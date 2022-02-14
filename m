@@ -2,136 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A51C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 23:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232068AbiBNW7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 17:59:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60302 "EHLO
+        id S229598AbiBNXEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 18:04:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232056AbiBNW7H (ORCPT
+        with ESMTP id S229458AbiBNXD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 17:59:07 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58ACE1901A6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 14:58:58 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id h18so7013629edb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 14:58:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H4CDzrFaAIRXP+JfJQjZSpyvl+auCY5ZKASrSIHcfZ4=;
-        b=g1eWBAr03pbHIGky/Et9stEsa62hM8KOUIVkJ/UAyGbCj4E+TeHxDAH3ngnjFzbGfy
-         6KPQbUeolripHdS/5FHHM9Osf86vxMO7KIsfUjlLd1M3dNyM0u8fmJH+j+mm3iJ7z63G
-         JR5bLt0DPZE2syU6n0PxTOgFYdHlbSn8G6gXjktIi3ecNeuPuQWXqQTOZ6pD2qS1EnUj
-         5CI5MEwdruQArTTBNk5mEiO2WdgEek1emiOymwL1PvsONdPEK3OOEIaEqvwcIFHKrrFr
-         4JHZGQ3/Gfz/G39IRSC2r0IejJFYpkNCwItA4+7Y1kGBMvRC/fc9ZY7Fwo/zsr8YvW0o
-         1rqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H4CDzrFaAIRXP+JfJQjZSpyvl+auCY5ZKASrSIHcfZ4=;
-        b=GigqJoL78N/V6AlBDt+34VLICaPBiTBHEkEIbDJue2Xuiz5M7Vk2aB+kDLxpZTGutz
-         CTcWMuNlgV77Do8JrgJ9kqM/dRcYfeMK3riVOzYvUZsWEV3G4vFX78lWT+mI+VOAl7Ks
-         WHwwFOwo3u9fn+OvKnB9lik2pmhFf0ARdh6/FXT7X3bCoAqlj0OIuMMq20DHvaSOnWOR
-         /BqhW+Nhl0NvuKGho6HKwMLRmNMk6KQ9VsTrYUZDOI/qhj+q3qMWXQP/0HDIb6dZyxdh
-         nGxlKpz3d4JOsMUQ/nCixSCIw4wBnAO/cnPppaflg6qia2jgjBeEkpPuzevVlCfArCA6
-         40cQ==
-X-Gm-Message-State: AOAM531/hXgJv5FjtSp9bXtXpgvsbPO4+C8OeAYr6ZkWv2W3a2AmcCfi
-        +LCFBHF5p25uY7msxLAJ1tV/K0ijEqy6uwSLJMSuDQ==
-X-Google-Smtp-Source: ABdhPJwpXtBphXPJ50QihP13rNz4U0amvRgAmy4aDk1Wwxy0Bg+4yuTFVEPXPDcZi9Valn6eEkT1vrL25RQAh8jRaLY=
-X-Received: by 2002:a05:6402:50d4:: with SMTP id h20mr1175034edb.90.1644879536587;
- Mon, 14 Feb 2022 14:58:56 -0800 (PST)
+        Mon, 14 Feb 2022 18:03:59 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36ADE19B40B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 15:03:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644879831; x=1676415831;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LQDocSg91l9vEMUZRg6EgiKUmYdHL9BdY4/boZi/R5Y=;
+  b=Ax5iKriuk8OwKR8ILD6lUwNpAJYL8miiC7rcmSQ2eJAsysiIi28bEzoE
+   hiCYEcKy0TE6ySFwjnZQLUwSBFbKjuakoLPQJtI2DdylmY7KOEYftRM3o
+   aDExkj+TMXHdAXK36xNnJRd20abfKt3ut7+ayLuu/QGSIi9TeHxh87jE+
+   0+3k4yiZ85SUInooh2M6aIvzSvpNkLWlO6U9B0sUqm+PU9ZvH802rQ6Zl
+   /WuSmc0M1pyMcc9Z8Wai2Ao0AFdAR0pFCC2BgUoHqV9C54QyIqeH6Zc3G
+   ISGulIA9ALop7VX5543Ya9REvBKWyCvtD+QaSG6hhyr3zLuRAuTDXT7OZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250409578"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="250409578"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 15:03:50 -0800
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="543974316"
+Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 15:03:50 -0800
+Date:   Mon, 14 Feb 2022 15:03:50 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V8 06/44] mm/pkeys: Add Kconfig options for PKS
+Message-ID: <20220214230350.GW785175@iweiny-DESK2.sc.intel.com>
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-7-ira.weiny@intel.com>
+ <9c4a8275-236d-67b6-07f9-5e46f66396c0@intel.com>
+ <20220128231015.GK785175@iweiny-DESK2.sc.intel.com>
+ <f72b0e17-11bf-b12e-fe7a-d38b0833acdc@intel.com>
+ <20220204190851.GY785175@iweiny-DESK2.sc.intel.com>
+ <20220209053430.GL785175@iweiny-DESK2.sc.intel.com>
+ <6b50671d-883f-561a-bf7d-5ae01c2cc312@intel.com>
 MIME-Version: 1.0
-References: <20220211023008.3197397-1-wonchung@google.com> <CAJZ5v0gD4zs3uBAYv6M4_1gNpkZ-g9XKOywJnf5007e6GwoGVA@mail.gmail.com>
- <CAOvb9yjpruiHxkZyZ8BOT0Hi_iV7xMOnBCr59BZX3eah_Zcy_w@mail.gmail.com>
-In-Reply-To: <CAOvb9yjpruiHxkZyZ8BOT0Hi_iV7xMOnBCr59BZX3eah_Zcy_w@mail.gmail.com>
-From:   Won Chung <wonchung@google.com>
-Date:   Mon, 14 Feb 2022 14:58:44 -0800
-Message-ID: <CAOvb9yh7jo27NH32tbAOtkJrnC9LwUFgFbHRbdbArwiU+YSmdw@mail.gmail.com>
-Subject: Re: [PATCH v6] ACPI: device_sysfs: Add sysfs support for _PLD
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Len Brown <lenb@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6b50671d-883f-561a-bf7d-5ae01c2cc312@intel.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 12:30 PM Won Chung <wonchung@google.com> wrote:
->
-> On Mon, Feb 14, 2022 at 11:12 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> >
-> > On Fri, Feb 11, 2022 at 3:30 AM Won Chung <wonchung@google.com> wrote:
-> > >
-> > > When ACPI table includes _PLD fields for a device, create a new
-> > > directory (pld) in sysfs to share _PLD fields.
-> >
-> > This version of the patch loos better to me, but I'm not sure if it
-> > goes into the right direction overall.
-> >
-> > > Currently without PLD information, when there are multiple of same
-> > > devices, it is hard to distinguish which device corresponds to which
-> > > physical device in which location. For example, when there are two Type
-> > > C connectors, it is hard to find out which connector corresponds to the
-> > > Type C port on the left panel versus the Type C port on the right panel.
-> >
-> > So I think that this is your primary use case and I'm wondering if
-> > this is the best way to address it.
-> >
-> > Namely, by exposing _PLD information under the ACPI device object,
-> > you'll make user space wanting to use that information depend on this
-> > interface, but the problem is not ACPI-specific (inevitably, it will
-> > appear on systems using DT, sooner or later) and making the user space
-> > interface related to it depend on ACPI doesn't look like a perfect
-> > choice.
-> >
-> > IOW, why don't you create a proper ABI for this in the Type C
-> > subsystem and expose the information needed by user space in a generic
-> > way that can be based on the _PLD information on systems with ACPI?
->
-> Hi Rafael,
->
-> Thank you for the review.
->
-> I was thinking that _PLD info is specific to ACPI since it is part of
-> the ACPI table. Could you explain a little bit more on why you think
-> exposing _PLD fields is not an ACPI-specific problem?
+On Mon, Feb 14, 2022 at 11:20:20AM -0800, Dave Hansen wrote:
+> On 2/8/22 21:34, Ira Weiny wrote:
+> >>> In other words, there are two things that must happen before the code
+> >>> gets compiled in:
+> >>>
+> >>> 1. Arch support
+> >>> 2. One or more features to use the arch support
+> >> Yes.  I really think we are both say the same thing with different words.
+> > Is the following more clear?
+> > 
+> > <commit>
+> > 
+> > PKS is only useful to kernel consumers and is only available on some
+> > architectures.  If no kernel consumers are configured or PKS support is
+> > not available the PKS code can be eliminated from the compile.
+> > 
+> > Define a Kconfig structure which allows kernel consumers to detect
+> > architecture support (ARCH_HAS_SUPERVISOR_PKEYS) and, if available,
+> > indicate that PKS should be compiled in (ARCH_ENABLE_SUPERVISOR_PKEYS).
+> > 
+> > In this patch ARCH_ENABLE_SUPERVISOR_PKEYS remains off until the first
+> > kernel consumer sets it.
+> 
+> It's a bit more clear.  I wish it was more clear about the problem.  I
+> think it would be well-served to add some specifics and clarify the
+> *problem*.  Maybe something like:
 
-Hi Rafael again,
+;-(  Ok.
 
-Sorry for the silly question here. I misunderstood your comment a bit,
-but I talked to Benson and Prashant for clarification. I understand
-now what you mean by it is not an ACPI-specific problem and exposing
-PLD would depend on ACPI.
+> 
+> == Problem ==
+> 
+> PKS support is provided by core x86 architecture code.  Its consumers,
+> however, may be far-flung device drivers like NVDIMM support.  The PKS
+> core architecture code is dead weight without a consumer.
 
->
-> I gave an example of how _PLD fields can be used for specifying Type C
-> connectors, but it is not Type C specific. For Chrome OS, we plan to
-> initially add PLD to not only Type C connectors but also USB port
-> devices (including Type C and Type A). Also, PLD can be used in the
-> future for describing other types of ports too like HDMI. (Benson and
-> Prashant, please correct or add if I am wrong or missing some
-> information) Maybe my commit message was not detailed enough..
->
-> I am also curious what Heikki thinks about this. Heikki, can you take
-> a look and share your thoughts?
+This is not the whole story though.  The far-flung device drivers don't need to
+compile their PKS code, or may not be able to support a feature, if
+ARCH_HAS_SUPERVISOR_PKEYS is not set.  Also, they may wish to chose a different
+implementation for the same functionality if available.  So
+ARCH_HAS_SUPERVISOR_PKEYS can affect more than just if PKS code is compiled.
+It could affect how drivers chose to implement some higher level feature.
 
-I am still curious what you and Heikki think about this since it may
-not be a Type C specific issue. We can start from adding generic
-location info to Type C subsystem first, as you suggested, then
-consider how to do the same for USB devices and Type A ports
-afterwards. I would appreciate sharing any thoughts or feedback. Thank
-you very much!
+> 
+> --- maybe add one example ---
+> 
+> == Solution ==
+> 
+> Avoid even compiling in the core PKS code if there are no consumers.
 
-Won
+And allow users to avoid compiling PKS code on architectures which
+don't support PKS.  Or chose another implementation if possible.
 
->
-> Thank you,
-> Won
+I'll try again.
+
+<msg>
+
+Consumers wishing to implement additional protections on memory pages may be
+able to use PKS.  However, PKS is only available on some architectures.
+
+In addition, PKS code, both in the core and in these consumers would be dead
+code without PKS being both available and used.  Therefore, if no kernel
+consumers are configured or PKS support is not available all the PKS code can
+be eliminated from the compile.
+
+Avoid using PKS if the architecture does not support it.  Furthermore,
+avoid compiling any PKS code if their are no consumers configured to use 
+it.
+
+Define ARCH_HAS_SUPERVISOR_PKEYS to detect architecture support and
+define ARCH_ENABLE_SUPERVISOR_PKEYS to indicate the core should compile
+in support.
+
+In this patch ARCH_ENABLE_SUPERVISOR_PKEYS remains off until the first
+kernel consumer sets it.
+
+</msg>
+
+
+Ira
+
+> 
+> == Details ==
