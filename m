@@ -2,195 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0EE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230477AbiBNVVf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:21:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46124 "EHLO
+        id S230486AbiBNVVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:21:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbiBNVVb (ORCPT
+        with ESMTP id S230474AbiBNVVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:21:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A91738BF78
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:21:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644873681;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Zw0m26jmgL5PSZbxc9F56RhQG8aGfeQzkdtSIlZWESE=;
-        b=DFDQq7MU/Ml96jrV35+CNJC1uE8+u8fAgeeEGMha+1O0rMpbtXcnk7uODTllTXktwMcqEe
-        Jez4RM1MGGYXd2muEC4HKopQJf1QpAKiG0By6X2O7JEYK9KiYuyHHXNpz8FPkkbT+TDJYY
-        oxifW3pxG+vt5CGZ658LW57mcpbEdkQ=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-630-3JNSnZ1VNNOH5ka-28vOIg-1; Mon, 14 Feb 2022 13:57:55 -0500
-X-MC-Unique: 3JNSnZ1VNNOH5ka-28vOIg-1
-Received: by mail-qk1-f198.google.com with SMTP id b204-20020a3767d5000000b004b2a0d2e930so9728494qkc.15
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:57:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zw0m26jmgL5PSZbxc9F56RhQG8aGfeQzkdtSIlZWESE=;
-        b=1H7bXPBsQ4HKK3WHWHGB0KWgkGmK70plEu0aryZ8rwsC3WIWfg2yucT1xb53qYHuR1
-         qxFtKlwRLxYoRD0YAj25Yne4QT2WgopPxts7PJ6rMkdZlyqPzmAYu2iX3YA0gPR4OTyZ
-         0lGzeiQ299ZXpz5/R4IXFb3outkOLfCP0mMCX146YuKwu/Xl2027RNjIeMVRUUi+ALbs
-         pEPsxlqsaka9Zc5lBNbl6dnp+3UzBF9GSGHGbrJLqnGCDIVtKsFADzJXRgS7u+49uSep
-         spR237ZraY3AnHdAjoWmsQHC2Hqa/g2GQS+kDDcow5U2M16LCbMfXhZTafJtylfu/7Pr
-         BjxA==
-X-Gm-Message-State: AOAM533RTTDq5dF/IQylEL1ALruJokBsw7b1SmMDe6XTxKSoiy+OEZh6
-        j+4ymSJHEZUPa0kSxsv6dxGDHyoy8I5Y7zTMIBqMoEooJplDL90530S8egio7lH6An5VBFpqPFx
-        KB+v6d0rsr+HL5OH/o/t6M9oQ
-X-Received: by 2002:ad4:58f1:: with SMTP id di17mr81631qvb.36.1644865075192;
-        Mon, 14 Feb 2022 10:57:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJysuyQMRiLKO/pEhsQy4DxLU5S9UbooAkR2s9LJCJ+c5txevugMskSZ+48nNPU8AiQWi+8+Lg==
-X-Received: by 2002:ad4:58f1:: with SMTP id di17mr81584qvb.36.1644865074915;
-        Mon, 14 Feb 2022 10:57:54 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id i13sm16244149qko.91.2022.02.14.10.57.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 10:57:54 -0800 (PST)
-Date:   Mon, 14 Feb 2022 10:57:48 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
- unique-symbol` is available
-Message-ID: <20220214185748.ite4oxkaynrvjj34@treble>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
- <20220209185752.1226407-3-alexandr.lobakin@intel.com>
- <20220211174130.xxgjoqr2vidotvyw@treble>
- <20220214121447.288695-1-alexandr.lobakin@intel.com>
+        Mon, 14 Feb 2022 16:21:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66421179BA;
+        Mon, 14 Feb 2022 13:21:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48FD8B8164B;
+        Mon, 14 Feb 2022 19:05:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D599C340E9;
+        Mon, 14 Feb 2022 19:05:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644865550;
+        bh=0qXjvfXrQAWSIg6NzaQiBgbrubEQO78+++XPIl1Kl8c=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=rZoYLgMoANJJQhw6AF430YieYpe50cyfmskQ8MsdJR2TZcu266KSWTuNs7Y2aYx1+
+         CHhdGj1EQKrOcSDoQWpOkCvYMZp7eX5l+P2kFOb4WqgNTAe2qyvKvYN+oJYUavpSoA
+         67WDlT3swFWpW9jcvLjwBdy9iRGWgWC/KpHRRidnIU57H+7a2Wcaq752/j/c3mPXyE
+         CResbLhsqjSIU3HRY6Qa3/4tRlp7x+43k9hls/xPM1p0NcwNSuWvBIi3es9uoVohyg
+         eZXKWqPy3LREqlQXWp55dVvInVSOnf+l1er9wnatIzNgYZ0LgzEvGA9DE+y5iTY8YI
+         9hgeJcTGnxV6Q==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 918F35C0388; Mon, 14 Feb 2022 11:05:49 -0800 (PST)
+Date:   Mon, 14 Feb 2022 11:05:49 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     clm@fb.com
+Cc:     riel@surriel.com, viro@zeniv.linux.org.uk,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        kernel-team@fb.com
+Subject: [PATCH RFC fs/namespace] Make kern_unmount() use
+ synchronize_rcu_expedited()
+Message-ID: <20220214190549.GA2815154@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220214121447.288695-1-alexandr.lobakin@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NOTE: Maybe -zunique-symbol won't get used after all, based on maskray's
-objections.  Regardless, I'm replying below, because the rest of the
-approach in this patch seems all wrong.
+Experimental.  Not for inclusion.  Yet, anyway.
 
-On Mon, Feb 14, 2022 at 01:14:47PM +0100, Alexander Lobakin wrote:
-> From: Josh Poimboeuf <jpoimboe@redhat.com>
-> Date: Fri, 11 Feb 2022 09:41:30 -0800
-> 
-> > On Wed, Feb 09, 2022 at 07:57:39PM +0100, Alexander Lobakin wrote:
-> > > Position-based search, which means that if there are several symbols
-> > > with the same name, the user needs to additionally provide the
-> > > "index" of a desired symbol, is fragile. For example, it breaks
-> > > when two symbols with the same name are located in different
-> > > sections.
-> > > 
-> > > Since a while, LD has a flag `-z unique-symbol` which appends
-> > > numeric suffixes to the functions with the same name (in symtab
-> > > and strtab). It can be used to effectively prevent from having
-> > > any ambiguity when referring to a symbol by its name.
-> > 
-> > In the patch description can you also give the version of binutils (and
-> > possibly other linkers) which have the flag?
-> 
-> Yeah, sure.
+Freeing large numbers of namespaces in quick succession can result in
+a bottleneck on the synchronize_rcu() invoked from kern_unmount().
+This patch applies the synchronize_rcu_expedited() hammer to allow
+further testing and fault isolation.
 
-> > > Check for its availability and always prefer when the livepatching
-> > > is on. It can be used unconditionally later on after broader testing
-> > > on a wide variety of machines, but for now let's stick to the actual
-> > > CONFIG_LIVEPATCH=y case, which is true for most of distro configs
-> > > anyways.
-> > 
-> > Has anybody objected to just enabling it for *all* configs, not just for
-> > livepatch?
-> 
-> A few folks previously.
+Hey, at least there was no need to change the comment!  ;-)
 
-Why?  It would be good to document that here.
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+Cc: <linux-fsdevel@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+Not-yet-signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 
-> > I'd much prefer that: the less "special" livepatch is (and the distros
-> > which enable it), the better.  And I think having unique symbols would
-> > benefit some other components.
-> 
-> Agree, I just want this series to be as least invasive for
-> non-FG-KASLR builds as possible.
+---
 
-But in a very real sense, this patch is making the series *more*
-invasive by complexifying the config space.
+ namespace.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Adding -zunique-symbols could have kernel-wide implications.  If there
-were bugs, we'd want to root them out, not hide them behind obscure
-config combinations we hope nobody uses.  Effectively this is
-destabilizing CONFIG_LIVEPATCH.
-
-Beyond "least invasive", we also need to consider:
-
-- What makes fgkaslr most compatible with other features?
-- What makes fgkaslr most palatable for wide use?
-- What's best for the kernel as a whole?
-
-It's much better to integrate new features properly with the kernel,
-rather than just grafting them on to the side.  Otherwise it just adds
-technical debt, with no benefit to the rest of the kernel.  Then it
-might as well just remain an out-of-tree patch set.
-
-> > > +	if (IS_ENABLED(CONFIG_LD_HAS_Z_UNIQUE_SYMBOL))
-> > > +		sympos = 0;
-> > > +
-> > 
-> > Similarly, I don't see a need for this.  If the patch is legit then
-> > sympos should already be zero.  If not, an error gets reported and the
-> > patch fails to load.
-> 
-> Right, but for both those chunks the main idea is to let the
-> compiler optimize-out the code non-actual for unique-symbol builds:
-> 
-> add/remove: 0/0 grow/shrink: 1/2 up/down: 3/-80 (-77)
-> Function                                     old     new   delta
-> klp_find_callback                            139     142      +3
-> klp_find_object_symbol.cold                   85      48     -37
-> klp_find_object_symbol                       168     125     -43
-
-As I said, it's not a hot path, so there's no need to complicate the
-code with edge cases, and remove useful error checking in the process.
-
--- 
-Josh
-
+diff --git a/fs/namespace.c b/fs/namespace.c
+index 40b994a29e90d..79c50ad0ade5b 100644
+--- a/fs/namespace.c
++++ b/fs/namespace.c
+@@ -4389,7 +4389,7 @@ void kern_unmount(struct vfsmount *mnt)
+ 	/* release long term mount so mount point can be released */
+ 	if (!IS_ERR_OR_NULL(mnt)) {
+ 		real_mount(mnt)->mnt_ns = NULL;
+-		synchronize_rcu();	/* yecchhh... */
++		synchronize_rcu_expedited();	/* yecchhh... */
+ 		mntput(mnt);
+ 	}
+ }
