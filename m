@@ -2,184 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E79FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiBNVAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:00:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34148 "EHLO
+        id S229976AbiBNVAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:00:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiBNVAi (ORCPT
+        with ESMTP id S230024AbiBNVAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:00:38 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED8AD761F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:00:29 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id b9so8903717lfv.7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:00:29 -0800 (PST)
+        Mon, 14 Feb 2022 16:00:43 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A518713194B;
+        Mon, 14 Feb 2022 13:00:34 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id t4-20020a17090a510400b001b8c4a6cd5dso296884pjh.5;
+        Mon, 14 Feb 2022 13:00:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2nOxSfxC5d0K6IVKp4zE1wrpFnLKPO0Xaise/eOirLY=;
-        b=kPiZqYEwBCdmA51juRTF8Ufmi6EoniKHwK2suVXkdNN1vWkg+ku8KWKhE8o64PF3sl
-         CO0DRcTllgOtv/LZZ1k2xKtQo+XC8Q2e0NxviDRjFnCUa6vNq9yMS5HzdX+EsvBhjfvC
-         El7a24acxMwtpJJAHWH2sNdfLogGwHYxBlYbTumL6n9RuXjyy/iAc8Hfpp9yytBIAEta
-         vsZ9ZSMmDcodI4Nh846ij8xXAYyD4VE0s/uU9bl4MRDmuAlqtBYWzc/peiPcEg3Wx0Pc
-         vW3Vqk2OgDLbB362vue2kqlxjIS00yH4s90+1Bl+D/UqQyGF/rkOVNb59QNIkap2lSea
-         n7hA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=nQ8TSkYAbvmp6Q3oaHRO6T3ykYVNUOGZKtBNrreWFLo=;
+        b=gjPryxoWPiwCiEaLQKO8x3yzqkQ+YJnYOcvgz2EmXtNKXXIuLVi2DVqX3Is2Dy9R4H
+         gw42n+xgEsswL+F+YL1ohciYqCVi/GM9S9MkGZ5EMkGtnTzo6D+gDrbCHrPMI889N8Yq
+         WukgFIXeRFzLQ/U8cAwb/gizAkWL3rfhwdPK0lO8nbndmcp7UMuca0EM2Ir55aGlYglK
+         t1IUBeRmjyxziKxJdXFLqHIbPfuRqKVgDRlBDvRNyoY2apSb8C+ITVTM/jt5xxCyKYZD
+         tFcm7SKK6aaVsPb58tw+w6tcQDKj2yzf0V7E5gFWoSHnARTYi/hCLPn1bTXs7M7v8BIs
+         2afQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2nOxSfxC5d0K6IVKp4zE1wrpFnLKPO0Xaise/eOirLY=;
-        b=N890M+kIfJq62/uxhwZBozIVlK80OJtlLfFHioRxaTrvpSth9fBwULv/KHInNtkzG1
-         gA1hk//rQJ6LYpJ4ig7+fKUUgX6yPrUTfk9vFS1t3V3gjLujxOW1veDbLhTAchNtAX66
-         Wn6nqsz1v6Sqs9i28tSaYcDMkx3bSRxQn9P0nOkjfpXR6ihMDGPE2yd6sAotrk3NBgCc
-         Z0C8V3Ulq7fr9SfW9++Vrxdp9DlJlKd9cgE8eb3rKvmqq2s46zafYbutdjqStMmQC+51
-         aYCG9OvzHk2EItuphl5mX5hc9QJF0PQezDEmNKPgaXGPE99pAmrU1YUqURaD4Mu+MH/I
-         BIKA==
-X-Gm-Message-State: AOAM533nuL0SEB4CjDKi8WDQXVpHybn8mhc92qDPCM+r/cNDeGmvYmTv
-        jRvqriYW2lWGnEt8NqUfVfb7Fw==
-X-Google-Smtp-Source: ABdhPJzHSeOU0mjnUhdjqpKrFNyLy4bR7RR6F1D6uxTDz8QYlVVkR7sSpfcIQWDRm5o/aHx5D1Yl0g==
-X-Received: by 2002:a05:6512:22d4:: with SMTP id g20mr694127lfu.116.1644872427785;
-        Mon, 14 Feb 2022 13:00:27 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id m9sm3450661lfp.134.2022.02.14.13.00.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 13:00:27 -0800 (PST)
-Message-ID: <369073e5-4311-a752-786e-e5132b202796@linaro.org>
-Date:   Tue, 15 Feb 2022 00:00:26 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=nQ8TSkYAbvmp6Q3oaHRO6T3ykYVNUOGZKtBNrreWFLo=;
+        b=CiAmdZ1+huo8KkVuTzzTKTzurPJ4hrQKIOO9UgURA6jWJFVdEQXDIUy51UH4+WUjPg
+         GRq+qkNQ+HWyjb10ds9Klu9ZIZ6jynN39Dws0phHpd9Zqp/OZg+5RHWD9jce9NNT7L9x
+         msGzHaNPuSRpNQTZ57S6qT0pVAKF60kZuxnj1R6OoW/38yzBlnUg2cluvhAjl2hlOeQT
+         A6GxCuRR5JdnvYYZUbKVA2aXqb8FvrB+4Pc8xVtm2h2I/nUEqMlLZGh6ZPeYya6HnQBj
+         xjlOTFzdVR5Qjs1ZDnh7bjJH8OaWQswBiscy+d0Ta4+Ka1OPB45y2jH3OH6pKL3JFQYf
+         JZnQ==
+X-Gm-Message-State: AOAM530sLnM8mNn14Cmyd6+7J5TBP4Y8SDBXSoet6fQXGnJWj68sbyvj
+        8V2qf39akc5H3y2tA9r8J+bZotQaf02Iug==
+X-Google-Smtp-Source: ABdhPJzs2dcp3QbYCWrCen4ErUKUVrFhyM9P4jNJSqL+XDqe+2UVjDQT6gadl/VQZUTaTUjglAr59Q==
+X-Received: by 2002:a05:6a00:15cd:: with SMTP id o13mr681299pfu.54.1644868379513;
+        Mon, 14 Feb 2022 11:52:59 -0800 (PST)
+Received: from jagath-PC ([27.4.59.114])
+        by smtp.gmail.com with ESMTPSA id e28sm359521pgm.23.2022.02.14.11.52.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 14 Feb 2022 11:52:59 -0800 (PST)
+Date:   Tue, 15 Feb 2022 01:22:54 +0530
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>, jic23@kernel.org
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/4] iio: potentiometer: Add support for Maxim DS3502
+Message-ID: <20220214195252.GA7374@jagath-PC>
+References: <20220214033620.4059-1-jagathjog1996@gmail.com>
+ <20220214033620.4059-4-jagathjog1996@gmail.com>
+ <CAHp75VcWym5vyDAVyTUCpj=Qkm28VUaqdqJ7VuFL_bsb0fmhaA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] drm/msm: populate intf_audio_select() base on hardware
- capability
-Content-Language: en-GB
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     robdclark@gmail.com, sean@poorly.run, swboyd@chromium.org,
-        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1644621822-25407-1-git-send-email-quic_khsieh@quicinc.com>
- <CAA8EJpqwAxDa142B_N6NA7KkQ6WuuG_Ma7No5SXEpJdBmgKvXQ@mail.gmail.com>
- <3b6cd2c2-5ebb-97a2-f9af-3c32d0899cd8@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <3b6cd2c2-5ebb-97a2-f9af-3c32d0899cd8@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHp75VcWym5vyDAVyTUCpj=Qkm28VUaqdqJ7VuFL_bsb0fmhaA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/02/2022 20:55, Kuogee Hsieh wrote:
-> 
-> On 2/11/2022 3:36 PM, Dmitry Baryshkov wrote:
->> On Sat, 12 Feb 2022 at 02:23, Kuogee Hsieh<quic_khsieh@quicinc.com>  wrote:
->>> intf_audio_select() callback function use to configure
->>> HDMI_DP_CORE_SELECT to decide audio output routes to HDMI or DP
->>> interface. HDMI is obsoleted at newer chipset. To keep supporting
->>> legacy hdmi application, intf_audio_select call back function have
->>> to be populated base on hardware chip capability where legacy
->>> chipsets have has_audio_select flag set to true.
->>>
->>> Signed-off-by: Kuogee Hsieh<quic_khsieh@quicinc.com>
->>> ---
->>>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c | 2 ++
->>>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h | 1 +
->>>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c     | 9 ++++++---
->>>   3 files changed, 9 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>> index 272b14b..23680e7 100644
->>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>> @@ -201,6 +201,7 @@ static const struct dpu_caps sdm845_dpu_caps = {
->>>          .has_dim_layer = true,
->>>          .has_idle_pc = true,
->>>          .has_3d_merge = true,
->>> +       .has_audio_select = true,
->>>          .max_linewidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
->>>          .pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
->>>          .max_hdeci_exp = MAX_HORZ_DECIMATION,
->>> @@ -229,6 +230,7 @@ static const struct dpu_caps sm8150_dpu_caps = {
->>>          .has_dim_layer = true,
->>>          .has_idle_pc = true,
->>>          .has_3d_merge = true,
->>> +       .has_audio_select = true,
->>>          .max_linewidth = 4096,
->>>          .pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
->>>          .max_hdeci_exp = MAX_HORZ_DECIMATION,
->>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
->>> index e5a96d6..b33f91b 100644
->>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
->>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
->>> @@ -357,6 +357,7 @@ struct dpu_caps {
->>>          bool has_dim_layer;
->>>          bool has_idle_pc;
->>>          bool has_3d_merge;
->>> +       bool has_audio_select;
->> I'd suggest adding a bit to dpu_mdp_cfg's features instead, following
->> the example of other hardware blocks.
-> 
-> it may cause mis leading if we put this in hardware level since 
-> MDP_HDMI_DP_SELECT  bit has not be connected
-> 
-> to logic for a while even it still present at ipcat. Also this bit but 
-> will be  removed at next release.
+Hello Andy,
 
-I'm sorry, I can't quite catch you. Why would you like to remove this 
-bit at the next release?
+On Mon, Feb 14, 2022 at 01:32:14PM +0200, Andy Shevchenko wrote:
+> On Mon, Feb 14, 2022 at 5:36 AM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> >
+> > The DS3502 is a 7-bit, nonvolatile digital potentiometer featuring
+> > an output voltage range of up to 15.5V.
+> > DS3502 support is implemented into existing ds1803 driver
+> 
+> Be consistent here and in other commit messages with how you refer to
+> the IC parts, i.e.
+> DS1803. Don't forget English grammar and punctuation, i.e. missed period above.
+> 
+
+I will fix this in v3
+
+> > Datasheet: https://datasheets.maximintegrated.com/en/ds/DS3502.pdf
+> 
+> >
+> 
+> A tag block may not have blank lines. Drop it.
+> 
+> > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+> 
+> ...
+> 
+> > -       tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
+> > +       tristate "Maxim Integrated DS1803 and similar Digital Potentiometer driver"
+> 
+> Please, list them like other drivers do:
+> 
+>        tristate "Maxim Integrated DS1803/DS... Digital Potentiometer driver"
+> 
+> ...
+> 
+> > -         Say yes here to build support for the Maxim Integrated DS1803
+> > -         digital potentiometer chip.
+> > +         Say yes here to build support for the Maxim Integrated DS1803 and
+> > +         similar digital potentiometer chip.
+> 
+> Same here.
+> 
+> ...
+> 
+> > - * Maxim Integrated DS1803 digital potentiometer driver
+> > + * Maxim Integrated DS1803 and similar digital potentiometer driver
+> 
+> Same here.
+
+Based on Jonathan suggestion for the previous patch version I used 
+"and similar" wording here.
 
 > 
-> Is dpu_caps level more proper than in hardware feature level?
+> ...
+> 
+> > -#define DS1803_MAX_POS         255
+> > -#define DS1803_WRITE(chan)     (0xa8 | ((chan) + 1))
+> 
+> Not sure why these were removed (or moved?)
 
-A priciple of the least surprise. In other hardware-dependent virtual 
-functions selection we use block's caps->features rather than boolean flags.
+Since max wiper position is present in avail array of ds1803_cfg structure
+and that is being used for read scale so DS1803_MAX_POS is removed.
+
+Since each wiper address of both parts is assigned to the address
+member of iio_chan_spec struct so DS1803_WRITE(chan) is removed.
 
 > 
+> ...
 > 
->>>          /* SSPP limits */
->>>          u32 max_linewidth;
->>>          u32 pixel_ram_size;
->>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c
->>> index 282e3c6..e608f4d 100644
->>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c
->>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c
->>> @@ -261,14 +261,17 @@ static void dpu_hw_intf_audio_select(struct dpu_hw_mdp *mdp)
->>>   }
->>>
->>>   static void _setup_mdp_ops(struct dpu_hw_mdp_ops *ops,
->>> -               unsigned long cap)
->>> +               unsigned long cap,
->>> +               const struct dpu_mdss_cfg *m)
->>>   {
->>>          ops->setup_split_pipe = dpu_hw_setup_split_pipe;
->>>          ops->setup_clk_force_ctrl = dpu_hw_setup_clk_force_ctrl;
->>>          ops->get_danger_status = dpu_hw_get_danger_status;
->>>          ops->setup_vsync_source = dpu_hw_setup_vsync_source;
->>>          ops->get_safe_status = dpu_hw_get_safe_status;
->>> -       ops->intf_audio_select = dpu_hw_intf_audio_select;
->>> +
->>> +       if (m->caps->has_audio_select)
->>> +               ops->intf_audio_select = dpu_hw_intf_audio_select;
->>>   }
->>>
->>>   static const struct dpu_mdp_cfg *_top_offset(enum dpu_mdp mdp,
->>> @@ -320,7 +323,7 @@ struct dpu_hw_mdp *dpu_hw_mdptop_init(enum dpu_mdp idx,
->>>           */
->>>          mdp->idx = idx;
->>>          mdp->caps = cfg;
->>> -       _setup_mdp_ops(&mdp->ops, mdp->caps->features);
->>> +       _setup_mdp_ops(&mdp->ops, mdp->caps->features, m);
->>>
->>>          return mdp;
->>>   }
+> > +static const struct ds1803_cfg ds1803_cfg[] = {
+> > +       [DS1803_010] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  10,
+> > +                        .channels = ds1803_channels,
+> > +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
+> > +       [DS1803_050] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  50,
+> > +                        .channels = ds1803_channels,
+> > +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
+> > +       [DS1803_100] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms = 100,
+> > +                        .channels = ds1803_channels,
+> > +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
+> > +       [DS3502] =     { .wipers = 1, .avail = { 0, 1, 127 }, .kohms =  10,
+> > +                        .channels = ds3502_channels,
+> > +                        .num_channels = ARRAY_SIZE(ds3502_channels) },
+> >  };
+> 
+> Split this on a per type basis. I believe it won't be too much work,
+> also, consider adding channels as a separate preparatory patch as you
+> did with avail.
 
+Based on Jonathan suggestion for the previous patch version to avoid
+having different chip type related structures so channels and num_channels
+are added into ds1803_cfg structure.
 
--- 
-With best wishes
-Dmitry
+Sure for channels I will split into separate patch for old part in v3.
+
+>
+> ...
+> 
+> > -       data->cfg = &ds1803_cfg[id->driver_data];
+> > +       data->chip_type = (uintptr_t)device_get_match_data(dev);
+> > +       if (data->chip_type < DS1803_010 || data->chip_type > DS3502)
+> > +               data->chip_type = id->driver_data;
+> 
+> Split it into a separate patch and use pointer validation instead:
+> 
+> data->cfg = ...
+> if (!data->cfg)
+>   data->cfg = ...id->driver_data;
+> 
+> ...
+> 
+> > -       { .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
+> > -       { .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
+> > -       { .compatible = "maxim,ds1803-100", .data = &ds1803_cfg[DS1803_100] },
+
+To get the chip specific structure I can use previous structure method for data
+and validation as you shown above.
+But it is necessary to get the chip_type also because of dependency in 
+ds1803_raw_read().
+
+To get the chip_type can I use 
+data->chip_type = id->driver_data
+
+> > +       { .compatible = "maxim,ds1803-010", .data = (void *)DS1803_010 },
+> > +       { .compatible = "maxim,ds1803-050", .data = (void *)DS1803_050 },
+> > +       { .compatible = "maxim,ds1803-100", .data = (void *)DS1803_100 },
+> 
+> This is not good, please use pointers as it was before.
+> 
+> > +       { .compatible = "maxim,ds3502",     .data = (void *)DS3502 },
+> 
+> Ditto. Create a new, separate structure for this type.
+> 
+> ...
+> 
+> >         { "ds1803-010", DS1803_010 },
+> >         { "ds1803-050", DS1803_050 },
+> >         { "ds1803-100", DS1803_100 },
+> > +       { "ds3502",     DS3502     },
+> 
+> Too many spaces.
+> Besides this, please create a new prerequisite patch to convert this
+> to use pointers as above.
+
+Sure I will split this patch in v3.
+Thanks for feedback.
+
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+
+Best Regards,
+Jagath
