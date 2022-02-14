@@ -2,256 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 142A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 23:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B19C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 23:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232267AbiBNX5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 18:57:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58452 "EHLO
+        id S232277AbiBNX6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 18:58:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiBNX5q (ORCPT
+        with ESMTP id S229636AbiBNX6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 18:57:46 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572375FB9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 15:57:37 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id k60-20020a17090a4cc200b001b932781f3eso919228pjh.0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 15:57:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JXjDrv5uEfaLPNIeos7lmODCsgdXrIHIxdqkM1uiR6M=;
-        b=M7dwsMjSN3cVVk2U1XKyRyNzKBD4tQUrtGAf+u1V8YDsnkalGgDsRa0YKLmZ0nnb9x
-         oYIJkzgOH4otpONhB9ac9JqCkTl2WIuLr4LhUmxMqEworBJ0sTOuKXmAwOXWouKRtt0p
-         Dk3R+gO59ggfo36U0T5CLvQP7HofkjUq478KDCL1d656SxlulkDtejDICuy2f5PAGytE
-         iSiGgvso/f7RfMVCMbJ51qxH1xh+ZHWvoSCCQr5JVEjpUhcodupGFWHx14mWFWQpofv2
-         MRPY2ZnJMgsIWoqV7tZvS0f/04Rip9tr1IIOd2pO5qyZGHEHKbk4zbrjubH0fohLTl9K
-         0N+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=JXjDrv5uEfaLPNIeos7lmODCsgdXrIHIxdqkM1uiR6M=;
-        b=4LRBUq8wJpA+AHnDHQCGOgoOsBB0+2/7QC9QwR6hxnd/r6k+EfUXbOOzXa0CHG8J+H
-         puD9QwPkEX9wseb3oWarcI9UzAYyg5Daew0fSt9OhMadJuEqet/nz22ACjtgUdcZ5meE
-         4eBk2OvsQsEK0pmFb8fg+Fj6XviUKrBp8U1GESUpKRozLbqljxptTwbZyLcFdtZBEhbR
-         WqEVJprX+N0Mj+eNiwlNAzs7V4fXf0GuCvg65f1tXHTXKTh3LBQSKR1/XR7bFLXeLBC3
-         IqQl2f+YMN8+JlDsHkp3vcdrP/+IHXhpquOy3dimMWNNjaZe304U3S7IP9OVpFSOxpYX
-         XM/w==
-X-Gm-Message-State: AOAM532O8QTv6YFw7xMYwqMz1V7fB4s/YYCwyUZ7413XbhdO+oWcI4go
-        pnTgjh62gG4X1O7zLkICIPSONtgmaa8=
-X-Google-Smtp-Source: ABdhPJyLKXTk5KvHpWV/M4S6xtTeAf2IWQFdoF4u0/BmSSBUc2M4n/Ev4ddZzQzsd3Zlld2S590EtA==
-X-Received: by 2002:a17:902:780d:: with SMTP id p13mr1390855pll.32.1644883056682;
-        Mon, 14 Feb 2022 15:57:36 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:e6b9:838c:97e9:17b8])
-        by smtp.gmail.com with ESMTPSA id k5sm6223611pfu.180.2022.02.14.15.57.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 15:57:36 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Michael Petlan <mpetlan@redhat.com>
-Subject: [PATCH v3] perf/core: Add a new read format to get a number of lost samples
-Date:   Mon, 14 Feb 2022 15:57:28 -0800
-Message-Id: <20220214235728.40159-1-namhyung@kernel.org>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+        Mon, 14 Feb 2022 18:58:40 -0500
+Received: from qproxy6-pub.mail.unifiedlayer.com (qproxy6-pub.mail.unifiedlayer.com [69.89.23.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A072AC66
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 15:58:31 -0800 (PST)
+Received: from gproxy2-pub.mail.unifiedlayer.com (unknown [69.89.18.3])
+        by qproxy6.mail.unifiedlayer.com (Postfix) with ESMTP id B8C788031CCF
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:58:30 +0000 (UTC)
+Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
+        by progateway4.mail.pro1.eigbox.com (Postfix) with ESMTP id 0D7C21004837D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:58:30 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id JlEjn6lUu2s5dJlEjnn6CO; Mon, 14 Feb 2022 23:58:30 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=BOh2EHcG c=1 sm=1 tr=0 ts=620aeca6
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=oGFeUVbbRNcA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ScEyoHUccvNVCjYeOJrZASzf1PVV3fhbdAISfsk9YVQ=; b=mYnlATE2wAPc/qkXEbilWbK9zP
+        IYHKd+RD2dGrswOQctONmhQtH0sUJdKhmDxEhFSUstgAz0Vj03dnJ2puJK6XDekShagccCiFZvEWf
+        ru9vrBxIwoVDDvdmgoKHvOI6f;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:54484 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nJlEi-000FYY-UJ; Mon, 14 Feb 2022 16:58:28 -0700
+Message-ID: <ca5640d6-d4b1-e51f-6d9f-58f5705cc1e3@w6rz.net>
+Date:   Mon, 14 Feb 2022 15:58:27 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 000/172] 5.15.24-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220214092506.354292783@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nJlEi-000FYY-UJ
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:54484
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 13
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sometimes we want to know an accurate number of samples even if it's
-lost.  Currenlty PERF_RECORD_LOST is generated for a ring-buffer which
-might be shared with other events.  So it's hard to know per-event
-lost count.
+On 2/14/22 01:24, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.24 release.
+> There are 172 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.24-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Add event->lost_samples field and PERF_FORMAT_LOST to retrieve it from
-userspace.
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Original-patch-by: Jiri Olsa <jolsa@redhat.com>
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- * rebase to tip/perf/core
- * fix copy-n-paste errors
-
- include/linux/perf_event.h      |  2 ++
- include/uapi/linux/perf_event.h |  5 ++++-
- kernel/events/core.c            | 21 ++++++++++++++++++---
- kernel/events/ring_buffer.c     |  5 ++++-
- 4 files changed, 28 insertions(+), 5 deletions(-)
-
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 733649184b27..1debe51cb736 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -759,6 +759,8 @@ struct perf_event {
- 	struct pid_namespace		*ns;
- 	u64				id;
- 
-+	atomic64_t			lost_samples;
-+
- 	u64				(*clock)(void);
- 	perf_overflow_handler_t		overflow_handler;
- 	void				*overflow_handler_context;
-diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-index 1b65042ab1db..08220748fa9f 100644
---- a/include/uapi/linux/perf_event.h
-+++ b/include/uapi/linux/perf_event.h
-@@ -299,6 +299,7 @@ enum {
-  *	  { u64		time_enabled; } && PERF_FORMAT_TOTAL_TIME_ENABLED
-  *	  { u64		time_running; } && PERF_FORMAT_TOTAL_TIME_RUNNING
-  *	  { u64		id;           } && PERF_FORMAT_ID
-+ *	  { u64		lost;         } && PERF_FORMAT_LOST
-  *	} && !PERF_FORMAT_GROUP
-  *
-  *	{ u64		nr;
-@@ -306,6 +307,7 @@ enum {
-  *	  { u64		time_running; } && PERF_FORMAT_TOTAL_TIME_RUNNING
-  *	  { u64		value;
-  *	    { u64	id;           } && PERF_FORMAT_ID
-+ *	    { u64	lost;         } && PERF_FORMAT_LOST
-  *	  }		cntr[nr];
-  *	} && PERF_FORMAT_GROUP
-  * };
-@@ -315,8 +317,9 @@ enum perf_event_read_format {
- 	PERF_FORMAT_TOTAL_TIME_RUNNING		= 1U << 1,
- 	PERF_FORMAT_ID				= 1U << 2,
- 	PERF_FORMAT_GROUP			= 1U << 3,
-+	PERF_FORMAT_LOST			= 1U << 4,
- 
--	PERF_FORMAT_MAX = 1U << 4,		/* non-ABI */
-+	PERF_FORMAT_MAX = 1U << 5,		/* non-ABI */
- };
- 
- #define PERF_ATTR_SIZE_VER0	64	/* sizeof first published struct */
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index afbf388a5176..3f3a029c81c4 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -1910,6 +1910,9 @@ static void __perf_event_read_size(struct perf_event *event, int nr_siblings)
- 	if (event->attr.read_format & PERF_FORMAT_ID)
- 		entry += sizeof(u64);
- 
-+	if (event->attr.read_format & PERF_FORMAT_LOST)
-+		entry += sizeof(u64);
-+
- 	if (event->attr.read_format & PERF_FORMAT_GROUP) {
- 		nr += nr_siblings;
- 		size += sizeof(u64);
-@@ -5350,11 +5353,15 @@ static int __perf_read_group_add(struct perf_event *leader,
- 	values[n++] += perf_event_count(leader);
- 	if (read_format & PERF_FORMAT_ID)
- 		values[n++] = primary_event_id(leader);
-+	if (read_format & PERF_FORMAT_LOST)
-+		values[n++] = atomic64_read(&leader->lost_samples);
- 
- 	for_each_sibling_event(sub, leader) {
- 		values[n++] += perf_event_count(sub);
- 		if (read_format & PERF_FORMAT_ID)
- 			values[n++] = primary_event_id(sub);
-+		if (read_format & PERF_FORMAT_LOST)
-+			values[n++] = atomic64_read(&sub->lost_samples);
- 	}
- 
- 	raw_spin_unlock_irqrestore(&ctx->lock, flags);
-@@ -5411,7 +5418,7 @@ static int perf_read_one(struct perf_event *event,
- 				 u64 read_format, char __user *buf)
- {
- 	u64 enabled, running;
--	u64 values[4];
-+	u64 values[5];
- 	int n = 0;
- 
- 	values[n++] = __perf_event_read_value(event, &enabled, &running);
-@@ -5421,6 +5428,8 @@ static int perf_read_one(struct perf_event *event,
- 		values[n++] = running;
- 	if (read_format & PERF_FORMAT_ID)
- 		values[n++] = primary_event_id(event);
-+	if (read_format & PERF_FORMAT_LOST)
-+		values[n++] = atomic64_read(&event->lost_samples);
- 
- 	if (copy_to_user(buf, values, n * sizeof(u64)))
- 		return -EFAULT;
-@@ -6951,7 +6960,7 @@ static void perf_output_read_one(struct perf_output_handle *handle,
- 				 u64 enabled, u64 running)
- {
- 	u64 read_format = event->attr.read_format;
--	u64 values[4];
-+	u64 values[5];
- 	int n = 0;
- 
- 	values[n++] = perf_event_count(event);
-@@ -6965,6 +6974,8 @@ static void perf_output_read_one(struct perf_output_handle *handle,
- 	}
- 	if (read_format & PERF_FORMAT_ID)
- 		values[n++] = primary_event_id(event);
-+	if (read_format & PERF_FORMAT_LOST)
-+		values[n++] = atomic64_read(&event->lost_samples);
- 
- 	__output_copy(handle, values, n * sizeof(u64));
- }
-@@ -6975,7 +6986,7 @@ static void perf_output_read_group(struct perf_output_handle *handle,
- {
- 	struct perf_event *leader = event->group_leader, *sub;
- 	u64 read_format = event->attr.read_format;
--	u64 values[5];
-+	u64 values[6];
- 	int n = 0;
- 
- 	values[n++] = 1 + leader->nr_siblings;
-@@ -6993,6 +7004,8 @@ static void perf_output_read_group(struct perf_output_handle *handle,
- 	values[n++] = perf_event_count(leader);
- 	if (read_format & PERF_FORMAT_ID)
- 		values[n++] = primary_event_id(leader);
-+	if (read_format & PERF_FORMAT_LOST)
-+		values[n++] = atomic64_read(&leader->lost_samples);
- 
- 	__output_copy(handle, values, n * sizeof(u64));
- 
-@@ -7006,6 +7019,8 @@ static void perf_output_read_group(struct perf_output_handle *handle,
- 		values[n++] = perf_event_count(sub);
- 		if (read_format & PERF_FORMAT_ID)
- 			values[n++] = primary_event_id(sub);
-+		if (read_format & PERF_FORMAT_LOST)
-+			values[n++] = atomic64_read(&sub->lost_samples);
- 
- 		__output_copy(handle, values, n * sizeof(u64));
- 	}
-diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
-index 52868716ec35..727ca8f4caad 100644
---- a/kernel/events/ring_buffer.c
-+++ b/kernel/events/ring_buffer.c
-@@ -172,8 +172,10 @@ __perf_output_begin(struct perf_output_handle *handle,
- 		goto out;
- 
- 	if (unlikely(rb->paused)) {
--		if (rb->nr_pages)
-+		if (rb->nr_pages) {
- 			local_inc(&rb->lost);
-+			atomic64_inc(&event->lost_samples);
-+		}
- 		goto out;
- 	}
- 
-@@ -254,6 +256,7 @@ __perf_output_begin(struct perf_output_handle *handle,
- 
- fail:
- 	local_inc(&rb->lost);
-+	atomic64_inc(&event->lost_samples);
- 	perf_output_put_handle(handle);
- out:
- 	rcu_read_unlock();
--- 
-2.35.1.265.g69c8d7142f-goog
+Tested-by: Ron Economos <re@w6rz.net>
 
