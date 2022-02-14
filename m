@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6983AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F65C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357129AbiBNRbJ (ORCPT
+        id S1347213AbiBNRc4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 12:31:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55444 "EHLO
+        Mon, 14 Feb 2022 12:32:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353641AbiBNRbG (ORCPT
+        with ESMTP id S231965AbiBNRcz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 12:31:06 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FD3652FF
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:30:58 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id s10so14530471wrb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:30:58 -0800 (PST)
+        Mon, 14 Feb 2022 12:32:55 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898876540A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:32:46 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id l67-20020a1c2546000000b00353951c3f62so11351227wml.5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:32:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=AGCFdqLSGMml/hB38dxa+9K7KXIhUPhr2p9KJH7yQOw=;
-        b=fF5f304uLd8qG/ptoPc82cE0G9TEhr8c7bhbNMAbatpc4mpdLfO9SYrUbw0Z9Fa8BM
-         NPH1wgKHgNg+Fy3kDqxUncJcxI8miMxR12aDOTVyPhLmT0bF3nfJWmnxZ+j9tccy97vO
-         U1juckm/tf+RZcC91IBO6n/1soK8/j2P3TNTtnIZBuGsGXrUbe9hSVaS3jQ4n1o200/n
-         YpTT2+mlnVKWt71Mj5aAjl1STUl3I+oaVT5XKCqsdFkIsQbBT3ywar0cFaqWlt+v6M+J
-         NQpWNYoYanjEwWdc1L4+sVrPu5D6DUQpbSHPXxMInmDyHYa+VRDyEGM54O6eZO5VKJzG
-         gFTQ==
+        bh=COv/JfRRrIlYexTxxYlC5EFg8w0U7LpqChTxU8wlLIc=;
+        b=hvyUrRjtSeyQHJIt6u+50oogQzvKDNbcd+ORZ89zqwkqc/9xQMmJJFtDwFBzeSfZhj
+         pOOumU2YQseakVQCCfLEthFfGYpgUmTui2yDc6HxkkiN3rKQV+Sa+HhnU4Quu/V6s+IY
+         z25KYKjwRj5Xk+UeHJWF8PTcBypbUmRqIn6Nm0VUrBxIl5yvEXHTdic/R3RgVlLwk5r0
+         SXYdvBaWEQOlcGcRkZkARuvlH/vUaNcChvf+PNZlCUmbhwMMJhZS3bx4IT386SuyoitZ
+         7n/+7d3s1ZGFh7Jta6dFt55hv8qinp9wQ4N0byX3xniq6wdkgci8vX+9QFd0oxWhg3/x
+         TC9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
          :content-disposition;
-        bh=AGCFdqLSGMml/hB38dxa+9K7KXIhUPhr2p9KJH7yQOw=;
-        b=X2+8SH82unqZ3aILGDKXeI5GFkzjUg52uqqkIx+oBPJ0vqN0sW+5pmvZ0uHMwPM53/
-         D3pNATOMBOipTQ911/Da9WxdmTeqqmCGev/h9GXzk/PaqTceFf6GEAZW/GRDFJ0JVhkx
-         eRSmbf5dDc5zVrCk2g/IhL2QVPIQClMPOO34IEOM4gx7JRmTjyWP2rpzYuzBPzj9NfjB
-         K6qgiLOSnpFFRVhFccRbMmKMQ6LrGsAy+1cEw27XzzUESsQYJIe//Ntk6mtRqIBziaPS
-         Oy8+tHzpEKVYPIS88oSuY7+Rt4GGGO9RVntzYID88US+1NSINYTZSWePh9j0b87zHY1s
-         hfrA==
-X-Gm-Message-State: AOAM532JjOwKogXoylwledw64grrU0JZiU00Kj21R7Qzoeld7Bdn76gA
-        zMhyX452A2rIyed9FmB2ig==
-X-Google-Smtp-Source: ABdhPJxrmXqZeVPlzpv1HDwLQrpG8BXwagt0bWX/clYj9JqT0GpW+yaXkMzyr1sdYWNu7+UzRIYvCA==
-X-Received: by 2002:a5d:6f11:: with SMTP id ay17mr29377wrb.581.1644859857075;
-        Mon, 14 Feb 2022 09:30:57 -0800 (PST)
+        bh=COv/JfRRrIlYexTxxYlC5EFg8w0U7LpqChTxU8wlLIc=;
+        b=4fU/fNySPmbyqXsIxB6mXeUaUSLhoBgFN19DfBONMh3H/4j+3z0J0fmF0fevRpu//G
+         mLal5A9ajtKZttmVMiQtUiPX+sB64eD90bs5fG5RXNgI5R2L2l3LoAWFyQAQ/l/MTHhn
+         R/8kyVsFKgllGzZ3alYnHH3/EilCZPj5VJ0FIGXjI8NeImWXtmDfn6x3tdWqROUBGKGg
+         LEoPjbfQr/BxAi6sDDyH4RxvBDF0yOZnpR/Ml3XVXavDp5ZVpH4KWxT/5BL4wHbKM8K7
+         MR90sVY/KK4wWOEtXMXajrfLcar4dlPylngL2EI3Alk9KxGZQrO3bcjguMMJGWal54gn
+         gYcg==
+X-Gm-Message-State: AOAM532CjVC8j3UvSpcMGjaCGk+Hq7w0smT2ch8Omwndm8Ik0jnxAgLR
+        vN8d5BGXd1C6OSsGe5b+IA==
+X-Google-Smtp-Source: ABdhPJz3gAQwwLH43RdxSe/lvVNORXFySKe2lClGwmVl87vWJuPyjhdE2vtSaoCfq3YaoTAGpZFBWQ==
+X-Received: by 2002:a05:600c:1c03:: with SMTP id j3mr6316373wms.106.1644859965155;
+        Mon, 14 Feb 2022 09:32:45 -0800 (PST)
 Received: from localhost.localdomain ([46.53.254.86])
-        by smtp.gmail.com with ESMTPSA id u14sm16733986wmq.41.2022.02.14.09.30.56
+        by smtp.gmail.com with ESMTPSA id a18sm26871528wrg.13.2022.02.14.09.32.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 09:30:56 -0800 (PST)
-Date:   Mon, 14 Feb 2022 20:30:55 +0300
+        Mon, 14 Feb 2022 09:32:44 -0800 (PST)
+Date:   Mon, 14 Feb 2022 20:32:43 +0300
 From:   Alexey Dobriyan <adobriyan@gmail.com>
 To:     bp@suse.de
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org
-Subject: [PATCH] x86, alternative: simplify DUMP_BYTES macro
-Message-ID: <YgqRz4dYzaexFiUh@localhost.localdomain>
+Subject: [PATCH] x86, alternative: bump MAX_PATCH_LEN
+Message-ID: <YgqSOyubItnEVRQK@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
@@ -61,70 +61,23 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Printing buffers is simpler if space is put before the data.
+Replacement instructions are raw data, there is no need to reserve
+space for the NUL terminator.
 
 Signed-off-by: Alexey Dobriyan (CloudLinux) <adobriyan@gmail.com>
 ---
 
- arch/x86/kernel/alternative.c |   21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ arch/x86/kernel/alternative.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -66,13 +66,10 @@ do {									\
- 	if (unlikely(debug_alternative)) {				\
- 		int j;							\
- 									\
--		if (!(len))						\
--			break;						\
--									\
- 		printk(KERN_DEBUG pr_fmt(fmt), ##args);			\
--		for (j = 0; j < (len) - 1; j++)				\
--			printk(KERN_CONT "%02hhx ", buf[j]);		\
--		printk(KERN_CONT "%02hhx\n", buf[j]);			\
-+		for (j = 0; j < (len); j++)				\
-+			printk(KERN_CONT " %02hhx", buf[j]);		\
-+		printk(KERN_CONT "\n");					\
- 	}								\
- } while (0)
+@@ -35,7 +35,7 @@ int __read_mostly alternatives_patched;
  
-@@ -214,7 +211,7 @@ static __always_inline int optimize_nops_range(u8 *instr, u8 instrlen, int off)
- 	add_nops(instr + off, nnops);
- 	local_irq_restore(flags);
+ EXPORT_SYMBOL_GPL(alternatives_patched);
  
--	DUMP_BYTES(instr, instrlen, "%px: [%d:%d) optimized NOPs: ", instr, off, i);
-+	DUMP_BYTES(instr, instrlen, "%px: [%d:%d) optimized NOPs:", instr, off, i);
+-#define MAX_PATCH_LEN (255-1)
++#define MAX_PATCH_LEN 255
  
- 	return nnops;
- }
-@@ -303,8 +300,8 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
- 			instr, instr, a->instrlen,
- 			replacement, a->replacementlen);
+ static int __initdata_or_module debug_alternative;
  
--		DUMP_BYTES(instr, a->instrlen, "%px:   old_insn: ", instr);
--		DUMP_BYTES(replacement, a->replacementlen, "%px:   rpl_insn: ", replacement);
-+		DUMP_BYTES(instr, a->instrlen, "%px:   old_insn:", instr);
-+		DUMP_BYTES(replacement, a->replacementlen, "%px:   rpl_insn:", replacement);
- 
- 		memcpy(insn_buff, replacement, a->replacementlen);
- 		insn_buff_sz = a->replacementlen;
-@@ -328,7 +325,7 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
- 		for (; insn_buff_sz < a->instrlen; insn_buff_sz++)
- 			insn_buff[insn_buff_sz] = 0x90;
- 
--		DUMP_BYTES(insn_buff, insn_buff_sz, "%px: final_insn: ", instr);
-+		DUMP_BYTES(insn_buff, insn_buff_sz, "%px: final_insn:", instr);
- 
- 		text_poke_early(instr, insn_buff, insn_buff_sz);
- 
-@@ -499,8 +496,8 @@ void __init_or_module noinline apply_retpolines(s32 *start, s32 *end)
- 		len = patch_retpoline(addr, &insn, bytes);
- 		if (len == insn.length) {
- 			optimize_nops(bytes, len);
--			DUMP_BYTES(((u8*)addr),  len, "%px: orig: ", addr);
--			DUMP_BYTES(((u8*)bytes), len, "%px: repl: ", addr);
-+			DUMP_BYTES(((u8*)addr),  len, "%px: orig:", addr);
-+			DUMP_BYTES(((u8*)bytes), len, "%px: repl:", addr);
- 			text_poke_early(addr, bytes, len);
- 		}
- 	}
