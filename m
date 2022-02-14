@@ -2,83 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 909B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:04:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbiBNWEj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 17:04:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48962 "EHLO
+        id S231710AbiBNWIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 17:08:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231654AbiBNWEd (ORCPT
+        with ESMTP id S230117AbiBNWIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 17:04:33 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022ED1B4468
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 14:04:24 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21EIxpqg099035;
-        Mon, 14 Feb 2022 12:59:51 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644865191;
-        bh=Pz4wP+n3GDnd5dYw+LjYNjLY5RV4YQxdOk9eQvqnJ04=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=MNDzLqntzEgbm5a6KaOg1vVjSfRpGrC5z+5F3pu4eTtQ6wQzESXxGKTAp7R3N5QRv
-         uw1I+f/h3UlZl58Xl7gLbi5O6dxprmdCds8U1zbRnzqE9bnbEAjLxLGGD6WFkniOuB
-         4vrz4t8xGB1yRy/nJ9W4ZE2yfxpw/a/5t80GoF9I=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21EIxo3R013282
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Feb 2022 12:59:51 -0600
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 14
- Feb 2022 12:59:50 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 14 Feb 2022 12:59:50 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21EIxnaE103038;
-        Mon, 14 Feb 2022 12:59:50 -0600
-Date:   Tue, 15 Feb 2022 00:29:49 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     <Tudor.Ambarus@microchip.com>
-CC:     <michael@walle.cc>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <miquel.raynal@bootlin.com>,
-        <richard@nod.at>, <vigneshr@ti.com>
-Subject: Re: [PATCH v1 11/14] mtd: spi-nor: spansion: slightly rework control
- flow in late_init()
-Message-ID: <20220214185949.lp3jjifypaqyjenp@ti.com>
-References: <20220202145853.4187726-1-michael@walle.cc>
- <20220202145853.4187726-12-michael@walle.cc>
- <f004399f-36b0-2099-b2a0-8ab0ecd114b7@microchip.com>
+        Mon, 14 Feb 2022 17:08:30 -0500
+Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6426F13C391;
+        Mon, 14 Feb 2022 14:08:21 -0800 (PST)
+Received: from dread.disaster.area (pa49-186-85-251.pa.vic.optusnet.com.au [49.186.85.251])
+        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 793C852DCD8;
+        Tue, 15 Feb 2022 09:08:12 +1100 (AEDT)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1nJjW0-00C4n4-91; Tue, 15 Feb 2022 09:08:12 +1100
+Date:   Tue, 15 Feb 2022 09:08:12 +1100
+From:   Dave Chinner <david@fromorbit.com>
+To:     Nitesh Shetty <nj.shetty@samsung.com>
+Cc:     javier@javigon.com, chaitanyak@nvidia.com,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        dm-devel@redhat.com, linux-nvme@lists.infradead.org,
+        linux-fsdevel@vger.kernel.org, axboe@kernel.dk,
+        msnitzer@redhat.com, bvanassche@acm.org,
+        martin.petersen@oracle.com, hare@suse.de, kbusch@kernel.org,
+        hch@lst.de, Frederick.Knight@netapp.com, osandov@fb.com,
+        lsf-pc@lists.linux-foundation.org, djwong@kernel.org,
+        josef@toxicpanda.com, clm@fb.com, dsterba@suse.com, tytso@mit.edu,
+        jack@suse.com, joshi.k@samsung.com, arnav.dawn@samsung.com,
+        nitheshshetty@gmail.com, Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        James Smart <james.smart@broadcom.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 00/10] Add Copy offload support
+Message-ID: <20220214220741.GB2872883@dread.disaster.area>
+References: <CGME20220214080551epcas5p201d4d85e9d66077f97585bb3c64517c0@epcas5p2.samsung.com>
+ <20220214080002.18381-1-nj.shetty@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <f004399f-36b0-2099-b2a0-8ab0ecd114b7@microchip.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220214080002.18381-1-nj.shetty@samsung.com>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=620ad2d3
+        a=2CV4XU02g+4RbH+qqUnf+g==:117 a=2CV4XU02g+4RbH+qqUnf+g==:17
+        a=IkcTkHD0fZMA:10 a=oGFeUVbbRNcA:10 a=7-415B0cAAAA:8
+        a=JFXMuzjNVKxm2W9Oq_QA:9 a=QEXdDO2ut3YA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/02/22 03:26AM, Tudor.Ambarus@microchip.com wrote:
-> On 2/2/22 16:58, Michael Walle wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > Increase readability of the code. Instead of returning early if the
-> > flash size is smaller or equal than 16MiB and then do the fixups for
-> > larger flashes, do it within the condition.
-> > 
+On Mon, Feb 14, 2022 at 01:29:50PM +0530, Nitesh Shetty wrote:
+> The patch series covers the points discussed in November 2021 virtual call
+> [LSF/MM/BFP TOPIC] Storage: Copy Offload[0].
+> We have covered the Initial agreed requirements in this patchset.
+> Patchset borrows Mikulas's token based approach for 2 bdev
+> implementation.
 > 
-> mm, no, I'm not sure this improves readability, I see the two equivalent.
-> The original version has the benefit of no indentation. Pratyush?
+> Overall series supports –
+> 
+> 1. Driver
+> - NVMe Copy command (single NS), including support in nvme-target (for
+> 	block and file backend)
+> 
+> 2. Block layer
+> - Block-generic copy (REQ_COPY flag), with interface accommodating
+> 	two block-devs, and multi-source/destination interface
+> - Emulation, when offload is natively absent
+> - dm-linear support (for cases not requiring split)
+> 
+> 3. User-interface
+> - new ioctl
+> 
+> 4. In-kernel user
+> - dm-kcopyd
 
-I am fine with both to be honest. But Michael's reasoning does make some 
-sense to me. So,
+The biggest missing piece - and arguably the single most useful
+piece of this functionality for users - is hooking this up to the
+copy_file_range() syscall so that user file copies can be offloaded
+to the hardware efficiently.
 
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+This seems like it would relatively easy to do with an fs/iomap iter
+loop that maps src + dst file ranges and issues block copy offload
+commands on the extents. We already do similar "read from source,
+write to destination" operations in iomap, so it's not a huge
+stretch to extent the iomap interfaces to provide an copy offload
+mechanism using this infrastructure.
 
+Also, hooking this up to copy-file-range() will also get you
+immediate data integrity testing right down to the hardware via fsx
+in fstests - it uses copy_file_range() as one of it's operations and
+it will find all the off-by-one failures in both the linux IO stack
+implementation and the hardware itself.
+
+And, in reality, I wouldn't trust a block copy offload mechanism
+until it is integrated with filesystems, the page cache and has
+solid end-to-end data integrity testing available to shake out all
+the bugs that will inevitably exist in this stack....
+
+Cheers,
+
+Dave.
 -- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Dave Chinner
+david@fromorbit.com
