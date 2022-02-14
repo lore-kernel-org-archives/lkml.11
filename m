@@ -2,167 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F22A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:11:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238630AbiBNQLL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:11:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53902 "EHLO
+        id S1356272AbiBNQLP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 11:11:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356204AbiBNQK3 (ORCPT
+        with ESMTP id S1356227AbiBNQKk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:10:29 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B205460AB9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:10:21 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id u1so13932585wrg.11
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:10:21 -0800 (PST)
+        Mon, 14 Feb 2022 11:10:40 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF61460D9F
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:10:26 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id j2so47755199ybu.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:10:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=M82hp5dMIuVJWpsA3lI9MajB5cFJCHZXKFYo8aoIZPc=;
-        b=QOkRwYBVwyu9l/gZ/H5snUJmSmCWo0z7XHye6aQ05FOTFKCBkJCHH58uIAlFJaE4Xw
-         N8MXYCnIg8cRHBSQjNE/N0XvXZEg8jOL1k+ebC/jU2tVejys3zghu0JQBIUMcCMqbgoF
-         cJpyy7gcNrWgKndMKwNr46UmdwAUJ8jfyPnnj8i4ORX2DP9Fp8CHBVVHmXxBcTE3fXvx
-         q988fhHMfVQ8mM8B8z7ekCD+Sb6yfC5e5FFRpanBWLhBNZ6OJ16K6peN2Fipj+lgx8ZU
-         ShdW2LnQRUl5yLGXB+gI7Gc4JekFSt7zbupBgPLQIRyN5clHCxuxIp10OuJODNmb3PP/
-         F1Uw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7cG3DtS4AFRpk5Ytg8SebP0tvlPwMV13yDhdJ92f6j8=;
+        b=nkY8OC1guEp+iBvvAKdH8uX4DHWKDUYifZMG7fUcaVU5dGlMpe0ROTjrfcTYl5ikh9
+         cF17s9gZMl/Flw+7Bw/CDtMSY4YAJ6zQ3Dg5e3qel/uDjE53fEPXceT9l0RqCIxIUs0s
+         Tn34nIqD8jvG/EeL4seiSbzkA4VH1+IjamxBwWyJzxUfKFmSxbeSKVp1glLpwisZ/vOu
+         EFbI+K6ea432x1R3uVsUDH/Jdva4B7BcKmQygfhCrpH68Dgbzr3iu3ZHO8GEAygm2Vil
+         ZO+H9mdL79k3ldSQpcV415Cx/rZf1bQIg+vnVjaq73QoJniq8v6l33qdN1tBIwNiFS8C
+         BetQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=M82hp5dMIuVJWpsA3lI9MajB5cFJCHZXKFYo8aoIZPc=;
-        b=v0RfntbK1tGxJyemQFcpuKUdBETxDKqdrGfQukEnSXMT3ifBzN3gepQCxwx071Bgdu
-         Bs3aSAF4KRyHXBI9OZkqx5ZQCX7DEDRCLxocF1baM0CdmlY7CcIJOHO9+QvwW0Nth16z
-         mLbLYTIKrbBdee4oyJsAXqtTzLkx4C8AEmotlnZ2yOAZcAQ8V5ms18PDZGV3RdAWGWbs
-         HUEPdbVh4JT/qdCc0uPJNRgvqxv599jZibvKzCgDdcZhet9CYfEvCRvMcUlHafQg4JKV
-         KGfR+wAj8oLKOOVoNvJFujtNUhB5E3aHIto34dnyDGbyvGcXAt4dCBQimMUCo0f5mFY1
-         mn1g==
-X-Gm-Message-State: AOAM530Bzz92NuF5QkMlVN49xPwe6LyrZmL3Sb7ALaY6au2jeb4vCw6Y
-        LHEFoJcjpO77NZDNBjR5zP3g1g==
-X-Google-Smtp-Source: ABdhPJzHJ1jdDAasQpYs0LV9TlB3ejc3g9ifEHzXBXVgT1lxV6Hlxm4GG71aJwuwJlRINhkW3wRCqg==
-X-Received: by 2002:adf:e708:: with SMTP id c8mr253233wrm.653.1644855020189;
-        Mon, 14 Feb 2022 08:10:20 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id k28sm13677022wms.23.2022.02.14.08.10.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 08:10:19 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     robh+dt@kernel.org, gregkh@linuxfoundation.org
-Cc:     devicetree@vger.kernel.org, ekangupt@qti.qualcomm.com,
-        bkumar@qti.qualcomm.com, linux-kernel@vger.kernel.org,
-        srini@kernel.org, bjorn.andersson@linaro.org,
-        linux-arm-msm@vger.kernel.org,
-        Vamsi Krishna Gattupalli <quic_vgattupa@quicinc.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v4 10/12] misc: fastrpc: Add fdlist implementation
-Date:   Mon, 14 Feb 2022 16:10:00 +0000
-Message-Id: <20220214161002.6831-11-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220214161002.6831-1-srinivas.kandagatla@linaro.org>
-References: <20220214161002.6831-1-srinivas.kandagatla@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7cG3DtS4AFRpk5Ytg8SebP0tvlPwMV13yDhdJ92f6j8=;
+        b=UGFvYml4JE3nGoYKezSijKPKMJKRUuRIPSFgh/mZ3WiHOHbbhX1SsCFp4FzGsXJnbJ
+         ywBJ+zec1k4zg6J+6b2WHmkOT688ozCTI5ajDE06Nl7+KzFcqWP0edMffEZPdHguy4Io
+         bZiHzLeykzgwAqrr88DcKsex2gzSu1o3WCQVd67y9R2MvoSjc8BNyasEZ6k/wpdntXnh
+         rOpRszxN6yTl2Yu/+qEeLBygSqLtyFOow44gDX1h6T8A74H7NVVAN2kf7u2hAqFKF1O4
+         ueCqOlmRTG+QEYU2ez4tbiCIubYPl0wfPeZUfrkFfEBW9WAnP4TDFD5t2bbqEdxFdjmo
+         7Tmg==
+X-Gm-Message-State: AOAM5330WWOeyBAh2fi5D0+zscJvwKNUeK/5I6KQ6idVoW4FG4eba8eA
+        gVo8Hrdnq9UJmwlsXQTz09uyKkHKTlYhe8aDlCOwPQ==
+X-Google-Smtp-Source: ABdhPJxmeN0Mu0nfPv7jQg7fnM5tK8qeTcOwoiKNnS1LECVetrm3mNP8Yu3R/CnlqIPtPQaboKVejM8GSgVVJp7zzC4=
+X-Received: by 2002:a81:ff10:: with SMTP id k16mr314507ywn.321.1644855025825;
+ Mon, 14 Feb 2022 08:10:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220211014313.1790140-1-aik@ozlabs.ru> <CAKwvOdkKsoYw9KOfwdHYg7OkTz0TQ6YgZZcqQ5PNg+_O1Q5bgg@mail.gmail.com>
+In-Reply-To: <CAKwvOdkKsoYw9KOfwdHYg7OkTz0TQ6YgZZcqQ5PNg+_O1Q5bgg@mail.gmail.com>
+From:   Sami Tolvanen <samitolvanen@google.com>
+Date:   Mon, 14 Feb 2022 08:10:16 -0800
+Message-ID: <CABCJKudj5VJ-f+QU0qmnODoadEzpVME2rXhtUZbzrEV8o69hqQ@mail.gmail.com>
+Subject: Re: [RFC PATCH kernel] trace: Make FTRACE_MCOUNT_USE_RECORDMCOUNT configurable
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Kees Cook <keescook@chromium.org>, llvm@lists.linux.dev,
+        Alexey Kardashevskiy <aik@ozlabs.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vamsi Krishna Gattupalli <quic_vgattupa@quicinc.com>
+On Fri, Feb 11, 2022 at 4:11 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> + Sami, Kees
+>
+> Do you guys remember why we don't support
+> FTRACE_MCOUNT_USE_RECORDMCOUNT with LTO?
 
-Add fdlist implementation to support dma handles. fdlist is populated by
-DSP if any map is no longer used and it is freed during put_args.
+It's because recordmcount cannot distinguish between calls and other
+references to mcount/fentry, which is a problem with LTO where we have
+to process the entire vmlinux.o and cannot ignore individual
+translation units. Instead of resorting to workarounds, Peter was kind
+enough to implement a smarter mcount pass in objtool, which we now use
+on x86_64 with LTO.
 
-Signed-off-by: Vamsi Krishna Gattupalli <quic_vgattupa@quicinc.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- drivers/misc/fastrpc.c | 36 ++++++++++++++++++++++++++++++++----
- 1 file changed, 32 insertions(+), 4 deletions(-)
+Alexey, which architecture are you trying to fix here?
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 1cec85e8eaa1..5015b4e7ec09 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -320,7 +320,8 @@ static void fastrpc_map_get(struct fastrpc_map *map)
- 		kref_get(&map->refcount);
- }
- 
--static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
-+
-+static int fastrpc_map_lookup(struct fastrpc_user *fl, int fd,
- 			    struct fastrpc_map **ppmap)
- {
- 	struct fastrpc_map *map = NULL;
-@@ -328,7 +329,6 @@ static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
- 	mutex_lock(&fl->mutex);
- 	list_for_each_entry(map, &fl->maps, node) {
- 		if (map->fd == fd) {
--			fastrpc_map_get(map);
- 			*ppmap = map;
- 			mutex_unlock(&fl->mutex);
- 			return 0;
-@@ -339,6 +339,17 @@ static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
- 	return -ENOENT;
- }
- 
-+static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
-+			    struct fastrpc_map **ppmap)
-+{
-+	int ret = fastrpc_map_lookup(fl, fd, ppmap);
-+
-+	if (!ret)
-+		fastrpc_map_get(*ppmap);
-+
-+	return ret;
-+}
-+
- static void fastrpc_buf_free(struct fastrpc_buf *buf)
- {
- 	dma_free_coherent(buf->dev, buf->size, buf->virt,
-@@ -411,7 +422,7 @@ static void fastrpc_context_free(struct kref *ref)
- 	ctx = container_of(ref, struct fastrpc_invoke_ctx, refcount);
- 	cctx = ctx->cctx;
- 
--	for (i = 0; i < ctx->nscalars; i++)
-+	for (i = 0; i < ctx->nbufs; i++)
- 		fastrpc_map_put(ctx->maps[i]);
- 
- 	if (ctx->buf)
-@@ -969,9 +980,19 @@ static int fastrpc_put_args(struct fastrpc_invoke_ctx *ctx,
- 			    u32 kernel)
- {
- 	struct fastrpc_remote_arg *rpra = ctx->rpra;
--	int i, inbufs;
-+	struct fastrpc_user *fl = ctx->fl;
-+	struct fastrpc_map *mmap = NULL;
-+	struct fastrpc_invoke_buf *list;
-+	struct fastrpc_phy_page *pages;
-+	u64 *fdlist;
-+	int i, inbufs, outbufs, handles;
- 
- 	inbufs = REMOTE_SCALARS_INBUFS(ctx->sc);
-+	outbufs = REMOTE_SCALARS_OUTBUFS(ctx->sc);
-+	handles = REMOTE_SCALARS_INHANDLES(ctx->sc) + REMOTE_SCALARS_OUTHANDLES(ctx->sc);
-+	list = fastrpc_invoke_buf_start(rpra, ctx->nscalars);
-+	pages = fastrpc_phy_page_start(list, ctx->nscalars);
-+	fdlist = (uint64_t *)(pages + inbufs + outbufs + handles);
- 
- 	for (i = inbufs; i < ctx->nbufs; ++i) {
- 		if (!ctx->maps[i]) {
-@@ -988,6 +1009,13 @@ static int fastrpc_put_args(struct fastrpc_invoke_ctx *ctx,
- 		}
- 	}
- 
-+	for (i = 0; i < FASTRPC_MAX_FDLIST; i++) {
-+		if (!fdlist[i])
-+			break;
-+		if (!fastrpc_map_lookup(fl, (int)fdlist[i], &mmap))
-+			fastrpc_map_put(mmap);
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.21.0
-
+Sami
