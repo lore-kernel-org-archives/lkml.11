@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 994A1C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC05DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:41:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348241AbiBNKkm (ORCPT
+        id S1348450AbiBNKkq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:40:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48402 "EHLO
+        Mon, 14 Feb 2022 05:40:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348374AbiBNKfH (ORCPT
+        with ESMTP id S1348950AbiBNKgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:35:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CF0E0DA;
-        Mon, 14 Feb 2022 02:02:03 -0800 (PST)
+        Mon, 14 Feb 2022 05:36:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB32988B20;
+        Mon, 14 Feb 2022 02:02:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B333060DD9;
-        Mon, 14 Feb 2022 10:02:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 832F0C340EF;
-        Mon, 14 Feb 2022 10:02:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AEDF60C71;
+        Mon, 14 Feb 2022 10:02:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60ED2C340E9;
+        Mon, 14 Feb 2022 10:02:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832922;
-        bh=2bxlapIbZ7DOSdflx2EZloe76yIzRk8iWg3zk2A8E8w=;
+        s=korg; t=1644832948;
+        bh=iVVprejHhTHrKXydZFMArGB8nKpVGa/J/tekSOuOWgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CiLXei9GrM3w2SrHjf/ruxX4KE6zm/7WCFvLIy91mXNkkoseSK8Q9bsF9ndOC1bxk
-         Yen7mIpmunNUx+x8xOsLT9tC+I/xxP3IObtslAhJXU92gynJ5bCjsYt+kUvkiUDVFy
-         QvpiLc1or0c5eCtmZ9ra2qvFI2RbD8+oebPIGafM=
+        b=dNIreoc6mYSj22Kpag/ieTqREbHaTwIoWFhRfGwb6J7N5tQyHeTG2Xdj1HXma6cgi
+         gq0KEAnNi/EY0X9CQUgeaoNwzSdF2zHf1+iUZW3+5ozIvrO6JbiQPHMSBa5cxLsOt7
+         MDNK8wnULmAWfgmb24gFKOUnDcf/ofrj87iG5hiQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable@kernel.org, Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Subject: [PATCH 5.16 167/203] Revert "usb: dwc2: drd: fix soft connect when gadget is unconfigured"
-Date:   Mon, 14 Feb 2022 10:26:51 +0100
-Message-Id: <20220214092515.921302103@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Szymon Heidrich <szymon.heidrich@gmail.com>, stable@kernel.org
+Subject: [PATCH 5.16 174/203] usb: gadget: rndis: check size of RNDIS_MSG_SET command
+Date:   Mon, 14 Feb 2022 10:26:58 +0100
+Message-Id: <20220214092516.158278972@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -53,38 +51,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 736e8d89044c1c330967fb938fa766cd9e0d8af0 upstream.
+commit 38ea1eac7d88072bbffb630e2b3db83ca649b826 upstream.
 
-This reverts commit 269cbcf7b72de6f0016806d4a0cec1d689b55a87.
+Check the size of the RNDIS_MSG_SET command given to us before
+attempting to respond to an invalid message size.
 
-It causes build errors as reported by the kernel test robot.
-
-Link: https://lore.kernel.org/r/202202112236.AwoOTtHO-lkp@intel.com
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 269cbcf7b72d ("usb: dwc2: drd: fix soft connect when gadget is unconfigured")
+Reported-by: Szymon Heidrich <szymon.heidrich@gmail.com>
 Cc: stable@kernel.org
-Cc: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Cc: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Tested-by: Szymon Heidrich <szymon.heidrich@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc2/drd.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/function/rndis.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/dwc2/drd.c
-+++ b/drivers/usb/dwc2/drd.c
-@@ -109,10 +109,8 @@ static int dwc2_drd_role_sw_set(struct u
- 		already = dwc2_ovr_avalid(hsotg, true);
- 	} else if (role == USB_ROLE_DEVICE) {
- 		already = dwc2_ovr_bvalid(hsotg, true);
--		if (hsotg->enabled) {
--			/* This clear DCTL.SFTDISCON bit */
--			dwc2_hsotg_core_connect(hsotg);
--		}
-+		/* This clear DCTL.SFTDISCON bit */
-+		dwc2_hsotg_core_connect(hsotg);
- 	} else {
- 		if (dwc2_is_device_mode(hsotg)) {
- 			if (!dwc2_ovr_bvalid(hsotg, false))
+--- a/drivers/usb/gadget/function/rndis.c
++++ b/drivers/usb/gadget/function/rndis.c
+@@ -637,14 +637,17 @@ static int rndis_set_response(struct rnd
+ 	rndis_set_cmplt_type *resp;
+ 	rndis_resp_t *r;
+ 
++	BufLength = le32_to_cpu(buf->InformationBufferLength);
++	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
++	if ((BufLength > RNDIS_MAX_TOTAL_SIZE) ||
++	    (BufOffset + 8 >= RNDIS_MAX_TOTAL_SIZE))
++		    return -EINVAL;
++
+ 	r = rndis_add_response(params, sizeof(rndis_set_cmplt_type));
+ 	if (!r)
+ 		return -ENOMEM;
+ 	resp = (rndis_set_cmplt_type *)r->buf;
+ 
+-	BufLength = le32_to_cpu(buf->InformationBufferLength);
+-	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
+-
+ #ifdef	VERBOSE_DEBUG
+ 	pr_debug("%s: Length: %d\n", __func__, BufLength);
+ 	pr_debug("%s: Offset: %d\n", __func__, BufOffset);
 
 
