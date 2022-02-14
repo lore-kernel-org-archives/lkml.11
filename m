@@ -2,61 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B86D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349714AbiBNS14 (ORCPT
+        id S1357436AbiBNS3O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:27:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37430 "EHLO
+        Mon, 14 Feb 2022 13:29:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiBNS1y (ORCPT
+        with ESMTP id S1348672AbiBNS3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:27:54 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6D7496BB
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:27:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=93oBqhRfGyp81erZawUocVFg/qlY90+qZLcs405SMv0=; b=vWu3W4we2fdhM5wZ76QSxQy5W2
-        lKa4zewyd1VhEAHkacc//5dUs2MWC/eFl5uS+/Yt/ba4EL1D4WD0oRaR/OlEJ/8dISj6Q6Ri35dJJ
-        SFs+dhwZ3ldCkowTYS7WVBWxcj7vz4orDa/gXd7rw7H9rzNnSIDvJE0+E175Nhk7ZQxCb+TdmKvfm
-        xqdQUFyPFx5hxn/fZZJpKgdH/0qAwn5KW9iB7hMG5sp5pIiQH5Yv20zsDNkAPQzUnPXdJeGOfiDkw
-        hsAPjmI4M4uCR/zkLGm2NL2lgfcM0zG8W+gXLWnnxjDdauXtfshakyPg/avDGdvvwqnfz3VRowfdI
-        Cs3A1gZQ==;
-Received: from [2602:306:c5a2:a380:b27b:25ff:fe2c:51a8]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJg4K-00D9vw-RT; Mon, 14 Feb 2022 18:27:25 +0000
-Message-ID: <aa6c446a-02f8-02d3-bd1a-19b5d729eb91@infradead.org>
-Date:   Mon, 14 Feb 2022 10:27:20 -0800
+        Mon, 14 Feb 2022 13:29:12 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D60D56C0A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:29:04 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJg5V-0006ak-2B; Mon, 14 Feb 2022 19:28:37 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJg5N-00GbE8-Cu; Mon, 14 Feb 2022 19:28:28 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJg5L-003BE4-Vq; Mon, 14 Feb 2022 19:28:27 +0100
+Date:   Mon, 14 Feb 2022 19:28:24 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Anson Huang <anson.huang@nxp.com>,
+        Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>,
+        Rahul Tanwar <rtanwar@maxlinear.com>,
+        Jeff LaBundy <jeff@labundy.com>,
+        Yash Shah <yash.shah@sifive.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Vignesh R <vigneshr@ti.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 11/15] dt-bindings: pwm: intel, keembay: do not require
+ pwm-cells
+Message-ID: <20220214182824.gevtqbtv4qrddjqb@pengutronix.de>
+References: <20220214081605.161394-1-krzysztof.kozlowski@canonical.com>
+ <20220214081605.161394-11-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] powerpc/boot: Add `otheros-too-big.bld` to .gitignore
-Content-Language: en-US
-To:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-References: <20220214065543.198992-1-pmenzel@molgen.mpg.de>
-From:   Geoff Levand <geoff@infradead.org>
-In-Reply-To: <20220214065543.198992-1-pmenzel@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lqbpgpqedfoirane"
+Content-Disposition: inline
+In-Reply-To: <20220214081605.161394-11-krzysztof.kozlowski@canonical.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
 
-On 2/13/22 22:55, Paul Menzel wrote:
-> Currently, `git status` lists the file as untracked by git, so tell git
-> to ignore it.
+--lqbpgpqedfoirane
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for your contribution.
+Hello Krzysztof,
 
-Acked-by: Geoff Levand <geoff@infradead.org>
+when I read the subject line I thought the patch intention to be wrong.
+Maybe make that:
 
+	dt-bindings: intel,keembay-pwm: Don't require #pwm-cells twice
+
+?
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--lqbpgpqedfoirane
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIKn0UACgkQwfwUeK3K
+7AmoPQgAnQ94Se1jdIRfuPxmJ8SI3oyoR5qYibmzoO6pwZLs9AEr0sb5Vgbt0bkU
+gQmoGNX0ivMunGQ1xXrSm0KXvUUM7nxRaxIHK/rmpYLvAiv1x1oZIKgV7QG7lBOx
+Ua+jxme5GKpJD8jNMWXOU/c2vvMb3D0f1FViJeMXitnnooA8RlMRwQeHO+Xz60Gs
+YokHBwlm1DtKPndRHVUcnoKpOIUnBvcDaFCVNPuqLfGRBsckM/5qqMH6duDEiZn7
+9EUVHIPADGIjR2kSt1jkf+sXnJ9qMguzKcxcouDXAkwqlqFS0xbk8s32UO+3BFM2
+rZo1vmmZ555NPDPiZmLPGN0ec+HiXQ==
+=7yzT
+-----END PGP SIGNATURE-----
+
+--lqbpgpqedfoirane--
