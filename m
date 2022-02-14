@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C26C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A17C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344329AbiBNKCN (ORCPT
+        id S1344398AbiBNKCW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:02:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43278 "EHLO
+        Mon, 14 Feb 2022 05:02:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344332AbiBNJ4J (ORCPT
+        with ESMTP id S1344130AbiBNJz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:56:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA88460AB1;
-        Mon, 14 Feb 2022 01:44:27 -0800 (PST)
+        Mon, 14 Feb 2022 04:55:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D129D6CA54;
+        Mon, 14 Feb 2022 01:44:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EE75B80DBE;
-        Mon, 14 Feb 2022 09:44:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 909B0C340F0;
-        Mon, 14 Feb 2022 09:44:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AD5461238;
+        Mon, 14 Feb 2022 09:44:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C425C340E9;
+        Mon, 14 Feb 2022 09:44:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831866;
-        bh=KimOwKA5+EzbugyKoinzwMga6SVhkoGzn6yyP7opoB8=;
+        s=korg; t=1644831858;
+        bh=VurFU58a1cNgjY+xlro4xnBrTwWyCaOg886ucNWiblY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zLtqpeVzalBCN5xBZtXlJGzpkiXEz8ylHwAT55+cVtpYI9BN/sLmTtloVQvBxRNb9
-         G0M9vvqC28/nbcpu5mDYOFodybKLkTLw9aekjgG2hwyMTx4amxEpAUSIlMDPZkgZFN
-         Jg788oVZ/2GU7AmAap8Vy48eZHo7snkcBJGqNYsg=
+        b=S9OYqlyq6Ke+GKhdGpR1+YtIRsBkmx86wu2BTZ3txipDIAmGLLuXFKrXkHr3mMH4v
+         +0oXp6kKJARFDcqp5FQT8ihHs+BPfB8CKPAPIOJS39yzgWAvXwfggnnvtsGFg/157E
+         kPY0qpgIbxWtIVvrIs0BTTvF+7ZtKCFms/LC6gD8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.10 109/116] hwmon: (dell-smm) Speed up setting of fan speed
-Date:   Mon, 14 Feb 2022 10:26:48 +0100
-Message-Id: <20220214092502.561795476@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>
+Subject: [PATCH 5.10 107/116] speakup-dectlk: Restore pitch setting
+Date:   Mon, 14 Feb 2022 10:26:46 +0100
+Message-Id: <20220214092502.487158091@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,70 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf <W_Armin@gmx.de>
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
 
-commit c0d79987a0d82671bff374c07f2201f9bdf4aaa2 upstream.
+commit bca828ccdd6548d24613d0cede04ada4dfb2f89c upstream.
 
-When setting the fan speed, i8k_set_fan() calls i8k_get_fan_status(),
-causing an unnecessary SMM call since from the two users of this
-function, only i8k_ioctl_unlocked() needs to know the new fan status
-while dell_smm_write() ignores the new fan status.
-Since SMM calls can be very slow while also making error reporting
-difficult for dell_smm_write(), remove the function call from
-i8k_set_fan() and call it separately in i8k_ioctl_unlocked().
+d97a9d7aea04 ("staging/speakup: Add inflection synth parameter")
+introduced the inflection parameter, but happened to drop the pitch
+parameter from the dectlk driver. This restores it.
 
-Tested on a Dell Inspiron 3505.
-
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20211021190531.17379-6-W_Armin@gmx.de
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Cc: stable@vger.kernel.org
+Fixes: d97a9d7aea04 ("staging/speakup: Add inflection synth parameter")
+Signed-off-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Link: https://lore.kernel.org/r/20220206015626.aesbhvvdkmqsrbaw@begin
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/dell-smm-hwmon.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/accessibility/speakup/speakup_dectlk.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/hwmon/dell-smm-hwmon.c
-+++ b/drivers/hwmon/dell-smm-hwmon.c
-@@ -317,7 +317,7 @@ static int i8k_enable_fan_auto_mode(bool
- }
- 
- /*
-- * Set the fan speed (off, low, high). Returns the new fan status.
-+ * Set the fan speed (off, low, high, ...).
-  */
- static int i8k_set_fan(int fan, int speed)
- {
-@@ -329,7 +329,7 @@ static int i8k_set_fan(int fan, int spee
- 	speed = (speed < 0) ? 0 : ((speed > i8k_fan_max) ? i8k_fan_max : speed);
- 	regs.ebx = (fan & 0xff) | (speed << 8);
- 
--	return i8k_smm(&regs) ? : i8k_get_fan_status(fan);
-+	return i8k_smm(&regs);
- }
- 
- static int i8k_get_temp_type(int sensor)
-@@ -443,7 +443,7 @@ static int
- i8k_ioctl_unlocked(struct file *fp, unsigned int cmd, unsigned long arg)
- {
- 	int val = 0;
--	int speed;
-+	int speed, err;
- 	unsigned char buff[16];
- 	int __user *argp = (int __user *)arg;
- 
-@@ -504,7 +504,11 @@ i8k_ioctl_unlocked(struct file *fp, unsi
- 		if (copy_from_user(&speed, argp + 1, sizeof(int)))
- 			return -EFAULT;
- 
--		val = i8k_set_fan(val, speed);
-+		err = i8k_set_fan(val, speed);
-+		if (err < 0)
-+			return err;
-+
-+		val = i8k_get_fan_status(val);
- 		break;
- 
- 	default:
+--- a/drivers/accessibility/speakup/speakup_dectlk.c
++++ b/drivers/accessibility/speakup/speakup_dectlk.c
+@@ -44,6 +44,7 @@ static struct var_t vars[] = {
+ 	{ CAPS_START, .u.s = {"[:dv ap 160] " } },
+ 	{ CAPS_STOP, .u.s = {"[:dv ap 100 ] " } },
+ 	{ RATE, .u.n = {"[:ra %d] ", 180, 75, 650, 0, 0, NULL } },
++	{ PITCH, .u.n = {"[:dv ap %d] ", 122, 50, 350, 0, 0, NULL } },
+ 	{ INFLECTION, .u.n = {"[:dv pr %d] ", 100, 0, 10000, 0, 0, NULL } },
+ 	{ VOL, .u.n = {"[:dv g5 %d] ", 86, 60, 86, 0, 0, NULL } },
+ 	{ PUNCT, .u.n = {"[:pu %c] ", 0, 0, 2, 0, 0, "nsa" } },
 
 
