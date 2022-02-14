@@ -2,97 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F21C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346284AbiBNKXu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:23:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50518 "EHLO
+        id S233414AbiBNKXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:23:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346707AbiBNKVu (ORCPT
+        with ESMTP id S1346722AbiBNKVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:21:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF09D7DE2F;
-        Mon, 14 Feb 2022 01:55:55 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C217DE36;
+        Mon, 14 Feb 2022 01:55:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D45761291;
-        Mon, 14 Feb 2022 09:55:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C4CC340E9;
-        Mon, 14 Feb 2022 09:55:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832551;
-        bh=JVnRg65Qwa1/CD39njIMCAjJPJZ+EuC+Z6Vt+4qdiKQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FnJUi9zTIHw6N9o0wZ6rn0kEomd7RGwf6C63y5/vULq/B9c81BkJiJlny3gq8oBTf
-         W7ukqvnFpXs/rpgyzyupnuae1sFsqQSHpziBxkPuJhCPN2awiYMS1vK8M8bKELyrZq
-         hTy3CVD5LaRnjmZTobRikYkOaVBuawP/b3kWf//c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-        Tong Zhang <ztong0001@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 051/203] scsi: myrs: Fix crash in error case
-Date:   Mon, 14 Feb 2022 10:24:55 +0100
-Message-Id: <20220214092511.958621924@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9017BB80DBE;
+        Mon, 14 Feb 2022 09:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3184C340E9;
+        Mon, 14 Feb 2022 09:55:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644832555;
+        bh=za+znYSgbhf0ycyD96oqYNU6ulxWPNb7LNxbXB3qlyo=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=UV/d/E5DqMrcjwq2gyPTgsTVJ2O2VOKhR1K5uE6hIbFAqwyntn1IyxXoNAL7E1ccD
+         A1gScG/iu9cPZziLQHZZxBaQGPtvnJWopYDRUdDjcTAQ8O2Z3Mq05QhG0JJUYgxlCd
+         BeWXhhPJ4EQQuaSNQL/bfphY6h4Gh6Rk5UoqvOQ+MDhzKt+WXbDZ1oL6G/Tk1bR9oh
+         1E9k6r3VwjojLR884/D5RSU1EaDpszAdrxq0DTlywNzyLajvIICF4olvmJyk57uQL/
+         b0Iw6wBdYFeCzRA3jGvcEkQYCi6N8w5A0YtnlC/V9zD6Z/6d2TaRwXrb7aku5T8Sv3
+         zMqygAXXDO0ug==
+Date:   Mon, 14 Feb 2022 10:55:51 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Aditya Garg <gargaditya08@live.com>
+cc:     "alexhenrie24@gmail.com" <alexhenrie24@gmail.com>,
+        "benjamin.tissoires@redhat.com" <benjamin.tissoires@redhat.com>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "paul@mrarm.io" <paul@mrarm.io>, Aun-Ali Zaidi <admin@kodeit.net>,
+        Orlando Chamberlain <redecorating@protonmail.com>
+Subject: Re: [PATCH v2 1/3] HID: apple: Add support for keyboard backlight
+ on certain T2 Macs.
+In-Reply-To: <1088ECFE-B356-4731-AC8A-09A4421DD7D1@live.com>
+Message-ID: <nycvar.YFH.7.76.2202141054070.11721@cbobk.fhfr.pm>
+References: <67E7EA8B-CF21-4794-B7B4-96873EE70EF6@live.com> <1088ECFE-B356-4731-AC8A-09A4421DD7D1@live.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tong Zhang <ztong0001@gmail.com>
+On Thu, 3 Feb 2022, Aditya Garg wrote:
 
-[ Upstream commit 4db09593af0b0b4d7d4805ebb3273df51d7cc30d ]
+> 
+> 
+> > On 24-Jan-2022, at 8:38 PM, Aditya Garg <gargaditya08@live.com> wrote:
+> > 
+> > From: Paul Pawlowski <paul@mrarm.io>
+> > 
+> > This patch introduces the requisite plumbing for supporting keyboard
+> > backlight on T2-attached, USB exposed models. The quirk mechanism was
+> > used to reuse the existing hid-apple driver.
+> > 
+> > Signed-off-by: Paul Pawlowski <paul@mrarm.io>
+> > Signed-off-by: Aun-Ali Zaidi <admin@kodeit.net>
+> > Signed-off-by: Aditya Garg <gargaditya08@live.com>
+> > ---
+> > drivers/hid/hid-apple.c | 125 ++++++++++++++++++++++++++++++++++++++++
+> > 1 file changed, 125 insertions(+)
+> > 
+> > diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+> > index 24802a4a6..c22d445a9 100644
+> > --- a/drivers/hid/hid-apple.c
+> > +++ b/drivers/hid/hid-apple.c
+> > @@ -7,6 +7,7 @@
+> >  *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
+> >  *  Copyright (c) 2006-2007 Jiri Kosina
+> >  *  Copyright (c) 2008 Jiri Slaby <jirislaby@gmail.com>
+> > + *  Copyright (c) 2019 Paul Pawlowski <paul@mrarm.io>
+> >  */
+> > 
+> > /*
+> > @@ -33,6 +34,7 @@
+> > /* BIT(7) reserved, was: APPLE_IGNORE_HIDINPUT */
+> > #define APPLE_NUMLOCK_EMULATION	BIT(8)
+> > #define APPLE_RDESC_BATTERY	BIT(9)
+> > +#define APPLE_BACKLIGHT_CTL	0x0200
+> Jiri, should it be BIT(10)? 0x0200 is BIT(9) if I ain’t wrong.
 
-In myrs_detect(), cs->disable_intr is NULL when privdata->hw_init() fails
-with non-zero. In this case, myrs_cleanup(cs) will call a NULL ptr and
-crash the kernel.
+Yes, please use BIT(10). Thanks,
 
-[    1.105606] myrs 0000:00:03.0: Unknown Initialization Error 5A
-[    1.105872] myrs 0000:00:03.0: Failed to initialize Controller
-[    1.106082] BUG: kernel NULL pointer dereference, address: 0000000000000000
-[    1.110774] Call Trace:
-[    1.110950]  myrs_cleanup+0xe4/0x150 [myrs]
-[    1.111135]  myrs_probe.cold+0x91/0x56a [myrs]
-[    1.111302]  ? DAC960_GEM_intr_handler+0x1f0/0x1f0 [myrs]
-[    1.111500]  local_pci_probe+0x48/0x90
-
-Link: https://lore.kernel.org/r/20220123225717.1069538-1-ztong0001@gmail.com
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/myrs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/scsi/myrs.c b/drivers/scsi/myrs.c
-index 6ea323e9a2e34..f6dbc8f2f60a3 100644
---- a/drivers/scsi/myrs.c
-+++ b/drivers/scsi/myrs.c
-@@ -2269,7 +2269,8 @@ static void myrs_cleanup(struct myrs_hba *cs)
- 	myrs_unmap(cs);
- 
- 	if (cs->mmio_base) {
--		cs->disable_intr(cs);
-+		if (cs->disable_intr)
-+			cs->disable_intr(cs);
- 		iounmap(cs->mmio_base);
- 		cs->mmio_base = NULL;
- 	}
 -- 
-2.34.1
-
-
+Jiri Kosina
+SUSE Labs
 
