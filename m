@@ -2,99 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 08:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 08:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241560AbiBNIHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 03:07:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38300 "EHLO
+        id S241562AbiBNIHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 03:07:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiBNIHA (ORCPT
+        with ESMTP id S229908AbiBNIHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 03:07:00 -0500
-X-Greylist: delayed 419 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 00:06:52 PST
-Received: from mail.parknet.co.jp (mail.parknet.co.jp [210.171.160.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 848B75F27B;
-        Mon, 14 Feb 2022 00:06:52 -0800 (PST)
-Received: from ibmpc.myhome.or.jp (server.parknet.ne.jp [210.171.168.39])
-        by mail.parknet.co.jp (Postfix) with ESMTPSA id 5364915F93A;
-        Mon, 14 Feb 2022 16:59:52 +0900 (JST)
-Received: from devron.myhome.or.jp (foobar@devron.myhome.or.jp [192.168.0.3])
-        by ibmpc.myhome.or.jp (8.16.1/8.16.1/Debian-2) with ESMTPS id 21E7xoRZ051364
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 16:59:51 +0900
-Received: from devron.myhome.or.jp (foobar@localhost [127.0.0.1])
-        by devron.myhome.or.jp (8.16.1/8.16.1/Debian-2) with ESMTPS id 21E7xoWK253761
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 16:59:50 +0900
-Received: (from hirofumi@localhost)
-        by devron.myhome.or.jp (8.16.1/8.16.1/Submit) id 21E7xoEx253760;
-        Mon, 14 Feb 2022 16:59:50 +0900
-From:   OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-To:     Helge Deller <deller@gmx.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org
-Subject: Re: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
- case
-References: <YgmB01p+p45Cihhg@p100>
-Date:   Mon, 14 Feb 2022 16:59:50 +0900
-In-Reply-To: <YgmB01p+p45Cihhg@p100> (Helge Deller's message of "Sun, 13 Feb
-        2022 23:10:27 +0100")
-Message-ID: <87y22dho95.fsf@mail.parknet.co.jp>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.0.50 (gnu/linux)
+        Mon, 14 Feb 2022 03:07:51 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65755F27B;
+        Mon, 14 Feb 2022 00:07:42 -0800 (PST)
+Received: from [192.168.0.2] (ip5f5aebfe.dynamic.kabel-deutschland.de [95.90.235.254])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id A6BA961EA1924;
+        Mon, 14 Feb 2022 09:07:39 +0100 (CET)
+Message-ID: <960946b8-8f73-9f81-735a-64e5cc555a9c@molgen.mpg.de>
+Date:   Mon, 14 Feb 2022 09:07:39 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-2022-jp
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH 1/2] ahci: Add Green Sardine vendor ID as
+ board_ahci_mobile
+Content-Language: en-US
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Nehal-bakulchandra Shah <Nehal-bakulchandra.Shah@amd.com>
+References: <20211112201539.17377-1-mario.limonciello@amd.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20211112201539.17377-1-mario.limonciello@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Helge Deller <deller@gmx.de> writes:
+Dear Mario,
 
-> The put_user(val,ptr) macro wants a pointer in the second parameter, but in
-> fat_ioctl_filldir() the d_name field references a whole "array of chars".
-> Usually the compiler automatically converts it and uses a pointer to that
-> array, but it's more clean to explicitly give the real pointer to where someting
-> is put, which is in this case the first character of the d_name[] array.
->
-> I noticed that issue while trying to optimize the parisc put_user() macro
-> and used an intermediate variable to store the pointer. In that case I
-> got this error:
->
-> In file included from include/linux/uaccess.h:11,
->                  from include/linux/compat.h:17,
->                  from fs/fat/dir.c:18:
-> fs/fat/dir.c: In function $B!F(Bfat_ioctl_filldir$B!G(B:
-> fs/fat/dir.c:725:33: error: invalid initializer
->   725 |                 if (put_user(0, d2->d_name)                     ||         \
->       |                                 ^~
-> include/asm/uaccess.h:152:33: note: in definition of macro $B!F(B__put_user$B!G(B
->   152 |         __typeof__(ptr) __ptr = ptr;                            \
->       |                                 ^~~
-> fs/fat/dir.c:759:1: note: in expansion of macro $B!F(BFAT_IOCTL_FILLDIR_FUNC$B!G(B
->   759 | FAT_IOCTL_FILLDIR_FUNC(fat_ioctl_filldir, __fat_dirent)
->
-> The patch below cleans it up.
->
-> Signed-off-by: Helge Deller <deller@gmx.de>
 
-Looks good.
+(For the records, is part of Linux since 5.16-rc2 (commit 1527f69204fe).)
 
-Acked-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Am 12.11.21 um 21:15 schrieb Mario Limonciello:
+> AMD requires that the SATA controller be configured for devsleep in order
+> for S0i3 entry to work properly.
+> 
+> commit b1a9585cc396 ("ata: ahci: Enable DEVSLP by default on x86 with
+> SLP_S0") sets up a kernel policy to enable devsleep on Intel mobile
+> platforms that are using s0ix.  Add the PCI ID for the SATA controller in
+> Green Sardine platforms to extend this policy by default for AMD based
+> systems using s0i3 as well.
+> 
+> Cc: Nehal-bakulchandra Shah <Nehal-bakulchandra.Shah@amd.com>
+> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=214091
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+>   drivers/ata/ahci.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
+> index d60f34718b5d..1e1167e725a4 100644
+> --- a/drivers/ata/ahci.c
+> +++ b/drivers/ata/ahci.c
+> @@ -438,6 +438,7 @@ static const struct pci_device_id ahci_pci_tbl[] = {
+>   	/* AMD */
+>   	{ PCI_VDEVICE(AMD, 0x7800), board_ahci }, /* AMD Hudson-2 */
+>   	{ PCI_VDEVICE(AMD, 0x7900), board_ahci }, /* AMD CZ */
+> +	{ PCI_VDEVICE(AMD, 0x7901), board_ahci_mobile }, /* AMD Green Sardine */
 
-> diff --git a/fs/fat/dir.c b/fs/fat/dir.c
-> index c4a274285858..249825017da7 100644
-> --- a/fs/fat/dir.c
-> +++ b/fs/fat/dir.c
-> @@ -722,7 +722,7 @@ static int func(struct dir_context *ctx, const char *name, int name_len,   \
->  		if (name_len >= sizeof(d1->d_name))			   \
->  			name_len = sizeof(d1->d_name) - 1;		   \
->  									   \
-> -		if (put_user(0, d2->d_name)			||	   \
-> +		if (put_user(0, &d2->d_name[0])			||	   \
->  		    put_user(0, &d2->d_reclen)			||	   \
->  		    copy_to_user(d1->d_name, name, name_len)	||	   \
->  		    put_user(0, d1->d_name + name_len)		||	   \
+Aren’t 0x7900 and 0x7901 the same device only in different modes? I 
+wonder, why different boards and different comments are used.
 
--- 
-OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Additionally, the device 0x7901 is also present in desktop systems like 
+Dell OptiPlex 5055 and MSI B350 MORTAR. Is `board_ahci_mobile` the right 
+board then? Or should the flag `AHCI_HFLAG_IS_MOBILE` be renamed to 
+avoid confusion?
+
+>   	/* AMD is using RAID class only for ahci controllers */
+>   	{ PCI_VENDOR_ID_AMD, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
+>   	  PCI_CLASS_STORAGE_RAID << 8, 0xffffff, board_ahci },
+
+
+Kind regards,
+
+Paul
