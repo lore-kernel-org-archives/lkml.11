@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B6BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E68BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344587AbiBNKCr (ORCPT
+        id S1344592AbiBNKCu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:02:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43450 "EHLO
+        Mon, 14 Feb 2022 05:02:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344052AbiBNJ6M (ORCPT
+        with ESMTP id S241081AbiBNJ6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:58:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB2D6A3B7;
-        Mon, 14 Feb 2022 01:46:04 -0800 (PST)
+        Mon, 14 Feb 2022 04:58:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B01C65839;
+        Mon, 14 Feb 2022 01:46:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51FDAB80DC7;
-        Mon, 14 Feb 2022 09:46:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E6AC340E9;
-        Mon, 14 Feb 2022 09:46:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AD3B60FA2;
+        Mon, 14 Feb 2022 09:46:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4190C340E9;
+        Mon, 14 Feb 2022 09:46:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831962;
-        bh=uTVbxloRA/oMSMkup+LNxAM+kjT2Mh6U5zYG9RnWECE=;
+        s=korg; t=1644831971;
+        bh=2/SoHm4dUzIUl91r/mOgRB3n+Cf0sjPHHhog8Keii2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eejCPZqwJ0lg4Camvy5UgFbPHtw/dPEhZRMjV/JkQrRY2Y59es/Skl7hVJXMMLAn9
-         jSDYQn14XLo6j7Vubfo+H6JHH+9BcBPMza/nHYxqYY9RZuTqi8QULSb9kAdd+TGT/Z
-         oBr9utt2fA6ZMUIEkvk2pxWRyugyU/kiS6XOYhok=
+        b=MndDzb8+SPyg3zz/hYO3c5m+8v8HgnsaHF2i2vdtgioYxAU8T9RJHJlGQ4tajrR9H
+         Y0AZHjKLmEMRcID6pYjX/07EpwCaye2kGUl3tF3ECHttWAcpxsO7z0doxBZ21hSdmu
+         2GVJxhmm+HsSgNRezWn3vUUBdQbsSLcRcqbub7jc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org,
+        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 036/172] perf/x86/rapl: fix AMD event handling
-Date:   Mon, 14 Feb 2022 10:24:54 +0100
-Message-Id: <20220214092507.650404408@linuxfoundation.org>
+Subject: [PATCH 5.15 039/172] drm/vc4: Fix deadlock on DSI device attach error
+Date:   Mon, 14 Feb 2022 10:24:57 +0100
+Message-Id: <20220214092507.747476363@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,67 +51,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+From: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
 
-[ Upstream commit 0036fb00a756a2f6e360d44e2e3d2200a8afbc9b ]
+[ Upstream commit 0a3d12ab5097b1d045e693412e6b366b7e82031b ]
 
-The RAPL events exposed under /sys/devices/power/events should only reflect
-what the underlying hardware actually support. This is how it works on Intel
-RAPL and Intel core/uncore PMUs in general.
-But on AMD, this was not the case. All possible RAPL events were advertised.
+DSI device attach to DSI host will be done with host device's lock
+held.
 
-This is what it showed on an AMD Fam17h:
-$ ls /sys/devices/power/events/
-energy-cores        energy-gpu          energy-pkg          energy-psys
-energy-ram          energy-cores.scale  energy-gpu.scale    energy-pkg.scale
-energy-psys.scale   energy-ram.scale    energy-cores.unit   energy-gpu.unit
-energy-pkg.unit     energy-psys.unit    energy-ram.unit
+Un-registering host in "device attach" error path (ex: probe retry)
+will result in deadlock with below call trace and non operational
+DSI display.
 
-Yet, on AMD Fam17h, only energy-pkg is supported.
+Startup Call trace:
+[   35.043036]  rt_mutex_slowlock.constprop.21+0x184/0x1b8
+[   35.043048]  mutex_lock_nested+0x7c/0xc8
+[   35.043060]  device_del+0x4c/0x3e8
+[   35.043075]  device_unregister+0x20/0x40
+[   35.043082]  mipi_dsi_remove_device_fn+0x18/0x28
+[   35.043093]  device_for_each_child+0x68/0xb0
+[   35.043105]  mipi_dsi_host_unregister+0x40/0x90
+[   35.043115]  vc4_dsi_host_attach+0xf0/0x120 [vc4]
+[   35.043199]  mipi_dsi_attach+0x30/0x48
+[   35.043209]  tc358762_probe+0x128/0x164 [tc358762]
+[   35.043225]  mipi_dsi_drv_probe+0x28/0x38
+[   35.043234]  really_probe+0xc0/0x318
+[   35.043244]  __driver_probe_device+0x80/0xe8
+[   35.043254]  driver_probe_device+0xb8/0x118
+[   35.043263]  __device_attach_driver+0x98/0xe8
+[   35.043273]  bus_for_each_drv+0x84/0xd8
+[   35.043281]  __device_attach+0xf0/0x150
+[   35.043290]  device_initial_probe+0x1c/0x28
+[   35.043300]  bus_probe_device+0xa4/0xb0
+[   35.043308]  deferred_probe_work_func+0xa0/0xe0
+[   35.043318]  process_one_work+0x254/0x700
+[   35.043330]  worker_thread+0x4c/0x448
+[   35.043339]  kthread+0x19c/0x1a8
+[   35.043348]  ret_from_fork+0x10/0x20
 
-This patch fixes the problem. Given the way perf_msr_probe() works, the
-amd_rapl_msrs[] table has to have all entries filled out and in particular
-the group field, otherwise perf_msr_probe() defaults to making the event
-visible.
+Shutdown Call trace:
+[  365.565417] Call trace:
+[  365.565423]  __switch_to+0x148/0x200
+[  365.565452]  __schedule+0x340/0x9c8
+[  365.565467]  schedule+0x48/0x110
+[  365.565479]  schedule_timeout+0x3b0/0x448
+[  365.565496]  wait_for_completion+0xac/0x138
+[  365.565509]  __flush_work+0x218/0x4e0
+[  365.565523]  flush_work+0x1c/0x28
+[  365.565536]  wait_for_device_probe+0x68/0x158
+[  365.565550]  device_shutdown+0x24/0x348
+[  365.565561]  kernel_restart_prepare+0x40/0x50
+[  365.565578]  kernel_restart+0x20/0x70
+[  365.565591]  __do_sys_reboot+0x10c/0x220
+[  365.565605]  __arm64_sys_reboot+0x2c/0x38
+[  365.565619]  invoke_syscall+0x4c/0x110
+[  365.565634]  el0_svc_common.constprop.3+0xfc/0x120
+[  365.565648]  do_el0_svc+0x2c/0x90
+[  365.565661]  el0_svc+0x4c/0xf0
+[  365.565671]  el0t_64_sync_handler+0x90/0xb8
+[  365.565682]  el0t_64_sync+0x180/0x184
 
-With the patch applied, the kernel now only shows was is actually supported:
-
-$ ls /sys/devices/power/events/
-energy-pkg  energy-pkg.scale  energy-pkg.unit
-
-The patch also uses the RAPL_MSR_MASK because only the 32-bits LSB of the
-RAPL counters are relevant when reading power consumption.
-
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220105185659.643355-1-eranian@google.com
+Signed-off-by: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220118005127.29015-1-treasure4paddy@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/rapl.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
-index 85feafacc445d..77e3a47af5ad5 100644
---- a/arch/x86/events/rapl.c
-+++ b/arch/x86/events/rapl.c
-@@ -536,11 +536,14 @@ static struct perf_msr intel_rapl_spr_msrs[] = {
-  * - perf_msr_probe(PERF_RAPL_MAX)
-  * - want to use same event codes across both architectures
-  */
--static struct perf_msr amd_rapl_msrs[PERF_RAPL_MAX] = {
--	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr },
-+static struct perf_msr amd_rapl_msrs[] = {
-+	[PERF_RAPL_PP0]  = { 0, &rapl_events_cores_group, 0, false, 0 },
-+	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr, false, RAPL_MSR_MASK },
-+	[PERF_RAPL_RAM]  = { 0, &rapl_events_ram_group,   0, false, 0 },
-+	[PERF_RAPL_PP1]  = { 0, &rapl_events_gpu_group,   0, false, 0 },
-+	[PERF_RAPL_PSYS] = { 0, &rapl_events_psys_group,  0, false, 0 },
- };
- 
--
- static int rapl_cpu_offline(unsigned int cpu)
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index a185027911ce5..d09c1ea60c04e 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -1262,7 +1262,6 @@ static int vc4_dsi_host_attach(struct mipi_dsi_host *host,
+ 			       struct mipi_dsi_device *device)
  {
- 	struct rapl_pmu *pmu = cpu_to_rapl_pmu(cpu);
+ 	struct vc4_dsi *dsi = host_to_dsi(host);
+-	int ret;
+ 
+ 	dsi->lanes = device->lanes;
+ 	dsi->channel = device->channel;
+@@ -1297,18 +1296,15 @@ static int vc4_dsi_host_attach(struct mipi_dsi_host *host,
+ 		return 0;
+ 	}
+ 
+-	ret = component_add(&dsi->pdev->dev, &vc4_dsi_ops);
+-	if (ret) {
+-		mipi_dsi_host_unregister(&dsi->dsi_host);
+-		return ret;
+-	}
+-
+-	return 0;
++	return component_add(&dsi->pdev->dev, &vc4_dsi_ops);
+ }
+ 
+ static int vc4_dsi_host_detach(struct mipi_dsi_host *host,
+ 			       struct mipi_dsi_device *device)
+ {
++	struct vc4_dsi *dsi = host_to_dsi(host);
++
++	component_del(&dsi->pdev->dev, &vc4_dsi_ops);
+ 	return 0;
+ }
+ 
+@@ -1706,9 +1702,7 @@ static int vc4_dsi_dev_remove(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
+ 
+-	component_del(&pdev->dev, &vc4_dsi_ops);
+ 	mipi_dsi_host_unregister(&dsi->dsi_host);
+-
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
