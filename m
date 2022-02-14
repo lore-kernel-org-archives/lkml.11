@@ -2,68 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9180EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76706C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349059AbiBNKpD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:45:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60372 "EHLO
+        id S230378AbiBNKpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:45:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348939AbiBNKoy (ORCPT
+        with ESMTP id S1348656AbiBNKo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:44:54 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5251674859;
-        Mon, 14 Feb 2022 02:06:11 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8B9271EC01A9;
-        Mon, 14 Feb 2022 11:06:05 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644833165;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=aXPq0nLzHCwRfyUGulTT2l60daxEfBrJC63adKuy65o=;
-        b=MjK8jxmnJXjN2XXB/H1U2Yk7OIDpTQ9Kc792Rjc72CJIbjXL8YKS0o85ObU98GqQc0GWRo
-        Zr0zG5il9szYmsEztX0N5cbiLdB+1iSmGPvlTiAi41kzWpclF4bvfha6wvYGZTTcabXKiL
-        Tw0j9UqkXuAkEe0JwiEh7DHMX2SlCmI=
-Date:   Mon, 14 Feb 2022 11:06:07 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
-        rric@kernel.org, Smita.KoralahalliChannabasappa@amd.com
-Subject: Re: [PATCH v4 08/24] EDAC/amd64: Define function to check DRAM limit
- address
-Message-ID: <YgopjwgItEHPfFtF@zn.tnic>
-References: <20220127204115.384161-1-yazen.ghannam@amd.com>
- <20220127204115.384161-9-yazen.ghannam@amd.com>
+        Mon, 14 Feb 2022 05:44:56 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1998AB86A;
+        Mon, 14 Feb 2022 02:07:30 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.43:35964.414113341
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
+        by 189.cn (HERMES) with SMTP id CD6CD10029D;
+        Mon, 14 Feb 2022 18:07:27 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id 2ce5d89c9d2b4751bf53523b557ba63b for jiaxun.yang@flygoat.com;
+        Mon, 14 Feb 2022 18:07:29 CST
+X-Transaction-ID: 2ce5d89c9d2b4751bf53523b557ba63b
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <79f30dcb-48f5-e8b4-7cdd-770dd30d4896@189.cn>
+Date:   Mon, 14 Feb 2022 18:07:26 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220127204115.384161-9-yazen.ghannam@amd.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7 0/7] drm/lsdc: add drm driver for loongson display
+ controller
+Content-Language: en-US
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>, Li Yi <liyi@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
+References: <20220213141649.1115987-1-15330273260@189.cn>
+ <380d93a4-6f36-00d2-6cd3-e4428534cbb1@flygoat.com>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <380d93a4-6f36-00d2-6cd3-e4428534cbb1@flygoat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 08:40:59PM +0000, Yazen Ghannam wrote:
-> Move the DRAM limit check into a separate helper function.
 
-You're still writing the "what" in commit messages - pls make a note to
-write about "why" you're doing a change instead.
+On 2022/2/14 13:54, Jiaxun Yang wrote:
+>
+>
+> 在 2022/2/13 14:16, Sui Jingfeng 写道:
+>> There is a display controller in loongson's LS2K1000 SoC and LS7A1000
+>> bridge chip, the DC is a PCI device in those chips. It has two display
+>> pipes but with only one hardware cursor. Each way has a DVO interface
+>> which provide RGB888 signals, vertical & horizontal synchronisations,
+>> data enable and the pixel clock. Each CRTC is able to scanout from
+>> 1920x1080 resolution at 60Hz. The maxmium resolution is 2048x2048
+>> according to the hardware spec.
+>
+> Hi Jiangfeng,
+>
+> I see you added dts for those boards, but I didn't see you wire up them
+> in Makefile and code? How can you use them in present systems?
+>
+> I guess to make those dts work for general all-in-one kernel, what you
+> need to do is, for example Lemota A1901:
+>
+> 1. Add __dtb_lemote_a1901 to builtin_dtbs.h
+>
+> 2. Wire up with something like:
+>
+> if (!strcmp("LEMOTE-/LS3A4000/-7A1000-1w-V01-pc", eboard->name)
+>     loongson_fdt_blob = __dtb_lemote_a1901
+>
+> In arch/mips/loongson64/env.c.
+>
+> Thanks.
+> - Jiaxun
 
-Because I don't see why you're doing this. Because
-umc_normaddr_to_sysaddr() is supposed to call helper functions only?
+For most board, this driver is ready to be use out of box.
+Device tree is for supplement purpose.
 
-Now if you had the "why" I wouldn't be wondering...
-
-:)
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
