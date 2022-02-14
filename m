@@ -2,132 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCAB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FABBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343874AbiBNJyv (ORCPT
+        id S1343921AbiBNJy4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:54:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33416 "EHLO
+        Mon, 14 Feb 2022 04:54:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344187AbiBNJve (ORCPT
+        with ESMTP id S1344375AbiBNJvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:34 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ED577ABE;
-        Mon, 14 Feb 2022 01:42:37 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21E48WXt002872;
-        Mon, 14 Feb 2022 04:42:34 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e7fsvgx13-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 04:42:34 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 21E9gXvK038650
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Feb 2022 04:42:33 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 14 Feb
- 2022 04:42:32 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 14 Feb 2022 04:42:32 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21E9gM3W009467;
-        Mon, 14 Feb 2022 04:42:28 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v3 2/3] dt-bindings:iio:amplifiers: add ada4250 doc
-Date:   Mon, 14 Feb 2022 11:41:14 +0200
-Message-ID: <20220214094115.48548-2-antoniu.miclaus@analog.com>
+        Mon, 14 Feb 2022 04:51:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B1966FA5;
+        Mon, 14 Feb 2022 01:42:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E50D061172;
+        Mon, 14 Feb 2022 09:42:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1599C340E9;
+        Mon, 14 Feb 2022 09:42:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644831767;
+        bh=EmdIkX7A7iEE+I7vI3N50D/Fv19L8KBxC1mzjgrtM7k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uYnhzYfqAZeEb7IU2ih068+W4CJL/GYGHL5PEE4fi6UCIQOBXjcI8TEq7mdtYcWCv
+         Q4Mr/y3ebxuFb3quFj25vKWGR7FH+yYCy8b68n13iJh5vZhq277Pf7X/lNeMpxt4H/
+         JhyqiOZ0Myj6TTlHs00lyC4LsP/kjYFtpQvxCLCg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kosuke Tatsukawa <tatsu-ab1@nec.com>
+Subject: [PATCH 5.10 089/116] n_tty: wake up poll(POLLRDNORM) on receiving data
+Date:   Mon, 14 Feb 2022 10:26:28 +0100
+Message-Id: <20220214092501.842412778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214094115.48548-1-antoniu.miclaus@analog.com>
-References: <20220214094115.48548-1-antoniu.miclaus@analog.com>
+In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
+References: <20220214092458.668376521@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 6RlZK-2i1ZZ3z9OS8zEwMqGt-ZRyUtp3
-X-Proofpoint-ORIG-GUID: 6RlZK-2i1ZZ3z9OS8zEwMqGt-ZRyUtp3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_02,2022-02-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 clxscore=1015 phishscore=0 adultscore=0 mlxlogscore=928
- suspectscore=0 priorityscore=1501 spamscore=0 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202140058
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the ADA4250 driver.
+From: TATSUKAWA KOSUKE (立川 江介) <tatsu-ab1@nec.com>
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+commit c816b2e65b0e86b95011418cad334f0524fc33b8 upstream.
+
+The poll man page says POLLRDNORM is equivalent to POLLIN when used as
+an event.
+$ man poll
+<snip>
+              POLLRDNORM
+                     Equivalent to POLLIN.
+
+However, in n_tty driver, POLLRDNORM does not return until timeout even
+if there is terminal input, whereas POLLIN returns.
+
+The following test program works until kernel-3.17, but the test stops
+in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
+
+[Steps to run test program]
+  $ cc -o test-pollrdnorm test-pollrdnorm.c
+  $ ./test-pollrdnorm
+  foo          <-- Type in something from the terminal followed by [RET].
+                   The string should be echoed back.
+
+  ------------------------< test-pollrdnorm.c >------------------------
+  #include <stdio.h>
+  #include <errno.h>
+  #include <poll.h>
+  #include <unistd.h>
+
+  void main(void)
+  {
+	int		n;
+	unsigned char	buf[8];
+	struct pollfd	fds[1] = {{ 0, POLLRDNORM, 0 }};
+
+	n = poll(fds, 1, -1);
+	if (n < 0)
+		perror("poll");
+	n = read(0, buf, 8);
+	if (n < 0)
+		perror("read");
+	if (n > 0)
+		write(1, buf, n);
+  }
+  ------------------------------------------------------------------------
+
+The attached patch fixes this problem.  Many calls to
+wake_up_interruptible_poll() in the kernel source code already specify
+"POLLIN | POLLRDNORM".
+
+Fixes: 57087d515441 ("tty: Fix spurious poll() wakeups")
+Cc: stable@vger.kernel.org
+Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
+Link: https://lore.kernel.org/r/TYCPR01MB81901C0F932203D30E452B3EA5209@TYCPR01MB8190.jpnprd01.prod.outlook.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../bindings/iio/amplifiers/adi,ada4250.yaml  | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+ drivers/tty/n_tty.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-new file mode 100644
-index 000000000000..22283ab48903
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/amplifiers/adi,ada4250.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ADA4250 Programmable Gain Instrumentation Amplifier
-+
-+maintainers:
-+  - Antoniu Miclaus <antoniu.miclaus@analog.com>
-+
-+description: |
-+  Precision Low Power, 110kHz, 26uA, Programmable Gain Instrumentation Amplifier.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ada4250
-+
-+  reg:
-+    maxItems: 1
-+
-+  avdd-supply: true
-+
-+  adi,refbuf-enable:
-+    description:
-+      Enable internal buffer to drive the reference pin.
-+    type: boolean
-+
-+required:
-+  - compatible
-+  - reg
-+  - avdd-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      ada4250@0{
-+        compatible = "adi,ada4250";
-+        reg = <0>;
-+        avdd-supply = <&avdd>;
-+      };
-+    };
-+...
--- 
-2.35.1
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1372,7 +1372,7 @@ handle_newline:
+ 			put_tty_queue(c, ldata);
+ 			smp_store_release(&ldata->canon_head, ldata->read_head);
+ 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+-			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
++			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
+ 			return 0;
+ 		}
+ 	}
+@@ -1653,7 +1653,7 @@ static void __receive_buf(struct tty_str
+ 
+ 	if (read_cnt(ldata)) {
+ 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+-		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
++		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
+ 	}
+ }
+ 
+
 
