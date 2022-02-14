@@ -2,62 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D39C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242889AbiBNJZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:25:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39390 "EHLO
+        id S242898AbiBNJ0e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:26:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242898AbiBNJZo (ORCPT
+        with ESMTP id S238884AbiBNJ0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:25:44 -0500
-X-Greylist: delayed 1199 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 01:25:36 PST
-Received: from mail.ruletown.pl (mail.ruletown.pl [192.71.213.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A0060A88
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:25:36 -0800 (PST)
-Received: by mail.ruletown.pl (Postfix, from userid 1001)
-        id 2ACBA40B81; Mon, 14 Feb 2022 09:46:06 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ruletown.pl; s=mail;
-        t=1644828374; bh=VNuNg2MzRkdVVfp4kSZZW7SxoKEFGotk5GCW4ktyH/8=;
-        h=Date:From:To:Subject:From;
-        b=aRZOxaU+dY/zhioZci1TI/k2twudMOJldjQ7h58MrOfmBzzuGiLX7eOcJXOQsLkhs
-         E7U/v5aIQrzvmKwS6ogiyHDDJdfzzk2xlr4T0AUTywqIS2NnNcx65y6bhrm2jX5vcm
-         xuZ4FMAqCY77jxsZzeoi5MTPuAm17P9fQNKJHhdvFS3rmLVPilYRxvfOYatX/qKf7D
-         X7OZLHCmpjv2tkgX9pRYcb2+ucx8YJ7E+Gcv0eBeJwtCGo9Run4xUaOcDDHCrCeZJM
-         bzspUs5wSB4Zs9YcyPBkH/LZaiQhZ0K6FBJcWKbpJp7YkbdW68uzE71kRpFKxaNJ+2
-         RD9nOutv6VnpQ==
-Received: by mail.ruletown.pl for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:46:01 GMT
-Message-ID: <20220214084500-0.1.v.208d.0.ajv3o8og01@ruletown.pl>
-Date:   Mon, 14 Feb 2022 08:46:01 GMT
-From:   "Filip Ostrowski" <filip.ostrowski@ruletown.pl>
-To:     <linux-kernel@vger.kernel.org>
-Subject: W sprawie samochodu
-X-Mailer: mail.ruletown.pl
+        Mon, 14 Feb 2022 04:26:31 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 150C260A8B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:26:23 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-313-sjXgZp0fOm66Vo-KMrSp4w-1; Mon, 14 Feb 2022 09:26:21 +0000
+X-MC-Unique: sjXgZp0fOm66Vo-KMrSp4w-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Mon, 14 Feb 2022 09:26:20 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Mon, 14 Feb 2022 09:26:20 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        'Helge Deller' <deller@gmx.de>,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>
+Subject: RE: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
+ case
+Thread-Topic: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
+ case
+Thread-Index: AQHYISaVap2r7qAO+E+IsFLjJVJIxKySvtowgAAIGvA=
+Date:   Mon, 14 Feb 2022 09:26:20 +0000
+Message-ID: <0ecb87dcc4cf42328f1f5a7d6abd08ed@AcuMS.aculab.com>
+References: <YgmB01p+p45Cihhg@p100>
+ <49a26b7a30254d9fb9653c2f815eaa28@AcuMS.aculab.com>
+In-Reply-To: <49a26b7a30254d9fb9653c2f815eaa28@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dzie=C5=84 dobry,
+RnJvbTogRGF2aWQgTGFpZ2h0DQo+IFNlbnQ6IDE0IEZlYnJ1YXJ5IDIwMjIgMDk6MTINCj4gDQo+
+IEZyb206IEhlbGdlIERlbGxlcg0KPiA+IFNlbnQ6IDEzIEZlYnJ1YXJ5IDIwMjIgMjI6MTANCj4g
+Pg0KPiA+IFRoZSBwdXRfdXNlcih2YWwscHRyKSBtYWNybyB3YW50cyBhIHBvaW50ZXIgaW4gdGhl
+IHNlY29uZCBwYXJhbWV0ZXIsIGJ1dCBpbg0KPiA+IGZhdF9pb2N0bF9maWxsZGlyKCkgdGhlIGRf
+bmFtZSBmaWVsZCByZWZlcmVuY2VzIGEgd2hvbGUgImFycmF5IG9mIGNoYXJzIi4NCj4gPiBVc3Vh
+bGx5IHRoZSBjb21waWxlciBhdXRvbWF0aWNhbGx5IGNvbnZlcnRzIGl0IGFuZCB1c2VzIGEgcG9p
+bnRlciB0byB0aGF0DQo+ID4gYXJyYXksIGJ1dCBpdCdzIG1vcmUgY2xlYW4gdG8gZXhwbGljaXRs
+eSBnaXZlIHRoZSByZWFsIHBvaW50ZXIgdG8gd2hlcmUgc29tZXRpbmcNCj4gPiBpcyBwdXQsIHdo
+aWNoIGlzIGluIHRoaXMgY2FzZSB0aGUgZmlyc3QgY2hhcmFjdGVyIG9mIHRoZSBkX25hbWVbXSBh
+cnJheS4NCj4gDQo+IFRoYXQganVzdCBpc24ndCB0cnVlLg0KPiANCj4gSW4gQyBib3RoIHgtPmNo
+YXJfYXJyYXkgYW5kICZ4LT5jaGFyX2FycmF5WzBdIGhhdmUgdGhlIHNhbWUgdHlwZQ0KPiAnY2hh
+ciAqJy4NCj4gDQo+IFRoZSAnYnVnJyBpcyBjYXVzZWQgYnkgcHV0X3VzZXIoKSB0cnlpbmcgdG8g
+ZG86DQo+IAlfX3R5cGVvZl9fKHB0cikgX19wdHIgPSBwdHI7DQo+IHdoZXJlIF9fdHlwZW9mX18g
+aXMgcmV0dXJuaW5nIGNoYXJbbl0gbm90IGNoYXIgKi4NCj4gDQo+IEkndmUgdHJpZWQgYSBmZXcg
+dGhpbmdzIGJ1dCBjYW4ndCBnZXQgX190eXBlb2ZfXyB0bw0KPiBnZW5lcmF0ZSBhIHN1aXRhYmxl
+IHR5cGUgZm9yIGJvdGggYSBzaW1wbGUgdHlwZSBhbmQgYXJyYXkuDQoNCkFjdHVhbGx5IHRoZSBp
+c3N1ZSBpcyB0aGF0IHB1dF91c2VyKCkgd3JpdGVzIGEgc2luZ2xlIHZhcmlhYmxlDQphbmQgbmVl
+ZHMgYSBwb2ludGVyIHRvIG9uZS4NClNvIGNoYW5naW5nIHRvOg0KCXB1dF91c2VyKDAsICZhcnJh
+eVswXSk7DQppcyBwcm9iYWJseSBmaW5lLg0KQnV0IHRoZSBkZXNjcmlwdGlvbiBpcyBhbGwgd3Jv
+bmcuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkg
+Um9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlv
+biBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-chcieliby=C5=9Bmy zapewni=C4=87 Pa=C5=84stwu kompleksowe rozwi=C4=85zania=
-, je=C5=9Bli chodzi o system monitoringu GPS.
-
-Precyzyjne monitorowanie pojazd=C3=B3w na mapach cyfrowych, =C5=9Bledzeni=
-e ich parametr=C3=B3w eksploatacyjnych w czasie rzeczywistym oraz kontrol=
-a paliwa to kluczowe funkcjonalno=C5=9Bci naszego systemu.=20
-
-Organizowanie pracy pracownik=C3=B3w jest dzi=C4=99ki temu prostsze i bar=
-dziej efektywne, a oszcz=C4=99dno=C5=9Bci i optymalizacja w zakresie pono=
-szonych koszt=C3=B3w, maj=C4=85 dla ka=C5=BCdego przedsi=C4=99biorcy ogro=
-mne znaczenie.
-
-Dopasujemy nasz=C4=85 ofert=C4=99 do Pa=C5=84stwa oczekiwa=C5=84 i potrze=
-b organizacji. Czy mogliby=C5=9Bmy porozmawia=C4=87 o naszej propozycji?
-
-
-Pozdrawiam,
-Filip Ostrowski
