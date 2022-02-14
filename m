@@ -2,131 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 657D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C48EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:39:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348877AbiBNKjT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:39:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44096 "EHLO
+        id S231965AbiBNKjZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:39:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349420AbiBNKgb (ORCPT
+        with ESMTP id S1349512AbiBNKgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:36:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC73715A5;
-        Mon, 14 Feb 2022 02:02:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA9B7B80CE0;
-        Mon, 14 Feb 2022 10:02:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC02C340EF;
-        Mon, 14 Feb 2022 10:02:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832954;
-        bh=7LDs95ymi7OV85+xbBS8SAoB5UAExAJyb74/cAjDU14=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GqkafSEHdbwWoTbJr5MbAyR+p2TOiA11Z+mNVUgLFnax/KQV8mkKj8mI4vFZMYpuS
-         UztVVBqB9zPbU16NHlQm89+/7IO9dlkjoRoYQvacB1njIHiv3PdOZESZGoJHp/UZhA
-         p7LunvBB95ssRal8sp4RlLoZscp3ooekhuU5ml/o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 145/203] nfp: flower: fix ida_idx not being released
-Date:   Mon, 14 Feb 2022 10:26:29 +0100
-Message-Id: <20220214092515.168524215@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 05:36:35 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2679322B36
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:02:52 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id qe15so14024460pjb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:02:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3FWzPND9WvW0DCoLJOyDC1qp18zJ90FPtYnzhOK7Lxo=;
+        b=KkDqPZYoT1GxMGWLVXlXtePwZUwNphej5qr/aPTYk+3Ur0Yl0owRHR/BjCbIQnXSbV
+         ocDqX6cwHSGvVdaMbe26s7imwgXGNnpOm6D00/7ZV6l3VGycQc+weDvNfsnPF93+OSDu
+         nZWwjjvDVSCzGYbW0VcX6uU0glqmbj5qgV78eAtrAR3XGpc/BgFwjWWvtg5cX73JvYzW
+         8L1GE4GBmGlIJxUevAXtbX8F6/ysrVMd/jMIAdf3JPNmqCpwl0KxL04TOO4c5hD6m06A
+         wXj77yppe99ACupcU9geF6iMo6T4YNGk9lNFbiP61OAg0Fk0CAtfVRrBo0vrrqRqpc41
+         smOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3FWzPND9WvW0DCoLJOyDC1qp18zJ90FPtYnzhOK7Lxo=;
+        b=5N425DGHXSxKchqDupWM3TqMpGfWh0zgNSPNP5KqhesZxan9ecoP+0ZaPXGD+AQZWV
+         R5pkr6Lv1gxnJpDlADYMuk7XrGXbmEHn+yjCKBcapNJncTDJ2RKO5DjvOALa4TfmSjXW
+         NGqnXMi+s05ifH/iceknC2qfJVxuM5FF62Jd/CoMP87X/pmzJRyLubXGG631jMsC+NCj
+         rTa6rA1z+SHYjlmK0GrPljSP/8ybQJZpgV2Be2vLf5bHH3s81bO2yEagIXmyvATegJ+t
+         lgtIJx5P4drq0aSf6LLpyBhR5r7XWZezy5sFA+n6C41yO1v5jMmvbuBqUrArmpHPzdlP
+         sknQ==
+X-Gm-Message-State: AOAM532ByMXSKSk3HrYkQZ/E+k2nwEo1Nvr+10EPrzXO7xVEFaGDVrAR
+        x1UfHCY4jJcCe/UgUMMbHVFT
+X-Google-Smtp-Source: ABdhPJyJ64qK8l+dVZGI6z1v97NAnYSzBQDf2NqUErR/7NdZCcUOASry2EezNzMjZnYRDuGM6dIBPg==
+X-Received: by 2002:a17:902:e552:: with SMTP id n18mr13557384plf.152.1644832963831;
+        Mon, 14 Feb 2022 02:02:43 -0800 (PST)
+Received: from thinkpad ([157.51.138.108])
+        by smtp.gmail.com with ESMTPSA id kx5sm13370870pjb.16.2022.02.14.02.02.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 02:02:43 -0800 (PST)
+Date:   Mon, 14 Feb 2022 15:32:32 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [RFC PATCH 3/5] misc: pci_endpoint_test: Add driver data for
+ Renesas RZ/G2{EHMN}
+Message-ID: <20220214100116.GK3494@thinkpad>
+References: <20220126195043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220126195043.28376-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126195043.28376-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Louis Peens <louis.peens@corigine.com>
+On Wed, Jan 26, 2022 at 07:50:41PM +0000, Lad Prabhakar wrote:
+> Add "dmac_data_alignment" member (indicating the alignment requirement
+> for internal DMAC for data transfers) to struct pci_endpoint_test_data
+> and add driver_data to Renesas RZ/G2{EHMN}.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/misc/pci_endpoint_test.c | 40 ++++++++++++++++++++++++++------
+>  1 file changed, 33 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
+> index 8f786a225dcf..0a00d45830e9 100644
+> --- a/drivers/misc/pci_endpoint_test.c
+> +++ b/drivers/misc/pci_endpoint_test.c
+> @@ -116,6 +116,7 @@ struct pci_endpoint_test {
+>  	struct miscdevice miscdev;
+>  	enum pci_barno test_reg_bar;
+>  	size_t alignment;
+> +	size_t dmac_data_alignment;
 
-[ Upstream commit 7db788ad627aabff2b74d4f1a3b68516d0fee0d7 ]
+Alignment is a generic requirement, so this could be "dma_alignment" or
+"data_alignment". Eventhough the only current user is internal DMA, this can
+also be used by others in the future.
 
-When looking for a global mac index the extra NFP_TUN_PRE_TUN_IDX_BIT
-that gets set if nfp_flower_is_supported_bridge is true is not taken
-into account. Consequently the path that should release the ida_index
-in cleanup is never triggered, causing messages like:
+Thanks,
+Mani
 
-    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
-    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
-    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
-
-after NFP_MAX_MAC_INDEX number of reconfigs. Ultimately this lead to
-new tunnel flows not being offloaded.
-
-Fix this by unsetting the NFP_TUN_PRE_TUN_IDX_BIT before checking if
-the port is of type OTHER.
-
-Fixes: 2e0bc7f3cb55 ("nfp: flower: encode mac indexes with pre-tunnel rule check")
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20220208101453.321949-1-simon.horman@corigine.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../net/ethernet/netronome/nfp/flower/tunnel_conf.c  | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-index dfb4468fe287a..0a326e04e6923 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-@@ -1011,6 +1011,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 	struct nfp_flower_repr_priv *repr_priv;
- 	struct nfp_tun_offloaded_mac *entry;
- 	struct nfp_repr *repr;
-+	u16 nfp_mac_idx;
- 	int ida_idx;
- 
- 	entry = nfp_tunnel_lookup_offloaded_macs(app, mac);
-@@ -1029,8 +1030,6 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 		entry->bridge_count--;
- 
- 		if (!entry->bridge_count && entry->ref_count) {
--			u16 nfp_mac_idx;
--
- 			nfp_mac_idx = entry->index & ~NFP_TUN_PRE_TUN_IDX_BIT;
- 			if (__nfp_tunnel_offload_mac(app, mac, nfp_mac_idx,
- 						     false)) {
-@@ -1046,7 +1045,6 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 
- 	/* If MAC is now used by 1 repr set the offloaded MAC index to port. */
- 	if (entry->ref_count == 1 && list_is_singular(&entry->repr_list)) {
--		u16 nfp_mac_idx;
- 		int port, err;
- 
- 		repr_priv = list_first_entry(&entry->repr_list,
-@@ -1074,8 +1072,14 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 	WARN_ON_ONCE(rhashtable_remove_fast(&priv->tun.offloaded_macs,
- 					    &entry->ht_node,
- 					    offloaded_macs_params));
-+
-+	if (nfp_flower_is_supported_bridge(netdev))
-+		nfp_mac_idx = entry->index & ~NFP_TUN_PRE_TUN_IDX_BIT;
-+	else
-+		nfp_mac_idx = entry->index;
-+
- 	/* If MAC has global ID then extract and free the ida entry. */
--	if (nfp_tunnel_is_mac_idx_global(entry->index)) {
-+	if (nfp_tunnel_is_mac_idx_global(nfp_mac_idx)) {
- 		ida_idx = nfp_tunnel_get_ida_from_global_mac_idx(entry->index);
- 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
- 	}
--- 
-2.34.1
-
-
-
+>  	const char *name;
+>  };
+>  
+> @@ -123,6 +124,7 @@ struct pci_endpoint_test_data {
+>  	enum pci_barno test_reg_bar;
+>  	size_t alignment;
+>  	int irq_type;
+> +	size_t dmac_data_alignment;
+>  };
+>  
+>  static inline u32 pci_endpoint_test_readl(struct pci_endpoint_test *test,
+> @@ -368,8 +370,11 @@ static bool pci_endpoint_test_copy(struct pci_endpoint_test *test,
+>  		goto err;
+>  
+>  	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
+> -	if (use_dma)
+> +	if (use_dma) {
+>  		flags |= FLAG_USE_DMA;
+> +		if (test->dmac_data_alignment)
+> +			size =  ALIGN(size, test->dmac_data_alignment);
+> +	}
+>  
+>  	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
+>  		dev_err(dev, "Invalid IRQ type option\n");
+> @@ -502,8 +507,11 @@ static bool pci_endpoint_test_write(struct pci_endpoint_test *test,
+>  		goto err;
+>  
+>  	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
+> -	if (use_dma)
+> +	if (use_dma) {
+>  		flags |= FLAG_USE_DMA;
+> +		if (test->dmac_data_alignment)
+> +			size =  ALIGN(size, test->dmac_data_alignment);
+> +	}
+>  
+>  	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
+>  		dev_err(dev, "Invalid IRQ type option\n");
+> @@ -600,8 +608,11 @@ static bool pci_endpoint_test_read(struct pci_endpoint_test *test,
+>  		goto err;
+>  
+>  	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
+> -	if (use_dma)
+> +	if (use_dma) {
+>  		flags |= FLAG_USE_DMA;
+> +		if (test->dmac_data_alignment)
+> +			size =  ALIGN(size, test->dmac_data_alignment);
+> +	}
+>  
+>  	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
+>  		dev_err(dev, "Invalid IRQ type option\n");
+> @@ -787,6 +798,7 @@ static int pci_endpoint_test_probe(struct pci_dev *pdev,
+>  		test->test_reg_bar = test_reg_bar;
+>  		test->alignment = data->alignment;
+>  		irq_type = data->irq_type;
+> +		test->dmac_data_alignment = data->dmac_data_alignment;
+>  	}
+>  
+>  	init_completion(&test->irq_raised);
+> @@ -948,6 +960,12 @@ static const struct pci_endpoint_test_data j721e_data = {
+>  	.irq_type = IRQ_TYPE_MSI,
+>  };
+>  
+> +static const struct pci_endpoint_test_data renesas_rzg2x_data = {
+> +	.test_reg_bar = BAR_0,
+> +	.irq_type = IRQ_TYPE_MSI,
+> +	.dmac_data_alignment = 8,
+> +};
+> +
+>  static const struct pci_device_id pci_endpoint_test_tbl[] = {
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_DRA74x),
+>  	  .driver_data = (kernel_ulong_t)&default_data,
+> @@ -965,10 +983,18 @@ static const struct pci_device_id pci_endpoint_test_tbl[] = {
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_AM654),
+>  	  .driver_data = (kernel_ulong_t)&am654_data
+>  	},
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774A1),},
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774B1),},
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774C0),},
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774E1),},
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774A1),
+> +	 .driver_data = (kernel_ulong_t)&renesas_rzg2x_data,
+> +	},
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774B1),
+> +	 .driver_data = (kernel_ulong_t)&renesas_rzg2x_data,
+> +	},
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774C0),
+> +	 .driver_data = (kernel_ulong_t)&renesas_rzg2x_data,
+> +	},
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774E1),
+> +	 .driver_data = (kernel_ulong_t)&renesas_rzg2x_data,
+> +	},
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_J721E),
+>  	  .driver_data = (kernel_ulong_t)&j721e_data,
+>  	},
+> -- 
+> 2.25.1
+> 
