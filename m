@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B81EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C939C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231745AbiBNJ5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:57:17 -0500
+        id S232750AbiBNJ5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:57:21 -0500
 Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344930AbiBNJwH (ORCPT
+        with ESMTP id S1343633AbiBNJuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:52:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B598C7B568;
-        Mon, 14 Feb 2022 01:43:28 -0800 (PST)
+        Mon, 14 Feb 2022 04:50:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2E4657B3;
+        Mon, 14 Feb 2022 01:41:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C2BCB80DC4;
-        Mon, 14 Feb 2022 09:43:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79F83C340E9;
-        Mon, 14 Feb 2022 09:43:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE93E611B8;
+        Mon, 14 Feb 2022 09:41:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D536EC340E9;
+        Mon, 14 Feb 2022 09:41:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831806;
-        bh=h6DUSLEzM5nWMlU2QZLed3g8W6f2bQcqsOY1Ce/iF+I=;
+        s=korg; t=1644831712;
+        bh=a6lTLUlCPFqhaJW682/k6YpdxQGr5eC5ep3SweaQk3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BLHXGviOmKQYecad+yERLkHmIH7NqnWuklPAH53auepInl18BUNhovBkv29Igfyx2
-         Hbbvb+fVaAgT6oLfH/kUFuqjcDYZZnixyxaFdSZ3h7TUOcnW1HacxauPUPL0c/glb+
-         m0zeMVEQyA2slK6hPXdmYXgOCEIfhBUehR5FG/Jg=
+        b=1t/dpL1ivJHHVRSm3jXz3QcgRc+Hoxts8FQ4LpQ0G7Si7E3ziIu5YcJM//bPhWCpI
+         Fu1Q9gVqevlRZB+PV9OChQLDNhfn48IPIjUOXgjfQxxNIOQtYcApi5ZTO1RDv7Huuk
+         zy046O4z1yQUso+/2MgmSetUAJ3VuPJU7MOAgGwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@gmail.com>,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH 5.10 101/116] usb: raw-gadget: fix handling of dual-direction-capable endpoints
-Date:   Mon, 14 Feb 2022 10:26:40 +0100
-Message-Id: <20220214092502.270989110@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Liam Merwick <liam.merwick@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 040/116] KVM: SVM: Dont kill SEV guest if SMAP erratum triggers in usermode
+Date:   Mon, 14 Feb 2022 10:25:39 +0100
+Message-Id: <20220214092500.062896165@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -48,44 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 292d2c82b105d92082c2120a44a58de9767e44f1 upstream.
+[ Upstream commit cdf85e0c5dc766fc7fc779466280e454a6d04f87 ]
 
-Under dummy_hcd, every available endpoint is *either* IN or OUT capable.
-But with some real hardware, there are endpoints that support both IN and
-OUT. In particular, the PLX 2380 has four available endpoints that each
-support both IN and OUT.
+Inject a #GP instead of synthesizing triple fault to try to avoid killing
+the guest if emulation of an SEV guest fails due to encountering the SMAP
+erratum.  The injected #GP may still be fatal to the guest, e.g. if the
+userspace process is providing critical functionality, but KVM should
+make every attempt to keep the guest alive.
 
-raw-gadget currently gets confused and thinks that any endpoint that is
-usable as an IN endpoint can never be used as an OUT endpoint.
-
-Fix it by looking at the direction in the configured endpoint descriptor
-instead of looking at the hardware capabilities.
-
-With this change, I can use the PLX 2380 with raw-gadget.
-
-Fixes: f2c2e717642c ("usb: gadget: add raw-gadget interface")
-Cc: stable <stable@vger.kernel.org>
-Tested-by: Andrey Konovalov <andreyknvl@gmail.com>
-Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
-Signed-off-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/r/20220126205214.2149936-1-jannh@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+Message-Id: <20220120010719.711476-10-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/legacy/raw_gadget.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/gadget/legacy/raw_gadget.c
-+++ b/drivers/usb/gadget/legacy/raw_gadget.c
-@@ -1003,7 +1003,7 @@ static int raw_process_ep_io(struct raw_
- 		ret = -EBUSY;
- 		goto out_unlock;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index fa543c355fbdb..d515c8e68314c 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4155,7 +4155,21 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int i
+ 			return true;
+ 
+ 		pr_err_ratelimited("KVM: SEV Guest triggered AMD Erratum 1096\n");
+-		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
++
++		/*
++		 * If the fault occurred in userspace, arbitrarily inject #GP
++		 * to avoid killing the guest and to hopefully avoid confusing
++		 * the guest kernel too much, e.g. injecting #PF would not be
++		 * coherent with respect to the guest's page tables.  Request
++		 * triple fault if the fault occurred in the kernel as there's
++		 * no fault that KVM can inject without confusing the guest.
++		 * In practice, the triple fault is moot as no sane SEV kernel
++		 * will execute from user memory while also running with SMAP=1.
++		 */
++		if (is_user)
++			kvm_inject_gp(vcpu, 0);
++		else
++			kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
  	}
--	if ((in && !ep->ep->caps.dir_in) || (!in && ep->ep->caps.dir_in)) {
-+	if (in != usb_endpoint_dir_in(ep->ep->desc)) {
- 		dev_dbg(&dev->gadget->dev, "fail, wrong direction\n");
- 		ret = -EINVAL;
- 		goto out_unlock;
+ 
+ 	return false;
+-- 
+2.34.1
+
 
 
