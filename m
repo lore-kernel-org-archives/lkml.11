@@ -2,97 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F41C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F14AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbiBNVQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:16:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58888 "EHLO
+        id S230390AbiBNVRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:17:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230392AbiBNVQ3 (ORCPT
+        with ESMTP id S230213AbiBNVRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:16:29 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79DA111DE7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:16:15 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id c10so5795332pfv.8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:16:15 -0800 (PST)
+        Mon, 14 Feb 2022 16:17:07 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B290A12E9FA
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:16:58 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id y84so21619847iof.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:16:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7CzXZHBrjrvvHPuFEDIUoa2XYSCdiIOC+ZXymIl1Gq0=;
-        b=DLytup8/nMFdOQpyOX32iLWswu2Lulci0Fe3QMhFaiTB94l2eFbralSxvQAHWw0Abi
-         eMBgf9GgT+3emlXnMtYFbLB8+fCbzYJCtn5FPEK0aM6ahcRxN/pBwtNPTnwicu4pOuMN
-         h1eKmzTSyxcEdz8Xf9DJQZvl62kNNYWtiHsrE=
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fWI/C1yfb+9wFKwbONNPcLLBB0Ih56XvX3BMqqSOd1Y=;
+        b=ESbE50vsogJHzE+1a/RYDHo/WgfZXW73RrPEMeyIGALKiYdqqPys80tZoNhVgugEYs
+         iY6dmuXr1ODeIJMb/NYXeihuzaHzGJbdSdEU6uK3uSLGkRuBUd30/OSlMjY1cIxkJUjd
+         m5gyZU313xbSJaxxtdTVjWincj2DECIIAvsWg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7CzXZHBrjrvvHPuFEDIUoa2XYSCdiIOC+ZXymIl1Gq0=;
-        b=3H+b+mrMZxBs5S3d7C5RHIBIQ/Zq4nnqMyQxZ0ciw21TYUA0feQxb7m3TGhMFmACLF
-         TiUzV4hx0XXIYgTnEuY/8zNOi8Fkqn+z1vNUMbki7XIdjnQv/CEM5bN5j3YcprK4564E
-         2XvirR9E+ALJMGsq7dvN652763eaRhyHUIqCBMXpY16hykmOGTcUqthY4wGhX5HvflxD
-         QuOvn8/V/XV3hYDBTxbxoXE5v7qpKoMpP2pSpor6rYxAsR4Ln45cD1QhWJtL4NR+INHj
-         Ze/obDcO9gTjCsoUvh/yjoTHTWSPtmWG7PZycLMe0OEg68YBwzdp3C5DyJpQGkGbFlEL
-         j3Pw==
-X-Gm-Message-State: AOAM532wvDogJZGNiT8x6PcXzhGF6CHdrJTiUdwV7ZqOIejPVOFD4Izk
-        HIQx/SRwnHso9uwk4V//B9FX3kl3mCM/5g==
-X-Google-Smtp-Source: ABdhPJwEa/+o++xM1jvGn6J4uA1jnNEs+L6LOssFo6u6kFTNXF/whFKH0nAMuVk0P4sIE7mk5RwzkA==
-X-Received: by 2002:a65:584d:: with SMTP id s13mr389414pgr.369.1644866055556;
-        Mon, 14 Feb 2022 11:14:15 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id oa10sm12985799pjb.54.2022.02.14.11.14.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 11:14:15 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Marco Elver <elver@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Alexander Potapenko <glider@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        kasan-dev@googlegroups.com, Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        Elena Reshetova <elena.reshetova@intel.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v2 1/2] stack: Introduce CONFIG_RANDOMIZE_KSTACK_OFFSET
-Date:   Mon, 14 Feb 2022 11:14:03 -0800
-Message-Id: <164486603894.3748820.17377347049312013591.b4-ty@chromium.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220131090521.1947110-1-elver@google.com>
-References: <20220131090521.1947110-1-elver@google.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fWI/C1yfb+9wFKwbONNPcLLBB0Ih56XvX3BMqqSOd1Y=;
+        b=iXcWpnw2TOcNqvaOBzHdvpb/vPJA5oN5+3/Qw4x4EofpcTX+tiMhtmcxVaGKXBGjxv
+         Coz8WYUwlGv5RBacEWFVs68xlstR3pTBaPiRZWEAN2ZCsrLWbsICnxowKXER64vCr8Kz
+         4T9Pi6oElcSjXiDAz3GY/RE7+VF8nnsVyk+ZBy21cm5MBcoj6zG/ZnMyv1wZZscAIiME
+         fNtv5neFXNn7ONCsu67iP0RxHiYFWdZHL/yavUSdvB2bnTg5+lcex2CDXULXpFF7QXYG
+         EEIlSYaJU02z/5abrY32ganG3taI9WrZ+c4eEgzVBGaPudWxqM7M0wBWD6+ZruUhjeDs
+         D4Sw==
+X-Gm-Message-State: AOAM531KRQvV3OTOom3e1aMuZyBWJFnvEUdxROUW0sctTiKH7rnd1sBE
+        pY11PkwFZMCzRcEUZUCXt6gxwA==
+X-Google-Smtp-Source: ABdhPJyrXxz2EbuHWruPVS7GR25u9adQa2p6SuorPSX8MtPWSZ2UB8Ze0ZZB2AU1wMN1OrX+AeBeNg==
+X-Received: by 2002:a05:6602:2c0d:: with SMTP id w13mr462239iov.184.1644873417859;
+        Mon, 14 Feb 2022 13:16:57 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id j12sm10118708ilu.12.2022.02.14.13.16.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 13:16:57 -0800 (PST)
+Subject: Re: [PATCH V2] selftests: Use -isystem instead of -I to include
+ headers
+To:     Kees Cook <keescook@chromium.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Shuah Khan <shuah@kernel.org>, kernel@collabora.com,
+        sherry.yang@oracle.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220214160756.3543590-1-usama.anjum@collabora.com>
+ <202202141125.085DF9BA6@keescook>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <51b7f746-d98c-b8e6-7d8f-98064ce0f697@linuxfoundation.org>
+Date:   Mon, 14 Feb 2022 14:16:56 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <202202141125.085DF9BA6@keescook>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 31 Jan 2022 10:05:20 +0100, Marco Elver wrote:
-> The randomize_kstack_offset feature is unconditionally compiled in when
-> the architecture supports it.
+On 2/14/22 12:25 PM, Kees Cook wrote:
+> On Mon, Feb 14, 2022 at 09:07:56PM +0500, Muhammad Usama Anjum wrote:
+>> Selftests need kernel headers and glibc for compilation. In compilation
+>> of selftests, uapi headers from kernel source are used instead of
+>> default ones while glibc has already been compiled with different header
+>> files installed in the operating system. So there can be redefination
+
+Spelling - redefinition
+
+>> warnings from compiler. These warnings can be suppressed by using
+>> -isystem to include the uapi headers.
+>>
+>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 > 
-> To add constraints on compiler versions, we require a dedicated Kconfig
-> variable. Therefore, introduce RANDOMIZE_KSTACK_OFFSET.
+> Reviewed-by: Kees Cook <keescook@chromium.org>
 > 
-> Furthermore, this option is now also configurable by EXPERT kernels:
-> while the feature is supposed to have zero performance overhead when
-> disabled, due to its use of static branches, there are few cases where
-> giving a distribution the option to disable the feature entirely makes
-> sense. For example, in very resource constrained environments, which
-> would never enable the feature to begin with, in which case the
-> additional kernel code size increase would be redundant.
-> 
-> [...]
 
-Applied to for-next/hardening, thanks!
+Looks good to me. With the above minor type fixed:
 
-[1/2] stack: Introduce CONFIG_RANDOMIZE_KSTACK_OFFSET
-      https://git.kernel.org/kees/c/8cb37a5974a4
-[2/2] stack: Constrain and fix stack offset randomization with Clang builds
-      https://git.kernel.org/kees/c/efa90c11f62e
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
--- 
-Kees Cook
+This one depends on an earlier patch that added that added KHDR_INCLUDES
+which is in Andrew's
 
+https://ozlabs.org/~akpm/mmotm/broken-out/selftests-add-and-export-a-kernel-uapi-headers-path.patch
+
+Andrew, would you like to take this through your tree?
+
+thanks,
+-- Shuah
+
+Would you like to apply this on top of th
