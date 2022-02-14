@@ -2,68 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9401C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242710AbiBNJOp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:14:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60810 "EHLO
+        id S242719AbiBNJPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:15:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240186AbiBNJOo (ORCPT
+        with ESMTP id S231175AbiBNJPF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:14:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6567560078;
-        Mon, 14 Feb 2022 01:14:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21CEFB80D8E;
-        Mon, 14 Feb 2022 09:14:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4442C340E9;
-        Mon, 14 Feb 2022 09:14:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830074;
-        bh=E+QOro8f3+YytQ8VYk/ygx78L4mVnH+y/kMzcrkKHLM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zeL0+BTKNdOhpH5TK+f7US/o0tKhISI01kL/yd7RJbiRz/RGsn5Vcm+ZBweoYMYZg
-         Bst25yc0kUjKHahDoI2lcljg7e+WdNYqQnz3euShMI6NYZ3uhGiVFymhNZ/DYE/BWI
-         FQZ6eK1GdU5lyAhFGfsCaKYBXwE4ZpK/50/mhvZA=
-Date:   Mon, 14 Feb 2022 10:14:31 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     =?utf-8?B?5pa96YyV6bS7?= <vincent.sunplus@gmail.com>
-Cc:     stern@rowland.harvard.edu, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, wells.lu@sunplus.com
-Subject: Re: [PATCH v1 1/2] usb: host: ehci-sunplus: Add driver for ehci in
- Sunplus SP7021
-Message-ID: <Ygodd+TFQGnhki6A@kroah.com>
-References: <1644827562-17244-1-git-send-email-vincent.sunplus@gmail.com>
- <1644827562-17244-2-git-send-email-vincent.sunplus@gmail.com>
- <YgoVBv/z1uCsR1Y0@kroah.com>
- <CAPvp3Rhtb-g1A5FG6_1irzX2fG-VACU3T4tST1Xo99cnnL==MQ@mail.gmail.com>
+        Mon, 14 Feb 2022 04:15:05 -0500
+X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 01:14:57 PST
+Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975E26007D;
+        Mon, 14 Feb 2022 01:14:57 -0800 (PST)
+Received: from [167.98.27.226] (helo=rainbowdash)
+        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1nJWcF-0007ZQ-3a; Mon, 14 Feb 2022 08:21:47 +0000
+Received: from ben by rainbowdash with local (Exim 4.95)
+        (envelope-from <ben@rainbowdash>)
+        id 1nJWcE-004vyw-NT;
+        Mon, 14 Feb 2022 08:21:46 +0000
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+To:     linux-kernel@vger.kernel.org, bhelgaas@google.comv,
+        linux-pci@vger.kernel.org
+Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
+        david.abdurachmanov@gmail.com
+Subject: fu740 pcie driver fixes
+Date:   Mon, 14 Feb 2022 08:21:42 +0000
+Message-Id: <20220214082144.1176084-1-ben.dooks@codethink.co.uk>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPvp3Rhtb-g1A5FG6_1irzX2fG-VACU3T4tST1Xo99cnnL==MQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 05:03:00PM +0800, 施錕鴻 wrote:
-> Hi, Greg
->     About this issue, my colleague Hammer Hsieh has explained it to
-> you recently in the mail of "[PATCH v7 2/2] serial: sunplus-uart: Add
-> Sunplus
-> SoC UART Driver". The ehci driver and uart one are in the same Sunplus Soc.
+This pair of patches is currently necessary to allow any PCIe
+probe on the SiFive Unmatched board without using U-Boot to
+probe the PCIe bus (which does all the setup below). We found
+this as we have been network booting kernels onto our boards
+for testing.
 
-I do not know what you are referring to, sorry.  Remember we get
-thousands of emails a week.
 
-Please be explicit and make the code work properly for each patch you
-submit.
-
-thanks,
-
-greg k-h
