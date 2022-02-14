@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE086C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A54F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243756AbiBNJcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:32:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42262 "EHLO
+        id S243596AbiBNJco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:32:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243613AbiBNJcB (ORCPT
+        with ESMTP id S243615AbiBNJcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:32:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CCA1ADB1;
-        Mon, 14 Feb 2022 01:30:57 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8631D1ADB5;
+        Mon, 14 Feb 2022 01:30:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1F09B80DC6;
-        Mon, 14 Feb 2022 09:30:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7CB9C340E9;
-        Mon, 14 Feb 2022 09:30:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2356E60C8A;
+        Mon, 14 Feb 2022 09:30:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1A96C340EF;
+        Mon, 14 Feb 2022 09:30:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831054;
-        bh=LGnMrv8zyFJ9Jznd8mvnS6QMJ59LaXA+jxgRSmNbVW4=;
+        s=korg; t=1644831057;
+        bh=oot8H8SG+fLifHmlvEmUgAK75vhWQy+DzZGm3AcsJhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O0/gZ2xoSvi0VG1Tv4qhtEM7cyMsrGQYTHVRJpnpTsOxSH9bHfzXd7geu0BKsUvww
-         CCLFtgsbgwAZ13RnZrI1EnKAn8PGbM3PjURb9J74a2GMDg+QMmFz3JA8DdwYEaOhb8
-         rUqb7REla9MlohPjup7YSo0kCOBqOtajqCuvJkwc=
+        b=brGMhA3URKhtYCWmy+cgLbsopHaIi1BK87UXjP/AqN9v9eCqnRusZ/9WnGqMqg1g4
+         BwfPpYD0u9tpHgsUCcikJUKsRhDe4sv/SpEXxB8eDrs5nf/62vokkRgpEeimeJYU76
+         T7gvWI+LjBzxRpr5ylTAF9KbeIrSFI9HbVx6jpmw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Selwin Sebastian <Selwin.Sebastian@amd.com>,
-        Raju Rangoju <Raju.Rangoju@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 28/44] net: amd-xgbe: disable interrupts during pci removal
-Date:   Mon, 14 Feb 2022 10:25:51 +0100
-Message-Id: <20220214092448.821089086@linuxfoundation.org>
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH 4.14 29/44] vt_ioctl: fix array_index_nospec in vt_setactivate
+Date:   Mon, 14 Feb 2022 10:25:52 +0100
+Message-Id: <20220214092448.854594545@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -51,41 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Raju Rangoju <Raju.Rangoju@amd.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit 68c2d6af1f1e469544d6cbe9a601d96fb9c00e7f ]
+commit 61cc70d9e8ef5b042d4ed87994d20100ec8896d9 upstream.
 
-Hardware interrupts are enabled during the pci probe, however,
-they are not disabled during pci removal.
+array_index_nospec ensures that an out-of-bounds value is set to zero
+on the transient path. Decreasing the value by one afterwards causes
+a transient integer underflow. vsa.console should be decreased first
+and then sanitized with array_index_nospec.
 
-Disable all hardware interrupts during pci removal to avoid any
-issues.
+Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
+Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
+Amsterdam.
 
-Fixes: e75377404726 ("amd-xgbe: Update PCI support to use new IRQ functions")
-Suggested-by: Selwin Sebastian <Selwin.Sebastian@amd.com>
-Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220127144406.3589293-1-jakobkoschel@gmail.com
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/vt/vt_ioctl.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-index 82d1f416ee2ac..569e6d3d066bf 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-@@ -400,6 +400,9 @@ static void xgbe_pci_remove(struct pci_dev *pdev)
- 
- 	pci_free_irq_vectors(pdata->pcidev);
- 
-+	/* Disable all interrupts in the hardware */
-+	XP_IOWRITE(pdata, XP_INT_EN, 0x0);
-+
- 	xgbe_free_pdata(pdata);
- }
- 
--- 
-2.34.1
-
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -715,9 +715,9 @@ int vt_ioctl(struct tty_struct *tty,
+ 		if (vsa.console == 0 || vsa.console > MAX_NR_CONSOLES)
+ 			ret = -ENXIO;
+ 		else {
+-			vsa.console = array_index_nospec(vsa.console,
+-							 MAX_NR_CONSOLES + 1);
+ 			vsa.console--;
++			vsa.console = array_index_nospec(vsa.console,
++							 MAX_NR_CONSOLES);
+ 			console_lock();
+ 			ret = vc_allocate(vsa.console);
+ 			if (ret == 0) {
 
 
