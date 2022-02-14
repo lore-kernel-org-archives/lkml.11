@@ -2,92 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79028C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E83DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231444AbiBNQNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:13:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57450 "EHLO
+        id S236659AbiBNQQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 11:16:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230109AbiBNQNF (ORCPT
+        with ESMTP id S230109AbiBNQQD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:13:05 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADF3CFE;
-        Mon, 14 Feb 2022 08:12:57 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 6743F1F438A4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644855176;
-        bh=xszuPxTh+RrzQKdIk/UYX7m0IGZxD+CwZJwkc1byRNE=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=Ox3V1acuR+hSOBVzElsGhFQ8rG9+6L/wP8sjXuVapRZ7yoQjj3DHWjBoqgpyHkoX5
-         76BHrtYZ7MAjYVi99wdgv1CmPmfjQSJBLwO8Rh7tmStfo5U7bk6PALpi3bgMZZtpSr
-         yYiVU1ML3GhZteHchvEssnFHl3rlCAoAHpOljqwjqDsq5fBGYtDIfvIkvlZi3sphjb
-         HyhsDzmYbJYLk8ngZjCRcEeG2IZXu/srQTj2bVX41YOrSspvnoVWMNTIP781NdPTIG
-         cwN9npokyHQJvN5fnS/oyQ9Jvg2ngGwyX58u2AXNgWC4Et2m0cgX8iwnkrxjShlHrQ
-         HfDyy19xoDoLQ==
-Message-ID: <66140ffb-306e-2956-2f6b-c017a38e18f8@collabora.com>
-Date:   Mon, 14 Feb 2022 21:12:46 +0500
+        Mon, 14 Feb 2022 11:16:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77929D48
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:15:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5C64614BC
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 16:15:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D88B9C340EE
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 16:15:53 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="J3pJHqss"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644855350;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BEj4LEQNjT5w6i+nrVdETHT6q2Q2BpQcUA4gmY11BTs=;
+        b=J3pJHqssyfiYGuFmVoy3hJrMucYk3N0eRz7VEWL7xK5i0gaEbqKlHo+HjtkprzxKNTddCL
+        iqzNOyX1XLwMwbkJEmiRo5CE+g9CbYTt1xct4HYXyA5jvbaFP1z4FZbPNUt7cH3znqEcM5
+        Z2AGZIlaYO1bXExWCPfz89kn45MMnn8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fde401f1 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Mon, 14 Feb 2022 16:15:50 +0000 (UTC)
+Received: by mail-yb1-f175.google.com with SMTP id p19so47604081ybc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:15:50 -0800 (PST)
+X-Gm-Message-State: AOAM533Iwh7YdQ1SW+uf+j2Bb8eIKvQljt2l5ema5ewfgIArm5mQIhCV
+        O/T2Lpl8Ev3Mjsi70/+BkldNwOCVRaS3QeD6q8s=
+X-Google-Smtp-Source: ABdhPJy1kra1Qp5vQH8qSXKIQrqs5nft0TI1FHnE7Pb3ogx3kMJS0+5WcM7KjoPbr8MhaiIokNDDhnrQ+hAnGJuYmwA=
+X-Received: by 2002:a81:f10b:: with SMTP id h11mr405157ywm.396.1644855348864;
+ Mon, 14 Feb 2022 08:15:48 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     usama.anjum@collabora.com, Shuah Khan <skhan@linuxfoundation.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        "luto@amacapital.net" <luto@amacapital.net>,
-        "wad@chromium.org" <wad@chromium.org>,
-        "christian@brauner.io" <christian@brauner.io>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
- missing headers
-Content-Language: en-US
-To:     Sherry Yang <sherry.yang@oracle.com>
-References: <20220210203049.67249-1-sherry.yang@oracle.com>
- <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
- <85DF69B3-3932-4227-978C-C6DAC7CAE64D@oracle.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <85DF69B3-3932-4227-978C-C6DAC7CAE64D@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CAHmME9rAnh6nSRNYo56Ty6VSrY17ej35AoNkSjunFO0AQp1D9Q@mail.gmail.com>
+ <20220214133735.966528-1-Jason@zx2c4.com> <Ygpkej/vnMvUDIlP@linutronix.de>
+ <CAHmME9ruM85U+dp4coBRJUBdk=iHXFZq3ZvHSiDXmpV+BoZEVw@mail.gmail.com>
+ <Ygpr9Xg0I+ZVzp9v@linutronix.de> <CAHmME9rp+O3+yjX_q-BS8y06PigbkEgi4vn=nzLACnBAWZt-vA@mail.gmail.com>
+ <Ygpv/kLWCmTzUTki@linutronix.de> <CAHmME9qrhpRCox2mR2UEStWxev2Zu14htBkpv3mdFEkVqacvVQ@mail.gmail.com>
+ <YgpybD+PeQ5Az7CJ@linutronix.de>
+In-Reply-To: <YgpybD+PeQ5Az7CJ@linutronix.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 14 Feb 2022 17:15:38 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qXE_t-O1X9yX_QeY1cQqNtWCHn12UiGYrE18vrab9Pvw@mail.gmail.com>
+Message-ID: <CAHmME9qXE_t-O1X9yX_QeY1cQqNtWCHn12UiGYrE18vrab9Pvw@mail.gmail.com>
+Subject: Re: [PATCH v2] random: set fast pool count to zero in cpuhp teardown
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->> "../../../../usr/include/" directory doesn't have header files if
->> different output directory is used for kselftests build like "make -C
->> tools/tests/selftest O=build". Can you try adding recently added
->> variable, KHDR_INCLUDES here which makes this kind of headers inclusion
->> easy and correct for other build combinations as well?
->>
->>
-> 
-> Hi Muhammad,
-> 
-> I just pulled linux-next, and tried with KHDR_INCLUDES. It works. Very nice 
-> work! I really appreciate you made headers inclusion compatible. However, 
-> my case is a little more complicated. It will throw warnings with -I, using 
-> -isystem can suppress these warnings, more details please refer to 
-> https://lore.kernel.org/all/C340461A-6FD2-440A-8EFC-D7E85BF48DB5@oracle.com/
-> 
-> According to this case, do you think will it be better to export header path 
-> (KHDR_INCLUDES) without “-I”?
-Well said. I've thought about it and it seems like -isystem is better
-than -I. I've sent a patch:
-https://lore.kernel.org/linux-kselftest/20220214160756.3543590-1-usama.anjum@collabora.com/
-I'm looking forward to discussion on it.
+Hi Sebastian,
 
-Thanks,
-Usama
+On Mon, Feb 14, 2022 at 4:17 PM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+> > I'd like to do only one method here, so we can set those fields in
+> > startup, provided it happens early enough.
+> > > > So I think it seems better to keep it before CPUHP_TIMERS_PREPARE, =
+but
+> > > > do it on startup rather than teardown. Seem reasonable? Would that
+> > > > mean we zero out before IRQs are enabled?
+> > > I would only zero it if the upper-most bit is there.
+> >
+> > I still don't quite understand: why can't we just unconditionally
+> > zero, always, before CPUHP_TIMERS_PREPARE?
+>
+> If you have a rollback before CPUHP_TIMERS_PREPARE you don't notice it
+> and your worker may have skipped this work because it run on the wrong
+> CPU. Also, I *think* that if you happen to have 64 interrupts between
+>    CPUHP_AP_ONLINE_IDLE =E2=80=A6 CPUHP_AP_WORKQUEUE_ONLINE
+>
+> then the scheduled worker is unbound and may run on the "wrong" CPU.
+
+I'm talking about in the context of unconditionally zeroing during
+*startup*, just before CPUHP_TIMERS_PREPARE. That's what I sent in
+this patch series:
+https://lore.kernel.org/lkml/20220214151415.1108141-1-Jason@zx2c4.com/t/#u
+
+Jason
