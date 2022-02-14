@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08EF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E15C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347787AbiBNKcA (ORCPT
+        id S1347491AbiBNKcD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:32:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37452 "EHLO
+        Mon, 14 Feb 2022 05:32:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348306AbiBNKav (ORCPT
+        with ESMTP id S1348356AbiBNKav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:30:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FD39BF7E;
-        Mon, 14 Feb 2022 01:59:27 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E1D6582E;
+        Mon, 14 Feb 2022 01:59:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6B8760B34;
-        Mon, 14 Feb 2022 09:59:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6881C340E9;
-        Mon, 14 Feb 2022 09:59:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44CD9B80DCD;
+        Mon, 14 Feb 2022 09:59:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E9BDC340E9;
+        Mon, 14 Feb 2022 09:59:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832766;
-        bh=VPRDR3PYXiPBeYJvCUZ/lY1OC90TasViMFD935EnErY=;
+        s=korg; t=1644832750;
+        bh=hG9jkos58WAdkn3Ip/Te7FXuqEYEgOqyyoE7Oxk6cmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYjLFcPbtY8pi16o5b9mYwii4lED/Lis1f3N7oGszGvVfOUy7zB5mZ1Fx2z1td5uG
-         1Qwhz2E/WM+cRTzXdYQeAw+RupetgFmWljavi2r7wT/uROQHb36UWvHd6esyhc3mE2
-         zrrrz9gV9MPzoZaAhL1I6dJ/8CzoLQkEu7vKm96k=
+        b=MUzYQ0amPezkMpXWFJ+mysSCadET0+DFUACCI8BkH83cmV75PDy052pnog0Mq9KSG
+         GyhXVUR4P9MzIe6/lsytCDWt8u/INRs4I9d9/1LWUZ9YjlnWuheB56Pb53/e8O+Jgz
+         xeBrfP/moHJTRh7gMJ3yN80OoirNkBbioDJ1qH+I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongjin Kim <tobetter@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 118/203] arm64: dts: meson-g12b-odroid-n2: fix typo dio2133
-Date:   Mon, 14 Feb 2022 10:26:02 +0100
-Message-Id: <20220214092514.263808238@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.16 081/203] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
+Date:   Mon, 14 Feb 2022 10:25:25 +0100
+Message-Id: <20220214092513.030990533@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,47 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongjin Kim <tobetter@gmail.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit bc41099f060ea74ac8d02c51bd0f5f46d969bedf ]
+commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
 
-Typo in audio amplifier node, dioo2133 -> dio2133
+Currently, SD card fails to mount due to the following pinctrl error:
 
-Signed-off-by: Dongjin Kim <tobetter@gmail.com>
-Fixes: ef599f5f3e10 ("arm64: dts: meson: convert ODROID-N2 to dtsi")
-Fixes: 67d141c1f8e6 ("arm64: dts: meson: odroid-n2: add jack audio output support")
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/YfKQJejh0bfGYvof@anyang
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
+[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
+[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
+[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
+
+Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
+is already been used by the mmc0-pins-fixup pinctrl group.
+
+With this change the rootfs can be mounted and the imx23-evk board can
+boot successfully.
+
+Cc: <stable@vger.kernel.org>
+Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/imx23-evk.dts |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-index 3e968b2441918..fd3fa82e4c330 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-@@ -17,7 +17,7 @@ aliases {
- 		rtc1 = &vrtc;
- 	};
- 
--	dioo2133: audio-amplifier-0 {
-+	dio2133: audio-amplifier-0 {
- 		compatible = "simple-audio-amplifier";
- 		enable-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
- 		VCC-supply = <&vcc_5v>;
-@@ -219,7 +219,7 @@ sound {
- 		audio-widgets = "Line", "Lineout";
- 		audio-aux-devs = <&tdmout_b>, <&tdmout_c>, <&tdmin_a>,
- 				 <&tdmin_b>, <&tdmin_c>, <&tdmin_lb>,
--				 <&dioo2133>;
-+				 <&dio2133>;
- 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
- 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
- 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
--- 
-2.34.1
-
+--- a/arch/arm/boot/dts/imx23-evk.dts
++++ b/arch/arm/boot/dts/imx23-evk.dts
+@@ -79,7 +79,6 @@
+ 						MX23_PAD_LCD_RESET__GPIO_1_18
+ 						MX23_PAD_PWM3__GPIO_1_29
+ 						MX23_PAD_PWM4__GPIO_1_30
+-						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+ 					>;
+ 					fsl,drive-strength = <MXS_DRIVE_4mA>;
+ 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
 
 
