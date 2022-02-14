@@ -2,63 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF92AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 07:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D11AC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 07:38:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241470AbiBNHik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 02:38:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55726 "EHLO
+        id S241478AbiBNHim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 02:38:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232225AbiBNHie (ORCPT
+        with ESMTP id S241412AbiBNHic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 02:38:34 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACF85A0AE;
-        Sun, 13 Feb 2022 23:38:26 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id hw13so7059026ejc.9;
-        Sun, 13 Feb 2022 23:38:26 -0800 (PST)
+        Mon, 14 Feb 2022 02:38:32 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915D559A4C;
+        Sun, 13 Feb 2022 23:38:24 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id jg20so10610428ejc.3;
+        Sun, 13 Feb 2022 23:38:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=f8SXCNeboPV5p4WZMz4UAaCSfT79i5ySX42XkzZvpOo=;
-        b=pwvSmwB22CdJbJGvcAxNV3UWj1yoL5L4cGkij5LLzQGZLX96vcA1NviuiGOansGty+
-         Q49YPUsAsiewd1FaAqZ9FRjPbZZXKm1kmiqJ4eFUb3GnkGg3cwnneKWXzXPQuLm5RRX3
-         txcZ4pdS/EzrcWlVA5yGH+sursPyNtUmiS4AolHftAjDUdAzNWkm95jFTaOcEVAhhkNN
-         1VdwzFmXmU7yeQnJfKVZ5FDKNXU6YE5HjNqiCKv+yqRIj6FEgnxixV3TkJmZI4KSfckC
-         vR2PAx8luXNwIa/RAXOlsytOz0pbCA9HCaWmBUC2pDGcUUzyNSAqkzlglBVLbu8wIQ4b
-         GzJw==
+        bh=+mR95J2LT/Gbe3zVkCuvHD8OzNfodUwOt0VFxheiVPs=;
+        b=oq+uj0YAwVucwdN6fruQ96UOBzwgAnTQQtA6BQAI5pqexaziARwDENWa9kRzSdLsle
+         uYg+uRFpb7u4xEtuQxQJ0PO50i63+Qe7kz6fWTK812KY4qZI18ckcmmH+h0ktsv2M+iI
+         RwbJKRRpH1caIK8BJmmhKh9ljXx31wyAhaeBG6fTi6hipDtda+s0SS/y83qLjDJhVCeI
+         LhwLBAH4UNPNNvFXQbep37Lo5lDt/F+WJZBfWCu+yJCA485IujA7IX73zl64jLU/LMzY
+         ZYp+VxNW8rP9IZD16x8muxRwEOkYXgSR9Xj2H4fSiIPSfG+Lu1Zw8NriyztlxmvnNNvx
+         b3cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=f8SXCNeboPV5p4WZMz4UAaCSfT79i5ySX42XkzZvpOo=;
-        b=78okRE0lB3LLCtBI7Y/Mxp7T2hNjcQOMSf9iSLPcUojNWG4YoL4xpq0UsN1n0k5bqC
-         eWpYaxEc+hxlP0jq/Hv5vprQQnlaa9Z7U/OVboC0efmzDcvv9yVyGPFCUWy6n5ZhVdMj
-         t50kHs9EKaFqHeRUjm99eXCZEJ5LlR/qCwG5L6ouiSZDHYJ3uZUJJJh4DoaQ3IKRu030
-         MvSI/qO/N3m4A2sqKmAGQiPVQpZGV25eegA9oV3zWAmvlg1GFxE9/Q6ra52fHt+fGLzL
-         Kq20RnzwqLirpqM5J72pfiehcuc0pYZSdviOs1vwieTRR07EOAJJmEy1B1yJLtxiQ8zp
-         Qg+w==
-X-Gm-Message-State: AOAM531PKOqjQIiBAIeDT3x6hz6fBZBX+A6oqrWDnN8zLfi3uqlgT32S
-        j4NOukSKWXpvdcfhuLBevQ5bVUcu/fc=
-X-Google-Smtp-Source: ABdhPJwb5psvYWCWsRU49QrD70LolMa5euOTE61k2CJmu2I5n6y8HiRBrRK00UvDfeshWnkadhUy2Q==
-X-Received: by 2002:a17:907:a409:: with SMTP id sg9mr10158763ejc.219.1644824305470;
-        Sun, 13 Feb 2022 23:38:25 -0800 (PST)
+        bh=+mR95J2LT/Gbe3zVkCuvHD8OzNfodUwOt0VFxheiVPs=;
+        b=2uWFc8hNeCGiPVSEQMezylj5kq6P29Edu8OZX8SJyrGq/YYDqP1xcOI4JUVdWH25Wn
+         tU7KZgJZ9U1LifcdTug6MHb5N0fi/ftbbAeU16mVMZ9mocwn3LghrbMFFtzAN74UhDcA
+         yotkbKM6TXRSZCMIL5mhN14m5xc1Zuq4oQmFxxHhTUbWSxHrGhezoHtR5+1oXB8NDE2c
+         qkkjLKMVE7HzGlCljnyg5sxkRFRQkOnI1GWDleCAqusgDxEvCJ1GdSbYESc2vh5hVvEu
+         2ASbfUKEvFMLvlRsjdsftw4kB95JvZP/sHEsOJbkxU3bkFo3NccWZlbBWNidDtYV5ePx
+         5EsA==
+X-Gm-Message-State: AOAM533KXId1Nm7KuIkXU9W/62HMjBEy8Tz0VFDKjFLJNuinYBOZYyyf
+        P8vRd+w0hSMxUmO3lBhif/alFJCnT/o=
+X-Google-Smtp-Source: ABdhPJzSfi774tIJeU3md2VRN1w6gYZZ9dtEmOK96422+bpuCIn88GiYEJybyPuHKniaDqW+Vc/x+g==
+X-Received: by 2002:a17:907:2d11:: with SMTP id gs17mr10125423ejc.360.1644824303095;
+        Sun, 13 Feb 2022 23:38:23 -0800 (PST)
 Received: from demon-pc.localdomain ([188.24.58.131])
-        by smtp.gmail.com with ESMTPSA id 9sm2480065ejd.184.2022.02.13.23.38.24
+        by smtp.gmail.com with ESMTPSA id 9sm2480065ejd.184.2022.02.13.23.38.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 23:38:25 -0800 (PST)
+        Sun, 13 Feb 2022 23:38:22 -0800 (PST)
 From:   Cosmin Tanislav <demonsingur@gmail.com>
 X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
 Cc:     cosmin.tanislav@analog.com, demonsingur@gmail.com,
         Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v5 4/5] dt-bindings: iio: accel: add ADXL367
-Date:   Mon, 14 Feb 2022 09:38:09 +0200
-Message-Id: <20220214073810.781016-5-cosmin.tanislav@analog.com>
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 2/5] iio: ABI: document mag_referenced
+Date:   Mon, 14 Feb 2022 09:38:07 +0200
+Message-Id: <20220214073810.781016-3-cosmin.tanislav@analog.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214073810.781016-1-cosmin.tanislav@analog.com>
 References: <20220214073810.781016-1-cosmin.tanislav@analog.com>
@@ -69,111 +68,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
+Some accelerometers that support activity and inactivity
+events also support a referenced mode, in which the
+gravitational acceleration is taken as a point of
+reference before comparing the acceleration to the
+specified activity and inactivity magnitude.
 
-The ADXL367 does not alias input signals to achieve ultralow power
-consumption, it samples the full bandwidth of the sensor at all
-data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-with a resolution of 0.25mg/LSB on the +-2 g range.
+For example, in the case of the ADXL367, for activity
+detection, the formula is:
 
-In addition to its ultralow power consumption, the ADXL367
-has many features to enable true system level power reduction.
-It includes a deep multimode output FIFO, a built-in micropower
-temperature sensor, and an internal ADC for synchronous conversion
-of an additional analog input.
+abs(acceleration - reference) > magnitude
+
+Add a new event type that makes this behavior clear.
 
 Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/iio/accel/adi,adxl367.yaml       | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+ Documentation/ABI/testing/sysfs-bus-iio | 26 +++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-new file mode 100644
-index 000000000000..d259e796c1d6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/adi,adxl367.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index c551301b33f1..41c1e3e1bf30 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1213,6 +1213,32 @@ Description:
+ 		number or direction is not specified, applies to all channels of
+ 		this type.
+ 
++What:		/sys/.../iio:deviceX/events/in_accel_mag_referenced_en
++What:		/sys/.../iio:deviceX/events/in_accel_mag_referenced_rising_en
++What:		/sys/.../iio:deviceX/events/in_accel_mag_referenced_falling_en
++What:		/sys/.../iio:deviceX/events/in_accel_y_mag_referenced_en
++What:		/sys/.../iio:deviceX/events/in_accel_y_mag_referenced_rising_en
++What:		/sys/.../iio:deviceX/events/in_accel_y_mag_referenced_falling_en
++KernelVersion:	5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Similar to in_accel_mag[_y][_rising|_falling]_en, but the event
++		value is relative to a reference magnitude. The reference magnitude
++		includes the graviational acceleration.
 +
-+title: Analog Devices ADXL367 3-Axis Digital Accelerometer
++What:		/sys/.../iio:deviceX/events/in_accel_mag_referenced_value
++What:		/sys/.../iio:deviceX/events/in_accel_mag_referenced_rising_value
++What:		/sys/.../iio:deviceX/events/in_accel_mag_referenced_falling_value
++What:		/sys/.../iio:deviceX/events/in_accel_y_mag_referenced_value
++What:		/sys/.../iio:deviceX/events/in_accel_y_mag_referenced_rising_value
++What:		/sys/.../iio:deviceX/events/in_accel_y_mag_referenced_falling_value
++KernelVersion:	5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The value to which the reference magnitude of the channel is
++		compared. If the axis is not specified, it applies to all channels
++		of this type.
 +
-+maintainers:
-+  - Cosmin Tanislav <cosmin.tanislav@analog.com>
-+
-+description: |
-+  The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
-+
-+  The ADXL367 does not alias input signals by to achieve ultralow power
-+  consumption, it samples the full bandwidth of the sensor at all
-+  data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-+  with a resolution of 0.25mg/LSB on the +-2 g range.
-+
-+  In addition to its ultralow power consumption, the ADXL367
-+  has many features to enable true system level power reduction.
-+  It includes a deep multimode output FIFO, a built-in micropower
-+  temperature sensor, and an internal ADC for synchronous conversion
-+  of an additional analog input.
-+    https://www.analog.com/en/products/adxl367.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adxl367
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+  vdd-supply: true
-+  vddio-supply: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      accelerometer@53 {
-+        compatible = "adi,adxl367";
-+        reg = <0x53>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+      };
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      accelerometer@0 {
-+        compatible = "adi,adxl367";
-+        reg = <0>;
-+        spi-max-frequency = <1000000>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+      };
-+    };
+ What:		/sys/.../events/in_steps_change_en
+ KernelVersion:	4.0
+ Contact:	linux-iio@vger.kernel.org
 -- 
 2.35.1
 
