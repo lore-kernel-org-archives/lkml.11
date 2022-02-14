@@ -2,82 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 499DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355789AbiBNPUu (ORCPT
+        id S1355798AbiBNPUw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:20:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46818 "EHLO
+        Mon, 14 Feb 2022 10:20:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355781AbiBNPUs (ORCPT
+        with ESMTP id S1355785AbiBNPUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:20:48 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761435F8E8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:20:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Qr2y9smPLhABHY4CroiGMzJ6xRTz2IT9aOQZeTRdcAA=; b=RvPTsgMyLuheHX9yQiaR0/Igwl
-        4OLmmnWQNwB7JZjQffqPeljm58g5orQ5hGf15S/tc+6pjg7pTjOKdJX2g+W9Hu6Ijwqn2Y8y9d/pc
-        pBFDYzIxuDURcL3v7XQKasaawY5lvMCS5iIzdjbYYPKM9QAC8xBNmLioWus1ehT2uV2KzFpBZIk8j
-        8fzBZy3Ca4lUXMvI9Wcq7X93dW16mQ+HyLWekw42YUpye2I3ZaSLeNW5nYHRksCwfHWDotLuBgJqs
-        V+J1p6N4LpB+S47/AX8qhSW/bT6ZCUw7eR+duuL27+yrne0MGBaL8LgBa/dAsJ62Q/KPNV1ts+Axa
-        Pb1faHTQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJd9S-00D1ch-Lm; Mon, 14 Feb 2022 15:20:30 +0000
-Date:   Mon, 14 Feb 2022 15:20:30 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: Re: [willy-pagecache:for-next 52/85] mm/page_vma_mapped.c:246
- page_vma_mapped_walk() warn: always true condition '(pvmw->nr_pages >= (1 <<
- ( - 12))) => (0-u32max >= 0)'
-Message-ID: <YgpzPru8aFA5sHOI@casper.infradead.org>
-References: <202202141933.YLNzdo4f-lkp@intel.com>
+        Mon, 14 Feb 2022 10:20:49 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E4C5BD24;
+        Mon, 14 Feb 2022 07:20:41 -0800 (PST)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21EE4hmJ009969;
+        Mon, 14 Feb 2022 15:20:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : mime-version : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=fkrUmfPtt6zYPcLAlCBt3JXgVA+JKKKc7SEZHzMLDOM=;
+ b=R2d7Kt2UArwcORU2EzATFwybq1li5NUpNiwpJTJoRXXdwYy7N0Wktbfgeqb2kfVkCu6Q
+ 2z7Mnz0hEvfdohgEgjWWIIEaDYAs0e+mDrl/eb41Rj1/U0tDwx+D+EtBzPrShfgzti9J
+ znm6pi3nL8D0RAvg92LMGnTDoJBtPlDu79cCvYvi8OlrJ86DcosN9K1NW+MOL8Fyfz2Q
+ 6Y+KyGSbWXtRl29G0/k0CDnj4QF4LnVoyV3lUlr+V8Y3GgoQYmkxGBJZ+kubhjdkUENj
+ OXFUuIpGGzThL+j+A3g8rivdCBKXUGLfMTfCzQqRgMwRunPzSqeG4smx4SVFkLOhpSBJ lg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7c4e1bq5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 15:20:05 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21EEtWhP029986;
+        Mon, 14 Feb 2022 15:20:05 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7c4e1bny-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 15:20:05 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21EFD1f1020571;
+        Mon, 14 Feb 2022 15:20:03 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06fra.de.ibm.com with ESMTP id 3e645jdw7n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 15:20:02 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21EFK0GI48365924
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Feb 2022 15:20:00 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 58A52A405E;
+        Mon, 14 Feb 2022 15:20:00 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9CB76A4055;
+        Mon, 14 Feb 2022 15:19:59 +0000 (GMT)
+Received: from localhost (unknown [9.43.124.167])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Feb 2022 15:19:59 +0000 (GMT)
+Date:   Mon, 14 Feb 2022 20:49:57 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [PATCH v2 08/13] powerpc/ftrace: Prepare PPC64's ftrace_caller()
+ for CONFIG_DYNAMIC_FTRACE_WITH_ARGS
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Jiri Kosina <jikos@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Ingo Molnar <mingo@redhat.com>, Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
+        <850817333cc76593699032e8e9a70d8c36e1af1e.1640017960.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <850817333cc76593699032e8e9a70d8c36e1af1e.1640017960.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202202141933.YLNzdo4f-lkp@intel.com>
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1644851672.d8a13a7hsf.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Hmu2hYFU9gEsaZJi4w4TCpwYTGPH5jdQ
+X-Proofpoint-ORIG-GUID: X2BX5tu4QyN2Hw7dSQafa7aVJYunyltG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_06,2022-02-14_03,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
+ adultscore=0 clxscore=1011 lowpriorityscore=0 impostorscore=0
+ suspectscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0 phishscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202140093
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Dan, is this an smatch bug?
+Hi Christophe,
+Thanks for your work enabling DYNAMIC_FTRACE_WITH_ARGS on powerpc. Sorry=20
+for the late review on this series, but I have a few comments below.
 
-On Mon, Feb 14, 2022 at 07:53:39PM +0800, kernel test robot wrote:
-> tree:   git://git.infradead.org/users/willy/pagecache for-next
-> head:   c267b33d0001488f1d9dad12d6a87655e174d914
-> commit: 9733dd1f11d6b6f8a38fa82f0cc014f7840cbd67 [52/85] mm: Convert page_vma_mapped_walk to work on PFNs
-> config: xtensa-randconfig-m031-20220213 (https://download.01.org/0day-ci/archive/20220214/202202141933.YLNzdo4f-lkp@intel.com/config)
-> compiler: xtensa-linux-gcc (GCC) 11.2.0
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> smatch warnings:
-> mm/page_vma_mapped.c:246 page_vma_mapped_walk() warn: always true condition '(pvmw->nr_pages >= (1 << ( - 12))) => (0-u32max >= 0)'
 
-[...]
+Christophe Leroy wrote:
+> In order to implement CONFIG_DYNAMIC_FTRACE_WITH_ARGS, change ftrace_call=
+er()
+> to handle LIVEPATCH the same way as frace_caller_regs().
+>=20
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> ---
+>  .../powerpc/kernel/trace/ftrace_64_mprofile.S | 25 ++++++++++++++-----
+>  1 file changed, 19 insertions(+), 6 deletions(-)
 
->    244				if ((pvmw->flags & PVMW_SYNC) &&
->    245				    transparent_hugepage_active(vma) &&
->  > 246				    (pvmw->nr_pages >= HPAGE_PMD_NR)) {
->    247					spinlock_t *ptl = pmd_lock(mm, pvmw->pmd);
+I think we also need to save r1 into pt_regs so that the stack pointer=20
+is available in the callbacks.
 
-The config in question doesn't enable CONFIG_TRANSPARENT_HUGEPAGE,
-so this condition should turn into
-	if ((pvmw->flags & PVMW_SYNC) && false && true)
-and I don't think smatch should warn on the third clause of the if
-being always-true when the second one is false.  Of course, it's not a
-literal "false", it's:
+Other than that, a few minor nits below...
 
-static inline bool transparent_hugepage_active(struct vm_area_struct *vma)
-{
-        return false;
-}
+>=20
+> diff --git a/arch/powerpc/kernel/trace/ftrace_64_mprofile.S b/arch/powerp=
+c/kernel/trace/ftrace_64_mprofile.S
+> index d636fc755f60..f6f787819273 100644
+> --- a/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
+> +++ b/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
+> @@ -172,14 +172,19 @@ _GLOBAL(ftrace_caller)
+>  	addi	r3, r3, function_trace_op@toc@l
+>  	ld	r5, 0(r3)
+> =20
+> +#ifdef CONFIG_LIVEPATCH_64
+> +	SAVE_GPR(14, r1)
+> +	mr	r14,r7		/* remember old NIP */
+                    ^ add a space
+> +#endif
 
-unless my debugging / understanding of this issue has gone astray.
+Please add a blank line here, to match the formatting for the rest of=20
+this file.
+
+>  	/* Calculate ip from nip-4 into r3 for call below */
+>  	subi    r3, r7, MCOUNT_INSN_SIZE
+> =20
+>  	/* Put the original return address in r4 as parent_ip */
+> +	std	r0, _LINK(r1)
+>  	mr	r4, r0
+> =20
+> -	/* Set pt_regs to NULL */
+> -	li	r6, 0
+> +	/* Load &pt_regs in r6 for call below */
+> +	addi    r6, r1 ,STACK_FRAME_OVERHEAD
+                      ^^ incorrect spacing
+> =20
+>  	/* ftrace_call(r3, r4, r5, r6) */
+>  .globl ftrace_call
+> @@ -189,6 +194,10 @@ ftrace_call:
+> =20
+>  	ld	r3, _NIP(r1)
+>  	mtctr	r3
+
+Another blank line here.
+
+> +#ifdef CONFIG_LIVEPATCH_64
+> +	cmpd	r14, r3		/* has NIP been altered? */
+> +	REST_GPR(14, r1)
+> +#endif
+> =20
+>  	/* Restore gprs */
+>  	REST_GPRS(3, 10, r1)
+> @@ -196,13 +205,17 @@ ftrace_call:
+>  	/* Restore callee's TOC */
+>  	ld	r2, 24(r1)
+> =20
+> +	/* Restore possibly modified LR */
+> +	ld	r0, _LINK(r1)
+> +	mtlr	r0
+> +
+>  	/* Pop our stack frame */
+>  	addi	r1, r1, SWITCH_FRAME_SIZE
+> =20
+> -	/* Reload original LR */
+> -	ld	r0, LRSAVE(r1)
+> -	mtlr	r0
+> -
+> +#ifdef CONFIG_LIVEPATCH_64
+> +        /* Based on the cmpd above, if the NIP was altered handle livepa=
+tch */
+> +	bne-	livepatch_handler
+> +#endif
+
+Here too.
+
+>  	/* Handle function_graph or go back */
+>  	b	ftrace_caller_common
+> =20
+
+
+- Naveen
+
