@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB51C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D1C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244243AbiBNJjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:39:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52866 "EHLO
+        id S244405AbiBNJji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:39:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244568AbiBNJgE (ORCPT
+        with ESMTP id S244611AbiBNJgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:36:04 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF901ADA5;
-        Mon, 14 Feb 2022 01:33:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2475A66F92;
+        Mon, 14 Feb 2022 01:33:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C09C3B80DA9;
-        Mon, 14 Feb 2022 09:33:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02115C340F1;
-        Mon, 14 Feb 2022 09:33:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EE71B80DC9;
+        Mon, 14 Feb 2022 09:33:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A18C36AF6;
+        Mon, 14 Feb 2022 09:33:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831203;
-        bh=5amVScnpOyj3ZLaoLoUqzRYXi/TQPaSI+KVKUF64VPM=;
+        s=korg; t=1644831210;
+        bh=4dsyQEVEH2d0rKeGzvEUb/48O60vR5Q89DpGn4IrFmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ajbIM/GRgDlBPoiNjLx06iJJePw/dbaf7yaFDx3cRcj5tavL+3YAaEJ7utXF5L3oT
-         m2ecqaNUUpgao1G0eDv5XcTKg1rPsaE5hYSt29Ijv9qJKoREBndqrkN3roTDARYh9P
-         l7nEh2JM6UpcPD4klHfYKT9glIh4wny8hUZtmdyU=
+        b=sPVKIqDivZFJGcGJK16ghrkzn43bG2f7ng125OGxxzIcS6mdklgsBduGnsedFTdI+
+         Gfp/+cxna4OUsZWh/ITqAm4IFARBJIKsw880CDy24V4ZhVDVjrrXyUsOd/Zd9DQ6HI
+         8qeVhJ4NSZS/OpL/z4HPG6ilHT1nCqRS6hvKnHX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 22/49] ARM: dts: meson: Fix the UART compatible strings
-Date:   Mon, 14 Feb 2022 10:25:48 +0100
-Message-Id: <20220214092449.029484001@linuxfoundation.org>
+Subject: [PATCH 4.19 24/49] ARM: dts: imx6qdl-udoo: Properly describe the SD card detect
+Date:   Mon, 14 Feb 2022 10:25:50 +0100
+Message-Id: <20220214092449.092256660@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -50,67 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit 5225e1b87432dcf0d0fc3440824b91d04c1d6cc1 ]
+[ Upstream commit 993d66140f8d1c1853a3b58b77b43b681eb64dee ]
 
-The dt-bindings for the UART controller only allow the following values
-for Meson6 SoCs:
-- "amlogic,meson6-uart", "amlogic,meson-ao-uart"
-- "amlogic,meson6-uart"
+GPIO7_IO00 is used as SD card detect.
 
-Use the correct fallback compatible string "amlogic,meson-ao-uart" for
-AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
-domain UART controllers.
+Properly describe this in the devicetree.
 
-Fixes: ec9b59162fd831 ("ARM: dts: meson6: use stable UART bindings")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211227180026.4068352-2-martin.blumenstingl@googlemail.com
+Fixes: 40cdaa542cf0 ("ARM: dts: imx6q-udoo: Add initial board support")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/meson.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/imx6qdl-udoo.dtsi | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
-index a86b890863347..2486feb5323bc 100644
---- a/arch/arm/boot/dts/meson.dtsi
-+++ b/arch/arm/boot/dts/meson.dtsi
-@@ -91,14 +91,14 @@ hwrng: rng@8100 {
- 			};
+diff --git a/arch/arm/boot/dts/imx6qdl-udoo.dtsi b/arch/arm/boot/dts/imx6qdl-udoo.dtsi
+index 4cc9858f7ff80..ef63ea5873ed5 100644
+--- a/arch/arm/boot/dts/imx6qdl-udoo.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-udoo.dtsi
+@@ -5,6 +5,8 @@
+  * Author: Fabio Estevam <fabio.estevam@freescale.com>
+  */
  
- 			uart_A: serial@84c0 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84c0 0x18>;
- 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
- 			};
++#include <dt-bindings/gpio/gpio.h>
++
+ / {
+ 	aliases {
+ 		backlight = &backlight;
+@@ -210,6 +212,7 @@ MX6QDL_PAD_SD3_DAT0__SD3_DATA0		0x17059
+ 				MX6QDL_PAD_SD3_DAT1__SD3_DATA1		0x17059
+ 				MX6QDL_PAD_SD3_DAT2__SD3_DATA2		0x17059
+ 				MX6QDL_PAD_SD3_DAT3__SD3_DATA3		0x17059
++				MX6QDL_PAD_SD3_DAT5__GPIO7_IO00		0x1b0b0
+ 			>;
+ 		};
  
- 			uart_B: serial@84dc {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84dc 0x18>;
- 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
-@@ -136,7 +136,7 @@ saradc: adc@8680 {
- 			};
+@@ -276,7 +279,7 @@ &usbh1 {
+ &usdhc3 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_usdhc3>;
+-	non-removable;
++	cd-gpios = <&gpio7 0 GPIO_ACTIVE_LOW>;
+ 	status = "okay";
+ };
  
- 			uart_C: serial@8700 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x8700 0x18>;
- 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
-@@ -219,7 +219,7 @@ ir_receiver: ir-receiver@480 {
- 			};
- 
- 			uart_AO: serial@4c0 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart";
- 				reg = <0x4c0 0x18>;
- 				interrupts = <GIC_SPI 90 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
 -- 
 2.34.1
 
