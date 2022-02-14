@@ -2,256 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36527C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 103FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229500AbiBNUXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:23:02 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53562 "EHLO
+        id S229508AbiBNUpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:45:09 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiBNUXA (ORCPT
+        with ESMTP id S229495AbiBNUpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:23:00 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F931E6822
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:21:20 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id d187so31131036pfa.10
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:21:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DF9WT/Vv+v/rFZpH2c7Do8/144JbYcaXb42/q6Y+A0U=;
-        b=QIyQthQljzLDrV1j/8Di/lSTC4O9i7AJ4h+RyA0Gbr4rcktlIyiBLn6GTX8uKH6LcT
-         jHb/KGlZVkhdQXIFz3E2u6cgJcFB9mYMV6IHktSAy+pSDAun9LkQRlfDlpWDNdv8isxg
-         OKtqc7zE/vmR6+ggIAD2GVAjrM2eJ1Mjo6GLo=
+        Mon, 14 Feb 2022 15:45:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75F3C1BAC46
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:42:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644871176;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HAECzVoo6xb20snd0BZ4vnL4W4MCzeWKIUtHRwlsp2E=;
+        b=VjEbaqBGJvMe2bYdI9Dx55EeQiidMGaHnaHeu/p6Cg1d9BgBPZKUFYlWAT6CGZY0q+Lzro
+        4z/uVEayc1B1UzPOmBrY29K1iQjbpL7wxNWcehy7apL6dLtcFZb7g3dZwUJSGsQziTo85V
+        LjPXbHj2swzdRmHsWkoklecuLHCzSYI=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-534-yCYbegcjPfOImNpnK1GKog-1; Mon, 14 Feb 2022 15:39:34 -0500
+X-MC-Unique: yCYbegcjPfOImNpnK1GKog-1
+Received: by mail-il1-f199.google.com with SMTP id x6-20020a923006000000b002bea39c3974so9927765ile.12
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:39:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DF9WT/Vv+v/rFZpH2c7Do8/144JbYcaXb42/q6Y+A0U=;
-        b=rLFidTy6tKJ2aN4QjuHBrTGfISAw161eaTMJLtO4I8dgFqMTmcCuzkaM/hLTd5VhgA
-         xwr6UssqlyJwjAcBk4dG8BogpgQIeQPG9jvJmKBMqaPkrqgnvPfF6mc5k8qZHArHOiuk
-         0FhQnCNeIe5T5MnW8lzeyJoe+hFnY/fCrfMOOYg/9TyCcD1VL+WTcTZYqWY1pq0Qm4zr
-         Gt0ZMBcrZ0R7Rjom1QIYYii7la3z79z9i6qkY3JwLpHQW2hpVGdpAM+sedrqVHZT/hgi
-         wWBWEXeVzQ7JZn3K7MijE0f7Wd8y+T1JHigty5mWB3yVx8f0AOhsNApY4A+G57j0vDuj
-         8yJA==
-X-Gm-Message-State: AOAM533d5WGAfk737MKdwEpL6YQoeiKQmOgUnZQoka8lLPDa/1Bmhepn
-        T9/rEWiee/WC8ge7+hCFGE2j7U+z2tlo9Q==
-X-Google-Smtp-Source: ABdhPJyGvGVuw3HE04nf6pE0tMBuCUxgl2p9O4asWDDxJJCfFsjyzXK4t7nX3MjYl8E01F0Y9HZ41Q==
-X-Received: by 2002:a17:903:2281:: with SMTP id b1mr686528plh.158.1644869246223;
-        Mon, 14 Feb 2022 12:07:26 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id lw16sm9718884pjb.51.2022.02.14.12.07.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 12:07:25 -0800 (PST)
-Date:   Mon, 14 Feb 2022 12:07:25 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Robert =?utf-8?B?xZp3acSZY2tp?= <robert@swiecki.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Jann Horn <jannh@google.com>, Will Drewry <wad@chromium.org>,
-        linux-api@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [RFC] Get siginfo from unreaped task
-Message-ID: <202202141152.6296CD7F@keescook>
-References: <CAP145phC6S6Zda-ZWLH1s4ZfDPh79rtf_7vzs-yvt1vykUCP4A@mail.gmail.com>
- <CF5167CE-FA1C-4CEC-9EA8-5EE8041FE7C4@amacapital.net>
- <20220213085212.cwzuqlrabpgbnbac@wittgenstein>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HAECzVoo6xb20snd0BZ4vnL4W4MCzeWKIUtHRwlsp2E=;
+        b=gI/A3aXgAA2BzBtkdPaqr/6xewqsWEj0iYhmx3tLnle/c0Ty8LWSEHKbD4csA9u8If
+         AaAQnZOkfPC0ZiAw6dTAFB8x7NWTeu8ODuGzx6JVjhTKhs6Mkh2dygl5MVCN7cAB4gAI
+         1aKotpHw/cpXJVM00DQuf6FOFXv5/PasqvFdJBWFic2Qk6nXCjrqbLZYm00LY8xRDdTf
+         6kMEuLQ/PosnwCjgXI7ORVUB03PFQo+GQ8JSVOyfQgXZjBTAOh5bmShsfRnLrXn5PSHS
+         KZQFNpPxIS/DRC1bqpYlLI3ntDI4ycT+K4rAJ13nYjDnSB+gQQ8ItWoucNds6xwgUtoJ
+         MlkA==
+X-Gm-Message-State: AOAM533BIxTeAYIkm8vs7rVa9eeYNKtwzJ3SMHLXjxGDWQqF11OibuAz
+        vD46I6G2i2XszY82Gsc8Q8tC1+ilnHyp41PEQO5ndacQ0om+/nJSxryfZGeO3J13RNSE7yV8Lld
+        NZeb23tqWTpdHy7kXvNs0qx/8
+X-Received: by 2002:a05:6e02:15c8:: with SMTP id q8mr395721ilu.19.1644871174089;
+        Mon, 14 Feb 2022 12:39:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy5cu3m+TozT2FZ+o5dsIkovOwm0QFJliaGHGqwZZ83nc7T40s7dpZ9fgU1na7EoDMJfryjvg==
+X-Received: by 2002:a05:6e02:15c8:: with SMTP id q8mr395702ilu.19.1644871173792;
+        Mon, 14 Feb 2022 12:39:33 -0800 (PST)
+Received: from ?IPV6:2601:280:4400:a2e0::4f60? ([2601:280:4400:a2e0::4f60])
+        by smtp.gmail.com with ESMTPSA id u12sm16796049ilg.51.2022.02.14.12.39.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 12:39:33 -0800 (PST)
+Message-ID: <118fc685-c68d-614f-006a-7d5487302122@redhat.com>
+Date:   Mon, 14 Feb 2022 15:39:31 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3] mm/oom: do not oom reap task with an unresolved robust
+ futex
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Waiman Long <longman@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        jsavitz@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        mingo@redhat.com, dvhart@infradead.org, dave@stgolabs.net,
+        andrealmeid@collabora.com
+References: <20220114180135.83308-1-npache@redhat.com>
+ <YeUuWcNArnDhOjFY@dhcp22.suse.cz>
+ <ad639326-bea8-9bfb-23e3-4e2b216d9645@redhat.com>
+ <43a6c470-9fc2-6195-9a25-5321d17540e5@redhat.com>
+ <YeZ/mL808DpA8mdG@dhcp22.suse.cz>
+From:   Nico Pache <npache@redhat.com>
+In-Reply-To: <YeZ/mL808DpA8mdG@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220213085212.cwzuqlrabpgbnbac@wittgenstein>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 09:52:12AM +0100, Christian Brauner wrote:
-> On Sat, Feb 12, 2022 at 06:32:08PM -0800, Andy Lutomirski wrote:
-> > 
-> > > On Feb 12, 2022, at 3:24 AM, Robert Święcki <robert@swiecki.net> wrote:
-> > > 
-> > > ﻿sob., 12 lut 2022 o 05:28 Kees Cook <keescook@chromium.org> napisał(a):
-> > >> 
-> > >> Make siginfo available through PTRACE_GETSIGINFO after process death,
-> > >> without needing to have already used PTRACE_ATTACH. Uses 48 more bytes
-> > >> in task_struct, though I bet there might be somewhere else we could
-> > >> stash a copy of it?
-> > > 
-> > > An alternative way of accessing this info could be abusing the
-> > > waitid() interface, with some additional, custom to Linux, flag
-> > > 
-> > > waitid(P_ALL, 0, &si, __WCHILDSIGINFO);
-> > > 
-> > > which would change what is put into si.
-> > > 
-> > > But maybe ptrace() is better, because it's mostly incompatible with
-> > > other OSes anyway on the behavior/flag level, while waitd() seems to
-> > > be POSIX/BSD standard, even if Linux specifies some additional flags.
-> > > 
-> > > 
-> > 
-> > I had a kind of opposite thought, which is that it would be very nice
-> > to be able to get all the waitid() data without reaping a process or
-> > even necessarily being its parent.  Maybe these can be combined?  A
-> > new waitid() option like you’re suggesting could add siginfo (and
-> > might need permissions).  And we could have a different waitid() flag
-> > that says “maybe not my child, don’t reap” (and also needs
-> > permissions).
-> > 
-> > Although the “don’t reap” thing is fundamentally racy. What a sane
-> > process manager actually wants is an interface to read all this info
-> > from a pidfd, which means it all needs to get stuck in struct pid. And
+
+
+On 1/18/22 03:51, Michal Hocko wrote:
+> On Mon 17-01-22 17:56:28, Nico Pache wrote:
+>> On 1/17/22 11:05, Waiman Long wrote:
+>>> On 1/17/22 03:52, Michal Hocko wrote:
+> [...]
+>>>>> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+>>>>> index 1ddabefcfb5a..3cdaac9c7de5 100644
+>>>>> --- a/mm/oom_kill.c
+>>>>> +++ b/mm/oom_kill.c
+>>>>> @@ -667,6 +667,21 @@ static void wake_oom_reaper(struct task_struct *tsk)
+>>>>>       if (test_and_set_bit(MMF_OOM_REAP_QUEUED, &tsk->signal->oom_mm->flags))
+>>>>>           return;
+>>>>>   +#ifdef CONFIG_FUTEX
+>>>>> +    /*
+>>>>> +     * If the ooming task's SIGKILL has not finished handling the
+>>>>> +     * robust futex it is not correct to reap the mm concurrently.
+>>>>> +     * Do not wake the oom reaper when the task still contains a
+>>>>> +     * robust list.
+>>>>> +     */
+>>>>> +    if (tsk->robust_list)
+>>>>> +        return;
+>>>>> +#ifdef CONFIG_COMPAT
+>>>>> +    if (tsk->compat_robust_list)
+>>>>> +        return;
+>>>>> +#endif
+>>>>> +#endif
+>>>> If this turns out to be really needed, which I do not really see at the
+>>>> moment, then this is not the right way to handle this situation. The oom
+>>>> victim could get stuck and the oom killer wouldn't be able to move
+>>>> forward. If anything the victim would need to get MMF_OOM_SKIP set.
+>>
+>> I will try this, but I don't immediately see any difference between this return
+>> case and setting the bit, passing the oom_reaper_list, then skipping it based on
+>> the flag. Do you mind explaining how this could lead to the oom killer getting
+>> stuck?
 > 
-> /me briefly pops out from vacation
+> The primary purpose of the oom_reaper is to guarantee a forward
+> progress. If a task gets stuck in the kernel - e.g. on locks then it
+> won't bail out and won't handle signals (i.e. SIGKILL from the
+> userspace). The oom killer prevents new oom victims selection in a
+> presence of an existing oom victim (see oom_evaluate_task). That means
+> that we not only send a SIGKILL to the victim, we also wake up the oom
+> reaper which then asynchronously tears down the private memory of the
+> task (thus release at least some of its memory) and once it is done it
+> will set MMF_OOM_SKIP flag which will tell the oom killer
+> (oom_evaluate_task) that this victim is no longer interesting and a new
+> victim can be selected.
 > 
-> Agreed and not just siginfo I would expect(?). We already came to that
-> conclusion when we first introduced them.
+> Makes sense?
+Thank does, Thank you for clearing that up!
 > 
-> > task_struct needs a completion or wait queue so you can actually wait
-> > for a pidfd to exit (unless someone already did this — I had patches a
-> > while back).  And this would be awesome.
+> Part of the async tear down is also MMF_UNSTABLE handling (see
+> __oom_reap_task_mm) which tells #PF handling code
+> (check_stable_address_space) that the underlying memory could have been
+> tempered with and thus it should return SIGBUS. The underlying
+> assumption is that the process (and all tasks which share its mm) has
+> been killed and it will never return to the userspace so the de-facto
+> memory corruption doesn't matter.
 > 
-> Currently, you can wait for a pidfd to exit via polling and you can use
-> a pidfd to pass it to waitid(P_PIDFD, pidfd, ...).
+> One thing that is still unclear to me is why this leads to any locked up
+> tasks. Looking at exit_robust_list I can see that it is accessing the
+> userspace memory but this should return EFAULT in this situation. My
+> assumption (which might be really wrong) is that futex shared among
+> processes which are not sharing mm nor signal handling will be sitting
+> in a shared memory. 
 > 
-> /me pops back into vacation
+> Now to the actual fix. I do not think we want to hide the task from the
+> oom reaper as you are suggesting. Futexes are very likely to be used for
+> many processes and that would make the whole async scheme useless. We
+> need something like the below.
+> 
+> futex_exit_release is not directly usable as it implicitly depends
+> on memory allocation (#PF) and that is not acceptable. So instead we
+> need something futex_exit_try_release or similar which would fail the
+> operation in case get_user (pagefault_disable) needs to really handle
+> the #PF or if the futex_exit_mutex is locked. In other words this would
+> have to be a completely non-blocking operation. The oom reaper would
+> then bail out.
+Yeah Joel came up with a similar idea once we realized his v2 had the issue with
+sleeping.
 
-Right, so waitid already has all the infrastructure for this, so I think
-adding it there makes a lot of sense. Here's what I've got:
+We've recently been discussing the following if statement in __oom_reap_task_mm:
+	if (vma_is_anonymous(vma) || !(vma->vm_flags & VM_SHARED))
 
+Given the comment above it, and some of the upstream discussion the original
+RFC, we are struggling to see why this should be a `||` and not an `&&`. If we
+only want to reap anon memory and reaping shared memory can be dangerous is this
+statement incorrect?
 
+We have a patch queued up to make this change, but wanted to get your opinion on
+why this was originally designed this way in case we are missing something.
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index f5b2be39a78c..e40789e801ef 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1178,6 +1178,7 @@ struct task_struct {
- #endif
- 	/* Ptrace state: */
- 	unsigned long			ptrace_message;
-+	kernel_siginfo_t		death_siginfo;
- 	kernel_siginfo_t		*last_siginfo;
- 
- 	struct task_io_accounting	ioac;
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 9b04631acde8..41f6ba6b7aa7 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -2825,6 +2825,10 @@ bool get_signal(struct ksignal *ksig)
- 		}
- 
- 	fatal:
-+		/* Allow siginfo to be queried until reaped. */
-+		copy_siginfo(&current->death_siginfo, &ksig->info);
-+		current->last_siginfo = &current->death_siginfo;
-+
- 		spin_unlock_irq(&sighand->siglock);
- 		if (unlikely(cgroup_task_frozen(current)))
- 			cgroup_leave_frozen(true);
-diff --git a/include/uapi/linux/wait.h b/include/uapi/linux/wait.h
-index 85b809fc9f11..7258cd4510ba 100644
---- a/include/uapi/linux/wait.h
-+++ b/include/uapi/linux/wait.h
-@@ -9,6 +9,7 @@
- #define WCONTINUED	0x00000008
- #define WNOWAIT		0x01000000	/* Don't reap, just poll status.  */
- 
-+#define __WCHILDSIGINFO	0x10000000	/* Report child's siginfo. */
- #define __WNOTHREAD	0x20000000	/* Don't wait on children of other threads in this group */
- #define __WALL		0x40000000	/* Wait on all children, regardless of type */
- #define __WCLONE	0x80000000	/* Wait only on non-SIGCHLD children */
-diff --git a/kernel/exit.c b/kernel/exit.c
-index d54efddd378b..70ecb996cecd 100644
---- a/kernel/exit.c
-+++ b/kernel/exit.c
-@@ -953,6 +953,7 @@ struct waitid_info {
- 	uid_t uid;
- 	int status;
- 	int cause;
-+	kernel_siginfo_t siginfo;
- };
- 
- struct wait_opts {
-@@ -964,7 +965,7 @@ struct wait_opts {
- 	int			wo_stat;
- 	struct rusage		*wo_rusage;
- 
--	wait_queue_entry_t		child_wait;
-+	wait_queue_entry_t	child_wait;
- 	int			notask_error;
- };
- 
-@@ -1012,11 +1013,16 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
- 	int state, status;
- 	pid_t pid = task_pid_vnr(p);
- 	uid_t uid = from_kuid_munged(current_user_ns(), task_uid(p));
--	struct waitid_info *infop;
-+	struct waitid_info *infop = wo->wo_info;
- 
- 	if (!likely(wo->wo_flags & WEXITED))
- 		return 0;
- 
-+	/* Before WNOWAIT so a copy can be extracted without reaping. */
-+	if (unlikely(wo->wo_flags & __WCHILDSIGINFO)) {
-+		if (infop && p->last_siginfo)
-+			copy_siginfo(&infop->siginfo, p->last_siginfo);
-+	}
- 	if (unlikely(wo->wo_flags & WNOWAIT)) {
- 		status = (p->signal->flags & SIGNAL_GROUP_EXIT)
- 			? p->signal->group_exit_code : p->exit_code;
-@@ -1121,7 +1127,6 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
- 		release_task(p);
- 
- out_info:
--	infop = wo->wo_info;
- 	if (infop) {
- 		if ((status & 0x7f) == 0) {
- 			infop->cause = CLD_EXITED;
-@@ -1564,7 +1569,7 @@ static long kernel_waitid(int which, pid_t upid, struct waitid_info *infop,
- 	unsigned int f_flags = 0;
- 
- 	if (options & ~(WNOHANG|WNOWAIT|WEXITED|WSTOPPED|WCONTINUED|
--			__WNOTHREAD|__WCLONE|__WALL))
-+			__WNOTHREAD|__WCLONE|__WALL|__WCHILDSIGINFO))
- 		return -EINVAL;
- 	if (!(options & (WEXITED|WSTOPPED|WCONTINUED)))
- 		return -EINVAL;
-@@ -1638,6 +1645,10 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
- 	if (!infop)
- 		return err;
- 
-+	/* __WCHILDSIGINFO */
-+	if (info->siginfo.signo)
-+		return copy_siginfo_to_user(infop, &info->siginfo);
-+
- 	if (!user_write_access_begin(infop, sizeof(*infop)))
- 		return -EFAULT;
- 
-@@ -1781,6 +1792,12 @@ COMPAT_SYSCALL_DEFINE5(waitid,
- 	if (!infop)
- 		return err;
- 
-+	/* __WCHILDSIGINFO */
-+	if (info->siginfo.signo)
-+		return copy_siginfo_to_user32(
-+				(struct compat_siginfo __user *)infop,
-+				&info->siginfo);
-+
- 	if (!user_write_access_begin(infop, sizeof(*infop)))
- 		return -EFAULT;
- 
+-- Nico
 
+> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+> index ef5860fc7d22..57660d3d1b79 100644
+> --- a/mm/oom_kill.c
+> +++ b/mm/oom_kill.c
+> @@ -613,6 +613,9 @@ static void oom_reap_task(struct task_struct *tsk)
+>  	int attempts = 0;
+>  	struct mm_struct *mm = tsk->signal->oom_mm;
+>  
+> +	if (futex_exit_try_release(tsk))
+> +		goto fail;
+> +
+>  	/* Retry the mmap_read_trylock(mm) a few times */
+>  	while (attempts++ < MAX_OOM_REAP_RETRIES && !oom_reap_task_mm(tsk, mm))
+>  		schedule_timeout_idle(HZ/10);
+> @@ -621,6 +624,7 @@ static void oom_reap_task(struct task_struct *tsk)
+>  	    test_bit(MMF_OOM_SKIP, &mm->flags))
+>  		goto done;
+>  
+> +fail:
+>  	pr_info("oom_reaper: unable to reap pid:%d (%s)\n",
+>  		task_pid_nr(tsk), tsk->comm);
+>  	sched_show_task(tsk);
+> @@ -1184,6 +1188,11 @@ SYSCALL_DEFINE2(process_mrelease, int, pidfd, unsigned int, flags)
+>  	if (!reap)
+>  		goto drop_mm;
+>  
+> +	if (futex_exit_try_release(tsk)) {
+> +		ret = -EAGAIN;
+> +		goto drop_mm;
+> +	}
+> +	
+>  	if (mmap_read_lock_killable(mm)) {
+>  		ret = -EINTR;
+>  		goto drop_mm;
 
-One usability question I have is:
-
-- if the process just exited normally, should it return an empty
-  siginfo, or should it ignore __WCHILDSIGINFO? (I have it ignoring it
-  above.)
-
-
--- 
-Kees Cook
