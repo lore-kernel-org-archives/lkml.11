@@ -2,96 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF39C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9ED6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:36:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355927AbiBNPfx (ORCPT
+        id S1355907AbiBNPgV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:35:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55468 "EHLO
+        Mon, 14 Feb 2022 10:36:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355898AbiBNPfm (ORCPT
+        with ESMTP id S1350750AbiBNPgN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:35:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8ECB4AE3C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:35:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F0FD61328
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 15:35:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 223E5C340E9;
-        Mon, 14 Feb 2022 15:35:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644852933;
-        bh=GKW1O/9iEU6PCo4adC0DG5ixQw/23hNkDvK3MXbEU/A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ivNsmiPS4Tf+UY9vbDcZjF34lCS0o63Mbho96U/7CiTc5r6c69kGgDsPQZ0HxW5sU
-         peK/+DXnIKlPzS3kY76K+q4SLK3IjgRWmWpEBpOToELnM8+y628Nxgg3ikqgM7trRD
-         SudH1CrRFJX05een+/BoKb2kHwcZ6q+mGL6r7v7ZzLI5AW8ys/LpU1yQKVpN+eB2dA
-         Dvgm6/p7pZw2zUiASzvNiF8tXFr2dolpvzbQccoRGA9XQZF4ryN28Ds07K1QyaNtHk
-         RWQurZTHGXanZvVFav8d4rfPKjc7/EuP3oC/+iBVr7W1LD8SgRCoWQDrrclKiZPwDP
-         h/9ebHsGuy/hQ==
-Date:   Mon, 14 Feb 2022 08:35:29 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: arm64: clang-nightly: net/ipv4/tcp_input.c: clang: error: clang
- frontend command failed with exit code 139
-Message-ID: <Ygp2wVo8JfWh5iOk@dev-arch.archlinux-ax161>
-References: <CA+G9fYtR+E52X-ucmvXYG5-9v0q2UEXQsML=nkQRnSf7TwXYqw@mail.gmail.com>
+        Mon, 14 Feb 2022 10:36:13 -0500
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A504AE3C;
+        Mon, 14 Feb 2022 07:36:04 -0800 (PST)
+Received: (Authenticated sender: gregory.clement@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id E74B61BF206;
+        Mon, 14 Feb 2022 15:36:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644852963;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wZaVsNZfL1Y9JFue2k1wM/baHSjDOG975omNd7JZ0b8=;
+        b=aqQuBbvuyYLqCNZtSOtTuL3CX+GcC3c1knhe2FBkGI27DstNgcmIo8dkzUj/I2g4J8TYyF
+        EhbnU/edAwqFoVwmDRxyHAECs2UI4JIpwRIBIRaU/UeZD9p/osq9HR9WlAb03yBwTuZM2b
+        w1tvyXusl4cS7GwmsD0ueu6zvHf1OLII2BSkzggnWkFOmV7YZECIm0zYRwfumU51KdgTS+
+        NnmMuX9PDCkZBoGIjmXxUU1K2IiL4oZ4VFt0wOP7pGqJOP8oOq3I6gOLHbE0Ei7nhNgR00
+        3LwTisFaYjlmxha4VWUbVHCjnOm0FeGnUBZzBFBUpOXmMFvASN+ABniCj/HzNg==
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>, andrew@lunn.ch,
+        robh+dt@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: Re: [PATCH 2/2] watchdog: orion_wdt: support pretimeout on Armada-XP
+In-Reply-To: <20220211003257.2037332-3-chris.packham@alliedtelesis.co.nz>
+References: <20220211003257.2037332-1-chris.packham@alliedtelesis.co.nz>
+ <20220211003257.2037332-3-chris.packham@alliedtelesis.co.nz>
+Date:   Mon, 14 Feb 2022 16:36:01 +0100
+Message-ID: <87r185jw9q.fsf@BL-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYtR+E52X-ucmvXYG5-9v0q2UEXQsML=nkQRnSf7TwXYqw@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Naresh,
+Chris Packham <chris.packham@alliedtelesis.co.nz> writes:
 
-On Mon, Feb 14, 2022 at 12:27:17PM +0530, Naresh Kamboju wrote:
-> On Linux mainline master branch with arm64 clang-nightly build failed
-> due to following errors and warnings.
-> 
-> make --silent --keep-going --jobs=8
-> O=/home/tuxbuild/.cache/tuxmake/builds/current LLVM=1 LLVM_IAS=1
-> ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
-> CROSS_COMPILE_COMPAT=arm-linux-gnueabihf- HOSTCC=clang CC=clang
-> PLEASE submit a bug report to
-> https://github.com/llvm/llvm-project/issues/ and include the crash
-> backtrace, preprocessed source, and associated run script.
-> Stack dump:
+> Commit e07a4c79ca75 ("watchdog: orion_wdt: use timer1 as a pretimeout")
+> added support for a pretimeout on Armada-38x variants. Because the
+> Armada-XP variants use armada370_start/armada370_stop (due to missing an
+> explicit RSTOUT mask bit for the watchdog). Add the required pretimeout
+> support to armada370_start/armada370_stop for Armada-XP.
+>
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 
-<snip>
+Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 
-> 1. <eof> parser at end of file
-> 2. Code generation
-> 3. Running pass 'Function Pass Manager' on module
-> '/builds/linux/net/ipv4/tcp_input.c'.
+Thanks,
 
-<snip>
+Gregory
 
-> I have reported this a new issues on github,
-> https://github.com/llvm/llvm-project/issues/53811
+> ---
+>  drivers/watchdog/orion_wdt.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/watchdog/orion_wdt.c b/drivers/watchdog/orion_wdt.c
+> index 127eefc9161d..e25e6bf4647f 100644
+> --- a/drivers/watchdog/orion_wdt.c
+> +++ b/drivers/watchdog/orion_wdt.c
+> @@ -238,8 +238,10 @@ static int armada370_start(struct watchdog_device *wdt_dev)
+>  	atomic_io_modify(dev->reg + TIMER_A370_STATUS, WDT_A370_EXPIRED, 0);
+>  
+>  	/* Enable watchdog timer */
+> -	atomic_io_modify(dev->reg + TIMER_CTRL, dev->data->wdt_enable_bit,
+> -						dev->data->wdt_enable_bit);
+> +	reg = dev->data->wdt_enable_bit;
+> +	if (dev->wdt.info->options & WDIOF_PRETIMEOUT)
+> +		reg |= TIMER1_ENABLE_BIT;
+> +	atomic_io_modify(dev->reg + TIMER_CTRL, reg, reg);
+>  
+>  	/* Enable reset on watchdog */
+>  	reg = readl(dev->rstout);
+> @@ -312,7 +314,7 @@ static int armada375_stop(struct watchdog_device *wdt_dev)
+>  static int armada370_stop(struct watchdog_device *wdt_dev)
+>  {
+>  	struct orion_watchdog *dev = watchdog_get_drvdata(wdt_dev);
+> -	u32 reg;
+> +	u32 reg, mask;
+>  
+>  	/* Disable reset on watchdog */
+>  	reg = readl(dev->rstout);
+> @@ -320,7 +322,10 @@ static int armada370_stop(struct watchdog_device *wdt_dev)
+>  	writel(reg, dev->rstout);
+>  
+>  	/* Disable watchdog timer */
+> -	atomic_io_modify(dev->reg + TIMER_CTRL, dev->data->wdt_enable_bit, 0);
+> +	mask = dev->data->wdt_enable_bit;
+> +	if (wdt_dev->info->options & WDIOF_PRETIMEOUT)
+> +		mask |= TIMER1_ENABLE_BIT;
+> +	atomic_io_modify(dev->reg + TIMER_CTRL, mask, 0);
+>  
+>  	return 0;
+>  }
+> -- 
+> 2.35.1
+>
 
-Thank you for the report! I found this over the weekend myself and
-reverted the problematic commit in LLVM and I will make sure that if it
-lands again, it can build a kernel without any issues.
-
-https://github.com/llvm/llvm-project/commit/22eb1dae3fb20ca8ada865de1d95baab0e08a060
-
-For the future, you may consider only sending reports of compiler
-crashes to Nick, myself, and llvm@lists.linux.dev; a compiler crash is
-pretty much never the fault of the source code so CC'ing Linux
-maintainers is just noise.
-
-Cheers,
-Nathan
+-- 
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
