@@ -2,128 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3CFC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 07:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A93C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 07:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241448AbiBNHig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 02:38:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55666 "EHLO
+        id S241457AbiBNHii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 02:38:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiBNHia (ORCPT
+        with ESMTP id S229962AbiBNHib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 02:38:30 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239264F47F;
-        Sun, 13 Feb 2022 23:38:23 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id a8so35538447ejc.8;
-        Sun, 13 Feb 2022 23:38:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AVMu6NN3biChFR5UuxImcxGSWWGJG/KG7InEx8tN/zM=;
-        b=IPJ5L/Gd4eaUTATgSsFFcNgdogHy+3PeWddDTcM6RMYnTojO8nmAYe7DljsIrAzQi7
-         i6Xq60F/Pxt9k7ZOk+UNVayYR5d+XRZEWfTHX4xqxF3NJeSWi2Ba3sXXw1T2vMJ7P/k2
-         0q2yOtYrF0KsL7CqQ1tilLcKdjZIOlRwwrbAdhBQlaBN67Jsh/4AXatn4i/PS4Q8JaFZ
-         Xk3o5MhHB45kSupMfzS4bbVM4XeZWBRsDr4HHvKhy1mvgFGUlCXpGbj9MqsOOg7mNmyh
-         HqHuq3rMqOhyQH6KQejnupSrrDv7sThFB11ck/fYmCvMTihbse0366OMsDRigwHyLm1L
-         hK4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AVMu6NN3biChFR5UuxImcxGSWWGJG/KG7InEx8tN/zM=;
-        b=NrhgAzS/DQ9i9Op8MsYy93b2x4qVyGVfvI4wlpRtl35B9dirrCUJjbOiVZ525TfPS2
-         4n8zVAXU5ufgkC0a3TWgX1K29fNFSEcW8+nlzxrz56OCW5V+4RT+5ZhInVcxpEMXzX34
-         RjstpmJhYH8NgPWiqfwFE1R+4tXMjHINKK0+9HgadoGry82xKYmBgmT9CdUfsRge8o6s
-         GMndHts+ODkHV+S1oAtI0FXO5XBmdMsFciDAsus1+O84pxKKRR/47ZtjFmwHeZ5siq2y
-         NmDkny7ZpWgk3sPOBV6XRbXEjoGHyYo5bIG+mgj6N+mO72suMcxjkSNxQ4hxvq+BSxeJ
-         JV9A==
-X-Gm-Message-State: AOAM533HfKq3ustlt7jyAABbc9XzrbQSHLpwG3WHoZfi53Q0vFqJ0dsA
-        GOg97vPZY2jbq2/l2l6Dcdg=
-X-Google-Smtp-Source: ABdhPJyLQdlZaKqPwB9HMGZNonoU8F290JfXnTh8DZkkz1YHIEXvNVVeuSBR8STeaI9T4YvrnHaKgw==
-X-Received: by 2002:a17:907:970f:: with SMTP id jg15mr10393921ejc.705.1644824301740;
-        Sun, 13 Feb 2022 23:38:21 -0800 (PST)
-Received: from demon-pc.localdomain ([188.24.58.131])
-        by smtp.gmail.com with ESMTPSA id 9sm2480065ejd.184.2022.02.13.23.38.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 23:38:21 -0800 (PST)
-From:   Cosmin Tanislav <demonsingur@gmail.com>
-X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Cc:     cosmin.tanislav@analog.com, demonsingur@gmail.com,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 1/5] iio: introduce mag_referenced
-Date:   Mon, 14 Feb 2022 09:38:06 +0200
-Message-Id: <20220214073810.781016-2-cosmin.tanislav@analog.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214073810.781016-1-cosmin.tanislav@analog.com>
-References: <20220214073810.781016-1-cosmin.tanislav@analog.com>
+        Mon, 14 Feb 2022 02:38:31 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45A274F9C3
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 23:38:24 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 7900468AFE; Mon, 14 Feb 2022 08:38:20 +0100 (CET)
+Date:   Mon, 14 Feb 2022 08:38:20 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 10/11] iommu/vt-d: Use xarray for global
+ device_domain_info
+Message-ID: <20220214073820.GF17411@lst.de>
+References: <20220214025704.3184654-1-baolu.lu@linux.intel.com> <20220214025704.3184654-11-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214025704.3184654-11-baolu.lu@linux.intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some accelerometers that support activity and inactivity
-events also support a referenced mode, in which the
-gravitational acceleration is taken as a point of
-reference before comparing the acceleration to the
-specified activity and inactivity magnitude.
+>  
+>  const struct iommu_ops intel_iommu_ops;
+> @@ -903,7 +905,8 @@ static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn, u8 bus, u
+>  	struct dmar_domain *domain;
+>  	int offset, level;
+>  
+> -	info = dmar_search_domain_by_dev_info(iommu->segment, bus, devfn);
+> +	info = xa_load(&device_domain_array,
+> +		       devi_idx(iommu->segment, bus, devfn));
+>  	if (!info || !info->domain) {
+>  		pr_info("device [%02x:%02x.%d] not probed\n",
+>  			bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
+> @@ -1742,14 +1745,14 @@ static int iommu_init_domains(struct intel_iommu *iommu)
 
-For example, in the case of the ADXL367, for activity
-detection, the formula is:
+Don't we need a rcu critical section here?
 
-abs(acceleration - reference) > magnitude
+> -	list_for_each_entry_safe(info, tmp, &device_domain_list, global) {
+> +	rcu_read_lock();
+> +	xa_for_each(&device_domain_array, index, info) {
+>  		if (info->iommu != iommu)
+>  			continue;
+>  
+> @@ -1758,7 +1761,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+>  
+>  		__dmar_remove_one_dev_info(info);
+>  	}
+> -	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +	rcu_read_unlock();
 
-Add a new event type that makes this behavior clear.
+__dmar_remove_one_dev_info asserts that device_domain_lock is held,
+which these two hunks remove.
 
-Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
----
- drivers/iio/industrialio-event.c | 1 +
- include/uapi/linux/iio/types.h   | 1 +
- tools/iio/iio_event_monitor.c    | 1 +
- 3 files changed, 3 insertions(+)
+>  	spin_lock_irqsave(&device_domain_lock, flags);
+>  	dev_iommu_priv_set(dev, NULL);
+> -	list_del(&info->global);
+> +	xa_erase(&device_domain_array,
+> +		 devi_idx(info->segment, info->bus, info->devfn));
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  
+>  	kfree(info);
 
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index d0732eac0f0a..ce8b102ce52f 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -230,6 +230,7 @@ static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
- 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
- 	[IIO_EV_TYPE_CHANGE] = "change",
-+	[IIO_EV_TYPE_MAG_REFERENCED] = "mag_referenced",
- };
- 
- static const char * const iio_ev_dir_text[] = {
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 48c13147c0a8..472cead10d8d 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -104,6 +104,7 @@ enum iio_event_type {
- 	IIO_EV_TYPE_THRESH_ADAPTIVE,
- 	IIO_EV_TYPE_MAG_ADAPTIVE,
- 	IIO_EV_TYPE_CHANGE,
-+	IIO_EV_TYPE_MAG_REFERENCED,
- };
- 
- enum iio_event_direction {
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index b94a16ba5c6c..2f4581658859 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -68,6 +68,7 @@ static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
- 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
- 	[IIO_EV_TYPE_CHANGE] = "change",
-+	[IIO_EV_TYPE_MAG_REFERENCED] = "mag_referenced",
- };
- 
- static const char * const iio_ev_dir_text[] = {
--- 
-2.35.1
-
+Do we need a kfree_rcu here to allow rcu based access?
