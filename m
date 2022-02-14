@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6479C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40228C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbiBNJds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:33:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42400 "EHLO
+        id S243769AbiBNJdy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:33:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243867AbiBNJdN (ORCPT
+        with ESMTP id S243870AbiBNJdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:33:13 -0500
+        Mon, 14 Feb 2022 04:33:24 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3591B65785;
-        Mon, 14 Feb 2022 01:31:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459DBBF6C;
+        Mon, 14 Feb 2022 01:31:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B71E460DFD;
-        Mon, 14 Feb 2022 09:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DB93C340E9;
-        Mon, 14 Feb 2022 09:31:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6DAE60FFF;
+        Mon, 14 Feb 2022 09:31:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4486C340E9;
+        Mon, 14 Feb 2022 09:31:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831099;
-        bh=vKR3XLW8cjvpm8Z/9x3036EkCMG759mpw8h0+7mcmx4=;
+        s=korg; t=1644831102;
+        bh=Uj2nSFtwqR3ZK3vkD7VM+uy5Bie9c8gJ+7OMKjQ4i+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r5EjL4brRV/zi0JmcLekfEke2QQ+RWWwnW0WwU4+cboEc2AlHbdXZ68wadTnt1acV
-         NDRudmu22TxA8d8u0WHaZfqzPF5vpWWIcegVsN2HrRwQ/Yg30XnsApI8dUglgKRqDW
-         1lUN0Ytp+CbM8Xbfp+64wmfIBb519RIyn8WICeU8=
+        b=qzIn/r+DuEoxViKREiELNNW8JvsaJPjXlxoluu9BEaUiLBV85YgjkAz25d/p7YTwJ
+         54Feu08E0YTo06FeKQF6wqB3/VdB1yIq/mFBKMh98ObT/dj4Ep07DsvDJ1YD/I//1I
+         cruwvf0fqGwMJBKhuFC2hgl/AZQvlF9psVvkaVxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 4.14 43/44] hwmon: (dell-smm) Speed up setting of fan speed
-Date:   Mon, 14 Feb 2022 10:26:06 +0100
-Message-Id: <20220214092449.293304202@linuxfoundation.org>
+        stable@vger.kernel.org, Song Liu <song@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 4.14 44/44] perf: Fix list corruption in perf_cgroup_switch()
+Date:   Mon, 14 Feb 2022 10:26:07 +0100
+Message-Id: <20220214092449.324669342@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -49,70 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf <W_Armin@gmx.de>
+From: Song Liu <song@kernel.org>
 
-commit c0d79987a0d82671bff374c07f2201f9bdf4aaa2 upstream.
+commit 5f4e5ce638e6a490b976ade4a40017b40abb2da0 upstream.
 
-When setting the fan speed, i8k_set_fan() calls i8k_get_fan_status(),
-causing an unnecessary SMM call since from the two users of this
-function, only i8k_ioctl_unlocked() needs to know the new fan status
-while dell_smm_write() ignores the new fan status.
-Since SMM calls can be very slow while also making error reporting
-difficult for dell_smm_write(), remove the function call from
-i8k_set_fan() and call it separately in i8k_ioctl_unlocked().
+There's list corruption on cgrp_cpuctx_list. This happens on the
+following path:
 
-Tested on a Dell Inspiron 3505.
+  perf_cgroup_switch: list_for_each_entry(cgrp_cpuctx_list)
+      cpu_ctx_sched_in
+         ctx_sched_in
+            ctx_pinned_sched_in
+              merge_sched_in
+                  perf_cgroup_event_disable: remove the event from the list
 
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20211021190531.17379-6-W_Armin@gmx.de
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Use list_for_each_entry_safe() to allow removing an entry during
+iteration.
+
+Fixes: 058fe1c0440e ("perf/core: Make cgroup switch visit only cpuctxs with cgroup events")
+Signed-off-by: Song Liu <song@kernel.org>
+Reviewed-by: Rik van Riel <riel@surriel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220204004057.2961252-1-song@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/dell-smm-hwmon.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ kernel/events/core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/hwmon/dell-smm-hwmon.c
-+++ b/drivers/hwmon/dell-smm-hwmon.c
-@@ -294,7 +294,7 @@ static int i8k_get_fan_nominal_speed(int
- }
- 
- /*
-- * Set the fan speed (off, low, high). Returns the new fan status.
-+ * Set the fan speed (off, low, high, ...).
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -716,7 +716,7 @@ static DEFINE_PER_CPU(struct list_head,
   */
- static int i8k_set_fan(int fan, int speed)
+ static void perf_cgroup_switch(struct task_struct *task, int mode)
  {
-@@ -303,7 +303,7 @@ static int i8k_set_fan(int fan, int spee
- 	speed = (speed < 0) ? 0 : ((speed > i8k_fan_max) ? i8k_fan_max : speed);
- 	regs.ebx = (fan & 0xff) | (speed << 8);
+-	struct perf_cpu_context *cpuctx;
++	struct perf_cpu_context *cpuctx, *tmp;
+ 	struct list_head *list;
+ 	unsigned long flags;
  
--	return i8k_smm(&regs) ? : i8k_get_fan_status(fan);
-+	return i8k_smm(&regs);
- }
+@@ -727,7 +727,7 @@ static void perf_cgroup_switch(struct ta
+ 	local_irq_save(flags);
  
- static int i8k_get_temp_type(int sensor)
-@@ -417,7 +417,7 @@ static int
- i8k_ioctl_unlocked(struct file *fp, unsigned int cmd, unsigned long arg)
- {
- 	int val = 0;
--	int speed;
-+	int speed, err;
- 	unsigned char buff[16];
- 	int __user *argp = (int __user *)arg;
+ 	list = this_cpu_ptr(&cgrp_cpuctx_list);
+-	list_for_each_entry(cpuctx, list, cgrp_cpuctx_entry) {
++	list_for_each_entry_safe(cpuctx, tmp, list, cgrp_cpuctx_entry) {
+ 		WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
  
-@@ -478,7 +478,11 @@ i8k_ioctl_unlocked(struct file *fp, unsi
- 		if (copy_from_user(&speed, argp + 1, sizeof(int)))
- 			return -EFAULT;
- 
--		val = i8k_set_fan(val, speed);
-+		err = i8k_set_fan(val, speed);
-+		if (err < 0)
-+			return err;
-+
-+		val = i8k_get_fan_status(val);
- 		break;
- 
- 	default:
+ 		perf_ctx_lock(cpuctx, cpuctx->task_ctx);
 
 
