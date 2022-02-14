@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 406E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86172C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346809AbiBNKWP (ORCPT
+        id S1346837AbiBNKWU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:22:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47964 "EHLO
+        Mon, 14 Feb 2022 05:22:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346815AbiBNKUm (ORCPT
+        with ESMTP id S1346785AbiBNKUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:20:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DA97D289;
-        Mon, 14 Feb 2022 01:55:18 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318D369CF5;
+        Mon, 14 Feb 2022 01:55:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ADC7B80D6D;
-        Mon, 14 Feb 2022 09:55:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EEA3C340E9;
-        Mon, 14 Feb 2022 09:55:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E5666128D;
+        Mon, 14 Feb 2022 09:54:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C6EC340EF;
+        Mon, 14 Feb 2022 09:54:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832517;
-        bh=TheAArXQS3fi+rNGW9hay+xSdAToryKlCV4+R0BzZZs=;
+        s=korg; t=1644832495;
+        bh=0SOO8xkYBZ52xNgcRbuIriuBZKJmD4xqKnRP+PGEuL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=go+7vJwb8ZnSAjZ+2Lb4urcLIl7rYbBTEXEUU3ca92tHapYxx5bLpXKumnBot5jv5
-         EPIVKDky3yRFu1aVkv9bK4RSKvdOnB0ReaLBU2ZBXVNR53IGQWUeJo+qlbb07rQg4k
-         7g09DxttlFCTy25GaUVwe0FduyKA1vY2wukbjFdQ=
+        b=YI0F6mAWO2h851rPabWz7X/Jt6FsOyWNdeejHPdOGbiWH+CJSryJV9lxb4tqGW17l
+         5r8eF9mfdFkWkrJmdbbDMAzmLwOjudbz4m9F8TkwXxCMancrAnlL3SJV3mlmPYM+T7
+         vSDMjI2lKNSw9hBNkzKS+cdOHGwyu2+mbJhfj6XM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andrey Skvortsov <andrej.skvortzov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.16 008/203] mmc: core: Wait for command setting Power Off Notification bit to complete
-Date:   Mon, 14 Feb 2022 10:24:12 +0100
-Message-Id: <20220214092510.501534324@linuxfoundation.org>
+        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 032/203] irqchip/realtek-rtl: Service all pending interrupts
+Date:   Mon, 14 Feb 2022 10:24:36 +0100
+Message-Id: <20220214092511.297773901@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,62 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+From: Sander Vanheule <sander@svanheule.net>
 
-commit 379f56c24e698f14242f532b1d0a0f1747725e08 upstream.
+[ Upstream commit 960dd884ddf5621ae6284cd3a42724500a97ae4c ]
 
-SD card is allowed to signal busy on DAT0 up to 1s after the
-CMD49. According to SD spec (version 6.0 section 5.8.1.3) first host
-waits until busy of CMD49 is released and only then polls Power
-Management Status register up to 1s until the card indicates ready to
-power off.
+Instead of only servicing the lowest pending interrupt line, make sure
+all pending SoC interrupts are serviced before exiting the chained
+handler. This adds a small overhead if only one interrupt is pending,
+but should prevent rapid re-triggering of the handler.
 
-Without waiting for busy before polling status register sometimes card
-becomes unresponsive and system fails to suspend:
-
-  [  205.907459] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
-  [  206.421274] sunxi-mmc 1c0f000.mmc: data error, sending stop command
-  [  206.421321] sunxi-mmc 1c0f000.mmc: send stop command failed
-  [  206.421347] mmc0: error -110 reading status reg of PM func
-  [  206.421366] PM: dpm_run_callback(): mmc_bus_suspend+0x0/0x74 returns -110
-  [  206.421402] mmcblk mmc0:aaaa: PM: failed to suspend async: error -110
-  [  206.437064] PM: Some devices failed to suspend, or early wake event detected
-
-Tested with Sandisk Extreme PRO A2 64GB on Allwinner A64 system.
-
-Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Fixes: 2c5d42769038 ("mmc: core: Add support for Power Off Notification for SD cards")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220115121447.641524-1-andrej.skvortzov@gmail.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/5082ad3cb8b4eedf55075561b93eff6570299fe1.1641739718.git.sander@svanheule.net
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/sd.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/irqchip/irq-realtek-rtl.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/core/sd.c
-+++ b/drivers/mmc/core/sd.c
-@@ -67,7 +67,7 @@ static const unsigned int sd_au_size[] =
- 		__res & __mask;						\
- 	})
+diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
+index 568614edd88f4..50a56820c99bc 100644
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -76,16 +76,20 @@ static void realtek_irq_dispatch(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = irq_desc_get_chip(desc);
+ 	struct irq_domain *domain;
+-	unsigned int pending;
++	unsigned long pending;
++	unsigned int soc_int;
  
--#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 2000
-+#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 1000
- #define SD_WRITE_EXTR_SINGLE_TIMEOUT_MS 1000
- 
- struct sd_busy_data {
-@@ -1664,6 +1664,12 @@ static int sd_poweroff_notify(struct mmc
+ 	chained_irq_enter(chip, desc);
+ 	pending = readl(REG(RTL_ICTL_GIMR)) & readl(REG(RTL_ICTL_GISR));
++
+ 	if (unlikely(!pending)) {
+ 		spurious_interrupt();
  		goto out;
  	}
- 
-+	/* Find out when the command is completed. */
-+	err = mmc_poll_for_busy(card, SD_WRITE_EXTR_SINGLE_TIMEOUT_MS, false,
-+				MMC_BUSY_EXTR_SINGLE);
-+	if (err)
-+		goto out;
 +
- 	cb_data.card = card;
- 	cb_data.reg_buf = reg_buf;
- 	err = __mmc_poll_for_busy(card, SD_POWEROFF_NOTIFY_TIMEOUT_MS,
+ 	domain = irq_desc_get_handler_data(desc);
+-	generic_handle_domain_irq(domain, __ffs(pending));
++	for_each_set_bit(soc_int, &pending, 32)
++		generic_handle_domain_irq(domain, soc_int);
+ 
+ out:
+ 	chained_irq_exit(chip, desc);
+-- 
+2.34.1
+
 
 
