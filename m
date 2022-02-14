@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C863EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97462C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345344AbiBNKKI (ORCPT
+        id S1345167AbiBNKKL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:10:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36190 "EHLO
+        Mon, 14 Feb 2022 05:10:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346000AbiBNKHX (ORCPT
+        with ESMTP id S1344617AbiBNKEu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:07:23 -0500
+        Mon, 14 Feb 2022 05:04:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B596C1C8;
-        Mon, 14 Feb 2022 01:49:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8DF4BFDF;
+        Mon, 14 Feb 2022 01:49:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2EDB61291;
-        Mon, 14 Feb 2022 09:49:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF135C340E9;
-        Mon, 14 Feb 2022 09:49:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8D861284;
+        Mon, 14 Feb 2022 09:49:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5490C340E9;
+        Mon, 14 Feb 2022 09:49:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832196;
-        bh=hVT9vcrsMu3iXmmfL1aKgU0xyFqeb/Z1AIQblrY07wo=;
+        s=korg; t=1644832152;
+        bh=LDr9fet3QinOPzrvjIlFRpO51oUaf2hH9I6poxqYFRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MoI3/8dVhCJlQibrqCjia0dGTvGbolSOulEmf7YLm+bL8ldubz7Om63BuvqfTQFmj
-         eGC8IXSmslF5BMVQ1zY7FLotkdAnFRfGoNG4bt2Fnqmoe1CpOICQ4BPXpOFunsInsA
-         zUAn/OUbK5M0taQwxdnWmpG1T+Pyy/js5DQAS2JM=
+        b=pdtHBmV5fE8HGwnlxGV0RkVGCn6nIHn3KlTjS/PZAt6FOG7K5/q+IaazBld0DRyM0
+         6LKVOJmusYV5DqhZwXlar7n/REEC5LjGfhvd5BqAP6DKSnVs6Tw/Fw6K7HuhznCFKx
+         1JD1s2yCP4w/NAAGXzn7bMxFLWZgDQtbN4EN0T8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 110/172] bonding: pair enable_port with slave_arr_updates
-Date:   Mon, 14 Feb 2022 10:26:08 +0100
-Message-Id: <20220214092510.224523668@linuxfoundation.org>
+Subject: [PATCH 5.15 094/172] NFS: Dont overfill uncached readdir pages
+Date:   Mon, 14 Feb 2022 10:25:52 +0100
+Message-Id: <20220214092509.650004231@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,53 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Bandewar <maheshb@google.com>
+From: trondmy@kernel.org <trondmy@kernel.org>
 
-[ Upstream commit 23de0d7b6f0e3f9a6283a882594c479949da1120 ]
+[ Upstream commit d9c4e39c1f8f8a8ebaccf00b8f22c14364b2d27e ]
 
-When 803.2ad mode enables a participating port, it should update
-the slave-array. I have observed that the member links are participating
-and are part of the active aggregator while the traffic is egressing via
-only one member link (in a case where two links are participating). Via
-kprobes I discovered that slave-arr has only one link added while
-the other participating link wasn't part of the slave-arr.
+If we're doing an uncached read of the directory, then we ideally want
+to read only the exact set of entries that will fit in the buffer
+supplied by the getdents() system call. So unlike the case where we're
+reading into the page cache, let's send only one READDIR call, before
+trying to fill up the buffer.
 
-I couldn't see what caused that situation but the simple code-walk
-through provided me hints that the enable_port wasn't always associated
-with the slave-array update.
-
-Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Link: https://lore.kernel.org/r/20220207222901.1795287-1-maheshb@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 35df59d3ef69 ("NFS: Reduce number of RPC calls when doing uncached readdir")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_3ad.c | 3 ++-
+ fs/nfs/dir.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 6006c2e8fa2bc..9fd1d6cba3cda 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -1021,8 +1021,8 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
- 				if (port->aggregator &&
- 				    port->aggregator->is_active &&
- 				    !__port_is_enabled(port)) {
--
- 					__enable_port(port);
-+					*update_slave_arr = true;
- 				}
- 			}
- 			break;
-@@ -1779,6 +1779,7 @@ static void ad_agg_selection_logic(struct aggregator *agg,
- 			     port = port->next_port_in_aggregator) {
- 				__enable_port(port);
- 			}
-+			*update_slave_arr = true;
- 		}
- 	}
+diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
+index db6abd4733bfb..af7881bc6b3e6 100644
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -870,7 +870,8 @@ static int nfs_readdir_xdr_to_array(struct nfs_readdir_descriptor *desc,
  
+ 		status = nfs_readdir_page_filler(desc, entry, pages, pglen,
+ 						 arrays, narrays);
+-	} while (!status && nfs_readdir_page_needs_filling(page));
++	} while (!status && nfs_readdir_page_needs_filling(page) &&
++		page_mapping(page));
+ 
+ 	nfs_readdir_free_pages(pages, array_size);
+ out_release_label:
 -- 
 2.34.1
 
