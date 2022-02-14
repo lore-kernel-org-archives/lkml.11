@@ -2,102 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D39C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D39C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242883AbiBNJZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:25:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38820 "EHLO
+        id S242889AbiBNJZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:25:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235801AbiBNJZF (ORCPT
+        with ESMTP id S242898AbiBNJZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:25:05 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAEE60A89;
-        Mon, 14 Feb 2022 01:24:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644830679;
-        bh=bPwqzMydBgKUCCPAcnpWEevOwrjSEKacihSgwMc0jc4=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=iostq3mEM/MOJNzagGc2y1i3Y05rII7z/NhlaQiyUbyXunuVAbarmNO/rWdo9xJIG
-         Vdh5Ow8y1U5FZNOdkaBid272QPDu/tzE6mcnrrSE++hoHwixxHA08Uytf0DAqdq/np
-         WOpyi2gw7rg+RBCA7ZXGPairX8MzSBabv/qkfsF0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.123.55] ([88.152.144.107]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MIdif-1nY7vO2GKj-00Edn1; Mon, 14
- Feb 2022 10:24:39 +0100
-Message-ID: <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de>
-Date:   Mon, 14 Feb 2022 10:24:22 +0100
+        Mon, 14 Feb 2022 04:25:44 -0500
+X-Greylist: delayed 1199 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 01:25:36 PST
+Received: from mail.ruletown.pl (mail.ruletown.pl [192.71.213.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A0060A88
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:25:36 -0800 (PST)
+Received: by mail.ruletown.pl (Postfix, from userid 1001)
+        id 2ACBA40B81; Mon, 14 Feb 2022 09:46:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ruletown.pl; s=mail;
+        t=1644828374; bh=VNuNg2MzRkdVVfp4kSZZW7SxoKEFGotk5GCW4ktyH/8=;
+        h=Date:From:To:Subject:From;
+        b=aRZOxaU+dY/zhioZci1TI/k2twudMOJldjQ7h58MrOfmBzzuGiLX7eOcJXOQsLkhs
+         E7U/v5aIQrzvmKwS6ogiyHDDJdfzzk2xlr4T0AUTywqIS2NnNcx65y6bhrm2jX5vcm
+         xuZ4FMAqCY77jxsZzeoi5MTPuAm17P9fQNKJHhdvFS3rmLVPilYRxvfOYatX/qKf7D
+         X7OZLHCmpjv2tkgX9pRYcb2+ucx8YJ7E+Gcv0eBeJwtCGo9Run4xUaOcDDHCrCeZJM
+         bzspUs5wSB4Zs9YcyPBkH/LZaiQhZ0K6FBJcWKbpJp7YkbdW68uzE71kRpFKxaNJ+2
+         RD9nOutv6VnpQ==
+Received: by mail.ruletown.pl for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:46:01 GMT
+Message-ID: <20220214084500-0.1.v.208d.0.ajv3o8og01@ruletown.pl>
+Date:   Mon, 14 Feb 2022 08:46:01 GMT
+From:   "Filip Ostrowski" <filip.ostrowski@ruletown.pl>
+To:     <linux-kernel@vger.kernel.org>
+Subject: W sprawie samochodu
+X-Mailer: mail.ruletown.pl
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return
- value
-Content-Language: en-US
-To:     Andreas Schwab <schwab@linux-m68k.org>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@atishpatra.org>, linux-efi@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>, stable@vger.kernel.org,
-        Sunil V L <sunilvl@ventanamicro.com>
-References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
- <877d9xx14f.fsf@igel.home>
-From:   Heinrich Schuchardt <xypron.glpk@gmx.de>
-In-Reply-To: <877d9xx14f.fsf@igel.home>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Au/e3vMlDZkTXGdYorj9+mhhI0kX2Yew6mxWnv2QGwXtTeAfS/B
- GC0CYZsekBZfnzXD4vQVL/bx8xJHpAaGKrFLun/Ih7miykJsovZHN4EABrb6DE/aB82u+CT
- k5c1fbeV8pG17cyAa13L6Z8lVVvBfrq/uV8UwY2JaLXw2tPkV05PLZhFL6PL5/XCgt2mzv1
- QptnAnKEGT+5Wc5+r0pyA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2xdUZkLP5D8=:FOcUVX4+xapxGqnhuR0t5M
- 6FjdiVIZ4HOFCmWD7niXzb2QMPmbL5iWiX/XLvvHmuAKoQ21tsqVKJGLichsdaKOjHNjAkrTF
- An37zog0g1a5ZsXqmQpszkOgIpbdUMjsB8RhA3H6PfjxjJqiCuSCHpRuEQHn2lRUZJzWk6qAI
- iLZurQ/PEpqBL5lDwmr14XOmLjXK0xrMeu+Q1IVT8gABOdZNx9S8UT/soc7K3YquXvHbJNFjg
- E8dNS24EEiPvPFGakMihSYE2V48uAKYYApxh+hqTze3kr/LY1nHHBeE4O1+dctXhF+eOp+/nn
- Socw+JcuHf0c7mPCjtc/FKpekkTFRkbbo7L2CCl1UhBX03c4GkdDYmSuUY/f5pWZV4C2QJcQe
- y18FpIOAgTdacaWI7tGuq37kffw8eqwFFSLjHrJOlhUb1Nmdku/DIkVnwmgwQB/x5Y5MEjAjR
- wog4U8Ypt9h50VOKDJTa2tV1pGlqTHZoenPX5khDmG+XG8lb0H633AO9VZ5sUZnH4R9Xh0rS2
- zVO71lzwAJ4WH3zVMN9ksZQzZh0JQkDsppnlPT3GjqQiJXclup+9FigJZatTWZVWKTZ1v1HN6
- C6X355YcfqlYN4hx3qURb85suzcQtMNMOPrqGoZgml4d+PuWg4RpjTCRz5HoIfGXQjqrLC/uG
- /U8OglNbddKjyBuQT4mgX4Gvuaie99pGrxBa68PSHmIMEoo6vfwCHv7Wq2MBflYGAYqF4X9c8
- lgmgbaLfCcW+8hg0SufRgXgG+4N5vZMT2/smamEJRbdaW5qsrvXTaDyEbizDtj6tUiQecgGX6
- WxeiesARhS9k8k0rPt//zIR/Ods6qL111AzecSoNzuu0JpMOy2cfsYinb/ElE0ehIDiV3Bq86
- 0VlREP/0vmEG7FlVYi1/xTiD6qoGsRUY/8xP7GMPzocmQI9gyxiwz1dwqOyPMFZLOi8H14moq
- YRsoYoRwlnvad55b5zoADbj694to8+24iVs/JWY7lommLPg6fogVgoGk7v3Fs631qyW9kboe0
- 2UHKqP4mtqsKepGO/XjMBlOoKewGj+fYySTjde+bMKWZfGAuPIZ5ljSpiKmVCDfa20uokMbQQ
- JNVEpb4tJlugaM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/14/22 10:12, Andreas Schwab wrote:
-> On Jan 28 2022, Sunil V L wrote:
->
->> diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmwa=
-re/efi/libstub/riscv-stub.c
->> index 380e4e251399..9c460843442f 100644
->> --- a/drivers/firmware/efi/libstub/riscv-stub.c
->> +++ b/drivers/firmware/efi/libstub/riscv-stub.c
->> @@ -25,7 +25,7 @@ typedef void __noreturn (*jump_kernel_func)(unsigned =
-int, unsigned long);
->>
->>   static u32 hartid;
->>
->> -static u32 get_boot_hartid_from_fdt(void)
->> +static int get_boot_hartid_from_fdt(void)
->
-> I think the function should be renamed, now that it no longer returns
-> the hart ID, but initializes a static variable as a side effect.  Thus
-> it no longer "gets", but "sets".
->
+Dzie=C5=84 dobry,
 
-set_boot_hartid() implies that the caller can change the boot hart ID.
-As this is not a case this name obviously would be a misnomer.
+chcieliby=C5=9Bmy zapewni=C4=87 Pa=C5=84stwu kompleksowe rozwi=C4=85zania=
+, je=C5=9Bli chodzi o system monitoringu GPS.
 
-Best regards
+Precyzyjne monitorowanie pojazd=C3=B3w na mapach cyfrowych, =C5=9Bledzeni=
+e ich parametr=C3=B3w eksploatacyjnych w czasie rzeczywistym oraz kontrol=
+a paliwa to kluczowe funkcjonalno=C5=9Bci naszego systemu.=20
 
-Heinrich
+Organizowanie pracy pracownik=C3=B3w jest dzi=C4=99ki temu prostsze i bar=
+dziej efektywne, a oszcz=C4=99dno=C5=9Bci i optymalizacja w zakresie pono=
+szonych koszt=C3=B3w, maj=C4=85 dla ka=C5=BCdego przedsi=C4=99biorcy ogro=
+mne znaczenie.
+
+Dopasujemy nasz=C4=85 ofert=C4=99 do Pa=C5=84stwa oczekiwa=C5=84 i potrze=
+b organizacji. Czy mogliby=C5=9Bmy porozmawia=C4=87 o naszej propozycji?
+
+
+Pozdrawiam,
+Filip Ostrowski
