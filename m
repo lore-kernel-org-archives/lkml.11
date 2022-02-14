@@ -2,130 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C058DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C807CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351737AbiBNLco (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:32:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59036 "EHLO
+        id S230131AbiBNLct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:32:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351650AbiBNLai (ORCPT
+        with ESMTP id S1351711AbiBNLaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:30:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 998714925E
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:13:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644837185;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cd7FfNhaOUqw4MafFCrvctc+5I4/l56rH8rjuuoMQx8=;
-        b=EphOaXML+De4JBnoV8MLtsu1dTXpX7nu0Okpc1fb0oxHJYW3DKnuggN1+7oxGeQf6baVjx
-        RYFcDrZbBW2GlIQNxsa0wA+1JTZNTZuFGYKnAnzqiOrQYOiwKWMk8U9ago7r+uhRHK7N+2
-        VRaequv/pYkBlrr9p8RTa2usgel9fzw=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-574-IZ39JI6hOb6jbstYH-NwsA-1; Mon, 14 Feb 2022 06:13:04 -0500
-X-MC-Unique: IZ39JI6hOb6jbstYH-NwsA-1
-Received: by mail-ej1-f69.google.com with SMTP id mp5-20020a1709071b0500b0069f2ba47b20so5618181ejc.19
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:13:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cd7FfNhaOUqw4MafFCrvctc+5I4/l56rH8rjuuoMQx8=;
-        b=LF53UDkbz2jAaZIy+pjV+HqJuVYGCOuIhGUqPvosTPTGgieMb8vqW+/Bxfn7aFKdAP
-         aWmg5Il/TvN5+rfwu8TZRR9y3utFdgs6HRGY2zZR53T0X6YXECFw7a0VRBIRtZhiWxue
-         fAaKVgUdubMl8/6Riou7X0wq6o4M/+mGxRjf4ye8Keqac6DZjG07zAtKll/tIbhbn0C+
-         PxuOzEIwWME3cQDWio5UrfeXyrrBmSrHnRdTp3BncQRA/judnSSKyypAn+gSLicHfK8u
-         w7FFJQZT2I++2P5KRqtoWNj9JBcg2fLh/0S3EroRuOiWswS08NMz518SFdM9g6uQr2uq
-         4i6g==
-X-Gm-Message-State: AOAM531oIMcnYUKHw7iQTKtIFiUteXGFNrmQTogMMmdQkz04izqFR4p1
-        EqGO18Bim25fNec5l83QH2RmMWwRmvWpcjkXwndCygLJ0+R7HPzI6DaAHKiR/zYsPsyqWbklkID
-        4MgNiXodTf4A1IMmADB+mtJsd
-X-Received: by 2002:aa7:d40f:: with SMTP id z15mr11148449edq.357.1644837183434;
-        Mon, 14 Feb 2022 03:13:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzaDY+IY+Ydj+aXMFKhLtloPk4nt05m+QD+99CTBrzop3qEzQnXTRrUQXMBvsF014QaDo+TYg==
-X-Received: by 2002:aa7:d40f:: with SMTP id z15mr11148436edq.357.1644837183291;
-        Mon, 14 Feb 2022 03:13:03 -0800 (PST)
-Received: from [10.40.98.142] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id z5sm10405008eja.20.2022.02.14.03.13.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 03:13:02 -0800 (PST)
-Message-ID: <ecd789b3-74df-f4fe-ae66-8728f9bf24ab@redhat.com>
-Date:   Mon, 14 Feb 2022 12:13:02 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] fix linux 5.16 freeze regression on 32-bit ThinkPad T40
-Content-Language: en-US
-To:     Woody Suwalski <wsuwalski@gmail.com>, linux-pm@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-References: <80742062-8629-3978-e78d-92ffc9bb2e0b@gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <80742062-8629-3978-e78d-92ffc9bb2e0b@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 14 Feb 2022 06:30:13 -0500
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DDB40A01
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:11:53 -0800 (PST)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220214111151epoutp04f2337dcb6b52306508a8d1cfffe1c393~ToqNPoHYu1097310973epoutp04T
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:11:51 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220214111151epoutp04f2337dcb6b52306508a8d1cfffe1c393~ToqNPoHYu1097310973epoutp04T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1644837111;
+        bh=vo5dCj6f0lE9XyHVfR1Uk+w8viUP5iroIa6Ar1pwTks=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=RBah/8tj4X4iaXWvaypPOgA2Na7+74kWd6EsiYMQTR8YTeGWTPxsyax4f4khCbtQN
+         EHUhijVzg1kAH3WQcJjVSnAN6hUogWZ3OItqEg6+/KR9wtnaDK7JnFyGZsQpNYS/Aw
+         C6I155ZT4h8qbpTe81YjDeL8yecUUOGOj3gOmzzk=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220214111150epcas2p435d7e3c9bfb219d59ee36c1ae023f1f6~ToqML7M1F2326823268epcas2p4j;
+        Mon, 14 Feb 2022 11:11:50 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.97]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4Jy1kr5nLrz4x9QG; Mon, 14 Feb
+        2022 11:11:48 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        9B.3F.35137.5583A026; Mon, 14 Feb 2022 20:09:09 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220214111148epcas2p3fac143c7870c53ecadfb6b093fcf626b~ToqKfaxnx0748407484epcas2p3c;
+        Mon, 14 Feb 2022 11:11:48 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220214111148epsmtrp15721726d40d4abf09784118321c4bd7d~ToqKeuNEw1541015410epsmtrp1M;
+        Mon, 14 Feb 2022 11:11:48 +0000 (GMT)
+X-AuditID: b6c32a46-d8bff70000018941-f4-620a38552c01
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        60.78.08738.4F83A026; Mon, 14 Feb 2022 20:11:48 +0900 (KST)
+Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220214111148epsmtip12a5e91e2420e4853ed0a3abb5f486336~ToqKQO9nN2598625986epsmtip1d;
+        Mon, 14 Feb 2022 11:11:48 +0000 (GMT)
+From:   Daehwan Jung <dh10.jung@samsung.com>
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org (open list),
+        Daehwan Jung <dh10.jung@samsung.com>, quic_wcheng@quicinc.com,
+        quic_jackp@quicinc.com, Thinh.Nguyen@synopsys.com
+Subject: [PATCH v2 0/2] Fix ep command fail issue in dequeue
+Date:   Mon, 14 Feb 2022 20:08:51 +0900
+Message-Id: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
+X-Mailer: git-send-email 2.7.4
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrBKsWRmVeSWpSXmKPExsWy7bCmmW6oBVeSQecWJYtjbU/YLe4smMZk
+        0bx4PZvF5V1z2CwWLWtlttj1bxGTxabdfawWqxYcYHfg8Ni0qpPNY//cNeweE/fUefRtWcXo
+        sWX/Z0aPz5vkAtiism0yUhNTUosUUvOS81My89JtlbyD453jTc0MDHUNLS3MlRTyEnNTbZVc
+        fAJ03TJzgO5RUihLzCkFCgUkFhcr6dvZFOWXlqQqZOQXl9gqpRak5BSYF+gVJ+YWl+al6+Wl
+        llgZGhgYmQIVJmRnvJl7nbGgnbWi/9Mk1gbGCSxdjBwcEgImEuueancxcnEICexglNj4/zUT
+        hPOJUaLr+1MWCOczo8TTlm+MXYycYB1rZ+6ASuxilFjU9ZEVwvnBKLHm7EV2kLlsAloS3xeC
+        NYgIhElMXLYPrIFZYC+jRNO+u6wgCWEBG4mey2eZQGwWAVWJxY9egtm8Am4Sez9PZIXYJidx
+        81wnM0izhMAudonDxw4zQSRcJPasPssMYQtLvDq+hR3ClpJ42d8GZRdL7PrUygTR3MAo0fjg
+        BFSDscSsZ+2MIJcyC2hKrN+lDwkMZYkjt1hAKpgF+CQ6Dv9lhwjzSnS0CUE0KktMvzwB6jRJ
+        iYOvz0EN9JBYu3M72L9CArES/VMuMk5glJ2FMH8BI+MqRrHUguLc9NRiowIjeCQl5+duYgQn
+        MS23HYxT3n7QO8TIxMF4iFGCg1lJhDfuLGeSEG9KYmVValF+fFFpTmrxIUZTYHhNZJYSTc4H
+        ptG8knhDE0sDEzMzQ3MjUwNzJXFer5QNiUIC6YklqdmpqQWpRTB9TBycUg1MXCqSAdMXFKz7
+        1rj04vW76492/uyZaTSjYnHZw/u7I/o7fk16vNtVrbGYoV8jv5f1UXteOH/f+7UVDo3m95bF
+        Tiv9/CWie8Xq4p1MkoeUjP5ZXlxzKUac4YTn0pNh/2+d/TT/McdXHx2VhYau030qpsgGT17G
+        UXSLR2XKvhX3ShgOzaiwXL5A1/terduio33rNkZdv9mrVFSe9VZd3aFAgvP2+R2/mlyuyVT8
+        X3Wn4Anf96Nx0571cfqKSjIqdWzfspPpzdmgdws7K6v/LVzQPqvuMXf8sRv7Z6fuCr8X1/jC
+        9YzjtPfbVovFHPNZkXY7jXv334fd37tP+zqrc3/kYbb5+kDz6Pd2Ne/pzzewzFJiKc5INNRi
+        LipOBAAihIVG6wMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupgluLIzCtJLcpLzFFi42LZdlhJTveLBVeSwY5jHBbH2p6wW9xZMI3J
+        onnxejaLy7vmsFksWtbKbLHr3yImi027+1gtVi04wO7A4bFpVSebx/65a9g9Ju6p8+jbsorR
+        Y8v+z4wenzfJBbBFcdmkpOZklqUW6dslcGW8mXudsaCdtaL/0yTWBsYJLF2MnBwSAiYSa2fu
+        ALK5OIQEdjBKtO2cyAaRkJRYOvcGO4QtLHG/5QgrRNE3Rom1d/YzdjFycLAJaEl8X8gIUiMi
+        ECbx79FFsEHMAocZJVre7gIbJCxgI9Fz+SwTiM0ioCqx+NFLMJtXwE1i7+eJrBAL5CRunutk
+        nsDIs4CRYRWjZGpBcW56brFhgVFearlecWJucWleul5yfu4mRnBgaWntYNyz6oPeIUYmDsZD
+        jBIczEoivHFnOZOEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKanZpakFoEk2Xi
+        4JRqYNK5HFHKt1uh0K3fLbsz955++Bbv8raMtE+OzCd51L67v1At2JgUfLt/2ettS9L879oL
+        tK6N3/9TMemL44Qjzp2Cglv9fc4EZR/1UbYzvP01P1R9j867XRI3ueWY4qKiH5jcz1DtKmpd
+        mDTpdJzYl+nO/boeyrma+5RznigY3Rc3ZtV13B6S927Vq4PLvglqK3UHlkgf+CX4mGlj1M0C
+        C74Twe/mu/hWrL9eMe+4SM73mOfWKT45RuWdNp92zLmi465+prXWzuK2dnlcrMiVDTnL/CbW
+        B/c7/1cI5OIKrBNuaZ4hk2r4uPzKapvdnWkVl7XvC3Hs/FGh1H7ryrJ+jsPlMRt9dzpUlewT
+        9VJiKc5INNRiLipOBAA19PfEmwIAAA==
+X-CMS-MailID: 20220214111148epcas2p3fac143c7870c53ecadfb6b093fcf626b
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220214111148epcas2p3fac143c7870c53ecadfb6b093fcf626b
+References: <CGME20220214111148epcas2p3fac143c7870c53ecadfb6b093fcf626b@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+It always sets DWC3_EP_END_TRANSFER_PENDING in dwc3_stop_active_transfer
+even if dwc3_send_gadget_ep_cmd fails. It can cause some problems like
+skipping clear stall commmand or giveback from dequeue. It could cause
+hung task if ENDTRANSFER command should not be completed. It seems
+like HW(Controller) issue but SW can prevent it.
 
-On 2/9/22 22:05, Woody Suwalski wrote:
-> From: Woody Suwalski <wsuwalski@gmail.com>
-> 
-> Add and ACPI idle power level limit for 32-bit ThinkPad T40.
-> 
-> There is a regression on T40 introduced by commit d6b88ce2, starting with kernel 5.16:
-> 
-> commit d6b88ce2eb9d2698eb24451eb92c0a1649b17bb1
-> Author: Richard Gong <richard.gong@amd.com>
-> Date:   Wed Sep 22 08:31:16 2021 -0500
-> 
->     ACPI: processor idle: Allow playing dead in C3 state
-> 
-> The above patch is trying to enter C3 state during init, what is causing a T40 system freeze. I have not found a similar issue on any other of my 32-bit machines.
-> 
-> The fix is to add another exception to the processor_power_dmi_table[] list.
-> As a result the dmesg shows as expected:
-> 
->     2.155398] ACPI: IBM ThinkPad T40 detected - limiting to C2 max_cstate. Override with "processor.max_cstate=9"
-> [    2.155404] ACPI: processor limited to max C-state 2
-> 
-> The fix is trivial and affects only vintage T40 systems.
-> 
-> Signed-off-by: Woody Suwalski <wsuwalski@gmail.com>
-> ---
+Changes in v2:
+- fix coding rule
 
-Thanks, patch looks good to me:
+Daehwan Jung (2):
+  usb: dwc3: Not set DWC3_EP_END_TRANSFER_PENDING in ep cmd fails
+  usb: dwc3: Prevent cleanup cancelled requests at the same time.
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+ drivers/usb/dwc3/gadget.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-Regards,
-
-Hans
-
-
-> --- a/drivers/acpi/processor_idle.c    2022-02-04 09:09:54.515906362 -0500
-> +++ b/drivers/acpi/processor_idle.c    2022-02-04 14:21:08.264911271 -0500
-> @@ -96,6 +96,11 @@ static const struct dmi_system_id proces
->        DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK Computer Inc."),
->        DMI_MATCH(DMI_PRODUCT_NAME,"L8400B series Notebook PC")},
->       (void *)1},
-> +    /* T40 can not handle C3 idle state */
-> +    { set_max_cstate, "IBM ThinkPad T40", {
-> +      DMI_MATCH(DMI_SYS_VENDOR, "IBM"),
-> +      DMI_MATCH(DMI_PRODUCT_NAME, "23737CU")},
-> +     (void *)2},
->      {},
->  };
-> 
-> 
+-- 
+2.31.1
 
