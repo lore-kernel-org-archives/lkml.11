@@ -2,116 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28577C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62483C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350541AbiBNLRH (ORCPT
+        id S1350740AbiBNLRO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:17:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48410 "EHLO
+        Mon, 14 Feb 2022 06:17:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350585AbiBNLQw (ORCPT
+        with ESMTP id S1350732AbiBNLRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:16:52 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D8274629
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:47:21 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id c3so10213417pls.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:47:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=f6tdSlJeXe/1IN6nf0GGeLX0PqBAatpqqkKLywQfYL8=;
-        b=DTAYKnaOh94BOPUawcuMPqT2RtCL2lomNlC1d/wO/grleI08J2rWXGpteVuHo9JBgX
-         1Wdsy46fiASLwylBNNfSGyAMBHwNueomFw1spqp7E29g6W7puEPUcPZ2L5CZizbCgLl1
-         9xqJQTl+mbTYHmnCatLCGXE2xQTTrPsuXTbaDe0hBG3Y26iRx4H5pKtQj8EtuQQJTOwx
-         ebiPPAsgy70pP2GKnLGypj5xhQ1tIh8cW41nnUcRWq00enQBJ09oKP/rtPu7RfdDyjz5
-         NddJbf4zhbkP0ne7veMj3Zc8iaCaqc6fx0WzL2PnWD1z+b31Nx0GLQ/YjvUSiBFctNMb
-         uaGQ==
+        Mon, 14 Feb 2022 06:17:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 853B574859
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:48:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644835703;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+l7hpn1bL8odV+gyyAWmIY7KuNRjJIE1ZtTHLa6TWCo=;
+        b=B8gdDjWwdbW5GBemTkchWxwLMShgLe4OQKs/e46078uHd/HVvBPDJusw3sq7QzbWnAJ5ck
+        gOuoj0ICiWfPNr3IDe2yXxV16Fj7BCIuxGeEJLzt9BvkXUIgkL++KWsUIeK4LVgvfcznac
+        1Jmh0bhqaEDrHf3CzdhqiuSr1V7RhEM=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-3-5mcpnLKDNYOPDg61ptRFUA-1; Mon, 14 Feb 2022 05:48:22 -0500
+X-MC-Unique: 5mcpnLKDNYOPDg61ptRFUA-1
+Received: by mail-pj1-f72.google.com with SMTP id s10-20020a17090a948a00b001b96be201f6so6646384pjo.4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:48:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=f6tdSlJeXe/1IN6nf0GGeLX0PqBAatpqqkKLywQfYL8=;
-        b=SRoBwF30NFHBZ4YoOsQuE6m4E9LZfVgVTJcV2LW16KOjdwMHJU49hxLGuspCttUDmb
-         Sh5KcwjMRVZZ6Nhe87U2nB/RrDtbIUx7mYPRPQ2f+XsvELkjGjB2a1MkJvwXuvlLJlpr
-         aF22vb+ZKlKXM9yLg/TJWLtMSgiNkupaLBt31Q/IqqQ2C1lnTmUpp82m+bM27WLcnzmx
-         D8g/nPvPr6VaLF3XmJeEBxp6OsTYuzWdnPR3dNmhb0tzUO5I4k4VAId/zYbYwtr763hb
-         R77kHNScn382D7LBz43YfGW/ykoqlgu5r7dZir7VLs5meoy7YImqBZVyVM1M+JvYAW46
-         ffSg==
-X-Gm-Message-State: AOAM531psgPhRHFxJrwHArq6aGa5zmEId2x2akJLcveELcNe9eBkPD88
-        S7UM0N6xRImQ7sH04Ec5aRxKCw==
-X-Google-Smtp-Source: ABdhPJzQTPusYaBLdSphWOQZjRSRGGjdHal8Pare5BrSAOmhDMUcSEbYWOtDFOp31nQ/LiEL67sxwA==
-X-Received: by 2002:a17:902:f691:: with SMTP id l17mr11420259plg.72.1644835641111;
-        Mon, 14 Feb 2022 02:47:21 -0800 (PST)
-Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id e3sm26664610pgc.41.2022.02.14.02.47.18
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 14 Feb 2022 02:47:20 -0800 (PST)
-Date:   Mon, 14 Feb 2022 18:47:14 +0800
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Loic Poulain <loic.poulain@linaro.org>, linux-gpio@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pinctrl: qcom: qcm2290: Add GPIO wakeirq map
-Message-ID: <20220214104713.GA31965@dragon>
-References: <20211122080938.20623-1-shawn.guo@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+l7hpn1bL8odV+gyyAWmIY7KuNRjJIE1ZtTHLa6TWCo=;
+        b=BKToftcIch3nSu3tjx1QCdBhOrawcXFim3Oc498dlcWCTVozS9GXXS1024hORWrk2e
+         tjBsTu+uUJSdXTB/FGeBnixms3pCGWas3hYpJboH3FiiDZA5QaJGWpMbL9j8a4+P3JF/
+         ZiakqhyLs8dpVvdX3DOqFBTLxwcQcYprXeG4X0+uYkXhZbTQ6GHd+Ph+Cbacu2t0LOlJ
+         RqCRVCiqLy3ZSGWqGnDIEg8w1Q7cPzLM8HmOdCVX2o6OKpJalvoQ+o3T0wHhKsIr59Jt
+         tAZ/CYyKP42tPG3H6FldJvPa3//NJH6DZ7cwIb3bPnZSotyjYBitaCDyNxYAWVMw6ven
+         Xa/w==
+X-Gm-Message-State: AOAM5315YqZXFjgiHRvPlrROfgKDAcOs7caeU4Rhocl3nQfJvOEjB6sL
+        xlL56H/82TuZtyojm7+PzSE/GEnNPvzkQ5MHV9x5cAyhmraOSVaHTAp65kWtKYbqPPTQY1R4F9n
+        FyOqVDeZ9fjAB1PYd1c0t/sZx9kj/k2LfqYlZLWhR
+X-Received: by 2002:a17:90a:be02:: with SMTP id a2mr14115820pjs.113.1644835701221;
+        Mon, 14 Feb 2022 02:48:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyAJJMrZoxa0gI6bcZdaLyASagoTjq0CGWMV+m1iVayk/YJaM8O1MizoUGpXXVhW0z6wqLu5aF7WXaO6PPW584=
+X-Received: by 2002:a17:90a:be02:: with SMTP id a2mr14115801pjs.113.1644835701012;
+ Mon, 14 Feb 2022 02:48:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211122080938.20623-1-shawn.guo@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20220126161832.3193805-1-benjamin.tissoires@redhat.com>
+ <20220126161832.3193805-13-benjamin.tissoires@redhat.com> <YgNdokzzATwy/57P@quokka>
+In-Reply-To: <YgNdokzzATwy/57P@quokka>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Mon, 14 Feb 2022 11:48:10 +0100
+Message-ID: <CAO-hwJ+xo8yq05jPz19CoyF5x_U_O_imDXScLVhvhnm7hkdEhw@mail.gmail.com>
+Subject: Re: [PATCH 12/12] Input: docs: add more details on the use of BTN_TOOL
+To:     Peter Hutterer <peter.hutterer@who-t.net>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Ahelenia_Ziemia=C5=84ska?= 
+        <nabijaczleweli@nabijaczleweli.xyz>,
+        Ping Cheng <pinglinux@gmail.com>,
+        Aaron Armstrong Skomra <skomra@gmail.com>,
+        Jason Gerecke <killertofu@gmail.com>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 04:09:38PM +0800, Shawn Guo wrote:
-> It adds the map of wakeup capable GPIOs and the pins at MPM wake
-> controller on QCM2290, so that these GPIOs can wake up the SoC from
-> vlow/vmin low power mode.
-> 
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+Hi Peter,
 
-Any comments on this patch?
 
-Shawn
+Looks like you commented on v1, and I made some changes in the v2 :)
 
-> ---
->  drivers/pinctrl/qcom/pinctrl-qcm2290.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/pinctrl/qcom/pinctrl-qcm2290.c b/drivers/pinctrl/qcom/pinctrl-qcm2290.c
-> index 3f05c0a24b79..aa9325f333fb 100644
-> --- a/drivers/pinctrl/qcom/pinctrl-qcm2290.c
-> +++ b/drivers/pinctrl/qcom/pinctrl-qcm2290.c
-> @@ -1083,6 +1083,16 @@ static const struct msm_pingroup qcm2290_groups[] = {
->  	[133] = SDC_QDSD_PINGROUP(sdc2_data, 0x86000, 9, 0),
->  };
->  
-> +static const struct msm_gpio_wakeirq_map qcm2290_mpm_map[] = {
-> +	{ 0, 84 }, { 3, 75 }, { 4, 16 }, { 6, 59 }, { 8, 63 }, { 11, 17 },
-> +	{ 13, 18 }, { 14, 51 }, { 17, 20 }, { 18, 52 }, { 19, 53 }, { 24, 6 },
-> +	{ 25, 71 }, { 27, 73 }, { 28, 41 }, { 31, 27 }, { 32, 54 }, { 33, 55 },
-> +	{ 34, 56 }, { 35, 57 }, { 36, 58 }, { 39, 28 }, { 46, 29 }, { 62, 60 },
-> +	{ 63, 61 }, { 64, 62 }, { 69, 33 }, { 70, 34 }, { 72, 72 }, { 75, 35 },
-> +	{ 79, 36 }, { 80, 21 }, { 81, 38 }, { 86, 19 }, { 87, 42 }, { 88, 43 },
-> +	{ 89, 45 }, { 91, 74 }, { 94, 47 }, { 95, 48 }, { 96, 49 }, { 97, 50 },
-> +};
-> +
->  static const struct msm_pinctrl_soc_data qcm2290_pinctrl = {
->  	.pins = qcm2290_pins,
->  	.npins = ARRAY_SIZE(qcm2290_pins),
-> @@ -1091,6 +1101,8 @@ static const struct msm_pinctrl_soc_data qcm2290_pinctrl = {
->  	.groups = qcm2290_groups,
->  	.ngroups = ARRAY_SIZE(qcm2290_groups),
->  	.ngpios = 127,
-> +	.wakeirq_map = qcm2290_mpm_map,
-> +	.nwakeirq_map = ARRAY_SIZE(qcm2290_mpm_map),
->  };
->  
->  static int qcm2290_pinctrl_probe(struct platform_device *pdev)
-> -- 
-> 2.17.1
-> 
+On Wed, Feb 9, 2022 at 7:22 AM Peter Hutterer <peter.hutterer@who-t.net> wrote:
+>
+> On Wed, Jan 26, 2022 at 05:18:32PM +0100, Benjamin Tissoires wrote:
+> > The HID core stack used to be very relaxed considering the BTN_TOOL_*
+> > usage. With the recent commits, we should now enforce to have only one
+> > tool at a time, meaning that we can now express that requirement in the
+> > docs.
+> >
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> > ---
+> >  Documentation/input/event-codes.rst | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/input/event-codes.rst b/Documentation/input/event-codes.rst
+> > index b24ae7d292cc..41b1fa647dab 100644
+> > --- a/Documentation/input/event-codes.rst
+> > +++ b/Documentation/input/event-codes.rst
+> > @@ -137,7 +137,10 @@ A few EV_KEY codes have special meanings:
+> >      code should be set to a value of 1. When the tool is no longer interacting
+> >      with the input device, the BTN_TOOL_<name> code should be reset to 0. All
+> >      trackpads, tablets, and touchscreens should use at least one BTN_TOOL_<name>
+> > -    code when events are generated.
+> > +    code when events are generated. Likewise all trackpads, tablets, and
+> > +    touchscreens should export only one BTN_TOOL_<name> at a time. It is
+>
+> s/export/set to nonzero/ to avoid any ambiguity with setting the evbit on the
+> device vs setting the value to nonzero.
+
+I can carry this change in the v3.
+
+>
+> > +    however accepted to switch tool in one EV_SYN frame by setting the old
+> > +    BTN_TOOL_<name> at a value of 0 and the new one at 1.
+>
+> I would even s/accepted/recommended/ but this LGTM to me, thanks.
+
+In v2 I used recommended, but I turned the meaning the other way
+around. In the v2 it reads:
+"To not break existing userspace, it is recommended to not switch tool
+in one EV_SYN frame but first emitting the old BTN_TOOL_<name> at 0,
+then emit one SYN_REPORT and then set the new BTN_TOOL_<name> at 1."
+
+So maybe I should use "accepted" in v3?
+
+>
+> Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+Do I keep your acked-by in the v2/3?
+
+Cheers,
+Benjamin
+
