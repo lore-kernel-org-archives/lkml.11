@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB81C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F58CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243851AbiBNJfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:35:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52638 "EHLO
+        id S243823AbiBNJfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:35:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244060AbiBNJes (ORCPT
+        with ESMTP id S244030AbiBNJe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:34:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D72869286;
-        Mon, 14 Feb 2022 01:32:50 -0800 (PST)
+        Mon, 14 Feb 2022 04:34:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBE067376;
+        Mon, 14 Feb 2022 01:32:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B377B60FA2;
-        Mon, 14 Feb 2022 09:32:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EAF6C340F2;
-        Mon, 14 Feb 2022 09:32:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A78AB80DC4;
+        Mon, 14 Feb 2022 09:32:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C64C340E9;
+        Mon, 14 Feb 2022 09:32:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831150;
-        bh=k8li0rbyuLmDg+tAiLENpQPLXkvUb6PfoEEdtHStkQ4=;
+        s=korg; t=1644831172;
+        bh=z8tdiUGAdlFL67ygbtxUangTrl199Q2Sogk2a6y4kQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rMFfK8HilijNOqo0wKT2xsp1DnyqpXt4RmEC9XhpbEK10INGI/GtP3BvLFsm6Wh8v
-         gU9da+G+NdJaL6jIHsiN/m+USGreoO4b7dgxPFpKIR4nF/w2bV00fH3AH0iajRCB65
-         Eifx/HZ94C1X9AsIMCOT+4Rzis+I0v55ySqKa6ns=
+        b=KB1Wv5RHlgDuxCKpRQdO2Bvw6J8ClsV0ruxTGytPt9gbie8ula2XBB+rrS7pNlSMi
+         J7gtEnH6wND4jZGwUQ2o6uFYGLasObPjbQVArTDIxgbX8JWTByBtQmgm8rMbUKIOL3
+         TjslilyAusiZk+z2TPUNeHEdIY+rDcXwqe7+aYCQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 14/49] net: sched: Clarify error message when qdisc kind is unknown
-Date:   Mon, 14 Feb 2022 10:25:40 +0100
-Message-Id: <20220214092448.769554509@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 4.19 02/49] ima: Remove ima_policy file before directory
+Date:   Mon, 14 Feb 2022 10:25:28 +0100
+Message-Id: <20220214092448.377329663@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -49,41 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Victor Nogueira <victor@mojatatu.com>
+From: Stefan Berger <stefanb@linux.ibm.com>
 
-[ Upstream commit 973bf8fdd12f0e70ea351c018e68edd377a836d1 ]
+commit f7333b9572d0559e00352a926c92f29f061b4569 upstream.
 
-When adding a tc rule with a qdisc kind that is not supported or not
-compiled into the kernel, the kernel emits the following error: "Error:
-Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
-compiled in and it was not obvious right away what the message meant
-without looking at the kernel code.
+The removal of ima_dir currently fails since ima_policy still exists, so
+remove the ima_policy file before removing the directory.
 
-Change the error message to be more explicit and say the qdisc kind is
-unknown.
-
-Signed-off-by: Victor Nogueira <victor@mojatatu.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4af4662fa4a9 ("integrity: IMA policy")
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/sch_api.c | 2 +-
+ security/integrity/ima/ima_fs.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index af035431bec60..424e70907b967 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1131,7 +1131,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+--- a/security/integrity/ima/ima_fs.c
++++ b/security/integrity/ima/ima_fs.c
+@@ -497,12 +497,12 @@ int __init ima_fs_init(void)
  
- 	err = -ENOENT;
- 	if (!ops) {
--		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
-+		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
- 		goto err_out;
- 	}
- 
--- 
-2.34.1
-
+ 	return 0;
+ out:
++	securityfs_remove(ima_policy);
+ 	securityfs_remove(violations);
+ 	securityfs_remove(runtime_measurements_count);
+ 	securityfs_remove(ascii_runtime_measurements);
+ 	securityfs_remove(binary_runtime_measurements);
+ 	securityfs_remove(ima_symlink);
+ 	securityfs_remove(ima_dir);
+-	securityfs_remove(ima_policy);
+ 	return -1;
+ }
 
 
