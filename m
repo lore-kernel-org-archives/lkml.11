@@ -2,131 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354598AbiBNNqF (ORCPT
+        id S1354612AbiBNNqG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:46:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57994 "EHLO
+        Mon, 14 Feb 2022 08:46:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354618AbiBNNpo (ORCPT
+        with ESMTP id S1354731AbiBNNqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:45:44 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C5D575F4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:45:33 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21ECVusW014630;
-        Mon, 14 Feb 2022 13:45:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=t/xh7h782UBN/jZbD91JVD9rwY0PYE6Ef7A2XaPovz0=;
- b=LDaIM6W45eWmucJPJxrvRoAEGE7zsy9TmhAUbW33wkwMCOBMB3FHWEpm8pQwb1eCjk07
- o0MzcUO0R//2AbtKQLXTsFF+uZJqmWNWH5lTHU2hPzMsZL32N+5LP4nunFXMuADFM3Zw
- WV5Vu7u8/oUdF9P9K9Ble3hr1xejZUA4x2gfdWIibriBss6v9WgD/y1LePQvvNNq4FRF
- JIv0eA8gIsjbekgx9fu4dxtciSmJFR/1SQqntiTwGZfJABdsJUMjeU3EiKriNPMxjflv
- TzPxlbrUc2mfGjJnyZQPzt4/6qMslnFVk1VRl3uxRjIgpeLpW/yvHboAkaFIB4BeSOPJ Bg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e6rt1624p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 13:45:18 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21EDQQEf032307;
-        Mon, 14 Feb 2022 13:45:17 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e6rt1623q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 13:45:17 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21EDhnGj019890;
-        Mon, 14 Feb 2022 13:45:15 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 3e64h9nx3a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 13:45:15 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21EDjCb336110832
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Feb 2022 13:45:13 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DA19C42045;
-        Mon, 14 Feb 2022 13:45:12 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C8F584204F;
-        Mon, 14 Feb 2022 13:45:12 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Mon, 14 Feb 2022 13:45:12 +0000 (GMT)
-Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 55390)
-        id 7F15AE02E8; Mon, 14 Feb 2022 14:45:12 +0100 (CET)
-From:   Sven Schnelle <svens@linux.ibm.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>
-Subject: [PATCH] ftrace: ensure trace buffer is at least 4096 bytes large
-Date:   Mon, 14 Feb 2022 14:44:56 +0100
-Message-Id: <20220214134456.1751749-1-svens@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 14 Feb 2022 08:46:01 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D8EB849;
+        Mon, 14 Feb 2022 05:45:51 -0800 (PST)
+Received: from [192.168.0.2] (ip5f5aebfe.dynamic.kabel-deutschland.de [95.90.235.254])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 9D27261EA1927;
+        Mon, 14 Feb 2022 14:45:49 +0100 (CET)
+Message-ID: <74d2302f-88fc-c75c-6d2d-4aece1a515bb@molgen.mpg.de>
+Date:   Mon, 14 Feb 2022 14:45:49 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v3 0/9] Parallel CPU bringup for x86_64
+Content-Language: en-US
+To:     David Woodhouse <dwmw2@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        rcu@vger.kernel.org, mimoja@mimoja.de, hewenliang4@huawei.com,
+        hushiyuan@huawei.com, luolongjun@huawei.com, hejingxian@huawei.com
+References: <20211215145633.5238-1-dwmw2@infradead.org>
+ <9a47b5ec-f2d1-94d9-3a48-9b326c88cfcb@molgen.mpg.de>
+ <ab28d2ce-4a9c-387d-9eda-558045a0c35b@molgen.mpg.de>
+ <3bfacf45d2d0f3dfa3789ff5a2dcb46744aacff7.camel@infradead.org>
+ <ea433e41-0038-554d-3348-70aa98aff9e1@molgen.mpg.de>
+ <efbe0d3d92e6c279e3a6d7a4191ca7470bc4beec.camel@infradead.org>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <efbe0d3d92e6c279e3a6d7a4191ca7470bc4beec.camel@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: -0CZ3F6oPakx4SvErDd_hRaL7qjAqMzj
-X-Proofpoint-ORIG-GUID: RzYc1BmW-MYduAmjfnhD0JJV_T175gh4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_06,2022-02-14_03,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- impostorscore=0 suspectscore=0 priorityscore=1501 phishscore=0
- clxscore=1015 mlxscore=0 lowpriorityscore=0 adultscore=0 spamscore=0
- bulkscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202140082
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Booting the kernel with 'trace_buf_size=1' give a warning at
-boot during the ftrace selftests:
+Dear David,
 
-[    0.892809] Running postponed tracer tests:
-[    0.892893] Testing tracer function:
-[    0.901899] Callback from call_rcu_tasks_trace() invoked.
-[    0.983829] Callback from call_rcu_tasks_rude() invoked.
-[    1.072003] .. bad ring buffer .. corrupted trace buffer ..
-[    1.091944] Callback from call_rcu_tasks() invoked.
-[    1.097695] PASSED
-[    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
-[    1.353474] ------------[ cut here ]------------
-[    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
 
-Therefore enforce a minimum of 4096 bytes to make the selftest pass.
+Am 29.12.21 um 14:54 schrieb David Woodhouse:
+> On Wed, 2021-12-29 at 14:18 +0100, Paul Menzel wrote:
+>>> Or the one in
+>>> https://lore.kernel.org/lkml/d4cde50b4aab24612823714dfcbe69bc4bb63b60.camel@infradead.org
+>>>
+>>> which makes it do nothing except prepare all the CPUs before bringing
+>>> them up one at a time?
+>>
+>> I applied it on top the other one, and it made no difference either.
+> 
+> It's possible I missed something else in the prepare stage that doesn't
+> cope with all CPUs being prepared first.
+> 
+> My next attempt might be to change the loop in bringup_nonboot_cpus()
+> to bring all the CPUs not to the CPUHP_BP_PARALLEL_DYN state(s) but
+> instead just bring them to somewhere like CPUHP_RCUTREE_PREP, which is
+> somewhere in the middle between CPUHP_OFFLINE and CPUHP_BRINGUP_CPU.
+> 
+> Then a binary chop search — if that one boots, try maybe
+> CPUHP_TOPOLOGY_PREPARE. And if not, try CPUHP_PROFILE_PREPARE. Etc.
+> 
+>>> My current theory (not that I've spent that much time thinking about it
+>>> in the last week) is that there's something about the existing CPU
+>>> bringup, possibly a CPU bug or something special about the AMD CPUs,
+>>> which is triggered by just making it a little bit *faster*, which is
+>>> why bringing them up from kexec (especially in qemu) can cause it too?
+>>
+>> Would having the serial console enabled make a difference?
+>
+> Yes. I couldn't make this fail in my EC2 m6a instance (for clean boots;
+> I have never managed to kexec it) until I turned off the serial console
+> to make things go faster.
+> 
+>>> Tom seemed to find that it was in load_TR_desc(), so if you could try
+>>> this hack on a machine that doesn't magically wink out of existence on
+>>> a triplefault before even flushing its serial output, that would be
+>>> much appreciated...
+> 
+>> Unfortunately, no more messages were printed on the serial console.
+> 
+> I suppose we need to litter those outputs somewhere earlier in the
+> trampoline then, perhaps it *isn't* getting to load_TR_desc() in your
+> case?
+> 
+> Will be back online properly next week and can actually provide some of
+> the above suggestions in patch form if you're willing to keep testing.
 
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
----
- kernel/trace/trace.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+Sorry for replying so late. I saw your v4 patches, and tried commit 
+5e3524d21d2a () from your branch `parallel-5.17-part1`. Unfortunately, 
+the boot problem still persists on an AMD Ryzen 3 2200 g system, I 
+tested with. Please tell, where I should report these results too (here 
+or posted v4 patches).
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 7c2578efde26..3050892d1812 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -1474,10 +1474,12 @@ static int __init set_buf_size(char *str)
- 	if (!str)
- 		return 0;
- 	buf_size = memparse(str, &str);
--	/* nr_entries can not be zero */
--	if (buf_size == 0)
--		return 0;
--	trace_buf_size = buf_size;
-+	/*
-+	 * nr_entries can not be zero and the startup
-+	 * tests require some buffer space. Therefore
-+	 * ensure we have at least 4096 bytes of buffer.
-+	 */
-+	trace_buf_size = max(4096UL, buf_size);
- 	return 1;
- }
- __setup("trace_buf_size=", set_buf_size);
--- 
-2.32.0
+Also, do you have (physical) access to a system with an AMD CPU? If not, 
+maybe we can get you one, so it’s more convenient for you to test.
 
+
+Kind regards,
+
+Paul
