@@ -2,103 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F48C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE58C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352575AbiBNLkB (ORCPT
+        id S1352598AbiBNLoa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:40:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43628 "EHLO
+        Mon, 14 Feb 2022 06:44:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352021AbiBNLja (ORCPT
+        with ESMTP id S233810AbiBNLoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:39:30 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D07DF40;
-        Mon, 14 Feb 2022 03:29:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644838185; x=1676374185;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=LyVZUfq/4Kt0u89YufhzKsBwro574htmaUqau0RQcl0=;
-  b=bV7YjWRDXHWJeQFEoqNSyv7beWasxmTvNQB33sA6mqmBi/z0raVD8Tck
-   X+wxmHFswIP8z4CE2M8b3pGxh8xncZ3VD5IUvqsDNKhbHcAHv7Oesi9IX
-   W+q/TVfTehdEYK1zNrtXMCMhb2UL9UZg141z5AQThVSXdZvBo32EWwNqa
-   Shvl5CWJeE25o+LNPR1M84/qiKoVXOc9zq4OeRoYQFAQKsKFt/8jzyFgX
-   E/+w4vXb0iFR3s6Ol3QWntomASwZnZACMQasFI2ZldQG7OqQWFcd9545H
-   dLFHfxs9jijYX3Ciopc6wPivu3q30f7MJLWb7a/qUa5Fiuc6bsuvn9Uoh
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="250276737"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="250276737"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:29:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="587167021"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2022 03:29:42 -0800
-From:   Tianfei zhang <tianfei.zhang@intel.com>
-To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     corbet@lwn.net, Matthew Gerlach <matthew.gerlach@linux.intel.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v1 4/7] fpga: dfl: fix VF creation when ports have no local BAR space
-Date:   Mon, 14 Feb 2022 06:26:16 -0500
-Message-Id: <20220214112619.219761-5-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220214112619.219761-1-tianfei.zhang@intel.com>
-References: <20220214112619.219761-1-tianfei.zhang@intel.com>
+        Mon, 14 Feb 2022 06:44:06 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52996658E
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:37:02 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mtapsc-3-c-H2DoQROpmCBki-_qsGZA-1; Mon, 14 Feb 2022 11:36:59 +0000
+X-MC-Unique: c-H2DoQROpmCBki-_qsGZA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Mon, 14 Feb 2022 11:36:58 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Mon, 14 Feb 2022 11:36:58 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Rasmus Villemoes' <linux@rasmusvillemoes.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Miguel Ojeda <ojeda@kernel.org>
+CC:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "rust-for-linux@vger.kernel.org" <rust-for-linux@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Gary Guo <gary@garyguo.net>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        "Petr Mladek" <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Sergey Senozhatsky" <senozhatsky@chromium.org>
+Subject: RE: [PATCH v4 12/20] vsprintf: add new `%pA` format specifier
+Thread-Topic: [PATCH v4 12/20] vsprintf: add new `%pA` format specifier
+Thread-Index: AQHYIZS6su9cmqy/q0KCzLw1maUsHKyS6n8w
+Date:   Mon, 14 Feb 2022 11:36:58 +0000
+Message-ID: <2a7dff8e0efb4142849802357284af51@AcuMS.aculab.com>
+References: <20220212130410.6901-1-ojeda@kernel.org>
+ <20220212130410.6901-13-ojeda@kernel.org>
+ <YgosclY9ebD3t020@smile.fi.intel.com>
+ <dc9054f2-5e2b-0ae2-1022-23421668dd05@rasmusvillemoes.dk>
+In-Reply-To: <dc9054f2-5e2b-0ae2-1022-23421668dd05@rasmusvillemoes.dk>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-
-When a port is not connected to the same PCIe endpoint as
-the FME, the port does not need to be released before being
-virtualized.  Fix VF creation code to handle this new use
-case.
-
-Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
----
- drivers/fpga/dfl.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index 26f8cf890700..cfc539a656f0 100644
---- a/drivers/fpga/dfl.c
-+++ b/drivers/fpga/dfl.c
-@@ -1705,15 +1705,22 @@ EXPORT_SYMBOL_GPL(dfl_fpga_cdev_config_ports_pf);
- int dfl_fpga_cdev_config_ports_vf(struct dfl_fpga_cdev *cdev, int num_vfs)
- {
- 	struct dfl_feature_platform_data *pdata;
--	int ret = 0;
-+	int ret = 0, port_count = 0;
- 
- 	mutex_lock(&cdev->lock);
-+
-+	list_for_each_entry(pdata, &cdev->port_dev_list, node) {
-+		if (pdata->dev)
-+			continue;
-+		port_count++;
-+	}
-+
- 	/*
- 	 * can't turn multiple ports into 1 VF device, only 1 port for 1 VF
- 	 * device, so if released port number doesn't match VF device number,
- 	 * then reject the request with -EINVAL error code.
- 	 */
--	if (cdev->released_port_num != num_vfs) {
-+	if (port_count && cdev->released_port_num != num_vfs) {
- 		ret = -EINVAL;
- 		goto done;
- 	}
--- 
-2.17.1
+RnJvbTogUmFzbXVzIFZpbGxlbW9lcw0KPiBTZW50OiAxNCBGZWJydWFyeSAyMDIyIDEwOjUzDQo+
+IA0KPiBPbiAxNC8wMi8yMDIyIDExLjE4LCBBbmR5IFNoZXZjaGVua28gd3JvdGU6DQo+ID4gT24g
+U2F0LCBGZWIgMTIsIDIwMjIgYXQgMDI6MDM6MzhQTSArMDEwMCwgTWlndWVsIE9qZWRhIHdyb3Rl
+Og0KPiA+DQo+ID4+IEZyb206IEdhcnkgR3VvIDxnYXJ5QGdhcnlndW8ubmV0Pg0KPiA+DQo+ID4g
+Tm90IHN1cmUgSSB1bmRlcnN0YW5kIHRoaXMuLi4NCj4gPg0KPiA+PiBUaGlzIHBhdGNoIGFkZHMg
+YSBmb3JtYXQgc3BlY2lmaWVyIGAlcEFgIHRvIGB2c3ByaW50ZmAgd2hpY2ggZm9ybWF0cw0KPiA+
+PiBhIHBvaW50ZXIgYXMgYGNvcmU6OmZtdDo6QXJndW1lbnRzYC4gRG9pbmcgc28gYWxsb3dzIHVz
+IHRvIGRpcmVjdGx5DQo+ID4+IGZvcm1hdCB0byB0aGUgaW50ZXJuYWwgYnVmZmVyIG9mIGBwcmlu
+dGZgLCBzbyB3ZSBkbyBub3QgaGF2ZSB0byB1c2UNCj4gPj4gYSB0ZW1wb3JhcnkgYnVmZmVyIG9u
+IHRoZSBzdGFjayB0byBwcmUtYXNzZW1ibGUgdGhlIG1lc3NhZ2Ugb24NCj4gPj4gdGhlIFJ1c3Qg
+c2lkZS4NCj4gPj4NCj4gPj4gVGhpcyBzcGVjaWZpZXIgaXMgaW50ZW5kZWQgb25seSB0byBiZSB1
+c2VkIGZyb20gUnVzdCBhbmQgbm90IGZvciBDLCBzbw0KPiA+PiBgY2hlY2twYXRjaC5wbGAgaXMg
+aW50ZW50aW9uYWxseSB1bmNoYW5nZWQgdG8gY2F0Y2ggYW55IG1pc3VzZS4NCj4gPj4NCj4gPj4g
+Q28tZGV2ZWxvcGVkLWJ5OiBBbGV4IEdheW5vciA8YWxleC5nYXlub3JAZ21haWwuY29tPg0KPiA+
+PiBTaWduZWQtb2ZmLWJ5OiBBbGV4IEdheW5vciA8YWxleC5nYXlub3JAZ21haWwuY29tPg0KPiA+
+PiBDby1kZXZlbG9wZWQtYnk6IFdlZHNvbiBBbG1laWRhIEZpbGhvIDx3ZWRzb25hZkBnb29nbGUu
+Y29tPg0KPiA+PiBTaWduZWQtb2ZmLWJ5OiBXZWRzb24gQWxtZWlkYSBGaWxobyA8d2Vkc29uYWZA
+Z29vZ2xlLmNvbT4NCj4gPg0KPiA+PiBTaWduZWQtb2ZmLWJ5OiBHYXJ5IEd1byA8Z2FyeUBnYXJ5
+Z3VvLm5ldD4NCj4gPg0KPiA+IC4uLnRvZ2V0aGVyIHdpdGggdGhpcyBpbiB0aGUgY3VycmVudCBT
+b0IgY2hhaW4uDQo+ID4NCj4gPj4gQ28tZGV2ZWxvcGVkLWJ5OiBNaWd1ZWwgT2plZGEgPG9qZWRh
+QGtlcm5lbC5vcmc+DQo+ID4+IFNpZ25lZC1vZmYtYnk6IE1pZ3VlbCBPamVkYSA8b2plZGFAa2Vy
+bmVsLm9yZz4NCj4gPg0KPiA+IEknbSB3b25kZXJpbmcgaWYgeW91IGNvbnNpZGVyZWQgdG8gdXNl
+ICVwVi4NCj4gPg0KPiANCj4gSSB0aGluayB0aGUgcG9pbnQgaXMgZm9yIHZzbnByaW50ZigpIHRv
+IGNhbGwgKGJhY2spIGludG8gUnVzdCBjb2RlLg0KDQpEb2Vzbid0IHRoYXQgc3RhbmQgYSByZWFz
+b25hYmxlIGNoYW5jZSBvZiBibG93aW5nIHRoZSBrZXJuZWwgc3RhY2s/DQoNCnZzbnByaW50Zigp
+IGlzIGxpa2VseSB0byBiZSBvbiB0aGUgJ3dvcnN0IGNhc2UnIHN0YWNrIHBhdGggYW55d2F5Lg0K
+QW55dGhpbmcgdmFndWVseSBsaWtlIGEgcmVjdXJzaXZlIGNhbGwsIG9yIGFueXRoaW5nICdzdGFj
+ayBleHBlbnNpdmUnDQppbnNpZGUgdnNucHJpbnRmKCkgc3RhbmRzIGEgcmVhbCBjaGFuY2Ugb2Yg
+b3ZlcmZsb3dpbmcgdGhlIHN0YWNrLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNz
+IExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAx
+UFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
