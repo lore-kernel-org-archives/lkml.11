@@ -2,128 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D36EAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356014AbiBNPqj (ORCPT
+        id S1356027AbiBNPqm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:46:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40964 "EHLO
+        Mon, 14 Feb 2022 10:46:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238595AbiBNPqg (ORCPT
+        with ESMTP id S1356013AbiBNPqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:46:36 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3719626D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:46:27 -0800 (PST)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F3629240006;
-        Mon, 14 Feb 2022 15:46:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644853586;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6ywu1zL9TscboOTL+KoPo7dZ6f2fEaqerWdTVr9qxik=;
-        b=A4CnLIzQ5f3D5+0+ZyuCP8fGLUGNr3eCLcIRf21jidFewb//SlR/zb7Lyd0/MOE8NLVvVa
-        sTDqJpZchwZd8AC4M1eDjlR6E+X1I3Ie61VNE7VW9RZ5MlcWLIVVen8yJ0zQfddAxaWfLK
-        iuymkZZEOra8qtl/QUyEza2pc6mlD4S/GXvcQSDlyL2BrswAzLeo5z7S8Tblj26PDs7rkI
-        LWtXjgHLPPM10VL5MzpMBm3JZXErjsRlw5JylQQn3HMir4dQNXgjzXd1nd9pVP4W7jxeor
-        kw2AG71XY9qOvX9sMqZub7Vgo8zNVBxEz0yWWA/XseLaufRAmKk6r6fkOv/krA==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
-        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>
-Subject: Re: [PATCH v8 5/6] arm64: dts: marvell: armada-37xx: add device
- node for UART clock and use it
-In-Reply-To: <20220211191238.2142-6-kabel@kernel.org>
-References: <20220211191238.2142-1-kabel@kernel.org>
- <20220211191238.2142-6-kabel@kernel.org>
-Date:   Mon, 14 Feb 2022 16:46:25 +0100
-Message-ID: <87leydjvse.fsf@BL-laptop>
+        Mon, 14 Feb 2022 10:46:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0D726D;
+        Mon, 14 Feb 2022 07:46:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B148C61313;
+        Mon, 14 Feb 2022 15:46:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD385C340EB;
+        Mon, 14 Feb 2022 15:46:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644853590;
+        bh=ypkwro1J7DlbYw5w/3uL9p/1TnF6Qdw1cTOGQOtdg1I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=c0U/vNvgxNlRhTzZnEFFCR9aId6hPQBmgaHLTo+QXeG9M6se3Uo3eBniwaQ5IiqMC
+         TqBW6QLwfKfh9+oZArZB9VUlt39D81a5wwq3y6zev029QTe93ZzrvhGkX7JwrXw5tR
+         1IgBc+cGCNur3T+1wnnfN2wB4ygvoBqDnEZzJnS074vM6NQuYfTsDmSJyJ+8SKm7FN
+         bzVUHj3r7qK3x4Bzp0He4EGuy7mgnIAvs0UD2Z6qxb/+j/X9jDdsL5ztXSSYF8e8GZ
+         5cwlpktvcqcYGIXeW1KR22mhuke38YbW7r+LFhiLgggPbMJ9+vnWMOmJ4zZBp1F5hp
+         AeN0j8m9ygFig==
+Date:   Mon, 14 Feb 2022 09:46:28 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Jan Palus <jpalus@fastmail.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [PATCH] PCI: mvebu: Fix merge conflicts in commit 91a8d79fc797
+Message-ID: <20220214154628.GA8830@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220214110228.25825-1-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Marek and Pali,
+On Mon, Feb 14, 2022 at 12:02:28PM +0100, Pali Rohár wrote:
+> Commit 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe
+> Root Port via emulated bridge") was incorrectly applied from mailing list
+> patch [1] to the linux git repository [2] probably due to resolving merge
+> conflicts incorrectly. Fix it now.
+> 
+> [1] - https://lore.kernel.org/r/20211125124605.25915-12-pali@kernel.org
+> [2] - https://git.kernel.org/linus/91a8d79fc797
+> 
+> Fixes: 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe Root Port via emulated bridge")
+> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215540
+> Reported-by: Jan Palus <jpalus@fastmail.com>
+> Signed-off-by: Pali Rohár <pali@kernel.org>
 
-> From: Pali Roh=C3=A1r <pali@kernel.org>
->
-> Define DT node for UART clock "marvell,armada-3700-uart-clock" and use
-> this UART clock as a base clock for all UART devices.
->
-> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
-> Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
-> Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
+Applied to for-linus for v5.17 with the following commit log, thanks!
 
-Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+commit c49ae619905e ("PCI: mvebu: Fix device enumeration regression")
+Author: Pali Rohár <pali@kernel.org>
+Date:   Mon Feb 14 12:02:28 2022 +0100
 
-However for keeping bisectability we have to ensure that this patch will
-be applied after the drivers changes.
+    PCI: mvebu: Fix device enumeration regression
 
-Thanks,
+    Jan reported that on Turris Omnia (Armada 385), no PCIe devices were
+    detected after upgrading from v5.16.1 to v5.16.3 and identified the cause
+    as the backport of 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus
+    of PCIe Root Port via emulated bridge"), which appeared in v5.17-rc1.
 
-Gregory
+    91a8d79fc797 was incorrectly applied from mailing list patch [1] to the
+    linux git repository [2] probably due to resolving merge conflicts
+    incorrectly. Fix it now.
 
+    [1] https://lore.kernel.org/r/20211125124605.25915-12-pali@kernel.org
+    [2] https://git.kernel.org/linus/91a8d79fc797
+
+    [bhelgaas: commit log]
+    BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215540
+    Fixes: 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe Root Port via emulated bridge")
+    Link: https://lore.kernel.org/r/20220214110228.25825-1-pali@kernel.org
+    Link: https://lore.kernel.org/r/20220127234917.GA150851@bhelgaas
+    Reported-by: Jan Palus <jpalus@fastmail.com>
+    Signed-off-by: Pali Rohár <pali@kernel.org>
+    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 
 > ---
-> Changes since v7:
-> - changed commit message ("This change defines" -> "Define")
-> - added Marek's Reviewed-by tag
-> ---
->  arch/arm64/boot/dts/marvell/armada-37xx.dtsi | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/bo=
-ot/dts/marvell/armada-37xx.dtsi
-> index 673f4906eef9..4cf6c8aa0ac2 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> @@ -132,10 +132,20 @@ avs: avs@11500 {
->  				reg =3D <0x11500 0x40>;
->  			};
->=20=20
-> +			uartclk: clock-controller@12010 {
-> +				compatible =3D "marvell,armada-3700-uart-clock";
-> +				reg =3D <0x12010 0x4>, <0x12210 0x4>;
-> +				clocks =3D <&tbg 0>, <&tbg 1>, <&tbg 2>,
-> +					 <&tbg 3>, <&xtalclk>;
-> +				clock-names =3D "TBG-A-P", "TBG-B-P", "TBG-A-S",
-> +					      "TBG-B-S", "xtal";
-> +				#clock-cells =3D <1>;
-> +			};
-> +
->  			uart0: serial@12000 {
->  				compatible =3D "marvell,armada-3700-uart";
->  				reg =3D <0x12000 0x18>;
-> -				clocks =3D <&xtalclk>;
-> +				clocks =3D <&uartclk 0>;
->  				interrupts =3D
->  				<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
->  				<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-> @@ -147,7 +157,7 @@ uart0: serial@12000 {
->  			uart1: serial@12200 {
->  				compatible =3D "marvell,armada-3700-uart-ext";
->  				reg =3D <0x12200 0x30>;
-> -				clocks =3D <&xtalclk>;
-> +				clocks =3D <&uartclk 1>;
->  				interrupts =3D
->  				<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
->  				<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
-> --=20
-> 2.34.1
->
-
---=20
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+>  drivers/pci/controller/pci-mvebu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+> index 71258ea3d35f..f8e82c5e2d87 100644
+> --- a/drivers/pci/controller/pci-mvebu.c
+> +++ b/drivers/pci/controller/pci-mvebu.c
+> @@ -1329,7 +1329,8 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
+>  		 * indirectly via kernel emulated PCI bridge driver.
+>  		 */
+>  		mvebu_pcie_setup_hw(port);
+> -		mvebu_pcie_set_local_dev_nr(port, 0);
+> +		mvebu_pcie_set_local_dev_nr(port, 1);
+> +		mvebu_pcie_set_local_bus_nr(port, 0);
+>  	}
+>  
+>  	pcie->nports = i;
+> -- 
+> 2.20.1
+> 
