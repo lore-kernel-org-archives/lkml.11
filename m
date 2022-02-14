@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 375CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2515EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345421AbiBNKKj (ORCPT
+        id S1345455AbiBNKKn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:10:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35404 "EHLO
+        Mon, 14 Feb 2022 05:10:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345888AbiBNKHH (ORCPT
+        with ESMTP id S1345883AbiBNKHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:07:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9C674DE5;
-        Mon, 14 Feb 2022 01:49:46 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB2674DE6;
+        Mon, 14 Feb 2022 01:49:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47EAEB80DC4;
-        Mon, 14 Feb 2022 09:49:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AED6C340E9;
-        Mon, 14 Feb 2022 09:49:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4C6D61238;
+        Mon, 14 Feb 2022 09:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A2F0C340F4;
+        Mon, 14 Feb 2022 09:49:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832184;
-        bh=xgvGDpPtHORyw1EJlVVMNsL8hLWusH/bXXGoEfhnHQY=;
+        s=korg; t=1644832187;
+        bh=ConjnUoJ0g0xGyfJNWwrU/GygfPMqHV4ZaFCx5Ndfkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZkUMiNTbatu78ZTd+KOLbXPMmGdlWmFbbiec7tpBQYzlO4uHQ3Q4nJuuFp3T/FYC2
-         Tnmunj235cCKdTCJRQXKY500aiV0FmhRKE2kih8/UuS+h8MtX5eObxt6X6rNRvdxA/
-         naAiWMnEVihVqgoUFkjOxotZfQiboSqvPoUGpf0Q=
+        b=ti+shNCmqz46nE+1cGIDGK3ApVtKlLW28rmelY5xnYszYtUzBaavjDcf4MhiJ8cn6
+         HWaYaQCDDRWWAWlRt3aBxNVT5OCAqaR6F9V4e3GPLd6astK4lWc88HRB6MzSHl9E0T
+         s41by2JvXbKKDDkBwIWASByWQJg9DaNC0Hfv+LvU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Suresh Balakrishnan <suresh.balakrishnan@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 106/172] ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE
-Date:   Mon, 14 Feb 2022 10:26:04 +0100
-Message-Id: <20220214092510.074083242@linuxfoundation.org>
+Subject: [PATCH 5.15 107/172] gpiolib: Never return internal error codes to user space
+Date:   Mon, 14 Feb 2022 10:26:05 +0100
+Message-Id: <20220214092510.113389427@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,79 +52,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit dc0075ba7f387fe4c48a8c674b11ab6f374a6acc ]
+[ Upstream commit 95a4eed7dd5b7c1c3664a626174290686ddbee9f ]
 
-Commit 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while
-suspended to idle") made acpi_ec_dispatch_gpe() check
-pm_wakeup_pending(), but that is before canceling the SCI wakeup,
-so pm_wakeup_pending() is always true.  This causes the loop in
-acpi_ec_dispatch_gpe() to always terminate after one iteration which
-may not be correct.
+Currently it's possible that character device interface may return
+the error codes which are not supposed to be seen by user space.
+In this case it's EPROBE_DEFER.
 
-Address this issue by canceling the SCI wakeup earlier, from
-acpi_ec_dispatch_gpe() itself.
+Wrap it to return -ENODEV instead as sysfs does.
 
-Fixes: 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while suspended to idle")
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: d7c51b47ac11 ("gpio: userspace ABI for reading/writing GPIO lines")
+Fixes: 61f922db7221 ("gpio: userspace ABI for reading GPIO line events")
+Fixes: 3c0d9c635ae2 ("gpiolib: cdev: support GPIO_V2_GET_LINE_IOCTL and GPIO_V2_LINE_GET_VALUES_IOCTL")
+Reported-by: Suresh Balakrishnan <suresh.balakrishnan@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/ec.c    | 10 ++++++++++
- drivers/acpi/sleep.c | 14 ++++----------
- 2 files changed, 14 insertions(+), 10 deletions(-)
+ drivers/gpio/gpiolib-cdev.c  |  6 +++---
+ drivers/gpio/gpiolib-sysfs.c |  7 ++-----
+ drivers/gpio/gpiolib.h       | 12 ++++++++++++
+ 3 files changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
-index 9b859ff976e89..98d1782275440 100644
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -2051,6 +2051,16 @@ bool acpi_ec_dispatch_gpe(void)
- 	if (acpi_any_gpe_status_set(first_ec->gpe))
- 		return true;
+diff --git a/drivers/gpio/gpiolib-cdev.c b/drivers/gpio/gpiolib-cdev.c
+index c7b5446d01fd2..ffa0256cad5a0 100644
+--- a/drivers/gpio/gpiolib-cdev.c
++++ b/drivers/gpio/gpiolib-cdev.c
+@@ -330,7 +330,7 @@ static int linehandle_create(struct gpio_device *gdev, void __user *ip)
+ 			goto out_free_lh;
+ 		}
  
-+	/*
-+	 * Cancel the SCI wakeup and process all pending events in case there
-+	 * are any wakeup ones in there.
-+	 *
-+	 * Note that if any non-EC GPEs are active at this point, the SCI will
-+	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
-+	 * should be missed by canceling the wakeup here.
-+	 */
-+	pm_system_cancel_wakeup();
+-		ret = gpiod_request(desc, lh->label);
++		ret = gpiod_request_user(desc, lh->label);
+ 		if (ret)
+ 			goto out_free_lh;
+ 		lh->descs[i] = desc;
+@@ -1378,7 +1378,7 @@ static int linereq_create(struct gpio_device *gdev, void __user *ip)
+ 			goto out_free_linereq;
+ 		}
+ 
+-		ret = gpiod_request(desc, lr->label);
++		ret = gpiod_request_user(desc, lr->label);
+ 		if (ret)
+ 			goto out_free_linereq;
+ 
+@@ -1764,7 +1764,7 @@ static int lineevent_create(struct gpio_device *gdev, void __user *ip)
+ 		}
+ 	}
+ 
+-	ret = gpiod_request(desc, le->label);
++	ret = gpiod_request_user(desc, le->label);
+ 	if (ret)
+ 		goto out_free_le;
+ 	le->desc = desc;
+diff --git a/drivers/gpio/gpiolib-sysfs.c b/drivers/gpio/gpiolib-sysfs.c
+index 4098bc7f88b7e..44c1ad51b3fe9 100644
+--- a/drivers/gpio/gpiolib-sysfs.c
++++ b/drivers/gpio/gpiolib-sysfs.c
+@@ -475,12 +475,9 @@ static ssize_t export_store(struct class *class,
+ 	 * they may be undone on its behalf too.
+ 	 */
+ 
+-	status = gpiod_request(desc, "sysfs");
+-	if (status) {
+-		if (status == -EPROBE_DEFER)
+-			status = -ENODEV;
++	status = gpiod_request_user(desc, "sysfs");
++	if (status)
+ 		goto done;
+-	}
+ 
+ 	status = gpiod_set_transitory(desc, false);
+ 	if (!status) {
+diff --git a/drivers/gpio/gpiolib.h b/drivers/gpio/gpiolib.h
+index 30bc3f80f83e6..c31f4626915de 100644
+--- a/drivers/gpio/gpiolib.h
++++ b/drivers/gpio/gpiolib.h
+@@ -135,6 +135,18 @@ struct gpio_desc {
+ 
+ int gpiod_request(struct gpio_desc *desc, const char *label);
+ void gpiod_free(struct gpio_desc *desc);
 +
- 	/*
- 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
- 	 * to allow the caller to process events properly after that.
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index 7ae09e4b45927..245a0fa979cbb 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -739,21 +739,15 @@ bool acpi_s2idle_wake(void)
- 			return true;
- 		}
- 
--		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
-+		/*
-+		 * Check non-EC GPE wakeups and if there are none, cancel the
-+		 * SCI-related wakeup and dispatch the EC GPE.
-+		 */
- 		if (acpi_ec_dispatch_gpe()) {
- 			pm_pr_dbg("ACPI non-EC GPE wakeup\n");
- 			return true;
- 		}
- 
--		/*
--		 * Cancel the SCI wakeup and process all pending events in case
--		 * there are any wakeup ones in there.
--		 *
--		 * Note that if any non-EC GPEs are active at this point, the
--		 * SCI will retrigger after the rearming below, so no events
--		 * should be missed by canceling the wakeup here.
--		 */
--		pm_system_cancel_wakeup();
- 		acpi_os_wait_events_complete();
- 
- 		/*
++static inline int gpiod_request_user(struct gpio_desc *desc, const char *label)
++{
++	int ret;
++
++	ret = gpiod_request(desc, label);
++	if (ret == -EPROBE_DEFER)
++		ret = -ENODEV;
++
++	return ret;
++}
++
+ int gpiod_configure_flags(struct gpio_desc *desc, const char *con_id,
+ 		unsigned long lflags, enum gpiod_flags dflags);
+ int gpio_set_debounce_timeout(struct gpio_desc *desc, unsigned int debounce);
 -- 
 2.34.1
 
