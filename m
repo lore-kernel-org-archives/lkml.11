@@ -2,139 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BEC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229969AbiBNTH5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 14:07:57 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40084 "EHLO
+        id S230079AbiBNTI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 14:08:26 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiBNTH2 (ORCPT
+        with ESMTP id S230255AbiBNTIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 14:07:28 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634BF2DD3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:07:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644865631; x=1676401631;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7D1GO4YJHOIRP96aOncYfWj1zSTB7tfZJ+Mw8NP2NSo=;
-  b=df5focoY+vypeheVFByr99g/3Ezv8IcwILpn5+DYRg59FN7BcU5jqhWB
-   lehweWaXAvI+6vpA3CMcG63VvO2pe37nSnI5YDKhvet/sFHaYBNVZ8lew
-   HPKBLD0pJMbA2iZFA1rV/A3m9gT75ikUhwxrvxz7j3WZOfNBdxs4nbKTH
-   gBhGg+O53cstFCnvqs66g3P85SVFwYCecjD5EbYEp5236R1aGzfme8rq9
-   TuL9tFwpGNvpktNtvvQ0feKXnFJYSLizXlidk/h2w8tNx3/sIwd8weJjJ
-   G8P2N1JIQf/JN3oz60WNkjwBUx9z68NtgKtShX/UnbkZYCE07gLQfCm6m
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="313438223"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="313438223"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 11:02:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="495930947"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 14 Feb 2022 11:02:16 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJgc3-0008qU-Hk; Mon, 14 Feb 2022 19:02:15 +0000
-Date:   Tue, 15 Feb 2022 03:02:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [nbd168-wireless:mtk-flow-offload 9/9]
- drivers/net/wireless/mediatek/mt76/dma.c:145:17: warning: variable 'ring'
- set but not used
-Message-ID: <202202150257.O7iGQocg-lkp@intel.com>
+        Mon, 14 Feb 2022 14:08:17 -0500
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9439C1EC70
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:08:01 -0800 (PST)
+Received: by mail-pj1-f51.google.com with SMTP id n19-20020a17090ade9300b001b9892a7bf9so48708pjv.5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:08:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l8oDDwvFNImY/VPR1iI+PTzO8EFCV3s3KPhPnO2c9qA=;
+        b=rI4JOyp6IV6w3InslglP235o0EtoDitOmNELyKh8B2Up0oGYgaVOWRXqwKiX9TLfAz
+         N/2ys8LUy0o18leOKmEw5jJ3DEvqQYHy3xxsiT2o5zWvHUved3MSXP9mu3GborQQtXay
+         ISMq80DJ8Ou2f8/XmrMyr+/+LX4XC7wfhRYHA3Ja3a05N56J8PQ19wNBPzb0VM4rb6hU
+         P7mxRkcgf0GCQZOnt3HteIoUDNo5wKZ1rbAxOf1AuI0pDIFeOk/FlgLUM9SCZoKhrujm
+         yQxkuwheZRelQtdwNZ4htfATDkm299zk1VFn16AKkKHIRFeaDzwwkeeAQ+HmljxteeM1
+         t4hA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l8oDDwvFNImY/VPR1iI+PTzO8EFCV3s3KPhPnO2c9qA=;
+        b=q7yczolk3C/TQei0o1QijetO8s7ft3GJoGv1M8+KpDZC8Px+nr0Qd/AFWGod6M69Uo
+         oaMCtvvyaWq+LDdSRqvht8DrNWptVLLdCxJdkrCaFd+kuf3x9Jiyze/6qMb4VI6rSYWu
+         nRez3xUbkApF7gKuUKlEG14uJKHC1G5P46R4NEp1hMOv0lG7d0K+ojpwsajAx7Vtxwzf
+         O1BDANelTR3bD59nhZAH7RmudRyP8E7Upwh4ua+QX1QakLRAcECNN++Idh9FtOvlhOD/
+         iz7PMIP4BDnKTVNGf+sPF4SGLTKGggnqiaQA8vdy8D5Xo9MAzz9WtfP27jRMo254EzWg
+         hVSw==
+X-Gm-Message-State: AOAM533+6kk1imQI0iPT2qV088lqJivnFsD/m4MX9SZ0//cd8/e2xtZV
+        MQcFvd3aDJqt8LMtTVmZouPP+g+9vyedJpRownRey7DHkrGV/rN6
+X-Google-Smtp-Source: ABdhPJwrV9PAaE833RQnSzliybCzTGC5tXIZJBODdZdXtN+MdiLtf7qksrvTJNixCwaxHomIyGnU/PinBMcVwG0/VPE=
+X-Received: by 2002:a67:7206:: with SMTP id n6mr51013vsc.21.1644864661852;
+ Mon, 14 Feb 2022 10:51:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220214092448.285381753@linuxfoundation.org>
+In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
+From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
+Date:   Mon, 14 Feb 2022 13:50:25 -0500
+Message-ID: <CAG=yYwm=7zS0k9VY+Oie18LtmN1jemV0AP778+s4+wR5jC6N+g@mail.gmail.com>
+Subject: Re: [PATCH 4.19 00/49] 4.19.230-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
+        torvalds@linux-foundation.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/nbd168/wireless mtk-flow-offload
-head:   6dbc6b1e07e9f4face597784cf4069cff9f3a043
-commit: 6dbc6b1e07e9f4face597784cf4069cff9f3a043 [9/9] mt76: mt7915: add Wireless Ethernet Dispatch support
-config: x86_64-randconfig-a005-20220214 (https://download.01.org/0day-ci/archive/20220215/202202150257.O7iGQocg-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/nbd168/wireless/commit/6dbc6b1e07e9f4face597784cf4069cff9f3a043
-        git remote add nbd168-wireless https://github.com/nbd168/wireless
-        git fetch --no-tags nbd168-wireless mtk-flow-offload
-        git checkout 6dbc6b1e07e9f4face597784cf4069cff9f3a043
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/wireless/mediatek/mt76/
+On Mon, Feb 14, 2022 at 4:37 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.230 release.
+> There are 49 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.230-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
+>
+ hello,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Compiled and booted 4.19.230-rc1+  on  ...
+Processor Information
+    Socket Designation: FM2
+    Type: Central Processor
+    Family: A-Series
+    Manufacturer: AuthenticAMD
 
-All warnings (new ones prefixed by >>):
+NO new regressions from dmesg.
 
->> drivers/net/wireless/mediatek/mt76/dma.c:145:17: warning: variable 'ring' set but not used [-Wunused-but-set-variable]
-           int ret, type, ring;
-                          ^
->> drivers/net/wireless/mediatek/mt76/dma.c:165:7: warning: variable 'ret' is used uninitialized whenever switch case is taken [-Wsometimes-uninitialized]
-           case MT76_WED_Q_TXFREE:
-                ^~~~~~~~~~~~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:182:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/net/wireless/mediatek/mt76/dma.c:158:7: warning: variable 'ret' is used uninitialized whenever switch case is taken [-Wsometimes-uninitialized]
-           case MT76_WED_Q_TX:
-                ^~~~~~~~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:182:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/net/wireless/mediatek/mt76/dma.c:145:9: note: initialize the variable 'ret' to silence this warning
-           int ret, type, ring;
-                  ^
-                   = 0
-   3 warnings generated.
+Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
 
-
-vim +/ring +145 drivers/net/wireless/mediatek/mt76/dma.c
-
-   140	
-   141	static int
-   142	mt76_dma_wed_setup(struct mt76_dev *dev, struct mt76_queue *q)
-   143	{
-   144		struct mtk_wed_device *wed = &dev->mmio.wed;
- > 145		int ret, type, ring;
-   146		u8 flags = q->flags;
-   147	
-   148		if (!mtk_wed_device_active(wed))
-   149			q->flags &= ~MT_QFLAG_WED;
-   150	
-   151		if (!(q->flags & MT_QFLAG_WED))
-   152			return 0;
-   153	
-   154		type = FIELD_GET(MT_QFLAG_WED_TYPE, q->flags);
-   155		ring = FIELD_GET(MT_QFLAG_WED_RING, q->flags);
-   156	
-   157		switch (type) {
-   158		case MT76_WED_Q_TX:
-   159	#ifdef CONFIG_NET_MEDIATEK_SOC_WED
-   160			ret = mtk_wed_device_tx_ring_setup(wed, ring, q->regs);
-   161			if (!ret)
-   162				q->wed_regs = wed->tx_ring[ring].reg_base;
-   163	#endif
-   164			break;
- > 165		case MT76_WED_Q_TXFREE:
-   166			/* WED txfree queue needs ring to be initialized before setup */
-   167			q->flags = 0;
-   168			mt76_dma_queue_reset(dev, q);
-   169			mt76_dma_rx_fill(dev, q);
-   170			q->flags = flags;
-   171	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+software engineer
+rajagiri school of engineering and technology  -  autonomous
