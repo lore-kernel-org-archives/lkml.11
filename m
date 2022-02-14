@@ -2,135 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7579DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB48C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239803AbiBNDEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 22:04:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45586 "EHLO
+        id S239819AbiBNDEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 22:04:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiBNDEK (ORCPT
+        with ESMTP id S229460AbiBNDEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 22:04:10 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1920650E02;
-        Sun, 13 Feb 2022 19:04:02 -0800 (PST)
-X-UUID: c0cc346dcdef40718578236a9f63c992-20220214
-X-UUID: c0cc346dcdef40718578236a9f63c992-20220214
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <guodong.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1061529773; Mon, 14 Feb 2022 11:04:01 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 14 Feb 2022 11:03:59 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Feb 2022 11:03:58 +0800
-Message-ID: <ab823da2bff2dddcbf563083c787631c9ef842b7.camel@mediatek.com>
-Subject: Re: [PATCH v3 1/3] dt-bindings: pinctrl: mt8186: add pinctrl file
- and binding document
-From:   Guodong Liu <guodong.liu@mediatek.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     Linus Walleij <linus.walleij@linaro.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-gpio@vger.kernel.org>, Sean Wang <sean.wang@kernel.org>,
-        <devicetree@vger.kernel.org>
-Date:   Mon, 14 Feb 2022 11:03:58 +0800
-In-Reply-To: <1644504472.320340.2624780.nullmailer@robh.at.kernel.org>
-References: <20220210062122.23974-1-guodong.liu@mediatek.com>
-         <20220210062122.23974-2-guodong.liu@mediatek.com>
-         <1644504472.320340.2624780.nullmailer@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Sun, 13 Feb 2022 22:04:36 -0500
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E12A50E2F;
+        Sun, 13 Feb 2022 19:04:28 -0800 (PST)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nJRf9-001dBJ-DX; Mon, 14 Feb 2022 03:04:27 +0000
+Date:   Mon, 14 Feb 2022 03:04:27 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Hao Lee <haolee.swjtu@gmail.com>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fs/namespace: eliminate unnecessary mount counting
+Message-ID: <YgnGuy0GJzlqCSRj@zeniv-ca.linux.org.uk>
+References: <20220123100448.GA1468@haolee.io>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220123100448.GA1468@haolee.io>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------Original Message-----
-From: Rob Herring <robh@kernel.org>
-To: Guodong Liu <guodong.liu@mediatek.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Sean Wang <
-sean.wang@mediatek.com>, linux-mediatek@lists.infradead.org, Rob
-Herring <robh+dt@kernel.org>, linux-arm-kernel@lists.infradead.org, 
-linux-kernel@vger.kernel.org, 
-Project_Global_Chrome_Upstream_Group@mediatek.com, Matthias Brugger <
-matthias.bgg@gmail.com>, linux-gpio@vger.kernel.org, Sean Wang <
-sean.wang@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] dt-bindings: pinctrl: mt8186: add pinctrl
-file and binding document
-Date: Thu, 10 Feb 2022 08:47:52 -0600
+On Sun, Jan 23, 2022 at 10:04:48AM +0000, Hao Lee wrote:
+> propagate_one() counts the number of propagated mounts in each
+> propagation. We can count them in advance and use the number in
+> subsequent propagation.
 
-On Thu, 10 Feb 2022 14:21:20 +0800, Guodong Liu wrote:
-> 1. This patch adds pinctrl file for mt8186.
-> 2. This patch adds mt8186 compatible node in binding document.
-> 
-> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
-> ---
->  .../bindings/pinctrl/pinctrl-mt8186.yaml      |  313 +++++
->  include/dt-bindings/pinctrl/mt8186-pinfunc.h  | 1174
-> +++++++++++++++++
->  2 files changed, 1487 insertions(+)
->  create mode 100644
-> Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
->  create mode 100644 include/dt-bindings/pinctrl/mt8186-pinfunc.h
-> 
+You are relying upon highly non-obvious assumptions.  Namely, that
+copies will have the same amount of mounts as source_mnt.  AFAICS,
+it's not true in case of mount --move - there source_mnt might very
+well contain the things that would be skipped in subsequent copies.
+E.g. anything marked unbindable.  Or mntns binds - anything that would
+be skipped by copy_tree() without special flags.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Sure, we could make count_mounts() return just the number of those
+that will go into subsequent copies (with mount --move we don't add
+the original subtree - it's been in the namespace and thus is already
+counted), but
+	1) it creates an extra dependency in already convoluted code
+(copy_tree() and count_mounts() need to be kept in sync, in case we ever
+add new classes of mounts to be skipped)
+	2) I'm *NOT* certain that we won't ever run into the non-move
+cases where the original tree contains something that would be skipped
+from subsequent ones, and there we want to count the original.	Matter of
+fact, we do run into that.  Look:
 
-yamllint warnings/errors:
+# arrange a private tree at /tmp/a
+mkdir /tmp/a
+mount --bind /tmp/a /tmp/a
+mount --make-rprivate /tmp/a
+# mountpoint at /tmp/a/x
+mkdir /tmp/a/x
+mount --bind /tmp/a/x /tmp/a/x
+# this will be a peer of /tmp/a/x
+mkdir /tmp/a/y
+# ... and this - a mountpoint in it
+mkdir /tmp/a/x/v
+# ... rbind fodder:
+mkdir /tmp/a/z
+touch /tmp/a/z/f
+# start a new mntns, so we won't run afoul of loop checks
+unshare -m &
+# ... and bind it on /tmp/a/z/f
+mount --bind /proc/$!/ns/mnt /tmp/a/z/f
+# now we can do the rest - it won't spread into child namespace
+# make /tmp/a/x a peer of /tmp/b/x
+mount --make-shared /tmp/a/x
+mount --bind /tmp/a/x /tmp/a/y
+# ... and rbind /tmp/a/z at /tmp/a/x/v
+# which will propagate a copy to /tmp/b/x/v
+# except that mntns bound on /tmp/a/x/v/f will *not* propagate.
+mount --rbind /tmp/a/z /tmp/a/x/v
+# verify that
+stat /tmp/a/x/v
+stat /tmp/a/y/v
+stat /tmp/a/x/v/f
+stat /tmp/a/y/v/f
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-
-review/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml:
-properties:reg-names: {'description': 'Gpio base register names.\n',
-'items': [{'const': 'iocfg0'}, {'const': 'iocfg_bm'}, {'const':
-'iocfg_bl'}, {'const': 'iocfg_br'}, {'const': 'iocfg_lm'}, {'const':
-'iocfg_rb'}, {'const': 'iocfg_tl'}, {'const': 'eint'}], 'maxItems': 8}
-should not be valid under {'required': ['maxItems']}
-	hint: "maxItems" is not needed with an "items" list
-	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
-/builds/robherring/linux-dt-
-review/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml:
-ignoring, error in schema: properties: reg-names
-Documentation/devicetree/bindings/pinctrl/pinctrl-
-mt8186.example.dt.yaml:0:0: /example-0/pinctrl@10005000: failed to
-match any schema with compatible: ['mediatek,mt8186-pinctrl']
+Result:
+  File: /tmp/a/x/v/
+  Size: 4096            Blocks: 8          IO Block: 4096   directory
+Device: 808h/2056d      Inode: 270607      Links: 2
+Access: (0755/drwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-02-13 21:43:45.058485130 -0500
+Modify: 2022-02-13 21:42:37.142457622 -0500
+Change: 2022-02-13 21:42:37.142457622 -0500
+ Birth: 2022-02-13 21:42:37.142457622 -0500
+  File: /tmp/a/y/v/
+  Size: 4096            Blocks: 8          IO Block: 4096   directory
+Device: 808h/2056d      Inode: 270607      Links: 2
+Access: (0755/drwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-02-13 21:43:45.058485130 -0500
+Modify: 2022-02-13 21:42:37.142457622 -0500
+Change: 2022-02-13 21:42:37.142457622 -0500
+ Birth: 2022-02-13 21:42:37.142457622 -0500
+  File: /tmp/a/x/v/f
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 4h/4d   Inode: 4026532237  Links: 1
+Access: (0444/-r--r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-02-13 21:42:37.146457624 -0500
+Modify: 2022-02-13 21:42:37.146457624 -0500
+Change: 2022-02-13 21:42:37.146457624 -0500
+ Birth: -
+  File: /tmp/a/y/v/f
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 808h/2056d      Inode: 270608      Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-02-13 21:42:37.142457622 -0500
+Modify: 2022-02-13 21:42:37.142457622 -0500
+Change: 2022-02-13 21:42:37.142457622 -0500
+ Birth: 2022-02-13 21:42:37.142457622 -0500
 
-doc reference errors (make refcheckdocs):
+	Note that /tmp/a/x/v and /tmp/a/y/v resolve to the same directory
+(otherwise seen at /tmp/a/z), but /tmp/a/x/v/f and /tmp/a/y/v/f do *not*
+resolve to the same thing - the latter is a regular file on /dev/sda8
+(nothing got propagated there), while the former is *not* - it's an
+mntns descriptor we'd bound on /tmp/a/z/f
 
-See https://patchwork.ozlabs.org/patch/1590838
+	IOW, the first copy has two mount nodes, the second - only one.
+Initial copy at rbind does get mntns binds copied into it - look at
+CL_COPY_MNT_NS_FILE in arguments of copy_tree() call in __do_loopback().
+However, we do *not* propagate that subsequent copies (propagate_one()
+never passes CL_COPY_MNT_NS_FILE).  So that's at least one case where we
+want different contributions from the first copy and every subsequent one.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+	So we'd need to run *two* counts, the one to be used from
+attach_recursive_mnt() and another for propagate_one().  With even more
+places where the things could go wrong...
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+	I don't believe it's worth the trouble.  Sure, you run that loop
+only once, instead of once per copy.  And if that's more than noise,
+compared to allocating the same mounts we'd been counting, connecting
+them into tree, hashing, etc., I would be *very* surprised.
 
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
-Hi Rob
-
-Thank you fou your useful information, and we will update it for next
-version.
-
-Thanks
-Guodong
-
-
-
-
+NAKed-by: Al Viro <viro@zeniv.linux.org.uk>
