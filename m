@@ -2,179 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17790C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A610C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:10:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357351AbiBNSK2 (ORCPT
+        id S1357352AbiBNSK6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:10:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56708 "EHLO
+        Mon, 14 Feb 2022 13:10:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357344AbiBNSKX (ORCPT
+        with ESMTP id S231703AbiBNSK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:10:23 -0500
-X-Greylist: delayed 396 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 10:10:12 PST
-Received: from mx2.securetransport.de (mx2.securetransport.de [IPv6:2a03:4000:13:6c7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBAFD65171;
-        Mon, 14 Feb 2022 10:10:12 -0800 (PST)
-Received: from mail.dh-electronics.com (business-24-134-97-169.pool2.vodafone-ip.de [24.134.97.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx2.securetransport.de (Postfix) with ESMTPSA id 4AC115E9CC;
-        Mon, 14 Feb 2022 19:02:46 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-        s=dhelectronicscom; t=1644861768;
-        bh=7xfalOX+rWD4NJI43BSDKMhWEeNFDqerF9Kf3/7C4RA=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=to8ggP9eD3YNDZScXwrMAoJ7D0rCUx1aVHHAh3B9mPByEN5yhJEqPTFVETJyfcnnz
-         0mKctBGU5R8Uf0M1uhF41UrMnyS33+YwJc8LFzP6QH0z3qT49pa7uS2R4ATLLSbXZ9
-         Zuzxas0DAE+PvKCP3oERtK+zmlIkhiOaTYd9mel4bLbOm2S4gq16Tb3KqWurWSm8nJ
-         1lwEvrzorM2VEFjZYEGlToZuoYWyKhMq65nZ/9RB7X57C2UqobSEdpxJH1Pnk2MFc9
-         6oJ+DOJKoijgjKD8myR8rq8DIvAyshpgphOXBCkhrCZIpnQdwtMzd7SbVEysn0KACW
-         HT822K2+UqA4Q==
-Received: from DHPWEX01.DH-ELECTRONICS.ORG (10.64.2.30) by
- DHPWEX01.DH-ELECTRONICS.ORG (10.64.2.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 14 Feb 2022 19:02:42 +0100
-Received: from DHPWEX01.DH-ELECTRONICS.ORG ([fe80::6ced:fa7f:9a9c:e579]) by
- DHPWEX01.DH-ELECTRONICS.ORG ([fe80::6ced:fa7f:9a9c:e579%6]) with mapi id
- 15.02.0986.015; Mon, 14 Feb 2022 19:02:42 +0100
-From:   Christoph Niedermaier <cniedermaier@dh-electronics.com>
-To:     Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
-        Andrej Picej <andrej.picej@norik.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     Support Opensource <Support.Opensource@diasemi.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [RFC PATCH] watchdog: da9062: Correct the timeout values
- [Klartext]
-Thread-Topic: [RFC PATCH] watchdog: da9062: Correct the timeout values
- [Klartext]
-Thread-Index: AdfwANztWgHN3oJ0TZqwlPeCV8dlmAAIEJYAAALaKlAAD68ZMAxWZv9g
-Date:   Mon, 14 Feb 2022 18:02:42 +0000
-Message-ID: <3bb120e2fcb649f09cf0f8c881f442ff@dh-electronics.com>
-References: <4254747d8cde4c5dbcbfdd00a3ecf701@dh-electronics.com>
- <03871bd3-ea78-52e1-f57b-3e35724c8934@roeck-us.net>
-  <a065a23625404ca9853354f9d367a09c@dh-electronics.com>
-In-Reply-To: <a065a23625404ca9853354f9d367a09c@dh-electronics.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.51.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 14 Feb 2022 13:10:56 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495196541B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:10:48 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so19665046pjl.2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:10:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fsT7lSAVYkp9weLcsjjFUcpaz6KeRlFgjOc+jPp5SLw=;
+        b=SSDPNr8/MHlLHsdeCjQIWLjj54yWgtlyyGDG3JWsl3RrdXDL9ccmj3ra0peSk8liJX
+         OI9gCUedBiCr9nDwvTpN1Nd+uLVhOCNh4EvC68Wixq0o02daALU3MRYM+YOxQYD27rit
+         Im01CHx4qHtVcw2Tl43YIhFxJDvPmMNdB1iyBRjoY9zQEL37vE8fUQ9z1mavkAnOuVcq
+         R+wReTg5aubxbsrgzJcnRJgxf/9dSWNfwMgF0h5rUakd0uuCWe7nMwUpaCBJDzBXW7RX
+         cvODpFc7YBc0+IqdViTfNgPiGVthko6mHd3EnYyFKsZFP2Jp/y7zB9ngc7BMdG8RgFiV
+         pnxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=fsT7lSAVYkp9weLcsjjFUcpaz6KeRlFgjOc+jPp5SLw=;
+        b=KK6fcCg+Bfu66r30PQXnQBhTCgB8HT1uwHWgQ2IpIuY7vLl5XkXA9YiJWCf6Xo6U/O
+         uIyXsmei3KCst0RVUo818bX6IWK0FiZlBjkMA+ccKVFWPLYSpsbAIGYYxYXJVXJxU+Fm
+         VAXo6H2iCPOUYJ4M5E6iYNkv2WNI/oq4QIhMk6aRWC/1oMJieBgcvaHmc2I+vjm9bGZU
+         vqwm5f+9HM8+kHIEkwtlF5ME7+D8gw7u2H//9GVLvd7BQMyA70RCtf3kJh2+7+Ouv73n
+         VXtf04o5GWs7KUPb57Zyg61WeOYU2nYyPHdfHHhM0nYJHN0cnVxd3R9EzGpUqjMJBM5r
+         fh+g==
+X-Gm-Message-State: AOAM532jr8mIC6PxCIqEjEWwvxXBI7OaMajqaskWgUVbzIQYafeHwcPr
+        uPMO7e5aFPYy6jT6vlSie/o=
+X-Google-Smtp-Source: ABdhPJyRevZISbVVEODjyftiRPR9ISk40D+7cKnW09JRPf63npZqU5VSfgstAIffRDeyxL/fbBLwvQ==
+X-Received: by 2002:a17:90a:5210:: with SMTP id v16mr16337719pjh.107.1644862247647;
+        Mon, 14 Feb 2022 10:10:47 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id t200sm3533608pfc.35.2022.02.14.10.10.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 10:10:46 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 14 Feb 2022 08:10:45 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 6/7] kernfs: Introduce hashed rw-sem to replace per-fs
+ kernfs_rwsem.
+Message-ID: <YgqbJS64XpsnOeHH@slm.duckdns.org>
+References: <20220214120322.2402628-1-imran.f.khan@oracle.com>
+ <20220214120322.2402628-7-imran.f.khan@oracle.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214120322.2402628-7-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogbGludXgtYXJtLWtlcm5lbCBbbWFpbHRvOmxpbnV4LWFybS1rZXJuZWwtYm91bmNlc0Bs
-aXN0cy5pbmZyYWRlYWQub3JnXQ0KU2VudDogTW9uZGF5LCBEZWNlbWJlciAxMywgMjAyMSAxMTo0
-NSBQTQ0KPj4+Pj4+IFRoYW5rcyBhbnl3YXksIHNvIG5vdyBJIGtub3cgaXQgbXVzdCBiZQ0KPj4+
-Pj4+IHByb2JsZW0gd2l0aCBteSBEQTkwNjEgY2hpcC4NCj4+Pj4+Pg0KPj4+Pj4+IEBBZGFtDQo+
-Pj4+Pj4gV2hlcmUgY2FuIGl0IGNvbWUgZnJvbT8NCj4+Pj4+PiBDYW4geW91IGdpdmUgd2UgYSBo
-aW50IHdoYXQgdG8gY2hlY2s/DQo+Pj4+Pg0KPj4+Pj4gSSd2ZSBzcG9rZW4gaW50ZXJuYWxseSBh
-bmQgaGF2ZSBiZWVuIGluZm9ybWVkIHRoYXQgdGhpcyBpcyBkb3duIHRvIHRoZSBmYWN0IHRoYXQN
-Cj4+Pj4+IERBOTA2MSBydW5zIG9ubHkgZnJvbSBhbiBpbnRlcm5hbCBvc2NpbGxhdG9yIHdoaWNo
-IG1heSBiZSBzbG93ZXIuIFRoZSBpbmRpY2F0aW9uDQo+Pj4+PiBpcyB0aGF0IHRoZSB2YWx1ZXMg
-Zm9yIFRXRFNDQUxFIGRlc2NyaWJlIHRoZSB3aW5kb3cgd2hlcmUgaWYgYSBraWNrL3Bpbmcgb2Nj
-dXJzDQo+Pj4+PiB3aXRoaW4gdGhhdCBwZXJpb2QgdGhlbiB0aGUgd2F0Y2hkb2cgaXMgZ3VhcmFu
-dGVlZCAqbm90KiB0byB0aW1lb3V0LiBUaGUgYWN0dWFsDQo+Pj4+PiB0aW1lb3V0IHdvdWxkIGJl
-IGF0IHNvbWUgcG9pbnQgYWZ0ZXIgdGhlIHNlbGVjdGVkIHRpbWVvdXQgcGVyaW9kLCBhc3N1bWlu
-ZyBubw0KPj4+Pj4gcGluZy9raWNrIG9jY3VycmVkLg0KPj4+Pj4NCj4+Pj4+IFRhYmxlIDggaW4g
-dGhlIGRhdGFzaGVldCBzcGVjaWZpZXMgYSBtaW5pbXVtIHdhdGNoZG9nIHRpbWVvdXQgb2YgMi41
-cyAodFdETUFYKQ0KPj4+Pj4gdW5kZXIgc3BlY2lmaWMgb3BlcmF0aW5nIGNvbmRpdGlvbnMsIHNv
-IGlmIHRoZSBtaW5pbXVtIDJzIHdpbmRvdyB3YXMgY2hvc2VuDQo+Pj4+PiAoVFdEU0NBTEUgPSAx
-KSB0aGVuIGVhcmxpZXN0IHRoZSB3YXRjaGRvZyB3b3VsZCBhY3R1YWxseSB0aW1lb3V0LCBmb2xs
-b3dpbmcgYQ0KPj4+Pj4gcGluZywgaXMgMi41cywgYXNzdW1pbmcgdGhlIGNvbmRpdGlvbnMgbWF0
-Y2hlZCB0aG9zZSBkZXNjcmliZWQuDQo+Pj4+Pg0KPj4+Pj4gSWYgeW91IGhhdmUgZnVydGhlciBx
-dWVzdGlvbnMgaXQgcHJvYmFibHkgbWFrZXMgc2Vuc2UgdG8gY29udGFjdCBEaWFsb2cvUmVuZXNh
-cw0KPj4+Pj4gc3VwcG9ydCBhcyB0aGV5IHdpbGwgYmUgYWJsZSB0byBwcm92aWRlIG1vcmUgZGV0
-YWlsZWQgaW5mbyBvbiB0aGlzLg0KPj4+Pg0KPj4+PiBTbyBhIERBOTA2MSBydW5zIG9ubHkgZnJv
-bSBhbiBpbnRlcm5hbCBvc2NpbGxhdG9yLCB3aGVyZWFzIGEgREE5MDYyDQo+Pj4+IGNhbiBydW4g
-b24gZWl0aGVyIGFuIGludGVybmFsIG9yIGFuIGV4dGVybmFsIG9zY2lsbGF0b3IuIFNvIHRoaXMN
-Cj4+Pj4gbWVhbnMgdGhhdCB0aGUgREE5MDYxIHRpbWVvdXQgdmFsdWVzIGFyZSBkaWZmZXIgZnJv
-bSB0aGUgREE5MDYyDQo+Pj4+IHdpdGggYW4gZXh0ZXJuYWwgb3NjaWxsYXRvciBub3Qgb25seSBv
-biBteSBkZXZpY2UgYnV0IG9uIGFsbCBEQTkwNjENCj4+Pj4gZGV2aWNlcy4NCj4+Pj4NCj4+Pj4g
-VGhpcyBhcmUgdGhlIHZhbHVlcyAoaW4gc2Vjb25kcykgaW4gY29tcGFyaXNvbjoNCj4+Pj4gREE5
-MDYyIChmcm9tIGRyaXZlcik6IDAgIDIgIDQgICA4ICAxNiAgMzIgIDY1IDEzMQ0KPj4+PiBEQTkw
-NjEgKG1lYXN1cmVkKTogICAgMCAgMyAgNiAgMTIgIDI1ICA1MSAxMDIgMjA0DQo+Pj4+ID09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCj4+Pj4gRGlmZmVy
-ZW5jZTogICAgICAgICAgIDAgKzEgKzIgICs0ICArOSArMTkgKzM3ICs3Mw0KPj4+Pg0KPj4+PiBJ
-biBteSBvcGluaW9uLCB0aGUgZGlmZmVyZW5jZXMgaW4gdGhlIGhpZ2hlciB2YWx1ZXMgYXJlIHZl
-cnkgaHVnZS4NCj4+Pj4gSWYgSSBleHBlY3QgdGhhdCB0aGUgd2F0Y2hkb2cgdHJpZ2dlcnMgYW5k
-IEkgaGF2ZSB0byB3YWl0IG1vcmUgdGhhbg0KPj4+PiBhIG1pbnV0ZSBmb3IgdGhhdCB0byBoYXBw
-ZW4gSSBhc2sgbXlzZWxmIGlzIHRoZXJlIHNvbWV0aGluZyB3cm9uZy4NCj4+Pj4NCj4+Pj4gQEFu
-ZHJlag0KPj4+PiBJIGd1ZXNzLCB5b3UgYXJlIHVzaW5nIGFuIGV4dGVybmFsIG9zY2lsbGF0b3Is
-IGFyZW4ndCB5b3U/DQo+Pj4+DQo+Pj4+IEBBZGFtDQo+Pj4+IElzIHRoZXJlIGEgd2F5IHRvIGNo
-ZWNrIGluIHRoZSBkcml2ZXIgd2hpY2ggb3NjaWxsYXRvciBpcyBpbiB1c2U/DQo+Pj4+DQo+Pj4+
-IEBNYWludGFpbmVycw0KPj4+PiBJcyBpbiB0aGUgZHJpdmVyIGEgbmVlZCB0byBkaXN0aW5ndWlz
-aCBiZXR3ZWVuIGFuIGV4dGVybmFsIGFuZCBhbg0KPj4+PiBpbnRlcm5hbCBvc2NpbGxhdG9yIHRv
-IGdldCB0aGUgdGltZW91dCB2YWx1ZXMgbW9yZSBhY2N1cmF0ZT8NCj4+Pj4NCj4+Pg0KPj4+IEl0
-IHdvdWxkIGJlIHZlcnkgZGVzaXJhYmxlIHRvIGdldCB0aW1lb3V0IHZhbHVlcyBtb3JlIGFjY3Vy
-YXRlLg0KPj4+IEkgd291bGQgbm90IHdhbnQgdG8gZGljdGF0ZSBob3cgdG8gaW1wbGVtZW50IGl0
-LCB0aG91Z2guDQo+Pj4gSXQgY291bGQgYmUgYXV0b21hdGljYWxseSBkZXRlY3RlZCBpZiB0aGF0
-IGlzIHBvc3NpYmxlLCB0aGVyZQ0KPj4+IGNvdWxkIGJlIGEgZGV2aWNldHJlZSBjbG9jayBwcm9w
-ZXJ0eSBwcm92aWRpbmcgdGhlIGNsb2NrDQo+Pj4gZnJlcXVlbmN5LCBvciBtYXliZSB0aGVyZSBp
-cyBzb21lIG90aGVyIHNvbHV0aW9uLg0KPj4+DQo+Pj4gR3VlbnRlcg0KPj4NCj4+IEkgYW0gb3Bl
-biBmb3IgYSBnb29kIHNvbHV0aW9uLg0KPj4gTWVhbndoaWxlIEkgbWVhc3VyZWQgdGhlIHRpbWVv
-dXQgdmFsdWVzIG9mIG15IDggYXZhaWxhYmxlIERBOTA2MQ0KPj4gd2F0Y2hkb2dzLiBJIGRlcml2
-ZWQgdGhlIGZvbGxvd2luZyBmb3JtdWxhIGZyb20gdGhlIGdpdmVuIGZvcm11bGENCj4+IGF0IHRo
-ZSBkYXRhIHNoZWV0IGFuZCB0aGUgY2xvY2sgZGl2aWRlciBvZiAyXjE2Og0KPj4NCj4+IGYgPSAy
-XigxNStUV0RTQ0FMRSkgLyB0DQo+Pg0KPj4gRm9ybXVsYSBjaGVjayB3aXRoIHRoZSBleHRlcm5h
-bCBvc2NpbGxhdG9yICgzMmtIeikgVFdEU0NBTEU9NyBAIDEzMXM6DQo+PiBmID0gMl4oMTUrNykg
-LyAxMzEgPSAzMjAxN0h6ICg9PiBzaG91bGQgYmUgT0spDQo+Pg0KPj4gVGhlIHRpbWVvdXRzIG9m
-IG15IDggd2F0Y2hkb2dzICg5MDYxLUFBKSB3aXRoIFRXRFNDQUxFPTc6DQo+PiB0NyA9IDIxMXMg
-PT4gMTk4NzhIeg0KPj4gdDcgPSAxOTdzID0+IDIxMjkxSHoNCj4+IHQ3ID0gMjAzcyA9PiAyMDY2
-Mkh6DQo+PiB0NyA9IDIwNHMgPT4gMjA1NjBIeg0KPj4gdDcgPSAyMDZzID0+IDIwMzYxSHoNCj4+
-IHQ3ID0gMTk4cyA9PiAyMTY2Mkh6DQo+PiB0NyA9IDIwMHMgPT4gMjA5NzJIeg0KPj4NCj4+IEFj
-Y29yZGluZyB0byB0aGUgZGF0YSBzaGVldCB0aGUgaW50ZXJuYWwgb3NjaWxsYXRvciBzaG91bGQg
-cnVuIGF0IDI1a0h6Lg0KPj4gVGhlIGF2ZXJhZ2UgZnJlcXVlbmN5IG9mIG15IDggZGV2aWNlcyBp
-cyAyMC42a0h6LiBNYXliZSB0aGUgZGF0YSBzaGVldA0KPj4gQ2xvY2sgdmFsdWUgaXMgYSBtYXgg
-dmFsdWUuIFRoZSB0aW1lb3V0IGRpZmZlcmVuY2Ugb24gbXkgOCBkZXZpY2VzIGFyZQ0KPj4gMTRz
-LiBTbyB0aGUgdmFsdWVzIHZhcnkgZnJvbSBkZXZpY2UgdG8gZGV2aWNlLCBhbmQgbWF5YmUgdGhl
-cmUgaXMgYWxzbyBhDQo+PiB0ZW1wZXJhdHVyZSBjb21wb25lbnQuDQo+Pg0KPj4gQEFkYW0NCj4+
-IElzIHRoZXJlIGEgd2F5IHRvIGNoZWNrIHdoaWNoIG9zY2lsbGF0b3IgaXMgaW4gdXNlPw0KPj4g
-SXMgdGhlcmUgYSB3YXkgdG8gZmluZCB0aGUgY3VycmVudCBvc2NpbGxhdG9yIGZyZXF1ZW5jeT8N
-Cj4+IEFyZSB0aGVyZSBhbnkgb3RoZXIgaWRlYXMvc29sdXRpb25zIHRvIGdldCB0aGUgdGltZW91
-dCB2YWx1ZXMgbW9yZSBhY2N1cmF0ZT8NCj4gDQo+IEFzIEkgc2VudCBteSBFLU1haWwgSSBkaWRu
-J3Qgc2VlIHlvdXIgYW5zd2VyLCBzbyBoZXJlIGl0IGlzOg0KPiANCj4+IEEgcXVpY2sgc2NhbiBv
-ZiB0aGUgREE5MDYyIGRhdGFzaGVldCBzaG93cyB0aGF0IHJlZy9maWVsZCBFTl8zMksvQ1JZU1RB
-TCB3aWxsDQo+PiBpbmRpY2F0ZSB0aGUgcHJlc2VuY2Ugb2YgYSAzMktIeiBjcnlzdGFsIG9zY2ls
-bGF0b3IuIE9idmlvdXNseSBvbiBEQTkwNjEgdGhhdA0KPj4gb3B0aW9uIGlzbid0IGF2YWlsYWJs
-ZS4NCj4+DQo+PiBJIHRoaW5rIHRoZSBwcm9ibGVtIHNlZW1zIHRvIGxpZSBhcm91bmQgZGV0ZXJt
-aW5pbmcgdGhlIGludGVybmFsIG9zY2lsbGF0b3Incw0KPj4gZnJlcXVlbmN5LiBEYXRhc2hlZXQg
-cmVmZXJlbmNlcyAyNU1oeiBpbiBUYWJsZSA5IChXYXRjaGRvZyBFbGVjdHJpY2FsDQo+PiBDaGFy
-YWN0ZXJpc3RpY3MpLCBidXQgdGhhdCBkb2Vzbid0IHNlZW0gdG8gdGFsbHkgd2l0aCB5b3VyIHRp
-bWluZ3MgYW5kIEkgZG9uJ3QNCj4+IHNlZSBhbiBvYnZpb3VzIHdheSBpbiB0aGUgcmVnbWFwIHRv
-IGNhbGN1bGF0ZSB0aGlzIGF0IHJ1biB0aW1lLiAqSWYqIHRoZQ0KPj4gb3NjaWxsYXRvciBmcmVx
-dWVuY3kgdmFyaWVzIGZyb20gcGFydCB0byBwYXJ0LCBvciB1bmRlciBkaWZmZXJlbnQgZW52aXJv
-bm1lbnRhbA0KPj4gY29uZGl0aW9ucywgdGhlbiBpdCdzIGdvaW5nIHRvIGJlIHRvdWdoIHRvIHRp
-ZSB0aGlzIGRvd24sIGFuZCB5b3Ugd291bGRuJ3Qgd2FudA0KPj4gdG8gc3RhdGUgYSB0aW1lb3V0
-IHZhbHVlIHRoYXQncyBsb25nZXIgdGhhbiByZWFsaXR5Lg0KPiANCj4gQEFkYW0NCj4gV2hhdCBk
-byB5b3UgdGhpbmsgaWYgSSBhZGQgYWxzbyB0aGUgdGltZW91dCB2YWx1ZXMgZm9yIHRoZSBpbnRl
-cm5hbA0KPiBvc2NpbGxhdG9yPw0KPiBUaGFuIHRoZSB2YWx1ZXMgd291bGQgYmU6DQo+IA0KPiB0
-ID0gMl4oMTUrVFdEU0NBTEUpIC8gZg0KPiANCj4gSW50ZXJuYWwgMjVrSHogb3NjaWxsYXRvcjog
-MCAgMiAgNSAgMTAgIDIwICA0MSAgODMgMTY3DQo+IA0KPiBJbiBjb21wYXJpc29uIHRvIHRoZQ0K
-PiBleHRlcm5hbCAzMmtIeiBvc2NpbGxhdG9yOiAwICAyICA0ICAgOCAgMTYgIDMyICA2NSAxMzEN
-Cj4gDQo+IFNvIHRoZSBkaWZmZXJlbmNlIHRvIG15IG1lYXN1cmVkIHZhbHVlcyB3aWxsIGRlY3Jl
-YXNlIGFuZCBpdCB3aWxsIGltcHJvdmUNCj4gdGhlDQo+IGN1cnJlbnQgZHJpdmVyIHRvd2FyZHMg
-bW9yZSBhY2N1cmF0ZSB2YWx1ZXMuDQo+IA0KPiBCdHcgaWYgSSBjYWxjdWxhdGUgdGhlIHZhbHVl
-cyB3aXRoIDMyNzY4SHogKHRoZSB0eXBpY2FsIDMya0h6IG9zY2lsbGF0b3IpLCBJDQo+IGdldCB0
-aGUNCj4gZm9sbG93aW5nIHZhbHVlczoNCj4gMzI3NjhIeiBvc2NpbGxhdG9yOiAgICAgICAgMCAg
-MiAgNCAgIDggIDE2ICAzMiAgNjQgMTI4DQoNCkkgY29tZSB0byB0aGUgY29uY2x1c2lvbiB0aGF0
-IHVuZGVyIG5vcm1hbCBjb25kaXRpb24gKHJvb20gdGVtcGVyYXR1cmUpIHRoZQ0KdGltZW91dCB2
-YWx1ZXMgY291bGQgYmUgaW1wcm92ZWQsIGJ1dCBkdWUgdG8gdGhlIHVzZWQgaW50ZXJuYWwgcmlu
-ZyBvc2NpbGxhdG9yDQpvbiB0aGUgREE5MDYxIGNoaXAgdW5kZXIgZXh0cmVtZSBjb25kaXRpb25z
-IGxpa2UgYXV0b21vdGl2ZSAoMTI1IGRlZ3JlZXMpIHRoZQ0KdmFsdWVzIGNvbWUgY2xvc2UgdG8g
-dGhlIERBOTA2MiB0aW1lb3V0IHZhbHVlcywgaWYgYW4gZXh0ZXJuYWwgb3NjaWxsYXRvcg0KaXMg
-dXNlZC4gSW4gb3JkZXIgbm90IHRvIHRyaWdnZXIgdG9vIGVhcmx5IGluIGV4dHJlbWUgc2l0dWF0
-aW9ucywgdGhlIHZhbHVlcw0KbXVzdCBiZSBsZWZ0IGFzIHRoZXkgYXJlLiBCdXQgSSB0b2xkIERp
-YWxvZyB0byBhZGQgYSBub3RlIGluIHRoZSBkYXRhIHNoZWV0DQpleHBsYWluaW5nIHRoZSBkZXZp
-YXRpb24gd2hlbiB0aGUgaW50ZXJuYWwgb3NjaWxsYXRvciBpcyB1c2VkIChEQTkwNjEpLg0KDQpU
-aGFua3MgZm9yIGhlbHBpbmcgbWUgYW5kIGJlc3QgcmVnYXJkcw0KQ2hyaXN0b3BoDQo=
+On Mon, Feb 14, 2022 at 11:03:21PM +1100, Imran Khan wrote:
+> +/**
+> + * up_write_kernfs_rwsem_for_two_nodes() - Release hashed rwsem for 2 nodes
+> + *
+> + * @kn1: kernfs_node for which hashed rwsem needs to be released
+> + * @kn2: kernfs_node for which hashed rwsem needs to be released
+> + *
+> + * In case of nested locking, rwsem with higher address is released first.
+> + */
+> +static inline void up_write_kernfs_rwsem_for_two_nodes(struct kernfs_node *kn1,
+> +						       struct kernfs_node *kn2)
+> +{
+> +	struct rw_semaphore *rwsem1 = kernfs_rwsem_ptr(kn1);
+> +	struct rw_semaphore *rwsem2 = kernfs_rwsem_ptr(kn2);
+> +
+> +	if (rwsem1 == rwsem2)
+> +		up_write(rwsem1);
+> +	else {
+> +		if (rwsem1 > rwsem2) {
+> +			up_write(rwsem1);
+> +			up_write(rwsem2);
+> +		} else {
+> +			up_write(rwsem2);
+> +			up_write(rwsem1);
+> +		}
+> +	}
+> +
+> +	kernfs_put(kn1);
+> +	kernfs_put(kn2);
+> +}
+
+You don't need to order unlocks.
+
+> +/**
+> + * down_read_kernfs_rwsem_for_two_nodes() - Acquire hashed rwsem for 2 nodes
+> + *
+> + * @kn1: kernfs_node for which hashed rwsem needs to be taken
+> + * @kn2: kernfs_node for which hashed rwsem needs to be taken
+> + *
+> + * In certain cases we need to acquire hashed rwsem for 2 nodes that don't have a
+> + * parent child relationship. This is one of the cases of nested locking involving
+> + * hashed rwsem and rwsem with lower address is acquired first.
+> + */
+> +static inline void down_read_kernfs_rwsem_for_two_nodes(struct kernfs_node *kn1,
+> +							struct kernfs_node *kn2)
+
+Maybe something like kernfs_down_read_double_nodes() is enough as the name?
+up/down already imply rwsem.
+
+> +static inline void down_read_kernfs_rwsem(struct kernfs_node *kn,
+> +				      enum kernfs_rwsem_lock_pattern ptrn)
+> +{
+> +	struct rw_semaphore *p_rwsem = NULL;
+> +	struct rw_semaphore *rwsem = kernfs_rwsem_ptr(kn);
+> +	int lock_parent = 0;
+
+bool?
+
+> +
+> +	if (ptrn == KERNFS_RWSEM_LOCK_SELF_AND_PARENT && kn->parent)
+
+I wonder whether it'd be clearer to separate the double lock case into its
+own function. The backend implementation being shared is fine but if we had
+e.g. kernfs_down_read() and kernfs_down_read_double(), wouldn't that be
+simpler?
+
+> +		lock_parent = 1;
+> +
+> +	if (lock_parent)
+> +		p_rwsem = kernfs_rwsem_ptr(kn->parent);
+> +
+> +	if (!lock_parent || rwsem == p_rwsem) {
+> +		down_read_nested(rwsem, 0);
+> +		kernfs_get(kn);
+> +		kn->unlock_parent = 0;
+> +	} else {
+> +		/**
+> +		 * In case of nested locking, locks are taken in order of their
+> +		 * addresses. lock with lower address is taken first, followed
+> +		 * by lock with higher address.
+> +		 */
+> +		if (rwsem < p_rwsem) {
+> +			down_read_nested(rwsem, 0);
+> +			down_read_nested(p_rwsem, 1);
+> +		} else {
+> +			down_read_nested(p_rwsem, 0);
+> +			down_read_nested(rwsem, 1);
+> +		}
+> +		kernfs_get(kn);
+> +		kernfs_get(kn->parent);
+> +		kn->unlock_parent = 1;
+
+I wouldn't put this inside kernfs_node. Either make the same decision
+(whether it has a parent) in up() or return something which can be passed to
+up() by the caller.
+
+> +/**
+> + * down_write_kernfs_rwsem_rename_ns() - take hashed rwsem during
+
+kernfs_down_write_triple()?
+
+> +static inline void up_write_kernfs_rwsem_rename_ns(struct kernfs_node *kn,
+> +					struct kernfs_node *current_parent,
+> +					struct kernfs_node *old_parent)
+> +{
+> +	struct rw_semaphore *array[3];
+> +
+> +	array[0] = kernfs_rwsem_ptr(kn);
+> +	array[1] = kernfs_rwsem_ptr(current_parent);
+> +	array[2] = kernfs_rwsem_ptr(old_parent);
+
+So, we had sth like the following:
+
+struct kernfs_rwsem_token {
+       struct kernfs_node held[3];
+};
+
+which the down functions return (probably as out argument), wouldn't we be
+able to share up() for all variants and make the code simpler?
+
+> +static inline void down_read_kernfs_rwsem_rename_ns(struct kernfs_node *kn,
+> +					struct kernfs_node *current_parent,
+> +					struct kernfs_node *new_parent)
+> +{
+> +	struct rw_semaphore *array[3];
+> +
+> +	array[0] = kernfs_rwsem_ptr(kn);
+> +	array[1] = kernfs_rwsem_ptr(current_parent);
+> +	array[2] = kernfs_rwsem_ptr(new_parent);
+> +
+> +	if (array[0] == array[1] && array[0] == array[2]) {
+> +		/* All 3 nodes hash to same rwsem */
+> +		down_read_nested(array[0], 0);
+> +	} else {
+> +		/**
+> +		 * All 3 nodes are not hashing to the same rwsem, so sort the
+> +		 * array.
+> +		 */
+> +		kernfs_sort_rwsems(array);
+> +
+> +		if (array[0] == array[1] || array[1] == array[2]) {
+> +			/**
+> +			 * Two nodes hash to same rwsem, and these
+> +			 * will occupy consecutive places in array after
+> +			 * sorting.
+> +			 */
+> +			down_read_nested(array[0], 0);
+> +			down_read_nested(array[2], 1);
+> +		} else {
+> +			/* All 3 nodes hashe to different rwsems */
+> +			down_read_nested(array[0], 0);
+> +			down_read_nested(array[1], 1);
+> +			down_read_nested(array[2], 2);
+> +		}
+> +	}
+
+How about factoring out "am I locking one, two or three?" into a function -
+e.g. the sort function takes the array, sort & uniq's them into locking
+token so that the down functions (for both double and triple) just do what's
+the token says.
+
+Thanks.
+
+-- 
+tejun
