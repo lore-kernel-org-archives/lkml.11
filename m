@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 728B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 663A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:44:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244915AbiBNJoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:44:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33462 "EHLO
+        id S240902AbiBNJoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:44:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244960AbiBNJlB (ORCPT
+        with ESMTP id S244989AbiBNJlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374C06578F;
-        Mon, 14 Feb 2022 01:36:26 -0800 (PST)
+        Mon, 14 Feb 2022 04:41:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8197A186;
+        Mon, 14 Feb 2022 01:36:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC232B80DC1;
-        Mon, 14 Feb 2022 09:36:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A35C340E9;
-        Mon, 14 Feb 2022 09:36:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57D0F6102D;
+        Mon, 14 Feb 2022 09:36:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C85C340E9;
+        Mon, 14 Feb 2022 09:36:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831383;
-        bh=MjwLM9w9HSUTLylEXxIBHOL81l+2um6GSMvhepqhVbQ=;
+        s=korg; t=1644831411;
+        bh=etoig3Pzjr9tZNEg1pKJtWlT1tk2W7RNrHuv6XbcSYw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DfDi0g6q1wgOkiNwVE77MbdDIjpA2to7Huk4Ekn5gWKA+FP1TvtO2KZOdaXpx5LyZ
-         nd0zH6iGJBx2ujkAiiYN5BUDud32GI119/aVLxnV/Xx/vYYAZF8XmYvER1btARIqMy
-         bA9ifRvO6YrwPVaXAxMmqAqdqoxUZKnNB4IgwAQI=
+        b=pjn/7+91b2BmT8TlGxVFDfMFZYXZD+srQfAxzEz3iI80lURWkjzHYSDdnYKDSxJLr
+         ey1xzITJ15C0aPWsGFdeNV5zPFipcbGTA1TcujTw+j/eoafs+2wshSOQ0H37qMWu8r
+         0ysAE+Q6shAhAnk0teYzLsLI45Zjlw5Y/Knvprj0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.4 29/71] ARM: socfpga: fix missing RESET_CONTROLLER
-Date:   Mon, 14 Feb 2022 10:25:57 +0100
-Message-Id: <20220214092452.998302958@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 46/71] veth: fix races around rq->rx_notify_masked
+Date:   Mon, 14 Feb 2022 10:26:14 +0100
+Message-Id: <20220214092453.603018204@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,46 +51,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 3037b174b1876aae6b2d1a27a878c681c78ccadc upstream.
+[ Upstream commit 68468d8c4cd4222a4ca1f185ab5a1c14480d078c ]
 
-The SocFPGA machine since commit b3ca9888f35f ("reset: socfpga: add an
-early reset driver for SoCFPGA") uses reset controller, so it should
-select RESET_CONTROLLER explicitly.  Selecting ARCH_HAS_RESET_CONTROLLER
-is not enough because it affects only default choice still allowing a
-non-buildable configuration:
+veth being NETIF_F_LLTX enabled, we need to be more careful
+whenever we read/write rq->rx_notify_masked.
 
-  /usr/bin/arm-linux-gnueabi-ld: arch/arm/mach-socfpga/socfpga.o: in function `socfpga_init_irq':
-  arch/arm/mach-socfpga/socfpga.c:56: undefined reference to `socfpga_reset_init'
+BUG: KCSAN: data-race in veth_xmit / veth_xmit
 
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: <stable@vger.kernel.org>
-Fixes: b3ca9888f35f ("reset: socfpga: add an early reset driver for SoCFPGA")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+write to 0xffff888133d9a9f8 of 1 bytes by task 23552 on cpu 0:
+ __veth_xdp_flush drivers/net/veth.c:269 [inline]
+ veth_xmit+0x307/0x470 drivers/net/veth.c:350
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one+0x105/0x2f0 net/core/dev.c:3473
+ dev_hard_start_xmit net/core/dev.c:3489 [inline]
+ __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
+ dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
+ br_dev_queue_push_xmit+0x3ce/0x430 net/bridge/br_forward.c:53
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ br_forward_finish net/bridge/br_forward.c:66 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ __br_forward+0x2e4/0x400 net/bridge/br_forward.c:115
+ br_flood+0x521/0x5c0 net/bridge/br_forward.c:242
+ br_dev_xmit+0x8b6/0x960
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one+0x105/0x2f0 net/core/dev.c:3473
+ dev_hard_start_xmit net/core/dev.c:3489 [inline]
+ __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
+ dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
+ neigh_hh_output include/net/neighbour.h:525 [inline]
+ neigh_output include/net/neighbour.h:539 [inline]
+ ip_finish_output2+0x6f8/0xb70 net/ipv4/ip_output.c:228
+ ip_finish_output+0xfb/0x240 net/ipv4/ip_output.c:316
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip_output+0xf3/0x1a0 net/ipv4/ip_output.c:430
+ dst_output include/net/dst.h:451 [inline]
+ ip_local_out net/ipv4/ip_output.c:126 [inline]
+ ip_send_skb+0x6e/0xe0 net/ipv4/ip_output.c:1570
+ udp_send_skb+0x641/0x880 net/ipv4/udp.c:967
+ udp_sendmsg+0x12ea/0x14c0 net/ipv4/udp.c:1254
+ inet_sendmsg+0x5f/0x80 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
+ ___sys_sendmsg net/socket.c:2467 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
+ __do_sys_sendmmsg net/socket.c:2582 [inline]
+ __se_sys_sendmmsg net/socket.c:2579 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffff888133d9a9f8 of 1 bytes by task 23563 on cpu 1:
+ __veth_xdp_flush drivers/net/veth.c:268 [inline]
+ veth_xmit+0x2d6/0x470 drivers/net/veth.c:350
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one+0x105/0x2f0 net/core/dev.c:3473
+ dev_hard_start_xmit net/core/dev.c:3489 [inline]
+ __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
+ dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
+ br_dev_queue_push_xmit+0x3ce/0x430 net/bridge/br_forward.c:53
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ br_forward_finish net/bridge/br_forward.c:66 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ __br_forward+0x2e4/0x400 net/bridge/br_forward.c:115
+ br_flood+0x521/0x5c0 net/bridge/br_forward.c:242
+ br_dev_xmit+0x8b6/0x960
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one+0x105/0x2f0 net/core/dev.c:3473
+ dev_hard_start_xmit net/core/dev.c:3489 [inline]
+ __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
+ dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
+ neigh_hh_output include/net/neighbour.h:525 [inline]
+ neigh_output include/net/neighbour.h:539 [inline]
+ ip_finish_output2+0x6f8/0xb70 net/ipv4/ip_output.c:228
+ ip_finish_output+0xfb/0x240 net/ipv4/ip_output.c:316
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip_output+0xf3/0x1a0 net/ipv4/ip_output.c:430
+ dst_output include/net/dst.h:451 [inline]
+ ip_local_out net/ipv4/ip_output.c:126 [inline]
+ ip_send_skb+0x6e/0xe0 net/ipv4/ip_output.c:1570
+ udp_send_skb+0x641/0x880 net/ipv4/udp.c:967
+ udp_sendmsg+0x12ea/0x14c0 net/ipv4/udp.c:1254
+ inet_sendmsg+0x5f/0x80 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
+ ___sys_sendmsg net/socket.c:2467 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
+ __do_sys_sendmmsg net/socket.c:2582 [inline]
+ __se_sys_sendmmsg net/socket.c:2579 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x00 -> 0x01
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 23563 Comm: syz-executor.5 Not tainted 5.17.0-rc2-syzkaller-00064-gc36c04c2e132 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 948d4f214fde ("veth: Add driver XDP")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-socfpga/Kconfig |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/veth.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/arch/arm/mach-socfpga/Kconfig
-+++ b/arch/arm/mach-socfpga/Kconfig
-@@ -2,6 +2,7 @@
- menuconfig ARCH_SOCFPGA
- 	bool "Altera SOCFPGA family"
- 	depends on ARCH_MULTI_V7
-+	select ARCH_HAS_RESET_CONTROLLER
- 	select ARCH_SUPPORTS_BIG_ENDIAN
- 	select ARM_AMBA
- 	select ARM_GIC
-@@ -19,6 +20,7 @@ menuconfig ARCH_SOCFPGA
- 	select PL310_ERRATA_727915
- 	select PL310_ERRATA_753970 if PL310
- 	select PL310_ERRATA_769419
-+	select RESET_CONTROLLER
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 81a79e7132483..10a876f8831c7 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -209,9 +209,10 @@ static void __veth_xdp_flush(struct veth_rq *rq)
+ {
+ 	/* Write ptr_ring before reading rx_notify_masked */
+ 	smp_mb();
+-	if (!rq->rx_notify_masked) {
+-		rq->rx_notify_masked = true;
+-		napi_schedule(&rq->xdp_napi);
++	if (!READ_ONCE(rq->rx_notify_masked) &&
++	    napi_schedule_prep(&rq->xdp_napi)) {
++		WRITE_ONCE(rq->rx_notify_masked, true);
++		__napi_schedule(&rq->xdp_napi);
+ 	}
+ }
  
- if ARCH_SOCFPGA
- config SOCFPGA_SUSPEND
+@@ -780,8 +781,10 @@ static int veth_poll(struct napi_struct *napi, int budget)
+ 		/* Write rx_notify_masked before reading ptr_ring */
+ 		smp_store_mb(rq->rx_notify_masked, false);
+ 		if (unlikely(!__ptr_ring_empty(&rq->xdp_ring))) {
+-			rq->rx_notify_masked = true;
+-			napi_schedule(&rq->xdp_napi);
++			if (napi_schedule_prep(&rq->xdp_napi)) {
++				WRITE_ONCE(rq->rx_notify_masked, true);
++				__napi_schedule(&rq->xdp_napi);
++			}
+ 		}
+ 	}
+ 
+-- 
+2.34.1
+
 
 
