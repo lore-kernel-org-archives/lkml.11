@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38AAFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3648C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347002AbiBNK3F (ORCPT
+        id S1347100AbiBNK3I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:29:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37260 "EHLO
+        Mon, 14 Feb 2022 05:29:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348474AbiBNK1G (ORCPT
+        with ESMTP id S1348232AbiBNK0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:27:06 -0500
+        Mon, 14 Feb 2022 05:26:50 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C1C70301;
-        Mon, 14 Feb 2022 01:58:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C707811AD;
+        Mon, 14 Feb 2022 01:57:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEC72B80DC4;
-        Mon, 14 Feb 2022 09:57:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2527C340E9;
-        Mon, 14 Feb 2022 09:57:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF038B80DBE;
+        Mon, 14 Feb 2022 09:57:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD9E0C340EF;
+        Mon, 14 Feb 2022 09:57:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832678;
-        bh=d1WcnwbYcvx7Jr2kzW+21IfSV6rX6uum7WSctazv07o=;
+        s=korg; t=1644832667;
+        bh=UImdhe0lzIBcuJU5o3NtutfAaJZJjpWz8OLIQz63P+c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JKgl2EcGLBRA/ptVvzyKLR3s76yVFPUzTj3FeS1hoVZyhYG7hNR6ImervO8X469bh
-         AOWRiJT/ISVOAeFQ/PWDwgme+3c/dvGi47uKW3ix+RqtWZSiYbdqWRFO83VseXu8Kl
-         biBKplek+B2b20GiEOEOxsRMGj7Pp/Ngi/j9KQP8=
+        b=WmSmtdoe5153onrnpzBPS4kgF5E54kPSg7Scd9cTtw3LXSfdteem0u7fdSJo0KeqA
+         R0oBHEbNeAYepBzLWQjpq4vZZ9fdl1cbCfL3Ah3jV6ibFa/vx5C47k/MkP1/ERkWe0
+         4YAaoaDawSfsh+c1Z4stOCg/+Hou2VupFn8mIoB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.16 091/203] drm/i915: Populate pipe dbuf slices more accurately during readout
-Date:   Mon, 14 Feb 2022 10:25:35 +0100
-Message-Id: <20220214092513.353139500@linuxfoundation.org>
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.16 088/203] drm/rockchip: vop: Correct RK3399 VOP register fields
+Date:   Mon, 14 Feb 2022 10:25:32 +0100
+Message-Id: <20220214092513.258735233@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,64 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 85bb289215cf37e05e9581b39b114db1293f9ecd upstream.
+commit 9da1e9ab82c92d0e89fe44cad2cd7c2d18d64070 upstream.
 
-During readout we cannot assume the planes are actually using the
-slices they are supposed to use. The BIOS may have misprogrammed
-things and put the planes onto the wrong dbuf slices. So let's
-do the readout more carefully to make sure we really know which
-dbuf slices are actually in use by the pipe at the time.
+Commit 7707f7227f09 ("drm/rockchip: Add support for afbc") switched up
+the rk3399_vop_big[] register windows, but it did so incorrectly.
 
-Cc: <stable@vger.kernel.org> # v5.14+
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220204141818.1900-2-ville.syrjala@linux.intel.com
-Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
-(cherry picked from commit b3dcc6dc0f32612d04839c2fb32e94d0ebf92c98)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+The biggest problem is in rk3288_win23_data[] vs.
+rk3368_win23_data[] .format field:
+
+  RK3288's format: VOP_REG(RK3288_WIN2_CTRL0, 0x7, 1)
+  RK3368's format: VOP_REG(RK3368_WIN2_CTRL0, 0x3, 5)
+
+Bits 5:6 (i.e., shift 5, mask 0x3) are correct for RK3399, according to
+the TRM.
+
+There are a few other small differences between the 3288 and 3368
+definitions that were swapped in commit 7707f7227f09. I reviewed them to
+the best of my ability according to the RK3399 TRM and fixed them up.
+
+This fixes IOMMU issues (and display errors) when testing with BG24
+color formats.
+
+Fixes: 7707f7227f09 ("drm/rockchip: Add support for afbc")
+Cc: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Tested-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220119161104.1.I1d01436bef35165a8cdfe9308789c0badb5ff46a@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/intel_pm.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/rockchip/rockchip_vop_reg.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/i915/intel_pm.c
-+++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -6633,6 +6633,7 @@ void skl_wm_get_hw_state(struct drm_i915
- 		enum pipe pipe = crtc->pipe;
- 		unsigned int mbus_offset;
- 		enum plane_id plane_id;
-+		u8 slices;
+--- a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
++++ b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
+@@ -902,6 +902,7 @@ static const struct vop_win_phy rk3399_w
+ 	.enable = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 0),
+ 	.format = VOP_REG(RK3288_WIN0_CTRL0, 0x7, 1),
+ 	.rb_swap = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 12),
++	.x_mir_en = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 21),
+ 	.y_mir_en = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 22),
+ 	.act_info = VOP_REG(RK3288_WIN0_ACT_INFO, 0x1fff1fff, 0),
+ 	.dsp_info = VOP_REG(RK3288_WIN0_DSP_INFO, 0x0fff0fff, 0),
+@@ -912,6 +913,7 @@ static const struct vop_win_phy rk3399_w
+ 	.uv_vir = VOP_REG(RK3288_WIN0_VIR, 0x3fff, 16),
+ 	.src_alpha_ctl = VOP_REG(RK3288_WIN0_SRC_ALPHA_CTRL, 0xff, 0),
+ 	.dst_alpha_ctl = VOP_REG(RK3288_WIN0_DST_ALPHA_CTRL, 0xff, 0),
++	.channel = VOP_REG(RK3288_WIN0_CTRL2, 0xff, 0),
+ };
  
- 		skl_pipe_wm_get_hw_state(crtc, &crtc_state->wm.skl.optimal);
- 		crtc_state->wm.skl.raw = crtc_state->wm.skl.optimal;
-@@ -6652,20 +6653,22 @@ void skl_wm_get_hw_state(struct drm_i915
- 			skl_ddb_entry_union(&dbuf_state->ddb[pipe], ddb_uv);
- 		}
+ /*
+@@ -922,11 +924,11 @@ static const struct vop_win_phy rk3399_w
+ static const struct vop_win_data rk3399_vop_win_data[] = {
+ 	{ .base = 0x00, .phy = &rk3399_win01_data,
+ 	  .type = DRM_PLANE_TYPE_PRIMARY },
+-	{ .base = 0x40, .phy = &rk3288_win01_data,
++	{ .base = 0x40, .phy = &rk3368_win01_data,
+ 	  .type = DRM_PLANE_TYPE_OVERLAY },
+-	{ .base = 0x00, .phy = &rk3288_win23_data,
++	{ .base = 0x00, .phy = &rk3368_win23_data,
+ 	  .type = DRM_PLANE_TYPE_OVERLAY },
+-	{ .base = 0x50, .phy = &rk3288_win23_data,
++	{ .base = 0x50, .phy = &rk3368_win23_data,
+ 	  .type = DRM_PLANE_TYPE_CURSOR },
+ };
  
--		dbuf_state->slices[pipe] =
--			skl_compute_dbuf_slices(crtc, dbuf_state->active_pipes,
--						dbuf_state->joined_mbus);
--
- 		dbuf_state->weight[pipe] = intel_crtc_ddb_weight(crtc_state);
- 
- 		/*
- 		 * Used for checking overlaps, so we need absolute
- 		 * offsets instead of MBUS relative offsets.
- 		 */
--		mbus_offset = mbus_ddb_offset(dev_priv, dbuf_state->slices[pipe]);
-+		slices = skl_compute_dbuf_slices(crtc, dbuf_state->active_pipes,
-+						 dbuf_state->joined_mbus);
-+		mbus_offset = mbus_ddb_offset(dev_priv, slices);
- 		crtc_state->wm.skl.ddb.start = mbus_offset + dbuf_state->ddb[pipe].start;
- 		crtc_state->wm.skl.ddb.end = mbus_offset + dbuf_state->ddb[pipe].end;
- 
-+		/* The slices actually used by the planes on the pipe */
-+		dbuf_state->slices[pipe] =
-+			skl_ddb_dbuf_slice_mask(dev_priv, &crtc_state->wm.skl.ddb);
-+
- 		drm_dbg_kms(&dev_priv->drm,
- 			    "[CRTC:%d:%s] dbuf slices 0x%x, ddb (%d - %d), active pipes 0x%x, mbus joined: %s\n",
- 			    crtc->base.base.id, crtc->base.name,
 
 
