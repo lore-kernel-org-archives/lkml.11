@@ -2,215 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D52BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC264C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235537AbiBNLcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:32:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32854 "EHLO
+        id S1351637AbiBNLca (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:32:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351236AbiBNL3t (ORCPT
+        with ESMTP id S1351709AbiBNLaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:29:49 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4306B1C91A;
-        Mon, 14 Feb 2022 03:09:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644836984; x=1676372984;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4jmg151yDeRVjcnQYpGboO10DRS6jYizSfbjNlgT6NE=;
-  b=bLRwq4CrU7R+EgJcs3rY+D1MmG2vZPgvuTrw+0D91S/roKSpzOMMg+tn
-   IrzbiUB/dxd4bdoflrJDK3ul9uMvliPQNP16TzndNGm7hBakhacLCbOvr
-   rs7dBbPtroHm+Xh4sXhF/smnU1jqDfm+8qp2OlRZJ1HTpjA3HZ+GNFLTh
-   4ZpjKV9cWaWuiy95ScMFcUl7dG0dwpwnh1tvPCL4RQ2VN/8np9ZB8+2aG
-   1J3hRbq+MzdTJVZr1WOp1d6+H1CMJJzuCyapS9s+p7NHaBTvKd2s0hbmZ
-   jvD5hHX+3pQi4+A4Y1Q2CQv956Kv0zWuPORBOimm9x1fwnSmSxMSGm4dw
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="274639385"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="274639385"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:09:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="635103413"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 03:09:36 -0800
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH V2 03/11] perf/x86: Add support for TSC in nanoseconds as a perf event clock
-Date:   Mon, 14 Feb 2022 13:09:06 +0200
-Message-Id: <20220214110914.268126-4-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220214110914.268126-1-adrian.hunter@intel.com>
-References: <20220214110914.268126-1-adrian.hunter@intel.com>
-MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+        Mon, 14 Feb 2022 06:30:13 -0500
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6398A40A00
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:11:53 -0800 (PST)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220214111151epoutp01367e0b46ec1990c5c4b1817d6972e68c~ToqNzoIxg1889318893epoutp01E
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:11:51 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220214111151epoutp01367e0b46ec1990c5c4b1817d6972e68c~ToqNzoIxg1889318893epoutp01E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1644837111;
+        bh=rQEv8A94KwKqju5KY7Ptdnt3AHdeZLS2w//+3n7Lkbg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=orbcaSiRfFQIfnTcAoIqqm++aPA/jcJJodcrUZGxASH4uLvFS8ABHFBnVWb7gfczC
+         V8xNuPlMxZ1GJt7vfvAH2ZbqeRXqu2RbhwkE0j3y1KD4Hz9y77qMJn0I3ttfyNI8Va
+         FU/56Ft8KQHZU5O5asJlJ2x4q9HvueEW4AhsVdrU=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220214111151epcas2p3cb16f64dbb9dc2f061af47c2c7f29b70~ToqNa1WqK0748407484epcas2p3j;
+        Mon, 14 Feb 2022 11:11:51 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4Jy1kt0KW9z4x9Py; Mon, 14 Feb
+        2022 11:11:50 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D7.0D.51767.5F83A026; Mon, 14 Feb 2022 20:11:49 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220214111149epcas2p29b9e39b84d7203572422531beb3c39ed~ToqL3RoqX2621226212epcas2p2I;
+        Mon, 14 Feb 2022 11:11:49 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220214111149epsmtrp1f54907ccfcfe88c1521ea8295a033d16~ToqL2YkXp1541015410epsmtrp1N;
+        Mon, 14 Feb 2022 11:11:49 +0000 (GMT)
+X-AuditID: b6c32a45-45dff7000000ca37-ad-620a38f58d8b
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        1F.A6.29871.5F83A026; Mon, 14 Feb 2022 20:11:49 +0900 (KST)
+Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220214111149epsmtip115d81f37d38f278caa3aa904346c061e~ToqLttWOf2598625986epsmtip1e;
+        Mon, 14 Feb 2022 11:11:49 +0000 (GMT)
+From:   Daehwan Jung <dh10.jung@samsung.com>
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org (open list),
+        Daehwan Jung <dh10.jung@samsung.com>, quic_wcheng@quicinc.com,
+        quic_jackp@quicinc.com, Thinh.Nguyen@synopsys.com
+Subject: [PATCH v2 2/2] usb: dwc3: Prevent cleanup cancelled requests at the
+ same time.
+Date:   Mon, 14 Feb 2022 20:08:53 +0900
+Message-Id: <1644836933-141376-3-git-send-email-dh10.jung@samsung.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrCKsWRmVeSWpSXmKPExsWy7bCmhe5XC64kg00tNhbH2p6wW9xZMI3J
+        onnxejaLy7vmsFksWtbKbLHr3yImi027+1gtVi04wO7A4bFpVSebx/65a9g9Ju6p8+jbsorR
+        Y8v+z4wenzfJBbBFZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5
+        +AToumXmAN2jpFCWmFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwL9ArTswtLs1L18tL
+        LbEyNDAwMgUqTMjO+PohquCYcMXCtZ2MDYzbBboYOTkkBEwkvv1qZe9i5OIQEtjBKHHkSyMr
+        hPOJUaLn/06ozDdGiT+zf7LDtOzdcYsNIrGXUeLr2laolh+MEt+3fmTsYuTgYBPQkvi+kBGk
+        QUQgTGLisn0sIDXMIA1N++6ygiSEBSIl/t5fwwRSzyKgKrHlOhdImFfATaL3xl+oZXISN891
+        MoPYnALuEl131jGCzJEQuMYucffGaqgiF4lpc9+yQNjCEq+Ob4GKS0m87G+Dsosldn1qZYJo
+        bmCUaHxwghkiYSwx61k72NHMApoS63fpg5gSAsoSR26BjWQW4JPoOAxyD0iYV6KjTQiiUVli
+        +uUJrBC2pMTB1+egBnpIzL89Fxo+sxglGt7NZZ/AKDcLYcECRsZVjGKpBcW56anFRgWG8AhL
+        zs/dxAhOblquOxgnv/2gd4iRiYPxEKMEB7OSCG/cWc4kId6UxMqq1KL8+KLSnNTiQ4ymwLCb
+        yCwlmpwPTK95JfGGJpYGJmZmhuZGpgbmSuK8XikbEoUE0hNLUrNTUwtSi2D6mDg4pRqYSq+p
+        XPU0iz+VLfxRufc6y1J3XvOdC0LOlTrVsP8x0T4uad1yzdbWdrKwYNv3wCtfeFv+vOTbE+If
+        wbXa+teSOZ5zj6x5+PjpZTnRdvF9j02095psbFwpwnPpsZ5XSPWBxQuS/kidNCq5t+3XY/cb
+        i5nm/DPLz5ZaMjWeO/DVTd1PU9fEuPoyL3iS+PNSl803f79/p+qYnpalrxe7/uhZzeOTZ98U
+        X1uh4Bw15YJG9A7R/DfJvSXnaiR+y3tYO/dwGhQ8VfqWsP/kLYaZi1r+Htfq3FD/7FPcBcVJ
+        f/7ol03U9di8t2CjSeWhNuta81ernml3Gqv9fD1bP69vin+y/8Wrz7atPXzVIfOLnUT2biWW
+        4oxEQy3mouJEANto6Yn3AwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHLMWRmVeSWpSXmKPExsWy7bCSnO5XC64kgzVXNSyOtT1ht7izYBqT
+        RfPi9WwWl3fNYbNYtKyV2WLXv0VMFpt297FarFpwgN2Bw2PTqk42j/1z17B7TNxT59G3ZRWj
+        x5b9nxk9Pm+SC2CL4rJJSc3JLEst0rdL4Mr4+iGq4JhwxcK1nYwNjNsFuhg5OSQETCT27rjF
+        1sXIxSEksJtR4ua0x2wQCUmJpXNvsEPYwhL3W46wQhR9Y5Q4N72fsYuRg4NNQEvi+0JGkBoR
+        gTCJf48usoDUMAscZpRoebsLbJCwQLhEy6FdrCD1LAKqEluuc4GEeQXcJHpv/IWaLydx81wn
+        M4jNKeAu0XVnHdhMIaCaN3tvs09g5FvAyLCKUTK1oDg3PbfYsMAwL7Vcrzgxt7g0L10vOT93
+        EyM4CLU0dzBuX/VB7xAjEwfjIUYJDmYlEd64s5xJQrwpiZVVqUX58UWlOanFhxilOViUxHkv
+        dJ2MFxJITyxJzU5NLUgtgskycXBKNTAdZxVbvG0ha8Xytz93RWypv9ccftaR+wb/Wy5+qziB
+        R7dnPu+pP8BwLrz67zT++ES7OQ+X6Xm2Sjz8f0DBafs9x43HIsN+NS46/PzBirI1ZWqfjCfz
+        T0xt4Nwn87H+8ffm26dWd3c8//Bw/0KOA1dPCjZGz2X8bShnFvL5/Y4jR+IvtMwMmOn8Tpvr
+        zOzQ37un7Vwds/rDlOk7Zy//p6DrWWlXutfJStWSuYaTd3dj3pOJfBWBDvbzV314MvtKxqyr
+        C5e2Nbwzzd0cP2+xI3OaEWvJ6qpFAv+bOe/+36hy7sa6Azcnvih+Wm4d0lNTPkHDv3H6e27W
+        1OMb2vkFb9qsXbLDOTD1Quq8vgeiRREuS5VYijMSDbWYi4oTAQM0I+GxAgAA
+X-CMS-MailID: 20220214111149epcas2p29b9e39b84d7203572422531beb3c39ed
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220214111149epcas2p29b9e39b84d7203572422531beb3c39ed
+References: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
+        <CGME20220214111149epcas2p29b9e39b84d7203572422531beb3c39ed@epcas2p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, when Intel PT is used within a VM guest, it is not possible to
-make use of TSC because perf clock is subject to paravirtualization.
+We added cleanup cancelled requests when ep cmd timeout on ep dequeue
+because there's no complete interrupt then. But, we find out new case
+that complete interrupt comes up later. list_for_each_entry_safe is
+used when cleanup cancelled requests and it has vulnerabilty on multi-core
+environment. dwc3_gadget_giveback unlocks dwc->lock temporarily and other
+core(ISR) can get lock and try to cleanup them again. It could cause
+list_del corruption and we use DWC3_EP_END_TRANSFER_PENDING to prevent it.
 
-If the hypervisor leaves rdtsc alone, the TSC value will be subject only to
-the VMCS TSC Offset and Scaling, the same as the TSC packet from Intel PT.
-The new clock is based on rdtsc and not subject to paravirtualization.
+1. MTP server cancels -> ep dequeue -> ep cmd timeout(END_TRANSFER)
+	-> cleanup cancelled requests -> dwc3_gadget_giveback ->
+	list_del -> release lock temporarily
+2. Complete with END_TRANSFER -> ISR(dwc3_gadget_endpoint_command_complete)
+	gets lock -> cleanup cancelled requests -> dwc3_gadget_giveback
+	-> list_del
+3. MTP server process gets lock again
+	-> tries to access POISON list(list_del corruption)
 
-Hence it would be possible to use this new clock for Intel PT decoding
-within a VM guest.
+[2: MtpServer: 5032] dwc3 10b00000.dwc3: request cancelled
+						with wrong reason:5
+[2: MtpServer: 5032] list_del corruption,
+		ffffff88b6963968->next is LIST_POISON1 (dead000000000100)
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
 ---
- arch/x86/events/core.c            | 41 ++++++++++++++++++++-----------
- arch/x86/include/asm/perf_event.h |  2 ++
- include/uapi/linux/perf_event.h   |  6 +++++
- kernel/events/core.c              |  6 +++++
- 4 files changed, 40 insertions(+), 15 deletions(-)
+ drivers/usb/dwc3/gadget.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index 51d5345de30a..905975a7d475 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -41,6 +41,7 @@
- #include <asm/desc.h>
- #include <asm/ldt.h>
- #include <asm/unwind.h>
-+#include <asm/tsc.h>
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index 3ad3bc5813ca..bac3814894e2 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -2046,8 +2046,11 @@ static int dwc3_gadget_ep_dequeue(struct usb_ep *ep,
  
- #include "perf_event.h"
- 
-@@ -2728,18 +2729,26 @@ void arch_perf_update_userpage(struct perf_event *event,
- 		!!(event->hw.flags & PERF_EVENT_FLAG_USER_READ_CNT);
- 	userpg->pmc_width = x86_pmu.cntval_bits;
- 
--	if (event->attr.use_clockid &&
--	    event->attr.ns_clockid &&
--	    event->attr.clockid == CLOCK_PERF_HW_CLOCK) {
--		userpg->cap_user_time_zero = 1;
--		userpg->time_mult = 1;
--		userpg->time_shift = 0;
--		userpg->time_offset = 0;
--		userpg->time_zero = 0;
--		return;
-+	if (event->attr.use_clockid && event->attr.ns_clockid) {
-+		if (event->attr.clockid == CLOCK_PERF_HW_CLOCK) {
-+			userpg->cap_user_time_zero = 1;
-+			userpg->time_mult = 1;
-+			userpg->time_shift = 0;
-+			userpg->time_offset = 0;
-+			userpg->time_zero = 0;
-+			return;
-+		}
-+		if (event->attr.clockid == CLOCK_PERF_HW_CLOCK_NS)
-+			userpg->cap_user_time_zero = 1;
-+	}
+ 			/* If ep cmd fails, then force to giveback cancelled requests here */
+ 			if (!(dep->flags & DWC3_EP_END_TRANSFER_PENDING)) {
+-				dep->flags &= ~DWC3_EP_TRANSFER_STARTED;
++				dep->flags |= DWC3_EP_END_TRANSFER_PENDING;
+ 				dwc3_gadget_ep_cleanup_cancelled_requests(dep);
 +
-+	if (using_native_sched_clock() && sched_clock_stable()) {
-+		userpg->cap_user_time = 1;
-+		if (!event->attr.use_clockid)
-+			userpg->cap_user_time_zero = 1;
- 	}
++				dep->flags &= ~DWC3_EP_TRANSFER_STARTED;
++				dep->flags &= ~DWC3_EP_END_TRANSFER_PENDING;
+ 			}
  
--	if (!using_native_sched_clock() || !sched_clock_stable())
-+	if (!userpg->cap_user_time && !userpg->cap_user_time_zero)
- 		return;
+ 			dep->flags &= ~DWC3_EP_WAIT_TRANSFER_COMPLETE;
+@@ -3426,9 +3429,11 @@ static void dwc3_gadget_endpoint_command_complete(struct dwc3_ep *dep,
+ 	if (dep->stream_capable)
+ 		dep->flags |= DWC3_EP_IGNORE_NEXT_NOSTREAM;
  
- 	cyc2ns_read_begin(&data);
-@@ -2750,19 +2759,16 @@ void arch_perf_update_userpage(struct perf_event *event,
- 	 * Internal timekeeping for enabled/running/stopped times
- 	 * is always in the local_clock domain.
- 	 */
--	userpg->cap_user_time = 1;
- 	userpg->time_mult = data.cyc2ns_mul;
- 	userpg->time_shift = data.cyc2ns_shift;
- 	userpg->time_offset = offset - now;
- 
- 	/*
- 	 * cap_user_time_zero doesn't make sense when we're using a different
--	 * time base for the records.
-+	 * time base for the records, except for CLOCK_PERF_HW_CLOCK_NS.
- 	 */
--	if (!event->attr.use_clockid) {
--		userpg->cap_user_time_zero = 1;
-+	if (userpg->cap_user_time_zero)
- 		userpg->time_zero = offset;
--	}
- 
- 	cyc2ns_read_end();
- }
-@@ -2996,6 +3002,11 @@ u64 perf_hw_clock(void)
- 	return rdtsc_ordered();
- }
- 
-+u64 perf_hw_clock_ns(void)
-+{
-+	return native_sched_clock_from_tsc(perf_hw_clock());
-+}
++	if (!(dep->flags & DWC3_EP_END_TRANSFER_PENDING))
++		dwc3_gadget_ep_cleanup_cancelled_requests(dep);
 +
- void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- {
- 	cap->version		= x86_pmu.version;
-diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
-index 5288ea1ae2ba..46cbca90cdd1 100644
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -453,6 +453,8 @@ extern unsigned long perf_misc_flags(struct pt_regs *regs);
+ 	dep->flags &= ~DWC3_EP_END_TRANSFER_PENDING;
+ 	dep->flags &= ~DWC3_EP_TRANSFER_STARTED;
+-	dwc3_gadget_ep_cleanup_cancelled_requests(dep);
  
- extern u64 perf_hw_clock(void);
- #define perf_hw_clock		perf_hw_clock
-+extern u64 perf_hw_clock_ns(void);
-+#define perf_hw_clock_ns	perf_hw_clock_ns
- 
- #include <asm/stacktrace.h>
- 
-diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-index e8617efd552b..0edc005f8ddf 100644
---- a/include/uapi/linux/perf_event.h
-+++ b/include/uapi/linux/perf_event.h
-@@ -298,6 +298,12 @@ enum {
-  * paravirtualized.
-  */
- #define CLOCK_PERF_HW_CLOCK		0x10000000
-+/*
-+ * Same as CLOCK_PERF_HW_CLOCK but in nanoseconds. Note support of
-+ * CLOCK_PERF_HW_CLOCK_NS does not necesssarily imply support of
-+ * CLOCK_PERF_HW_CLOCK or vice versa.
-+ */
-+#define CLOCK_PERF_HW_CLOCK_NS	0x10000001
- 
- /*
-  * The format of the data returned by read() on a perf event fd,
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 15dee265a5b9..65e70fb669fd 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -12019,6 +12019,12 @@ static int perf_event_set_clock(struct perf_event *event, clockid_t clk_id, bool
- 			event->clock = &perf_hw_clock;
- 			nmi_safe = true;
- 			break;
-+#endif
-+#ifdef perf_hw_clock_ns
-+		case CLOCK_PERF_HW_CLOCK_NS:
-+			event->clock = &perf_hw_clock_ns;
-+			nmi_safe = true;
-+			break;
- #endif
- 		default:
- 			return -EINVAL;
+ 	if (dep->flags & DWC3_EP_PENDING_CLEAR_STALL) {
+ 		struct dwc3 *dwc = dep->dwc;
 -- 
-2.25.1
+2.31.1
 
