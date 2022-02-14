@@ -2,120 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B231DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350734AbiBNLWN (ORCPT
+        id S1350492AbiBNLWU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:22:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48410 "EHLO
+        Mon, 14 Feb 2022 06:22:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352167AbiBNLVl (ORCPT
+        with ESMTP id S1350665AbiBNLVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:21:41 -0500
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFF36584;
-        Mon, 14 Feb 2022 02:57:33 -0800 (PST)
-Received: by mail-vk1-f181.google.com with SMTP id bj24so2875205vkb.8;
-        Mon, 14 Feb 2022 02:57:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3C7RZsUPH67gE+tnYDZyMgOb/jtRDu7g+Ix4wmjevW8=;
-        b=UaBHozIXPe18+KgmQSXZZsLH7SSOP6Unk2JCtECYxGRLVEW5CJ5OYUp/F3dPILiFJs
-         sjojXymmPqTInSoW7Yule3Fvk5cEe3lokUhJH3eXho1sLjOA1FWH6XMORuWrXUvO6oIJ
-         VReqC/pHF5BvFrh8f3bdG4PGzaczvr8irTtdIdDiRRu4zNNEpTQGkzFU0x7jHUf48GRq
-         cvZKYBzx6vNxL88uBGNL56FT8tzuAdVMlnKWZnp93/pn1WJDgWRhbNfJ0GXjXltE3kSS
-         sL3Lq0qYUE6IV3n74a8dPUk7gpjHk6ZDMgvOJKMP95QIMhZ9C8kGbovqUPbvVdHjPXcH
-         rQKA==
-X-Gm-Message-State: AOAM533lXWLhvlN7nS30pj5Qx8vxtU4/Q0G4XbrKpTtL/qIXT0FwFZpQ
-        johaid3TCqffMVcRQXQjeG5cz07ISJetAA==
-X-Google-Smtp-Source: ABdhPJzwKuNmxyGuDSGVgNeCo3ap3+ytp+2it/27uxcpIZ5Ql2gOJeGlJOFOle9Dq7DeUHBZ0AZ9jg==
-X-Received: by 2002:a05:6122:1c5:: with SMTP id h5mr3712385vko.2.1644836252598;
-        Mon, 14 Feb 2022 02:57:32 -0800 (PST)
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com. [209.85.217.41])
-        by smtp.gmail.com with ESMTPSA id 2sm738511vkn.35.2022.02.14.02.57.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 02:57:32 -0800 (PST)
-Received: by mail-vs1-f41.google.com with SMTP id j20so4377376vsg.5;
-        Mon, 14 Feb 2022 02:57:31 -0800 (PST)
-X-Received: by 2002:a05:6102:440d:: with SMTP id df13mr1065090vsb.5.1644836251571;
- Mon, 14 Feb 2022 02:57:31 -0800 (PST)
+        Mon, 14 Feb 2022 06:21:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A174D13D60;
+        Mon, 14 Feb 2022 02:57:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BC8B60E84;
+        Mon, 14 Feb 2022 10:57:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E529C340E9;
+        Mon, 14 Feb 2022 10:57:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644836267;
+        bh=xH46V2BfUDEk4tfDK5AlSlTasUAt3mbtgoN2tyCrJuE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NY49rm1oYN8KMtEh7BNsW9o9HRKwbmuz+DUYhCUNjfjYjKlX/syU9fRRmA4f1+oig
+         ZNImXBF5GRqIZQghhPYmCucic71XuMLiJrP6RjqIb1+SzBwKeRThx8T95HhuJYwHKD
+         7/ZqrxEnVPV4dkAA2IUKdjh4GtpePda3FAgvhm9YF4CtGyLNt6v4vjtvZ6xGxjdXX/
+         +giS63sVuurdMRgDjEIkSdmHs3ZqzdaReEs1/ALdInTmhQsfy4DDSF1vanX7qymwCt
+         gMRwQtsGdHkCBUYZVnz1mrLc3A15gmCzXS5SHBPcpPSrNlKaSnPCpqF6t/IVEnjNbR
+         Gb3zGDlw6xb4Q==
+Date:   Mon, 14 Feb 2022 11:57:44 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Yu Liao <liaoyu15@huawei.com>
+Cc:     paulmck@kernel.org, linux-kernel@vger.kernel.org,
+        liwei391@huawei.com, rcu@vger.kernel.org
+Subject: Re: Question about nohz and sysidle
+Message-ID: <20220214105744.GA663287@lothringen>
+References: <b881759b-d281-fdc3-71b7-4429d84cd734@huawei.com>
+ <b6dc758b-492d-1000-24e5-643e38d3166e@huawei.com>
 MIME-Version: 1.0
-References: <20220211091927.2988283-1-javierm@redhat.com> <20220211091927.2988283-2-javierm@redhat.com>
- <YgY6OqN+guBlt/ED@smile.fi.intel.com> <4fa465d9-4fac-4199-9a04-d8e09d164308@redhat.com>
- <YgZEuXvJ2ZiOyNS+@smile.fi.intel.com> <7560cd10-0a7c-3fda-da83-9008833e3901@suse.de>
- <87pmnt7gm3.fsf@intel.com> <YgaDj6Wld4b7S6DF@smile.fi.intel.com>
- <f87ce2fa-6b18-f985-eb86-506ce7103db3@suse.de> <YgoxFBGNsrezVxmi@smile.fi.intel.com>
-In-Reply-To: <YgoxFBGNsrezVxmi@smile.fi.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Feb 2022 11:57:20 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVWUDo3v+=+Um_8_ys-a-5HovGTUeYjvkQ91R_JDf0Myg@mail.gmail.com>
-Message-ID: <CAMuHMdVWUDo3v+=+Um_8_ys-a-5HovGTUeYjvkQ91R_JDf0Myg@mail.gmail.com>
-Subject: Re: [PATCH v4 1/6] drm/format-helper: Add drm_fb_xrgb8888_to_gray8_line()
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sam Ravnborg <sam@ravnborg.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b6dc758b-492d-1000-24e5-643e38d3166e@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+On Mon, Feb 14, 2022 at 05:40:55PM +0800, Yu Liao wrote:
 
-On Mon, Feb 14, 2022 at 11:39 AM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> On Mon, Feb 14, 2022 at 10:03:53AM +0100, Thomas Zimmermann wrote:
-> > Am 11.02.22 um 16:41 schrieb Andy Shevchenko:
-> > > > IMO *always* prefer a for loop over while or do-while.
-> > > >
-> > > > The for (i = 0; i < N; i++) is such a strong paradigm in C. You
-> > > > instantly know how many times you're going to loop, at a glance. Not so
-> > > > with with the alternatives, which should be used sparingly.
-> > >
-> > > while () {}  _is_ a paradigm, for-loop is syntax sugar on top of it.
-> >
-> > Naw, that's not true.
->
-> In the section 3.5 "Loops - While and For" in "The C Programming
-> Language" 2nd by K&R, the authors said:
->
->         The for statement ... is equivalent to ... while..."
->
-> They said that for is equivalent to while, and not otherwise.
+Hi Yu Liao,
 
-When I learned C, people told me to prefer while() over for() when
-possible, as several compilers are better at optimizing while()-loops
-than for()-loops.
+> 
+> On 2022/2/14 16:28, Yu Liao wrote:
+> > Hi Frederic,
+> > 
+> > I'm working on an issue about nohz. When NO_HZ_FULL is enabled, CPU 0
+> > handles the timekeeping duty on behalf of all other CPUs, which means
+> > CPU 0 never stop tick even in sysidle state. This is a powersaving
+> > issue.
+> > 
+> > I found your patchset (nohz: Support sysidle) in the below link.
+> > https://lore.kernel.org/all/1406569056-30217-1-git-send-email-fweisbec@gmail.com/
+> > 
+> > But these patches haven't been merged into mainline yet and sysidle
+> > state detection has been removed by commit fe5ac724d81a (rcu: Remove
+> > nohz_full full-system-idle state machine) as well.
+> > 
+> > I tried your patches and it does work, why are we no longer working on
+> > stopping timekeeping duty when all full dynticks CPUs are idle?
 
-During the last 3 decades, optimizers got better, and all the bad
-old compilers went the way of the dodo (see also [1])...
-But even for a human, it's still less symbols to decode (and verify
-all the details about =/</>/<=/>=/++/--/...) for
+Because it was not a priority at that time. There were so many things to handle
+first (and we are not even done yet) that we postponed that feature until
+someone ever comes up with powersaving issues on nohz_full. We were waiting for
+you :)
 
-    while (n--) { ... }
+It's possible to unearth this. I think the first step will be to merge the
+RCU dynticks counters into context tracking, something that was on my queue
+anyway, and then revive this:
 
-than for
+	https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/commit/?h=sysidle.2017.05.11a&id=fe5ac724d81a3c7803e60c2232718f212f3f38d4
 
-   for (i = 0; i < n; i++) { ... }
-
-[1] https://lwn.net/Articles/871283/
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks.
