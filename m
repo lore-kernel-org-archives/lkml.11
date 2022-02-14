@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14100C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E15C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244925AbiBNJnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:43:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33916 "EHLO
+        id S244935AbiBNJnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:43:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245145AbiBNJlJ (ORCPT
+        with ESMTP id S245227AbiBNJlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154A0A1AB;
-        Mon, 14 Feb 2022 01:37:11 -0800 (PST)
+        Mon, 14 Feb 2022 04:41:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2674E652E7;
+        Mon, 14 Feb 2022 01:37:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5AE760F8F;
-        Mon, 14 Feb 2022 09:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75FE9C340E9;
-        Mon, 14 Feb 2022 09:37:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D082AB80DCD;
+        Mon, 14 Feb 2022 09:37:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECA5DC340E9;
+        Mon, 14 Feb 2022 09:37:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831430;
-        bh=AEhN0dU65MjTPdISc5kfADwdPFaDXe3pKiCi7bTBSQY=;
+        s=korg; t=1644831433;
+        bh=m//ix3XPBPrvcEFkN+P3oNvi1ozebqHaRfxVNaNA0N8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uoSM4tPH+JvMxVTXOvB23y1AHdSTG6fkBtOWOwlQ/G8PxyYgZozsMep8iQs0Z58xc
-         MH+4t71leGtYBqaiK7Cjl3F49G2Z1ctzkqlDkgTi+eJgiex2QygW88fjr+8OJUZVbK
-         JLh0pfMB+/T/ppNyBB3jnR3AaRYMG8U+W3FNAHTc=
+        b=u90AJFWu1kNruLfyUV1uDt3RmkbMX+RymZ+hfQfp/x5FUlhLodvScKSX0m13XHP+K
+         78jx3DFl7xh1fwDPIu6myt9cS8qfGIo3D9QErxouwMCI4uuTW1SVYQlUJFZsw88GqJ
+         4DFJdJJY8WwPe2fBcU/em/VKqCYmf6JoBXAaksqk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Subject: [PATCH 5.4 52/71] n_tty: wake up poll(POLLRDNORM) on receiving data
-Date:   Mon, 14 Feb 2022 10:26:20 +0100
-Message-Id: <20220214092453.796074483@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 35/71] ARM: dts: meson: Fix the UART compatible strings
+Date:   Mon, 14 Feb 2022 10:26:03 +0100
+Message-Id: <20220214092453.207005977@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -47,84 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: TATSUKAWA KOSUKE (立川 江介) <tatsu-ab1@nec.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-commit c816b2e65b0e86b95011418cad334f0524fc33b8 upstream.
+[ Upstream commit 5225e1b87432dcf0d0fc3440824b91d04c1d6cc1 ]
 
-The poll man page says POLLRDNORM is equivalent to POLLIN when used as
-an event.
-$ man poll
-<snip>
-              POLLRDNORM
-                     Equivalent to POLLIN.
+The dt-bindings for the UART controller only allow the following values
+for Meson6 SoCs:
+- "amlogic,meson6-uart", "amlogic,meson-ao-uart"
+- "amlogic,meson6-uart"
 
-However, in n_tty driver, POLLRDNORM does not return until timeout even
-if there is terminal input, whereas POLLIN returns.
+Use the correct fallback compatible string "amlogic,meson-ao-uart" for
+AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
+domain UART controllers.
 
-The following test program works until kernel-3.17, but the test stops
-in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
-
-[Steps to run test program]
-  $ cc -o test-pollrdnorm test-pollrdnorm.c
-  $ ./test-pollrdnorm
-  foo          <-- Type in something from the terminal followed by [RET].
-                   The string should be echoed back.
-
-  ------------------------< test-pollrdnorm.c >------------------------
-  #include <stdio.h>
-  #include <errno.h>
-  #include <poll.h>
-  #include <unistd.h>
-
-  void main(void)
-  {
-	int		n;
-	unsigned char	buf[8];
-	struct pollfd	fds[1] = {{ 0, POLLRDNORM, 0 }};
-
-	n = poll(fds, 1, -1);
-	if (n < 0)
-		perror("poll");
-	n = read(0, buf, 8);
-	if (n < 0)
-		perror("read");
-	if (n > 0)
-		write(1, buf, n);
-  }
-  ------------------------------------------------------------------------
-
-The attached patch fixes this problem.  Many calls to
-wake_up_interruptible_poll() in the kernel source code already specify
-"POLLIN | POLLRDNORM".
-
-Fixes: 57087d515441 ("tty: Fix spurious poll() wakeups")
-Cc: stable@vger.kernel.org
-Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Link: https://lore.kernel.org/r/TYCPR01MB81901C0F932203D30E452B3EA5209@TYCPR01MB8190.jpnprd01.prod.outlook.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ec9b59162fd831 ("ARM: dts: meson6: use stable UART bindings")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211227180026.4068352-2-martin.blumenstingl@googlemail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_tty.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/meson.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1377,7 +1377,7 @@ handle_newline:
- 			put_tty_queue(c, ldata);
- 			smp_store_release(&ldata->canon_head, ldata->read_head);
- 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
-+			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
- 			return 0;
- 		}
- 	}
-@@ -1658,7 +1658,7 @@ static void __receive_buf(struct tty_str
+diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
+index c4447f6c8b2cb..e141ce7484841 100644
+--- a/arch/arm/boot/dts/meson.dtsi
++++ b/arch/arm/boot/dts/meson.dtsi
+@@ -49,14 +49,14 @@ hwrng: rng@8100 {
+ 			};
  
- 	if (read_cnt(ldata)) {
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
-+		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
- 	}
- }
+ 			uart_A: serial@84c0 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x84c0 0x18>;
+ 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+ 			};
  
+ 			uart_B: serial@84dc {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x84dc 0x18>;
+ 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+@@ -94,7 +94,7 @@ saradc: adc@8680 {
+ 			};
+ 
+ 			uart_C: serial@8700 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x8700 0x18>;
+ 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+@@ -196,7 +196,7 @@ ir_receiver: ir-receiver@480 {
+ 			};
+ 
+ 			uart_AO: serial@4c0 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart";
+ 				reg = <0x4c0 0x18>;
+ 				interrupts = <GIC_SPI 90 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+-- 
+2.34.1
+
 
 
