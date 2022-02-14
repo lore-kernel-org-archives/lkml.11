@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E25C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DF6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229972AbiBNLWr convert rfc822-to-8bit (ORCPT
+        id S1350860AbiBNLWv convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:22:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50198 "EHLO
+        Mon, 14 Feb 2022 06:22:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351045AbiBNLVt (ORCPT
+        with ESMTP id S1350901AbiBNLW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:21:49 -0500
+        Mon, 14 Feb 2022 06:22:26 -0500
 Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 993A728E03
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:58:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3791739BAD
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:58:13 -0800 (PST)
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-510-uMtCYzVQMwmav8KewIsXpQ-1; Mon, 14 Feb 2022 05:46:51 -0500
-X-MC-Unique: uMtCYzVQMwmav8KewIsXpQ-1
+ us-mta-144-WN4wZf-jMmypSJn7zlURtA-1; Mon, 14 Feb 2022 05:47:39 -0500
+X-MC-Unique: WN4wZf-jMmypSJn7zlURtA-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C527A1091DA1;
-        Mon, 14 Feb 2022 10:46:49 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 62D4C814245;
+        Mon, 14 Feb 2022 10:47:36 +0000 (UTC)
 Received: from x1.com (unknown [10.22.16.130])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3039A26E74;
-        Mon, 14 Feb 2022 10:46:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B9C3D27C2B;
+        Mon, 14 Feb 2022 10:47:29 +0000 (UTC)
 From:   Daniel Bristot de Oliveira <bristot@kernel.org>
 To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
@@ -47,9 +47,9 @@ Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
         Clark Williams <williams@redhat.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-trace-devel@vger.kernel.org
-Subject: [RFC V2 08/21] rv/monitor: Add the wip monitor skeleton created by dot2k
-Date:   Mon, 14 Feb 2022 11:44:59 +0100
-Message-Id: <a0c00c72bdb6fc183a67df3c8d913f990e2b522b.1644830251.git.bristot@kernel.org>
+Subject: [RFC V2 14/21] Documentation/rv: Add a basic documentation
+Date:   Mon, 14 Feb 2022 11:45:05 +0100
+Message-Id: <f0c29baa66cbabf2d8a4384d0b0f1ccea7fd9bf3.1644830251.git.bristot@kernel.org>
 In-Reply-To: <cover.1644830251.git.bristot@kernel.org>
 References: <cover.1644830251.git.bristot@kernel.org>
 MIME-Version: 1.0
@@ -64,37 +64,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the direct output this command line:
-  $ dot2k -d ~/wip.dot -t per_cpu
-
-with wip.dot as:
- ----- %< -----
-digraph state_automaton {
-	center = true;
-	size = "7,11";
-	rankdir = LR;
-	{node [shape = circle] "non_preemptive"};
-	{node [shape = plaintext, style=invis, label=""] "__init_preemptive"};
-	{node [shape = doublecircle] "preemptive"};
-	{node [shape = circle] "preemptive"};
-	"__init_preemptive" -> "preemptive";
-	"non_preemptive" [label = "non_preemptive"];
-	"non_preemptive" -> "non_preemptive" [ label = "sched_waking" ];
-	"non_preemptive" -> "preemptive" [ label = "preempt_enable" ];
-	"preemptive" [label = "preemptive"];
-	"preemptive" -> "non_preemptive" [ label = "preempt_disable" ];
-	{ rank = min ;
-		"__init_preemptive";
-		"preemptive";
-	}
-}
- ----- >% -----
-
-This model is broken because preempt_disable_notrace(). It is broken on
-purpose to test the reactors.
-
-It does not compile because it lacks the instrumentation, which will be
-add next.
+Add the runtime-verification.rst document, explaining the basics of RV
+and how to use the interface.
 
 Cc: Jonathan Corbet <corbet@lwn.net>
 Cc: Steven Rostedt <rostedt@goodmis.org>
@@ -115,259 +86,291 @@ Cc: linux-kernel@vger.kernel.org
 Cc: linux-trace-devel@vger.kernel.org
 Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 ---
- kernel/trace/rv/monitor_wip/model.h |  38 +++++++++
- kernel/trace/rv/monitor_wip/wip.c   | 124 ++++++++++++++++++++++++++++
- kernel/trace/rv/monitor_wip/wip.h   |  64 ++++++++++++++
- 3 files changed, 226 insertions(+)
- create mode 100644 kernel/trace/rv/monitor_wip/model.h
- create mode 100644 kernel/trace/rv/monitor_wip/wip.c
- create mode 100644 kernel/trace/rv/monitor_wip/wip.h
+ Documentation/trace/index.rst                 |   1 +
+ Documentation/trace/rv/index.rst              |   9 +
+ .../trace/rv/runtime-verification.rst         | 233 ++++++++++++++++++
+ kernel/trace/rv/Kconfig                       |   3 +
+ 4 files changed, 246 insertions(+)
+ create mode 100644 Documentation/trace/rv/index.rst
+ create mode 100644 Documentation/trace/rv/runtime-verification.rst
 
-diff --git a/kernel/trace/rv/monitor_wip/model.h b/kernel/trace/rv/monitor_wip/model.h
+diff --git a/Documentation/trace/index.rst b/Documentation/trace/index.rst
+index 3769b9b7aed8..879a95cad9b3 100644
+--- a/Documentation/trace/index.rst
++++ b/Documentation/trace/index.rst
+@@ -30,3 +30,4 @@ Linux Tracing Technologies
+    stm
+    sys-t
+    coresight/index
++   rv/index
+diff --git a/Documentation/trace/rv/index.rst b/Documentation/trace/rv/index.rst
 new file mode 100644
-index 000000000000..5212ba5b1dfb
+index 000000000000..92338dceffab
 --- /dev/null
-+++ b/kernel/trace/rv/monitor_wip/model.h
-@@ -0,0 +1,38 @@
-+enum states_wip {
-+	preemptive = 0,
-+	non_preemptive,
-+	state_max
-+};
++++ b/Documentation/trace/rv/index.rst
+@@ -0,0 +1,9 @@
++===================================
++RV - Runtime Verification Interface
++===================================
 +
-+enum events_wip {
-+	preempt_disable = 0,
-+	preempt_enable,
-+	sched_waking,
-+	event_max
-+};
++.. toctree::
++   :maxdepth: 2
++   :glob:
 +
-+struct automaton_wip {
-+	char *state_names[state_max];
-+	char *event_names[event_max];
-+	char function[state_max][event_max];
-+	char initial_state;
-+	char final_states[state_max];
-+};
-+
-+struct automaton_wip automaton_wip = {
-+	.state_names = {
-+		"preemptive",
-+		"non_preemptive"
-+	},
-+	.event_names = {
-+		"preempt_disable",
-+		"preempt_enable",
-+		"sched_waking"
-+	},
-+	.function = {
-+		{ non_preemptive,             -1,             -1 },
-+		{             -1,     preemptive, non_preemptive },
-+	},
-+	.initial_state = preemptive,
-+	.final_states = { 1, 0 },
-+};
-\ No newline at end of file
-diff --git a/kernel/trace/rv/monitor_wip/wip.c b/kernel/trace/rv/monitor_wip/wip.c
++   *
+diff --git a/Documentation/trace/rv/runtime-verification.rst b/Documentation/trace/rv/runtime-verification.rst
 new file mode 100644
-index 000000000000..1aec75e683d2
+index 000000000000..5ee22c866183
 --- /dev/null
-+++ b/kernel/trace/rv/monitor_wip/wip.c
-@@ -0,0 +1,124 @@
-+#include <linux/ftrace.h>
-+#include <linux/tracepoint.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/rv.h>
-+#include <rv/da_monitor.h>
++++ b/Documentation/trace/rv/runtime-verification.rst
+@@ -0,0 +1,233 @@
++====================
++Runtime Verification
++====================
 +
-+#define MODULE_NAME "wip"
++Runtime Verification (RV) is a lightweight (yet rigorous) method that
++complements classical exhaustive verification techniques (such as *model
++checking* and *theorem proving*) with a more practical approach for complex
++systems.
 +
-+/*
-+ * This is the self-generated part of the monitor. Generally, there is no need
-+ * to touch this section.
-+ */
-+#include "model.h"
 +
-+/*
-+ * Declare the deterministic automata monitor.
-+ *
-+ * The rv monitor reference is needed for the monitor declaration.
-+ */
-+struct rv_monitor rv_wip;
-+DECLARE_DA_MON_PER_CPU(wip, char);
++Instead of relying on a fine-grained model of a system (e.g., a
++re-implementation a instruction level), RV works by analyzing the trace of the
++system's actual execution, comparing it against a formal specification of
++the system behavior.
 +
-+#define CREATE_TRACE_POINTS
-+#include "wip.h"
++The main advantage is that RV can give precise information on the runtime
++behavior of the monitored system, without the pitfalls of developing models
++that require a re-implementation of the entire system in a modeling language.
++Moreover, given an efficient monitoring method, it is possible execute an
++*online* verification of a system, enabling the *reaction* for unexpected
++events, avoiding, for example, the propagation of a failure on safety-critical
++systems.
 +
-+/*
-+ * This is the instrumentation part of the monitor.
-+ *
-+ * This is the section where manual work is required. Here the kernel events
-+ * are translated into model's event.
-+ *
-+ */
++Runtime Monitors and Reactors
++=============================
 +
-+void handle_preempt_disable(void *data, /* XXX: fill header */)
-+{
-+	da_handle_event_wip(preempt_disable);
-+}
++A monitor is the central part of the runtime verification of a system. The
++monitor stands in between the formal specification of the desired (or
++undesired) behavior, and the trace of the actual system system.
 +
-+void handle_preempt_enable(void *data, /* XXX: fill header */)
-+{
-+	da_handle_event_wip(preempt_enable);
-+}
++In Linux terms, the runtime verification monitors are encapsulated inside the
++*RV monitor* abstraction. A *RV monitor* includes a reference model of the
++system, a set of instances of the monitor (per-cpu monitor, per-task monitor,
++and so on), and the helper functions that glue the monitor to the system via
++trace, as depicted bellow::
 +
-+void handle_sched_waking(void *data, /* XXX: fill header */)
-+{
-+	da_handle_event_wip(sched_waking);
-+}
++ Linux   +---- RV Monitor ----------------------------------+ Formal
++  Realm  |                                                  |  Realm
++  +-------------------+     +----------------+     +-----------------+
++  |   Linux kernel    |     |     Monitor    |     |     Reference   |
++  |     Tracing       |  -> |   Instance(s)  | <-  |       Model     |
++  | (instrumentation) |     | (verification) |     | (specification) |
++  +-------------------+     +----------------+     +-----------------+
++         |                          |                       |
++         |                          V                       |
++         |                     +----------+                 |
++         |                     | Reaction |                 |
++         |                     +--+--+--+-+                 |
++         |                        |  |  |                   |
++         |                        |  |  +-> trace output ?  |
++         +------------------------|--|----------------------+
++                                  |  +----> panic ?
++                                  +-------> <user-specified>
 +
-+#define NR_TP   3
-+static struct tracepoint_hook_helper tracepoints_to_hook[NR_TP] = {
-+	{
-+		.probe = handle_preempt_disable,
-+		.name = /* XXX: tracepoint name here */,
-+		.registered = 0
-+	},
-+	{
-+		.probe = handle_preempt_enable,
-+		.name = /* XXX: tracepoint name here */,
-+		.registered = 0
-+	},
-+	{
-+		.probe = handle_sched_waking,
-+		.name = /* XXX: tracepoint name here */,
-+		.registered = 0
-+	},
-+};
++In addition to the verification and monitoring of the system, a monitor can
++react to an unexpected event. The forms of reaction can vary from logging the
++event occurrence to the enforcement of the correct behavior to the extreme
++action of taking a system down to avoid the propagation of a failure.
 +
-+static int start_wip(void)
-+{
-+	int retval;
++In Linux terms, a *reactor* is an reaction method available for *RV monitors*.
++By default, all monitors should provide a trace output of their actions,
++which is already a reaction. In addition, other reactions will be available
++so the user can enable them as needed.
 +
-+	da_monitor_init_wip();
++For further information about the principles of runtime verification and
++RV applied to Linux:
 +
-+	retval = thh_hook_probes(tracepoints_to_hook, NR_TP);
-+	if (retval)
-+		goto out_err;
++  BARTOCCI, Ezio, et al. *Introduction to runtime verification.* In: Lectures on
++  Runtime Verification. Springer, Cham, 2018. p. 1-33.
 +
-+	return 0;
++  FALCONE, Ylies, et al. *A taxonomy for classifying runtime verification tools.*
++  In: International Conference on Runtime Verification. Springer, Cham, 2018. p.
++  241-262.
 +
-+out_err:
-+	return -EINVAL;
-+}
++  DE OLIVEIRA, Daniel Bristot, et al. *Automata-based formal analysis and
++  verification of the real-time Linux kernel.* Ph.D. Thesis, 2020.
 +
-+static void stop_wip(void)
-+{
-+	rv_wip.enabled = 0;
-+	thh_unhook_probes(tracepoints_to_hook, NR_TP);
-+	return;
-+}
++Online RV monitors
++==================
 +
-+/*
-+ * This is the monitor register section.
-+ */
-+struct rv_monitor rv_wip = {
-+	.name = "wip",
-+	.description = "auto-generated wip",
-+	.start = start_wip,
-+	.stop = stop_wip,
-+	.reset = da_monitor_reset_all_wip,
-+	.enabled = 0,
-+};
++Monitors can be classified as *offline* and *online* monitors. *Offline*
++monitor process the traces generated by a system after the events, generally by
++reading the trace execution from a permanent storage system. *Online* monitors
++process the trace during the execution of the system. Online monitors are said
++to be *synchronous* if the processing of an event is attached to the system
++execution, blocking the system during the event monitoring. On the other hand,
++an *asynchronous* monitor has its execution detached from the system. Each type
++of monitor has a set of advantages. For example, *offline* monitors can be
++executed on different machines but require operations to save the log to a
++file. In contrast, *synchronous online* method can react at the exact moment
++a violation occurs.
 +
-+int register_wip(void)
-+{
-+	rv_register_monitor(&rv_wip);
-+	return 0;
-+}
++Another important aspect regarding monitors is the overhead associated with the
++event analysis. If the system generates events at a frequency higher than the
++monitor's ability to process them in the same system, only the *offline*
++methods are viable. On the other hand, if the tracing of the events incurs
++on higher overhead than the simple handling of an event by a monitor, then a
++*synchronous online* monitors will incur on lower overhead.
 +
-+void unregister_wip(void)
-+{
-+	if (rv_wip.enabled)
-+		stop_wip();
++Indeed, the research presented in:
 +
-+	rv_unregister_monitor(&rv_wip);
-+}
++  DE OLIVEIRA, Daniel Bristot; CUCINOTTA, Tommaso; DE OLIVEIRA, Romulo Silva.
++  *Efficient formal verification for the Linux kernel.* In: International
++  Conference on Software Engineering and Formal Methods. Springer, Cham, 2019.
++  p. 315-332.
 +
-+module_init(register_wip);
-+module_exit(unregister_wip);
++Shows that for Deterministic Automata models, the synchronous processing of
++events in-kernel causes lower overhead than saving the same events to the trace
++buffer, not even considering collecting the trace for user-space analysis.
++This motivated the development of an in-kernel interface for online monitors.
 +
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("dot2k: auto-generated");
-+MODULE_DESCRIPTION("wip");
-diff --git a/kernel/trace/rv/monitor_wip/wip.h b/kernel/trace/rv/monitor_wip/wip.h
-new file mode 100644
-index 000000000000..7a751a8896e9
---- /dev/null
-+++ b/kernel/trace/rv/monitor_wip/wip.h
-@@ -0,0 +1,64 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM rv
++For further information about modeling of Linux kernel behavior using automata,
++please read:
 +
-+#if !defined(_WIP_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _WIP_TRACE_H
++  DE OLIVEIRA, Daniel B.; DE OLIVEIRA, Romulo S.; CUCINOTTA, Tommaso. *A thread
++  synchronization model for the PREEMPT_RT Linux kernel.* Journal of Systems
++  Architecture, 2020, 107: 101729.
 +
-+#include <linux/tracepoint.h>
++The user interface
++==================
 +
-+TRACE_EVENT(event_wip,
++The user interface resembles the tracing interface (on purpose). It is
++currently at "/sys/kernel/tracing/rv/".
 +
-+	TP_PROTO(char state, char event, char next_state, bool safe),
++The following files/folders are currently available:
 +
-+	TP_ARGS(state, event, next_state, safe),
++**available_monitors**
 +
-+	TP_STRUCT__entry(
-+		__field(	char,		state		)
-+		__field(	char,		event		)
-+		__field(	char,		next_state	)
-+		__field(	bool,		safe		)
-+	),
++- Reading list the available monitors, one per line
 +
-+	TP_fast_assign(
-+		__entry->state = state;
-+		__entry->event = event;
-+		__entry->next_state = next_state;
-+		__entry->safe = safe;
-+	),
++For example::
 +
-+	TP_printk("%s x %s -> %s %s",
-+		model_get_state_name_wip(__entry->state),
-+		model_get_event_name_wip(__entry->event),
-+		model_get_state_name_wip(__entry->next_state),
-+		__entry->safe ? "(safe)" : "")
-+);
++   [root@f32 rv]# cat available_monitors
++   wip
++   wwnr
 +
-+TRACE_EVENT(error_wip,
++**available_reactors**
 +
-+	TP_PROTO(char state, char event),
++- Reading shows the available reactors, one per line.
 +
-+	TP_ARGS(state, event),
++For example::
 +
-+	TP_STRUCT__entry(
-+		__field(	char,		state		)
-+		__field(	char,		event		)
-+	),
++   [root@f32 rv]# cat available_reactors
++   nop
++   panic
++   printk
 +
-+	TP_fast_assign(
-+		__entry->state = state;
-+		__entry->event = event;
-+	),
++**enabled_monitors**:
 +
-+	TP_printk("event %s not expected in the state %s",
-+		model_get_event_name_wip(__entry->event),
-+		model_get_state_name_wip(__entry->state))
-+);
++- Reading lists the enabled monitors, one per line
++- Writing to it enables a given monitor
++- Writing a monitor name with a '-' prefix disables it
++- Truncating the file disables all enabled monitors
 +
-+#endif /* _WIP_H */
++For example::
 +
-+/* This part ust be outside protection */
-+#undef TRACE_INCLUDE_PATH
-+#define TRACE_INCLUDE_PATH .
-+#define TRACE_INCLUDE_FILE wip
-+#include <trace/define_trace.h>
++   [root@f32 rv]# cat enabled_monitors
++   [root@f32 rv]# echo wip > enabled_monitors
++   [root@f32 rv]# echo wwnr >> enabled_monitors
++   [root@f32 rv]# cat enabled_monitors
++   wip
++   wwnr
++   [root@f32 rv]# echo -wip >> enabled_monitors
++   [root@f32 rv]# cat enabled_monitors
++   wwnr
++   [root@f32 rv]# echo > enabled_monitors
++   [root@f32 rv]# cat enabled_monitors
++   [root@f32 rv]#
++
++Note that it is possible to enable more than one monitor concurrently.
++
++
++**monitoring_on**
++
++This is an on/off general switcher for monitoring. It resembles the
++"tracing_on" switcher in the trace interface.
++
++- Writing "0" stops the monitoring
++- Writing "1" continues the monitoring
++- Reading returns the current status of the monitoring
++
++Note that it does not disable enabled monitors but stop the per-entity
++monitors monitoring the events received from the system.
++
++**reacting_on**
++
++- Writing "0" prevents reactions for happening
++- Writing "1" enable reactions
++- Reading returns the current status of the monitoring
++
++**monitors/**
++
++Each monitor will have its own directory inside "monitors/". There the
++monitor-specific files will be presented. The "monitors/" directory resembles
++the "events" directory on tracefs.
++
++For example::
++
++   [root@f32 rv]# cd monitors/wip/
++   [root@f32 wip]# ls
++   desc  enable
++   [root@f32 wip]# cat desc
++   auto-generated wakeup in preemptive monitor.
++   [root@f32 wip]# cat enable
++   0
++
++**monitors/$MONITOR/desc**
++
++- Reading shows a description of the monitor *$MONITOR*
++
++**monitors/$MONITOR/enable**
++
++- Writing "0" disables the *$MONITOR*
++- Writing "1" enables the *$MONITOR*
++- Reading return the current status of the *$MONITOR*
++
++**monitors/$MONITOR/reactors**
++
++- List available reactors, with the select reaction for the given *MONITOR*
++  inside "[]". The default one is the nop (no operation) reactor.
++- Writing the name of a reactor enables it to the given MONITOR.
++
++For example::
++
++   [root@f32 rv]# cat monitors/wip/reactors
++   [nop]
++   panic
++   printk
++   [root@f32 rv]# echo panic > monitors/wip/reactors
++   [root@f32 rv]# cat monitors/wip/reactors
++   nop
++   [panic]
++   printk
+diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
+index 7940898a0504..a6545a84df13 100644
+--- a/kernel/trace/rv/Kconfig
++++ b/kernel/trace/rv/Kconfig
+@@ -11,6 +11,9 @@ menuconfig RV
+ 	  actual execution, comparing it against a formal specification of
+ 	  the system behavior.
+ 
++	  For further information, see:
++	    Documentation/trace/rv/runtime-verification.rst
++
+ if RV
+ 
+ config RV_MON_WIP
 -- 
 2.33.1
 
