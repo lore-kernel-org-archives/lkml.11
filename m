@@ -2,92 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 515A9C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D52BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351611AbiBNLcT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:32:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56680 "EHLO
+        id S235537AbiBNLcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:32:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351570AbiBNLaM (ORCPT
+        with ESMTP id S1351236AbiBNL3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:30:12 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26A0166AED
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:11:38 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-33-IItVuRDPNvWlDoJ-8YoAUQ-1; Mon, 14 Feb 2022 11:11:35 +0000
-X-MC-Unique: IItVuRDPNvWlDoJ-8YoAUQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Mon, 14 Feb 2022 11:11:14 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Mon, 14 Feb 2022 11:11:13 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Helge Deller' <deller@gmx.de>,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>
-Subject: RE: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
- case
-Thread-Topic: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
- case
-Thread-Index: AQHYISaVap2r7qAO+E+IsFLjJVJIxKySvtowgAAIGvCAABwpAIAAAYyg
-Date:   Mon, 14 Feb 2022 11:11:13 +0000
-Message-ID: <01801d084adf442aa5b8dc4bf1eee771@AcuMS.aculab.com>
-References: <YgmB01p+p45Cihhg@p100>
- <49a26b7a30254d9fb9653c2f815eaa28@AcuMS.aculab.com>
- <0ecb87dcc4cf42328f1f5a7d6abd08ed@AcuMS.aculab.com>
- <ffebaea4-8135-6e2e-fca1-8e9f118ef70b@gmx.de>
-In-Reply-To: <ffebaea4-8135-6e2e-fca1-8e9f118ef70b@gmx.de>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 14 Feb 2022 06:29:49 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4306B1C91A;
+        Mon, 14 Feb 2022 03:09:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644836984; x=1676372984;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=4jmg151yDeRVjcnQYpGboO10DRS6jYizSfbjNlgT6NE=;
+  b=bLRwq4CrU7R+EgJcs3rY+D1MmG2vZPgvuTrw+0D91S/roKSpzOMMg+tn
+   IrzbiUB/dxd4bdoflrJDK3ul9uMvliPQNP16TzndNGm7hBakhacLCbOvr
+   rs7dBbPtroHm+Xh4sXhF/smnU1jqDfm+8qp2OlRZJ1HTpjA3HZ+GNFLTh
+   4ZpjKV9cWaWuiy95ScMFcUl7dG0dwpwnh1tvPCL4RQ2VN/8np9ZB8+2aG
+   1J3hRbq+MzdTJVZr1WOp1d6+H1CMJJzuCyapS9s+p7NHaBTvKd2s0hbmZ
+   jvD5hHX+3pQi4+A4Y1Q2CQv956Kv0zWuPORBOimm9x1fwnSmSxMSGm4dw
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="274639385"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="274639385"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:09:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="635103413"
+Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
+  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 03:09:36 -0800
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH V2 03/11] perf/x86: Add support for TSC in nanoseconds as a perf event clock
+Date:   Mon, 14 Feb 2022 13:09:06 +0200
+Message-Id: <20220214110914.268126-4-adrian.hunter@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220214110914.268126-1-adrian.hunter@intel.com>
+References: <20220214110914.268126-1-adrian.hunter@intel.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogSGVsZ2UgRGVsbGVyDQo+IFNlbnQ6IDE0IEZlYnJ1YXJ5IDIwMjIgMTE6MDUNCj4gDQo+
-IE9uIDIvMTQvMjIgMTA6MjYsIERhdmlkIExhaWdodCB3cm90ZToNCj4gPiBGcm9tOiBEYXZpZCBM
-YWlnaHQNCj4gPj4gU2VudDogMTQgRmVicnVhcnkgMjAyMiAwOToxMg0KPiA+Pg0KPiA+PiBGcm9t
-OiBIZWxnZSBEZWxsZXINCj4gPj4+IFNlbnQ6IDEzIEZlYnJ1YXJ5IDIwMjIgMjI6MTANCj4gPj4+
-DQo+ID4+PiBUaGUgcHV0X3VzZXIodmFsLHB0cikgbWFjcm8gd2FudHMgYSBwb2ludGVyIGluIHRo
-ZSBzZWNvbmQgcGFyYW1ldGVyLCBidXQgaW4NCj4gPj4+IGZhdF9pb2N0bF9maWxsZGlyKCkgdGhl
-IGRfbmFtZSBmaWVsZCByZWZlcmVuY2VzIGEgd2hvbGUgImFycmF5IG9mIGNoYXJzIi4NCj4gPj4+
-IFVzdWFsbHkgdGhlIGNvbXBpbGVyIGF1dG9tYXRpY2FsbHkgY29udmVydHMgaXQgYW5kIHVzZXMg
-YSBwb2ludGVyIHRvIHRoYXQNCj4gPj4+IGFycmF5LCBidXQgaXQncyBtb3JlIGNsZWFuIHRvIGV4
-cGxpY2l0bHkgZ2l2ZSB0aGUgcmVhbCBwb2ludGVyIHRvIHdoZXJlIHNvbWV0aW5nDQo+ID4+PiBp
-cyBwdXQsIHdoaWNoIGlzIGluIHRoaXMgY2FzZSB0aGUgZmlyc3QgY2hhcmFjdGVyIG9mIHRoZSBk
-X25hbWVbXSBhcnJheS4NCj4gPj4NCj4gPj4gVGhhdCBqdXN0IGlzbid0IHRydWUuDQo+ID4+DQo+
-ID4+IEluIEMgYm90aCB4LT5jaGFyX2FycmF5IGFuZCAmeC0+Y2hhcl9hcnJheVswXSBoYXZlIHRo
-ZSBzYW1lIHR5cGUNCj4gPj4gJ2NoYXIgKicuDQo+ID4+DQo+ID4+IFRoZSAnYnVnJyBpcyBjYXVz
-ZWQgYnkgcHV0X3VzZXIoKSB0cnlpbmcgdG8gZG86DQo+ID4+IAlfX3R5cGVvZl9fKHB0cikgX19w
-dHIgPSBwdHI7DQo+ID4+IHdoZXJlIF9fdHlwZW9mX18gaXMgcmV0dXJuaW5nIGNoYXJbbl0gbm90
-IGNoYXIgKi4NCj4gPj4NCj4gPj4gSSd2ZSB0cmllZCBhIGZldyB0aGluZ3MgYnV0IGNhbid0IGdl
-dCBfX3R5cGVvZl9fIHRvDQo+ID4+IGdlbmVyYXRlIGEgc3VpdGFibGUgdHlwZSBmb3IgYm90aCBh
-IHNpbXBsZSB0eXBlIGFuZCBhcnJheS4NCj4gPg0KPiA+IEFjdHVhbGx5IHRoZSBpc3N1ZSBpcyB0
-aGF0IHB1dF91c2VyKCkgd3JpdGVzIGEgc2luZ2xlIHZhcmlhYmxlDQo+ID4gYW5kIG5lZWRzIGEg
-cG9pbnRlciB0byBvbmUuDQo+ID4gU28gY2hhbmdpbmcgdG86DQo+ID4gCXB1dF91c2VyKDAsICZh
-cnJheVswXSk7DQo+ID4gaXMgcHJvYmFibHkgZmluZS4NCj4gDQo+IE9rLg0KPiANCj4gPiBCdXQg
-dGhlIGRlc2NyaXB0aW9uIGlzIGFsbCB3cm9uZy4NCj4gDQo+IEkgYWdyZWUgaXQgY2FuIGJlIGlt
-cHJvdmVkLg0KPiBXb3VsZCB5b3UgbWluZCBwcm9wb3NpbmcgYSBiZXR0ZXIgZGVzY3JpcHRpb24/
-DQoNCnB1dF91c2VyKCkgbmVlZHMgYSBwb2ludGVyIHRvIGEgc2ltcGxlIHR5cGUuDQoNCglEYXZp
-ZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQg
-RmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4
-NiAoV2FsZXMpDQo=
+Currently, when Intel PT is used within a VM guest, it is not possible to
+make use of TSC because perf clock is subject to paravirtualization.
+
+If the hypervisor leaves rdtsc alone, the TSC value will be subject only to
+the VMCS TSC Offset and Scaling, the same as the TSC packet from Intel PT.
+The new clock is based on rdtsc and not subject to paravirtualization.
+
+Hence it would be possible to use this new clock for Intel PT decoding
+within a VM guest.
+
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+---
+ arch/x86/events/core.c            | 41 ++++++++++++++++++++-----------
+ arch/x86/include/asm/perf_event.h |  2 ++
+ include/uapi/linux/perf_event.h   |  6 +++++
+ kernel/events/core.c              |  6 +++++
+ 4 files changed, 40 insertions(+), 15 deletions(-)
+
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index 51d5345de30a..905975a7d475 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -41,6 +41,7 @@
+ #include <asm/desc.h>
+ #include <asm/ldt.h>
+ #include <asm/unwind.h>
++#include <asm/tsc.h>
+ 
+ #include "perf_event.h"
+ 
+@@ -2728,18 +2729,26 @@ void arch_perf_update_userpage(struct perf_event *event,
+ 		!!(event->hw.flags & PERF_EVENT_FLAG_USER_READ_CNT);
+ 	userpg->pmc_width = x86_pmu.cntval_bits;
+ 
+-	if (event->attr.use_clockid &&
+-	    event->attr.ns_clockid &&
+-	    event->attr.clockid == CLOCK_PERF_HW_CLOCK) {
+-		userpg->cap_user_time_zero = 1;
+-		userpg->time_mult = 1;
+-		userpg->time_shift = 0;
+-		userpg->time_offset = 0;
+-		userpg->time_zero = 0;
+-		return;
++	if (event->attr.use_clockid && event->attr.ns_clockid) {
++		if (event->attr.clockid == CLOCK_PERF_HW_CLOCK) {
++			userpg->cap_user_time_zero = 1;
++			userpg->time_mult = 1;
++			userpg->time_shift = 0;
++			userpg->time_offset = 0;
++			userpg->time_zero = 0;
++			return;
++		}
++		if (event->attr.clockid == CLOCK_PERF_HW_CLOCK_NS)
++			userpg->cap_user_time_zero = 1;
++	}
++
++	if (using_native_sched_clock() && sched_clock_stable()) {
++		userpg->cap_user_time = 1;
++		if (!event->attr.use_clockid)
++			userpg->cap_user_time_zero = 1;
+ 	}
+ 
+-	if (!using_native_sched_clock() || !sched_clock_stable())
++	if (!userpg->cap_user_time && !userpg->cap_user_time_zero)
+ 		return;
+ 
+ 	cyc2ns_read_begin(&data);
+@@ -2750,19 +2759,16 @@ void arch_perf_update_userpage(struct perf_event *event,
+ 	 * Internal timekeeping for enabled/running/stopped times
+ 	 * is always in the local_clock domain.
+ 	 */
+-	userpg->cap_user_time = 1;
+ 	userpg->time_mult = data.cyc2ns_mul;
+ 	userpg->time_shift = data.cyc2ns_shift;
+ 	userpg->time_offset = offset - now;
+ 
+ 	/*
+ 	 * cap_user_time_zero doesn't make sense when we're using a different
+-	 * time base for the records.
++	 * time base for the records, except for CLOCK_PERF_HW_CLOCK_NS.
+ 	 */
+-	if (!event->attr.use_clockid) {
+-		userpg->cap_user_time_zero = 1;
++	if (userpg->cap_user_time_zero)
+ 		userpg->time_zero = offset;
+-	}
+ 
+ 	cyc2ns_read_end();
+ }
+@@ -2996,6 +3002,11 @@ u64 perf_hw_clock(void)
+ 	return rdtsc_ordered();
+ }
+ 
++u64 perf_hw_clock_ns(void)
++{
++	return native_sched_clock_from_tsc(perf_hw_clock());
++}
++
+ void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
+ {
+ 	cap->version		= x86_pmu.version;
+diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
+index 5288ea1ae2ba..46cbca90cdd1 100644
+--- a/arch/x86/include/asm/perf_event.h
++++ b/arch/x86/include/asm/perf_event.h
+@@ -453,6 +453,8 @@ extern unsigned long perf_misc_flags(struct pt_regs *regs);
+ 
+ extern u64 perf_hw_clock(void);
+ #define perf_hw_clock		perf_hw_clock
++extern u64 perf_hw_clock_ns(void);
++#define perf_hw_clock_ns	perf_hw_clock_ns
+ 
+ #include <asm/stacktrace.h>
+ 
+diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+index e8617efd552b..0edc005f8ddf 100644
+--- a/include/uapi/linux/perf_event.h
++++ b/include/uapi/linux/perf_event.h
+@@ -298,6 +298,12 @@ enum {
+  * paravirtualized.
+  */
+ #define CLOCK_PERF_HW_CLOCK		0x10000000
++/*
++ * Same as CLOCK_PERF_HW_CLOCK but in nanoseconds. Note support of
++ * CLOCK_PERF_HW_CLOCK_NS does not necesssarily imply support of
++ * CLOCK_PERF_HW_CLOCK or vice versa.
++ */
++#define CLOCK_PERF_HW_CLOCK_NS	0x10000001
+ 
+ /*
+  * The format of the data returned by read() on a perf event fd,
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 15dee265a5b9..65e70fb669fd 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -12019,6 +12019,12 @@ static int perf_event_set_clock(struct perf_event *event, clockid_t clk_id, bool
+ 			event->clock = &perf_hw_clock;
+ 			nmi_safe = true;
+ 			break;
++#endif
++#ifdef perf_hw_clock_ns
++		case CLOCK_PERF_HW_CLOCK_NS:
++			event->clock = &perf_hw_clock_ns;
++			nmi_safe = true;
++			break;
+ #endif
+ 		default:
+ 			return -EINVAL;
+-- 
+2.25.1
 
