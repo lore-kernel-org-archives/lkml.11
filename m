@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E17C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24597C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiBNJ6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:58:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60726 "EHLO
+        id S1344178AbiBNJ65 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:58:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343586AbiBNJxA (ORCPT
+        with ESMTP id S1343653AbiBNJxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:53:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FF86D95E;
-        Mon, 14 Feb 2022 01:43:48 -0800 (PST)
+        Mon, 14 Feb 2022 04:53:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62D46736F;
+        Mon, 14 Feb 2022 01:43:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1133061236;
-        Mon, 14 Feb 2022 09:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1040C340E9;
-        Mon, 14 Feb 2022 09:43:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55B4F61236;
+        Mon, 14 Feb 2022 09:43:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CB76C340EF;
+        Mon, 14 Feb 2022 09:43:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831827;
-        bh=wCbd00afu2GJSkMEEuQkkZmfg2byA3jBt0zqXmqLULM=;
+        s=korg; t=1644831830;
+        bh=dnqBjILIyPFJ4zWz2ADF95n2WkBQyD/RD3t0VOM3EjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UbpaOhMQxF9ywKWDJpd04lI57sFo9Ra5LD3WC/LFpJtzKM33sz/bX04JE6YGndkNZ
-         Bj+EUVnFmXh6KpY1nMGDcQV8r1v+iPgiboUs7u2sMvG0yMY2/fBrsAxKC4+J/qFn0B
-         uXOfjSfg0DZ5ex0WseqU4yXTUxPpHTCzrRd3sfVk=
+        b=VRD53kOg8deOB+gVNRtYKBUUqZMaZR8UxbHlx+OrkVSyCHrTM+i19OaMlV3LpDZeQ
+         +U9RXuCOlP9Fd+vRXGf531orOIZyO7ETqcHb8g2bZ/Ep5xDD7iUISwtSQUthhv1KKD
+         C+G3SylWWa2nr4sRYZ9HbZuCkK3OuxUskt67T/CY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 068/116] bonding: pair enable_port with slave_arr_updates
-Date:   Mon, 14 Feb 2022 10:26:07 +0100
-Message-Id: <20220214092501.094608414@linuxfoundation.org>
+        stable@vger.kernel.org, Pawel Dembicki <paweldembicki@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.10 103/116] USB: serial: option: add ZTE MF286D modem
+Date:   Mon, 14 Feb 2022 10:26:42 +0100
+Message-Id: <20220214092502.345009198@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,55 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Bandewar <maheshb@google.com>
+From: Pawel Dembicki <paweldembicki@gmail.com>
 
-[ Upstream commit 23de0d7b6f0e3f9a6283a882594c479949da1120 ]
+commit d48384c7ed6c8fe4727eaa0f3048f62afd1cd715 upstream.
 
-When 803.2ad mode enables a participating port, it should update
-the slave-array. I have observed that the member links are participating
-and are part of the active aggregator while the traffic is egressing via
-only one member link (in a case where two links are participating). Via
-kprobes I discovered that slave-arr has only one link added while
-the other participating link wasn't part of the slave-arr.
+Modem from ZTE MF286D is an Qualcomm MDM9250 based 3G/4G modem.
 
-I couldn't see what caused that situation but the simple code-walk
-through provided me hints that the enable_port wasn't always associated
-with the slave-array update.
+T:  Bus=02 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
+D:  Ver= 3.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS= 9 #Cfgs=  1
+P:  Vendor=19d2 ProdID=1485 Rev=52.87
+S:  Manufacturer=ZTE,Incorporated
+S:  Product=ZTE Technologies MSM
+S:  SerialNumber=MF286DZTED000000
+C:* #Ifs= 7 Cfg#= 1 Atr=80 MxPwr=896mA
+A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=02 Prot=ff Driver=rndis_host
+E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
+E:  Ad=81(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=88(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
+E:  Ad=8e(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=0f(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=usbfs
+E:  Ad=05(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=89(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
 
-Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Link: https://lore.kernel.org/r/20220207222901.1795287-1-maheshb@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_3ad.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/usb/serial/option.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index aa001b16765ae..ab8c833411654 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -1003,8 +1003,8 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
- 				if (port->aggregator &&
- 				    port->aggregator->is_active &&
- 				    !__port_is_enabled(port)) {
--
- 					__enable_port(port);
-+					*update_slave_arr = true;
- 				}
- 			}
- 			break;
-@@ -1760,6 +1760,7 @@ static void ad_agg_selection_logic(struct aggregator *agg,
- 			     port = port->next_port_in_aggregator) {
- 				__enable_port(port);
- 			}
-+			*update_slave_arr = true;
- 		}
- 	}
- 
--- 
-2.34.1
-
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1649,6 +1649,8 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(2) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(ZTE_VENDOR_ID, 0x1476, 0xff) },	/* GosunCn ZTE WeLink ME3630 (ECM/NCM mode) */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1481, 0xff, 0x00, 0x00) }, /* ZTE MF871A */
++	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1485, 0xff, 0xff, 0xff),  /* ZTE MF286D */
++	  .driver_info = RSVD(5) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1533, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1534, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1535, 0xff, 0xff, 0xff) },
 
 
