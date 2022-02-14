@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB2FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F64C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244418AbiBNJkJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:40:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51552 "EHLO
+        id S236191AbiBNJkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:40:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244217AbiBNJil (ORCPT
+        with ESMTP id S243369AbiBNJjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:38:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4B869297;
-        Mon, 14 Feb 2022 01:35:20 -0800 (PST)
+        Mon, 14 Feb 2022 04:39:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103516AA41;
+        Mon, 14 Feb 2022 01:35:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5583B80DCD;
-        Mon, 14 Feb 2022 09:35:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAECEC340E9;
-        Mon, 14 Feb 2022 09:35:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4E046115B;
+        Mon, 14 Feb 2022 09:35:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF6BAC340E9;
+        Mon, 14 Feb 2022 09:35:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831317;
-        bh=tApmv9g/WQvtLQVhDANandRHY+qLCCsghdlgK1RbwaM=;
+        s=korg; t=1644831323;
+        bh=vJ41Kp7L4JmG3aLVkOGChqm6yVs8a5DCHjL5ArIC62Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T6sXI1akP+l4hDE4MparFg+bH/2yWr1mmDGdedq4efe7siKlBW9Z5vwt11ZUQXmvc
-         31WGcjyrUn4haz8CrmXm7qemZyo1nCCsKIPAeJg+PLiGXpCAX97K4UzTlZPrwfx5uC
-         0vlbg+6lxdyzTa3fRgaO+6Gu0nG+oAeQwHcV0IzA=
+        b=IE6jwJ892IQAFvNVZXobk7X7eA2F4J0jBtR+bJnk4xdxgf6EHbBTLmKPDM/86vwP0
+         UyyCysfjHs09GL5MSTFBDKUeYPap7kRX86jH0/Hrp2AAlZWw+xy4WA04GDnVJwpepX
+         bjEalX1a31ejLqX2CXU316UbS4JSApRPS+QXejoo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 16/71] NFSv4 expose nfs_parse_server_name function
-Date:   Mon, 14 Feb 2022 10:25:44 +0100
-Message-Id: <20220214092452.567616266@linuxfoundation.org>
+Subject: [PATCH 5.4 18/71] net: sched: Clarify error message when qdisc kind is unknown
+Date:   Mon, 14 Feb 2022 10:25:46 +0100
+Message-Id: <20220214092452.631467489@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,48 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Victor Nogueira <victor@mojatatu.com>
 
-[ Upstream commit f5b27cc6761e27ee6387a24df1a99ca77b360fea ]
+[ Upstream commit 973bf8fdd12f0e70ea351c018e68edd377a836d1 ]
 
-Make nfs_parse_server_name available outside of nfs4namespace.c.
+When adding a tc rule with a qdisc kind that is not supported or not
+compiled into the kernel, the kernel emits the following error: "Error:
+Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
+compiled in and it was not obvious right away what the message meant
+without looking at the kernel code.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Change the error message to be more explicit and say the qdisc kind is
+unknown.
+
+Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4_fs.h       | 3 ++-
- fs/nfs/nfs4namespace.c | 4 ++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ net/sched/sch_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
-index 5708b5a636f19..ebd77a301057e 100644
---- a/fs/nfs/nfs4_fs.h
-+++ b/fs/nfs/nfs4_fs.h
-@@ -279,7 +279,8 @@ struct vfsmount *nfs4_submount(struct nfs_server *, struct dentry *,
- 			       struct nfs_fh *, struct nfs_fattr *);
- int nfs4_replace_transport(struct nfs_server *server,
- 				const struct nfs4_fs_locations *locations);
--
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net);
- /* nfs4proc.c */
- extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
- extern int nfs4_async_handle_error(struct rpc_task *task,
-diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
-index 2e460c33ae487..768258848a684 100644
---- a/fs/nfs/nfs4namespace.c
-+++ b/fs/nfs/nfs4namespace.c
-@@ -121,8 +121,8 @@ static int nfs4_validate_fspath(struct dentry *dentry,
- 	return 0;
- }
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index e70f990334083..6f36df85d23d8 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1195,7 +1195,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
  
--static size_t nfs_parse_server_name(char *string, size_t len,
--		struct sockaddr *sa, size_t salen, struct net *net)
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net)
- {
- 	ssize_t ret;
+ 	err = -ENOENT;
+ 	if (!ops) {
+-		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
++		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
+ 		goto err_out;
+ 	}
  
 -- 
 2.34.1
