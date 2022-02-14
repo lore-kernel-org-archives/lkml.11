@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 326D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C014C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244188AbiBNJi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:38:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52650 "EHLO
+        id S244197AbiBNJib (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:38:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245413AbiBNJgq (ORCPT
+        with ESMTP id S244532AbiBNJgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BF56DA9F;
-        Mon, 14 Feb 2022 01:34:39 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2191AD88;
+        Mon, 14 Feb 2022 01:33:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE825B80DCC;
-        Mon, 14 Feb 2022 09:34:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4EDCC340E9;
-        Mon, 14 Feb 2022 09:34:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 057A461146;
+        Mon, 14 Feb 2022 09:33:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA5B1C340E9;
+        Mon, 14 Feb 2022 09:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831277;
-        bh=o0pEpcsUFfgRzpuHWku1OvbvDzy+twvKJnNPSEj3M4w=;
+        s=korg; t=1644831231;
+        bh=dKBFCfRpfLKNMl+pvojyy7jAfmFm/01aTMmYI6c5qEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1pie8z0pGOGuz2BzkDD6olacStzreB1fFWyijsOvqSXTM+4ifnDk5VIbvzR3Zihvb
-         1s3+ZsRUh05mYLY/DJ3l52NXiKLholMvPOSpbl1G2LpHMHDWthC8ik7t96lhRZVOvA
-         tMFeo1a/P9hFbGb0W1T0KmywLL6ojtBfHmxlUC7k=
+        b=JFiO2fEaOUHZYsxCpM0jugGT/iJVjiC0NALk/s8PwpnV2Szb7JUarumwFhwmX+2xF
+         Osw0jhQSyk8snPdTfNxP1HUZEc8bQbPQDh7hgJbdRhshLcLppAJmrSESnUTXZE7jmu
+         8pWye5cbwsrTAzZ9jngrK8srL5KMDgRkcZD3ySOU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 31/49] veth: fix races around rq->rx_notify_masked
-Date:   Mon, 14 Feb 2022 10:25:57 +0100
-Message-Id: <20220214092449.324113105@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>
+Subject: [PATCH 4.19 39/49] usb: dwc3: gadget: Prevent core from processing stale TRBs
+Date:   Mon, 14 Feb 2022 10:26:05 +0100
+Message-Id: <20220214092449.593492537@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -51,156 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Udipto Goswami <quic_ugoswami@quicinc.com>
 
-[ Upstream commit 68468d8c4cd4222a4ca1f185ab5a1c14480d078c ]
+commit 117b4e96c7f362eb6459543883fc07f77662472c upstream.
 
-veth being NETIF_F_LLTX enabled, we need to be more careful
-whenever we read/write rq->rx_notify_masked.
+With CPU re-ordering on write instructions, there might
+be a chance that the HWO is set before the TRB is updated
+with the new mapped buffer address.
+And in the case where core is processing a list of TRBs
+it is possible that it fetched the TRBs when the HWO is set
+but before the buffer address is updated.
+Prevent this by adding a memory barrier before the HWO
+is updated to ensure that the core always process the
+updated TRBs.
 
-BUG: KCSAN: data-race in veth_xmit / veth_xmit
-
-write to 0xffff888133d9a9f8 of 1 bytes by task 23552 on cpu 0:
- __veth_xdp_flush drivers/net/veth.c:269 [inline]
- veth_xmit+0x307/0x470 drivers/net/veth.c:350
- __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
- netdev_start_xmit include/linux/netdevice.h:4697 [inline]
- xmit_one+0x105/0x2f0 net/core/dev.c:3473
- dev_hard_start_xmit net/core/dev.c:3489 [inline]
- __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
- dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
- br_dev_queue_push_xmit+0x3ce/0x430 net/bridge/br_forward.c:53
- NF_HOOK include/linux/netfilter.h:307 [inline]
- br_forward_finish net/bridge/br_forward.c:66 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- __br_forward+0x2e4/0x400 net/bridge/br_forward.c:115
- br_flood+0x521/0x5c0 net/bridge/br_forward.c:242
- br_dev_xmit+0x8b6/0x960
- __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
- netdev_start_xmit include/linux/netdevice.h:4697 [inline]
- xmit_one+0x105/0x2f0 net/core/dev.c:3473
- dev_hard_start_xmit net/core/dev.c:3489 [inline]
- __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
- dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
- neigh_hh_output include/net/neighbour.h:525 [inline]
- neigh_output include/net/neighbour.h:539 [inline]
- ip_finish_output2+0x6f8/0xb70 net/ipv4/ip_output.c:228
- ip_finish_output+0xfb/0x240 net/ipv4/ip_output.c:316
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip_output+0xf3/0x1a0 net/ipv4/ip_output.c:430
- dst_output include/net/dst.h:451 [inline]
- ip_local_out net/ipv4/ip_output.c:126 [inline]
- ip_send_skb+0x6e/0xe0 net/ipv4/ip_output.c:1570
- udp_send_skb+0x641/0x880 net/ipv4/udp.c:967
- udp_sendmsg+0x12ea/0x14c0 net/ipv4/udp.c:1254
- inet_sendmsg+0x5f/0x80 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
- ___sys_sendmsg net/socket.c:2467 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
- __do_sys_sendmmsg net/socket.c:2582 [inline]
- __se_sys_sendmmsg net/socket.c:2579 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff888133d9a9f8 of 1 bytes by task 23563 on cpu 1:
- __veth_xdp_flush drivers/net/veth.c:268 [inline]
- veth_xmit+0x2d6/0x470 drivers/net/veth.c:350
- __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
- netdev_start_xmit include/linux/netdevice.h:4697 [inline]
- xmit_one+0x105/0x2f0 net/core/dev.c:3473
- dev_hard_start_xmit net/core/dev.c:3489 [inline]
- __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
- dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
- br_dev_queue_push_xmit+0x3ce/0x430 net/bridge/br_forward.c:53
- NF_HOOK include/linux/netfilter.h:307 [inline]
- br_forward_finish net/bridge/br_forward.c:66 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- __br_forward+0x2e4/0x400 net/bridge/br_forward.c:115
- br_flood+0x521/0x5c0 net/bridge/br_forward.c:242
- br_dev_xmit+0x8b6/0x960
- __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
- netdev_start_xmit include/linux/netdevice.h:4697 [inline]
- xmit_one+0x105/0x2f0 net/core/dev.c:3473
- dev_hard_start_xmit net/core/dev.c:3489 [inline]
- __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
- dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
- neigh_hh_output include/net/neighbour.h:525 [inline]
- neigh_output include/net/neighbour.h:539 [inline]
- ip_finish_output2+0x6f8/0xb70 net/ipv4/ip_output.c:228
- ip_finish_output+0xfb/0x240 net/ipv4/ip_output.c:316
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip_output+0xf3/0x1a0 net/ipv4/ip_output.c:430
- dst_output include/net/dst.h:451 [inline]
- ip_local_out net/ipv4/ip_output.c:126 [inline]
- ip_send_skb+0x6e/0xe0 net/ipv4/ip_output.c:1570
- udp_send_skb+0x641/0x880 net/ipv4/udp.c:967
- udp_sendmsg+0x12ea/0x14c0 net/ipv4/udp.c:1254
- inet_sendmsg+0x5f/0x80 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
- ___sys_sendmsg net/socket.c:2467 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
- __do_sys_sendmmsg net/socket.c:2582 [inline]
- __se_sys_sendmmsg net/socket.c:2579 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00 -> 0x01
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 23563 Comm: syz-executor.5 Not tainted 5.17.0-rc2-syzkaller-00064-gc36c04c2e132 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 948d4f214fde ("veth: Add driver XDP")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: f6bafc6a1c9d ("usb: dwc3: convert TRBs into bitshifts")
+Cc: stable <stable@vger.kernel.org>
+Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Signed-off-by: Udipto Goswami <quic_ugoswami@quicinc.com>
+Link: https://lore.kernel.org/r/1644207958-18287-1-git-send-email-quic_ugoswami@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/veth.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ drivers/usb/dwc3/gadget.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 5e988f7ec1743..76e834ca54e79 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -152,9 +152,10 @@ static void __veth_xdp_flush(struct veth_rq *rq)
- {
- 	/* Write ptr_ring before reading rx_notify_masked */
- 	smp_mb();
--	if (!rq->rx_notify_masked) {
--		rq->rx_notify_masked = true;
--		napi_schedule(&rq->xdp_napi);
-+	if (!READ_ONCE(rq->rx_notify_masked) &&
-+	    napi_schedule_prep(&rq->xdp_napi)) {
-+		WRITE_ONCE(rq->rx_notify_masked, true);
-+		__napi_schedule(&rq->xdp_napi);
- 	}
- }
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -1020,6 +1020,19 @@ static void __dwc3_prepare_one_trb(struc
+ 	if (usb_endpoint_xfer_bulk(dep->endpoint.desc) && dep->stream_capable)
+ 		trb->ctrl |= DWC3_TRB_CTRL_SID_SOFN(stream_id);
  
-@@ -623,8 +624,10 @@ static int veth_poll(struct napi_struct *napi, int budget)
- 		/* Write rx_notify_masked before reading ptr_ring */
- 		smp_store_mb(rq->rx_notify_masked, false);
- 		if (unlikely(!__ptr_ring_empty(&rq->xdp_ring))) {
--			rq->rx_notify_masked = true;
--			napi_schedule(&rq->xdp_napi);
-+			if (napi_schedule_prep(&rq->xdp_napi)) {
-+				WRITE_ONCE(rq->rx_notify_masked, true);
-+				__napi_schedule(&rq->xdp_napi);
-+			}
- 		}
- 	}
++	/*
++	 * As per data book 4.2.3.2TRB Control Bit Rules section
++	 *
++	 * The controller autonomously checks the HWO field of a TRB to determine if the
++	 * entire TRB is valid. Therefore, software must ensure that the rest of the TRB
++	 * is valid before setting the HWO field to '1'. In most systems, this means that
++	 * software must update the fourth DWORD of a TRB last.
++	 *
++	 * However there is a possibility of CPU re-ordering here which can cause
++	 * controller to observe the HWO bit set prematurely.
++	 * Add a write memory barrier to prevent CPU re-ordering.
++	 */
++	wmb();
+ 	trb->ctrl |= DWC3_TRB_CTRL_HWO;
  
--- 
-2.34.1
-
+ 	dwc3_ep_inc_enq(dep);
 
 
