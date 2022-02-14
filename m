@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D758C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E1D8C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349761AbiBNKlZ (ORCPT
+        id S1349156AbiBNKk6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:41:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48552 "EHLO
+        Mon, 14 Feb 2022 05:40:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348452AbiBNKhP (ORCPT
+        with ESMTP id S1349698AbiBNKgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:37:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1442A74FB;
-        Mon, 14 Feb 2022 02:03:44 -0800 (PST)
+        Mon, 14 Feb 2022 05:36:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94BE71C89;
+        Mon, 14 Feb 2022 02:03:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61D61B80D6D;
-        Mon, 14 Feb 2022 10:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 830FBC340E9;
-        Mon, 14 Feb 2022 10:03:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64ACB6077B;
+        Mon, 14 Feb 2022 10:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44438C340E9;
+        Mon, 14 Feb 2022 10:02:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832998;
-        bh=9/6JzC8Ei1Q6WqapUktg2s5rVzX9QnQZ38BxlY9Zk18=;
+        s=korg; t=1644832960;
+        bh=hVUHZ5WyxrV1PseGE0Vyr2SlFfdW6bD0RR9iZNJtdkA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ep8KVCkHHJ6/lGQxYi5RxlRsyKdyN06vhGxvortR7emXTUHauxcIOm0/PGWkU+tiA
-         XkZrb8rfEzrNbaW764QmaeZy3ylvS+Rz9aDChLAjq51PmjZ+mxlrbjkuim8+FHWHNS
-         moPv07O9y5RWYsV1I/mC6uV9ozYiet/htb3vEZ08=
+        b=pg0bpoylg04zxxLgNz/7WbsufEb3eX/BEAsP+ovga0LxFGCWyNE2CBnpbPY0eG3VK
+         vUPkBAWTaSAeGzABt3LPX/FrBvShl7jNQrs+/IxpKEjFagnGzu9JhjcSwSA4qD3F9c
+         l5unk8s5qSmqXugWTRU+evfnzzNe6rIniPVJMlXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manivannan Sadhasivam <mani@kernel.org>,
-        Slark Xiao <slark_xiao@163.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 5.16 192/203] bus: mhi: pci_generic: Add mru_default for Cinterion MV31-W
-Date:   Mon, 14 Feb 2022 10:27:16 +0100
-Message-Id: <20220214092516.775197639@linuxfoundation.org>
+        stable@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 147/203] net: fix a memleak when uncloning an skb dst and its metadata
+Date:   Mon, 14 Feb 2022 10:26:31 +0100
+Message-Id: <20220214092515.230123382@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,37 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-commit 05daa805a86c831ad9692f6f15e1b877c8f10638 upstream.
+[ Upstream commit 9eeabdf17fa0ab75381045c867c370f4cc75a613 ]
 
-For default mechanism, product would use default MRU 3500 if
-they didn't define it. But for Cinterion MV31-W, there is a known
-issue which MRU 3500 would lead to data connection lost.
-So we align it with Qualcomm default MRU settings.
+When uncloning an skb dst and its associated metadata, a new
+dst+metadata is allocated and later replaces the old one in the skb.
+This is helpful to have a non-shared dst+metadata attached to a specific
+skb.
 
-Link: https://lore.kernel.org/r/20220119102519.5342-1-slark_xiao@163.com
-[mani: Modified the commit message to reflect Cinterion MV31-W and CCed stable]
-Fixes: 87693e092bd0 ("bus: mhi: pci_generic: Add Cinterion MV31-W PCIe to MHI")
-Cc: stable@vger.kernel.org # v5.14 +
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Link: https://lore.kernel.org/r/20220205135731.157871-3-manivannan.sadhasivam@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The issue is the uncloned dst+metadata is initialized with a refcount of
+1, which is increased to 2 before attaching it to the skb. When
+tun_dst_unclone returns, the dst+metadata is only referenced from a
+single place (the skb) while its refcount is 2. Its refcount will never
+drop to 0 (when the skb is consumed), leading to a memory leak.
+
+Fix this by removing the call to dst_hold in tun_dst_unclone, as the
+dst+metadata refcount is already 1.
+
+Fixes: fc4099f17240 ("openvswitch: Fix egress tunnel info.")
+Cc: Pravin B Shelar <pshelar@ovn.org>
+Reported-by: Vlad Buslov <vladbu@nvidia.com>
+Tested-by: Vlad Buslov <vladbu@nvidia.com>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/mhi/pci_generic.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/net/dst_metadata.h | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/bus/mhi/pci_generic.c
-+++ b/drivers/bus/mhi/pci_generic.c
-@@ -402,6 +402,7 @@ static const struct mhi_pci_dev_info mhi
- 	.config = &modem_mv31_config,
- 	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
- 	.dma_data_width = 32,
-+	.mru_default = 32768,
- };
+diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
+index b997e0c1e3627..adab27ba1ecbf 100644
+--- a/include/net/dst_metadata.h
++++ b/include/net/dst_metadata.h
+@@ -137,7 +137,6 @@ static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
+ #endif
  
- static const struct pci_device_id mhi_pci_id_table[] = {
+ 	skb_dst_drop(skb);
+-	dst_hold(&new_md->dst);
+ 	skb_dst_set(skb, &new_md->dst);
+ 	return new_md;
+ }
+-- 
+2.34.1
+
 
 
