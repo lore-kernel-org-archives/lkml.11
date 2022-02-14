@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A703FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348381AbiBNKiW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:38:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43740 "EHLO
+        id S242689AbiBNKi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:38:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347716AbiBNKeY (ORCPT
+        with ESMTP id S242944AbiBNKet (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:34:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867A0A2F18;
-        Mon, 14 Feb 2022 02:00:50 -0800 (PST)
+        Mon, 14 Feb 2022 05:34:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A816B6463;
+        Mon, 14 Feb 2022 02:01:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22FCD60C62;
-        Mon, 14 Feb 2022 10:00:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE731C340E9;
-        Mon, 14 Feb 2022 10:00:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 631E8B80E0D;
+        Mon, 14 Feb 2022 10:01:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF6A8C340EF;
+        Mon, 14 Feb 2022 10:01:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832849;
-        bh=qG8TxJIEufoTrtV8bFIDKUVwWO6LpLeVz8gYbFL9Sw4=;
+        s=korg; t=1644832916;
+        bh=Gj3Z9M/ZYEBo4oID8ujH6W/lVH/mp2oAgAzRkJJzenA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JuhLnPxGi3lAvS2Q8MzXhPNea7moHse8J1nCGB5wOnhcTkWbXpXFOmUDLPb6QMzVV
-         ALxNuke9Hl8uH3YdFfHBi0H92w/yk+GUTZd90tuvb6z1B8IZ/ynehA+qHcTkzddoy3
-         lj7A43tOW2dV+awi1FqC4vZOVTnczs+3xWMwzYUQ=
+        b=qvRHiilpnFwRC8LbEQiSTZBDZSLJg3a0HHWYXubVjQA8gkt0a5VlkKgZeGa1vAjZo
+         kDBDe4m1Xg4UK9FmZW9YVlEqZ0VmlxYPsnUmLvkLhSIRlw2vcHbIYV/zZ6ysNYiJ2M
+         Or9DqDgDcMBKxoEKvTIU0fiLrUMel6Q2/1xf7xiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 113/203] drm/vc4: hdmi: Allow DBLCLK modes even if horz timing is odd.
-Date:   Mon, 14 Feb 2022 10:25:57 +0100
-Message-Id: <20220214092514.092096297@linuxfoundation.org>
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Jonas Malaco <jonas@protocubo.io>
+Subject: [PATCH 5.16 165/203] eeprom: ee1004: limit i2c reads to I2C_SMBUS_BLOCK_MAX
+Date:   Mon, 14 Feb 2022 10:26:49 +0100
+Message-Id: <20220214092515.850069036@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,52 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Jonas Malaco <jonas@protocubo.io>
 
-[ Upstream commit 1d118965965f89948236ebe23072bb1fca5e7832 ]
+commit c0689e46be23160d925dca95dfc411f1a0462708 upstream.
 
-The 2711 pixel valve can't produce odd horizontal timings, and
-checks were added to vc4_hdmi_encoder_atomic_check and
-vc4_hdmi_encoder_mode_valid to filter out/block selection of
-such modes.
+Commit effa453168a7 ("i2c: i801: Don't silently correct invalid transfer
+size") revealed that ee1004_eeprom_read() did not properly limit how
+many bytes to read at once.
 
-Modes with DRM_MODE_FLAG_DBLCLK double all the horizontal timing
-values before programming them into the PV. The PV values,
-therefore, can not be odd, and so the modes can be supported.
+In particular, i2c_smbus_read_i2c_block_data_or_emulated() takes the
+length to read as an u8.  If count == 256 after taking into account the
+offset and page boundary, the cast to u8 overflows.  And this is common
+when user space tries to read the entire EEPROM at once.
 
-Amend the filtering appropriately.
+To fix it, limit each read to I2C_SMBUS_BLOCK_MAX (32) bytes, already
+the maximum length i2c_smbus_read_i2c_block_data_or_emulated() allows.
 
-Fixes: 57fb32e632be ("drm/vc4: hdmi: Block odd horizontal timings")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220127135116.298278-1-maxime@cerno.tech
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: effa453168a7 ("i2c: i801: Don't silently correct invalid transfer size")
+Cc: stable@vger.kernel.org
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Jonas Malaco <jonas@protocubo.io>
+Link: https://lore.kernel.org/r/20220203165024.47767-1-jonas@protocubo.io
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/misc/eeprom/ee1004.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index c000946996edb..24f11c07bc3c7 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1090,6 +1090,7 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
- 	unsigned long long tmds_rate;
+--- a/drivers/misc/eeprom/ee1004.c
++++ b/drivers/misc/eeprom/ee1004.c
+@@ -114,6 +114,9 @@ static ssize_t ee1004_eeprom_read(struct
+ 	if (offset + count > EE1004_PAGE_SIZE)
+ 		count = EE1004_PAGE_SIZE - offset;
  
- 	if (vc4_hdmi->variant->unsupported_odd_h_timings &&
-+	    !(mode->flags & DRM_MODE_FLAG_DBLCLK) &&
- 	    ((mode->hdisplay % 2) || (mode->hsync_start % 2) ||
- 	     (mode->hsync_end % 2) || (mode->htotal % 2)))
- 		return -EINVAL;
-@@ -1137,6 +1138,7 @@ vc4_hdmi_encoder_mode_valid(struct drm_encoder *encoder,
- 	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
++	if (count > I2C_SMBUS_BLOCK_MAX)
++		count = I2C_SMBUS_BLOCK_MAX;
++
+ 	return i2c_smbus_read_i2c_block_data_or_emulated(client, offset, count, buf);
+ }
  
- 	if (vc4_hdmi->variant->unsupported_odd_h_timings &&
-+	    !(mode->flags & DRM_MODE_FLAG_DBLCLK) &&
- 	    ((mode->hdisplay % 2) || (mode->hsync_start % 2) ||
- 	     (mode->hsync_end % 2) || (mode->htotal % 2)))
- 		return MODE_H_ILLEGAL;
--- 
-2.34.1
-
 
 
