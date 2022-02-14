@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB27C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F552C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243167AbiBNJ3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:29:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41786 "EHLO
+        id S243203AbiBNJ3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:29:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243078AbiBNJ2r (ORCPT
+        with ESMTP id S243061AbiBNJ2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:28:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187A160AA5;
-        Mon, 14 Feb 2022 01:28:40 -0800 (PST)
+        Mon, 14 Feb 2022 04:28:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1738D60AB3;
+        Mon, 14 Feb 2022 01:28:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB788B80DC6;
-        Mon, 14 Feb 2022 09:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE3AAC340E9;
-        Mon, 14 Feb 2022 09:28:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A765160F6F;
+        Mon, 14 Feb 2022 09:28:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C0C0C340EF;
+        Mon, 14 Feb 2022 09:28:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830917;
-        bh=BVp2NYOxol68HKJUG8M/TDvYST2EW00jW0boGJsVm1w=;
+        s=korg; t=1644830927;
+        bh=czRuVdm4hdL5Ea907Q1CqurNlQHpEw3Smw/F2cDltok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qV3hzuAR1Bu6xDjg6MVm0iACKieRblnXJqJ+41yAB1S36R8Yp9TOX2DVL4veH4UDn
-         AztcM13CdydgKS7JKgFeafAdqPbTLBMW/QEpuJPVOYczX3kRRYQ/tJ+agVWiXb+I/C
-         hERer+3P2ZVikqZ2QcJzQgJ2Jil2/sd+eJ3eQ1AY=
+        b=cImMgQ4xrxn5h0xQn8Vz3WjHpFOIjUkiO16m+OArF7ipTpYGSSIABrLY9KyU6ghgQ
+         Ks2DljDd58VyG0gLc5PkjKmFqO76hAtZWpqwnuPpo57Krx3ltF1KBvtnqiQ5yKcTL0
+         qB/MBxT+qXXL6EuJDE3jjkUhJwb6ljtZs0krg5NU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Guillaume Bertholon <guillaume.bertholon@ens.fr>
-Subject: [PATCH 4.9 06/34] serial: sh-sci: Fix misplaced backport of "Fix late enablement of AUTORTS"
-Date:   Mon, 14 Feb 2022 10:25:32 +0100
-Message-Id: <20220214092446.158164949@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 09/34] NFSv4 only print the label when its queried
+Date:   Mon, 14 Feb 2022 10:25:35 +0100
+Message-Id: <20220214092446.250441240@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
@@ -48,47 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Bertholon <guillaume.bertholon@ens.fr>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-The upstream commit 5f76895e4c71 ("serial: sh-sci: Fix late enablement of
-AUTORTS") inserted a new call to .set_mctrl().
-However the backported version in stable (commit ad3faea03fdf ("serial:
-sh-sci: Fix late enablement of AUTORTS")) does not insert it at the same
-position.
+[ Upstream commit 2c52c8376db7160a1dd8a681c61c9258405ef143 ]
 
-This patch moves the added instructions back to where they should be
-according to the upsteam patch.
+When the bitmask of the attributes doesn't include the security label,
+don't bother printing it. Since the label might not be null terminated,
+adjust the printing format accordingly.
 
-Fixes: ad3faea03fdf ("serial: sh-sci: Fix late enablement of AUTORTS")
-Signed-off-by: Guillaume Bertholon <guillaume.bertholon@ens.fr>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sh-sci.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/nfs/nfs4xdr.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2377,6 +2377,10 @@ done:
- 
- 		serial_port_out(port, SCFCR, ctrl);
+diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
+index 0a7c4e30a385e..29dbb14b6fd11 100644
+--- a/fs/nfs/nfs4xdr.c
++++ b/fs/nfs/nfs4xdr.c
+@@ -4177,10 +4177,11 @@ static int decode_attr_security_label(struct xdr_stream *xdr, uint32_t *bitmap,
+ 		} else
+ 			printk(KERN_WARNING "%s: label too long (%u)!\n",
+ 					__func__, len);
++		if (label && label->label)
++			dprintk("%s: label=%.*s, len=%d, PI=%d, LFS=%d\n",
++				__func__, label->len, (char *)label->label,
++				label->len, label->pi, label->lfs);
  	}
-+	if (port->flags & UPF_HARD_FLOW) {
-+		/* Refresh (Auto) RTS */
-+		sci_set_mctrl(port, port->mctrl);
-+	}
+-	if (label && label->label)
+-		dprintk("%s: label=%s, len=%d, PI=%d, LFS=%d\n", __func__,
+-			(char *)label->label, label->len, label->pi, label->lfs);
+ 	return status;
  
- 	scr_val |= s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0);
- 	dev_dbg(port->dev, "SCSCR 0x%x\n", scr_val);
-@@ -2391,10 +2395,6 @@ done:
- 		 */
- 		udelay(DIV_ROUND_UP(10 * 1000000, baud));
- 	}
--	if (port->flags & UPF_HARD_FLOW) {
--		/* Refresh (Auto) RTS */
--		sci_set_mctrl(port, port->mctrl);
--	}
- 
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
- 	/*
+ out_overflow:
+-- 
+2.34.1
+
 
 
