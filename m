@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F56EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65615C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347155AbiBNKUv (ORCPT
+        id S1347196AbiBNKVB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:20:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44698 "EHLO
+        Mon, 14 Feb 2022 05:21:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347061AbiBNKQR (ORCPT
+        with ESMTP id S1347361AbiBNKQ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:16:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A52C6D4F4;
-        Mon, 14 Feb 2022 01:53:31 -0800 (PST)
+        Mon, 14 Feb 2022 05:16:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD71569CED;
+        Mon, 14 Feb 2022 01:53:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0270760DFE;
-        Mon, 14 Feb 2022 09:53:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C23B3C340E9;
-        Mon, 14 Feb 2022 09:53:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6765B80DC6;
+        Mon, 14 Feb 2022 09:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB9AC340E9;
+        Mon, 14 Feb 2022 09:53:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832410;
-        bh=XHsiq3PFMyIQmhdaRWxgmjhLZbm1cobgoXAss8jZOOw=;
+        s=korg; t=1644832426;
+        bh=LBylFngLp5Sc0TB3vzfnAJqZtAbcj0oRjimFAAhmYCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z/1+mNZu510jc/r63Iva38LJEy0HfBP9JyKhLRx+fv9GqGpbMsWHJ5z6Cz0tMPBzF
-         Ys+P2+y1JGz5sCKlN/fHjw80t/M/B8eraCfjeOtNOBTYYP1rlbXPhaBjtweXaUB//n
-         LKE7lDL2nokq9N6kPddfBc1qKNPRb2Alvt5i6SZ0=
+        b=a+5JXt5JjHrsi+F8wUWDJ0pJC0eJ5p4P8fKXTsfuz/MuEGpPjNymkZEt4VYOtOkGi
+         yxNuhiPQBEkPKPEYZJiUSpKnHvAel3w1BO5IJR78dTB+79wHkOv3P1MT32/HauNHjL
+         srCqJ1J04we7kIa/CRehf0pfnhKUq3P8aufjn9TQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Song Liu <song@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 171/172] perf: Fix list corruption in perf_cgroup_switch()
-Date:   Mon, 14 Feb 2022 10:27:09 +0100
-Message-Id: <20220214092512.292969197@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.16 003/203] ima: fix reference leak in asymmetric_verify()
+Date:   Mon, 14 Feb 2022 10:24:07 +0100
+Message-Id: <20220214092510.337512879@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
-References: <20220214092506.354292783@linuxfoundation.org>
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <song@kernel.org>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 5f4e5ce638e6a490b976ade4a40017b40abb2da0 upstream.
+commit 926fd9f23b27ca6587492c3f58f4c7f4cd01dad5 upstream.
 
-There's list corruption on cgrp_cpuctx_list. This happens on the
-following path:
+Don't leak a reference to the key if its algorithm is unknown.
 
-  perf_cgroup_switch: list_for_each_entry(cgrp_cpuctx_list)
-      cpu_ctx_sched_in
-         ctx_sched_in
-            ctx_pinned_sched_in
-              merge_sched_in
-                  perf_cgroup_event_disable: remove the event from the list
-
-Use list_for_each_entry_safe() to allow removing an entry during
-iteration.
-
-Fixes: 058fe1c0440e ("perf/core: Make cgroup switch visit only cpuctxs with cgroup events")
-Signed-off-by: Song Liu <song@kernel.org>
-Reviewed-by: Rik van Riel <riel@surriel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220204004057.2961252-1-song@kernel.org
+Fixes: 947d70597236 ("ima: Support EC keys for signature verification")
+Cc: <stable@vger.kernel.org> # v5.13+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
+Reviewed-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ security/integrity/digsig_asymmetric.c |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -839,7 +839,7 @@ static DEFINE_PER_CPU(struct list_head,
-  */
- static void perf_cgroup_switch(struct task_struct *task, int mode)
- {
--	struct perf_cpu_context *cpuctx;
-+	struct perf_cpu_context *cpuctx, *tmp;
- 	struct list_head *list;
- 	unsigned long flags;
+--- a/security/integrity/digsig_asymmetric.c
++++ b/security/integrity/digsig_asymmetric.c
+@@ -109,22 +109,25 @@ int asymmetric_verify(struct key *keyrin
  
-@@ -850,7 +850,7 @@ static void perf_cgroup_switch(struct ta
- 	local_irq_save(flags);
+ 	pk = asymmetric_key_public_key(key);
+ 	pks.pkey_algo = pk->pkey_algo;
+-	if (!strcmp(pk->pkey_algo, "rsa"))
++	if (!strcmp(pk->pkey_algo, "rsa")) {
+ 		pks.encoding = "pkcs1";
+-	else if (!strncmp(pk->pkey_algo, "ecdsa-", 6))
++	} else if (!strncmp(pk->pkey_algo, "ecdsa-", 6)) {
+ 		/* edcsa-nist-p192 etc. */
+ 		pks.encoding = "x962";
+-	else if (!strcmp(pk->pkey_algo, "ecrdsa") ||
+-		   !strcmp(pk->pkey_algo, "sm2"))
++	} else if (!strcmp(pk->pkey_algo, "ecrdsa") ||
++		   !strcmp(pk->pkey_algo, "sm2")) {
+ 		pks.encoding = "raw";
+-	else
+-		return -ENOPKG;
++	} else {
++		ret = -ENOPKG;
++		goto out;
++	}
  
- 	list = this_cpu_ptr(&cgrp_cpuctx_list);
--	list_for_each_entry(cpuctx, list, cgrp_cpuctx_entry) {
-+	list_for_each_entry_safe(cpuctx, tmp, list, cgrp_cpuctx_entry) {
- 		WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
- 
- 		perf_ctx_lock(cpuctx, cpuctx->task_ctx);
+ 	pks.digest = (u8 *)data;
+ 	pks.digest_size = datalen;
+ 	pks.s = hdr->sig;
+ 	pks.s_size = siglen;
+ 	ret = verify_signature(key, &pks);
++out:
+ 	key_put(key);
+ 	pr_debug("%s() = %d\n", __func__, ret);
+ 	return ret;
 
 
