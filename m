@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48036C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8525CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346583AbiBNKY0 (ORCPT
+        id S1346636AbiBNKYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:24:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57158 "EHLO
+        Mon, 14 Feb 2022 05:24:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346959AbiBNKWw (ORCPT
+        with ESMTP id S1346572AbiBNKXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:22:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839586CA52;
-        Mon, 14 Feb 2022 01:56:08 -0800 (PST)
+        Mon, 14 Feb 2022 05:23:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0E76E4EE;
+        Mon, 14 Feb 2022 01:56:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2150D61456;
-        Mon, 14 Feb 2022 09:56:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD1EC340E9;
-        Mon, 14 Feb 2022 09:56:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4389B80DC8;
+        Mon, 14 Feb 2022 09:56:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA64CC340E9;
+        Mon, 14 Feb 2022 09:56:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832567;
-        bh=1A7IgsR91FTYPNF5tJ+NY0HRqWFFQHbPO3KHIvT7IJ0=;
+        s=korg; t=1644832570;
+        bh=WFqTIFbcouaApt5mdXLi6vKpn1Gu/pyOz2IiuG4k3xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IrzNkclxCdP0Tm/eSEVtwRs9J43b7Oe3kgk2QvocAZ04Nuwqnxx8LFxFacGc/CpiX
-         p2bBFJLWs6VG077I2TnuCJVQCP0eunFh26U8SEdATAU9moI1qhWvDqFo+wXe2XSA1T
-         DVNpd2L98YSLRIJAqMgbSS9bzrrDIrzy0xh8R53g=
+        b=pQYPWWiNzAr2TDgqw9CksOnOjhJ8K+PXXqgTZUDMKHlLSS3UkZMUSlndJJVKDz+Gl
+         dxJwJ9terA1Jtsma+u27irnw5/A7f/ZW5DRGPEzwszF9kQAfxThBBEkjxUrfo13/BJ
+         jDT0b9HSitlDIT4IN57bCghGzQz6t8EptTYyyq5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 056/203] drm/amdgpu/display: use msleep rather than udelay for long delays
-Date:   Mon, 14 Feb 2022 10:25:00 +0100
-Message-Id: <20220214092512.153253157@linuxfoundation.org>
+Subject: [PATCH 5.16 057/203] usb: dwc2: gadget: dont try to disable ep0 in dwc2_hsotg_suspend
+Date:   Mon, 14 Feb 2022 10:25:01 +0100
+Message-Id: <20220214092512.186924841@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,44 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit 98fdcacb45f7cd2092151d6af2e60152811eb79c ]
+[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
 
-Some architectures (e.g., ARM) throw an compilation error if the
-udelay is too long.  In general udelays of longer than 2000us are
-not recommended on any architecture.  Switch to msleep in these
-cases.
+Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
+logs before returning -EINVAL:
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
 
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+To avoid these two logs while suspending, start disabling the endpoint
+from the index 1, as done in dwc2_hsotg_udc_stop:
+
+	/* all endpoints should be shutdown */
+	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+		if (hsotg->eps_in[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
+		if (hsotg->eps_out[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
+	}
+
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/dwc2/gadget.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-index b97be2e9088ce..94e75199d9428 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-@@ -6058,7 +6058,7 @@ bool dpcd_write_128b_132b_sst_payload_allocation_table(
- 			}
- 		}
- 		retries++;
--		udelay(5000);
-+		msleep(5);
- 	}
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index 43cf49c4e5e59..da82e4140d545 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -5097,7 +5097,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
+ 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+ 		spin_unlock_irqrestore(&hsotg->lock, flags);
  
- 	if (!result && retries == max_retries) {
-@@ -6110,7 +6110,7 @@ bool dpcd_poll_for_allocation_change_trigger(struct dc_link *link)
- 			break;
- 		}
- 
--		udelay(5000);
-+		msleep(5);
- 	}
- 
- 	if (result == ACT_FAILED) {
+-		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
++		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+ 			if (hsotg->eps_in[ep])
+ 				dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
+ 			if (hsotg->eps_out[ep])
 -- 
 2.34.1
 
