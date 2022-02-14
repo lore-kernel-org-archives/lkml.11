@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 02:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 908B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 02:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239700AbiBNC7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 21:59:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41628 "EHLO
+        id S239500AbiBNC7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 21:59:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239725AbiBNC7D (ORCPT
+        with ESMTP id S239707AbiBNC7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 21:59:03 -0500
+        Sun, 13 Feb 2022 21:59:07 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD84950B17
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 18:58:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728EB50E3B
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 18:58:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644807532; x=1676343532;
+  t=1644807538; x=1676343538;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VfnNiH0iyPcpYrZNt/OHwIGhAD5IQG518T5a6b0/BPU=;
-  b=E2+KSTbfs/+lFim55V7AgqbZjgGzROcoLVxxycGZY7eD0I7rd9qai8cE
-   NrXslQTgmV/cPaMrwS3VjIzJjvqEVXAV4+hIHVjT2aVIHcgv4z23wTMDJ
-   QsaH9POzMpc+B45NTDO1s3VLdjh8PbHi105e7gGsv+ZFYxln+9VZw3EIA
-   ilLTalEGtA5FdD+5Oujg5Lw6+k+imm3bLwBrcLiAbsywbEbYqI/Zubdki
-   RfcbMyiNYpHncRWgZZ52mX9463JZm3lQYnbg09slUTaN89wT1SokoGVrA
-   tzyW25VsV4CAFE4exPYQTMeyiJJZSAfpxMCUZi3iq8jSZ9tfjN4/rY3j8
+  bh=XnFH65FFxEQ3hwhwcysUPS97E/4r4ucJNSpMglRXUwU=;
+  b=kiKKtsoxAdD51ViJcJHPYcWyH5qKKfIEZ3LD3GaO+cRs4nJCWlG0AlDD
+   8kJXGNa0h1rgUEP+dDmGtyWqTqjHQ0vbxG1jLlA9COmE2W05ly6AJa4+X
+   jphTLB5UY59v8jTroa6qoIudxn4q5qsgLpO2rjLDNVx7vBROmT66OHxLr
+   9xsHcxeoZ3RDkOd9DJ/e43McaJgS/tpPfZieKymI62H26Gnw+fxkRvjr9
+   LieZb6Pzf/fiNdPU5WPvc3RCZbcNqPpJe3JdvAzVhkXMRLECq5XV5fAnu
+   +7EofKL/WyfjCRH2YpPEOH5IZBcDAGGk1hzLOEg3GxNigJGUMfnsCmhrU
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="313280425"
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="313280431"
 X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
-   d="scan'208";a="313280425"
+   d="scan'208";a="313280431"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 18:58:52 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 18:58:58 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
-   d="scan'208";a="501514991"
+   d="scan'208";a="501515020"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
-  by orsmga002.jf.intel.com with ESMTP; 13 Feb 2022 18:58:49 -0800
+  by orsmga002.jf.intel.com with ESMTP; 13 Feb 2022 18:58:55 -0800
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
         Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
@@ -47,9 +47,9 @@ Cc:     Robin Murphy <robin.murphy@arm.com>,
         Christoph Hellwig <hch@lst.de>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 06/11] iommu/vt-d: Remove unnecessary includes
-Date:   Mon, 14 Feb 2022 10:56:59 +0800
-Message-Id: <20220214025704.3184654-7-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 08/11] iommu/vt-d: Fix indentation of goto labels
+Date:   Mon, 14 Feb 2022 10:57:01 +0800
+Message-Id: <20220214025704.3184654-9-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
 References: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
@@ -59,63 +59,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove unnecessary include files and sort the remaining alphabetically.
+Remove blanks before goto labels.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 34 +++++++---------------------------
- 1 file changed, 7 insertions(+), 27 deletions(-)
+ drivers/iommu/intel/iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index d9965e72d9a8..b6a6fea8525d 100644
+index dfd3698406fa..d7fac0a1761d 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -13,38 +13,18 @@
- #define pr_fmt(fmt)     "DMAR: " fmt
- #define dev_fmt(fmt)    pr_fmt(fmt)
+@@ -827,7 +827,7 @@ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
+ 		}
  
--#include <linux/init.h>
--#include <linux/bitmap.h>
--#include <linux/debugfs.h>
--#include <linux/export.h>
--#include <linux/slab.h>
--#include <linux/irq.h>
--#include <linux/interrupt.h>
--#include <linux/spinlock.h>
--#include <linux/pci.h>
--#include <linux/dmar.h>
--#include <linux/dma-map-ops.h>
--#include <linux/mempool.h>
--#include <linux/memory.h>
--#include <linux/cpu.h>
--#include <linux/timer.h>
--#include <linux/io.h>
--#include <linux/iova.h>
--#include <linux/iommu.h>
-+#include <linux/crash_dump.h>
-+#include <linux/dma-direct.h>
- #include <linux/dma-iommu.h>
-+#include <linux/dmi.h>
- #include <linux/intel-iommu.h>
- #include <linux/intel-svm.h>
-+#include <linux/memory.h>
-+#include <linux/pci.h>
-+#include <linux/pci-ats.h>
-+#include <linux/spinlock.h>
- #include <linux/syscore_ops.h>
- #include <linux/tboot.h>
--#include <linux/dmi.h>
--#include <linux/pci-ats.h>
--#include <linux/memblock.h>
--#include <linux/dma-direct.h>
--#include <linux/crash_dump.h>
--#include <linux/numa.h>
--#include <asm/irq_remapping.h>
--#include <asm/cacheflush.h>
--#include <asm/iommu.h>
+ 		if (pdev && drhd->include_all) {
+-		got_pdev:
++got_pdev:
+ 			if (bus && devfn) {
+ 				*bus = pdev->bus->number;
+ 				*devfn = pdev->devfn;
+@@ -836,7 +836,7 @@ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
+ 		}
+ 	}
+ 	iommu = NULL;
+- out:
++out:
+ 	if (iommu_is_dummy(iommu, dev))
+ 		iommu = NULL;
  
- #include "../irq_remapping.h"
- #include "../iommu-sva-lib.h"
 -- 
 2.25.1
 
