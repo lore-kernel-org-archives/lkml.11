@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 961ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20140C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344878AbiBNKET (ORCPT
+        id S1345109AbiBNKEZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:04:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44368 "EHLO
+        Mon, 14 Feb 2022 05:04:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344331AbiBNJ7T (ORCPT
+        with ESMTP id S1344348AbiBNJ72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:59:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D08A389;
-        Mon, 14 Feb 2022 01:46:35 -0800 (PST)
+        Mon, 14 Feb 2022 04:59:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F354C34;
+        Mon, 14 Feb 2022 01:47:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0615AB80DBF;
-        Mon, 14 Feb 2022 09:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E15C340E9;
-        Mon, 14 Feb 2022 09:46:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E7E6B80DBF;
+        Mon, 14 Feb 2022 09:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B12AC340E9;
+        Mon, 14 Feb 2022 09:46:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831992;
-        bh=C8dHEA5Be/M4HwoHN9qOTlysc8sgv88UKMWgUlc+Z6I=;
+        s=korg; t=1644832017;
+        bh=L2abX2J6L4mBx7bs32Xn/5k1qnjftTG1FoPZV+6UUe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mMPjemxDRZowdacAu8H0gd4zRIpu0w7lgOJHIXuGhO8ipuqDUnjuGMRUmbNwZjr3T
-         yRaODsBbtWN6JsMdogG+cUDMcpEV+3+IM96EWKBHG3eIjEDrSGhY3vaPV5sH/pnMPY
-         Ym3NckklRPYSdXDd8Rk92xchFeiiGnFZEXvkxkcc=
+        b=lUC2f7GRnf4l4xH1I3+X+8rqAgKaNkMbbOtl01RVIFkliCJgpkgRg5PijcAMTW5qL
+         KgBnU6Yol270DHDeqGw8X49gu1bTQm2C8NNwm5WD63NUCcTyKFRoSdVq7qGR7yKSqn
+         C7EBa1MbXc3zRV4b0d+xGwaeMbMhQ47BwxWL81gI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 028/172] NFSv4 store server support for fs_location attribute
-Date:   Mon, 14 Feb 2022 10:24:46 +0100
-Message-Id: <20220214092507.375131199@linuxfoundation.org>
+Subject: [PATCH 5.15 053/172] PM: hibernate: Remove register_nosave_region_late()
+Date:   Mon, 14 Feb 2022 10:25:11 +0100
+Message-Id: <20220214092508.220560042@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,45 +53,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-[ Upstream commit 8a59bb93b7e3cca389af44781a429ac12ac49be6 ]
+[ Upstream commit 33569ef3c754a82010f266b7b938a66a3ccf90a4 ]
 
-Define and store if server returns it supports fs_locations attribute
-as a capability.
+It is an unused wrapper forcing kmalloc allocation for registering
+nosave regions. Also, rename __register_nosave_region() to
+register_nosave_region() now that there is no need for disambiguation.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4proc.c         | 2 ++
- include/linux/nfs_fs_sb.h | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ include/linux/suspend.h | 11 +----------
+ kernel/power/snapshot.c | 21 +++++++--------------
+ 2 files changed, 8 insertions(+), 24 deletions(-)
 
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index 443eab71c9a9e..367a1b99b7550 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -3894,6 +3894,8 @@ static int _nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *f
- 		if (res.attr_bitmask[2] & FATTR4_WORD2_SECURITY_LABEL)
- 			server->caps |= NFS_CAP_SECURITY_LABEL;
- #endif
-+		if (res.attr_bitmask[0] & FATTR4_WORD0_FS_LOCATIONS)
-+			server->caps |= NFS_CAP_FS_LOCATIONS;
- 		if (!(res.attr_bitmask[0] & FATTR4_WORD0_FILEID))
- 			server->fattr_valid &= ~NFS_ATTR_FATTR_FILEID;
- 		if (!(res.attr_bitmask[1] & FATTR4_WORD1_MODE))
-diff --git a/include/linux/nfs_fs_sb.h b/include/linux/nfs_fs_sb.h
-index 2a9acbfe00f0f..9a6e70ccde56e 100644
---- a/include/linux/nfs_fs_sb.h
-+++ b/include/linux/nfs_fs_sb.h
-@@ -287,5 +287,5 @@ struct nfs_server {
- #define NFS_CAP_COPY_NOTIFY	(1U << 27)
- #define NFS_CAP_XATTR		(1U << 28)
- #define NFS_CAP_READ_PLUS	(1U << 29)
--
-+#define NFS_CAP_FS_LOCATIONS	(1U << 30)
- #endif
+diff --git a/include/linux/suspend.h b/include/linux/suspend.h
+index 8af13ba60c7e4..c1310c571d805 100644
+--- a/include/linux/suspend.h
++++ b/include/linux/suspend.h
+@@ -430,15 +430,7 @@ struct platform_hibernation_ops {
+ 
+ #ifdef CONFIG_HIBERNATION
+ /* kernel/power/snapshot.c */
+-extern void __register_nosave_region(unsigned long b, unsigned long e, int km);
+-static inline void __init register_nosave_region(unsigned long b, unsigned long e)
+-{
+-	__register_nosave_region(b, e, 0);
+-}
+-static inline void __init register_nosave_region_late(unsigned long b, unsigned long e)
+-{
+-	__register_nosave_region(b, e, 1);
+-}
++extern void register_nosave_region(unsigned long b, unsigned long e);
+ extern int swsusp_page_is_forbidden(struct page *);
+ extern void swsusp_set_page_free(struct page *);
+ extern void swsusp_unset_page_free(struct page *);
+@@ -457,7 +449,6 @@ int pfn_is_nosave(unsigned long pfn);
+ int hibernate_quiet_exec(int (*func)(void *data), void *data);
+ #else /* CONFIG_HIBERNATION */
+ static inline void register_nosave_region(unsigned long b, unsigned long e) {}
+-static inline void register_nosave_region_late(unsigned long b, unsigned long e) {}
+ static inline int swsusp_page_is_forbidden(struct page *p) { return 0; }
+ static inline void swsusp_set_page_free(struct page *p) {}
+ static inline void swsusp_unset_page_free(struct page *p) {}
+diff --git a/kernel/power/snapshot.c b/kernel/power/snapshot.c
+index f7a9860782135..330d499376924 100644
+--- a/kernel/power/snapshot.c
++++ b/kernel/power/snapshot.c
+@@ -978,8 +978,7 @@ static void memory_bm_recycle(struct memory_bitmap *bm)
+  * Register a range of page frames the contents of which should not be saved
+  * during hibernation (to be used in the early initialization code).
+  */
+-void __init __register_nosave_region(unsigned long start_pfn,
+-				     unsigned long end_pfn, int use_kmalloc)
++void __init register_nosave_region(unsigned long start_pfn, unsigned long end_pfn)
+ {
+ 	struct nosave_region *region;
+ 
+@@ -995,18 +994,12 @@ void __init __register_nosave_region(unsigned long start_pfn,
+ 			goto Report;
+ 		}
+ 	}
+-	if (use_kmalloc) {
+-		/* During init, this shouldn't fail */
+-		region = kmalloc(sizeof(struct nosave_region), GFP_KERNEL);
+-		BUG_ON(!region);
+-	} else {
+-		/* This allocation cannot fail */
+-		region = memblock_alloc(sizeof(struct nosave_region),
+-					SMP_CACHE_BYTES);
+-		if (!region)
+-			panic("%s: Failed to allocate %zu bytes\n", __func__,
+-			      sizeof(struct nosave_region));
+-	}
++	/* This allocation cannot fail */
++	region = memblock_alloc(sizeof(struct nosave_region),
++				SMP_CACHE_BYTES);
++	if (!region)
++		panic("%s: Failed to allocate %zu bytes\n", __func__,
++		      sizeof(struct nosave_region));
+ 	region->start_pfn = start_pfn;
+ 	region->end_pfn = end_pfn;
+ 	list_add_tail(&region->list, &nosave_regions);
 -- 
 2.34.1
 
