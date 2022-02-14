@@ -2,98 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF29DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8442C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355611AbiBNPGv (ORCPT
+        id S1355618AbiBNPGy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:06:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36976 "EHLO
+        Mon, 14 Feb 2022 10:06:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355601AbiBNPGs (ORCPT
+        with ESMTP id S1355605AbiBNPGt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:06:48 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31036B84F
+        Mon, 14 Feb 2022 10:06:49 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7940149F9D
         for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:06:41 -0800 (PST)
-Date:   Mon, 14 Feb 2022 16:06:38 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644851199;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4ffmDmCgww43CwxuLJqy8ALswx+JnwgUCL+VZyLzQiE=;
-        b=pZxVjmSngLvK43Shu4+ZvEImk75UAlp6+SguISjrMd67DF/fqREqAydfxQUMiSCKyQT5/K
-        w1CemAhF82jFYTvMdGDI6wk54BegMmhsEZfI9rBKNwj4yfiPqH8orjM1u8TL8IeR0Q5rlV
-        VP6KJn4nEJhT8DUodFSp4TmrTZvvBjQctIT8/o+AQpEPPRPowePKdXFx/UTYgsJlcgIGA0
-        NJpwdXkEw5NF/L0RopRBqAbp8HKNFHrLZTdfULAg97UAOmMRrTkSV1XLhMXZkp4kSXp/0p
-        gOeI6fo+YSNrWVnss19NwzZXwqpRSgKsoo94R80YyceDlA6gN8931hN66UiTlg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644851199;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4ffmDmCgww43CwxuLJqy8ALswx+JnwgUCL+VZyLzQiE=;
-        b=T5tNRo2pHZmK/Ij4qjMvCldM5bz7MzZRbKfHjxs5IBGGjr+tDI5asSmKtSvMaXPPgwt7UO
-        U/2jL4EXtXMU8oBg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH v2] random: set fast pool count to zero in cpuhp teardown
-Message-ID: <Ygpv/kLWCmTzUTki@linutronix.de>
-References: <CAHmME9rAnh6nSRNYo56Ty6VSrY17ej35AoNkSjunFO0AQp1D9Q@mail.gmail.com>
- <20220214133735.966528-1-Jason@zx2c4.com>
- <Ygpkej/vnMvUDIlP@linutronix.de>
- <CAHmME9ruM85U+dp4coBRJUBdk=iHXFZq3ZvHSiDXmpV+BoZEVw@mail.gmail.com>
- <Ygpr9Xg0I+ZVzp9v@linutronix.de>
- <CAHmME9rp+O3+yjX_q-BS8y06PigbkEgi4vn=nzLACnBAWZt-vA@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644851190;
+        bh=XJKDudRxjecHHstAdeydKO87TqgUYqKLrpClo0189hg=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=atjrzDzrVd+rtHTzMGl4C904TAWNYEIs1mEDpMmTP6tvuByaXqsFy+pwHGIbFWUmr
+         TZzMnOa+UOf/SGaNfl0ZVwFtAYpfMi/+f5+x8nK/CQ2CbTbjBIrrRzNvLf1pRafFKr
+         RVMXpkftRtlUQ6zw+IuF6NHIIlIyrgBL/Talo0tA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.168.11]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MatRZ-1nqTVu3Z4V-00cP9n; Mon, 14
+ Feb 2022 16:06:29 +0100
+Message-ID: <e259c202-5473-8406-2577-9e3c0d968385@gmx.de>
+Date:   Mon, 14 Feb 2022 16:06:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHmME9rp+O3+yjX_q-BS8y06PigbkEgi4vn=nzLACnBAWZt-vA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [deller-parisc:for-next 5/6]
+ arch/parisc/include/asm/bitops.h:20:2: error: #error "Please use
+ 'ARCH=parisc64' to build the 64-bit kernel."
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+References: <202202142139.fHrrv9Oy-lkp@intel.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <202202142139.fHrrv9Oy-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:AMQd1HwBAbw+XhfwZikxGzoW4Mxd95Au1gMMbC1lNpLj+h+pX0Z
+ j+zLsvP8q9zaCxE1ZwxOgBXIrGHjIVMUxFPuyGPcGCFtJv37edyNjLrCfSuLNv4LkBg1yMj
+ /kPl0OqqmcS3h1Hj89XBQzWUsGdCEm8ofkWEIKAkHDXv6N5MSqBXh2XrUt1WgO470SZ5bsa
+ +QOw1JqpC1p8mcocNoeOA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:RqLYCO8ho6s=:TGZbwiuz54oRHe0o3nHC3F
+ SwJ0i3TDMEhqsBWYnvS17DOtqrBRE8kpGTJgIkmYliNh+eVdlCniDjeDbEoo0e1bIsMVAVdJD
+ VDjjvKV/ZUc+D/qDdpJUtRuaRGFKd/w3rKbaqQfkNqRr9SY+VGKbGfnoFYUSgobkSxIkXIiWz
+ cCQkB4qBnqy/eCbhYP1BtX7Iy6FK1UlzulpiuoNM0vU7uMoyXVDRfngkJA4dSiAxRHZ3hk9Vt
+ B5IA5aylR7o1vDS4rfFdMOJtR+ZCEHS0fA2JMe6NlFNDvpOTy6EdtIYPnyJ9ZdddX5bObjKl3
+ HPzG3Uty+G7guSTyZWFkxt0JR+vftqUpD6krwEx/uqxHHgfMt+Ad04mncMGrhCY0iEkS+hMVy
+ 6tx88+2babh7RwWP04trp+EXVyehZs5vVROrohg6/jIDIcbAhKFE6/8XThwdNqmL+t/aty3J5
+ AvzImtl5KeSTj3Vgk0cfGVyWso55ZqSk5RzUcANuXU4e7dlE2XazmgmgcmWeBV3l5Ewopf4Xz
+ ici078RBOxkmeP+FIQ6ifblFYdMb9BU8YQ7FHCoYdfoWSDf2r19mIVD7K1s1cMnvSqktCHzD+
+ aPi4CWKMuYhsZQ5ZdX7whch8BgSBo7vcajiYfEqbKajYvc5/rGdM2zQjy9Gqi7lpi8XvlHgmS
+ M2teQP0Q2x23+C+SU3afU76UblIAKcs9dAKD6NnXwwjpRDzOH1PBaFAf5+Ea/ggG1MAo5cwE5
+ x8H+ti4bFlRVUptnMTv40xd07Jqoc3/eR082E81USXE5F2ueEMxAi9OwgFW25oYZ7EQ/rf8Kl
+ OOuHgzkZpNxk7jXRTOmL62/SkM3qchS/yd359VZkfNLTC6TICBZz0xE/Pt/I7xSB+Mj0pZnXK
+ pB9WXOov+wM4b4UWH21Rwyre7cTC7zUtN1dnEGCveQoc/EKA/uW7WqaEF9dkQznW0JRTaOSIU
+ NJEKYa9AxcSCL1jvtuajuWkTf45Tcju1dYk01fSsd7YIIKO5rAFP09hW3CvC80o2TmwcKIAh/
+ vo7se0kkiBC5AEAOfznhI8vWI5rgmWFptjKqzcpqT2p7OV4ZUQfpJoSsB+zZYLDPAY1Lv59XG
+ 8Wh9FHRYn/DX70=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-14 15:52:34 [+0100], Jason A. Donenfeld wrote:
-> On Mon, Feb 14, 2022 at 3:49 PM Sebastian Andrzej Siewior
-> <bigeasy@linutronix.de> wrote:
-> >
-> > On 2022-02-14 15:42:50 [+0100], Jason A. Donenfeld wrote:
-> > > Hi Sebastian,
-> > Hi Jason,
-> >
-> > > If we move this to startup, is there a phase during which no interrupt
-> > > will arrive? That is, can this happen very very early in startup, so
-> > > that zeroing out count happens *before* ++count?
-> >
-> > Interrupts will arrive starting with CPUHP_AP_ONLINE_IDLE from the CPU
-> > HP point of view. My suggestion had a check for upper most bit and only
-> > clear count if that bit was seen. So we wouldn't clear the counter if we
-> > wouldn't suspect one of the rare corner cases.
-> 
-> That doesn't work for the other use cases I have for this (see the other patch).
+On 2/14/22 14:25, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-li=
+nux.git for-next
+> head:   dbd0b42350d5717786cb8257fbe5b528f3af9772
+> commit: b160628e9ebcdc85d0db9d7f423c26b3c7c179d0 [5/6] parisc: Show erro=
+r if wrong 32/64-bit compiler is being used
+> config: parisc-randconfig-r004-20220213 (https://download.01.org/0day-ci=
+/archive/20220214/202202142139.fHrrv9Oy-lkp@intel.com/config)
+> compiler: hppa64-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=3D1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sb=
+in/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-=
+linux.git/commit/?id=3Db160628e9ebcdc85d0db9d7f423c26b3c7c179d0
+>         git remote add deller-parisc https://git.kernel.org/pub/scm/linu=
+x/kernel/git/deller/parisc-linux.git
+>         git fetch --no-tags deller-parisc for-next
+>         git checkout b160628e9ebcdc85d0db9d7f423c26b3c7c179d0
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-11.2.0 make.cr=
+oss O=3Dbuild_dir ARCH=3Dparisc prepare
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    In file included from include/linux/bitops.h:33,
+>                     from include/linux/kernel.h:22,
+>                     from arch/parisc/include/asm/bug.h:5,
+>                     from include/linux/bug.h:5,
+>                     from include/linux/page-flags.h:10,
+>                     from kernel/bounds.c:10:
+>>> arch/parisc/include/asm/bitops.h:20:2: error: #error "Please use 'ARCH=
+=3Dparisc64' to build the 64-bit kernel."
+>       20 | #error "Please use 'ARCH=3Dparisc64' to build the 64-bit kern=
+el."
 
-But you acked my question regarding boot-up? So the teardown callback
-won't happen during boot-up.
+The newly introduced error message works as intended :-)
 
-> So I think it seems better to keep it before CPUHP_TIMERS_PREPARE, but
-> do it on startup rather than teardown. Seem reasonable? Would that
-> mean we zero out before IRQs are enabled?
-I would only zero it if the upper-most bit is there.
-If you need (want) to reset the get_random_uXX() pools and such, there
-is nothing wrong with having an early notifier at CPU up time before the
-CPU gets active (say CPUHP_RANDOM_PREPARE) where you make sure that the
-pools will re-fill during first usage.
-And then have another one after CPUHP_AP_WORKQUEUE_ONLINE to ensure that
-a possible scheduled worker between CPUHP_AP_ONLINE_IDLE and
-CPUHP_AP_WORKQUEUE_ONLINE runs on the correct CPU. And this covers also
-the rollback problem.
+#error "Please use 'ARCH=3Dparisc64' to build the 64-bit kernel."
 
-Sebastian
+Helge
