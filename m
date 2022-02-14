@@ -2,80 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A00DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352343AbiBNMd5 (ORCPT
+        id S1353211AbiBNMeB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:33:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59958 "EHLO
+        Mon, 14 Feb 2022 07:34:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231529AbiBNMdz (ORCPT
+        with ESMTP id S231529AbiBNMd6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:33:55 -0500
-X-Greylist: delayed 304 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 04:33:47 PST
-Received: from mout.web.de (mout.web.de [212.227.15.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D3B4A3C7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:33:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1644842026;
-        bh=84k/EoVoWVAY9EFEJhZ3x3GPR9+cYp7/R0Zz+rHzqRo=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=qXOIK4nQ227c39gJsGYurMhbGuw1IMPFS7I/Ccv8TUM46LWPI9JAMO1bP36OwrRi1
-         2SZoclqZnvj1hCfEKI/qJDWo6byxhKI0N9tXkHr6YebEsaTs5FJ9x7VFCgsrnOFVfL
-         /RQID3QThHvj+V3UY7k0UMdx/r+mHIrHVF0efZcA=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from schienar ([128.141.229.125]) by smtp.web.de (mrweb006
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1Mae3q-1nqA4D3gvi-00cKam; Mon, 14
- Feb 2022 13:28:39 +0100
-Date:   Mon, 14 Feb 2022 13:28:38 +0100
-From:   Julian Wollrath <jwollrath@web.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>
-Subject: v5.17.0-rc3: Regression bisecting failing suspend to disk: ALSA:
- hda: realtek: Fix race at concurrent COEF updates
-Message-ID: <20220214132838.4db10fca@schienar>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Mon, 14 Feb 2022 07:33:58 -0500
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184304A3C5;
+        Mon, 14 Feb 2022 04:33:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644842007;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=qUySygnZkUVx2rCGOqeGTSW2rdh368jzeZLPMWUYvgM=;
+    b=HgaFJ6Ad0ulS/opcA5h6cVZhkGErNDDWCWraBuVA+dHKnvROUI7LO2LlfCT2oHrhMn
+    62W8bhJhgSocf6NKz51ZsXj1fzBjeqZldRG1v9qGWiee1NcfzyVmqhPAA2mA4IpIWtVt
+    W+epz9xy0Xw9gTZnoCZsKDb1c3U2CG4ySTufPcm29MnIQhEQLFyAHSuaS20dSduPUMkl
+    39Iby/GdVlzrLqaeg3qCMIGTdRM8tdIQJ1ud3wFvDXTXPqTkC62VmIJ1GInOSxzRKmDH
+    u1LKTUElff1sKPiuyjfn+bMDasVqPqk/sUryL6kjlK8dlKA5fIXvdOhRJKPkJ7nlfplb
+    +vzw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3jcR+"
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+    by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
+    with ESMTPSA id L29417y1ECXQyfk
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Mon, 14 Feb 2022 13:33:26 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: [PATCH v15 1/7] drm/ingenic: Fix support for JZ4780 HDMI output
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <U0OA7R.MYFTV5LL3N4A2@crapouillou.net>
+Date:   Mon, 14 Feb 2022 13:33:25 +0100
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Paul Boddie <paul@boddie.org.uk>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
+        letux-kernel@openphoenux.org,
+        Ezequiel Garcia <ezequiel@collabora.com>
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:ycVXxNClGrKE24vzcWsZdYakcruvmxhRhlYCy3dNncpUIRCwfa3
- k0l9dwXqGvApiNMFrLkaFBnMNOsa+RXME1BroVfyYgcILDnsQ+rqz6rnzBPoiZcEdiY9wef
- hC2dDASEhPueVTzk0v+A8WH111FnQ10rP4Xn8tXhxBur9jG45vRD6hLS35Sj3j1PR+3wqQ/
- soldAHPJFupZy8rszUnqA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vK5QEthO3RQ=:zlSvmHovXF6fHHRppF9Cn4
- gx8ljHsir0Iiu8xF1BB+3Rgcs+Iu6THfFsD0tgZawzutIL8Z8b2raDztvKlX0mytd/CHpftMt
- fCDi7aJ/ADz1+LLN9ozBDXf6+e6Yv6cXqSz2c2+DgA8punujKc/s2EG2e1F5n3Xpc2d6hXmmw
- 7ZTTDkV69hR1n2EsDtEZP9xC5+eLQcFchaffgw6/huDNSJZle2jY6LuST2Ww6FnIgnzxpOspf
- w69XUg4FGQA43hdQpa+KXX+eft98H1+ELouOXwi0scRVm+vJ3Pk9Ou03xlrn/atNfe+RtV1d/
- EYfb0suFtF4y3n5LvgYgWX+ovp++KJxBJsHfQJncgLJg76EzbLhVWCzx7cPFAh6bdrk0BmmxM
- qRbeh+tGBHR7jSnD2cMeAdmXLmCy8oS1bL9whefcWlWBSOCu8am2r5WxAGhGQzQhsDnIBRhkL
- k3ib8UZv26QoMlg2I5GnzhohqljEIc47v8NikXm3Z91DF8jm4Q6Wyx3M/eYwoy1LApaqWBc/1
- p17fF564jcP8Vx65M3OkMl/J9QuTUECIXwfcIhYwJ33X7IsOat1VPPFv2rXkvKHpLElnMDal0
- Hbk3G7HkXa/WjkYYXJBstra7X1nkLgXdaIejoBlKHqZfZvIfwK4WyI9rxcDo24ruQuy6jAYAt
- u5MIgQxwuD/8Hb5pnarfB5pZ7sYd6H6rhavzZNZZErNBnDILsGbU3xn1OE1hRaHqoxWnvMu6Z
- YP0PlHqwzyer3pQJD7riCikmnTEQqKGBHYKSR5JJA5/QEy4UT+A4DlFrmM6VjPhKbUPUSv4Kv
- mhhetzs+odrUHAOzRodGFTS67+ynxhMNIVhj2mCtFewUGtUZqzRlqTln/HeejCUjtVChsUEcP
- 8ZVIpEAA9WG1ihCWhhw+CsU3vbSBPuI3VrE3cJa5Wgj0LiW6oB0WvWgMuInnGDV3XuVqjbrG6
- gjLvcONxErIzJ4zxG8UhYXnrg515C+0SolZfLS/vBv3XvFJrNkuRxPgL5TfED7ZL6F/Hasgbk
- FzJp2pqiiQhAfWNOoggJ54fkQXo+3v1bC/mtszBLS7R8edJeP82LJRcJ1cF10hi+pDxQbKusn
- nNv357661NOGU0=
+Message-Id: <93A6366F-1B51-459B-9927-04FCF730698E@goldelico.com>
+References: <cover.1644681054.git.hns@goldelico.com>
+ <9d3a2000d2bb014f1afb0613537bdc523202135d.1644681054.git.hns@goldelico.com>
+ <PQHA7R.CIX6XS4CFLMM3@crapouillou.net>
+ <CD0193A3-4E97-4B26-9D1F-1CFAD5B18506@goldelico.com>
+ <U0OA7R.MYFTV5LL3N4A2@crapouillou.net>
+To:     Paul Cercueil <paul@crapouillou.net>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Takashi Iwai,
+Hi Paul,
 
-since v5.17.0-rc3 my system (HP Elitebook 845 G7) fails to suspend to
-disk and instead just hangs. Rebooting via the magic sysrq keys is
-still possible though. I bisected the regression to commit
-b837a9f5ab3bdfab9233c9f98a6bef717673a3e5 (ALSA: hda: realtek: Fix race
-at concurrent COEF updates). Reverting that commit removes the problem.
-I you need more information, I am happy to provide it.
+> Am 14.02.2022 um 13:29 schrieb Paul Cercueil <paul@crapouillou.net>:
+>=20
+> Hi,
+>=20
+> Le lun., f=C3=A9vr. 14 2022 at 11:19:40 +0100, H. Nikolaus Schaller =
+<hns@goldelico.com> a =C3=A9crit :
+>> Hi Paul,
+>>> Am 14.02.2022 um 11:13 schrieb Paul Cercueil <paul@crapouillou.net>:
+>>> Hi,
+>>> Le sam., f=C3=A9vr. 12 2022 at 16:50:49 +0100, H. Nikolaus Schaller =
+<hns@goldelico.com> a =C3=A9crit :
+>>>> From: Paul Boddie <paul@boddie.org.uk>
+>>>> We have to make sure that
+>>>> - JZ_LCD_OSDC_ALPHAEN is set
+>>>> - plane f0 is disabled and not seen from user-space
+>>> Actually it will still be seen from user-space, but it won't be =
+possible to use it. So before applying I'll change this to:
+>>> "plane f0 is disabled as it's not working yet"
+>>> If that's OK with you.
+>> Yes. You understand much better than me the implications...
+>=20
+> I reworded it to "plane f0 is disabled as it's not working yet", added =
+a Fixes: tag, and pushed this patch to drm-misc-next.
 
+great and thanks.
+So I drop it from v16.
 
-Best regards,
-Julian Wollrath
+BR and thanks,
+Nikolaus
 
-=2D-
- ()  ascii ribbon campaign - against html e-mail
- /\                        - against proprietary attachments
