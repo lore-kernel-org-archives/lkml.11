@@ -2,249 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1938C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D50E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349366AbiBNKlI (ORCPT
+        id S1349453AbiBNKlL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:41:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49110 "EHLO
+        Mon, 14 Feb 2022 05:41:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349810AbiBNKgn (ORCPT
+        with ESMTP id S1349807AbiBNKgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:36:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D76D71CA8;
-        Mon, 14 Feb 2022 02:03:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54AC2B80DBF;
-        Mon, 14 Feb 2022 10:03:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B5CC340E9;
-        Mon, 14 Feb 2022 10:03:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832982;
-        bh=eo7epGseaw9I0c7bR4AlDDXxfuUZN+PIXhnLHwo6GsY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lEna5SQCqylrilGBK1SaGd0JOxej1WXv89blc8jc/V4L2nbX/xMf5wuR0/hpOltz/
-         JCh4ICTlyYo4MKIAcFZzV9OnVDdQy22VW7BiOuJ6JuCYzgH4eZxQafUONLI8O4c2fT
-         Wf518YWIYksUbxk2YPbzCo2FvhdDrJFNZzxwO2ig=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1CD71CA5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:03:05 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:8c73:faf1:1d11:4a47])
+        by xavier.telenet-ops.be with bizsmtp
+        id uy2z2600Q3BmCM301y2zvS; Mon, 14 Feb 2022 11:02:59 +0100
+Received: from geert (helo=localhost)
+        by ramsan.of.borg with local-esmtp (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nJYCB-000kAi-A6; Mon, 14 Feb 2022 11:02:59 +0100
+Date:   Mon, 14 Feb 2022 11:02:59 +0100 (CET)
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+X-X-Sender: geert@ramsan.of.borg
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roman Gushchin <guro@fb.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Waiman Long <longman@redhat.com>, Tejun Heo <tj@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 187/203] mm: memcg: synchronize objcg lists with a dedicated spinlock
-Date:   Mon, 14 Feb 2022 10:27:11 +0100
-Message-Id: <20220214092516.597353091@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+cc:     linuxppc-dev@lists.ozlabs.org
+Subject: Re: Build regressions/improvements in v5.17-rc4
+In-Reply-To: <20220214093704.1773948-1-geert@linux-m68k.org>
+Message-ID: <alpine.DEB.2.22.394.2202141102110.177467@ramsan.of.borg>
+References: <20220214093704.1773948-1-geert@linux-m68k.org>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roman Gushchin <guro@fb.com>
+On Mon, 14 Feb 2022, Geert Uytterhoeven wrote:
+> JFYI, when comparing v5.17-rc4[1] to v5.17-rc3[3], the summaries are:
+>  - build errors: +1/-0
 
-commit 0764db9b49c932b89ee4d9e3236dff4bb07b4a66 upstream.
+   + error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to fit: R_PPC64_REL14 (stub) against symbol `system_reset_common' defined in .text section in arch/powerpc/kernel/head_64.o:  => (.text+0x3ec)
 
-Alexander reported a circular lock dependency revealed by the mmap1 ltp
-test:
+powerpc-gcc5/powerpc-allyesconfig
 
-  LOCKDEP_CIRCULAR (suite: ltp, case: mtest06 (mmap1))
-          WARNING: possible circular locking dependency detected
-          5.17.0-20220113.rc0.git0.f2211f194038.300.fc35.s390x+debug #1 Not tainted
-          ------------------------------------------------------
-          mmap1/202299 is trying to acquire lock:
-          00000001892c0188 (css_set_lock){..-.}-{2:2}, at: obj_cgroup_release+0x4a/0xe0
-          but task is already holding lock:
-          00000000ca3b3818 (&sighand->siglock){-.-.}-{2:2}, at: force_sig_info_to_task+0x38/0x180
-          which lock already depends on the new lock.
-          the existing dependency chain (in reverse order) is:
-          -> #1 (&sighand->siglock){-.-.}-{2:2}:
-                 __lock_acquire+0x604/0xbd8
-                 lock_acquire.part.0+0xe2/0x238
-                 lock_acquire+0xb0/0x200
-                 _raw_spin_lock_irqsave+0x6a/0xd8
-                 __lock_task_sighand+0x90/0x190
-                 cgroup_freeze_task+0x2e/0x90
-                 cgroup_migrate_execute+0x11c/0x608
-                 cgroup_update_dfl_csses+0x246/0x270
-                 cgroup_subtree_control_write+0x238/0x518
-                 kernfs_fop_write_iter+0x13e/0x1e0
-                 new_sync_write+0x100/0x190
-                 vfs_write+0x22c/0x2d8
-                 ksys_write+0x6c/0xf8
-                 __do_syscall+0x1da/0x208
-                 system_call+0x82/0xb0
-          -> #0 (css_set_lock){..-.}-{2:2}:
-                 check_prev_add+0xe0/0xed8
-                 validate_chain+0x736/0xb20
-                 __lock_acquire+0x604/0xbd8
-                 lock_acquire.part.0+0xe2/0x238
-                 lock_acquire+0xb0/0x200
-                 _raw_spin_lock_irqsave+0x6a/0xd8
-                 obj_cgroup_release+0x4a/0xe0
-                 percpu_ref_put_many.constprop.0+0x150/0x168
-                 drain_obj_stock+0x94/0xe8
-                 refill_obj_stock+0x94/0x278
-                 obj_cgroup_charge+0x164/0x1d8
-                 kmem_cache_alloc+0xac/0x528
-                 __sigqueue_alloc+0x150/0x308
-                 __send_signal+0x260/0x550
-                 send_signal+0x7e/0x348
-                 force_sig_info_to_task+0x104/0x180
-                 force_sig_fault+0x48/0x58
-                 __do_pgm_check+0x120/0x1f0
-                 pgm_check_handler+0x11e/0x180
-          other info that might help us debug this:
-           Possible unsafe locking scenario:
-                 CPU0                    CPU1
-                 ----                    ----
-            lock(&sighand->siglock);
-                                         lock(css_set_lock);
-                                         lock(&sighand->siglock);
-            lock(css_set_lock);
-           *** DEADLOCK ***
-          2 locks held by mmap1/202299:
-           #0: 00000000ca3b3818 (&sighand->siglock){-.-.}-{2:2}, at: force_sig_info_to_task+0x38/0x180
-           #1: 00000001892ad560 (rcu_read_lock){....}-{1:2}, at: percpu_ref_put_many.constprop.0+0x0/0x168
-          stack backtrace:
-          CPU: 15 PID: 202299 Comm: mmap1 Not tainted 5.17.0-20220113.rc0.git0.f2211f194038.300.fc35.s390x+debug #1
-          Hardware name: IBM 3906 M04 704 (LPAR)
-          Call Trace:
-            dump_stack_lvl+0x76/0x98
-            check_noncircular+0x136/0x158
-            check_prev_add+0xe0/0xed8
-            validate_chain+0x736/0xb20
-            __lock_acquire+0x604/0xbd8
-            lock_acquire.part.0+0xe2/0x238
-            lock_acquire+0xb0/0x200
-            _raw_spin_lock_irqsave+0x6a/0xd8
-            obj_cgroup_release+0x4a/0xe0
-            percpu_ref_put_many.constprop.0+0x150/0x168
-            drain_obj_stock+0x94/0xe8
-            refill_obj_stock+0x94/0x278
-            obj_cgroup_charge+0x164/0x1d8
-            kmem_cache_alloc+0xac/0x528
-            __sigqueue_alloc+0x150/0x308
-            __send_signal+0x260/0x550
-            send_signal+0x7e/0x348
-            force_sig_info_to_task+0x104/0x180
-            force_sig_fault+0x48/0x58
-            __do_pgm_check+0x120/0x1f0
-            pgm_check_handler+0x11e/0x180
-          INFO: lockdep is turned off.
+> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/754e0b0e35608ed5206d6a67a791563c631cec07/ (all 99 configs)
+> [3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/dfd42facf1e4ada021b939b4e19c935dcdd55566/ (all 99 configs)
 
-In this example a slab allocation from __send_signal() caused a
-refilling and draining of a percpu objcg stock, resulted in a releasing
-of another non-related objcg.  Objcg release path requires taking the
-css_set_lock, which is used to synchronize objcg lists.
+Gr{oetje,eeting}s,
 
-This can create a circular dependency with the sighandler lock, which is
-taken with the locked css_set_lock by the freezer code (to freeze a
-task).
+ 						Geert
 
-In general it seems that using css_set_lock to synchronize objcg lists
-makes any slab allocations and deallocation with the locked css_set_lock
-and any intervened locks risky.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-To fix the problem and make the code more robust let's stop using
-css_set_lock to synchronize objcg lists and use a new dedicated spinlock
-instead.
-
-Link: https://lkml.kernel.org/r/Yfm1IHmoGdyUR81T@carbon.dhcp.thefacebook.com
-Fixes: bf4f059954dc ("mm: memcg/slab: obj_cgroup API")
-Signed-off-by: Roman Gushchin <guro@fb.com>
-Reported-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Tested-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Reviewed-by: Waiman Long <longman@redhat.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Reviewed-by: Jeremy Linton <jeremy.linton@arm.com>
-Tested-by: Jeremy Linton <jeremy.linton@arm.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/linux/memcontrol.h |    5 +++--
- mm/memcontrol.c            |   10 +++++-----
- 2 files changed, 8 insertions(+), 7 deletions(-)
-
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -217,7 +217,7 @@ struct obj_cgroup {
- 	struct mem_cgroup *memcg;
- 	atomic_t nr_charged_bytes;
- 	union {
--		struct list_head list;
-+		struct list_head list; /* protected by objcg_lock */
- 		struct rcu_head rcu;
- 	};
- };
-@@ -313,7 +313,8 @@ struct mem_cgroup {
- #ifdef CONFIG_MEMCG_KMEM
- 	int kmemcg_id;
- 	struct obj_cgroup __rcu *objcg;
--	struct list_head objcg_list; /* list of inherited objcgs */
-+	/* list of inherited objcgs, protected by objcg_lock */
-+	struct list_head objcg_list;
- #endif
- 
- 	MEMCG_PADDING(_pad2_);
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -254,7 +254,7 @@ struct mem_cgroup *vmpressure_to_memcg(s
- }
- 
- #ifdef CONFIG_MEMCG_KMEM
--extern spinlock_t css_set_lock;
-+static DEFINE_SPINLOCK(objcg_lock);
- 
- bool mem_cgroup_kmem_disabled(void)
- {
-@@ -298,9 +298,9 @@ static void obj_cgroup_release(struct pe
- 	if (nr_pages)
- 		obj_cgroup_uncharge_pages(objcg, nr_pages);
- 
--	spin_lock_irqsave(&css_set_lock, flags);
-+	spin_lock_irqsave(&objcg_lock, flags);
- 	list_del(&objcg->list);
--	spin_unlock_irqrestore(&css_set_lock, flags);
-+	spin_unlock_irqrestore(&objcg_lock, flags);
- 
- 	percpu_ref_exit(ref);
- 	kfree_rcu(objcg, rcu);
-@@ -332,7 +332,7 @@ static void memcg_reparent_objcgs(struct
- 
- 	objcg = rcu_replace_pointer(memcg->objcg, NULL, true);
- 
--	spin_lock_irq(&css_set_lock);
-+	spin_lock_irq(&objcg_lock);
- 
- 	/* 1) Ready to reparent active objcg. */
- 	list_add(&objcg->list, &memcg->objcg_list);
-@@ -342,7 +342,7 @@ static void memcg_reparent_objcgs(struct
- 	/* 3) Move already reparented objcgs to the parent's list */
- 	list_splice(&memcg->objcg_list, &parent->objcg_list);
- 
--	spin_unlock_irq(&css_set_lock);
-+	spin_unlock_irq(&objcg_lock);
- 
- 	percpu_ref_kill(&objcg->refcnt);
- }
-
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+ 							    -- Linus Torvalds
