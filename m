@@ -2,131 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72461C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10145C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355740AbiBNPTA (ORCPT
+        id S1355754AbiBNPT1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:19:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45444 "EHLO
+        Mon, 14 Feb 2022 10:19:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355744AbiBNPS6 (ORCPT
+        with ESMTP id S1355749AbiBNPTU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:18:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 164F060AA6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:18:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644851929;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qtxii3fDgLz/BjfAaX9vX0zo678hl9XTBNM9+pp5Auk=;
-        b=HXS/gKHkFuVEqoNg42uvqrl9RRcrhjgvboWn8eg6BNUKOcYlRIVnF8Drljd5HarsA9iksp
-        jrFKR781flHn75WvknJ5IktcNA78voPOBRfK6t702QRcEEESydDgKPGfttaenoOmERZ49L
-        UjiciaU15OJdIB2XZ9Tybay80LzsAXY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-499-ywGxEZJ_MfqW6Ba62kVU-A-1; Mon, 14 Feb 2022 10:18:46 -0500
-X-MC-Unique: ywGxEZJ_MfqW6Ba62kVU-A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1E9C22F25;
-        Mon, 14 Feb 2022 15:18:44 +0000 (UTC)
-Received: from x1.localdomain.com (unknown [10.39.192.237])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F2AD2B598;
-        Mon, 14 Feb 2022 15:18:24 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        =?UTF-8?q?Benoit=20Gr=C3=A9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC 2/2] x86/PCI: Ignore EFI memmap MMIO entries
-Date:   Mon, 14 Feb 2022 16:17:59 +0100
-Message-Id: <20220214151759.98267-3-hdegoede@redhat.com>
-In-Reply-To: <20220214151759.98267-1-hdegoede@redhat.com>
-References: <20220214151759.98267-1-hdegoede@redhat.com>
+        Mon, 14 Feb 2022 10:19:20 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC14A5BD24;
+        Mon, 14 Feb 2022 07:19:09 -0800 (PST)
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jy7CD6Xbbz6899G;
+        Mon, 14 Feb 2022 23:18:16 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 14 Feb 2022 16:19:07 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 14 Feb
+ 2022 15:19:06 +0000
+Date:   Mon, 14 Feb 2022 15:19:05 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     kernel test robot <lkp@intel.com>
+CC:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        <kbuild-all@lists.01.org>, <linux-kernel@vger.kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        <linux-sh@vger.kernel.org>
+Subject: Re: drivers/iio/adc/xilinx-ams.c:1195:21: error: unused variable
+ 'ams'
+Message-ID: <20220214151905.00005a27@Huawei.com>
+In-Reply-To: <202202142203.4ofqbic9-lkp@intel.com>
+References: <202202142203.4ofqbic9-lkp@intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml718-chm.china.huawei.com (10.201.108.69) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linux excludes E820 reserved addresses when allocating addresses from the
-PCI host bridge window. This behavior is needed for at least 2 reasons:
+On Mon, 14 Feb 2022 22:47:14 +0800
+kernel test robot <lkp@intel.com> wrote:
 
-1. Some BIOS-es contain a bug where they add addresses which map to system
-RAM in the PCI host bridge window returned by the ACPI _CRS method, see
-commit 4dc2287c1805 ("x86: avoid E820 regions when allocating address
-space").
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   754e0b0e35608ed5206d6a67a791563c631cec07
+> commit: d5c70627a79455154f5f636096abe6fe57510605 iio: adc: Add Xilinx AMS driver
+> date:   8 weeks ago
+> config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220214/202202142203.4ofqbic9-lkp@intel.com/config)
+> compiler: sh4-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d5c70627a79455154f5f636096abe6fe57510605
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout d5c70627a79455154f5f636096abe6fe57510605
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sh SHELL=/bin/bash drivers/iio/adc/ drivers/net/ethernet/freescale/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 
-2. At least the Lenovo X1 carbon gen 2 BIOS has an overlap between an
-E820 reserved range and the ACPI _CRS providing the PCI bridge windows:
- BIOS-e820: [mem 0x00000000dceff000-0x00000000dfa0ffff] reserved
- pci_bus 0000:00: root bus resource [mem 0xdfa00000-0xfebfffff window]
-If Linux assigns the overlapping 0xdfa00000-0xdfa0ffff range to a PCI BAR
-then the system fails to resume after a suspend.
+I'm very tempted to say won't fix on this at least not in the IIO code.
 
-Recently (2019) some systems have shown-up with EFI memmap MMIO entries
-covering the entire _CRS returned PCI bridge memory window. These memmap
-entries get converted into e820_table entries, causing all attempts to
-assign memory to PCI BARs which have not been setup by the BIOS to fail.
-For example see these dmesg snippets from a Lenovo IdeaPad 3 15IIL 81WE:
+The issue I think is the stub for iounmap on sh with no MMU not using the argument because it's
+defined as a while loop rather than as an empty static inline function which is what we'd
+get it it wasn't defined at all (AFAICT).
 
- efi: mem63: [MMIO   |RUN|  |  |  |  |  |  |  |  |   |  |  |  |UC] range=
-     [0x0000000065400000-0x00000000cfffffff] (1708MB)
- [mem 0x000000004bc50000-0x00000000cfffffff] reserved
- pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
- pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
- pci 0000:00:15.0: BAR 0: failed to assign [mem size 0x00001000 64bit]
+If anyone wants to take this on, my guess is drop
+https://elixir.bootlin.com/linux/latest/source/arch/sh/include/asm/io.h#L274
+and see if everything still works and the warning goes away.
 
-Since the problem is specifically caused by EFI memmap entries with
-a MMIO type, use the new E820_TYPE_MMIO marking of e820 entries
-translated from MMIO EFI memmap entries to skip these entries when
-excluding e820 reservations in arch_remove_reservations(), fixing the
-problem of not being able to find free space for unassigned BARs.
++CC linux-sh for inputs.
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=206459
-BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1868899
-BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1871793
-BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=2029207
-BugLink: https://bugs.launchpad.net/bugs/1878279
-BugLink: https://bugs.launchpad.net/bugs/1931715
-BugLink: https://bugs.launchpad.net/bugs/1932069
-BugLink: https://bugs.launchpad.net/bugs/1921649
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- arch/x86/kernel/resource.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Thanks,
 
-diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
-index 9b9fb7882c20..bd501f787a10 100644
---- a/arch/x86/kernel/resource.c
-+++ b/arch/x86/kernel/resource.c
-@@ -31,6 +31,10 @@ static void remove_e820_regions(struct resource *avail)
- 	for (i = 0; i < e820_table->nr_entries; i++) {
- 		entry = &e820_table->entries[i];
- 
-+		/* Some fw reserves the entire PCI bridge window as MMIO */
-+		if (entry->type == E820_TYPE_MMIO)
-+			continue;
-+
- 		resource_clip(avail, entry->addr,
- 			      entry->addr + entry->size - 1);
- 	}
--- 
-2.33.1
+Jonathan
+
+
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    drivers/iio/adc/xilinx-ams.c: In function 'ams_iounmap_ps':
+> >> drivers/iio/adc/xilinx-ams.c:1195:21: error: unused variable 'ams' [-Werror=unused-variable]  
+>     1195 |         struct ams *ams = data;
+>          |                     ^~~
+>    drivers/iio/adc/xilinx-ams.c: In function 'ams_iounmap_pl':
+>    drivers/iio/adc/xilinx-ams.c:1202:21: error: unused variable 'ams' [-Werror=unused-variable]
+>     1202 |         struct ams *ams = data;
+>          |                     ^~~
+>    cc1: all warnings being treated as errors
+> 
+> 
+> vim +/ams +1195 drivers/iio/adc/xilinx-ams.c
+> 
+>   1192	
+>   1193	static void ams_iounmap_ps(void *data)
+>   1194	{
+> > 1195		struct ams *ams = data;  
+>   1196	
+>   1197		iounmap(ams->ps_base);
+>   1198	}
+>   1199	
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
