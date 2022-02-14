@@ -2,110 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B11C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3F1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbiBNKmM convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:42:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49886 "EHLO
+        id S241668AbiBNKmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:42:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348882AbiBNKji (ORCPT
+        with ESMTP id S1348906AbiBNKkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:39:38 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61DEA9965;
-        Mon, 14 Feb 2022 02:04:01 -0800 (PST)
-Date:   Mon, 14 Feb 2022 10:03:01 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 06/23] drm/ingenic: Make use of the helper
- component_compare_of
-To:     Yong Wu <yong.wu@mediatek.com>
+        Mon, 14 Feb 2022 05:40:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0DC840A3B;
+        Mon, 14 Feb 2022 02:04:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40578B80DA6;
+        Mon, 14 Feb 2022 10:03:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EBE2C340E9;
+        Mon, 14 Feb 2022 10:03:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644833031;
+        bh=fkDalG/b6PGqzj6WaVb4J36Ptr1/KBf8bM9KnaprYO0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yVcMV0G+hcjOzJfalCmi41onq/lbTEWVDdqxszH14utjHeGAB3/3iBpfgRClVOJQW
+         AQGA0RXllpg+KaczGryYYVMDv5cDVHa63A/w772RbyqmVqMDskkCs5/mpL8dfRtbjK
+         NKcI/YlFDV0rYW2qhJTlbEYB9C4krFxwDSZ7+RLE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        James Wang <james.qian.wang@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        iommu@lists.linux-foundation.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-mediatek@lists.infradead.org,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Stephen Boyd <sboyd@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Tomasz Figa <tfiga@chromium.org>, srv_heupstream@mediatek.com,
-        Rob Clark <robdclark@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>, linux-mips@vger.kernel.org
-Message-Id: <19HA7R.NEIIBC5SNORY1@crapouillou.net>
-In-Reply-To: <20220214060819.7334-7-yong.wu@mediatek.com>
-References: <20220214060819.7334-1-yong.wu@mediatek.com>
-        <20220214060819.7334-7-yong.wu@mediatek.com>
+        stable@vger.kernel.org, Ryan Cai <ycaibb@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 5.16 201/203] kconfig: fix missing fclose() on error paths
+Date:   Mon, 14 Feb 2022 10:27:25 +0100
+Message-Id: <20220214092517.204082731@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-Le lun., févr. 14 2022 at 14:08:02 +0800, Yong Wu 
-<yong.wu@mediatek.com> a écrit :
-> Use the common compare helper from component.
-> 
-> Cc: Paul Cercueil <paul@crapouillou.net>
-> Cc: linux-mips@vger.kernel.org
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+commit d23a0c3718222a42430fd56359478a6fc7675070 upstream.
 
-Acked-by: Paul Cercueil <paul@crapouillou.net>
+The file is not closed when ferror() fails.
 
-Cheers,
--Paul
+Fixes: 00d674cb3536 ("kconfig: refactor conf_write_dep()")
+Fixes: 57ddd07c4560 ("kconfig: refactor conf_write_autoconf()")
+Reported-by: Ryan Cai <ycaibb@gmail.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ scripts/kconfig/confdata.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-> ---
->  drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c 
-> b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-> index b4943a56be09..23b8f012b418 100644
-> --- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-> +++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-> @@ -1322,11 +1322,6 @@ static int 
-> ingenic_drm_bind_with_components(struct device *dev)
->  	return ingenic_drm_bind(dev, true);
->  }
-> 
-> -static int compare_of(struct device *dev, void *data)
-> -{
-> -	return dev->of_node == data;
-> -}
-> -
->  static void ingenic_drm_unbind(struct device *dev)
->  {
->  	struct ingenic_drm *priv = dev_get_drvdata(dev);
-> @@ -1360,7 +1355,7 @@ static int ingenic_drm_probe(struct 
-> platform_device *pdev)
->  	if (!np)
->  		return ingenic_drm_bind(dev, false);
-> 
-> -	drm_of_component_match_add(dev, &match, compare_of, np);
-> +	drm_of_component_match_add(dev, &match, component_compare_of, np);
->  	of_node_put(np);
-> 
->  	return component_master_add_with_match(dev, &ingenic_master_ops, 
-> match);
-> --
-> 2.18.0
-> 
+--- a/scripts/kconfig/confdata.c
++++ b/scripts/kconfig/confdata.c
+@@ -977,10 +977,10 @@ static int conf_write_autoconf_cmd(const
+ 
+ 	fprintf(out, "\n$(deps_config): ;\n");
+ 
+-	if (ferror(out)) /* error check for all fprintf() calls */
+-		return -1;
+-
++	ret = ferror(out); /* error check for all fprintf() calls */
+ 	fclose(out);
++	if (ret)
++		return -1;
+ 
+ 	if (rename(tmp, name)) {
+ 		perror("rename");
+@@ -1091,10 +1091,10 @@ static int __conf_write_autoconf(const c
+ 			print_symbol(file, sym);
+ 
+ 	/* check possible errors in conf_write_heading() and print_symbol() */
+-	if (ferror(file))
+-		return -1;
+-
++	ret = ferror(file);
+ 	fclose(file);
++	if (ret)
++		return -1;
+ 
+ 	if (rename(tmp, filename)) {
+ 		perror("rename");
 
 
