@@ -2,157 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C31C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D81FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:16:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355019AbiBNOQf (ORCPT
+        id S1355023AbiBNOQq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 09:16:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52364 "EHLO
+        Mon, 14 Feb 2022 09:16:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233575AbiBNOQc (ORCPT
+        with ESMTP id S1355021AbiBNOQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 09:16:32 -0500
-Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F4AC72
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:16:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=V57R5a2O0zZ5gdcp4vIHQbVgGyyROcq/YIatDbB3aUU=; b=Bodhw4C6EJx6HuM+psJGR5tvbD
-        2Z5aAwckyx0vclVEQnNQ9PK7h9WuPQGpAcdnDxpZa2g4/Se0JdrlxspAJF2HWaZLOTSqbzsdEDFaW
-        IVidNF9bHmtvWXCKjo5pXFdUjoRRaKolsPRWhZE8S2agSZfpehediA1XPrX0jfbr20Cub0IKW3lOF
-        fKN5XF9pnMkWMHxSoCMBUCl9DUT+Gh/UktxnK2fgYsmegLpV1YNNagi8RJ5pJCMDg7TIPbrMcm5L/
-        X/xSUgG/gTDuZSqkZLdHlNmIojs+6C01U+6Pt4zIwPZiln9jHA6Q4eYnkZuFM9eUNNAY2wphft9oa
-        4YNYBT7A==;
-Received: from 201-27-34-205.dsl.telesp.net.br ([201.27.34.205] helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1nJc9G-0003w2-2s; Mon, 14 Feb 2022 15:16:14 +0100
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     linux-kernel@vger.kernel.org, bhe@redhat.com, pmladek@suse.com,
-        akpm@linux-foundation.org
-Cc:     gpiccoli@igalia.com, anton@enomsg.org, ccross@android.com,
-        dyoung@redhat.com, feng.tang@intel.com, john.ogness@linutronix.de,
-        keescook@chromium.org, kernel@gpiccoli.net,
-        kexec@lists.infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, tony.luck@intel.com, vgoyal@redhat.com
-Subject: [PATCH V6] panic: Move panic_print before kmsg dumpers
-Date:   Mon, 14 Feb 2022 11:13:09 -0300
-Message-Id: <20220214141308.841525-1-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.35.0
+        Mon, 14 Feb 2022 09:16:44 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB5BC72
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:16:36 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id q7so27010803wrc.13
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:16:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=kgQHfexaQuoUShSlLQPKVWrC/gt5SJSd7Yg7kgOgPDA=;
+        b=Qar0O4VfTdm4BhCSDsumsP2Z0/NBPGBQXdxkXe6L8qV9ranTdvuer5MbywUm3O7Dzb
+         9CbG2dZ46gKZiwzl1lTTQewq6TUEKA0sQzf9FZ34F1rCKzIDaA+aPYvWHiXaj9xlX4e/
+         0Td6Dz4v9tLVZUc0SDAFeMmBQeYXoE0VzGwV6ePXCPoBJ4eKhATYyNml6yjcU/QJiMlR
+         t7V3IpMTuW2bWnDsE6eLE/ERLls3LmxfJ5u5XElFkvdcEbwqqUYF47uwjcNjjuls7RIy
+         pV2P7/7czjqcSJtzeaeC/xmW4t5V7NCUS3H1b2sPO88Oj4D+0dKCRm3xNPhwZJtT4tNk
+         zTXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=kgQHfexaQuoUShSlLQPKVWrC/gt5SJSd7Yg7kgOgPDA=;
+        b=pF9b2df4KOdLDuuY452a7uxYkkojzJejDIijrMSKGT9ANeMZHC22xrPCMdQneswjfw
+         ajDRs36wq1qwDEeHDowXsUfsB5FaxTeGwZEkqgKjyOevBRKecrSp73jO7e/qs6L9Jcmy
+         gnpGRC8teYJ4hs79nvXRWWq8AVmHKGMUR9E5UEw7LmSD25XiH+QHhr6lHnh9bOF8EVVn
+         jBjkiALNQuAtba1LvseWvz/xQCOo9FXrSvyV0KRMffT11d0LYaWVsnRNbF7glPBn46S/
+         GiBwGNKiTr3/6djYjNxtBqaKfmVMaGFpWWrhplSxx6YAi00kYSLQAjrq5kiq2jruzoOe
+         Mkkw==
+X-Gm-Message-State: AOAM533fNHrB/fX3LwUusDMcTd+aZzidm+KFCpYWqmCPxE/CwnmTt3UL
+        ycKSr1tRv0dPOuJKCUJHf/S/JcYyfX/kNg==
+X-Google-Smtp-Source: ABdhPJy7afZw39K6dXfik9BXiNDpeFayVD89osPiAt5JUbelWGzKm2KIokkvj0G/ptPA15p6XaVQWw==
+X-Received: by 2002:a5d:6b90:: with SMTP id n16mr11641080wrx.558.1644848194706;
+        Mon, 14 Feb 2022 06:16:34 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id q13sm29865253wrd.78.2022.02.14.06.16.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 06:16:34 -0800 (PST)
+Date:   Mon, 14 Feb 2022 14:16:32 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     soc@kernel.org, linux-kernel@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH] MAINTAINERS: add myself as a maintainer for the sl28cpld
+Message-ID: <YgpkQMbhWAJG6oCh@google.com>
+References: <20220207184652.1218447-1-michael@walle.cc>
+ <YgpkCyoSMg5RYfkO@google.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YgpkCyoSMg5RYfkO@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The panic_print setting allows users to collect more information in a
-panic event, like memory stats, tasks, CPUs backtraces, etc.
-This is an interesting debug mechanism, but currently the print event
-happens *after* kmsg_dump(), meaning that pstore, for example, cannot
-collect a dmesg with the panic_print extra information.
+On Mon, 14 Feb 2022, Lee Jones wrote:
 
-This patch changes that in 2 steps:
+> On Mon, 07 Feb 2022, Michael Walle wrote:
+> 
+> > The sl28cpld is a management controller found on the Kontron SMARC-sAL28
+> > board for now. Support for it was added by me quite a while ago, but I
+> > didn't add a MAINTAINERS entry. Add it now.
+> > 
+> > Signed-off-by: Michael Walle <michael@walle.cc>
+> > ---
+> > Hi,
+> > 
+> > since this affects so many subsystems, I'm not sure through which tree this
+> > should go. I'm sending this to the arm soc maintainers because it's an
+> > aarch64 board where this driver is used as well as Lee as the MFD
+> > maintainer.
+> 
+> I'm happy to take this, if it pleases everyone.
 
-(a) The panic_print setting allows to replay the existing kernel log
-buffer to the console (bit 5), besides the extra information dump.
-This functionality makes sense only at the end of the panic() function.
-So, we hereby allow to distinguish the two situations by a new boolean
-parameter in the function panic_print_sys_info().
+Hold on, you're not going to get many Acks if you don't send it to the
+other subsystem maintainers. :)
 
-(b) With the above change, we can safely call panic_print_sys_info()
-before kmsg_dump(), allowing to dump the extra information when using
-pstore or other kmsg dumpers.
+> >  MAINTAINERS | 15 +++++++++++++++
+> >  1 file changed, 15 insertions(+)
+> > 
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index ddcee331dc09..c14209168ce6 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -17762,6 +17762,21 @@ S:	Maintained
+> >  W:	http://www.winischhofer.at/linuxsisusbvga.shtml
+> >  F:	drivers/usb/misc/sisusbvga/
+> >  
+> > +SL28 CPLD MFD DRIVER
+> > +M:	Michael Walle <michael@walle.cc>
+> > +S:	Maintained
+> > +F:	Documentation/devicetree/bindings/gpio/kontron,sl28cpld-gpio.yaml
+> > +F:	Documentation/devicetree/bindings/hwmon/kontron,sl28cpld-hwmon.yaml
+> > +F:	Documentation/devicetree/bindings/interrupt-controller/kontron,sl28cpld-intc.yaml
+> > +F:	Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
+> > +F:	Documentation/devicetree/bindings/pwm/kontron,sl28cpld-pwm.yaml
+> > +F:	Documentation/devicetree/bindings/watchdog/kontron,sl28cpld-wdt.yaml
+> > +F:	drivers/gpio/gpio-sl28cpld.c
+> > +F:	drivers/hwmon/sl28cpld-hwmon.c
+> > +F:	drivers/irqchip/irq-sl28cpld.c
+> > +F:	drivers/pwm/pwm-sl28cpld.c
+> > +F:	drivers/watchdog/sl28cpld_wdt.c
+> > +
+> >  SLAB ALLOCATOR
+> >  M:	Christoph Lameter <cl@linux.com>
+> >  M:	Pekka Enberg <penberg@kernel.org>
+> 
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+> 
 
-The additional messages from panic_print could overwrite the oldest
-messages when the buffer is full. The only reasonable solution is to
-use a large enough log buffer, hence we added an advice into the kernel
-parameters documentation about that.
-
-Cc: Feng Tang <feng.tang@intel.com>
-Cc: Petr Mladek <pmladek@suse.com>
-Acked-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
----
-
-
-V6: Implemented a small suggestion from Baoquan in the commit
-message; with that, added his Acked-By. (Thanks Baoquan!)
-Notice that this is rebased against linux-next (next-20220211 branch).
-
-V5: https://lore.kernel.org/lkml/20220211215539.822466-1-gpiccoli@igalia.com/
-
-V4: https://lore.kernel.org/lkml/20220124203101.216051-1-gpiccoli@igalia.com/
-
-
-Andrew, can we get that merged in the mm-tree, after getting [0]
-removed from there? This one replaces [0]. Thanks!!
-
-[0] https://ozlabs.org/~akpm/mmots/broken-out/panic-allow-printing-extra-panic-information-on-kdump.patch
-
-
- Documentation/admin-guide/kernel-parameters.txt |  4 ++++
- kernel/panic.c                                  | 13 +++++++++----
- 2 files changed, 13 insertions(+), 4 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 3c2b3e24e8f5..2cf7078eaa95 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3766,6 +3766,10 @@
- 			bit 4: print ftrace buffer
- 			bit 5: print all printk messages in buffer
- 			bit 6: print all CPUs backtrace (if available in the arch)
-+			*Be aware* that this option may print a _lot_ of lines,
-+			so there are risks of losing older messages in the log.
-+			Use this option carefully, maybe worth to setup a
-+			bigger log buffer with "log_buf_len" along with this.
- 
- 	panic_on_taint=	Bitmask for conditionally calling panic() in add_taint()
- 			Format: <hex>[,nousertaint]
-diff --git a/kernel/panic.c b/kernel/panic.c
-index 3c3fb36d8d41..eb4dfb932c85 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -148,10 +148,13 @@ void nmi_panic(struct pt_regs *regs, const char *msg)
- }
- EXPORT_SYMBOL(nmi_panic);
- 
--static void panic_print_sys_info(void)
-+static void panic_print_sys_info(bool console_flush)
- {
--	if (panic_print & PANIC_PRINT_ALL_PRINTK_MSG)
--		console_flush_on_panic(CONSOLE_REPLAY_ALL);
-+	if (console_flush) {
-+		if (panic_print & PANIC_PRINT_ALL_PRINTK_MSG)
-+			console_flush_on_panic(CONSOLE_REPLAY_ALL);
-+		return;
-+	}
- 
- 	if (panic_print & PANIC_PRINT_ALL_CPU_BT)
- 		trigger_all_cpu_backtrace();
-@@ -286,6 +289,8 @@ void panic(const char *fmt, ...)
- 	 */
- 	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
- 
-+	panic_print_sys_info(false);
-+
- 	kmsg_dump(KMSG_DUMP_PANIC);
- 
- 	/*
-@@ -316,7 +321,7 @@ void panic(const char *fmt, ...)
- 	debug_locks_off();
- 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
- 
--	panic_print_sys_info();
-+	panic_print_sys_info(true);
- 
- 	if (!panic_blink)
- 		panic_blink = no_blink;
 -- 
-2.35.0
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
