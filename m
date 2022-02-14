@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A05EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6655C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344059AbiBNJzt (ORCPT
+        id S1344126AbiBNJz5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:55:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33134 "EHLO
+        Mon, 14 Feb 2022 04:55:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343774AbiBNJvV (ORCPT
+        with ESMTP id S1343837AbiBNJvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E025A65804;
-        Mon, 14 Feb 2022 01:42:06 -0800 (PST)
+        Mon, 14 Feb 2022 04:51:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1AC166F9E;
+        Mon, 14 Feb 2022 01:42:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A788B80DA9;
-        Mon, 14 Feb 2022 09:42:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9ED2C36AE9;
-        Mon, 14 Feb 2022 09:42:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 124CE611B8;
+        Mon, 14 Feb 2022 09:42:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4028C340E9;
+        Mon, 14 Feb 2022 09:42:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831724;
-        bh=J9Y5rRl0Pzf7jFgIcm4gXc+PZJ+r8Jvu6dK1Jr0qtr8=;
+        s=korg; t=1644831733;
+        bh=lUg6UgIUo1yE4iHE1a1K4H9EBvuK+VqmJ7QfNaWBFas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZzupAv4Q7ciG/CIhe0TDmPDz9oHx/nTMFPGxqlqxElW0pO/hbR5z2lyV39rqWko05
-         sG5Pla/0uRKPnuXelFWbFa+lv9A1v1KcOH57IpGG1yaD7TKBhzN0WG2860KKR/hvq0
-         WUOH9LLYCrMS3vHoXmZSKd6yOrdF8J54CVpQdLZg=
+        b=rGg+C+kvxt/msxqCOfAmYh0s/SGD4VxigpB0eJUJWy42pNb9colYWQ+gLFElK2dWu
+         6mTrar2n1jFXYYzcxTypCa3KiSlo+j3hURaI3i9ETXcJ0L0FZXsYfRd+ZG3GNpmLu0
+         1pcFwRUI4nPv+Et4CGf7I2Zra836oJDUx4siLskY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
-        James Clark <james.clark@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Lunn <andrew@lunn.ch>, Andrew Jeffery <andrew@aj.id.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 034/116] perf: Always wake the parent event
-Date:   Mon, 14 Feb 2022 10:25:33 +0100
-Message-Id: <20220214092459.867720153@linuxfoundation.org>
+Subject: [PATCH 5.10 079/116] net: mdio: aspeed: Add missing MODULE_DEVICE_TABLE
+Date:   Mon, 14 Feb 2022 10:26:18 +0100
+Message-Id: <20220214092501.501545931@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -52,94 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: Joel Stanley <joel@jms.id.au>
 
-[ Upstream commit 961c39121759ad09a89598ec4ccdd34ae0468a19 ]
+[ Upstream commit bc1c3c3b10db4f37c41e6107751a8d450d9c431c ]
 
-When using per-process mode and event inheritance is set to true,
-forked processes will create a new perf events via inherit_event() ->
-perf_event_alloc(). But these events will not have ring buffers
-assigned to them. Any call to wakeup will be dropped if it's called on
-an event with no ring buffer assigned because that's the object that
-holds the wakeup list.
+Fix loading of the driver when built as a module.
 
-If the child event is disabled due to a call to
-perf_aux_output_begin() or perf_aux_output_end(), the wakeup is
-dropped leaving userspace hanging forever on the poll.
-
-Normally the event is explicitly re-enabled by userspace after it
-wakes up to read the aux data, but in this case it does not get woken
-up so the event remains disabled.
-
-This can be reproduced when using Arm SPE and 'stress' which forks once
-before running the workload. By looking at the list of aux buffers read,
-it's apparent that they stop after the fork:
-
-  perf record -e arm_spe// -vvv -- stress -c 1
-
-With this patch applied they continue to be printed. This behaviour
-doesn't happen when using systemwide or per-cpu mode.
-
-Reported-by: Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>
-Signed-off-by: James Clark <james.clark@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20211206113840.130802-2-james.clark@arm.com
+Fixes: f160e99462c6 ("net: phy: Add mdio-aspeed")
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Acked-by: Andrew Jeffery <andrew@aj.id.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/events/core.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/net/mdio/mdio-aspeed.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index c6493f7e02359..6d3a67bef3951 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -5877,6 +5877,8 @@ static void ring_buffer_attach(struct perf_event *event,
- 	struct perf_buffer *old_rb = NULL;
- 	unsigned long flags;
+diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+index 966c3b4ad59d1..e2273588c75b6 100644
+--- a/drivers/net/mdio/mdio-aspeed.c
++++ b/drivers/net/mdio/mdio-aspeed.c
+@@ -148,6 +148,7 @@ static const struct of_device_id aspeed_mdio_of_match[] = {
+ 	{ .compatible = "aspeed,ast2600-mdio", },
+ 	{ },
+ };
++MODULE_DEVICE_TABLE(of, aspeed_mdio_of_match);
  
-+	WARN_ON_ONCE(event->parent);
-+
- 	if (event->rb) {
- 		/*
- 		 * Should be impossible, we set this when removing
-@@ -5934,6 +5936,9 @@ static void ring_buffer_wakeup(struct perf_event *event)
- {
- 	struct perf_buffer *rb;
- 
-+	if (event->parent)
-+		event = event->parent;
-+
- 	rcu_read_lock();
- 	rb = rcu_dereference(event->rb);
- 	if (rb) {
-@@ -5947,6 +5952,9 @@ struct perf_buffer *ring_buffer_get(struct perf_event *event)
- {
- 	struct perf_buffer *rb;
- 
-+	if (event->parent)
-+		event = event->parent;
-+
- 	rcu_read_lock();
- 	rb = rcu_dereference(event->rb);
- 	if (rb) {
-@@ -6618,7 +6626,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
- 	if (WARN_ON_ONCE(READ_ONCE(sampler->oncpu) != smp_processor_id()))
- 		goto out;
- 
--	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
-+	rb = ring_buffer_get(sampler);
- 	if (!rb)
- 		goto out;
- 
-@@ -6684,7 +6692,7 @@ static void perf_aux_sample_output(struct perf_event *event,
- 	if (WARN_ON_ONCE(!sampler || !data->aux_size))
- 		return;
- 
--	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
-+	rb = ring_buffer_get(sampler);
- 	if (!rb)
- 		return;
- 
+ static struct platform_driver aspeed_mdio_driver = {
+ 	.driver = {
 -- 
 2.34.1
 
