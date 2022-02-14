@@ -2,92 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD08C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AF4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348826AbiBNKti (ORCPT
+        id S1349210AbiBNKtp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:49:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38624 "EHLO
+        Mon, 14 Feb 2022 05:49:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237718AbiBNKtN (ORCPT
+        with ESMTP id S1349119AbiBNKtR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:49:13 -0500
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C940BDA72;
-        Mon, 14 Feb 2022 02:12:13 -0800 (PST)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21E86urF026746;
-        Mon, 14 Feb 2022 11:11:58 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=MpTqBNhX+HIyoyjXnQ6/DBGf/cO04PKi4xy5WrWMQtM=;
- b=55UHFt0xRaAGpxn2Pr8CS2hOQbO5daWb1jFg7gbjWrrTxF8SuQ8Fr5X4YLwUJ18r0iG+
- a05X2ZlAldKYLmZDICq/fH6FuipuQBmWduzK52C1XKBDkQagpQHZiDLR2PiXJKAO8n6H
- B1WVk9i5XcVranVUk+W43HboAlMqmSqrGQ99Qdly5zkSfP0Y16cfNJNdCBDXObFLTJ9z
- PuoTnKNH9lgi14OtayFnvMc/QeAHCsLWEQf2olS4s3nxcF22yucBEYez0a7N0fYOZ9YP
- GBFsDQdNumGCo9FjFnB0y3vTjfY/ySiJeXmUBrRswVJ5USVkxDs4Y0Wv7eTNz4SL8BnB Yw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e74c3bs05-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 11:11:58 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9646910002A;
-        Mon, 14 Feb 2022 11:11:57 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8C004219DED;
-        Mon, 14 Feb 2022 11:11:57 +0100 (CET)
-Received: from [10.48.0.252] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 14 Feb
- 2022 11:11:57 +0100
-Message-ID: <c3c1d310-19f0-889b-04b5-f3628e09b3bf@foss.st.com>
-Date:   Mon, 14 Feb 2022 11:11:56 +0100
+        Mon, 14 Feb 2022 05:49:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AADBF94E;
+        Mon, 14 Feb 2022 02:12:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B937961027;
+        Mon, 14 Feb 2022 10:12:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D3CC340E9;
+        Mon, 14 Feb 2022 10:12:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644833541;
+        bh=4e6jacegMudm5QOO5r4b8aXUbKWQ/KZagciGyXk0tFQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dWgOCaq9LwmLUWtMT7HPrs1K+hIb25M6y5lmPLlGADQIWn+ktjprZPDD4AHsRsFdP
+         22C5wQvlEiUCP2TIBNNZG0gJ+dQ4/5WAaA8UbkTfOuU3UVef1Kj4DZOkHgKPZU6q51
+         6mKzlynGQpisdWw3qFqtDq7e6e382gjSAm2McVts=
+Date:   Mon, 14 Feb 2022 10:59:50 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 04/14] driver core: platform: Add driver dma ownership
+ management
+Message-ID: <YgooFjSWLTSapuIs@kroah.com>
+References: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
+ <20220104015644.2294354-5-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/2] ARM: dts: stm32: remove timer duplicate unit-address
- on stm32f7 series
-Content-Language: en-US
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>, <robh+dt@kernel.org>
-CC:     <olivier.moysan@foss.st.com>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-References: <1644403729-22665-1-git-send-email-fabrice.gasnier@foss.st.com>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <1644403729-22665-1-git-send-email-fabrice.gasnier@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_02,2022-02-14_02,2021-12-02_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220104015644.2294354-5-baolu.lu@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabrice
-
-On 2/9/22 11:48, Fabrice Gasnier wrote:
-> Remove a series of warnings seen when building with W=1, like:
-> Warning (unique_unit_address): /soc/timer@40000c00: duplicate unit-address
-> (also used in node /soc/timers@40000c00)
+On Tue, Jan 04, 2022 at 09:56:34AM +0800, Lu Baolu wrote:
+> Multiple platform devices may be placed in the same IOMMU group because
+> they cannot be isolated from each other. These devices must either be
+> entirely under kernel control or userspace control, never a mixture. This
+> checks and sets DMA ownership during driver binding, and release the
+> ownership during driver unbinding.
 > 
-> This approach is based on some discussions[1], to restructure the dtsi
-> and dts files.
-> [1] https://lore.kernel.org/linux-arm-kernel/Yaf4jiZIp8+ndaXs@robh.at.kernel.org/
+> The device driver may set a new flag (no_kernel_api_dma) to skip calling
+> iommu_device_use_dma_api() during the binding process. For instance, the
+> userspace framework drivers (vfio etc.) which need to manually claim
+> their own dma ownership when assigning the device to userspace.
 > 
->   arch/arm/boot/dts/stm32746g-eval.dts  | 12 +++++++++
->   arch/arm/boot/dts/stm32f746-disco.dts | 12 +++++++++
->   arch/arm/boot/dts/stm32f746.dtsi      | 47 -----------------------------------
->   arch/arm/boot/dts/stm32f769-disco.dts | 12 +++++++++
->   4 files changed, 36 insertions(+), 47 deletions(-)
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  include/linux/platform_device.h |  1 +
+>  drivers/base/platform.c         | 20 ++++++++++++++++++++
+>  2 files changed, 21 insertions(+)
 > 
+> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+> index 17fde717df68..8f0eaafcef47 100644
+> --- a/include/linux/platform_device.h
+> +++ b/include/linux/platform_device.h
+> @@ -210,6 +210,7 @@ struct platform_driver {
+>  	struct device_driver driver;
+>  	const struct platform_device_id *id_table;
+>  	bool prevent_deferred_probe;
+> +	bool no_kernel_api_dma;
+>  };
+>  
+>  #define to_platform_driver(drv)	(container_of((drv), struct platform_driver, \
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index b4d36b46ab2e..d5171e44d903 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -30,6 +30,7 @@
+>  #include <linux/property.h>
+>  #include <linux/kmemleak.h>
+>  #include <linux/types.h>
+> +#include <linux/iommu.h>
+>  
+>  #include "base.h"
+>  #include "power/power.h"
+> @@ -1451,9 +1452,16 @@ static void platform_shutdown(struct device *_dev)
+>  
+>  static int platform_dma_configure(struct device *dev)
+>  {
+> +	struct platform_driver *drv = to_platform_driver(dev->driver);
+>  	enum dev_dma_attr attr;
+>  	int ret = 0;
+>  
+> +	if (!drv->no_kernel_api_dma) {
+> +		ret = iommu_device_use_dma_api(dev);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	if (dev->of_node) {
+>  		ret = of_dma_configure(dev, dev->of_node, true);
+>  	} else if (has_acpi_companion(dev)) {
+> @@ -1461,9 +1469,20 @@ static int platform_dma_configure(struct device *dev)
+>  		ret = acpi_dma_configure(dev, attr);
+>  	}
+>  
+> +	if (ret && !drv->no_kernel_api_dma)
+> +		iommu_device_unuse_dma_api(dev);
 
-Series applied on stm32-next.
+So you are now going to call this for every platform driver _unless_
+they set this flag?
 
-Cheers
-Alex
+And having "negative" flags is rough to parse at times.  Yes, we have
+"prevent_deferred_probe" already here, so maybe keep this in the same
+nameing scheme and use "prevent_dma_api"?
+
+And it would be good to document this somewhere as to what this means.
+
+thanks,
+
+greg k-h
