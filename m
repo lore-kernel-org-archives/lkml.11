@@ -2,70 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB7EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240791AbiBNMKi convert rfc822-to-8bit (ORCPT
+        id S1352665AbiBNMK6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:10:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45004 "EHLO
+        Mon, 14 Feb 2022 07:10:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352607AbiBNMKa (ORCPT
+        with ESMTP id S243280AbiBNMK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:10:30 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5393A488B3;
-        Mon, 14 Feb 2022 04:10:23 -0800 (PST)
-Date:   Mon, 14 Feb 2022 12:00:48 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 1/2] dt-bindings: timer: Add PWM compatible for X1000 SoC
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     robh+dt@kernel.org, linux-mips@vger.kernel.org,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <CPMA7R.UFQ0L5LKXMVF3@crapouillou.net>
-In-Reply-To: <20220209231141.20184-1-aidanmacdonald.0x0@gmail.com>
-References: <20220209231141.20184-1-aidanmacdonald.0x0@gmail.com>
+        Mon, 14 Feb 2022 07:10:56 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215A9488A6;
+        Mon, 14 Feb 2022 04:10:49 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B72451EC04AD;
+        Mon, 14 Feb 2022 13:10:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644840643;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=lIy/cfmHR9baTiV2EoLmKirTBMhO8ezxcxtXGNlkPeg=;
+        b=SOZfJwzqPJR3MeG1NT25sVU4SHJRSmIDtWmuB1tKe3tJIgJngma3cMssUUytwEYGCOifSB
+        0T2OFdMo4uhUK8/NLV3Q3ZCu+ilOfOllGZcg3aOt+spYo37vmnJUmvOe/9lycGjCJMVILq
+        euKqL0sCW1ZeBKs7fgbC1Ib+uvpy52g=
+Date:   Mon, 14 Feb 2022 13:10:49 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Yazen Ghannam <yazen.ghannam@amd.com>
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
+        rric@kernel.org, Smita.KoralahalliChannabasappa@amd.com
+Subject: Re: [PATCH v4 10/24] EDAC/amd64: Define function to get Interleave
+ Address Bit
+Message-ID: <YgpGyceWKsIVYuGv@zn.tnic>
+References: <20220127204115.384161-1-yazen.ghannam@amd.com>
+ <20220127204115.384161-11-yazen.ghannam@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220127204115.384161-11-yazen.ghannam@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Jan 27, 2022 at 08:41:01PM +0000, Yazen Ghannam wrote:
+> Move code to find the interleave address bit into a separate helper
+> function.
 
-Le mer., févr. 9 2022 at 23:11:41 +0000, Aidan MacDonald 
-<aidanmacdonald.0x0@gmail.com> a écrit :
-> The PWM hardware on the X1000 SoC is almost identical to other
-> Ingenic SoCs, so it can be used with only minor driver changes.
-> 
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Same question: what's the point of this change?
 
-Acked-by: Paul Cercueil <paul@crapouillou.net>
+-- 
+Regards/Gruss,
+    Boris.
 
-Cheers,
--Paul
-
-> ---
->  Documentation/devicetree/bindings/timer/ingenic,tcu.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml 
-> b/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-> index 7fb37eae9da7..d541cf2067bc 100644
-> --- a/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-> +++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-> @@ -152,6 +152,7 @@ patternProperties:
->            - enum:
->                - ingenic,jz4740-pwm
->                - ingenic,jz4725b-pwm
-> +              - ingenic,x1000-pwm
->            - items:
->                - enum:
->                    - ingenic,jz4760-pwm
-> --
-> 2.34.1
-> 
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
