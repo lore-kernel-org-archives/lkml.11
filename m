@@ -2,108 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F12FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1169C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355903AbiBNPjU (ORCPT
+        id S1355919AbiBNPj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:39:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36450 "EHLO
+        Mon, 14 Feb 2022 10:39:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236000AbiBNPjP (ORCPT
+        with ESMTP id S236000AbiBNPjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:39:15 -0500
-X-Greylist: delayed 181 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 07:39:06 PST
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCDA40A35;
-        Mon, 14 Feb 2022 07:39:05 -0800 (PST)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6E231240008;
-        Mon, 14 Feb 2022 15:39:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644853144;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Yd4h8qG0bOZ43U9tdtwFQ5VmXb5hOehL8q+jzFS2vS4=;
-        b=MWGYl1SVktk3dJzE/XVK7PfBGHJwxRS99HyvdnnxQLCw2UbxKVvkYxQ2eQWTlEW9C0mwTM
-        3iT2psJxpLV1oGfFwciU2Id/dgdoxp6h8OAc35Bs83LqtjTEC8QaGq8FPcHzz7fHnCHNsQ
-        SCd4Gau2Kh/7jNfDyAM1s+C2ct6kFkfKzRBZRHnuqZ470WA4mE3UxN/58xJ6KvHMUy0s4c
-        3/kOPO2TkbSigRBPJ4cjg9k79B1PmJ4+09jVfK8ARSrnTMCBIHQvQKOLrGl74RKXPMftE1
-        vyu+rZ/IvazvsscTVenPpRktLNUIzYTWAIKcPTRpx6704Wu55iLJ6o5sYvsd/g==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>, andrew@lunn.ch,
-        robh+dt@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Subject: Re: [PATCH 1/2] ARM: dts: armada-xp: add interrupts for watchdog
-In-Reply-To: <20220211003257.2037332-2-chris.packham@alliedtelesis.co.nz>
-References: <20220211003257.2037332-1-chris.packham@alliedtelesis.co.nz>
- <20220211003257.2037332-2-chris.packham@alliedtelesis.co.nz>
-Date:   Mon, 14 Feb 2022 16:39:02 +0100
-Message-ID: <87o839jw4p.fsf@BL-laptop>
+        Mon, 14 Feb 2022 10:39:54 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515F560A94
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:39:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644853187; x=1676389187;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tBq5G6DGdm8dCqFpUhhhooINLC3BMivAvyoI5veTl20=;
+  b=BH9yqEHTvWt17VeBwg3DKGndK98F9TDc6drEfV49EtrY3WXOynaMFCYS
+   xHn48JS2nse1ulE8XpVQL/i4Dp7OwNrY1hxiVwMbKwu2zOgwSgieSuXR+
+   ufIK2vRus6HB1BzHkz62DCzQSSSM6Hcv7aYVifmRzQvA2UQbTkg+6UKbG
+   D+4c+PozV1vOKSal0LUD1Qmb3LftHAukZ3wGMN5e9HJ5tol/tMbq5nyej
+   7UhgE3rCMeIaXKkqV4GEeX5ZyAQdaJKD4eR7Iti9lx4Nxn4vGAG/+vHy9
+   7KYCb3mH2ouPwUNjjv6Qv0zqwCjxKLZtHVNhFdI3cXb0l7jRx+Mo7LSAj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249860853"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="249860853"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 07:39:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="528241928"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga007.jf.intel.com with ESMTP; 14 Feb 2022 07:39:44 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id EE089143; Mon, 14 Feb 2022 17:39:59 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH v1 1/1] misc: sgi-gru: Don't cast parameter in bit operations
+Date:   Mon, 14 Feb 2022 17:39:58 +0200
+Message-Id: <20220214153958.9721-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Chris,
+While in this particular case (*) it would not be an issue,
+the pattern itself is bad and error prone in case somebody
+blindly copies to their code.
 
-> The first interrupt is for the regular watchdog timeout. Normally the
-> RSTOUT line will trigger a reset before this interrupt fires but on
-> systems with a non-standard reset it may still trigger.
->
-> The second interrupt is for a timer1 which is used as a pre-timeout for
-> the watchdog.
->
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Don't cast parameter to unsigned long pointer in the bit
+operations. Note, new compilers might warn on this line for
+potential outbound access.
 
-Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+*) it seems a dead code, so remove it all for good
 
-To keep bisectability this patch should be merged after the driver
-patch.
+Fixes: 13d19498b044 ("GRU Driver: driver internal header files")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/misc/sgi-gru/grutables.h | 6 ------
+ 1 file changed, 6 deletions(-)
 
-Thanks,
-
-Gregory
-
-> ---
->  arch/arm/boot/dts/armada-xp-98dx3236.dtsi | 1 +
->  arch/arm/boot/dts/armada-xp.dtsi          | 1 +
->  2 files changed, 2 insertions(+)
->
-> diff --git a/arch/arm/boot/dts/armada-xp-98dx3236.dtsi b/arch/arm/boot/dts/armada-xp-98dx3236.dtsi
-> index 38a052a0312d..0e561dfc0ca9 100644
-> --- a/arch/arm/boot/dts/armada-xp-98dx3236.dtsi
-> +++ b/arch/arm/boot/dts/armada-xp-98dx3236.dtsi
-> @@ -286,6 +286,7 @@ &watchdog {
->  	compatible = "marvell,armada-xp-wdt";
->  	clocks = <&coreclk 2>, <&refclk>;
->  	clock-names = "nbclk", "fixed";
-> +	interrupts = <93>, <38>;
->  };
->  
->  &cpurst {
-> diff --git a/arch/arm/boot/dts/armada-xp.dtsi b/arch/arm/boot/dts/armada-xp.dtsi
-> index 6c19984d668e..4297482da62f 100644
-> --- a/arch/arm/boot/dts/armada-xp.dtsi
-> +++ b/arch/arm/boot/dts/armada-xp.dtsi
-> @@ -260,6 +260,7 @@ &watchdog {
->  	compatible = "marvell,armada-xp-wdt";
->  	clocks = <&coreclk 2>, <&refclk>;
->  	clock-names = "nbclk", "fixed";
-> +	interrupts = <93>, <38>;
->  };
->  
->  &cpurst {
-> -- 
-> 2.35.1
->
-
+diff --git a/drivers/misc/sgi-gru/grutables.h b/drivers/misc/sgi-gru/grutables.h
+index e4c067c61251..5efc869fe59a 100644
+--- a/drivers/misc/sgi-gru/grutables.h
++++ b/drivers/misc/sgi-gru/grutables.h
+@@ -530,12 +530,6 @@ struct gru_blade_state {
+ 		for ((i) = (k)*GRU_CBR_AU_SIZE;				\
+ 				(i) < ((k) + 1) * GRU_CBR_AU_SIZE; (i)++)
+ 
+-/* Scan each DSR in a DSR bitmap. Note: multiple DSRs in an allocation unit */
+-#define for_each_dsr_in_allocation_map(i, map, k)			\
+-	for_each_set_bit((k), (const unsigned long *)(map), GRU_DSR_AU)	\
+-		for ((i) = (k) * GRU_DSR_AU_CL;				\
+-				(i) < ((k) + 1) * GRU_DSR_AU_CL; (i)++)
+-
+ #define gseg_physical_address(gru, ctxnum)				\
+ 		((gru)->gs_gru_base_paddr + ctxnum * GRU_GSEG_STRIDE)
+ #define gseg_virtual_address(gru, ctxnum)				\
 -- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+2.34.1
+
