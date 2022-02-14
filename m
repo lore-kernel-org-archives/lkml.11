@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61827C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348525AbiBNKfn (ORCPT
+        id S1348686AbiBNKho (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:35:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48392 "EHLO
+        Mon, 14 Feb 2022 05:37:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348171AbiBNKel (ORCPT
+        with ESMTP id S1348346AbiBNKes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:34:41 -0500
+        Mon, 14 Feb 2022 05:34:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E51CE5;
-        Mon, 14 Feb 2022 02:01:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EF3117B;
+        Mon, 14 Feb 2022 02:01:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84161B80DCD;
-        Mon, 14 Feb 2022 10:01:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B693BC340F0;
-        Mon, 14 Feb 2022 10:01:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A4E4B80D6D;
+        Mon, 14 Feb 2022 10:01:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A39BBC340E9;
+        Mon, 14 Feb 2022 10:01:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832877;
-        bh=GNEWetQrwebJFihNGopC2dg0VX/rGux39dWCMrIO/Hw=;
+        s=korg; t=1644832906;
+        bh=CLfqbK5DAgyx3E+ykodxSz0Gwtxu7xIMZXMF5qlQwTE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vTcFPptOUNwvWQHVhJSc70hl2zOpuJlW0aUz3EKVj+OxxagDC6vnLAKY18q5ksoGV
-         QEwzMOW8uzQVso60xfsVp5jSzg+QGmtDAFrFEJ1CXNT+tZvJiKDNW2lxszVCWNZQTA
-         3mSETLB1kmaalOL+zxHR1LPP1drNzmpxhJc1v6tQ=
+        b=JIw1bkAa+bJf2ejkLa/3FVSk9L0MAqNY4OlGfCljsKRL3ZyZ7WWi5Y18hH3Cjoxjy
+         5XR5zsV4oHjedP96wHf8MMUDvPpkbWnS0Ua/XApGfLtHjdsRKq8+Nr9PNAbupL3DBZ
+         yLeD3rtK87HA2Cbw7IQHrim1rv16+JEEc4Krzv+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geliang Tang <geliang.tang@suse.com>,
-        Kishen Maloor <kishen.maloor@intel.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 154/203] mptcp: netlink: process IPv6 addrs in creating listening sockets
-Date:   Mon, 14 Feb 2022 10:26:38 +0100
-Message-Id: <20220214092515.484395190@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH 5.16 162/203] vt_ioctl: fix array_index_nospec in vt_setactivate
+Date:   Mon, 14 Feb 2022 10:26:46 +0100
+Message-Id: <20220214092515.745236545@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,51 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishen Maloor <kishen.maloor@intel.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit 029744cd4bc6e9eb3bd833b4a033348296d34645 ]
+commit 61cc70d9e8ef5b042d4ed87994d20100ec8896d9 upstream.
 
-This change updates mptcp_pm_nl_create_listen_socket() to create
-listening sockets bound to IPv6 addresses (where IPv6 is supported).
+array_index_nospec ensures that an out-of-bounds value is set to zero
+on the transient path. Decreasing the value by one afterwards causes
+a transient integer underflow. vsa.console should be decreased first
+and then sanitized with array_index_nospec.
 
-Fixes: 1729cf186d8a ("mptcp: create the listening socket for new port")
-Acked-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Kishen Maloor <kishen.maloor@intel.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
+Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
+Amsterdam.
+
+Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220127144406.3589293-1-jakobkoschel@gmail.com
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mptcp/pm_netlink.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/tty/vt/vt_ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 5d305fafd0e99..5eada95dd76b3 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -878,6 +878,7 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
- static int mptcp_pm_nl_create_listen_socket(struct sock *sk,
- 					    struct mptcp_pm_addr_entry *entry)
- {
-+	int addrlen = sizeof(struct sockaddr_in);
- 	struct sockaddr_storage addr;
- 	struct mptcp_sock *msk;
- 	struct socket *ssock;
-@@ -902,8 +903,11 @@ static int mptcp_pm_nl_create_listen_socket(struct sock *sk,
- 	}
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -599,8 +599,8 @@ static int vt_setactivate(struct vt_seta
+ 	if (vsa.console == 0 || vsa.console > MAX_NR_CONSOLES)
+ 		return -ENXIO;
  
- 	mptcp_info2sockaddr(&entry->addr, &addr, entry->addr.family);
--	err = kernel_bind(ssock, (struct sockaddr *)&addr,
--			  sizeof(struct sockaddr_in));
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+	if (entry->addr.family == AF_INET6)
-+		addrlen = sizeof(struct sockaddr_in6);
-+#endif
-+	err = kernel_bind(ssock, (struct sockaddr *)&addr, addrlen);
- 	if (err) {
- 		pr_warn("kernel_bind error, err=%d", err);
- 		goto out;
--- 
-2.34.1
-
+-	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES + 1);
+ 	vsa.console--;
++	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES);
+ 	console_lock();
+ 	ret = vc_allocate(vsa.console);
+ 	if (ret) {
 
 
