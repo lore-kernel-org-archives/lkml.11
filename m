@@ -2,195 +2,707 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8959C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38013C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229666AbiBNUqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:46:55 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38200 "EHLO
+        id S229941AbiBNUrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:47:00 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiBNUqB (ORCPT
+        with ESMTP id S229595AbiBNUqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 15:46:01 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B23816111C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:44:23 -0800 (PST)
-Date:   Mon, 14 Feb 2022 21:19:52 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644869993;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=bXNE4LooGlzlo0G4AK11ajol/4hEQRx4f/cldILJwL0=;
-        b=v0KAacvU4tc7OHjoU8wjrxzXaARWq/HrUCuqwNsw7GVHTfzv230/bAPYfFzSx7BnRHBfVM
-        Lc96Wl7OltGuTYlJ5np1ledp09qOIG1FvLrlISnVkMxN/G7cgDFvllvMGcrCEzqNExTBJP
-        Vgj3pqn/Vf3g/CnNmiZ8fB5Ep2MrGnAzuO1fsYU4VVeQqZOOUi17x4UG5Bhv0RRqER9x9f
-        T5UmUmPxqseVxS6fbZMvHJZol8pMjwq8f6yUwhY3VKaUwJihHEAKi1Yvasij7OmC/Y7Rci
-        veub4I+LoHiMruMRlSJDn3l/urpyE5I+4VenMtPWZ6QlzjdnjkwsA6dKLIrlHA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644869993;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=bXNE4LooGlzlo0G4AK11ajol/4hEQRx4f/cldILJwL0=;
-        b=dTTsfpEIS3NpPxxk2QywVZnf+5RnfK+txM24xXJIJHKOXc1Z3xPtlb4CKN1f8varbd6CPX
-        aZBIPUai5RQi64AQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Oleg Nesterov <oleg@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: [PATCH] signal/x86: Delay calling signals in atomic
-Message-ID: <Ygq5aBB/qMQw6aP5@linutronix.de>
+Received: from mxout03.lancloud.ru (mxout03.lancloud.ru [45.84.86.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A44FB7F4;
+        Mon, 14 Feb 2022 12:44:17 -0800 (PST)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 085F02075200
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: [PATCH] ata: add/use ata_taskfile::{error|status} fields
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Organization: Open Mobile Platform
+Message-ID: <e99172ca-cf0e-5510-60fc-b19dc48658ac@omp.ru>
+Date:   Mon, 14 Feb 2022 23:43:50 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleg Nesterov <oleg@redhat.com>
-Date: Tue, 14 Jul 2015 14:26:34 +0200
+Add the explicit error and status register fields to 'struct ata_taskfile'
+using the anonymous *union*s ('struct ide_taskfile' had that for ages!) and
+update the libata taskfile code accordingly. There should be no object code
+changes resulting from that...
 
-On x86_64 we must disable preemption before we enable interrupts
-for stack faults, int3 and debugging, because the current task is using
-a per CPU debug stack defined by the IST. If we schedule out, another task
-can come in and use the same stack and cause the stack to be corrupted
-and crash the kernel on return.
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-When CONFIG_PREEMPT_RT is enabled, spinlock_t locks become sleeping, and
-one of these is the spin lock used in signal handling.
-
-Some of the debug code (int3) causes do_trap() to send a signal.
-This function calls a spinlock_t lock that has been converted to a
-sleeping lock. If this happens, the above issues with the corrupted
-stack is possible.
-
-Instead of calling the signal right away, for PREEMPT_RT and x86,
-the signal information is stored on the stacks task_struct and
-TIF_NOTIFY_RESUME is set. Then on exit of the trap, the signal resume
-code will send the signal when preemption is enabled.
-
-[ rostedt: Switched from #ifdef CONFIG_PREEMPT_RT to
-  ARCH_RT_DELAYS_SIGNAL_SEND and added comments to the code. ]
-[bigeasy: Add on 32bit as per Yang Shi, minor rewording. ]
-
-Signed-off-by: Oleg Nesterov <oleg@redhat.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- arch/x86/include/asm/signal.h | 13 +++++++++++++
- include/linux/sched.h         |  3 +++
- kernel/entry/common.c         |  9 +++++++++
- kernel/signal.c               | 28 ++++++++++++++++++++++++++++
- 4 files changed, 53 insertions(+)
+This patch is against the 'for-next' branch of Damien Le Moal's 'libata.git'
+repo plus just posted 'drivers/ata/libata-scsi.c' patch.
 
-diff --git a/arch/x86/include/asm/signal.h b/arch/x86/include/asm/signal.h
-index 2dfb5fea13aff..fc03f4f7ed84c 100644
---- a/arch/x86/include/asm/signal.h
-+++ b/arch/x86/include/asm/signal.h
-@@ -28,6 +28,19 @@ typedef struct {
- #define SA_IA32_ABI	0x02000000u
- #define SA_X32_ABI	0x01000000u
+ drivers/ata/acard-ahci.c      |    2 +-
+ drivers/ata/ahci.c            |    4 ++--
+ drivers/ata/ahci_qoriq.c      |    2 +-
+ drivers/ata/ahci_xgene.c      |    2 +-
+ drivers/ata/libahci.c         |    4 ++--
+ drivers/ata/libata-acpi.c     |    8 ++++----
+ drivers/ata/libata-core.c     |   12 ++++++------
+ drivers/ata/libata-eh.c       |   42 +++++++++++++++++++++---------------------
+ drivers/ata/libata-sata.c     |   10 +++++-----
+ drivers/ata/libata-scsi.c     |   22 +++++++++++-----------
+ drivers/ata/libata-sff.c      |    6 +++---
+ drivers/ata/pata_ep93xx.c     |    4 ++--
+ drivers/ata/pata_ns87415.c    |    4 ++--
+ drivers/ata/pata_octeon_cf.c  |    4 ++--
+ drivers/ata/pata_samsung_cf.c |    2 +-
+ drivers/ata/sata_highbank.c   |    2 +-
+ drivers/ata/sata_inic162x.c   |   10 +++++-----
+ drivers/ata/sata_rcar.c       |    4 ++--
+ drivers/ata/sata_svw.c        |   10 +++++-----
+ drivers/ata/sata_vsc.c        |    8 ++++----
+ include/linux/libata.h        |   10 ++++++++--
+ 21 files changed, 89 insertions(+), 83 deletions(-)
+
+Index: libata/drivers/ata/acard-ahci.c
+===================================================================
+--- libata.orig/drivers/ata/acard-ahci.c
++++ libata/drivers/ata/acard-ahci.c
+@@ -265,7 +265,7 @@ static bool acard_ahci_qc_fill_rtf(struc
+ 	if (qc->tf.protocol == ATA_PROT_PIO && qc->dma_dir == DMA_FROM_DEVICE &&
+ 	    !(qc->flags & ATA_QCFLAG_FAILED)) {
+ 		ata_tf_from_fis(rx_fis + RX_FIS_PIO_SETUP, &qc->result_tf);
+-		qc->result_tf.command = (rx_fis + RX_FIS_PIO_SETUP)[15];
++		qc->result_tf.status = (rx_fis + RX_FIS_PIO_SETUP)[15];
+ 	} else
+ 		ata_tf_from_fis(rx_fis + RX_FIS_D2H_REG, &qc->result_tf);
  
-+/*
-+ * Because some traps use the IST stack, we must keep preemption
-+ * disabled while calling do_trap(), but do_trap() may call
-+ * force_sig_info() which will grab the signal spin_locks for the
-+ * task, which in PREEMPT_RT are mutexes.  By defining
-+ * ARCH_RT_DELAYS_SIGNAL_SEND the force_sig_info() will set
-+ * TIF_NOTIFY_RESUME and set up the signal to be sent on exit of the
-+ * trap.
-+ */
-+#if defined(CONFIG_PREEMPT_RT)
-+#define ARCH_RT_DELAYS_SIGNAL_SEND
-+#endif
-+
- #ifndef CONFIG_COMPAT
- #define compat_sigset_t compat_sigset_t
- typedef sigset_t compat_sigset_t;
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 75ba8aa60248b..0514237cee3fc 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1087,6 +1087,9 @@ struct task_struct {
- 	/* Restored if set_restore_sigmask() was used: */
- 	sigset_t			saved_sigmask;
- 	struct sigpending		pending;
-+#ifdef CONFIG_PREEMPT_RT
-+	struct				kernel_siginfo forced_info;
-+#endif
- 	unsigned long			sas_ss_sp;
- 	size_t				sas_ss_size;
- 	unsigned int			sas_ss_flags;
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index bad713684c2e3..216dbf46e05f5 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -162,6 +162,15 @@ static unsigned long exit_to_user_mode_loop(struct pt_regs *regs,
- 		if (ti_work & _TIF_NEED_RESCHED)
- 			schedule();
+Index: libata/drivers/ata/ahci.c
+===================================================================
+--- libata.orig/drivers/ata/ahci.c
++++ libata/drivers/ata/ahci.c
+@@ -739,7 +739,7 @@ static int ahci_p5wdh_hardreset(struct a
  
-+#ifdef ARCH_RT_DELAYS_SIGNAL_SEND
-+		if (unlikely(current->forced_info.si_signo)) {
-+			struct task_struct *t = current;
-+
-+			force_sig_info(&t->forced_info);
-+			t->forced_info.si_signo = 0;
-+		}
-+#endif
-+
- 		if (ti_work & _TIF_UPROBE)
- 			uprobe_notify_resume(regs);
+ 	/* clear D2H reception area to properly wait for D2H FIS */
+ 	ata_tf_init(link->device, &tf);
+-	tf.command = ATA_BUSY;
++	tf.status = ATA_BUSY;
+ 	ata_tf_to_fis(&tf, 0, 0, d2h_fis);
  
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 9b04631acde8f..cb2b28c17c0a5 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -1327,6 +1327,34 @@ force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *t,
- 	struct k_sigaction *action;
- 	int sig = info->si_signo;
+ 	rc = sata_link_hardreset(link, sata_ehc_deb_timing(&link->eh_context),
+@@ -808,7 +808,7 @@ static int ahci_avn_hardreset(struct ata
  
-+	/*
-+	 * On some archs, PREEMPT_RT has to delay sending a signal from a trap
-+	 * since it can not enable preemption, and the signal code's spin_locks
-+	 * turn into mutexes. Instead, it must set TIF_NOTIFY_RESUME which will
-+	 * send the signal on exit of the trap.
-+	 */
-+#ifdef ARCH_RT_DELAYS_SIGNAL_SEND
-+	if (in_atomic()) {
-+		struct task_struct *t = current;
-+
-+		if (WARN_ON_ONCE(t->forced_info.si_signo))
-+			return 0;
-+
-+		if (is_si_special(info)) {
-+			WARN_ON_ONCE(info != SEND_SIG_PRIV);
-+			t->forced_info.si_signo = info->si_signo;
-+			t->forced_info.si_errno = 0;
-+			t->forced_info.si_code = SI_KERNEL;
-+			t->forced_info.si_pid = 0;
-+			t->forced_info.si_uid = 0;
-+		} else {
-+			t->forced_info = *info;
-+		}
-+
-+		set_tsk_thread_flag(t, TIF_NOTIFY_RESUME);
-+		return 0;
-+	}
-+#endif
- 	spin_lock_irqsave(&t->sighand->siglock, flags);
- 	action = &t->sighand->action[sig-1];
- 	ignored = action->sa.sa_handler == SIG_IGN;
--- 
-2.34.1
+ 		/* clear D2H reception area to properly wait for D2H FIS */
+ 		ata_tf_init(link->device, &tf);
+-		tf.command = ATA_BUSY;
++		tf.status = ATA_BUSY;
+ 		ata_tf_to_fis(&tf, 0, 0, d2h_fis);
+ 
+ 		rc = sata_link_hardreset(link, timing, deadline, &online,
+Index: libata/drivers/ata/ahci_qoriq.c
+===================================================================
+--- libata.orig/drivers/ata/ahci_qoriq.c
++++ libata/drivers/ata/ahci_qoriq.c
+@@ -123,7 +123,7 @@ static int ahci_qoriq_hardreset(struct a
+ 
+ 	/* clear D2H reception area to properly wait for D2H FIS */
+ 	ata_tf_init(link->device, &tf);
+-	tf.command = ATA_BUSY;
++	tf.status = ATA_BUSY;
+ 	ata_tf_to_fis(&tf, 0, 0, d2h_fis);
+ 
+ 	rc = sata_link_hardreset(link, timing, deadline, &online,
+Index: libata/drivers/ata/ahci_xgene.c
+===================================================================
+--- libata.orig/drivers/ata/ahci_xgene.c
++++ libata/drivers/ata/ahci_xgene.c
+@@ -365,7 +365,7 @@ static int xgene_ahci_do_hardreset(struc
+ 	do {
+ 		/* clear D2H reception area to properly wait for D2H FIS */
+ 		ata_tf_init(link->device, &tf);
+-		tf.command = ATA_BUSY;
++		tf.status = ATA_BUSY;
+ 		ata_tf_to_fis(&tf, 0, 0, d2h_fis);
+ 		rc = sata_link_hardreset(link, timing, deadline, online,
+ 				 ahci_check_ready);
+Index: libata/drivers/ata/libahci.c
+===================================================================
+--- libata.orig/drivers/ata/libahci.c
++++ libata/drivers/ata/libahci.c
+@@ -1561,7 +1561,7 @@ int ahci_do_hardreset(struct ata_link *l
+ 
+ 	/* clear D2H reception area to properly wait for D2H FIS */
+ 	ata_tf_init(link->device, &tf);
+-	tf.command = ATA_BUSY;
++	tf.status = ATA_BUSY;
+ 	ata_tf_to_fis(&tf, 0, 0, d2h_fis);
+ 
+ 	rc = sata_link_hardreset(link, timing, deadline, online,
+@@ -2033,7 +2033,7 @@ static bool ahci_qc_fill_rtf(struct ata_
+ 	if (qc->tf.protocol == ATA_PROT_PIO && qc->dma_dir == DMA_FROM_DEVICE &&
+ 	    !(qc->flags & ATA_QCFLAG_FAILED)) {
+ 		ata_tf_from_fis(rx_fis + RX_FIS_PIO_SETUP, &qc->result_tf);
+-		qc->result_tf.command = (rx_fis + RX_FIS_PIO_SETUP)[15];
++		qc->result_tf.status = (rx_fis + RX_FIS_PIO_SETUP)[15];
+ 	} else
+ 		ata_tf_from_fis(rx_fis + RX_FIS_D2H_REG, &qc->result_tf);
+ 
+Index: libata/drivers/ata/libata-acpi.c
+===================================================================
+--- libata.orig/drivers/ata/libata-acpi.c
++++ libata/drivers/ata/libata-acpi.c
+@@ -546,13 +546,13 @@ static void ata_acpi_gtf_to_tf(struct at
+ 
+ 	tf->flags |= ATA_TFLAG_ISADDR | ATA_TFLAG_DEVICE;
+ 	tf->protocol = ATA_PROT_NODATA;
+-	tf->feature = gtf->tf[0];	/* 0x1f1 */
++	tf->error   = gtf->tf[0];	/* 0x1f1 */
+ 	tf->nsect   = gtf->tf[1];	/* 0x1f2 */
+ 	tf->lbal    = gtf->tf[2];	/* 0x1f3 */
+ 	tf->lbam    = gtf->tf[3];	/* 0x1f4 */
+ 	tf->lbah    = gtf->tf[4];	/* 0x1f5 */
+ 	tf->device  = gtf->tf[5];	/* 0x1f6 */
+-	tf->command = gtf->tf[6];	/* 0x1f7 */
++	tf->status  = gtf->tf[6];	/* 0x1f7 */
+ }
+ 
+ static int ata_acpi_filter_tf(struct ata_device *dev,
+@@ -679,7 +679,7 @@ static int ata_acpi_run_tf(struct ata_de
+ 				"(%s) rejected by device (Stat=0x%02x Err=0x%02x)",
+ 				tf.command, tf.feature, tf.nsect, tf.lbal,
+ 				tf.lbam, tf.lbah, tf.device, descr,
+-				rtf.command, rtf.feature);
++				rtf.status, rtf.error);
+ 			rc = 0;
+ 			break;
+ 
+@@ -689,7 +689,7 @@ static int ata_acpi_run_tf(struct ata_de
+ 				"(%s) failed (Emask=0x%x Stat=0x%02x Err=0x%02x)",
+ 				tf.command, tf.feature, tf.nsect, tf.lbal,
+ 				tf.lbam, tf.lbah, tf.device, descr,
+-				err_mask, rtf.command, rtf.feature);
++				err_mask, rtf.status, rtf.error);
+ 			rc = -EIO;
+ 			break;
+ 		}
+Index: libata/drivers/ata/libata-core.c
+===================================================================
+--- libata.orig/drivers/ata/libata-core.c
++++ libata/drivers/ata/libata-core.c
+@@ -1171,7 +1171,7 @@ static int ata_read_native_max_address(s
+ 		ata_dev_warn(dev,
+ 			     "failed to read native max address (err_mask=0x%x)\n",
+ 			     err_mask);
+-		if (err_mask == AC_ERR_DEV && (tf.feature & ATA_ABORTED))
++		if (err_mask == AC_ERR_DEV && (tf.error & ATA_ABORTED))
+ 			return -EACCES;
+ 		return -EIO;
+ 	}
+@@ -1235,7 +1235,7 @@ static int ata_set_max_sectors(struct at
+ 			     "failed to set max address (err_mask=0x%x)\n",
+ 			     err_mask);
+ 		if (err_mask == AC_ERR_DEV &&
+-		    (tf.feature & (ATA_ABORTED | ATA_IDNF)))
++		    (tf.error & (ATA_ABORTED | ATA_IDNF)))
+ 			return -EACCES;
+ 		return -EIO;
+ 	}
+@@ -1584,7 +1584,7 @@ unsigned ata_exec_internal_sg(struct ata
+ 
+ 	/* perform minimal error analysis */
+ 	if (qc->flags & ATA_QCFLAG_FAILED) {
+-		if (qc->result_tf.command & (ATA_ERR | ATA_DF))
++		if (qc->result_tf.status & (ATA_ERR | ATA_DF))
+ 			qc->err_mask |= AC_ERR_DEV;
+ 
+ 		if (!qc->err_mask)
+@@ -1593,7 +1593,7 @@ unsigned ata_exec_internal_sg(struct ata
+ 		if (qc->err_mask & ~AC_ERR_OTHER)
+ 			qc->err_mask &= ~AC_ERR_OTHER;
+ 	} else if (qc->tf.command == ATA_CMD_REQ_SENSE_DATA) {
+-		qc->result_tf.command |= ATA_SENSE;
++		qc->result_tf.status |= ATA_SENSE;
+ 	}
+ 
+ 	/* finish up */
+@@ -1813,7 +1813,7 @@ retry:
+ 			return 0;
+ 		}
+ 
+-		if ((err_mask == AC_ERR_DEV) && (tf.feature & ATA_ABORTED)) {
++		if ((err_mask == AC_ERR_DEV) && (tf.error & ATA_ABORTED)) {
+ 			/* Device or controller might have reported
+ 			 * the wrong device class.  Give a shot at the
+ 			 * other IDENTIFY if the current one is
+@@ -4375,7 +4375,7 @@ static unsigned int ata_dev_init_params(
+ 	/* A clean abort indicates an original or just out of spec drive
+ 	   and we should continue as we issue the setup based on the
+ 	   drive reported working geometry */
+-	if (err_mask == AC_ERR_DEV && (tf.feature & ATA_ABORTED))
++	if (err_mask == AC_ERR_DEV && (tf.error & ATA_ABORTED))
+ 		err_mask = 0;
+ 
+ 	return err_mask;
+Index: libata/drivers/ata/libata-eh.c
+===================================================================
+--- libata.orig/drivers/ata/libata-eh.c
++++ libata/drivers/ata/libata-eh.c
+@@ -1386,7 +1386,7 @@ unsigned int atapi_eh_tur(struct ata_dev
+ 
+ 	err_mask = ata_exec_internal(dev, &tf, cdb, DMA_NONE, NULL, 0, 0);
+ 	if (err_mask == AC_ERR_DEV)
+-		*r_sense_key = tf.feature >> 4;
++		*r_sense_key = tf.error >> 4;
+ 	return err_mask;
+ }
+ 
+@@ -1429,12 +1429,12 @@ static void ata_eh_request_sense(struct
+ 
+ 	err_mask = ata_exec_internal(dev, &tf, NULL, DMA_NONE, NULL, 0, 0);
+ 	/* Ignore err_mask; ATA_ERR might be set */
+-	if (tf.command & ATA_SENSE) {
++	if (tf.status & ATA_SENSE) {
+ 		ata_scsi_set_sense(dev, cmd, tf.lbah, tf.lbam, tf.lbal);
+ 		qc->flags |= ATA_QCFLAG_SENSE_VALID;
+ 	} else {
+ 		ata_dev_warn(dev, "request sense failed stat %02x emask %x\n",
+-			     tf.command, err_mask);
++			     tf.status, err_mask);
+ 	}
+ }
+ 
+@@ -1557,7 +1557,7 @@ static unsigned int ata_eh_analyze_tf(st
+ 				      const struct ata_taskfile *tf)
+ {
+ 	unsigned int tmp, action = 0;
+-	u8 stat = tf->command, err = tf->feature;
++	u8 stat = tf->status, err = tf->error;
+ 
+ 	if ((stat & (ATA_BUSY | ATA_DRQ | ATA_DRDY)) != ATA_DRDY) {
+ 		qc->err_mask |= AC_ERR_HSM;
+@@ -1594,7 +1594,7 @@ static unsigned int ata_eh_analyze_tf(st
+ 		if (!(qc->ap->pflags & ATA_PFLAG_FROZEN)) {
+ 			tmp = atapi_eh_request_sense(qc->dev,
+ 						qc->scsicmd->sense_buffer,
+-						qc->result_tf.feature >> 4);
++						qc->result_tf.error >> 4);
+ 			if (!tmp)
+ 				qc->flags |= ATA_QCFLAG_SENSE_VALID;
+ 			else
+@@ -2360,7 +2360,7 @@ static void ata_eh_link_report(struct at
+ 			cmd->hob_feature, cmd->hob_nsect,
+ 			cmd->hob_lbal, cmd->hob_lbam, cmd->hob_lbah,
+ 			cmd->device, qc->tag, data_buf, cdb_buf,
+-			res->command, res->feature, res->nsect,
++			res->status, res->error, res->nsect,
+ 			res->lbal, res->lbam, res->lbah,
+ 			res->hob_feature, res->hob_nsect,
+ 			res->hob_lbal, res->hob_lbam, res->hob_lbah,
+@@ -2368,28 +2368,28 @@ static void ata_eh_link_report(struct at
+ 			qc->err_mask & AC_ERR_NCQ ? " <F>" : "");
+ 
+ #ifdef CONFIG_ATA_VERBOSE_ERROR
+-		if (res->command & (ATA_BUSY | ATA_DRDY | ATA_DF | ATA_DRQ |
+-				    ATA_SENSE | ATA_ERR)) {
+-			if (res->command & ATA_BUSY)
++		if (res->status & (ATA_BUSY | ATA_DRDY | ATA_DF | ATA_DRQ |
++				   ATA_SENSE | ATA_ERR)) {
++			if (res->status & ATA_BUSY)
+ 				ata_dev_err(qc->dev, "status: { Busy }\n");
+ 			else
+ 				ata_dev_err(qc->dev, "status: { %s%s%s%s%s}\n",
+-				  res->command & ATA_DRDY ? "DRDY " : "",
+-				  res->command & ATA_DF ? "DF " : "",
+-				  res->command & ATA_DRQ ? "DRQ " : "",
+-				  res->command & ATA_SENSE ? "SENSE " : "",
+-				  res->command & ATA_ERR ? "ERR " : "");
++				  res->status & ATA_DRDY ? "DRDY " : "",
++				  res->status & ATA_DF ? "DF " : "",
++				  res->status & ATA_DRQ ? "DRQ " : "",
++				  res->status & ATA_SENSE ? "SENSE " : "",
++				  res->status & ATA_ERR ? "ERR " : "");
+ 		}
+ 
+ 		if (cmd->command != ATA_CMD_PACKET &&
+-		    (res->feature & (ATA_ICRC | ATA_UNC | ATA_AMNF |
+-				     ATA_IDNF | ATA_ABORTED)))
++		    (res->error & (ATA_ICRC | ATA_UNC | ATA_AMNF | ATA_IDNF |
++				   ATA_ABORTED)))
+ 			ata_dev_err(qc->dev, "error: { %s%s%s%s%s}\n",
+-			  res->feature & ATA_ICRC ? "ICRC " : "",
+-			  res->feature & ATA_UNC ? "UNC " : "",
+-			  res->feature & ATA_AMNF ? "AMNF " : "",
+-			  res->feature & ATA_IDNF ? "IDNF " : "",
+-			  res->feature & ATA_ABORTED ? "ABRT " : "");
++				    res->error & ATA_ICRC ? "ICRC " : "",
++				    res->error & ATA_UNC ? "UNC " : "",
++				    res->error & ATA_AMNF ? "AMNF " : "",
++				    res->error & ATA_IDNF ? "IDNF " : "",
++				    res->error & ATA_ABORTED ? "ABRT " : "");
+ #endif
+ 	}
+ }
+Index: libata/drivers/ata/libata-sata.c
+===================================================================
+--- libata.orig/drivers/ata/libata-sata.c
++++ libata/drivers/ata/libata-sata.c
+@@ -191,8 +191,8 @@ EXPORT_SYMBOL_GPL(ata_tf_to_fis);
+ 
+ void ata_tf_from_fis(const u8 *fis, struct ata_taskfile *tf)
+ {
+-	tf->command	= fis[2];	/* status */
+-	tf->feature	= fis[3];	/* error */
++	tf->status	= fis[2];
++	tf->error	= fis[3];
+ 
+ 	tf->lbal	= fis[4];
+ 	tf->lbam	= fis[5];
+@@ -1406,8 +1406,8 @@ static int ata_eh_read_log_10h(struct at
+ 
+ 	*tag = buf[0] & 0x1f;
+ 
+-	tf->command = buf[2];
+-	tf->feature = buf[3];
++	tf->status = buf[2];
++	tf->error = buf[3];
+ 	tf->lbal = buf[4];
+ 	tf->lbam = buf[5];
+ 	tf->lbah = buf[6];
+@@ -1482,7 +1482,7 @@ void ata_eh_analyze_ncq_error(struct ata
+ 	qc->result_tf.flags = ATA_TFLAG_ISADDR | ATA_TFLAG_LBA | ATA_TFLAG_LBA48;
+ 	qc->err_mask |= AC_ERR_DEV | AC_ERR_NCQ;
+ 	if (dev->class == ATA_DEV_ZAC &&
+-	    ((qc->result_tf.command & ATA_SENSE) || qc->result_tf.auxiliary)) {
++	    ((qc->result_tf.status & ATA_SENSE) || qc->result_tf.auxiliary)) {
+ 		char sense_key, asc, ascq;
+ 
+ 		sense_key = (qc->result_tf.auxiliary >> 16) & 0xff;
+Index: libata/drivers/ata/libata-scsi.c
+===================================================================
+--- libata.orig/drivers/ata/libata-scsi.c
++++ libata/drivers/ata/libata-scsi.c
+@@ -680,7 +680,7 @@ static void ata_qc_set_pc_nbytes(struct
+  */
+ static void ata_dump_status(struct ata_port *ap, struct ata_taskfile *tf)
+ {
+-	u8 stat = tf->command, err = tf->feature;
++	u8 stat = tf->status, err = tf->error;
+ 
+ 	if (stat & ATA_BUSY) {
+ 		ata_port_warn(ap, "status=0x%02x {Busy} ", stat);
+@@ -871,8 +871,8 @@ static void ata_gen_passthru_sense(struc
+ 	 * onto sense key, asc & ascq.
+ 	 */
+ 	if (qc->err_mask ||
+-	    tf->command & (ATA_BUSY | ATA_DF | ATA_ERR | ATA_DRQ)) {
+-		ata_to_sense_error(qc->ap->print_id, tf->command, tf->feature,
++	    tf->status & (ATA_BUSY | ATA_DF | ATA_ERR | ATA_DRQ)) {
++		ata_to_sense_error(qc->ap->print_id, tf->status, tf->error,
+ 				   &sense_key, &asc, &ascq, verbose);
+ 		ata_scsi_set_sense(qc->dev, cmd, sense_key, asc, ascq);
+ 	} else {
+@@ -901,13 +901,13 @@ static void ata_gen_passthru_sense(struc
+ 		 * Copy registers into sense buffer.
+ 		 */
+ 		desc[2] = 0x00;
+-		desc[3] = tf->feature;	/* == error reg */
++		desc[3] = tf->error;
+ 		desc[5] = tf->nsect;
+ 		desc[7] = tf->lbal;
+ 		desc[9] = tf->lbam;
+ 		desc[11] = tf->lbah;
+ 		desc[12] = tf->device;
+-		desc[13] = tf->command; /* == status reg */
++		desc[13] = tf->status;
+ 
+ 		/*
+ 		 * Fill in Extend bit, and the high order bytes
+@@ -922,8 +922,8 @@ static void ata_gen_passthru_sense(struc
+ 		}
+ 	} else {
+ 		/* Fixed sense format */
+-		desc[0] = tf->feature;
+-		desc[1] = tf->command; /* status */
++		desc[0] = tf->error;
++		desc[1] = tf->status;
+ 		desc[2] = tf->device;
+ 		desc[3] = tf->nsect;
+ 		desc[7] = 0;
+@@ -972,14 +972,14 @@ static void ata_gen_ata_sense(struct ata
+ 	 * onto sense key, asc & ascq.
+ 	 */
+ 	if (qc->err_mask ||
+-	    tf->command & (ATA_BUSY | ATA_DF | ATA_ERR | ATA_DRQ)) {
+-		ata_to_sense_error(qc->ap->print_id, tf->command, tf->feature,
++	    tf->status & (ATA_BUSY | ATA_DF | ATA_ERR | ATA_DRQ)) {
++		ata_to_sense_error(qc->ap->print_id, tf->status, tf->error,
+ 				   &sense_key, &asc, &ascq, verbose);
+ 		ata_scsi_set_sense(dev, cmd, sense_key, asc, ascq);
+ 	} else {
+ 		/* Could not decode error */
+ 		ata_dev_warn(dev, "could not decode error status 0x%x err_mask 0x%x\n",
+-			     tf->command, qc->err_mask);
++			     tf->status, qc->err_mask);
+ 		ata_scsi_set_sense(dev, cmd, ABORTED_COMMAND, 0, 0);
+ 		return;
+ 	}
+@@ -2473,7 +2473,7 @@ static void atapi_request_sense(struct a
+ 
+ 	/* fill these in, for the case where they are -not- overwritten */
+ 	cmd->sense_buffer[0] = 0x70;
+-	cmd->sense_buffer[2] = qc->tf.feature >> 4;
++	cmd->sense_buffer[2] = qc->tf.error >> 4;
+ 
+ 	ata_qc_reinit(qc);
+ 
+Index: libata/drivers/ata/libata-sff.c
+===================================================================
+--- libata.orig/drivers/ata/libata-sff.c
++++ libata/drivers/ata/libata-sff.c
+@@ -449,8 +449,8 @@ void ata_sff_tf_read(struct ata_port *ap
+ {
+ 	struct ata_ioports *ioaddr = &ap->ioaddr;
+ 
+-	tf->command = ata_sff_check_status(ap);
+-	tf->feature = ioread8(ioaddr->error_addr);
++	tf->status = ata_sff_check_status(ap);
++	tf->error = ioread8(ioaddr->error_addr);
+ 	tf->nsect = ioread8(ioaddr->nsect_addr);
+ 	tf->lbal = ioread8(ioaddr->lbal_addr);
+ 	tf->lbam = ioread8(ioaddr->lbam_addr);
+@@ -1824,7 +1824,7 @@ unsigned int ata_sff_dev_classify(struct
+ 	memset(&tf, 0, sizeof(tf));
+ 
+ 	ap->ops->sff_tf_read(ap, &tf);
+-	err = tf.feature;
++	err = tf.error;
+ 	if (r_err)
+ 		*r_err = err;
+ 
+Index: libata/drivers/ata/pata_ep93xx.c
+===================================================================
+--- libata.orig/drivers/ata/pata_ep93xx.c
++++ libata/drivers/ata/pata_ep93xx.c
+@@ -416,8 +416,8 @@ static void ep93xx_pata_tf_read(struct a
+ {
+ 	struct ep93xx_pata_data *drv_data = ap->host->private_data;
+ 
+-	tf->command = ep93xx_pata_check_status(ap);
+-	tf->feature = ep93xx_pata_read_reg(drv_data, IDECTRL_ADDR_FEATURE);
++	tf->status = ep93xx_pata_check_status(ap);
++	tf->error = ep93xx_pata_read_reg(drv_data, IDECTRL_ADDR_FEATURE);
+ 	tf->nsect = ep93xx_pata_read_reg(drv_data, IDECTRL_ADDR_NSECT);
+ 	tf->lbal = ep93xx_pata_read_reg(drv_data, IDECTRL_ADDR_LBAL);
+ 	tf->lbam = ep93xx_pata_read_reg(drv_data, IDECTRL_ADDR_LBAM);
+Index: libata/drivers/ata/pata_ns87415.c
+===================================================================
+--- libata.orig/drivers/ata/pata_ns87415.c
++++ libata/drivers/ata/pata_ns87415.c
+@@ -264,8 +264,8 @@ void ns87560_tf_read(struct ata_port *ap
+ {
+ 	struct ata_ioports *ioaddr = &ap->ioaddr;
+ 
+-	tf->command = ns87560_check_status(ap);
+-	tf->feature = ioread8(ioaddr->error_addr);
++	tf->status = ns87560_check_status(ap);
++	tf->error = ioread8(ioaddr->error_addr);
+ 	tf->nsect = ioread8(ioaddr->nsect_addr);
+ 	tf->lbal = ioread8(ioaddr->lbal_addr);
+ 	tf->lbam = ioread8(ioaddr->lbam_addr);
+Index: libata/drivers/ata/pata_octeon_cf.c
+===================================================================
+--- libata.orig/drivers/ata/pata_octeon_cf.c
++++ libata/drivers/ata/pata_octeon_cf.c
+@@ -382,7 +382,7 @@ static void octeon_cf_tf_read16(struct a
+ 	void __iomem *base = ap->ioaddr.data_addr;
+ 
+ 	blob = __raw_readw(base + 0xc);
+-	tf->feature = blob >> 8;
++	tf->error = blob >> 8;
+ 
+ 	blob = __raw_readw(base + 2);
+ 	tf->nsect = blob & 0xff;
+@@ -394,7 +394,7 @@ static void octeon_cf_tf_read16(struct a
+ 
+ 	blob = __raw_readw(base + 6);
+ 	tf->device = blob & 0xff;
+-	tf->command = blob >> 8;
++	tf->status = blob >> 8;
+ 
+ 	if (tf->flags & ATA_TFLAG_LBA48) {
+ 		if (likely(ap->ioaddr.ctl_addr)) {
+Index: libata/drivers/ata/pata_samsung_cf.c
+===================================================================
+--- libata.orig/drivers/ata/pata_samsung_cf.c
++++ libata/drivers/ata/pata_samsung_cf.c
+@@ -213,7 +213,7 @@ static void pata_s3c_tf_read(struct ata_
+ {
+ 	struct ata_ioports *ioaddr = &ap->ioaddr;
+ 
+-	tf->feature = ata_inb(ap->host, ioaddr->error_addr);
++	tf->error = ata_inb(ap->host, ioaddr->error_addr);
+ 	tf->nsect = ata_inb(ap->host, ioaddr->nsect_addr);
+ 	tf->lbal = ata_inb(ap->host, ioaddr->lbal_addr);
+ 	tf->lbam = ata_inb(ap->host, ioaddr->lbam_addr);
+Index: libata/drivers/ata/sata_highbank.c
+===================================================================
+--- libata.orig/drivers/ata/sata_highbank.c
++++ libata/drivers/ata/sata_highbank.c
+@@ -400,7 +400,7 @@ static int ahci_highbank_hardreset(struc
+ 
+ 	/* clear D2H reception area to properly wait for D2H FIS */
+ 	ata_tf_init(link->device, &tf);
+-	tf.command = ATA_BUSY;
++	tf.status = ATA_BUSY;
+ 	ata_tf_to_fis(&tf, 0, 0, d2h_fis);
+ 
+ 	do {
+Index: libata/drivers/ata/sata_inic162x.c
+===================================================================
+--- libata.orig/drivers/ata/sata_inic162x.c
++++ libata/drivers/ata/sata_inic162x.c
+@@ -557,13 +557,13 @@ static void inic_tf_read(struct ata_port
+ {
+ 	void __iomem *port_base = inic_port_base(ap);
+ 
+-	tf->feature	= readb(port_base + PORT_TF_FEATURE);
++	tf->error	= readb(port_base + PORT_TF_FEATURE);
+ 	tf->nsect	= readb(port_base + PORT_TF_NSECT);
+ 	tf->lbal	= readb(port_base + PORT_TF_LBAL);
+ 	tf->lbam	= readb(port_base + PORT_TF_LBAM);
+ 	tf->lbah	= readb(port_base + PORT_TF_LBAH);
+ 	tf->device	= readb(port_base + PORT_TF_DEVICE);
+-	tf->command	= readb(port_base + PORT_TF_COMMAND);
++	tf->status	= readb(port_base + PORT_TF_COMMAND);
+ }
+ 
+ static bool inic_qc_fill_rtf(struct ata_queued_cmd *qc)
+@@ -580,11 +580,11 @@ static bool inic_qc_fill_rtf(struct ata_
+ 	 */
+ 	inic_tf_read(qc->ap, &tf);
+ 
+-	if (!(tf.command & ATA_ERR))
++	if (!(tf.status & ATA_ERR))
+ 		return false;
+ 
+-	rtf->command = tf.command;
+-	rtf->feature = tf.feature;
++	rtf->status = tf.status;
++	rtf->error = tf.error;
+ 	return true;
+ }
+ 
+Index: libata/drivers/ata/sata_rcar.c
+===================================================================
+--- libata.orig/drivers/ata/sata_rcar.c
++++ libata/drivers/ata/sata_rcar.c
+@@ -394,8 +394,8 @@ static void sata_rcar_tf_read(struct ata
+ {
+ 	struct ata_ioports *ioaddr = &ap->ioaddr;
+ 
+-	tf->command = sata_rcar_check_status(ap);
+-	tf->feature = ioread32(ioaddr->error_addr);
++	tf->status = sata_rcar_check_status(ap);
++	tf->error = ioread32(ioaddr->error_addr);
+ 	tf->nsect = ioread32(ioaddr->nsect_addr);
+ 	tf->lbal = ioread32(ioaddr->lbal_addr);
+ 	tf->lbam = ioread32(ioaddr->lbam_addr);
+Index: libata/drivers/ata/sata_svw.c
+===================================================================
+--- libata.orig/drivers/ata/sata_svw.c
++++ libata/drivers/ata/sata_svw.c
+@@ -194,24 +194,24 @@ static void k2_sata_tf_load(struct ata_p
+ static void k2_sata_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
+ {
+ 	struct ata_ioports *ioaddr = &ap->ioaddr;
+-	u16 nsect, lbal, lbam, lbah, feature;
++	u16 nsect, lbal, lbam, lbah, error;
+ 
+-	tf->command = k2_stat_check_status(ap);
++	tf->status = k2_stat_check_status(ap);
+ 	tf->device = readw(ioaddr->device_addr);
+-	feature = readw(ioaddr->error_addr);
++	error = readw(ioaddr->error_addr);
+ 	nsect = readw(ioaddr->nsect_addr);
+ 	lbal = readw(ioaddr->lbal_addr);
+ 	lbam = readw(ioaddr->lbam_addr);
+ 	lbah = readw(ioaddr->lbah_addr);
+ 
+-	tf->feature = feature;
++	tf->error = error;
+ 	tf->nsect = nsect;
+ 	tf->lbal = lbal;
+ 	tf->lbam = lbam;
+ 	tf->lbah = lbah;
+ 
+ 	if (tf->flags & ATA_TFLAG_LBA48) {
+-		tf->hob_feature = feature >> 8;
++		tf->hob_feature = error >> 8;
+ 		tf->hob_nsect = nsect >> 8;
+ 		tf->hob_lbal = lbal >> 8;
+ 		tf->hob_lbam = lbam >> 8;
+Index: libata/drivers/ata/sata_vsc.c
+===================================================================
+--- libata.orig/drivers/ata/sata_vsc.c
++++ libata/drivers/ata/sata_vsc.c
+@@ -183,17 +183,17 @@ static void vsc_sata_tf_load(struct ata_
+ static void vsc_sata_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
+ {
+ 	struct ata_ioports *ioaddr = &ap->ioaddr;
+-	u16 nsect, lbal, lbam, lbah, feature;
++	u16 nsect, lbal, lbam, lbah, error;
+ 
+-	tf->command = ata_sff_check_status(ap);
++	tf->status = ata_sff_check_status(ap);
+ 	tf->device = readw(ioaddr->device_addr);
+-	feature = readw(ioaddr->error_addr);
++	error = readw(ioaddr->error_addr);
+ 	nsect = readw(ioaddr->nsect_addr);
+ 	lbal = readw(ioaddr->lbal_addr);
+ 	lbam = readw(ioaddr->lbam_addr);
+ 	lbah = readw(ioaddr->lbah_addr);
+ 
+-	tf->feature = feature;
++	tf->error = error;
+ 	tf->nsect = nsect;
+ 	tf->lbal = lbal;
+ 	tf->lbam = lbam;
+Index: libata/include/linux/libata.h
+===================================================================
+--- libata.orig/include/linux/libata.h
++++ libata/include/linux/libata.h
+@@ -518,7 +518,10 @@ struct ata_taskfile {
+ 	u8			hob_lbam;
+ 	u8			hob_lbah;
+ 
+-	u8			feature;
++	union {
++		u8		error;
++		u8		feature;
++	};
+ 	u8			nsect;
+ 	u8			lbal;
+ 	u8			lbam;
+@@ -526,7 +529,10 @@ struct ata_taskfile {
+ 
+ 	u8			device;
+ 
+-	u8			command;	/* IO operation */
++	union {
++		u8		status;
++		u8		command;
++	};
+ 
+ 	u32			auxiliary;	/* auxiliary field */
+ 						/* from SATA 3.1 and */
+
