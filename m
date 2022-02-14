@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C78A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01659C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbiBNKOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:14:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44746 "EHLO
+        id S1345785AbiBNKOK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:14:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345709AbiBNKNK (ORCPT
+        with ESMTP id S1345711AbiBNKNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:13:10 -0500
+        Mon, 14 Feb 2022 05:13:12 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1565C59A63;
-        Mon, 14 Feb 2022 01:51:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D05657A0;
+        Mon, 14 Feb 2022 01:51:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1820B80DC4;
-        Mon, 14 Feb 2022 09:51:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3FBEC340EF;
-        Mon, 14 Feb 2022 09:51:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D50BBB80DC7;
+        Mon, 14 Feb 2022 09:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 019ACC340E9;
+        Mon, 14 Feb 2022 09:51:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832279;
-        bh=YYnbQUNHnyZnPlW0EXMkhiN07cJiuJLrOZ2257GGNHE=;
+        s=korg; t=1644832282;
+        bh=oaiLjJykr2FN8slW2zNpphunsPR7vSwBat8phM02CcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xj08xgfD13OdK/APT9R8t0yiN6BSiHPHP5epMUADCYgW8PPTVNbhpglYxNzJrDJdb
-         eBirdkDIW/+BLMJpfcGIfu2nZUW9OZAM+JP6u0ipDPxb2xKOss7y91aDm+PppK9mlC
-         b8NAhVuznixrixomcDnPbZfC4N4t/vpqlsIe9OYI=
+        b=0PC0B5xLJBwRsSKwmwSS88Icy3lIs01kbUR6Te+5Z+dZ8kTZOfTPXF1qUM7PY2YVq
+         3+3wtX6/p80jC/06CQHZPWUVv2nuuSxZOz1Qmy4mVonE8KTqr8woD2DOcnUlkweKoO
+         h9aX/W6D2lL1J1OWa8iK/h0dKQLS8VzAmS9nBcs8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Mendoza-Jonas <samjonas@amazon.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 104/172] ixgbevf: Require large buffers for build_skb on 82599VF
-Date:   Mon, 14 Feb 2022 10:26:02 +0100
-Message-Id: <20220214092509.987469123@linuxfoundation.org>
+Subject: [PATCH 5.15 095/172] NFS: Dont skip directory entries when doing uncached readdir
+Date:   Mon, 14 Feb 2022 10:25:53 +0100
+Message-Id: <20220214092509.682797240@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,72 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Mendoza-Jonas <samjonas@amazon.com>
+From: trondmy@kernel.org <trondmy@kernel.org>
 
-[ Upstream commit fe68195daf34d5dddacd3f93dd3eafc4beca3a0e ]
+[ Upstream commit ce292d8faf41f62e0fb0c78476c6fce5d629235a ]
 
->From 4.17 onwards the ixgbevf driver uses build_skb() to build an skb
-around new data in the page buffer shared with the ixgbe PF.
-This uses either a 2K or 3K buffer, and offsets the DMA mapping by
-NET_SKB_PAD + NET_IP_ALIGN. When using a smaller buffer RXDCTL is set to
-ensure the PF does not write a full 2K bytes into the buffer, which is
-actually 2K minus the offset.
+Ensure that we initialise desc->cache_entry_index correctly in
+uncached_readdir().
 
-However on the 82599 virtual function, the RXDCTL mechanism is not
-available. The driver attempts to work around this by using the SET_LPE
-mailbox method to lower the maximm frame size, but the ixgbe PF driver
-ignores this in order to keep the PF and all VFs in sync[0].
-
-This means the PF will write up to the full 2K set in SRRCTL, causing it
-to write NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the buffer.
-With 4K pages split into two buffers, this means it either writes
-NET_SKB_PAD + NET_IP_ALIGN bytes past the first buffer (and into the
-second), or NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the DMA
-mapping.
-
-Avoid this by only enabling build_skb when using "large" buffers (3K).
-These are placed in each half of an order-1 page, preventing the PF from
-writing past the end of the mapping.
-
-[0]: Technically it only ever raises the max frame size, see
-ixgbe_set_vf_lpe() in ixgbe_sriov.c
-
-Fixes: f15c5ba5b6cd ("ixgbevf: add support for using order 1 pages to receive large frames")
-Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d1bacf9eb2fd ("NFS: add readdir cache array")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ fs/nfs/dir.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index c714e1ecd3089..7ef2e1241a76e 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -1984,14 +1984,15 @@ static void ixgbevf_set_rx_buffer_len(struct ixgbevf_adapter *adapter,
- 	if (adapter->flags & IXGBEVF_FLAGS_LEGACY_RX)
- 		return;
+diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
+index af7881bc6b3e6..f6381c675cbe9 100644
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -1049,6 +1049,7 @@ static int uncached_readdir(struct nfs_readdir_descriptor *desc)
+ 		goto out;
  
--	set_ring_build_skb_enabled(rx_ring);
-+	if (PAGE_SIZE < 8192)
-+		if (max_frame > IXGBEVF_MAX_FRAME_BUILD_SKB)
-+			set_ring_uses_large_buffer(rx_ring);
+ 	desc->page_index = 0;
++	desc->cache_entry_index = 0;
+ 	desc->last_cookie = desc->dir_cookie;
+ 	desc->duped = 0;
  
--	if (PAGE_SIZE < 8192) {
--		if (max_frame <= IXGBEVF_MAX_FRAME_BUILD_SKB)
--			return;
-+	/* 82599 can't rely on RXDCTL.RLPML to restrict the size of the frame */
-+	if (adapter->hw.mac.type == ixgbe_mac_82599_vf && !ring_uses_large_buffer(rx_ring))
-+		return;
- 
--		set_ring_uses_large_buffer(rx_ring);
--	}
-+	set_ring_build_skb_enabled(rx_ring);
- }
- 
- /**
 -- 
 2.34.1
 
