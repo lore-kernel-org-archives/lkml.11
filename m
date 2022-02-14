@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E90FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F96C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346218AbiBNKXA (ORCPT
+        id S1346677AbiBNKXE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:23:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47998 "EHLO
+        Mon, 14 Feb 2022 05:23:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347455AbiBNKVQ (ORCPT
+        with ESMTP id S1347337AbiBNKVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:21:16 -0500
+        Mon, 14 Feb 2022 05:21:14 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44D36E2A1;
-        Mon, 14 Feb 2022 01:55:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8ED76E37D;
+        Mon, 14 Feb 2022 01:55:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03043612FF;
-        Mon, 14 Feb 2022 09:55:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D890DC340E9;
-        Mon, 14 Feb 2022 09:55:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A77FE612BF;
+        Mon, 14 Feb 2022 09:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F3CCC340E9;
+        Mon, 14 Feb 2022 09:55:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832523;
-        bh=M6IFrLskbsvGTic0lO/SuMgtOr0QHBC9KNhy30mcHwA=;
+        s=korg; t=1644832514;
+        bh=5aLdZcklCu3DFC/Gykz4dyVw4uYl4546Sw0ES2dxX6U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXg6YQ/OizgLBAg8zLKfRKhNS9FWEwpEC0yUYn1hOOg7brjBP547yB0r0tIDLqs5f
-         Eawzj59X0UdNWXKuy3xbzrj8t0Ph+5gUnLW1IszRTG1kwdd05yN6meXmodmmCx8r+1
-         OIuy53L2TPDIkVxezPj3GqJHqI29qIbhls75dg9k=
+        b=qvaLAa1mUv8dNoYg9TTk2m8TXvM6q07rbnbjgvpkfr3gtNUEhWs60pTW+dNsD55Sb
+         uP+Y6MasyEmTCQMZf7m3pa2+76P81MXy3aSnI1GZZGjqi6yO0mXVWaxbJE4XV/6Ekf
+         y+Da56+6v3RH4y/zbvbvitir6DAzjB3gY29MW3iQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.16 010/203] can: isotp: fix potential CAN frame reception race in isotp_rcv()
-Date:   Mon, 14 Feb 2022 10:24:14 +0100
-Message-Id: <20220214092510.565366151@linuxfoundation.org>
+        stable@vger.kernel.org, Raymond Jay Golo <rjgolo@gmail.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 037/203] drm: panel-orientation-quirks: Add quirk for the 1Netbook OneXPlayer
+Date:   Mon, 14 Feb 2022 10:24:41 +0100
+Message-Id: <20220214092511.466160773@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,109 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Raymond Jay Golo <rjgolo@gmail.com>
 
-commit 7c759040c1dd03954f650f147ae7175476d51314 upstream.
+[ Upstream commit d3cbc6e323c9299d10c8d2e4127c77c7d05d07b1 ]
 
-When receiving a CAN frame the current code logic does not consider
-concurrently receiving processes which do not show up in real world
-usage.
+The 1Netbook OneXPlayer uses a panel which has been mounted
+90 degrees rotated. Add a quirk for this.
 
-Ziyang Xuan writes:
-
-The following syz problem is one of the scenarios. so->rx.len is
-changed by isotp_rcv_ff() during isotp_rcv_cf(), so->rx.len equals
-0 before alloc_skb() and equals 4096 after alloc_skb(). That will
-trigger skb_over_panic() in skb_put().
-
-=======================================================
-CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc8-syzkaller #0
-RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:113
-Call Trace:
- <TASK>
- skb_over_panic net/core/skbuff.c:118 [inline]
- skb_put.cold+0x24/0x24 net/core/skbuff.c:1990
- isotp_rcv_cf net/can/isotp.c:570 [inline]
- isotp_rcv+0xa38/0x1e30 net/can/isotp.c:668
- deliver net/can/af_can.c:574 [inline]
- can_rcv_filter+0x445/0x8d0 net/can/af_can.c:635
- can_receive+0x31d/0x580 net/can/af_can.c:665
- can_rcv+0x120/0x1c0 net/can/af_can.c:696
- __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5465
- __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5579
-
-Therefore we make sure the state changes and data structures stay
-consistent at CAN frame reception time by adding a spin_lock in
-isotp_rcv(). This fixes the issue reported by syzkaller but does not
-affect real world operation.
-
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/linux-can/d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com/T/
-Link: https://lore.kernel.org/all/20220208200026.13783-1-socketcan@hartkopp.net
-Cc: stable@vger.kernel.org
-Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
-Reported-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Raymond Jay Golo <rjgolo@gmail.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220113000619.90988-1-rjgolo@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/isotp.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -56,6 +56,7 @@
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
-+#include <linux/spinlock.h>
- #include <linux/hrtimer.h>
- #include <linux/wait.h>
- #include <linux/uio.h>
-@@ -145,6 +146,7 @@ struct isotp_sock {
- 	struct tpcon rx, tx;
- 	struct list_head notifier;
- 	wait_queue_head_t wait;
-+	spinlock_t rx_lock; /* protect single thread state machine */
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 042bb80383c93..b910978d3e480 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -115,6 +115,12 @@ static const struct drm_dmi_panel_orientation_data lcd1280x1920_rightside_up = {
+ 	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
  };
  
- static LIST_HEAD(isotp_notifier_list);
-@@ -615,11 +617,17 @@ static void isotp_rcv(struct sk_buff *sk
- 
- 	n_pci_type = cf->data[ae] & 0xF0;
- 
-+	/* Make sure the state changes and data structures stay consistent at
-+	 * CAN frame reception time. This locking is not needed in real world
-+	 * use cases but the inconsistency can be triggered with syzkaller.
-+	 */
-+	spin_lock(&so->rx_lock);
++static const struct drm_dmi_panel_orientation_data lcd1600x2560_leftside_up = {
++	.width = 1600,
++	.height = 2560,
++	.orientation = DRM_MODE_PANEL_ORIENTATION_LEFT_UP,
++};
 +
- 	if (so->opt.flags & CAN_ISOTP_HALF_DUPLEX) {
- 		/* check rx/tx path half duplex expectations */
- 		if ((so->tx.state != ISOTP_IDLE && n_pci_type != N_PCI_FC) ||
- 		    (so->rx.state != ISOTP_IDLE && n_pci_type == N_PCI_FC))
--			return;
-+			goto out_unlock;
- 	}
- 
- 	switch (n_pci_type) {
-@@ -668,6 +676,9 @@ static void isotp_rcv(struct sk_buff *sk
- 		isotp_rcv_cf(sk, cf, ae, skb);
- 		break;
- 	}
-+
-+out_unlock:
-+	spin_unlock(&so->rx_lock);
- }
- 
- static void isotp_fill_dataframe(struct canfd_frame *cf, struct isotp_sock *so,
-@@ -1444,6 +1455,7 @@ static int isotp_init(struct sock *sk)
- 	so->txtimer.function = isotp_tx_timer_handler;
- 
- 	init_waitqueue_head(&so->wait);
-+	spin_lock_init(&so->rx_lock);
- 
- 	spin_lock(&isotp_notifier_lock);
- 	list_add_tail(&so->notifier, &isotp_notifier_list);
+ static const struct dmi_system_id orientation_data[] = {
+ 	{	/* Acer One 10 (S1003) */
+ 		.matches = {
+@@ -275,6 +281,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Default string"),
+ 		},
+ 		.driver_data = (void *)&onegx1_pro,
++	}, {	/* OneXPlayer */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK TECHNOLOGY CO., LTD."),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
++		},
++		.driver_data = (void *)&lcd1600x2560_leftside_up,
+ 	}, {	/* Samsung GalaxyBook 10.6 */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
+-- 
+2.34.1
+
 
 
