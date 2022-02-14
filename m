@@ -2,89 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E11C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F093DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbiBNUBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:01:51 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55202 "EHLO
+        id S229673AbiBNUDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:03:38 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiBNUBr (ORCPT
+        with ESMTP id S229507AbiBNUDf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:01:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D02214AC8A;
-        Mon, 14 Feb 2022 12:01:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D74396115F;
-        Mon, 14 Feb 2022 19:44:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45256C340E9;
-        Mon, 14 Feb 2022 19:44:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644867881;
-        bh=jxOYiEgPWektpf5sVKihUYWrVFKV0HAUXvsI0SeCjrY=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=dRO6ISvNTvfNGuc219bHukN3m5ziudzHyjjyHNwbAp4XOotmfmGfAXli6ng7PYyXw
-         sWFG+c35AJQTFFKLSn16Q72apFPWfzeJXWsQyTXV7GyHj8qifh+iwVgoIe7y+4bcaZ
-         C4bUJcxCZOTRc7HOgbfLuXmMJPQ8OIhG/Q4nSmrwdYCMNgOtpMccwOrgM7lKNHD2iv
-         6gZJt+JBJF5KoXLO6RjkRA63GJYzgtGC8cNjK8jvEhqNrd+CPsDtswo6JHWrXVfYSs
-         TynDNMULeQidgTK9AYSBvvyLAz4SEcRhTUPb159geRvTv7KbG53RWrWL7vnSo4qH9K
-         IlIVMKhhf+ZMQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 024035C0388; Mon, 14 Feb 2022 11:44:40 -0800 (PST)
-Date:   Mon, 14 Feb 2022 11:44:40 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Chris Mason <clm@fb.com>
-Cc:     Giuseppe Scrivano <gscrivan@redhat.com>,
-        "riel@surriel.com" <riel@surriel.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH RFC fs/namespace] Make kern_unmount() use
- synchronize_rcu_expedited()
-Message-ID: <20220214194440.GZ4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220214190549.GA2815154@paulmck-ThinkPad-P17-Gen-1>
- <C88FC9A7-D6AD-4382-B74A-175922F57852@fb.com>
+        Mon, 14 Feb 2022 15:03:35 -0500
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F106510F20D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:03:17 -0800 (PST)
+Received: by mail-yb1-f177.google.com with SMTP id j2so49686605ybu.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:03:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=EBOPhqSf+aywWxhUqpiwT6NM6RUx7mAerBj7xaF4Kxk=;
+        b=qqO3lcD+cemdiR+mXW04vHX6a84DDvxfqa3p1ElfyL7Az/3/hsz4DHtC0bT5Yk7bgc
+         INz5aMjx/fsdmICmRWrJswQ4SGCwyu1FXzE6zfxapPHAaNVwXwzEpw+Qlp5wGWWjMIl6
+         o/xV5PMrldoKsPnq/3NEeEI97fMyQ3TWtMaxWYZLb6dU49Gd7NMjBp/vhDPcTpI4Qq99
+         td/j/ORxFAlhA7kxpiv77vhZ3RYK8VFWwkPO/D5yEPMgaGSQj5u63nO/4hWCd0fiZBzl
+         tugxlyFWyrfblP5Z1lOJ5ZHvPXW9pkG1BfPNwfh7VMvsIU30MOa8GBcPrSUI1SwC1ruA
+         Ffpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EBOPhqSf+aywWxhUqpiwT6NM6RUx7mAerBj7xaF4Kxk=;
+        b=BJRUXSTHZMVVtgEc1zNRUOR0GotAPSLQkFAI5hpp/PhloJ++5xyaySG789aUhfLMVr
+         5d3/rt6XyQwQWzGGN7LR+GzQyX3Sqz8dKQsVfY8qKIlbbiL9CygbbXZeglj+g/V+CqEV
+         o+kjtf70g5Hw0/9DMx2asiEP7ZdlrO9qTQTeyVkN/xgrSLxuTk0ZFBh/RI9CnEsTqD50
+         pOZTtFNcVBgxX7AZt384nuyVh3aGHHtKk7IJeJN5PR/1PllMHY7DF/Yrri90XWxyi4BM
+         4/0ktdr6E/FYZnVGzlZAbNQfvCACzdK7sa0OLHN6w9lGHNkQ3zXPrfFZZ2zOwodg+qzo
+         ikPQ==
+X-Gm-Message-State: AOAM530rJMrQvI+2sdY0WPPD2qunHjt7umlaunzr9XrDgIdlVwa/0dgw
+        ZTL3sd5iafnMtjYIoTiCUrPOlTnad4EJrkbla84=
+X-Google-Smtp-Source: ABdhPJwX1fQ9ooMynxhV+ZrSEHGFOuJ0zg+b9O+K7gr/d7kRmT6xVhPHiGTrk1wl/8FC9OBbmpm+FeVkqtr7K5Jd3Ng=
+X-Received: by 2002:a25:148b:: with SMTP id 133mr724420ybu.270.1644868706855;
+ Mon, 14 Feb 2022 11:58:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <C88FC9A7-D6AD-4382-B74A-175922F57852@fb.com>
+References: <20220213065106.48062-1-ztong0001@gmail.com> <YglQW7gVNoRJ7QpQ@dev-arch.archlinux-ax161>
+In-Reply-To: <YglQW7gVNoRJ7QpQ@dev-arch.archlinux-ax161>
+From:   Tong Zhang <ztong0001@gmail.com>
+Date:   Mon, 14 Feb 2022 11:58:16 -0800
+Message-ID: <CAA5qM4AMf0Tzdsm3jX5_gVw0Uh3d5DwqFB0PGTvsfEwL-v4Nhw@mail.gmail.com>
+Subject: Re: [PATCH] drm/i915: fix build issue when using clang
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        intel-gfx@lists.freedesktop.org,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 07:26:49PM +0000, Chris Mason wrote:
-> 
-> 
-> > On Feb 14, 2022, at 2:05 PM, Paul E. McKenney <paulmck@kernel.org> wrote:
-> > 
-> > Experimental.  Not for inclusion.  Yet, anyway.
-> > 
-> > Freeing large numbers of namespaces in quick succession can result in
-> > a bottleneck on the synchronize_rcu() invoked from kern_unmount().
-> > This patch applies the synchronize_rcu_expedited() hammer to allow
-> > further testing and fault isolation.
-> > 
-> > Hey, at least there was no need to change the comment!  ;-)
-> > 
-> 
-> I don’t think this will be fast enough.  I think the problem is that commit e1eb26fa62d04ec0955432be1aa8722a97cb52e7 is putting all of the ipc namespace frees onto a list, and every free includes one call to synchronize_rcu()
-> 
-> The end result is that we can create new namespaces much much faster than we can free them, and eventually we run out.  I found this while debugging clone() returning ENOSPC because create_ipc_ns() was returning ENOSPC.
+On Sun, Feb 13, 2022 at 10:39 AM Nathan Chancellor <nathan@kernel.org> wrot=
+e:
+>
+> On Sat, Feb 12, 2022 at 10:51:06PM -0800, Tong Zhang wrote:
+> > drm/i915 target adds some extra cflags, especially it does re-apply -Wa=
+ll.
+> > In clang this will override -Wno-format-security and cause the build to
+> > fail when CONFIG_DRM_I915_WERROR=3Dy. While with GCC this does not happ=
+en.
+> > We reapply -Wno-format-security here to get around this issue.
+>
+> For what it's worth, GCC would warn in the exact same way if
+> -Wformat-security was included within -Wall like it is for clang:
+>
+> drivers/gpu/drm/i915/gt/intel_gt.c: In function =E2=80=98intel_gt_invalid=
+ate_tlbs=E2=80=99:
+> drivers/gpu/drm/i915/gt/intel_gt.c:988:9: error: format not a string lite=
+ral and no format arguments [-Werror=3Dformat-security]
+>   988 |         GEM_TRACE("\n");
+>       |         ^~~~~~~~~
+> cc1: all warnings being treated as errors
+>
+> drivers/gpu/drm/i915/gt/selftest_execlists.c: In function =E2=80=98live_s=
+anitycheck=E2=80=99:
+> drivers/gpu/drm/i915/gt/selftest_execlists.c:142:25: error: format not a =
+string literal and no format arguments [-Werror=3Dformat-security]
+>   142 |                         GEM_TRACE("spinner failed to start\n");
+>       |                         ^~~~~~~~~
+> drivers/gpu/drm/i915/gt/selftest_execlists.c: In function =E2=80=98live_p=
+reempt=E2=80=99:
+> drivers/gpu/drm/i915/gt/selftest_execlists.c:1775:25: error: format not a=
+ string literal and no format arguments [-Werror=3Dformat-security]
+>  1775 |                         GEM_TRACE("lo spinner failed to start\n")=
+;
+>       |                         ^~~~~~~~~
+> drivers/gpu/drm/i915/gt/selftest_execlists.c:1792:25: error: format not a=
+ string literal and no format arguments [-Werror=3Dformat-security]
+>  1792 |                         GEM_TRACE("hi spinner failed to start\n")=
+;
+>       |                         ^~~~~~~~~
+> cc1: all warnings being treated as errors
+>
+> If fixing these warnings instead of just disabling the warning is
+> undesirable (since I feel like the entire point of the i195 cflags
+> situation is to enable more warnings than the main Makefile), I think
+> the commit message should be rewritten to something along the lines of:
+>
+> "drm/i915 adds some extra cflags, namely -Wall, which causes
+> instances of -Wformat-security to appear when building with clang, even
+> though this warning is turned off kernel-wide in the main Makefile:"
+>
+> > drivers/gpu/drm/i915/gt/intel_gt.c:983:2: error: format string is not a=
+ string literal (potentially insecure) [-Werror,-Wformat-security]
+> >         GEM_TRACE("ERROR\n");
+> >         ^~~~~~~~~~~~~~~~~~~~
+> > ./drivers/gpu/drm/i915/i915_gem.h:76:24: note: expanded from macro 'GEM=
+_TRACE'
+> >  #define GEM_TRACE(...) trace_printk(__VA_ARGS__)
+> >                        ^~~~~~~~~~~~~~~~~~~~~~~~~
+> > ./include/linux/kernel.h:369:3: note: expanded from macro 'trace_printk=
+'
+> >                 do_trace_printk(fmt, ##__VA_ARGS__);    \
+> >                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > ./include/linux/kernel.h:383:30: note: expanded from macro 'do_trace_pr=
+intk'
+> >                 __trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);  =
+ \
+> >                                            ^~~~~~~~~~~~~~~~
+> > drivers/gpu/drm/i915/gt/intel_gt.c:983:2: note: treat the string as an =
+argument to avoid this
+>
+> "This does not happen with GCC because it does not enable
+> -Wformat-security with -Wall. Disable -Wformat-security within the i915
+> Makefile so that these warnings do not show up with clang."
+>
+> The actual diff itself looks fine to me.
+>
+> Cheers,
+> Nathan
+>
+> > Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+> > ---
+> >  drivers/gpu/drm/i915/Makefile | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makef=
+ile
+> > index 1b62b9f65196..c04e05a3d39f 100644
+> > --- a/drivers/gpu/drm/i915/Makefile
+> > +++ b/drivers/gpu/drm/i915/Makefile
+> > @@ -13,6 +13,7 @@
+> >  # will most likely get a sudden build breakage... Hopefully we will fi=
+x
+> >  # new warnings before CI updates!
+> >  subdir-ccflags-y :=3D -Wall -Wextra
+> > +subdir-ccflags-y +=3D -Wno-format-security
+> >  subdir-ccflags-y +=3D -Wno-unused-parameter
+> >  subdir-ccflags-y +=3D -Wno-type-limits
+> >  subdir-ccflags-y +=3D -Wno-missing-field-initializers
+> > --
+> > 2.25.1
+> >
 
-Moving from synchronize_rcu() to synchronize_rcu_expedited() does buy
-you at least an order of magnitude.  But yes, it should be possible to
-get rid of all but one call per batch, which would be better.  Maybe
-a bit more complicated, but probably not that much.
-
-Let me see what I can come up with.
-
-If this is an emergency, I still suggest trying the patch as a short-term
-workaround.
-
-							Thanx, Paul
+Thank you Nathan!
+I will send a v2 with a revised commit message.
+Thanks,
+- Tong
