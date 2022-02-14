@@ -2,99 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B56CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC36C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343812AbiBNJ7G (ORCPT
+        id S242073AbiBNJ7M convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:59:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33310 "EHLO
+        Mon, 14 Feb 2022 04:59:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245759AbiBNJwz (ORCPT
+        with ESMTP id S245707AbiBNJwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:52:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FEF6D955;
-        Mon, 14 Feb 2022 01:43:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8D83B80DC7;
-        Mon, 14 Feb 2022 09:43:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB6C1C340EF;
-        Mon, 14 Feb 2022 09:43:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831824;
-        bh=hVUHZ5WyxrV1PseGE0Vyr2SlFfdW6bD0RR9iZNJtdkA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xYkdhFPnLcVFhL2043wTRgRJTV53PdECj/eqaOE9gVauYSTHZaXU+JLiGmdtp3UaX
-         EHEbKSiQr0DSY3CRlyEtL/9L30q4/HM5G/32YqfTzOGT4IDDz+ZuMSiw1ctCmSxtMO
-         aULSoAW+gNbbX1esMsC3fzY5Dtj2G9R9NRaydYRQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 077/116] net: fix a memleak when uncloning an skb dst and its metadata
-Date:   Mon, 14 Feb 2022 10:26:16 +0100
-Message-Id: <20220214092501.417661174@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
-References: <20220214092458.668376521@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 04:52:44 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CC46D952;
+        Mon, 14 Feb 2022 01:43:46 -0800 (PST)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21E7LdkY020363;
+        Mon, 14 Feb 2022 09:42:52 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e7d0jgwt6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 09:42:51 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21E9biex021905;
+        Mon, 14 Feb 2022 09:42:50 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e645jbjt9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 09:42:50 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21E9glRs47055116
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Feb 2022 09:42:47 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8555EA405B;
+        Mon, 14 Feb 2022 09:42:47 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CFC96A406F;
+        Mon, 14 Feb 2022 09:42:46 +0000 (GMT)
+Received: from smtp.tlslab.ibm.com (unknown [9.101.4.1])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Mon, 14 Feb 2022 09:42:46 +0000 (GMT)
+Received: from yukon.ibmuc.com (unknown [9.171.60.190])
+        by smtp.tlslab.ibm.com (Postfix) with ESMTP id 5080A2201DE;
+        Mon, 14 Feb 2022 10:42:45 +0100 (CET)
+From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
+Cc:     Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+Subject: [PATCH 06/10] spi: aspeed: Workaround AST2500 limitations
+Date:   Mon, 14 Feb 2022 10:42:27 +0100
+Message-Id: <20220214094231.3753686-7-clg@kaod.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220214094231.3753686-1-clg@kaod.org>
+References: <20220214094231.3753686-1-clg@kaod.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: gBnuaXrjM3F9pQMmir6ztSVgmiCYgopY
+X-Proofpoint-GUID: gBnuaXrjM3F9pQMmir6ztSVgmiCYgopY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_01,2022-02-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 lowpriorityscore=0 phishscore=0 mlxlogscore=947
+ adultscore=0 spamscore=0 clxscore=1034 bulkscore=0 priorityscore=1501
+ mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202140058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+It is not possible to configure a full 128MB window for a chip of the
+same size on the AST2500 SPI controller. For his case, the maximum
+window size is restricted to 120MB for CE0.
 
-[ Upstream commit 9eeabdf17fa0ab75381045c867c370f4cc75a613 ]
-
-When uncloning an skb dst and its associated metadata, a new
-dst+metadata is allocated and later replaces the old one in the skb.
-This is helpful to have a non-shared dst+metadata attached to a specific
-skb.
-
-The issue is the uncloned dst+metadata is initialized with a refcount of
-1, which is increased to 2 before attaching it to the skb. When
-tun_dst_unclone returns, the dst+metadata is only referenced from a
-single place (the skb) while its refcount is 2. Its refcount will never
-drop to 0 (when the skb is consumed), leading to a memory leak.
-
-Fix this by removing the call to dst_hold in tun_dst_unclone, as the
-dst+metadata refcount is already 1.
-
-Fixes: fc4099f17240 ("openvswitch: Fix egress tunnel info.")
-Cc: Pravin B Shelar <pshelar@ovn.org>
-Reported-by: Vlad Buslov <vladbu@nvidia.com>
-Tested-by: Vlad Buslov <vladbu@nvidia.com>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Cédric Le Goater <clg@kaod.org>
 ---
- include/net/dst_metadata.h | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/spi/spi-aspeed-smc.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
-index b997e0c1e3627..adab27ba1ecbf 100644
---- a/include/net/dst_metadata.h
-+++ b/include/net/dst_metadata.h
-@@ -137,7 +137,6 @@ static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
- #endif
+diff --git a/drivers/spi/spi-aspeed-smc.c b/drivers/spi/spi-aspeed-smc.c
+index 9c4eacfed72c..c6ac3253d7d5 100644
+--- a/drivers/spi/spi-aspeed-smc.c
++++ b/drivers/spi/spi-aspeed-smc.c
+@@ -466,6 +466,8 @@ static int aspeed_spi_set_window(struct aspeed_spi *aspi,
+  * - ioremap each window, not strictly necessary since the overall window
+  *   is correct.
+  */
++static const struct aspeed_spi_data ast2500_spi_data;
++
+ static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
+ 					 u32 local_offset, u32 size)
+ {
+@@ -474,6 +476,16 @@ static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
+ 	struct aspeed_spi_window *win = &windows[chip->cs];
+ 	int ret;
  
- 	skb_dst_drop(skb);
--	dst_hold(&new_md->dst);
- 	skb_dst_set(skb, &new_md->dst);
- 	return new_md;
- }
++	/*
++	 * Due to an HW issue on the AST2500 SPI controller, the CE0
++	 * window size should be smaller than the maximum 128MB.
++	 */
++	if (aspi->data == &ast2500_spi_data && chip->cs == 0 && size == SZ_128M) {
++		size = 120 << 20;
++		dev_info(aspi->dev, "CE%d window resized to %dMB (AST2500 HW quirk)",
++			 chip->cs, size >> 20);
++	}
++
+ 	aspeed_spi_get_windows(aspi, windows);
+ 
+ 	/* Adjust this chip window */
 -- 
 2.34.1
-
-
 
