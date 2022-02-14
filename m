@@ -2,427 +2,502 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D63C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47CB5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352985AbiBNLqR (ORCPT
+        id S1353027AbiBNLqX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:46:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46272 "EHLO
+        Mon, 14 Feb 2022 06:46:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352596AbiBNLpV (ORCPT
+        with ESMTP id S1353004AbiBNLpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:45:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADBDBC04;
-        Mon, 14 Feb 2022 03:42:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 387DD6122C;
-        Mon, 14 Feb 2022 11:42:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502B6C340E9;
-        Mon, 14 Feb 2022 11:42:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644838947;
-        bh=BAX5QKSkNzu3GCePfgK1DGgQaGnWdjerZdEEaYRvmkQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=roHTB6fm6FZtAB5p/X2IVdo1aU+VVcsdAcDlpiPPW6+9xhH8ZHGnyQ7vOXxIEdQgY
-         1urLgs1l6YauMrtD1IVMCXQd+TxZX8DHIPFDNp92ZGo5IXAZi8iwK7khg6KGjAVtBJ
-         p3pZDlPk4vBJsEEQU503V0gk1y8G6yVJvWCHfS8/a1SACC28R8+WzRtcEha2Dcu6yV
-         BJLwYqFBKPDuSFDc3ZiCL3ZnO0CxoJ9ErkJiZOcpG9apX1hK3pdCncOTRwudD4JCMP
-         MRaG+JLnEkZxACk9xOkaKg15vYmkiH69Skt8YmW+mOxw1EEC4B1hEY6tmUTtSXrOO9
-         KsgrKUW6NpO3Q==
-Received: by pali.im (Postfix)
-        id C7EE5CAA; Mon, 14 Feb 2022 12:42:24 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH v2 1/2] PCI: Add defines for normal and subtractive PCI bridges
-Date:   Mon, 14 Feb 2022 12:41:08 +0100
-Message-Id: <20220214114109.26809-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Mon, 14 Feb 2022 06:45:53 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5461021
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:43:34 -0800 (PST)
+Received: from kwepemi500010.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jy2LT47btzZff5;
+        Mon, 14 Feb 2022 19:39:13 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi500010.china.huawei.com (7.221.188.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 14 Feb 2022 19:43:32 +0800
+Received: from localhost.localdomain (10.67.164.66) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 14 Feb 2022 19:43:32 +0800
+From:   Qi Liu <liuqi115@huawei.com>
+To:     <will@kernel.org>, <mark.rutland@arm.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <zhangshaokun@hisilicon.com>
+Subject: [PATCH 1/2] drivers/perf: hisi: Add Support for CPA PMU
+Date:   Mon, 14 Feb 2022 19:42:27 +0800
+Message-ID: <20220214114228.40859-2-liuqi115@huawei.com>
+X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20220214114228.40859-1-liuqi115@huawei.com>
+References: <20220214114228.40859-1-liuqi115@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add following two new PCI class codes defines into pci_ids.h include file:
+On HiSilicon Hip09 platform, there is a CPA(Coherency Protocol Agent) on
+each SICL (Super I/O Cluster) which implements packet format translation,
+route parsing and traffic statistic.
 
-  PCI_CLASS_BRIDGE_PCI_NORMAL
-  PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE
+CPA PMU has separate PMU registers which the driver can program freely and
+interrupt is supported to handle counter overflow. Let's support its driver
+under the framework of HiSilicon uncore PMU driver.
 
-And use these defines in all kernel code for describing PCI class codes for
-normal and subtractive PCI bridges.
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Qi Liu <liuqi115@huawei.com>
 ---
-Changes in v2:
-- rebased on on top of pci/next branch
-- dropped pcie-iproc.c change for 0x43c register for now
-  (layout of this register is unknown and later I should get more
-   information from Broadcom about it)
----
- .../mips/include/asm/mach-bcm63xx/bcm63xx_regs.h |  2 --
- arch/mips/pci/fixup-sb1250.c                     |  2 +-
- arch/mips/pci/pci-bcm63xx.c                      |  2 +-
- arch/powerpc/platforms/powernv/pci.c             |  2 +-
- arch/powerpc/sysdev/fsl_pci.c                    |  2 +-
- arch/sh/drivers/pci/pcie-sh7786.c                |  2 +-
- drivers/pci/controller/dwc/pci-keystone.c        |  8 ++++----
- drivers/pci/controller/dwc/pci-meson.c           | 16 ++++++++--------
- drivers/pci/controller/dwc/pcie-qcom.c           |  2 +-
- .../pci/controller/mobiveil/pcie-mobiveil-host.c |  2 +-
- drivers/pci/controller/pci-aardvark.c            |  2 +-
- drivers/pci/controller/pci-loongson.c            |  2 +-
- drivers/pci/controller/pci-tegra.c               |  2 +-
- drivers/pci/controller/pcie-iproc-bcma.c         |  2 +-
- drivers/pci/controller/pcie-iproc.c              |  2 +-
- drivers/pci/controller/pcie-mediatek-gen3.c      |  2 +-
- drivers/pci/controller/pcie-rcar-host.c          |  2 +-
- drivers/pci/controller/pcie-rockchip-host.c      |  2 +-
- drivers/pci/controller/pcie-rockchip.h           |  1 -
- drivers/pci/hotplug/shpchp_core.c                |  2 +-
- drivers/pci/pci-bridge-emul.c                    |  4 ++--
- drivers/pci/pcie/portdrv_pci.c                   |  4 ++--
- include/linux/pci_ids.h                          |  2 ++
- 23 files changed, 34 insertions(+), 35 deletions(-)
+ drivers/perf/hisilicon/Makefile              |   2 +-
+ drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c | 403 +++++++++++++++++++
+ include/linux/cpuhotplug.h                   |   1 +
+ 3 files changed, 405 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
 
-diff --git a/arch/mips/include/asm/mach-bcm63xx/bcm63xx_regs.h b/arch/mips/include/asm/mach-bcm63xx/bcm63xx_regs.h
-index 9ceb5e72889f..d3f397dcab6e 100644
---- a/arch/mips/include/asm/mach-bcm63xx/bcm63xx_regs.h
-+++ b/arch/mips/include/asm/mach-bcm63xx/bcm63xx_regs.h
-@@ -1380,8 +1380,6 @@
+diff --git a/drivers/perf/hisilicon/Makefile b/drivers/perf/hisilicon/Makefile
+index 506ed39e3266..6be83517acaa 100644
+--- a/drivers/perf/hisilicon/Makefile
++++ b/drivers/perf/hisilicon/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_HISI_PMU) += hisi_uncore_pmu.o hisi_uncore_l3c_pmu.o \
+ 			  hisi_uncore_hha_pmu.o hisi_uncore_ddrc_pmu.o hisi_uncore_sllc_pmu.o \
+-			  hisi_uncore_pa_pmu.o
++			  hisi_uncore_pa_pmu.o hisi_uncore_cpa_pmu.o
  
- #define PCIE_IDVAL3_REG			0x43c
- #define IDVAL3_CLASS_CODE_MASK		0xffffff
--#define IDVAL3_SUBCLASS_SHIFT		8
--#define IDVAL3_CLASS_SHIFT		16
- 
- #define PCIE_DLSTATUS_REG		0x1048
- #define DLSTATUS_PHYLINKUP		(1 << 13)
-diff --git a/arch/mips/pci/fixup-sb1250.c b/arch/mips/pci/fixup-sb1250.c
-index 40efc990cdce..3f914c33b7de 100644
---- a/arch/mips/pci/fixup-sb1250.c
-+++ b/arch/mips/pci/fixup-sb1250.c
-@@ -75,7 +75,7 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_SIBYTE, PCI_DEVICE_ID_BCM1250_PCI,
-  */
- static void quirk_sb1250_ht(struct pci_dev *dev)
- {
--	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-+	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
- }
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SIBYTE, PCI_DEVICE_ID_BCM1250_HT,
- 			quirk_sb1250_ht);
-diff --git a/arch/mips/pci/pci-bcm63xx.c b/arch/mips/pci/pci-bcm63xx.c
-index 5548365605c0..ac83243772d2 100644
---- a/arch/mips/pci/pci-bcm63xx.c
-+++ b/arch/mips/pci/pci-bcm63xx.c
-@@ -186,7 +186,7 @@ static int __init bcm63xx_register_pcie(void)
- 	/* setup class code as bridge */
- 	val = bcm_pcie_readl(PCIE_IDVAL3_REG);
- 	val &= ~IDVAL3_CLASS_CODE_MASK;
--	val |= (PCI_CLASS_BRIDGE_PCI << IDVAL3_SUBCLASS_SHIFT);
-+	val |= PCI_CLASS_BRIDGE_PCI_NORMAL;
- 	bcm_pcie_writel(val, PCIE_IDVAL3_REG);
- 
- 	/* disable bar1 size */
-diff --git a/arch/powerpc/platforms/powernv/pci.c b/arch/powerpc/platforms/powernv/pci.c
-index 9a8391b983d1..f7054879ecd4 100644
---- a/arch/powerpc/platforms/powernv/pci.c
-+++ b/arch/powerpc/platforms/powernv/pci.c
-@@ -815,7 +815,7 @@ void pnv_pci_shutdown(void)
- /* Fixup wrong class code in p7ioc and p8 root complex */
- static void pnv_p7ioc_rc_quirk(struct pci_dev *dev)
- {
--	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-+	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
- }
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_IBM, 0x3b9, pnv_p7ioc_rc_quirk);
- 
-diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
-index 674f047b7820..a97ce602394e 100644
---- a/arch/powerpc/sysdev/fsl_pci.c
-+++ b/arch/powerpc/sysdev/fsl_pci.c
-@@ -55,7 +55,7 @@ static void quirk_fsl_pcie_early(struct pci_dev *dev)
- 	if ((hdr_type & 0x7f) != PCI_HEADER_TYPE_BRIDGE)
- 		return;
- 
--	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-+	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
- 	fsl_pcie_bus_fixup = 1;
- 	return;
- }
-diff --git a/arch/sh/drivers/pci/pcie-sh7786.c b/arch/sh/drivers/pci/pcie-sh7786.c
-index 4d499476c33a..b0c2a5238d04 100644
---- a/arch/sh/drivers/pci/pcie-sh7786.c
-+++ b/arch/sh/drivers/pci/pcie-sh7786.c
-@@ -314,7 +314,7 @@ static int __init pcie_init(struct sh7786_pcie_port *port)
- 	 * class to match. Hardware takes care of propagating the IDSETR
- 	 * settings, so there is no need to bother with a quirk.
- 	 */
--	pci_write_reg(chan, PCI_CLASS_BRIDGE_PCI << 16, SH4A_PCIEIDSETR1);
-+	pci_write_reg(chan, PCI_CLASS_BRIDGE_PCI_NORMAL << 8, SH4A_PCIEIDSETR1);
- 
- 	/* Initialize default capabilities. */
- 	data = pci_read_reg(chan, SH4A_PCIEEXPCAP0);
-diff --git a/drivers/pci/controller/dwc/pci-keystone.c b/drivers/pci/controller/dwc/pci-keystone.c
-index 1c2ee4e13f1c..d10e5fd0f83c 100644
---- a/drivers/pci/controller/dwc/pci-keystone.c
-+++ b/drivers/pci/controller/dwc/pci-keystone.c
-@@ -531,13 +531,13 @@ static void ks_pcie_quirk(struct pci_dev *dev)
- 	struct pci_dev *bridge;
- 	static const struct pci_device_id rc_pci_devids[] = {
- 		{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCIE_RC_K2HK),
--		 .class = PCI_CLASS_BRIDGE_PCI << 8, .class_mask = ~0, },
-+		 .class = PCI_CLASS_BRIDGE_PCI_NORMAL, .class_mask = ~0, },
- 		{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCIE_RC_K2E),
--		 .class = PCI_CLASS_BRIDGE_PCI << 8, .class_mask = ~0, },
-+		 .class = PCI_CLASS_BRIDGE_PCI_NORMAL, .class_mask = ~0, },
- 		{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCIE_RC_K2L),
--		 .class = PCI_CLASS_BRIDGE_PCI << 8, .class_mask = ~0, },
-+		 .class = PCI_CLASS_BRIDGE_PCI_NORMAL, .class_mask = ~0, },
- 		{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCIE_RC_K2G),
--		 .class = PCI_CLASS_BRIDGE_PCI << 8, .class_mask = ~0, },
-+		 .class = PCI_CLASS_BRIDGE_PCI_NORMAL, .class_mask = ~0, },
- 		{ 0, },
- 	};
- 
-diff --git a/drivers/pci/controller/dwc/pci-meson.c b/drivers/pci/controller/dwc/pci-meson.c
-index 686ded034f22..f44bf347904a 100644
---- a/drivers/pci/controller/dwc/pci-meson.c
-+++ b/drivers/pci/controller/dwc/pci-meson.c
-@@ -313,14 +313,14 @@ static int meson_pcie_rd_own_conf(struct pci_bus *bus, u32 devfn,
- 	 * cannot program the PCI_CLASS_DEVICE register, so we must fabricate
- 	 * the return value in the config accessors.
- 	 */
--	if (where == PCI_CLASS_REVISION && size == 4)
--		*val = (PCI_CLASS_BRIDGE_PCI << 16) | (*val & 0xffff);
--	else if (where == PCI_CLASS_DEVICE && size == 2)
--		*val = PCI_CLASS_BRIDGE_PCI;
--	else if (where == PCI_CLASS_DEVICE && size == 1)
--		*val = PCI_CLASS_BRIDGE_PCI & 0xff;
--	else if (where == PCI_CLASS_DEVICE + 1 && size == 1)
--		*val = (PCI_CLASS_BRIDGE_PCI >> 8) & 0xff;
-+	if ((where & ~3) == PCI_CLASS_REVISION) {
-+		if (size <= 2)
-+			*val = (*val & ((1 << (size * 8)) - 1)) << (8 * (where & 3));
-+		*val &= ~0xffffff00;
-+		*val |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
-+		if (size <= 2)
-+			*val = (*val >> (8 * (where & 3))) & ((1 << (size * 8)) - 1);
+ obj-$(CONFIG_HISI_PCIE_PMU) += hisi_pcie_pmu.o
+diff --git a/drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c b/drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
+new file mode 100644
+index 000000000000..a28796e93ae1
+--- /dev/null
++++ b/drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
+@@ -0,0 +1,403 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * HiSilicon SoC CPA(Coherency Protocol Agent) uncore Hardware event counters support
++ *
++ * Copyright (C) 2022 HiSilicon Limited
++ * Author: Qi Liu <liuqi115@huawei.com>
++ *
++ * This code is based on the uncore PMUs like arm-cci and arm-ccn.
++ */
++
++#include <linux/acpi.h>
++#include <linux/bug.h>
++#include <linux/cpuhotplug.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/list.h>
++#include <linux/smp.h>
++
++#include "hisi_uncore_pmu.h"
++
++/* CPA register definition */
++#define CPA_PERF_CTRL		0x1C00
++#define CPA_EVENT_CTRL		0x1C04
++#define CPA_INT_MASK		0x1C70
++#define CPA_INT_STATUS		0x1C78
++#define CPA_INT_CLEAR		0x1C7C
++#define CPA_EVENT_TYPE0		0x1C80
++#define CPA_VERSION		0x1CF0
++#define CPA_CNT0_LOWER		0x1D00
++#define CPA_CFG_REG		0x0534
++
++/* CPA operation command */
++#define CPA_PERF_CTRL_EN	BIT_ULL(0)
++#define CPA_EVTYPE_MASK		0xFFUL
++#define CPA_PM_CTRL		BIT_ULL(9)
++
++/* CPA has 8-counters */
++#define CPA_NR_COUNTERS		0x8
++#define CPA_COUNTER_BITS	64
++#define CPA_NR_EVENTS		0xFF
++#define CPA_REG_OFFSET		0x8
++
++static u32 hisi_cpa_pmu_get_counter_offset(int idx)
++{
++	return (CPA_CNT0_LOWER + idx * CPA_REG_OFFSET);
++}
++
++static u64 hisi_cpa_pmu_read_counter(struct hisi_pmu *cpa_pmu,
++				     struct hw_perf_event *hwc)
++{
++	return readq(cpa_pmu->base + hisi_cpa_pmu_get_counter_offset(hwc->idx));
++}
++
++static void hisi_cpa_pmu_write_counter(struct hisi_pmu *cpa_pmu,
++				       struct hw_perf_event *hwc, u64 val)
++{
++	writeq(val, cpa_pmu->base + hisi_cpa_pmu_get_counter_offset(hwc->idx));
++}
++
++static void hisi_cpa_pmu_write_evtype(struct hisi_pmu *cpa_pmu, int idx, u32 type)
++{
++	u32 reg, reg_idx, shift, val;
++
++	/*
++	 * Select the appropriate event select register(CPA_EVENT_TYPE0/1).
++	 * There are 2 event select registers for the 8 hardware counters.
++	 * Event code is 8-bits and for the former 4 hardware counters,
++	 * CPA_EVENT_TYPE0 is chosen. For the latter 4 hardware counters,
++	 * CPA_EVENT_TYPE1 is chosen.
++	 */
++	reg = CPA_EVENT_TYPE0 + (idx / 4) * 4;
++	reg_idx = idx % 4;
++	shift = CPA_REG_OFFSET * reg_idx;
++
++	/* Write event code to CPA_EVENT_TYPEx Register */
++	val = readl(cpa_pmu->base + reg);
++	val &= ~(CPA_EVTYPE_MASK << shift);
++	val |= (type << shift);
++	writel(val, cpa_pmu->base + reg);
++}
++
++static void hisi_cpa_pmu_start_counters(struct hisi_pmu *cpa_pmu)
++{
++	u32 val;
++
++	val = readl(cpa_pmu->base + CPA_PERF_CTRL);
++	val |= CPA_PERF_CTRL_EN;
++	writel(val, cpa_pmu->base + CPA_PERF_CTRL);
++}
++
++static void hisi_cpa_pmu_stop_counters(struct hisi_pmu *cpa_pmu)
++{
++	u32 val;
++
++	val = readl(cpa_pmu->base + CPA_PERF_CTRL);
++	val &= ~(CPA_PERF_CTRL_EN);
++	writel(val, cpa_pmu->base + CPA_PERF_CTRL);
++}
++
++static void hisi_cpa_pmu_disable_pm(struct hisi_pmu *cpa_pmu)
++{
++	u32 val;
++
++	val = readl(cpa_pmu->base + CPA_CFG_REG);
++	val |= CPA_PM_CTRL;
++	writel(val, cpa_pmu->base + CPA_CFG_REG);
++}
++
++static void hisi_cpa_pmu_enable_pm(struct hisi_pmu *cpa_pmu)
++{
++	u32 val;
++
++	val = readl(cpa_pmu->base + CPA_CFG_REG);
++	val &= ~CPA_PM_CTRL;
++	writel(val, cpa_pmu->base + CPA_CFG_REG);
++}
++
++static void hisi_cpa_pmu_enable_counter(struct hisi_pmu *cpa_pmu, struct hw_perf_event *hwc)
++{
++	u32 val;
++
++	/* Enable counter index in CPA_EVENT_CTRL register */
++	val = readl(cpa_pmu->base + CPA_EVENT_CTRL);
++	val |= 1 << hwc->idx;
++	writel(val, cpa_pmu->base + CPA_EVENT_CTRL);
++
++	/* Power management should be disabled before counting. */
++	hisi_cpa_pmu_disable_pm(cpa_pmu);
++}
++
++static void hisi_cpa_pmu_disable_counter(struct hisi_pmu *cpa_pmu, struct hw_perf_event *hwc)
++{
++	u32 val;
++
++	hisi_cpa_pmu_enable_pm(cpa_pmu);
++
++	/* Clear counter index in CPA_EVENT_CTRL register */
++	val = readl(cpa_pmu->base + CPA_EVENT_CTRL);
++	val &= ~(1UL << hwc->idx);
++	writel(val, cpa_pmu->base + CPA_EVENT_CTRL);
++}
++
++static void hisi_cpa_pmu_enable_counter_int(struct hisi_pmu *cpa_pmu, struct hw_perf_event *hwc)
++{
++	u32 val;
++
++	/* Write 0 to enable interrupt */
++	val = readl(cpa_pmu->base + CPA_INT_MASK);
++	val &= ~(1UL << hwc->idx);
++	writel(val, cpa_pmu->base + CPA_INT_MASK);
++}
++
++static void hisi_cpa_pmu_disable_counter_int(struct hisi_pmu *cpa_pmu, struct hw_perf_event *hwc)
++{
++	u32 val;
++
++	/* Write 1 to mask interrupt */
++	val = readl(cpa_pmu->base + CPA_INT_MASK);
++	val |= 1 << hwc->idx;
++	writel(val, cpa_pmu->base + CPA_INT_MASK);
++}
++
++static u32 hisi_cpa_pmu_get_int_status(struct hisi_pmu *cpa_pmu)
++{
++	return readl(cpa_pmu->base + CPA_INT_STATUS);
++}
++
++static void hisi_cpa_pmu_clear_int_status(struct hisi_pmu *cpa_pmu, int idx)
++{
++	writel(1 << idx, cpa_pmu->base + CPA_INT_CLEAR);
++}
++
++static const struct acpi_device_id hisi_cpa_pmu_acpi_match[] = {
++	{ "HISI0281", },
++	{}
++};
++MODULE_DEVICE_TABLE(acpi, hisi_cpa_pmu_acpi_match);
++
++static int hisi_cpa_pmu_init_data(struct platform_device *pdev,
++				  struct hisi_pmu *cpa_pmu)
++{
++	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
++				     &cpa_pmu->sccl_id)) {
++		dev_err(&pdev->dev, "Can not read cpa_pmu sccl-id\n");
++		return -EINVAL;
 +	}
- 
- 	return PCIBIOS_SUCCESSFUL;
- }
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index c19cd506ed3f..a47f1c0434c2 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1634,7 +1634,7 @@ static const struct of_device_id qcom_pcie_match[] = {
- 
- static void qcom_fixup_class(struct pci_dev *dev)
- {
--	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-+	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
- }
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_QCOM, 0x0101, qcom_fixup_class);
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_QCOM, 0x0104, qcom_fixup_class);
-diff --git a/drivers/pci/controller/mobiveil/pcie-mobiveil-host.c b/drivers/pci/controller/mobiveil/pcie-mobiveil-host.c
-index f3547aa60140..31a7bdebe540 100644
---- a/drivers/pci/controller/mobiveil/pcie-mobiveil-host.c
-+++ b/drivers/pci/controller/mobiveil/pcie-mobiveil-host.c
-@@ -295,7 +295,7 @@ int mobiveil_host_init(struct mobiveil_pcie *pcie, bool reinit)
- 	/* fixup for PCIe class register */
- 	value = mobiveil_csr_readl(pcie, PAB_INTP_AXI_PIO_CLASS);
- 	value &= 0xff;
--	value |= (PCI_CLASS_BRIDGE_PCI << 16);
-+	value |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
- 	mobiveil_csr_writel(pcie, value, PAB_INTP_AXI_PIO_CLASS);
- 
- 	return 0;
-diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
-index 4f5b44827d21..2561326e9181 100644
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -529,7 +529,7 @@ static void advk_pcie_setup_hw(struct advk_pcie *pcie)
- 	 */
- 	reg = advk_readl(pcie, PCIE_CORE_DEV_REV_REG);
- 	reg &= ~0xffffff00;
--	reg |= (PCI_CLASS_BRIDGE_PCI << 8) << 8;
-+	reg |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
- 	advk_writel(pcie, reg, PCIE_CORE_DEV_REV_REG);
- 
- 	/* Disable Root Bridge I/O space, memory space and bus mastering */
-diff --git a/drivers/pci/controller/pci-loongson.c b/drivers/pci/controller/pci-loongson.c
-index 48169b1e3817..50a8e1d6f70a 100644
---- a/drivers/pci/controller/pci-loongson.c
-+++ b/drivers/pci/controller/pci-loongson.c
-@@ -35,7 +35,7 @@ struct loongson_pci {
- /* Fixup wrong class code in PCIe bridges */
- static void bridge_class_quirk(struct pci_dev *dev)
- {
--	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-+	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
- }
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_LOONGSON,
- 			DEV_PCIE_PORT_0, bridge_class_quirk);
-diff --git a/drivers/pci/controller/pci-tegra.c b/drivers/pci/controller/pci-tegra.c
-index cb0aa65d6934..0457ec02ab70 100644
---- a/drivers/pci/controller/pci-tegra.c
-+++ b/drivers/pci/controller/pci-tegra.c
-@@ -726,7 +726,7 @@ static void tegra_pcie_port_free(struct tegra_pcie_port *port)
- /* Tegra PCIE root complex wrongly reports device class */
- static void tegra_pcie_fixup_class(struct pci_dev *dev)
- {
--	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-+	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
- }
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_NVIDIA, 0x0bf0, tegra_pcie_fixup_class);
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_NVIDIA, 0x0bf1, tegra_pcie_fixup_class);
-diff --git a/drivers/pci/controller/pcie-iproc-bcma.c b/drivers/pci/controller/pcie-iproc-bcma.c
-index 54b6e6d5bc64..99a99900444d 100644
---- a/drivers/pci/controller/pcie-iproc-bcma.c
-+++ b/drivers/pci/controller/pcie-iproc-bcma.c
-@@ -18,7 +18,7 @@
- /* NS: CLASS field is R/O, and set to wrong 0x200 value */
- static void bcma_pcie2_fixup_class(struct pci_dev *dev)
- {
--	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-+	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
- }
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_BROADCOM, 0x8011, bcma_pcie2_fixup_class);
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_BROADCOM, 0x8012, bcma_pcie2_fixup_class);
-diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-index b3e75bc61ff1..3df4ab209253 100644
---- a/drivers/pci/controller/pcie-iproc.c
-+++ b/drivers/pci/controller/pcie-iproc.c
-@@ -1581,7 +1581,7 @@ static void quirk_paxc_bridge(struct pci_dev *pdev)
- 	 * code that the bridge is not an Ethernet device.
- 	 */
- 	if (pdev->hdr_type == PCI_HEADER_TYPE_BRIDGE)
--		pdev->class = PCI_CLASS_BRIDGE_PCI << 8;
-+		pdev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
- 
- 	/*
- 	 * MPSS is not being set properly (as it is currently 0).  This is
-diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-index 7705d61fba4c..3e8d70bfabc6 100644
---- a/drivers/pci/controller/pcie-mediatek-gen3.c
-+++ b/drivers/pci/controller/pcie-mediatek-gen3.c
-@@ -292,7 +292,7 @@ static int mtk_pcie_startup_port(struct mtk_gen3_pcie *pcie)
- 	/* Set class code */
- 	val = readl_relaxed(pcie->base + PCIE_PCI_IDS_1);
- 	val &= ~GENMASK(31, 8);
--	val |= PCI_CLASS(PCI_CLASS_BRIDGE_PCI << 8);
-+	val |= PCI_CLASS(PCI_CLASS_BRIDGE_PCI_NORMAL);
- 	writel_relaxed(val, pcie->base + PCIE_PCI_IDS_1);
- 
- 	/* Mask all INTx interrupts */
-diff --git a/drivers/pci/controller/pcie-rcar-host.c b/drivers/pci/controller/pcie-rcar-host.c
-index 38b6e02edfa9..dfca59c4ae34 100644
---- a/drivers/pci/controller/pcie-rcar-host.c
-+++ b/drivers/pci/controller/pcie-rcar-host.c
-@@ -370,7 +370,7 @@ static int rcar_pcie_hw_init(struct rcar_pcie *pcie)
- 	 * class to match. Hardware takes care of propagating the IDSETR
- 	 * settings, so there is no need to bother with a quirk.
- 	 */
--	rcar_pci_write_reg(pcie, PCI_CLASS_BRIDGE_PCI << 16, IDSETR1);
-+	rcar_pci_write_reg(pcie, PCI_CLASS_BRIDGE_PCI_NORMAL << 8, IDSETR1);
- 
- 	/*
- 	 * Setup Secondary Bus Number & Subordinate Bus Number, even though
-diff --git a/drivers/pci/controller/pcie-rockchip-host.c b/drivers/pci/controller/pcie-rockchip-host.c
-index 45a28880f322..7f56f99b4116 100644
---- a/drivers/pci/controller/pcie-rockchip-host.c
-+++ b/drivers/pci/controller/pcie-rockchip-host.c
-@@ -370,7 +370,7 @@ static int rockchip_pcie_host_init_port(struct rockchip_pcie *rockchip)
- 	rockchip_pcie_write(rockchip, ROCKCHIP_VENDOR_ID,
- 			    PCIE_CORE_CONFIG_VENDOR);
- 	rockchip_pcie_write(rockchip,
--			    PCI_CLASS_BRIDGE_PCI << PCIE_RC_CONFIG_SCC_SHIFT,
-+			    PCI_CLASS_BRIDGE_PCI_NORMAL << 8,
- 			    PCIE_RC_CONFIG_RID_CCR);
- 
- 	/* Clear THP cap's next cap pointer to remove L1 substate cap */
-diff --git a/drivers/pci/controller/pcie-rockchip.h b/drivers/pci/controller/pcie-rockchip.h
-index 1650a5087450..32c3a859c26b 100644
---- a/drivers/pci/controller/pcie-rockchip.h
-+++ b/drivers/pci/controller/pcie-rockchip.h
-@@ -134,7 +134,6 @@
- #define PCIE_RC_CONFIG_NORMAL_BASE	0x800000
- #define PCIE_RC_CONFIG_BASE		0xa00000
- #define PCIE_RC_CONFIG_RID_CCR		(PCIE_RC_CONFIG_BASE + 0x08)
--#define   PCIE_RC_CONFIG_SCC_SHIFT		16
- #define PCIE_RC_CONFIG_DCR		(PCIE_RC_CONFIG_BASE + 0xc4)
- #define   PCIE_RC_CONFIG_DCR_CSPL_SHIFT		18
- #define   PCIE_RC_CONFIG_DCR_CSPL_LIMIT		0xff
-diff --git a/drivers/pci/hotplug/shpchp_core.c b/drivers/pci/hotplug/shpchp_core.c
-index 81a918d47895..53692b048301 100644
---- a/drivers/pci/hotplug/shpchp_core.c
-+++ b/drivers/pci/hotplug/shpchp_core.c
-@@ -312,7 +312,7 @@ static void shpc_remove(struct pci_dev *dev)
- }
- 
- static const struct pci_device_id shpcd_pci_tbl[] = {
--	{PCI_DEVICE_CLASS(((PCI_CLASS_BRIDGE_PCI << 8) | 0x00), ~0)},
-+	{PCI_DEVICE_CLASS(PCI_CLASS_BRIDGE_PCI_NORMAL, ~0)},
- 	{ /* end: all zeroes */ }
- };
- MODULE_DEVICE_TABLE(pci, shpcd_pci_tbl);
-diff --git a/drivers/pci/pci-bridge-emul.c b/drivers/pci/pci-bridge-emul.c
-index c994ebec2360..cf9d90ec2968 100644
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -329,9 +329,9 @@ int pci_bridge_emul_init(struct pci_bridge_emul *bridge,
- 
- 	/*
- 	 * class_revision: Class is high 24 bits and revision is low 8 bit of this member,
--	 * while class for PCI Bridge Normal Decode has the 24-bit value: PCI_CLASS_BRIDGE_PCI << 8
-+	 * while class for PCI Bridge Normal Decode has the 24-bit value: PCI_CLASS_BRIDGE_PCI_NORMAL
- 	 */
--	bridge->conf.class_revision |= cpu_to_le32((PCI_CLASS_BRIDGE_PCI << 8) << 8);
-+	bridge->conf.class_revision |= cpu_to_le32(PCI_CLASS_BRIDGE_PCI_NORMAL << 8);
- 	bridge->conf.header_type = PCI_HEADER_TYPE_BRIDGE;
- 	bridge->conf.cache_line_size = 0x10;
- 	bridge->conf.status = cpu_to_le16(PCI_STATUS_CAP_LIST);
-diff --git a/drivers/pci/pcie/portdrv_pci.c b/drivers/pci/pcie/portdrv_pci.c
-index 35eca6277a96..4b8801656ffb 100644
---- a/drivers/pci/pcie/portdrv_pci.c
-+++ b/drivers/pci/pcie/portdrv_pci.c
-@@ -178,9 +178,9 @@ static pci_ers_result_t pcie_portdrv_mmio_enabled(struct pci_dev *dev)
-  */
- static const struct pci_device_id port_pci_ids[] = {
- 	/* handle any PCI-Express port */
--	{ PCI_DEVICE_CLASS(((PCI_CLASS_BRIDGE_PCI << 8) | 0x00), ~0) },
-+	{ PCI_DEVICE_CLASS(PCI_CLASS_BRIDGE_PCI_NORMAL, ~0) },
- 	/* subtractive decode PCI-to-PCI bridge, class type is 060401h */
--	{ PCI_DEVICE_CLASS(((PCI_CLASS_BRIDGE_PCI << 8) | 0x01), ~0) },
-+	{ PCI_DEVICE_CLASS(PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE, ~0) },
- 	/* handle any Root Complex Event Collector */
- 	{ PCI_DEVICE_CLASS(((PCI_CLASS_SYSTEM_RCEC << 8) | 0x00), ~0) },
- 	{ },
-diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-index aad54c666407..130949c3b486 100644
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -60,6 +60,8 @@
- #define PCI_CLASS_BRIDGE_EISA		0x0602
- #define PCI_CLASS_BRIDGE_MC		0x0603
- #define PCI_CLASS_BRIDGE_PCI		0x0604
-+#define PCI_CLASS_BRIDGE_PCI_NORMAL		0x060400
-+#define PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE	0x060401
- #define PCI_CLASS_BRIDGE_PCMCIA		0x0605
- #define PCI_CLASS_BRIDGE_NUBUS		0x0606
- #define PCI_CLASS_BRIDGE_CARDBUS	0x0607
++
++	cpa_pmu->ccl_id = -1;
++
++	if (device_property_read_u32(&pdev->dev, "hisilicon,idx-id",
++				     &cpa_pmu->index_id)) {
++		dev_err(&pdev->dev, "Cannot read idx-id\n");
++		return -EINVAL;
++	}
++
++	cpa_pmu->base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(cpa_pmu->base)) {
++		dev_err(&pdev->dev, "ioremap failed for cpa_pmu resource\n");
++		return PTR_ERR(cpa_pmu->base);
++	}
++
++	cpa_pmu->identifier = readl(cpa_pmu->base + CPA_VERSION);
++
++	return 0;
++}
++
++static struct attribute *hisi_cpa_pmu_format_attr[] = {
++	HISI_PMU_FORMAT_ATTR(event, "config:0-15"),
++	NULL
++};
++
++static const struct attribute_group hisi_cpa_pmu_format_group = {
++	.name = "format",
++	.attrs = hisi_cpa_pmu_format_attr,
++};
++
++static struct attribute *hisi_cpa_pmu_events_attr[] = {
++	HISI_PMU_EVENT_ATTR(cpa_cycles,		0x00),
++	HISI_PMU_EVENT_ATTR(p1_wr_dat,		0x61),
++	HISI_PMU_EVENT_ATTR(p1_rd_dat,		0x62),
++	HISI_PMU_EVENT_ATTR(p0_wr_dat,		0xE1),
++	HISI_PMU_EVENT_ATTR(p0_rd_dat,		0xE2),
++	NULL
++};
++
++static const struct attribute_group hisi_cpa_pmu_events_group = {
++	.name = "events",
++	.attrs = hisi_cpa_pmu_events_attr,
++};
++
++static DEVICE_ATTR(cpumask, 0444, hisi_cpumask_sysfs_show, NULL);
++
++static struct attribute *hisi_cpa_pmu_cpumask_attrs[] = {
++	&dev_attr_cpumask.attr,
++	NULL,
++};
++
++static const struct attribute_group hisi_cpa_pmu_cpumask_attr_group = {
++	.attrs = hisi_cpa_pmu_cpumask_attrs,
++};
++
++static struct device_attribute hisi_cpa_pmu_identifier_attr =
++	__ATTR(identifier, 0444, hisi_uncore_pmu_identifier_attr_show, NULL);
++
++static struct attribute *hisi_cpa_pmu_identifier_attrs[] = {
++	&hisi_cpa_pmu_identifier_attr.attr,
++	NULL
++};
++
++static const struct attribute_group hisi_cpa_pmu_identifier_group = {
++	.attrs = hisi_cpa_pmu_identifier_attrs,
++};
++
++static const struct attribute_group *hisi_cpa_pmu_attr_groups[] = {
++	&hisi_cpa_pmu_format_group,
++	&hisi_cpa_pmu_events_group,
++	&hisi_cpa_pmu_cpumask_attr_group,
++	&hisi_cpa_pmu_identifier_group,
++	NULL,
++};
++
++static const struct hisi_uncore_ops hisi_uncore_cpa_pmu_ops = {
++	.write_evtype           = hisi_cpa_pmu_write_evtype,
++	.get_event_idx		= hisi_uncore_pmu_get_event_idx,
++	.start_counters		= hisi_cpa_pmu_start_counters,
++	.stop_counters		= hisi_cpa_pmu_stop_counters,
++	.enable_counter		= hisi_cpa_pmu_enable_counter,
++	.disable_counter	= hisi_cpa_pmu_disable_counter,
++	.enable_counter_int	= hisi_cpa_pmu_enable_counter_int,
++	.disable_counter_int	= hisi_cpa_pmu_disable_counter_int,
++	.write_counter		= hisi_cpa_pmu_write_counter,
++	.read_counter		= hisi_cpa_pmu_read_counter,
++	.get_int_status		= hisi_cpa_pmu_get_int_status,
++	.clear_int_status	= hisi_cpa_pmu_clear_int_status,
++};
++
++static int hisi_cpa_pmu_dev_probe(struct platform_device *pdev,
++				  struct hisi_pmu *cpa_pmu)
++{
++	int ret;
++
++	ret = hisi_cpa_pmu_init_data(pdev, cpa_pmu);
++	if (ret)
++		return ret;
++
++	ret = hisi_uncore_pmu_init_irq(cpa_pmu, pdev);
++	if (ret)
++		return ret;
++
++	cpa_pmu->counter_bits = CPA_COUNTER_BITS;
++	cpa_pmu->check_event = CPA_NR_EVENTS;
++	cpa_pmu->pmu_events.attr_groups = hisi_cpa_pmu_attr_groups;
++	cpa_pmu->ops = &hisi_uncore_cpa_pmu_ops;
++	cpa_pmu->num_counters = CPA_NR_COUNTERS;
++	cpa_pmu->dev = &pdev->dev;
++	cpa_pmu->on_cpu = -1;
++
++	return 0;
++}
++
++static int hisi_cpa_pmu_probe(struct platform_device *pdev)
++{
++	struct hisi_pmu *cpa_pmu;
++	char *name;
++	int ret;
++
++	cpa_pmu = devm_kzalloc(&pdev->dev, sizeof(*cpa_pmu), GFP_KERNEL);
++	if (!cpa_pmu)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, cpa_pmu);
++
++	ret = hisi_cpa_pmu_dev_probe(pdev, cpa_pmu);
++	if (ret)
++		return ret;
++
++	ret = cpuhp_state_add_instance(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
++				       &cpa_pmu->node);
++	if (ret) {
++		dev_err(&pdev->dev, "Error %d registering hotplug\n", ret);
++		return ret;
++	}
++
++	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sicl%d_cpa%u", cpa_pmu->sccl_id - 1,
++			      cpa_pmu->index_id);
++
++	cpa_pmu->pmu = (struct pmu) {
++		.name		= name,
++		.module		= THIS_MODULE,
++		.task_ctx_nr	= perf_invalid_context,
++		.event_init	= hisi_uncore_pmu_event_init,
++		.pmu_enable	= hisi_uncore_pmu_enable,
++		.pmu_disable	= hisi_uncore_pmu_disable,
++		.add		= hisi_uncore_pmu_add,
++		.del		= hisi_uncore_pmu_del,
++		.start		= hisi_uncore_pmu_start,
++		.stop		= hisi_uncore_pmu_stop,
++		.read		= hisi_uncore_pmu_read,
++		.attr_groups	= cpa_pmu->pmu_events.attr_groups,
++		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
++	};
++
++	ret = perf_pmu_register(&cpa_pmu->pmu, name, -1);
++	if (ret) {
++		dev_err(cpa_pmu->dev, "CPA PMU register failed\n");
++		cpuhp_state_remove_instance_nocalls(
++			CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE, &cpa_pmu->node);
++	}
++
++	return ret;
++}
++
++static int hisi_cpa_pmu_remove(struct platform_device *pdev)
++{
++	struct hisi_pmu *cpa_pmu = platform_get_drvdata(pdev);
++
++	perf_pmu_unregister(&cpa_pmu->pmu);
++	cpuhp_state_remove_instance_nocalls(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
++					    &cpa_pmu->node);
++	return 0;
++}
++
++static struct platform_driver hisi_cpa_pmu_driver = {
++	.driver = {
++		.name = "hisi_cpa_pmu",
++		.acpi_match_table = ACPI_PTR(hisi_cpa_pmu_acpi_match),
++		.suppress_bind_attrs = true,
++	},
++	.probe = hisi_cpa_pmu_probe,
++	.remove = hisi_cpa_pmu_remove,
++};
++
++static int __init hisi_cpa_pmu_module_init(void)
++{
++	int ret;
++
++	ret = cpuhp_setup_state_multi(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
++				      "AP_PERF_ARM_HISI_CPA_ONLINE",
++				      hisi_uncore_pmu_online_cpu,
++				      hisi_uncore_pmu_offline_cpu);
++	if (ret) {
++		pr_err("CPA PMU: setup hotplug: %d\n", ret);
++		return ret;
++	}
++
++	ret = platform_driver_register(&hisi_cpa_pmu_driver);
++	if (ret)
++		cpuhp_remove_multi_state(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE);
++
++	return ret;
++}
++module_init(hisi_cpa_pmu_module_init);
++
++static void __exit hisi_cpa_pmu_module_exit(void)
++{
++	platform_driver_unregister(&hisi_cpa_pmu_driver);
++	cpuhp_remove_multi_state(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE);
++}
++module_exit(hisi_cpa_pmu_module_exit);
++
++MODULE_DESCRIPTION("HiSilicon SoC CPA uncore PMU driver");
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Qi Liu <liuqi115@huawei.com>");
+diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+index 411a428ace4d..d55063719904 100644
+--- a/include/linux/cpuhotplug.h
++++ b/include/linux/cpuhotplug.h
+@@ -220,6 +220,7 @@ enum cpuhp_state {
+ 	CPUHP_AP_PERF_S390_SF_ONLINE,
+ 	CPUHP_AP_PERF_ARM_CCI_ONLINE,
+ 	CPUHP_AP_PERF_ARM_CCN_ONLINE,
++	CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
+ 	CPUHP_AP_PERF_ARM_HISI_DDRC_ONLINE,
+ 	CPUHP_AP_PERF_ARM_HISI_HHA_ONLINE,
+ 	CPUHP_AP_PERF_ARM_HISI_L3_ONLINE,
 -- 
-2.20.1
+2.24.0
 
