@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08853C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C864C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243189AbiBNJ3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:29:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42394 "EHLO
+        id S235449AbiBNJ3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:29:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243072AbiBNJ3O (ORCPT
+        with ESMTP id S243250AbiBNJ3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:29:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6235960DBE;
-        Mon, 14 Feb 2022 01:29:05 -0800 (PST)
+        Mon, 14 Feb 2022 04:29:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF5F1ADAC;
+        Mon, 14 Feb 2022 01:29:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19229B80DC6;
-        Mon, 14 Feb 2022 09:29:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C47C340E9;
-        Mon, 14 Feb 2022 09:29:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE739B80DC7;
+        Mon, 14 Feb 2022 09:29:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9551C340E9;
+        Mon, 14 Feb 2022 09:29:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830942;
-        bh=OPUQ6xskA2ISXa0tn8ZSGRVtMN6wLt4Hj555l+W/JXo=;
+        s=korg; t=1644830949;
+        bh=Uor7jjTOEEjPcyExhC02s0bq7qZ5s/OhSjfJZ7irT5g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nggo+B9Kz2i1KpV2y47pb1xTZA6qCr8pWYkmy9BySNgmJCE2JekJNDperCJHrnmcI
-         cpK5AvPVvkZ2hM6qg3oQelgljOGn8ZNroeLiaFuu7MEMp4GRdT2u3EOEyStq+nGHiy
-         QYgmWGCUkwLMoMzQV+Xi6YaKBWPtuFnXBpluoOBg=
+        b=YWXmFoKfFcaStatvvCuXATxO4ILO3t5ChhTyeIZWgxZmLX+lLrS6RSg640AajZf0i
+         E8S+iWBjzvIvnpdqLbH0xsIjOOMLFQKltsrkvyzvr9Cmhoba9bdaLZ0irLosD2Hobe
+         Iv2n7VXQqqBBzwrBc28JHE7tKmrH9l48X2IDbCKg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pawel Dembicki <paweldembicki@gmail.com>,
+        stable@vger.kernel.org, Scott Russell <Scott.Russell2@ncr.com>,
         Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.9 30/34] USB: serial: option: add ZTE MF286D modem
-Date:   Mon, 14 Feb 2022 10:25:56 +0100
-Message-Id: <20220214092446.921416537@linuxfoundation.org>
+Subject: [PATCH 4.9 32/34] USB: serial: cp210x: add NCR Retail IO box id
+Date:   Mon, 14 Feb 2022 10:25:58 +0100
+Message-Id: <20220214092446.987039411@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
@@ -48,62 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawel Dembicki <paweldembicki@gmail.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit d48384c7ed6c8fe4727eaa0f3048f62afd1cd715 upstream.
+commit b50f8f09c622297d3cf46e332e17ba8adedec9af upstream.
 
-Modem from ZTE MF286D is an Qualcomm MDM9250 based 3G/4G modem.
+Add the device id for NCR's Retail IO box (CP2105) used in NCR FastLane
+SelfServ Checkout - R6C:
 
-T:  Bus=02 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
-D:  Ver= 3.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS= 9 #Cfgs=  1
-P:  Vendor=19d2 ProdID=1485 Rev=52.87
-S:  Manufacturer=ZTE,Incorporated
-S:  Product=ZTE Technologies MSM
-S:  SerialNumber=MF286DZTED000000
-C:* #Ifs= 7 Cfg#= 1 Atr=80 MxPwr=896mA
-A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=02 Prot=ff Driver=rndis_host
-E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
-E:  Ad=81(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=86(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-E:  Ad=88(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-E:  Ad=8e(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=0f(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=usbfs
-E:  Ad=05(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=89(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+	https://www.ncr.com/product-catalog/ncr-fastlane-selfserv-checkout-r6c
 
-Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+Reported-by: Scott Russell <Scott.Russell2@ncr.com>
 Cc: stable@vger.kernel.org
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/serial/cp210x.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -1625,6 +1625,8 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(2) },
- 	{ USB_DEVICE_INTERFACE_CLASS(ZTE_VENDOR_ID, 0x1476, 0xff) },	/* GosunCn ZTE WeLink ME3630 (ECM/NCM mode) */
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1481, 0xff, 0x00, 0x00) }, /* ZTE MF871A */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1485, 0xff, 0xff, 0xff),  /* ZTE MF286D */
-+	  .driver_info = RSVD(5) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1533, 0xff, 0xff, 0xff) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1534, 0xff, 0xff, 0xff) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1535, 0xff, 0xff, 0xff) },
+--- a/drivers/usb/serial/cp210x.c
++++ b/drivers/usb/serial/cp210x.c
+@@ -49,6 +49,7 @@ static int cp210x_port_remove(struct usb
+ static void cp210x_dtr_rts(struct usb_serial_port *p, int on);
+ 
+ static const struct usb_device_id id_table[] = {
++	{ USB_DEVICE(0x0404, 0x034C) },	/* NCR Retail IO Box */
+ 	{ USB_DEVICE(0x045B, 0x0053) }, /* Renesas RX610 RX-Stick */
+ 	{ USB_DEVICE(0x0471, 0x066A) }, /* AKTAKOM ACE-1001 cable */
+ 	{ USB_DEVICE(0x0489, 0xE000) }, /* Pirelli Broadband S.p.A, DP-L10 SIP/GSM Mobile */
 
 
