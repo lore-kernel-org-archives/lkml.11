@@ -2,114 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8442C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C97C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355618AbiBNPGy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:06:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36988 "EHLO
+        id S236683AbiBNPH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 10:07:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355605AbiBNPGt (ORCPT
+        with ESMTP id S232466AbiBNPH1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:06:49 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7940149F9D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:06:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644851190;
-        bh=XJKDudRxjecHHstAdeydKO87TqgUYqKLrpClo0189hg=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=atjrzDzrVd+rtHTzMGl4C904TAWNYEIs1mEDpMmTP6tvuByaXqsFy+pwHGIbFWUmr
-         TZzMnOa+UOf/SGaNfl0ZVwFtAYpfMi/+f5+x8nK/CQ2CbTbjBIrrRzNvLf1pRafFKr
-         RVMXpkftRtlUQ6zw+IuF6NHIIlIyrgBL/Talo0tA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.168.11]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MatRZ-1nqTVu3Z4V-00cP9n; Mon, 14
- Feb 2022 16:06:29 +0100
-Message-ID: <e259c202-5473-8406-2577-9e3c0d968385@gmx.de>
-Date:   Mon, 14 Feb 2022 16:06:22 +0100
+        Mon, 14 Feb 2022 10:07:27 -0500
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB2D4B41C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:07:17 -0800 (PST)
+Received: (Authenticated sender: gregory.clement@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id BD7E11BF204;
+        Mon, 14 Feb 2022 15:07:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644851235;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+ss+CgBMxTZ4PvxtZAL6RbpWF0KZZk0nOt+eGe+JgCI=;
+        b=QJjKYEYMtunNXrNVeX1nAnszUawCIwvP0QelWuJMtgUYwbmAzd5e6Y7ItoC+UoMFJBdLy3
+        3dsgOPnV+icQP45B1XTWyvsK8mnoAnSjCt4Fx2dOJzhh7GsKzjshubCX0w2gcjj/rBdXM5
+        vOuK8D9MypKxKumhDjEp0aiNUqMAS8lnC+xccae6OUWoLuW3k243MVVDeroFF5Swb+iMCN
+        NI7P357xgeaME4gZu05bzdtFa74f1bWBRx/ewm/4V480l8Rzdg6ayVkZPkvJYo3ER/SASm
+        Z2idB5WrS7D2qmR7V2E7D43g1gBulpHI+cwVxCKIHOY8jjZvY8fXog026aDbDA==
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 11/11] ARM: dts: armada-385.dtsi: Add definitions for
+ PCIe legacy INTx interrupts
+In-Reply-To: <20220112151814.24361-12-pali@kernel.org>
+References: <20220105150239.9628-1-pali@kernel.org>
+ <20220112151814.24361-1-pali@kernel.org>
+ <20220112151814.24361-12-pali@kernel.org>
+Date:   Mon, 14 Feb 2022 16:07:13 +0100
+Message-ID: <87wnhxjxlq.fsf@BL-laptop>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [deller-parisc:for-next 5/6]
- arch/parisc/include/asm/bitops.h:20:2: error: #error "Please use
- 'ARCH=parisc64' to build the 64-bit kernel."
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-References: <202202142139.fHrrv9Oy-lkp@intel.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <202202142139.fHrrv9Oy-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:AMQd1HwBAbw+XhfwZikxGzoW4Mxd95Au1gMMbC1lNpLj+h+pX0Z
- j+zLsvP8q9zaCxE1ZwxOgBXIrGHjIVMUxFPuyGPcGCFtJv37edyNjLrCfSuLNv4LkBg1yMj
- /kPl0OqqmcS3h1Hj89XBQzWUsGdCEm8ofkWEIKAkHDXv6N5MSqBXh2XrUt1WgO470SZ5bsa
- +QOw1JqpC1p8mcocNoeOA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:RqLYCO8ho6s=:TGZbwiuz54oRHe0o3nHC3F
- SwJ0i3TDMEhqsBWYnvS17DOtqrBRE8kpGTJgIkmYliNh+eVdlCniDjeDbEoo0e1bIsMVAVdJD
- VDjjvKV/ZUc+D/qDdpJUtRuaRGFKd/w3rKbaqQfkNqRr9SY+VGKbGfnoFYUSgobkSxIkXIiWz
- cCQkB4qBnqy/eCbhYP1BtX7Iy6FK1UlzulpiuoNM0vU7uMoyXVDRfngkJA4dSiAxRHZ3hk9Vt
- B5IA5aylR7o1vDS4rfFdMOJtR+ZCEHS0fA2JMe6NlFNDvpOTy6EdtIYPnyJ9ZdddX5bObjKl3
- HPzG3Uty+G7guSTyZWFkxt0JR+vftqUpD6krwEx/uqxHHgfMt+Ad04mncMGrhCY0iEkS+hMVy
- 6tx88+2babh7RwWP04trp+EXVyehZs5vVROrohg6/jIDIcbAhKFE6/8XThwdNqmL+t/aty3J5
- AvzImtl5KeSTj3Vgk0cfGVyWso55ZqSk5RzUcANuXU4e7dlE2XazmgmgcmWeBV3l5Ewopf4Xz
- ici078RBOxkmeP+FIQ6ifblFYdMb9BU8YQ7FHCoYdfoWSDf2r19mIVD7K1s1cMnvSqktCHzD+
- aPi4CWKMuYhsZQ5ZdX7whch8BgSBo7vcajiYfEqbKajYvc5/rGdM2zQjy9Gqi7lpi8XvlHgmS
- M2teQP0Q2x23+C+SU3afU76UblIAKcs9dAKD6NnXwwjpRDzOH1PBaFAf5+Ea/ggG1MAo5cwE5
- x8H+ti4bFlRVUptnMTv40xd07Jqoc3/eR082E81USXE5F2ueEMxAi9OwgFW25oYZ7EQ/rf8Kl
- OOuHgzkZpNxk7jXRTOmL62/SkM3qchS/yd359VZkfNLTC6TICBZz0xE/Pt/I7xSB+Mj0pZnXK
- pB9WXOov+wM4b4UWH21Rwyre7cTC7zUtN1dnEGCveQoc/EKA/uW7WqaEF9dkQznW0JRTaOSIU
- NJEKYa9AxcSCL1jvtuajuWkTf45Tcju1dYk01fSsd7YIIKO5rAFP09hW3CvC80o2TmwcKIAh/
- vo7se0kkiBC5AEAOfznhI8vWI5rgmWFptjKqzcpqT2p7OV4ZUQfpJoSsB+zZYLDPAY1Lv59XG
- 8Wh9FHRYn/DX70=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/14/22 14:25, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-li=
-nux.git for-next
-> head:   dbd0b42350d5717786cb8257fbe5b528f3af9772
-> commit: b160628e9ebcdc85d0db9d7f423c26b3c7c179d0 [5/6] parisc: Show erro=
-r if wrong 32/64-bit compiler is being used
-> config: parisc-randconfig-r004-20220213 (https://download.01.org/0day-ci=
-/archive/20220214/202202142139.fHrrv9Oy-lkp@intel.com/config)
-> compiler: hppa64-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=3D1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sb=
-in/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-=
-linux.git/commit/?id=3Db160628e9ebcdc85d0db9d7f423c26b3c7c179d0
->         git remote add deller-parisc https://git.kernel.org/pub/scm/linu=
-x/kernel/git/deller/parisc-linux.git
->         git fetch --no-tags deller-parisc for-next
->         git checkout b160628e9ebcdc85d0db9d7f423c26b3c7c179d0
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-11.2.0 make.cr=
-oss O=3Dbuild_dir ARCH=3Dparisc prepare
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    In file included from include/linux/bitops.h:33,
->                     from include/linux/kernel.h:22,
->                     from arch/parisc/include/asm/bug.h:5,
->                     from include/linux/bug.h:5,
->                     from include/linux/page-flags.h:10,
->                     from kernel/bounds.c:10:
->>> arch/parisc/include/asm/bitops.h:20:2: error: #error "Please use 'ARCH=
-=3Dparisc64' to build the 64-bit kernel."
->       20 | #error "Please use 'ARCH=3Dparisc64' to build the 64-bit kern=
-el."
+Hello Pali,
 
-The newly introduced error message works as intended :-)
+> With this change legacy INTA, INTB, INTC and INTD interrupts are reported
+> separately and not mixed into one Linux virq source anymore.
+>
+> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
+> ---
+>  arch/arm/boot/dts/armada-385.dtsi | 52 ++++++++++++++++++++++++++-----
 
-#error "Please use 'ARCH=3Dparisc64' to build the 64-bit kernel."
+Is there any reason for not doing the same change in armada-380.dtsi ?
 
-Helge
+Gr=C3=A9gory
+
+>  1 file changed, 44 insertions(+), 8 deletions(-)
+>
+> diff --git a/arch/arm/boot/dts/armada-385.dtsi b/arch/arm/boot/dts/armada=
+-385.dtsi
+> index f0022d10c715..83392b92dae2 100644
+> --- a/arch/arm/boot/dts/armada-385.dtsi
+> +++ b/arch/arm/boot/dts/armada-385.dtsi
+> @@ -69,16 +69,25 @@
+>  				reg =3D <0x0800 0 0 0 0>;
+>  				#address-cells =3D <3>;
+>  				#size-cells =3D <2>;
+> +				interrupt-names =3D "intx";
+> +				interrupts-extended =3D <&gic GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
+>  				#interrupt-cells =3D <1>;
+>  				ranges =3D <0x82000000 0 0 0x82000000 0x1 0 1 0
+>  					  0x81000000 0 0 0x81000000 0x1 0 1 0>;
+>  				bus-range =3D <0x00 0xff>;
+> -				interrupt-map-mask =3D <0 0 0 0>;
+> -				interrupt-map =3D <0 0 0 0 &gic GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
+> +				interrupt-map-mask =3D <0 0 0 7>;
+> +				interrupt-map =3D <0 0 0 1 &pcie1_intc 0>,
+> +						<0 0 0 2 &pcie1_intc 1>,
+> +						<0 0 0 3 &pcie1_intc 2>,
+> +						<0 0 0 4 &pcie1_intc 3>;
+>  				marvell,pcie-port =3D <0>;
+>  				marvell,pcie-lane =3D <0>;
+>  				clocks =3D <&gateclk 8>;
+>  				status =3D "disabled";
+> +				pcie1_intc: interrupt-controller {
+> +					interrupt-controller;
+> +					#interrupt-cells =3D <1>;
+> +				};
+>  			};
+>=20=20
+>  			/* x1 port */
+> @@ -88,16 +97,25 @@
+>  				reg =3D <0x1000 0 0 0 0>;
+>  				#address-cells =3D <3>;
+>  				#size-cells =3D <2>;
+> +				interrupt-names =3D "intx";
+> +				interrupts-extended =3D <&gic GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
+>  				#interrupt-cells =3D <1>;
+>  				ranges =3D <0x82000000 0 0 0x82000000 0x2 0 1 0
+>  					  0x81000000 0 0 0x81000000 0x2 0 1 0>;
+>  				bus-range =3D <0x00 0xff>;
+> -				interrupt-map-mask =3D <0 0 0 0>;
+> -				interrupt-map =3D <0 0 0 0 &gic GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
+> +				interrupt-map-mask =3D <0 0 0 7>;
+> +				interrupt-map =3D <0 0 0 1 &pcie2_intc 0>,
+> +						<0 0 0 2 &pcie2_intc 1>,
+> +						<0 0 0 3 &pcie2_intc 2>,
+> +						<0 0 0 4 &pcie2_intc 3>;
+>  				marvell,pcie-port =3D <1>;
+>  				marvell,pcie-lane =3D <0>;
+>  				clocks =3D <&gateclk 5>;
+>  				status =3D "disabled";
+> +				pcie2_intc: interrupt-controller {
+> +					interrupt-controller;
+> +					#interrupt-cells =3D <1>;
+> +				};
+>  			};
+>=20=20
+>  			/* x1 port */
+> @@ -107,16 +125,25 @@
+>  				reg =3D <0x1800 0 0 0 0>;
+>  				#address-cells =3D <3>;
+>  				#size-cells =3D <2>;
+> +				interrupt-names =3D "intx";
+> +				interrupts-extended =3D <&gic GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
+>  				#interrupt-cells =3D <1>;
+>  				ranges =3D <0x82000000 0 0 0x82000000 0x3 0 1 0
+>  					  0x81000000 0 0 0x81000000 0x3 0 1 0>;
+>  				bus-range =3D <0x00 0xff>;
+> -				interrupt-map-mask =3D <0 0 0 0>;
+> -				interrupt-map =3D <0 0 0 0 &gic GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
+> +				interrupt-map-mask =3D <0 0 0 7>;
+> +				interrupt-map =3D <0 0 0 1 &pcie3_intc 0>,
+> +						<0 0 0 2 &pcie3_intc 1>,
+> +						<0 0 0 3 &pcie3_intc 2>,
+> +						<0 0 0 4 &pcie3_intc 3>;
+>  				marvell,pcie-port =3D <2>;
+>  				marvell,pcie-lane =3D <0>;
+>  				clocks =3D <&gateclk 6>;
+>  				status =3D "disabled";
+> +				pcie3_intc: interrupt-controller {
+> +					interrupt-controller;
+> +					#interrupt-cells =3D <1>;
+> +				};
+>  			};
+>=20=20
+>  			/*
+> @@ -129,16 +156,25 @@
+>  				reg =3D <0x2000 0 0 0 0>;
+>  				#address-cells =3D <3>;
+>  				#size-cells =3D <2>;
+> +				interrupt-names =3D "intx";
+> +				interrupts-extended =3D <&gic GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
+>  				#interrupt-cells =3D <1>;
+>  				ranges =3D <0x82000000 0 0 0x82000000 0x4 0 1 0
+>  					  0x81000000 0 0 0x81000000 0x4 0 1 0>;
+>  				bus-range =3D <0x00 0xff>;
+> -				interrupt-map-mask =3D <0 0 0 0>;
+> -				interrupt-map =3D <0 0 0 0 &gic GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
+> +				interrupt-map-mask =3D <0 0 0 7>;
+> +				interrupt-map =3D <0 0 0 1 &pcie4_intc 0>,
+> +						<0 0 0 2 &pcie4_intc 1>,
+> +						<0 0 0 3 &pcie4_intc 2>,
+> +						<0 0 0 4 &pcie4_intc 3>;
+>  				marvell,pcie-port =3D <3>;
+>  				marvell,pcie-lane =3D <0>;
+>  				clocks =3D <&gateclk 7>;
+>  				status =3D "disabled";
+> +				pcie4_intc: interrupt-controller {
+> +					interrupt-controller;
+> +					#interrupt-cells =3D <1>;
+> +				};
+>  			};
+>  		};
+>  	};
+> --=20
+> 2.20.1
+>
+
+--=20
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
