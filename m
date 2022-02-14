@@ -2,280 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF03C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE11C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbiBNUqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:46:16 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37958 "EHLO
+        id S229908AbiBNUqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:46:25 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiBNUpq (ORCPT
+        with ESMTP id S229708AbiBNUp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:45:46 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20D0160FC4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:43:13 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id v63so22685902ybv.10
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:43:13 -0800 (PST)
+        Mon, 14 Feb 2022 15:45:59 -0500
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F78245FD3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:44:00 -0800 (PST)
+Received: by mail-vs1-xe32.google.com with SMTP id r20so20396214vsn.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:44:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=U1oWoNofV8AZjJJFAuidFOcNI5CsuFZS/DRQS7vQedc=;
-        b=TYcePQM8YCsYfbX0pi4eFmqkwdPyBtUUKJyRgseTrYyPNBIe3gpHXnXlcz/+ja7pe1
-         Fwr1nEOFOBkOrhk8GF7cN8LU5Fd0LCy1dW3rZsog/J58Uf8VpT3olpcyVM8XX/jCa8EC
-         24HAlNxLsxrXYa6TXCe69c9t/5T46h0cDO+ik=
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=17Bsz2tDR9cv+r6+yn7G+p/1ar4tciGH3rzRstCpvzk=;
+        b=j+pDsEQOlVPYsxzQ1X2T7ellEP2v/3Rap3g71hqa2HH9Snz9hF+a/BLY2uP2SUiOAL
+         KaCv200/N6QR02DB0RkW6K2XaSg047kyLVbW9kGPiOieblI3bV715SxDOnunt6rJsxa1
+         JvJV6XVgw/jSyDHhPnZ8aUrYJ1EkuFG/Ual94yrXo8DkHc/MNs48epBWLHc8QYScxIo9
+         k+M/cZX/QPlGKGhZrKa1R4RGfmv7K5uJAB8OPuH3jYezUe6iVk1q82ruEg8Ib/d1rymi
+         rZhREHlJ2A0OK8+l+lGlHtYS2aFUVhOytLVkUgMoDXHWQdgUvo1kzklV1fwBgvuBky60
+         rPrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=U1oWoNofV8AZjJJFAuidFOcNI5CsuFZS/DRQS7vQedc=;
-        b=3jJX/cvCvGX/u0ZVIlTe34oG7HCaS0tdk6+Iwj30Aocb95IT4/CxDEwGFomftDql/j
-         l4aJG04LTFtgPIDraYjDw1aM6k7V7EbKrEtLdcWvCOafxSIJ7WDjA5SlwYMmSYGC1vVF
-         u/jPU+cWcB0RnJSinVdI/Ar3+1WGeirE6IX49eB+ifAgYrePhWn1ZtNH0i/P1Z3BH25N
-         7gumf1o4Yyy1pJY7lnVYLLeINUZ/yIUpGvAhb/871Nkd9EJKkMQqXdPSJsv+KWCNqoao
-         5fvCTrp6gbOy0pKAR9//3+23+UR0IO7VJzpgDDvsOubEhccu6j9B3JZF6UGib870/tPN
-         4zWA==
-X-Gm-Message-State: AOAM532q6+DOZWrYzDJzydVuV5TJ/fx0HV0QwmhTJb988ydSoM9lwAIR
-        URV0t3O340ASfT06wrGPHiekcOkVS7TS2f1eoi0X
-X-Google-Smtp-Source: ABdhPJxcnmlwefG+6nBmJEbpi/vn+HO/ryxdwH+cXu8XlnxWV5H28qkELg/iB8P/k0Dm/0ombt2LQKojfS9CD5/rAO4=
-X-Received: by 2002:a25:c794:: with SMTP id w142mr865109ybe.632.1644871363371;
- Mon, 14 Feb 2022 12:42:43 -0800 (PST)
+         :message-id:subject:to;
+        bh=17Bsz2tDR9cv+r6+yn7G+p/1ar4tciGH3rzRstCpvzk=;
+        b=aqahGo0D4BGYH73GxtL5UGJ2n19rvU92QKudNBJTa7w/93fPpuWj6MQ088SLsDF4bT
+         i/aIPGZ9PFFLuisrW1hD+cO5TttATqKt/kpen8GwO+n0TSNv05JIm+yJ7sB2UPEiUnZ7
+         3bqAKBKuezoYHLz1dkqeOOitHi06xYz62dsoOUbOKVOQvOnjJtAswdRoN/a8lLXiziy0
+         x52aD2MgHuWyVFTXhltdow+9m45hTW8yLsxMq+kw2AXBjbDMzgeQHBo4EqkRlG197mM/
+         3daFEATxqvnCqvLFn//IX4TdeoGnFXfnzP1gaXB8en4gtiGc0AL+TNAIb7bcXY+MCoOe
+         JWAw==
+X-Gm-Message-State: AOAM531XANYhCpH6GaNpogTGgGELNdjaOrkr6QHhm9jSk+YwOrmWKXLX
+        mpvJ51v9qkknAnqT+8zEG7eGyqMdzEf6B4D4ygNKYSBmVJJNJg==
+X-Google-Smtp-Source: ABdhPJz0Oy/JgAUdiZIwNaa8W2W0mJGvuMr99W2I9UeRvepCocWgHMmOer0izZmus6n4NKI4NDsPxZZe9MeKAxdZ1p0=
+X-Received: by 2002:a62:e907:: with SMTP id j7mr753345pfh.3.1644869401968;
+ Mon, 14 Feb 2022 12:10:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20220210214018.55739-1-atishp@rivosinc.com> <3881365.IPMWXPQfj1@diego>
- <CAOnJCUK1CwJ=J+y9EqszY0aACQsDdpLqCDbEZ1ZNDRdHE9C4gA@mail.gmail.com> <3479483.A1skbJeUdD@diego>
-In-Reply-To: <3479483.A1skbJeUdD@diego>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Mon, 14 Feb 2022 12:42:32 -0800
-Message-ID: <CAOnJCU+cWBDrN-3Z37m8xA1GPrJY+JaOweYMiZBxJ-cT7ii_5Q@mail.gmail.com>
-Subject: Re: [PATCH v2 4/6] RISC-V: Implement multi-letter ISA extension
- probing framework
-To:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>
-Cc:     "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>
+References: <20220212071111.148575-1-ztong0001@gmail.com> <20220214175905.GV785175@iweiny-DESK2.sc.intel.com>
+In-Reply-To: <20220214175905.GV785175@iweiny-DESK2.sc.intel.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Mon, 14 Feb 2022 12:09:54 -0800
+Message-ID: <CAPcyv4jrh5Xr3AnOj-YrOr3i4HTm=wVBuaQ1VBAxCoszHjHdfA@mail.gmail.com>
+Subject: Re: [PATCH] dax: make sure inodes are flushed before destroy cache
+To:     Tong Zhang <ztong0001@gmail.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 12:24 PM Heiko St=C3=BCbner <heiko@sntech.de> wrote=
-:
+On Mon, Feb 14, 2022 at 9:59 AM Ira Weiny <ira.weiny@intel.com> wrote:
 >
-> Am Montag, 14. Februar 2022, 21:14:13 CET schrieb Atish Patra:
-> > On Mon, Feb 14, 2022 at 12:06 PM Heiko St=C3=BCbner <heiko@sntech.de> w=
-rote:
-> > >
-> > > Am Donnerstag, 10. Februar 2022, 22:40:16 CET schrieb Atish Patra:
-> > > > Multi-letter extensions can be probed using exising
-> > > > riscv_isa_extension_available API now. It doesn't support versionin=
-g
-> > > > right now as there is no use case for it.
-> > > > Individual extension specific implementation will be added during
-> > > > each extension support.
-> > > >
-> > > > Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> > >
-> > > Tested-by: Heiko Stuebner <heiko@sntech.de>
-> > >
-> > >
-> > > By the way, does a similar parsing exist for opensbi as well?
-> > > Things like svpbmt as well as zicbom have CSR bits controlling how
-> > > these functions should behave (enabling them, etc), so I guess
-> > > opensbi also needs to parse the extensions from the ISA string?
-> > >
-> > >
+> On Fri, Feb 11, 2022 at 11:11:11PM -0800, Tong Zhang wrote:
+> > A bug can be triggered by following command
 > >
-> > No. Currently, OpenSBI relies on the CSR read/write & trap method to
-> > identify the extensions [1].
+> > $ modprobe nd_pmem && modprobe -r nd_pmem
 > >
-> > https://github.com/riscv-software-src/opensbi/blob/master/lib/sbi/sbi_h=
-art.c#L404
->
-> I guess my question is more, who is supposed to set CBIE, CBCFE bits in t=
-he
-> ENVCFG CSR. I.e. at it's default settings CMO instructions will cause
-> illegal instructions until the level above does allow them.
->
-> When the kernel wants to call a cache-invalidate, from my reading menvcfg
-> needs to be modified accordingly - which would fall in SBI's court?
->
-
-I think so. I had the same question for the SSTC extension as well.
-This is what I currently do:
-
-1. Detect menvcfg first, detect stimecmp
-2. Enable SSTC feature only if both are available
-3. Set the STCE bit in menvcfg if SSTC is available
-
-Here is the patch
-https://github.com/atishp04/opensbi/commit/e6b185821e8302bffdceb4633b413252=
-e0de4889
-
->
-> > In the future, zicbom can be detected in the same manner. However,
-> > svpbmt is a bit tricky as it doesn't
-> > define any new CSR. Do you think OpenSBI needs to detect svpbmt for any=
- reason ?
->
-> There is the PBMTE bit in MENVCFG, which I found while looking through th=
-e
-> zicbom-parts, which is supposed to "control wheter svpbmt is available fo=
-r
-> use". So I guess the question is the same as above :-)
->
-
-PBMTE bit in MENVCFG says if PBMTE bit is available or not. OpenSBI
-needs other way to
-detect if PBMTE is available.
-
-That's why, I think MENVCFG should be set correctly by the hardware
-upon reset. What do you think
-about that ? I couldn't find anything related to the reset state for menvcf=
-g.
-
->
-> Heiko
->
->
-> > > Heiko
-> > >
-> > > > ---
-> > > >  arch/riscv/include/asm/hwcap.h | 18 ++++++++++++++++++
-> > > >  arch/riscv/kernel/cpufeature.c | 27 ++++++++++++++++++++++++---
-> > > >  2 files changed, 42 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/as=
-m/hwcap.h
-> > > > index 5ce50468aff1..170bd80da520 100644
-> > > > --- a/arch/riscv/include/asm/hwcap.h
-> > > > +++ b/arch/riscv/include/asm/hwcap.h
-> > > > @@ -34,7 +34,25 @@ extern unsigned long elf_hwcap;
-> > > >  #define RISCV_ISA_EXT_s              ('s' - 'a')
-> > > >  #define RISCV_ISA_EXT_u              ('u' - 'a')
-> > > >
-> > > > +/*
-> > > > + * Increse this to higher value as kernel support more ISA extensi=
-ons.
-> > > > + */
-> > > >  #define RISCV_ISA_EXT_MAX    64
-> > > > +#define RISCV_ISA_EXT_NAME_LEN_MAX 32
-> > > > +
-> > > > +/* The base ID for multi-letter ISA extensions */
-> > > > +#define RISCV_ISA_EXT_BASE 26
-> > > > +
-> > > > +/*
-> > > > + * This enum represent the logical ID for each multi-letter RISC-V=
- ISA extension.
-> > > > + * The logical ID should start from RISCV_ISA_EXT_BASE and must no=
-t exceed
-> > > > + * RISCV_ISA_EXT_MAX. 0-25 range is reserved for single letter
-> > > > + * extensions while all the multi-letter extensions should define =
-the next
-> > > > + * available logical extension id.
-> > > > + */
-> > > > +enum riscv_isa_ext_id {
-> > > > +     RISCV_ISA_EXT_ID_MAX =3D RISCV_ISA_EXT_MAX,
-> > > > +};
-> > > >
-> > > >  unsigned long riscv_isa_extension_base(const unsigned long *isa_bi=
-tmap);
-> > > >
-> > > > diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpu=
-feature.c
-> > > > index e9e3b0693d16..469b9739faf7 100644
-> > > > --- a/arch/riscv/kernel/cpufeature.c
-> > > > +++ b/arch/riscv/kernel/cpufeature.c
-> > > > @@ -83,7 +83,7 @@ void __init riscv_fill_hwcap(void)
-> > > >
-> > > >       for_each_of_cpu_node(node) {
-> > > >               unsigned long this_hwcap =3D 0;
-> > > > -             unsigned long this_isa =3D 0;
-> > > > +             uint64_t this_isa =3D 0;
-> > > >
-> > > >               if (riscv_of_processor_hartid(node) < 0)
-> > > >                       continue;
-> > > > @@ -169,12 +169,22 @@ void __init riscv_fill_hwcap(void)
-> > > >                       if (*isa !=3D '_')
-> > > >                               --isa;
-> > > >
-> > > > +#define SET_ISA_EXT_MAP(name, bit)                                =
-           \
-> > > > +                     do {                                         =
-           \
-> > > > +                             if ((ext_end - ext =3D=3D sizeof(name=
-) - 1) &&      \
-> > > > +                                  !memcmp(ext, name, sizeof(name) =
-- 1)) {    \
-> > > > +                                     this_isa |=3D (1UL << bit);  =
-             \
-> > > > +                                     pr_info("Found ISA extension =
-%s", name);\
-> > > > +                             }                                    =
-           \
-> > > > +                     } while (false)                              =
-           \
-> > > > +
-> > > >                       if (unlikely(ext_err))
-> > > >                               continue;
-> > > >                       if (!ext_long) {
-> > > >                               this_hwcap |=3D isa2hwcap[(unsigned c=
-har)(*ext)];
-> > > >                               this_isa |=3D (1UL << (*ext - 'a'));
-> > > >                       }
-> > > > +#undef SET_ISA_EXT_MAP
-> > > >               }
-> > > >
-> > > >               /*
-> > > > @@ -187,10 +197,21 @@ void __init riscv_fill_hwcap(void)
-> > > >               else
-> > > >                       elf_hwcap =3D this_hwcap;
-> > > >
-> > > > -             if (riscv_isa[0])
-> > > > +             if (riscv_isa[0]) {
-> > > > +#if IS_ENABLED(CONFIG_32BIT)
-> > > > +                     riscv_isa[0] &=3D this_isa & 0xFFFFFFFF;
-> > > > +                     riscv_isa[1] &=3D this_isa >> 32;
-> > > > +#else
-> > > >                       riscv_isa[0] &=3D this_isa;
-> > > > -             else
-> > > > +#endif
-> > > > +             } else {
-> > > > +#if IS_ENABLED(CONFIG_32BIT)
-> > > > +                     riscv_isa[0] =3D this_isa & 0xFFFFFFFF;
-> > > > +                     riscv_isa[1] =3D this_isa >> 32;
-> > > > +#else
-> > > >                       riscv_isa[0] =3D this_isa;
-> > > > +#endif
-> > > > +             }
-> > > >       }
-> > > >
-> > > >       /* We don't support systems with F but without D, so mask tho=
-se out
-> > > >
-> > >
-> > >
-> > >
-> > >
+> > [   10.060014] BUG dax_cache (Not tainted): Objects remaining in dax_cache on __kmem_cache_shutdown()
+> > [   10.060938] Slab 0x0000000085b729ac objects=9 used=1 fp=0x000000004f5ae469 flags=0x200000000010200(slab|head|node)
+> > [   10.062433] Call Trace:
+> > [   10.062673]  dump_stack_lvl+0x34/0x44
+> > [   10.062865]  slab_err+0x90/0xd0
+> > [   10.063619]  __kmem_cache_shutdown+0x13b/0x2f0
+> > [   10.063848]  kmem_cache_destroy+0x4a/0x110
+> > [   10.064058]  __x64_sys_delete_module+0x265/0x300
 > >
-> >
-> >
+> > This is caused by dax_fs_exit() not flushing inodes before destroy cache.
+> > To fix this issue, call rcu_barrier() before destroy cache.
 >
->
->
->
+> I don't doubt that this fixes the bug.  However, I can't help but think this is
+> hiding a bug, or perhaps a missing step, in the kmem_cache layer?  As far as I
+> can see dax does not call call_rcu() and only uses srcu not rcu?  I was tempted
+> to suggest srcu_barrier() but dax does not call call_srcu() either.
 
+This rcu_barrier() is associated with the call_rcu() in destroy_inode().
 
---=20
-Regards,
-Atish
+While kern_unmount() does a full sycnrhonize_rcu() after clearing
+->mnt_ns. Any pending destroy_inode() callbacks need to be flushed
+before the kmem_cache is destroyed.
+
+> So I'm not clear about what is really going on and why this fixes it.  I know
+> that dax is not using srcu is a standard way so perhaps this helps in a way I
+> don't quite grok?  If so perhaps a comment here would be in order?
+
+Looks like a common pattern I missed that all filesystem exit paths implement.
