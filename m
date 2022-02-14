@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D43AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF919C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244237AbiBNJin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:38:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50630 "EHLO
+        id S244021AbiBNJir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:38:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245579AbiBNJgv (ORCPT
+        with ESMTP id S245599AbiBNJgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EFAA1A4;
-        Mon, 14 Feb 2022 01:34:46 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA90A1AC;
+        Mon, 14 Feb 2022 01:34:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1122C6102D;
-        Mon, 14 Feb 2022 09:34:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5D70C340E9;
-        Mon, 14 Feb 2022 09:34:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D5D6B80DC1;
+        Mon, 14 Feb 2022 09:34:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70183C340E9;
+        Mon, 14 Feb 2022 09:34:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831267;
-        bh=I8Ph0gGStHft4R/DZ1s2Vo5pyXczRsabuPR6VqIhCoU=;
+        s=korg; t=1644831287;
+        bh=oot8H8SG+fLifHmlvEmUgAK75vhWQy+DzZGm3AcsJhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rR9AFhcDbsQDfxoHayAukw8dAp3wHaIRwmWmW/nmik6dJbySt1XLAIFMz0DKPs+We
-         TenSWcW/w0nVDEvjx7y5jdD5SOoU5Ejyvz/aLERKTjXYkLRDY6Nzh82K2y2Fm5/93j
-         jygGh1vwY20q1qPqHOidUxdUTWL9l4vUPXxTsCEQ=
+        b=TvNRyDk4vR17c4jYoZM9M3YFyzumUby6erPrb7fwcjpqYZo01KA99uaKP6iI4IPLl
+         i4bmmYVNUvBjhXwHZsUhFp7O87ail606l7novt4BNeS3Cvh7lsS8LtCCIYzUmW3baw
+         rvuYcT7XjBA0fuATs8/xTWbNOGb7w7sxWyBHOEfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Song Liu <song@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 4.19 49/49] perf: Fix list corruption in perf_cgroup_switch()
-Date:   Mon, 14 Feb 2022 10:26:15 +0100
-Message-Id: <20220214092449.933317340@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH 4.19 34/49] vt_ioctl: fix array_index_nospec in vt_setactivate
+Date:   Mon, 14 Feb 2022 10:26:00 +0100
+Message-Id: <20220214092449.416709561@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -49,52 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <song@kernel.org>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-commit 5f4e5ce638e6a490b976ade4a40017b40abb2da0 upstream.
+commit 61cc70d9e8ef5b042d4ed87994d20100ec8896d9 upstream.
 
-There's list corruption on cgrp_cpuctx_list. This happens on the
-following path:
+array_index_nospec ensures that an out-of-bounds value is set to zero
+on the transient path. Decreasing the value by one afterwards causes
+a transient integer underflow. vsa.console should be decreased first
+and then sanitized with array_index_nospec.
 
-  perf_cgroup_switch: list_for_each_entry(cgrp_cpuctx_list)
-      cpu_ctx_sched_in
-         ctx_sched_in
-            ctx_pinned_sched_in
-              merge_sched_in
-                  perf_cgroup_event_disable: remove the event from the list
+Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
+Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
+Amsterdam.
 
-Use list_for_each_entry_safe() to allow removing an entry during
-iteration.
-
-Fixes: 058fe1c0440e ("perf/core: Make cgroup switch visit only cpuctxs with cgroup events")
-Signed-off-by: Song Liu <song@kernel.org>
-Reviewed-by: Rik van Riel <riel@surriel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220204004057.2961252-1-song@kernel.org
+Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220127144406.3589293-1-jakobkoschel@gmail.com
+Cc: stable <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c |    4 ++--
+ drivers/tty/vt/vt_ioctl.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -798,7 +798,7 @@ static DEFINE_PER_CPU(struct list_head,
-  */
- static void perf_cgroup_switch(struct task_struct *task, int mode)
- {
--	struct perf_cpu_context *cpuctx;
-+	struct perf_cpu_context *cpuctx, *tmp;
- 	struct list_head *list;
- 	unsigned long flags;
- 
-@@ -809,7 +809,7 @@ static void perf_cgroup_switch(struct ta
- 	local_irq_save(flags);
- 
- 	list = this_cpu_ptr(&cgrp_cpuctx_list);
--	list_for_each_entry(cpuctx, list, cgrp_cpuctx_entry) {
-+	list_for_each_entry_safe(cpuctx, tmp, list, cgrp_cpuctx_entry) {
- 		WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
- 
- 		perf_ctx_lock(cpuctx, cpuctx->task_ctx);
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -715,9 +715,9 @@ int vt_ioctl(struct tty_struct *tty,
+ 		if (vsa.console == 0 || vsa.console > MAX_NR_CONSOLES)
+ 			ret = -ENXIO;
+ 		else {
+-			vsa.console = array_index_nospec(vsa.console,
+-							 MAX_NR_CONSOLES + 1);
+ 			vsa.console--;
++			vsa.console = array_index_nospec(vsa.console,
++							 MAX_NR_CONSOLES);
+ 			console_lock();
+ 			ret = vc_allocate(vsa.console);
+ 			if (ret == 0) {
 
 
