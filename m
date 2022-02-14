@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA08C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE25BC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345445AbiBNKGP (ORCPT
+        id S1345527AbiBNKGX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:06:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54752 "EHLO
+        Mon, 14 Feb 2022 05:06:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345646AbiBNKBt (ORCPT
+        with ESMTP id S1345366AbiBNKBg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:01:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7021EAF9;
-        Mon, 14 Feb 2022 01:48:02 -0800 (PST)
+        Mon, 14 Feb 2022 05:01:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA9714082;
+        Mon, 14 Feb 2022 01:47:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA290B80DC7;
-        Mon, 14 Feb 2022 09:48:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B411CC340E9;
-        Mon, 14 Feb 2022 09:47:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8FA861238;
+        Mon, 14 Feb 2022 09:47:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD5BCC340E9;
+        Mon, 14 Feb 2022 09:47:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832079;
-        bh=0LiZp27Q0KIDsfgdO2XzxA5W7NEljmqZlrVlZTx/7xU=;
+        s=korg; t=1644832066;
+        bh=LLJn431NWz2Op/hN3e1rQHFby3XMCjd85OUZKwq7C3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IBeLIGjBfEZfGAOGhY1vqX+gDE4VtSVm2rn2nle8J1jp8nyHJ4LEN0nmLv8qbKqU7
-         zDoaY17pSgGCaZOZuqeeOfOECw3z01OPi6NNEtyFcO0XjeAC+OIGNmTXfTcFv321JV
-         Qy+GjVQSpiFP3ZiccTOs7IlyzqT6dWDx+AT6Ygxk=
+        b=VQmlTFk72crs9Ppmm6+AQfCBiHlML5q7NWz7cYjfWnHpQarP474CzE8TGC7260ipy
+         NV6vur5nuX66eGDoK+ltOnaiRVgEUXMaqNuBf2c1BZBd3Kz1l3notdvLO3b/qhJqXP
+         ewXeFqy+OttL7tZ2Ze60AllC/iOzlkLroWBpA1G8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
-        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5.15 073/172] nvme-tcp: fix bogus request completion when failing to send AER
-Date:   Mon, 14 Feb 2022 10:25:31 +0100
-Message-Id: <20220214092508.929334944@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 061/172] KVM: nVMX: eVMCS: Filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER
+Date:   Mon, 14 Feb 2022 10:25:19 +0100
+Message-Id: <20220214092508.503747049@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -49,42 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit 63573807b27e0faf8065a28b1bbe1cbfb23c0130 upstream.
+[ Upstream commit 7a601e2cf61558dfd534a9ecaad09f5853ad8204 ]
 
-AER is not backed by a real request, hence we should not incorrectly
-assume that when failing to send a nvme command, it is a normal request
-but rather check if this is an aer and if so complete the aer (similar
-to the normal completion path).
+Enlightened VMCS v1 doesn't have VMX_PREEMPTION_TIMER_VALUE field,
+PIN_BASED_VMX_PREEMPTION_TIMER is also filtered out already so it makes
+sense to filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER too.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Note, none of the currently existing Windows/Hyper-V versions are known
+to enable 'save VMX-preemption timer value' when eVMCS is in use, the
+change is aimed at making the filtering future proof.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220112170134.1904308-3-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/evmcs.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -920,7 +920,15 @@ static inline void nvme_tcp_done_send_re
+diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+index 152ab0aa82cf6..b43976e4b9636 100644
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -59,7 +59,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+ 	 SECONDARY_EXEC_SHADOW_VMCS |					\
+ 	 SECONDARY_EXEC_TSC_SCALING |					\
+ 	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
+-#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL)
++#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
++	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
++	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
+ #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
  
- static void nvme_tcp_fail_request(struct nvme_tcp_request *req)
- {
--	nvme_tcp_end_request(blk_mq_rq_from_pdu(req), NVME_SC_HOST_PATH_ERROR);
-+	if (nvme_tcp_async_req(req)) {
-+		union nvme_result res = {};
-+
-+		nvme_complete_async_event(&req->queue->ctrl->ctrl,
-+				cpu_to_le16(NVME_SC_HOST_PATH_ERROR), &res);
-+	} else {
-+		nvme_tcp_end_request(blk_mq_rq_from_pdu(req),
-+				NVME_SC_HOST_PATH_ERROR);
-+	}
- }
- 
- static int nvme_tcp_try_send_data(struct nvme_tcp_request *req)
+-- 
+2.34.1
+
 
 
