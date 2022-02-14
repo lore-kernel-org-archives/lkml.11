@@ -2,108 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86080C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB78C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353279AbiBNMk1 (ORCPT
+        id S1353284AbiBNMld (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:40:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35040 "EHLO
+        Mon, 14 Feb 2022 07:41:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiBNMk0 (ORCPT
+        with ESMTP id S229718AbiBNMlb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:40:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E47C4A914
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:40:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AAE461371
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4250FC340E9;
-        Mon, 14 Feb 2022 12:40:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644842418;
-        bh=IQKHs148sOwzSOJ9x7YM1yay1qSuKlbeZzKnX8pviEM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rWhH+LSokZ3Zs/QiXpu8o5Ki+KnAslQZ/LWSTzG9fMRcf+8pxIVHNAgtUU1oj6cvU
-         ueXKCU7WZKJ/wRK68K+zEAjeJMdaM7s47AyvQ25N8LoFbUMh7pKIayN3VgCmqiQ99S
-         EQR52sV8lX24QDh5Y6RmFhExf1wnMLker7AQ7F8D4NFlTeWtaasxrCVfhF99LVv4oK
-         GCeaHeVIzO4MU8vxm/xgXbvG8u+tFoMpgRZSLd4+HwKHyKf5X75+YbpnFVMkkgUSk6
-         fDvjyddaRrvSTNImWVKyRUoZuzRyOMhMV3cPUcakLZra9OnBOGXZW/szRhs+oQ3MYF
-         1e2CJ3Ew+jpfQ==
-Date:   Mon, 14 Feb 2022 12:40:08 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Yong Wu <yong.wu@mediatek.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        James Wang <james.qian.wang@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        iommu@lists.linux-foundation.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-mediatek@lists.infradead.org,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Stephen Boyd <sboyd@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Tomasz Figa <tfiga@chromium.org>, srv_heupstream@mediatek.com,
-        Rob Clark <robdclark@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 20/23] ASoC: codecs: wcd938x: Make use of the helper
- component_compare/release_of
-Message-ID: <YgpNqLQzpx4J6d8K@sirena.org.uk>
-References: <20220214060819.7334-1-yong.wu@mediatek.com>
- <20220214060819.7334-21-yong.wu@mediatek.com>
+        Mon, 14 Feb 2022 07:41:31 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8515EAE74
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:41:21 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id y23-20020a5e8717000000b0060fd92726cbso10333265ioj.22
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:41:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=/ogNVkQPxmgCJgiz3r7sJ/UoZMagbKaZs2wZ+gXktvo=;
+        b=KsuejWofuKUt/W3wpMSNu/gAq3TxXJI0gjzD/SCXDoKuf0a0rWjnE0LTMh9HE9gV0r
+         ZVA1C3Hc3PLIoWekLYWc8clZxLqfXdN2Y2r2rFJAjYy6ad9/BS7DkwJe4nr7+kY9ykh3
+         XJPXi/w698RJBPLtYw8BtOTahHcE+tCAd2vuz7vHpzb7NqPOTQVMeeEys0Rc06t5aamf
+         3227dq5Tnn0c4tB3sd3yyBqh5TBNPaX/aSI4WO/LduIc0jerV57b/vFy01ZNISkN46Fn
+         6B9qGLpyBCrjvhOOrp9NiPadJESTWRn8+mCwZ4+Yh7DP1oreilyCOTDVMUbqo11F324k
+         aDBQ==
+X-Gm-Message-State: AOAM5324VS4awReR18bAD63oS7G8LdG/9W9XqN0m1HA+fIAr1vhyau0f
+        QxdiqOswnicRi2kCEyYTU3urJfcGgIIA9scNVCUuT6HvNAu2
+X-Google-Smtp-Source: ABdhPJy9LdtYSZVCagL6TVsGo5yLocufVDaumwa8kWvPToRWkHxtPQzNWMqPtbYEXEzY2H7Cu9Bx+wL30elaG0rho4XWgeTFXtJx
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kmbocLNYrfZ7Ic0Q"
-Content-Disposition: inline
-In-Reply-To: <20220214060819.7334-21-yong.wu@mediatek.com>
-X-Cookie: Am I in GRADUATE SCHOOL yet?
+X-Received: by 2002:a02:3b24:: with SMTP id c36mr8103245jaa.148.1644842480871;
+ Mon, 14 Feb 2022 04:41:20 -0800 (PST)
+Date:   Mon, 14 Feb 2022 04:41:20 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c8aedf05d7f9bb9c@google.com>
+Subject: [syzbot] INFO: task can't die in submit_bio_wait (2)
+From:   syzbot <syzbot+b8c45d4034039b7ce03e@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
---kmbocLNYrfZ7Ic0Q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+syzbot found the following issue on:
 
-On Mon, Feb 14, 2022 at 02:08:16PM +0800, Yong Wu wrote:
-> Use the common compare/release helpers from component.
+HEAD commit:    ef6b35306dd8 Add linux-next specific files for 20220204
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10ed552c700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e0431e0b00810b4f
+dashboard link: https://syzkaller.appspot.com/bug?extid=b8c45d4034039b7ce03e
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=108cb306700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10bed71c700000
 
-What's the story with dependencies here?  I've just got this one patch
-with no cover letter...
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b8c45d4034039b7ce03e@syzkaller.appspotmail.com
 
---kmbocLNYrfZ7Ic0Q
-Content-Type: application/pgp-signature; name="signature.asc"
+INFO: task syz-executor157:3633 can't die for more than 143 seconds.
+task:syz-executor157 state:D stack:28120 pid: 3633 ppid:  3629 flags:0x00004004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5000 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6309
+ schedule+0xd2/0x1f0 kernel/sched/core.c:6381
+ schedule_timeout+0x14a/0x2a0 kernel/time/timer.c:1881
+ io_schedule_timeout+0xcb/0x140 kernel/sched/core.c:8406
+ do_wait_for_common kernel/sched/completion.c:85 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common_io kernel/sched/completion.c:123 [inline]
+ wait_for_completion_io_timeout+0x16f/0x280 kernel/sched/completion.c:191
+ submit_bio_wait+0x158/0x230 block/bio.c:1308
+ blkdev_issue_flush+0x95/0xd0 block/blk-flush.c:464
+ blkdev_fsync+0x68/0xa0 block/fops.c:471
+ vfs_fsync_range fs/sync.c:188 [inline]
+ vfs_fsync fs/sync.c:202 [inline]
+ do_fsync fs/sync.c:212 [inline]
+ __do_sys_fdatasync fs/sync.c:225 [inline]
+ __se_sys_fdatasync fs/sync.c:223 [inline]
+ __x64_sys_fdatasync+0xc5/0x140 fs/sync.c:223
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fcb854986d9
+RSP: 002b:00007ffd575ac058 EFLAGS: 00000246 ORIG_RAX: 000000000000004b
+RAX: ffffffffffffffda RBX: 0000000000076c12 RCX: 00007fcb854986d9
+RDX: 00007fcb854986d9 RSI: 0000000000000005 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 00007ffd575ac1f8 R09: 00007ffd575ac1f8
+R10: 00007ffd575ac1f8 R11: 0000000000000246 R12: 00007ffd575ac06c
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
------BEGIN PGP SIGNATURE-----
+Showing all locks held in the system:
+1 lock held by khungtaskd/26:
+ #0: ffffffff8bb83a60 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6463
+2 locks held by getty/3275:
+ #0: ffff88807f051098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:244
+ #1: ffffc90002b662e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xcf0/0x1230 drivers/tty/n_tty.c:2077
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIKTagACgkQJNaLcl1U
-h9ChNwf9H0Bf8Q4NJFX6MpkURJU1WTUkJZ8s9zjT9F5003kszR2qdhtG8TCUYisF
-m+Ywr7okO1EGsbMSae1gxr0q5In/J/buVsEnIjl42Be7doIn1xXcDB+3tjDyi4aH
-ZN/sHluDMyiwzeBgN2jiu99gsgHDVXThtPOdyMLab2QMCVo6PEox6vsKyIb6vO2F
-Rl7BLwS916U45mWEFF/XAJLWV7QPG5f43JvKlSkjKLgJhFP8H/cxKzlNZclRAdEi
-fSWK497fgwmyoHrXr2inZNyDmAh20f9np1WMgLBl2sJwN8LnmWSDpp76C/XfRV0T
-Qp7CAMe19I/TqvJsaFw7oluNeBT7Yg==
-=2URH
------END PGP SIGNATURE-----
+=============================================
 
---kmbocLNYrfZ7Ic0Q--
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
