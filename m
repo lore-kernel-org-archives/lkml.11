@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D86D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1581DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347747AbiBNKai (ORCPT
+        id S1347847AbiBNKaj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:30:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41280 "EHLO
+        Mon, 14 Feb 2022 05:30:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347710AbiBNKaG (ORCPT
+        with ESMTP id S1347569AbiBNKaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:30:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC337093D;
-        Mon, 14 Feb 2022 01:58:51 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9E799680;
+        Mon, 14 Feb 2022 01:58:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D63BB80DC8;
-        Mon, 14 Feb 2022 09:58:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 740A4C340E9;
-        Mon, 14 Feb 2022 09:58:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89FEB60A69;
+        Mon, 14 Feb 2022 09:58:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 655E1C340E9;
+        Mon, 14 Feb 2022 09:58:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832712;
-        bh=JfL+GhWxwE5F5v6NmdagFTHsk5XA1TJAJFpQryMWtWs=;
+        s=korg; t=1644832731;
+        bh=o4neHMx2mJG77mYsmSI3U36Vmc1lgTCbnYGLWeoZyoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XILD0+U/KaiC2gYfkrFyBkD417RQrH+0ZnAwFHz1iuidu1JDdYnPi+BupgansWVyd
-         MjjEhpbg3Iw1+unJQbpOoQVuRvv58hQuzvcjigk/dBRIE4XcodlkIkFTDyL99Y3uEr
-         UejIO3zvA/6n+J6DOyp0KEAUM6WZNocrUNifAxmM=
+        b=NVrq17cDB35tvNaZxtQoNg2KRkalr7akVYBSjDo4N1F7EzNwyAsOIBKCz6+HWvUtr
+         ADMLTpjOqjJs57KYkVu9h2Pn6Ts7uZDr9Uj8e/M4GkwHHEndaTOXbgutg/h71vfSrn
+         fIulcQgXpL1WZTjOMGR1t158U1cr6MdeWAhc6Oa4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 100/203] staging: fbtft: Fix error path in fbtft_driver_module_init()
-Date:   Mon, 14 Feb 2022 10:25:44 +0100
-Message-Id: <20220214092513.650977713@linuxfoundation.org>
+        Martin Kepplinger <martin.kepplinger@puri.sm>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 105/203] arm64: dts: imx8mq: fix mipi_csi bidirectional port numbers
+Date:   Mon, 14 Feb 2022 10:25:49 +0100
+Message-Id: <20220214092513.811692543@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,38 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Martin Kepplinger <martin.kepplinger@puri.sm>
 
-[ Upstream commit 426aca16e903b387a0b0001d62207a745c67cfd3 ]
+[ Upstream commit 283d45145fbf460dbaf0229cacd7ed60ec52f364 ]
 
-If registering the platform driver fails, the function must not return
-without undoing the spi driver registration first.
+The port numbers for the imx8mq mipi csi controller are wrong and
+the mipi driver can't find any media devices as port@1 is connected
+to the CSI bridge, not port@0. And port@0 is connected to the
+source - the sensor. Fix this.
 
-Fixes: c296d5f9957c ("staging: fbtft: core support")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20220118181338.207943-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bcadd5f66c2a ("arm64: dts: imx8mq: add mipi csi phy and csi bridge descriptions")
+Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/fbtft/fbtft.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/freescale/imx8mq.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/fbtft/fbtft.h b/drivers/staging/fbtft/fbtft.h
-index 6869f3603b0e6..9a6c906820f22 100644
---- a/drivers/staging/fbtft/fbtft.h
-+++ b/drivers/staging/fbtft/fbtft.h
-@@ -334,7 +334,10 @@ static int __init fbtft_driver_module_init(void)                           \
- 	ret = spi_register_driver(&fbtft_driver_spi_driver);               \
- 	if (ret < 0)                                                       \
- 		return ret;                                                \
--	return platform_driver_register(&fbtft_driver_platform_driver);    \
-+	ret = platform_driver_register(&fbtft_driver_platform_driver);     \
-+	if (ret < 0)                                                       \
-+		spi_unregister_driver(&fbtft_driver_spi_driver);           \
-+	return ret;                                                        \
- }                                                                          \
- 									   \
- static void __exit fbtft_driver_module_exit(void)                          \
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq.dtsi b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+index 71bf497f99c25..c222d93f5e649 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+@@ -1123,8 +1123,8 @@ ports {
+ 					#address-cells = <1>;
+ 					#size-cells = <0>;
+ 
+-					port@0 {
+-						reg = <0>;
++					port@1 {
++						reg = <1>;
+ 
+ 						csi1_mipi_ep: endpoint {
+ 							remote-endpoint = <&csi1_ep>;
+@@ -1175,8 +1175,8 @@ ports {
+ 					#address-cells = <1>;
+ 					#size-cells = <0>;
+ 
+-					port@0 {
+-						reg = <0>;
++					port@1 {
++						reg = <1>;
+ 
+ 						csi2_mipi_ep: endpoint {
+ 							remote-endpoint = <&csi2_ep>;
 -- 
 2.34.1
 
