@@ -2,107 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E16C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239994AbiBND1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 22:27:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55474 "EHLO
+        id S240002AbiBND1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 22:27:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233121AbiBND1f (ORCPT
+        with ESMTP id S231786AbiBND1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 22:27:35 -0500
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0B755489;
-        Sun, 13 Feb 2022 19:27:29 -0800 (PST)
-Received: by mail-qv1-xf2c.google.com with SMTP id x3so8093403qvd.8;
-        Sun, 13 Feb 2022 19:27:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1Mk4g7a4kkGp+4mbNE5PqLoN+dulOsHzWj8LqpF9LSE=;
-        b=G01Mpr4f6OfVK0fOPp4lzC84aqgY6vPtk3GEISIKlPMcJ/WQ0ySrF5A+nd2aTcdY7d
-         2qRieK0AhBO8jDaPmxb3vGBoFByaK6WvboWBGyeEYFofALpT9ZCv6S2a56ULo7t+ef4P
-         8MA9tliHSPOVhXUQnheyq3Q1pGZGTuplN1YxHqf0He9T+wNzXUmZWxQMhJuaUwuiid2e
-         yDUpBBtOg2B2e2wM7PzuCTh/bWgWDqC3FtQpwTJjGUQip8ZETW3cHE18/7rC1R1gWMdM
-         mfxDORPVIp7RfSVy4eIRznakKzl/CCATv39NupxpkLOazTPTjCyFT6pu8ZjJ7TsMF+bc
-         l0Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1Mk4g7a4kkGp+4mbNE5PqLoN+dulOsHzWj8LqpF9LSE=;
-        b=2QPzE00re9HMgvFJISif9UyBts+9yYaJuNkt/chxib8FioIS3UZhDaKPevOCcMP+ap
-         oRnv7Q53MYbfDlzHGnzIHMbIbsA0zBkY5j8s+R5wPL3Fp2cBqvhs2gWji+AIlQ1esO2L
-         YY1MOOHGZTAUEWH/dpfuxBPvoSf2/Q4UkaksOiz+c5ybKJdamgcHZ7oJrjUxYKB4NtNS
-         zVIO69h79IUwoAs7ngriZOo0fwtZalZMToKTYlXv1Hd8fWpp4OFXnNX0X/jfzrz3uHgd
-         Swpor+ZEB8Seerz8pt60xYHmo1nKsJJGDUQ0rOwOAMGBsnJ/9Af1L6tS6qy8QZZKFkt3
-         34/Q==
-X-Gm-Message-State: AOAM531+0V7fFXgS8qk+MiC6f8eMMADW6hursvJv2d8gcDG9AuT9yBNV
-        FsqMjAXiGbk7Dz1gLQPtOVA=
-X-Google-Smtp-Source: ABdhPJyvpHHKq86EMPjgff598oi5GUBwcfc1+ZO5YI+bd4eKKIg3oe0uXcPJZD56SIsQq34JCdgO4Q==
-X-Received: by 2002:a05:6214:19e5:: with SMTP id q5mr6399886qvc.42.1644809248326;
-        Sun, 13 Feb 2022 19:27:28 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id n6sm17006667qtx.23.2022.02.13.19.27.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 19:27:27 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: zhang.yunkai@zte.com.cn
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhang Yunkai <zhang.yunkai@zte.com.cn>
-Subject: [PATCH v2] ipv4: add description about martian source
-Date:   Mon, 14 Feb 2022 03:27:21 +0000
-Message-Id: <20220214032721.1716878-1-zhang.yunkai@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Sun, 13 Feb 2022 22:27:49 -0500
+X-Greylist: delayed 1729 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 19:27:43 PST
+Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C94E55487
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 19:27:43 -0800 (PST)
+Received: from dread.disaster.area (pa49-186-85-251.pa.vic.optusnet.com.au [49.186.85.251])
+        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id EFDDD10C71FF;
+        Mon, 14 Feb 2022 13:58:50 +1100 (AEDT)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1nJRZh-00BlIw-Ju; Mon, 14 Feb 2022 13:58:49 +1100
+Date:   Mon, 14 Feb 2022 13:58:49 +1100
+From:   Dave Chinner <david@fromorbit.com>
+To:     Ritesh Harjani <riteshh@linux.ibm.com>
+Cc:     syzbot <syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com>,
+        djwong@kernel.org, fgheet255t@gmail.com, hch@infradead.org,
+        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING in iomap_iter
+Message-ID: <20220214025849.GP59729@dread.disaster.area>
+References: <000000000000f2075605d04f9964@google.com>
+ <00000000000011f55805d7d8352c@google.com>
+ <20220213143410.qdqxlixuzgtq56yl@riteshh-domain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220213143410.qdqxlixuzgtq56yl@riteshh-domain>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=VuxAv86n c=1 sm=1 tr=0 ts=6209c56b
+        a=2CV4XU02g+4RbH+qqUnf+g==:117 a=2CV4XU02g+4RbH+qqUnf+g==:17
+        a=kj9zAlcOel0A:10 a=oGFeUVbbRNcA:10 a=edf1wS77AAAA:8 a=7-415B0cAAAA:8
+        a=9nmZ6OI4_2a5T7hfYiMA:9 a=CjuIK1q_8ugA:10 a=DcSpbTIhAlouE1Uv7lRv:22
+        a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Yunkai <zhang.yunkai@zte.com.cn>
+On Sun, Feb 13, 2022 at 08:04:10PM +0530, Ritesh Harjani wrote:
+> On 22/02/12 12:41PM, syzbot wrote:
+> > syzbot has found a reproducer for the following issue on:
+> >
+> > HEAD commit:    83e396641110 Merge tag 'soc-fixes-5.17-1' of git://git.ker..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=11fe01a4700000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=88e0a6a3dbf057cf
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=a8e049cd3abd342936b6
+> > compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14f8cad2700000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132c16ba700000
+> 
+> FYI - I could reproduce with above C reproduer on my setup 5.17-rc3.
+> I was also able to hit it with XFS <below stack shows that>
+> 
+> So here is some initial analysis on this one. I haven't completely debugged it
+> though. I am just putting my observations here for others too.
+> 
+> It seems iomap_dio_rw is getting called with a negative iocb->ki_pos value.
+> (I haven't yet looked into when can this happen. Is it due to negative loop
+> device mapping range offset or something?)
+> 
+> i.e.
+> (gdb) p iocb->ki_pos
+> $101 = -2147483648
+> (gdb) p /x iocb->ki_pos
+> $102 = 0xffffffff80000000
+> (gdb)
+> 
+> This when passed to ->iomap_begin() sometimes is resulting into iomap->offset
+> which is a positive value and hence hitting below warn_on_once in
+> iomap_iter_done().
+> 
+> 		WARN_ON_ONCE(iter->iomap.offset > iter->pos)
+> 
+> 1. So I think the question here is what does it mean when xfs/ext4_file_read_iter()
+>    is called with negative iocb->ki_pos value?
+> 2. Also when can iocb->ki_pos be negative?
 
-When multiple containers are running in the environment and multiple
-macvlan network port are configured in each container, a lot of martian
-source prints will appear after martian_log is enabled. they are almost
-the same, and printed by net_warn_ratelimited. Each arp message will
-trigger this print on each network port.
+Sounds like a bug in the loop driver, not a problem with the iomap
+DIO code. The IO path normally checks the position via
+rw_verify_area() high up in the IO path, so by the time iocb->ki_pos
+gets to filesystems and low level IO routines it's supposed to have
+already been checked against overflows. Looks to me like the loop
+driver is not checking the back end file position it calculates for
+overflows...
 
-Such as:
-IPv4: martian source 173.254.95.16 from 173.254.100.109,
-on dev eth0
-ll header: 00000000: ff ff ff ff ff ff 40 00 ad fe 64 6d
-08 06        ......@...dm..
-IPv4: martian source 173.254.95.16 from 173.254.100.109,
-on dev eth1
-ll header: 00000000: ff ff ff ff ff ff 40 00 ad fe 64 6d
-08 06        ......@...dm..
+Cheers,
 
-There is no description of this kind of source in the RFC1812.
-
-Signed-off-by: Zhang Yunkai <zhang.yunkai@zte.com.cn>
----
- net/ipv4/fib_frontend.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 4d61ddd8a0ec..3564308e849a 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -436,6 +436,9 @@ int fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
- 		if (net->ipv4.fib_has_custom_local_routes ||
- 		    fib4_has_custom_rules(net))
- 			goto full_check;
-+		/* Within the same container, it is regarded as a martian source,
-+		 * and the same host but different containers are not.
-+		 */
- 		if (inet_lookup_ifaddr_rcu(net, src))
- 			return -EINVAL;
- 
+Dave.
 -- 
-2.25.1
-
+Dave Chinner
+david@fromorbit.com
