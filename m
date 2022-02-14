@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1059C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346050AbiBNKS5 (ORCPT
+        id S1346500AbiBNKTE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:18:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45096 "EHLO
+        Mon, 14 Feb 2022 05:19:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346190AbiBNKPM (ORCPT
+        with ESMTP id S1347491AbiBNKQd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:15:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97FE77A82;
-        Mon, 14 Feb 2022 01:52:31 -0800 (PST)
+        Mon, 14 Feb 2022 05:16:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7C07C146;
+        Mon, 14 Feb 2022 01:54:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B95BB80DBF;
-        Mon, 14 Feb 2022 09:52:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5130DC36AEA;
-        Mon, 14 Feb 2022 09:52:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEB6DB80D6D;
+        Mon, 14 Feb 2022 09:54:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F37BEC340E9;
+        Mon, 14 Feb 2022 09:54:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832348;
-        bh=OjPeCyA/ofgU7GFCY7rViE5BCiYYQglG21UC4UdiCZA=;
+        s=korg; t=1644832442;
+        bh=90L42e49gTnIttG60Vd1WAt35ktpCOrBMIYNDCAlMsA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XdrgDFbpifXNosamZPphHK4pft3fC5Xc0gCmPm139XoNeNFRI0y10T9sw8cClD4GM
-         VtRfjCgdLdk5RuC2G5QToBF1zBCFF0L3c08UwHhqEzRMDB8A4d4/NgiK8RkpWkR6wQ
-         tc8/lqjKku9fZKNN9wY6LNHdSvJUw7Itd9wCMcrU=
+        b=FqnNQHDtl22qGgGxY9DDRAwkpYQDRpeBYoM9bFWSIwSrGiiTj1e21cywTarAwvb0m
+         2jaT1j1yMp7kIO8JCENZKrvF2DOOmYO87/jMgQxXzJcpBZMAzicXCDKva50cLgwHvT
+         1yVyeUQRsslgvhzm0k5wnnvhGSnSklGmBAowACpg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.15 158/172] seccomp: Invalidate seccomp mode to catch death failures
-Date:   Mon, 14 Feb 2022 10:26:56 +0100
-Message-Id: <20220214092511.852647286@linuxfoundation.org>
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.16 016/203] NFSD: Fix ia_size underflow
+Date:   Mon, 14 Feb 2022 10:24:20 +0100
+Message-Id: <20220214092510.772279592@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
-References: <20220214092506.354292783@linuxfoundation.org>
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,64 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 495ac3069a6235bfdf516812a2a9b256671bbdf9 upstream.
+commit e6faac3f58c7c4176b66f63def17a34232a17b0e upstream.
 
-If seccomp tries to kill a process, it should never see that process
-again. To enforce this proactively, switch the mode to something
-impossible. If encountered: WARN, reject all syscalls, and attempt to
-kill the process again even harder.
+iattr::ia_size is a loff_t, which is a signed 64-bit type. NFSv3 and
+NFSv4 both define file size as an unsigned 64-bit type. Thus there
+is a range of valid file size values an NFS client can send that is
+already larger than Linux can handle.
 
-Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Will Drewry <wad@chromium.org>
-Fixes: 8112c4f140fa ("seccomp: remove 2-phase API")
+Currently decode_fattr4() dumps a full u64 value into ia_size. If
+that value happens to be larger than S64_MAX, then ia_size
+underflows. I'm about to fix up the NFSv3 behavior as well, so let's
+catch the underflow in the common code path: nfsd_setattr().
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/seccomp.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ fs/nfsd/vfs.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/kernel/seccomp.c
-+++ b/kernel/seccomp.c
-@@ -29,6 +29,9 @@
- #include <linux/syscalls.h>
- #include <linux/sysctl.h>
+--- a/fs/nfsd/vfs.c
++++ b/fs/nfsd/vfs.c
+@@ -434,6 +434,10 @@ nfsd_setattr(struct svc_rqst *rqstp, str
+ 			.ia_size	= iap->ia_size,
+ 		};
  
-+/* Not exposed in headers: strictly internal use only. */
-+#define SECCOMP_MODE_DEAD	(SECCOMP_MODE_FILTER + 1)
++		host_err = -EFBIG;
++		if (iap->ia_size < 0)
++			goto out_unlock;
 +
- #ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
- #include <asm/syscall.h>
- #endif
-@@ -1010,6 +1013,7 @@ static void __secure_computing_strict(in
- #ifdef SECCOMP_DEBUG
- 	dump_stack();
- #endif
-+	current->seccomp.mode = SECCOMP_MODE_DEAD;
- 	seccomp_log(this_syscall, SIGKILL, SECCOMP_RET_KILL_THREAD, true);
- 	do_exit(SIGKILL);
- }
-@@ -1261,6 +1265,7 @@ static int __seccomp_filter(int this_sys
- 	case SECCOMP_RET_KILL_THREAD:
- 	case SECCOMP_RET_KILL_PROCESS:
- 	default:
-+		current->seccomp.mode = SECCOMP_MODE_DEAD;
- 		seccomp_log(this_syscall, SIGSYS, action, true);
- 		/* Dump core only if this is the last remaining thread. */
- 		if (action != SECCOMP_RET_KILL_THREAD ||
-@@ -1309,6 +1314,11 @@ int __secure_computing(const struct secc
- 		return 0;
- 	case SECCOMP_MODE_FILTER:
- 		return __seccomp_filter(this_syscall, sd, false);
-+	/* Surviving SECCOMP_RET_KILL_* must be proactively impossible. */
-+	case SECCOMP_MODE_DEAD:
-+		WARN_ON_ONCE(1);
-+		do_exit(SIGKILL);
-+		return -1;
- 	default:
- 		BUG();
- 	}
+ 		host_err = notify_change(&init_user_ns, dentry, &size_attr, NULL);
+ 		if (host_err)
+ 			goto out_unlock;
 
 
