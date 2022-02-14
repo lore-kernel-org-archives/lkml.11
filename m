@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 339E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 435DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346761AbiBNKXs (ORCPT
+        id S1346284AbiBNKXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:23:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48506 "EHLO
+        Mon, 14 Feb 2022 05:23:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346640AbiBNKVt (ORCPT
+        with ESMTP id S1346707AbiBNKVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:21:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527037DE2B;
-        Mon, 14 Feb 2022 01:55:54 -0800 (PST)
+        Mon, 14 Feb 2022 05:21:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF09D7DE2F;
+        Mon, 14 Feb 2022 01:55:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38773B80DCF;
-        Mon, 14 Feb 2022 09:55:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E7B0C340E9;
-        Mon, 14 Feb 2022 09:55:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D45761291;
+        Mon, 14 Feb 2022 09:55:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C4CC340E9;
+        Mon, 14 Feb 2022 09:55:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832544;
-        bh=WoggJfzxZcsMjHbc6cnyNwotPtNHvkZ1EEsQdBd98pI=;
+        s=korg; t=1644832551;
+        bh=JVnRg65Qwa1/CD39njIMCAjJPJZ+EuC+Z6Vt+4qdiKQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bg5n2UFVAYIJXV3sdKSkm3b1tMeiQ85EcEWk+lC3mYAzJrv/nle7x0N+Gcgd/lLoR
-         nPR4JZSpix6jJ9+Vcxx4ArTe6wtmlKact5tePyIPoNwg+rCbiHJxo1FDVF8IFhwr7e
-         C69fXDHBaEo5hWCzgoUsFtczLrgnXM/lVVdT7K7M=
+        b=FnJUi9zTIHw6N9o0wZ6rn0kEomd7RGwf6C63y5/vULq/B9c81BkJiJlny3gq8oBTf
+         W7ukqvnFpXs/rpgyzyupnuae1sFsqQSHpziBxkPuJhCPN2awiYMS1vK8M8bKELyrZq
+         hTy3CVD5LaRnjmZTobRikYkOaVBuawP/b3kWf//c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Tong Zhang <ztong0001@gmail.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 049/203] scsi: ufs: Use generic error code in ufshcd_set_dev_pwr_mode()
-Date:   Mon, 14 Feb 2022 10:24:53 +0100
-Message-Id: <20220214092511.882844129@linuxfoundation.org>
+Subject: [PATCH 5.16 051/203] scsi: myrs: Fix crash in error case
+Date:   Mon, 14 Feb 2022 10:24:55 +0100
+Message-Id: <20220214092511.958621924@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,53 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiwoong Kim <kwmad.kim@samsung.com>
+From: Tong Zhang <ztong0001@gmail.com>
 
-[ Upstream commit ad6c8a426446873febc98140d81d5353f8c0825b ]
+[ Upstream commit 4db09593af0b0b4d7d4805ebb3273df51d7cc30d ]
 
-The return value of ufshcd_set_dev_pwr_mode() is passed to device PM
-core. However, the function currently returns a SCSI result which the PM
-core doesn't understand.  This might lead to unexpected behaviors in
-userland; a platform reset was observed in Android.
+In myrs_detect(), cs->disable_intr is NULL when privdata->hw_init() fails
+with non-zero. In this case, myrs_cleanup(cs) will call a NULL ptr and
+crash the kernel.
 
-Use a generic error code for SSU failures.
+[    1.105606] myrs 0000:00:03.0: Unknown Initialization Error 5A
+[    1.105872] myrs 0000:00:03.0: Failed to initialize Controller
+[    1.106082] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[    1.110774] Call Trace:
+[    1.110950]  myrs_cleanup+0xe4/0x150 [myrs]
+[    1.111135]  myrs_probe.cold+0x91/0x56a [myrs]
+[    1.111302]  ? DAC960_GEM_intr_handler+0x1f0/0x1f0 [myrs]
+[    1.111500]  local_pci_probe+0x48/0x90
 
-Link: https://lore.kernel.org/r/1642743182-54098-1-git-send-email-kwmad.kim@samsung.com
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
+Link: https://lore.kernel.org/r/20220123225717.1069538-1-ztong0001@gmail.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/scsi/myrs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index c94377aa82739..ec7d7e01231d7 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -8587,7 +8587,7 @@ static void ufshcd_hba_exit(struct ufs_hba *hba)
-  * @pwr_mode: device power mode to set
-  *
-  * Returns 0 if requested power mode is set successfully
-- * Returns non-zero if failed to set the requested power mode
-+ * Returns < 0 if failed to set the requested power mode
-  */
- static int ufshcd_set_dev_pwr_mode(struct ufs_hba *hba,
- 				     enum ufs_dev_pwr_mode pwr_mode)
-@@ -8641,8 +8641,11 @@ static int ufshcd_set_dev_pwr_mode(struct ufs_hba *hba,
- 		sdev_printk(KERN_WARNING, sdp,
- 			    "START_STOP failed for power mode: %d, result %x\n",
- 			    pwr_mode, ret);
--		if (ret > 0 && scsi_sense_valid(&sshdr))
--			scsi_print_sense_hdr(sdp, NULL, &sshdr);
-+		if (ret > 0) {
-+			if (scsi_sense_valid(&sshdr))
-+				scsi_print_sense_hdr(sdp, NULL, &sshdr);
-+			ret = -EIO;
-+		}
- 	}
+diff --git a/drivers/scsi/myrs.c b/drivers/scsi/myrs.c
+index 6ea323e9a2e34..f6dbc8f2f60a3 100644
+--- a/drivers/scsi/myrs.c
++++ b/drivers/scsi/myrs.c
+@@ -2269,7 +2269,8 @@ static void myrs_cleanup(struct myrs_hba *cs)
+ 	myrs_unmap(cs);
  
- 	if (!ret)
+ 	if (cs->mmio_base) {
+-		cs->disable_intr(cs);
++		if (cs->disable_intr)
++			cs->disable_intr(cs);
+ 		iounmap(cs->mmio_base);
+ 		cs->mmio_base = NULL;
+ 	}
 -- 
 2.34.1
 
