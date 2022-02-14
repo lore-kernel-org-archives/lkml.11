@@ -2,599 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21878C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B824C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351230AbiBNLX7 convert rfc822-to-8bit (ORCPT
+        id S1350866AbiBNLYD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:23:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52126 "EHLO
+        Mon, 14 Feb 2022 06:24:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350702AbiBNLXi (ORCPT
+        with ESMTP id S1350838AbiBNLXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:23:38 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C691E6AA5D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:59:01 -0800 (PST)
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-347-FZQAIk2MPauVFaiMtszyBg-1; Mon, 14 Feb 2022 05:48:16 -0500
-X-MC-Unique: FZQAIk2MPauVFaiMtszyBg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E997D801B0E;
-        Mon, 14 Feb 2022 10:48:13 +0000 (UTC)
-Received: from x1.com (unknown [10.22.16.130])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E30AA27BDC;
-        Mon, 14 Feb 2022 10:48:01 +0000 (UTC)
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [RFC V2 19/21] rv/monitor: Add safe watchdog nowayout monitor
-Date:   Mon, 14 Feb 2022 11:45:10 +0100
-Message-Id: <7a810f46b6136565a364001e7d1550fb9a4ccf62.1644830251.git.bristot@kernel.org>
-In-Reply-To: <cover.1644830251.git.bristot@kernel.org>
-References: <cover.1644830251.git.bristot@kernel.org>
+        Mon, 14 Feb 2022 06:23:19 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8D21400B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:58:59 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id p9so5607221wra.12
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:58:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=mivF3ekCKstELbAjwclXaYaNa1EngP36z3pQawfN/Ww=;
+        b=JbsWgFcHUSVRaavjY38WJUtjsTOkJ/Fgtev1kqvA9SwrNt92it6Fe9uFNbIuSwX7uh
+         8K1UvNYPSTax58CZxNIt0NZpR2UkdGpv3lD3CLAyCawqnZ9Hv2MDN2nlrw/Q4Y3BwpkY
+         dF26NMhEvsOK5utsQGMQg0vnYhS/PqaI60JhoPNDniQpEUX5GDCeY00WJfYWaJnVT39H
+         GlMG2Rw2SkJCxvN1ezcfH6iWyMpiZBL8ZspYsW2jrByKYBqNddmRjEQvnzrn3MRH1PJK
+         LO1JsdaPyuN7W9FOTapP4lYFdtW1rkaf/QPz7HLVo2inGSlhgvve1jSNF7vXwJir72Cb
+         TDWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mivF3ekCKstELbAjwclXaYaNa1EngP36z3pQawfN/Ww=;
+        b=KLJQq6Ikbk9v2cZ9numyopWGAYGzkPXIlIT1mYttR3O0hIqfH4BrKbXVQx6P4I2ydg
+         fQ7Li7JiAfK+x3DAHDs19Ud3ZIlYx5fwA5daKFMIetz/K0b1SKmR+E3xr2ZoaISkL57Z
+         qYu8PQzh8oI+Gb3gYQIgDfOBrf9CL/7DxyzKQiR5/iGsi8YbaqgowECce3DXLUGtCVae
+         Dw4zl3E8ZiblP36oLTtdNmGp6DyUGEmtjUdqgXSi0KH+rjSwhGRlLXSdZKFW/nMM5WzC
+         W1S4VGtg1I36kobUlwExHa3O0cg+godFHGW+S+VBwwhXttBMTZyyKveXrp7Mzm9pUkzo
+         wu6Q==
+X-Gm-Message-State: AOAM531k/5dYZaG6wjaxiKUFx+WQAZM3PS8N5tEjM5jprYfc5ks7Y9EA
+        cWKTNrOPjGO03000xMW5s1xZTQ==
+X-Google-Smtp-Source: ABdhPJwHV2UfTyzufi4WYxi4Lo4jKcDclD2KpFx+9zNpnE6mUVUXIlC2sr5hve8icJGE4+rvu2IZjA==
+X-Received: by 2002:adf:d1e2:: with SMTP id g2mr11158806wrd.207.1644836337628;
+        Mon, 14 Feb 2022 02:58:57 -0800 (PST)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id f18sm2453499wmg.21.2022.02.14.02.58.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 02:58:57 -0800 (PST)
+Message-ID: <8e718e04-5abe-0cb9-c8db-384f3604ad2a@linaro.org>
+Date:   Mon, 14 Feb 2022 10:58:56 +0000
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 2/3] nvmem: add driver for Layerscape SFP (Security
+ Fuse Processor)
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>
+References: <20220127163728.3650648-1-michael@walle.cc>
+ <20220127163728.3650648-3-michael@walle.cc>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <20220127163728.3650648-3-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a simplification of the safe_wtd monitor, named safe_wtd_nwo.
-The difference between these two monitors is that the latter enforces
-the nowayout watchdog device option before opening the watchdog.
 
-In this way, once the watchdog is starts, the watchdog hardware will
-serve as an safety-monitor until the system shutdown.
 
-For further information, please refer to:
-        Documentation/trace/rv/watchdog-monitor.rst
+On 27/01/2022 16:37, Michael Walle wrote:
+> Add support for the Security Fuse Processor found on Layerscape SoCs.
+> This driver implements basic read access.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+minor comments below.
 
-The monitor specification was developed together with Gabriele Paoloni,
-in the context of the Linux Foundation Elisa Project.
 
-Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Marco Elver <elver@google.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Shuah Khan <skhan@linuxfoundation.org>
-Cc: Gabriele Paoloni <gpaoloni@redhat.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Clark Williams <williams@redhat.com>
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- kernel/trace/rv/Kconfig                       |  10 +
- kernel/trace/rv/Makefile                      |   1 +
- kernel/trace/rv/monitor_safe_wtd_nwo/model.h  |  61 ++++
- .../rv/monitor_safe_wtd_nwo/safe_wtd_nwo.c    | 309 ++++++++++++++++++
- .../rv/monitor_safe_wtd_nwo/safe_wtd_nwo.h    |  64 ++++
- 5 files changed, 445 insertions(+)
- create mode 100644 kernel/trace/rv/monitor_safe_wtd_nwo/model.h
- create mode 100644 kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.c
- create mode 100644 kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.h
+> ---
+>   drivers/nvmem/Kconfig          | 12 +++++
+>   drivers/nvmem/Makefile         |  2 +
+>   drivers/nvmem/layerscape-sfp.c | 91 ++++++++++++++++++++++++++++++++++
+>   3 files changed, 105 insertions(+)
+>   create mode 100644 drivers/nvmem/layerscape-sfp.c
+> 
+> diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
+> index 94dd60b2654e..63792082e476 100644
+> --- a/drivers/nvmem/Kconfig
+> +++ b/drivers/nvmem/Kconfig
+> @@ -307,4 +307,16 @@ config NVMEM_BRCM_NVRAM
+>   	  This driver provides support for Broadcom's NVRAM that can be accessed
+>   	  using I/O mapping.
+>   
+> +config NVMEM_LAYERSCAPE_SFP
+> +	tristate "Layerscape SFP (Security Fuse Processor) support"
+> +	depends on ARCH_LAYERSCAPE || COMPILE_TEST
+> +	depends on HAS_IOMEM
+> +	help
+> +	  This driver provides support to read the eFuses on Freescale
+> +	  Layerscape SoC's. For example, the vendor provides a per part
+> +	  unique ID there.
+> +
+> +	  This driver can also be built as a module. If so, the module
+> +	  will be called layerscape-sfp.
+> +
+>   endif
+> diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
+> index 4e6d877fdfaf..914358fcdb37 100644
+> --- a/drivers/nvmem/Makefile
+> +++ b/drivers/nvmem/Makefile
+> @@ -62,3 +62,5 @@ obj-$(CONFIG_NVMEM_RMEM) 	+= nvmem-rmem.o
+>   nvmem-rmem-y			:= rmem.o
+>   obj-$(CONFIG_NVMEM_BRCM_NVRAM)	+= nvmem_brcm_nvram.o
+>   nvmem_brcm_nvram-y		:= brcm_nvram.o
+> +obj-$(CONFIG_NVMEM_LAYERSCAPE_SFP)	+= nvmem-layerscape-sfp.o
+> +nvmem-layerscape-sfp-y		:= layerscape-sfp.o
+> diff --git a/drivers/nvmem/layerscape-sfp.c b/drivers/nvmem/layerscape-sfp.c
+> new file mode 100644
+> index 000000000000..4aa94e03d8d1
+> --- /dev/null
+> +++ b/drivers/nvmem/layerscape-sfp.c
+> @@ -0,0 +1,91 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Layerscape SFP driver
+> + *
+> + * Copyright (c) 2022 Michael Walle <michael@walle.cc>
+> + *
+> + */
+> +
+> +#include <linux/clk.h>
 
-diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
-index 93b36f215b2b..7e797e132f60 100644
---- a/kernel/trace/rv/Kconfig
-+++ b/kernel/trace/rv/Kconfig
-@@ -39,6 +39,16 @@ config RV_MON_SAFE_WTD
- 	  For futher information see:
- 	    Documentation/trace/rv/safety-monitor.rst
- 
-+config RV_MON_SAFE_WTD_NWO
-+	tristate "Safety watchdog nowayout"
-+	help
-+	  Enable safe_wtd_nwo, this monitor observes the interaction
-+	  between a user-space safety monitor and a watchdog device. It
-+	  enforces the usage of watchdog's nowayout config.
-+
-+	  For futher information see:
-+	    Documentation/trace/rv/safety-monitor.rst
-+
- config RV_REACTORS
- 	bool "Runtime verification reactors"
- 	default y if RV
-diff --git a/kernel/trace/rv/Makefile b/kernel/trace/rv/Makefile
-index 854d0f6e453b..44277103d178 100644
---- a/kernel/trace/rv/Makefile
-+++ b/kernel/trace/rv/Makefile
-@@ -4,6 +4,7 @@ obj-$(CONFIG_RV) += rv.o
- obj-$(CONFIG_RV_MON_WIP) += monitor_wip/wip.o
- obj-$(CONFIG_RV_MON_WWNR) += monitor_wwnr/wwnr.o
- obj-$(CONFIG_RV_MON_SAFE_WTD) += monitor_safe_wtd/safe_wtd.o
-+obj-$(CONFIG_RV_MON_SAFE_WTD_NWO) += monitor_safe_wtd_nwo/safe_wtd_nwo.o
- obj-$(CONFIG_RV_REACTORS) += rv_reactors.o
- obj-$(CONFIG_RV_REACT_PRINTK) += reactor_printk.o
- obj-$(CONFIG_RV_REACT_PANIC) += reactor_panic.o
-diff --git a/kernel/trace/rv/monitor_safe_wtd_nwo/model.h b/kernel/trace/rv/monitor_safe_wtd_nwo/model.h
-new file mode 100644
-index 000000000000..504a93e35b93
---- /dev/null
-+++ b/kernel/trace/rv/monitor_safe_wtd_nwo/model.h
-@@ -0,0 +1,61 @@
-+enum states_safe_wtd_nwo {
-+	init = 0,
-+	closed_running,
-+	nwo,
-+	opened,
-+	safe,
-+	set,
-+	started,
-+	state_max
-+};
-+
-+enum events_safe_wtd_nwo {
-+	close = 0,
-+	nowayout,
-+	open,
-+	other_threads,
-+	ping,
-+	set_safe_timeout,
-+	start,
-+	event_max
-+};
-+
-+struct automaton_safe_wtd_nwo {
-+	char *state_names[state_max];
-+	char *event_names[event_max];
-+	char function[state_max][event_max];
-+	char initial_state;
-+	char final_states[state_max];
-+};
-+
-+struct automaton_safe_wtd_nwo automaton_safe_wtd_nwo = {
-+	.state_names = {
-+		"init",
-+		"closed_running",
-+		"nwo",
-+		"opened",
-+		"safe",
-+		"set",
-+		"started"
-+	},
-+	.event_names = {
-+		"close",
-+		"nowayout",
-+		"open",
-+		"other_threads",
-+		"ping",
-+		"set_safe_timeout",
-+		"start"
-+	},
-+	.function = {
-+		{             -1,            nwo,             -1,             -1,             -1,             -1,             -1 },
-+		{             -1, closed_running,        started, closed_running,             -1,             -1,             -1 },
-+		{             -1,            nwo,         opened,            nwo,             -1,             -1,             -1 },
-+		{            nwo,             -1,             -1,             -1,             -1,             -1,        started },
-+		{ closed_running,             -1,             -1,             -1,           safe,             -1,             -1 },
-+		{             -1,             -1,             -1,             -1,           safe,             -1,             -1 },
-+		{ closed_running,             -1,             -1,             -1,             -1,            set,             -1 },
-+	},
-+	.initial_state = init,
-+	.final_states = { 1, 0, 0, 0, 0, 0, 0 },
-+};
-diff --git a/kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.c b/kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.c
-new file mode 100644
-index 000000000000..e19e10da0dc1
---- /dev/null
-+++ b/kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.c
-@@ -0,0 +1,309 @@
-+#include <linux/ftrace.h>
-+#include <linux/tracepoint.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/rv.h>
-+#include <rv/da_monitor.h>
-+
-+#include <linux/watchdog.h>
-+#include <linux/moduleparam.h>
-+
-+#define MODULE_NAME "safe_wtd_nwo"
-+
-+/*
-+ * This is the self-generated part of the monitor. Generally, there is no need
-+ * to touch this section.
-+ */
-+#include "model.h"
-+
-+/*
-+ * Declare the deterministic automata monitor.
-+ *
-+ * The rv monitor reference is needed for the monitor declaration.
-+ */
-+struct rv_monitor rv_safe_wtd_nwo;
-+DECLARE_DA_MON_GLOBAL(safe_wtd_nwo, char);
-+
-+#define CREATE_TRACE_POINTS
-+#include "safe_wtd_nwo.h"
-+
-+/*
-+ * custom: safe_timeout is the maximum value a watchdog monitor
-+ * can set. This value is registered here to duplicate the information.
-+ * In this way, a miss-behaving monitor can be detected.
-+ */
-+static int safe_timeout = ~0;
-+module_param(safe_timeout, int, 0444);
-+
-+/*
-+ * custom: if check_timeout is set, the monitor will check if the time left
-+ * in the watchdog is less than or equals to the last safe timeout set by
-+ * user-space. This check is done after each ping. In this way, if any
-+ * code by-passed the watchdog dev interface setting a higher (so unsafe)
-+ * timeout, this monitor will catch the side effect and react.
-+ */
-+static int last_timeout_set = 0;
-+static int check_timeout = 0;
-+module_param(check_timeout, int, 0444);
-+
-+/*
-+ * custom: if dont_stop is set the monitor will react if stopped.
-+ */
-+static int dont_stop = 0;
-+module_param(dont_stop, int, 0444);
-+
-+/*
-+ * custom: there are some states that are kept after the watchdog is closed.
-+ * For example, the nowayout state.
-+ *
-+ * Thus, the RV monitor needs to keep track of these states after a start/stop
-+ * of the RV monitor itself, and should not reset after each restart - keeping the
-+ * know state until the system shutdown.
-+ *
-+ * If for an unknown reason an RV monitor would like to reset the RV monitor at each
-+ * RV monitor start, set it to one.
-+ */
-+static int reset_on_restart = 0;
-+module_param(reset_on_restart, int, 0444);
-+
-+/*
-+ * open_pid takes note of the first thread that opened the watchdog.
-+ *
-+ * Any other thread that generates an event will cause an "other_threads"
-+ * event in the monitor.
-+ */
-+static int open_pid = 0;
-+
-+/*
-+ * watchdog_id: the watchdog to monitor
-+ */
-+static int watchdog_id = 0;
-+module_param(watchdog_id, int, 0444);
-+
-+static void handle_nowayout(void *data, struct watchdog_device *wdd)
-+{
-+	if (wdd->id != watchdog_id)
-+		return;
-+
-+	da_handle_init_run_event_safe_wtd_nwo(nowayout);
-+}
-+
-+static void handle_close(void *data, struct watchdog_device *wdd)
-+{
-+	if (wdd->id != watchdog_id)
-+		return;
-+
-+	if (open_pid && current->pid != open_pid) {
-+		da_handle_init_run_event_safe_wtd_nwo(other_threads);
-+	} else {
-+		da_handle_event_safe_wtd_nwo(close);
-+		open_pid = 0;
-+	}
-+}
-+
-+static void handle_open(void *data, struct watchdog_device *wdd)
-+{
-+	if (wdd->id != watchdog_id)
-+		return;
-+
-+	if (open_pid && current->pid != open_pid) {
-+		da_handle_init_run_event_safe_wtd_nwo(other_threads);
-+	} else {
-+		da_handle_init_run_event_safe_wtd_nwo(open);
-+		open_pid = current->pid;
-+	}
-+}
-+
-+static void blocked_events(void *data, struct watchdog_device *wdd)
-+{
-+	if (wdd->id != watchdog_id)
-+		return;
-+
-+	if (open_pid && current->pid != open_pid) {
-+		da_handle_init_run_event_safe_wtd_nwo(other_threads);
-+		return;
-+	}
-+	da_handle_event_safe_wtd_nwo(other_threads);
-+}
-+
-+static void handle_ping(void *data, struct watchdog_device *wdd)
-+{
-+	char msg[128];
-+	unsigned int timeout;
-+
-+	if (wdd->id != watchdog_id)
-+		return;
-+
-+	if (open_pid && current->pid != open_pid) {
-+		da_handle_init_run_event_safe_wtd_nwo(other_threads);
-+		return;
-+	}
-+
-+	da_handle_event_safe_wtd_nwo(ping);
-+
-+	if (!check_timeout)
-+		return;
-+
-+	if (wdd->ops->get_timeleft) {
-+		timeout = wdd->ops->get_timeleft(wdd);
-+		if (timeout > last_timeout_set) {
-+			snprintf(msg, 128,
-+				 "watchdog timout is %u > than previously set (%d)\n",
-+				 timeout, last_timeout_set);
-+			cond_react(msg);
-+		}
-+	} else {
-+		snprintf(msg, 128, "error getting timeout: option not supported\n");
-+		cond_react(msg);
-+	}
-+}
-+
-+static void handle_set_safe_timeout(void *data, struct watchdog_device *wdd, unsigned long timeout)
-+{
-+	char msg[128];
-+
-+	if (wdd->id != watchdog_id)
-+		return;
-+
-+	if (open_pid && current->pid != open_pid) {
-+		da_handle_init_run_event_safe_wtd_nwo(other_threads);
-+		return;
-+	}
-+
-+	da_handle_event_safe_wtd_nwo(set_safe_timeout);
-+
-+	if (timeout > safe_timeout) {
-+		snprintf(msg, 128, "set safety timeout is too high: %d", (int) timeout);
-+		cond_react(msg);
-+	}
-+
-+	if (check_timeout)
-+		last_timeout_set = timeout;
-+}
-+
-+static void handle_start(void *data, struct watchdog_device *wdd)
-+{
-+	if (wdd->id != watchdog_id)
-+		return;
-+
-+	if (open_pid && current->pid != open_pid) {
-+		da_handle_init_run_event_safe_wtd_nwo(other_threads);
-+		return;
-+	}
-+
-+	da_handle_event_safe_wtd_nwo(start);
-+}
-+
-+#define NR_TP	9
-+static struct tracepoint_hook_helper tracepoints_to_hook[NR_TP] = {
-+	{
-+		.probe = handle_close,
-+		.name = "watchdog_close",
-+		.registered = 0
-+	},
-+	{
-+		.probe = handle_nowayout,
-+		.name = "watchdog_nowayout",
-+		.registered = 0
-+	},
-+	{
-+		.probe = handle_open,
-+		.name = "watchdog_open",
-+		.registered = 0
-+	},
-+	{
-+		.probe = handle_ping,
-+		.name = "watchdog_ping",
-+		.registered = 0
-+	},
-+	{
-+		.probe = handle_set_safe_timeout,
-+		.name = "watchdog_set_timeout",
-+		.registered = 0
-+	},
-+	{
-+		.probe = handle_start,
-+		.name = "watchdog_start",
-+		.registered = 0
-+	},
-+	{
-+		.probe = blocked_events,
-+		.name = "watchdog_stop",
-+		.registered = 0
-+	},
-+	{
-+		.probe = blocked_events,
-+		.name = "watchdog_set_keep_alive",
-+		.registered = 0
-+	},
-+	{
-+		.probe = blocked_events,
-+		.name = "watchdog_keep_alive",
-+		.registered = 0
-+	},
-+};
-+
-+static int mon_started = 0;
-+
-+static int start_safe_wtd_nwo(void)
-+{
-+	int retval;
-+
-+	if (!mon_started || reset_on_restart) {
-+		da_monitor_init_safe_wtd_nwo();
-+		mon_started = 1;
-+	}
-+
-+	retval = thh_hook_probes(tracepoints_to_hook, NR_TP);
-+	if (retval)
-+		goto out_err;
-+
-+	return 0;
-+
-+out_err:
-+	return -EINVAL;
-+}
-+
-+static void stop_safe_wtd_nwo(void)
-+{
-+	if (dont_stop)
-+		cond_react("dont_stop safe_wtd_nwo is set.");
-+
-+	rv_safe_wtd_nwo.enabled = 0;
-+	thh_unhook_probes(tracepoints_to_hook, NR_TP);
-+	return;
-+}
-+
-+/*
-+ * This is the monitor register section.
-+ */
-+struct rv_monitor rv_safe_wtd_nwo = {
-+	.name = "safe_wtd_nwo",
-+	.description = "A watchdog monitor guarding a safety monitor actions, nowayout required.",
-+	.start = start_safe_wtd_nwo,
-+	.stop = stop_safe_wtd_nwo,
-+	.reset = da_monitor_reset_all_safe_wtd_nwo,
-+	.enabled = 0,
-+};
-+
-+int register_safe_wtd_nwo(void)
-+{
-+	rv_register_monitor(&rv_safe_wtd_nwo);
-+	return 0;
-+}
-+
-+void unregister_safe_wtd_nwo(void)
-+{
-+	if (rv_safe_wtd_nwo.enabled)
-+		stop_safe_wtd_nwo();
-+
-+	rv_unregister_monitor(&rv_safe_wtd_nwo);
-+}
-+
-+module_init(register_safe_wtd_nwo);
-+module_exit(unregister_safe_wtd_nwo);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Daniel Bristot de Oliveira <bristot@kernel.org>");
-+MODULE_DESCRIPTION("Safe watchdog RV monitor nowayout");
-diff --git a/kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.h b/kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.h
-new file mode 100644
-index 000000000000..0d33800b0972
---- /dev/null
-+++ b/kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.h
-@@ -0,0 +1,64 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM rv
-+
-+#if !defined(_SAFETY_MONITOR_NWO_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _SAFETY_MONITOR_NWO_TRACE_H
-+
-+#include <linux/tracepoint.h>
-+
-+TRACE_EVENT(event_safe_wtd_nwo,
-+
-+	TP_PROTO(char state, char event, char next_state, bool safe),
-+
-+	TP_ARGS(state, event, next_state, safe),
-+
-+	TP_STRUCT__entry(
-+		__field(	char,		state		)
-+		__field(	char,		event		)
-+		__field(	char,		next_state	)
-+		__field(	bool,		safe		)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->state = state;
-+		__entry->event = event;
-+		__entry->next_state = next_state;
-+		__entry->safe = safe;
-+	),
-+
-+	TP_printk("%s x %s -> %s %s",
-+		model_get_state_name_safe_wtd_nwo(__entry->state),
-+		model_get_event_name_safe_wtd_nwo(__entry->event),
-+		model_get_state_name_safe_wtd_nwo(__entry->next_state),
-+		__entry->safe ? "(safe)" : "")
-+);
-+
-+TRACE_EVENT(error_safe_wtd_nwo,
-+
-+	TP_PROTO(char state, char event),
-+
-+	TP_ARGS(state, event),
-+
-+	TP_STRUCT__entry(
-+		__field(	char,		state		)
-+		__field(	char,		event		)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->state = state;
-+		__entry->event = event;
-+	),
-+
-+	TP_printk("event %s not expected in the state %s",
-+		model_get_event_name_safe_wtd_nwo(__entry->event),
-+		model_get_state_name_safe_wtd_nwo(__entry->state))
-+);
-+
-+#endif /* _SAFETY_MONITOR_NWO_H */
-+
-+/* This part ust be outside protection */
-+#undef TRACE_INCLUDE_PATH
-+#define TRACE_INCLUDE_PATH ../kernel/trace/rv/monitor_safe_wtd_nwo/
-+#define TRACE_INCLUDE_FILE safe_wtd_nwo
-+#include <trace/define_trace.h>
--- 
-2.33.1
+is this required?
+
+> +#include <linux/device.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/nvmem-provider.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +#include <linux/delay.h>
+
+Same here.
+
+> +
+> +#define LAYERSCAPE_SFP_OTP_OFFSET	0x0200
+> +
+> +struct layerscape_sfp_priv {
+> +	void __iomem *base;
+> +};
+> +
+> +struct layerscape_sfp_data {
+> +	int size;
+> +};
+> +
+> +static int layerscape_sfp_read(void *context, unsigned int offset, void *val,
+> +			size_t bytes)
+
+incorrect indention here.
+> +{
+> +	struct layerscape_sfp_priv *priv = context;
+> +
+> +	memcpy_fromio(val, priv->base + LAYERSCAPE_SFP_OTP_OFFSET + offset, bytes);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct nvmem_config layerscape_sfp_nvmem_config = {
+> +	.name = "fsl-sfp",
+> +	.reg_read = layerscape_sfp_read,
+> +};
+> +
+> +static int layerscape_sfp_probe(struct platform_device *pdev)
+> +{
+> +	const struct layerscape_sfp_data *data;
+> +	struct layerscape_sfp_priv *priv;
+> +	struct nvmem_device *nvmem;
+> +
+> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	priv->base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(priv->base))
+> +		return PTR_ERR(priv->base);
+> + > +	data = device_get_match_data(&pdev->dev);
+> +
+> +	layerscape_sfp_nvmem_config.size = data->size;
+> +	layerscape_sfp_nvmem_config.dev = &pdev->dev;
+> +	layerscape_sfp_nvmem_config.priv = priv;
+> +
+> +	nvmem = devm_nvmem_register(&pdev->dev, &layerscape_sfp_nvmem_config);
+> +
+> +	return PTR_ERR_OR_ZERO(nvmem);
+> +}
+> +
+> +static const struct layerscape_sfp_data ls1028a_data = {
+> +	.size = 0x88,
+> +};
+> +
+> +static const struct of_device_id layerscape_sfp_dt_ids[] = {
+> +	{ .compatible = "fsl,ls1028a-sfp", .data = &ls1028a_data },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, layerscape_sfp_dt_ids);
+> +
+> +static struct platform_driver layerscape_sfp_driver = {
+> +	.probe	= layerscape_sfp_probe,
+> +	.driver = {
+> +		.name	= "layerscape_sfp",
+> +		.of_match_table = layerscape_sfp_dt_ids,
+> +	},
+> +};
+> +module_platform_driver(layerscape_sfp_driver);
+> +
+> +MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
+> +MODULE_DESCRIPTION("Layerscape Security Fuse Processor driver");
+> +MODULE_LICENSE("GPL v2");
+Just MODULE_LICENSE("GPL") should be good here.
+
+--srini
 
