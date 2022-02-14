@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF08C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54158C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237244AbiBNKNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:13:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42320 "EHLO
+        id S1346069AbiBNKNw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:13:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345655AbiBNKMo (ORCPT
+        with ESMTP id S1345720AbiBNKNN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:12:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09890652E4;
-        Mon, 14 Feb 2022 01:50:50 -0800 (PST)
+        Mon, 14 Feb 2022 05:13:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02385657A2;
+        Mon, 14 Feb 2022 01:51:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D6E2B80DC8;
-        Mon, 14 Feb 2022 09:50:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90FCBC340F0;
-        Mon, 14 Feb 2022 09:50:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B244AB80DBF;
+        Mon, 14 Feb 2022 09:51:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4883C340E9;
+        Mon, 14 Feb 2022 09:51:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832248;
-        bh=jEmOCVJ94waLsve1mzG0F4gG1Stwn267OeTCJu9ysJw=;
+        s=korg; t=1644832289;
+        bh=fv+WkH1spk8VErTFjZqgX1hkHlHoiWogpK/zEzaVGAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n+jbKESeFO+QfbaeBnxOm7G9b9kAbudCoszsejuC0VOnMRZb2zoPIOMAD0huMKizd
-         e3IF3Gp1hAcwiWac+OBrqbTZpaZFUzk4TwwQaowqrB4axQAzC0BxlUHirhiH1eqZq/
-         5rbVXNvzKvcwlxBbTDRjMFZ0oO4hIH/BwjtpoDjU=
+        b=OpEWnqmZWs4QS0/btKHD9RzqlJzlVd+Xs61yL/t62vUf91nNv+6COnZNLy67sx32I
+         K3bu9YYftXb+APOvJKGPhjlrHpSYGhAbOU81XWg1AapaH47P6TcWanDf1gpXYVSK4s
+         XJkSONw2VwIjUiP6zMJ14hvlDfj35pa7jjbAwB6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Wang <KevinYang.Wang@amd.com>,
-        Kenneth Feng <kenneth.feng@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/172] drm/amd/pm: fix hwmon node of power1_label create issue
-Date:   Mon, 14 Feb 2022 10:26:23 +0100
-Message-Id: <20220214092510.727307286@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Jann Horn <jannh@google.com>
+Subject: [PATCH 5.15 140/172] net: usb: ax88179_178a: Fix out-of-bounds accesses in RX fixup
+Date:   Mon, 14 Feb 2022 10:26:38 +0100
+Message-Id: <20220214092511.234695360@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,42 +49,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Wang <KevinYang.Wang@amd.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit a8b1e8636a3252daa729762b2e3cc9015cc91a5c ]
+commit 57bc3d3ae8c14df3ceb4e17d26ddf9eeab304581 upstream.
 
-it will cause hwmon node of power1_label is not created.
+ax88179_rx_fixup() contains several out-of-bounds accesses that can be
+triggered by a malicious (or defective) USB device, in particular:
 
-v2:
-the hwmon node of "power1_label" is always needed for all ASICs.
-and the patch will remove ASIC type check for "power1_label".
+ - The metadata array (hdr_off..hdr_off+2*pkt_cnt) can be out of bounds,
+   causing OOB reads and (on big-endian systems) OOB endianness flips.
+ - A packet can overlap the metadata array, causing a later OOB
+   endianness flip to corrupt data used by a cloned SKB that has already
+   been handed off into the network stack.
+ - A packet SKB can be constructed whose tail is far beyond its end,
+   causing out-of-bounds heap data to be considered part of the SKB's
+   data.
 
-Fixes: ae07970a0621d6 ("drm/amd/pm: add support for hwmon control of slow and fast PPT limit on vangogh")
+I have tested that this can be used by a malicious USB device to send a
+bogus ICMPv6 Echo Request and receive an ICMPv6 Echo Reply in response
+that contains random kernel heap data.
+It's probably also possible to get OOB writes from this on a
+little-endian system somehow - maybe by triggering skb_cow() via IP
+options processing -, but I haven't tested that.
 
-Signed-off-by: Yang Wang <KevinYang.Wang@amd.com>
-Reviewed-by: Kenneth Feng <kenneth.feng@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e2ca90c276e1 ("ax88179_178a: ASIX AX88179_178A USB 3.0/2.0 to gigabit ethernet adapter driver")
+Cc: stable@kernel.org
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/pm/amdgpu_pm.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/usb/ax88179_178a.c |   68 +++++++++++++++++++++++------------------
+ 1 file changed, 39 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/amdgpu_pm.c b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-index 32a0fd5e84b73..640db5020ccc3 100644
---- a/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-+++ b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-@@ -3445,8 +3445,7 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
- 	     attr == &sensor_dev_attr_power2_cap_min.dev_attr.attr ||
- 		 attr == &sensor_dev_attr_power2_cap.dev_attr.attr ||
- 		 attr == &sensor_dev_attr_power2_cap_default.dev_attr.attr ||
--		 attr == &sensor_dev_attr_power2_label.dev_attr.attr ||
--		 attr == &sensor_dev_attr_power1_label.dev_attr.attr))
-+		 attr == &sensor_dev_attr_power2_label.dev_attr.attr))
- 		return 0;
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1467,58 +1467,68 @@ static int ax88179_rx_fixup(struct usbne
+ 	u16 hdr_off;
+ 	u32 *pkt_hdr;
  
- 	return effective_mode;
--- 
-2.34.1
-
+-	/* This check is no longer done by usbnet */
+-	if (skb->len < dev->net->hard_header_len)
++	/* At the end of the SKB, there's a header telling us how many packets
++	 * are bundled into this buffer and where we can find an array of
++	 * per-packet metadata (which contains elements encoded into u16).
++	 */
++	if (skb->len < 4)
+ 		return 0;
+-
+ 	skb_trim(skb, skb->len - 4);
+ 	rx_hdr = get_unaligned_le32(skb_tail_pointer(skb));
+-
+ 	pkt_cnt = (u16)rx_hdr;
+ 	hdr_off = (u16)(rx_hdr >> 16);
++
++	if (pkt_cnt == 0)
++		return 0;
++
++	/* Make sure that the bounds of the metadata array are inside the SKB
++	 * (and in front of the counter at the end).
++	 */
++	if (pkt_cnt * 2 + hdr_off > skb->len)
++		return 0;
+ 	pkt_hdr = (u32 *)(skb->data + hdr_off);
+ 
+-	while (pkt_cnt--) {
++	/* Packets must not overlap the metadata array */
++	skb_trim(skb, hdr_off);
++
++	for (; ; pkt_cnt--, pkt_hdr++) {
+ 		u16 pkt_len;
+ 
+ 		le32_to_cpus(pkt_hdr);
+ 		pkt_len = (*pkt_hdr >> 16) & 0x1fff;
+ 
+-		/* Check CRC or runt packet */
+-		if ((*pkt_hdr & AX_RXHDR_CRC_ERR) ||
+-		    (*pkt_hdr & AX_RXHDR_DROP_ERR)) {
+-			skb_pull(skb, (pkt_len + 7) & 0xFFF8);
+-			pkt_hdr++;
+-			continue;
+-		}
+-
+-		if (pkt_cnt == 0) {
+-			skb->len = pkt_len;
+-			/* Skip IP alignment pseudo header */
+-			skb_pull(skb, 2);
+-			skb_set_tail_pointer(skb, skb->len);
+-			skb->truesize = pkt_len + sizeof(struct sk_buff);
+-			ax88179_rx_checksum(skb, pkt_hdr);
+-			return 1;
+-		}
++		if (pkt_len > skb->len)
++			return 0;
+ 
+-		ax_skb = skb_clone(skb, GFP_ATOMIC);
+-		if (ax_skb) {
++		/* Check CRC or runt packet */
++		if (((*pkt_hdr & (AX_RXHDR_CRC_ERR | AX_RXHDR_DROP_ERR)) == 0) &&
++		    pkt_len >= 2 + ETH_HLEN) {
++			bool last = (pkt_cnt == 0);
++
++			if (last) {
++				ax_skb = skb;
++			} else {
++				ax_skb = skb_clone(skb, GFP_ATOMIC);
++				if (!ax_skb)
++					return 0;
++			}
+ 			ax_skb->len = pkt_len;
+ 			/* Skip IP alignment pseudo header */
+ 			skb_pull(ax_skb, 2);
+ 			skb_set_tail_pointer(ax_skb, ax_skb->len);
+ 			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
+ 			ax88179_rx_checksum(ax_skb, pkt_hdr);
++
++			if (last)
++				return 1;
++
+ 			usbnet_skb_return(dev, ax_skb);
+-		} else {
+-			return 0;
+ 		}
+ 
+-		skb_pull(skb, (pkt_len + 7) & 0xFFF8);
+-		pkt_hdr++;
++		/* Trim this packet away from the SKB */
++		if (!skb_pull(skb, (pkt_len + 7) & 0xFFF8))
++			return 0;
+ 	}
+-	return 1;
+ }
+ 
+ static struct sk_buff *
 
 
