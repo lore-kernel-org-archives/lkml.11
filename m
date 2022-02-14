@@ -2,72 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E920C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243990AbiBNKdm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:33:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39056 "EHLO
+        id S1347972AbiBNKds (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:33:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348982AbiBNKbO (ORCPT
+        with ESMTP id S1348968AbiBNKbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:31:14 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7D19DD78;
+        Mon, 14 Feb 2022 05:31:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB309DD75;
         Mon, 14 Feb 2022 01:59:59 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 79FD21F43053
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644832798;
-        bh=PmeiC/wYqvKXsD5lUE5EB7IB8YOl2pZWINM/lweU0uQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=huItp0jpBT5mIuS3V2qntF47BW1WYY6qF2Sphz5S5Es9/zaydd2GXERLPFT48Tg7I
-         fkYl24WNF0i/WY3JaQYCJ4SSLVD397Irnv1yVkV8sJRdWorZgZlGvWQ4JvmRgIy9AW
-         4qSFNoTZ+SW09YJaey4sO0UFk6hq1dZVLsm6Dd6QV3E/z+KHfZ0TLRiUb+9xA4V8oP
-         WSZZI6dCgNTb/OX7OQ275Y3ZmvM+Zt3BQYxwqkjQGpQBbxWMQmjJqRjtsdBGygbnRO
-         SdcBfHb106jhNlW++A9eGBwHtD0h0Ai93vVVfLmlQxpqs6wNuz0vPKnxnkoyO6nMHT
-         IGQakN7qdIYYA==
-Message-ID: <2dae87c6-c796-4687-0f21-86a0b36ae1ac@collabora.com>
-Date:   Mon, 14 Feb 2022 10:59:54 +0100
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C77960B31;
+        Mon, 14 Feb 2022 09:59:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A1CC340E9;
+        Mon, 14 Feb 2022 09:59:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832788;
+        bh=+3V7kLPNkHtBcTLCEvk6zqPxgRYdatEipC65smgMYe0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nOxpilClTw/DyWOTn4Tcyohvwy61m0+unemrcM3byACA2WNpANn0Ubul80HemS/De
+         QQHJJMANKsN1S9rWsZQ1XDvKzY9UG7ksy+WvnnNXqErJglNVYHAQj3ICFtH+DQcduy
+         Xn7Cbp3n2gCV+xJLx3vnw4ClGrbUdPRKjLaH7GiQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Marek Vasut <marex@denx.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 125/203] drm/panel: simple: Assign data from panel_dpi_probe() correctly
+Date:   Mon, 14 Feb 2022 10:26:09 +0100
+Message-Id: <20220214092514.490834060@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v4 2/3] pinctrl: add pinctrl driver on mt8186
-Content-Language: en-US
-To:     Guodong Liu <guodong.liu@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@kernel.org>
-Cc:     Sean Wang <sean.wang@mediatek.com>, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220214030631.4969-1-guodong.liu@mediatek.com>
- <20220214030631.4969-3-guodong.liu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220214030631.4969-3-guodong.liu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 14/02/22 04:06, Guodong Liu ha scritto:
-> This commit includes pinctrl driver for mt8186.
-> 
-> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+[ Upstream commit 6df4432a5eca101b5fd80fbee41d309f3d67928d ]
 
-> ---
->   drivers/pinctrl/mediatek/Kconfig              |    7 +
->   drivers/pinctrl/mediatek/Makefile             |    1 +
->   drivers/pinctrl/mediatek/pinctrl-mt8186.c     | 1311 ++++++++++
->   drivers/pinctrl/mediatek/pinctrl-mtk-mt8186.h | 2186 +++++++++++++++++
->   4 files changed, 3505 insertions(+)
->   create mode 100644 drivers/pinctrl/mediatek/pinctrl-mt8186.c
->   create mode 100644 drivers/pinctrl/mediatek/pinctrl-mtk-mt8186.h
-> 
+In the function panel_simple_probe() the pointer panel->desc is
+assigned to the passed pointer desc. If function panel_dpi_probe()
+is called panel->desc will be updated, but further on only desc
+will be evaluated. So update the desc pointer to be able to use
+the data from the function panel_dpi_probe().
+
+Fixes: 4a1d0dbc8332 ("drm/panel: simple: add panel-dpi support")
+
+Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+To: dri-devel@lists.freedesktop.org
+Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220201110153.3479-1-cniedermaier@dh-electronics.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/panel/panel-simple.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index eb475a3a774b7..87f30bced7b7e 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -588,6 +588,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
+ 		err = panel_dpi_probe(dev, panel);
+ 		if (err)
+ 			goto free_ddc;
++		desc = panel->desc;
+ 	} else {
+ 		if (!of_get_display_timing(dev->of_node, "panel-timing", &dt))
+ 			panel_simple_parse_panel_timing_node(dev, panel, &dt);
+-- 
+2.34.1
+
+
+
