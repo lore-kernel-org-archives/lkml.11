@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A140C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5697EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243465AbiBNJcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:32:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41894 "EHLO
+        id S243598AbiBNJcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:32:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243344AbiBNJbj (ORCPT
+        with ESMTP id S243436AbiBNJbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:31:39 -0500
+        Mon, 14 Feb 2022 04:31:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC0FAE59;
-        Mon, 14 Feb 2022 01:30:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66518AE77;
+        Mon, 14 Feb 2022 01:30:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26F9360F87;
-        Mon, 14 Feb 2022 09:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05122C340E9;
-        Mon, 14 Feb 2022 09:30:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E905B60F8D;
+        Mon, 14 Feb 2022 09:30:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64AD0C340E9;
+        Mon, 14 Feb 2022 09:30:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831024;
-        bh=uCy9zei6+glFa+/0WU4PdY4k4NNYd49dDfkkI9f0W6k=;
+        s=korg; t=1644831028;
+        bh=xTXfdeZ0M0/7c+q//0P2caLawKRx8oTCw8iwRYfen8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eqtur7icnjvCYi/KQ/WzJnZF//Z1F1Afd6xdk9KG3GtyDt2e7yZn2P5SGvWMZ9Ln0
-         2tqVRI8UXHv9Wbs6d1hz0wGbBb++12hth3P4k68ywS+EzM1VtBuKB82E4ZYTosIgtU
-         O/c602xkP4K+b2Vn+ZZZ2mN+wXo4vytBZj7203Po=
+        b=DZB6ZyWWNKU3fUyM6bJnNDneV63Tantx2geKBfC+6f0j046mEKgrsHR2xJcjzlS2Y
+         Zbd8UoRFMPHgrxMxspZfwI+F0uIOSGM5nqqrAzf1v7Kk5in3VoipwIAgBafm4z5uLX
+         VJ9RdG2a2uzS0QP4aJ68plY7JVJhgBhMDImcECuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 4.14 02/44] ima: Remove ima_policy file before directory
-Date:   Mon, 14 Feb 2022 10:25:25 +0100
-Message-Id: <20220214092447.980494510@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 20/44] staging: fbtft: Fix error path in fbtft_driver_module_init()
+Date:   Mon, 14 Feb 2022 10:25:43 +0100
+Message-Id: <20220214092448.568447156@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -49,37 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Berger <stefanb@linux.ibm.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit f7333b9572d0559e00352a926c92f29f061b4569 upstream.
+[ Upstream commit 426aca16e903b387a0b0001d62207a745c67cfd3 ]
 
-The removal of ima_dir currently fails since ima_policy still exists, so
-remove the ima_policy file before removing the directory.
+If registering the platform driver fails, the function must not return
+without undoing the spi driver registration first.
 
-Fixes: 4af4662fa4a9 ("integrity: IMA policy")
-Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Fixes: c296d5f9957c ("staging: fbtft: core support")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220118181338.207943-1-u.kleine-koenig@pengutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/ima_fs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/fbtft/fbtft.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/security/integrity/ima/ima_fs.c
-+++ b/security/integrity/ima/ima_fs.c
-@@ -486,11 +486,11 @@ int __init ima_fs_init(void)
- 
- 	return 0;
- out:
-+	securityfs_remove(ima_policy);
- 	securityfs_remove(violations);
- 	securityfs_remove(runtime_measurements_count);
- 	securityfs_remove(ascii_runtime_measurements);
- 	securityfs_remove(binary_runtime_measurements);
- 	securityfs_remove(ima_dir);
--	securityfs_remove(ima_policy);
- 	return -1;
- }
+diff --git a/drivers/staging/fbtft/fbtft.h b/drivers/staging/fbtft/fbtft.h
+index 488ab788138e1..b086e8e5b4dd3 100644
+--- a/drivers/staging/fbtft/fbtft.h
++++ b/drivers/staging/fbtft/fbtft.h
+@@ -342,7 +342,10 @@ static int __init fbtft_driver_module_init(void)                           \
+ 	ret = spi_register_driver(&fbtft_driver_spi_driver);               \
+ 	if (ret < 0)                                                       \
+ 		return ret;                                                \
+-	return platform_driver_register(&fbtft_driver_platform_driver);    \
++	ret = platform_driver_register(&fbtft_driver_platform_driver);     \
++	if (ret < 0)                                                       \
++		spi_unregister_driver(&fbtft_driver_spi_driver);           \
++	return ret;                                                        \
+ }                                                                          \
+ 									   \
+ static void __exit fbtft_driver_module_exit(void)                          \
+-- 
+2.34.1
+
 
 
