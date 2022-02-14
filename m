@@ -2,96 +2,338 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88342C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 23:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 093B8C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232284AbiBNX7h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 18:59:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38234 "EHLO
+        id S232307AbiBOAAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 19:00:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiBNX7e (ORCPT
+        with ESMTP id S229636AbiBOAA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 18:59:34 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9418B3E5DD
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 15:59:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644883165; x=1676419165;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hXIeqUPMnAbRI0lDJsfcrAloUYkm5YLSaI9flvJx2Dk=;
-  b=aMmH/kZ2cTgWEdc3HhSzEOElxPeaPeFK5iSJy258DCttYXLbFOjLWNyN
-   NxlvKiVpSvIRtvDG3u+TtShnu2Okkv5+m20upTWC6qaN8y+TyMOYyASkE
-   mo5FgeEuJ3nfLIJnLOg+c+q4KiRVtsqj6ZqBXG37iaJEu3HYvjW6RjK1Y
-   LeGW0nfFR/KqEmwkDwZztkkmM93TinN4csHeeRkK8JjSHEnHzKitd78rV
-   ILvEsL9VN01tGWVMk1jNif0ScglT9Q77aJPXDzCfyzk0K8GOOn2/1LqmY
-   kpxPKpWmvxM5DFeGkbIX+BBpZ+oNhU4U7QN/9EbOGo/Tmw/RQ8rE3duVj
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249043895"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="249043895"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 15:59:24 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="570539661"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 14 Feb 2022 15:59:23 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJlFa-00093U-GB; Mon, 14 Feb 2022 23:59:22 +0000
-Date:   Tue, 15 Feb 2022 07:58:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [willy-pagecache:fs-folio 44/58] fs/hostfs/hostfs_kern.c:507:17:
- error: 'filemap_dirty_folio' undeclared here (not in a function); did you
- mean 'filemap_get_folio'?
-Message-ID: <202202150745.y8wccCv3-lkp@intel.com>
+        Mon, 14 Feb 2022 19:00:29 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B9C403C6;
+        Mon, 14 Feb 2022 16:00:20 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21ENX1hJ019774;
+        Tue, 15 Feb 2022 00:00:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=J3faY/DanDPihzvBOoFhm5o0uGb8lNbKSjixyKz24a4=;
+ b=L7zjsXdU/behPiYfhjaJAek8StavL1GWqgnWXH0syp0IDMa9Y102WfcykzxTWW/zF/YH
+ C4vdUvAhAOZAy5MXbEJUwaETY7BiSuBp5DLCM3YIWrO7vEXHEQEm6DrorpORCutA+c0T
+ iPKWryhByoEqtVoeQd854InTcEdYYtw/8XGHXy97eEBJWpXazFjH1bxVqAwi47s1qudc
+ 7Kf9TlBdHw/l03N5nhfJ5C+NH9Mk7jN36E5dNpUfKQ/E0gNYWDj96XPHk5cG5B01Ec30
+ 0SIM7QxnI/qAaJdr9sJLNXOr/iypOB8IzOnbybUhnYhb/mjEgC35qerxUjk958kUFgrI BA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e785tg9x7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 00:00:19 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21F00JVI028653;
+        Tue, 15 Feb 2022 00:00:19 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e785tg9wc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 00:00:19 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21ENwH1c005203;
+        Tue, 15 Feb 2022 00:00:17 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e645jhxhj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 00:00:16 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21F00D7i27132324
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 00:00:13 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 81E8AA405B;
+        Tue, 15 Feb 2022 00:00:13 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E561EA4059;
+        Tue, 15 Feb 2022 00:00:12 +0000 (GMT)
+Received: from p-imbrenda (unknown [9.145.2.54])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 15 Feb 2022 00:00:12 +0000 (GMT)
+Date:   Mon, 14 Feb 2022 16:30:53 +0100
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: Re: [PATCH v4 01/10] s390/uaccess: Add copy_from/to_user_key
+ functions
+Message-ID: <20220214163053.13e71683@p-imbrenda>
+In-Reply-To: <20220211182215.2730017-2-scgl@linux.ibm.com>
+References: <20220211182215.2730017-1-scgl@linux.ibm.com>
+        <20220211182215.2730017-2-scgl@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: BwgqTVATgoIpAz9oIa5f680-uma8_m3g
+X-Proofpoint-ORIG-GUID: B4tDmq-WKFrCwUYYxoj8b0-6O0b6sOi3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_07,2022-02-14_03,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
+ malwarescore=0 adultscore=0 lowpriorityscore=0 clxscore=1015
+ impostorscore=0 priorityscore=1501 bulkscore=0 suspectscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202140134
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.infradead.org/users/willy/pagecache fs-folio
-head:   2a1113b30dfe1f84d065830fc837dfa8737ba380
-commit: 117ba9cd89727cdc7262cb6088ea070ae1ef2a98 [44/58] fs: Convert trivial uses of __set_page_dirty_nobuffers to filemap_dirty_folio
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220215/202202150745.y8wccCv3-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        git remote add willy-pagecache git://git.infradead.org/users/willy/pagecache
-        git fetch --no-tags willy-pagecache fs-folio
-        git checkout 117ba9cd89727cdc7262cb6088ea070ae1ef2a98
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+On Fri, 11 Feb 2022 19:22:06 +0100
+Janis Schoetterl-Glausch <scgl@linux.ibm.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Add copy_from/to_user_key functions, which perform storage key checking.
+> These functions can be used by KVM for emulating instructions that need
+> to be key checked.
+> These functions differ from their non _key counterparts in
+> include/linux/uaccess.h only in the additional key argument and must be
+> kept in sync with those.
+> 
+> Since the existing uaccess implementation on s390 makes use of move
+> instructions that support having an additional access key supplied,
+> we can implement raw_copy_from/to_user_key by enhancing the
+> existing implementation.
+> 
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+> Acked-by: Heiko Carstens <hca@linux.ibm.com>
+> Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+> Acked-by: Janosch Frank <frankja@linux.ibm.com>
 
-All errors (new ones prefixed by >>):
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
 
->> fs/hostfs/hostfs_kern.c:507:17: error: 'filemap_dirty_folio' undeclared here (not in a function); did you mean 'filemap_get_folio'?
-     507 |  .dirty_folio = filemap_dirty_folio,
-         |                 ^~~~~~~~~~~~~~~~~~~
-         |                 filemap_get_folio
+> ---
+>  arch/s390/include/asm/uaccess.h | 22 +++++++++
+>  arch/s390/lib/uaccess.c         | 81 +++++++++++++++++++++++++--------
+>  2 files changed, 85 insertions(+), 18 deletions(-)
+> 
+> diff --git a/arch/s390/include/asm/uaccess.h b/arch/s390/include/asm/uaccess.h
+> index d74e26b48604..ba1bcb91af95 100644
+> --- a/arch/s390/include/asm/uaccess.h
+> +++ b/arch/s390/include/asm/uaccess.h
+> @@ -44,6 +44,28 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n);
+>  #define INLINE_COPY_TO_USER
+>  #endif
+>  
+> +unsigned long __must_check
+> +_copy_from_user_key(void *to, const void __user *from, unsigned long n, unsigned long key);
+> +
+> +static __always_inline unsigned long __must_check
+> +copy_from_user_key(void *to, const void __user *from, unsigned long n, unsigned long key)
+> +{
+> +	if (likely(check_copy_size(to, n, false)))
+> +		n = _copy_from_user_key(to, from, n, key);
+> +	return n;
+> +}
+> +
+> +unsigned long __must_check
+> +_copy_to_user_key(void __user *to, const void *from, unsigned long n, unsigned long key);
+> +
+> +static __always_inline unsigned long __must_check
+> +copy_to_user_key(void __user *to, const void *from, unsigned long n, unsigned long key)
+> +{
+> +	if (likely(check_copy_size(from, n, true)))
+> +		n = _copy_to_user_key(to, from, n, key);
+> +	return n;
+> +}
+> +
+>  int __put_user_bad(void) __attribute__((noreturn));
+>  int __get_user_bad(void) __attribute__((noreturn));
+>  
+> diff --git a/arch/s390/lib/uaccess.c b/arch/s390/lib/uaccess.c
+> index 8a5d21461889..b709239feb5d 100644
+> --- a/arch/s390/lib/uaccess.c
+> +++ b/arch/s390/lib/uaccess.c
+> @@ -59,11 +59,13 @@ static inline int copy_with_mvcos(void)
+>  #endif
+>  
+>  static inline unsigned long copy_from_user_mvcos(void *x, const void __user *ptr,
+> -						 unsigned long size)
+> +						 unsigned long size, unsigned long key)
+>  {
+>  	unsigned long tmp1, tmp2;
+>  	union oac spec = {
+> +		.oac2.key = key,
+>  		.oac2.as = PSW_BITS_AS_SECONDARY,
+> +		.oac2.k = 1,
+>  		.oac2.a = 1,
+>  	};
+>  
+> @@ -94,19 +96,19 @@ static inline unsigned long copy_from_user_mvcos(void *x, const void __user *ptr
+>  }
+>  
+>  static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
+> -						unsigned long size)
+> +						unsigned long size, unsigned long key)
+>  {
+>  	unsigned long tmp1, tmp2;
+>  
+>  	tmp1 = -256UL;
+>  	asm volatile(
+>  		"   sacf  0\n"
+> -		"0: mvcp  0(%0,%2),0(%1),%3\n"
+> +		"0: mvcp  0(%0,%2),0(%1),%[key]\n"
+>  		"7: jz    5f\n"
+>  		"1: algr  %0,%3\n"
+>  		"   la    %1,256(%1)\n"
+>  		"   la    %2,256(%2)\n"
+> -		"2: mvcp  0(%0,%2),0(%1),%3\n"
+> +		"2: mvcp  0(%0,%2),0(%1),%[key]\n"
+>  		"8: jnz   1b\n"
+>  		"   j     5f\n"
+>  		"3: la    %4,255(%1)\n"	/* %4 = ptr + 255 */
+> @@ -115,7 +117,7 @@ static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
+>  		"   slgr  %4,%1\n"
+>  		"   clgr  %0,%4\n"	/* copy crosses next page boundary? */
+>  		"   jnh   6f\n"
+> -		"4: mvcp  0(%4,%2),0(%1),%3\n"
+> +		"4: mvcp  0(%4,%2),0(%1),%[key]\n"
+>  		"9: slgr  %0,%4\n"
+>  		"   j     6f\n"
+>  		"5: slgr  %0,%0\n"
+> @@ -123,24 +125,49 @@ static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
+>  		EX_TABLE(0b,3b) EX_TABLE(2b,3b) EX_TABLE(4b,6b)
+>  		EX_TABLE(7b,3b) EX_TABLE(8b,3b) EX_TABLE(9b,6b)
+>  		: "+a" (size), "+a" (ptr), "+a" (x), "+a" (tmp1), "=a" (tmp2)
+> -		: : "cc", "memory");
+> +		: [key] "d" (key << 4)
+> +		: "cc", "memory");
+>  	return size;
+>  }
+>  
+> -unsigned long raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+> +static unsigned long raw_copy_from_user_key(void *to, const void __user *from,
+> +					    unsigned long n, unsigned long key)
+>  {
+>  	if (copy_with_mvcos())
+> -		return copy_from_user_mvcos(to, from, n);
+> -	return copy_from_user_mvcp(to, from, n);
+> +		return copy_from_user_mvcos(to, from, n, key);
+> +	return copy_from_user_mvcp(to, from, n, key);
+> +}
+> +
+> +unsigned long raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+> +{
+> +	return raw_copy_from_user_key(to, from, n, 0);
+>  }
+>  EXPORT_SYMBOL(raw_copy_from_user);
+>  
+> +unsigned long _copy_from_user_key(void *to, const void __user *from,
+> +				  unsigned long n, unsigned long key)
+> +{
+> +	unsigned long res = n;
+> +
+> +	might_fault();
+> +	if (!should_fail_usercopy()) {
+> +		instrument_copy_from_user(to, from, n);
+> +		res = raw_copy_from_user_key(to, from, n, key);
+> +	}
+> +	if (unlikely(res))
+> +		memset(to + (n - res), 0, res);
+> +	return res;
+> +}
+> +EXPORT_SYMBOL(_copy_from_user_key);
+> +
+>  static inline unsigned long copy_to_user_mvcos(void __user *ptr, const void *x,
+> -					       unsigned long size)
+> +					       unsigned long size, unsigned long key)
+>  {
+>  	unsigned long tmp1, tmp2;
+>  	union oac spec = {
+> +		.oac1.key = key,
+>  		.oac1.as = PSW_BITS_AS_SECONDARY,
+> +		.oac1.k = 1,
+>  		.oac1.a = 1,
+>  	};
+>  
+> @@ -171,19 +198,19 @@ static inline unsigned long copy_to_user_mvcos(void __user *ptr, const void *x,
+>  }
+>  
+>  static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
+> -					      unsigned long size)
+> +					      unsigned long size, unsigned long key)
+>  {
+>  	unsigned long tmp1, tmp2;
+>  
+>  	tmp1 = -256UL;
+>  	asm volatile(
+>  		"   sacf  0\n"
+> -		"0: mvcs  0(%0,%1),0(%2),%3\n"
+> +		"0: mvcs  0(%0,%1),0(%2),%[key]\n"
+>  		"7: jz    5f\n"
+>  		"1: algr  %0,%3\n"
+>  		"   la    %1,256(%1)\n"
+>  		"   la    %2,256(%2)\n"
+> -		"2: mvcs  0(%0,%1),0(%2),%3\n"
+> +		"2: mvcs  0(%0,%1),0(%2),%[key]\n"
+>  		"8: jnz   1b\n"
+>  		"   j     5f\n"
+>  		"3: la    %4,255(%1)\n" /* %4 = ptr + 255 */
+> @@ -192,7 +219,7 @@ static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
+>  		"   slgr  %4,%1\n"
+>  		"   clgr  %0,%4\n"	/* copy crosses next page boundary? */
+>  		"   jnh   6f\n"
+> -		"4: mvcs  0(%4,%1),0(%2),%3\n"
+> +		"4: mvcs  0(%4,%1),0(%2),%[key]\n"
+>  		"9: slgr  %0,%4\n"
+>  		"   j     6f\n"
+>  		"5: slgr  %0,%0\n"
+> @@ -200,18 +227,36 @@ static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
+>  		EX_TABLE(0b,3b) EX_TABLE(2b,3b) EX_TABLE(4b,6b)
+>  		EX_TABLE(7b,3b) EX_TABLE(8b,3b) EX_TABLE(9b,6b)
+>  		: "+a" (size), "+a" (ptr), "+a" (x), "+a" (tmp1), "=a" (tmp2)
+> -		: : "cc", "memory");
+> +		: [key] "d" (key << 4)
+> +		: "cc", "memory");
+>  	return size;
+>  }
+>  
+> -unsigned long raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+> +static unsigned long raw_copy_to_user_key(void __user *to, const void *from,
+> +					  unsigned long n, unsigned long key)
+>  {
+>  	if (copy_with_mvcos())
+> -		return copy_to_user_mvcos(to, from, n);
+> -	return copy_to_user_mvcs(to, from, n);
+> +		return copy_to_user_mvcos(to, from, n, key);
+> +	return copy_to_user_mvcs(to, from, n, key);
+> +}
+> +
+> +unsigned long raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+> +{
+> +	return raw_copy_to_user_key(to, from, n, 0);
+>  }
+>  EXPORT_SYMBOL(raw_copy_to_user);
+>  
+> +unsigned long _copy_to_user_key(void __user *to, const void *from,
+> +				unsigned long n, unsigned long key)
+> +{
+> +	might_fault();
+> +	if (should_fail_usercopy())
+> +		return n;
+> +	instrument_copy_to_user(to, from, n);
+> +	return raw_copy_to_user_key(to, from, n, key);
+> +}
+> +EXPORT_SYMBOL(_copy_to_user_key);
+> +
+>  static inline unsigned long clear_user_mvcos(void __user *to, unsigned long size)
+>  {
+>  	unsigned long tmp1, tmp2;
 
-
-vim +507 fs/hostfs/hostfs_kern.c
-
-   503	
-   504	static const struct address_space_operations hostfs_aops = {
-   505		.writepage 	= hostfs_writepage,
-   506		.readpage	= hostfs_readpage,
- > 507		.dirty_folio	= filemap_dirty_folio,
-   508		.write_begin	= hostfs_write_begin,
-   509		.write_end	= hostfs_write_end,
-   510	};
-   511	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
