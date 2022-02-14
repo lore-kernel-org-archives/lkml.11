@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:15:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF6F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346044AbiBNKPI (ORCPT
+        id S1345720AbiBNKPK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:15:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44004 "EHLO
+        Mon, 14 Feb 2022 05:15:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345780AbiBNKNO (ORCPT
+        with ESMTP id S1345850AbiBNKNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:13:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8D8657AA;
-        Mon, 14 Feb 2022 01:52:03 -0800 (PST)
+        Mon, 14 Feb 2022 05:13:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7568F65805;
+        Mon, 14 Feb 2022 01:52:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 777F9B80D83;
-        Mon, 14 Feb 2022 09:52:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 645AAC340F0;
-        Mon, 14 Feb 2022 09:52:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0481860F31;
+        Mon, 14 Feb 2022 09:52:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4C18C340E9;
+        Mon, 14 Feb 2022 09:52:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832321;
-        bh=73jkwc8d5G1IRqqum6n5Rw5oNUa2CIyevo3N8bAMXJk=;
+        s=korg; t=1644832327;
+        bh=9vxZ2UxSC/BPL5u/hZd6/MrObK1934bk0SauZ5RvZs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HQEvsopK7dmpTtsGkkRwci0bAIUm3lMuciWHdbdqj2q0W6SZkod52hBVwX3lOpuUf
-         iKj0M1C4sSLbuvsZOKhZvC0J7gdAi4egOtqJw0WSQN3a1r3/56FNgnV8HDMW1rsuU/
-         osGoAcqQ4068bySAPqQD14LJPsXA48XcunBlv09A=
+        b=dpVg19mRIxuUV3+CdqCjYxOwM1bl+JR4AQn7jSkbPTj/rlvB8UAskyqgCM+dNY74F
+         LYepStrecMZA9IH6bObP9/CqBkdkMh14En2JKd3Zoh8vq2YOcqASFsQQVnRAPtEjMP
+         fXkcMZafHbUNQ4XjGh3kz4sOqZxMvqoOaBII1DO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 132/172] net: mscc: ocelot: fix mutex lock error during ethtool stats read
-Date:   Mon, 14 Feb 2022 10:26:30 +0100
-Message-Id: <20220214092510.971159445@linuxfoundation.org>
+        Stephan Brunner <s.brunner@stephan-brunner.net>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.15 151/172] USB: serial: ch341: add support for GW Instek USB2.0-Serial devices
+Date:   Mon, 14 Feb 2022 10:26:49 +0100
+Message-Id: <20220214092511.602067284@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -52,85 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Foster <colin.foster@in-advantage.com>
+From: Stephan Brunner <s.brunner@stephan-brunner.net>
 
-[ Upstream commit 7fbf6795d127a3b1bb39b0e42579904cf6db1624 ]
+commit fa77ce201f7f2d823b07753575122d1ae5597fbe upstream.
 
-An ongoing workqueue populates the stats buffer. At the same time, a user
-might query the statistics. While writing to the buffer is mutex-locked,
-reading from the buffer wasn't. This could lead to buggy reads by ethtool.
+Programmable lab power supplies made by GW Instek, such as the
+GPP-2323, have a USB port exposing a serial port to control the device.
 
-This patch fixes the former blamed commit, but the bug was introduced in
-the latter.
+Stringing the supplied Windows driver, references to the ch341 chip are
+found. Binding the existing ch341 driver to the VID/PID of the GPP-2323
+("GW Instek USB2.0-Serial" as per the USB product name) works out of the
+box, communication and control is now possible.
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-Fixes: 1e1caa9735f90 ("ocelot: Clean up stats update deferred work")
-Fixes: a556c76adc052 ("net: mscc: Add initial Ocelot switch support")
-Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/all/20220210150451.416845-2-colin.foster@in-advantage.com/
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch should work with any GPP series power supply due to
+similarities in the product line.
+
+Signed-off-by: Stephan Brunner <s.brunner@stephan-brunner.net>
+Link: https://lore.kernel.org/r/4a47b864-0816-6f6a-efee-aa20e74bcdc6@stephan-brunner.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/usb/serial/ch341.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index be2dd69bfee8b..6aad0953e8fe5 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1215,12 +1215,11 @@ void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data)
- }
- EXPORT_SYMBOL(ocelot_get_strings);
- 
-+/* Caller must hold &ocelot->stats_lock */
- static void ocelot_update_stats(struct ocelot *ocelot)
- {
- 	int i, j;
- 
--	mutex_lock(&ocelot->stats_lock);
--
- 	for (i = 0; i < ocelot->num_phys_ports; i++) {
- 		/* Configure the port to read the stats from */
- 		ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(i), SYS_STAT_CFG);
-@@ -1239,8 +1238,6 @@ static void ocelot_update_stats(struct ocelot *ocelot)
- 					      ~(u64)U32_MAX) + val;
- 		}
- 	}
--
--	mutex_unlock(&ocelot->stats_lock);
- }
- 
- static void ocelot_check_stats_work(struct work_struct *work)
-@@ -1249,7 +1246,9 @@ static void ocelot_check_stats_work(struct work_struct *work)
- 	struct ocelot *ocelot = container_of(del_work, struct ocelot,
- 					     stats_work);
- 
-+	mutex_lock(&ocelot->stats_lock);
- 	ocelot_update_stats(ocelot);
-+	mutex_unlock(&ocelot->stats_lock);
- 
- 	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
- 			   OCELOT_STATS_CHECK_DELAY);
-@@ -1259,12 +1258,16 @@ void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
- {
- 	int i;
- 
-+	mutex_lock(&ocelot->stats_lock);
-+
- 	/* check and update now */
- 	ocelot_update_stats(ocelot);
- 
- 	/* Copy all counters */
- 	for (i = 0; i < ocelot->num_stats; i++)
- 		*data++ = ocelot->stats[port * ocelot->num_stats + i];
-+
-+	mutex_unlock(&ocelot->stats_lock);
- }
- EXPORT_SYMBOL(ocelot_get_ethtool_stats);
- 
--- 
-2.34.1
-
+--- a/drivers/usb/serial/ch341.c
++++ b/drivers/usb/serial/ch341.c
+@@ -85,6 +85,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(0x1a86, 0x5523) },
+ 	{ USB_DEVICE(0x1a86, 0x7522) },
+ 	{ USB_DEVICE(0x1a86, 0x7523) },
++	{ USB_DEVICE(0x2184, 0x0057) },
+ 	{ USB_DEVICE(0x4348, 0x5523) },
+ 	{ USB_DEVICE(0x9986, 0x7523) },
+ 	{ },
 
 
