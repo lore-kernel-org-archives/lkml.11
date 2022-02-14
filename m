@@ -2,145 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57831C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1DBC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244110AbiBNLPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:15:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45142 "EHLO
+        id S1350350AbiBNLPo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:15:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350209AbiBNLPM (ORCPT
+        with ESMTP id S1350378AbiBNLPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:15:12 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77556673CF
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:44:44 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id e3so26173007wra.0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:44:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wEYNEIYPdcnYLYEy0iaUdFs9a34YcPpJNldEuNyBzNY=;
-        b=cJ0oJ3rKrxXIhRNwAfNrvQ1ql3yhxuZMVcNb7XaPbDJK11oq6dEPOmugLzFs0HLWp4
-         tAPoqRAYetyA7fb1X9auua3A/pQABKYbLKzK52UfyWlYzt1oYNZeV7Okyi7qICzfg4Qm
-         5suMSeSlRY1dUlEFtAvAclAABcKe1PxLzPlWTdNq/idr8hzriDBYfKnH8FFg6D5tglBS
-         kCIWOBmvpw0Na0Gu+o/5OgSMwfERrVeGBV7PzPa4tfo1moWdHR1Br6Lo9zLmwTwDZo2+
-         K1Die44/3JlbkEA9b0iwQsfpOMZiGQcpNIXP/1TAdTRoC0WYiNkFm2u+Apq3HmHq3JDh
-         n3Bg==
+        Mon, 14 Feb 2022 06:15:09 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121D8EFF93
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:44:23 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id ay26-20020a5d9d9a000000b006396dd81e4bso8722410iob.10
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:44:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wEYNEIYPdcnYLYEy0iaUdFs9a34YcPpJNldEuNyBzNY=;
-        b=EY8LD5Uh3SFYAp/5wVoH8Au5c6v76uQbrJEW+hyKWLXthQ/YB28mfR5KxzUubOv5db
-         PpAjkFb+usSf8GHie3p5MFs4j8053QbEBV7QfARg4BNuQQpJFqtZVqxR5u5VsIV7i4FQ
-         yyWv2jhE/Poyeyh32rqUtI4EmJsk+6pjd/CmE8j9bdiQkumI6uSNpLT0KNjnXJXl0hKT
-         Bo1P4UzBQ92DOWJ8CzuEt8A8av7kxPGZXWbbvhv9XqQSjAAgnifzmTlGiQPQxWNawDAh
-         1oqagQ4kC5zR3P+oKD9MC5PnlThHPlg9C8ucnORkLiIwz6KsQZ9HCIU46NyiyD6aBfyY
-         STTQ==
-X-Gm-Message-State: AOAM533P+iy+1ebTP9Ud6ivqNFOsUlt9bO0InTrWaGdIC7hwcBF4IB81
-        GB/Td4ABh2c4Dd82eHQJXHcTjA==
-X-Google-Smtp-Source: ABdhPJx6Dji8PxUO8kXtpblQL8nxXOxK/bexvq1pUZNZ0MtxAeirvsDmvH1b8hpWNM/Vl6Lm+3eisA==
-X-Received: by 2002:adf:f3d1:: with SMTP id g17mr9553978wrp.518.1644835483008;
-        Mon, 14 Feb 2022 02:44:43 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id z3sm13747208wmp.42.2022.02.14.02.44.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 02:44:42 -0800 (PST)
-Message-ID: <e1dd400d-0b8c-8bcd-d729-5f07976e468a@linaro.org>
-Date:   Mon, 14 Feb 2022 10:44:41 +0000
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=U/K75PKZ7oRwBSg0DraF4Jz5emwI9maCTepHYeXlOoM=;
+        b=5nPeS6AfG5m9MH4xF27jjV0tqmTgkR5lGKxhCtKow2ox6Nbea53BlP0sVqm/oD6+4M
+         RFNu2d8Z0VsZ6HFN5H8sLZ4BnfkV5Zbht1uBDDD0RuI+eQZVxDNn+SduZgcdwu+lhmI0
+         hbWq+f9YqLhFdlgihBdYTj4Ywb2yrUoMYVh8vashujqx7sl0u8lPRruDK+E1cjmJgvaQ
+         y4dQyAsMpPk2HdCe4LFgnRwzNFkGdl8mxdw0QNkb8FdYmBC/R8U6i0hqhhNVWPxlUzz7
+         /vrn6x3IuQ6DVJBE0ESk9iI4pmBf744rB14VLbnRCjy43hzyVCvBVVwtkLuhHz8VTgGX
+         EyxQ==
+X-Gm-Message-State: AOAM530JAoFgTYDW5k4retscajzcHlbc0dYudzwOEORtsPQtUvkvs1zC
+        cN12RF3Oa7s0qTpCct2gxjapp42Q8gR0YuUgls1n57oq41uD
+X-Google-Smtp-Source: ABdhPJxyUdi3Tb42Ir4UEK58TVXzU+k9ISfC3Jdy2Vc8F5tPwmm5O23GuYMKZpQy2tRDFj3A7smJGdWu2vJWursXva7qLI+JGyQN
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] doc: nvmem: Remove references to regmap
-Content-Language: en-US
-To:     Sean Anderson <sean.anderson@seco.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-References: <20220208162657.724119-1-sean.anderson@seco.com>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <20220208162657.724119-1-sean.anderson@seco.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:a112:: with SMTP id f18mr7608688jag.51.1644835462375;
+ Mon, 14 Feb 2022 02:44:22 -0800 (PST)
+Date:   Mon, 14 Feb 2022 02:44:22 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000072ef2c05d7f81950@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in __oom_reap_task_mm
+From:   syzbot <syzbot+2ccf63a4bd07cf39cab0@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, brauner@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sean,
-Thanks for the patch,
+Hello,
 
-On 08/02/2022 16:26, Sean Anderson wrote:
-> Since commit 795ddd18d38f ("nvmem: core: remove regmap dependency"),
-> nvmem devices do not use the regmap API. Remove references to it from
-> the documentation. Additionally, update the example to reflect the new
-> API.  I have chosen the brcm-nvram driver since it seems to be simpler
-> than the qfprom driver.
-> 
+syzbot found the following issue on:
 
-Please split this into two patches.
+HEAD commit:    e6251ab4551f Merge tag 'nfs-for-5.17-2' of git://git.linux..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1229b2f8700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
+dashboard link: https://syzkaller.appspot.com/bug?extid=2ccf63a4bd07cf39cab0
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: i386
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2ccf63a4bd07cf39cab0@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in can_madv_lru_vma mm/internal.h:76 [inline]
+BUG: KASAN: use-after-free in __oom_reap_task_mm+0x3a4/0x400 mm/oom_kill.c:529
+Read of size 8 at addr ffff88807b868ba8 by task syz-executor.2/12778
+
+CPU: 0 PID: 12778 Comm: syz-executor.2 Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ can_madv_lru_vma mm/internal.h:76 [inline]
+ __oom_reap_task_mm+0x3a4/0x400 mm/oom_kill.c:529
+ __do_sys_process_mrelease+0x3f2/0x450 mm/oom_kill.c:1196
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+RIP: 0023:0xf6e70549
+Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
+RSP: 002b:00000000f586a5cc EFLAGS: 00000296 ORIG_RAX: 00000000000001c0
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
+Allocated by task 12778:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
+ kasan_slab_alloc include/linux/kasan.h:260 [inline]
+ slab_post_alloc_hook mm/slab.h:732 [inline]
+ slab_alloc_node mm/slub.c:3230 [inline]
+ slab_alloc mm/slub.c:3238 [inline]
+ kmem_cache_alloc+0x202/0x3a0 mm/slub.c:3243
+ vm_area_dup+0x88/0x2b0 kernel/fork.c:357
+ dup_mmap kernel/fork.c:554 [inline]
+ dup_mm+0x5fa/0x13e0 kernel/fork.c:1451
+ copy_mm kernel/fork.c:1503 [inline]
+ copy_process+0x71f8/0x7300 kernel/fork.c:2164
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2555
+ __do_compat_sys_ia32_clone+0xac/0xe0 arch/x86/kernel/sys_ia32.c:254
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+
+Freed by task 12780:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x130/0x160 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:236 [inline]
+ slab_free_hook mm/slub.c:1728 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
+ slab_free mm/slub.c:3509 [inline]
+ kmem_cache_free+0xd8/0x340 mm/slub.c:3526
+ remove_vma+0x135/0x170 mm/mmap.c:189
+ exit_mmap+0x29a/0x670 mm/mmap.c:3186
+ __mmput+0x122/0x4b0 kernel/fork.c:1114
+ mmput+0x56/0x60 kernel/fork.c:1135
+ exit_mm kernel/exit.c:507 [inline]
+ do_exit+0xa3c/0x2a30 kernel/exit.c:793
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+ get_signal+0x4b0/0x28c0 kernel/signal.c:2862
+ arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+ handle_signal_work kernel/entry/common.c:148 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+ __do_fast_syscall_32+0x72/0xf0 arch/x86/entry/common.c:181
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+
+The buggy address belongs to the object at ffff88807b868b58
+ which belongs to the cache vm_area_struct of size 200
+The buggy address is located 80 bytes inside of
+ 200-byte region [ffff88807b868b58, ffff88807b868c20)
+The buggy address belongs to the page:
+page:ffffea0001ee1a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7b868
+memcg:ffff88804fe94a01
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 dead000000000100 dead000000000122 ffff888140006a00
+raw: 0000000000000000 00000000000f000f 00000001ffffffff ffff88804fe94a01
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112cc0(GFP_USER|__GFP_NOWARN|__GFP_NORETRY), pid 3175, ts 344170603641, free_ts 344164018467
+ prep_new_page mm/page_alloc.c:2434 [inline]
+ get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
+ alloc_pages+0x1aa/0x310 mm/mempolicy.c:2271
+ alloc_slab_page mm/slub.c:1799 [inline]
+ allocate_slab mm/slub.c:1944 [inline]
+ new_slab+0x28a/0x3b0 mm/slub.c:2004
+ ___slab_alloc+0x87c/0xe90 mm/slub.c:3018
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
+ slab_alloc_node mm/slub.c:3196 [inline]
+ slab_alloc mm/slub.c:3238 [inline]
+ kmem_cache_alloc+0x35c/0x3a0 mm/slub.c:3243
+ vm_area_dup+0x88/0x2b0 kernel/fork.c:357
+ dup_mmap kernel/fork.c:554 [inline]
+ dup_mm+0x5fa/0x13e0 kernel/fork.c:1451
+ copy_mm kernel/fork.c:1503 [inline]
+ copy_process+0x71f8/0x7300 kernel/fork.c:2164
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2555
+ __do_sys_clone+0xc8/0x110 kernel/fork.c:2672
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1352 [inline]
+ free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1404
+ free_unref_page_prepare mm/page_alloc.c:3325 [inline]
+ free_unref_page_list+0x1a9/0xfa0 mm/page_alloc.c:3441
+ release_pages+0x317/0x1220 mm/swap.c:980
+ tlb_batch_pages_flush mm/mmu_gather.c:50 [inline]
+ tlb_flush_mmu_free mm/mmu_gather.c:243 [inline]
+ tlb_flush_mmu mm/mmu_gather.c:250 [inline]
+ tlb_finish_mmu+0x165/0x8c0 mm/mmu_gather.c:341
+ exit_mmap+0x21b/0x670 mm/mmap.c:3180
+ __mmput+0x122/0x4b0 kernel/fork.c:1114
+ mmput+0x56/0x60 kernel/fork.c:1135
+ exit_mm kernel/exit.c:507 [inline]
+ do_exit+0xa3c/0x2a30 kernel/exit.c:793
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+ get_signal+0x4b0/0x28c0 kernel/signal.c:2862
+ arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+ handle_signal_work kernel/entry/common.c:148 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+ __do_fast_syscall_32+0x72/0xf0 arch/x86/entry/common.c:181
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+
+Memory state around the buggy address:
+ ffff88807b868a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88807b868b00: fb fb fb fc fc fc fc fc fc fc fc fa fb fb fb fb
+>ffff88807b868b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                  ^
+ ffff88807b868c00: fb fb fb fb fc fc fc fc fc fc fc fc fa fb fb fb
+ ffff88807b868c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+----------------
+Code disassembly (best guess):
+   0:	03 74 c0 01          	add    0x1(%rax,%rax,8),%esi
+   4:	10 05 03 74 b8 01    	adc    %al,0x1b87403(%rip)        # 0x1b8740d
+   a:	10 06                	adc    %al,(%rsi)
+   c:	03 74 b4 01          	add    0x1(%rsp,%rsi,4),%esi
+  10:	10 07                	adc    %al,(%rdi)
+  12:	03 74 b0 01          	add    0x1(%rax,%rsi,4),%esi
+  16:	10 08                	adc    %cl,(%rax)
+  18:	03 74 d8 01          	add    0x1(%rax,%rbx,8),%esi
+  1c:	00 00                	add    %al,(%rax)
+  1e:	00 00                	add    %al,(%rax)
+  20:	00 51 52             	add    %dl,0x52(%rcx)
+  23:	55                   	push   %rbp
+  24:	89 e5                	mov    %esp,%ebp
+  26:	0f 34                	sysenter
+  28:	cd 80                	int    $0x80
+* 2a:	5d                   	pop    %rbp <-- trapping instruction
+  2b:	5a                   	pop    %rdx
+  2c:	59                   	pop    %rcx
+  2d:	c3                   	retq
+  2e:	90                   	nop
+  2f:	90                   	nop
+  30:	90                   	nop
+  31:	90                   	nop
+  32:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+  39:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
 
 
---srini
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> 
-> Changes in v2:
-> - Replace spaces with tabs
-> 
->   Documentation/driver-api/nvmem.rst | 28 ++++++++++++----------------
->   1 file changed, 12 insertions(+), 16 deletions(-)
-> 
-> diff --git a/Documentation/driver-api/nvmem.rst b/Documentation/driver-api/nvmem.rst
-> index 287e86819640..a8a58b61709b 100644
-> --- a/Documentation/driver-api/nvmem.rst
-> +++ b/Documentation/driver-api/nvmem.rst
-> @@ -26,9 +26,7 @@ was a rather big abstraction leak.
->   
->   This framework aims at solve these problems. It also introduces DT
->   representation for consumer devices to go get the data they require (MAC
-> -Addresses, SoC/Revision ID, part numbers, and so on) from the NVMEMs. This
-> -framework is based on regmap, so that most of the abstraction available in
-> -regmap can be reused, across multiple types of buses.
-> +Addresses, SoC/Revision ID, part numbers, and so on) from the NVMEMs.
->   
->   NVMEM Providers
->   +++++++++++++++
-> @@ -45,24 +43,22 @@ nvmem_device pointer.
->   
->   nvmem_unregister(nvmem) is used to unregister a previously registered provider.
->   
-> -For example, a simple qfprom case::
-> +For example, a simple nvram case::
->   
-> -  static struct nvmem_config econfig = {
-> -	.name = "qfprom",
-> -	.owner = THIS_MODULE,
-> -  };
-> -
-> -  static int qfprom_probe(struct platform_device *pdev)
-> +  static int brcm_nvram_probe(struct platform_device *pdev)
->     {
-> +	struct nvmem_config config = {
-> +		.name = "brcm-nvram",
-> +		.reg_read = brcm_nvram_read,
-> +	};
->   	...
-> -	econfig.dev = &pdev->dev;
-> -	nvmem = nvmem_register(&econfig);
-> -	...
-> +	config.dev = &pdev->dev;
-> +	config.priv = priv;
-> +	config.size = resource_size(res);
-> +
-> +	devm_nvmem_register(&econfig);
->     }
->   
-> -It is mandatory that the NVMEM provider has a regmap associated with its
-> -struct device. Failure to do would return error code from nvmem_register().
-> -
->   Users of board files can define and register nvmem cells using the
->   nvmem_cell_table struct::
->   
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
