@@ -2,321 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E64C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:48:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2727C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbiBNUsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:48:51 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58114 "EHLO
+        id S229595AbiBNUs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:48:59 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiBNUst (ORCPT
+        with ESMTP id S229379AbiBNUsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:48:49 -0500
-X-Greylist: delayed 6392 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 12:48:22 PST
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A01166A6F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:48:21 -0800 (PST)
-Received: from terra.local.svanheule.net (104.153-136-217.adsl-dyn.isp.belgacom.be [217.136.153.104])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 3F5852A25FE;
-        Mon, 14 Feb 2022 19:57:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1644865029;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xG36KawVbQpRfxk6svXdxXAMh3RWTIg+IJcjKbB2Plc=;
-        b=Ijn3tdqMHWtyzo0hep9yfKHBfVF4yRFbNs/yRUSB9XdlWpzxkru+24FSyOn1NpvybEe3Zm
-        h/4C++BkEEFBSmBqGf/sVEqGHpo3f82U5HFQc4rnZlTFW1TmarJxpPmczF/YK7FvxxVWXF
-        xTd9RVZXEzx2QPxHrqb2k/jGEmggaKE4DKxntO2HnHxE74MG2PO0u4LAt5hBpkqMOoZRK3
-        l77MJMNqGnjPnPNR/KRIkhmcngn9B9Ks3WwVCz9SY7MR9jDxbipAbVw+lImmdnLpBsWkvp
-        ALZ2n5yZbfIHruPwj6nUM0usl3P19UlexMlVicSa8zZmc3uhCICp0YsbE0RZDQ==
-From:   Sander Vanheule <sander@svanheule.net>
-To:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Birger Koblitz <mail@birger-koblitz.de>,
-        Bert Vermeulen <bert@biot.com>,
-        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org,
-        Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH v5 4/4] irqchip/realtek-rtl: use per-parent domains
-Date:   Mon, 14 Feb 2022 19:57:01 +0100
-Message-Id: <d3925d36b1e027ca57b3a31182618edc66ef4b0d.1644864700.git.sander@svanheule.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1644864700.git.sander@svanheule.net>
-References: <cover.1644864700.git.sander@svanheule.net>
+        Mon, 14 Feb 2022 15:48:52 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBCA15FC87;
+        Mon, 14 Feb 2022 12:48:27 -0800 (PST)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21EI7w7w001562;
+        Mon, 14 Feb 2022 20:03:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=1pJI+ix99l7/rXF96NBURmzsCZLTmUmqrMwjJzasCG0=;
+ b=C1bDcPyd47Ps/ucOG0vzZZpw5wLQNfRu9sAxsPUbwxdePlL5ZkHNCxdbhF+EIrTTAyQJ
+ yvjHEpil9pDYbMXNK0cZRzdetM4rd0d0WqTJYQZYgYfGUgWIUNn4DitSdmVC5jcPuCt3
+ OxXom30rXLMQmCjz0njRmfHtQejZNzpgdq1VR0l5vI34uMtRlAq4oNu5M4qlOW1p6GUP
+ KFiAkN6grVpTsMIV9keh1B4OkGZhMe2HhuL3LncHVR1L5GjOTjUWJmCdYov0msVCFYvM
+ nekfS6NIvX964JtQaR/gbFr3xVhNZwPAJ2YfudrIkq2ydrO6LxSX9kOwJbVZwmGxiYKr dw== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e7cje8nr5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 20:03:39 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21EK1rxK027551;
+        Mon, 14 Feb 2022 20:03:38 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma03dal.us.ibm.com with ESMTP id 3e64hahga8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 20:03:38 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21EK3bML28377520
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Feb 2022 20:03:37 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1738528058;
+        Mon, 14 Feb 2022 20:03:37 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E579E28060;
+        Mon, 14 Feb 2022 20:03:36 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Feb 2022 20:03:36 +0000 (GMT)
+Message-ID: <ea619561-fe29-6864-0a07-a49dee8549ab@linux.ibm.com>
+Date:   Mon, 14 Feb 2022 15:03:36 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 1/8] ima: rename IMA_ACTION_FLAGS to
+ IMA_NONACTION_FLAGS
+Content-Language: en-US
+To:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org
+Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fscrypt@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220211214310.119257-1-zohar@linux.ibm.com>
+ <20220211214310.119257-2-zohar@linux.ibm.com>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <20220211214310.119257-2-zohar@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: T4YCMHvcv5xJtau2XmjWltnHNOqfi_Jo
+X-Proofpoint-ORIG-GUID: T4YCMHvcv5xJtau2XmjWltnHNOqfi_Jo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_07,2022-02-14_03,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ suspectscore=0 mlxlogscore=999 mlxscore=0 priorityscore=1501 bulkscore=0
+ malwarescore=0 lowpriorityscore=0 adultscore=0 impostorscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202140116
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The interrupt router can connect each of its inputs to one of the parent
-interrupts. These parent interrupts may be handled differently by their
-interrupt controller. SoC interrupts should be treated per-parent, to
-maintain this expected behaviour for routed child interrupts.
 
-For example, it is possible that both networking interrupts and the
-system event timer interrupts are routed through this controller. Even
-under high network load, event timer interrupts should take precedence,
-which can be ensured by routing them to a higher priority parent.
+On 2/11/22 16:43, Mimi Zohar wrote:
+> Simple policy rule options, such as fowner, uid, or euid, can be checked
+> immediately, while other policy rule options, such as requiring a file
+> signature, need to be deferred.
+>
+> The 'flags' field in the integrity_iint_cache struct contains the policy
+> action', 'subaction', and non action/subaction.
+>
+> action: measure/measured, appraise/appraised, (collect)/collected,
+>          audit/audited
+> subaction: appraise status for each hook (e.g. file, mmap, bprm, read,
+>          creds)
+> non action/subaction: deferred policy rule options and state
+>
+> Rename the IMA_ACTION_FLAGS to IMA_NONACTION_FLAGS.
+>
+> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 
-Rework the driver to use a separate domain for each output, using all
-available parents interrupts (as specified in the devicetree). A
-per-parent mask of child interrupts is used to keep track of which
-domain should handle which interrupts.
+Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
 
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
----
-Changes since v4:
-- Use irq_domain_add_linear instead of irq_domain_add_simple
-- Drop 'inline' specifiers from static functions
-- Drop WARN in intc_select() to only warn once for old bindings
-
- drivers/irqchip/irq-realtek-rtl.c | 149 +++++++++++++++++++++++++-----
- 1 file changed, 124 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
-index 2a349082af81..0cd25e2cb8cc 100644
---- a/drivers/irqchip/irq-realtek-rtl.c
-+++ b/drivers/irqchip/irq-realtek-rtl.c
-@@ -22,12 +22,22 @@
- #define RTL_ICTL_IRR3		0x14
- 
- #define RTL_ICTL_NUM_INPUTS	32
-+#define RTL_ICTL_NUM_OUTPUTS	15
- 
- #define REG(x)		(realtek_ictl_base + x)
- 
- static DEFINE_RAW_SPINLOCK(irq_lock);
- static void __iomem *realtek_ictl_base;
- 
-+struct realtek_ictl_output {
-+	/* IRQ controller data */
-+	struct fwnode_handle *fwnode;
-+	/* Output specific data */
-+	unsigned int output_index;
-+	struct irq_domain *domain;
-+	u32 child_mask;
-+};
-+
- /*
-  * IRR0-IRR3 store 4 bits per interrupt, but Realtek uses inverted numbering,
-  * placing IRQ 31 in the first four bits. A routing value of '0' means the
-@@ -37,6 +47,11 @@ static void __iomem *realtek_ictl_base;
- #define IRR_OFFSET(idx)		(4 * (3 - (idx * 4) / 32))
- #define IRR_SHIFT(idx)		((idx * 4) % 32)
- 
-+static u32 read_irr(void __iomem *irr0, int idx)
-+{
-+	return (readl(irr0 + IRR_OFFSET(idx)) >> IRR_SHIFT(idx)) & 0xf;
-+}
-+
- static void write_irr(void __iomem *irr0, int idx, u32 value)
- {
- 	unsigned int offset = IRR_OFFSET(idx);
-@@ -84,51 +99,128 @@ static struct irq_chip realtek_ictl_irq = {
- 
- static int intc_map(struct irq_domain *d, unsigned int irq, irq_hw_number_t hw)
- {
-+	struct realtek_ictl_output *output = d->host_data;
- 	unsigned long flags;
-+	u32 routing_old;
-+	int err = 0;
-+
-+	raw_spin_lock_irqsave(&irq_lock, flags);
-+
-+	/*
-+	 * Inputs can only be routed to one output, so they shouldn't end up in
-+	 * multiple domains. Perform this check in the same atomic context as
-+	 * configuring the routing to prevent races.
-+	 */
-+	routing_old = read_irr(REG(RTL_ICTL_IRR0), hw);
-+	if (routing_old && output->output_index != routing_old - 1) {
-+		pr_err("int %ld already routed to output %d\n",
-+			hw, routing_old - 1);
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
-+	output->child_mask |= BIT(hw);
-+	write_irr(REG(RTL_ICTL_IRR0), hw, output->output_index + 1);
- 
- 	irq_set_chip_and_handler(irq, &realtek_ictl_irq, handle_level_irq);
- 
--	raw_spin_lock_irqsave(&irq_lock, flags);
--	write_irr(REG(RTL_ICTL_IRR0), hw, 1);
-+out:
- 	raw_spin_unlock_irqrestore(&irq_lock, flags);
- 
--	return 0;
-+	return err;
-+}
-+
-+static int intc_select(struct irq_domain *d, struct irq_fwspec *fwspec,
-+	enum irq_domain_bus_token bus_token)
-+{
-+	struct realtek_ictl_output *output = d->host_data;
-+
-+	if (fwspec->fwnode != output->fwnode)
-+		return false;
-+
-+	/* Original specifiers only had one parameter */
-+	if (fwspec->param_count < 2)
-+		return true;
-+
-+	return fwspec->param[1] == output->output_index;
- }
- 
- static const struct irq_domain_ops irq_domain_ops = {
- 	.map = intc_map,
-+	.select = intc_select,
- 	.xlate = irq_domain_xlate_onecell,
- };
- 
- static void realtek_irq_dispatch(struct irq_desc *desc)
- {
-+	struct realtek_ictl_output *output = irq_desc_get_handler_data(desc);
- 	struct irq_chip *chip = irq_desc_get_chip(desc);
--	struct irq_domain *domain;
- 	unsigned long pending;
- 	unsigned int soc_int;
- 
- 	chained_irq_enter(chip, desc);
--	pending = readl(REG(RTL_ICTL_GIMR)) & readl(REG(RTL_ICTL_GISR));
-+	pending = readl(REG(RTL_ICTL_GIMR)) & readl(REG(RTL_ICTL_GISR))
-+		& output->child_mask;
- 
- 	if (unlikely(!pending)) {
- 		spurious_interrupt();
- 		goto out;
- 	}
- 
--	domain = irq_desc_get_handler_data(desc);
--	for_each_set_bit(soc_int, &pending, 32)
--		generic_handle_domain_irq(domain, soc_int);
-+	for_each_set_bit(soc_int, &pending, RTL_ICTL_NUM_INPUTS)
-+		generic_handle_domain_irq(output->domain, soc_int);
- 
- out:
- 	chained_irq_exit(chip, desc);
- }
- 
-+static int __init setup_parent_interrupts(struct device_node *node, int *parents,
-+	unsigned int num_parents)
-+{
-+	struct realtek_ictl_output *outputs;
-+	struct realtek_ictl_output *output;
-+	struct irq_domain *domain;
-+	unsigned int p;
-+
-+	outputs = kcalloc(num_parents, sizeof(*outputs), GFP_KERNEL);
-+	if (!outputs)
-+		return -ENOMEM;
-+
-+	for (p = 0; p < num_parents; p++) {
-+		output = outputs + p;
-+
-+		domain = irq_domain_add_linear(node, RTL_ICTL_NUM_INPUTS,
-+						&irq_domain_ops, output);
-+		if (!domain)
-+			goto domain_err;
-+
-+		output->fwnode = of_node_to_fwnode(node);
-+		output->output_index = p;
-+		output->domain = domain;
-+
-+		irq_set_chained_handler_and_data(parents[p], realtek_irq_dispatch, output);
-+	}
-+
-+	return 0;
-+
-+domain_err:
-+	while (p--) {
-+		irq_set_chained_handler_and_data(parents[p], NULL, NULL);
-+		irq_domain_remove(outputs[p].domain);
-+	}
-+
-+	kfree(outputs);
-+
-+	return -ENOMEM;
-+}
-+
- static int __init realtek_rtl_of_init(struct device_node *node, struct device_node *parent)
- {
-+	int parent_irqs[RTL_ICTL_NUM_OUTPUTS];
- 	struct of_phandle_args oirq;
--	struct irq_domain *domain;
-+	unsigned int num_parents;
- 	unsigned int soc_irq;
--	int parent_irq;
-+	unsigned int p;
- 
- 	realtek_ictl_base = of_iomap(node, 0);
- 	if (!realtek_ictl_base)
-@@ -139,36 +231,43 @@ static int __init realtek_rtl_of_init(struct device_node *node, struct device_no
- 	for (soc_irq = 0; soc_irq < RTL_ICTL_NUM_INPUTS; soc_irq++)
- 		write_irr(REG(RTL_ICTL_IRR0), soc_irq, 0);
- 
--	if (WARN_ON(!of_irq_count(node))) {
-+	num_parents = of_irq_count(node);
-+	if (num_parents > RTL_ICTL_NUM_OUTPUTS) {
-+		pr_err("too many parent interrupts\n");
-+		return -EINVAL;
-+	}
-+
-+	for (p = 0; p < num_parents; p++)
-+		parent_irqs[p] = of_irq_get(node, p);
-+
-+	if (WARN_ON(!num_parents)) {
- 		/*
- 		 * If DT contains no parent interrupts, assume MIPS CPU IRQ 2
- 		 * (HW0) is connected to the first output. This is the case for
- 		 * all known hardware anyway. "interrupt-map" is deprecated, so
- 		 * don't bother trying to parse that.
-+		 * Since this is to account for old devicetrees with one-cell
-+		 * interrupt specifiers, only one output domain is needed.
- 		 */
- 		oirq.np = of_find_compatible_node(NULL, NULL, "mti,cpu-interrupt-controller");
- 		oirq.args_count = 1;
- 		oirq.args[0] = 2;
- 
--		parent_irq = irq_create_of_mapping(&oirq);
-+		parent_irqs[0] = irq_create_of_mapping(&oirq);
-+		num_parents = 1;
- 
- 		of_node_put(oirq.np);
--	} else {
--		parent_irq = of_irq_get(node, 0);
- 	}
- 
--	if (parent_irq < 0)
--		return parent_irq;
--	else if (!parent_irq)
--		return -ENODEV;
--
--	domain = irq_domain_add_linear(node, RTL_ICTL_NUM_INPUTS, &irq_domain_ops, NULL);
--	if (!domain)
--		return -ENOMEM;
--
--	irq_set_chained_handler_and_data(parent_irq, realtek_irq_dispatch, domain);
-+	/* Ensure we haven't collected any errors before proceeding */
-+	for (p = 0; p < num_parents; p++) {
-+		if (parent_irqs[p] < 0)
-+			return parent_irqs[p];
-+		if (!parent_irqs[p])
-+			return -ENODEV;
-+	}
- 
--	return 0;
-+	return setup_parent_interrupts(node, parent_irqs, num_parents);
- }
- 
- IRQCHIP_DECLARE(realtek_rtl_intc, "realtek,rtl-intc", realtek_rtl_of_init);
--- 
-2.35.1
 
