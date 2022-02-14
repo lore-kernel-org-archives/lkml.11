@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A110FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347185AbiBNK23 (ORCPT
+        id S1347457AbiBNK2b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:28:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33136 "EHLO
+        Mon, 14 Feb 2022 05:28:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347936AbiBNK0g (ORCPT
+        with ESMTP id S1348046AbiBNK0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:26:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC25480919;
-        Mon, 14 Feb 2022 01:57:37 -0800 (PST)
+        Mon, 14 Feb 2022 05:26:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F8880939;
+        Mon, 14 Feb 2022 01:57:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22EEB6126B;
-        Mon, 14 Feb 2022 09:57:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED58C340E9;
-        Mon, 14 Feb 2022 09:57:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DB96B80DC8;
+        Mon, 14 Feb 2022 09:57:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9936CC340E9;
+        Mon, 14 Feb 2022 09:57:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832644;
-        bh=UhSIihMSSu2vmuCQjZPE4NANjKqrX8Al7bFfWHKoSt8=;
+        s=korg; t=1644832648;
+        bh=cK9ecw/EFhSoO7tLE759EsN5OX8WHGKfTJe7PYjYBbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S3Nosd+jS/PHJMhM06tPyjswsgXCSDm7SEzljr1p/w0X1s8Rym7o4//Qm2yLRfqWt
-         apGDm3OJ4NQfIUqMxWB0BkkizKBxHlX1iVYZDUi74xLBmsYvQQnD3aw4MA72OuaRvn
-         MVseu/E8nzqczIZQwgBI7ctJLwtBdQs/JZAJldgw=
+        b=IoNV7niv9mBeBo5UxmhMZYtzqU4JvfYIVYUHaYwcqsQ2N2NJLdFSYGtx7d62dRZl0
+         pjFvRAYl8f0cSXW0N7MJWe32+9zjpIz0Cef7K0gUx1dWx86l9vX5tEgYq8zasnLdsg
+         oFOTWYTxB8MPDRFFItYKQ0T5ocoscv7kJLUHHTZI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aurelien Jarno <aurelien@aurel32.net>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.16 073/203] riscv: fix build with binutils 2.38
-Date:   Mon, 14 Feb 2022 10:25:17 +0100
-Message-Id: <20220214092512.757891200@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Stefan Hansson <newbyte@disroot.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.16 082/203] ARM: dts: Fix boot regression on Skomer
+Date:   Mon, 14 Feb 2022 10:25:26 +0100
+Message-Id: <20220214092513.064687097@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,50 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurelien Jarno <aurelien@aurel32.net>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-commit 6df2a016c0c8a3d0933ef33dd192ea6606b115e3 upstream.
+commit d9058d6a0e92d8e4a00855f8fe204792f42794db upstream.
 
->From version 2.38, binutils default to ISA spec version 20191213. This
-means that the csr read/write (csrr*/csrw*) instructions and fence.i
-instruction has separated from the `I` extension, become two standalone
-extensions: Zicsr and Zifencei. As the kernel uses those instruction,
-this causes the following build failure:
+The signal routing on the Skomer board was incorrect making
+it impossible to mount root from the SD card. Fix this up.
 
-  CC      arch/riscv/kernel/vdso/vgettimeofday.o
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h: Assembler messages:
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-
-The fix is to specify those extensions explicitely in -march. However as
-older binutils version do not support this, we first need to detect
-that.
-
-Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
-Tested-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Cc: Stefan Hansson <newbyte@disroot.org>
+Link: https://lore.kernel.org/r/20220205235312.446730-1-linus.walleij@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/Makefile |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/boot/dts/ste-ux500-samsung-skomer.dts |    4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/arch/riscv/Makefile
-+++ b/arch/riscv/Makefile
-@@ -50,6 +50,12 @@ riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32
- riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima
- riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
- riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
-+
-+# Newer binutils versions default to ISA spec version 20191213 which moves some
-+# instructions from the I extension to the Zicsr and Zifencei extensions.
-+toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
-+riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
-+
- KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
- KBUILD_AFLAGS += -march=$(riscv-march-y)
- 
+--- a/arch/arm/boot/dts/ste-ux500-samsung-skomer.dts
++++ b/arch/arm/boot/dts/ste-ux500-samsung-skomer.dts
+@@ -185,10 +185,6 @@
+ 			cap-sd-highspeed;
+ 			cap-mmc-highspeed;
+ 			/* All direction control is used */
+-			st,sig-dir-cmd;
+-			st,sig-dir-dat0;
+-			st,sig-dir-dat2;
+-			st,sig-dir-dat31;
+ 			st,sig-pin-fbclk;
+ 			full-pwr-cycle;
+ 			vmmc-supply = <&ab8500_ldo_aux3_reg>;
 
 
