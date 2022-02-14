@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BC8C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDDCC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345955AbiBNKLU (ORCPT
+        id S1345920AbiBNKLN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:11:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38122 "EHLO
+        Mon, 14 Feb 2022 05:11:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345245AbiBNKIe (ORCPT
+        with ESMTP id S1345098AbiBNKIJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:08:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CF275C37;
-        Mon, 14 Feb 2022 01:50:14 -0800 (PST)
+        Mon, 14 Feb 2022 05:08:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B3775C15;
+        Mon, 14 Feb 2022 01:50:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E82D2B80DC8;
-        Mon, 14 Feb 2022 09:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEFE1C340F1;
-        Mon, 14 Feb 2022 09:50:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2398EB80DC4;
+        Mon, 14 Feb 2022 09:50:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D69C340E9;
+        Mon, 14 Feb 2022 09:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832211;
-        bh=DrjitRWyezSPq3nPLzHzoi5LlKZRoVPa3+u+GnJEjtc=;
+        s=korg; t=1644832207;
+        bh=NztMsR2kgqmVFtrKAa0G1xzND/aCA27veuaAtsBHcvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FKbfPUTAPssvH8gtSAyUTsaSHa9+fshNk/vu37WSifzFYQFK99CvgiNefXtUBLOjE
-         Zw/TB+wLXGth7jOIf6Kk215ifJs3O78RrhQq1WGVpaT9etlJQiRv4oXUnLGfzTy9W8
-         zB6drm/3hGqzI/KqpHxvCSp1rE4JFaKdWvh31JiQ=
+        b=NY7414+8jYzcEJdws9uiupL8Y21hoQTTvCRsL++R4gMAKVSaMD8qd1o6N82wofwFs
+         WGACdifhUg7XWJ82tL8vCm+BUZNFz6Ko/raoCOa3W7YQm+bp1IiG7rSNQB7ZwbcY5U
+         jkkoGwkSiVHIg5j4LJQ20mG0Lx6i8al5X1Uw/7lE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Mathias Krause <minipli@grsecurity.net>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 097/172] misc: fastrpc: avoid double fput() on failed usercopy
-Date:   Mon, 14 Feb 2022 10:25:55 +0100
-Message-Id: <20220214092509.760885873@linuxfoundation.org>
+Subject: [PATCH 5.15 114/172] net: dsa: felix: dont use devres for mdiobus
+Date:   Mon, 14 Feb 2022 10:26:12 +0100
+Message-Id: <20220214092510.367795301@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,53 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Krause <minipli@grsecurity.net>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 46963e2e0629cb31c96b1d47ddd89dc3d8990b34 ]
+[ Upstream commit 209bdb7ec6a28c7cdf580a0a98afbc9fc3b98932 ]
 
-If the copy back to userland fails for the FASTRPC_IOCTL_ALLOC_DMA_BUFF
-ioctl(), we shouldn't assume that 'buf->dmabuf' is still valid. In fact,
-dma_buf_fd() called fd_install() before, i.e. "consumed" one reference,
-leaving us with none.
+As explained in commits:
+74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
+5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
 
-Calling dma_buf_put() will therefore put a reference we no longer own,
-leading to a valid file descritor table entry for an already released
-'file' object which is a straight use-after-free.
+mdiobus_free() will panic when called from devm_mdiobus_free() <-
+devres_release_all() <- __device_release_driver(), and that mdiobus was
+not previously unregistered.
 
-Simply avoid calling dma_buf_put() and rely on the process exit code to
-do the necessary cleanup, if needed, i.e. if the file descriptor is
-still valid.
+The Felix VSC9959 switch is a PCI device, so the initial set of
+constraints that I thought would cause this (I2C or SPI buses which call
+->remove on ->shutdown) do not apply. But there is one more which
+applies here.
 
-Fixes: 6cffd79504ce ("misc: fastrpc: Add support for dmabuf exporter")
-Acked-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Mathias Krause <minipli@grsecurity.net>
-Link: https://lore.kernel.org/r/20220127130218.809261-1-minipli@grsecurity.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If the DSA master itself is on a bus that calls ->remove from ->shutdown
+(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
+between the switch and the DSA master, and device_links_unbind_consumers()
+will unbind the felix switch driver on shutdown.
+
+So the same treatment must be applied to all DSA switch drivers, which
+is: either use devres for both the mdiobus allocation and registration,
+or don't use devres at all.
+
+The felix driver has the code structure in place for orderly mdiobus
+removal, so just replace devm_mdiobus_alloc_size() with the non-devres
+variant, and add manual free where necessary, to ensure that we don't
+let devres free a still-registered bus.
+
+Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/fastrpc.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index f3002653bd010..86d8fb8c0148b 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -1286,7 +1286,14 @@ static int fastrpc_dmabuf_alloc(struct fastrpc_user *fl, char __user *argp)
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 11b42fd812e4a..e53ad283e2596 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1066,7 +1066,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 		return PTR_ERR(hw);
  	}
  
- 	if (copy_to_user(argp, &bp, sizeof(bp))) {
--		dma_buf_put(buf->dmabuf);
-+		/*
-+		 * The usercopy failed, but we can't do much about it, as
-+		 * dma_buf_fd() already called fd_install() and made the
-+		 * file descriptor accessible for the current process. It
-+		 * might already be closed and dmabuf no longer valid when
-+		 * we reach this point. Therefore "leak" the fd and rely on
-+		 * the process exit path to do any required cleanup.
-+		 */
- 		return -EFAULT;
+-	bus = devm_mdiobus_alloc_size(dev, sizeof(*mdio_priv));
++	bus = mdiobus_alloc_size(sizeof(*mdio_priv));
+ 	if (!bus)
+ 		return -ENOMEM;
+ 
+@@ -1086,6 +1086,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	rc = mdiobus_register(bus);
+ 	if (rc < 0) {
+ 		dev_err(dev, "failed to register MDIO bus\n");
++		mdiobus_free(bus);
+ 		return rc;
  	}
  
+@@ -1135,6 +1136,7 @@ static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
+ 		lynx_pcs_destroy(pcs);
+ 	}
+ 	mdiobus_unregister(felix->imdio);
++	mdiobus_free(felix->imdio);
+ }
+ 
+ static void vsc9959_sched_speed_set(struct ocelot *ocelot, int port,
 -- 
 2.34.1
 
