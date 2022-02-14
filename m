@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18424C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD20C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240325AbiBNJjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:39:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52584 "EHLO
+        id S244438AbiBNJjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:39:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244945AbiBNJg0 (ORCPT
+        with ESMTP id S244989AbiBNJg2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90BFF6CA75;
-        Mon, 14 Feb 2022 01:34:15 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199236D18F;
+        Mon, 14 Feb 2022 01:34:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7214E61149;
-        Mon, 14 Feb 2022 09:34:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34CCDC340E9;
-        Mon, 14 Feb 2022 09:34:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCBBBB80DC8;
+        Mon, 14 Feb 2022 09:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 161C3C340E9;
+        Mon, 14 Feb 2022 09:33:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831254;
-        bh=oKFbjQIThrTEoXfJ2Rp9yWl1wVsyR7h+VVFaAA6N+oI=;
+        s=korg; t=1644831237;
+        bh=iVVprejHhTHrKXydZFMArGB8nKpVGa/J/tekSOuOWgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ot7lxb281QDfQJy3AZRaIMJICz6Yvq/cQcIDyvU8GDAJb5iMZsm+zL1WsDEuXdFP
-         ccjO1/u0aloeIJ2GIFi1uSf8J2ZmLBVT+eDxN6ghktDaijYuzJIjau+FUI4hj/BJwK
-         ZTqHk+8FA8kKF+QXqBns7gNfp0t/ESUNCwizP9zI=
+        b=wgLgY2gCY/ZZdmnAkB+0caJftTjv6oodG2c9hPKzXkfn1w2QHrTRQqMJ5RHKRPLyt
+         FgTDz8bJw0H8XsG9ptgwcZj9QtEwJr6u21gdxEm3NavNz7+6DJB/6hzZiIU1UC6z/U
+         KOwRQBWt+zNMkvb3btJUcqqHa9Nr15KKz1GEurDw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 28/49] ipmr,ip6mr: acquire RTNL before calling ip[6]mr_free_table() on failure path
-Date:   Mon, 14 Feb 2022 10:25:54 +0100
-Message-Id: <20220214092449.219707158@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Szymon Heidrich <szymon.heidrich@gmail.com>, stable@kernel.org
+Subject: [PATCH 4.19 41/49] usb: gadget: rndis: check size of RNDIS_MSG_SET command
+Date:   Mon, 14 Feb 2022 10:26:07 +0100
+Message-Id: <20220214092449.657409941@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -51,100 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 5611a00697c8ecc5aad04392bea629e9d6a20463 ]
+commit 38ea1eac7d88072bbffb630e2b3db83ca649b826 upstream.
 
-ip[6]mr_free_table() can only be called under RTNL lock.
+Check the size of the RNDIS_MSG_SET command given to us before
+attempting to respond to an invalid message size.
 
-RTNL: assertion failed at net/core/dev.c (10367)
-WARNING: CPU: 1 PID: 5890 at net/core/dev.c:10367 unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
-Modules linked in:
-CPU: 1 PID: 5890 Comm: syz-executor.2 Not tainted 5.16.0-syzkaller-11627-g422ee58dc0ef #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
-Code: 0f 85 9b ee ff ff e8 69 07 4b fa ba 7f 28 00 00 48 c7 c6 00 90 ae 8a 48 c7 c7 40 90 ae 8a c6 05 6d b1 51 06 01 e8 8c 90 d8 01 <0f> 0b e9 70 ee ff ff e8 3e 07 4b fa 4c 89 e7 e8 86 2a 59 fa e9 ee
-RSP: 0018:ffffc900046ff6e0 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888050f51d00 RSI: ffffffff815fa008 RDI: fffff520008dfece
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815f3d6e R11: 0000000000000000 R12: 00000000fffffff4
-R13: dffffc0000000000 R14: ffffc900046ff750 R15: ffff88807b7dc000
-FS:  00007f4ab736e700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fee0b4f8990 CR3: 000000001e7d2000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- mroute_clean_tables+0x244/0xb40 net/ipv6/ip6mr.c:1509
- ip6mr_free_table net/ipv6/ip6mr.c:389 [inline]
- ip6mr_rules_init net/ipv6/ip6mr.c:246 [inline]
- ip6mr_net_init net/ipv6/ip6mr.c:1306 [inline]
- ip6mr_net_init+0x3f0/0x4e0 net/ipv6/ip6mr.c:1298
- ops_init+0xaf/0x470 net/core/net_namespace.c:140
- setup_net+0x54f/0xbb0 net/core/net_namespace.c:331
- copy_net_ns+0x318/0x760 net/core/net_namespace.c:475
- create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
- copy_namespaces+0x391/0x450 kernel/nsproxy.c:178
- copy_process+0x2e0c/0x7300 kernel/fork.c:2167
- kernel_clone+0xe7/0xab0 kernel/fork.c:2555
- __do_sys_clone+0xc8/0x110 kernel/fork.c:2672
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f4ab89f9059
-Code: Unable to access opcode bytes at RIP 0x7f4ab89f902f.
-RSP: 002b:00007f4ab736e118 EFLAGS: 00000206 ORIG_RAX: 0000000000000038
-RAX: ffffffffffffffda RBX: 00007f4ab8b0bf60 RCX: 00007f4ab89f9059
-RDX: 0000000020000280 RSI: 0000000020000270 RDI: 0000000040200000
-RBP: 00007f4ab8a5308d R08: 0000000020000300 R09: 0000000020000300
-R10: 00000000200002c0 R11: 0000000000000206 R12: 0000000000000000
-R13: 00007ffc3977cc1f R14: 00007f4ab736e300 R15: 0000000000022000
- </TASK>
-
-Fixes: f243e5a7859a ("ipmr,ip6mr: call ip6mr_free_table() on failure path")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Cong Wang <cong.wang@bytedance.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220208053451.2885398-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc: stable@kernel.org
+Tested-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ipmr.c  | 2 ++
- net/ipv6/ip6mr.c | 2 ++
- 2 files changed, 4 insertions(+)
+ drivers/usb/gadget/function/rndis.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index d235478d9ca3c..2085af224a416 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -265,7 +265,9 @@ static int __net_init ipmr_rules_init(struct net *net)
- 	return 0;
+--- a/drivers/usb/gadget/function/rndis.c
++++ b/drivers/usb/gadget/function/rndis.c
+@@ -637,14 +637,17 @@ static int rndis_set_response(struct rnd
+ 	rndis_set_cmplt_type *resp;
+ 	rndis_resp_t *r;
  
- err2:
-+	rtnl_lock();
- 	ipmr_free_table(mrt);
-+	rtnl_unlock();
- err1:
- 	fib_rules_unregister(ops);
- 	return err;
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 35e7092eceb37..e9eb917342b85 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -245,7 +245,9 @@ static int __net_init ip6mr_rules_init(struct net *net)
- 	return 0;
++	BufLength = le32_to_cpu(buf->InformationBufferLength);
++	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
++	if ((BufLength > RNDIS_MAX_TOTAL_SIZE) ||
++	    (BufOffset + 8 >= RNDIS_MAX_TOTAL_SIZE))
++		    return -EINVAL;
++
+ 	r = rndis_add_response(params, sizeof(rndis_set_cmplt_type));
+ 	if (!r)
+ 		return -ENOMEM;
+ 	resp = (rndis_set_cmplt_type *)r->buf;
  
- err2:
-+	rtnl_lock();
- 	ip6mr_free_table(mrt);
-+	rtnl_unlock();
- err1:
- 	fib_rules_unregister(ops);
- 	return err;
--- 
-2.34.1
-
+-	BufLength = le32_to_cpu(buf->InformationBufferLength);
+-	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
+-
+ #ifdef	VERBOSE_DEBUG
+ 	pr_debug("%s: Length: %d\n", __func__, BufLength);
+ 	pr_debug("%s: Offset: %d\n", __func__, BufOffset);
 
 
