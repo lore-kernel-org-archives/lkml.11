@@ -2,93 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0BFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47938C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233000AbiBNLjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:39:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42188 "EHLO
+        id S1348992AbiBNLrR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:47:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351964AbiBNLj3 (ORCPT
+        with ESMTP id S1352297AbiBNLjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:39:29 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43814BC86;
-        Mon, 14 Feb 2022 03:29:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644838175; x=1676374175;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xqXAjqj9UB3uzzHP4hrVah9w4aiJB22TXUi2vtc3JR4=;
-  b=bndRfRJgZAuW1GRN5IIqbeieYL5ioaa0Mlnc61PqzcrmWgbg0y+Z/oQ0
-   9aEbzDtvTCj226l1RvwVKLT50NX8q3qcqs0bRh/EiqrDKVZ6dPmsBRasX
-   lYj4jRi7cnsgneRboNhna52fmV+32J/f55bSw2GYAHymiadehgHF4nr8i
-   iIr+OxuURf1U/TAR4FSD2o+PIJ5IjAWz5mDd4E6+y4nrWWOCIhOBLh3KK
-   HGJFu4NZCAWNa2cIOoLAJW8tN95Qefq1g0veqaVzZEFfUStS3jAo7cqCH
-   BIqzy88aW6427ktsuUjVviKwtGRcnJeft+IrnNtAnUsyUQptoRXzpQq9L
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="250276718"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="250276718"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:29:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="587166931"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2022 03:29:32 -0800
-From:   Tianfei zhang <tianfei.zhang@intel.com>
-To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     corbet@lwn.net, Tianfei zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v1 0/7] Add Intel OFS support for DFL driver
-Date:   Mon, 14 Feb 2022 06:26:12 -0500
-Message-Id: <20220214112619.219761-1-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
+        Mon, 14 Feb 2022 06:39:46 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A73FBF73
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:31:34 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id y6so45097731ybc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:31:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Mw/bxELONBcXUIQ4ZlitUOdIGwAvzRaHxRx0vzLKiwE=;
+        b=asNcvjaxh2z9Q0eDPTF/MHVOJlSKunX9xOaEWoZyQdNjgTY0NuVZ7sE1xn32KshaoP
+         e/VvGS71+1On+TQj1UU0xvIoAqRdhmdgLfNBYMRwZTVovhWcfFyJPGjLnWLZAlHhC0Wy
+         PPrEhRWRTXHvve+RRSRuXHKR92j4hlVsihXwmIHFeRKTQxMLSmpc49sXb5WlxcUO0mxm
+         dwgo5q6XGMLIXRJph9rbNQxSyVCNHL2om88A9AvSTkX3u5Yn3yPCdb8TO7B/p71vXdKK
+         RqGGN2zYHPQ2Xc9/2rern1s7FdCZ0pHDH1Ll1gltaUMpYofmXLs1Rd5Q7JjcNG3rqlw7
+         74PA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Mw/bxELONBcXUIQ4ZlitUOdIGwAvzRaHxRx0vzLKiwE=;
+        b=c6OGkTP0ZjHwPMLCzClqh3a2JsORUeQwdl3Ndy/4kkpDtJCI8s94wIhf+8Yx7vQWV7
+         rUUByXDBT86M+Su1gkh7WnHP4HNkkGivYwDe1kj03jujhEOgreGNeuMaIxiiarvgJkHU
+         +pTYN880nD4VKo/GZcJge57GNo3/EzAezuZBYHodf6imUr2DGD4BJ3aHlvkHNg+AiPZH
+         QecIVVWRa5HtUhgzLemv33ak8Btuj4QqVGoubzBm4E9t9INnvQFu5kWANrq3yjDawLEa
+         Jae4Y0VVCH0Q18K3JWOpBE6VfAM1JvAxPEZrgJoNBxOELiSGmSHZ7ES5h5Zw5UMYyTL2
+         23vQ==
+X-Gm-Message-State: AOAM5314PCXwwX3MRp8FT5+XiwSJKqccmIa8dvkjqmTMTQeckD/neLiM
+        HkLSql9csZVavHASMK+7dWzHUJU13V7XJCtDAr/fWA==
+X-Google-Smtp-Source: ABdhPJxa6vrERknymq3wbgVH3aL7pi7aXuDhckCAoXVb99Mp/XV1TLitwoRL3UpFD22a/lTepFhatbY499rliNbMyjI=
+X-Received: by 2002:a25:49c5:: with SMTP id w188mr11519207yba.200.1644838293317;
+ Mon, 14 Feb 2022 03:31:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220214092510.221474733@linuxfoundation.org> <CA+G9fYvfx2jRPnU6zVK8v9vNbwXc4wV0KX0JfGWeNsAbL72y-g@mail.gmail.com>
+ <Ygo8pUuBuNYmP9ds@kroah.com>
+In-Reply-To: <Ygo8pUuBuNYmP9ds@kroah.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 14 Feb 2022 17:01:21 +0530
+Message-ID: <CA+G9fYtkx8kqRR4L9oP-cO5PhU20i2CLfREJkQB+6UGK8ojvEw@mail.gmail.com>
+Subject: Re: [PATCH 5.16 000/203] 5.16.10-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adding IOFS (Intel Open FPGA stack) support for
-DFL driver. IOFS is Intel's version of a common core set of
-RTL to allow customers to easily interface to logic and IP
-on the FPGA. IOFS leverage the DFL for the implementation of
-the FPGA RTL design.
+On Mon, 14 Feb 2022 at 16:57, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Mon, Feb 14, 2022 at 04:29:43PM +0530, Naresh Kamboju wrote:
+> > On Mon, 14 Feb 2022 at 15:23, Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > This is the start of the stable review cycle for the 5.16.10 release.
+> > > There are 203 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, please
+> > > let me know.
+> > >
+> > > Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
+> > > Anything received after that time might be too late.
+> > >
+> > > The whole patch series can be found in one patch at:
+> > >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.10-rc1.gz
+> > > or in the git tree and branch at:
+> > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> > > and the diffstat can be found below.
+> > >
+> > > thanks,
+> > >
+> > > greg k-h
+> >
+> > On Linux mainline master branch with arm64 clang-nigtly build failed
+> > due to following errors and warnings.
+> > Now it is also noticed on stable-rc 5.15 and 5.16.
+>
+> Sounds like a compiler error.  Do the clang developers know about this?
 
-Patch 1, adds architecture description about IOFS support for DFL
-in documentation.
-Patch 2, checks feature type during the user interrupt enumeration.
-On IOFS, the Feature ID of the PMCI device and Port User Interrupts
-are identical.
-Patch 3, allows a port may not be connected any local BAR space.
-Patch 4 and 5, fix VF creation when ports have no local
-BAR space and no port connected to VF.
-Patch 6, handles dfl's starting with AFU and allows for VFs
-to be created.
-Patch 7, adds PCIe Device ID for OFS. 
+I have reported a new issue on LLVM github.
+https://github.com/llvm/llvm-project/issues/53811
 
-Matthew Gerlach (5):
-  fpga: dfl: Allow for ports with no local bar space.
-  fpga: dfl: fix VF creation when ports have no local BAR space
-  drivers: fpga: dfl: handle empty port list
-  fpga: dfl: Handle dfl's starting with AFU
-  fpga: dfl: pci: Add generic OFS PCI PID
-
-Tianfei Zhang (2):
-  Documentation: fpga: dfl: add description of IOFS
-  fpga: dfl: check feature type before parse irq info
-
- Documentation/fpga/dfl.rst | 99 +++++++++++++++++++++++++++++++++++++-
- drivers/fpga/dfl-pci.c     | 19 +++++++-
- drivers/fpga/dfl.c         | 47 +++++++++++++-----
- 3 files changed, 151 insertions(+), 14 deletions(-)
-
-
-base-commit: f1baf68e1383f6ed93eb9cff2866d46562607a43
--- 
-2.17.1
-
+- Naresh
