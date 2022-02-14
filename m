@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69254C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346045AbiBNKSe (ORCPT
+        id S1346456AbiBNKSi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:18:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47952 "EHLO
+        Mon, 14 Feb 2022 05:18:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347184AbiBNKQV (ORCPT
+        with ESMTP id S1347308AbiBNKQ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:16:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB8E6D86F;
-        Mon, 14 Feb 2022 01:53:39 -0800 (PST)
+        Mon, 14 Feb 2022 05:16:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924616737E;
+        Mon, 14 Feb 2022 01:53:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F99CB80DBF;
-        Mon, 14 Feb 2022 09:53:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E053C340E9;
-        Mon, 14 Feb 2022 09:53:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86271B80D6D;
+        Mon, 14 Feb 2022 09:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4F12C340E9;
+        Mon, 14 Feb 2022 09:53:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832416;
-        bh=J4TfmdW9SmmCxPVvKGSAjHUPbDY8uIQC53QynwaK9Pk=;
+        s=korg; t=1644832407;
+        bh=PWC4MiolHqPxzZqlrPZg8QnjhC1NnQ1cEiBb2jdkjgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yIVHU0ziXghpd8yCMWVcRqb2iNzGNBXQvI69r/0RZZeSX1vPPPGrqXAJvyDWEJGYU
-         RTXG3hL9sJ8WD2Wvv1kYFM/C0q36ghY4zczIVMJcVR+Wwih4st3R6Ihrwlyqa6/ZEq
-         8BL6fYbCKM5t7/AG95LdUeGIG1ET9aULQRf1bY6A=
+        b=ZAxzKeJXpI5Ln+GvSV+YC0iM+W1/SpnP/v+JT8rzYftzUYMrYrliDBaVDYQKrxyAd
+         pzhUxETNAdeCgtXIsT+XizU4T+3d2i+pcLXsDVN7lvZEUnO2v/zNqCSQVXavF/gatS
+         0TyVndTuo/vogkpFUG3H2GgtMj9RXg3WoaswjMLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>
-Subject: [PATCH 5.15 165/172] sched/fair: Fix fault in reweight_entity
-Date:   Mon, 14 Feb 2022 10:27:03 +0100
-Message-Id: <20220214092512.081826010@linuxfoundation.org>
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.15 170/172] arm64: dts: imx8mq: fix lcdif port node
+Date:   Mon, 14 Feb 2022 10:27:08 +0100
+Message-Id: <20220214092512.261642891@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -52,97 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-commit 13765de8148f71fa795e0a6607de37c49ea5915a upstream.
+commit 91f6d5f181f6629dd74ab71759fe92d3f4eff966 upstream.
 
-Syzbot found a GPF in reweight_entity. This has been bisected to
-commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid
-sched_task_group")
+The port node does not have a unit-address, remove it.
+This fixes the warnings:
+lcd-controller@30320000: 'port' is a required property
+lcd-controller@30320000: 'port@0' does not match any of the regexes:
+'pinctrl-[0-9]+'
 
-There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
-within a thread group that causes a null-ptr-deref in
-reweight_entity() in CFS. The scenario is that the main process spawns
-number of new threads, which then call setpriority(PRIO_PGRP, 0, -20),
-wait, and exit.  For each of the new threads the copy_process() gets
-invoked, which adds the new task_struct and calls sched_post_fork()
-for it.
-
-In the above scenario there is a possibility that
-setpriority(PRIO_PGRP) and set_one_prio() will be called for a thread
-in the group that is just being created by copy_process(), and for
-which the sched_post_fork() has not been executed yet. This will
-trigger a null pointer dereference in reweight_entity(), as it will
-try to access the run queue pointer, which hasn't been set.
-
-Before the mentioned change the cfs_rq pointer for the task  has been
-set in sched_fork(), which is called much earlier in copy_process(),
-before the new task is added to the thread_group.  Now it is done in
-the sched_post_fork(), which is called after that.  To fix the issue
-the remove the update_load param from the update_load param() function
-and call reweight_task() only if the task flag doesn't have the
-TASK_NEW flag set.
-
-Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
-Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220203161846.1160750-1-tadeusz.struk@linaro.org
+Fixes: commit d0081bd02a03 ("arm64: dts: imx8mq: Add NWL MIPI DSI controller")
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/core.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/freescale/imx8mq.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -1199,8 +1199,9 @@ int tg_nop(struct task_group *tg, void *
- }
- #endif
+--- a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+@@ -526,7 +526,7 @@
+ 				assigned-clock-rates = <0>, <0>, <0>, <594000000>;
+ 				status = "disabled";
  
--static void set_load_weight(struct task_struct *p, bool update_load)
-+static void set_load_weight(struct task_struct *p)
- {
-+	bool update_load = !(READ_ONCE(p->__state) & TASK_NEW);
- 	int prio = p->static_prio - MAX_RT_PRIO;
- 	struct load_weight *load = &p->se.load;
- 
-@@ -4358,7 +4359,7 @@ int sched_fork(unsigned long clone_flags
- 			p->static_prio = NICE_TO_PRIO(0);
- 
- 		p->prio = p->normal_prio = p->static_prio;
--		set_load_weight(p, false);
-+		set_load_weight(p);
- 
- 		/*
- 		 * We don't need the reset flag anymore after the fork. It has
-@@ -6902,7 +6903,7 @@ void set_user_nice(struct task_struct *p
- 		put_prev_task(rq, p);
- 
- 	p->static_prio = NICE_TO_PRIO(nice);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- 	old_prio = p->prio;
- 	p->prio = effective_prio(p);
- 
-@@ -7193,7 +7194,7 @@ static void __setscheduler_params(struct
- 	 */
- 	p->rt_priority = attr->sched_priority;
- 	p->normal_prio = normal_prio(p);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- }
- 
- /*
-@@ -9431,7 +9432,7 @@ void __init sched_init(void)
- #endif
- 	}
- 
--	set_load_weight(&init_task, false);
-+	set_load_weight(&init_task);
- 
- 	/*
- 	 * The boot idle thread does lazy MMU switching as well:
+-				port@0 {
++				port {
+ 					lcdif_mipi_dsi: endpoint {
+ 						remote-endpoint = <&mipi_dsi_lcdif_in>;
+ 					};
 
 
