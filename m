@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1505EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242533AbiBNKUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:20:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44496 "EHLO
+        id S232155AbiBNKU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:20:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346683AbiBNKP4 (ORCPT
+        with ESMTP id S1346669AbiBNKP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:15:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065F879235;
-        Mon, 14 Feb 2022 01:53:10 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101FD7922D;
+        Mon, 14 Feb 2022 01:53:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5156CB80DC4;
-        Mon, 14 Feb 2022 09:53:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 689E9C340E9;
-        Mon, 14 Feb 2022 09:53:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55348B80D6D;
+        Mon, 14 Feb 2022 09:52:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64DAEC340E9;
+        Mon, 14 Feb 2022 09:52:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832386;
-        bh=kBk9rwrQ8IjaiqnLRz8c7PBbVQhRD4GH1Rd2rgHKem8=;
+        s=korg; t=1644832377;
+        bh=8ub30ShdTLXwZFcoIMXYvvWBHyjJegmarl+2ns4BQYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kKhdRsbBqM5yQ56uf0qs8niOwVGxX0v8YrWr0heQ9TKoC71kevTH4Mq13k5B3aN/5
-         dCf4kUmPqR7WOLCkbwUriI02Xth07vcxlA+Of7ug68a67vL9k6axKoNR17UaY0vLct
-         xWaFvvjFGUooyepRing/+TvB2jOSon5WstSMbjps=
+        b=rRnGcDfLI5ZEGSjrDy2JUKs60apQTebBDzfaiHwE/opfnDSxPymF+CIKV0jY6OvPq
+         c/vMTm9dSFQU/rlMSrZF7A5MRN+IaDB6xkyiQKSNcYzj4cDdiyeB7GFsn6V6J/raA1
+         aAqsj021TNF+OPmMy1XNR2KGSwqfFQIcmQdFT+W8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Subject: [PATCH 5.15 138/172] usb: dwc2: drd: fix soft connect when gadget is unconfigured
-Date:   Mon, 14 Feb 2022 10:26:36 +0100
-Message-Id: <20220214092511.164824295@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH 5.15 135/172] vt_ioctl: add array_index_nospec to VT_ACTIVATE
+Date:   Mon, 14 Feb 2022 10:26:33 +0100
+Message-Id: <20220214092511.069185634@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,51 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-commit 269cbcf7b72de6f0016806d4a0cec1d689b55a87 upstream.
+commit 28cb138f559f8c1a1395f5564f86b8bbee83631b upstream.
 
-When the gadget driver hasn't been (yet) configured, and the cable is
-connected to a HOST, the SFTDISCON gets cleared unconditionally, so the
-HOST tries to enumerate it.
-At the host side, this can result in a stuck USB port or worse. When
-getting lucky, some dmesg can be observed at the host side:
- new high-speed USB device number ...
- device descriptor read/64, error -110
+in vt_setactivate an almost identical code path has been patched
+with array_index_nospec. In the VT_ACTIVATE path the user input
+is from a system call argument instead of a usercopy.
+For consistency both code paths should have the same mitigations
+applied.
 
-Fix it in drd, by checking the enabled flag before calling
-dwc2_hsotg_core_connect(). It will be called later, once configured,
-by the normal flow:
-- udc_bind_to_driver
- - usb_gadget_connect
-   - dwc2_hsotg_pullup
-     - dwc2_hsotg_core_connect
+Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
+Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
+Amsterdam.
 
-Fixes: 17f934024e84 ("usb: dwc2: override PHY input signals with usb role switch support")
-Cc: stable@kernel.org
-Reviewed-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Link: https://lore.kernel.org/r/1644423353-17859-1-git-send-email-fabrice.gasnier@foss.st.com
+Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220127144406.3589293-2-jakobkoschel@gmail.com
+Cc: stable <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc2/drd.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/vt/vt_ioctl.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/dwc2/drd.c
-+++ b/drivers/usb/dwc2/drd.c
-@@ -109,8 +109,10 @@ static int dwc2_drd_role_sw_set(struct u
- 		already = dwc2_ovr_avalid(hsotg, true);
- 	} else if (role == USB_ROLE_DEVICE) {
- 		already = dwc2_ovr_bvalid(hsotg, true);
--		/* This clear DCTL.SFTDISCON bit */
--		dwc2_hsotg_core_connect(hsotg);
-+		if (hsotg->enabled) {
-+			/* This clear DCTL.SFTDISCON bit */
-+			dwc2_hsotg_core_connect(hsotg);
-+		}
- 	} else {
- 		if (dwc2_is_device_mode(hsotg)) {
- 			if (!dwc2_ovr_bvalid(hsotg, false))
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -845,6 +845,7 @@ int vt_ioctl(struct tty_struct *tty,
+ 			return -ENXIO;
+ 
+ 		arg--;
++		arg = array_index_nospec(arg, MAX_NR_CONSOLES);
+ 		console_lock();
+ 		ret = vc_allocate(arg);
+ 		console_unlock();
 
 
