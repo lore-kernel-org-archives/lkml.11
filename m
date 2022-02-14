@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4120C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343492AbiBNJur (ORCPT
+        id S1343534AbiBNJut (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:50:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43944 "EHLO
+        Mon, 14 Feb 2022 04:50:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245635AbiBNJqD (ORCPT
+        with ESMTP id S1343581AbiBNJqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:46:03 -0500
+        Mon, 14 Feb 2022 04:46:12 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A548717B3;
-        Mon, 14 Feb 2022 01:39:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35694723F9;
+        Mon, 14 Feb 2022 01:39:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C82236102D;
-        Mon, 14 Feb 2022 09:39:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC86C340E9;
-        Mon, 14 Feb 2022 09:39:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7F856118F;
+        Mon, 14 Feb 2022 09:39:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8AF8C340E9;
+        Mon, 14 Feb 2022 09:39:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831554;
-        bh=4RIDEAq+c22nmmG4y8cxqHGvT85mUiWcK7yNYU3i7IM=;
+        s=korg; t=1644831582;
+        bh=4hgg5iMrujXJmneoAXhbKFclV2q+lP2+TNvZMESW15U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aqJXK3/nkfETofJ1CeDtn3sUOWG+pdjyCrsnsoK9TWMgoufkPBpSHRI3W2krsc/Bl
-         g6Y5cQ0mW/5JR+Wind0zlxFToW0usSLBoH6RUNcryzVJIcRIPjN/4wcIz6iRpwg4FX
-         0GzyRFbAv6ni8945ZoiRYdpcYyTQ41aNJ9YQgt5g=
+        b=w0F/3j8RL+iZ+kSrhOSRgLARW3ETsyGTt3KnFy1sYCiB5vUPeavpBXO65Dp3m0eLh
+         rGef+pIEmtqXMDJUDCvSDG6ny3K2TOEiYlMshV7DIe1ZJYrWwHfXpkIRwFBGwKW65V
+         xFiM4RB40S7Xn5mBiT4E5jgbWg/xTHqxE6FzjZ34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.10 002/116] ima: Remove ima_policy file before directory
-Date:   Mon, 14 Feb 2022 10:25:01 +0100
-Message-Id: <20220214092458.753440143@linuxfoundation.org>
+        stable@vger.kernel.org, Saurav Kashyap <skashyap@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 028/116] scsi: qedf: Fix refcount issue when LOGO is received during TMF
+Date:   Mon, 14 Feb 2022 10:25:27 +0100
+Message-Id: <20220214092459.652688603@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,38 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Berger <stefanb@linux.ibm.com>
+From: Saurav Kashyap <skashyap@marvell.com>
 
-commit f7333b9572d0559e00352a926c92f29f061b4569 upstream.
+[ Upstream commit 5239ab63f17cee643bd4bf6addfedebaa7d4f41e ]
 
-The removal of ima_dir currently fails since ima_policy still exists, so
-remove the ima_policy file before removing the directory.
+Hung task call trace was seen during LOGO processing.
 
-Fixes: 4af4662fa4a9 ("integrity: IMA policy")
-Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[  974.309060] [0000:00:00.0]:[qedf_eh_device_reset:868]: 1:0:2:0: LUN RESET Issued...
+[  974.309065] [0000:00:00.0]:[qedf_initiate_tmf:2422]: tm_flags 0x10 sc_cmd 00000000c16b930f op = 0x2a target_id = 0x2 lun=0
+[  974.309178] [0000:00:00.0]:[qedf_initiate_tmf:2431]: portid=016900 tm_flags =LUN RESET
+[  974.309222] [0000:00:00.0]:[qedf_initiate_tmf:2438]: orig io_req = 00000000ec78df8f xid = 0x180 ref_cnt = 1.
+[  974.309625] host1: rport 016900: Received LOGO request while in state Ready
+[  974.309627] host1: rport 016900: Delete port
+[  974.309642] host1: rport 016900: work event 3
+[  974.309644] host1: rport 016900: lld callback ev 3
+[  974.313243] [0000:61:00.2]:[qedf_execute_tmf:2383]:1: fcport is uploading, not executing flush.
+[  974.313295] [0000:61:00.2]:[qedf_execute_tmf:2400]:1: task mgmt command success...
+[  984.031088] INFO: task jbd2/dm-15-8:7645 blocked for more than 120 seconds.
+[  984.031136]       Not tainted 4.18.0-305.el8.x86_64 #1
+
+[  984.031166] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  984.031209] jbd2/dm-15-8    D    0  7645      2 0x80004080
+[  984.031212] Call Trace:
+[  984.031222]  __schedule+0x2c4/0x700
+[  984.031230]  ? unfreeze_partials.isra.83+0x16e/0x1a0
+[  984.031233]  ? bit_wait_timeout+0x90/0x90
+[  984.031235]  schedule+0x38/0xa0
+[  984.031238]  io_schedule+0x12/0x40
+[  984.031240]  bit_wait_io+0xd/0x50
+[  984.031243]  __wait_on_bit+0x6c/0x80
+[  984.031248]  ? free_buffer_head+0x21/0x50
+[  984.031251]  out_of_line_wait_on_bit+0x91/0xb0
+[  984.031257]  ? init_wait_var_entry+0x50/0x50
+[  984.031268]  jbd2_journal_commit_transaction+0x112e/0x19f0 [jbd2]
+[  984.031280]  kjournald2+0xbd/0x270 [jbd2]
+[  984.031284]  ? finish_wait+0x80/0x80
+[  984.031291]  ? commit_timeout+0x10/0x10 [jbd2]
+[  984.031294]  kthread+0x116/0x130
+[  984.031300]  ? kthread_flush_work_fn+0x10/0x10
+[  984.031305]  ret_from_fork+0x1f/0x40
+
+There was a ref count issue when LOGO is received during TMF. This leads to
+one of the I/Os hanging with the driver. Fix the ref count.
+
+Link: https://lore.kernel.org/r/20220117135311.6256-3-njavali@marvell.com
+Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/ima_fs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/qedf/qedf_io.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/security/integrity/ima/ima_fs.c
-+++ b/security/integrity/ima/ima_fs.c
-@@ -496,12 +496,12 @@ int __init ima_fs_init(void)
+diff --git a/drivers/scsi/qedf/qedf_io.c b/drivers/scsi/qedf/qedf_io.c
+index 63f99f4eeed97..472374d83cede 100644
+--- a/drivers/scsi/qedf/qedf_io.c
++++ b/drivers/scsi/qedf/qedf_io.c
+@@ -2268,6 +2268,7 @@ int qedf_initiate_cleanup(struct qedf_ioreq *io_req,
+ 	    io_req->tm_flags == FCP_TMF_TGT_RESET) {
+ 		clear_bit(QEDF_CMD_OUTSTANDING, &io_req->flags);
+ 		io_req->sc_cmd = NULL;
++		kref_put(&io_req->refcount, qedf_release_cmd);
+ 		complete(&io_req->tm_done);
+ 	}
  
- 	return 0;
- out:
-+	securityfs_remove(ima_policy);
- 	securityfs_remove(violations);
- 	securityfs_remove(runtime_measurements_count);
- 	securityfs_remove(ascii_runtime_measurements);
- 	securityfs_remove(binary_runtime_measurements);
- 	securityfs_remove(ima_symlink);
- 	securityfs_remove(ima_dir);
--	securityfs_remove(ima_policy);
- 	return -1;
- }
+-- 
+2.34.1
+
 
 
