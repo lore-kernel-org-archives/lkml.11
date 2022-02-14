@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 745E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 528EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243572AbiBNJcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:32:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43132 "EHLO
+        id S243712AbiBNJct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:32:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243683AbiBNJcK (ORCPT
+        with ESMTP id S243595AbiBNJcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:32:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A081ADB2;
-        Mon, 14 Feb 2022 01:31:03 -0800 (PST)
+        Mon, 14 Feb 2022 04:32:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCB060AA5;
+        Mon, 14 Feb 2022 01:31:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4AAEB80DC6;
-        Mon, 14 Feb 2022 09:31:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 027FFC340E9;
-        Mon, 14 Feb 2022 09:30:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE94F60F83;
+        Mon, 14 Feb 2022 09:31:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95B93C340E9;
+        Mon, 14 Feb 2022 09:31:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831060;
-        bh=VUVBaAGZBaqswhE6D4PLK24XkRlHN39JFF+flQEuJME=;
+        s=korg; t=1644831067;
+        bh=RuHWb3w5sWFdomNRagX+hTJL7q/b3BKZNtbnuV1Auew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zz2CSd74aromH5TGQJ8iHsQS+ajt4SZWkljSXB1x5aU8kcgPzLDOMz3oFhp9N1oek
-         WgJ9Q7BHq4TGSLlU5f0iMA/6KG+CNP92Bwr3+j15PatVO6p/bkuHcQVOkRJGC6HjOx
-         If9aixIklEYbPasXXj6utabuaun5Jfnq1acH3an0=
+        b=Yb/8WwrENztGT1qCGnZ+foFPRevIWJm/U4dPgQwyEyV8HL/EeUmfXIN4YFYp8/dZh
+         vG7ZYYWlA3TXVfl9l4VFt2wqqezVZw9VUWmMX757ed0iUixaSbkIZcuN0boN8ZNfyi
+         aLZNrFYSCTDNgUQquc1Iq10jFfm9fgcQzRXL8TWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Zihua <guozihua@huawei.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 4.14 03/44] ima: Allow template selection with ima_template[_fmt]= after ima_hash=
-Date:   Mon, 14 Feb 2022 10:25:26 +0100
-Message-Id: <20220214092448.021896858@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 4.14 04/44] mmc: sdhci-of-esdhc: Check for error num after setting mask
+Date:   Mon, 14 Feb 2022 10:25:27 +0100
+Message-Id: <20220214092448.054893540@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -49,84 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit bb8e52e4906f148c2faf6656b5106cf7233e9301 upstream.
+commit 40c67c291a93f8846c4a972c9ef1b7ba4544c8d0 upstream.
 
-Commit c2426d2ad5027 ("ima: added support for new kernel cmdline parameter
-ima_template_fmt") introduced an additional check on the ima_template
-variable to avoid multiple template selection.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
+And since the sdhci_setup_host() has already checked the return value of
+the enable_dma, we need not check it in sdhci_resume_host() again.
 
-Unfortunately, ima_template could be also set by the setup function of the
-ima_hash= parameter, when it calls ima_template_desc_current(). This causes
-attempts to choose a new template with ima_template= or with
-ima_template_fmt=, after ima_hash=, to be ignored.
-
-Achieve the goal of the commit mentioned with the new static variable
-template_setup_done, so that template selection requests after ima_hash=
-are not ignored.
-
-Finally, call ima_init_template_list(), if not already done, to initialize
-the list of templates before lookup_template_desc() is called.
-
-Reported-by: Guo Zihua <guozihua@huawei.com>
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Fixes: 5552d7ad596c ("mmc: sdhci-of-esdhc: set proper dma mask for ls104x chips")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
 Cc: stable@vger.kernel.org
-Fixes: c2426d2ad5027 ("ima: added support for new kernel cmdline parameter ima_template_fmt")
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220112083156.1124782-1-jiasheng@iscas.ac.cn
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/integrity/ima/ima_template.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/mmc/host/sdhci-of-esdhc.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/security/integrity/ima/ima_template.c
-+++ b/security/integrity/ima/ima_template.c
-@@ -31,6 +31,7 @@ static struct ima_template_desc builtin_
+--- a/drivers/mmc/host/sdhci-of-esdhc.c
++++ b/drivers/mmc/host/sdhci-of-esdhc.c
+@@ -427,12 +427,16 @@ static void esdhc_of_adma_workaround(str
  
- static LIST_HEAD(defined_templates);
- static DEFINE_SPINLOCK(template_list);
-+static int template_setup_done;
- 
- static struct ima_template_field supported_fields[] = {
- 	{.field_id = "d", .field_init = ima_eventdigest_init,
-@@ -57,10 +58,11 @@ static int __init ima_template_setup(cha
- 	struct ima_template_desc *template_desc;
- 	int template_len = strlen(str);
- 
--	if (ima_template)
-+	if (template_setup_done)
- 		return 1;
- 
--	ima_init_template_list();
-+	if (!ima_template)
-+		ima_init_template_list();
- 
- 	/*
- 	 * Verify that a template with the supplied name exists.
-@@ -84,6 +86,7 @@ static int __init ima_template_setup(cha
- 	}
- 
- 	ima_template = template_desc;
-+	template_setup_done = 1;
- 	return 1;
- }
- __setup("ima_template=", ima_template_setup);
-@@ -92,7 +95,7 @@ static int __init ima_template_fmt_setup
+ static int esdhc_of_enable_dma(struct sdhci_host *host)
  {
- 	int num_templates = ARRAY_SIZE(builtin_templates);
++	int ret;
+ 	u32 value;
+ 	struct device *dev = mmc_dev(host->mmc);
  
--	if (ima_template)
-+	if (template_setup_done)
- 		return 1;
+ 	if (of_device_is_compatible(dev->of_node, "fsl,ls1043a-esdhc") ||
+-	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc"))
+-		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
++	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc")) {
++		ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
++		if (ret)
++			return ret;
++	}
  
- 	if (template_desc_init_fields(str, NULL, NULL) < 0) {
-@@ -103,6 +106,7 @@ static int __init ima_template_fmt_setup
+ 	value = sdhci_readl(host, ESDHC_DMA_SYSCTL);
  
- 	builtin_templates[num_templates - 1].fmt = str;
- 	ima_template = builtin_templates + num_templates - 1;
-+	template_setup_done = 1;
- 
- 	return 1;
- }
 
 
