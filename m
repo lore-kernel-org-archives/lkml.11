@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46ED0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 326D1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244176AbiBNJi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:38:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51552 "EHLO
+        id S244188AbiBNJi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:38:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245238AbiBNJgf (ORCPT
+        with ESMTP id S245413AbiBNJgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F32425EB6;
-        Mon, 14 Feb 2022 01:34:32 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BF56DA9F;
+        Mon, 14 Feb 2022 01:34:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BAE361120;
-        Mon, 14 Feb 2022 09:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26FE7C340EF;
-        Mon, 14 Feb 2022 09:34:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE825B80DCC;
+        Mon, 14 Feb 2022 09:34:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4EDCC340E9;
+        Mon, 14 Feb 2022 09:34:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831270;
-        bh=h/90sFQJ4ADpeoVXdbJhADLAI2IKpcQnwVbtczvVWjg=;
+        s=korg; t=1644831277;
+        bh=o0pEpcsUFfgRzpuHWku1OvbvDzy+twvKJnNPSEj3M4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AGqi49kRYW9H2x0XuydoRzjh0aEklRJqU4I/mYAD0AsiF9WagUTmn/vmPfYLpb7jr
-         koJhRvJsINerHASahJpa6zH7fUToc82AjEZdXgK3PMP27egfcX889ZHmw6sH/e/oBr
-         t1Yu3mkLuWF9BfGVKNG48jd7GBkv2Uj+5w9oIILA=
+        b=1pie8z0pGOGuz2BzkDD6olacStzreB1fFWyijsOvqSXTM+4ifnDk5VIbvzR3Zihvb
+         1s3+ZsRUh05mYLY/DJ3l52NXiKLholMvPOSpbl1G2LpHMHDWthC8ik7t96lhRZVOvA
+         tMFeo1a/P9hFbGb0W1T0KmywLL6ojtBfHmxlUC7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Antoine Tenart <atenart@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
+        syzbot <syzkaller@googlegroups.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 29/49] net: do not keep the dst cache when uncloning an skb dst and its metadata
-Date:   Mon, 14 Feb 2022 10:25:55 +0100
-Message-Id: <20220214092449.253165027@linuxfoundation.org>
+Subject: [PATCH 4.19 31/49] veth: fix races around rq->rx_notify_masked
+Date:   Mon, 14 Feb 2022 10:25:57 +0100
+Message-Id: <20220214092449.324113105@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -51,62 +51,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit cfc56f85e72f5b9c5c5be26dc2b16518d36a7868 ]
+[ Upstream commit 68468d8c4cd4222a4ca1f185ab5a1c14480d078c ]
 
-When uncloning an skb dst and its associated metadata a new dst+metadata
-is allocated and the tunnel information from the old metadata is copied
-over there.
+veth being NETIF_F_LLTX enabled, we need to be more careful
+whenever we read/write rq->rx_notify_masked.
 
-The issue is the tunnel metadata has references to cached dst, which are
-copied along the way. When a dst+metadata refcount drops to 0 the
-metadata is freed including the cached dst entries. As they are also
-referenced in the initial dst+metadata, this ends up in UaFs.
+BUG: KCSAN: data-race in veth_xmit / veth_xmit
 
-In practice the above did not happen because of another issue, the
-dst+metadata was never freed because its refcount never dropped to 0
-(this will be fixed in a subsequent patch).
+write to 0xffff888133d9a9f8 of 1 bytes by task 23552 on cpu 0:
+ __veth_xdp_flush drivers/net/veth.c:269 [inline]
+ veth_xmit+0x307/0x470 drivers/net/veth.c:350
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one+0x105/0x2f0 net/core/dev.c:3473
+ dev_hard_start_xmit net/core/dev.c:3489 [inline]
+ __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
+ dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
+ br_dev_queue_push_xmit+0x3ce/0x430 net/bridge/br_forward.c:53
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ br_forward_finish net/bridge/br_forward.c:66 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ __br_forward+0x2e4/0x400 net/bridge/br_forward.c:115
+ br_flood+0x521/0x5c0 net/bridge/br_forward.c:242
+ br_dev_xmit+0x8b6/0x960
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one+0x105/0x2f0 net/core/dev.c:3473
+ dev_hard_start_xmit net/core/dev.c:3489 [inline]
+ __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
+ dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
+ neigh_hh_output include/net/neighbour.h:525 [inline]
+ neigh_output include/net/neighbour.h:539 [inline]
+ ip_finish_output2+0x6f8/0xb70 net/ipv4/ip_output.c:228
+ ip_finish_output+0xfb/0x240 net/ipv4/ip_output.c:316
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip_output+0xf3/0x1a0 net/ipv4/ip_output.c:430
+ dst_output include/net/dst.h:451 [inline]
+ ip_local_out net/ipv4/ip_output.c:126 [inline]
+ ip_send_skb+0x6e/0xe0 net/ipv4/ip_output.c:1570
+ udp_send_skb+0x641/0x880 net/ipv4/udp.c:967
+ udp_sendmsg+0x12ea/0x14c0 net/ipv4/udp.c:1254
+ inet_sendmsg+0x5f/0x80 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
+ ___sys_sendmsg net/socket.c:2467 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
+ __do_sys_sendmmsg net/socket.c:2582 [inline]
+ __se_sys_sendmmsg net/socket.c:2579 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fix this by initializing the dst cache after copying the tunnel
-information from the old metadata to also unshare the dst cache.
+read to 0xffff888133d9a9f8 of 1 bytes by task 23563 on cpu 1:
+ __veth_xdp_flush drivers/net/veth.c:268 [inline]
+ veth_xmit+0x2d6/0x470 drivers/net/veth.c:350
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one+0x105/0x2f0 net/core/dev.c:3473
+ dev_hard_start_xmit net/core/dev.c:3489 [inline]
+ __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
+ dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
+ br_dev_queue_push_xmit+0x3ce/0x430 net/bridge/br_forward.c:53
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ br_forward_finish net/bridge/br_forward.c:66 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ __br_forward+0x2e4/0x400 net/bridge/br_forward.c:115
+ br_flood+0x521/0x5c0 net/bridge/br_forward.c:242
+ br_dev_xmit+0x8b6/0x960
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one+0x105/0x2f0 net/core/dev.c:3473
+ dev_hard_start_xmit net/core/dev.c:3489 [inline]
+ __dev_queue_xmit+0x86d/0xf90 net/core/dev.c:4116
+ dev_queue_xmit+0x13/0x20 net/core/dev.c:4149
+ neigh_hh_output include/net/neighbour.h:525 [inline]
+ neigh_output include/net/neighbour.h:539 [inline]
+ ip_finish_output2+0x6f8/0xb70 net/ipv4/ip_output.c:228
+ ip_finish_output+0xfb/0x240 net/ipv4/ip_output.c:316
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip_output+0xf3/0x1a0 net/ipv4/ip_output.c:430
+ dst_output include/net/dst.h:451 [inline]
+ ip_local_out net/ipv4/ip_output.c:126 [inline]
+ ip_send_skb+0x6e/0xe0 net/ipv4/ip_output.c:1570
+ udp_send_skb+0x641/0x880 net/ipv4/udp.c:967
+ udp_sendmsg+0x12ea/0x14c0 net/ipv4/udp.c:1254
+ inet_sendmsg+0x5f/0x80 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
+ ___sys_sendmsg net/socket.c:2467 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
+ __do_sys_sendmmsg net/socket.c:2582 [inline]
+ __se_sys_sendmmsg net/socket.c:2579 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fixes: d71785ffc7e7 ("net: add dst_cache to ovs vxlan lwtunnel")
-Cc: Paolo Abeni <pabeni@redhat.com>
-Reported-by: Vlad Buslov <vladbu@nvidia.com>
-Tested-by: Vlad Buslov <vladbu@nvidia.com>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+value changed: 0x00 -> 0x01
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 23563 Comm: syz-executor.5 Not tainted 5.17.0-rc2-syzkaller-00064-gc36c04c2e132 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 948d4f214fde ("veth: Add driver XDP")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/dst_metadata.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/veth.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
-index 14efa0ded75dd..b997e0c1e3627 100644
---- a/include/net/dst_metadata.h
-+++ b/include/net/dst_metadata.h
-@@ -123,6 +123,19 @@ static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 5e988f7ec1743..76e834ca54e79 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -152,9 +152,10 @@ static void __veth_xdp_flush(struct veth_rq *rq)
+ {
+ 	/* Write ptr_ring before reading rx_notify_masked */
+ 	smp_mb();
+-	if (!rq->rx_notify_masked) {
+-		rq->rx_notify_masked = true;
+-		napi_schedule(&rq->xdp_napi);
++	if (!READ_ONCE(rq->rx_notify_masked) &&
++	    napi_schedule_prep(&rq->xdp_napi)) {
++		WRITE_ONCE(rq->rx_notify_masked, true);
++		__napi_schedule(&rq->xdp_napi);
+ 	}
+ }
  
- 	memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
- 	       sizeof(struct ip_tunnel_info) + md_size);
-+#ifdef CONFIG_DST_CACHE
-+	/* Unclone the dst cache if there is one */
-+	if (new_md->u.tun_info.dst_cache.cache) {
-+		int ret;
-+
-+		ret = dst_cache_init(&new_md->u.tun_info.dst_cache, GFP_ATOMIC);
-+		if (ret) {
-+			metadata_dst_free(new_md);
-+			return ERR_PTR(ret);
-+		}
-+	}
-+#endif
-+
- 	skb_dst_drop(skb);
- 	dst_hold(&new_md->dst);
- 	skb_dst_set(skb, &new_md->dst);
+@@ -623,8 +624,10 @@ static int veth_poll(struct napi_struct *napi, int budget)
+ 		/* Write rx_notify_masked before reading ptr_ring */
+ 		smp_store_mb(rq->rx_notify_masked, false);
+ 		if (unlikely(!__ptr_ring_empty(&rq->xdp_ring))) {
+-			rq->rx_notify_masked = true;
+-			napi_schedule(&rq->xdp_napi);
++			if (napi_schedule_prep(&rq->xdp_napi)) {
++				WRITE_ONCE(rq->rx_notify_masked, true);
++				__napi_schedule(&rq->xdp_napi);
++			}
+ 		}
+ 	}
+ 
 -- 
 2.34.1
 
