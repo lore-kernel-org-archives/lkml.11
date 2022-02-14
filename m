@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41224C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346993AbiBNKXR (ORCPT
+        id S1347044AbiBNKXW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:23:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50562 "EHLO
+        Mon, 14 Feb 2022 05:23:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346674AbiBNKUA (ORCPT
+        with ESMTP id S1347081AbiBNKUr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:20:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD45490260;
-        Mon, 14 Feb 2022 01:55:06 -0800 (PST)
+        Mon, 14 Feb 2022 05:20:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2864E6E344;
+        Mon, 14 Feb 2022 01:55:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31BC4B80DBF;
-        Mon, 14 Feb 2022 09:55:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5F3C340E9;
-        Mon, 14 Feb 2022 09:55:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6209B80DC8;
+        Mon, 14 Feb 2022 09:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCB25C340E9;
+        Mon, 14 Feb 2022 09:55:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832504;
-        bh=PKFm0sE3iMB94aMb4kUoSynBy19rolL5hhSmfs8lpww=;
+        s=korg; t=1644832526;
+        bh=pgZjIPO/xPpvA04zri388RaooRNpi1eK/Oi2BDZbWD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NDjqzjivdrZt/JYoklXM7mllmvVDUjbNsI4g3uJp+rTV9mtKfsY6NQo7A7VnH9kUn
-         OBI9ChLr/dziXmCFNZwcEEJva/0JztBkvMFUyBl6MvQLYcutRoIsw+pH+ql5nSwMpI
-         ZIJaTi/kD2eX66ZHhjWI1Lh+NM3wPUBP1FKRqgXE=
+        b=umV0aFXN1CO0x0+nPVtGr5fwjfWf2zaGmMf4smBmQYl52kQi6jKdw1qM3IwfIlgKU
+         FrbxhTJIfUo1e8HuXRBw6K1E4PzDENeC3uJ0+OFYMJpGbDz4ynZRYAkhbZztgb/jTO
+         QNsxV3SxNrZiPqFtUGidTpMCrN9SFrOIkwk//G0o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 034/203] x86/perf: Avoid warning for Arch LBR without XSAVE
-Date:   Mon, 14 Feb 2022 10:24:38 +0100
-Message-Id: <20220214092511.361960856@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.16 011/203] can: isotp: fix error path in isotp_sendmsg() to unlock wait queue
+Date:   Mon, 14 Feb 2022 10:24:15 +0100
+Message-Id: <20220214092510.602078699@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,38 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andi Kleen <ak@linux.intel.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 8c16dc047b5dd8f7b3bf4584fa75733ea0dde7dc ]
+commit 8375dfac4f683e1b2c5956d919d36aeedad46699 upstream.
 
-Some hypervisors support Arch LBR, but without the LBR XSAVE support.
-The current Arch LBR init code prints a warning when the xsave size (0) is
-unexpected. Avoid printing the warning for the "no LBR XSAVE" case.
+Commit 43a08c3bdac4 ("can: isotp: isotp_sendmsg(): fix TX buffer concurrent
+access in isotp_sendmsg()") introduced a new locking scheme that may render
+the userspace application in a locking state when an error is detected.
+This issue shows up under high load on simultaneously running isotp channels
+with identical configuration which is against the ISO specification and
+therefore breaks any reasonable PDU communication anyway.
 
-Signed-off-by: Andi Kleen <ak@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20211215204029.150686-1-ak@linux.intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 43a08c3bdac4 ("can: isotp: isotp_sendmsg(): fix TX buffer concurrent access in isotp_sendmsg()")
+Link: https://lore.kernel.org/all/20220209073601.25728-1-socketcan@hartkopp.net
+Cc: stable@vger.kernel.org
+Cc: Ziyang Xuan <william.xuanziyang@huawei.com>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/lbr.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/can/isotp.c |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-index 8043213b75a52..fa947c4fbd1f8 100644
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -1726,6 +1726,9 @@ static bool is_arch_lbr_xsave_available(void)
- 	 * Check the LBR state with the corresponding software structure.
- 	 * Disable LBR XSAVES support if the size doesn't match.
- 	 */
-+	if (xfeature_size(XFEATURE_LBR) == 0)
-+		return false;
-+
- 	if (WARN_ON(xfeature_size(XFEATURE_LBR) != get_lbr_state_size()))
- 		return false;
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -887,7 +887,7 @@ static int isotp_sendmsg(struct socket *
  
--- 
-2.34.1
-
+ 	if (!size || size > MAX_MSG_LENGTH) {
+ 		err = -EINVAL;
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	/* take care of a potential SF_DL ESC offset for TX_DL > 8 */
+@@ -897,24 +897,24 @@ static int isotp_sendmsg(struct socket *
+ 	if ((so->opt.flags & CAN_ISOTP_SF_BROADCAST) &&
+ 	    (size > so->tx.ll_dl - SF_PCI_SZ4 - ae - off)) {
+ 		err = -EINVAL;
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	err = memcpy_from_msg(so->tx.buf, msg, size);
+ 	if (err < 0)
+-		goto err_out;
++		goto err_out_drop;
+ 
+ 	dev = dev_get_by_index(sock_net(sk), so->ifindex);
+ 	if (!dev) {
+ 		err = -ENXIO;
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	skb = sock_alloc_send_skb(sk, so->ll.mtu + sizeof(struct can_skb_priv),
+ 				  msg->msg_flags & MSG_DONTWAIT, &err);
+ 	if (!skb) {
+ 		dev_put(dev);
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	can_skb_reserve(skb);
+@@ -976,7 +976,7 @@ static int isotp_sendmsg(struct socket *
+ 	if (err) {
+ 		pr_notice_once("can-isotp: %s: can_send_ret %pe\n",
+ 			       __func__, ERR_PTR(err));
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	if (wait_tx_done) {
+@@ -989,6 +989,9 @@ static int isotp_sendmsg(struct socket *
+ 
+ 	return size;
+ 
++err_out_drop:
++	/* drop this PDU and unlock a potential wait queue */
++	old_state = ISOTP_IDLE;
+ err_out:
+ 	so->tx.state = old_state;
+ 	if (so->tx.state == ISOTP_IDLE)
 
 
