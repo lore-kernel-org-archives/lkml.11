@@ -2,154 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21008C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD346C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348020AbiBNKdP (ORCPT
+        id S1347539AbiBNKdV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:33:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41536 "EHLO
+        Mon, 14 Feb 2022 05:33:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348035AbiBNKbu (ORCPT
+        with ESMTP id S1347894AbiBNKbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:31:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255FE2AD9;
-        Mon, 14 Feb 2022 02:00:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1395B80DCF;
-        Mon, 14 Feb 2022 10:00:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D71F4C340EF;
-        Mon, 14 Feb 2022 09:59:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832800;
-        bh=ConjnUoJ0g0xGyfJNWwrU/GygfPMqHV4ZaFCx5Ndfkk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=diankk27kKWxDRHQoAUdjLueM4xloH9aq13BiG9JLxP30et8iA8k+KqrJYqNEjMYr
-         I/uQ+Wow6depkctk34qJoPheW6WmZgNUCPO9sj5a6Zrad6Wu2YcItqMh+Jl+WVt12A
-         17SWOSmATS58ijW4Aj0sJzM18ElOgY4iFeSsnKew=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Suresh Balakrishnan <suresh.balakrishnan@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 128/203] gpiolib: Never return internal error codes to user space
-Date:   Mon, 14 Feb 2022 10:26:12 +0100
-Message-Id: <20220214092514.588804058@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 05:31:49 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF23BE0;
+        Mon, 14 Feb 2022 02:00:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644832808; x=1676368808;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=pdaKJlAT99zvWSgNNF1VUPdCxF67X30I6vH6ZtJgEK8=;
+  b=b7o25zNyyjhXHYu+Fk/s/N8PJfe9GSmKbyTdUkkvRYb3kwMHqYAlkVEy
+   2BNUI9yEBiBoKNJwfZup9awXWHLYHfmEkYC2YWxxql0lpQsCztgPXdSd6
+   pPGD0Yg7oDrNhnWHdB9uIWb9X9V0omZ6O+J9CdRnBXdYEL5fOJtvM3n7I
+   s=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Feb 2022 01:59:57 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 01:59:56 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 14 Feb 2022 01:59:55 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 14 Feb 2022 01:59:50 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v13 00/10] Add support for audio on SC7280 based targets
+Date:   Mon, 14 Feb 2022 15:29:37 +0530
+Message-ID: <1644832778-16064-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+This patch set is to add support for Audio over wcd codec,
+digital mics, through digital codecs and without ADSP.
 
-[ Upstream commit 95a4eed7dd5b7c1c3664a626174290686ddbee9f ]
+Changes Since V12:
+    -- Fix typo errors.
+Changes Since V11:
+    -- Fix kernel robot issue on arguments type mismatch.
+Changes Since V10:
+    -- Split bulk clock voting to individual clock voting as per use case in cdc-dma driver.
+    -- Add missing codec dma clocks.
+    -- Update rxtx lpm buffer size.
+Changes Since V9:
+    -- Change individual clock voting to bulk clock voting of lpass-sc7280 platform driver.
+    -- Remove redundant clocks in lpass variant structure.
+    -- Add mclk for MI2S based headset path.
+    -- Remove unused lpass variant structure members in lpass header.
+Changes Since V8:
+    -- Fix errors in sc7280 lpass cpu dt-bindings.
+    -- Move to quicinc domain email id's.
+Changes Since V7:
+    -- Fix indentation errors.
+    -- Bisect patches to avoid interdependency.
+Changes Since V6:
+    -- Split cdc dma regmap config macros.
+    -- Add write dma reg fields for i2s path.
+    -- Add helper function to distinguish rxtx and va dma ports.
+    -- Optimizing clock and reg name in cpu dt-bindings.
+    -- Update buffer management for cdc dma path.
+    -- Remove Kconfig fields of machine driver.
+Changes Since V5:
+    -- Include MI2S primary node to snd_soc_dai_driver in lpass-sc7280 platform driver.
+    -- Move dependency patch list to corresponding patch.
+    -- Add support for missing cdc-dma ports.
+    -- Change if/else conditional statements to switch cases.
+    -- Add missing error handlings.
+    -- Typo errors fix.
+Changes Since V4:
+    -- Remove unused variable in lpass-sc7280 platform driver.
+Changes Since V3:
+    -- Remove redundant power domain controls. As power domains can be configured from dtsi.
+Changes Since V2:
+    -- Split lpass sc7280 cpu driver patch and create regmap config patch.
+    -- Create patches based on latest kernel tip.
+    -- Add helper function to get dma control and lpaif handle.
+    -- Remove unused variables.
+Changes Since V1:
+    -- Typo errors fix
+    -- CPU driver readable/writable apis optimization.
+    -- Add Missing config patch
+    -- Add Common api for repeated dmactl initialization.
 
-Currently it's possible that character device interface may return
-the error codes which are not supposed to be seen by user space.
-In this case it's EPROBE_DEFER.
+Srinivasa Rao Mandadapu (10):
+  ASoC: qcom: SC7280: Update config for building codec dma drivers
+  ASoC: qcom: Move lpass_pcm_data structure to lpass header
+  ASoC: qcom: lpass: Add dma fields for codec dma lpass interface
+  ASoC: qcom: Add helper function to get dma control and lpaif handle
+  ASoC: qcom: Add register definition for codec rddma and wrdma
+  ASoC: qcom: Add regmap config support for codec dma driver
+  ASoC: qcom: Add support for codec dma driver
+  ASoC: qcom: Add lpass CPU driver for codec dma control
+  ASoC: dt-bindings: Add SC7280 lpass cpu bindings
+  ASoC: qcom: lpass-sc7280: Add platform driver for lpass audio
 
-Wrap it to return -ENODEV instead as sysfs does.
+ .../devicetree/bindings/sound/qcom,lpass-cpu.yaml  |  75 ++-
+ sound/soc/qcom/Kconfig                             |  11 +
+ sound/soc/qcom/Makefile                            |   4 +
+ sound/soc/qcom/lpass-cdc-dma.c                     | 304 ++++++++++
+ sound/soc/qcom/lpass-cpu.c                         | 244 +++++++-
+ sound/soc/qcom/lpass-lpaif-reg.h                   | 127 ++++-
+ sound/soc/qcom/lpass-platform.c                    | 617 ++++++++++++++++++---
+ sound/soc/qcom/lpass-sc7280.c                      | 447 +++++++++++++++
+ sound/soc/qcom/lpass.h                             | 145 +++++
+ 9 files changed, 1887 insertions(+), 87 deletions(-)
+ create mode 100644 sound/soc/qcom/lpass-cdc-dma.c
+ create mode 100644 sound/soc/qcom/lpass-sc7280.c
 
-Fixes: d7c51b47ac11 ("gpio: userspace ABI for reading/writing GPIO lines")
-Fixes: 61f922db7221 ("gpio: userspace ABI for reading GPIO line events")
-Fixes: 3c0d9c635ae2 ("gpiolib: cdev: support GPIO_V2_GET_LINE_IOCTL and GPIO_V2_LINE_GET_VALUES_IOCTL")
-Reported-by: Suresh Balakrishnan <suresh.balakrishnan@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpio/gpiolib-cdev.c  |  6 +++---
- drivers/gpio/gpiolib-sysfs.c |  7 ++-----
- drivers/gpio/gpiolib.h       | 12 ++++++++++++
- 3 files changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/gpio/gpiolib-cdev.c b/drivers/gpio/gpiolib-cdev.c
-index c7b5446d01fd2..ffa0256cad5a0 100644
---- a/drivers/gpio/gpiolib-cdev.c
-+++ b/drivers/gpio/gpiolib-cdev.c
-@@ -330,7 +330,7 @@ static int linehandle_create(struct gpio_device *gdev, void __user *ip)
- 			goto out_free_lh;
- 		}
- 
--		ret = gpiod_request(desc, lh->label);
-+		ret = gpiod_request_user(desc, lh->label);
- 		if (ret)
- 			goto out_free_lh;
- 		lh->descs[i] = desc;
-@@ -1378,7 +1378,7 @@ static int linereq_create(struct gpio_device *gdev, void __user *ip)
- 			goto out_free_linereq;
- 		}
- 
--		ret = gpiod_request(desc, lr->label);
-+		ret = gpiod_request_user(desc, lr->label);
- 		if (ret)
- 			goto out_free_linereq;
- 
-@@ -1764,7 +1764,7 @@ static int lineevent_create(struct gpio_device *gdev, void __user *ip)
- 		}
- 	}
- 
--	ret = gpiod_request(desc, le->label);
-+	ret = gpiod_request_user(desc, le->label);
- 	if (ret)
- 		goto out_free_le;
- 	le->desc = desc;
-diff --git a/drivers/gpio/gpiolib-sysfs.c b/drivers/gpio/gpiolib-sysfs.c
-index 4098bc7f88b7e..44c1ad51b3fe9 100644
---- a/drivers/gpio/gpiolib-sysfs.c
-+++ b/drivers/gpio/gpiolib-sysfs.c
-@@ -475,12 +475,9 @@ static ssize_t export_store(struct class *class,
- 	 * they may be undone on its behalf too.
- 	 */
- 
--	status = gpiod_request(desc, "sysfs");
--	if (status) {
--		if (status == -EPROBE_DEFER)
--			status = -ENODEV;
-+	status = gpiod_request_user(desc, "sysfs");
-+	if (status)
- 		goto done;
--	}
- 
- 	status = gpiod_set_transitory(desc, false);
- 	if (!status) {
-diff --git a/drivers/gpio/gpiolib.h b/drivers/gpio/gpiolib.h
-index 30bc3f80f83e6..c31f4626915de 100644
---- a/drivers/gpio/gpiolib.h
-+++ b/drivers/gpio/gpiolib.h
-@@ -135,6 +135,18 @@ struct gpio_desc {
- 
- int gpiod_request(struct gpio_desc *desc, const char *label);
- void gpiod_free(struct gpio_desc *desc);
-+
-+static inline int gpiod_request_user(struct gpio_desc *desc, const char *label)
-+{
-+	int ret;
-+
-+	ret = gpiod_request(desc, label);
-+	if (ret == -EPROBE_DEFER)
-+		ret = -ENODEV;
-+
-+	return ret;
-+}
-+
- int gpiod_configure_flags(struct gpio_desc *desc, const char *con_id,
- 		unsigned long lflags, enum gpiod_flags dflags);
- int gpio_set_debounce_timeout(struct gpio_desc *desc, unsigned int debounce);
 -- 
-2.34.1
-
-
+2.7.4
 
