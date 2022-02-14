@@ -2,149 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA75C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 378B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355181AbiBNOdm (ORCPT
+        id S1355190AbiBNOdr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 09:33:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42610 "EHLO
+        Mon, 14 Feb 2022 09:33:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231570AbiBNOdk (ORCPT
+        with ESMTP id S1355177AbiBNOdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 09:33:40 -0500
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8204A4A3FC;
-        Mon, 14 Feb 2022 06:33:30 -0800 (PST)
-Received: from jleng.ambarella.net (unknown [116.246.37.178])
-        by mail-app2 (Coremail) with SMTP id by_KCgDHzIQAaApizCzkAQ--.27842S2;
-        Mon, 14 Feb 2022 22:32:53 +0800 (CST)
-From:   3090101217@zju.edu.cn
-To:     balbi@kernel.org, gregkh@linuxfoundation.org,
-        ruslan.bilovol@gmail.com, pavel.hofman@ivitera.com,
-        jbrunet@baylibre.com, jackp@codeaurora.org, colin.king@intel.com,
-        pawell@cadence.com
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jing Leng <jleng@ambarella.com>
-Subject: [PATCH v2] usb: gadget: f_uac2: fix superspeed transfer
-Date:   Mon, 14 Feb 2022 22:32:23 +0800
-Message-Id: <20220214143223.5658-1-3090101217@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220214032606.17227-1-3090101217@zju.edu.cn>
-References: <20220214032606.17227-1-3090101217@zju.edu.cn>
-X-CM-TRANSID: by_KCgDHzIQAaApizCzkAQ--.27842S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxXw1UGFy5WF1ktw4xZF18Zrb_yoWrJF45pw
-        n8C39rtrW5Ar4aga1rAr4UAr43AFWIyayYkFW2vw12vF4Sq34ktF1Iyr1YkFyUAFyYyw10
-        vF4jkw47W3Zrur7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPjb7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwV
-        C2z280aVCY1x0267AKxVW0oVCq3wAac4AC62xK8xCEY4vEwIxC4wAac4AC6xC2jxv24VCS
-        YI8q64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2
-        WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkE
-        bVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwAKzVCY07xG64
-        k0F24l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AK
-        xVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrx
-        kI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v2
-        6r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8Jw
-        CI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU2KZXUUUU
-        U
-X-CM-SenderInfo: qtqziiyqrsilo62m3hxhgxhubq/1tbiAwQRBVNG3FHYyQAPsV
+        Mon, 14 Feb 2022 09:33:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1A214BFC6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:33:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644849216;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oIIRJ21BwIfvNwz0gmLQtZq6j5ywHb6my37zjrdYjEk=;
+        b=JdmyYN8NJiao2XNqO7tz8Akr1LZ8XEQX82ZxalSDsC0D+z4gF4zSNia9dfqlqP6KvY4ilG
+        tF/yL5D208SfgAQzI+YEGZXhHkKmLSV+s/AIJmuOeidg/Kn1zn8Btw5CB66kbyyYEQMR59
+        lZpmxRnQPC+dTfZoHgTQdA0JVXw001s=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-583-f4tA5gRtN5mHVZMeanHJmg-1; Mon, 14 Feb 2022 09:33:35 -0500
+X-MC-Unique: f4tA5gRtN5mHVZMeanHJmg-1
+Received: by mail-oo1-f70.google.com with SMTP id g8-20020a4aa708000000b002e8efc514a6so10733701oom.12
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:33:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oIIRJ21BwIfvNwz0gmLQtZq6j5ywHb6my37zjrdYjEk=;
+        b=AD/P0VuRgD4ZH7MA+JjhKdaUHlC9XMWuPmYe83cPMDvDE8aq5vHwl0JgLYDerOTvJs
+         TBT5C5TMnuPZwYkZ+i0P0MdzJ1iOcTFhZTUbFNm32dNKrlvaOt7gxVP060bhZ6uaiQDV
+         kN3ThA8XJa/ozImImAQ9VgYkOB1LKAJfIK45Cy/IM/s7Bg7DReAY6gG2hts/qAxhwfKD
+         ZDmGvXG8P4CTFghWjzL1Ifm/RKoonGcf02L1FTI035GwPz/Exn94CgRcnQ9M6LHra86C
+         ntWY30HXQRa0LrycAYo5LKuwX8DiVLdZ8tPzlY8b9JaeociVQg9oxno/gAnZLIkKh1Q2
+         8Hxw==
+X-Gm-Message-State: AOAM531wfMNgVQN1Eq7aGIqZ3CLrGk3anLmDAArapCKek+CeoWCMW7O1
+        j23UBjXPMONHIGd6lGwDcGjlYfpv6paD6nx756Fv0dfxGswIYxTa4gpBlt0Vs0BCJlKfN1Lqe38
+        bOUJwQaYSewrR+i5rXWuU9nqd
+X-Received: by 2002:a05:6870:c095:: with SMTP id c21mr2067589oad.245.1644849215018;
+        Mon, 14 Feb 2022 06:33:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxdVQ5IR9sHLZgVPu2QVTSPw4yaT3G8ufJi3cdC6V7G9uaFDWwCWmnk8z6rfOM7YD50C4dtNQ==
+X-Received: by 2002:a05:6870:c095:: with SMTP id c21mr2067577oad.245.1644849214794;
+        Mon, 14 Feb 2022 06:33:34 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id z4sm12449303ota.7.2022.02.14.06.33.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 06:33:34 -0800 (PST)
+From:   trix@redhat.com
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, jacob.e.keller@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] ice: check the return of ice_ptp_gettimex64
+Date:   Mon, 14 Feb 2022 06:33:27 -0800
+Message-Id: <20220214143327.2884183-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+From: Tom Rix <trix@redhat.com>
 
-On page 362 of the USB3.2 specification (
-https://usb.org/sites/default/files/usb_32_20210125.zip),
-The 'SuperSpeed Endpoint Companion Descriptor' shall only be returned
-by Enhanced SuperSpeed devices that are operating at Gen X speed.
-Each endpoint described in an interface is followed by a 'SuperSpeed
-Endpoint Companion Descriptor'.
+Clang static analysis reports this issue
+time64.h:69:50: warning: The left operand of '+'
+  is a garbage value
+  set_normalized_timespec64(&ts_delta, lhs.tv_sec + rhs.tv_sec,
+                                       ~~~~~~~~~~ ^
+In ice_ptp_adjtime_nonatomic(), the timespec64 variable 'now'
+is set by ice_ptp_gettimex64().  This function can fail
+with -EBUSY, so 'now' can have a gargbage value.
+So check the return.
 
-If we use SuperSpeed UDC, host can't recognize the device if endpoint
-doesn't have 'SuperSpeed Endpoint Companion Descriptor' followed.
-
-Currently in the uac2 driver code:
-1. ss_epout_desc_comp follows ss_epout_desc;
-2. ss_epin_fback_desc_comp follows ss_epin_fback_desc;
-3. ss_epin_desc_comp follows ss_epin_desc;
-4. Only ss_ep_int_desc endpoint doesn't have 'SuperSpeed Endpoint
-Companion Descriptor' followed, so we should add it.
-
-Signed-off-by: Jing Leng <jleng@ambarella.com>
+Fixes: 06c16d89d2cb ("ice: register 1588 PTP clock device object for E810 devices")
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- drivers/usb/gadget/function/f_uac2.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
-index 097a709549d6..a6fc492f9148 100644
---- a/drivers/usb/gadget/function/f_uac2.c
-+++ b/drivers/usb/gadget/function/f_uac2.c
-@@ -282,6 +282,14 @@ static struct usb_endpoint_descriptor ss_ep_int_desc = {
- 	.bInterval = 4,
- };
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index ae291d442539..000c39d163a2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -1533,9 +1533,12 @@ ice_ptp_settime64(struct ptp_clock_info *info, const struct timespec64 *ts)
+ static int ice_ptp_adjtime_nonatomic(struct ptp_clock_info *info, s64 delta)
+ {
+ 	struct timespec64 now, then;
++	int ret;
  
-+static struct usb_ss_ep_comp_descriptor ss_ep_int_desc_comp = {
-+	.bLength = sizeof(ss_ep_int_desc_comp),
-+	.bDescriptorType = USB_DT_SS_ENDPOINT_COMP,
-+	.bMaxBurst = 0,
-+	.bmAttributes = 0,
-+	.wBytesPerInterval = cpu_to_le16(6),
-+};
-+
- /* Audio Streaming OUT Interface - Alt0 */
- static struct usb_interface_descriptor std_as_out_if0_desc = {
- 	.bLength = sizeof std_as_out_if0_desc,
-@@ -595,7 +603,8 @@ static struct usb_descriptor_header *ss_audio_desc[] = {
- 	(struct usb_descriptor_header *)&in_feature_unit_desc,
- 	(struct usb_descriptor_header *)&io_out_ot_desc,
+ 	then = ns_to_timespec64(delta);
+-	ice_ptp_gettimex64(info, &now, NULL);
++	ret = ice_ptp_gettimex64(info, &now, NULL);
++	if (ret)
++		return ret;
+ 	now = timespec64_add(now, then);
  
--  (struct usb_descriptor_header *)&ss_ep_int_desc,
-+	(struct usb_descriptor_header *)&ss_ep_int_desc,
-+	(struct usb_descriptor_header *)&ss_ep_int_desc_comp,
- 
- 	(struct usb_descriptor_header *)&std_as_out_if0_desc,
- 	(struct usb_descriptor_header *)&std_as_out_if1_desc,
-@@ -657,6 +666,7 @@ static int set_ep_max_packet_size(const struct f_uac2_opts *uac2_opts,
- 
- 	case USB_SPEED_HIGH:
- 	case USB_SPEED_SUPER:
-+	case USB_SPEED_SUPER_PLUS:
- 		max_size_ep = 1024;
- 		factor = 8000;
- 		break;
-@@ -723,6 +733,7 @@ static void setup_headers(struct f_uac2_opts *opts,
- 	struct usb_ss_ep_comp_descriptor *epout_desc_comp = NULL;
- 	struct usb_ss_ep_comp_descriptor *epin_desc_comp = NULL;
- 	struct usb_ss_ep_comp_descriptor *epin_fback_desc_comp = NULL;
-+	struct usb_ss_ep_comp_descriptor *ep_int_desc_comp = NULL;
- 	struct usb_endpoint_descriptor *epout_desc;
- 	struct usb_endpoint_descriptor *epin_desc;
- 	struct usb_endpoint_descriptor *epin_fback_desc;
-@@ -750,6 +761,7 @@ static void setup_headers(struct f_uac2_opts *opts,
- 		epin_fback_desc = &ss_epin_fback_desc;
- 		epin_fback_desc_comp = &ss_epin_fback_desc_comp;
- 		ep_int_desc = &ss_ep_int_desc;
-+		ep_int_desc_comp = &ss_ep_int_desc_comp;
- 	}
- 
- 	i = 0;
-@@ -778,8 +790,11 @@ static void setup_headers(struct f_uac2_opts *opts,
- 	if (EPOUT_EN(opts))
- 		headers[i++] = USBDHDR(&io_out_ot_desc);
- 
--	if (FUOUT_EN(opts) || FUIN_EN(opts))
-+	if (FUOUT_EN(opts) || FUIN_EN(opts)) {
- 		headers[i++] = USBDHDR(ep_int_desc);
-+		if (ep_int_desc_comp)
-+			headers[i++] = USBDHDR(ep_int_desc_comp);
-+	}
- 
- 	if (EPOUT_EN(opts)) {
- 		headers[i++] = USBDHDR(&std_as_out_if0_desc);
+ 	return ice_ptp_settime64(info, (const struct timespec64 *)&now);
 -- 
-2.17.1
+2.26.3
 
