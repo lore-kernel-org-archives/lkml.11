@@ -2,87 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D62C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9180EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348822AbiBNKnb (ORCPT
+        id S1349059AbiBNKpD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:43:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52128 "EHLO
+        Mon, 14 Feb 2022 05:45:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348937AbiBNKkP (ORCPT
+        with ESMTP id S1348939AbiBNKoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:40:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376C966C98;
-        Mon, 14 Feb 2022 02:04:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 14 Feb 2022 05:44:54 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5251674859;
+        Mon, 14 Feb 2022 02:06:11 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBC5AB80DFE;
-        Mon, 14 Feb 2022 10:04:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25ADDC36AE2;
-        Mon, 14 Feb 2022 10:04:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644833043;
-        bh=9vxZ2UxSC/BPL5u/hZd6/MrObK1934bk0SauZ5RvZs8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AbSTH3s3CCGol+m9UX/VTIig93WbVLbwbDxZSjVy1sJ+Q50PwB1l6WkQRHEARbgzm
-         nvWEVc+CYGOPkPjXE1dVe3bbcBAuewRqX72awv2XOXFL3liuG8OG81jK9t+NC8JdYm
-         hKfPWrWM3sJlueUotlCEEUsSVc5M24q28e4rmgiY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stephan Brunner <s.brunner@stephan-brunner.net>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.16 179/203] USB: serial: ch341: add support for GW Instek USB2.0-Serial devices
-Date:   Mon, 14 Feb 2022 10:27:03 +0100
-Message-Id: <20220214092516.333904772@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8B9271EC01A9;
+        Mon, 14 Feb 2022 11:06:05 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644833165;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=aXPq0nLzHCwRfyUGulTT2l60daxEfBrJC63adKuy65o=;
+        b=MjK8jxmnJXjN2XXB/H1U2Yk7OIDpTQ9Kc792Rjc72CJIbjXL8YKS0o85ObU98GqQc0GWRo
+        Zr0zG5il9szYmsEztX0N5cbiLdB+1iSmGPvlTiAi41kzWpclF4bvfha6wvYGZTTcabXKiL
+        Tw0j9UqkXuAkEe0JwiEh7DHMX2SlCmI=
+Date:   Mon, 14 Feb 2022 11:06:07 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Yazen Ghannam <yazen.ghannam@amd.com>
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
+        rric@kernel.org, Smita.KoralahalliChannabasappa@amd.com
+Subject: Re: [PATCH v4 08/24] EDAC/amd64: Define function to check DRAM limit
+ address
+Message-ID: <YgopjwgItEHPfFtF@zn.tnic>
+References: <20220127204115.384161-1-yazen.ghannam@amd.com>
+ <20220127204115.384161-9-yazen.ghannam@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220127204115.384161-9-yazen.ghannam@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Brunner <s.brunner@stephan-brunner.net>
+On Thu, Jan 27, 2022 at 08:40:59PM +0000, Yazen Ghannam wrote:
+> Move the DRAM limit check into a separate helper function.
 
-commit fa77ce201f7f2d823b07753575122d1ae5597fbe upstream.
+You're still writing the "what" in commit messages - pls make a note to
+write about "why" you're doing a change instead.
 
-Programmable lab power supplies made by GW Instek, such as the
-GPP-2323, have a USB port exposing a serial port to control the device.
+Because I don't see why you're doing this. Because
+umc_normaddr_to_sysaddr() is supposed to call helper functions only?
 
-Stringing the supplied Windows driver, references to the ch341 chip are
-found. Binding the existing ch341 driver to the VID/PID of the GPP-2323
-("GW Instek USB2.0-Serial" as per the USB product name) works out of the
-box, communication and control is now possible.
+Now if you had the "why" I wouldn't be wondering...
 
-This patch should work with any GPP series power supply due to
-similarities in the product line.
+:)
 
-Signed-off-by: Stephan Brunner <s.brunner@stephan-brunner.net>
-Link: https://lore.kernel.org/r/4a47b864-0816-6f6a-efee-aa20e74bcdc6@stephan-brunner.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/serial/ch341.c |    1 +
- 1 file changed, 1 insertion(+)
+-- 
+Regards/Gruss,
+    Boris.
 
---- a/drivers/usb/serial/ch341.c
-+++ b/drivers/usb/serial/ch341.c
-@@ -85,6 +85,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(0x1a86, 0x5523) },
- 	{ USB_DEVICE(0x1a86, 0x7522) },
- 	{ USB_DEVICE(0x1a86, 0x7523) },
-+	{ USB_DEVICE(0x2184, 0x0057) },
- 	{ USB_DEVICE(0x4348, 0x5523) },
- 	{ USB_DEVICE(0x9986, 0x7523) },
- 	{ },
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
