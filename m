@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC55CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:40:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEBAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244242AbiBNJk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:40:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51856 "EHLO
+        id S235685AbiBNJkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:40:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244337AbiBNJjE (ORCPT
+        with ESMTP id S233952AbiBNJjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:39:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F2B692AD;
-        Mon, 14 Feb 2022 01:35:23 -0800 (PST)
+        Mon, 14 Feb 2022 04:39:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFA16AA53;
+        Mon, 14 Feb 2022 01:35:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B261860F8D;
-        Mon, 14 Feb 2022 09:34:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D8CCC340E9;
-        Mon, 14 Feb 2022 09:34:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5041EB80DC1;
+        Mon, 14 Feb 2022 09:35:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66815C340E9;
+        Mon, 14 Feb 2022 09:35:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831296;
-        bh=Qg/5nP1Qy14g7mcuUba5wXFNYp8f2uUoQ5AnUMCO4wU=;
+        s=korg; t=1644831302;
+        bh=cyfD6cAL+cJCHRXrkrEDDSE13jOiSFS77BO1c8qJ0Ok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vCRLhsaxZucRTtJJK3KMNcSpVmVAon1pZrdKkI4Yf7YK9iJVBJEADlIYB1NNn4NHv
-         7/O4O3NZ8bwBMzlPSStYfhf4svH6swYdCMKlhfhPYq8MbRFaQCSrlnXKrgRBdJiNN1
-         qjAiLH/JtxdVeDCTFjBhAePjfYs+naOOPG2803WU=
+        b=g2MwzyJNQC3bt04zHpGEFYtyLd8ulJAmZuRZWrDeko6kSBl8qdj5VeO6hkyLYCtEY
+         M9ZSsC2Rr9XNQP318JlsRLTwKLGyO86H4ZzH+ibAwfVWLvESlP7qxUxxbP34hjeV9M
+         N1/xvj0LsbBZCJ0e8PcnERcl9ELZctXOYygYZBlw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.4 01/71] integrity: check the return value of audit_log_start()
-Date:   Mon, 14 Feb 2022 10:25:29 +0100
-Message-Id: <20220214092452.074567685@linuxfoundation.org>
+        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
+        Prabhath Sajeepa <psajeepa@purestorage.com>,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Uday Shankar <ushankar@purestorage.com>
+Subject: [PATCH 5.4 11/71] nvme: Fix parsing of ANA log page
+Date:   Mon, 14 Feb 2022 10:25:39 +0100
+Message-Id: <20220214092452.410238173@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,33 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Prabhath Sajeepa <psajeepa@purestorage.com>
 
-commit 83230351c523b04ff8a029a4bdf97d881ecb96fc upstream.
+commit 64fab7290dc3561729bbc1e35895a517eb2e549e upstream.
 
-audit_log_start() returns audit_buffer pointer on success or NULL on
-error, so it is better to check the return value of it.
+Check validity of offset into ANA log buffer before accessing
+nvme_ana_group_desc. This check ensures the size of ANA log buffer >=
+offset + sizeof(nvme_ana_group_desc)
 
-Fixes: 3323eec921ef ("integrity: IMA as an integrity service provider")
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Prabhath Sajeepa <psajeepa@purestorage.com>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Cc: Uday Shankar <ushankar@purestorage.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/integrity/integrity_audit.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/nvme/host/multipath.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/security/integrity/integrity_audit.c
-+++ b/security/integrity/integrity_audit.c
-@@ -36,6 +36,8 @@ void integrity_audit_msg(int audit_msgno
- 		return;
+--- a/drivers/nvme/host/multipath.c
++++ b/drivers/nvme/host/multipath.c
+@@ -458,8 +458,14 @@ static int nvme_parse_ana_log(struct nvm
  
- 	ab = audit_log_start(audit_context(), GFP_KERNEL, audit_msgno);
-+	if (!ab)
-+		return;
- 	audit_log_format(ab, "pid=%d uid=%u auid=%u ses=%u",
- 			 task_pid_nr(current),
- 			 from_kuid(&init_user_ns, current_cred()->uid),
+ 	for (i = 0; i < le16_to_cpu(ctrl->ana_log_buf->ngrps); i++) {
+ 		struct nvme_ana_group_desc *desc = base + offset;
+-		u32 nr_nsids = le32_to_cpu(desc->nnsids);
+-		size_t nsid_buf_size = nr_nsids * sizeof(__le32);
++		u32 nr_nsids;
++		size_t nsid_buf_size;
++
++		if (WARN_ON_ONCE(offset > ctrl->ana_log_size - sizeof(*desc)))
++			return -EINVAL;
++
++		nr_nsids = le32_to_cpu(desc->nnsids);
++		nsid_buf_size = nr_nsids * sizeof(__le32);
+ 
+ 		if (WARN_ON_ONCE(desc->grpid == 0))
+ 			return -EINVAL;
+@@ -479,8 +485,6 @@ static int nvme_parse_ana_log(struct nvm
+ 			return error;
+ 
+ 		offset += nsid_buf_size;
+-		if (WARN_ON_ONCE(offset > ctrl->ana_log_size - sizeof(*desc)))
+-			return -EINVAL;
+ 	}
+ 
+ 	return 0;
 
 
