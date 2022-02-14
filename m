@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C79ADC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69720C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346210AbiBNKRe (ORCPT
+        id S1346377AbiBNKPs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:17:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44688 "EHLO
+        Mon, 14 Feb 2022 05:15:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346343AbiBNKPr (ORCPT
+        with ESMTP id S1345910AbiBNKNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:15:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7EF88B33;
-        Mon, 14 Feb 2022 01:52:45 -0800 (PST)
+        Mon, 14 Feb 2022 05:13:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A2A88B17;
+        Mon, 14 Feb 2022 01:51:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41B44B80DC4;
-        Mon, 14 Feb 2022 09:52:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F359C340E9;
-        Mon, 14 Feb 2022 09:52:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF4A960F65;
+        Mon, 14 Feb 2022 09:51:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97548C340E9;
+        Mon, 14 Feb 2022 09:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832355;
-        bh=7l+VzWdFRa+CJ1xl/tSsSuOBIXCFgelYaZomtLXIgT4=;
+        s=korg; t=1644832270;
+        bh=T7YDZ7jqaN12u6DNHfqzCT1Ns3t7VXGIw+QDvT0i+QA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y2ZMHbOTGmZT06rIsLnlK12uO8yAk9NP1FJG73NLf68hLyMINtHOs7hCYyrF56fnp
-         0ga/bQ/U3KUU7M8Dblqag+pMOzJXAFtO73F3R6TGGb1l/eHhJJxt/wjqPMjd37Nz5s
-         XPUSzW3+TLgJcDFAqoLNIEY4aQLG+Y7k7UFU/UzM=
+        b=hAjqFrVBtc7r8yFfpGZk+UVvtkYN3gzjLl2PmQpmA5jtsoOTYv9ZkJRwikhC2YbU0
+         F+ohbOZ+plqLBuweOcl4ogMLVcS/665kcCarjOey8ujO0hFG9vVs8KLy1JJRaf7bVV
+         Ho7XG08ULsaCVtnzxmK8zgZHSJgmJ9HNxp4oq2E8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rafael Richter <rafael.richter@gin.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Lutz Koschorreck <theleks@ko-hh.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 133/172] net: dsa: mv88e6xxx: fix use-after-free in mv88e6xxx_mdios_unregister
-Date:   Mon, 14 Feb 2022 10:26:31 +0100
-Message-Id: <20220214092511.002463492@linuxfoundation.org>
+Subject: [PATCH 5.15 101/172] arm64: dts: meson-sm1-odroid: use correct enable-gpio pin for tf-io regulator
+Date:   Mon, 14 Feb 2022 10:25:59 +0100
+Message-Id: <20220214092509.893895551@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,46 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Lutz Koschorreck <theleks@ko-hh.de>
 
-[ Upstream commit 51a04ebf21122d5c76a716ecd9bfc33ea44b2b39 ]
+[ Upstream commit 323ca765bfe9d637fa774373baec0bc41e51fcfa ]
 
-Since struct mv88e6xxx_mdio_bus *mdio_bus is the bus->priv of something
-allocated with mdiobus_alloc_size(), this means that mdiobus_free(bus)
-will free the memory backing the mdio_bus as well. Therefore, the
-mdio_bus->list element is freed memory, but we continue to iterate
-through the list of MDIO buses using that list element.
+The interrupt pin of the external ethernet phy is used, instead of the
+enable-gpio pin of the tf-io regulator. The GPIOE_2 pin is located in
+the gpio_ao bank.
 
-To fix this, use the proper list iterator that handles element deletion
-by keeping a copy of the list element next pointer.
+This causes phy interrupt problems at system startup.
+[   76.645190] irq 36: nobody cared (try booting with the "irqpoll" option)
+[   76.649617] CPU: 0 PID: 1416 Comm: irq/36-0.0:00 Not tainted 5.16.0 #2
+[   76.649629] Hardware name: Hardkernel ODROID-HC4 (DT)
+[   76.649635] Call trace:
+[   76.649638]  dump_backtrace+0x0/0x1c8
+[   76.649658]  show_stack+0x14/0x60
+[   76.649667]  dump_stack_lvl+0x64/0x7c
+[   76.649676]  dump_stack+0x14/0x2c
+[   76.649683]  __report_bad_irq+0x38/0xe8
+[   76.649695]  note_interrupt+0x220/0x3a0
+[   76.649704]  handle_irq_event_percpu+0x58/0x88
+[   76.649713]  handle_irq_event+0x44/0xd8
+[   76.649721]  handle_fasteoi_irq+0xa8/0x130
+[   76.649730]  generic_handle_domain_irq+0x38/0x58
+[   76.649738]  gic_handle_irq+0x9c/0xb8
+[   76.649747]  call_on_irq_stack+0x28/0x38
+[   76.649755]  do_interrupt_handler+0x7c/0x80
+[   76.649763]  el1_interrupt+0x34/0x80
+[   76.649772]  el1h_64_irq_handler+0x14/0x20
+[   76.649781]  el1h_64_irq+0x74/0x78
+[   76.649788]  irq_finalize_oneshot.part.56+0x68/0xf8
+[   76.649796]  irq_thread_fn+0x5c/0x98
+[   76.649804]  irq_thread+0x13c/0x260
+[   76.649812]  kthread+0x144/0x178
+[   76.649822]  ret_from_fork+0x10/0x20
+[   76.649830] handlers:
+[   76.653170] [<0000000025a6cd31>] irq_default_primary_handler threaded [<0000000093580eb7>] phy_interrupt
+[   76.661256] Disabling IRQ #36
 
-Fixes: f53a2ce893b2 ("net: dsa: mv88e6xxx: don't use devres for mdiobus")
-Reported-by: Rafael Richter <rafael.richter@gin.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220210174017.3271099-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1f80a5cf74a6 ("arm64: dts: meson-sm1-odroid: add missing enable gpio and supply for tf_io regulator")
+Signed-off-by: Lutz Koschorreck <theleks@ko-hh.de>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+[narmstrong: removed spurious invalid & blank lines from commit message]
+Link: https://lore.kernel.org/r/20220127130537.GA187347@odroid-VirtualBox
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 206b8a3001b95..056e3b65cd278 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3466,10 +3466,10 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
- static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+index 5779e70caccd3..328f4adfaaa9d 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+@@ -48,7 +48,7 @@ tf_io: gpio-regulator-tf_io {
+ 		regulator-max-microvolt = <3300000>;
+ 		vin-supply = <&vcc_5v>;
  
- {
--	struct mv88e6xxx_mdio_bus *mdio_bus;
-+	struct mv88e6xxx_mdio_bus *mdio_bus, *p;
- 	struct mii_bus *bus;
+-		enable-gpio = <&gpio GPIOE_2 GPIO_ACTIVE_HIGH>;
++		enable-gpio = <&gpio_ao GPIOE_2 GPIO_ACTIVE_HIGH>;
+ 		enable-active-high;
+ 		regulator-always-on;
  
--	list_for_each_entry(mdio_bus, &chip->mdios, list) {
-+	list_for_each_entry_safe(mdio_bus, p, &chip->mdios, list) {
- 		bus = mdio_bus->bus;
- 
- 		if (!mdio_bus->external)
 -- 
 2.34.1
 
