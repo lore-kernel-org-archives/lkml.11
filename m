@@ -2,144 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 935D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C3D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiBNU5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:57:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43784 "EHLO
+        id S230074AbiBNU5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:57:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbiBNU4z (ORCPT
+        with ESMTP id S229978AbiBNU4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:56:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD70113DAF;
-        Mon, 14 Feb 2022 12:56:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 14 Feb 2022 15:56:52 -0500
+Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA5C5F66
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:56:29 -0800 (PST)
+Received: from terra.local.svanheule.net (104.153-136-217.adsl-dyn.isp.belgacom.be [217.136.153.104])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B5C86116D;
-        Mon, 14 Feb 2022 19:50:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53768C340E9;
-        Mon, 14 Feb 2022 19:50:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644868242;
-        bh=BvxiazElhAHgEm8+2WGMWR3C6ZbhqtLqke0JBRhBcik=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aEGVTY81UnRVU8bkM8waQP4laPDy37D3Gu8TElITdwX61EGmyK5ZXos2moGKr5Zd2
-         8MP989zlHrw4km6Qd2cAIkl424Y7mypQq6/Jz4lro7XYz1tVNiF2LHsm/Qlz6eDPDV
-         3aF55ngK8WxjFvb+1VefzXQCjlDwQtNb96TskP3EFoEWXcOyW6actoyWn7O8aoHusr
-         BU3stTV6VNZ2Y/kFzJ0O5VzJLANKsKxQ9/SvwrQYfOhqFBRwvvuHpW7h/qHcbeOBMa
-         EKZDkio8Fkmf0SxDgGW0obRhFKbjpbAs37b3J2YkEbC42FX+OMt5ljgg5j1O4ZV4k/
-         VPYggZ5PnzqTw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 58C4F400FE; Mon, 14 Feb 2022 16:50:40 -0300 (-03)
-Date:   Mon, 14 Feb 2022 16:50:40 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@collabora.com>,
-        James Clark <james.clark@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>, Andi Kleen <ak@linux.intel.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Song Liu <song@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        German Gomez <german.gomez@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Hao Luo <haoluo@google.com>, eranian@google.com
-Subject: Re: [PATCH v3 06/22] perf test: Use pointer for maps
-Message-ID: <YgqykEiMq88HNyE2@kernel.org>
-References: <20220211103415.2737789-1-irogers@google.com>
- <20220211103415.2737789-7-irogers@google.com>
- <YgqyE+vYyOf1HaRj@kernel.org>
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 408372A25F9;
+        Mon, 14 Feb 2022 19:57:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1644865026;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=3OUln+Jd0vJItj9ItdKh+4cBql28ktOQKrgUUfEdlPE=;
+        b=uCaRK2g3ZKjFT3BEwVnQptvk8V5RNfvlFgivnxJ6FPO/LG/W/ybE1lDK+xNFvzcD6D97w/
+        q+hdTNNr07Av9BFTs58L2K5Hr3w3hxxBf2PZjhqQfwvQni0dSjEfIWD5xusWf3FwtPLvB8
+        aHPXQ6RDWUwceQJQ2pfYunzte5o5zSOGUkLZKOj7w78w5yusPigakZ3AAaKX5ol0CyOhe/
+        7AFUpx+ItIzFjAz+MHbirS2qOschPjYhClmY2MDoGnR01a4bOQkTVY+d8k7gJj92wCYAZp
+        xAhQKDXk5xUVMI1P1hCulmI1TDpsp+HTst4xJiXZRgo1CUKmUBpc6qEx+GB7oA==
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Birger Koblitz <mail@birger-koblitz.de>,
+        Bert Vermeulen <bert@biot.com>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org,
+        Sander Vanheule <sander@svanheule.net>
+Subject: [PATCH v5 0/4] Per-parent domains for realtek-rtl IRQ driver
+Date:   Mon, 14 Feb 2022 19:56:57 +0100
+Message-Id: <cover.1644864700.git.sander@svanheule.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgqyE+vYyOf1HaRj@kernel.org>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, Feb 14, 2022 at 04:48:35PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Fri, Feb 11, 2022 at 02:33:59AM -0800, Ian Rogers escreveu:
-> > struct maps is reference counted, using a pointer is more idiomatic.
-> > 
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/tests/maps.c | 20 ++++++++++----------
-> >  1 file changed, 10 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/tools/perf/tests/maps.c b/tools/perf/tests/maps.c
-> > index e308a3296cef..6f53f17f788e 100644
-> > --- a/tools/perf/tests/maps.c
-> > +++ b/tools/perf/tests/maps.c
-> > @@ -35,7 +35,7 @@ static int check_maps(struct map_def *merged, unsigned int size, struct maps *ma
-> >  
-> >  static int test__maps__merge_in(struct test_suite *t __maybe_unused, int subtest __maybe_unused)
-> >  {
-> > -	struct maps maps;
-> > +	struct maps *maps;
-> >  	unsigned int i;
-> >  	struct map_def bpf_progs[] = {
-> >  		{ "bpf_prog_1", 200, 300 },
-> > @@ -64,7 +64,7 @@ static int test__maps__merge_in(struct test_suite *t __maybe_unused, int subtest
-> >  	struct map *map_kcore1, *map_kcore2, *map_kcore3;
-> >  	int ret;
-> >  
-> > -	maps__init(&maps, NULL);
-> > +	maps = maps__new(NULL);
-> 
-> Now that is dynamicly allocated we need to check for the constructor
-> result, I'm fixing this up.
+The original implementation for this interrupt controller/router used
+an interrupt-map parser to determine which parent interrupts were
+present. However, this controller is not transparent, so a list of
+parent interrupts seems more appropriate, while also getting rid of the
+assumed routing to parent interrupts.
 
-I.e. added this:
+Additionally, N real cascaded interrupts are implemented, instead of
+handling all input interrupts with one cascaded interrupt. Otherwise it
+is possible that the priority of the parent interrupts is not respected.
 
-diff --git a/tools/perf/tests/maps.c b/tools/perf/tests/maps.c
-index 6f53f17f788e7dd7..a69988a89d265211 100644
---- a/tools/perf/tests/maps.c
-+++ b/tools/perf/tests/maps.c
-@@ -35,7 +35,6 @@ static int check_maps(struct map_def *merged, unsigned int size, struct maps *ma
- 
- static int test__maps__merge_in(struct test_suite *t __maybe_unused, int subtest __maybe_unused)
- {
--	struct maps *maps;
- 	unsigned int i;
- 	struct map_def bpf_progs[] = {
- 		{ "bpf_prog_1", 200, 300 },
-@@ -63,8 +62,9 @@ static int test__maps__merge_in(struct test_suite *t __maybe_unused, int subtest
- 	};
- 	struct map *map_kcore1, *map_kcore2, *map_kcore3;
- 	int ret;
-+	struct maps *maps = maps__new(NULL);
- 
--	maps = maps__new(NULL);
-+	TEST_ASSERT_VAL("failed to create maps", maps);
- 
- 	for (i = 0; i < ARRAY_SIZE(bpf_progs); i++) {
- 		struct map *map;
+Changes since v4:
+Link: https://lore.kernel.org/all/cover.1644165421.git.sander@svanheule.net/
+
+- Add Rob's Reviewed-by
+- Use irq_domain_add_linear instead of irq_domain_add_simple
+- Drop 'inline' specifiers from static functions
+- Drop WARN in intc_select() to only warn once for old bindings
+
+Changes since v3:
+Link: https://lore.kernel.org/all/cover.1641739718.git.sander@svanheule.net/
+
+- Patches with fixes were merged, so these are no longer included.
+- Update the devicetree changes to more clearly indicate the controller
+  is not transparent.
+
+Changes since v2 (RFC):
+Link: https://lore.kernel.org/all/cover.1640548009.git.sander@svanheule.net/
+
+- Define new, two-part compatibles for devicetree bindings. The existing format
+  is kept for the old one-part compatible, but deprecated. New compatibles will
+  require a different way of specifying parent interrupts and interrupt routing.
+- Add change to handle all pending SoC interrupts in one go.
+
+Changes since v1 (RFC):
+Link: https://lore.kernel.org/all/cover.1640261161.git.sander@svanheule.net/
+
+- Split some of the changes to limit the patch scope to one issue.
+- Dropped some small (spurious or unneeded) changes
+- Instead of dropping/replacing interrupt-map, the last patches now provide an
+  implementation that amends the current situtation.
+
+Sander Vanheule (4):
+  irqchip/realtek-rtl: use irq_domain_add_linear
+  dt-bindings: interrupt-controller: realtek,rtl-intc: require parents
+  irqchip/realtek-rtl: use parent interrupts
+  irqchip/realtek-rtl: use per-parent domains
+
+ .../realtek,rtl-intc.yaml                     |  82 +++++--
+ drivers/irqchip/irq-realtek-rtl.c             | 231 ++++++++++++------
+ 2 files changed, 221 insertions(+), 92 deletions(-)
+
+-- 
+2.35.1
+
