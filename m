@@ -2,256 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC021C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3A2C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:10:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356197AbiBNQK2 (ORCPT
+        id S1356207AbiBNQKe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:10:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53724 "EHLO
+        Mon, 14 Feb 2022 11:10:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356159AbiBNQKW (ORCPT
+        with ESMTP id S1356158AbiBNQKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:10:22 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DD560A9B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:10:12 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id o24so25023524wro.3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:10:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=x9uRKtqCvCxuePfYK0JAx8QeSBxwo9Y+7tq8m7yx3w0=;
-        b=WlvCopevW8b5o/72zfeOhvEXYQ8rB+v5AzHGOpdqFflewuoDHhb29my/5AhgSyQCqk
-         i5R3HjMlwDwhaYbR1USnLuYHZCtDQlv8Yq3T/MgoLSg81GOu33i/ALbHZkJkLnA3Od6h
-         XeRB6kUdTAhP/D4f1lYRrEwjV2NCgS/QuuLRr99dKP8qCxdaNI2S6IW2WB1BzC2HGP2B
-         aM+iPnRuHyJPW23QEd3/n7Zt1/ISKusWbvSnmjbn/v6Hkdb7fd43LjBHXiNTCyiej8TI
-         nhDlEeWfn8BifSRv5hpZPGCncCMvUEEnIJPWIV9AYken23zBh6wcn/4hXq81Y3B2bJGw
-         SxoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=x9uRKtqCvCxuePfYK0JAx8QeSBxwo9Y+7tq8m7yx3w0=;
-        b=RKbDbpx6q8VHsq4wstConW95D91DtvVEl8axz5ffXlI33JmA8JtED7e6rLLxGN+fpk
-         W4DTpZhGwCQoEYyLYI9a2BnWCVoMsJRR6Kab7mcKSRnheJvSEo2Q2yRQvDmE0q28e1ht
-         rzI/X98IRRPjJT9afrpVnlFcsCEP4H23sx9tPy7/1YNt+epHz/kThTY2/b0Pdp19TKUz
-         XUGGdND0SqpoDiI6wJM/E1ku3vtXdpBCirrRTlBBLXgmu8VNSaA2SWEQZcErIGA2eM9P
-         5ZKp+59PnwuBjoW0kJB4iRbHdpItPrdbzB+ESKPxopO/WdJLzJOn5n6484sVNyVF6kaH
-         T/ig==
-X-Gm-Message-State: AOAM532ztdCJehnUSSKhBAUOL44VpEMzY4LNDYRSgm7Bbalfphtq0fDC
-        sz34xKgrLio7xAxZT52pa3wnNg==
-X-Google-Smtp-Source: ABdhPJzV6UXmlK51RlmkwjmvZg1JdPBiVJub4IcAUfCRgceQL+C/VWFByLWMgo28GVrtc0aVjMvKkA==
-X-Received: by 2002:adf:ff82:: with SMTP id j2mr281369wrr.242.1644855010903;
-        Mon, 14 Feb 2022 08:10:10 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id k28sm13677022wms.23.2022.02.14.08.10.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 08:10:10 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     robh+dt@kernel.org, gregkh@linuxfoundation.org
-Cc:     devicetree@vger.kernel.org, ekangupt@qti.qualcomm.com,
-        bkumar@qti.qualcomm.com, linux-kernel@vger.kernel.org,
-        srini@kernel.org, bjorn.andersson@linaro.org,
-        linux-arm-msm@vger.kernel.org, Jeya R <jeyr@codeaurora.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v4 03/12] misc: fastrpc: Add support to get DSP capabilities
-Date:   Mon, 14 Feb 2022 16:09:53 +0000
-Message-Id: <20220214161002.6831-4-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220214161002.6831-1-srinivas.kandagatla@linaro.org>
-References: <20220214161002.6831-1-srinivas.kandagatla@linaro.org>
+        Mon, 14 Feb 2022 11:10:23 -0500
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E855FF0B;
+        Mon, 14 Feb 2022 08:10:11 -0800 (PST)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id F24851BF215;
+        Mon, 14 Feb 2022 16:10:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644855010;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b5eS9fguaP+pvzR5A1Vwu+pYHyCDBG8CctR4OI6MdrE=;
+        b=UCj7f71PmwliZ1ok8P9m8PXiwkU1fLCOpZZ3sk70BvhQuGXFhuBmONFAMuSbUi1XZZ5v6I
+        QVpMk7mSQJwKucLTkeer6lOa1TmqXGX7Fc8xvI5zZRCKgrfQO1bJTpwqiOEHuUOkA+FQtG
+        B77Afoe4dPbz7hemN4PheVD6azW/7wzrlBdV81+M+Au1E4SdQDIlUw2JI8q945X4WT3Uex
+        EzjsmO0+Gws4avZNcm5iT+YhbZCMG1BSYxeAztO1GF0BPVNy4DKCsKgUWKI9yKxNPYZJQW
+        4Ipo7H5vQB+UwL/Hry4QvOcnMj2k+7AbuSoEE7ZDWIIHjJL8YVdPDn8JYhE5cA==
+Date:   Mon, 14 Feb 2022 17:10:05 +0100
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 07/66] dt-bindings: media: sun6i-a31-csi: Add MIPI
+ CSI-2 input port
+Message-ID: <Ygp+3URjxyvRBn/5@aptenodytes>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-8-paul.kocialkowski@bootlin.com>
+ <YgFCuaf007wd8sJy@pendragon.ideasonboard.com>
+ <YgaKXvP3rLOLR9VR@aptenodytes>
+ <YgbNfKiNkPmvaT1k@pendragon.ideasonboard.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="1K2ddbKyLBZHtd45"
+Content-Disposition: inline
+In-Reply-To: <YgbNfKiNkPmvaT1k@pendragon.ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeya R <jeyr@codeaurora.org>
 
-Add support to get DSP capabilities. The capability information is cached
-on driver.
+--1K2ddbKyLBZHtd45
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jeya R <jeyr@codeaurora.org>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- drivers/misc/fastrpc.c      | 112 ++++++++++++++++++++++++++++++++++++
- include/uapi/misc/fastrpc.h |   8 +++
- 2 files changed, 120 insertions(+)
+Hi,
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index e3253daba0f9..528ae5777586 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -31,10 +31,15 @@
- #define FASTRPC_PHYS(p)	((p) & 0xffffffff)
- #define FASTRPC_CTX_MAX (256)
- #define FASTRPC_INIT_HANDLE	1
-+#define FASTRPC_DSP_UTILITIES_HANDLE	2
- #define FASTRPC_CTXID_MASK (0xFF0)
- #define INIT_FILELEN_MAX (2 * 1024 * 1024)
- #define FASTRPC_DEVICE_NAME	"fastrpc"
- #define ADSP_MMAP_ADD_PAGES 0x1000
-+#define DSP_UNSUPPORTED_API (0x80000414)
-+/* MAX NUMBER of DSP ATTRIBUTES SUPPORTED */
-+#define FASTRPC_MAX_DSP_ATTRIBUTES (256)
-+#define FASTRPC_MAX_DSP_ATTRIBUTES_LEN (sizeof(u32) * FASTRPC_MAX_DSP_ATTRIBUTES)
- 
- /* Retrives number of input buffers from the scalars parameter */
- #define REMOTE_SCALARS_INBUFS(sc)	(((sc) >> 16) & 0x0ff)
-@@ -233,6 +238,9 @@ struct fastrpc_channel_ctx {
- 	struct idr ctx_idr;
- 	struct list_head users;
- 	struct kref refcount;
-+	/* Flag if dsp attributes are cached */
-+	bool valid_attributes;
-+	u32 dsp_attributes[FASTRPC_MAX_DSP_ATTRIBUTES];
- 	struct fastrpc_device *fdevice;
- };
- 
-@@ -1371,6 +1379,107 @@ static int fastrpc_invoke(struct fastrpc_user *fl, char __user *argp)
- 	return err;
- }
- 
-+static int fastrpc_get_info_from_dsp(struct fastrpc_user *fl, uint32_t *dsp_attr_buf,
-+				     uint32_t dsp_attr_buf_len)
-+{
-+	struct fastrpc_invoke_args args[2] = { 0 };
-+
-+	/* Capability filled in userspace */
-+	dsp_attr_buf[0] = 0;
-+
-+	args[0].ptr = (u64)(uintptr_t)&dsp_attr_buf_len;
-+	args[0].length = sizeof(dsp_attr_buf_len);
-+	args[0].fd = -1;
-+	args[1].ptr = (u64)(uintptr_t)&dsp_attr_buf[1];
-+	args[1].length = dsp_attr_buf_len;
-+	args[1].fd = -1;
-+	fl->pd = 1;
-+
-+	return fastrpc_internal_invoke(fl, true, FASTRPC_DSP_UTILITIES_HANDLE,
-+				       FASTRPC_SCALARS(0, 1, 1), args);
-+}
-+
-+static int fastrpc_get_info_from_kernel(struct fastrpc_ioctl_capability *cap,
-+					struct fastrpc_user *fl)
-+{
-+	struct fastrpc_channel_ctx *cctx = fl->cctx;
-+	uint32_t attribute_id = cap->attribute_id;
-+	uint32_t *dsp_attributes;
-+	unsigned long flags;
-+	uint32_t domain = cap->domain;
-+	int err;
-+
-+	spin_lock_irqsave(&cctx->lock, flags);
-+	/* check if we already have queried dsp for attributes */
-+	if (cctx->valid_attributes) {
-+		spin_unlock_irqrestore(&cctx->lock, flags);
-+		goto done;
-+	}
-+	spin_unlock_irqrestore(&cctx->lock, flags);
-+
-+	dsp_attributes = kzalloc(FASTRPC_MAX_DSP_ATTRIBUTES_LEN, GFP_KERNEL);
-+	if (!dsp_attributes)
-+		return -ENOMEM;
-+
-+	err = fastrpc_get_info_from_dsp(fl, dsp_attributes, FASTRPC_MAX_DSP_ATTRIBUTES_LEN);
-+	if (err == DSP_UNSUPPORTED_API) {
-+		dev_info(&cctx->rpdev->dev,
-+			 "Warning: DSP capabilities not supported on domain: %d\n", domain);
-+		kfree(dsp_attributes);
-+		return -EOPNOTSUPP;
-+	} else if (err) {
-+		dev_err(&cctx->rpdev->dev, "Error: dsp information is incorrect err: %d\n", err);
-+		kfree(dsp_attributes);
-+		return err;
-+	}
-+
-+	spin_lock_irqsave(&cctx->lock, flags);
-+	memcpy(cctx->dsp_attributes, dsp_attributes, FASTRPC_MAX_DSP_ATTRIBUTES_LEN);
-+	cctx->valid_attributes = true;
-+	spin_unlock_irqrestore(&cctx->lock, flags);
-+	kfree(dsp_attributes);
-+done:
-+	cap->capability = cctx->dsp_attributes[attribute_id];
-+	return 0;
-+}
-+
-+static int fastrpc_get_dsp_info(struct fastrpc_user *fl, char __user *argp)
-+{
-+	struct fastrpc_ioctl_capability cap = {0};
-+	int err = 0;
-+
-+	if (copy_from_user(&cap, argp, sizeof(cap)))
-+		return  -EFAULT;
-+
-+	cap.capability = 0;
-+	if (cap.domain >= FASTRPC_DEV_MAX) {
-+		dev_err(&fl->cctx->rpdev->dev, "Error: Invalid domain id:%d, err:%d\n",
-+			cap.domain, err);
-+		return -ECHRNG;
-+	}
-+
-+	/* Fastrpc Capablities does not support modem domain */
-+	if (cap.domain == MDSP_DOMAIN_ID) {
-+		dev_err(&fl->cctx->rpdev->dev, "Error: modem not supported %d\n", err);
-+		return -ECHRNG;
-+	}
-+
-+	if (cap.attribute_id >= FASTRPC_MAX_DSP_ATTRIBUTES) {
-+		dev_err(&fl->cctx->rpdev->dev, "Error: invalid attribute: %d, err: %d\n",
-+			cap.attribute_id, err);
-+		return -EOVERFLOW;
-+	}
-+
-+	err = fastrpc_get_info_from_kernel(&cap, fl);
-+	if (err)
-+		return err;
-+
-+	if (copy_to_user(argp, &cap.capability, sizeof(cap.capability)))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
- static int fastrpc_req_munmap_impl(struct fastrpc_user *fl,
- 				   struct fastrpc_req_munmap *req)
- {
-@@ -1676,6 +1785,9 @@ static long fastrpc_device_ioctl(struct file *file, unsigned int cmd,
- 	case FASTRPC_IOCTL_MEM_UNMAP:
- 		err = fastrpc_req_mem_unmap(fl, argp);
- 		break;
-+	case FASTRPC_IOCTL_GET_DSP_INFO:
-+		err = fastrpc_get_dsp_info(fl, argp);
-+		break;
- 	default:
- 		err = -ENOTTY;
- 		break;
-diff --git a/include/uapi/misc/fastrpc.h b/include/uapi/misc/fastrpc.h
-index d248eeb20e67..7cc9d342078a 100644
---- a/include/uapi/misc/fastrpc.h
-+++ b/include/uapi/misc/fastrpc.h
-@@ -15,6 +15,7 @@
- #define FASTRPC_IOCTL_INIT_ATTACH_SNS	_IO('R', 8)
- #define FASTRPC_IOCTL_MEM_MAP		_IOWR('R', 10, struct fastrpc_mem_map)
- #define FASTRPC_IOCTL_MEM_UNMAP		_IOWR('R', 11, struct fastrpc_mem_unmap)
-+#define FASTRPC_IOCTL_GET_DSP_INFO	_IOWR('R', 13, struct fastrpc_ioctl_capability)
- 
- /**
-  * enum fastrpc_map_flags - control flags for mapping memory on DSP user process
-@@ -105,4 +106,11 @@ struct fastrpc_mem_unmap {
- 	__s32 reserved[5];
- };
- 
-+struct fastrpc_ioctl_capability {
-+	__u32 domain;
-+	__u32 attribute_id;
-+	__u32 capability;   /* dsp capability */
-+	__u32 reserved[4];
-+};
-+
- #endif /* __QCOM_FASTRPC_H__ */
--- 
-2.21.0
+On Fri 11 Feb 22, 22:56, Laurent Pinchart wrote:
+> On Fri, Feb 11, 2022 at 05:10:06PM +0100, Paul Kocialkowski wrote:
+> > Hi Laurent,
+> >=20
+> > Thanks for the review!
+> >=20
+> > On Mon 07 Feb 22, 18:03, Laurent Pinchart wrote:
+> > > Hi Paul,
+> > >=20
+> > > Thank you for the patch.
+> > >=20
+> > > On Sat, Feb 05, 2022 at 07:53:30PM +0100, Paul Kocialkowski wrote:
+> > > > The A31 CSI controller supports two distinct input interfaces:
+> > > > parallel and an external MIPI CSI-2 bridge. The parallel interface
+> > > > is often connected to a set of hardware pins while the MIPI CSI-2
+> > > > bridge is an internal FIFO-ish link. As a result, these two inputs
+> > > > are distinguished as two different ports.
+> > > >=20
+> > > > Note that only one of the two may be present on a controller instan=
+ce.
+> > > > For example, the V3s has one controller dedicated to MIPI-CSI2 and =
+one
+> > > > dedicated to parallel.
+> > >=20
+> > > Is it that only one of the two is present, or only one of the two is
+> > > connected ? In the latter case I'd make both ports required, but with
+> > > only one of them connected.
+> >=20
+> > There are situations where the actual pins for parallel (port@0) are mi=
+ssing
+> > and the controller is dedicated to its mipi csi-2 bridge (port@1), case=
+s where
+> > the two are present and cases where the mipi csi-2 bridge doesn't exist.
+> > So all in all it's really legit that only one port may be defined.
+>=20
+> The port could still exist internally in the IP core though. Of course
+> that's hard to tell.
 
+Yes that's true, the bit to switch input to mipi csi-2 is there in all cases
+but I don't think it makes sense to expose the port in situations where
+no controller is attached.
+
+> > > > Update the binding with an explicit ports node that holds two disti=
+nct
+> > > > port nodes: one for parallel input and one for MIPI CSI-2.
+> > > >=20
+> > > > This is backward-compatible with the single-port approach that was
+> > > > previously taken for representing the parallel interface port, which
+> > > > stays enumerated as fwnode port 0.
+> > > >=20
+> > > > Note that additional ports may be added in the future, especially to
+> > > > support feeding the CSI controller's output to the ISP.
+> > > >=20
+> > > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > > Acked-by: Maxime Ripard <mripard@kernel.org>
+> > > > ---
+> > > >  .../media/allwinner,sun6i-a31-csi.yaml        | 60 +++++++++++++++=
+----
+> > > >  1 file changed, 47 insertions(+), 13 deletions(-)
+> > > >=20
+> > > > diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6=
+i-a31-csi.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a3=
+1-csi.yaml
+> > > > index 8b568072a069..3cc61866ea89 100644
+> > > > --- a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-c=
+si.yaml
+> > > > +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-c=
+si.yaml
+> > > > @@ -61,6 +61,34 @@ properties:
+> > > > =20
+> > > >      additionalProperties: false
+> > > > =20
+> > > > +  ports:
+> > > > +    $ref: /schemas/graph.yaml#/properties/ports
+> > > > +
+> > > > +    properties:
+> > > > +      port@0:
+> > > > +        $ref: "#/properties/port"
+> > > > +        unevaluatedProperties: false
+> > > > +
+> > > > +      port@1:
+> > > > +        $ref: /schemas/graph.yaml#/$defs/port-base
+> > > > +        description: MIPI CSI-2 bridge input port
+> > > > +
+> > > > +        properties:
+> > > > +          reg:
+> > > > +            const: 1
+> > > > +
+> > > > +          endpoint:
+> > > > +            $ref: video-interfaces.yaml#
+> > > > +            unevaluatedProperties: false
+> > > > +
+> > > > +        additionalProperties: false
+> > > > +
+> > > > +    anyOf:
+> > > > +      - required:
+> > > > +        - port@0
+> > > > +      - required:
+> > > > +        - port@1
+> > > > +
+> > > >  required:
+> > > >    - compatible
+> > > >    - reg
+> > >=20
+> > > Shouldn't you specify that either port or ports is required, but not
+> > > both ? I'd also add a comment in the port node to tell it's deprecate=
+d,
+> > > and that ports should be used instead.
+> >=20
+> > Yes I agree on both points. I guess that should be a:
+> >=20
+> > oneOf:
+> >   - required:
+> >     - ports
+> >   - required:
+> >     - port
+> >=20
+> > (but feel free to correct me).
+> >=20
+> > > > @@ -89,19 +117,25 @@ examples:
+> > > >                        "ram";
+> > > >          resets =3D <&ccu RST_BUS_CSI>;
+> > > > =20
+> > > > -        port {
+> > > > -            /* Parallel bus endpoint */
+> > > > -            csi1_ep: endpoint {
+> > > > -                remote-endpoint =3D <&adv7611_ep>;
+> > > > -                bus-width =3D <16>;
+> > > > -
+> > > > -                /*
+> > > > -                 * If hsync-active/vsync-active are missing,
+> > > > -                 * embedded BT.656 sync is used.
+> > > > -                 */
+> > > > -                 hsync-active =3D <0>; /* Active low */
+> > > > -                 vsync-active =3D <0>; /* Active low */
+> > > > -                 pclk-sample =3D <1>;  /* Rising */
+> > > > +        ports {
+> > > > +            #address-cells =3D <1>;
+> > > > +            #size-cells =3D <0>;
+> > > > +
+> > > > +            port@0 {
+> > > > +                reg =3D <0>;
+> > > > +                /* Parallel bus endpoint */
+> > > > +                csi1_ep: endpoint {
+> > > > +                    remote-endpoint =3D <&adv7611_ep>;
+> > > > +                    bus-width =3D <16>;
+> > > > +
+> > > > +                    /*
+> > > > +                     * If hsync-active/vsync-active are missing,
+> > > > +                     * embedded BT.656 sync is used.
+> > > > +                     */
+> > > > +                     hsync-active =3D <0>; /* Active low */
+> > > > +                     vsync-active =3D <0>; /* Active low */
+> > > > +                     pclk-sample =3D <1>;  /* Rising */
+> > >=20
+> > > Wrong indentation.
+> >=20
+> > The double-space before /* Rising */ or something with the heading inde=
+nt?
+>=20
+> The heading has one extra space for all three lines, they should be
+> aligned to the / of /*, not to the *.
+
+Oh that's true, good catch thanks!
+
+Paul
+
+> > > > +                };
+> > > >              };
+> > > >          };
+> > > >      };
+>=20
+> --=20
+> Regards,
+>=20
+> Laurent Pinchart
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--1K2ddbKyLBZHtd45
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEyBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmIKft0ACgkQ3cLmz3+f
+v9GBzQf4ykgosl0x6xfMvLDDLl0cFnB2eK0Bdp9ZhcxVv+4V0W9kcIZ/NnN4FJ+5
+2NODVUSkvCLd8E5R/z8MT4ngVlKnvd26GV3Uiog3yhoQ1SpjkTQT2dZMXOMhPARi
+mzNpeUfkBY76pRMdDQzmOnwAAj4Iqlizkar0a3su1o/zKAwYJ1k//32QHc5RVF9X
+i9kE1FldlInxg0HNAuE0SOU0k0DYSbHI0xNugH8Wf5DszFeWTFdMUseOdB3iNaT3
+eQRBKtfrzjIrYFSE4LLZTtydLTDyxh1N4udg/t0DMQpjF5vFZWW/Im4iMXwD0IAI
+WbWJgCPQNoul4HI9EK2vEWjUyDsh
+=ShHP
+-----END PGP SIGNATURE-----
+
+--1K2ddbKyLBZHtd45--
