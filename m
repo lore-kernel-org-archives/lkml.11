@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E97DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:30:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239482AbiBNK3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:29:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34840 "EHLO
+        id S241151AbiBNKaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:30:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347305AbiBNK1m (ORCPT
+        with ESMTP id S1347527AbiBNK3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:27:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80419680D;
-        Mon, 14 Feb 2022 01:58:25 -0800 (PST)
+        Mon, 14 Feb 2022 05:29:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA2B98F62;
+        Mon, 14 Feb 2022 01:58:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54962B80DD0;
-        Mon, 14 Feb 2022 09:58:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 601E1C340E9;
-        Mon, 14 Feb 2022 09:58:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C02E360918;
+        Mon, 14 Feb 2022 09:58:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85F1EC340E9;
+        Mon, 14 Feb 2022 09:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832702;
-        bh=/apOOMgqf/OTkUOcSRp5I3Rhi45H/kugQwMz+9Cmq98=;
+        s=korg; t=1644832698;
+        bh=OGK0+msb1kIhUGC5n/iUnSiYpQt27a+vnzsr7j/gXos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EqlAhVIj/ktsNCBUDNhhSLq/CsHsf9VUtCuLvRUb30bkUdwcPWYTgXA6+8zA80gaJ
-         BgH2fYZjFkphKrmanyNKX6wamXADf/0k5fM2sO84BTbzDjInjHBgSCWk4WtI3MHKXe
-         sHO2hG2fslM5TQGBomkDarlNrVPJniAWLlbs2kK8=
+        b=V45YuwhS8KCcx7PoswUTVXWZqJ2/iLVOFnALn0Jbur51CQ/Ru60R/v6D+7oiYgVqF
+         UBszRzPA1NwQFhtriGFSaXns5CoMLdlMpoU3x6CvVi52d875qAFA40cG2xo3AvsHxH
+         VzhZ/KXUkPrz+Jv8JtexBalWwtahlTEhP1sFX0ag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 097/203] phy: broadcom: Kconfig: Fix PHY_BRCM_USB config option
-Date:   Mon, 14 Feb 2022 10:25:41 +0100
-Message-Id: <20220214092513.554851385@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 096/203] ARM: dts: meson8b: Fix the UART device-tree schema validation
+Date:   Mon, 14 Feb 2022 10:25:40 +0100
+Message-Id: <20220214092513.523717618@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,42 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Cooper <alcooperx@gmail.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 5070ce86246a8a4ebacd0c15b121e6b6325bc167 ]
+[ Upstream commit 3375aa77135f6aeb1107ed839a2050a4118444bc ]
 
-The previous commit 4b402fa8e0b7 ("phy: phy-brcm-usb: support PHY on
-the BCM4908") added a second "default" line for ARCH_BCM_4908 above
-the original "default" line for ARCH_BRCMSTB. When two "default"
-lines are used, only the first is used and this change stopped
-the PHY_BRCM_USB option for being enabled for ARCH_BRCMSTB.
-The fix is to use one "default line with "||".
+The dt-bindings for the UART controller only allow the following values
+for Meson8 SoCs:
+- "amlogic,meson8b-uart", "amlogic,meson-ao-uart"
+- "amlogic,meson8b-uart"
 
-Fixes: 4b402fa8e0b7 ("phy: phy-brcm-usb: support PHY on the BCM4908")
-Signed-off-by: Al Cooper <alcooperx@gmail.com>
-Acked-by: Rafał Miłecki <rafal@milecki.pl>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20211201180653.35097-4-alcooperx@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Use the correct fallback compatible string "amlogic,meson-ao-uart" for
+AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
+domain UART controllers.
+
+Also update the order of the clocks to match the order defined in the
+yaml bindings.
+
+Fixes: b02d6e73f5fc96 ("ARM: dts: meson8b: use stable UART bindings with correct gate clock")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211227180026.4068352-4-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/broadcom/Kconfig | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm/boot/dts/meson8b.dtsi | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/phy/broadcom/Kconfig b/drivers/phy/broadcom/Kconfig
-index f81e237420799..849c4204f5506 100644
---- a/drivers/phy/broadcom/Kconfig
-+++ b/drivers/phy/broadcom/Kconfig
-@@ -97,8 +97,7 @@ config PHY_BRCM_USB
- 	depends on OF
- 	select GENERIC_PHY
- 	select SOC_BRCMSTB if ARCH_BRCMSTB
--	default ARCH_BCM4908
--	default ARCH_BRCMSTB
-+	default ARCH_BCM4908 || ARCH_BRCMSTB
- 	help
- 	  Enable this to support the Broadcom STB USB PHY.
- 	  This driver is required by the USB XHCI, EHCI and OHCI
+diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
+index b49b7cbaed4ee..94f1c03deccef 100644
+--- a/arch/arm/boot/dts/meson8b.dtsi
++++ b/arch/arm/boot/dts/meson8b.dtsi
+@@ -724,27 +724,27 @@ &timer_abcde {
+ };
+ 
+ &uart_AO {
+-	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_CLK81>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8b-uart", "amlogic,meson-ao-uart";
++	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
+ 
+ &uart_A {
+-	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART0>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8b-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
+ 
+ &uart_B {
+-	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART1>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8b-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
+ 
+ &uart_C {
+-	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART2>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8b-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
+ 
+ &usb0 {
 -- 
 2.34.1
 
