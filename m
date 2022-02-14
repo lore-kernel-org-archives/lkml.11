@@ -2,77 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD88C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C688C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242692AbiBNJMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:12:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59606 "EHLO
+        id S242701AbiBNJNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:13:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231482AbiBNJMN (ORCPT
+        with ESMTP id S231482AbiBNJNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:12:13 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 544216005F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:12:05 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-225-3ObD8h0vMEC7W4ZlGhGL-Q-1; Mon, 14 Feb 2022 09:12:02 +0000
-X-MC-Unique: 3ObD8h0vMEC7W4ZlGhGL-Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Mon, 14 Feb 2022 09:12:01 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Mon, 14 Feb 2022 09:12:01 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Helge Deller' <deller@gmx.de>,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>
-Subject: RE: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
- case
-Thread-Topic: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
- case
-Thread-Index: AQHYISaVap2r7qAO+E+IsFLjJVJIxKySvtow
-Date:   Mon, 14 Feb 2022 09:12:01 +0000
-Message-ID: <49a26b7a30254d9fb9653c2f815eaa28@AcuMS.aculab.com>
-References: <YgmB01p+p45Cihhg@p100>
-In-Reply-To: <YgmB01p+p45Cihhg@p100>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 14 Feb 2022 04:13:05 -0500
+Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E913A60068
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:12:55 -0800 (PST)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4Jxz5Z129sz1sr4Y;
+        Mon, 14 Feb 2022 10:12:50 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4Jxz5Y6ThLz1qqkD;
+        Mon, 14 Feb 2022 10:12:49 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id pdJ6wzpt_XJf; Mon, 14 Feb 2022 10:12:48 +0100 (CET)
+X-Auth-Info: i81bJA8adEdhuMnwODt1w9ZYPCIJmRzN5xVOLlFPDwvVOgLBggv7jog9GhkXrxg2
+Received: from igel.home (ppp-46-244-178-131.dynamic.mnet-online.de [46.244.178.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Mon, 14 Feb 2022 10:12:48 +0100 (CET)
+Received: by igel.home (Postfix, from userid 1000)
+        id 375862C39FF; Mon, 14 Feb 2022 10:12:48 +0100 (CET)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     Sunil V L <sunilvl@ventanamicro.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>, linux-efi@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heinrich Schuchardt <xypron.glpk@gmx.de>,
+        Anup Patel <apatel@ventanamicro.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return
+ value
+References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
+X-Yow:  .. If I cover this entire WALL with MAZOLA, who I have to give my
+ AGENT ten per cent??
+Date:   Mon, 14 Feb 2022 10:12:48 +0100
+In-Reply-To: <20220128045004.4843-1-sunilvl@ventanamicro.com> (Sunil V. L.'s
+        message of "Fri, 28 Jan 2022 10:20:04 +0530")
+Message-ID: <877d9xx14f.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.91 (gnu/linux)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogSGVsZ2UgRGVsbGVyDQo+IFNlbnQ6IDEzIEZlYnJ1YXJ5IDIwMjIgMjI6MTANCj4gDQo+
-IFRoZSBwdXRfdXNlcih2YWwscHRyKSBtYWNybyB3YW50cyBhIHBvaW50ZXIgaW4gdGhlIHNlY29u
-ZCBwYXJhbWV0ZXIsIGJ1dCBpbg0KPiBmYXRfaW9jdGxfZmlsbGRpcigpIHRoZSBkX25hbWUgZmll
-bGQgcmVmZXJlbmNlcyBhIHdob2xlICJhcnJheSBvZiBjaGFycyIuDQo+IFVzdWFsbHkgdGhlIGNv
-bXBpbGVyIGF1dG9tYXRpY2FsbHkgY29udmVydHMgaXQgYW5kIHVzZXMgYSBwb2ludGVyIHRvIHRo
-YXQNCj4gYXJyYXksIGJ1dCBpdCdzIG1vcmUgY2xlYW4gdG8gZXhwbGljaXRseSBnaXZlIHRoZSBy
-ZWFsIHBvaW50ZXIgdG8gd2hlcmUgc29tZXRpbmcNCj4gaXMgcHV0LCB3aGljaCBpcyBpbiB0aGlz
-IGNhc2UgdGhlIGZpcnN0IGNoYXJhY3RlciBvZiB0aGUgZF9uYW1lW10gYXJyYXkuDQoNClRoYXQg
-anVzdCBpc24ndCB0cnVlLg0KDQpJbiBDIGJvdGggeC0+Y2hhcl9hcnJheSBhbmQgJngtPmNoYXJf
-YXJyYXlbMF0gaGF2ZSB0aGUgc2FtZSB0eXBlDQonY2hhciAqJy4NCg0KVGhlICdidWcnIGlzIGNh
-dXNlZCBieSBwdXRfdXNlcigpIHRyeWluZyB0byBkbzoNCglfX3R5cGVvZl9fKHB0cikgX19wdHIg
-PSBwdHI7DQp3aGVyZSBfX3R5cGVvZl9fIGlzIHJldHVybmluZyBjaGFyW25dIG5vdCBjaGFyICou
-DQoNCkkndmUgdHJpZWQgYSBmZXcgdGhpbmdzIGJ1dCBjYW4ndCBnZXQgX190eXBlb2ZfXyB0bw0K
-Z2VuZXJhdGUgYSBzdWl0YWJsZSB0eXBlIGZvciBib3RoIGEgc2ltcGxlIHR5cGUgYW5kIGFycmF5
-Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJv
-YWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24g
-Tm86IDEzOTczODYgKFdhbGVzKQ0K
+On Jan 28 2022, Sunil V L wrote:
 
+> diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
+> index 380e4e251399..9c460843442f 100644
+> --- a/drivers/firmware/efi/libstub/riscv-stub.c
+> +++ b/drivers/firmware/efi/libstub/riscv-stub.c
+> @@ -25,7 +25,7 @@ typedef void __noreturn (*jump_kernel_func)(unsigned int, unsigned long);
+>  
+>  static u32 hartid;
+>  
+> -static u32 get_boot_hartid_from_fdt(void)
+> +static int get_boot_hartid_from_fdt(void)
+
+I think the function should be renamed, now that it no longer returns
+the hart ID, but initializes a static variable as a side effect.  Thus
+it no longer "gets", but "sets".
+
+-- 
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
