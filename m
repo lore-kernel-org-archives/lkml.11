@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3648C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347100AbiBNK3I (ORCPT
+        id S1347546AbiBNK3R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:29:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33274 "EHLO
+        Mon, 14 Feb 2022 05:29:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348232AbiBNK0u (ORCPT
+        with ESMTP id S1348375AbiBNK0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:26:50 -0500
+        Mon, 14 Feb 2022 05:26:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C707811AD;
-        Mon, 14 Feb 2022 01:57:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C038301E;
+        Mon, 14 Feb 2022 01:57:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF038B80DBE;
-        Mon, 14 Feb 2022 09:57:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD9E0C340EF;
-        Mon, 14 Feb 2022 09:57:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8F26B80DCE;
+        Mon, 14 Feb 2022 09:57:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F15C4C340E9;
+        Mon, 14 Feb 2022 09:57:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832667;
-        bh=UImdhe0lzIBcuJU5o3NtutfAaJZJjpWz8OLIQz63P+c=;
+        s=korg; t=1644832670;
+        bh=Jxz/D8ATym+ryfklp5SjcQN48vMeOigzH2dvKKlKqWQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WmSmtdoe5153onrnpzBPS4kgF5E54kPSg7Scd9cTtw3LXSfdteem0u7fdSJo0KeqA
-         R0oBHEbNeAYepBzLWQjpq4vZZ9fdl1cbCfL3Ah3jV6ibFa/vx5C47k/MkP1/ERkWe0
-         4YAaoaDawSfsh+c1Z4stOCg/+Hou2VupFn8mIoB8=
+        b=iEUrECsVoilixxT6UI9ryS+ldTy4jOH2FXtXkl4wtP3SWUjOtpQB1NqeL4o5mJzc5
+         v+fjbvZGNbSHQpjiPkEWjqne2G5KDSFH2t5ZAyWnLSg+/cdxDDY6PFCfSjtdnSfnXL
+         YJpkiuvqKvgPnafbmq762apa6aIJ4V9XiH7aPYAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 5.16 088/203] drm/rockchip: vop: Correct RK3399 VOP register fields
-Date:   Mon, 14 Feb 2022 10:25:32 +0100
-Message-Id: <20220214092513.258735233@linuxfoundation.org>
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 089/203] drm/i915: Disable DRRS on IVB/HSW port != A
+Date:   Mon, 14 Feb 2022 10:25:33 +0100
+Message-Id: <20220214092513.289637602@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,73 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit 9da1e9ab82c92d0e89fe44cad2cd7c2d18d64070 upstream.
+commit ee59792c97176f12c1da31f29fc4c2aab187f06e upstream.
 
-Commit 7707f7227f09 ("drm/rockchip: Add support for afbc") switched up
-the rk3399_vop_big[] register windows, but it did so incorrectly.
+Currently we allow DRRS on IVB PCH ports, but we're missing a
+few programming steps meaning it is guaranteed to not work.
+And on HSW DRRS is not supported on anything but port A ever
+as only transcoder EDP has the M2/N2 registers (though I'm
+not sure if HSW ever has eDP on any other port).
 
-The biggest problem is in rk3288_win23_data[] vs.
-rk3368_win23_data[] .format field:
+Starting from BDW all transcoders have the dynamically
+reprogrammable M/N registers so DRRS could work on any
+port.
 
-  RK3288's format: VOP_REG(RK3288_WIN2_CTRL0, 0x7, 1)
-  RK3368's format: VOP_REG(RK3368_WIN2_CTRL0, 0x3, 5)
+Stop initializing DRRS on ports where it cannot possibly work.
 
-Bits 5:6 (i.e., shift 5, mask 0x3) are correct for RK3399, according to
-the TRM.
-
-There are a few other small differences between the 3288 and 3368
-definitions that were swapped in commit 7707f7227f09. I reviewed them to
-the best of my ability according to the RK3399 TRM and fixed them up.
-
-This fixes IOMMU issues (and display errors) when testing with BG24
-color formats.
-
-Fixes: 7707f7227f09 ("drm/rockchip: Add support for afbc")
-Cc: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Tested-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220119161104.1.I1d01436bef35165a8cdfe9308789c0badb5ff46a@changeid
+Cc: stable@vger.kernel.org
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220128103757.22461-11-ville.syrjala@linux.intel.com
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+(cherry picked from commit f0d4ce59f4d48622044933054a0e0cefa91ba15e)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/rockchip/rockchip_vop_reg.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/display/intel_drrs.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
-@@ -902,6 +902,7 @@ static const struct vop_win_phy rk3399_w
- 	.enable = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 0),
- 	.format = VOP_REG(RK3288_WIN0_CTRL0, 0x7, 1),
- 	.rb_swap = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 12),
-+	.x_mir_en = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 21),
- 	.y_mir_en = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 22),
- 	.act_info = VOP_REG(RK3288_WIN0_ACT_INFO, 0x1fff1fff, 0),
- 	.dsp_info = VOP_REG(RK3288_WIN0_DSP_INFO, 0x0fff0fff, 0),
-@@ -912,6 +913,7 @@ static const struct vop_win_phy rk3399_w
- 	.uv_vir = VOP_REG(RK3288_WIN0_VIR, 0x3fff, 16),
- 	.src_alpha_ctl = VOP_REG(RK3288_WIN0_SRC_ALPHA_CTRL, 0xff, 0),
- 	.dst_alpha_ctl = VOP_REG(RK3288_WIN0_DST_ALPHA_CTRL, 0xff, 0),
-+	.channel = VOP_REG(RK3288_WIN0_CTRL2, 0xff, 0),
- };
+--- a/drivers/gpu/drm/i915/display/intel_drrs.c
++++ b/drivers/gpu/drm/i915/display/intel_drrs.c
+@@ -405,6 +405,7 @@ intel_drrs_init(struct intel_connector *
+ 		struct drm_display_mode *fixed_mode)
+ {
+ 	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
++	struct intel_encoder *encoder = connector->encoder;
+ 	struct drm_display_mode *downclock_mode = NULL;
  
- /*
-@@ -922,11 +924,11 @@ static const struct vop_win_phy rk3399_w
- static const struct vop_win_data rk3399_vop_win_data[] = {
- 	{ .base = 0x00, .phy = &rk3399_win01_data,
- 	  .type = DRM_PLANE_TYPE_PRIMARY },
--	{ .base = 0x40, .phy = &rk3288_win01_data,
-+	{ .base = 0x40, .phy = &rk3368_win01_data,
- 	  .type = DRM_PLANE_TYPE_OVERLAY },
--	{ .base = 0x00, .phy = &rk3288_win23_data,
-+	{ .base = 0x00, .phy = &rk3368_win23_data,
- 	  .type = DRM_PLANE_TYPE_OVERLAY },
--	{ .base = 0x50, .phy = &rk3288_win23_data,
-+	{ .base = 0x50, .phy = &rk3368_win23_data,
- 	  .type = DRM_PLANE_TYPE_CURSOR },
- };
+ 	INIT_DELAYED_WORK(&dev_priv->drrs.work, intel_drrs_downclock_work);
+@@ -416,6 +417,13 @@ intel_drrs_init(struct intel_connector *
+ 		return NULL;
+ 	}
  
++	if ((DISPLAY_VER(dev_priv) < 8 && !HAS_GMCH(dev_priv)) &&
++	    encoder->port != PORT_A) {
++		drm_dbg_kms(&dev_priv->drm,
++			    "DRRS only supported on eDP port A\n");
++		return NULL;
++	}
++
+ 	if (dev_priv->vbt.drrs_type != SEAMLESS_DRRS_SUPPORT) {
+ 		drm_dbg_kms(&dev_priv->drm, "VBT doesn't support DRRS\n");
+ 		return NULL;
 
 
