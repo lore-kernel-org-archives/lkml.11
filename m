@@ -2,84 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 308A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F6BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351292AbiBNL3u (ORCPT
+        id S1351264AbiBNL3z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:29:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59206 "EHLO
+        Mon, 14 Feb 2022 06:29:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236996AbiBNL3Q (ORCPT
+        with ESMTP id S1351358AbiBNL3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:29:16 -0500
-Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40B413E3B;
-        Mon, 14 Feb 2022 03:09:10 -0800 (PST)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4Jy1gl1ML5z1sb4v;
-        Mon, 14 Feb 2022 12:09:07 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4Jy1gk6xvWz1qqkC;
-        Mon, 14 Feb 2022 12:09:06 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id PviuDD7DJMpb; Mon, 14 Feb 2022 12:09:05 +0100 (CET)
-X-Auth-Info: IIqgtslsiXqoU0044bdHXKurfQElNZ2hCA9ncLdtO9RAMGtWhVn9okSWqvV9m/4e
-Received: from igel.home (ppp-46-244-178-131.dynamic.mnet-online.de [46.244.178.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Mon, 14 Feb 2022 12:09:05 +0100 (CET)
-Received: by igel.home (Postfix, from userid 1000)
-        id 827722C3A76; Mon, 14 Feb 2022 12:09:05 +0100 (CET)
-From:   Andreas Schwab <schwab@linux-m68k.org>
-To:     Heinrich Schuchardt <xypron.glpk@gmx.de>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@atishpatra.org>, linux-efi@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>, stable@vger.kernel.org,
-        Sunil V L <sunilvl@ventanamicro.com>
-Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return
- value
-References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
-        <877d9xx14f.fsf@igel.home>
-        <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de>
-        <87tud1vjn4.fsf@igel.home>
-        <49d3aeab-1fe6-8d17-bc83-78f3555109c7@gmx.de>
-X-Yow:  Now my EMOTIONAL RESOURCES are heavily committed to 23% of the
- SMELTING and REFINING industry of the state of NEVADA!!
-Date:   Mon, 14 Feb 2022 12:09:05 +0100
-In-Reply-To: <49d3aeab-1fe6-8d17-bc83-78f3555109c7@gmx.de> (Heinrich
-        Schuchardt's message of "Mon, 14 Feb 2022 11:27:53 +0100")
-Message-ID: <87pmnpvh66.fsf@igel.home>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.91 (gnu/linux)
+        Mon, 14 Feb 2022 06:29:46 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEF0140FC;
+        Mon, 14 Feb 2022 03:09:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644836963; x=1676372963;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6XFRgemTjKhuqga19VKEjHmq/qPjH7VzOzRQuzRYuNs=;
+  b=LBfTA8w85r2wbP7RqNyZM10gk3ky0xLtowHkCBvZ3+EyHG3i84Sc7E7v
+   K7Zf0qn8nl+/kl5kBQsqDWeLBPAR4o8DD79fTEdd1g7EUjakkf6MST53U
+   7uc8bTBFKcxZ+QoS+vgtnV/kRHE8W9qdYAUxPI4J+zAT4aIucsyh8B9UN
+   lipCkyaEq2YNW4I4x7wJvQ7WBEkwOFPqlgjTiQJ5Ep9CeRBHz3eSfw6VG
+   HtV57pr+TPnbOF4lEotHjYFT5XEhcZK6l/FM0eDd7FcYUb2QKLvubiPsa
+   4z/Gv1/rS2MzGptXqqFbLRm0T5oZHx5WXTUsZUcivEI3r36G+0rjREdpd
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="237478553"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="237478553"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:09:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="635103112"
+Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
+  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 03:09:15 -0800
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH V2 00/11] perf intel-pt: Add perf event clocks to better support VM tracing
+Date:   Mon, 14 Feb 2022 13:09:03 +0200
+Message-Id: <20220214110914.268126-1-adrian.hunter@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Feb 14 2022, Heinrich Schuchardt wrote:
+Hi
 
-> On 2/14/22 11:15, Andreas Schwab wrote:
->> On Feb 14 2022, Heinrich Schuchardt wrote:
->>
->>> set_boot_hartid() implies that the caller can change the boot hart ID.
->>> As this is not a case this name obviously would be a misnomer.
->>
->> initialize_boot_hartid would fit better.
->>
->
-> Another misnomer.
+These patches add 2 new perf event clocks based on TSC for use with VMs.
 
-But the best fit so far.
+The first patch is a minor fix, the next 2 patches add each of the 2 new
+clocks.  The remaining patches add minimal tools support and are based on
+top of the Intel PT Event Trace tools' patches.
 
--- 
-Andreas Schwab, schwab@linux-m68k.org
-GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
-"And now for something completely different."
+The future work, to add the ability to use perf inject to inject perf
+events from a VM guest perf.data file into a VM host perf.data file,
+has yet to be implemented.
+
+
+Changes in V2:
+      perf/x86: Fix native_perf_sched_clock_from_tsc() with __sched_clock_offset
+	  Add __sched_clock_offset unconditionally
+
+      perf/x86: Add support for TSC as a perf event clock
+	  Use an attribute bit 'ns_clockid' to identify non-standard clockids
+
+      perf/x86: Add support for TSC in nanoseconds as a perf event clock
+	  Do not affect use of __sched_clock_offset
+	  Adjust to use 'ns_clockid'
+
+      perf tools: Add new perf clock IDs
+      perf tools: Add API probes for new clock IDs
+      perf tools: Add new clock IDs to "perf time to TSC" test
+      perf tools: Add perf_read_tsc_conv_for_clockid()
+      perf intel-pt: Add support for new clock IDs
+      perf intel-pt: Use CLOCK_PERF_HW_CLOCK_NS by default
+      perf intel-pt: Add config variables for timing parameters
+      perf intel-pt: Add documentation for new clock IDs
+	  Adjust to use 'ns_clockid'
+
+
+Adrian Hunter (11):
+      perf/x86: Fix native_perf_sched_clock_from_tsc() with __sched_clock_offset
+      perf/x86: Add support for TSC as a perf event clock
+      perf/x86: Add support for TSC in nanoseconds as a perf event clock
+      perf tools: Add new perf clock IDs
+      perf tools: Add API probes for new clock IDs
+      perf tools: Add new clock IDs to "perf time to TSC" test
+      perf tools: Add perf_read_tsc_conv_for_clockid()
+      perf intel-pt: Add support for new clock IDs
+      perf intel-pt: Use CLOCK_PERF_HW_CLOCK_NS by default
+      perf intel-pt: Add config variables for timing parameters
+      perf intel-pt: Add documentation for new clock IDs
+
+ arch/x86/events/core.c                     | 39 ++++++++++--
+ arch/x86/include/asm/perf_event.h          |  5 ++
+ arch/x86/kernel/tsc.c                      |  2 +-
+ include/uapi/linux/perf_event.h            | 18 +++++-
+ kernel/events/core.c                       | 63 +++++++++++++-------
+ tools/include/uapi/linux/perf_event.h      | 18 +++++-
+ tools/perf/Documentation/perf-config.txt   | 18 ++++++
+ tools/perf/Documentation/perf-intel-pt.txt | 47 +++++++++++++++
+ tools/perf/Documentation/perf-record.txt   |  9 ++-
+ tools/perf/arch/x86/util/intel-pt.c        | 95 ++++++++++++++++++++++++++++--
+ tools/perf/builtin-record.c                |  2 +-
+ tools/perf/tests/perf-time-to-tsc.c        | 42 ++++++++++---
+ tools/perf/util/clockid.c                  | 14 +++++
+ tools/perf/util/evsel.c                    |  1 +
+ tools/perf/util/intel-pt.c                 | 27 +++++++--
+ tools/perf/util/intel-pt.h                 |  7 ++-
+ tools/perf/util/perf_api_probe.c           | 24 ++++++++
+ tools/perf/util/perf_api_probe.h           |  2 +
+ tools/perf/util/perf_event_attr_fprintf.c  |  1 +
+ tools/perf/util/record.h                   |  2 +
+ tools/perf/util/tsc.c                      | 58 ++++++++++++++++++
+ tools/perf/util/tsc.h                      |  2 +
+ 22 files changed, 444 insertions(+), 52 deletions(-)
+
+
+Regards
+Adrian
