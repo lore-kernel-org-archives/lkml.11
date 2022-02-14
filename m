@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1CEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170A2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245269AbiBNJrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:47:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43282 "EHLO
+        id S245374AbiBNJrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:47:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244917AbiBNJpW (ORCPT
+        with ESMTP id S245111AbiBNJpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:45:22 -0500
+        Mon, 14 Feb 2022 04:45:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F4360AB4;
-        Mon, 14 Feb 2022 01:38:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBD160D96;
+        Mon, 14 Feb 2022 01:38:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3687760FA2;
-        Mon, 14 Feb 2022 09:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E77AC340E9;
-        Mon, 14 Feb 2022 09:38:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FEBD6118F;
+        Mon, 14 Feb 2022 09:38:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37491C340EF;
+        Mon, 14 Feb 2022 09:38:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831513;
-        bh=0KFL7EUzAu7Eb7oUe3MpZrguecfrpKt/qiwj88UrN+8=;
+        s=korg; t=1644831519;
+        bh=0SNWPaXymZm3bX46jRXr1RWWCMk24h+5vqzYav0VjV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AEM7AslL8YL8mXRR1ohfq7qoD/noLthviCz+X2oJ/YxfN3xBHi5fl21E2zJZvBEBI
-         JmSY+Ey+brG1ysXfYJ1/gDj++pv10iwuQDSk7dzxKvNFmNMbNRkAsxYWbkNuMxiesJ
-         s+NsgAt+e+XiT1FdPl8dzJTr42+Suyvc8OeHbr2s=
+        b=juo4RSE8Fugx8Vv2djVsATPlXRL0kWfbS+bQ8X42Es8fxPpXrwTHLGEHzYhpO3Yz3
+         /z/HYZpWXjIlGr+Mlm43WoLIjk3ZyioSUDG4/OZdT/pUx+2tRZNu2R6yriC0zvQSUW
+         JfZijHqLghTz83arXi7zaXNK9upKpqk/elvNSOXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stephan Brunner <s.brunner@stephan-brunner.net>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.4 64/71] USB: serial: ch341: add support for GW Instek USB2.0-Serial devices
-Date:   Mon, 14 Feb 2022 10:26:32 +0100
-Message-Id: <20220214092454.184088121@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.10 001/116] integrity: check the return value of audit_log_start()
+Date:   Mon, 14 Feb 2022 10:25:00 +0100
+Message-Id: <20220214092458.722049185@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
-References: <20220214092452.020713240@linuxfoundation.org>
+In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
+References: <20220214092458.668376521@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,39 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Brunner <s.brunner@stephan-brunner.net>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-commit fa77ce201f7f2d823b07753575122d1ae5597fbe upstream.
+commit 83230351c523b04ff8a029a4bdf97d881ecb96fc upstream.
 
-Programmable lab power supplies made by GW Instek, such as the
-GPP-2323, have a USB port exposing a serial port to control the device.
+audit_log_start() returns audit_buffer pointer on success or NULL on
+error, so it is better to check the return value of it.
 
-Stringing the supplied Windows driver, references to the ch341 chip are
-found. Binding the existing ch341 driver to the VID/PID of the GPP-2323
-("GW Instek USB2.0-Serial" as per the USB product name) works out of the
-box, communication and control is now possible.
-
-This patch should work with any GPP series power supply due to
-similarities in the product line.
-
-Signed-off-by: Stephan Brunner <s.brunner@stephan-brunner.net>
-Link: https://lore.kernel.org/r/4a47b864-0816-6f6a-efee-aa20e74bcdc6@stephan-brunner.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Fixes: 3323eec921ef ("integrity: IMA as an integrity service provider")
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/ch341.c |    1 +
- 1 file changed, 1 insertion(+)
+ security/integrity/integrity_audit.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/serial/ch341.c
-+++ b/drivers/usb/serial/ch341.c
-@@ -84,6 +84,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(0x1a86, 0x5523) },
- 	{ USB_DEVICE(0x1a86, 0x7522) },
- 	{ USB_DEVICE(0x1a86, 0x7523) },
-+	{ USB_DEVICE(0x2184, 0x0057) },
- 	{ USB_DEVICE(0x4348, 0x5523) },
- 	{ USB_DEVICE(0x9986, 0x7523) },
- 	{ },
+--- a/security/integrity/integrity_audit.c
++++ b/security/integrity/integrity_audit.c
+@@ -45,6 +45,8 @@ void integrity_audit_message(int audit_m
+ 		return;
+ 
+ 	ab = audit_log_start(audit_context(), GFP_KERNEL, audit_msgno);
++	if (!ab)
++		return;
+ 	audit_log_format(ab, "pid=%d uid=%u auid=%u ses=%u",
+ 			 task_pid_nr(current),
+ 			 from_kuid(&init_user_ns, current_uid()),
 
 
