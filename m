@@ -2,96 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F607C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236350AbiBNKuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:50:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38740 "EHLO
+        id S1348712AbiBNKuT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:50:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349291AbiBNKtS (ORCPT
+        with ESMTP id S1349256AbiBNKtp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:49:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A37BF963;
-        Mon, 14 Feb 2022 02:12:28 -0800 (PST)
+        Mon, 14 Feb 2022 05:49:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E9459A63;
+        Mon, 14 Feb 2022 02:13:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2EE660FF2;
-        Mon, 14 Feb 2022 10:12:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DDDFC340E9;
-        Mon, 14 Feb 2022 10:12:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB7CF60F60;
+        Mon, 14 Feb 2022 10:13:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0C4C340E9;
+        Mon, 14 Feb 2022 10:13:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644833547;
-        bh=M0BF1S8k6P4/h+amgHnnMxnmmzIHRn78qIWiqCZMTt8=;
+        s=korg; t=1644833624;
+        bh=Oqs2c+CSy2ojS0blJcmVhdvVTN8pL9wK7YjIOHGRVwU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UptKleNcc93DXh/8y4no+0p/Hl1XMjhGS2P6HwvH72Ql1NOdZNhK9XngXZl8Yka7F
-         VtmDV+JhrV/j6jL06nHWv0qvL3jHnPEvB9jfc+o2GYj/i76xty+/rY6wLh03YjI1KQ
-         IiTVtb8hFbVl3YncHAyB2BfGYzLSu8S3+nPbDfhk=
-Date:   Mon, 14 Feb 2022 11:02:28 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 02/14] driver core: Add dma_cleanup callback in
- bus_type
-Message-ID: <YgootGL4aL+XRE/J@kroah.com>
-References: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
- <20220104015644.2294354-3-baolu.lu@linux.intel.com>
+        b=kldvhzexBmY8f6OKfnUtYfDdTKk2zUEog/QxGa3qXn5IqlEE6S959kOzcsEkpLIS6
+         JvekTTu3hVCeH4uQgIzdOrmlCjrfO3XAdyPBtA1ia1+Pd7W6gwMYa6Eb9MT0et89u/
+         G5xqsSqQBflZWsbLCueeXcDRNE830a5sJ7bKRTyw=
+Date:   Mon, 14 Feb 2022 11:13:41 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Husni Faiz <ahamedhusni73@gmail.com>
+Cc:     johan@kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] usb: serial: Fix Coding Style Errors
+Message-ID: <YgorVSrt56Xf0fKK@kroah.com>
+References: <20220212175510.521072-1-ahamedhusni73@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220104015644.2294354-3-baolu.lu@linux.intel.com>
+In-Reply-To: <20220212175510.521072-1-ahamedhusni73@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 09:56:32AM +0800, Lu Baolu wrote:
-> The bus_type structure defines dma_configure() callback for bus drivers
-> to configure DMA on the devices. This adds the paired dma_cleanup()
-> callback and calls it during driver unbinding so that bus drivers can do
-> some cleanup work.
-> 
-> One use case for this paired DMA callbacks is for the bus driver to check
-> for DMA ownership conflicts during driver binding, where multiple devices
-> belonging to a same IOMMU group (the minimum granularity of isolation and
-> protection) may be assigned to kernel drivers or user space respectively.
-> 
-> Without this change, for example, the vfio driver has to listen to a bus
-> BOUND_DRIVER event and then BUG_ON() in case of dma ownership conflict.
-> This leads to bad user experience since careless driver binding operation
-> may crash the system if the admin overlooks the group restriction. Aside
-> from bad design, this leads to a security problem as a root user, even with
-> lockdown=integrity, can force the kernel to BUG.
-> 
-> With this change, the bus driver could check and set the DMA ownership in
-> driver binding process and fail on ownership conflicts. The DMA ownership
-> should be released during driver unbinding.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On Sat, Feb 12, 2022 at 11:25:10PM +0530, Husni Faiz wrote:
+> Added a space before the ternary operator.
+> Removed the space after the function argument.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+That should be 2 different patches, right?
+
+Please learn stuff like this on the drivers/staging/ part of the kernel
+first, as patches for this are welcome there and that is a great place
+to start.
+
+good luck!
+
+greg k-h
