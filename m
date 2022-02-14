@@ -2,101 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B60C2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354891AbiBNOGW (ORCPT
+        id S1354906AbiBNOGz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 09:06:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44904 "EHLO
+        Mon, 14 Feb 2022 09:06:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354879AbiBNOGT (ORCPT
+        with ESMTP id S231853AbiBNOGx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 09:06:19 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4024A3C4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:06:12 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id l125so13259821ybl.4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:06:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9M5OW/p/N+317mqw1a7QGwFIU/E34FcnEw0pMzdlDnM=;
-        b=XX2XWY3WEwfuGdCxy/g536HNRWOaAtAH42XA+oGj+uwqJfaSZF8dQ0L2/gdNtV+7rB
-         VJDbHURITZAj7S3thHnskzdeveYUD7SBi8iM3r97pkGz0ehx3CdRcagu9RUtqM9jvJCk
-         CxbAEi6ry/UyS6B/kQ5vwGigHJ6YXvG6pZ5ivH6FznJsyD0vu1Gum+0wIhqa5dUw+xUs
-         HF4BsE+rPLn7v4RjyQBVPOh1zxRvmYJtTODZ7l1MQArcQAv55WYghBQO1kDdEgbWoEnV
-         QBcNmz5iCEhga5UbzIZLe0WxyvpVH3+BhdDGBKIAMgsa2vobgfMwaILu2cn9NZFSVbZU
-         EDiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9M5OW/p/N+317mqw1a7QGwFIU/E34FcnEw0pMzdlDnM=;
-        b=U/EHxEKuwZzSOiTggcuRDVUmrZCPH1CukHhaPBK9qNdiIFOID/ngHRL6n/LlUDe5bL
-         AhRfW0Bj8e7YJtGYx7zNWbaZqOLpD3X5LpcAzaXK6stS/J4eDyMXtrqAs+knuj6lIP3z
-         OEgwN6WwAzIRFFBkyTq/4pZBRw05BqFABvejjphG8V5Cw5TzAwWbUDyMp41G6j5lmBED
-         MVYvGyHveZ+0QJXjwKT4DvH/OsdWw/ECUB8rybY+3gqpIBZGqD/f4Mw8dh/9RioSVNJZ
-         j0OSBSZPbkmjy0CaBF3GN1A7b+4R5xYn3k1zH0WXlrQSu2OOapdqaAZxnSed5Tb8cDFg
-         5zJg==
-X-Gm-Message-State: AOAM530LUFPCRfjgXiC1B0g89/FVKdEZmGnd73f3FvPvkExeMqfwhtPB
-        MQ6d39aT//sh71dfUyC/JbkEdxtuM+1FNv4DlOZlLg==
-X-Google-Smtp-Source: ABdhPJybkgqEwTJ0yZ5TqAONojA2iJ+32VTFfDuw6K3jdn4eeVbSn+HBrHa1lvMNw+ZFvbw/Z/C9kzy+yQp4GlPqJGc=
-X-Received: by 2002:a25:f404:: with SMTP id q4mr12321552ybd.146.1644847570937;
- Mon, 14 Feb 2022 06:06:10 -0800 (PST)
-MIME-Version: 1.0
-References: <720d0a9a42e33148fcac45cd39a727093a32bf32.1614965598.git.robin.murphy@arm.com>
- <a730070d718cb119f77c8ca1782a0d4189bfb3e7.1614965598.git.robin.murphy@arm.com>
- <0a1d437d-9ea0-de83-3c19-e07f560ad37c@arm.com> <20210730143431.GB1517404@mutt>
- <8b358507-dbdf-b05b-c1da-2ec9903a2912@arm.com> <CADYN=9LE2JnE+vmv_UaeyJj_RpHcp+zZUv711VuQekLSiQ2bJA@mail.gmail.com>
-In-Reply-To: <CADYN=9LE2JnE+vmv_UaeyJj_RpHcp+zZUv711VuQekLSiQ2bJA@mail.gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 14 Feb 2022 19:36:00 +0530
-Message-ID: <CA+G9fYu7ctvOfdvBkDZ1nABz0TaYZ49FUKVTctn+mBTCmk9JCQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] arm64: dts: juno: Enable more SMMUs
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>,
-        Liviu Dudau <Liviu.Dudau@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-stable <stable@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        lkft-triage@lists.linaro.org,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 14 Feb 2022 09:06:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC74365A2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:06:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89A5E60F86
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 14:06:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3150C340EE;
+        Mon, 14 Feb 2022 14:06:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644847604;
+        bh=uUt6bE07NssIaYfZ1Wzc5VcSVVOyx1PQSGWXB+SwyNg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TTjhN2oQXHO/DPe8aypKoXxulEjAeg9gpvnVZ98AN1NH4isPapKOXXyyV6mDb7GhX
+         SbNHHxzhjn512Ou4zrxUTjx5KIbns+zuIDsKXiDTYayIv7JPf1DVZNHVyjBOnpwlxt
+         5us9f6eMs18RID38v6oueyITdTp4U/j1/FtOFkWkT7K5k/03ZqjDFwFyncMlnmhQ48
+         3rZDqhttac1LzYsBgP2rfA6efbI6zzBKVCNe794A4bmustR8jmoBpZglhSHOJcF9R1
+         ZLoRcBrINUI6hx91vkfpEKw7bKZvf5oQIv0ig6WeaKAmHtYPxoTyS4yKnsASNU6xO/
+         T9Km6girYxw3w==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nJc02-007nP8-LH; Mon, 14 Feb 2022 14:06:42 +0000
+Date:   Mon, 14 Feb 2022 14:06:41 +0000
+Message-ID: <87leyd4k5q.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, qperret@google.com, tabba@google.com,
+        surenb@google.com, kernel-team@android.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Scull <ascull@google.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu
+Subject: Re: [PATCH 4/7] KVM: arm64: Allocate guard pages near hyp stacks
+In-Reply-To: <20220210224220.4076151-5-kaleshsingh@google.com>
+References: <20220210224220.4076151-1-kaleshsingh@google.com>
+        <20220210224220.4076151-5-kaleshsingh@google.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: kaleshsingh@google.com, will@kernel.org, qperret@google.com, tabba@google.com, surenb@google.com, kernel-team@android.com, catalin.marinas@arm.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, ardb@kernel.org, mark.rutland@arm.com, pasha.tatashin@soleen.com, joey.gouly@arm.com, pcc@google.com, ascull@google.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kvmarm@lists.cs.columbia.edu
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Robin,
+On Thu, 10 Feb 2022 22:41:45 +0000,
+Kalesh Singh <kaleshsingh@google.com> wrote:
+> 
+> From: Quentin Perret <qperret@google.com>
+> 
+> Allocate unbacked VA space underneath each stack page to ensure stack
+> overflows get trapped and don't corrupt memory silently.
+> 
+> The stack is aligned to twice its size (PAGE_SIZE), meaning that any
+> valid stack address has PAGE_SHIFT bit as 0. This allows us to easily
+> check for overflow in the exception entry without corrupting any GPRs.
+> 
+> Signed-off-by: Quentin Perret <qperret@google.com>
+> [ Kalesh - Update commit text and comments,
+>            refactor, add overflow handling ]
+> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> ---
+>  arch/arm64/kvm/hyp/nvhe/host.S   | 16 ++++++++++++++++
+>  arch/arm64/kvm/hyp/nvhe/setup.c  | 19 ++++++++++++++++++-
+>  arch/arm64/kvm/hyp/nvhe/switch.c |  5 +++++
+>  3 files changed, 39 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
+> index 3d613e721a75..78e4b612ac06 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/host.S
+> +++ b/arch/arm64/kvm/hyp/nvhe/host.S
+> @@ -153,6 +153,10 @@ SYM_FUNC_END(__host_hvc)
+>  
+>  .macro invalid_host_el2_vect
+>  	.align 7
+> +
+> +	/* Test stack overflow without corrupting GPRs */
+> +	test_sp_overflow PAGE_SHIFT, .L__hyp_sp_overflow\@
+> +
 
-Since we did not get a reply on this email thread.
-and those intermittent failures are causing a lot of noise in reports summary.
-We will wait one more week and stop running 64k page size testing on
-Juno-r2 devices.
+I am definitely concerned with this in a system not using pKVM (which
+is on average 100% of the upstream users so far! ;-). This is more or
+less guaranteed to do the wrong thing 50% of the times, depending on
+the alignment of the stack.
 
-> > > diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
-> > > index 8e7a66943b01..d3148730e951 100644
-> > > --- a/arch/arm64/boot/dts/arm/juno-base.dtsi
-> > > +++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
-> > > @@ -545,8 +545,7 @@ pcie_ctlr: pcie@40000000 {
-> > >                           <0x02000000 0x00 0x50000000 0x00 0x50000000 0x0 0x08000000>,
-> > >                           <0x42000000 0x40 0x00000000 0x40 0x00000000 0x1 0x00000000>;
-> > >                  /* Standard AXI Translation entries as programmed by EDK2 */
-> > > -               dma-ranges = <0x02000000 0x0 0x2c1c0000 0x0 0x2c1c0000 0x0 0x00040000>,
-> > > -                            <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
-> > > +               dma-ranges = <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
-> > >                               <0x43000000 0x8 0x00000000 0x8 0x00000000 0x2 0x00000000>;
-> > >                  #interrupt-cells = <1>;
-> > >                  interrupt-map-mask = <0 0 0 7>;
-> > >
+>  	/* If a guest is loaded, panic out of it. */
+>  	stp	x0, x1, [sp, #-16]!
+>  	get_loaded_vcpu x0, x1
+> @@ -165,6 +169,18 @@ SYM_FUNC_END(__host_hvc)
+>  	 * been partially clobbered by __host_enter.
+>  	 */
+>  	b	hyp_panic
+> +
+> +.L__hyp_sp_overflow\@:
+> +	/*
+> +	 * Reset SP to the top of the stack, to allow handling the hyp_panic.
+> +	 * This corrupts the stack but is ok, since we won't be attempting
+> +	 * any unwinding here.
+> +	 */
+> +	ldr_this_cpu	x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
+> +	mov	sp, x0
+> +
+> +	bl	hyp_panic_bad_stack
+> +	ASM_BUG()
+>  .endm
+>  
+>  .macro invalid_host_el1_vect
+> diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
+> index 99e178cf4249..114053dff228 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/setup.c
+> +++ b/arch/arm64/kvm/hyp/nvhe/setup.c
+> @@ -105,7 +105,24 @@ static int recreate_hyp_mappings(phys_addr_t phys, unsigned long size,
+>  		if (ret)
+>  			return ret;
+>  
+> -		/* Map stack pages in the 'private' VA range */
+> +		/*
+> +		 * Allocate 'private' VA range for stack guard pages.
+> +		 *
+> +		 * The 'private' VA range grows upward and stacks downwards, so
+> +		 * allocate the guard page first. But make sure to align the
+> +		 * stack itself with PAGE_SIZE * 2 granularity to ease overflow
+> +		 * detection in the entry assembly code.
+> +		 */
+> +		do {
+> +			start = (void *)hyp_alloc_private_va_range(PAGE_SIZE);
+> +			if (IS_ERR(start))
+> +				return PTR_ERR(start);
+> +		} while (IS_ALIGNED((u64) start, PAGE_SIZE * 2));
 
-Reference email thread,
-https://lore.kernel.org/stable/0a1d437d-9ea0-de83-3c19-e07f560ad37c@arm.com/
+This seems cumbersome. Can't we tweak hyp_alloc_private_va_range() to
+perform the required alignment? It could easily be convinced to return
+an address that is aligned on the size of the region, which would
+avoid this sort of loop.
 
-- Naresh
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
