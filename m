@@ -2,126 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94032C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:39:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 464FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354385AbiBNNjf (ORCPT
+        id S1354394AbiBNNjt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:39:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52804 "EHLO
+        Mon, 14 Feb 2022 08:39:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245609AbiBNNjc (ORCPT
+        with ESMTP id S245609AbiBNNjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:39:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F08904C43C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:39:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644845964;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q0nJAs/QVKzUPfZInqWn93G2x7vjNHkbBF9qYOiGnWA=;
-        b=Pc8DFin9FoU9qHi/lnCvtBM4g0mo8QRtq29Uw9Z5PYhpcCzAD07cpVg2leT4e0Qrv6/LPL
-        XKF1a1JR1eB5iTakejv48Df8CG5FbFsq0DE4MZgEwcmf/Hr9PQjexORRxskpCzYBzN2vYv
-        TCrIdYVH1Jy7Y61NXjrN4DxiGHH84u0=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-45-ThiNw74oMxmnJvj48tXH1w-1; Mon, 14 Feb 2022 08:39:22 -0500
-X-MC-Unique: ThiNw74oMxmnJvj48tXH1w-1
-Received: by mail-wr1-f69.google.com with SMTP id h29-20020adfa4dd000000b001e498f51244so6813129wrb.14
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:39:22 -0800 (PST)
+        Mon, 14 Feb 2022 08:39:46 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DF74C43C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:39:38 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id c192so9667371wma.4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:39:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=q2xtWcTzY3fGlUDVCwgpXaikGTqqdVJF0/bajHnvT9c=;
+        b=LXObhA7CkZldKpmJtEIVyeLqTUnGJJ+OV4THrg0bz4HYxjLuVoytkNE4rj6N2ZGsmx
+         z+KkPM7bpnuzFWFnOx5Kq5F1NEA5HIITJDNABELF3rZ6bHYoxb22vk/u8KLV5lCERQF9
+         SkPCUHCmgZZkbAj1yX308h9fjCJdnpdqE2VXJpTbOgft5k/eMUXmMf17ya07Q203ZABn
+         ggEyEKW/AZ0drKaLAiLhi/6HBgHGhALQdspsRMCBd2ZMhkXpGbIjjtNP+KLOpZvcJQYa
+         3CDUYeFLx+C015uvwo4tVLa/VbaJ5npsh/NA3JbCn23fqGSmNWtGNiHDgxdplgX7LzJ0
+         QfTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=q0nJAs/QVKzUPfZInqWn93G2x7vjNHkbBF9qYOiGnWA=;
-        b=ojBsBjg770/GFJEOOQi6PszuDKK3C6XAFUm+n/RvKnoHK+qddpWufcVsQV2GAaW7Mr
-         zD0OctSzVS4PdPeFmADseH9VOn00Bbun5sBu7oQD7peebZgAdKd7o3BGmgvH4NVUh7e3
-         cog6Ys9HsV0mBHNsnZIzKLZCFDLB7vDym9Z+syX560PJs+GraH1wpi+eAX9/JXGIAm50
-         gQuX4mE/Pcz0YmpGVXMFha7XPmaTaeDEHx9g6jwA/d68c+Ju9QGGWfPa6W4+rmmmzIEB
-         zBUhCXIeZhNCoBR9WJrX+bPv4xI12e3DSOLDTkiCo15EI7yi1cWNgFw7rbEm9Blbyjex
-         2dGQ==
-X-Gm-Message-State: AOAM532oSDzHtWHKGYQ7BdpRnoIq1GUF0R8vyE1wOLNVlfqdyoO9K5n5
-        ceL3js2iUfkANYa1oMHPtQSCBKyd8yqiynznHotaTL+ssxLNpDuXsPp0/BO+7FpTH9TOh68dM09
-        p5VpQLCJxjpwhMHkAsgwNJ2e1TAIiKyPU9m88uMf6BjsMwQmwo3D82RQijW55OdCm5XPU7+oRqt
-        k=
-X-Received: by 2002:a5d:4652:: with SMTP id j18mr9457910wrs.600.1644845961603;
-        Mon, 14 Feb 2022 05:39:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJynrCAqmAm2n2lQ+jT84K1ccY7RTWNT1XbLbIiM5V2Tu7Q5FECiZBbqhtjbe/uKekjhMZ/1gA==
-X-Received: by 2002:a5d:4652:: with SMTP id j18mr9457887wrs.600.1644845961377;
-        Mon, 14 Feb 2022 05:39:21 -0800 (PST)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id n20sm2108941wmq.42.2022.02.14.05.39.20
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=q2xtWcTzY3fGlUDVCwgpXaikGTqqdVJF0/bajHnvT9c=;
+        b=tbWTpBAi2aNiYd9AyQfqSxIZX9elGWSNox/vOzlXbP8U9Li+2RunNf1XHxDjWEyV/j
+         bDATrdfKptkFM25oFDBnOAji13JksabsfToO5Pd/FnSBpc1G3CuGy4cUXhEa/a/tREX3
+         bhW0KRuOorrlZagPEV55WdN0bzmgBEDfZh0srlMpVwJof0O+g4rZv9PWRb20tmvPfCTd
+         iW00wNxTs080ZiqWHWUKWaLfijwb1HZHnE2lQYCHefMhbdk+YEoevKQi51tIdY7f1w/m
+         vb5OQsplt5k9rt8VqOJ0EXJb9Z5EFRFnsWlOHMJb/wxIU2GxZB777lDPE0J1IFeKRDuw
+         Ce3Q==
+X-Gm-Message-State: AOAM532Z+DqtojjMzQrQT4UDlzqh7Xe+rfpPj+sB0lHQyGfr6MaD2BzH
+        qFWh3O6wvHwyuXoIxR+P/uAedVq2uGsk8Q==
+X-Google-Smtp-Source: ABdhPJz6XTNaTVeZypQMsL8H4LbZtEGF7tz7EdWyK1/Em9NjbpCUd9iH/ks8ltgR5rz3uSVfJn1YSw==
+X-Received: by 2002:a1c:f309:: with SMTP id q9mr11290076wmq.173.1644845977531;
+        Mon, 14 Feb 2022 05:39:37 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id az21sm11878848wmb.11.2022.02.14.05.39.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 05:39:21 -0800 (PST)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v6 5/6] MAINTAINERS: Add entry for Solomon SSD130x OLED displays DRM driver
-Date:   Mon, 14 Feb 2022 14:39:15 +0100
-Message-Id: <20220214133915.3278886-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214133710.3278506-1-javierm@redhat.com>
-References: <20220214133710.3278506-1-javierm@redhat.com>
+        Mon, 14 Feb 2022 05:39:37 -0800 (PST)
+Date:   Mon, 14 Feb 2022 13:39:35 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Johnson Wang <johnson.wang@mediatek.com>
+Cc:     robh+dt@kernel.org, broonie@kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH 1/4] mfd: Add support for the MediaTek MT6366 PMIC
+Message-ID: <Ygpbl/pxEVAug6jl@google.com>
+References: <20220106065407.16036-1-johnson.wang@mediatek.com>
+ <20220106065407.16036-2-johnson.wang@mediatek.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220106065407.16036-2-johnson.wang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To make sure that tools like the get_maintainer.pl script will suggest
-to Cc me if patches are posted for this driver.
+On Thu, 06 Jan 2022, Johnson Wang wrote:
 
-Also include the Device Tree binding for the old ssd1307fb fbdev driver
-since the new DRM driver was made compatible with the existing binding.
+> This adds support for the MediaTek MT6366 PMIC. This is a
+> multifunction device with the following sub modules:
+> 
+> - Regulator
+> - RTC
+> - Codec
+> - Interrupt
+> 
+> It is interfaced to the host controller using SPI interface
+> by a proprietary hardware called PMIC wrapper or pwrap.
+> MT6366 MFD is a child device of the pwrap.
+> 
+> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> ---
+>  drivers/mfd/mt6358-irq.c             | 1 +
+>  include/linux/mfd/mt6358/registers.h | 7 +++++++
+>  include/linux/mfd/mt6397/core.h      | 1 +
+>  3 files changed, 9 insertions(+)
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+Applied, thanks.
 
-(no changes since v5)
-
-Changes in v5:
-- Add Andy Shevchenko's Reviewed-by tag to patch #5.
-
-Changes in v3:
-- Adapt MAINTAINERS entry to point to the new drivers/gpu/drm/solomon directory.
-
-Changes in v2:
-- Add Sam Ravnborg's acked-by to patch adding a MAINTAINERS entry (Sam Ravnborg)
-
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d03ad8da1f36..05c306986ab0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6102,6 +6102,13 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
- F:	Documentation/devicetree/bindings/display/repaper.txt
- F:	drivers/gpu/drm/tiny/repaper.c
- 
-+DRM DRIVER FOR SOLOMON SSD130X OLED DISPLAYS
-+M:	Javier Martinez Canillas <javierm@redhat.com>
-+S:	Maintained
-+T:	git git://anongit.freedesktop.org/drm/drm-misc
-+F:	Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-+F:	drivers/gpu/drm/solomon/ssd130x*
-+
- DRM DRIVER FOR QEMU'S CIRRUS DEVICE
- M:	Dave Airlie <airlied@redhat.com>
- M:	Gerd Hoffmann <kraxel@redhat.com>
 -- 
-2.34.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
