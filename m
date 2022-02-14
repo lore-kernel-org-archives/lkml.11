@@ -2,254 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C06C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD26C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344075AbiBNKKX (ORCPT
+        id S1345670AbiBNKK1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:10:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35470 "EHLO
+        Mon, 14 Feb 2022 05:10:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345357AbiBNKGI (ORCPT
+        with ESMTP id S1345889AbiBNKHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:06:08 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226327463F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:49:30 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id h7-20020a17090a648700b001b927560c2bso14056394pjj.1
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:49:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/S2BvEODEAJUahCS59ViatHoyD/cWLeqwLgA2QTvjE8=;
-        b=JUQGBXn8+euWZUwquBLidxbuLw3TdJfHMe5lIkxyYnB5E5+Phe4SJM/kzbR8LVgZLJ
-         omYavMfQGq1XrSeFoRjwnWMWMy7yRDIgbekO0KHYkv8s0gH2vh8whPhUhPxwrcZ6XVl0
-         uS0Ib/HK4qNAugHZ10eCwxmb7yWA/ZRPKv6G734jNdINZ+C6YkBZRSoRWZuykoaAmPGE
-         TnqmxBsQNvEOOpJNpyzDQlo8NySA3K8Lle/JgGhv6XZ/I9EG+nyDS9yKwJ9960el5V3+
-         Gh7T0qVbB5wEVxCp5E5TDp5a643j3lGzBzOp85KvPbiGro5WYSv/D3GfWNHGNWT/Q4DK
-         drSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/S2BvEODEAJUahCS59ViatHoyD/cWLeqwLgA2QTvjE8=;
-        b=A9taN2lxGHITQs8p6OT220C/2/82IaSC15EvAyZeaV7XBIaeNq/c7kpjO38AkVJq5Q
-         Q3hZpcmKnAhfrhiQpyzgugUMrTnJ5lUW6LJQzDnJTg5AgOSxOe8njaF9m1eG8aHWab/0
-         2ShD1uAKAZ+9vY896iZWIs0dX3QkwH6+vt98d09XTiA4KoNCuY5qSXhtIJJf5FCvneG/
-         UVzapWuBgb8yIo+Lvs7WPrDqwxEkXCusMOczlrtP3Qz46KUETnKYwrkVwYm1pgn+WyFm
-         Y7qqBEveMKSuKGHfw4q8fV8LYO250kdfk9sbHPeeBuvhNe/LAwyh5Q8WZNvj8BXOwRpB
-         lUPw==
-X-Gm-Message-State: AOAM53012vW7wvUy0nbNkrXYStZuwZS/OPm1JXnk+BLaq3btjS2+68Zs
-        YLjJMrYVwZVx+v2muReDoQ45q9ZTxlNXcQ4=
-X-Google-Smtp-Source: ABdhPJz2Lk0La4YUA438Z/uoJgqgWO5edLzBJc/ODM441MaC7A5dLjTRPudSEXvP0SyxxMxIOPKrDg==
-X-Received: by 2002:a17:903:2406:: with SMTP id e6mr13119868plo.21.1644832169511;
-        Mon, 14 Feb 2022 01:49:29 -0800 (PST)
-Received: from thinkpad ([2409:4072:817:5a6f:3104:62c0:1941:5033])
-        by smtp.gmail.com with ESMTPSA id l17sm35406780pfu.61.2022.02.14.01.49.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 01:49:29 -0800 (PST)
-Date:   Mon, 14 Feb 2022 15:19:19 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [RFC PATCH 2/5] PCI: endpoint: Add support to data transfer
- using internal dmac
-Message-ID: <20220214094919.GJ3494@thinkpad>
-References: <20220126195043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220126195043.28376-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 14 Feb 2022 05:07:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44524BCA8;
+        Mon, 14 Feb 2022 01:49:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D953D612B4;
+        Mon, 14 Feb 2022 09:49:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9B1AC340E9;
+        Mon, 14 Feb 2022 09:49:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832190;
+        bh=p0GSrWSRYFcwVAlTWHkexOEppvNxSNDFbwq10rI/KzQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=evZ+7gNAsNu0KbypQwQXGnJ1hQchIQCYqN9NMOLM9YJQFOsBMOnf22KKOA/MKZYyC
+         6T+lXIE7dejhpPmTJ3c7A20iiP1H4v+YOh6H9oM/0sQGBe7qiFe6FmwMfwNYzCS4rn
+         HDFfC4mjU7vqB3oYN5qmMTFSSBe90+PE2aEHtei4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 108/172] gpio: sifive: use the correct register to read output values
+Date:   Mon, 14 Feb 2022 10:26:06 +0100
+Message-Id: <20220214092510.152974691@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
+References: <20220214092506.354292783@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126195043.28376-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 07:50:40PM +0000, Lad Prabhakar wrote:
-> For PCIe EP capable with internal DMAC, transfer data using this
-> when -d option is used with pcitest.
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  drivers/pci/endpoint/functions/pci-epf-test.c | 184 ++++++++++++++----
->  1 file changed, 141 insertions(+), 43 deletions(-)
-> 
-> diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-> index 90d84d3bc868..f792b1a15c44 100644
-> --- a/drivers/pci/endpoint/functions/pci-epf-test.c
-> +++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-> @@ -55,6 +55,7 @@ struct pci_epf_test {
->  	struct dma_chan		*dma_chan;
->  	struct completion	transfer_complete;
->  	bool			dma_supported;
-> +	bool			internal_dmac;
+From: Niklas Cassel <niklas.cassel@wdc.com>
 
-Please use "dma" everywhere.
+[ Upstream commit cc38ef936840ac29204d806deb4d1836ec509594 ]
 
->  	const struct pci_epc_features *epc_features;
->  };
->  
-> @@ -148,6 +149,40 @@ static int pci_epf_test_data_transfer(struct pci_epf_test *epf_test,
->  	return 0;
->  }
->  
-> +/**
-> + * pci_epf_test_internal_dmac_data_transfer() - Function that uses internal DMAC
-> + *				to transfer data between PCIe EP and remote PCIe RC
-> + * @epf_test: the EPF test device that performs the data transfer operation
-> + * @dma_dst: The destination address of the data transfer. It can be a physical
-> + *	     address given by pci_epc_mem_alloc_addr or DMA mapping APIs.
-> + * @dma_src: The source address of the data transfer. It can be a physical
-> + *	     address given by pci_epc_mem_alloc_addr or DMA mapping APIs.
-> + * @len: The size of the data transfer
-> + * @dir: Direction of data transfer
-> + *
-> + * Function that uses internal dmac supported by the controller to transfer data
-> + * between PCIe EP and remote PCIe RC.
-> + *
-> + * The function returns '0' on success and negative value on failure.
-> + */
-> +static int
-> +pci_epf_test_internal_dmac_data_transfer(struct pci_epf_test *epf_test,
-> +					 dma_addr_t dma_dst, dma_addr_t dma_src,
-> +					 size_t len, enum pci_epf_xfr_direction dir)
-> +{
-> +	struct pci_epf *epf = epf_test->epf;
-> +	int ret;
-> +
-> +	if (!epf_test->internal_dmac)
-> +		return -EINVAL;
-> +
-> +	ret = pci_epf_internal_dmac_xfr(epf, dma_dst, dma_src, len, dir);
-> +	if (ret)
-> +		return -EIO;
+Setting the output of a GPIO to 1 using gpiod_set_value(), followed by
+reading the same GPIO using gpiod_get_value(), will currently yield an
+incorrect result.
 
-Why can't you return "ret"?
+This is because the SiFive GPIO device stores the output values in reg_set,
+not reg_dat.
 
-> +
-> +	return 0;
-> +}
-> +
->  /**
->   * pci_epf_test_init_dma_chan() - Function to initialize EPF test DMA channel
->   * @epf_test: the EPF test device that performs data transfer operation
-> @@ -238,6 +273,14 @@ static int pci_epf_test_copy(struct pci_epf_test *epf_test)
->  	struct pci_epc *epc = epf->epc;
->  	enum pci_barno test_reg_bar = epf_test->test_reg_bar;
->  	struct pci_epf_test_reg *reg = epf_test->reg[test_reg_bar];
-> +	bool internal_dmac = epf_test->internal_dmac;
-> +
-> +	use_dma = !!(reg->flags & FLAG_USE_DMA);
-> +
-> +	if (use_dma && internal_dmac) {
-> +		dev_err(dev, "Operation not supported\n");
+Supply the flag BGPIOF_READ_OUTPUT_REG_SET to bgpio_init() so that the
+generic driver reads the correct register.
 
-Here you are erroring out but below you are checking for this condition to do
-internal DMA transfer.
+Fixes: 96868dce644d ("gpio/sifive: Add GPIO driver for SiFive SoCs")
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+[Bartosz: added the Fixes tag]
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpio/gpio-sifive.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +		return -EINVAL;
-> +	}
->  
->  	src_addr = pci_epc_mem_alloc_addr(epc, &src_phys_addr, reg->size);
->  	if (!src_addr) {
-> @@ -272,7 +315,6 @@ static int pci_epf_test_copy(struct pci_epf_test *epf_test)
+diff --git a/drivers/gpio/gpio-sifive.c b/drivers/gpio/gpio-sifive.c
+index 403f9e833d6a3..7d82388b4ab7c 100644
+--- a/drivers/gpio/gpio-sifive.c
++++ b/drivers/gpio/gpio-sifive.c
+@@ -223,7 +223,7 @@ static int sifive_gpio_probe(struct platform_device *pdev)
+ 			 NULL,
+ 			 chip->base + SIFIVE_GPIO_OUTPUT_EN,
+ 			 chip->base + SIFIVE_GPIO_INPUT_EN,
+-			 0);
++			 BGPIOF_READ_OUTPUT_REG_SET);
+ 	if (ret) {
+ 		dev_err(dev, "unable to init generic GPIO\n");
+ 		return ret;
+-- 
+2.34.1
 
-Why internal DMA is not used in pci_epf_test_copy()?
 
->  	}
->  
->  	ktime_get_ts64(&start);
-> -	use_dma = !!(reg->flags & FLAG_USE_DMA);
->  	if (use_dma) {
->  		if (!epf_test->dma_supported) {
->  			dev_err(dev, "Cannot transfer data using DMA\n");
-> @@ -322,31 +364,49 @@ static int pci_epf_test_read(struct pci_epf_test *epf_test)
->  	struct device *dma_dev = epf->epc->dev.parent;
->  	enum pci_barno test_reg_bar = epf_test->test_reg_bar;
->  	struct pci_epf_test_reg *reg = epf_test->reg[test_reg_bar];
-> +	bool internal_dmac = epf_test->internal_dmac;
->  
-> -	src_addr = pci_epc_mem_alloc_addr(epc, &phys_addr, reg->size);
-> -	if (!src_addr) {
-> -		dev_err(dev, "Failed to allocate address\n");
-> -		reg->status = STATUS_SRC_ADDR_INVALID;
-> -		ret = -ENOMEM;
-> -		goto err;
-> -	}
-> +	use_dma = !!(reg->flags & FLAG_USE_DMA);
->  
-> -	ret = pci_epc_map_addr(epc, epf->func_no, epf->vfunc_no, phys_addr,
-> -			       reg->src_addr, reg->size);
-> -	if (ret) {
-> -		dev_err(dev, "Failed to map address\n");
-> -		reg->status = STATUS_SRC_ADDR_INVALID;
-> -		goto err_addr;
-> +	if (use_dma && internal_dmac) {
 
-Both are mutually exclusive, isn't it?
-
-> +		phys_addr = reg->src_addr;
-> +		src_addr = NULL;
-> +	} else {
-> +		src_addr = pci_epc_mem_alloc_addr(epc, &phys_addr, reg->size);
-> +		if (!src_addr) {
-> +			dev_err(dev, "Failed to allocate address\n");
-> +			reg->status = STATUS_SRC_ADDR_INVALID;
-> +			ret = -ENOMEM;
-> +			goto err;
-> +		}
-> +
-> +		ret = pci_epc_map_addr(epc, epf->func_no, epf->vfunc_no, phys_addr,
-> +				       reg->src_addr, reg->size);
-> +		if (ret) {
-> +			dev_err(dev, "Failed to map address\n");
-> +			reg->status = STATUS_SRC_ADDR_INVALID;
-> +			goto err_addr;
-> +		}
->  	}
->  
-
-[...]
-
->  
->  	ret = pci_epf_test_alloc_space(epf);
->  	if (ret)
-> @@ -868,11 +964,13 @@ static int pci_epf_test_bind(struct pci_epf *epf)
->  			return ret;
->  	}
->  
-> -	epf_test->dma_supported = true;
-> +	epf_test->dma_supported = false;
->  
-> -	ret = pci_epf_test_init_dma_chan(epf_test);
-> -	if (ret)
-> -		epf_test->dma_supported = false;
-> +	if (!epf_test->internal_dmac) {
-> +		ret = pci_epf_test_init_dma_chan(epf_test);
-> +		if (!ret)
-> +			epf_test->dma_supported = true;
-
-You can set this flag to true inside pci_epf_test_init_dma_chan().
-
-Thanks,
-Mani
-
-> +	}
->  
->  	if (linkup_notifier) {
->  		epf->nb.notifier_call = pci_epf_test_notifier;
-> -- 
-> 2.25.1
-> 
