@@ -2,83 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C221C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF723C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237434AbiBNRYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 12:24:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51030 "EHLO
+        id S1357038AbiBNRYQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 12:24:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232948AbiBNRYE (ORCPT
+        with ESMTP id S232948AbiBNRYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 12:24:04 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B244652DE
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:23:57 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644859435;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d1o25gj0Q/pp9DqFCFKZq8sPPIEkmpv/ZWAOVwPqZ78=;
-        b=FxBkfG5SpY54hfO5mDqy+1Z87DlSpfiiv4x2bYaRw8x5L+9YwvfqpIKGDOLMD+3SSHSiob
-        RcKOImGYf+gNiUDlMIa5CZdRyGSBtKAo3gWp7xEVJL5lI8kOoKC2SRxLYmmbmHtjLn6C6G
-        H2Le+8BSvohX7pK4fz7b8tW3ut6fpcLK7o0vm9QUFEv4FLhVfXYTjRFrgYThCGSSLgV1Wg
-        zl4YaVVt87I4RooYsnDSKijmfGiy+Pu513WngKWrTx5xiAWWjzEf99n4IpVuYYdxCXAJ5M
-        X+RvPVfwf1DHUA5pJMFOh1EJYaQjjfKcqZyvOneadFcHGfSIbtKq/3+DCqb5sA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644859435;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d1o25gj0Q/pp9DqFCFKZq8sPPIEkmpv/ZWAOVwPqZ78=;
-        b=x0jfrvJ2Ui8x+bWKo2Eq0MJes/8k37hz73YSpXorf7YsZ7Hm27JRj6iVBmPfkP5LFGsDqU
-        +Kj99zAWGSqnhQAg==
-To:     Fenghua Yu <fenghua.yu@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>
-Cc:     iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH v4 04/11] kernel/fork: Initialize mm's PASID
-In-Reply-To: <20220207230254.3342514-5-fenghua.yu@intel.com>
-References: <20220207230254.3342514-1-fenghua.yu@intel.com>
- <20220207230254.3342514-5-fenghua.yu@intel.com>
-Date:   Mon, 14 Feb 2022 18:23:54 +0100
-Message-ID: <87v8xhqs45.ffs@tglx>
+        Mon, 14 Feb 2022 12:24:14 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43048652F1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:24:06 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1nJf51-0008Qe-HH; Mon, 14 Feb 2022 18:24:03 +0100
+Message-ID: <65a7fdadc60d0c76138a8979a0c6fe1d6cdeb85d.camel@pengutronix.de>
+Subject: Re: [PATCH] gpu: ipu-v3: Fix dev_dbg frequency output
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     "Jonas Mark (BT-FIR/ENG1-Grb)" <Mark.Jonas@de.bosch.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     "RUAN Tingquan (BT-FIR/ENG1-Zhu)" <Tingquan.Ruan@cn.bosch.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
+Date:   Mon, 14 Feb 2022 18:24:01 +0100
+In-Reply-To: <PAXPR10MB540528C7049118472B4F190EAD339@PAXPR10MB5405.EURPRD10.PROD.OUTLOOK.COM>
+References: <20220207151411.5009-1-mark.jonas@de.bosch.com>
+         <PAXPR10MB540528C7049118472B4F190EAD339@PAXPR10MB5405.EURPRD10.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07 2022 at 15:02, Fenghua Yu wrote:
+Am Montag, dem 14.02.2022 um 16:44 +0000 schrieb Jonas Mark (BT-FIR/ENG1-Grb):
+> Hi,
+> 
+> > From: Leo Ruan <tingquan.ruan@cn.bosch.com>
+> > 
+> > This commit corrects the printing of the IPU clock error percentage if it is
+> > between -0.1% to -0.9%. For example, if the pixel clock requested is 27.2
+> > MHz but only 27.0 MHz can be achieved the deviation is -0.8%.
+> > But the fixed point math had a flaw and calculated error of 0.2%.
+> > 
+> > Before:
+> >   Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+> >   IPU clock can give 27000000 with divider 10, error 0.2%
+> >   Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU,
+> > 27000000Hz
+> > 
+> > After:
+> >   Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+> >   IPU clock can give 27000000 with divider 10, error -0.8%
+> >   Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU,
+> > 27000000Hz
+> > 
+> > Signed-off-by: Leo Ruan <tingquan.ruan@cn.bosch.com>
+> > Signed-off-by: Mark Jonas <mark.jonas@de.bosch.com>
+> > ---
+> >  drivers/gpu/ipu-v3/ipu-di.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/ipu-v3/ipu-di.c b/drivers/gpu/ipu-v3/ipu-di.c index
+> > b4a31d506fcc..74eca68891ad 100644
+> > --- a/drivers/gpu/ipu-v3/ipu-di.c
+> > +++ b/drivers/gpu/ipu-v3/ipu-di.c
+> > @@ -451,8 +451,9 @@ static void ipu_di_config_clock(struct ipu_di *di,
+> > 
+> >  		error = rate / (sig->mode.pixelclock / 1000);
+> > 
+> > -		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider
+> > %u, error %d.%u%%\n",
+> > -			rate, div, (signed)(error - 1000) / 10, error % 10);
+> > +		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider
+> > %u, error %c%d.%d%%\n",
+> > +			rate, div, error < 1000 ? '-' : '+',
+> > +			abs(error - 1000) / 10, abs(error - 1000) % 10);
+> > 
+> >  		/* Allow a 1% error */
+> >  		if (error < 1010 && error >= 990) {
+> 
+> Is there anything I can do to help getting this patch mainline?
 
-> A new mm doesn't have a PASID yet when it's created. Initialize
-> the mm's PASID on fork() or for init_mm to INVALID_IOASID (-1).
->
-> INIT_PASID (0) is reserved for kernel legacy DMA PASID. It cannot be
-> allocated to a user process. Initializing the process's PASID to 0 may
-> cause confusion that why the process uses the reserved kernel legacy DMA
-> PASID. Initializing the PASID to INVALID_IOASID (-1) explicitly
-> tells the process doesn't have a valid PASID yet.
->
-> Even though the only user of mm_pasid_init() is in fork.c, define it
-> in <linux/sched/mm.h> as the first of three mm/pasid life cycle
-> functions (init/set/drop) to keep these all together.
->
-> Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
+Philipp is still on vacation, but will be back in a few days. I guess
+he will take a look at those patches then.
 
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Regards,
+Lucas
+
