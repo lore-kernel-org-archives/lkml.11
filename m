@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B72C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236816AbiBNKcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:32:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40220 "EHLO
+        id S1347327AbiBNKcU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:32:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348522AbiBNKay (ORCPT
+        with ESMTP id S1348669AbiBNKbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:30:54 -0500
+        Mon, 14 Feb 2022 05:31:02 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445D570F52;
-        Mon, 14 Feb 2022 01:59:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8EB70F76;
+        Mon, 14 Feb 2022 01:59:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11AB0B80DC8;
-        Mon, 14 Feb 2022 09:59:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30B28C36AE2;
-        Mon, 14 Feb 2022 09:59:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 444BAB80DD4;
+        Mon, 14 Feb 2022 09:59:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5334BC340E9;
+        Mon, 14 Feb 2022 09:59:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832772;
-        bh=DQmVaWFWH8iNG0jAB/LpA73J9Sxm1UdRB+c0DUjvBTU=;
+        s=korg; t=1644832778;
+        bh=I4QXmqh+Mf6c4C7XzH8zPRLFvteBSrDCrhY0hIQnFjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jzJLDPNQT/yjMX4cNwnJFwSP54w/0XSOehGF173nwiKgXa2ZPMt1GaCfYL6zxN/K6
-         iiVomLLqEdgBtnUOTAji0cNRpDDKOksDiG3uuQnNxaRSm0JJgwMu0zAIIwOJKRqAN3
-         shKMkieGylZVI3bOUhJQgxI7QlrQsslMvgXsE49Q=
+        b=IsEX/9xxYso7lw/fjbuWV6TKXnSUB2AKDGg9E5MMIFr7uNOLhl56t9O1f+Dro/ITm
+         6MedhQwMBp31tNXMyBdHCJ1dJfjsc4OT0GjdOsYi/HLxvRhsY5mJp4VW3Zjvh0zkQJ
+         6nNo6DDuDzW6gpA76qxQd0UOiHqhmeq6yuJrjumY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongjin Kim <tobetter@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Samuel Mendoza-Jonas <samjonas@amazon.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 120/203] arm64: dts: meson-sm1-bananapi-m5: fix wrong GPIO domain for GPIOE_2
-Date:   Mon, 14 Feb 2022 10:26:04 +0100
-Message-Id: <20220214092514.326510970@linuxfoundation.org>
+Subject: [PATCH 5.16 122/203] ixgbevf: Require large buffers for build_skb on 82599VF
+Date:   Mon, 14 Feb 2022 10:26:06 +0100
+Message-Id: <20220214092514.388675655@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -49,37 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongjin Kim <tobetter@gmail.com>
+From: Samuel Mendoza-Jonas <samjonas@amazon.com>
 
-[ Upstream commit a5be3e5d46f373fe1d2ee835c7ede31769c241cd ]
+[ Upstream commit fe68195daf34d5dddacd3f93dd3eafc4beca3a0e ]
 
-GPIOE_2 is in AO domain and "<&gpio GPIOE_2 ...>" changes the state of
-TF_PWR_EN of 'FC8731' on BPI-M5
+>From 4.17 onwards the ixgbevf driver uses build_skb() to build an skb
+around new data in the page buffer shared with the ixgbe PF.
+This uses either a 2K or 3K buffer, and offsets the DMA mapping by
+NET_SKB_PAD + NET_IP_ALIGN. When using a smaller buffer RXDCTL is set to
+ensure the PF does not write a full 2K bytes into the buffer, which is
+actually 2K minus the offset.
 
-Fixes: 976e920183e4 ("arm64: dts: meson-sm1: add Banana PI BPI-M5 board dts")
+However on the 82599 virtual function, the RXDCTL mechanism is not
+available. The driver attempts to work around this by using the SET_LPE
+mailbox method to lower the maximm frame size, but the ixgbe PF driver
+ignores this in order to keep the PF and all VFs in sync[0].
 
-Signed-off-by: Dongjin Kim <tobetter@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220127151656.GA2419733@paju
+This means the PF will write up to the full 2K set in SRRCTL, causing it
+to write NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the buffer.
+With 4K pages split into two buffers, this means it either writes
+NET_SKB_PAD + NET_IP_ALIGN bytes past the first buffer (and into the
+second), or NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the DMA
+mapping.
+
+Avoid this by only enabling build_skb when using "large" buffers (3K).
+These are placed in each half of an order-1 page, preventing the PF from
+writing past the end of the mapping.
+
+[0]: Technically it only ever raises the max frame size, see
+ixgbe_set_vf_lpe() in ixgbe_sriov.c
+
+Fixes: f15c5ba5b6cd ("ixgbevf: add support for using order 1 pages to receive large frames")
+Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-index 212c6aa5a3b86..5751c48620edf 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-@@ -123,7 +123,7 @@ vddio_c: regulator-vddio_c {
- 		regulator-min-microvolt = <1800000>;
- 		regulator-max-microvolt = <3300000>;
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index d81811ab4ec48..c2f87a2d0ef46 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -1984,14 +1984,15 @@ static void ixgbevf_set_rx_buffer_len(struct ixgbevf_adapter *adapter,
+ 	if (adapter->flags & IXGBEVF_FLAGS_LEGACY_RX)
+ 		return;
  
--		enable-gpio = <&gpio GPIOE_2 GPIO_ACTIVE_HIGH>;
-+		enable-gpio = <&gpio_ao GPIOE_2 GPIO_ACTIVE_HIGH>;
- 		enable-active-high;
- 		regulator-always-on;
+-	set_ring_build_skb_enabled(rx_ring);
++	if (PAGE_SIZE < 8192)
++		if (max_frame > IXGBEVF_MAX_FRAME_BUILD_SKB)
++			set_ring_uses_large_buffer(rx_ring);
  
+-	if (PAGE_SIZE < 8192) {
+-		if (max_frame <= IXGBEVF_MAX_FRAME_BUILD_SKB)
+-			return;
++	/* 82599 can't rely on RXDCTL.RLPML to restrict the size of the frame */
++	if (adapter->hw.mac.type == ixgbe_mac_82599_vf && !ring_uses_large_buffer(rx_ring))
++		return;
+ 
+-		set_ring_uses_large_buffer(rx_ring);
+-	}
++	set_ring_build_skb_enabled(rx_ring);
+ }
+ 
+ /**
 -- 
 2.34.1
 
