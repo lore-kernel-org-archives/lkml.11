@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76512C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E407C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347127AbiBNK2V (ORCPT
+        id S1347435AbiBNK2Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:28:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37372 "EHLO
+        Mon, 14 Feb 2022 05:28:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347860AbiBNK0d (ORCPT
+        with ESMTP id S1347938AbiBNK0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:26:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FAD80902;
-        Mon, 14 Feb 2022 01:57:34 -0800 (PST)
+        Mon, 14 Feb 2022 05:26:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51AC8091B;
+        Mon, 14 Feb 2022 01:57:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A789B80DCE;
-        Mon, 14 Feb 2022 09:57:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DAC8C340E9;
-        Mon, 14 Feb 2022 09:57:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBF4360FA2;
+        Mon, 14 Feb 2022 09:57:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E05C340E9;
+        Mon, 14 Feb 2022 09:57:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832641;
-        bh=sJ6+mzYe74c4klAocmWr1wXKcpylYLufUpLD0y2wM5s=;
+        s=korg; t=1644832654;
+        bh=saiZqjZcHJGpeZpPA0bHrcwnllIhia1FLnu2M+Iq5Lw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aJX8Anm92ECgkLkTnt2UEsimEW93vQABrLbeN28tbwjwAN1qKuXvd/uYEuPKxXTc7
-         8i7LQAuF48BDFR9Xi1M+xt7zj71BoDFOm8GXKHknct0O9+Llse/K/CAvoHhFcXKMvq
-         jxrw+W+F+kJIb3eH3V4BD1HGiLPzMfnySdZVe95g=
+        b=mzo1APez4K60Qqh3xCmjD5cpfmd9StcEo08AmuoQbbdyzH4WY7kqi0bA2l2/pbiGX
+         Opk/Cl9Zo32lk4ByX0MyC7RcDpPDMBjFnmkUQbphKfinOMZqHxvZHnlYF26cv9+Hg4
+         IxzxbLoJrWypNGM7x5H5XpBfRYaTf12SsAb1nMFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 038/203] net: sched: Clarify error message when qdisc kind is unknown
-Date:   Mon, 14 Feb 2022 10:24:42 +0100
-Message-Id: <20220214092511.496573425@linuxfoundation.org>
+        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
+        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.16 084/203] nvme-tcp: fix bogus request completion when failing to send AER
+Date:   Mon, 14 Feb 2022 10:25:28 +0100
+Message-Id: <20220214092513.128502574@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,41 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Victor Nogueira <victor@mojatatu.com>
+From: Sagi Grimberg <sagi@grimberg.me>
 
-[ Upstream commit 973bf8fdd12f0e70ea351c018e68edd377a836d1 ]
+commit 63573807b27e0faf8065a28b1bbe1cbfb23c0130 upstream.
 
-When adding a tc rule with a qdisc kind that is not supported or not
-compiled into the kernel, the kernel emits the following error: "Error:
-Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
-compiled in and it was not obvious right away what the message meant
-without looking at the kernel code.
+AER is not backed by a real request, hence we should not incorrectly
+assume that when failing to send a nvme command, it is a normal request
+but rather check if this is an aer and if so complete the aer (similar
+to the normal completion path).
 
-Change the error message to be more explicit and say the qdisc kind is
-unknown.
-
-Signed-off-by: Victor Nogueira <victor@mojatatu.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/sch_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvme/host/tcp.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 910a36ed56343..e4a7ce5c79f4f 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1204,7 +1204,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -913,7 +913,15 @@ static inline void nvme_tcp_done_send_re
  
- 	err = -ENOENT;
- 	if (!ops) {
--		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
-+		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
- 		goto err_out;
- 	}
+ static void nvme_tcp_fail_request(struct nvme_tcp_request *req)
+ {
+-	nvme_tcp_end_request(blk_mq_rq_from_pdu(req), NVME_SC_HOST_PATH_ERROR);
++	if (nvme_tcp_async_req(req)) {
++		union nvme_result res = {};
++
++		nvme_complete_async_event(&req->queue->ctrl->ctrl,
++				cpu_to_le16(NVME_SC_HOST_PATH_ERROR), &res);
++	} else {
++		nvme_tcp_end_request(blk_mq_rq_from_pdu(req),
++				NVME_SC_HOST_PATH_ERROR);
++	}
+ }
  
--- 
-2.34.1
-
+ static int nvme_tcp_try_send_data(struct nvme_tcp_request *req)
 
 
