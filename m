@@ -2,87 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B74C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C38C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344351AbiBNKDV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:03:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43266 "EHLO
+        id S234712AbiBNKDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:03:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344287AbiBNJ7A (ORCPT
+        with ESMTP id S1344288AbiBNJ7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:59:00 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FFC6AA73;
-        Mon, 14 Feb 2022 01:35:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0A8216;
+        Mon, 14 Feb 2022 01:46:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 375F0B80DCC;
-        Mon, 14 Feb 2022 09:34:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FE35C340E9;
-        Mon, 14 Feb 2022 09:34:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831289;
-        bh=M/5dKUxzJXnKgyxX5TYZlhdq53UpEzROZzEaWXAB0Dc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NkpYz9RvJj8gBzuRo9PNpLb4sg/6dd6FzIJyh8fUFpqPShMUFf1eu2Xmsjx4LaY4U
-         GbnXYvd02vpn7Gi/EWoY1kjdzvsbu+TSCLgy1ko7IikozDn5+A5LQa5a84tgD4NNQU
-         YUHhs3BShazVOt8TtI1BVFg97fN0GLiD3KM+JViQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH 4.19 35/49] vt_ioctl: add array_index_nospec to VT_ACTIVATE
-Date:   Mon, 14 Feb 2022 10:26:01 +0100
-Message-Id: <20220214092449.447743582@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
-References: <20220214092448.285381753@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 823CDB80DBF;
+        Mon, 14 Feb 2022 09:46:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16C1CC340E9;
+        Mon, 14 Feb 2022 09:46:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644831983;
+        bh=OSVkyrM6ZHWyAjiNiE+eVqLtoVxlU5X7JMWjSKFGqCs=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=md3S/d6/Die/Mp6ro9Hpc5Xc/c4F5mCuuc9SttsSVusPikCNFj+9bI7BK6miZCqJS
+         /9SB3rV6RQg6ciX6+JRHl94jTeZ+d8iccILBA9f4HXg/Y2rlAhdiN3h+rG367TVZDz
+         k++R6rhWqXSvOp5nvhwDr2tJUmrh8YkNqTKy10z93AMB6LYylV5sSYEgTJdUEOkyKh
+         Z/fEGYwTL7ODY1UFYSLPC36vsnyc/58wC1Oyh90vqrtZbE0Bg/2W2bTp5IDd0EmSW9
+         gUIg/LZkF0CxAeqkXFqFAfhwtyHbIQaT+H1Fe23oWco9YKva+PYkHjkjkqjK2UU2gA
+         M0tzxsKUh/3Rw==
+Date:   Mon, 14 Feb 2022 10:46:19 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Angela Czubak <acz@semihalf.com>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 00/12] i2c-hid: fixes for unnumbered reports and other
+ improvements
+In-Reply-To: <CAO-hwJK8O+yYMxCdx6DFd9cpF6McW4KC+uERQ6EsTY14JVr5-g@mail.gmail.com>
+Message-ID: <nycvar.YFH.7.76.2202141045240.11721@cbobk.fhfr.pm>
+References: <20220118072628.1617172-1-dmitry.torokhov@gmail.com> <nycvar.YFH.7.76.2202021456020.11721@cbobk.fhfr.pm> <CAO-hwJJ08vfMTEhU03VEef8Ejx=Ts+akUwGMKTUGqMWwOK3QoA@mail.gmail.com> <CAO-hwJK8O+yYMxCdx6DFd9cpF6McW4KC+uERQ6EsTY14JVr5-g@mail.gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+On Thu, 3 Feb 2022, Benjamin Tissoires wrote:
 
-commit 28cb138f559f8c1a1395f5564f86b8bbee83631b upstream.
+> OK, So I applied the series on my development laptop.
+> I had to apply it on top of v5.16 and then rebase on top of
+> hid.git/for-next because there is a minor conflict.
+> 
+> I changed the register as mentioned in 5/12, and gave it a try.
+> Both the Elan touchpad and the Wacom panel on my XPS-13 are behaving
+> properly, suspend/resume works also as expected.
+> 
+> Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> 
+> I gave a quick look at the individual patches, they all seem sane to
+> me, but haven't dug into enough detail to be able to formally give my
+> reviewed-by.
+> Note that I have a small comment on patch 2, but if you want to apply
+> it nevertheless Jiri (with the change in 5/12) it should be fine.
 
-in vt_setactivate an almost identical code path has been patched
-with array_index_nospec. In the VT_ACTIVATE path the user input
-is from a system call argument instead of a usercopy.
-For consistency both code paths should have the same mitigations
-applied.
+Thanks a lot for testing. I've tested in on my I2C hardware, and haven't 
+spotted any issues either.
 
-Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
-Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
-Amsterdam.
+I plan to finish going through the whole set today and tomorrow, and apply 
+it right afterwards with the 5/12 change.
 
-Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220127144406.3589293-2-jakobkoschel@gmail.com
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/vt/vt_ioctl.c |    1 +
- 1 file changed, 1 insertion(+)
+Thanks,
 
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -691,6 +691,7 @@ int vt_ioctl(struct tty_struct *tty,
- 			ret =  -ENXIO;
- 		else {
- 			arg--;
-+			arg = array_index_nospec(arg, MAX_NR_CONSOLES);
- 			console_lock();
- 			ret = vc_allocate(arg);
- 			console_unlock();
-
+-- 
+Jiri Kosina
+SUSE Labs
 
