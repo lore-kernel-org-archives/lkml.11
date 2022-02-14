@@ -2,99 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0041FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239315AbiBNDBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 22:01:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43856 "EHLO
+        id S239586AbiBNDBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 22:01:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239575AbiBNDBP (ORCPT
+        with ESMTP id S231216AbiBNDBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 22:01:15 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE1650E19
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 19:01:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644807666; x=1676343666;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=p2vQ+UAviLd5lnbMwBPi9FpeI0f022As0OZJg61G+20=;
-  b=Di9GxmysSAsA3tuYlIwb+knHQjB2AFm44AF3DhTSK46u2iQd8b7gJCDO
-   yvyqCBO9cqi+fezbdva3kiUYEG6Ut2FvzbOSDfi7YxgDluStgdjf8L6xV
-   CflRh9a2fvpT2vFOmHy5gaT4GPV6rTvvM7GFLGYXAiS9xCqVvuJNO1k14
-   hUigUTWXIleDw6KjP/gn+2EGtfLXNqh9R1Z/HiOjgXc2BAez/FGBeSNYN
-   c5Mj9fCZi+kWjOigD5PRG4pI+ZGGbd+7F0Ck+s1fG5uGRSQbYFL/7h8ux
-   m9BLfbGUQFKb1E36Z6YLJUn0sws356y4g+lHfUpCwkLsUamEJZW4idAIf
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="310736577"
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
-   d="scan'208";a="310736577"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 19:01:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
-   d="scan'208";a="680167100"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 13 Feb 2022 19:01:03 -0800
-Message-ID: <9d123ace-8e76-2d4d-0802-4ba5f21acfe9@linux.intel.com>
-Date:   Mon, 14 Feb 2022 10:59:46 +0800
+        Sun, 13 Feb 2022 22:01:39 -0500
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696DC50B1C;
+        Sun, 13 Feb 2022 19:01:32 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id o5so13784230qvm.3;
+        Sun, 13 Feb 2022 19:01:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eEFbRo8xP4/etal4ojTlagavZ7wnACaJTStCQjyvF6o=;
+        b=LKZ7xZlCwBGGKsfklE3ys+xarNpFa1hr+cXC+2oyl58eSm53j1B0Ode2H3gy/Am0HV
+         5Mm6GzzBvZZ9BFMLTkd6/kvGdZkyFVJ2LC9AHzBMpNv2pR0nTWL+8tJDsYYzSRz2Wc77
+         cw3VkRGzndbT/N93mnu5B4YJegWQYzDJEO6KmJHg7s1V0TRM/5hn7uAlqdhokwJj4TV/
+         Xu+7Hn/5+j2ZnEsg+FtDcwNiHG4E+xjRFtHVrqaR9yaJ3ynIKngY94mfao9i3/WHhu2a
+         z+15dIxLpiLm6rMUQlLqJoiOoCIGxsZmOtw1G37FgOav1QEWdmYZn5CEepvegbGjbAse
+         LgSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eEFbRo8xP4/etal4ojTlagavZ7wnACaJTStCQjyvF6o=;
+        b=e4k9bV5zsDqd9XRZs70MvIcn3/yErdgMAsml+oShvLRBDhD5Iyluv8L0b2AXY127uU
+         JfUtH2h06IeqGkXX4PidyzbJ4DKqFOXalZvwW9zeHC9Bi7ao7kEJwPrXTrnNepNdi11k
+         rnrID+DbfVp5BeKbdTEq1Ti4hxBu9JngUpnf/udQhG9dimSCPsF5L396dIQRrG4+xKjG
+         cnyoI/kLQ/ckKU4m8LtmCskFjiyBtVokr86NhinQLztQG8H9/yUWSx2u6mkV/2PFx5PJ
+         6hlK/lwrCOh+Z+w6PNfcPSx3SaUa47sGU/nt+2vxVYjHvKnQVYN0oxCBbBO8khiBwgtI
+         MNzA==
+X-Gm-Message-State: AOAM5326TqfW3MdYFfQ/1c9J9CfmklTrvkAWLerSQKZf4opk37tKpgKb
+        ZTmntqqMAMeaMNq40ZcYuc9AixJDcA4=
+X-Google-Smtp-Source: ABdhPJw7j2lRHo+wQEjmnqQh+iIK6UC8k0wATCPyeEpHcNBwlPuSpkCj3B2Fi9qKTkvVCXHUoP8aGw==
+X-Received: by 2002:ad4:5be1:: with SMTP id k1mr8190250qvc.62.1644807691587;
+        Sun, 13 Feb 2022 19:01:31 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id b14sm1095015qkp.23.2022.02.13.19.01.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Feb 2022 19:01:31 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: zhang.yunkai@zte.com.cn
+To:     davem@davemloft.net
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zhang Yunkai <zhang.yunkai@zte.com.cn>
+Subject: [PATCH] ipv4: add description about martian source
+Date:   Mon, 14 Feb 2022 03:01:23 +0000
+Message-Id: <20220214030123.1716223-1-zhang.yunkai@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 00/10] iommu/vt-d: Some Intel IOMMU cleanups
-Content-Language: en-US
-To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 2:41 PM, Lu Baolu wrote:
-> Hi folks,
-> 
-> After a long time of evolution, the drivers/iommu/intel/iommu.c becomes
-> fat and a bit messy. This series tries to cleanup and refactor the
-> driver to make it more concise. Your comments are very appreciated.
-> 
-> Best regards,
-> baolu
-> 
-> Lu Baolu (10):
->    iommu/vt-d: Move DMAR specific helpers into dmar.c
->    iommu/vt-d: Remove intel_iommu::domains
->    iommu/vt-d: Remove finding domain in dmar_insert_one_dev_info()
->    iommu/vt-d: Remove iova_cache_get/put()
->    iommu/vt-d: Remove domain and devinfo mempool
->    iommu/vt-d: Remove DEFER_DEVICE_DOMAIN_INFO
->    iommu/vt-d: Use an xarray for global device_domain_info
->    iommu/vt-d: Use rculist for dmar_domain::devices
->    iommu/vt-d: Refactor dmar_insert_one_dev_info()
->    iommu/vt-d: Some cleanups in iommu.c
-> 
->   include/linux/dmar.h          |   43 +-
->   include/linux/intel-iommu.h   |  220 ++++++-
->   drivers/iommu/intel/debugfs.c |    3 -
->   drivers/iommu/intel/dmar.c    |  216 ++++++-
->   drivers/iommu/intel/iommu.c   | 1109 ++++++---------------------------
->   5 files changed, 650 insertions(+), 941 deletions(-)
-> 
+From: Zhang Yunkai <zhang.yunkai@zte.com.cn>
 
-Thanks for your review comments. A new version of this series has been
-posted.
+When multiple containers are running in the environment and multiple
+macvlan network port are configured in each container, a lot of martian
+source prints will appear after martian_log is enabled.
 
-https://lore.kernel.org/linux-iommu/20220214025704.3184654-1-baolu.lu@linux.intel.com/
+Such as:
+IPv4: martian source 173.254.95.16 from 173.254.100.109,
+on dev eth0
+ll header: 00000000: ff ff ff ff ff ff 40 00 ad fe 64 6d
+08 06        ......@...dm..
+IPv4: martian source 173.254.95.16 from 173.254.100.109,
+on dev eth1
+ll header: 00000000: ff ff ff ff ff ff 40 00 ad fe 64 6d
+08 06        ......@...dm..
 
-Best regards,
-baolu
+There is no description of this kind of source in the RFC1812.
+
+Signed-off-by: Zhang Yunkai <zhang.yunkai@zte.com.cn>
+---
+ net/ipv4/fib_frontend.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 4d61ddd8a0ec..3564308e849a 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -436,6 +436,9 @@ int fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
+ 		if (net->ipv4.fib_has_custom_local_routes ||
+ 		    fib4_has_custom_rules(net))
+ 			goto full_check;
++		/* Within the same container,it is regarded as a martian source,
++		 * and the same host but different containers are not.
++		 */
+ 		if (inet_lookup_ifaddr_rcu(net, src))
+ 			return -EINVAL;
+ 
+-- 
+2.25.1
+
