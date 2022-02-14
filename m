@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 649F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346660AbiBNKT6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:19:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44720 "EHLO
+        id S244505AbiBNKUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:20:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348194AbiBNKRM (ORCPT
+        with ESMTP id S1346273AbiBNKPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:17:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698DE8E19A;
-        Mon, 14 Feb 2022 01:54:37 -0800 (PST)
+        Mon, 14 Feb 2022 05:15:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3857B55F;
+        Mon, 14 Feb 2022 01:52:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B0166137B;
-        Mon, 14 Feb 2022 09:54:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BD4BC36AF4;
-        Mon, 14 Feb 2022 09:54:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74C606131D;
+        Mon, 14 Feb 2022 09:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49074C340E9;
+        Mon, 14 Feb 2022 09:52:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832476;
-        bh=5dbB2LNFJMIk7RAbmegCDhTW7Pzz6+gklbBKd6oRf90=;
+        s=korg; t=1644832351;
+        bh=2BBZbbHHx50oBUEy83Jzex7N90VUJ1hapnj9wSM9Ri4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xvuhxS6+1bzavIlcmMaF6A8Ceou0lXfb2jSyvDzMbnrNckehLIw+Bs0MV5fPbTaOz
-         G59iKu4QXVZryucu6liEHLEQ10URm1rh9NtNFvoLaCJH1Qa3Bl1k7x+qcvD3ErGwef
-         k/M/458csn4v+z6ZGQiwiZN+TM+vyU9TqZN6yHQ4=
+        b=rUAPM7Ujr/OV445nbRzT2fFMl/5A/xP3xxaUBvdEqTtL9iJqTptKlyheL3miSxv6S
+         XlCNjo+u83scT1Lzj9UV5CqsHh084jCDnacJCY7RICJqlNAy/z+7+Pk3g10DUt1E86
+         BTEVsqbVETap9kv3zmp2dtpiZSynX4Udk/FR1Fx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 026/203] NFSv4.1 query for fs_location attr on a new file system
-Date:   Mon, 14 Feb 2022 10:24:30 +0100
-Message-Id: <20220214092511.097572416@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Robert=20=C5=9Awi=C4=99cki?= <robert@swiecki.net>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.15 159/172] signal: HANDLER_EXIT should clear SIGNAL_UNKILLABLE
+Date:   Mon, 14 Feb 2022 10:26:57 +0100
+Message-Id: <20220214092511.883393416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
+In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
+References: <20220214092506.354292783@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,245 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 1976b2b31462151403c9fc110204fcc2a77bdfd1 ]
+commit 5c72263ef2fbe99596848f03758ae2dc593adf2c upstream.
 
-Query the server for other possible trunkable locations for a given
-file system on a 4.1+ mount.
+Fatal SIGSYS signals (i.e. seccomp RET_KILL_* syscall filter actions)
+were not being delivered to ptraced pid namespace init processes. Make
+sure the SIGNAL_UNKILLABLE doesn't get set for these cases.
 
-v2:
--- added missing static to nfs4_discover_trunking,
-reported by the kernel test robot
-
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Robert Święcki <robert@swiecki.net>
+Suggested-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Fixes: 00b06da29cf9 ("signal: Add SA_IMMUTABLE to ensure forced siganls do not get changed")
+Cc: stable@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Link: https://lore.kernel.org/lkml/878rui8u4a.fsf@email.froward.int.ebiederm.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/client.c         |  7 ++++
- fs/nfs/nfs4_fs.h        |  9 ++---
- fs/nfs/nfs4proc.c       | 76 +++++++++++++++++++++++++++++++++++------
- fs/nfs/nfs4state.c      |  3 +-
- include/linux/nfs_xdr.h |  1 +
- 5 files changed, 81 insertions(+), 15 deletions(-)
+ kernel/signal.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/client.c b/fs/nfs/client.c
-index 2d2f2c091c65a..a1e87419f3a42 100644
---- a/fs/nfs/client.c
-+++ b/fs/nfs/client.c
-@@ -860,6 +860,13 @@ static int nfs_probe_fsinfo(struct nfs_server *server, struct nfs_fh *mntfh, str
- 			server->namelen = pathinfo.max_namelen;
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -1339,9 +1339,10 @@ force_sig_info_to_task(struct kernel_sig
  	}
- 
-+	if (clp->rpc_ops->discover_trunking != NULL &&
-+			(server->caps & NFS_CAP_FS_LOCATIONS)) {
-+		error = clp->rpc_ops->discover_trunking(server, mntfh);
-+		if (error < 0)
-+			return error;
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
-index ed5eaca6801ee..2402a3d8ba997 100644
---- a/fs/nfs/nfs4_fs.h
-+++ b/fs/nfs/nfs4_fs.h
-@@ -260,8 +260,8 @@ struct nfs4_state_maintenance_ops {
- };
- 
- struct nfs4_mig_recovery_ops {
--	int (*get_locations)(struct inode *, struct nfs4_fs_locations *,
--		struct page *, const struct cred *);
-+	int (*get_locations)(struct nfs_server *, struct nfs_fh *,
-+		struct nfs4_fs_locations *, struct page *, const struct cred *);
- 	int (*fsid_present)(struct inode *, const struct cred *);
- };
- 
-@@ -302,8 +302,9 @@ extern int nfs4_do_close(struct nfs4_state *state, gfp_t gfp_mask, int wait);
- extern int nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *fhandle);
- extern int nfs4_proc_fs_locations(struct rpc_clnt *, struct inode *, const struct qstr *,
- 				  struct nfs4_fs_locations *, struct page *);
--extern int nfs4_proc_get_locations(struct inode *, struct nfs4_fs_locations *,
--		struct page *page, const struct cred *);
-+extern int nfs4_proc_get_locations(struct nfs_server *, struct nfs_fh *,
-+				   struct nfs4_fs_locations *,
-+				   struct page *page, const struct cred *);
- extern int nfs4_proc_fsid_present(struct inode *, const struct cred *);
- extern struct rpc_clnt *nfs4_proc_lookup_mountpoint(struct inode *,
- 						    struct dentry *,
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index f924d3029d13b..9a94e758212c8 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -3934,6 +3934,60 @@ int nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *fhandle)
- 	return err;
- }
- 
-+static int _nfs4_discover_trunking(struct nfs_server *server,
-+				   struct nfs_fh *fhandle)
-+{
-+	struct nfs4_fs_locations *locations = NULL;
-+	struct page *page;
-+	const struct cred *cred;
-+	struct nfs_client *clp = server->nfs_client;
-+	const struct nfs4_state_maintenance_ops *ops =
-+		clp->cl_mvops->state_renewal_ops;
-+	int status = -ENOMEM;
-+
-+	cred = ops->get_state_renewal_cred(clp);
-+	if (cred == NULL) {
-+		cred = nfs4_get_clid_cred(clp);
-+		if (cred == NULL)
-+			return -ENOKEY;
-+	}
-+
-+	page = alloc_page(GFP_KERNEL);
-+	locations = kmalloc(sizeof(struct nfs4_fs_locations), GFP_KERNEL);
-+	if (page == NULL || locations == NULL)
-+		goto out;
-+
-+	status = nfs4_proc_get_locations(server, fhandle, locations, page,
-+					 cred);
-+	if (status)
-+		goto out;
-+out:
-+	if (page)
-+		__free_page(page);
-+	kfree(locations);
-+	return status;
-+}
-+
-+static int nfs4_discover_trunking(struct nfs_server *server,
-+				  struct nfs_fh *fhandle)
-+{
-+	struct nfs4_exception exception = {
-+		.interruptible = true,
-+	};
-+	struct nfs_client *clp = server->nfs_client;
-+	int err = 0;
-+
-+	if (!nfs4_has_session(clp))
-+		goto out;
-+	do {
-+		err = nfs4_handle_exception(server,
-+				_nfs4_discover_trunking(server, fhandle),
-+				&exception);
-+	} while (exception.retry);
-+out:
-+	return err;
-+}
-+
- static int _nfs4_lookup_root(struct nfs_server *server, struct nfs_fh *fhandle,
- 		struct nfs_fsinfo *info)
- {
-@@ -7820,18 +7874,18 @@ int nfs4_proc_fs_locations(struct rpc_clnt *client, struct inode *dir,
-  * appended to this compound to identify the client ID which is
-  * performing recovery.
-  */
--static int _nfs40_proc_get_locations(struct inode *inode,
-+static int _nfs40_proc_get_locations(struct nfs_server *server,
-+				     struct nfs_fh *fhandle,
- 				     struct nfs4_fs_locations *locations,
- 				     struct page *page, const struct cred *cred)
- {
--	struct nfs_server *server = NFS_SERVER(inode);
- 	struct rpc_clnt *clnt = server->client;
- 	u32 bitmask[2] = {
- 		[0] = FATTR4_WORD0_FSID | FATTR4_WORD0_FS_LOCATIONS,
- 	};
- 	struct nfs4_fs_locations_arg args = {
- 		.clientid	= server->nfs_client->cl_clientid,
--		.fh		= NFS_FH(inode),
-+		.fh		= fhandle,
- 		.page		= page,
- 		.bitmask	= bitmask,
- 		.migration	= 1,		/* skip LOOKUP */
-@@ -7877,17 +7931,17 @@ static int _nfs40_proc_get_locations(struct inode *inode,
-  * When the client supports GETATTR(fs_locations_info), it can
-  * be plumbed in here.
-  */
--static int _nfs41_proc_get_locations(struct inode *inode,
-+static int _nfs41_proc_get_locations(struct nfs_server *server,
-+				     struct nfs_fh *fhandle,
- 				     struct nfs4_fs_locations *locations,
- 				     struct page *page, const struct cred *cred)
- {
--	struct nfs_server *server = NFS_SERVER(inode);
- 	struct rpc_clnt *clnt = server->client;
- 	u32 bitmask[2] = {
- 		[0] = FATTR4_WORD0_FSID | FATTR4_WORD0_FS_LOCATIONS,
- 	};
- 	struct nfs4_fs_locations_arg args = {
--		.fh		= NFS_FH(inode),
-+		.fh		= fhandle,
- 		.page		= page,
- 		.bitmask	= bitmask,
- 		.migration	= 1,		/* skip LOOKUP */
-@@ -7936,11 +7990,11 @@ static int _nfs41_proc_get_locations(struct inode *inode,
-  * -NFS4ERR_LEASE_MOVED is returned if the server still has leases
-  * from this client that require migration recovery.
-  */
--int nfs4_proc_get_locations(struct inode *inode,
-+int nfs4_proc_get_locations(struct nfs_server *server,
-+			    struct nfs_fh *fhandle,
- 			    struct nfs4_fs_locations *locations,
- 			    struct page *page, const struct cred *cred)
- {
--	struct nfs_server *server = NFS_SERVER(inode);
- 	struct nfs_client *clp = server->nfs_client;
- 	const struct nfs4_mig_recovery_ops *ops =
- 					clp->cl_mvops->mig_recovery_ops;
-@@ -7953,10 +8007,11 @@ int nfs4_proc_get_locations(struct inode *inode,
- 		(unsigned long long)server->fsid.major,
- 		(unsigned long long)server->fsid.minor,
- 		clp->cl_hostname);
--	nfs_display_fhandle(NFS_FH(inode), __func__);
-+	nfs_display_fhandle(fhandle, __func__);
- 
- 	do {
--		status = ops->get_locations(inode, locations, page, cred);
-+		status = ops->get_locations(server, fhandle, locations, page,
-+					    cred);
- 		if (status != -NFS4ERR_DELAY)
- 			break;
- 		nfs4_handle_exception(server, status, &exception);
-@@ -10425,6 +10480,7 @@ const struct nfs_rpc_ops nfs_v4_clientops = {
- 	.free_client	= nfs4_free_client,
- 	.create_server	= nfs4_create_server,
- 	.clone_server	= nfs_clone_server,
-+	.discover_trunking = nfs4_discover_trunking,
- };
- 
- static const struct xattr_handler nfs4_xattr_nfs4_acl_handler = {
-diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
-index f3265575c28d2..499bef9fe1186 100644
---- a/fs/nfs/nfs4state.c
-+++ b/fs/nfs/nfs4state.c
-@@ -2098,7 +2098,8 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
- 	}
- 
- 	inode = d_inode(server->super->s_root);
--	result = nfs4_proc_get_locations(inode, locations, page, cred);
-+	result = nfs4_proc_get_locations(server, NFS_FH(inode), locations,
-+					 page, cred);
- 	if (result) {
- 		dprintk("<-- %s: failed to retrieve fs_locations: %d\n",
- 			__func__, result);
-diff --git a/include/linux/nfs_xdr.h b/include/linux/nfs_xdr.h
-index 967a0098f0a97..695fa84611b66 100644
---- a/include/linux/nfs_xdr.h
-+++ b/include/linux/nfs_xdr.h
-@@ -1795,6 +1795,7 @@ struct nfs_rpc_ops {
- 	struct nfs_server *(*create_server)(struct fs_context *);
- 	struct nfs_server *(*clone_server)(struct nfs_server *, struct nfs_fh *,
- 					   struct nfs_fattr *, rpc_authflavor_t);
-+	int	(*discover_trunking)(struct nfs_server *, struct nfs_fh *);
- };
- 
- /*
--- 
-2.34.1
-
+ 	/*
+ 	 * Don't clear SIGNAL_UNKILLABLE for traced tasks, users won't expect
+-	 * debugging to leave init killable.
++	 * debugging to leave init killable. But HANDLER_EXIT is always fatal.
+ 	 */
+-	if (action->sa.sa_handler == SIG_DFL && !t->ptrace)
++	if (action->sa.sa_handler == SIG_DFL &&
++	    (!t->ptrace || (handler == HANDLER_EXIT)))
+ 		t->signal->flags &= ~SIGNAL_UNKILLABLE;
+ 	ret = send_signal(sig, info, t, PIDTYPE_PID);
+ 	spin_unlock_irqrestore(&t->sighand->siglock, flags);
 
 
