@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C41CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71233C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245033AbiBNJn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:43:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33928 "EHLO
+        id S236862AbiBNJn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:43:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244981AbiBNJlC (ORCPT
+        with ESMTP id S244980AbiBNJlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:41:02 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F69725E95;
-        Mon, 14 Feb 2022 01:36:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7362D6579F;
+        Mon, 14 Feb 2022 01:36:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B89B0B80D83;
-        Mon, 14 Feb 2022 09:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02F16C340E9;
-        Mon, 14 Feb 2022 09:36:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2F34B80DC1;
+        Mon, 14 Feb 2022 09:36:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF1BCC340E9;
+        Mon, 14 Feb 2022 09:36:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831395;
-        bh=hG9jkos58WAdkn3Ip/Te7FXuqEYEgOqyyoE7Oxk6cmw=;
+        s=korg; t=1644831392;
+        bh=K9u/yluZ6jqyKExD51OrNDTXf7TYw0S+lTy0Bvy9QoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tpckO9riehOi71KdxEo3+3dq6T1NG8R9/9QQb8h7Xl2LklBFzXGyY1uPMZry7xGLN
-         ZLw30qOTO9VWnwwN/9sRUAMJXdVIHbiElaYET/a+P1RR1DZkGMFSL70NccpS4jZ/5S
-         4BbQY0OLcN2xn4fj52QXWmeU76/Gc4VlmvmXJemo=
+        b=jRHkyWIkDWiaoYEaE6mJMDmvUWnl+hRPSaiIsOMasA5ryLtsHLdqWUrHbFckHrq7w
+         IwljvvI2Jp2qYPByAi1RwOETJgfJP6OFNBBmw5YvZVjXFHSg7A6FUSekg18cmB3xHz
+         EK1fBzKc7Pt1B/J9zLAd64FinupdwIRexauyPJwk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.4 28/71] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
-Date:   Mon, 14 Feb 2022 10:25:56 +0100
-Message-Id: <20220214092452.963339698@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.4 32/71] PM: s2idle: ACPI: Fix wakeup interrupts handling
+Date:   Mon, 14 Feb 2022 10:26:00 +0100
+Message-Id: <20220214092453.101030210@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -48,41 +48,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
+commit cb1f65c1e1424a4b5e4a86da8aa3b8fd8459c8ec upstream.
 
-Currently, SD card fails to mount due to the following pinctrl error:
+After commit e3728b50cd9b ("ACPI: PM: s2idle: Avoid possible race
+related to the EC GPE") wakeup interrupts occurring immediately after
+the one discarded by acpi_s2idle_wake() may be missed.  Moreover, if
+the SCI triggers again immediately after the rearming in
+acpi_s2idle_wake(), that wakeup may be missed too.
 
-[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
-[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
-[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
-[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
+The problem is that pm_system_irq_wakeup() only calls pm_system_wakeup()
+when pm_wakeup_irq is 0, but that's not the case any more after the
+interrupt causing acpi_s2idle_wake() to run until pm_wakeup_irq is
+cleared by the pm_wakeup_clear() call in s2idle_loop().  However,
+there may be wakeup interrupts occurring in that time frame and if
+that happens, they will be missed.
 
-Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
-is already been used by the mmc0-pins-fixup pinctrl group.
+To address that issue first move the clearing of pm_wakeup_irq to
+the point at which it is known that the interrupt causing
+acpi_s2idle_wake() to tun will be discarded, before rearming the SCI
+for wakeup.  Moreover, because that only reduces the size of the
+time window in which the issue may manifest itself, allow
+pm_system_irq_wakeup() to register two second wakeup interrupts in
+a row and, when discarding the first one, replace it with the second
+one.  [Of course, this assumes that only one wakeup interrupt can be
+discarded in one go, but currently that is the case and I am not
+aware of any plans to change that.]
 
-With this change the rootfs can be mounted and the imx23-evk board can
-boot successfully.
-
-Cc: <stable@vger.kernel.org>
-Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: e3728b50cd9b ("ACPI: PM: s2idle: Avoid possible race related to the EC GPE")
+Cc: 5.4+ <stable@vger.kernel.org> # 5.4+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx23-evk.dts |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/acpi/sleep.c        |    1 +
+ drivers/base/power/wakeup.c |   41 ++++++++++++++++++++++++++++++++++-------
+ include/linux/suspend.h     |    4 ++--
+ kernel/power/main.c         |    5 ++++-
+ kernel/power/process.c      |    2 +-
+ kernel/power/suspend.c      |    2 --
+ 6 files changed, 42 insertions(+), 13 deletions(-)
 
---- a/arch/arm/boot/dts/imx23-evk.dts
-+++ b/arch/arm/boot/dts/imx23-evk.dts
-@@ -79,7 +79,6 @@
- 						MX23_PAD_LCD_RESET__GPIO_1_18
- 						MX23_PAD_PWM3__GPIO_1_29
- 						MX23_PAD_PWM4__GPIO_1_30
--						MX23_PAD_SSP1_DETECT__SSP1_DETECT
- 					>;
- 					fsl,drive-strength = <MXS_DRIVE_4mA>;
- 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -1027,6 +1027,7 @@ static bool acpi_s2idle_wake(void)
+ 		if (pm_wakeup_pending())
+ 			return true;
+ 
++		pm_wakeup_clear(acpi_sci_irq);
+ 		rearm_wake_irq(acpi_sci_irq);
+ 	}
+ 
+--- a/drivers/base/power/wakeup.c
++++ b/drivers/base/power/wakeup.c
+@@ -31,7 +31,8 @@ suspend_state_t pm_suspend_target_state;
+ bool events_check_enabled __read_mostly;
+ 
+ /* First wakeup IRQ seen by the kernel in the last cycle. */
+-unsigned int pm_wakeup_irq __read_mostly;
++static unsigned int wakeup_irq[2] __read_mostly;
++static DEFINE_RAW_SPINLOCK(wakeup_irq_lock);
+ 
+ /* If greater than 0 and the system is suspending, terminate the suspend. */
+ static atomic_t pm_abort_suspend __read_mostly;
+@@ -884,19 +885,45 @@ void pm_system_cancel_wakeup(void)
+ 	atomic_dec_if_positive(&pm_abort_suspend);
+ }
+ 
+-void pm_wakeup_clear(bool reset)
++void pm_wakeup_clear(unsigned int irq_number)
+ {
+-	pm_wakeup_irq = 0;
+-	if (reset)
++	raw_spin_lock_irq(&wakeup_irq_lock);
++
++	if (irq_number && wakeup_irq[0] == irq_number)
++		wakeup_irq[0] = wakeup_irq[1];
++	else
++		wakeup_irq[0] = 0;
++
++	wakeup_irq[1] = 0;
++
++	raw_spin_unlock_irq(&wakeup_irq_lock);
++
++	if (!irq_number)
+ 		atomic_set(&pm_abort_suspend, 0);
+ }
+ 
+ void pm_system_irq_wakeup(unsigned int irq_number)
+ {
+-	if (pm_wakeup_irq == 0) {
+-		pm_wakeup_irq = irq_number;
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&wakeup_irq_lock, flags);
++
++	if (wakeup_irq[0] == 0)
++		wakeup_irq[0] = irq_number;
++	else if (wakeup_irq[1] == 0)
++		wakeup_irq[1] = irq_number;
++	else
++		irq_number = 0;
++
++	raw_spin_unlock_irqrestore(&wakeup_irq_lock, flags);
++
++	if (irq_number)
+ 		pm_system_wakeup();
+-	}
++}
++
++unsigned int pm_wakeup_irq(void)
++{
++	return wakeup_irq[0];
+ }
+ 
+ /**
+--- a/include/linux/suspend.h
++++ b/include/linux/suspend.h
+@@ -482,14 +482,14 @@ extern void ksys_sync_helper(void);
+ 
+ /* drivers/base/power/wakeup.c */
+ extern bool events_check_enabled;
+-extern unsigned int pm_wakeup_irq;
+ extern suspend_state_t pm_suspend_target_state;
+ 
+ extern bool pm_wakeup_pending(void);
+ extern void pm_system_wakeup(void);
+ extern void pm_system_cancel_wakeup(void);
+-extern void pm_wakeup_clear(bool reset);
++extern void pm_wakeup_clear(unsigned int irq_number);
+ extern void pm_system_irq_wakeup(unsigned int irq_number);
++extern unsigned int pm_wakeup_irq(void);
+ extern bool pm_get_wakeup_count(unsigned int *count, bool block);
+ extern bool pm_save_wakeup_count(unsigned int count);
+ extern void pm_wakep_autosleep_enabled(bool set);
+--- a/kernel/power/main.c
++++ b/kernel/power/main.c
+@@ -472,7 +472,10 @@ static ssize_t pm_wakeup_irq_show(struct
+ 					struct kobj_attribute *attr,
+ 					char *buf)
+ {
+-	return pm_wakeup_irq ? sprintf(buf, "%u\n", pm_wakeup_irq) : -ENODATA;
++	if (!pm_wakeup_irq())
++		return -ENODATA;
++
++	return sprintf(buf, "%u\n", pm_wakeup_irq());
+ }
+ 
+ power_attr_ro(pm_wakeup_irq);
+--- a/kernel/power/process.c
++++ b/kernel/power/process.c
+@@ -134,7 +134,7 @@ int freeze_processes(void)
+ 	if (!pm_freezing)
+ 		atomic_inc(&system_freezing_cnt);
+ 
+-	pm_wakeup_clear(true);
++	pm_wakeup_clear(0);
+ 	pr_info("Freezing user space processes ... ");
+ 	pm_freezing = true;
+ 	error = try_to_freeze_tasks(true);
+--- a/kernel/power/suspend.c
++++ b/kernel/power/suspend.c
+@@ -138,8 +138,6 @@ static void s2idle_loop(void)
+ 			break;
+ 		}
+ 
+-		pm_wakeup_clear(false);
+-
+ 		s2idle_enter();
+ 	}
+ 
 
 
