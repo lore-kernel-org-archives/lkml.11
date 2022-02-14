@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E04EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB326C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346324AbiBNKV2 (ORCPT
+        id S1346567AbiBNKVf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:21:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45096 "EHLO
+        Mon, 14 Feb 2022 05:21:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348248AbiBNKRP (ORCPT
+        with ESMTP id S1346218AbiBNKRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:17:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8618A8E1B2;
-        Mon, 14 Feb 2022 01:54:41 -0800 (PST)
+        Mon, 14 Feb 2022 05:17:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F259A7CDF3;
+        Mon, 14 Feb 2022 01:54:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24CC1B80DC4;
-        Mon, 14 Feb 2022 09:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 198A8C340E9;
-        Mon, 14 Feb 2022 09:54:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C21AB80DD4;
+        Mon, 14 Feb 2022 09:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30EF1C340E9;
+        Mon, 14 Feb 2022 09:54:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832479;
-        bh=01qhbpbzi9zTKTLBiqQl76Ns3a+R6Qym8QX6U2G65A0=;
+        s=korg; t=1644832486;
+        bh=Zgwca39LIUpGLZ62CO/FtDwq+uINYpeQGJ1NAqdiEEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WkLkz4znV3lbuo7IZGfqVJPf297WORPAjdCs5aTdlJog9jaL6Y7ee99aMFskrFzYo
-         +hv2kaPphk5xtIirut08xwIliWoEgnf+/sTXWGPtij2Ys/E1xJqTJURxXmUvmOjsyM
-         5/r2QUTy6BOlrfMUY+mXqh1gOYfR+ArS8qgPhUU4=
+        b=W1ZqDFsipAa+jjTmpCKSKILXzVDH2FxRXmTSx9DNyqtLc+XyjKF80ApoX7xOLWkcb
+         NVzdpBKYj2kziVdsRikEJSgYFbFFUPShDxiSNRbHkQ5M+YUWxuEfoAwJ6PMve3A9kE
+         0s34DRnMttCLi6C1zKMubhdOEvQ09ZInoxOX3yHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
         Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 027/203] NFSv4 expose nfs_parse_server_name function
-Date:   Mon, 14 Feb 2022 10:24:31 +0100
-Message-Id: <20220214092511.130555114@linuxfoundation.org>
+Subject: [PATCH 5.16 029/203] SUNRPC allow for unspecified transport time in rpc_clnt_add_xprt
+Date:   Mon, 14 Feb 2022 10:24:33 +0100
+Message-Id: <20220214092511.200096671@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,47 +52,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit f5b27cc6761e27ee6387a24df1a99ca77b360fea ]
+[ Upstream commit b8a09619a56334414cbd7f935a0796240d0cc07e ]
 
-Make nfs_parse_server_name available outside of nfs4namespace.c.
+If the supplied argument doesn't specify the transport type, use the
+type of the existing rpc clnt and its existing transport.
 
 Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
 Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4_fs.h       | 3 ++-
- fs/nfs/nfs4namespace.c | 4 ++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ net/sunrpc/clnt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
-index 2402a3d8ba997..734ac09becf73 100644
---- a/fs/nfs/nfs4_fs.h
-+++ b/fs/nfs/nfs4_fs.h
-@@ -280,7 +280,8 @@ struct rpc_clnt *nfs4_negotiate_security(struct rpc_clnt *, struct inode *,
- int nfs4_submount(struct fs_context *, struct nfs_server *);
- int nfs4_replace_transport(struct nfs_server *server,
- 				const struct nfs4_fs_locations *locations);
--
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net);
- /* nfs4proc.c */
- extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
- extern int nfs4_async_handle_error(struct rpc_task *task,
-diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
-index 873342308dc0d..f1ed4f60a7f33 100644
---- a/fs/nfs/nfs4namespace.c
-+++ b/fs/nfs/nfs4namespace.c
-@@ -164,8 +164,8 @@ static int nfs4_validate_fspath(struct dentry *dentry,
- 	return 0;
- }
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index a312ea2bc4405..c83fe618767c4 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -2900,7 +2900,7 @@ int rpc_clnt_add_xprt(struct rpc_clnt *clnt,
+ 	unsigned long connect_timeout;
+ 	unsigned long reconnect_timeout;
+ 	unsigned char resvport, reuseport;
+-	int ret = 0;
++	int ret = 0, ident;
  
--static size_t nfs_parse_server_name(char *string, size_t len,
--		struct sockaddr *sa, size_t salen, struct net *net)
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net)
- {
- 	ssize_t ret;
+ 	rcu_read_lock();
+ 	xps = xprt_switch_get(rcu_dereference(clnt->cl_xpi.xpi_xpswitch));
+@@ -2914,8 +2914,11 @@ int rpc_clnt_add_xprt(struct rpc_clnt *clnt,
+ 	reuseport = xprt->reuseport;
+ 	connect_timeout = xprt->connect_timeout;
+ 	reconnect_timeout = xprt->max_reconnect_timeout;
++	ident = xprt->xprt_class->ident;
+ 	rcu_read_unlock();
  
++	if (!xprtargs->ident)
++		xprtargs->ident = ident;
+ 	xprt = xprt_create_transport(xprtargs);
+ 	if (IS_ERR(xprt)) {
+ 		ret = PTR_ERR(xprt);
 -- 
 2.34.1
 
