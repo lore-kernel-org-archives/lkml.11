@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAF1C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F151C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345688AbiBNKBv (ORCPT
+        id S1345771AbiBNKBz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:01:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45034 "EHLO
+        Mon, 14 Feb 2022 05:01:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344445AbiBNJ4M (ORCPT
+        with ESMTP id S1344419AbiBNJ4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:56:12 -0500
+        Mon, 14 Feb 2022 04:56:11 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0956CA75;
-        Mon, 14 Feb 2022 01:44:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8CD6CA67;
+        Mon, 14 Feb 2022 01:44:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7028EB80DC4;
-        Mon, 14 Feb 2022 09:44:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD173C340F0;
-        Mon, 14 Feb 2022 09:44:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E867B80DBF;
+        Mon, 14 Feb 2022 09:44:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8920C340E9;
+        Mon, 14 Feb 2022 09:44:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831875;
-        bh=6e54lmGimgKn631egJa57mEvUiKAcn1kkE1kiEEqHbE=;
+        s=korg; t=1644831872;
+        bh=QsNESD3ovvJn16NRwkN3uzf4k3ZPt6v4eLTA/pYShbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wy6COYANlT0IKi15QJfrSIdeIhlHlALpR9JWrd4kNUVgHpiyiib4u/PrP7v0BHEK3
-         D/tYVZ4SqlLvLdKqjk7AMKSAtFgkiwJjne72K5Btxln36eZrKKv3voFegETF1PAUEh
-         vebigE/Y8GwvxYCye+JM7aS4GH1HqlfYD2uAWZMk=
+        b=dqwRk5xa49rTjcJsJ2upCQBcWbUphUy2lQ1koNwZeF65zvcX833rh7ACHDYcVa4AB
+         2o00FbQ80+ADGPjTfQzb8cMmMYJvznnKESER4sfRuoI/fl1d1lJpFDCzFP7YLADcON
+         JTOJEJwTx/EKgT8eeXRKHeKtqxZqij+LTLD7ecd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.10 102/116] USB: serial: ftdi_sio: add support for Brainboxes US-159/235/320
-Date:   Mon, 14 Feb 2022 10:26:41 +0100
-Message-Id: <20220214092502.303008245@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.10 111/116] can: isotp: fix error path in isotp_sendmsg() to unlock wait queue
+Date:   Mon, 14 Feb 2022 10:26:50 +0100
+Message-Id: <20220214092502.627756264@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,58 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cameron Williams <cang1@live.co.uk>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-commit fbb9b194e15a63c56c5664e76ccd0e85c6100cea upstream.
+commit 8375dfac4f683e1b2c5956d919d36aeedad46699 upstream.
 
-This patch adds support for the Brainboxes US-159, US-235 and US-320
-USB-to-Serial devices.
+Commit 43a08c3bdac4 ("can: isotp: isotp_sendmsg(): fix TX buffer concurrent
+access in isotp_sendmsg()") introduced a new locking scheme that may render
+the userspace application in a locking state when an error is detected.
+This issue shows up under high load on simultaneously running isotp channels
+with identical configuration which is against the ISO specification and
+therefore breaks any reasonable PDU communication anyway.
 
-Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Fixes: 43a08c3bdac4 ("can: isotp: isotp_sendmsg(): fix TX buffer concurrent access in isotp_sendmsg()")
+Link: https://lore.kernel.org/all/20220209073601.25728-1-socketcan@hartkopp.net
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Cc: Ziyang Xuan <william.xuanziyang@huawei.com>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/ftdi_sio.c     |    3 +++
- drivers/usb/serial/ftdi_sio_ids.h |    3 +++
- 2 files changed, 6 insertions(+)
+ net/can/isotp.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -969,6 +969,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_023_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_034_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_101_PID) },
-+	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_159_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_1_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_2_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_3_PID) },
-@@ -977,12 +978,14 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_6_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_7_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_8_PID) },
-+	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_235_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_257_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_1_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_2_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_3_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_4_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_313_PID) },
-+	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_320_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_324_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_1_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_2_PID) },
---- a/drivers/usb/serial/ftdi_sio_ids.h
-+++ b/drivers/usb/serial/ftdi_sio_ids.h
-@@ -1506,6 +1506,9 @@
- #define BRAINBOXES_VX_023_PID		0x1003 /* VX-023 ExpressCard 1 Port RS422/485 */
- #define BRAINBOXES_VX_034_PID		0x1004 /* VX-034 ExpressCard 2 Port RS422/485 */
- #define BRAINBOXES_US_101_PID		0x1011 /* US-101 1xRS232 */
-+#define BRAINBOXES_US_159_PID		0x1021 /* US-159 1xRS232 */
-+#define BRAINBOXES_US_235_PID		0x1017 /* US-235 1xRS232 */
-+#define BRAINBOXES_US_320_PID		0x1019 /* US-320 1xRS422/485 */
- #define BRAINBOXES_US_324_PID		0x1013 /* US-324 1xRS422/485 1Mbaud */
- #define BRAINBOXES_US_606_1_PID		0x2001 /* US-606 6 Port RS232 Serial Port 1 and 2 */
- #define BRAINBOXES_US_606_2_PID		0x2002 /* US-606 6 Port RS232 Serial Port 3 and 4 */
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -885,24 +885,24 @@ static int isotp_sendmsg(struct socket *
+ 
+ 	if (!size || size > MAX_MSG_LENGTH) {
+ 		err = -EINVAL;
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	err = memcpy_from_msg(so->tx.buf, msg, size);
+ 	if (err < 0)
+-		goto err_out;
++		goto err_out_drop;
+ 
+ 	dev = dev_get_by_index(sock_net(sk), so->ifindex);
+ 	if (!dev) {
+ 		err = -ENXIO;
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	skb = sock_alloc_send_skb(sk, so->ll.mtu + sizeof(struct can_skb_priv),
+ 				  msg->msg_flags & MSG_DONTWAIT, &err);
+ 	if (!skb) {
+ 		dev_put(dev);
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	can_skb_reserve(skb);
+@@ -967,7 +967,7 @@ static int isotp_sendmsg(struct socket *
+ 	if (err) {
+ 		pr_notice_once("can-isotp: %s: can_send_ret %d\n",
+ 			       __func__, err);
+-		goto err_out;
++		goto err_out_drop;
+ 	}
+ 
+ 	if (wait_tx_done) {
+@@ -980,6 +980,9 @@ static int isotp_sendmsg(struct socket *
+ 
+ 	return size;
+ 
++err_out_drop:
++	/* drop this PDU and unlock a potential wait queue */
++	old_state = ISOTP_IDLE;
+ err_out:
+ 	so->tx.state = old_state;
+ 	if (so->tx.state == ISOTP_IDLE)
 
 
