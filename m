@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84680C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A449FC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349941AbiBNKld (ORCPT
+        id S1350008AbiBNKlj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:41:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52194 "EHLO
+        Mon, 14 Feb 2022 05:41:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233396AbiBNKhb (ORCPT
+        with ESMTP id S1348645AbiBNKhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:37:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9CAA8882;
-        Mon, 14 Feb 2022 02:03:46 -0800 (PST)
+        Mon, 14 Feb 2022 05:37:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50277A888D;
+        Mon, 14 Feb 2022 02:03:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F0436077B;
-        Mon, 14 Feb 2022 10:03:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6426FC340E9;
-        Mon, 14 Feb 2022 10:03:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A058060C8A;
+        Mon, 14 Feb 2022 10:03:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A78C340E9;
+        Mon, 14 Feb 2022 10:03:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832995;
-        bh=p11gsTIR0/f7UkZ4V4WyUxCY6A2mvza/KzjBcE5aFc0=;
+        s=korg; t=1644833002;
+        bh=NOLA5kg11otvmBJsW+m0RL1uhgYczBCkkn/7e1ziXuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oiVU3Q5uvJUfbrX6Hyk7EqU/EdfyVHtPd2Wb9Q8w+TLOen/38ACW5YHVT+L9J3O39
-         qWosISejSg/sdzixwLXeVmvv4SN3S5Z30MwWpw0nUudi6EEaVqY+CP7VKGyOmP83L6
-         jkE41/VEBLZRnlan6GBQ1ztJf+R5yKQB9DMVWgow=
+        b=hTcYYA/gc7HM/5p9jskP06/PPyJy4ipvhj//Xg/u+VhlLwtC267VZ7fqfNLd6Ys8M
+         5KSKBIonGTA6bqTXYUvDZ77hf/6GAXjDRBdvMvblxxmD6pQTu10cfJZnDZtRyFjjXe
+         6G8APY2YoMFwStX+F13fpn21+lFdCOnWTj+XH8dY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manivannan Sadhasivam <mani@kernel.org>,
-        Slark Xiao <slark_xiao@163.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 5.16 191/203] bus: mhi: pci_generic: Add mru_default for Foxconn SDX55
-Date:   Mon, 14 Feb 2022 10:27:15 +0100
-Message-Id: <20220214092516.742116372@linuxfoundation.org>
+        stable@vger.kernel.org, Vijay Dhanraj <vijay.dhanraj@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.16 193/203] x86/sgx: Silence softlockup detection when releasing large enclaves
+Date:   Mon, 14 Feb 2022 10:27:17 +0100
+Message-Id: <20220214092516.943836506@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,37 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Reinette Chatre <reinette.chatre@intel.com>
 
-commit a0572cea8866230ac13da6358c88075f89e99b20 upstream.
+commit 8795359e35bc33bf86b6d0765aa7f37431db3b9c upstream.
 
-For default mechanism, product would use default MRU 3500 if
-they didn't define it. But for Foxconn SDX55, there is a known
-issue which MRU 3500 would lead to data connection lost.
-So we align it with Qualcomm default MRU settings.
+Vijay reported that the "unclobbered_vdso_oversubscribed" selftest
+triggers the softlockup detector.
 
-Link: https://lore.kernel.org/r/20220119101213.5008-1-slark_xiao@163.com
-[mani: Added pci_generic prefix to subject and CCed stable]
-Fixes: aac426562f56 ("bus: mhi: pci_generic: Introduce Foxconn T99W175 support")
-Cc: stable@vger.kernel.org # v5.12+
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Link: https://lore.kernel.org/r/20220205135731.157871-2-manivannan.sadhasivam@linaro.org
+Actual SGX systems have 128GB of enclave memory or more.  The
+"unclobbered_vdso_oversubscribed" selftest creates one enclave which
+consumes all of the enclave memory on the system. Tearing down such a
+large enclave takes around a minute, most of it in the loop where
+the EREMOVE instruction is applied to each individual 4k enclave page.
+
+Spending one minute in a loop triggers the softlockup detector.
+
+Add a cond_resched() to give other tasks a chance to run and placate
+the softlockup detector.
+
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Reported-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+Tested-by: Jarkko Sakkinen <jarkko@kernel.org>  (kselftest as sanity check)
+Link: https://lkml.kernel.org/r/ced01cac1e75f900251b0a4ae1150aa8ebd295ec.1644345232.git.reinette.chatre@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bus/mhi/pci_generic.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kernel/cpu/sgx/encl.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/bus/mhi/pci_generic.c
-+++ b/drivers/bus/mhi/pci_generic.c
-@@ -366,6 +366,7 @@ static const struct mhi_pci_dev_info mhi
- 	.config = &modem_foxconn_sdx55_config,
- 	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
- 	.dma_data_width = 32,
-+	.mru_default = 32768,
- 	.sideband_wake = false,
- };
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -410,6 +410,8 @@ void sgx_encl_release(struct kref *ref)
+ 		}
  
+ 		kfree(entry);
++		/* Invoke scheduler to prevent soft lockups. */
++		cond_resched();
+ 	}
+ 
+ 	xa_destroy(&encl->page_array);
 
 
