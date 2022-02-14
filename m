@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2314C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243780AbiBNJeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:34:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42618 "EHLO
+        id S244043AbiBNJeY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:34:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243936AbiBNJd2 (ORCPT
+        with ESMTP id S233486AbiBNJdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:33:28 -0500
+        Mon, 14 Feb 2022 04:33:44 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64962BF7C;
-        Mon, 14 Feb 2022 01:32:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D9B1ADA9;
+        Mon, 14 Feb 2022 01:32:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21A72B80DC9;
-        Mon, 14 Feb 2022 09:32:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 327F1C340F1;
-        Mon, 14 Feb 2022 09:32:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D1B4B80DC1;
+        Mon, 14 Feb 2022 09:32:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 694E6C340E9;
+        Mon, 14 Feb 2022 09:32:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831128;
-        bh=RA1ihH4o+p/0O+GwVfq3zFPzcw3UMJyaeNiAp/qhKdM=;
+        s=korg; t=1644831132;
+        bh=WVAeUqgrH/pNsmuq3GgGhWwHLzCf/geaD98MM19BHyA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ELVWXbqfUo+yCFB7FeTC0ew7oyBK3FQq5hy2JNnl3+9vwSXe10L0XFaEvuPp2+VQV
-         fxkuC+QCpxs8Kw1INGRsk+q31cMWCo4EgUksffUiPyi1SPJxKGr/DnqKOPcMtNrkZc
-         C//BNOQ1PhZMl5IkfN8/JhyZKuB50BPkByqi7KzQ=
+        b=bJ7ntrP/sWcp8otYd0p3nIo+/nEaGQTFpLgGrd2aI/KFBbnEkGxYNCSVZIkyVf//r
+         r0v84rrb4XGCL4BN+cRmK6jZtfxNLudX2QCzLfQ13VqDMqmNXNXq1ViH5VReAQGtZ3
+         WKqTfmI8tlHjLs/3OOBUMpDhdWqk+YitElFmhRbY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Russell <Scott.Russell2@ncr.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.14 40/44] USB: serial: cp210x: add NCR Retail IO box id
-Date:   Mon, 14 Feb 2022 10:26:03 +0100
-Message-Id: <20220214092449.199474522@linuxfoundation.org>
+        stable@vger.kernel.org, Kosuke Tatsukawa <tatsu-ab1@nec.com>
+Subject: [PATCH 4.14 31/44] n_tty: wake up poll(POLLRDNORM) on receiving data
+Date:   Mon, 14 Feb 2022 10:25:54 +0100
+Message-Id: <20220214092448.919319254@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -48,33 +47,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: TATSUKAWA KOSUKE (立川 江介) <tatsu-ab1@nec.com>
 
-commit b50f8f09c622297d3cf46e332e17ba8adedec9af upstream.
+commit c816b2e65b0e86b95011418cad334f0524fc33b8 upstream.
 
-Add the device id for NCR's Retail IO box (CP2105) used in NCR FastLane
-SelfServ Checkout - R6C:
+The poll man page says POLLRDNORM is equivalent to POLLIN when used as
+an event.
+$ man poll
+<snip>
+              POLLRDNORM
+                     Equivalent to POLLIN.
 
-	https://www.ncr.com/product-catalog/ncr-fastlane-selfserv-checkout-r6c
+However, in n_tty driver, POLLRDNORM does not return until timeout even
+if there is terminal input, whereas POLLIN returns.
 
-Reported-by: Scott Russell <Scott.Russell2@ncr.com>
+The following test program works until kernel-3.17, but the test stops
+in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
+
+[Steps to run test program]
+  $ cc -o test-pollrdnorm test-pollrdnorm.c
+  $ ./test-pollrdnorm
+  foo          <-- Type in something from the terminal followed by [RET].
+                   The string should be echoed back.
+
+  ------------------------< test-pollrdnorm.c >------------------------
+  #include <stdio.h>
+  #include <errno.h>
+  #include <poll.h>
+  #include <unistd.h>
+
+  void main(void)
+  {
+	int		n;
+	unsigned char	buf[8];
+	struct pollfd	fds[1] = {{ 0, POLLRDNORM, 0 }};
+
+	n = poll(fds, 1, -1);
+	if (n < 0)
+		perror("poll");
+	n = read(0, buf, 8);
+	if (n < 0)
+		perror("read");
+	if (n > 0)
+		write(1, buf, n);
+  }
+  ------------------------------------------------------------------------
+
+The attached patch fixes this problem.  Many calls to
+wake_up_interruptible_poll() in the kernel source code already specify
+"POLLIN | POLLRDNORM".
+
+Fixes: 57087d515441 ("tty: Fix spurious poll() wakeups")
 Cc: stable@vger.kernel.org
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
+Link: https://lore.kernel.org/r/TYCPR01MB81901C0F932203D30E452B3EA5209@TYCPR01MB8190.jpnprd01.prod.outlook.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/cp210x.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/n_tty.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/serial/cp210x.c
-+++ b/drivers/usb/serial/cp210x.c
-@@ -55,6 +55,7 @@ static int cp210x_port_remove(struct usb
- static void cp210x_dtr_rts(struct usb_serial_port *p, int on);
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1377,7 +1377,7 @@ handle_newline:
+ 			put_tty_queue(c, ldata);
+ 			smp_store_release(&ldata->canon_head, ldata->read_head);
+ 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+-			wake_up_interruptible_poll(&tty->read_wait, POLLIN);
++			wake_up_interruptible_poll(&tty->read_wait, POLLIN | POLLRDNORM);
+ 			return 0;
+ 		}
+ 	}
+@@ -1658,7 +1658,7 @@ static void __receive_buf(struct tty_str
  
- static const struct usb_device_id id_table[] = {
-+	{ USB_DEVICE(0x0404, 0x034C) },	/* NCR Retail IO Box */
- 	{ USB_DEVICE(0x045B, 0x0053) }, /* Renesas RX610 RX-Stick */
- 	{ USB_DEVICE(0x0471, 0x066A) }, /* AKTAKOM ACE-1001 cable */
- 	{ USB_DEVICE(0x0489, 0xE000) }, /* Pirelli Broadband S.p.A, DP-L10 SIP/GSM Mobile */
+ 	if (read_cnt(ldata)) {
+ 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+-		wake_up_interruptible_poll(&tty->read_wait, POLLIN);
++		wake_up_interruptible_poll(&tty->read_wait, POLLIN | POLLRDNORM);
+ 	}
+ }
+ 
 
 
