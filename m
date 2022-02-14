@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A34AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347467AbiBNK2g (ORCPT
+        id S1347213AbiBNK2j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:28:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33890 "EHLO
+        Mon, 14 Feb 2022 05:28:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348096AbiBNK0o (ORCPT
+        with ESMTP id S1348125AbiBNK0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:26:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF1F81184;
+        Mon, 14 Feb 2022 05:26:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE55181189;
         Mon, 14 Feb 2022 01:57:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20637B80DCD;
-        Mon, 14 Feb 2022 09:57:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42D14C340EF;
-        Mon, 14 Feb 2022 09:57:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83839B80D6D;
+        Mon, 14 Feb 2022 09:57:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E75DC340E9;
+        Mon, 14 Feb 2022 09:57:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832660;
-        bh=PoVeYvvR1go9JL6IkY/gQPfhMt+FjXOTzqrvcNd3n9A=;
+        s=korg; t=1644832651;
+        bh=I4fTghh8t62Mct8NDcrob1gP89ZwL1gZIENffU7Umzs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WJqlSTScp1gD8m9VetTfzot4+N8Fqv3OV3UyIuoIrjbTtioAyJZHD+sFH+EC9Kqrt
-         BBfOgPIGc10Kn0cY986ZlWgU+Dw/3R4li0o1gAVhdvCQSpylU5cx5+iqpR31a7ATUp
-         3SncfLMpIXh6BHOCJq/7qGydSm0e0Od4gK+ubkrc=
+        b=Zul1fOqJzMsr+cn2S50wqE6I0ONMIzD8TH/YNk+gokThkG7SVTXkukRUcn4ViHmLx
+         zlAwwa7Wn2eAeH8eA4/+bNhSP7/r848VL/UpnIZRWOGWRzJLnDZeio5Aujhz53C4S+
+         LFJok8j41WoKfEL1nvPzQVzTADfPks89I8agaTgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.16 086/203] PM: s2idle: ACPI: Fix wakeup interrupts handling
-Date:   Mon, 14 Feb 2022 10:25:30 +0100
-Message-Id: <20220214092513.193388975@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.16 083/203] ARM: socfpga: fix missing RESET_CONTROLLER
+Date:   Mon, 14 Feb 2022 10:25:27 +0100
+Message-Id: <20220214092513.096849340@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -49,175 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-commit cb1f65c1e1424a4b5e4a86da8aa3b8fd8459c8ec upstream.
+commit 3037b174b1876aae6b2d1a27a878c681c78ccadc upstream.
 
-After commit e3728b50cd9b ("ACPI: PM: s2idle: Avoid possible race
-related to the EC GPE") wakeup interrupts occurring immediately after
-the one discarded by acpi_s2idle_wake() may be missed.  Moreover, if
-the SCI triggers again immediately after the rearming in
-acpi_s2idle_wake(), that wakeup may be missed too.
+The SocFPGA machine since commit b3ca9888f35f ("reset: socfpga: add an
+early reset driver for SoCFPGA") uses reset controller, so it should
+select RESET_CONTROLLER explicitly.  Selecting ARCH_HAS_RESET_CONTROLLER
+is not enough because it affects only default choice still allowing a
+non-buildable configuration:
 
-The problem is that pm_system_irq_wakeup() only calls pm_system_wakeup()
-when pm_wakeup_irq is 0, but that's not the case any more after the
-interrupt causing acpi_s2idle_wake() to run until pm_wakeup_irq is
-cleared by the pm_wakeup_clear() call in s2idle_loop().  However,
-there may be wakeup interrupts occurring in that time frame and if
-that happens, they will be missed.
+  /usr/bin/arm-linux-gnueabi-ld: arch/arm/mach-socfpga/socfpga.o: in function `socfpga_init_irq':
+  arch/arm/mach-socfpga/socfpga.c:56: undefined reference to `socfpga_reset_init'
 
-To address that issue first move the clearing of pm_wakeup_irq to
-the point at which it is known that the interrupt causing
-acpi_s2idle_wake() to tun will be discarded, before rearming the SCI
-for wakeup.  Moreover, because that only reduces the size of the
-time window in which the issue may manifest itself, allow
-pm_system_irq_wakeup() to register two second wakeup interrupts in
-a row and, when discarding the first one, replace it with the second
-one.  [Of course, this assumes that only one wakeup interrupt can be
-discarded in one go, but currently that is the case and I am not
-aware of any plans to change that.]
-
-Fixes: e3728b50cd9b ("ACPI: PM: s2idle: Avoid possible race related to the EC GPE")
-Cc: 5.4+ <stable@vger.kernel.org> # 5.4+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: <stable@vger.kernel.org>
+Fixes: b3ca9888f35f ("reset: socfpga: add an early reset driver for SoCFPGA")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/sleep.c        |    1 +
- drivers/base/power/wakeup.c |   41 ++++++++++++++++++++++++++++++++++-------
- include/linux/suspend.h     |    4 ++--
- kernel/power/main.c         |    5 ++++-
- kernel/power/process.c      |    2 +-
- kernel/power/suspend.c      |    2 --
- 6 files changed, 42 insertions(+), 13 deletions(-)
+ arch/arm/mach-socfpga/Kconfig |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -767,6 +767,7 @@ bool acpi_s2idle_wake(void)
- 			return true;
- 		}
+--- a/arch/arm/mach-socfpga/Kconfig
++++ b/arch/arm/mach-socfpga/Kconfig
+@@ -2,6 +2,7 @@
+ menuconfig ARCH_INTEL_SOCFPGA
+ 	bool "Altera SOCFPGA family"
+ 	depends on ARCH_MULTI_V7
++	select ARCH_HAS_RESET_CONTROLLER
+ 	select ARCH_SUPPORTS_BIG_ENDIAN
+ 	select ARM_AMBA
+ 	select ARM_GIC
+@@ -18,6 +19,7 @@ menuconfig ARCH_INTEL_SOCFPGA
+ 	select PL310_ERRATA_727915
+ 	select PL310_ERRATA_753970 if PL310
+ 	select PL310_ERRATA_769419
++	select RESET_CONTROLLER
  
-+		pm_wakeup_clear(acpi_sci_irq);
- 		rearm_wake_irq(acpi_sci_irq);
- 	}
- 
---- a/drivers/base/power/wakeup.c
-+++ b/drivers/base/power/wakeup.c
-@@ -34,7 +34,8 @@ suspend_state_t pm_suspend_target_state;
- bool events_check_enabled __read_mostly;
- 
- /* First wakeup IRQ seen by the kernel in the last cycle. */
--unsigned int pm_wakeup_irq __read_mostly;
-+static unsigned int wakeup_irq[2] __read_mostly;
-+static DEFINE_RAW_SPINLOCK(wakeup_irq_lock);
- 
- /* If greater than 0 and the system is suspending, terminate the suspend. */
- static atomic_t pm_abort_suspend __read_mostly;
-@@ -942,19 +943,45 @@ void pm_system_cancel_wakeup(void)
- 	atomic_dec_if_positive(&pm_abort_suspend);
- }
- 
--void pm_wakeup_clear(bool reset)
-+void pm_wakeup_clear(unsigned int irq_number)
- {
--	pm_wakeup_irq = 0;
--	if (reset)
-+	raw_spin_lock_irq(&wakeup_irq_lock);
-+
-+	if (irq_number && wakeup_irq[0] == irq_number)
-+		wakeup_irq[0] = wakeup_irq[1];
-+	else
-+		wakeup_irq[0] = 0;
-+
-+	wakeup_irq[1] = 0;
-+
-+	raw_spin_unlock_irq(&wakeup_irq_lock);
-+
-+	if (!irq_number)
- 		atomic_set(&pm_abort_suspend, 0);
- }
- 
- void pm_system_irq_wakeup(unsigned int irq_number)
- {
--	if (pm_wakeup_irq == 0) {
--		pm_wakeup_irq = irq_number;
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&wakeup_irq_lock, flags);
-+
-+	if (wakeup_irq[0] == 0)
-+		wakeup_irq[0] = irq_number;
-+	else if (wakeup_irq[1] == 0)
-+		wakeup_irq[1] = irq_number;
-+	else
-+		irq_number = 0;
-+
-+	raw_spin_unlock_irqrestore(&wakeup_irq_lock, flags);
-+
-+	if (irq_number)
- 		pm_system_wakeup();
--	}
-+}
-+
-+unsigned int pm_wakeup_irq(void)
-+{
-+	return wakeup_irq[0];
- }
- 
- /**
---- a/include/linux/suspend.h
-+++ b/include/linux/suspend.h
-@@ -496,14 +496,14 @@ extern void ksys_sync_helper(void);
- 
- /* drivers/base/power/wakeup.c */
- extern bool events_check_enabled;
--extern unsigned int pm_wakeup_irq;
- extern suspend_state_t pm_suspend_target_state;
- 
- extern bool pm_wakeup_pending(void);
- extern void pm_system_wakeup(void);
- extern void pm_system_cancel_wakeup(void);
--extern void pm_wakeup_clear(bool reset);
-+extern void pm_wakeup_clear(unsigned int irq_number);
- extern void pm_system_irq_wakeup(unsigned int irq_number);
-+extern unsigned int pm_wakeup_irq(void);
- extern bool pm_get_wakeup_count(unsigned int *count, bool block);
- extern bool pm_save_wakeup_count(unsigned int count);
- extern void pm_wakep_autosleep_enabled(bool set);
---- a/kernel/power/main.c
-+++ b/kernel/power/main.c
-@@ -504,7 +504,10 @@ static ssize_t pm_wakeup_irq_show(struct
- 					struct kobj_attribute *attr,
- 					char *buf)
- {
--	return pm_wakeup_irq ? sprintf(buf, "%u\n", pm_wakeup_irq) : -ENODATA;
-+	if (!pm_wakeup_irq())
-+		return -ENODATA;
-+
-+	return sprintf(buf, "%u\n", pm_wakeup_irq());
- }
- 
- power_attr_ro(pm_wakeup_irq);
---- a/kernel/power/process.c
-+++ b/kernel/power/process.c
-@@ -134,7 +134,7 @@ int freeze_processes(void)
- 	if (!pm_freezing)
- 		atomic_inc(&system_freezing_cnt);
- 
--	pm_wakeup_clear(true);
-+	pm_wakeup_clear(0);
- 	pr_info("Freezing user space processes ... ");
- 	pm_freezing = true;
- 	error = try_to_freeze_tasks(true);
---- a/kernel/power/suspend.c
-+++ b/kernel/power/suspend.c
-@@ -136,8 +136,6 @@ static void s2idle_loop(void)
- 			break;
- 		}
- 
--		pm_wakeup_clear(false);
--
- 		s2idle_enter();
- 	}
- 
+ if ARCH_INTEL_SOCFPGA
+ config SOCFPGA_SUSPEND
 
 
