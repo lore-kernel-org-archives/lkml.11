@@ -2,127 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC36C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74227C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242073AbiBNJ7M convert rfc822-to-8bit (ORCPT
+        id S1344335AbiBNJ7T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:59:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33296 "EHLO
+        Mon, 14 Feb 2022 04:59:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245707AbiBNJwo (ORCPT
+        with ESMTP id S1343647AbiBNJxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:52:44 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CC46D952;
-        Mon, 14 Feb 2022 01:43:46 -0800 (PST)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21E7LdkY020363;
-        Mon, 14 Feb 2022 09:42:52 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e7d0jgwt6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 09:42:51 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21E9biex021905;
-        Mon, 14 Feb 2022 09:42:50 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e645jbjt9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 09:42:50 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21E9glRs47055116
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Feb 2022 09:42:47 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8555EA405B;
-        Mon, 14 Feb 2022 09:42:47 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CFC96A406F;
-        Mon, 14 Feb 2022 09:42:46 +0000 (GMT)
-Received: from smtp.tlslab.ibm.com (unknown [9.101.4.1])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Mon, 14 Feb 2022 09:42:46 +0000 (GMT)
-Received: from yukon.ibmuc.com (unknown [9.171.60.190])
-        by smtp.tlslab.ibm.com (Postfix) with ESMTP id 5080A2201DE;
-        Mon, 14 Feb 2022 10:42:45 +0100 (CET)
-From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-Subject: [PATCH 06/10] spi: aspeed: Workaround AST2500 limitations
-Date:   Mon, 14 Feb 2022 10:42:27 +0100
-Message-Id: <20220214094231.3753686-7-clg@kaod.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214094231.3753686-1-clg@kaod.org>
-References: <20220214094231.3753686-1-clg@kaod.org>
+        Mon, 14 Feb 2022 04:53:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861EE69CE8;
+        Mon, 14 Feb 2022 01:44:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 330A8B80DBF;
+        Mon, 14 Feb 2022 09:43:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1331FC340E9;
+        Mon, 14 Feb 2022 09:43:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644831837;
+        bh=/XACVBImzhKzlP3jqZ9K4mJM4G4DEA1zro0JuI/XhFM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EIDF5UT3Yr9jkpz4atO1OZyUAZl87g0ADAkLrXh+tfyokoO16M4A89ij5QEpARDIW
+         NC8PQZ2xJg3/QCOJprEp3/kt/2FQuDTOmolxd+gbkWjTmU/aLTKBXwaF7KXvTudseU
+         4LN61124wPg5cU+m3busKTPzUzTNILPkhsAA4RlE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Ewan D. Milne" <emilne@redhat.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 113/116] scsi: lpfc: Reduce log messages seen after firmware download
+Date:   Mon, 14 Feb 2022 10:26:52 +0100
+Message-Id: <20220214092502.699048065@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
+References: <20220214092458.668376521@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: gBnuaXrjM3F9pQMmir6ztSVgmiCYgopY
-X-Proofpoint-GUID: gBnuaXrjM3F9pQMmir6ztSVgmiCYgopY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_01,2022-02-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 lowpriorityscore=0 phishscore=0 mlxlogscore=947
- adultscore=0 spamscore=0 clxscore=1034 bulkscore=0 priorityscore=1501
- mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202140058
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is not possible to configure a full 128MB window for a chip of the
-same size on the AST2500 SPI controller. For his case, the maximum
-window size is restricted to 120MB for CE0.
+From: James Smart <jsmart2021@gmail.com>
 
-Signed-off-by: Cédric Le Goater <clg@kaod.org>
+commit 5852ed2a6a39c862c8a3fdf646e1f4e01b91d710 upstream.
+
+Messages around firmware download were incorrectly tagged as being related
+to discovery trace events. Thus, firmware download status ended up dumping
+the trace log as well as the firmware update message. As there were a
+couple of log messages in this state, the trace log was dumped multiple
+times.
+
+Resolve this by converting from trace events to SLI events.
+
+Link: https://lore.kernel.org/r/20220207180442.72836-1-jsmart2021@gmail.com
+Reviewed-by: Ewan D. Milne <emilne@redhat.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-aspeed-smc.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/scsi/lpfc/lpfc_init.c |    2 +-
+ drivers/scsi/lpfc/lpfc_sli.c  |    8 +++++++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-aspeed-smc.c b/drivers/spi/spi-aspeed-smc.c
-index 9c4eacfed72c..c6ac3253d7d5 100644
---- a/drivers/spi/spi-aspeed-smc.c
-+++ b/drivers/spi/spi-aspeed-smc.c
-@@ -466,6 +466,8 @@ static int aspeed_spi_set_window(struct aspeed_spi *aspi,
-  * - ioremap each window, not strictly necessary since the overall window
-  *   is correct.
-  */
-+static const struct aspeed_spi_data ast2500_spi_data;
-+
- static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
- 					 u32 local_offset, u32 size)
- {
-@@ -474,6 +476,16 @@ static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
- 	struct aspeed_spi_window *win = &windows[chip->cs];
- 	int ret;
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -1998,7 +1998,7 @@ lpfc_handle_eratt_s4(struct lpfc_hba *ph
+ 		}
+ 		if (reg_err1 == SLIPORT_ERR1_REG_ERR_CODE_2 &&
+ 		    reg_err2 == SLIPORT_ERR2_REG_FW_RESTART) {
+-			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
++			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
+ 					"3143 Port Down: Firmware Update "
+ 					"Detected\n");
+ 			en_rn_msg = false;
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -12402,6 +12402,7 @@ lpfc_sli4_eratt_read(struct lpfc_hba *ph
+ 	uint32_t uerr_sta_hi, uerr_sta_lo;
+ 	uint32_t if_type, portsmphr;
+ 	struct lpfc_register portstat_reg;
++	u32 logmask;
  
-+	/*
-+	 * Due to an HW issue on the AST2500 SPI controller, the CE0
-+	 * window size should be smaller than the maximum 128MB.
-+	 */
-+	if (aspi->data == &ast2500_spi_data && chip->cs == 0 && size == SZ_128M) {
-+		size = 120 << 20;
-+		dev_info(aspi->dev, "CE%d window resized to %dMB (AST2500 HW quirk)",
-+			 chip->cs, size >> 20);
-+	}
-+
- 	aspeed_spi_get_windows(aspi, windows);
- 
- 	/* Adjust this chip window */
--- 
-2.34.1
+ 	/*
+ 	 * For now, use the SLI4 device internal unrecoverable error
+@@ -12452,7 +12453,12 @@ lpfc_sli4_eratt_read(struct lpfc_hba *ph
+ 				readl(phba->sli4_hba.u.if_type2.ERR1regaddr);
+ 			phba->work_status[1] =
+ 				readl(phba->sli4_hba.u.if_type2.ERR2regaddr);
+-			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
++			logmask = LOG_TRACE_EVENT;
++			if (phba->work_status[0] ==
++				SLIPORT_ERR1_REG_ERR_CODE_2 &&
++			    phba->work_status[1] == SLIPORT_ERR2_REG_FW_RESTART)
++				logmask = LOG_SLI;
++			lpfc_printf_log(phba, KERN_ERR, logmask,
+ 					"2885 Port Status Event: "
+ 					"port status reg 0x%x, "
+ 					"port smphr reg 0x%x, "
+
 
