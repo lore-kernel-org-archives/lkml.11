@@ -2,110 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA62C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347615AbiBNKco (ORCPT
+        id S1347701AbiBNKcs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:32:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41292 "EHLO
+        Mon, 14 Feb 2022 05:32:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346380AbiBNKaP (ORCPT
+        with ESMTP id S1347858AbiBNKaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:30:15 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED0370CC1;
-        Mon, 14 Feb 2022 01:59:02 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 06CD51F43053
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644832741;
-        bh=OaINPsaheT6XUF0+hFr141uKFbMlStd2byNaS6I2GKs=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=fGemg3CLB1WP8e5KYjv0QDiN8sv7DuAdkLeRWz7Svak1RqzeSREYL4mIrBDLKFNAb
-         i2cRTKJ+Gsl0Pj6yAAo8qxpzXg6Ns+FtuXmeFkOINlU+b3WDFaiFxijoiHtts1W0Gn
-         uWqtFsbSGDqHe4VVhmjEgtxP+36lok5C8WKldI3eP3+GfKkddyCh9wxBIzZuqSb+Rv
-         hRgNp3dTgwu0Tgsma0i7nNkgNMfhwK+7LRB+9XWbcJSlzebKyS+YfUIoEehQZVgjb9
-         dlGDbTEeU9eeF/c6B6ZYYwdugaIaayKPqDdRn5tdOByWmUIE87AvmpiydgZko+gpak
-         70qs8d1QAkefg==
-Message-ID: <87db864e-fc74-189a-a665-bf51db8b5321@collabora.com>
-Date:   Mon, 14 Feb 2022 10:58:58 +0100
+        Mon, 14 Feb 2022 05:30:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D0270CE0;
+        Mon, 14 Feb 2022 01:59:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8024B80DC8;
+        Mon, 14 Feb 2022 09:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E483EC340EF;
+        Mon, 14 Feb 2022 09:59:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832744;
+        bh=9gahyeLnbkRBgOkWxxyP2q3atLHrR6v1XwsdkB7+PGE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=i20lY47uCKLP/CaazcpUsMneyzTy+zPuJ6OeUdMd8EGa2xRtQZSODRJ0xSMCIT6Vo
+         hwm2SDYi+GP74CRte8c+sTMv2NWmp8wxVHcsGGkai0yqn7LsNjb7OLNAaOk1vjXUdL
+         B4J+0drK72KCYrPNwcvr/ZH+Q9yf+wNR0qzgVqr4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.16 079/203] Revert "gfs2: check context in gfs2_glock_put"
+Date:   Mon, 14 Feb 2022 10:25:23 +0100
+Message-Id: <20220214092512.963476086@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v4 1/3] dt-bindings: pinctrl: mt8186: add pinctrl file and
- binding document
-Content-Language: en-US
-To:     Guodong Liu <guodong.liu@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@kernel.org>
-Cc:     Sean Wang <sean.wang@mediatek.com>, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220214030631.4969-1-guodong.liu@mediatek.com>
- <20220214030631.4969-2-guodong.liu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220214030631.4969-2-guodong.liu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 14/02/22 04:06, Guodong Liu ha scritto:
-> 1. This patch adds pinctrl file for mt8186.
-> 2. This patch adds mt8186 compatible node in binding document.
-> 
-> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
-> ---
->   .../bindings/pinctrl/pinctrl-mt8186.yaml      |  302 +++++
->   include/dt-bindings/pinctrl/mt8186-pinfunc.h  | 1174 +++++++++++++++++
->   2 files changed, 1476 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
->   create mode 100644 include/dt-bindings/pinctrl/mt8186-pinfunc.h
-> 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
-> new file mode 100644
-> index 000000000000..582d131af4e3
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-...snip...
+commit 356b8103d4c495d5440e3e687db9026ec2b76043 upstream.
 
-> diff --git a/include/dt-bindings/pinctrl/mt8186-pinfunc.h b/include/dt-bindings/pinctrl/mt8186-pinfunc.h
-> new file mode 100644
-> index 000000000000..dcff86201a61
-> --- /dev/null
-> +++ b/include/dt-bindings/pinctrl/mt8186-pinfunc.h
-> @@ -0,0 +1,1174 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-> +/*
-> + * Copyright (C) 2021 MediaTek Inc.
-> + * Author: Guodong Liu <Guodong.Liu@mediatek.com>
-> + *
-> + */
-> +
+It turns out that the might_sleep() call that commit 660a6126f8c3 adds
+is triggering occasional data corruption in testing.  We're not sure
+about the root cause yet, but since this commit was added as a debugging
+aid only, revert it for now.
 
-Hello,
-I've just noticed that we have a typo here....
+This reverts commit 660a6126f8c3208f6df8d552039cda078a8426d1.
 
-You wrote "MT8168", but this should be "MT8186" instead; please fix it.
+Fixes: 660a6126f8c3 ("gfs2: check context in gfs2_glock_put")
+Cc: stable@vger.kernel.org # v5.16+
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/gfs2/glock.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
-P.S.: I'm sorry for not seeing that before!
+--- a/fs/gfs2/glock.c
++++ b/fs/gfs2/glock.c
+@@ -301,9 +301,6 @@ void gfs2_glock_queue_put(struct gfs2_gl
+ 
+ void gfs2_glock_put(struct gfs2_glock *gl)
+ {
+-	/* last put could call sleepable dlm api */
+-	might_sleep();
+-
+ 	if (lockref_put_or_lock(&gl->gl_lockref))
+ 		return;
+ 
 
-> +#ifndef __MT8168_PINFUNC_H
-> +#define __MT8168_PINFUNC_H
-> +
 
-..snip..
-
-> +
-> +#endif /* __MT8168-PINFUNC_H */
-
-Thank you,
-Angelo
