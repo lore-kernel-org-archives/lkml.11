@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:58:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A37AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344225AbiBNJ6b (ORCPT
+        id S1344315AbiBNJ6l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:58:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33424 "EHLO
+        Mon, 14 Feb 2022 04:58:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344984AbiBNJwJ (ORCPT
+        with ESMTP id S236955AbiBNJwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:52:09 -0500
+        Mon, 14 Feb 2022 04:52:17 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C4B6735E;
-        Mon, 14 Feb 2022 01:43:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6389692B3;
+        Mon, 14 Feb 2022 01:43:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63EBDB80DC4;
-        Mon, 14 Feb 2022 09:43:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A94EC340E9;
-        Mon, 14 Feb 2022 09:43:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81937B80DBF;
+        Mon, 14 Feb 2022 09:43:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FE90C340E9;
+        Mon, 14 Feb 2022 09:43:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831811;
-        bh=uU1GxgLTSPzUmRiUq/1dhaZbreEJK4OoFAx+LvhumBw=;
+        s=korg; t=1644831818;
+        bh=2gnv4tFeuIC+cqbvOWLqsFj8h80UvyqNMNBh+KR1MTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=srMs/FAJDnT2TgkX2Fo7SH0qQNeoVplCEY6WCB5cZTTEOpbd7s5tbBafzuTjCx3FQ
-         3tuYmJoeYz9y6qxdQWXFVL46nQZFAOQ7u4vq1gl9pI5QQ0sH2/dVeh5ak93ABbprI2
-         shq0poWqCs9Ez/S/BEL+QK9zSN922PrdQqEFefkI=
+        b=ZxlpRUm+dPesp6w6UIhvZAPfFe1/kq1WDhYJ3txUPNcVuxA/F9057ksY5+AOMY581
+         +YRORKzdRxNB0FnIDpsJJC2VupT3w7igDfi/dxacCUhg7V+/OChzOG5TEfjMhn//5h
+         RUZnZm3o7+fDOx/HTtZKdsaOGQ2xwhm1RRbNP640=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 073/116] net: dsa: lantiq_gswip: dont use devres for mdiobus
-Date:   Mon, 14 Feb 2022 10:26:12 +0100
-Message-Id: <20220214092501.284425363@linuxfoundation.org>
+Subject: [PATCH 5.10 075/116] nfp: flower: fix ida_idx not being released
+Date:   Mon, 14 Feb 2022 10:26:14 +0100
+Message-Id: <20220214092501.349352848@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -51,93 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Louis Peens <louis.peens@corigine.com>
 
-[ Upstream commit 0d120dfb5d67edc5bcd1804e167dba2b30809afd ]
+[ Upstream commit 7db788ad627aabff2b74d4f1a3b68516d0fee0d7 ]
 
-As explained in commits:
-74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
-5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
+When looking for a global mac index the extra NFP_TUN_PRE_TUN_IDX_BIT
+that gets set if nfp_flower_is_supported_bridge is true is not taken
+into account. Consequently the path that should release the ida_index
+in cleanup is never triggered, causing messages like:
 
-mdiobus_free() will panic when called from devm_mdiobus_free() <-
-devres_release_all() <- __device_release_driver(), and that mdiobus was
-not previously unregistered.
+    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
+    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
+    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
 
-The GSWIP switch is a platform device, so the initial set of constraints
-that I thought would cause this (I2C or SPI buses which call ->remove on
-->shutdown) do not apply. But there is one more which applies here.
+after NFP_MAX_MAC_INDEX number of reconfigs. Ultimately this lead to
+new tunnel flows not being offloaded.
 
-If the DSA master itself is on a bus that calls ->remove from ->shutdown
-(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
-between the switch and the DSA master, and device_links_unbind_consumers()
-will unbind the GSWIP switch driver on shutdown.
+Fix this by unsetting the NFP_TUN_PRE_TUN_IDX_BIT before checking if
+the port is of type OTHER.
 
-So the same treatment must be applied to all DSA switch drivers, which
-is: either use devres for both the mdiobus allocation and registration,
-or don't use devres at all.
-
-The gswip driver has the code structure in place for orderly mdiobus
-removal, so just replace devm_mdiobus_alloc() with the non-devres
-variant, and add manual free where necessary, to ensure that we don't
-let devres free a still-registered bus.
-
-Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: 2e0bc7f3cb55 ("nfp: flower: encode mac indexes with pre-tunnel rule check")
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20220208101453.321949-1-simon.horman@corigine.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/lantiq_gswip.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ .../net/ethernet/netronome/nfp/flower/tunnel_conf.c  | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 4d23a7aba7961..ed517985ca88e 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -495,8 +495,9 @@ static int gswip_mdio_rd(struct mii_bus *bus, int addr, int reg)
- static int gswip_mdio(struct gswip_priv *priv, struct device_node *mdio_np)
- {
- 	struct dsa_switch *ds = priv->ds;
-+	int err;
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index d19c02e991145..d3d5b663a4a3c 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -1011,6 +1011,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 	struct nfp_flower_repr_priv *repr_priv;
+ 	struct nfp_tun_offloaded_mac *entry;
+ 	struct nfp_repr *repr;
++	u16 nfp_mac_idx;
+ 	int ida_idx;
  
--	ds->slave_mii_bus = devm_mdiobus_alloc(priv->dev);
-+	ds->slave_mii_bus = mdiobus_alloc();
- 	if (!ds->slave_mii_bus)
- 		return -ENOMEM;
+ 	entry = nfp_tunnel_lookup_offloaded_macs(app, mac);
+@@ -1029,8 +1030,6 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 		entry->bridge_count--;
  
-@@ -509,7 +510,11 @@ static int gswip_mdio(struct gswip_priv *priv, struct device_node *mdio_np)
- 	ds->slave_mii_bus->parent = priv->dev;
- 	ds->slave_mii_bus->phy_mask = ~ds->phys_mii_mask;
+ 		if (!entry->bridge_count && entry->ref_count) {
+-			u16 nfp_mac_idx;
+-
+ 			nfp_mac_idx = entry->index & ~NFP_TUN_PRE_TUN_IDX_BIT;
+ 			if (__nfp_tunnel_offload_mac(app, mac, nfp_mac_idx,
+ 						     false)) {
+@@ -1046,7 +1045,6 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
  
--	return of_mdiobus_register(ds->slave_mii_bus, mdio_np);
-+	err = of_mdiobus_register(ds->slave_mii_bus, mdio_np);
-+	if (err)
-+		mdiobus_free(ds->slave_mii_bus);
+ 	/* If MAC is now used by 1 repr set the offloaded MAC index to port. */
+ 	if (entry->ref_count == 1 && list_is_singular(&entry->repr_list)) {
+-		u16 nfp_mac_idx;
+ 		int port, err;
+ 
+ 		repr_priv = list_first_entry(&entry->repr_list,
+@@ -1074,8 +1072,14 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 	WARN_ON_ONCE(rhashtable_remove_fast(&priv->tun.offloaded_macs,
+ 					    &entry->ht_node,
+ 					    offloaded_macs_params));
 +
-+	return err;
- }
- 
- static int gswip_pce_table_entry_read(struct gswip_priv *priv,
-@@ -2086,8 +2091,10 @@ static int gswip_probe(struct platform_device *pdev)
- 	gswip_mdio_mask(priv, GSWIP_MDIO_GLOB_ENABLE, 0, GSWIP_MDIO_GLOB);
- 	dsa_unregister_switch(priv->ds);
- mdio_bus:
--	if (mdio_np)
-+	if (mdio_np) {
- 		mdiobus_unregister(priv->ds->slave_mii_bus);
-+		mdiobus_free(priv->ds->slave_mii_bus);
-+	}
- put_mdio_node:
- 	of_node_put(mdio_np);
- 	for (i = 0; i < priv->num_gphy_fw; i++)
-@@ -2107,6 +2114,7 @@ static int gswip_remove(struct platform_device *pdev)
- 
- 	if (priv->ds->slave_mii_bus) {
- 		mdiobus_unregister(priv->ds->slave_mii_bus);
-+		mdiobus_free(priv->ds->slave_mii_bus);
- 		of_node_put(priv->ds->slave_mii_bus->dev.of_node);
++	if (nfp_flower_is_supported_bridge(netdev))
++		nfp_mac_idx = entry->index & ~NFP_TUN_PRE_TUN_IDX_BIT;
++	else
++		nfp_mac_idx = entry->index;
++
+ 	/* If MAC has global ID then extract and free the ida entry. */
+-	if (nfp_tunnel_is_mac_idx_global(entry->index)) {
++	if (nfp_tunnel_is_mac_idx_global(nfp_mac_idx)) {
+ 		ida_idx = nfp_tunnel_get_ida_from_global_mac_idx(entry->index);
+ 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
  	}
- 
 -- 
 2.34.1
 
