@@ -2,129 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECEEC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 515A9C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351439AbiBNLcL (ORCPT
+        id S1351611AbiBNLcT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:32:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57326 "EHLO
+        Mon, 14 Feb 2022 06:32:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351543AbiBNL3v (ORCPT
+        with ESMTP id S1351570AbiBNLaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:29:51 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582991FA4C;
-        Mon, 14 Feb 2022 03:09:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644836997; x=1676372997;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qzIFEcHTgjf/FESZQyf2nVcqovhWBlnCGxTHyI8aBPk=;
-  b=dRBUiKP1UzjhZPWE3pX76P3MRjQLV8X8LRtBcxfuaNKXdS9oC/qoPOGT
-   F8TRooj0zElaMrFFtlct6iJ4E1+SgUrLRxEKJXCQpXS7VISmX4ng/RNfv
-   kMBsXFZP7ozFH1IF6UqG2LjLm4gwJMYpeE0Mp41MXEqFxF9zzFx9quxr5
-   8dh3uX6h3tyX8jrjRyFNWgOC8WFG/4UJY8P9ItbkzVDvPa6LMlnWWRizY
-   nRIPJ4KfRDdEzZTCNvqI3WUBZlSrB6iPTyIy+04oFOoczHAvuWdIhp+UO
-   9lYNh9W5YD61UFBydoGBoKPpt1GUYcGO4NLr7cCDHSzVoS1qMDtVDQtcP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="233616169"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="233616169"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:09:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="635103545"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 03:09:50 -0800
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH V2 05/11] perf tools: Add API probes for new clock IDs
-Date:   Mon, 14 Feb 2022 13:09:08 +0200
-Message-Id: <20220214110914.268126-6-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220214110914.268126-1-adrian.hunter@intel.com>
-References: <20220214110914.268126-1-adrian.hunter@intel.com>
+        Mon, 14 Feb 2022 06:30:12 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26A0166AED
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:11:38 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-33-IItVuRDPNvWlDoJ-8YoAUQ-1; Mon, 14 Feb 2022 11:11:35 +0000
+X-MC-Unique: IItVuRDPNvWlDoJ-8YoAUQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Mon, 14 Feb 2022 11:11:14 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Mon, 14 Feb 2022 11:11:13 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Helge Deller' <deller@gmx.de>,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>
+Subject: RE: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
+ case
+Thread-Topic: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
+ case
+Thread-Index: AQHYISaVap2r7qAO+E+IsFLjJVJIxKySvtowgAAIGvCAABwpAIAAAYyg
+Date:   Mon, 14 Feb 2022 11:11:13 +0000
+Message-ID: <01801d084adf442aa5b8dc4bf1eee771@AcuMS.aculab.com>
+References: <YgmB01p+p45Cihhg@p100>
+ <49a26b7a30254d9fb9653c2f815eaa28@AcuMS.aculab.com>
+ <0ecb87dcc4cf42328f1f5a7d6abd08ed@AcuMS.aculab.com>
+ <ffebaea4-8135-6e2e-fca1-8e9f118ef70b@gmx.de>
+In-Reply-To: <ffebaea4-8135-6e2e-fca1-8e9f118ef70b@gmx.de>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ability to check whether the kernel supports new clock IDs
-CLOCK_PERF_HW_CLOCK and CLOCK_PERF_HW_CLOCK_NS.
-They will be used in a subsequent patch.
-
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/perf/util/perf_api_probe.c | 24 ++++++++++++++++++++++++
- tools/perf/util/perf_api_probe.h |  2 ++
- 2 files changed, 26 insertions(+)
-
-diff --git a/tools/perf/util/perf_api_probe.c b/tools/perf/util/perf_api_probe.c
-index c28dd50bd571..33d3dd858ecc 100644
---- a/tools/perf/util/perf_api_probe.c
-+++ b/tools/perf/util/perf_api_probe.c
-@@ -109,6 +109,20 @@ static void perf_probe_cgroup(struct evsel *evsel)
- 	evsel->core.attr.cgroup = 1;
- }
- 
-+static void perf_probe_hw_clock(struct evsel *evsel)
-+{
-+	evsel->core.attr.use_clockid = 1;
-+	evsel->core.attr.ns_clockid = 1;
-+	evsel->core.attr.clockid = CLOCK_PERF_HW_CLOCK;
-+}
-+
-+static void perf_probe_hw_clock_ns(struct evsel *evsel)
-+{
-+	evsel->core.attr.use_clockid = 1;
-+	evsel->core.attr.ns_clockid = 1;
-+	evsel->core.attr.clockid = CLOCK_PERF_HW_CLOCK_NS;
-+}
-+
- bool perf_can_sample_identifier(void)
- {
- 	return perf_probe_api(perf_probe_sample_identifier);
-@@ -195,3 +209,13 @@ bool perf_can_record_cgroup(void)
- {
- 	return perf_probe_api(perf_probe_cgroup);
- }
-+
-+bool perf_can_perf_clock_hw_clock(void)
-+{
-+	return perf_probe_api(perf_probe_hw_clock);
-+}
-+
-+bool perf_can_perf_clock_hw_clock_ns(void)
-+{
-+	return perf_probe_api(perf_probe_hw_clock_ns);
-+}
-diff --git a/tools/perf/util/perf_api_probe.h b/tools/perf/util/perf_api_probe.h
-index b104168efb15..5b30cbd260cf 100644
---- a/tools/perf/util/perf_api_probe.h
-+++ b/tools/perf/util/perf_api_probe.h
-@@ -13,5 +13,7 @@ bool perf_can_record_text_poke_events(void);
- bool perf_can_sample_identifier(void);
- bool perf_can_record_build_id(void);
- bool perf_can_record_cgroup(void);
-+bool perf_can_perf_clock_hw_clock(void);
-+bool perf_can_perf_clock_hw_clock_ns(void);
- 
- #endif // __PERF_API_PROBE_H
--- 
-2.25.1
+RnJvbTogSGVsZ2UgRGVsbGVyDQo+IFNlbnQ6IDE0IEZlYnJ1YXJ5IDIwMjIgMTE6MDUNCj4gDQo+
+IE9uIDIvMTQvMjIgMTA6MjYsIERhdmlkIExhaWdodCB3cm90ZToNCj4gPiBGcm9tOiBEYXZpZCBM
+YWlnaHQNCj4gPj4gU2VudDogMTQgRmVicnVhcnkgMjAyMiAwOToxMg0KPiA+Pg0KPiA+PiBGcm9t
+OiBIZWxnZSBEZWxsZXINCj4gPj4+IFNlbnQ6IDEzIEZlYnJ1YXJ5IDIwMjIgMjI6MTANCj4gPj4+
+DQo+ID4+PiBUaGUgcHV0X3VzZXIodmFsLHB0cikgbWFjcm8gd2FudHMgYSBwb2ludGVyIGluIHRo
+ZSBzZWNvbmQgcGFyYW1ldGVyLCBidXQgaW4NCj4gPj4+IGZhdF9pb2N0bF9maWxsZGlyKCkgdGhl
+IGRfbmFtZSBmaWVsZCByZWZlcmVuY2VzIGEgd2hvbGUgImFycmF5IG9mIGNoYXJzIi4NCj4gPj4+
+IFVzdWFsbHkgdGhlIGNvbXBpbGVyIGF1dG9tYXRpY2FsbHkgY29udmVydHMgaXQgYW5kIHVzZXMg
+YSBwb2ludGVyIHRvIHRoYXQNCj4gPj4+IGFycmF5LCBidXQgaXQncyBtb3JlIGNsZWFuIHRvIGV4
+cGxpY2l0bHkgZ2l2ZSB0aGUgcmVhbCBwb2ludGVyIHRvIHdoZXJlIHNvbWV0aW5nDQo+ID4+PiBp
+cyBwdXQsIHdoaWNoIGlzIGluIHRoaXMgY2FzZSB0aGUgZmlyc3QgY2hhcmFjdGVyIG9mIHRoZSBk
+X25hbWVbXSBhcnJheS4NCj4gPj4NCj4gPj4gVGhhdCBqdXN0IGlzbid0IHRydWUuDQo+ID4+DQo+
+ID4+IEluIEMgYm90aCB4LT5jaGFyX2FycmF5IGFuZCAmeC0+Y2hhcl9hcnJheVswXSBoYXZlIHRo
+ZSBzYW1lIHR5cGUNCj4gPj4gJ2NoYXIgKicuDQo+ID4+DQo+ID4+IFRoZSAnYnVnJyBpcyBjYXVz
+ZWQgYnkgcHV0X3VzZXIoKSB0cnlpbmcgdG8gZG86DQo+ID4+IAlfX3R5cGVvZl9fKHB0cikgX19w
+dHIgPSBwdHI7DQo+ID4+IHdoZXJlIF9fdHlwZW9mX18gaXMgcmV0dXJuaW5nIGNoYXJbbl0gbm90
+IGNoYXIgKi4NCj4gPj4NCj4gPj4gSSd2ZSB0cmllZCBhIGZldyB0aGluZ3MgYnV0IGNhbid0IGdl
+dCBfX3R5cGVvZl9fIHRvDQo+ID4+IGdlbmVyYXRlIGEgc3VpdGFibGUgdHlwZSBmb3IgYm90aCBh
+IHNpbXBsZSB0eXBlIGFuZCBhcnJheS4NCj4gPg0KPiA+IEFjdHVhbGx5IHRoZSBpc3N1ZSBpcyB0
+aGF0IHB1dF91c2VyKCkgd3JpdGVzIGEgc2luZ2xlIHZhcmlhYmxlDQo+ID4gYW5kIG5lZWRzIGEg
+cG9pbnRlciB0byBvbmUuDQo+ID4gU28gY2hhbmdpbmcgdG86DQo+ID4gCXB1dF91c2VyKDAsICZh
+cnJheVswXSk7DQo+ID4gaXMgcHJvYmFibHkgZmluZS4NCj4gDQo+IE9rLg0KPiANCj4gPiBCdXQg
+dGhlIGRlc2NyaXB0aW9uIGlzIGFsbCB3cm9uZy4NCj4gDQo+IEkgYWdyZWUgaXQgY2FuIGJlIGlt
+cHJvdmVkLg0KPiBXb3VsZCB5b3UgbWluZCBwcm9wb3NpbmcgYSBiZXR0ZXIgZGVzY3JpcHRpb24/
+DQoNCnB1dF91c2VyKCkgbmVlZHMgYSBwb2ludGVyIHRvIGEgc2ltcGxlIHR5cGUuDQoNCglEYXZp
+ZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQg
+RmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4
+NiAoV2FsZXMpDQo=
 
