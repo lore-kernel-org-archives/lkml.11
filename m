@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E99C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243130AbiBNJb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:31:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42648 "EHLO
+        id S243272AbiBNJbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:31:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243633AbiBNJbA (ORCPT
+        with ESMTP id S243294AbiBNJbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:31:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACCF655C3;
-        Mon, 14 Feb 2022 01:30:03 -0800 (PST)
+        Mon, 14 Feb 2022 04:31:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D9560D87;
+        Mon, 14 Feb 2022 01:30:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E636B80DC9;
-        Mon, 14 Feb 2022 09:30:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A709DC340E9;
-        Mon, 14 Feb 2022 09:30:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4744A60F87;
+        Mon, 14 Feb 2022 09:30:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31135C340E9;
+        Mon, 14 Feb 2022 09:30:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831002;
-        bh=sRCeHRUcEVzofXBICCRpX95loDW+YUQQzIAVjutA1HM=;
+        s=korg; t=1644831006;
+        bh=5iuORTELvsKpZaPEF5mrgRcATjPKHLLV9RGRvSPJiN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2BnO9T2jHrMgxj7ZdpnQTMm1f4gqySWlEsxdeLIBMqq5RM5BCNLt0TBFlBkJD1QS7
-         VzUz+T7p1ClEy6y3LuD2Ir70lMHmjAHwRNrrKI6K0fkQ4QzDSO6pD5TcoRje8W4+il
-         4ox2Mhhl41I8tgTXcRsfwgIYEUEB671PPrKnoHcQ=
+        b=Tb8wTV7aLY1MeA3aRe1m3XV2UMcU+e7Z/6z/NJ+FFKj4DDMfqNJBLFImO9dlro0yQ
+         95PuMVv5GAQWndDUtB1rWAismYlH1DhHlX34iAvNx/3P2BShlPqsasxbHuETAjjsXf
+         6xzSP7LeKkrKqTcFeupoc0qfoxfDlHlpbsdHpfXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ZouMingzhe <mingzhe.zou@easystack.cn>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 13/44] scsi: target: iscsi: Make sure the np under each tpg is unique
-Date:   Mon, 14 Feb 2022 10:25:36 +0100
-Message-Id: <20220214092448.341657325@linuxfoundation.org>
+Subject: [PATCH 4.14 14/44] usb: dwc2: gadget: dont try to disable ep0 in dwc2_hsotg_suspend
+Date:   Mon, 14 Feb 2022 10:25:37 +0100
+Message-Id: <20220214092448.373945460@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -50,41 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ZouMingzhe <mingzhe.zou@easystack.cn>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit a861790afaa8b6369eee8a88c5d5d73f5799c0c6 ]
+[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
 
-iscsit_tpg_check_network_portal() has nested for_each loops and is supposed
-to return true when a match is found. However, the tpg loop will still
-continue after existing the tpg_np loop. If this tpg_np is not the last the
-match value will be changed.
+Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
+logs before returning -EINVAL:
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
 
-Break the outer loop after finding a match and make sure the np under each
-tpg is unique.
+To avoid these two logs while suspending, start disabling the endpoint
+from the index 1, as done in dwc2_hsotg_udc_stop:
 
-Link: https://lore.kernel.org/r/20220111054742.19582-1-mingzhe.zou@easystack.cn
-Signed-off-by: ZouMingzhe <mingzhe.zou@easystack.cn>
-Reviewed-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+	/* all endpoints should be shutdown */
+	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+		if (hsotg->eps_in[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
+		if (hsotg->eps_out[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
+	}
+
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/iscsi/iscsi_target_tpg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/dwc2/gadget.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/target/iscsi/iscsi_target_tpg.c b/drivers/target/iscsi/iscsi_target_tpg.c
-index 16e7516052a44..2b78843091a2e 100644
---- a/drivers/target/iscsi/iscsi_target_tpg.c
-+++ b/drivers/target/iscsi/iscsi_target_tpg.c
-@@ -448,6 +448,9 @@ static bool iscsit_tpg_check_network_portal(
- 				break;
- 		}
- 		spin_unlock(&tpg->tpg_np_lock);
-+
-+		if (match)
-+			break;
- 	}
- 	spin_unlock(&tiqn->tiqn_tpg_lock);
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index f1edc5727000c..dddc5d02b5524 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -4783,7 +4783,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
+ 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+ 		spin_unlock_irqrestore(&hsotg->lock, flags);
  
+-		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
++		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+ 			if (hsotg->eps_in[ep])
+ 				dwc2_hsotg_ep_disable(&hsotg->eps_in[ep]->ep);
+ 			if (hsotg->eps_out[ep])
 -- 
 2.34.1
 
