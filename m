@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A37AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344315AbiBNJ6l (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:58:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34748 "EHLO
+        id S230178AbiBNJ6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:58:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236955AbiBNJwR (ORCPT
+        with ESMTP id S235066AbiBNJwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:52:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6389692B3;
-        Mon, 14 Feb 2022 01:43:40 -0800 (PST)
+        Mon, 14 Feb 2022 04:52:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC3A69CD5;
+        Mon, 14 Feb 2022 01:43:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81937B80DBF;
-        Mon, 14 Feb 2022 09:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FE90C340E9;
-        Mon, 14 Feb 2022 09:43:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB73361244;
+        Mon, 14 Feb 2022 09:43:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB3FDC340E9;
+        Mon, 14 Feb 2022 09:43:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831818;
-        bh=2gnv4tFeuIC+cqbvOWLqsFj8h80UvyqNMNBh+KR1MTk=;
+        s=korg; t=1644831821;
+        bh=h/90sFQJ4ADpeoVXdbJhADLAI2IKpcQnwVbtczvVWjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZxlpRUm+dPesp6w6UIhvZAPfFe1/kq1WDhYJ3txUPNcVuxA/F9057ksY5+AOMY581
-         +YRORKzdRxNB0FnIDpsJJC2VupT3w7igDfi/dxacCUhg7V+/OChzOG5TEfjMhn//5h
-         RUZnZm3o7+fDOx/HTtZKdsaOGQ2xwhm1RRbNP640=
+        b=yY8uAQkxV1AM04Du9AniWv9LHkL8k2VE1iieO1Gb6FMH2hCxcL4cAaJN+qq0B/DWN
+         9SGNeKSCH0VYyEvo94xb+XM3eAaRBdeFvURhRtMBAjYSapsNeEzIfvW/Bk+ht8/BLN
+         T1ZlbI3LBSoxHthXHtPOItunizp0JrdjZMbFkXuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 075/116] nfp: flower: fix ida_idx not being released
-Date:   Mon, 14 Feb 2022 10:26:14 +0100
-Message-Id: <20220214092501.349352848@linuxfoundation.org>
+Subject: [PATCH 5.10 076/116] net: do not keep the dst cache when uncloning an skb dst and its metadata
+Date:   Mon, 14 Feb 2022 10:26:15 +0100
+Message-Id: <20220214092501.382151728@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -51,80 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Louis Peens <louis.peens@corigine.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-[ Upstream commit 7db788ad627aabff2b74d4f1a3b68516d0fee0d7 ]
+[ Upstream commit cfc56f85e72f5b9c5c5be26dc2b16518d36a7868 ]
 
-When looking for a global mac index the extra NFP_TUN_PRE_TUN_IDX_BIT
-that gets set if nfp_flower_is_supported_bridge is true is not taken
-into account. Consequently the path that should release the ida_index
-in cleanup is never triggered, causing messages like:
+When uncloning an skb dst and its associated metadata a new dst+metadata
+is allocated and the tunnel information from the old metadata is copied
+over there.
 
-    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
-    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
-    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
+The issue is the tunnel metadata has references to cached dst, which are
+copied along the way. When a dst+metadata refcount drops to 0 the
+metadata is freed including the cached dst entries. As they are also
+referenced in the initial dst+metadata, this ends up in UaFs.
 
-after NFP_MAX_MAC_INDEX number of reconfigs. Ultimately this lead to
-new tunnel flows not being offloaded.
+In practice the above did not happen because of another issue, the
+dst+metadata was never freed because its refcount never dropped to 0
+(this will be fixed in a subsequent patch).
 
-Fix this by unsetting the NFP_TUN_PRE_TUN_IDX_BIT before checking if
-the port is of type OTHER.
+Fix this by initializing the dst cache after copying the tunnel
+information from the old metadata to also unshare the dst cache.
 
-Fixes: 2e0bc7f3cb55 ("nfp: flower: encode mac indexes with pre-tunnel rule check")
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20220208101453.321949-1-simon.horman@corigine.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: d71785ffc7e7 ("net: add dst_cache to ovs vxlan lwtunnel")
+Cc: Paolo Abeni <pabeni@redhat.com>
+Reported-by: Vlad Buslov <vladbu@nvidia.com>
+Tested-by: Vlad Buslov <vladbu@nvidia.com>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/netronome/nfp/flower/tunnel_conf.c  | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ include/net/dst_metadata.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-index d19c02e991145..d3d5b663a4a3c 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-@@ -1011,6 +1011,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 	struct nfp_flower_repr_priv *repr_priv;
- 	struct nfp_tun_offloaded_mac *entry;
- 	struct nfp_repr *repr;
-+	u16 nfp_mac_idx;
- 	int ida_idx;
+diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
+index 14efa0ded75dd..b997e0c1e3627 100644
+--- a/include/net/dst_metadata.h
++++ b/include/net/dst_metadata.h
+@@ -123,6 +123,19 @@ static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
  
- 	entry = nfp_tunnel_lookup_offloaded_macs(app, mac);
-@@ -1029,8 +1030,6 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 		entry->bridge_count--;
- 
- 		if (!entry->bridge_count && entry->ref_count) {
--			u16 nfp_mac_idx;
--
- 			nfp_mac_idx = entry->index & ~NFP_TUN_PRE_TUN_IDX_BIT;
- 			if (__nfp_tunnel_offload_mac(app, mac, nfp_mac_idx,
- 						     false)) {
-@@ -1046,7 +1045,6 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 
- 	/* If MAC is now used by 1 repr set the offloaded MAC index to port. */
- 	if (entry->ref_count == 1 && list_is_singular(&entry->repr_list)) {
--		u16 nfp_mac_idx;
- 		int port, err;
- 
- 		repr_priv = list_first_entry(&entry->repr_list,
-@@ -1074,8 +1072,14 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 	WARN_ON_ONCE(rhashtable_remove_fast(&priv->tun.offloaded_macs,
- 					    &entry->ht_node,
- 					    offloaded_macs_params));
+ 	memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
+ 	       sizeof(struct ip_tunnel_info) + md_size);
++#ifdef CONFIG_DST_CACHE
++	/* Unclone the dst cache if there is one */
++	if (new_md->u.tun_info.dst_cache.cache) {
++		int ret;
 +
-+	if (nfp_flower_is_supported_bridge(netdev))
-+		nfp_mac_idx = entry->index & ~NFP_TUN_PRE_TUN_IDX_BIT;
-+	else
-+		nfp_mac_idx = entry->index;
++		ret = dst_cache_init(&new_md->u.tun_info.dst_cache, GFP_ATOMIC);
++		if (ret) {
++			metadata_dst_free(new_md);
++			return ERR_PTR(ret);
++		}
++	}
++#endif
 +
- 	/* If MAC has global ID then extract and free the ida entry. */
--	if (nfp_tunnel_is_mac_idx_global(entry->index)) {
-+	if (nfp_tunnel_is_mac_idx_global(nfp_mac_idx)) {
- 		ida_idx = nfp_tunnel_get_ida_from_global_mac_idx(entry->index);
- 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
- 	}
+ 	skb_dst_drop(skb);
+ 	dst_hold(&new_md->dst);
+ 	skb_dst_set(skb, &new_md->dst);
 -- 
 2.34.1
 
