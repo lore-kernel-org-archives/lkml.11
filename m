@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A24C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242983AbiBNJ2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:28:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41022 "EHLO
+        id S243022AbiBNJ23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:28:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242964AbiBNJ2T (ORCPT
+        with ESMTP id S242973AbiBNJ2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:28:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FD060AA5;
-        Mon, 14 Feb 2022 01:28:11 -0800 (PST)
+        Mon, 14 Feb 2022 04:28:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E0260AAD;
+        Mon, 14 Feb 2022 01:28:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0351460F8B;
-        Mon, 14 Feb 2022 09:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD90CC340E9;
-        Mon, 14 Feb 2022 09:28:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC764B80DC4;
+        Mon, 14 Feb 2022 09:28:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7B30C340E9;
+        Mon, 14 Feb 2022 09:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830890;
-        bh=js+fuAM4/WE8FT7Gl8fPuy4DPVo7Bz7KVm+bzuIfYAM=;
+        s=korg; t=1644830893;
+        bh=nwAcgOvUUbyu0b9uqfYy5jUAsPqE5sOsSIj2K8lsWbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DQSEnNsqXrJwDsfwaEz0clrxR2qUZdu6emKPG8Cx66IQsszxIUwqGJpxaKcT5WQ3F
-         4VfowNaVwERHo5NVvUHm4NQF0/SBYdTZK7uR1bySL8C85+MojGaOu4qw3j8vFOoADS
-         4gteS3/oV9VWO/F4neRmqw9/tjIMSls2z0HtJBto=
+        b=EEzO5aoNTzMzQ+AKZjKGpCWLNC6DCqdqIiH860fhKEIOEq9pXuwDpuYIfzPb1oyol
+         tywA4VCSomF6xGX/HLgwvEfKhSl4NjYEd5179MVxCls7qdEMDxBHOS39OmDZVQZm+j
+         +9czlQOncz1nFd937IA6SrLMA9793jPRnkGaSDQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 13/34] usb: dwc2: gadget: dont try to disable ep0 in dwc2_hsotg_suspend
-Date:   Mon, 14 Feb 2022 10:25:39 +0100
-Message-Id: <20220214092446.379049043@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 4.9 14/34] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
+Date:   Mon, 14 Feb 2022 10:25:40 +0100
+Message-Id: <20220214092446.409556338@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
@@ -50,50 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
+commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
 
-Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
-logs before returning -EINVAL:
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+Currently, SD card fails to mount due to the following pinctrl error:
 
-To avoid these two logs while suspending, start disabling the endpoint
-from the index 1, as done in dwc2_hsotg_udc_stop:
+[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
+[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
+[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
+[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
 
-	/* all endpoints should be shutdown */
-	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
-		if (hsotg->eps_in[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
-		if (hsotg->eps_out[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
-	}
+Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
+is already been used by the mmc0-pins-fixup pinctrl group.
 
-Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
+With this change the rootfs can be mounted and the imx23-evk board can
+boot successfully.
+
+Cc: <stable@vger.kernel.org>
+Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/imx23-evk.dts |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index e7ad3ae4ea6bd..65bcbbad6d545 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -3979,7 +3979,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
- 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
- 		spin_unlock_irqrestore(&hsotg->lock, flags);
- 
--		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
-+		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
- 			if (hsotg->eps_in[ep])
- 				dwc2_hsotg_ep_disable(&hsotg->eps_in[ep]->ep);
- 			if (hsotg->eps_out[ep])
--- 
-2.34.1
-
+--- a/arch/arm/boot/dts/imx23-evk.dts
++++ b/arch/arm/boot/dts/imx23-evk.dts
+@@ -48,7 +48,6 @@
+ 						MX23_PAD_LCD_RESET__GPIO_1_18
+ 						MX23_PAD_PWM3__GPIO_1_29
+ 						MX23_PAD_PWM4__GPIO_1_30
+-						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+ 					>;
+ 					fsl,drive-strength = <MXS_DRIVE_4mA>;
+ 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
 
 
