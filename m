@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1505EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F79C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232155AbiBNKU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:20:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42292 "EHLO
+        id S1346669AbiBNKUa (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:20:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346669AbiBNKP4 (ORCPT
+        with ESMTP id S1346826AbiBNKQD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:15:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101FD7922D;
-        Mon, 14 Feb 2022 01:53:09 -0800 (PST)
+        Mon, 14 Feb 2022 05:16:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B80E79C6B;
+        Mon, 14 Feb 2022 01:53:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55348B80D6D;
-        Mon, 14 Feb 2022 09:52:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64DAEC340E9;
-        Mon, 14 Feb 2022 09:52:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EF6261303;
+        Mon, 14 Feb 2022 09:53:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8F8CC340E9;
+        Mon, 14 Feb 2022 09:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832377;
-        bh=8ub30ShdTLXwZFcoIMXYvvWBHyjJegmarl+2ns4BQYI=;
+        s=korg; t=1644832398;
+        bh=5WK0kK9roEQOPrKBdj9vTLAWvwtzCxIVmtlFHoWVxbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rRnGcDfLI5ZEGSjrDy2JUKs60apQTebBDzfaiHwE/opfnDSxPymF+CIKV0jY6OvPq
-         c/vMTm9dSFQU/rlMSrZF7A5MRN+IaDB6xkyiQKSNcYzj4cDdiyeB7GFsn6V6J/raA1
-         aAqsj021TNF+OPmMy1XNR2KGSwqfFQIcmQdFT+W8=
+        b=rD5goorXfdFEOjL8U92py9VTsCBXUvqrrz6Kuz7o7aCbDGz2QntKM6SQ/os7Bf+Nm
+         gM4ULMUkRQOguijRtaG0iIkDMlUvMGFa/ZAzvqAo86k1f5eF3gtH/IFSn/TWcaPPPu
+         wlmbZa5yNmxx9VYWOjT8r2T47ifb22tMgqjOFERg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH 5.15 135/172] vt_ioctl: add array_index_nospec to VT_ACTIVATE
-Date:   Mon, 14 Feb 2022 10:26:33 +0100
-Message-Id: <20220214092511.069185634@linuxfoundation.org>
+        stable@vger.kernel.org, "Ewan D. Milne" <emilne@redhat.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 167/172] scsi: lpfc: Remove NVMe support if kernel has NVME_FC disabled
+Date:   Mon, 14 Feb 2022 10:27:05 +0100
+Message-Id: <20220214092512.158990748@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -49,39 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: James Smart <jsmart2021@gmail.com>
 
-commit 28cb138f559f8c1a1395f5564f86b8bbee83631b upstream.
+commit c80b27cfd93ba9f5161383f798414609e84729f3 upstream.
 
-in vt_setactivate an almost identical code path has been patched
-with array_index_nospec. In the VT_ACTIVATE path the user input
-is from a system call argument instead of a usercopy.
-For consistency both code paths should have the same mitigations
-applied.
+The driver is initiating NVMe PRLIs to determine device NVMe support.  This
+should not be occurring if CONFIG_NVME_FC support is disabled.
 
-Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
-Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
-Amsterdam.
+Correct this by changing the default value for FC4 support. Currently it
+defaults to FCP and NVMe. With change, when NVME_FC support is not enabled
+in the kernel, the default value is just FCP.
 
-Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220127144406.3589293-2-jakobkoschel@gmail.com
-Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220207180516.73052-1-jsmart2021@gmail.com
+Reviewed-by: Ewan D. Milne <emilne@redhat.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/vt/vt_ioctl.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/lpfc/lpfc.h      |   13 ++++++++++---
+ drivers/scsi/lpfc/lpfc_attr.c |    4 ++--
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -845,6 +845,7 @@ int vt_ioctl(struct tty_struct *tty,
- 			return -ENXIO;
+--- a/drivers/scsi/lpfc/lpfc.h
++++ b/drivers/scsi/lpfc/lpfc.h
+@@ -1163,6 +1163,16 @@ struct lpfc_hba {
+ 	uint32_t cfg_hostmem_hgp;
+ 	uint32_t cfg_log_verbose;
+ 	uint32_t cfg_enable_fc4_type;
++#define LPFC_ENABLE_FCP  1
++#define LPFC_ENABLE_NVME 2
++#define LPFC_ENABLE_BOTH 3
++#if (IS_ENABLED(CONFIG_NVME_FC))
++#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
++#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
++#else
++#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_FCP
++#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_FCP
++#endif
+ 	uint32_t cfg_aer_support;
+ 	uint32_t cfg_sriov_nr_virtfn;
+ 	uint32_t cfg_request_firmware_upgrade;
+@@ -1184,9 +1194,6 @@ struct lpfc_hba {
+ 	uint32_t cfg_ras_fwlog_func;
+ 	uint32_t cfg_enable_bbcr;	/* Enable BB Credit Recovery */
+ 	uint32_t cfg_enable_dpp;	/* Enable Direct Packet Push */
+-#define LPFC_ENABLE_FCP  1
+-#define LPFC_ENABLE_NVME 2
+-#define LPFC_ENABLE_BOTH 3
+ 	uint32_t cfg_enable_pbde;
+ 	uint32_t cfg_enable_mi;
+ 	struct nvmet_fc_target_port *targetport;
+--- a/drivers/scsi/lpfc/lpfc_attr.c
++++ b/drivers/scsi/lpfc/lpfc_attr.c
+@@ -3978,8 +3978,8 @@ LPFC_ATTR_R(nvmet_mrq_post,
+  *                    3 - register both FCP and NVME
+  * Supported values are [1,3]. Default value is 3
+  */
+-LPFC_ATTR_R(enable_fc4_type, LPFC_ENABLE_BOTH,
+-	    LPFC_ENABLE_FCP, LPFC_ENABLE_BOTH,
++LPFC_ATTR_R(enable_fc4_type, LPFC_DEF_ENBL_FC4_TYPE,
++	    LPFC_ENABLE_FCP, LPFC_MAX_ENBL_FC4_TYPE,
+ 	    "Enable FC4 Protocol support - FCP / NVME");
  
- 		arg--;
-+		arg = array_index_nospec(arg, MAX_NR_CONSOLES);
- 		console_lock();
- 		ret = vc_allocate(arg);
- 		console_unlock();
+ /*
 
 
