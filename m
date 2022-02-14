@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E407C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347435AbiBNK2Y (ORCPT
+        id S1347185AbiBNK23 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:28:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34776 "EHLO
+        Mon, 14 Feb 2022 05:28:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347938AbiBNK0h (ORCPT
+        with ESMTP id S1347936AbiBNK0g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:26:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51AC8091B;
+        Mon, 14 Feb 2022 05:26:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC25480919;
         Mon, 14 Feb 2022 01:57:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBF4360FA2;
-        Mon, 14 Feb 2022 09:57:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E05C340E9;
-        Mon, 14 Feb 2022 09:57:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22EEB6126B;
+        Mon, 14 Feb 2022 09:57:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED58C340E9;
+        Mon, 14 Feb 2022 09:57:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832654;
-        bh=saiZqjZcHJGpeZpPA0bHrcwnllIhia1FLnu2M+Iq5Lw=;
+        s=korg; t=1644832644;
+        bh=UhSIihMSSu2vmuCQjZPE4NANjKqrX8Al7bFfWHKoSt8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mzo1APez4K60Qqh3xCmjD5cpfmd9StcEo08AmuoQbbdyzH4WY7kqi0bA2l2/pbiGX
-         Opk/Cl9Zo32lk4ByX0MyC7RcDpPDMBjFnmkUQbphKfinOMZqHxvZHnlYF26cv9+Hg4
-         IxzxbLoJrWypNGM7x5H5XpBfRYaTf12SsAb1nMFM=
+        b=S3Nosd+jS/PHJMhM06tPyjswsgXCSDm7SEzljr1p/w0X1s8Rym7o4//Qm2yLRfqWt
+         apGDm3OJ4NQfIUqMxWB0BkkizKBxHlX1iVYZDUi74xLBmsYvQQnD3aw4MA72OuaRvn
+         MVseu/E8nzqczIZQwgBI7ctJLwtBdQs/JZAJldgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
-        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5.16 084/203] nvme-tcp: fix bogus request completion when failing to send AER
-Date:   Mon, 14 Feb 2022 10:25:28 +0100
-Message-Id: <20220214092513.128502574@linuxfoundation.org>
+        stable@vger.kernel.org, Aurelien Jarno <aurelien@aurel32.net>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.16 073/203] riscv: fix build with binutils 2.38
+Date:   Mon, 14 Feb 2022 10:25:17 +0100
+Message-Id: <20220214092512.757891200@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -49,42 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Aurelien Jarno <aurelien@aurel32.net>
 
-commit 63573807b27e0faf8065a28b1bbe1cbfb23c0130 upstream.
+commit 6df2a016c0c8a3d0933ef33dd192ea6606b115e3 upstream.
 
-AER is not backed by a real request, hence we should not incorrectly
-assume that when failing to send a nvme command, it is a normal request
-but rather check if this is an aer and if so complete the aer (similar
-to the normal completion path).
+>From version 2.38, binutils default to ISA spec version 20191213. This
+means that the csr read/write (csrr*/csrw*) instructions and fence.i
+instruction has separated from the `I` extension, become two standalone
+extensions: Zicsr and Zifencei. As the kernel uses those instruction,
+this causes the following build failure:
 
+  CC      arch/riscv/kernel/vdso/vgettimeofday.o
+  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h: Assembler messages:
+  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+
+The fix is to specify those extensions explicitely in -march. However as
+older binutils version do not support this, we first need to detect
+that.
+
+Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
+Tested-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/tcp.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ arch/riscv/Makefile |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -913,7 +913,15 @@ static inline void nvme_tcp_done_send_re
- 
- static void nvme_tcp_fail_request(struct nvme_tcp_request *req)
- {
--	nvme_tcp_end_request(blk_mq_rq_from_pdu(req), NVME_SC_HOST_PATH_ERROR);
-+	if (nvme_tcp_async_req(req)) {
-+		union nvme_result res = {};
+--- a/arch/riscv/Makefile
++++ b/arch/riscv/Makefile
+@@ -50,6 +50,12 @@ riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32
+ riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima
+ riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
+ riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
 +
-+		nvme_complete_async_event(&req->queue->ctrl->ctrl,
-+				cpu_to_le16(NVME_SC_HOST_PATH_ERROR), &res);
-+	} else {
-+		nvme_tcp_end_request(blk_mq_rq_from_pdu(req),
-+				NVME_SC_HOST_PATH_ERROR);
-+	}
- }
++# Newer binutils versions default to ISA spec version 20191213 which moves some
++# instructions from the I extension to the Zicsr and Zifencei extensions.
++toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
++riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
++
+ KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
+ KBUILD_AFLAGS += -march=$(riscv-march-y)
  
- static int nvme_tcp_try_send_data(struct nvme_tcp_request *req)
 
 
