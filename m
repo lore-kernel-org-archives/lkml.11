@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A60C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91940C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343709AbiBNJzW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:55:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33310 "EHLO
+        id S229517AbiBNJz1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:55:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344604AbiBNJvv (ORCPT
+        with ESMTP id S1344686AbiBNJvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A807985E;
-        Mon, 14 Feb 2022 01:43:03 -0800 (PST)
+        Mon, 14 Feb 2022 04:51:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A57F6D381;
+        Mon, 14 Feb 2022 01:43:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1412561172;
-        Mon, 14 Feb 2022 09:43:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB67FC340E9;
-        Mon, 14 Feb 2022 09:43:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D27BAB80D83;
+        Mon, 14 Feb 2022 09:43:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8CD6C36AE2;
+        Mon, 14 Feb 2022 09:43:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831782;
-        bh=c4aitKK1Y1NNZzZfjqZWL2zAZsEEosoRaQN36dthyeA=;
+        s=korg; t=1644831785;
+        bh=fEKu0wIsrTU9+RjmzFhznFG/l8LoKPcNOQsQGHl9h6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KH95ua17WaXPbbX56J6yMOdC9Dwl9kCPGoXVels3ESepHsCt0q2cCdtC3Iz8Dh0ER
-         8Ha+MZn3DvemcHMXo0k6rcDlGfxFxKdxkTE7vpTcjgDUQwbUejznG0LeH7TlqNCAHw
-         cgF4Lbgm/8gcEif5UCh8U3RXTqz0UWzHOEjrAu3Y=
+        b=UF9sp0pZdx2rFPS4UcbAn7DIaXcXJl6LKI062+FcHuJYbuMuDpV+cEczCjN/XWXue
+         OrWl+JgScXTMMvZqOcHVWFixBwt6DyI6JgZV/n3KZQIR1gDfIMFIxBFyTKc2PaQ7AX
+         kdw/1JWvfNmP9FkCTGgUUupOhTwCQK/e9PYTFy8Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH 5.10 094/116] usb: ulpi: Move of_node_put to ulpi_dev_release
-Date:   Mon, 14 Feb 2022 10:26:33 +0100
-Message-Id: <20220214092502.019577572@linuxfoundation.org>
+Subject: [PATCH 5.10 095/116] usb: ulpi: Call of_node_put correctly
+Date:   Mon, 14 Feb 2022 10:26:34 +0100
+Message-Id: <20220214092502.051973305@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -52,39 +51,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Anderson <sean.anderson@seco.com>
 
-commit 092f45b13e51666fe8ecbf2d6cd247aa7e6c1f74 upstream.
+commit 0a907ee9d95e3ac35eb023d71f29eae0aaa52d1b upstream.
 
-Drivers are not unbound from the device when ulpi_unregister_interface
-is called. Move of_node-freeing code to ulpi_dev_release which is called
-only after all users are gone.
+of_node_put should always be called on device nodes gotten from
+of_get_*. Additionally, it should only be called after there are no
+remaining users. To address the first issue, call of_node_put if later
+steps in ulpi_register fail. To address the latter, call put_device if
+device_register fails, which will call ulpi_dev_release if necessary.
 
 Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
 Cc: stable <stable@vger.kernel.org>
 Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Link: https://lore.kernel.org/r/20220127190004.1446909-2-sean.anderson@seco.com
+Link: https://lore.kernel.org/r/20220127190004.1446909-3-sean.anderson@seco.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/common/ulpi.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/common/ulpi.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 --- a/drivers/usb/common/ulpi.c
 +++ b/drivers/usb/common/ulpi.c
-@@ -132,6 +132,7 @@ static const struct attribute_group *ulp
+@@ -250,12 +250,16 @@ static int ulpi_register(struct device *
+ 		return ret;
  
- static void ulpi_dev_release(struct device *dev)
- {
-+	of_node_put(dev->of_node);
- 	kfree(to_ulpi_dev(dev));
- }
+ 	ret = ulpi_read_id(ulpi);
+-	if (ret)
++	if (ret) {
++		of_node_put(ulpi->dev.of_node);
+ 		return ret;
++	}
  
-@@ -301,7 +302,6 @@ EXPORT_SYMBOL_GPL(ulpi_register_interfac
-  */
- void ulpi_unregister_interface(struct ulpi *ulpi)
- {
--	of_node_put(ulpi->dev.of_node);
- 	device_unregister(&ulpi->dev);
- }
- EXPORT_SYMBOL_GPL(ulpi_unregister_interface);
+ 	ret = device_register(&ulpi->dev);
+-	if (ret)
++	if (ret) {
++		put_device(&ulpi->dev);
+ 		return ret;
++	}
+ 
+ 	dev_dbg(&ulpi->dev, "registered ULPI PHY: vendor %04x, product %04x\n",
+ 		ulpi->id.vendor, ulpi->id.product);
 
 
