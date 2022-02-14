@@ -2,108 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6765C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9944FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:58:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbiBNU54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:57:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48296 "EHLO
+        id S229992AbiBNU6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:58:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbiBNU5e (ORCPT
+        with ESMTP id S229882AbiBNU6E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:57:34 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5332613911C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:56:58 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id k25so16635806qtp.4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:56:58 -0800 (PST)
+        Mon, 14 Feb 2022 15:58:04 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E1911EF08;
+        Mon, 14 Feb 2022 12:57:27 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id g1so11521631pfv.1;
+        Mon, 14 Feb 2022 12:57:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ttJu1XMf1+hA+hrMQ5r00OCzrFkN94Y4YW3j0uNrxV8=;
-        b=hr+TWd2YTvC14HH5KLVZE3+GCtF6eZvPPD6LASFw0DJGN9OgAZCjUR6WUWoVS69jSW
-         clj8d86ROskMUqHEaPm3XQjwNDI3Rr91p0vT6W0xRLCGwXHAY5SxD8AhF0A+UC8ij/FT
-         T4V46FpPWiYlBh/9OAZ9eRf1HztNX/WDBM+3w20JzYCZwoJg4+lKUstn2oxwFrSPl2me
-         r2ey1rlgdh7vjxGQWvXEcfmKQ5Uehd0ZreduPnbsGVgzpRJCfFd3cQGyKLTpBc+ZbeAe
-         Y545Xujo2QmmXI2Vz11AC8b39o3tVQJm4fRyt6gRfbxMzl8itRY34+gs5GuK4KjA7Sg9
-         SDvg==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8eI79aPTVtqYQhM0bTcpnqJ4UdG4+AWyiT8hNcdyv7Q=;
+        b=ZSV4ZqXKji33uFcHmgvE05zjLOm9kEVHG6oWJ7eZKZPZ4kZ2nggGrMqLqKlPL34Ek1
+         /u/NM4futt7QdWUDzgYKzfBFqB3ZZBZkwOMzOMhGC7cko+Qztmw8XHcfcb0gNwQq8MkU
+         7507ocXVBAmsp48WPhA5XpPf/bn2aWqzt0WtH8bdY9cWxbZexhWBaUs3sZd0U5bp1e3T
+         ruHrM+VNwVpvBmLdyRZvIgDd/7i3XcHwZsLkaOtpINL3arjnaQdH3B8XpxaFk+Fyctd1
+         shUZRC0TnpWCQftQMjh+GxGmupgih3F576KJYbNUbrq4yUWvlv3OvixikVZXYjiUMish
+         slvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ttJu1XMf1+hA+hrMQ5r00OCzrFkN94Y4YW3j0uNrxV8=;
-        b=H8xQmxwll9THLuEwoSdanjdG0S5f89WWKhVsMwSwYZTHM85FAghWjWyqsqhmwtga3S
-         fI294tjrN3kJz8gQqCMXWz4+fGOID9WRHpjw3ygHu8kgJe2iAOSJShdt4/cj73CgQdl1
-         d2Mpi1aDm0mBAG2JjfeA/rBP3yb2GIOyCRQYronQTW2jnyL8Ar3Q7IwV02iRuQjg17Wd
-         lneqQi4aMJHubL0pU5bTsv05B46QRgKdu8qjo0TgBPxeorPzq3bCa0sbibL9U5PflWJ9
-         ge0PuQNbq7XBTUOYdSSMq7yJT6eUAIqfkp3rEpFKSnfHtk0BqO1/5h5peQI0MgvDtjhD
-         ysrA==
-X-Gm-Message-State: AOAM530atCOLJFoq566wmYPeMsLBk/3hdfqaYxdhWCWRfvstrSmqChHV
-        A6uosk+YyiK+QkeiiFVthB3KSX9pgDT+OKDPuWAolmUI6Tg=
-X-Google-Smtp-Source: ABdhPJwiPFE8fdGZixjazWuzi7yJKv+5h1ACgsQMcp2+YO1XcbXd+6bVa6c5pWYdoHLKobd3nqtKYGMm6a6IidIncik=
-X-Received: by 2002:ae9:ed96:: with SMTP id c144mr370649qkg.221.1644870221334;
- Mon, 14 Feb 2022 12:23:41 -0800 (PST)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=8eI79aPTVtqYQhM0bTcpnqJ4UdG4+AWyiT8hNcdyv7Q=;
+        b=o3eE+CYEMxE67VxanFZkAPqsQZg+QwdShIlzmrMsDPTDscgsb+V1JTgAu2XeRlGiQo
+         FyH4zrAW9ChQ5sJDpeVuTw+km3LV3olOdpHgBVnDIu1n2O0nIId7XDCtW61bJpQdaLLG
+         P02SmNdoee0lNRVmA6IjkiCjTZFSpV7yS9x5sdcDwkLcyYk8C577LFWcbsnIsnjs4eE3
+         FMLEYCdvq7VmLFJ6sfYidkyC6c1b7ooNl3UqE4WcFTPoviC9o/Cer5so+I7k4QyEZYMD
+         LP1hTjDWH1Tv3KiHEP2RPu9D8Pq/yC+lQtm/9UOlKR1laqkwBpSISYtI+PxJIuFIoldT
+         Iw/w==
+X-Gm-Message-State: AOAM533ABcdnkONUWee9QGL7nG2NFhRkd61eYyqQGxOuRso8THXsMiYb
+        1Rp7oBCuFiaZK4v0qnvNWbRLUMxMr0s=
+X-Google-Smtp-Source: ABdhPJyUfTPTFZc8hUeHI+dD4bfFcL0x2ysfp78YkPhpEXIAqKojYn5U65C+/pWyd/cczefXz/Cd4w==
+X-Received: by 2002:a63:68c1:: with SMTP id d184mr494872pgc.405.1644868241417;
+        Mon, 14 Feb 2022 11:50:41 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id q94sm3968073pja.27.2022.02.14.11.50.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 11:50:41 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 14 Feb 2022 09:50:39 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Zhang Qiao <zhangqiao22@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        lizefan.x@bytedance.com, hannes@cmpxchg.org, matthltc@us.ibm.com,
+        bblum@google.com, menage@google.com, akpm@linux-foundation.org,
+        longman@redhat.com, mkoutny@suse.com, zhaogongyi@huawei.com
+Subject: Re: [PATCH] cgroup/cpuset: Fix a race between cpuset_attach() and
+ cpu hotplug
+Message-ID: <Ygqyj7nns+mxH81t@slm.duckdns.org>
+References: <20220121101210.84926-1-zhangqiao22@huawei.com>
 MIME-Version: 1.0
-References: <20220201205534.1962784-1-haoluo@google.com> <20220201205534.1962784-6-haoluo@google.com>
- <20220203180414.blk6ou3ccmod2qck@ast-mbp.dhcp.thefacebook.com>
- <CA+khW7jkJbvQrTx4oPJAoBZ0EOCtr3C2PKbrzhxj-7euBK8ojg@mail.gmail.com>
- <CAADnVQLZZ3SM2CDxnzgOnDgRtGU7+6wT9u5v4oFas5MnZF6DsQ@mail.gmail.com>
- <CA+khW7i+TScwPZ6-rcFKiXtxMm8hiZYJGH-wYb=7jBvDWg8pJQ@mail.gmail.com>
- <CAADnVQ+-29CS7nSXghKMgZjKte84L0nRDegUE0ObFm3d7E=eWw@mail.gmail.com>
- <CA+khW7iWd5MzZW_mCfgqHESi8okjNRiRMr0TM=CQzLkMsa_a5g@mail.gmail.com>
- <CAADnVQJcTAgcbwrOWO8EnbTdAcQ91HQmtpn7aKJGwHc=mEpJ1g@mail.gmail.com>
- <CA+khW7i46Rg8q=8goXdmuJuZ+NOuZ5AP6fSbSVzyqcU3C5iX4A@mail.gmail.com> <CAADnVQK+Eh9qCuoBWZ1cRQ4h+fS5J+zy+GePEGXijZ_BD_5Q3w@mail.gmail.com>
-In-Reply-To: <CAADnVQK+Eh9qCuoBWZ1cRQ4h+fS5J+zy+GePEGXijZ_BD_5Q3w@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Mon, 14 Feb 2022 12:23:29 -0800
-Message-ID: <CA+khW7jeptVgZziTqexXp2dNC0Kk+di8f8xkd2dTzXb8YR0Mjw@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next v2 5/5] selftests/bpf: test for pinning for
- cgroup_view link
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121101210.84926-1-zhangqiao22@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 11:25 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Feb 14, 2022 at 10:29 AM Hao Luo <haoluo@google.com> wrote:
-> > Hi Alexei,
-> >
-> > Actually, I found this almost worked, except that the tracepoints
-> > cgroup_mkdir and cgroup_rmdir are not sleepable. They are inside a
-> > spinlock's critical section with irq off. I guess one solution is to
-> > offload the sleepable part of the bpf prog into a thread context. We
-> > may create a dedicated kernel thread or use workqueue for this. Do you
-> > have any advice?
->
-> Are you referring to spin_lock in TRACE_CGROUP_PATH
-> that protects global trace_cgroup_path[] buffer?
+On Fri, Jan 21, 2022 at 06:12:10PM +0800, Zhang Qiao wrote:
+> As previously discussed(https://lkml.org/lkml/2022/1/20/51),
+> cpuset_attach() is affected with similar cpu hotplug race,
+> as follow scenario:
+> 
+>      cpuset_attach()				cpu hotplug
+>     ---------------------------            ----------------------
+>     down_write(cpuset_rwsem)
+>     guarantee_online_cpus() // (load cpus_attach)
+> 					sched_cpu_deactivate
+> 					  set_cpu_active()
+> 					  // will change cpu_active_mask
+>     set_cpus_allowed_ptr(cpus_attach)
+>       __set_cpus_allowed_ptr_locked()
+>        // (if the intersection of cpus_attach and
+>          cpu_active_mask is empty, will return -EINVAL)
+>     up_write(cpuset_rwsem)
+> 
+> To avoid races such as described above, protect cpuset_attach() call
+> with cpu_hotplug_lock.
+> 
+> Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
+> Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
+> Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
 
-Yes, that's the spin_lock I am talking about.
+Applied to cgroup/for-5.17-fixes w/ stable cc'd.
 
-> That is fixable.
-> Do you actually need the string path returned by cgroup_path() in bpf prog?
-> Maybe prog can call cgroup_path() by itself when necessary.
-> Parsing strings isn't great anyway. The bpf prog probably needs the last
-> part of the dir only. So cgrp->kn->name would do it?
-> The TRACE_CGROUP_PATH wasn't designed to be turned on 24/7.
-> That global spin_lock is not great for production use.
-> No need to delegate sleepable bpf to thread context.
-> Let's refactor that tracepoint a bit.
+Thanks and sorry about the delay.
 
-No, we don't need cgroup_path(). We are going to name the directories
-by cgrp->kn->id. I can add a fast version for cgroup_xxx tracepoints,
-which don't require the full path and can be turned on 24/7.
+-- 
+tejun
