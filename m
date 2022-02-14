@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD11C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07EE2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:41:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244647AbiBNJks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:40:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33308 "EHLO
+        id S244459AbiBNJlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:41:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244107AbiBNJkY (ORCPT
+        with ESMTP id S244489AbiBNJk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:40:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F4060D90;
-        Mon, 14 Feb 2022 01:35:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92F4EB80DC1;
-        Mon, 14 Feb 2022 09:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9321C340EF;
-        Mon, 14 Feb 2022 09:35:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831348;
-        bh=eE80Bi90mHkuFyViKklaO5l31qtgcf+UEIP/R5GkX1w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j0sA2hp3//DS8l4rswYWnx8oQ5+JDaglwDoPkOEbCx+OTXjN//S37hprP7RSX7Rt9
-         J69AJ60TBmeQ0IY/wmSYlB1c5azGTqUs69wQ7eUjChNO+hCbr6HDqhQpJ7TBo0/Qob
-         w0r7Cy1T+d8Q3fAPFUBnTbgzxb6hKzbUnNSoCeWY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 25/71] KVM: nVMX: eVMCS: Filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER
-Date:   Mon, 14 Feb 2022 10:25:53 +0100
-Message-Id: <20220214092452.860737143@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
-References: <20220214092452.020713240@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 04:40:29 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F0FAE54;
+        Mon, 14 Feb 2022 01:35:51 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id i14so25711225wrc.10;
+        Mon, 14 Feb 2022 01:35:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/4o0Sh/HDw28K29dhWptIQG7sJvv6LA5ikZvkukruHE=;
+        b=MwgSTZgnHotojaZgn5Sp7lQFJP83AHlDASXB7/1KYjjda8kjGHs9bIYBCcAmML8x0e
+         PwKf8EV+q6zr7osLYlY0/qeHeNvcXePbtftCPgMcLsQiAwM6ZK40uLL8S1ylRg5kVXBs
+         M64EDQrvp1cjYZxftr2qaYjcciNKBHWGvsdx49ZBjlDsFTf7yvP2b0RPBJW5+gD6c42e
+         sQkj1pjWEcUuVgjLzvKw7obGVyx0u7/lNS66TilSdahadgfbd1mvTwZ9EuNeUUWTze1s
+         IrdoPMGfsdrHt18T9ZFUFVmxlLdezW1qmmmbv1YjMWkRNTHkHwRm2pvj/Y/TrQQ37+iV
+         UINQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/4o0Sh/HDw28K29dhWptIQG7sJvv6LA5ikZvkukruHE=;
+        b=FXHBUR3yUkkX0XioPZUWarWS/3exYqSG2H7gJ43pO/8OXwUa1yoktP/iknHAEEU6wz
+         AdrDIA8Mhd2PJ7ZugChwhz1MaYjD8sJFPILGDs5dDSWTV4Mh2ZkriDyrzNram2rxlOLD
+         /EItDwIhCXILjHGh3hd1LtYkauzifeU8KDh4zVxTzPXYdAtuHD27LwW5Abg11Fsor3kt
+         rwcJb7dP7qH+DozOGnZTfshqci7kFpXVYg54GpvmAfrMJHQdoLYWahuxQuOhKad1vIdP
+         8g42TBMjQyRfj0GURo9QuzmjAuWQrec1QLnYzSDHUrWhDJBcD2J1PpNAYJuJtSPyKldh
+         DnIQ==
+X-Gm-Message-State: AOAM532J3ADagDmXjg7cphojc4bWYPX3CYTRdbFeAKhphjMC/E+EFuPE
+        ZyVIErB63tH8e6mtkJQDVW8=
+X-Google-Smtp-Source: ABdhPJwXHkfo0LVYpx7SEv6O1F58w6UNsO73U42vtQ17B2CQMPqe4CDwDvgTvyspI1UeUCCcFqjjxg==
+X-Received: by 2002:a5d:4fc4:: with SMTP id h4mr10734960wrw.481.1644831348777;
+        Mon, 14 Feb 2022 01:35:48 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id u16sm3192017wmq.41.2022.02.14.01.35.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 01:35:48 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] perf tools: Fix spelling mistake "commpressor" -> "compressor"
+Date:   Mon, 14 Feb 2022 09:35:47 +0000
+Message-Id: <20220214093547.44590-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+There is a spelling mistake in a debug message. Fix it.
 
-[ Upstream commit 7a601e2cf61558dfd534a9ecaad09f5853ad8204 ]
-
-Enlightened VMCS v1 doesn't have VMX_PREEMPTION_TIMER_VALUE field,
-PIN_BASED_VMX_PREEMPTION_TIMER is also filtered out already so it makes
-sense to filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER too.
-
-Note, none of the currently existing Windows/Hyper-V versions are known
-to enable 'save VMX-preemption timer value' when eVMCS is in use, the
-change is aimed at making the filtering future proof.
-
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220112170134.1904308-3-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- arch/x86/kvm/vmx/evmcs.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/perf/util/mmap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-index 07ebf6882a458..632bed227152e 100644
---- a/arch/x86/kvm/vmx/evmcs.h
-+++ b/arch/x86/kvm/vmx/evmcs.h
-@@ -58,7 +58,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
- 	 SECONDARY_EXEC_SHADOW_VMCS |					\
- 	 SECONDARY_EXEC_TSC_SCALING |					\
- 	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
--#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL)
-+#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
-+	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
-+	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
- #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
- #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
- 
+diff --git a/tools/perf/util/mmap.c b/tools/perf/util/mmap.c
+index 4cb5f2f159cc..50502b4a7ca4 100644
+--- a/tools/perf/util/mmap.c
++++ b/tools/perf/util/mmap.c
+@@ -298,7 +298,7 @@ int mmap__mmap(struct mmap *map, struct mmap_params *mp, int fd, struct perf_cpu
+ 	map->comp_level = mp->comp_level;
+ #ifndef PYTHON_PERF
+ 	if (zstd_init(&map->zstd_data, map->comp_level)) {
+-		pr_debug2("failed to init mmap commpressor, error %d\n", errno);
++		pr_debug2("failed to init mmap compressor, error %d\n", errno);
+ 		return -1;
+ 	}
+ #endif
 -- 
 2.34.1
-
-
 
