@@ -2,197 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF6C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A03C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354756AbiBNN6z (ORCPT
+        id S1354774AbiBNOAe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:58:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38650 "EHLO
+        Mon, 14 Feb 2022 09:00:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354747AbiBNN6v (ORCPT
+        with ESMTP id S245234AbiBNOAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:58:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CBC79C4E
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:58:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644847121;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Ya79H6TqHuWzpLyZaRYnVCACWlD+bUT2wjyTYIXjjM=;
-        b=JQPh/NQjRmIkaTAev6YvgDRoS+spRWobofloLrUu2e0L35vgpuAn+rI0Ov1rM27FuQSnWH
-        CBTljNkW4+Ww5UtGwfllBHcfYs/Xt60jgGyVXa8U/3SIXy6PqMmv8xexpCmmutAgVxAUu0
-        kJEfYG7IDGX+SD8LaDWs11J5Q4Inelw=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-590-IeG5-1glO8qB8paQ5WBysA-1; Mon, 14 Feb 2022 08:58:40 -0500
-X-MC-Unique: IeG5-1glO8qB8paQ5WBysA-1
-Received: by mail-ed1-f72.google.com with SMTP id g5-20020a056402090500b0040f28e1da47so10322528edz.8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:58:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+Ya79H6TqHuWzpLyZaRYnVCACWlD+bUT2wjyTYIXjjM=;
-        b=SyUZl/OsQTajyvfHDy+7eHmoDPfuHQuZQU0wHCZIqRVrTaDfYbDNE32/naH7rjyXOS
-         sHXe6YcVIX9BnHmFGRcpgIC9+we6W1aYiEunqzVdatWrkEfeCUZRSDc9a3N+GEvx62kQ
-         n4gdaul73SEJITGVP48j03TcVWNIqajRFuOUKiE5v2Hn1RUD06n5lh3Ex9MuNyy8zbc4
-         Cu2ncB8yHARww4EFxoww80sXzTdt9WlJxd7aw+4vu8GLPxFxP6pLD2vVle3EliOQPvOW
-         yQx2dncc3IeXCcpb9cLAwlRfWnqnHncqAw0cz5WRuJv6RBIoll24ay3LXdJfwdK+sAQz
-         WjIQ==
-X-Gm-Message-State: AOAM530oNTR4cngXez9LRDRj84U9ytRqKvhqXPdUhUBErVuzgcGCdfF6
-        TUvrmYArCNtzMbvi7cgKm7XuSRA/vYN3SXyboufP7vzbEQfgGjxn5fT0HUfDx+/0X/Itztyxhd5
-        19MivSGWG65C2Ju/mUjeNziBn
-X-Received: by 2002:a17:907:96aa:: with SMTP id hd42mr2192651ejc.738.1644847119348;
-        Mon, 14 Feb 2022 05:58:39 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxURNMgbfRCKJBXSt75Jz56tbXNymf2Sd9gMKsH7sp+2ALu4ROL/BRxIWGui59ZQC9O1R251Q==
-X-Received: by 2002:a17:907:96aa:: with SMTP id hd42mr2192624ejc.738.1644847119058;
-        Mon, 14 Feb 2022 05:58:39 -0800 (PST)
-Received: from [10.40.98.142] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id m7sm909736ejq.10.2022.02.14.05.58.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 05:58:38 -0800 (PST)
-Message-ID: <70afbdca-12ee-1106-c4b9-136c65aaa812@redhat.com>
-Date:   Mon, 14 Feb 2022 14:58:37 +0100
+        Mon, 14 Feb 2022 09:00:33 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2D613EA2;
+        Mon, 14 Feb 2022 06:00:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644847224; x=1676383224;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qW3sr4UpfHOJBkGebrV5Id5bVpujcOv1DgqT7fTbuks=;
+  b=B0M9RtAOhQSXR5psybe+1DAicJnW+gDno4ewYWOLd7wIzVyghvFB7Qrd
+   r+xbTN8X4keZ9mO6EKG3vkxVhdhF5gC/VoW2GWc04uJ+ywxpR2U6okl/m
+   OW6ZJh1cNlAKtFUZ66HHY9ECW7uSDcnKXpI6JcSCNlC11izXvEzSIprNB
+   x3Ts1ZPJaUFJ10DlmmdycJqHqqoRPYkfVFtM5F7EGHX7lJxgEYZ3iKy5Z
+   fel1/XRsF+ruItprK8FrKk2Pm/KzKPhDh1Bt0YV9Fso9IXbjippa055Z5
+   ZETDQr20ks3CrsIB3r4ZYDy4JEXdC2foWZM6Ej3fLVERFWGmhdUbA+sJc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="248924542"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="248924542"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 06:00:24 -0800
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="632157823"
+Received: from unknown (HELO smile.fi.intel.com) ([10.237.72.59])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 06:00:21 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nJbsz-004Yhy-62;
+        Mon, 14 Feb 2022 15:59:25 +0200
+Date:   Mon, 14 Feb 2022 15:59:24 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [PATCH v4 1/6] drm/format-helper: Add
+ drm_fb_xrgb8888_to_gray8_line()
+Message-ID: <YgpgPCT7XVLvwTnr@smile.fi.intel.com>
+References: <20220211091927.2988283-2-javierm@redhat.com>
+ <YgY6OqN+guBlt/ED@smile.fi.intel.com>
+ <4fa465d9-4fac-4199-9a04-d8e09d164308@redhat.com>
+ <YgZEuXvJ2ZiOyNS+@smile.fi.intel.com>
+ <7560cd10-0a7c-3fda-da83-9008833e3901@suse.de>
+ <87pmnt7gm3.fsf@intel.com>
+ <YgaDj6Wld4b7S6DF@smile.fi.intel.com>
+ <f87ce2fa-6b18-f985-eb86-506ce7103db3@suse.de>
+ <YgoxFBGNsrezVxmi@smile.fi.intel.com>
+ <5ee24960-7843-827a-2c47-b93a4b4798e3@suse.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [5.17 regression] "x86/PCI: Ignore E820 reservations for bridge
- windows on newer systems" breaks suspend/resume
-Content-Language: en-US
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        linux-acpi <linux-acpi@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>, x86@kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>
-References: <a7ad05fe-c2ab-a6d9-b66e-68e8c5688420@redhat.com>
- <697aaf96-ec60-4e11-b011-0e4151e714d7@redhat.com> <YgKcl9YX4HfjqZxS@lahna>
- <02994528-aaad-5259-1774-19aeacdd18fc@redhat.com> <YgPlQ6UK3+4/yzLk@lahna>
- <2f01e99d-e830-d03c-3a9d-30b95726cc2c@redhat.com> <YgSzNAlfgcrm8ykH@lahna>
- <039f9e8d-6e29-0288-606a-1d298e026c97@redhat.com> <YgpcYHZ1fxnBiUjV@lahna>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YgpcYHZ1fxnBiUjV@lahna>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5ee24960-7843-827a-2c47-b93a4b4798e3@suse.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, Feb 14, 2022 at 01:12:48PM +0100, Thomas Zimmermann wrote:
+> Am 14.02.22 um 11:38 schrieb Andy Shevchenko:
+> > On Mon, Feb 14, 2022 at 10:03:53AM +0100, Thomas Zimmermann wrote:
+> > > Am 11.02.22 um 16:41 schrieb Andy Shevchenko:
 
-On 2/14/22 14:42, Mika Westerberg wrote:
-> Hi Hans,
+...
+
+> > > > > IMO *always* prefer a for loop over while or do-while.
+> > > > > 
+> > > > > The for (i = 0; i < N; i++) is such a strong paradigm in C. You
+> > > > > instantly know how many times you're going to loop, at a glance. Not so
+> > > > > with with the alternatives, which should be used sparingly.
+> > > > 
+> > > > while () {}  _is_ a paradigm, for-loop is syntax sugar on top of it.
+> > > 
+> > > Naw, that's not true.
+> > 
+> > In the section 3.5 "Loops - While and For" in "The C Programming
+> > Language" 2nd by K&R, the authors said:
 > 
-> On Mon, Feb 14, 2022 at 01:42:29PM +0100, Hans de Goede wrote:
->> Hi,
->>
->> On 2/10/22 07:39, Mika Westerberg wrote:
->>> Hi Hans,
->>>
->>> On Wed, Feb 09, 2022 at 05:08:13PM +0100, Hans de Goede wrote:
->>>> As mentioned in my email from 10 seconds ago I think a better simpler
->>>> fix would be to just do:
->>>>
->>>> diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
->>>> index 9b9fb7882c20..18656f823764 100644
->>>> --- a/arch/x86/kernel/resource.c
->>>> +++ b/arch/x86/kernel/resource.c
->>>> @@ -28,6 +28,10 @@ static void remove_e820_regions(struct resource *avail)
->>>>  	int i;
->>>>  	struct e820_entry *entry;
->>>>  
->>>> +	/* Only remove E820 reservations on classic BIOS boot */
->>>> +	if (efi_enabled(EFI_MEMMAP))
->>>> +		return;
->>>> +
->>>>  	for (i = 0; i < e820_table->nr_entries; i++) {
->>>>  		entry = &e820_table->entries[i];
->>>>  
->>>>
->>>> I'm curious what you think of that?
->>>
->>> I'm not an expert in this e820 stuff but this one looks really simple
->>> and makes sense to me. So definitely should go with it assuming there
->>> are no objections from the x86 maintainers.
->>
->> Unfortunately with this suspend/resume is still broken on the ThinkPad
->> X1 carbon gen 2 of the reporter reporting the regression. The reporter
->> has been kind enough to also test in EFI mode (at my request) and then
->> the problem is back again with this patch. So just differentiating
->> between EFI / non EFI mode is not an option.
+> Year of publication: 1988 . It's not the most up-to-date reference for C
+> programming.
+
+Yet this makes your above remark invalid, i.e. `for` _is_ syntax sugar despite
+what you think it's idiomatic _nowadays_.
+
+> > 	The for statement ... is equivalent to ... while..."
+> > 
+> > They said that for is equivalent to while, and not otherwise.
 > 
-> Thanks for the update! Too bad that it did not solve the regression, though :(
+> Even leaving readability aside, it's not equivalent. You can declare
+> variables as part of the for statement. (I know it's not the kernel's
+> style.) Also, 'continue' statements are not well-suited in for loops,
+> because it's non-obvious if the loop's update statement is being executed.
+> (It isn't.)
+
+It's also written in the book :-)
+
+> > Also, syntax sugar by definition declares something that can be written as
+> > a single line of code, which usually is done using more (not always).
 > 
->> FYI, here is what I believe is the root-cause of the issue on the ThinkPad X1 carbon gen 2:
->>
->> The E820 reservations table has the following in both BIOS and EFI boot modes:
->>
->> [    0.000000] BIOS-e820: [mem 0x00000000dceff000-0x00000000dfa0ffff] reserved
->>
->> Which has a small overlap with:
->>
->> [    0.884684] pci_bus 0000:00: root bus resource [mem 0xdfa00000-0xfebfffff window]
->>
->> This leads to the following difference in assignments of PCI resources when honoring E820 reservations
->>
->> [    0.966573] pci 0000:00:1c.0: BAR 14: assigned [mem 0xdfb00000-0xdfcfffff]
->> [    0.966698] pci_bus 0000:02: resource 1 [mem 0xdfb00000-0xdfcfffff]
->>
->> vs the following when ignoring E820 reservations:
->>
->> [    0.966850] pci 0000:00:1c.0: BAR 14: assigned [mem 0xdfa00000-0xdfbfffff]
->> [    0.966973] pci_bus 0000:02: resource 1 [mem 0xdfa00000-0xdfbfffff]
->>
->> And the overlap of 0xdfa00000-0xdfa0ffff from the e820 reservations seems to be what is causing the suspend/resume issue.
-> 
-> Any idea what is using that range?
+> The discussion has entered the phase of hair splitting. Good.
 
-No, no clue I'm afraid.
+I don't know why we are adding an oil into the flames...
 
->> ###
->>
->> As already somewhat discussed, I'll go and prepare this solution instead:
->>
->> 1. Add E820_TYPE_MMIO to enum e820_type and modify the 2 places which check for
->>    type == reserved to treat this as reserved too, so as to not have any
->>    functional changes there
->>
->> 2. Modify the code building e820 tables from the EFI memmap to use
->>    E820_TYPE_MMIO for MMIO EFI memmap entries.
->>
->> 3. Modify arch/x86/kernel/resource.c: remove_e820_regions() to skip
->>    e820 table entries with a type of E820_TYPE_MMIO,
->>    this would actually be a functional change and should fix the
->>    issues we are trying to fix.
-> 
-> Given the above regression, I can't think of a better way to solve this.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Ack, note I'm still waiting for efi=debug output from the X1 carbon gen 2,
-so I hope that what seems to be the conflicting range is not also marked
-as EFI_MEMORY_MAPPED_IO. Otherwise things will get a bit more complicated (*)
-
-Regards,
-
-Hans
-
-*) On the systems where the EFI_MEMORY_MAPPED_IO memmap entries are causing
-issues they fully overlap the PCI bridge window, so we can use that as an
-extra check if necessary.
-
-
-
-
-> 
 
