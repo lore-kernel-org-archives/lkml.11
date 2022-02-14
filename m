@@ -2,115 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D72ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 571F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbiBNVSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:18:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35994 "EHLO
+        id S230457AbiBNVSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:18:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230199AbiBNVSR (ORCPT
+        with ESMTP id S230396AbiBNVSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:18:17 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE1F137591
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:18:06 -0800 (PST)
-Received: from epcas3p2.samsung.com (unknown [182.195.41.20])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220214211801epoutp0103a521b3b01a7263318424e716b22de9~Tw7eCaop52838128381epoutp01n
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:18:01 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220214211801epoutp0103a521b3b01a7263318424e716b22de9~Tw7eCaop52838128381epoutp01n
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1644873481;
-        bh=kLg3y1C57MGd7CXzhXTwI+7lw2u17ZSVQ9SR0owpbzU=;
-        h=Subject:Reply-To:From:To:Date:References:From;
-        b=dBF2VOqNcZ4j2L+Ow/qQgKwqFiInlx3/E1am2ekyouxZMQUsOlERyRyJwmmjbQM7N
-         Z6XP4ro9JYhmbItyrvvV6HypJm7+POAEPA9VQZ16hK5n12gxA0k9juEFY1Jsn/GzDw
-         HHq4oIoI/Y8T/gU2NboNhpFS+oroYhMykLZiWXag=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas3p4.samsung.com (KnoxPortal) with ESMTP id
-        20220214211801epcas3p453913a49631a117b8d2f4955cfe6cfb4~Tw7dcAUIH2286722867epcas3p4_;
-        Mon, 14 Feb 2022 21:18:01 +0000 (GMT)
-Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp2.localdomain
-        (Postfix) with ESMTP id 4JyHBK1N72z4x9Pv; Mon, 14 Feb 2022 21:18:01 +0000
-        (GMT)
-Mime-Version: 1.0
-Subject: [PATCH] scsi: ufs: Fix divide zero case in ufshcd_map_queues()
-Reply-To: j-young.choi@samsung.com
-Sender: Jinyoung CHOI <j-young.choi@samsung.com>
-From:   Jinyoung CHOI <j-young.choi@samsung.com>
-To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "cang@codeaurora.org" <cang@codeaurora.org>,
-        "asutoshd@codeaurora.org" <asutoshd@codeaurora.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <1891546521.01644873481638.JavaMail.epsvc@epcpadp4>
-Date:   Mon, 14 Feb 2022 19:33:52 +0900
-X-CMS-MailID: 20220214103352epcms2p79697c0fcaa2755dd89af9de887ff14cd
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220214103352epcms2p79697c0fcaa2755dd89af9de887ff14cd
-References: <CGME20220214103352epcms2p79697c0fcaa2755dd89af9de887ff14cd@epcms2p7>
+        Mon, 14 Feb 2022 16:18:24 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2991D13C243
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:18:14 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id 4so18772716oil.11
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:18:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lUDAX0UaDPTHJ9u8BBzfbhja83Bgj8HqOrB2yYnjOXM=;
+        b=VFULTseLnwoWoQSLrikwObkqrgWEDJsgEoShox8nAP9wuMRLYLSmINgZVPuS4zJCYq
+         AY+rJI2tTabEed97CNniygA5XGKmOrXxLL+dqf5LJsVaIMA+QxlQKmlOxLVW3MPyEQOW
+         ZtZ4oDJOQLly/BilNjT4JcO3Qc4hVnFdspg2L6GzChP02kiowqdnpSk3qcJBLKZzsP0E
+         LQOUETeZSPr1OgoOyaK1JtHOTBP1ihk0bK5wukpFaWyN8SjOlX96peTYbEzeUHuSIcP3
+         kErjTwCsp+aGM83fy1ZyKBkFtKkFORMEFCjsOWRHwsOb1sx0pkSNSAWQmxneJL40R6Rz
+         fXKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lUDAX0UaDPTHJ9u8BBzfbhja83Bgj8HqOrB2yYnjOXM=;
+        b=x4BjQYd41J76UTSPC3ac8L9oysTAKVksMbjFlGYgnzqXGk3cPO7YmRYimx19iv3mib
+         Pqm8rUOFPTpFrDKXO5qNaF6y/xKhInunHJGAHvZOZ3i/BWRuRef2GpNNYPpGQPfMCwEA
+         AHSDiDptahWS5qLuHXatiXrFXU1XUbVI0ilSq/SshAIKuIwUqta278Rmv1wMgT62Tfln
+         7Q1rZ/eEcCIYL7vmBpvgzfa1s2uvODqSGFwHwVPPQ9QBgZB4nWqU3obKh4HOSFUCUy9W
+         jJoNizX+7f8YUb7/H8ZagHF8CniYwKnE11vRPB6vBDff0NRbEu4bc0u/7IACRAqpfl/6
+         OqeA==
+X-Gm-Message-State: AOAM532MguSng4hI9xB1droneinrwY9w5CMSTyske4NHVyahl2q8L5Es
+        GF9PaDnVpYaF9At7C31iOkCU8nBaXwKfFw==
+X-Google-Smtp-Source: ABdhPJxxpY4/tEbGo0g+V8BNk8kQ7NowXtqTBM2bOEDe8a9owPVdSth3Obtc2+mwubfJzK+qB57Q9Q==
+X-Received: by 2002:a17:90a:1b2c:b0:1b8:ab57:309f with SMTP id q41-20020a17090a1b2c00b001b8ab57309fmr248913pjq.48.1644866647585;
+        Mon, 14 Feb 2022 11:24:07 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id nn16sm15099137pjb.2.2022.02.14.11.24.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 11:24:06 -0800 (PST)
+Date:   Mon, 14 Feb 2022 19:24:03 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com
+Subject: Re: [PATCH 12/12] KVM: x86: do not unload MMU roots on all role
+ changes
+Message-ID: <YgqsU8j80M1ZpWPx@google.com>
+References: <20220209170020.1775368-1-pbonzini@redhat.com>
+ <20220209170020.1775368-13-pbonzini@redhat.com>
+ <YgavcP/jb5njjKKn@google.com>
+ <5f42d1ef-f6b7-c339-32b9-f4cf48c21841@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5f42d1ef-f6b7-c339-32b9-f4cf48c21841@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before calling blk_mq_map_queues(), the mq_map and nr_queues belonging
-to "struct blk_mq_queue_map" must be a vaild value.
+On Mon, Feb 14, 2022, Paolo Bonzini wrote:
+> On 2/11/22 19:48, Sean Christopherson wrote:
+> > On Wed, Feb 09, 2022, Paolo Bonzini wrote:
+> > > @@ -5045,8 +5046,8 @@ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
+> > >   void kvm_mmu_reset_context(struct kvm_vcpu *vcpu)
+> > >   {
+> > > -	kvm_mmu_unload(vcpu);
+> > >   	kvm_init_mmu(vcpu);
+> > > +	kvm_mmu_new_pgd(vcpu, vcpu->arch.cr3);
+> > 
+> > This is too risky IMO, there are far more flows than just MOV CR0/CR4 that are
+> > affected, e.g. SMM transitions, KVM_SET_SREG, etc...
+> 
+> SMM exit does flush the TLB because RSM clears CR0.PG (I did check this :)).
+> SMM re-entry then does not need to flush.  But I don't think SMM exit should
+> flush the TLB *for non-SMM roles*.
 
-If nr_queues is set to 0, the system may encounter the "divide zero"
-depending on the type of architecture.
+I'm not concerned about the TLB flush aspects so much as the addition of
+kvm_mmu_new_pgd() in new paths.
 
-    blk_mq_map_queues() -> queue_index()
+> For KVM_SET_SREGS I'm not sure if it should flush the TLB, but I agree it is
+> certainly safer to keep it that way.
+> 
+> > Given that kvm_post_set_cr{0,4}() and kvm_vcpu_reset() explicitly handle CR0.PG
+> > and CR4.SMEP toggling, I highly doubt the other flows are correct in all instances.
+> > The call to kvm_mmu_new_pgd() is also
+> 
+> *white noise*
+> 
+> > To minimize risk, we should leave kvm_mmu_reset_context() as is (rename it if
+> > necessary) and instead add a new helper to handle kvm_post_set_cr{0,4}().  In
+> > the future we can/should work on avoiding unload in all paths, but again, future
+> > problem.
+> 
+> I disagree on this.  There aren't many calls to kvm_mmu_reset_context.
 
-Signed-off-by: Jinyoung Choi <j-young.choi@samsung.com>
----
- drivers/scsi/ufs/ufshcd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+All the more reason to do things incrementally.  I have no objection to allowing
+all flows to reuse a cached (or current) root, I'm objecting to converting them
+all in a single patch.  
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 41d85b69fa50..36c5ca62ae0c 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -2674,21 +2674,21 @@ static int ufshcd_map_queues(struct Scsi_Host *shost)
- 	for (i = 0; i < shost->nr_maps; i++) {
- 		struct blk_mq_queue_map *map = &shost->tag_set.map[i];
- 
- 		switch (i) {
- 		case HCTX_TYPE_DEFAULT:
- 		case HCTX_TYPE_POLL:
- 			map->nr_queues = 1;
- 			break;
- 		case HCTX_TYPE_READ:
- 			map->nr_queues = 0;
--			break;
-+			continue;
- 		default:
- 			WARN_ON_ONCE(true);
- 		}
- 		map->queue_offset = 0;
- 		ret = blk_mq_map_queues(map);
- 		WARN_ON_ONCE(ret);
- 	}
- 
- 	return 0;
- }
--- 
-2.25.1
+> > > -	if ((cr0 ^ old_cr0) & KVM_MMU_CR0_ROLE_BITS)
+> > > +	if ((cr0 ^ old_cr0) & KVM_MMU_CR0_ROLE_BITS) {
+> > > +		/* Flush the TLB if CR0 is changed 1 -> 0.  */
+> > > +		if ((old_cr0 & X86_CR0_PG) && !(cr0 & X86_CR0_PG))
+> > > +			kvm_mmu_unload(vcpu);
+> > 
+> > Calling kvm_mmu_unload() instead of requesting a flush isn't coherent with respect
+> > to the comment, or with SMEP handling.  And the SMEP handling isn't coherent with
+> > respect to the changelog.  Please elaborate :-)
+> 
+> Yep, will do (the CR0.PG=0 case is similar to the CR0.PCIDE=0 case below).
+
+Oh, you're freeing all roots to ensure a future MOV CR3 with NO_FLUSH and PCIDE=1
+can't reuse a stale root.  That's necessary if and only if the MMU is shadowing
+the guest, non-nested TDP MMUs just need to flush the guest's TLB.  The same is
+true for the PCIDE case, i.e. we could optimize that too, though the main motivation
+would be to clarify why all roots are unloaded.
+
+> Using kvm_mmu_unload() avoids loading a cached root just to throw it away
+> immediately after,
+
+The shadow paging case will throw it away, but not the non-nested TDP MMU case?
+
+> but I can change this to a new KVM_REQ_MMU_UPDATE_ROOT flag that does
+> 
+> 	kvm_mmu_new_pgd(vcpu, vcpu->arch.cr3);
+
+I don't think that's necessary, I was just confused by the discrepancy.
+
+> By the way, I have a possibly stupid question.  In kvm_set_cr3 (called e.g.
+> from emulator_set_cr()) there is
+> 
+>  	if (cr3 != kvm_read_cr3(vcpu))
+> 		kvm_mmu_new_pgd(vcpu, cr3);
+> 
+> What makes this work if mmu_is_nested(vcpu)?
+
+Hmm, nothing.  VMX is "broken" anyways because it will kick out to userspace with
+X86EMUL_UNHANDLEABLE due to the CR3 intercept check.  SVM is also broken in that
+it doesn't check INTERCEPT_CR3_WRITE, e.g. will do the wrong thing even if L1 wants
+to intercept CR3 accesses.
+
+> Should this also have an "if (... & !tdp_enabled)"?
+
+Yes?  That should avoid the nested mess.  This patch also needs to handle CR0 and
+CR4 modifications if L2 is active, e.g. if L1 choose not to intercept CR0/CR4.
+kvm_post_set_cr_reinit_mmu() would be a lovely landing spot for that check :-D
