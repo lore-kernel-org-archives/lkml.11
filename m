@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53444C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345395AbiBNJ4q (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:56:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34520 "EHLO
+        id S239047AbiBNJ5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:57:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344040AbiBNJva (ORCPT
+        with ESMTP id S1344945AbiBNJwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D017D77A8F;
-        Mon, 14 Feb 2022 01:42:26 -0800 (PST)
+        Mon, 14 Feb 2022 04:52:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CD77B574;
+        Mon, 14 Feb 2022 01:43:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E78861190;
-        Mon, 14 Feb 2022 09:42:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36ACAC340EF;
-        Mon, 14 Feb 2022 09:42:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CFAEB80DC7;
+        Mon, 14 Feb 2022 09:43:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75AE9C340E9;
+        Mon, 14 Feb 2022 09:43:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831745;
-        bh=HplwvKpp5VJPeBLdS9DXxmGhlP/ITLAVomu1IwBK4Xw=;
+        s=korg; t=1644831809;
+        bh=QL7IgnnS5NEn5+xPkax9kNlJwf421H3w804yKiFyQHE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZAeraOBIbdZiBF8hT2m+1ipKbgM9EUgQFtcYj54utCUNeEcAytMCTjH/4zRoYkjaq
-         qPaENcuufEgXe51oH1Eyql3ONDX/kOGaIi0Wev5H6LgYRDIMxQ7PSRml8FhbOo3Zn7
-         MuLR4EtpLE/FGUJ7rpliuLb4coMXOyJjvSNNZh28=
+        b=k1bGiqPhNKPZCUaA0VnO1mydzaBhRhBipvOR3LfkPIqNu+g8qGev+3BXWk0hT8nD0
+         T/1vZdxIezA9k7UvWNU3mF8OFi4dihjHZ98Z4F8pj+Tyn5CtTVG7+VgYrh3kuqCST6
+         Qy8tseE40duGDzgHVvzXZf5rQsw4bzB9cSdgK81Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 083/116] ice: fix an error code in ice_cfg_phy_fec()
-Date:   Mon, 14 Feb 2022 10:26:22 +0100
-Message-Id: <20220214092501.633966186@linuxfoundation.org>
+Subject: [PATCH 5.10 072/116] net: dsa: felix: dont use devres for mdiobus
+Date:   Mon, 14 Feb 2022 10:26:11 +0100
+Message-Id: <20220214092501.249190045@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -51,36 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 21338d58736ef70eaae5fd75d567a358ff7902f9 ]
+[ Upstream commit 209bdb7ec6a28c7cdf580a0a98afbc9fc3b98932 ]
 
-Propagate the error code from ice_get_link_default_override() instead
-of returning success.
+As explained in commits:
+74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
+5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
 
-Fixes: ea78ce4dab05 ("ice: add link lenient and default override support")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+mdiobus_free() will panic when called from devm_mdiobus_free() <-
+devres_release_all() <- __device_release_driver(), and that mdiobus was
+not previously unregistered.
+
+The Felix VSC9959 switch is a PCI device, so the initial set of
+constraints that I thought would cause this (I2C or SPI buses which call
+->remove on ->shutdown) do not apply. But there is one more which
+applies here.
+
+If the DSA master itself is on a bus that calls ->remove from ->shutdown
+(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
+between the switch and the DSA master, and device_links_unbind_consumers()
+will unbind the felix switch driver on shutdown.
+
+So the same treatment must be applied to all DSA switch drivers, which
+is: either use devres for both the mdiobus allocation and registration,
+or don't use devres at all.
+
+The felix driver has the code structure in place for orderly mdiobus
+removal, so just replace devm_mdiobus_alloc_size() with the non-devres
+variant, and add manual free where necessary, to ensure that we don't
+let devres free a still-registered bus.
+
+Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 64714757bd4f4..2b0d0373ab2c6 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -3032,7 +3032,8 @@ ice_cfg_phy_fec(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
- 	if (fec == ICE_FEC_AUTO && ice_fw_supports_link_override(pi->hw)) {
- 		struct ice_link_default_override_tlv tlv;
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 2e5bbdca5ea47..cd8d9b0e0edb3 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1050,7 +1050,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 		return PTR_ERR(hw);
+ 	}
  
--		if (ice_get_link_default_override(&tlv, pi))
-+		status = ice_get_link_default_override(&tlv, pi);
-+		if (status)
- 			goto out;
+-	bus = devm_mdiobus_alloc_size(dev, sizeof(*mdio_priv));
++	bus = mdiobus_alloc_size(sizeof(*mdio_priv));
+ 	if (!bus)
+ 		return -ENOMEM;
  
- 		if (!(tlv.options & ICE_LINK_OVERRIDE_STRICT_MODE) &&
+@@ -1070,6 +1070,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	rc = mdiobus_register(bus);
+ 	if (rc < 0) {
+ 		dev_err(dev, "failed to register MDIO bus\n");
++		mdiobus_free(bus);
+ 		return rc;
+ 	}
+ 
+@@ -1119,6 +1120,7 @@ static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
+ 		lynx_pcs_destroy(pcs);
+ 	}
+ 	mdiobus_unregister(felix->imdio);
++	mdiobus_free(felix->imdio);
+ }
+ 
+ static void vsc9959_sched_speed_set(struct ocelot *ocelot, int port,
 -- 
 2.34.1
 
