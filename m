@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4744AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C13D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347048AbiBNKXY (ORCPT
+        id S1346728AbiBNKX3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:23:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49684 "EHLO
+        Mon, 14 Feb 2022 05:23:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347501AbiBNKVS (ORCPT
+        with ESMTP id S1347535AbiBNKVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:21:18 -0500
+        Mon, 14 Feb 2022 05:21:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790DD6E2B4;
-        Mon, 14 Feb 2022 01:55:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D147D29B;
+        Mon, 14 Feb 2022 01:55:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11EA5B80DC8;
-        Mon, 14 Feb 2022 09:55:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D147C340E9;
-        Mon, 14 Feb 2022 09:55:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF55FB80DCD;
+        Mon, 14 Feb 2022 09:55:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10903C340E9;
+        Mon, 14 Feb 2022 09:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832541;
-        bh=bjoUDtJjdYhBbXWDCNWeCPkAHE8XCLOofGzvfH6ksWQ=;
+        s=korg; t=1644832529;
+        bh=l0PJjO+e5VJdWj/04DSb6gvQ/YyKbHI2YE4QxJza6hs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J9/vclSDm6oFSWBllszTrBuU/vvY7u2WJyg4TzZpZ64H1AZl2DEh8i/MyAbpUIXg+
-         Nh0ovfkxrf/F+t3XT33+LNNt7X6Wcyp/jbwVEQOd784QvtiFrt+jU2VBd6ZiaMoIf2
-         S7QMWCt3mYh1V3oAENyAiBwohEA8lzJBsiTHFWJg=
+        b=Ug/G4alaMp76I/s5AYBXYzXvsx6P9C1COZp0zoKXfzHXTMc5/ZUCOD3nQUMpKwMVT
+         LbesKQpE4dNsvmyaV54CMbBfw9ZVw1uCT1c69NtgY+qVOc0buq1iNIBAioNtOO+bP+
+         CK061/mGeRlUeyPgLQ3RRwV3U0BZ2F70nU9HAB18=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 048/203] scsi: pm8001: Fix bogus FW crash for maxcpus=1
-Date:   Mon, 14 Feb 2022 10:24:52 +0100
-Message-Id: <20220214092511.849135534@linuxfoundation.org>
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 012/203] net: phy: marvell: Fix RGMII Tx/Rx delays setting in 88e1121-compatible PHYs
+Date:   Mon, 14 Feb 2022 10:24:16 +0100
+Message-Id: <20220214092510.636380201@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,84 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Garry <john.garry@huawei.com>
+From: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
 
-[ Upstream commit 62afb379a0fee7e9c2f9f68e1abeb85ceddf51b9 ]
+commit fe4f57bf7b585dca58f1496c4e2481ecbae18126 upstream.
 
-According to the comment in check_fw_ready() we should not check the
-IOP1_READY field in register SCRATCH_PAD_1 for 8008 or 8009 controllers.
+It is mandatory for a software to issue a reset upon modifying RGMII
+Receive Timing Control and RGMII Transmit Timing Control bit fields of MAC
+Specific Control register 2 (page 2, register 21) otherwise the changes
+won't be perceived by the PHY (the same is applicable for a lot of other
+registers). Not setting the RGMII delays on the platforms that imply it'
+being done on the PHY side will consequently cause the traffic loss. We
+discovered that the denoted soft-reset is missing in the
+m88e1121_config_aneg() method for the case if the RGMII delays are
+modified but the MDIx polarity isn't changed or the auto-negotiation is
+left enabled, thus causing the traffic loss on our platform with Marvell
+Alaska 88E1510 installed. Let's fix that by issuing the soft-reset if the
+delays have been actually set in the m88e1121_config_aneg_rgmii_delays()
+method.
 
-However we check this very field in process_oq() for processing the highest
-index interrupt vector. The highest interrupt vector is checked as the FW
-is programmed to signal fatal errors through this irq.
-
-Change that function to not check IOP1_READY for those mentioned
-controllers, but do check ILA_READY in both cases.
-
-The reason I assume that this was not hit earlier was because we always
-allocated 64 MSI(X), and just did not pass the vector index check in
-process_oq(), i.e.  the handler never ran for vector index 63.
-
-Link: https://lore.kernel.org/r/1642508105-95432-1-git-send-email-john.garry@huawei.com
-Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: d6ab93364734 ("net: phy: marvell: Avoid unnecessary soft reset")
+Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+Link: https://lore.kernel.org/r/20220205203932.26899-1-Pavel.Parkhomenko@baikalelectronics.ru
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 16 ++++++++++++++--
- drivers/scsi/pm8001/pm80xx_hwi.h |  6 +++++-
- 2 files changed, 19 insertions(+), 3 deletions(-)
+ drivers/net/phy/marvell.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 2101fc5761c3c..4c5b945bf3187 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4161,10 +4161,22 @@ static int process_oq(struct pm8001_hba_info *pm8001_ha, u8 vec)
- 	u32 ret = MPI_IO_STATUS_FAIL;
- 	u32 regval;
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -553,9 +553,9 @@ static int m88e1121_config_aneg_rgmii_de
+ 	else
+ 		mscr = 0;
  
-+	/*
-+	 * Fatal errors are programmed to be signalled in irq vector
-+	 * pm8001_ha->max_q_num - 1 through pm8001_ha->main_cfg_tbl.pm80xx_tbl.
-+	 * fatal_err_interrupt
-+	 */
- 	if (vec == (pm8001_ha->max_q_num - 1)) {
-+		u32 mipsall_ready;
-+
-+		if (pm8001_ha->chip_id == chip_8008 ||
-+		    pm8001_ha->chip_id == chip_8009)
-+			mipsall_ready = SCRATCH_PAD_MIPSALL_READY_8PORT;
-+		else
-+			mipsall_ready = SCRATCH_PAD_MIPSALL_READY_16PORT;
-+
- 		regval = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1);
--		if ((regval & SCRATCH_PAD_MIPSALL_READY) !=
--					SCRATCH_PAD_MIPSALL_READY) {
-+		if ((regval & mipsall_ready) != mipsall_ready) {
- 			pm8001_ha->controller_fatal_error = true;
- 			pm8001_dbg(pm8001_ha, FAIL,
- 				   "Firmware Fatal error! Regval:0x%x\n",
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.h b/drivers/scsi/pm8001/pm80xx_hwi.h
-index c7e5d93bea924..c41ed039c92ac 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.h
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.h
-@@ -1405,8 +1405,12 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
- #define SCRATCH_PAD_BOOT_LOAD_SUCCESS	0x0
- #define SCRATCH_PAD_IOP0_READY		0xC00
- #define SCRATCH_PAD_IOP1_READY		0x3000
--#define SCRATCH_PAD_MIPSALL_READY	(SCRATCH_PAD_IOP1_READY | \
-+#define SCRATCH_PAD_MIPSALL_READY_16PORT	(SCRATCH_PAD_IOP1_READY | \
- 					SCRATCH_PAD_IOP0_READY | \
-+					SCRATCH_PAD_ILA_READY | \
-+					SCRATCH_PAD_RAAE_READY)
-+#define SCRATCH_PAD_MIPSALL_READY_8PORT	(SCRATCH_PAD_IOP0_READY | \
-+					SCRATCH_PAD_ILA_READY | \
- 					SCRATCH_PAD_RAAE_READY)
+-	return phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
+-				MII_88E1121_PHY_MSCR_REG,
+-				MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
++	return phy_modify_paged_changed(phydev, MII_MARVELL_MSCR_PAGE,
++					MII_88E1121_PHY_MSCR_REG,
++					MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
+ }
  
- /* boot loader state */
--- 
-2.34.1
-
+ static int m88e1121_config_aneg(struct phy_device *phydev)
+@@ -569,11 +569,13 @@ static int m88e1121_config_aneg(struct p
+ 			return err;
+ 	}
+ 
++	changed = err;
++
+ 	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
+ 	if (err < 0)
+ 		return err;
+ 
+-	changed = err;
++	changed |= err;
+ 
+ 	err = genphy_config_aneg(phydev);
+ 	if (err < 0)
 
 
