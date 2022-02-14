@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77527C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243114AbiBNJiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:38:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52558 "EHLO
+        id S230344AbiBNJiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:38:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245553AbiBNJgu (ORCPT
+        with ESMTP id S244273AbiBNJft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:50 -0500
+        Mon, 14 Feb 2022 04:35:49 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B98652C6;
-        Mon, 14 Feb 2022 01:34:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB6C65786;
+        Mon, 14 Feb 2022 01:33:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EDFCB80DCB;
-        Mon, 14 Feb 2022 09:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FB09C340E9;
-        Mon, 14 Feb 2022 09:34:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C9ABB80DCB;
+        Mon, 14 Feb 2022 09:33:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 165BDC340E9;
+        Mon, 14 Feb 2022 09:33:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831283;
-        bh=qlTXMgDZRk4SlT/fqVq8NbjrNQm0Jg7jri67W8G3os0=;
+        s=korg; t=1644831206;
+        bh=AQ1COmJn2gU97ypPJQ/vb3IDFfk2ENcFKsaIJ9vgvG8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VMO/ZCUyvUA8gvsVct6v/kb7mGQbG0p5TTdxxb99Nt50ZC7tCqv50K7A0015BZdup
-         pjQqRaiaUQRscD1u2bzX9k/6SidPd/6zoMuSp2niVlUBoDj1r/UJ7JGFBqEUaHRr8D
-         Bf4a5IIK+K8SH9RjpHCI5zUt67hpvqbU2EvgRT6M=
+        b=Do1+A/u9r684DO7cbmtsnah1PfQJg4Qgv8FZvkDncCh8bdC38rOIpxC9HclaGCb2K
+         7Phhqi+y3EvUMWHyy2YMCcR24hnD83kDsiTE0j9sMR4nqrntb400t7zF7ArBZ7+7o/
+         tXmBKuQgohGD5PA2ejizF5BTVqXrYkGEYNZZbmLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Selwin Sebastian <Selwin.Sebastian@amd.com>,
-        Raju Rangoju <Raju.Rangoju@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 33/49] net: amd-xgbe: disable interrupts during pci removal
-Date:   Mon, 14 Feb 2022 10:25:59 +0100
-Message-Id: <20220214092449.386726834@linuxfoundation.org>
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 23/49] staging: fbtft: Fix error path in fbtft_driver_module_init()
+Date:   Mon, 14 Feb 2022 10:25:49 +0100
+Message-Id: <20220214092449.059940035@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -51,39 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Raju Rangoju <Raju.Rangoju@amd.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 68c2d6af1f1e469544d6cbe9a601d96fb9c00e7f ]
+[ Upstream commit 426aca16e903b387a0b0001d62207a745c67cfd3 ]
 
-Hardware interrupts are enabled during the pci probe, however,
-they are not disabled during pci removal.
+If registering the platform driver fails, the function must not return
+without undoing the spi driver registration first.
 
-Disable all hardware interrupts during pci removal to avoid any
-issues.
-
-Fixes: e75377404726 ("amd-xgbe: Update PCI support to use new IRQ functions")
-Suggested-by: Selwin Sebastian <Selwin.Sebastian@amd.com>
-Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: c296d5f9957c ("staging: fbtft: core support")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220118181338.207943-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/staging/fbtft/fbtft.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-index 7b86240ecd5fe..c4f1fc97987ae 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-@@ -418,6 +418,9 @@ static void xgbe_pci_remove(struct pci_dev *pdev)
- 
- 	pci_free_irq_vectors(pdata->pcidev);
- 
-+	/* Disable all interrupts in the hardware */
-+	XP_IOWRITE(pdata, XP_INT_EN, 0x0);
-+
- 	xgbe_free_pdata(pdata);
- }
- 
+diff --git a/drivers/staging/fbtft/fbtft.h b/drivers/staging/fbtft/fbtft.h
+index 798a8fe98e957..247d0c23bb753 100644
+--- a/drivers/staging/fbtft/fbtft.h
++++ b/drivers/staging/fbtft/fbtft.h
+@@ -332,7 +332,10 @@ static int __init fbtft_driver_module_init(void)                           \
+ 	ret = spi_register_driver(&fbtft_driver_spi_driver);               \
+ 	if (ret < 0)                                                       \
+ 		return ret;                                                \
+-	return platform_driver_register(&fbtft_driver_platform_driver);    \
++	ret = platform_driver_register(&fbtft_driver_platform_driver);     \
++	if (ret < 0)                                                       \
++		spi_unregister_driver(&fbtft_driver_spi_driver);           \
++	return ret;                                                        \
+ }                                                                          \
+ 									   \
+ static void __exit fbtft_driver_module_exit(void)                          \
 -- 
 2.34.1
 
