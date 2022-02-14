@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB326C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346567AbiBNKVf (ORCPT
+        id S1346794AbiBNKUm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:21:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44744 "EHLO
+        Mon, 14 Feb 2022 05:20:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346218AbiBNKRs (ORCPT
+        with ESMTP id S1346914AbiBNKQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:17:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F259A7CDF3;
-        Mon, 14 Feb 2022 01:54:48 -0800 (PST)
+        Mon, 14 Feb 2022 05:16:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72557B57C;
+        Mon, 14 Feb 2022 01:53:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C21AB80DD4;
-        Mon, 14 Feb 2022 09:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30EF1C340E9;
-        Mon, 14 Feb 2022 09:54:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCE9D60F25;
+        Mon, 14 Feb 2022 09:53:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94FBEC340E9;
+        Mon, 14 Feb 2022 09:53:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832486;
-        bh=Zgwca39LIUpGLZ62CO/FtDwq+uINYpeQGJ1NAqdiEEI=;
+        s=korg; t=1644832389;
+        bh=2bxlapIbZ7DOSdflx2EZloe76yIzRk8iWg3zk2A8E8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W1ZqDFsipAa+jjTmpCKSKILXzVDH2FxRXmTSx9DNyqtLc+XyjKF80ApoX7xOLWkcb
-         NVzdpBKYj2kziVdsRikEJSgYFbFFUPShDxiSNRbHkQ5M+YUWxuEfoAwJ6PMve3A9kE
-         0s34DRnMttCLi6C1zKMubhdOEvQ09ZInoxOX3yHU=
+        b=Q8EFZldfW3N1MEzcjbzfmit8NVZJIqxR3OeCVZb8ZAa6oFH4fl2nHz7h2bcAXl2Li
+         Q7pvBNx2hBS16FON+ILnOEUIudHS+7HNqLydJ06KWVtgrzWIkkEECAzYH0GiBqqVDK
+         W93SVGtMk62XNarJGf2flhCYwBJJ4cBRKSKrHjds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 029/203] SUNRPC allow for unspecified transport time in rpc_clnt_add_xprt
-Date:   Mon, 14 Feb 2022 10:24:33 +0100
-Message-Id: <20220214092511.200096671@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        stable@kernel.org, Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: [PATCH 5.15 139/172] Revert "usb: dwc2: drd: fix soft connect when gadget is unconfigured"
+Date:   Mon, 14 Feb 2022 10:26:37 +0100
+Message-Id: <20220214092511.203292225@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
+In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
+References: <20220214092506.354292783@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit b8a09619a56334414cbd7f935a0796240d0cc07e ]
+commit 736e8d89044c1c330967fb938fa766cd9e0d8af0 upstream.
 
-If the supplied argument doesn't specify the transport type, use the
-type of the existing rpc clnt and its existing transport.
+This reverts commit 269cbcf7b72de6f0016806d4a0cec1d689b55a87.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+It causes build errors as reported by the kernel test robot.
+
+Link: https://lore.kernel.org/r/202202112236.AwoOTtHO-lkp@intel.com
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 269cbcf7b72d ("usb: dwc2: drd: fix soft connect when gadget is unconfigured")
+Cc: stable@kernel.org
+Cc: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Cc: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/clnt.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/usb/dwc2/drd.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index a312ea2bc4405..c83fe618767c4 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -2900,7 +2900,7 @@ int rpc_clnt_add_xprt(struct rpc_clnt *clnt,
- 	unsigned long connect_timeout;
- 	unsigned long reconnect_timeout;
- 	unsigned char resvport, reuseport;
--	int ret = 0;
-+	int ret = 0, ident;
- 
- 	rcu_read_lock();
- 	xps = xprt_switch_get(rcu_dereference(clnt->cl_xpi.xpi_xpswitch));
-@@ -2914,8 +2914,11 @@ int rpc_clnt_add_xprt(struct rpc_clnt *clnt,
- 	reuseport = xprt->reuseport;
- 	connect_timeout = xprt->connect_timeout;
- 	reconnect_timeout = xprt->max_reconnect_timeout;
-+	ident = xprt->xprt_class->ident;
- 	rcu_read_unlock();
- 
-+	if (!xprtargs->ident)
-+		xprtargs->ident = ident;
- 	xprt = xprt_create_transport(xprtargs);
- 	if (IS_ERR(xprt)) {
- 		ret = PTR_ERR(xprt);
--- 
-2.34.1
-
+--- a/drivers/usb/dwc2/drd.c
++++ b/drivers/usb/dwc2/drd.c
+@@ -109,10 +109,8 @@ static int dwc2_drd_role_sw_set(struct u
+ 		already = dwc2_ovr_avalid(hsotg, true);
+ 	} else if (role == USB_ROLE_DEVICE) {
+ 		already = dwc2_ovr_bvalid(hsotg, true);
+-		if (hsotg->enabled) {
+-			/* This clear DCTL.SFTDISCON bit */
+-			dwc2_hsotg_core_connect(hsotg);
+-		}
++		/* This clear DCTL.SFTDISCON bit */
++		dwc2_hsotg_core_connect(hsotg);
+ 	} else {
+ 		if (dwc2_is_device_mode(hsotg)) {
+ 			if (!dwc2_ovr_bvalid(hsotg, false))
 
 
