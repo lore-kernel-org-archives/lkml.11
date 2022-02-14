@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB02C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347917AbiBNKdB (ORCPT
+        id S1347952AbiBNKdG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:33:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41262 "EHLO
+        Mon, 14 Feb 2022 05:33:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348959AbiBNKbN (ORCPT
+        with ESMTP id S1347902AbiBNKb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:31:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9819DD6D;
-        Mon, 14 Feb 2022 01:59:58 -0800 (PST)
+        Mon, 14 Feb 2022 05:31:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF18C9FAE8;
+        Mon, 14 Feb 2022 02:00:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D7D560C38;
-        Mon, 14 Feb 2022 09:59:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B5CCC340F0;
-        Mon, 14 Feb 2022 09:59:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B55C60B34;
+        Mon, 14 Feb 2022 10:00:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F57CC340E9;
+        Mon, 14 Feb 2022 10:00:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832797;
-        bh=fgTxHlgAuSLN0JbaPkeomaLEwcnrryB9lPiCvLTAvSo=;
+        s=korg; t=1644832803;
+        bh=p0GSrWSRYFcwVAlTWHkexOEppvNxSNDFbwq10rI/KzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y/TR2+VXMUgFS9mYyP34RC9ClyoCYqQSSap7gzDSyIsSmfFjjN8qxkXYybexhFlyS
-         2XTt0qdx+ywQoCU6zAAFtkNpOgX/uyGz9m4iv92viXKAWDhzNLPwXM3DFnxBWsUPLa
-         AqEx9z4XQFLi2N1N7iPokHhz6abeC0kTRJ9ViCpw=
+        b=ZxexTiaH6PadwzLe2+gcbrqQKardm3Ft7kUfO0UbSyouOWo5YhPo97k6ietqNfksf
+         xiGkulkWDqjbifUqxsBlDwvtrq2En/33cAoQJZpMc7bm1W2uQj+03/81P/mFRQs4kX
+         i9f0vKFvUM4T619jEFgUEnw4G7wIM+W2khmaoHU0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 127/203] ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE
-Date:   Mon, 14 Feb 2022 10:26:11 +0100
-Message-Id: <20220214092514.556008650@linuxfoundation.org>
+Subject: [PATCH 5.16 129/203] gpio: sifive: use the correct register to read output values
+Date:   Mon, 14 Feb 2022 10:26:13 +0100
+Message-Id: <20220214092514.619622657@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,79 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Niklas Cassel <niklas.cassel@wdc.com>
 
-[ Upstream commit dc0075ba7f387fe4c48a8c674b11ab6f374a6acc ]
+[ Upstream commit cc38ef936840ac29204d806deb4d1836ec509594 ]
 
-Commit 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while
-suspended to idle") made acpi_ec_dispatch_gpe() check
-pm_wakeup_pending(), but that is before canceling the SCI wakeup,
-so pm_wakeup_pending() is always true.  This causes the loop in
-acpi_ec_dispatch_gpe() to always terminate after one iteration which
-may not be correct.
+Setting the output of a GPIO to 1 using gpiod_set_value(), followed by
+reading the same GPIO using gpiod_get_value(), will currently yield an
+incorrect result.
 
-Address this issue by canceling the SCI wakeup earlier, from
-acpi_ec_dispatch_gpe() itself.
+This is because the SiFive GPIO device stores the output values in reg_set,
+not reg_dat.
 
-Fixes: 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while suspended to idle")
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Supply the flag BGPIOF_READ_OUTPUT_REG_SET to bgpio_init() so that the
+generic driver reads the correct register.
+
+Fixes: 96868dce644d ("gpio/sifive: Add GPIO driver for SiFive SoCs")
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+[Bartosz: added the Fixes tag]
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/ec.c    | 10 ++++++++++
- drivers/acpi/sleep.c | 14 ++++----------
- 2 files changed, 14 insertions(+), 10 deletions(-)
+ drivers/gpio/gpio-sifive.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
-index b9c44e6c5e400..1712990bf2ad8 100644
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -2051,6 +2051,16 @@ bool acpi_ec_dispatch_gpe(void)
- 	if (acpi_any_gpe_status_set(first_ec->gpe))
- 		return true;
- 
-+	/*
-+	 * Cancel the SCI wakeup and process all pending events in case there
-+	 * are any wakeup ones in there.
-+	 *
-+	 * Note that if any non-EC GPEs are active at this point, the SCI will
-+	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
-+	 * should be missed by canceling the wakeup here.
-+	 */
-+	pm_system_cancel_wakeup();
-+
- 	/*
- 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
- 	 * to allow the caller to process events properly after that.
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index 9f237dc9d45fc..8513410ca2fc2 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -739,21 +739,15 @@ bool acpi_s2idle_wake(void)
- 			return true;
- 		}
- 
--		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
-+		/*
-+		 * Check non-EC GPE wakeups and if there are none, cancel the
-+		 * SCI-related wakeup and dispatch the EC GPE.
-+		 */
- 		if (acpi_ec_dispatch_gpe()) {
- 			pm_pr_dbg("ACPI non-EC GPE wakeup\n");
- 			return true;
- 		}
- 
--		/*
--		 * Cancel the SCI wakeup and process all pending events in case
--		 * there are any wakeup ones in there.
--		 *
--		 * Note that if any non-EC GPEs are active at this point, the
--		 * SCI will retrigger after the rearming below, so no events
--		 * should be missed by canceling the wakeup here.
--		 */
--		pm_system_cancel_wakeup();
- 		acpi_os_wait_events_complete();
- 
- 		/*
+diff --git a/drivers/gpio/gpio-sifive.c b/drivers/gpio/gpio-sifive.c
+index 403f9e833d6a3..7d82388b4ab7c 100644
+--- a/drivers/gpio/gpio-sifive.c
++++ b/drivers/gpio/gpio-sifive.c
+@@ -223,7 +223,7 @@ static int sifive_gpio_probe(struct platform_device *pdev)
+ 			 NULL,
+ 			 chip->base + SIFIVE_GPIO_OUTPUT_EN,
+ 			 chip->base + SIFIVE_GPIO_INPUT_EN,
+-			 0);
++			 BGPIOF_READ_OUTPUT_REG_SET);
+ 	if (ret) {
+ 		dev_err(dev, "unable to init generic GPIO\n");
+ 		return ret;
 -- 
 2.34.1
 
