@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9412FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB715C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346172AbiBNKPk (ORCPT
+        id S1346461AbiBNKPt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:15:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43978 "EHLO
+        Mon, 14 Feb 2022 05:15:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345765AbiBNKNO (ORCPT
+        with ESMTP id S1345883AbiBNKNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:13:14 -0500
+        Mon, 14 Feb 2022 05:13:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF21B60AA3;
-        Mon, 14 Feb 2022 01:51:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F401788B10;
+        Mon, 14 Feb 2022 01:51:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A6AB60F25;
-        Mon, 14 Feb 2022 09:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C2FFC340E9;
-        Mon, 14 Feb 2022 09:51:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CDE56126B;
+        Mon, 14 Feb 2022 09:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64756C340E9;
+        Mon, 14 Feb 2022 09:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832314;
-        bh=7dywxaiY+M967eUBC6Mz+LePl1QSR7NFa4x8qm8PoNw=;
+        s=korg; t=1644832267;
+        bh=wUT1mmXGo67XJdUTpxgcwIKvppAWwi5MpB+h0FS2/Wg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KNYQhdtTLLeUBQuzOGPF0RNRyHWuEU78g0Qj0ddKawGcda6r3UMc2Jom41pVc0nA0
-         TNtwD/7ix8T9DMrbe/0AGajW0asuhFSwwDALI9rHklXNUpG7ZeD+EMfr5yCAEzT+qM
-         goIItSVgzUqFPrvL0d1eGUaOOxKIxCsBacU0qzn4=
+        b=ppOla4qQu5fRitQPXZLb9glQ41Ihvcq5T6cz1QVbSZ9Sp+MGxB6md9UiC8Q71zP1M
+         Hlg7qcsrKsVMhyRBSxT4+94z/enwE787S/gfvM/nq4uF/v/PQ/JZlBfJARgUdD3McR
+         vfZt+lizul9gQEmi6J/C8kcNRMY8mdXcGjSG0aAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@gmail.com>,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH 5.15 148/172] usb: raw-gadget: fix handling of dual-direction-capable endpoints
-Date:   Mon, 14 Feb 2022 10:26:46 +0100
-Message-Id: <20220214092511.495970058@linuxfoundation.org>
+        stable@vger.kernel.org, Dongjin Kim <tobetter@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 100/172] arm64: dts: meson-g12b-odroid-n2: fix typo dio2133
+Date:   Mon, 14 Feb 2022 10:25:58 +0100
+Message-Id: <20220214092509.862020747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -49,44 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Dongjin Kim <tobetter@gmail.com>
 
-commit 292d2c82b105d92082c2120a44a58de9767e44f1 upstream.
+[ Upstream commit bc41099f060ea74ac8d02c51bd0f5f46d969bedf ]
 
-Under dummy_hcd, every available endpoint is *either* IN or OUT capable.
-But with some real hardware, there are endpoints that support both IN and
-OUT. In particular, the PLX 2380 has four available endpoints that each
-support both IN and OUT.
+Typo in audio amplifier node, dioo2133 -> dio2133
 
-raw-gadget currently gets confused and thinks that any endpoint that is
-usable as an IN endpoint can never be used as an OUT endpoint.
-
-Fix it by looking at the direction in the configured endpoint descriptor
-instead of looking at the hardware capabilities.
-
-With this change, I can use the PLX 2380 with raw-gadget.
-
-Fixes: f2c2e717642c ("usb: gadget: add raw-gadget interface")
-Cc: stable <stable@vger.kernel.org>
-Tested-by: Andrey Konovalov <andreyknvl@gmail.com>
-Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
-Signed-off-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/r/20220126205214.2149936-1-jannh@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Dongjin Kim <tobetter@gmail.com>
+Fixes: ef599f5f3e10 ("arm64: dts: meson: convert ODROID-N2 to dtsi")
+Fixes: 67d141c1f8e6 ("arm64: dts: meson: odroid-n2: add jack audio output support")
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/YfKQJejh0bfGYvof@anyang
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/legacy/raw_gadget.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/gadget/legacy/raw_gadget.c
-+++ b/drivers/usb/gadget/legacy/raw_gadget.c
-@@ -1004,7 +1004,7 @@ static int raw_process_ep_io(struct raw_
- 		ret = -EBUSY;
- 		goto out_unlock;
- 	}
--	if ((in && !ep->ep->caps.dir_in) || (!in && ep->ep->caps.dir_in)) {
-+	if (in != usb_endpoint_dir_in(ep->ep->desc)) {
- 		dev_dbg(&dev->gadget->dev, "fail, wrong direction\n");
- 		ret = -EINVAL;
- 		goto out_unlock;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+index a84ed3578425e..d33e54b5e1969 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+@@ -17,7 +17,7 @@ aliases {
+ 		rtc1 = &vrtc;
+ 	};
+ 
+-	dioo2133: audio-amplifier-0 {
++	dio2133: audio-amplifier-0 {
+ 		compatible = "simple-audio-amplifier";
+ 		enable-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
+ 		VCC-supply = <&vcc_5v>;
+@@ -217,7 +217,7 @@ sound {
+ 		audio-widgets = "Line", "Lineout";
+ 		audio-aux-devs = <&tdmout_b>, <&tdmout_c>, <&tdmin_a>,
+ 				 <&tdmin_b>, <&tdmin_c>, <&tdmin_lb>,
+-				 <&dioo2133>;
++				 <&dio2133>;
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-- 
+2.34.1
+
 
 
