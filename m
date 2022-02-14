@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CEFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 653ABC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347337AbiBNK1o (ORCPT
+        id S1347607AbiBNK3g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:27:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53378 "EHLO
+        Mon, 14 Feb 2022 05:29:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbiBNKY6 (ORCPT
+        with ESMTP id S232904AbiBNK1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:24:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD886A077;
-        Mon, 14 Feb 2022 01:56:52 -0800 (PST)
+        Mon, 14 Feb 2022 05:27:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE6195A0E;
+        Mon, 14 Feb 2022 01:58:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9E1AB80DBE;
-        Mon, 14 Feb 2022 09:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78F05C340E9;
-        Mon, 14 Feb 2022 09:56:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3572F60921;
+        Mon, 14 Feb 2022 09:58:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1745EC340E9;
+        Mon, 14 Feb 2022 09:58:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832610;
-        bh=paGR/fTnLUhrSaJbD5c1gmkz5uWTtOGJJZJk4wXLwB8=;
+        s=korg; t=1644832691;
+        bh=cDrmzps+EwVMIVwa4E3JRtZVdxrZkoacSvcnAIzOuQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYWqOpoQazwA6JQEFIMqmAkQn8pPjWSGFBtFtmoyC37mmYmq/xm821H/81gXSbDbP
-         6bc8U/AD1SuY6PUtuyWYBBeqRPFqgca3BVtKbCUMd/87YaZbPdUrFD5ob/AUn2etGd
-         /ehCrzMfu29gPFpEkQvUCeOZPfCqgDsBrYnGeUkA=
+        b=AZirjobC00MKz59tBbmcee+q0T/qoHZRj5xLsOGppIeTm5GAR0GImyLl9vLBFxIJD
+         U1NXly1UB9yAx4ZUYJM4i1XxL682A130cRMfvmT95bWubjRi0Zn7CeRCkRmPtiREWN
+         Isif5Idd3TLQMliGcODJE5NtyItgZJCo9iU+ZTBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 068/203] KVM: nVMX: eVMCS: Filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER
-Date:   Mon, 14 Feb 2022 10:25:12 +0100
-Message-Id: <20220214092512.575994619@linuxfoundation.org>
+Subject: [PATCH 5.16 094/203] ARM: dts: meson: Fix the UART compatible strings
+Date:   Mon, 14 Feb 2022 10:25:38 +0100
+Message-Id: <20220214092513.460176580@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,41 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 7a601e2cf61558dfd534a9ecaad09f5853ad8204 ]
+[ Upstream commit 5225e1b87432dcf0d0fc3440824b91d04c1d6cc1 ]
 
-Enlightened VMCS v1 doesn't have VMX_PREEMPTION_TIMER_VALUE field,
-PIN_BASED_VMX_PREEMPTION_TIMER is also filtered out already so it makes
-sense to filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER too.
+The dt-bindings for the UART controller only allow the following values
+for Meson6 SoCs:
+- "amlogic,meson6-uart", "amlogic,meson-ao-uart"
+- "amlogic,meson6-uart"
 
-Note, none of the currently existing Windows/Hyper-V versions are known
-to enable 'save VMX-preemption timer value' when eVMCS is in use, the
-change is aimed at making the filtering future proof.
+Use the correct fallback compatible string "amlogic,meson-ao-uart" for
+AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
+domain UART controllers.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220112170134.1904308-3-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: ec9b59162fd831 ("ARM: dts: meson6: use stable UART bindings")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211227180026.4068352-2-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/evmcs.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/meson.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-index 6255fa7167720..8d70f9aea94bc 100644
---- a/arch/x86/kvm/vmx/evmcs.h
-+++ b/arch/x86/kvm/vmx/evmcs.h
-@@ -59,7 +59,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
- 	 SECONDARY_EXEC_SHADOW_VMCS |					\
- 	 SECONDARY_EXEC_TSC_SCALING |					\
- 	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
--#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL)
-+#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
-+	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
-+	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
- #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
- #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
+diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
+index 3be7cba603d5a..26eaba3fa96f3 100644
+--- a/arch/arm/boot/dts/meson.dtsi
++++ b/arch/arm/boot/dts/meson.dtsi
+@@ -59,7 +59,7 @@ hwrng: rng@8100 {
+ 			};
  
+ 			uart_A: serial@84c0 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x84c0 0x18>;
+ 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
+ 				fifo-size = <128>;
+@@ -67,7 +67,7 @@ uart_A: serial@84c0 {
+ 			};
+ 
+ 			uart_B: serial@84dc {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x84dc 0x18>;
+ 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+@@ -105,7 +105,7 @@ saradc: adc@8680 {
+ 			};
+ 
+ 			uart_C: serial@8700 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x8700 0x18>;
+ 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+@@ -228,7 +228,7 @@ ir_receiver: ir-receiver@480 {
+ 			};
+ 
+ 			uart_AO: serial@4c0 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart";
+ 				reg = <0x4c0 0x18>;
+ 				interrupts = <GIC_SPI 90 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
 -- 
 2.34.1
 
