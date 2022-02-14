@@ -2,105 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 796A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B433C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbiBNUxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:53:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54570 "EHLO
+        id S229953AbiBNUxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:53:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiBNUxP (ORCPT
+        with ESMTP id S229893AbiBNUxP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 15:53:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E743F192F31
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:52:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC33192F32;
+        Mon, 14 Feb 2022 12:52:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD973B81686
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 20:17:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 821D1C340F3;
-        Mon, 14 Feb 2022 20:17:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55B22B81676;
+        Mon, 14 Feb 2022 19:45:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE8CCC340E9;
+        Mon, 14 Feb 2022 19:45:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644869850;
-        bh=bXedr7UYLlyWE7FAXfDmfEHymhA7Ze+P5ADWEtsZEic=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=XPCbTkjP1VOKsDUMzqRYehjXZhYthTIrtpBGr8H0ZzYaQftPi9E96AvzWlsECj3od
-         ybGN/h2z0/9LE0PHegdMnRe2GK0jn48FgZs4vur8NnXdyaaUNX82APoekloLzGGa+l
-         BmRXENTBjJJZMx0HUAho4F4DG+Se2O87upjPEDZhSFi7FYFdDiUVJi4uWNUmHGHZME
-         zvdOhhONFmU6NrbBkfcCcr6fDLTyYAytGzRsivGOedC8KJE/XGAInWwyeemT11Gkdn
-         RIcq7MT3ZG17lyIF9uthSy4H6AhbdKG/3DLgeLJA43ZKQzjBqVDX4Qzqq2CkIBxxXY
-         nBOvy3QArrg5Q==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 472305C0388; Mon, 14 Feb 2022 12:17:30 -0800 (PST)
-Date:   Mon, 14 Feb 2022 12:17:30 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 12/42] tools/nolibc/types: make FD_SETSIZE configurable
-Message-ID: <20220214201730.GA4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220207162354.14293-1-w@1wt.eu>
- <20220207162354.14293-13-w@1wt.eu>
- <20220213085301.GB31914@1wt.eu>
+        s=k20201202; t=1644867955;
+        bh=4cKu19CUQjjP0ctay0xc/Jduy9kkgqnkY9pQd62QArE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KCADrosyMNCwkao6AFfBCZhGg4c1Z/2yQdqXzDh5BumNhXkVnuZCl8ehECJRTJk/+
+         ZcArc0VlJNrY3IeqrlMNjDFUJGHkagJzqlboUR5+Fwg1ZoufMIudgaqFmJJM8TloYN
+         mbA7mgLfynKiiseJYURbmghxWDmeBDlWGD8M0KQs/dI3Zx29o1+Nepg8aLYPMvYJ4m
+         V/gq+0AsGrHYQMklCBGeGpRJ5zcG5A90o1gSuNA6kT/x/lOpm0aZFx+bQx3RhrO0wI
+         VKbRgHQzyemnleetBAHLbzJEyq8J/BFlubmyau4VHqxRPj0vGjz7+SnPiwFQd7W/KY
+         kPrUG3q862C8g==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id F0CF6400FE; Mon, 14 Feb 2022 16:45:51 -0300 (-03)
+Date:   Mon, 14 Feb 2022 16:45:51 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@collabora.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>, Andi Kleen <ak@linux.intel.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
+        Song Liu <song@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        German Gomez <german.gomez@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Hao Luo <haoluo@google.com>, eranian@google.com
+Subject: Re: [PATCH v3 05/22] perf maps: Use a pointer for kmaps
+Message-ID: <Ygqxb4R5arsW2yiD@kernel.org>
+References: <20220211103415.2737789-1-irogers@google.com>
+ <20220211103415.2737789-6-irogers@google.com>
+ <Ygabd1q3G1x19LU3@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220213085301.GB31914@1wt.eu>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Ygabd1q3G1x19LU3@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 09:53:01AM +0100, Willy Tarreau wrote:
-> The macro was hard-coded to 256 but it's common to see it redefined.
-> Let's support this and make sure we always allocate enough entries for
-> the cases where it wouldn't be multiple of 32.
+Em Fri, Feb 11, 2022 at 02:23:03PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Fri, Feb 11, 2022 at 02:33:58AM -0800, Ian Rogers escreveu:
+> > struct maps is reference counted, using a pointer is more idiomatic.
 > 
-> Signed-off-by: Willy Tarreau <w@1wt.eu>
-
-I queued both in place of their earlier versions, thank you!
-
-							Thanx, Paul
-
-> ---
-> v2:
-> - rebase on top of v2 of previous patch
-> ---
->  tools/include/nolibc/types.h | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+> So, I tried to apply this after adding this to the cset comming log to
+> make sure reviewers know that this is just a clarifying comming, no code
+> change:
 > 
-> diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
-> index a4dda0a22fc2..563dbbad0496 100644
-> --- a/tools/include/nolibc/types.h
-> +++ b/tools/include/nolibc/types.h
-> @@ -45,7 +45,9 @@
->  #define DT_SOCK        0xc
->  
->  /* commonly an fd_set represents 256 FDs */
-> +#ifndef FD_SETSIZE
->  #define FD_SETSIZE     256
-> +#endif
->  
->  /* Special FD used by all the *at functions */
->  #ifndef AT_FDCWD
-> @@ -72,7 +74,7 @@
->  
->  /* for select() */
->  typedef struct {
-> -	uint32_t fd32[FD_SETSIZE / 32];
-> +	uint32_t fd32[(FD_SETSIZE + 31) / 32];
->  } fd_set;
->  
->  #define FD_CLR(fd, set) do {                                            \
-> @@ -101,7 +103,7 @@ typedef struct {
->  #define FD_ZERO(set) do {                                               \
->  		fd_set *__set = (set);                                  \
->  		int __idx;                                              \
-> -		for (__idx = 0; __idx < FD_SETSIZE / 32; __idx ++)      \
-> +		for (__idx = 0; __idx < (FD_SETSIZE+31) / 32; __idx ++) \
->  			__set->fd32[__idx] = 0;                         \
->  	} while (0)
->  
-> -- 
-> 2.35.1
+> Committer notes:
+> 
+> Definition of machine__kernel_maps(machine), the replacement of &machine->kmaps
+> 
+> static inline
+> struct maps *machine__kernel_maps(struct machine *machine)
+> {
+>         return machine->kmaps;
+> }
+> 
+> but then when building on a f34 system I got:
+> 
+>   CC      /tmp/build/perf/bench/inject-buildid.o
+> In file included from /var/home/acme/git/perf/tools/perf/util/build-id.h:10,
+>                  from /var/home/acme/git/perf/tools/perf/util/dso.h:13,
+>                  from tests/vmlinux-kallsyms.c:8:
+> In function ‘machine__kernel_maps’,
+>     inlined from ‘test__vmlinux_matches_kallsyms’ at tests/vmlinux-kallsyms.c:122:22:
+> /var/home/acme/git/perf/tools/perf/util/machine.h:86:23: error: ‘vmlinux.kmaps’ is used uninitialized [-Werror=uninitialized]
+>    86 |         return machine->kmaps;
+>       |                ~~~~~~~^~~~~~~
+> tests/vmlinux-kallsyms.c: In function ‘test__vmlinux_matches_kallsyms’:
+> tests/vmlinux-kallsyms.c:121:34: note: ‘vmlinux’ declared here
+>   121 |         struct machine kallsyms, vmlinux;
+>       |                                  ^~~~~~~
+> cc1: all warnings being treated as errors
+> make[4]: *** [/var/home/acme/git/perf/tools/build/Makefile.build:96: /tmp/build/perf/tests/vmlinux-kallsyms.o] Error 1
+> make[4]: *** Waiting for unfinished jobs....
+>   CC      /tmp/build/perf/util/config.o
+>   CC      /tmp/build/perf/arch/x86/util/archinsn.o
+>   CC      /tmp/build/perf/arch/x86/util/intel-pt.o
+>   CC      /tmp/build/perf/arch/x86/util/intel-bts.o
+>   CC      /tmp/build/perf/util/db-export.o
+>   CC      /tmp/build/perf/util/event.o
+> make[3]: *** [/var/home/acme/git/perf/tools/build/Makefile.build:139: tests] Error 2
+> make[3]: *** Waiting for unfinished jobs....
+> 
+> Can you please  take a look at that?
+
+I'm applying this on top:
+
+diff --git a/tools/perf/tests/vmlinux-kallsyms.c b/tools/perf/tests/vmlinux-kallsyms.c
+index 84bf5f64006560f5..93dee542a177ed1d 100644
+--- a/tools/perf/tests/vmlinux-kallsyms.c
++++ b/tools/perf/tests/vmlinux-kallsyms.c
+@@ -119,7 +119,7 @@ static int test__vmlinux_matches_kallsyms(struct test_suite *test __maybe_unused
+ 	struct symbol *sym;
+ 	struct map *kallsyms_map, *vmlinux_map, *map;
+ 	struct machine kallsyms, vmlinux;
+-	struct maps *maps = machine__kernel_maps(&vmlinux);
++	struct maps *maps;
+ 	u64 mem_start, mem_end;
+ 	bool header_printed;
+ 
+@@ -132,6 +132,8 @@ static int test__vmlinux_matches_kallsyms(struct test_suite *test __maybe_unused
+ 	machine__init(&kallsyms, "", HOST_KERNEL_ID);
+ 	machine__init(&vmlinux, "", HOST_KERNEL_ID);
+ 
++	maps = machine__kernel_maps(&vmlinux);
++
+ 	/*
+ 	 * Step 2:
+ 	 *
