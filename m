@@ -2,112 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF95C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E76AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231888AbiBNWbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 17:31:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42452 "EHLO
+        id S231894AbiBNWcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 17:32:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230102AbiBNWbp (ORCPT
+        with ESMTP id S230102AbiBNWcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 17:31:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D323713E9C;
-        Mon, 14 Feb 2022 14:31:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0D1EB80C6D;
-        Mon, 14 Feb 2022 22:31:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C2DFC340E9;
-        Mon, 14 Feb 2022 22:31:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644877888;
-        bh=U9FS+HbROd6gXASD/1YFQXlW6ra2q4lCYkPCYYdKZzE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Lobos/mRirqUrrb/uzx6jBqU9QlkWKLRqWIns9GiMrotTuxIx2uPk8VwRBhvRBNP6
-         5l9MSsfHVd+AG/trcUCUHZ1gVGTmBECg15Fy+FvjZhpmS6BgRUFDXWq7/53xuTwnJk
-         i1gjAzU1emFp2bnoEJamngEaxtOnZUhnjGWyaUgxP2JWrPWPXRQDtWwqdBRVzLIMST
-         +vTDEhugRBS5/qvX3uvImYtXxQg/ahBxIGFKG8TIe/tP+28aKiC76W/pWiaw8cM5c+
-         8OAr2jGYXND6YM48GNK0k0Wz8nISudZGLAjjSmE+7Xtpj2z+x6Zn6iBwmX6Kgt8rn3
-         KMpyKplQQsOYA==
-Date:   Mon, 14 Feb 2022 16:39:03 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Hannes Reinecke <hare@suse.de>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH v2][next] scsi: fc: Replace one-element arrays with
- flexible-array members
-Message-ID: <20220214223903.GA859464@embeddedor>
+        Mon, 14 Feb 2022 17:32:53 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F57613C26C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 14:32:45 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id n5so13477219ilk.12
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 14:32:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Bf3Bc9D0jq7FIQN8gAz+SqtonqNFQ5fVJWGQu1QWYfY=;
+        b=VfdBSkpHshMp5wBY5CwOnjlb5zUmG+oIpXuTRFgzc47kldK0W9AwzZJxd5XsTdul6l
+         uxIgUsbnceGZaazbjfzdmNCcJxdeQhupIeig1cUYRR2j8HD+ZRu4aF8NaOoAwIA8P7Z7
+         4uQ4CoSwDy/vRcbhM3FptNb1F0GvhcnzRBl0o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Bf3Bc9D0jq7FIQN8gAz+SqtonqNFQ5fVJWGQu1QWYfY=;
+        b=YGkVe1X8WR4rcXEUyO5XigTxtJ0cJH4ATvwyXBPTrpmnX7fqfTSMIIpdV11ab5Q2lZ
+         JSYKRXKhXvDSYXuPQI4+l1rDQ0gb0NZG1EIjgSw09ANCqz4L7bBD1TyvnMAXVhbm/TT9
+         HzcjZ4IC9wNmfVilSU2zOHSr89evuYPDgbmCJd/gYgnhKg3GRwL4iR5UGu1aZzg+q17P
+         FeCY53XzcMVCP5/zCMXYnkf95JeeNq3YAdSq/09W8d+YslmeEyHly2Bet9BNoX5XQEDm
+         XxnAz7LLoXP14nczH8cc1w+NYYNvzjfpZb9AlKsOdBbMn9op6nH+LdDYRxXK7EranOfF
+         Wfbg==
+X-Gm-Message-State: AOAM533y4YC+Behz6tTWP/zQRC755+8+6RgHWXbN+JsdWlK7VNkLtZ4V
+        b5AB+UlHUhJn9/iGB9EphnWqCA5/48JGGw==
+X-Google-Smtp-Source: ABdhPJxo1HOhkhI5r7CSbOsckdFZTyzCWIiFOOl2YmJ2qTKrqbkUSaH13SB07sOPD1onMQZSFPIRag==
+X-Received: by 2002:a92:c5b1:: with SMTP id r17mr617226ilt.320.1644877964635;
+        Mon, 14 Feb 2022 14:32:44 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id x14sm5865419ill.88.2022.02.14.14.32.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 14:32:44 -0800 (PST)
+Subject: Re: [PATCH 4.19 00/49] 4.19.230-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220214092448.285381753@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <f9998c23-3ebd-d9d0-60cc-14a375772846@linuxfoundation.org>
+Date:   Mon, 14 Feb 2022 15:32:43 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use flexible-array members in struct fc_fdmi_attr_entry and
-fs_fdmi_attrs instead of one-element arrays, and refactor the
-code accordingly.
+On 2/14/22 2:25 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.230 release.
+> There are 49 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.230-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Also, this helps with the ongoing efforts to globally enable
--Warray-bounds and get us closer to being able to tighten the
-FORTIFY_SOURCE routines on memcpy().
+Compiled and booted on my test system. No dmesg regressions.
 
-https://github.com/KSPP/linux/issues/79
-https://github.com/ClangBuiltLinux/linux/issues/1590
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
-Changes in v2:
- - Revert changes for _port_ due to protocol definition conflict.
-   Link: https://lore.kernel.org/lkml/22139a80-3f64-1f21-6b5c-65d250bafe09@linux.ibm.com/
- - Update subject line.
- - Update changelog text.
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
- drivers/scsi/libfc/fc_encode.h | 2 +-
- include/scsi/fc/fc_ms.h        | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/scsi/libfc/fc_encode.h b/drivers/scsi/libfc/fc_encode.h
-index 74ae7fd15d8d..7dcac3b6baa7 100644
---- a/drivers/scsi/libfc/fc_encode.h
-+++ b/drivers/scsi/libfc/fc_encode.h
-@@ -246,7 +246,7 @@ static inline int fc_ct_ms_fill(struct fc_lport *lport,
- 				   &entry->type);
- 		put_unaligned_be16(len, &entry->len);
- 		put_unaligned_be64(lport->wwnn,
--				   (__be64 *)&entry->value[0]);
-+				   (__be64 *)&entry->value);
- 
- 		/* Manufacturer */
- 		entry = (struct fc_fdmi_attr_entry *)((char *)entry->value +
-diff --git a/include/scsi/fc/fc_ms.h b/include/scsi/fc/fc_ms.h
-index 00191695233a..56a5d2b5a624 100644
---- a/include/scsi/fc/fc_ms.h
-+++ b/include/scsi/fc/fc_ms.h
-@@ -158,7 +158,7 @@ struct fc_fdmi_port_name {
- struct fc_fdmi_attr_entry {
- 	__be16		type;
- 	__be16		len;
--	__u8		value[1];
-+	__u8		value[];
- } __attribute__((__packed__));
- 
- /*
-@@ -166,7 +166,7 @@ struct fc_fdmi_attr_entry {
-  */
- struct fs_fdmi_attrs {
- 	__be32				numattrs;
--	struct fc_fdmi_attr_entry	attr[1];
-+	struct fc_fdmi_attr_entry	attr[];
- } __attribute__((__packed__));
- 
- /*
--- 
-2.27.0
+thanks,
+-- Shuah
 
