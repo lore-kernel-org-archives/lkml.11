@@ -2,301 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15349C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD71FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbiBNVps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:45:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59158 "EHLO
+        id S229715AbiBNVrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:47:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231580AbiBNVpf (ORCPT
+        with ESMTP id S229441AbiBNVrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:45:35 -0500
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66C01867EE;
-        Mon, 14 Feb 2022 13:45:24 -0800 (PST)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [80.241.60.233])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4JyHnv3RYQz9sVw;
-        Mon, 14 Feb 2022 22:45:23 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
-        t=1644875119;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kUZ790IxZH5Rf/nkvP12xvh7cNzalDJRK4h9CSlRTIA=;
-        b=DfbAtF/uqDJwWS+qgeDFtkepYnOtAhu6XIHMY7m67CnZNWqNlnnsjRIlwR046Vhz6K4wDv
-        FMSKiBvy/qZd3mD+MODISvYmTRHkuJh6jwfl8ih1SXrdJmcJhLfK8ZljVe6Wfds0D+9co8
-        5X/TepO7Kli1xXbjQRETffB7itpRhUh4EJAeLkMByvzjqaFCmC2sx64O1yVQcpEwvOQDX1
-        EQXZ060Vt/+cuaEkLASMDkaXZad9mtYpK+XhsewZ9AjGFstF5VJrCaAVeRGroblduyVax0
-        teBxEJQjdSt0V9RvzYCSA3DD7pPl7Sqg+hqEvBOLZVU0wxPGiqJ+5rjoTTyelw==
-From:   Marcello Sylvester Bauer <sylv@sylv.io>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Marcello Sylvester Bauer <sylv@sylv.io>,
-        linux-doc@vger.kernel.org
-Subject: [PATCH v3 3/4] pmbus: Add support for pli1209bc
-Date:   Mon, 14 Feb 2022 22:44:55 +0100
-Message-Id: <8d44098e7b8ca5d4c13733267836d5a147539277.1644874828.git.sylv@sylv.io>
-In-Reply-To: <cover.1644874828.git.sylv@sylv.io>
-References: <cover.1644874828.git.sylv@sylv.io>
+        Mon, 14 Feb 2022 16:47:13 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB4C18C585;
+        Mon, 14 Feb 2022 13:47:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644875225; x=1676411225;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=AwroH8GNBIRwIAdQwJG2Wc1EKS3EDccIMT1yMCJYbQE=;
+  b=kTsgkhPC2hFZbMLS2v4SjL4HI8BYxzL4BIzyh3/SFv0OMQKGyJvWT/SZ
+   DopRUIVHna67OTUkKBl3jNMEiZf9tk2eO8zzPMffdR1SvnwSEo13FrAIw
+   CfHAAfJsjuaIB7bDYYq7+mjRG49YmL5zd44epIm+0X7i9RE97fbmYhaLq
+   8=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Feb 2022 13:47:04 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 13:47:03 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 14 Feb 2022 13:47:03 -0800
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 14 Feb 2022 13:47:02 -0800
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
+        <bjorn.andersson@linaro.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] drm/msm: populate intf_audio_select() base on hardware capability
+Date:   Mon, 14 Feb 2022 13:46:54 -0800
+Message-ID: <1644875214-12944-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PLI1209BC is a Digital Supervisor from Vicor Corporation.
+intf_audio_select() callback function use to configure
+HDMI_DP_CORE_SELECT to decide audio output routes to HDMI or DP
+interface. HDMI is obsoleted at newer chipset. To keep supporting
+legacy hdmi application, intf_audio_select call back function have
+to be populated base on hardware chip capability where legacy
+chipsets have has_audio_select flag set to true.
 
-Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+Changes in V2:
+-- remove has_audio_select flag
+-- add BIT(DPU_MDP_AUDIO_SELECT) into dpu_mdp_cfg
+
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 ---
- Documentation/hwmon/pli1209bc.rst |  73 +++++++++++++++++++
- drivers/hwmon/pmbus/Kconfig       |   9 +++
- drivers/hwmon/pmbus/Makefile      |   1 +
- drivers/hwmon/pmbus/pli1209bc.c   | 115 ++++++++++++++++++++++++++++++
- 4 files changed, 198 insertions(+)
- create mode 100644 Documentation/hwmon/pli1209bc.rst
- create mode 100644 drivers/hwmon/pmbus/pli1209bc.c
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c | 2 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h | 1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c     | 4 +++-
+ 3 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/hwmon/pli1209bc.rst b/Documentation/hwmon/pli1209bc.rst
-new file mode 100644
-index 000000000000..a3f686d03cf2
---- /dev/null
-+++ b/Documentation/hwmon/pli1209bc.rst
-@@ -0,0 +1,73 @@
-+Kernel driver pli1209bc
-+=======================
-+
-+Supported chips:
-+
-+  * Digital Supervisor PLI1209BC
-+
-+    Prefix: 'pli1209bc'
-+
-+    Addresses scanned: 0x50 - 0x5F
-+
-+    Datasheet: https://www.vicorpower.com/documents/datasheets/ds-PLI1209BCxyzz-VICOR.pdf
-+
-+Authors:
-+    - Marcello Sylvester Bauer <sylv@sylv.io>
-+
-+Description
-+-----------
-+
-+The Vicor PLI1209BC is an isolated digital power system supervisor thatprovides
-+a communication interface between a host processor and one Bus Converter Module
-+(BCM). The PLI communicates with a system controller via a PMBus compatible
-+interface over an isolated UART interface. Through the PLI, the host processor
-+can configure, set protection limits, and monitor the BCM.
-+
-+Sysfs entries
-+-------------
-+
-+======================= ========================================================
-+in1_label		"vin2"
-+in1_input		Input voltage.
-+in1_rated_min		Minimum rated input voltage.
-+in1_rated_max		Maximum rated input voltage.
-+in1_max			Maximum input voltage.
-+in1_max_alarm		Input voltage high alarm.
-+in1_crit		Critical input voltage.
-+in1_crit_alarm		Input voltage critical alarm.
-+
-+in2_label		"vout2"
-+in2_input		Output voltage.
-+in2_rated_min		Minimum rated output voltage.
-+in2_rated_max		Maximum rated output voltage.
-+in2_alarm		Output voltage alarm
-+
-+curr1_label		"iin2"
-+curr1_input		Input current.
-+curr1_max		Maximum input current.
-+curr1_max_alarm		Maximum input current high alarm.
-+curr1_crit		Critical input current.
-+curr1_crit_alarm	Input current critical alarm.
-+
-+curr2_label		"iout2"
-+curr2_input		Output current.
-+curr2_crit		Critical output current.
-+curr2_crit_alarm	Output current critical alarm.
-+curr2_max		Maximum output current.
-+curr2_max_alarm		Output current high alarm.
-+
-+power1_label		"pin2"
-+power1_input		Input power.
-+power1_alarm		Input power alarm.
-+
-+power2_label		"pout2"
-+power2_input		Output power.
-+power2_rated_max	Maximum rated output power.
-+
-+temp1_input		Die temperature.
-+temp1_alarm		Die temperature alarm.
-+temp1_max		Maximum die temperature.
-+temp1_max_alarm		Die temperature high alarm.
-+temp1_crit		Critical die temperature.
-+temp1_crit_alarm	Die temperature critical alarm.
-+======================= ========================================================
-diff --git a/drivers/hwmon/pmbus/Kconfig b/drivers/hwmon/pmbus/Kconfig
-index c96f7b7338bd..831db423bea0 100644
---- a/drivers/hwmon/pmbus/Kconfig
-+++ b/drivers/hwmon/pmbus/Kconfig
-@@ -310,6 +310,15 @@ config SENSORS_PIM4328
- 	  This driver can also be built as a module. If so, the module will
- 	  be called pim4328.
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+index 272b14b..9c2df26 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+@@ -265,7 +265,7 @@ static const struct dpu_mdp_cfg sdm845_mdp[] = {
+ 	{
+ 	.name = "top_0", .id = MDP_TOP,
+ 	.base = 0x0, .len = 0x45C,
+-	.features = 0,
++	.features = BIT(DPU_MDP_AUDIO_SELECT),
+ 	.highest_bank_bit = 0x2,
+ 	.clk_ctrls[DPU_CLK_CTRL_VIG0] = {
+ 			.reg_off = 0x2AC, .bit_off = 0},
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+index e5a96d6..fb7b5b5 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+@@ -87,6 +87,7 @@ enum {
+ 	DPU_MDP_BWC,
+ 	DPU_MDP_UBWC_1_0,
+ 	DPU_MDP_UBWC_1_5,
++	DPU_MDP_AUDIO_SELECT,
+ 	DPU_MDP_MAX
+ };
  
-+config SENSORS_PLI1209BC
-+	tristate "Vicor PLI1209BC"
-+	help
-+	  If you say yes here you get hardware monitoring support for Vicor
-+	  PLI1209BC Digital Supervisor.
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c
+index 282e3c6..ab3ef16 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_top.c
+@@ -268,7 +268,9 @@ static void _setup_mdp_ops(struct dpu_hw_mdp_ops *ops,
+ 	ops->get_danger_status = dpu_hw_get_danger_status;
+ 	ops->setup_vsync_source = dpu_hw_setup_vsync_source;
+ 	ops->get_safe_status = dpu_hw_get_safe_status;
+-	ops->intf_audio_select = dpu_hw_intf_audio_select;
 +
-+	  This driver can also be built as a module. If so, the module will
-+	  be called pli1209bc.
-+
- config SENSORS_PM6764TR
- 	tristate "ST PM6764TR"
- 	help
-diff --git a/drivers/hwmon/pmbus/Makefile b/drivers/hwmon/pmbus/Makefile
-index e5935f70c9e0..7ce74e3b8552 100644
---- a/drivers/hwmon/pmbus/Makefile
-+++ b/drivers/hwmon/pmbus/Makefile
-@@ -34,6 +34,7 @@ obj-$(CONFIG_SENSORS_MP2888)	+= mp2888.o
- obj-$(CONFIG_SENSORS_MP2975)	+= mp2975.o
- obj-$(CONFIG_SENSORS_MP5023)	+= mp5023.o
- obj-$(CONFIG_SENSORS_PM6764TR)	+= pm6764tr.o
-+obj-$(CONFIG_SENSORS_PLI1209BC)	+= pli1209bc.o
- obj-$(CONFIG_SENSORS_PXE1610)	+= pxe1610.o
- obj-$(CONFIG_SENSORS_Q54SJ108A2)	+= q54sj108a2.o
- obj-$(CONFIG_SENSORS_STPDDC60)	+= stpddc60.o
-diff --git a/drivers/hwmon/pmbus/pli1209bc.c b/drivers/hwmon/pmbus/pli1209bc.c
-new file mode 100644
-index 000000000000..5f8847307e55
---- /dev/null
-+++ b/drivers/hwmon/pmbus/pli1209bc.c
-@@ -0,0 +1,115 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Hardware monitoring driver for Vicor PLI1209BC Digital Supervisor
-+ *
-+ * Copyright (c) 2022 9elements GmbH
-+ */
-+
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/pmbus.h>
-+#include "pmbus.h"
-+
-+/*
-+ * The capability command is only supported at page 0. Probing the device while
-+ * the page register is set to 1 will falsely enable PEC support. Disable
-+ * capability probing accordingly, since the PLI1209BC does not have any
-+ * additional capabilities.
-+ */
-+static struct pmbus_platform_data pli1209bc_plat_data = {
-+	.flags = PMBUS_NO_CAPABILITY,
-+};
-+
-+static int pli1209bc_read_word_data(struct i2c_client *client, int page,
-+				    int phase, int reg)
-+{
-+	int data;
-+
-+	switch (reg) {
-+	/* PMBUS_READ_POUT uses a direct format with R=0 */
-+	case PMBUS_READ_POUT:
-+		data = pmbus_read_word_data(client, page, phase, reg);
-+		if (data < 0)
-+			return data;
-+		data = sign_extend32(data, 15) * 10;
-+		return clamp_val(data, -32768, 32767) & 0xffff;
-+	default:
-+		return -ENODATA;
-+	}
-+}
-+
-+static struct pmbus_driver_info pli1209bc_info = {
-+	.pages = 2,
-+	.format[PSC_VOLTAGE_IN] = direct,
-+	.format[PSC_VOLTAGE_OUT] = direct,
-+	.format[PSC_CURRENT_IN] = direct,
-+	.format[PSC_CURRENT_OUT] = direct,
-+	.format[PSC_POWER] = direct,
-+	.format[PSC_TEMPERATURE] = direct,
-+	.m[PSC_VOLTAGE_IN] = 1,
-+	.b[PSC_VOLTAGE_IN] = 0,
-+	.R[PSC_VOLTAGE_IN] = 1,
-+	.m[PSC_VOLTAGE_OUT] = 1,
-+	.b[PSC_VOLTAGE_OUT] = 0,
-+	.R[PSC_VOLTAGE_OUT] = 1,
-+	.m[PSC_CURRENT_IN] = 1,
-+	.b[PSC_CURRENT_IN] = 0,
-+	.R[PSC_CURRENT_IN] = 3,
-+	.m[PSC_CURRENT_OUT] = 1,
-+	.b[PSC_CURRENT_OUT] = 0,
-+	.R[PSC_CURRENT_OUT] = 2,
-+	.m[PSC_POWER] = 1,
-+	.b[PSC_POWER] = 0,
-+	.R[PSC_POWER] = 1,
-+	.m[PSC_TEMPERATURE] = 1,
-+	.b[PSC_TEMPERATURE] = 0,
-+	.R[PSC_TEMPERATURE] = 0,
-+	/*
-+	 * Page 0 sums up all attributes except voltage readings.
-+	 * The pli1209 digital supervisor only contains a single BCM, making
-+	 * page 0 redundant.
-+	 */
-+	.func[1] = PMBUS_HAVE_VIN | PMBUS_HAVE_VOUT
-+	    | PMBUS_HAVE_IIN | PMBUS_HAVE_IOUT
-+	    | PMBUS_HAVE_PIN | PMBUS_HAVE_POUT
-+	    | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP
-+	    | PMBUS_HAVE_STATUS_IOUT | PMBUS_HAVE_STATUS_INPUT,
-+	.read_word_data = pli1209bc_read_word_data,
-+};
-+
-+static int pli1209bc_probe(struct i2c_client *client)
-+{
-+	client->dev.platform_data = &pli1209bc_plat_data;
-+	return pmbus_do_probe(client, &pli1209bc_info);
-+}
-+
-+static const struct i2c_device_id pli1209bc_id[] = {
-+	{"pli1209bc", 0},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(i2c, pli1209bc_id);
-+
-+#ifdef CONFIG_OF
-+static const struct of_device_id pli1209bc_of_match[] = {
-+	{ .compatible = "vicor,pli1209bc" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, pli1209bc_of_match);
-+#endif
-+
-+static struct i2c_driver pli1209bc_driver = {
-+	.driver = {
-+		   .name = "pli1209bc",
-+		   .of_match_table = of_match_ptr(pli1209bc_of_match),
-+		   },
-+	.probe_new = pli1209bc_probe,
-+	.id_table = pli1209bc_id,
-+};
-+
-+module_i2c_driver(pli1209bc_driver);
-+
-+MODULE_AUTHOR("Marcello Sylvester Bauer <sylv@sylv.io>");
-+MODULE_DESCRIPTION("PMBus driver for Vicor PLI1209BC");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(PMBUS);
++	if (cap & BIT(DPU_MDP_AUDIO_SELECT))
++		ops->intf_audio_select = dpu_hw_intf_audio_select;
+ }
+ 
+ static const struct dpu_mdp_cfg *_top_offset(enum dpu_mdp mdp,
 -- 
-2.34.1
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
