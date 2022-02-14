@@ -2,150 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE9FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2EDFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351148AbiBNL3A (ORCPT
+        id S1351175AbiBNL3E convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:29:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59400 "EHLO
+        Mon, 14 Feb 2022 06:29:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351306AbiBNL2k (ORCPT
+        with ESMTP id S1351412AbiBNL2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:28:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5C29FC8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:07:45 -0800 (PST)
-Date:   Mon, 14 Feb 2022 12:07:42 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644836863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0v5ktf7hG2ixpStEOBAY+DLRwU/tcK7H3faQA+b3+P8=;
-        b=pj6ktAjUSJuLELD8r09PG1k7XgEUMJLk0cM4p4FO00Eg0Gu9p1x5WB2Dvoyy8W533mBFfm
-        GJmBd1UgSpAnd7casarcicEFoAkpC+Noe3SiAfeYg7HEE8HtXlTolAHYrybfU09yrMJe6m
-        rKMcDbV3ICHl3rUdx4ER4+8cox9YbMC36pWFvuGWFScOEcXIJGe776BvhQ628Lu6qDqneb
-        xjBYz9ijRp7xXvssJQQNe5oCb4f2mHnJqC7Ug58okBv9AEqGIuLkB1WLCc7I10KPRfiQeH
-        Kgny850unC/MNMstEeDR5fKNswS0PfRqjUT/WOV6+nx7yobbQMaVvVmNi3w9PQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644836863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0v5ktf7hG2ixpStEOBAY+DLRwU/tcK7H3faQA+b3+P8=;
-        b=kC2uGp6B+9jbLbITtuF+GDMDCDtYNvarfxaOVveh1/MOMHRzwql95BpDNKUHeQ5BZwt3Vm
-        yopdx+UoWLE/TlBQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Mon, 14 Feb 2022 06:28:20 -0500
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA56C2DCA
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:06:02 -0800 (PST)
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-416-_7XVMO5INWiMjIMJzHYuqg-1; Mon, 14 Feb 2022 05:45:57 -0500
+X-MC-Unique: _7XVMO5INWiMjIMJzHYuqg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E2E7E1091DA1;
+        Mon, 14 Feb 2022 10:45:54 +0000 (UTC)
+Received: from x1.com (unknown [10.22.16.130])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B42427BDF;
+        Mon, 14 Feb 2022 10:45:27 +0000 (UTC)
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH] random: set fast pool count to zero in cpuhp teardown
-Message-ID: <Ygo3/puhZFpuX91x@linutronix.de>
-References: <20220213215343.11652-1-Jason@zx2c4.com>
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [RFC V2 00/21] The Runtime Verification (RV) interface
+Date:   Mon, 14 Feb 2022 11:44:51 +0100
+Message-Id: <cover.1644830251.git.bristot@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220213215343.11652-1-Jason@zx2c4.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-13 22:53:43 [+0100], Jason A. Donenfeld wrote:
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index 805a924b1f5f..e177d806db1d 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -1216,6 +1216,19 @@ static void fast_mix(u32 pool[4])
-> =20
->  static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
-> =20
-> +int random_offline_cpu(unsigned int cpu)
-> +{
-> +	/*
-> +	 * Set the count to zero when offlining the CPU for two
-> +	 * reasons: 1) so that all new accumulated irqs are fresh
-> +	 * when it comes back online, and 2) so that its worker is
-> +	 * permitted to schedule again when it comes back online,
-> +	 * since the MIX_INFLIGHT flag will be cleared.
-> +	 */
-> +	per_cpu_ptr(&irq_randomness, cpu)->count =3D 0;
+Over the last years, I've been exploring the possibility of
+verifying the Linux kernel behavior using Runtime Verification.
 
-You registered that handler between
-   CPUHP_AP_ONLINE_IDLE =E2=80=A6 CPUHP_AP_ACTIVE
+Runtime Verification (RV) is a lightweight (yet rigorous) method that
+complements classical exhaustive verification techniques (such as model
+checking and theorem proving) with a more practical approach for complex
+systems.
 
-That means:
-- interrupts are still active. So you could schedule a worker after the
-  handler run (need 64 interrupts).
-- That handler will be invoked on the CPU that goes offline.
-- it will be invoked before the worker is unbound from the offline-going
-  CPU. Once unbound at CPUHP_AP_WORKQUEUE_ONLINE the worker may remain
-  on the CPU before the scheduler pushes it away.
+Instead of relying on a fine-grained model of a system (e.g., a
+re-implementation a instruction level), RV works by analyzing the trace of the
+system's actual execution, comparing it against a formal specification of
+the system behavior.
 
-You could:
-- keeping it at this position but
-  - this_cpu_ptr() could be used.
-  - move it to the online phase so it is reset for the CPU coming up
-    (from this point, you could have >=3D 64 interrupts before the CPU is
-    no longer serving interrupts).
+The usage of deterministic automaton for RV is a well-established
+approach. In the specific case of the Linux kernel, you can check how
+to model complex behavior of the Linux kernel with this paper:
 
-- move it to CPUHP_OFFLINE =E2=80=A6 CPUHP_BRINGUP_CPU. This is invoked on
-  another CPU once the is dead / before it comes up.
-  - in that case the function can remain as-is. But we have "rollback".
+  DE OLIVEIRA, Daniel Bristot; CUCINOTTA, Tommaso; DE OLIVEIRA, Romulo Silva.
+  *Efficient formal verification for the Linux kernel.* In: International
+  Conference on Software Engineering and Formal Methods. Springer, Cham, 2019.
+  p. 315-332.
 
-One slight complication:
-After the CPUHP_AP_WORKQUEUE_ONLINE state (going down), the worker is
-tainted. It may be moved to another CPU but may remain on the (correct)
-CPU and run. Moving HP-handler to an earlier point has the advantage
-that you know.=20
+And how efficient is this approach here:
 
-We also have this "rollback". That means the CPU goes down and then one
-step fails and it rolls back online. That means if you have your handler
-at an earlier point, you don't notice it and the worker may have skipped
-its turn. (Also I didn't check but I *assume* that after
-CPUHP_AP_WORKQUEUE_ONLINE there is no pool bound to the CPU and any new
-worker will be moved to an unbound pool).
+  DE OLIVEIRA, Daniel B.; DE OLIVEIRA, Romulo S.; CUCINOTTA, Tommaso. *A thread
+  synchronization model for the PREEMPT_RT Linux kernel.* Journal of Systems
+  Architecture, 2020, 107: 101729.
 
-The more I think I about it, moving the state left and right, I think
-that having a CPU up handler after CPUHP_AP_WORKQUEUE_ONLINE (like you
-have now (but up, not down)) doing:
+tlrd: it is possible to model complex behaviors in a modular way, with
+an acceptable overhead (even for production systems). See this
+presentation at 2019's ELCE: https://www.youtube.com/watch?v=BfTuEHafNgg
 
-	fast_pool =3D this_cpu_ptr(&irq_randomness);
-	local_irq_disable();
-	if (fast_pool->count & FAST_POOL_MIX_INFLIGHT) {
-		fast_pool->count =3D 0;
-		fast_pool->last =3D jiffies
-	}
-	local_irq_enable();
+Here I am proposing a more practical approach for the usage of deterministic
+automata for runtime verification, and it includes:
 
-should work just fine. This covers:
-- should a worker be scheduled while CPU is going down and do its job,
-  we good.
+	- An interface for controlling the verification;
+	- A tool and set of headers that enables the automatic code
+	  generation of the RV monitor (Monitor Synthesis);
+	- Sample monitors to evaluate the interface;
+	- A sample monitor developed in the context of the Elisa Project
+	  demonstrating how to use RV in the context of safety-critical
+	  systems.
 
-- should a worker be scheduled while CPU is going down, moved to another
-  CPU and skip its work then we have FAST_POOL_MIX_INFLIGHT set and
-  nothing pending. This gets reset once the CPU is going online.
-  This also covers the possible rollback scenarios.
+Given that RV is a tracing consumer, the code is being placed inside the
+tracing subsystem (Steven and I have been talking about it for a while).
 
-- should a CPU already contribute entropy then the HP-handler is not
-  going to reset it.
+The changes since V1 includes:
+	- rebased to the latest kernel;
+	- code cleanup;
+	- the watchdog dev monitor;
+	- safety app;
 
-- should a CPU already contribute entropy and schedule a worker then we
-  reset the FAST_POOL_MIX_INFLIGHT bit. However ->last is also reset so
-  no new worker is scheduled due the time and because count =3D=3D 0.
-  So either the worker runs (and does the same reset) _or_ we wait
-  another 64 interrupts + jiffy (in case the worker was scheduled but
-  did nothing because it was run on another CPU).
+The TODO list still includes:
+	- Make per-task monitor use the task struct to store the
+	  per monitor state (Suggested by peterz)
+	- Add a reactor tha enables the visualization of the visited
+	  states via KCOV (Marco Elver & Dmitry Vyukov)
+	- Add a CRC method to check from user-space if the values
+	  exported by the monitor were not corrupted by any other
+	  kernel task (Gabriele Paoloni)
 
-> +	return 0;
-> +}
-> +
+I am sending the V2 with some TODOs because I need
+some feedback on the interface/files placement inside the kernel,
+so I can adjust all the patches accordingly. Also, to make it possible
+for people in the Elisa Project to evaluate the safety_app approach.
 
-Sebastian
+Daniel Bristot de Oliveira (21):
+  rv: Add Runtime Verification (RV) interface
+  rv: Add runtime reactors interface
+  rv/include: Add helper functions for deterministic automata
+  rv/include: Add deterministic automata monitor definition via C macros
+  rv/include: Add tracing helper functions
+  tools/rv: Add dot2c
+  tools/rv: Add dot2k
+  rv/monitor: Add the wip monitor skeleton created by dot2k
+  rv/monitor: wip instrumentation and Makefile/Kconfig entries
+  rv/monitor: Add the wwnr monitor skeleton created by dot2k
+  rv/monitor: wwnr instrumentation and Makefile/Kconfig entries
+  rv/reactor: Add the printk reactor
+  rv/reactor: Add the panic reactor
+  Documentation/rv: Add a basic documentation
+  Documentation/rv: Add deterministic automata monitor synthesis
+    documentation
+  Documentation/rv: Add deterministic automata instrumentation
+    documentation
+  watchdog/dev: Add tracepoints
+  rv/monitor: Add safe watchdog monitor
+  rv/monitor: Add safe watchdog nowayout monitor
+  rv/safety_app: Add an safety_app sample
+  Documentation/rv: Add watchdog-monitor documentation
+
+ Documentation/trace/index.rst                 |   1 +
+ .../trace/rv/da_monitor_instrumentation.rst   | 230 ++++++
+ .../trace/rv/da_monitor_synthesis.rst         | 286 +++++++
+ Documentation/trace/rv/index.rst              |   9 +
+ .../trace/rv/runtime-verification.rst         | 233 ++++++
+ Documentation/trace/rv/watchdog-monitor.rst   | 307 ++++++++
+ drivers/watchdog/watchdog_dev.c               |  41 +-
+ include/linux/rv.h                            |  31 +
+ include/linux/watchdog.h                      |   7 +-
+ include/rv/automata.h                         |  52 ++
+ include/rv/da_monitor.h                       | 398 ++++++++++
+ include/rv/trace_helpers.h                    |  69 ++
+ include/trace/events/watchdog.h               | 103 +++
+ kernel/trace/Kconfig                          |   2 +
+ kernel/trace/Makefile                         |   2 +
+ kernel/trace/rv/Kconfig                       |  78 ++
+ kernel/trace/rv/Makefile                      |  10 +
+ kernel/trace/rv/monitor_safe_wtd/model.h      |  84 +++
+ kernel/trace/rv/monitor_safe_wtd/safe_wtd.c   | 322 ++++++++
+ kernel/trace/rv/monitor_safe_wtd/safe_wtd.h   |  64 ++
+ kernel/trace/rv/monitor_safe_wtd_nwo/model.h  |  61 ++
+ .../rv/monitor_safe_wtd_nwo/safe_wtd_nwo.c    | 309 ++++++++
+ .../rv/monitor_safe_wtd_nwo/safe_wtd_nwo.h    |  64 ++
+ kernel/trace/rv/monitor_wip/model.h           |  38 +
+ kernel/trace/rv/monitor_wip/wip.c             | 124 +++
+ kernel/trace/rv/monitor_wip/wip.h             |  64 ++
+ kernel/trace/rv/monitor_wwnr/model.h          |  38 +
+ kernel/trace/rv/monitor_wwnr/wwnr.c           | 122 +++
+ kernel/trace/rv/monitor_wwnr/wwnr.h           |  70 ++
+ kernel/trace/rv/reactor_panic.c               |  44 ++
+ kernel/trace/rv/reactor_printk.c              |  43 ++
+ kernel/trace/rv/rv.c                          | 700 +++++++++++++++++
+ kernel/trace/rv/rv.h                          |  50 ++
+ kernel/trace/rv/rv_reactors.c                 | 478 ++++++++++++
+ kernel/trace/trace.c                          |   4 +
+ kernel/trace/trace.h                          |   2 +
+ tools/tracing/rv/dot2/Makefile                |  26 +
+ tools/tracing/rv/dot2/automata.py             | 179 +++++
+ tools/tracing/rv/dot2/dot2c                   |  30 +
+ tools/tracing/rv/dot2/dot2c.py                | 240 ++++++
+ tools/tracing/rv/dot2/dot2k                   |  46 ++
+ tools/tracing/rv/dot2/dot2k.py                | 184 +++++
+ .../rv/dot2/dot2k_templates/main_global.c     |  96 +++
+ .../rv/dot2/dot2k_templates/main_global.h     |  64 ++
+ .../rv/dot2/dot2k_templates/main_per_cpu.c    |  96 +++
+ .../rv/dot2/dot2k_templates/main_per_cpu.h    |  64 ++
+ .../rv/dot2/dot2k_templates/main_per_task.c   |  96 +++
+ .../rv/dot2/dot2k_templates/main_per_task.h   |  70 ++
+ tools/tracing/rv/safety_app/Makefile          |  51 ++
+ tools/tracing/rv/safety_app/safety_app.c      | 713 ++++++++++++++++++
+ 50 files changed, 6486 insertions(+), 9 deletions(-)
+ create mode 100644 Documentation/trace/rv/da_monitor_instrumentation.rst
+ create mode 100644 Documentation/trace/rv/da_monitor_synthesis.rst
+ create mode 100644 Documentation/trace/rv/index.rst
+ create mode 100644 Documentation/trace/rv/runtime-verification.rst
+ create mode 100644 Documentation/trace/rv/watchdog-monitor.rst
+ create mode 100644 include/linux/rv.h
+ create mode 100644 include/rv/automata.h
+ create mode 100644 include/rv/da_monitor.h
+ create mode 100644 include/rv/trace_helpers.h
+ create mode 100644 include/trace/events/watchdog.h
+ create mode 100644 kernel/trace/rv/Kconfig
+ create mode 100644 kernel/trace/rv/Makefile
+ create mode 100644 kernel/trace/rv/monitor_safe_wtd/model.h
+ create mode 100644 kernel/trace/rv/monitor_safe_wtd/safe_wtd.c
+ create mode 100644 kernel/trace/rv/monitor_safe_wtd/safe_wtd.h
+ create mode 100644 kernel/trace/rv/monitor_safe_wtd_nwo/model.h
+ create mode 100644 kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.c
+ create mode 100644 kernel/trace/rv/monitor_safe_wtd_nwo/safe_wtd_nwo.h
+ create mode 100644 kernel/trace/rv/monitor_wip/model.h
+ create mode 100644 kernel/trace/rv/monitor_wip/wip.c
+ create mode 100644 kernel/trace/rv/monitor_wip/wip.h
+ create mode 100644 kernel/trace/rv/monitor_wwnr/model.h
+ create mode 100644 kernel/trace/rv/monitor_wwnr/wwnr.c
+ create mode 100644 kernel/trace/rv/monitor_wwnr/wwnr.h
+ create mode 100644 kernel/trace/rv/reactor_panic.c
+ create mode 100644 kernel/trace/rv/reactor_printk.c
+ create mode 100644 kernel/trace/rv/rv.c
+ create mode 100644 kernel/trace/rv/rv.h
+ create mode 100644 kernel/trace/rv/rv_reactors.c
+ create mode 100644 tools/tracing/rv/dot2/Makefile
+ create mode 100644 tools/tracing/rv/dot2/automata.py
+ create mode 100644 tools/tracing/rv/dot2/dot2c
+ create mode 100644 tools/tracing/rv/dot2/dot2c.py
+ create mode 100644 tools/tracing/rv/dot2/dot2k
+ create mode 100644 tools/tracing/rv/dot2/dot2k.py
+ create mode 100644 tools/tracing/rv/dot2/dot2k_templates/main_global.c
+ create mode 100644 tools/tracing/rv/dot2/dot2k_templates/main_global.h
+ create mode 100644 tools/tracing/rv/dot2/dot2k_templates/main_per_cpu.c
+ create mode 100644 tools/tracing/rv/dot2/dot2k_templates/main_per_cpu.h
+ create mode 100644 tools/tracing/rv/dot2/dot2k_templates/main_per_task.c
+ create mode 100644 tools/tracing/rv/dot2/dot2k_templates/main_per_task.h
+ create mode 100644 tools/tracing/rv/safety_app/Makefile
+ create mode 100644 tools/tracing/rv/safety_app/safety_app.c
+
+-- 
+2.33.1
+
