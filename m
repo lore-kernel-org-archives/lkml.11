@@ -2,256 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC07C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA19C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244442AbiBNLcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:32:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57298 "EHLO
+        id S1351695AbiBNLck (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:32:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351479AbiBNL3s (ORCPT
+        with ESMTP id S1351317AbiBNLaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:29:48 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090261AF1A;
-        Mon, 14 Feb 2022 03:09:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644836977; x=1676372977;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qHcNmmDcNOzFCPG3xh0TL+8mrKbFALsDkwhy3+agETA=;
-  b=QgcadQSk8a74iPsYgOXxqsjh4xzyC3S2ZfTr4GJ00Gn6N79YCfYDeMGf
-   h5gkOfZ3bRZUiSxJUf85W3CfwOg/s0UuxUDb7pSOqtCn0O0ZJmLKvB0EK
-   ONmJhMSCBbTTHX4AA7kA2tW33JQ/dCQQ7JQYOLA9dMfI2bckmc1frBbzJ
-   3Zr47sSsvw+H9C67vXhwxt1IqO6Tt+BR4pNeNmUea+rOvB6MeDDvJu1J1
-   JAKbKbT1FU3SGKWUqqVcyj90BcB/xSAmcMLrM7fymDC0Ipc1JlDsMYelc
-   W9Fldbun7JefGZ4SF14mWL0etTv7svdRVi746OcESjGKg5oS5KHgMOJOW
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="336494884"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="336494884"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:09:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="635103294"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 03:09:29 -0800
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH V2 02/11] perf/x86: Add support for TSC as a perf event clock
-Date:   Mon, 14 Feb 2022 13:09:05 +0200
-Message-Id: <20220214110914.268126-3-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220214110914.268126-1-adrian.hunter@intel.com>
-References: <20220214110914.268126-1-adrian.hunter@intel.com>
-MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+        Mon, 14 Feb 2022 06:30:13 -0500
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E859841311
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:11:54 -0800 (PST)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220214111152epoutp027c042f241b30db6bf36307fd02eb3ade~ToqOKhID52530025300epoutp02d
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:11:52 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220214111152epoutp027c042f241b30db6bf36307fd02eb3ade~ToqOKhID52530025300epoutp02d
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1644837112;
+        bh=14Me7vBAMhBKZ9NdNtxty8qye+T9cXqjuVsFOurxFrM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tQEO/Gp8g3/bHvzxBJ6256Js102TytdMHHaKyCF1c8FXlTYezaZoVJ2KBKYprudyf
+         CA1lf5YlanIm5Di9PdG5lDlAzA5iYrMTZ4IjGtDZYxREXy54WJtzP/T3ciTiBZa963
+         oY3molFFEuiUNbriQ2v7CCCexwheSaftxAlfRKpE=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220214111151epcas2p25ebfa707162dc228e7abdbff6a596582~ToqNkrAc80249502495epcas2p2l;
+        Mon, 14 Feb 2022 11:11:51 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.88]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4Jy1ks6SN6z4x9Px; Mon, 14 Feb
+        2022 11:11:49 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2C.3F.35137.6583A026; Mon, 14 Feb 2022 20:09:10 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220214111149epcas2p1a1faeda037991885fd6f2f026fa44ec5~ToqLfFI331425414254epcas2p1Y;
+        Mon, 14 Feb 2022 11:11:49 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220214111149epsmtrp2be83b3b6ba35f490fccafb4ff3695997~ToqLeYaqf0758607586epsmtrp2U;
+        Mon, 14 Feb 2022 11:11:49 +0000 (GMT)
+X-AuditID: b6c32a46-da1ff70000018941-f5-620a385652ce
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        6E.A6.29871.5F83A026; Mon, 14 Feb 2022 20:11:49 +0900 (KST)
+Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220214111149epsmtip1d1ec519cd8f46524a04ce85c38ff0762~ToqLU_wcj2931329313epsmtip1a;
+        Mon, 14 Feb 2022 11:11:49 +0000 (GMT)
+From:   Daehwan Jung <dh10.jung@samsung.com>
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org (open list),
+        Daehwan Jung <dh10.jung@samsung.com>, quic_wcheng@quicinc.com,
+        quic_jackp@quicinc.com, Thinh.Nguyen@synopsys.com
+Subject: [PATCH v2 1/2] usb: dwc3: Not set DWC3_EP_END_TRANSFER_PENDING in
+ ep cmd fails
+Date:   Mon, 14 Feb 2022 20:08:52 +0900
+Message-Id: <1644836933-141376-2-git-send-email-dh10.jung@samsung.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrKKsWRmVeSWpSXmKPExsWy7bCmhW6YBVeSwa+zYhbH2p6wW9xZMI3J
+        onnxejaLy7vmsFksWtbKbLHr3yImi027+1gtVi04wO7A4bFpVSebx/65a9g9Ju6p8+jbsorR
+        Y8v+z4wenzfJBbBFZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5
+        +AToumXmAN2jpFCWmFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwL9ArTswtLs1L18tL
+        LbEyNDAwMgUqTMjOWHdmBWtBA3fF8RuPGBsY+zi7GDk5JARMJC7s/cvaxcjFISSwg1Fi2skj
+        7BDOJ0aJGceesUA43xgl7vU9Y4RpaZr1ihkisZdRYvn0tYwQzg9GicsP9gMN4+BgE9CS+L4Q
+        rEFEIExi4rJ9YJOYQRqa9t1lBUkIC0RKfOz7xgZiswioSjycdgDM5hVwkzi0YgITxDY5iZvn
+        OplBbE4Bd4muO+vAlkkIXGOXeHW3hRWiyEXizPrlUOcJS7w6voUdwpaS+PxuLxuEXSyx61Mr
+        E0RzA6NE44MTzBAJY4lZz9oZQa5mFtCUWL9LH8SUEFCWOHKLBaSCWYBPouPwX3aIMK9ER5sQ
+        RKOyxPTLE6AukJQ4+Poc1EAPid+9i8DOFxKYxShx7Uj6BEa5WQjzFzAyrmIUSy0ozk1PLTYq
+        MILHWHJ+7iZGcHrTctvBOOXtB71DjEwcjIcYJTiYlUR4485yJgnxpiRWVqUW5ccXleakFh9i
+        NAWG3URmKdHkfGCCzSuJNzSxNDAxMzM0NzI1MFcS5/VK2ZAoJJCeWJKanZpakFoE08fEwSnV
+        wKQnvy32cva0M2d0j1lMUlLkZV24fI/S9bjLCl5iuw+1VRco9u37Hvt72QsTLe0kpsDgXz/n
+        dV0u9L/awvTl0pSNtdsv3onV39Lqq+S1rtP6lkNrh3ld2OMlXbce997J6Si9fHSaT91JkW9+
+        h/XnrTQvPyK2X6HJXyf52NvZUfwuZSklpnnbC66k6zJLfy698avO42XRx17hzws0Vp6W/trk
+        +2Tt30PsQaf2rLvSb9R8O7z21ZNlX3zeTX1bLf/ihnrplnkMbj2T2Pz++L5cFhdZ3hgbec7f
+        y0rkp9jiSwqibGWeIWrW/GtKZ6gFp+6+nvE389XB6qYnEWHspey7Q+I0v/Pf/ihzLETm1jF1
+        YSWW4oxEQy3mouJEAFG0rP34AwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrALMWRmVeSWpSXmKPExsWy7bCSnO5XC64kgzvXBCyOtT1ht7izYBqT
+        RfPi9WwWl3fNYbNYtKyV2WLXv0VMFpt297FarFpwgN2Bw2PTqk42j/1z17B7TNxT59G3ZRWj
+        x5b9nxk9Pm+SC2CL4rJJSc3JLEst0rdL4MpYd2YFa0EDd8XxG48YGxj7OLsYOTkkBEwkmma9
+        Yu5i5OIQEtjNKHH/w3Y2iISkxNK5N9ghbGGJ+y1HWCGKvjFKXH81CaiIg4NNQEvi+0JGkBoR
+        gTCJf48usoDUMAscZpRoebsLbJCwQLjEzikHwAaxCKhKPJx2ACzOK+AmcWjFBCaIBXISN891
+        MoPYnALuEl131oENFQKqebP3NvsERr4FjAyrGCVTC4pz03OLDQsM81LL9YoTc4tL89L1kvNz
+        NzGCA1FLcwfj9lUf9A4xMnEwHmKU4GBWEuGNO8uZJMSbklhZlVqUH19UmpNafIhRmoNFSZz3
+        QtfJeCGB9MSS1OzU1ILUIpgsEwenVANTf3RX8CrRC+nTJz0uipsg+E3EQnFB7E8F1qbyVbpn
+        hcpi/1vPkq6Ma18bxvlCo8g2YdLazaEWZ09YmXJc2R0h8ZFhusXCmWm3prHvvbquhWvVoowm
+        oTelP88uPvxkk+Nek57PBuYyj+KMK0TW1Ew59Gub1eodz9I5n3iavLkhzrVtjbKizO7Ij2v7
+        Fr91tbg83UHNWn3u6ZrX6Qdyp6ziudS5PlnoutLu7/OTSxdc+7l2mXb/5sw9r+UidH/X8Nxg
+        3RDGePy/2gK9S28FGyS3ztikvGfRTrFIz61/DnGUc2u/WXfI933kzrrn3yX+MZ6IWr6qWFit
+        qmPdmgkl1qu9AplnCzXEcXA9m3L6W8mNaiWW4oxEQy3mouJEABuIuRuzAgAA
+X-CMS-MailID: 20220214111149epcas2p1a1faeda037991885fd6f2f026fa44ec5
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220214111149epcas2p1a1faeda037991885fd6f2f026fa44ec5
+References: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
+        <CGME20220214111149epcas2p1a1faeda037991885fd6f2f026fa44ec5@epcas2p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, using Intel PT to trace a VM guest is limited to kernel space
-because decoding requires side band events such as MMAP and CONTEXT_SWITCH.
-While these events can be collected for the host, there is not a way to do
-that yet for a guest. One approach, would be to collect them inside the
-guest, but that would require being able to synchronize with host
-timestamps.
+It always sets DWC3_EP_END_TRANSFER_PENDING in dwc3_stop_active_transfer
+even if dwc3_send_gadget_ep_cmd fails. It can cause some problems like
+skipping clear stall commmand or giveback from dequeue. We fix to set it
+only when ep cmd success. Additionally, We clear DWC3_EP_TRANSFER_STARTED
+for next trb to start transfer not update transfer.
 
-The motivation for this patch is to provide a clock that can be used within
-a VM guest, and that correlates to a VM host clock. In the case of TSC, if
-the hypervisor leaves rdtsc alone, the TSC value will be subject only to
-the VMCS TSC Offset and Scaling. Adjusting for that would make it possible
-to inject events from a guest perf.data file, into a host perf.data file.
-
-Thus making possible the collection of VM guest side band for Intel PT
-decoding.
-
-There are other potential benefits of TSC as a perf event clock:
-	- ability to work directly with TSC
-	- ability to inject non-Intel-PT-related events from a guest
-
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
 ---
- arch/x86/events/core.c            | 16 +++++++++
- arch/x86/include/asm/perf_event.h |  3 ++
- include/uapi/linux/perf_event.h   | 12 ++++++-
- kernel/events/core.c              | 57 +++++++++++++++++++------------
- 4 files changed, 65 insertions(+), 23 deletions(-)
+ drivers/usb/dwc3/gadget.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index e686c5e0537b..51d5345de30a 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -2728,6 +2728,17 @@ void arch_perf_update_userpage(struct perf_event *event,
- 		!!(event->hw.flags & PERF_EVENT_FLAG_USER_READ_CNT);
- 	userpg->pmc_width = x86_pmu.cntval_bits;
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index 183b90923f51..3ad3bc5813ca 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -2044,6 +2044,12 @@ static int dwc3_gadget_ep_dequeue(struct usb_ep *ep,
+ 				dwc3_gadget_move_cancelled_request(r,
+ 						DWC3_REQUEST_STATUS_DEQUEUED);
  
-+	if (event->attr.use_clockid &&
-+	    event->attr.ns_clockid &&
-+	    event->attr.clockid == CLOCK_PERF_HW_CLOCK) {
-+		userpg->cap_user_time_zero = 1;
-+		userpg->time_mult = 1;
-+		userpg->time_shift = 0;
-+		userpg->time_offset = 0;
-+		userpg->time_zero = 0;
-+		return;
-+	}
++			/* If ep cmd fails, then force to giveback cancelled requests here */
++			if (!(dep->flags & DWC3_EP_END_TRANSFER_PENDING)) {
++				dep->flags &= ~DWC3_EP_TRANSFER_STARTED;
++				dwc3_gadget_ep_cleanup_cancelled_requests(dep);
++			}
 +
- 	if (!using_native_sched_clock() || !sched_clock_stable())
- 		return;
+ 			dep->flags &= ~DWC3_EP_WAIT_TRANSFER_COMPLETE;
  
-@@ -2980,6 +2991,11 @@ unsigned long perf_misc_flags(struct pt_regs *regs)
- 	return misc;
+ 			goto out;
+@@ -3645,7 +3651,7 @@ static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
+ 
+ 	if (!interrupt)
+ 		dep->flags &= ~DWC3_EP_TRANSFER_STARTED;
+-	else
++	else if (!ret)
+ 		dep->flags |= DWC3_EP_END_TRANSFER_PENDING;
  }
  
-+u64 perf_hw_clock(void)
-+{
-+	return rdtsc_ordered();
-+}
-+
- void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- {
- 	cap->version		= x86_pmu.version;
-diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
-index 58d9e4b1fa0a..5288ea1ae2ba 100644
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -451,6 +451,9 @@ extern unsigned long perf_instruction_pointer(struct pt_regs *regs);
- extern unsigned long perf_misc_flags(struct pt_regs *regs);
- #define perf_misc_flags(regs)	perf_misc_flags(regs)
- 
-+extern u64 perf_hw_clock(void);
-+#define perf_hw_clock		perf_hw_clock
-+
- #include <asm/stacktrace.h>
- 
- /*
-diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-index 82858b697c05..e8617efd552b 100644
---- a/include/uapi/linux/perf_event.h
-+++ b/include/uapi/linux/perf_event.h
-@@ -290,6 +290,15 @@ enum {
- 	PERF_TXN_ABORT_SHIFT = 32,
- };
- 
-+/*
-+ * If supported, clockid value to select an architecture dependent hardware
-+ * clock. Note this means the unit of time is ticks not nanoseconds.
-+ * Requires ns_clockid to be set in addition to use_clockid.
-+ * On x86, this clock is provided by the rdtsc instruction, and is not
-+ * paravirtualized.
-+ */
-+#define CLOCK_PERF_HW_CLOCK		0x10000000
-+
- /*
-  * The format of the data returned by read() on a perf event fd,
-  * as specified by attr.read_format:
-@@ -409,7 +418,8 @@ struct perf_event_attr {
- 				inherit_thread :  1, /* children only inherit if cloned with CLONE_THREAD */
- 				remove_on_exec :  1, /* event is removed from task on exec */
- 				sigtrap        :  1, /* send synchronous SIGTRAP on event */
--				__reserved_1   : 26;
-+				ns_clockid     :  1, /* non-standard clockid */
-+				__reserved_1   : 25;
- 
- 	union {
- 		__u32		wakeup_events;	  /* wakeup every n events */
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 57249f37c37d..15dee265a5b9 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -12008,35 +12008,48 @@ static void mutex_lock_double(struct mutex *a, struct mutex *b)
- 	mutex_lock_nested(b, SINGLE_DEPTH_NESTING);
- }
- 
--static int perf_event_set_clock(struct perf_event *event, clockid_t clk_id)
-+static int perf_event_set_clock(struct perf_event *event, clockid_t clk_id, bool ns_clockid)
- {
- 	bool nmi_safe = false;
- 
--	switch (clk_id) {
--	case CLOCK_MONOTONIC:
--		event->clock = &ktime_get_mono_fast_ns;
--		nmi_safe = true;
--		break;
-+	if (ns_clockid) {
-+		switch (clk_id) {
-+#ifdef perf_hw_clock
-+		case CLOCK_PERF_HW_CLOCK:
-+			event->clock = &perf_hw_clock;
-+			nmi_safe = true;
-+			break;
-+#endif
-+		default:
-+			return -EINVAL;
-+		}
-+	} else {
-+		switch (clk_id) {
-+		case CLOCK_MONOTONIC:
-+			event->clock = &ktime_get_mono_fast_ns;
-+			nmi_safe = true;
-+			break;
- 
--	case CLOCK_MONOTONIC_RAW:
--		event->clock = &ktime_get_raw_fast_ns;
--		nmi_safe = true;
--		break;
-+		case CLOCK_MONOTONIC_RAW:
-+			event->clock = &ktime_get_raw_fast_ns;
-+			nmi_safe = true;
-+			break;
- 
--	case CLOCK_REALTIME:
--		event->clock = &ktime_get_real_ns;
--		break;
-+		case CLOCK_REALTIME:
-+			event->clock = &ktime_get_real_ns;
-+			break;
- 
--	case CLOCK_BOOTTIME:
--		event->clock = &ktime_get_boottime_ns;
--		break;
-+		case CLOCK_BOOTTIME:
-+			event->clock = &ktime_get_boottime_ns;
-+			break;
- 
--	case CLOCK_TAI:
--		event->clock = &ktime_get_clocktai_ns;
--		break;
-+		case CLOCK_TAI:
-+			event->clock = &ktime_get_clocktai_ns;
-+			break;
- 
--	default:
--		return -EINVAL;
-+		default:
-+			return -EINVAL;
-+		}
- 	}
- 
- 	if (!nmi_safe && !(event->pmu->capabilities & PERF_PMU_CAP_NO_NMI))
-@@ -12245,7 +12258,7 @@ SYSCALL_DEFINE5(perf_event_open,
- 	pmu = event->pmu;
- 
- 	if (attr.use_clockid) {
--		err = perf_event_set_clock(event, attr.clockid);
-+		err = perf_event_set_clock(event, attr.clockid, attr.ns_clockid);
- 		if (err)
- 			goto err_alloc;
- 	}
 -- 
-2.25.1
+2.31.1
 
