@@ -2,124 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B0B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBF1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348146AbiBNKek (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:34:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41840 "EHLO
+        id S237511AbiBNKet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:34:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348057AbiBNKeA (ORCPT
+        with ESMTP id S1348065AbiBNKeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:34:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D564DA1BFB;
-        Mon, 14 Feb 2022 02:00:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79A9EB80DD0;
-        Mon, 14 Feb 2022 10:00:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81122C340E9;
-        Mon, 14 Feb 2022 10:00:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832837;
-        bh=xJ39vTC6tFKpPvYTl4kRN3eaMy5FWogE2TcMQmksQmA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1q1d8jR9vNk/vGr33d6Pv4LnfDBgK9et5ViLtzl/TxD3+G4pgRYTGMaq0s/nRStoH
-         UM8nyxNt8630h563nOgakeYv6JHQ8/G2Q/kcp+EEWxNmynbiFkyIAjkP3jzKnmyLx8
-         4N9oCTRAkAr/AFhvrZgUCHfbJgYiGOanjliLM86M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 139/203] net: dsa: seville: register the mdiobus under devres
-Date:   Mon, 14 Feb 2022 10:26:23 +0100
-Message-Id: <20220214092514.958868552@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 567B0A1BFD;
+        Mon, 14 Feb 2022 02:00:40 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2274B1396;
+        Mon, 14 Feb 2022 02:00:40 -0800 (PST)
+Received: from bogus (unknown [10.57.3.35])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7B6EC3F718;
+        Mon, 14 Feb 2022 02:00:38 -0800 (PST)
+Date:   Mon, 14 Feb 2022 09:59:50 +0000
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Edwin Chiu =?utf-8?B?6YKx5Z6C5bOw?= <edwin.chiu@sunplus.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Edwin Chiu <edwinchiu0505tw@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH v4] cpuidle: sunplus: Create cpuidle driver for sunplus
+ sp7021
+Message-ID: <20220214095950.vt7fkvrkvio3gtkw@bogus>
+References: <cover.1644218105.git.edwinchiu0505tw@gmail.com>
+ <957d882222d218b62fe3fb7a069e2f7952afc5be.1644218105.git.edwinchiu0505tw@gmail.com>
+ <64f91b1a-93b9-941d-fdfa-271e198e1ab5@canonical.com>
+ <0edae7bea1ae47cd9044cd223a989b81@sphcmbx02.sunplus.com.tw>
+ <136f2087-10e7-c9e8-2292-3046711c8f68@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <136f2087-10e7-c9e8-2292-3046711c8f68@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, Feb 14, 2022 at 07:44:30AM +0100, Krzysztof Kozlowski wrote:
+> On 14/02/2022 03:55, Edwin Chiu 邱垂峰 wrote:
+> > Hi Krzysztof:
+> > 
+> > Please see below answer.
+> > 
+> >>> +static struct cpuidle_driver sp7021_idle_driver = {
+> >>> +	.name = "sp7021_idle",
+> >>> +	.owner = THIS_MODULE,
+> >>> +	/*
+> >>> +	 * State at index 0 is standby wfi and considered standard
+> >>> +	 * on all ARM platforms. If in some platforms simple wfi
+> >>> +	 * can't be used as "state 0", DT bindings must be implemented
+> >>> +	 * to work around this issue and allow installing a special
+> >>> +	 * handler for idle state index 0.
+> >>> +	 */
+> >>> +	.states[0] = {
+> >>> +		.enter                  = sp7021_enter_idle_state,
+> >>> +		.exit_latency           = 1,
+> >>> +		.target_residency       = 1,
+> >>> +		.power_usage		= UINT_MAX,
+> >>> +		.name                   = "WFI",
+> >>> +		.desc                   = "ARM WFI",
+> >>
+> >> I have impression that there is no point in having custom driver with WFI...
+> >>
 
-[ Upstream commit bd488afc3b39e045ba71aab472233f2a78726e7b ]
++1
 
-As explained in commits:
-74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
-5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
+> >> Still the main question from Daniel and Sudeep stays: why do you need
+> >> this? You copied exactly cpuildle-arm driver, there is nothing different
+> >> here. At least I could not spot differences. Maybe except that you use
+> >> cpu_v7_do_idle explicitly.
+> >>
 
-mdiobus_free() will panic when called from devm_mdiobus_free() <-
-devres_release_all() <- __device_release_driver(), and that mdiobus was
-not previously unregistered.
+Please comment or answer why you can't use standard driver.
 
-The Seville VSC9959 switch is a platform device, so the initial set of
-constraints that I thought would cause this (I2C or SPI buses which call
-->remove on ->shutdown) do not apply. But there is one more which
-applies here.
+> >> Unfortunately I cannot understand the explanation here:
+> >> https://lore.kernel.org/all/0812c44f777d4026b79df2e3698294be@sphcmbx02.sunplus.com.tw/
+> >> Why exactly cpuidle-arm does not work in your case?
+> >>
+> > Edwin=> I mean cpuidle-arm driver can't directly use with no modified.
+> >        If someone want to use cpuidle-arm driver, below modification seems necessary.
+> >        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >        Static int sp7021_cpuidle_suspend_enter(unsigned long index) {~}
+> >        Static int __init sp7021_cpuidle_init(struct device_node *cpu_node, int cpu) {~}
+> >        Static const struct cpuidle_ops sc_smp_ops __initconst = {
+> >             .suspend = sp7021_cpuidle_suspend_enter,
+> >             .init = sp7021_cpuidle_init,
+> >        };
+> >        CPUIDLE_METHOD_OF_DECLARE(sc_smp, "sunplus,sc-smp", &sc_smp_ops); //declare enable method
+> >        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >
 
-If the DSA master itself is on a bus that calls ->remove from ->shutdown
-(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
-between the switch and the DSA master, and device_links_unbind_consumers()
-will unbind the seville switch driver on shutdown.
+May be. It depends on what is your enable-method. I did a quick grep and could
+see any support for sunplus platform upstream. So I am not sure what is the
+cpu boot/enable method used. Is it PSCI or something custom. You should be
+using standard PSCI if it is relatively new platform or you have any other
+strong reasons to use custom method. If you are using custom method, then
+some changes like above is required but that will be in the platform port
+and not the core cpuidle driver/framework.
 
-So the same treatment must be applied to all DSA switch drivers, which
-is: either use devres for both the mdiobus allocation and registration,
-or don't use devres at all.
+In short NACK for any dedicated driver for this platform, use the generic
+cpuidle-arm driver with appropriate platform hooks(like the above one only
+if you choose to use custom enable method and not standard PSCI)
 
-The seville driver has a code structure that could accommodate both the
-mdiobus_unregister and mdiobus_free calls, but it has an external
-dependency upon mscc_miim_setup() from mdio-mscc-miim.c, which calls
-devm_mdiobus_alloc_size() on its behalf. So rather than restructuring
-that, and exporting yet one more symbol mscc_miim_teardown(), let's work
-with devres and replace of_mdiobus_register with the devres variant.
-When we use all-devres, we can ensure that devres doesn't free a
-still-registered bus (it either runs both callbacks, or none).
-
-Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/dsa/ocelot/seville_vsc9953.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 5ee7d1592a721..40d6d1f2c724f 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1109,7 +1109,7 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
- 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
- 
- 	/* Needed in order to initialize the bus mutex lock */
--	rc = of_mdiobus_register(bus, NULL);
-+	rc = devm_of_mdiobus_register(dev, bus, NULL);
- 	if (rc < 0) {
- 		dev_err(dev, "failed to register MDIO bus\n");
- 		return rc;
-@@ -1161,7 +1161,8 @@ static void vsc9953_mdio_bus_free(struct ocelot *ocelot)
- 		mdio_device_free(pcs->mdio);
- 		lynx_pcs_destroy(pcs);
- 	}
--	mdiobus_unregister(felix->imdio);
-+
-+	/* mdiobus_unregister and mdiobus_free handled by devres */
- }
- 
- static const struct felix_info seville_info_vsc9953 = {
 -- 
-2.34.1
-
-
-
+Regards,
+Sudeep
