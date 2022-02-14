@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D661C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C79ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346183AbiBNKR3 (ORCPT
+        id S1346210AbiBNKRe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:17:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42286 "EHLO
+        Mon, 14 Feb 2022 05:17:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346274AbiBNKPn (ORCPT
+        with ESMTP id S1346343AbiBNKPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:15:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E147B561;
-        Mon, 14 Feb 2022 01:52:41 -0800 (PST)
+        Mon, 14 Feb 2022 05:15:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7EF88B33;
+        Mon, 14 Feb 2022 01:52:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C46E0B80DC8;
-        Mon, 14 Feb 2022 09:52:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7F1DC340E9;
-        Mon, 14 Feb 2022 09:52:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41B44B80DC4;
+        Mon, 14 Feb 2022 09:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F359C340E9;
+        Mon, 14 Feb 2022 09:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832358;
-        bh=PJHeGXva5+VseX84sjTYD+TkWsdaeyJBakqXYhk9zg0=;
+        s=korg; t=1644832355;
+        bh=7l+VzWdFRa+CJ1xl/tSsSuOBIXCFgelYaZomtLXIgT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v1SXIjjjibVtD3tayCiI7Kf1wh2A1pw+SUccf9ZUXPO0IMYGN4veb80SbNwZcmygN
-         G3lp2+x9K/opuQOXKVIUARmURpQ3sIS6BqtBl0ozBhKOiVuPhAfn6QxubiZZLGWaHq
-         Ic+CNlKFnX3+h90HiN5E3zhkpF1k3Pi3vxMY63o8=
+        b=y2ZMHbOTGmZT06rIsLnlK12uO8yAk9NP1FJG73NLf68hLyMINtHOs7hCYyrF56fnp
+         0ga/bQ/U3KUU7M8Dblqag+pMOzJXAFtO73F3R6TGGb1l/eHhJJxt/wjqPMjd37Nz5s
+         XPUSzW3+TLgJcDFAqoLNIEY4aQLG+Y7k7UFU/UzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 5.15 160/172] s390/cio: verify the driver availability for path_event call
-Date:   Mon, 14 Feb 2022 10:26:58 +0100
-Message-Id: <20220214092511.914738642@linuxfoundation.org>
+        stable@vger.kernel.org, Rafael Richter <rafael.richter@gin.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 133/172] net: dsa: mv88e6xxx: fix use-after-free in mv88e6xxx_mdios_unregister
+Date:   Mon, 14 Feb 2022 10:26:31 +0100
+Message-Id: <20220214092511.002463492@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,37 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vineeth Vijayan <vneethv@linux.ibm.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit dd9cb842fa9d90653a9b48aba52f89c069f3bc50 upstream.
+[ Upstream commit 51a04ebf21122d5c76a716ecd9bfc33ea44b2b39 ]
 
-If no driver is attached to a device or the driver does not provide the
-path_event function, an FCES path-event on this device could end up in a
-kernel-panic. Verify the driver availability before the path_event
-function call.
+Since struct mv88e6xxx_mdio_bus *mdio_bus is the bus->priv of something
+allocated with mdiobus_alloc_size(), this means that mdiobus_free(bus)
+will free the memory backing the mdio_bus as well. Therefore, the
+mdio_bus->list element is freed memory, but we continue to iterate
+through the list of MDIO buses using that list element.
 
-Fixes: 32ef938815c1 ("s390/cio: Add support for FCES status notification")
-Cc: stable@vger.kernel.org
-Signed-off-by: Vineeth Vijayan <vneethv@linux.ibm.com>
-Suggested-by: Peter Oberparleiter <oberpar@linux.ibm.com>
-Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
-Reviewed-by: Peter Oberparleiter <oberpar@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To fix this, use the proper list iterator that handles element deletion
+by keeping a copy of the list element next pointer.
+
+Fixes: f53a2ce893b2 ("net: dsa: mv88e6xxx: don't use devres for mdiobus")
+Reported-by: Rafael Richter <rafael.richter@gin.de>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220210174017.3271099-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/cio/device.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/s390/cio/device.c
-+++ b/drivers/s390/cio/device.c
-@@ -1194,7 +1194,7 @@ static int io_subchannel_chp_event(struc
- 			else
- 				path_event[chpid] = PE_NONE;
- 		}
--		if (cdev)
-+		if (cdev && cdev->drv && cdev->drv->path_event)
- 			cdev->drv->path_event(cdev, path_event);
- 		break;
- 	}
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 206b8a3001b95..056e3b65cd278 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3466,10 +3466,10 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
+ static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
+ 
+ {
+-	struct mv88e6xxx_mdio_bus *mdio_bus;
++	struct mv88e6xxx_mdio_bus *mdio_bus, *p;
+ 	struct mii_bus *bus;
+ 
+-	list_for_each_entry(mdio_bus, &chip->mdios, list) {
++	list_for_each_entry_safe(mdio_bus, p, &chip->mdios, list) {
+ 		bus = mdio_bus->bus;
+ 
+ 		if (!mdio_bus->external)
+-- 
+2.34.1
+
 
 
