@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8C2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 033AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350173AbiBNKls (ORCPT
+        id S1350284AbiBNKmD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:41:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52212 "EHLO
+        Mon, 14 Feb 2022 05:42:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348680AbiBNKhk (ORCPT
+        with ESMTP id S241787AbiBNKjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:37:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19167A8892;
-        Mon, 14 Feb 2022 02:03:49 -0800 (PST)
+        Mon, 14 Feb 2022 05:39:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA34403F6;
+        Mon, 14 Feb 2022 02:04:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DE1860DD7;
-        Mon, 14 Feb 2022 10:03:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FEA8C340E9;
-        Mon, 14 Feb 2022 10:03:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3370DB80CE1;
+        Mon, 14 Feb 2022 10:04:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45886C340EF;
+        Mon, 14 Feb 2022 10:04:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644833028;
-        bh=XHsiq3PFMyIQmhdaRWxgmjhLZbm1cobgoXAss8jZOOw=;
+        s=korg; t=1644833040;
+        bh=dnqBjILIyPFJ4zWz2ADF95n2WkBQyD/RD3t0VOM3EjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BBMMa0wjhQ2CpDQnJT6XsAaZzA7irc4nCbxVAxv/Vez5FvLtnGjNoCC7Ljog29Ttk
-         o7Q0Cuthy0dA3+M0ozgSqwk5mMhcw1zfCm07fKXPVnqFhzi/XS3Y9Tfrj+NlLvUxSb
-         tlmNfNOUrO9uR3fVhQa022WoiPMmYmtwGMXPzNNk=
+        b=Dy1lcOl4QacOrDwMnp5K0LG7G4ksqT/tlLHk0+oHQgqlfCXB5t/4Rs96QC6u867GU
+         qHLeHxTrWer4lLG9EIvWjsBct5lHaGZaVPnAJTUo3NBSAMQ8/ibHoXlvOBOXU+miND
+         JVDtwakjsAAKynfZeCcub3PCNWU+2nrVqF2vyu2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Song Liu <song@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.16 200/203] perf: Fix list corruption in perf_cgroup_switch()
-Date:   Mon, 14 Feb 2022 10:27:24 +0100
-Message-Id: <20220214092517.171509481@linuxfoundation.org>
+        stable@vger.kernel.org, Pawel Dembicki <paweldembicki@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.16 178/203] USB: serial: option: add ZTE MF286D modem
+Date:   Mon, 14 Feb 2022 10:27:02 +0100
+Message-Id: <20220214092516.295938960@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,52 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <song@kernel.org>
+From: Pawel Dembicki <paweldembicki@gmail.com>
 
-commit 5f4e5ce638e6a490b976ade4a40017b40abb2da0 upstream.
+commit d48384c7ed6c8fe4727eaa0f3048f62afd1cd715 upstream.
 
-There's list corruption on cgrp_cpuctx_list. This happens on the
-following path:
+Modem from ZTE MF286D is an Qualcomm MDM9250 based 3G/4G modem.
 
-  perf_cgroup_switch: list_for_each_entry(cgrp_cpuctx_list)
-      cpu_ctx_sched_in
-         ctx_sched_in
-            ctx_pinned_sched_in
-              merge_sched_in
-                  perf_cgroup_event_disable: remove the event from the list
+T:  Bus=02 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
+D:  Ver= 3.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS= 9 #Cfgs=  1
+P:  Vendor=19d2 ProdID=1485 Rev=52.87
+S:  Manufacturer=ZTE,Incorporated
+S:  Product=ZTE Technologies MSM
+S:  SerialNumber=MF286DZTED000000
+C:* #Ifs= 7 Cfg#= 1 Atr=80 MxPwr=896mA
+A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=02 Prot=ff Driver=rndis_host
+E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
+E:  Ad=81(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=88(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
+E:  Ad=8e(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=0f(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=usbfs
+E:  Ad=05(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+E:  Ad=89(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
 
-Use list_for_each_entry_safe() to allow removing an entry during
-iteration.
-
-Fixes: 058fe1c0440e ("perf/core: Make cgroup switch visit only cpuctxs with cgroup events")
-Signed-off-by: Song Liu <song@kernel.org>
-Reviewed-by: Rik van Riel <riel@surriel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220204004057.2961252-1-song@kernel.org
+Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/serial/option.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -839,7 +839,7 @@ static DEFINE_PER_CPU(struct list_head,
-  */
- static void perf_cgroup_switch(struct task_struct *task, int mode)
- {
--	struct perf_cpu_context *cpuctx;
-+	struct perf_cpu_context *cpuctx, *tmp;
- 	struct list_head *list;
- 	unsigned long flags;
- 
-@@ -850,7 +850,7 @@ static void perf_cgroup_switch(struct ta
- 	local_irq_save(flags);
- 
- 	list = this_cpu_ptr(&cgrp_cpuctx_list);
--	list_for_each_entry(cpuctx, list, cgrp_cpuctx_entry) {
-+	list_for_each_entry_safe(cpuctx, tmp, list, cgrp_cpuctx_entry) {
- 		WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
- 
- 		perf_ctx_lock(cpuctx, cpuctx->task_ctx);
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1649,6 +1649,8 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(2) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(ZTE_VENDOR_ID, 0x1476, 0xff) },	/* GosunCn ZTE WeLink ME3630 (ECM/NCM mode) */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1481, 0xff, 0x00, 0x00) }, /* ZTE MF871A */
++	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1485, 0xff, 0xff, 0xff),  /* ZTE MF286D */
++	  .driver_info = RSVD(5) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1533, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1534, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1535, 0xff, 0xff, 0xff) },
 
 
