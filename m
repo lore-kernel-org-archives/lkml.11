@@ -2,130 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F36C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348362AbiBNKkG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:40:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48532 "EHLO
+        id S240320AbiBNKkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:40:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350222AbiBNKhA (ORCPT
+        with ESMTP id S1350165AbiBNKg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:37:00 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21192A66ED;
-        Mon, 14 Feb 2022 02:03:31 -0800 (PST)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21E86fcW022932;
-        Mon, 14 Feb 2022 11:02:34 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=zBXICPv5YGDXCve/KOSXwXFvMmf1sH/hj0bAI5GxYVo=;
- b=EDzvvd/pFTWvooKLuYkeUIe99KBk+BJGKcjGoooMobeLklfhVE52vjADfET8qq9eMneR
- tepiqHXGE8QIFRuWGM7cIrs78E0e1+xyb/W7y3nVcM2tjrjmBDJHcQKIaJqe+Jpb4UMy
- 6wxW6+eAQgmRnhHtVnky7JpNNCvCAifMngR0OSSPTTaHGCT4LH9PQCZznxDD/L2ea35h
- txGgky7AWYHxRUr4RhqDRXF4YQv7jociSHi5GDhQZLjo8KeTpixWTH+ufkn+qzdkC2f/
- zgH5k9B7etZvNnZleKmO8QXfJ6Kqxnr+GvSCkXejVFnpNAvf3q3H2nT1vfpVQrcgiazh 7w== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e72j13pam-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 11:02:34 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D243A10002A;
-        Mon, 14 Feb 2022 11:02:32 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C195D2194F3;
-        Mon, 14 Feb 2022 11:02:32 +0100 (CET)
-Received: from [10.48.0.252] (10.75.127.45) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 14 Feb
- 2022 11:02:32 +0100
-Message-ID: <8e42cb99-a442-062a-cf0a-2f8d8aff0ab3@foss.st.com>
-Date:   Mon, 14 Feb 2022 11:02:22 +0100
+        Mon, 14 Feb 2022 05:36:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E720A66DA;
+        Mon, 14 Feb 2022 02:03:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCA0360C76;
+        Mon, 14 Feb 2022 10:02:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE6EC340E9;
+        Mon, 14 Feb 2022 10:02:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832970;
+        bh=yBRwaPPBX7oiofAb7QQqNGhdMzKYQcdZ2HG2mnhRb+4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ThEUqpE+tzIoo6r7JOBUdZcGFiPDssedEjsE9sKDIyz2lgf1ZlhK+aHm051l2JjCJ
+         DSn6Zf1oOSnRDPSczOqViW4ovtNT3vVc6R4spuX76p79Q8TU89c+ITWOBttAXrVCjL
+         A9tVpyIuLm8WecD2gBhcvZINrLz1BbRCPZ+6eXD4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 140/203] net: dsa: mt7530: fix kernel bug in mdiobus_free() when unbinding
+Date:   Mon, 14 Feb 2022 10:26:24 +0100
+Message-Id: <20220214092514.990174009@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 00/16] STM32 configure UART nodes for DMA
-Content-Language: en-US
-To:     Erwan Le Ray <erwan.leray@foss.st.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Marek Vasut <marex@denx.de>,
-        Marcin Sloniewski <marcin.sloniewski@gmail.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220203171114.10888-1-erwan.leray@foss.st.com>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <20220203171114.10888-1-erwan.leray@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_02,2022-02-14_02,2021-12-02_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 18:10, Erwan Le Ray wrote:
-> Add DMA configuration to UART nodes in stm32mp15x (SOC level) and
-> remove it at board level to keep current PIO behavior when needed.
-> For stm32-ed1 and stm32-dkx boards, UART4 (console) and UART7
-> (no HW flow control pin available) are kept in PIO mode, while USART3
-> is now configured in DMA mode.
-> UART4 (console UART) has to be kept in irq mode, as DMA support for
-> console has been removed from the driver by commit e359b4411c28
-> ("serial: stm32: fix threaded interrupt handling").
-> 
-> For other stm32mp15x-based boards, current configuration is kept for
-> all UART instances.
-> 
-> Erwan Le Ray (16):
->    ARM: dts: stm32: add DMA configuration to UART nodes on stm32mp151
->    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-ed1
->    ARM: dts: stm32: keep uart4 and uart7 behavior on stm32mp15xx-dkx
->    ARM: dts: stm32: keep uart4 behavior on icore-stm32mp1-ctouch2
->    ARM: dts: stm32: keep uart4 behavior on icore-stm32mp1-edimm2.2
->    ARM: dts: stm32: keep uart4 behavior on stm32mp157a-iot-box
->    ARM: dts: stm32: keep uart nodes behavior on stm32mp1-microdev2.0-of7
->    ARM: dts: stm32: keep uart nodes behavior on stm32mp1-microdev2.0
->    ARM: dts: stm32: keep uart nodes behavior on stm32mp157a-stinger96
->    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-lxa-mc1
->    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-odyssey
->    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-drc02
->    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-pdk2
->    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-picoitx
->    ARM: dts: stm32: keep uart4 behavior on stm32mp15xx-dhcom-som
->    ARM: dts: stm32: keep uart nodes behavior on
->      stm32mp15xx-dhcor-avenger96
-> 
->   arch/arm/boot/dts/stm32mp151.dtsi             | 21 +++++++++++++++++++
->   .../stm32mp157a-icore-stm32mp1-ctouch2.dts    |  2 ++
->   .../stm32mp157a-icore-stm32mp1-edimm2.2.dts   |  2 ++
->   arch/arm/boot/dts/stm32mp157a-iot-box.dts     |  2 ++
->   ...157a-microgea-stm32mp1-microdev2.0-of7.dts |  4 ++++
->   ...32mp157a-microgea-stm32mp1-microdev2.0.dts |  4 ++++
->   arch/arm/boot/dts/stm32mp157a-stinger96.dtsi  |  6 ++++++
->   arch/arm/boot/dts/stm32mp157c-ed1.dts         |  2 ++
->   arch/arm/boot/dts/stm32mp157c-lxa-mc1.dts     |  2 ++
->   arch/arm/boot/dts/stm32mp157c-odyssey.dts     |  2 ++
->   .../arm/boot/dts/stm32mp15xx-dhcom-drc02.dtsi |  4 ++++
->   arch/arm/boot/dts/stm32mp15xx-dhcom-pdk2.dtsi |  4 ++++
->   .../boot/dts/stm32mp15xx-dhcom-picoitx.dtsi   |  4 ++++
->   arch/arm/boot/dts/stm32mp15xx-dhcom-som.dtsi  |  2 ++
->   .../boot/dts/stm32mp15xx-dhcor-avenger96.dtsi |  6 ++++++
->   arch/arm/boot/dts/stm32mp15xx-dkx.dtsi        |  4 ++++
->   16 files changed, 71 insertions(+)
-> 
-Series applied on stm32-next.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Thanks
-Alex
+[ Upstream commit 9ffe3d09e32da45bb5a29cf2e80ec8d7534010c5 ]
+
+Nobody in this driver calls mdiobus_unregister(), which is necessary if
+mdiobus_register() completes successfully. So if the devres callbacks
+that free the mdiobus get invoked (this is the case when unbinding the
+driver), mdiobus_free() will BUG if the mdiobus is still registered,
+which it is.
+
+My speculation is that this is due to the fact that prior to commit
+ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+from June 2020, _devm_mdiobus_free() used to call mdiobus_unregister().
+But at the time that the mt7530 support was introduced in May 2021, the
+API was already changed. It's therefore likely that the blamed patch was
+developed on an older tree, and incorrectly adapted to net-next. This
+makes the Fixes: tag correct.
+
+Fix the problem by using the devres variant of mdiobus_register.
+
+Fixes: ba751e28d442 ("net: dsa: mt7530: add interrupt support")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/dsa/mt7530.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 9890672a206d0..fb59efc7f9266 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2066,7 +2066,7 @@ mt7530_setup_mdio(struct mt7530_priv *priv)
+ 	if (priv->irq)
+ 		mt7530_setup_mdio_irq(priv);
+ 
+-	ret = mdiobus_register(bus);
++	ret = devm_mdiobus_register(dev, bus);
+ 	if (ret) {
+ 		dev_err(dev, "failed to register MDIO bus: %d\n", ret);
+ 		if (priv->irq)
+-- 
+2.34.1
+
+
+
