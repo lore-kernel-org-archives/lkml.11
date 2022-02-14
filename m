@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19622C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38528C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351043AbiBNLYK convert rfc822-to-8bit (ORCPT
+        id S1350982AbiBNLYP convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:24:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52416 "EHLO
+        Mon, 14 Feb 2022 06:24:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350936AbiBNLXv (ORCPT
+        with ESMTP id S1350935AbiBNLXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 06:23:51 -0500
 Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4376613FA6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:59:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43AA170048
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:59:11 -0800 (PST)
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-436-UNO-Taq1O52MDZbamgUMuA-1; Mon, 14 Feb 2022 05:48:25 -0500
-X-MC-Unique: UNO-Taq1O52MDZbamgUMuA-1
+ us-mta-637-FLtZyrvGNYCv9PgvGY4JhA-1; Mon, 14 Feb 2022 05:47:59 -0500
+X-MC-Unique: FLtZyrvGNYCv9PgvGY4JhA-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 346211091DA0;
-        Mon, 14 Feb 2022 10:48:23 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E9769801B0E;
+        Mon, 14 Feb 2022 10:47:56 +0000 (UTC)
 Received: from x1.com (unknown [10.22.16.130])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F2F4527BDF;
-        Mon, 14 Feb 2022 10:48:18 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5948926E7E;
+        Mon, 14 Feb 2022 10:47:51 +0000 (UTC)
 From:   Daniel Bristot de Oliveira <bristot@kernel.org>
 To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
@@ -49,9 +49,9 @@ Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
         linux-trace-devel@vger.kernel.org,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
         Guenter Roeck <linux@roeck-us.net>
-Subject: [RFC V2 21/21] Documentation/rv: Add watchdog-monitor documentation
-Date:   Mon, 14 Feb 2022 11:45:12 +0100
-Message-Id: <347942775f8c2b6badd9796d1fd75f574dd0ce95.1644830251.git.bristot@kernel.org>
+Subject: [RFC V2 17/21] watchdog/dev: Add tracepoints
+Date:   Mon, 14 Feb 2022 11:45:08 +0100
+Message-Id: <e67874c8b676ea8dfe38679efa25363889bb1e76.1644830251.git.bristot@kernel.org>
 In-Reply-To: <cover.1644830251.git.bristot@kernel.org>
 References: <cover.1644830251.git.bristot@kernel.org>
 MIME-Version: 1.0
@@ -66,8 +66,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds documentation about the safe_wtd and safe_wtd_nwo RV monitors,
-and their usage via a safety application.
+Add a set of tracepoints, enabling the observability of the watchdog
+device interactions with user-space.
+
+The events are:
+	watchdog:watchdog_open
+	watchdog:watchdog_close
+	watchdog:watchdog_start
+	watchdog:watchdog_stop
+	watchdog:watchdog_set_timeout
+	watchdog:watchdog_ping
+	watchdog:watchdog_nowayout
+	watchdog:watchdog_set_keep_alive
+	watchdog:watchdog_keep_alive
 
 Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
 Cc: Guenter Roeck <linux@roeck-us.net>
@@ -90,323 +101,283 @@ Cc: linux-kernel@vger.kernel.org
 Cc: linux-trace-devel@vger.kernel.org
 Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 ---
- Documentation/trace/rv/watchdog-monitor.rst | 307 ++++++++++++++++++++
- 1 file changed, 307 insertions(+)
- create mode 100644 Documentation/trace/rv/watchdog-monitor.rst
+ drivers/watchdog/watchdog_dev.c |  41 ++++++++++++-
+ include/linux/watchdog.h        |   7 +--
+ include/trace/events/watchdog.h | 103 ++++++++++++++++++++++++++++++++
+ 3 files changed, 142 insertions(+), 9 deletions(-)
+ create mode 100644 include/trace/events/watchdog.h
 
-diff --git a/Documentation/trace/rv/watchdog-monitor.rst b/Documentation/trace/rv/watchdog-monitor.rst
+diff --git a/drivers/watchdog/watchdog_dev.c b/drivers/watchdog/watchdog_dev.c
+index 3a3d8b5c7ad5..0beeac5d4541 100644
+--- a/drivers/watchdog/watchdog_dev.c
++++ b/drivers/watchdog/watchdog_dev.c
+@@ -44,6 +44,9 @@
+ #include <linux/watchdog.h>	/* For watchdog specific items */
+ #include <linux/uaccess.h>	/* For copy_to_user/put_user/... */
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/watchdog.h>
++
+ #include "watchdog_core.h"
+ #include "watchdog_pretimeout.h"
+ 
+@@ -130,9 +133,11 @@ static inline void watchdog_update_worker(struct watchdog_device *wdd)
+ 	if (watchdog_need_worker(wdd)) {
+ 		ktime_t t = watchdog_next_keepalive(wdd);
+ 
+-		if (t > 0)
++		if (t > 0) {
+ 			hrtimer_start(&wd_data->timer, t,
+ 				      HRTIMER_MODE_REL_HARD);
++			trace_watchdog_set_keep_alive(wdd, ktime_to_ms(t));
++		}
+ 	} else {
+ 		hrtimer_cancel(&wd_data->timer);
+ 	}
+@@ -149,14 +154,16 @@ static int __watchdog_ping(struct watchdog_device *wdd)
+ 	now = ktime_get();
+ 
+ 	if (ktime_after(earliest_keepalive, now)) {
+-		hrtimer_start(&wd_data->timer,
+-			      ktime_sub(earliest_keepalive, now),
++		ktime_t t = ktime_sub(earliest_keepalive, now);
++		hrtimer_start(&wd_data->timer, t,
+ 			      HRTIMER_MODE_REL_HARD);
++		trace_watchdog_set_keep_alive(wdd, ktime_to_ms(t));
+ 		return 0;
+ 	}
+ 
+ 	wd_data->last_hw_keepalive = now;
+ 
++	trace_watchdog_ping(wdd);
+ 	if (wdd->ops->ping)
+ 		err = wdd->ops->ping(wdd);  /* ping the watchdog */
+ 	else
+@@ -215,6 +222,7 @@ static void watchdog_ping_work(struct kthread_work *work)
+ 	wd_data = container_of(work, struct watchdog_core_data, work);
+ 
+ 	mutex_lock(&wd_data->lock);
++	trace_watchdog_keep_alive(wd_data->wdd);
+ 	if (watchdog_worker_should_ping(wd_data))
+ 		__watchdog_ping(wd_data->wdd);
+ 	mutex_unlock(&wd_data->lock);
+@@ -252,6 +260,8 @@ static int watchdog_start(struct watchdog_device *wdd)
+ 
+ 	set_bit(_WDOG_KEEPALIVE, &wd_data->status);
+ 
++	trace_watchdog_start(wdd);
++
+ 	started_at = ktime_get();
+ 	if (watchdog_hw_running(wdd) && wdd->ops->ping) {
+ 		err = __watchdog_ping(wdd);
+@@ -298,6 +308,7 @@ static int watchdog_stop(struct watchdog_device *wdd)
+ 		return -EBUSY;
+ 	}
+ 
++	trace_watchdog_stop(wdd);
+ 	if (wdd->ops->stop) {
+ 		clear_bit(WDOG_HW_RUNNING, &wdd->status);
+ 		err = wdd->ops->stop(wdd);
+@@ -370,6 +381,7 @@ static int watchdog_set_timeout(struct watchdog_device *wdd,
+ 	if (watchdog_timeout_invalid(wdd, timeout))
+ 		return -EINVAL;
+ 
++	trace_watchdog_set_timeout(wdd, timeout);
+ 	if (wdd->ops->set_timeout) {
+ 		err = wdd->ops->set_timeout(wdd, timeout);
+ 	} else {
+@@ -432,6 +444,23 @@ static int watchdog_get_timeleft(struct watchdog_device *wdd,
+ 	return 0;
+ }
+ 
++/*
++ * watchdog_set_nowayout - set nowaout bit
++ * @wdd:	The watchdog device to set nowayoutbit
++ * @nowayout	A boolean on/off switcher
++ *
++ * If nowayout boolean is true, the nowayout option is set. No action is
++ * taken if nowayout is false.
++ */
++void watchdog_set_nowayout(struct watchdog_device *wdd, bool nowayout)
++{
++	if (nowayout) {
++		set_bit(WDOG_NO_WAY_OUT, &wdd->status);
++		trace_watchdog_nowayout(wdd);
++	}
++}
++EXPORT_SYMBOL(watchdog_set_nowayout);
++
+ #ifdef CONFIG_WATCHDOG_SYSFS
+ static ssize_t nowayout_show(struct device *dev, struct device_attribute *attr,
+ 				char *buf)
+@@ -457,6 +486,7 @@ static ssize_t nowayout_store(struct device *dev, struct device_attribute *attr,
+ 	/* nowayout cannot be disabled once set */
+ 	if (test_bit(WDOG_NO_WAY_OUT, &wdd->status) && !value)
+ 		return -EPERM;
++
+ 	watchdog_set_nowayout(wdd, value);
+ 	return len;
+ }
+@@ -858,6 +888,8 @@ static int watchdog_open(struct inode *inode, struct file *file)
+ 		goto out_clear;
+ 	}
+ 
++	trace_watchdog_open(wdd);
++
+ 	err = watchdog_start(wdd);
+ 	if (err < 0)
+ 		goto out_mod;
+@@ -880,6 +912,7 @@ static int watchdog_open(struct inode *inode, struct file *file)
+ 	return stream_open(inode, file);
+ 
+ out_mod:
++	trace_watchdog_close(wdd);
+ 	module_put(wd_data->wdd->ops->owner);
+ out_clear:
+ 	clear_bit(_WDOG_DEV_OPEN, &wd_data->status);
+@@ -940,6 +973,7 @@ static int watchdog_release(struct inode *inode, struct file *file)
+ 	/* make sure that /dev/watchdog can be re-opened */
+ 	clear_bit(_WDOG_DEV_OPEN, &wd_data->status);
+ 
++	trace_watchdog_close(wdd);
+ done:
+ 	running = wdd && watchdog_hw_running(wdd);
+ 	mutex_unlock(&wd_data->lock);
+@@ -952,6 +986,7 @@ static int watchdog_release(struct inode *inode, struct file *file)
+ 		module_put(wd_data->cdev.owner);
+ 		put_device(&wd_data->dev);
+ 	}
++
+ 	return 0;
+ }
+ 
+diff --git a/include/linux/watchdog.h b/include/linux/watchdog.h
+index 99660197a36c..11d93407e492 100644
+--- a/include/linux/watchdog.h
++++ b/include/linux/watchdog.h
+@@ -139,12 +139,7 @@ static inline bool watchdog_hw_running(struct watchdog_device *wdd)
+ 	return test_bit(WDOG_HW_RUNNING, &wdd->status);
+ }
+ 
+-/* Use the following function to set the nowayout feature */
+-static inline void watchdog_set_nowayout(struct watchdog_device *wdd, bool nowayout)
+-{
+-	if (nowayout)
+-		set_bit(WDOG_NO_WAY_OUT, &wdd->status);
+-}
++void watchdog_set_nowayout(struct watchdog_device *wdd, bool nowayout);
+ 
+ /* Use the following function to stop the watchdog on reboot */
+ static inline void watchdog_stop_on_reboot(struct watchdog_device *wdd)
+diff --git a/include/trace/events/watchdog.h b/include/trace/events/watchdog.h
 new file mode 100644
-index 000000000000..98d5bdd0ed85
+index 000000000000..5d5617ab611a
 --- /dev/null
-+++ b/Documentation/trace/rv/watchdog-monitor.rst
-@@ -0,0 +1,307 @@
-+Watchdog monitor
-+----------------
++++ b/include/trace/events/watchdog.h
+@@ -0,0 +1,103 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM watchdog
 +
-+The watchdog is an essential building block for the usage of Linux in
-+safety-critical systems because it allows the system to be monitored from
-+an external element - the watchdog hardware, acting as a safety-monitor.
++#if !defined(_TRACE_WATCHDOG_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_WATCHDOG_H
 +
-+A user-space application controls the watchdog device via the watchdog
-+interface. This application, hereafter safety_app, enables the watchdog
-+and periodically pets the watchdog upon correct completion of the safety
-+related processing.
++#include <linux/tracepoint.h>
 +
-+If the safety_app, for any reason, stops pinging the watchdog,
-+the watchdog hardware can set the system in a fail-safe state. For
-+example, shutting the system down.
++DECLARE_EVENT_CLASS(dev_operations_template,
 +
-+Given the importance of the safety_app / watchdog hardware couple,
-+the interaction between these software pieces also needs some
-+sort of monitoring. In other words, "who monitors the monitor?"
++	TP_PROTO(struct watchdog_device *wdd),
 +
-+The safe watchdog (safe_wtd) RV monitor monitors the interaction between
-+the safety_app and the watchdog device, enforcing the correct sequence of
-+events that leads the system to a safe state.
++	TP_ARGS(wdd),
 +
-+Furthermore, the safety_app can monitor the RV monitor by collecting the
-+events generated by the RV monitor itself via tracing interface. In this way,
-+closing the monitoring loop with the safety_app.
++	TP_STRUCT__entry(
++		__field(__u32, id)
++	),
 +
-+A diagram of the components and their interactions is::
++	TP_fast_assign(
++		__entry->id = wdd->id;
++	),
 +
-+  user-space:
-+                  +--------------------------------+
-+                  | safety_app                     |-----------+
-+                  +--------------------------------+           |
-+                     |                    ^                    |
-+                     | Configure          | Enable and         |
-+                     |                    | check data         |
-+  ===================+====================+===============     |
-+  kernel-space:      |                    |                    |
-+                     v                    v                    |
-+                +----------+  instr.     +-------------+       |
-+                | watchdog | ----------->| RV Monitor  |----+  |
-+                | device   |             +-------------+    |  |
-+                +----------+                                |  |
-+                  |                                         |  |
-+                  |                                         |  |
-+  ================+======================================   |  |
-+  hardware:       |                                         |  |
-+                  v                                         |  +-> Bring the system
-+                +--------------------+                      +----> to a safe state,
-+                | watchdog hardware  |---------------------------> e.g., halt.
-+                +--------------------+
++	TP_printk("id=%d",
++		  __entry->id)
++);
 +
-+Sample safety_app
-+-----------------
++/*
++ * Add a comment
++ */
++DEFINE_EVENT(dev_operations_template, watchdog_open,
++	     TP_PROTO(struct watchdog_device *wdd),
++	     TP_ARGS(wdd));
 +
-+The user-space safety_app sample code in ``tools/tracing/rv/safety_app/``
-+serves to illustrate the usage of the RV monitors for this use-case, as
-+well as the starting point to the development of a user-specific safety_app.
++DEFINE_EVENT(dev_operations_template, watchdog_close,
++	     TP_PROTO(struct watchdog_device *wdd),
++	     TP_ARGS(wdd));
 +
-+Watchdog events
-+---------------
++DEFINE_EVENT(dev_operations_template, watchdog_start,
++	     TP_PROTO(struct watchdog_device *wdd),
++	     TP_ARGS(wdd));
 +
-+The RV monitor observes the watchdog by using instrumentation to
-+process the events generated by the interaction between the
-+safety_app and the watchdog device layer in kernel.
++DEFINE_EVENT(dev_operations_template, watchdog_stop,
++	     TP_PROTO(struct watchdog_device *wdd),
++	     TP_ARGS(wdd));
 +
-+The monitored events are:
++DEFINE_EVENT(dev_operations_template, watchdog_ping,
++	     TP_PROTO(struct watchdog_device *wdd),
++	     TP_ARGS(wdd));
 +
-+  - watchdog:watchdog_open: open the watchdog device;
-+  - watchdog:watchdog_close: close the watchdog device;
-+  - watchdog:watchdog_start: start the watchdog;
-+  - watchdog:watchdog_stop: stop the watchdog;
-+  - watchdog:watchdog_set_timeout: set the watchdog timeout;
-+  - watchdog:watchdog_ping: reprogram the watchdog with the previously set
-+    timeout;
-+  - watchdog:watchdog_nowayout: prevents the watchdog from stopping;
-+  - watchdog:watchdog_set_keep_alive: set an intermediary ping to overcome
-+    the limitation of a hardware watchdog maximum timeout being shorter than
-+    the timeout set by the user-space tool;
-+  - watchdog:watchdog_keep_alive: the execution of the function that runs the
-+    intermediary keep alive ping;
++DEFINE_EVENT(dev_operations_template, watchdog_keep_alive,
++	     TP_PROTO(struct watchdog_device *wdd),
++	     TP_ARGS(wdd));
 +
-+RV monitor events
-+-----------------
++DEFINE_EVENT(dev_operations_template, watchdog_nowayout,
++	     TP_PROTO(struct watchdog_device *wdd),
++	     TP_ARGS(wdd));
 +
-+The RV monitor monitors the relevant events as an outside observer,
-+interpreting all the components (the hardware; the watchdog device
-+interface; and the safety monitor) as an integrated component.
 +
-+The events selected for the monitor are:
++TRACE_EVENT(watchdog_set_timeout,
 +
-+  - other_threads: an event generated by any thread other than the
-+    one that set nowayout or open the watchdog the last time.
-+  - open: a thread opens the watchdog to manipulate it;
-+  - close: a thread closes the watchdog;
-+  - start: starts the watchdog countdown;
-+  - stop: stops the watchdog;
-+  - set_safe_timeout: configures the watchdog with a given timeout;
-+  - ping: resets the watchdog countdown with the previously configured timeout;
-+  - nowayout: prevents the watchdog to be stopped until the system's shutdown;
-+  - sched_keep_alive: schedules a kernel worker to ping the watchdog if the
-+    timeout is longer than the watchdog hardware can handle.
-+  - keep_alive: executes the previously scheduled watchdog ping;
++	TP_PROTO(struct watchdog_device *wdd, u64 timeout),
 +
-+Noting that the events that does not appear in the automata models are
-+considered blocked events, and their execution will always cause the
-+RV monitor to react to an unexpected event.
++	TP_ARGS(wdd, timeout),
 +
-+RV monitor specification
-+------------------------
++	TP_STRUCT__entry(
++		__field(__u32, id)
++		__field(__u64, timeout)
++	),
 +
-+The monitor's goal is to assess a set of specifications that conducts the
-+system to a safe state.
++	TP_fast_assign(
++		__entry->id		= wdd->id;
++		__entry->timeout	= timeout;
++	),
 +
-+These specifications are:
++	TP_printk("id=%d timeout=%llus",
++		  __entry->id, __entry->timeout)
++);
 +
-+  - 1: Once open, only one process manipulates the watchdog;
-+  - 2: Following 1, the keep-alive mechanisms will not be used;
-+  - 3: If required, nowayout will be set before opening the watchdog;
-+  - 4: A safe timeout must be set;
-+  - 5: At least one ping must be made before entering the safe/safe_nwo states
-+  - 6: The The RV monitor does not react if the watchdog is closed without stopping.
-+       But the hardware watchdog is expected to react.
++TRACE_EVENT(watchdog_set_keep_alive,
 +
-+Deterministic automata monitors
-+-------------------------------
++	TP_PROTO(struct watchdog_device *wdd, u64 timeout),
 +
-+Following the specifications, two deterministic automata monitors
-+were developed. The are the safe_wtd and the safe_wtd_nwo monitors.
-+The monitors are modeled as Deterministic Automata models.
++	TP_ARGS(wdd, timeout),
 +
-+The difference between the safe_wtd and the safe_wtd_nwo is that
-+the latter enforces the usage of the watchdog's nowayout option
-+to reach the safe state.
++	TP_STRUCT__entry(
++		__field(__u32, id)
++		__field(__u64, timeout)
++	),
 +
-+The deterministic automata model for safe_wtd is::
++	TP_fast_assign(
++		__entry->id		= wdd->id;
++		__entry->timeout	= timeout;
++	),
 +
-+              #==================================#   other_threads
-+              H                                  H ----------------+
-+ -----------> H               init               H                 |
-+              H                                  H <---------------+
-+              #==================================#
-+                      |     |     ^
-+                      |     |     |               close
-+                      |     |     +----------------------------------------------------+
-+                      |     |                                                          |
-+                      |     |                     open                                 |
-+                      |     +------------------------------------------------------+   |
-+                      |                                                            |   |
-+                      |  nowayout                                                  |   |
-+                      v                                                            |   |
-+    nowayout        +-------------------+                                          |   |
-+    other_threads   |                   |          nowayout                        |   |
-+  +---------------- |        nwo        |<-------------------------------------+   |   |
-+  |                 |                   |                                      |   |   |
-+  +---------------> |                   | <+                                   |   |   |
-+                    +-------------------+  |                                   |   |   |
-+                      |                    |                                   |   |   |
-+                      | open               | close                             |   |   |
-+                      v                    |                                   |   |   |
-+                    +-------------------+  |                                   |   |   |
-+                    |    opened_nwo     | -+                                   |   |   |
-+                    +-------------------+                                      |   |   |
-+                      |                                                        |   |   |
-+                      | start                                                  |   |   |
-+                      v                                                        |   |   |
-+                    +-------------------+                                      |   |   |
-+  +---------------> |    started_nwo    | -+                                   |   |   |
-+  |                 +-------------------+  |                                   |   |   |
-+  |                   |                    |                                   |   |   |
-+  | open              | set_safe_timeout   |                                   |   |   |
-+  |                   v                    |                                   |   |   |
-+  |                 +-------------------+  |                                   |   |   |
-+  |                 |      set_nwo      |  |                                   |   |   |
-+  |                 +-------------------+  |                                   |   |   |
-+  |                           |            |                                   |   |   |
-+  |     +-------------+       | ping       |                                   |   |   |
-+  |     |             |       |            |                                   |   |   |
-+  |     | ping        v       v            |                                   |   |   |
-+  |     |           +-------------------+  |                                   |   |   |
-+  |     +-----------|     safe_nwo      |  |                                   |   |   |
-+  |                 +-------------------+  |                                   |   |   |
-+  |                   |                    |                                   |   |   |
-+  |                   | close              | close                             |   |   |
-+  |                   v                    v                                   |   |   |
-+  |                 +----------------------------------+   nowayout            |   |   |
-+  |                 |                                  |   other_threads       |   |   |
-+  |                 |        closed_running_nwo        | ----------------+     |   |   |
-+  |                 |                                  |                 |     |   |   |
-+  +---------------- |                                  | <---------------+     |   |   |
-+                    +----------------------------------+                       |   |   |
-+                        |        nowayout             ^                        |   |   |
-+                        +-----------------------------+                        |   |   |
-+                                                                               |   |   |
-+                                                                               |   |   |
-+                               +-------------------+           +--------+      |   |   |
-+                               |                   |           |        |------+---+   |
-+                               |      started      |  start    | opened |      |       |
-+             +---------------- |                   | <-------- |        |>-----+-------+
-+             |                 +-------------------+           +--------+      |       ^
-+             |                   |                                             |       |
-+             |                   | set_safe_timeout              +-------------+-------+
-+             |                   v                               |             |
-+             |                 +-------------------+             |             |
-+             |                 |                   |             |             |
-+             |                 |        set        |             |             |
-+  +----------+---------------> |                   |             |             |
-+  |          |                 +-------------------+             |             |
-+  |          |                   |                               |             |
-+  |          |                   | ping                          |             |
-+  |          |                   v                               |             |
-+  |          |                 +-------------------+   ping      |             |
-+  |          |                 |                   | -------+    |             |
-+  |          |           +---- |       safe        |        |    |             |
-+  |          |           |     |                   | <------+    |             |
-+  |          |           |     +-------------------+             |             |
-+  |          |           |       |                               |             |
-+  |          | stop      |       | stop                          |             |
-+  |          |           |       v                               |             |
-+  |          |           |     +-------------------+   close     |             |
-+  |          +-----------+---> |      stopped      |-------------+             |
-+  |                      |     +-------------------+                           |
-+  |                      +---+                                                 |
-+  |                          | close                                           |
-+  |                          v                                                 |
-+  |     other_threads  +----------------------------------------+              |
-+  |   +--------------> |                                        |              |
-+  |   |                |             closed_running             |              |
-+  |   +--------------- |                                        |--------------+
-+  |                    +----------------------------------------+
-+  |                               |          ^
-+  |                         open  |          | close
-+  |                               v          |
-+  |    set_safe_timeout       +-------------------+
-+  +-------------------------> |     reopened      |
-+                                +-------------------+
++	TP_printk("id=%d keep_alive=%llums",
++		  __entry->id, __entry->timeout)
++);
 +
-+The deterministic automata model for safe_wtd_nwo is::
++#endif /* _TRACE_WATCHDOG_H */
 +
-+                             |
-+                             |
-+                             v
-+                    #===================#
-+                    H       init        H
-+                    #===================#
-+                             |
-+                             | nowayout
-+                             v
-+    nowayout        +-------------------+
-+    other_threads   |                   |
-+  +---------------- |        nwo        |
-+  |                 |                   |
-+  +---------------> |                   | <---+
-+                    +-------------------+     |
-+                             |                |
-+                             | open           | close
-+                             v                |
-+                    +-------------------+     |
-+                    |      opened       | ----+
-+                    +-------------------+
-+                             |
-+                             | start
-+                             v
-+                    +-------------------+
-+  +---------------> |      started      | ---+
-+  |                 +-------------------+    |
-+  |                   |                      |
-+  | open              | set_safe_timeout     |
-+  |                   v                      |
-+  |                 +-------------------+    |
-+  |                 |        set        |    |
-+  |                 +-------------------+    |
-+  |                          |               |
-+  |       +------------+     | ping          |
-+  |       |            v     v               |
-+  |       | ping    +-------------------+    |
-+  |       +---------|       safe        |    |
-+  |                 +-------------------+    |
-+  |                          |               |
-+  |                          | close         | close
-+  |                          v               |
-+  |                 +-------------------+    |
-+  +---------------- |  closed_running   | <--+
-+                    +-------------------+
-+                      ^               |
-+                      | nowayout      |
-+                      | other_threads |
-+                      +---------------+
-+
-+It is important to note that the events sched_keep_alive and keep_alive
-+are not allowed on any of the present monitors (they are said to be blocked
-+events). The execution of any blocked events leads the RV monitor to react.
-+
-+Additional options
-+------------------
-+
-+The RV monitor also has a set of options enabled via kernel command
-+line/module options. They are:
-+
-+ - watchdog_id: the device id to monitor (default 0);
-+ - dont_stop: once enabled, do not allow the RV monitor to be stopped (default off);
-+ - safe_timeout: define a maximum safe value that a user-space application can
-+   set as the watchdog timeout (default unlimited);
-+ - check_timeout: After every ping, check if the time left in the watchdog is less
-+   than or equal to the last timeout set for the watchdog. It only works for watchdog
-+   devices that provide the get_timeleft() function (default off);
++/* This part must be outside protection */
++#include <trace/define_trace.h>
 -- 
 2.33.1
 
