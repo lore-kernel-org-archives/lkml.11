@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B04C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F42C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244661AbiBNJpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:45:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33874 "EHLO
+        id S233441AbiBNJph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:45:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244874AbiBNJnr (ORCPT
+        with ESMTP id S245068AbiBNJn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:43:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DDC460AA6;
-        Mon, 14 Feb 2022 01:38:03 -0800 (PST)
+        Mon, 14 Feb 2022 04:43:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C516CA6F;
+        Mon, 14 Feb 2022 01:38:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF8D26102D;
-        Mon, 14 Feb 2022 09:38:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1912C340E9;
-        Mon, 14 Feb 2022 09:38:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0E77B80D83;
+        Mon, 14 Feb 2022 09:38:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7A53C340E9;
+        Mon, 14 Feb 2022 09:38:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831482;
-        bh=Kab9zacGB1/708vz5V90R3dqWoMY+bN7P8/dNntkX7Y=;
+        s=korg; t=1644831485;
+        bh=cTfUMZissMI9IeGEkEU24qJMhW+DUACGHuB3TU20yqw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SBYVVtX4nEX610E9uhL97Sjabd1621oJFXE6OpLHOPuW623L+dkdkOROcpXesqJau
-         zt/nm0iQl2vqBvgCobwH4Un8LJ9NYn3TcYBnJXBdSjZ1yinf03n3pssjUtYlGEx/iw
-         ejXe5AL+9b1yjN38GZ14xt+mw08Rs/knAa9nt4Kk=
+        b=kBRdar0fDwpt2qFV90w9R4GzguQjjCNUgUSHy3bxgIMfQszuEEx0yxwtJHii1Kvk6
+         9aJPhuvWtwqx2gda5TrW9fak8LP4L0tphBAE/3djsnp9dm0aBVE3dZhZXwI9vPZ8tE
+         cX33KAhIjBmx/2al0fQBQzEDcONn4zFrz+1Lnx6s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Ewan D. Milne" <emilne@redhat.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 69/71] scsi: lpfc: Remove NVMe support if kernel has NVME_FC disabled
-Date:   Mon, 14 Feb 2022 10:26:37 +0100
-Message-Id: <20220214092454.357225881@linuxfoundation.org>
+        stable@vger.kernel.org, Song Liu <song@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.4 70/71] perf: Fix list corruption in perf_cgroup_switch()
+Date:   Mon, 14 Feb 2022 10:26:38 +0100
+Message-Id: <20220214092454.390214911@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,68 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Song Liu <song@kernel.org>
 
-commit c80b27cfd93ba9f5161383f798414609e84729f3 upstream.
+commit 5f4e5ce638e6a490b976ade4a40017b40abb2da0 upstream.
 
-The driver is initiating NVMe PRLIs to determine device NVMe support.  This
-should not be occurring if CONFIG_NVME_FC support is disabled.
+There's list corruption on cgrp_cpuctx_list. This happens on the
+following path:
 
-Correct this by changing the default value for FC4 support. Currently it
-defaults to FCP and NVMe. With change, when NVME_FC support is not enabled
-in the kernel, the default value is just FCP.
+  perf_cgroup_switch: list_for_each_entry(cgrp_cpuctx_list)
+      cpu_ctx_sched_in
+         ctx_sched_in
+            ctx_pinned_sched_in
+              merge_sched_in
+                  perf_cgroup_event_disable: remove the event from the list
 
-Link: https://lore.kernel.org/r/20220207180516.73052-1-jsmart2021@gmail.com
-Reviewed-by: Ewan D. Milne <emilne@redhat.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Use list_for_each_entry_safe() to allow removing an entry during
+iteration.
+
+Fixes: 058fe1c0440e ("perf/core: Make cgroup switch visit only cpuctxs with cgroup events")
+Signed-off-by: Song Liu <song@kernel.org>
+Reviewed-by: Rik van Riel <riel@surriel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220204004057.2961252-1-song@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/lpfc/lpfc.h      |   13 ++++++++++---
- drivers/scsi/lpfc/lpfc_attr.c |    4 ++--
- 2 files changed, 12 insertions(+), 5 deletions(-)
+ kernel/events/core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/lpfc/lpfc.h
-+++ b/drivers/scsi/lpfc/lpfc.h
-@@ -870,6 +870,16 @@ struct lpfc_hba {
- 	uint32_t cfg_hostmem_hgp;
- 	uint32_t cfg_log_verbose;
- 	uint32_t cfg_enable_fc4_type;
-+#define LPFC_ENABLE_FCP  1
-+#define LPFC_ENABLE_NVME 2
-+#define LPFC_ENABLE_BOTH 3
-+#if (IS_ENABLED(CONFIG_NVME_FC))
-+#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
-+#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
-+#else
-+#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_FCP
-+#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_FCP
-+#endif
- 	uint32_t cfg_aer_support;
- 	uint32_t cfg_sriov_nr_virtfn;
- 	uint32_t cfg_request_firmware_upgrade;
-@@ -892,9 +902,6 @@ struct lpfc_hba {
- 	uint32_t cfg_ras_fwlog_func;
- 	uint32_t cfg_enable_bbcr;	/* Enable BB Credit Recovery */
- 	uint32_t cfg_enable_dpp;	/* Enable Direct Packet Push */
--#define LPFC_ENABLE_FCP  1
--#define LPFC_ENABLE_NVME 2
--#define LPFC_ENABLE_BOTH 3
- 	uint32_t cfg_enable_pbde;
- 	struct nvmet_fc_target_port *targetport;
- 	lpfc_vpd_t vpd;		/* vital product data */
---- a/drivers/scsi/lpfc/lpfc_attr.c
-+++ b/drivers/scsi/lpfc/lpfc_attr.c
-@@ -3839,8 +3839,8 @@ LPFC_ATTR_R(nvmet_mrq_post,
-  *                    3 - register both FCP and NVME
-  * Supported values are [1,3]. Default value is 3
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -799,7 +799,7 @@ static DEFINE_PER_CPU(struct list_head,
   */
--LPFC_ATTR_R(enable_fc4_type, LPFC_ENABLE_BOTH,
--	    LPFC_ENABLE_FCP, LPFC_ENABLE_BOTH,
-+LPFC_ATTR_R(enable_fc4_type, LPFC_DEF_ENBL_FC4_TYPE,
-+	    LPFC_ENABLE_FCP, LPFC_MAX_ENBL_FC4_TYPE,
- 	    "Enable FC4 Protocol support - FCP / NVME");
+ static void perf_cgroup_switch(struct task_struct *task, int mode)
+ {
+-	struct perf_cpu_context *cpuctx;
++	struct perf_cpu_context *cpuctx, *tmp;
+ 	struct list_head *list;
+ 	unsigned long flags;
  
- /*
+@@ -810,7 +810,7 @@ static void perf_cgroup_switch(struct ta
+ 	local_irq_save(flags);
+ 
+ 	list = this_cpu_ptr(&cgrp_cpuctx_list);
+-	list_for_each_entry(cpuctx, list, cgrp_cpuctx_entry) {
++	list_for_each_entry_safe(cpuctx, tmp, list, cgrp_cpuctx_entry) {
+ 		WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
+ 
+ 		perf_ctx_lock(cpuctx, cpuctx->task_ctx);
 
 
