@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67211C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 961ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344823AbiBNKEL (ORCPT
+        id S1344878AbiBNKET (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:04:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43472 "EHLO
+        Mon, 14 Feb 2022 05:04:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343842AbiBNJ72 (ORCPT
+        with ESMTP id S1344331AbiBNJ7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:59:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8578C2C;
-        Mon, 14 Feb 2022 01:46:55 -0800 (PST)
+        Mon, 14 Feb 2022 04:59:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D08A389;
+        Mon, 14 Feb 2022 01:46:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44F7361287;
-        Mon, 14 Feb 2022 09:46:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4059C340E9;
-        Mon, 14 Feb 2022 09:46:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0615AB80DBF;
+        Mon, 14 Feb 2022 09:46:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E15C340E9;
+        Mon, 14 Feb 2022 09:46:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832014;
-        bh=KkVFtQgWDU8kC8bkFKYteuVKgn36OiBQyAW0ygsQ71w=;
+        s=korg; t=1644831992;
+        bh=C8dHEA5Be/M4HwoHN9qOTlysc8sgv88UKMWgUlc+Z6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2wEsnRRzy2OozEIEZ4ObpMKh7oNqhKBbqiTmicFb8sbJv8Ptrdql3s9gjhKeF2RHL
-         9jr/Q1ZGpnfmlBELnbNfeq2K+SELKyZI3XUEGsNSbbngomygVFSJsABs07G4rCOEsL
-         O2noxFUagGHYvl1Wku8YQ+uPCKMqWyKEAImpckHM=
+        b=mMPjemxDRZowdacAu8H0gd4zRIpu0w7lgOJHIXuGhO8ipuqDUnjuGMRUmbNwZjr3T
+         yRaODsBbtWN6JsMdogG+cUDMcpEV+3+IM96EWKBHG3eIjEDrSGhY3vaPV5sH/pnMPY
+         Ym3NckklRPYSdXDd8Rk92xchFeiiGnFZEXvkxkcc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 052/172] net: stmmac: reduce unnecessary wakeups from eee sw timer
-Date:   Mon, 14 Feb 2022 10:25:10 +0100
-Message-Id: <20220214092508.180040913@linuxfoundation.org>
+Subject: [PATCH 5.15 028/172] NFSv4 store server support for fs_location attribute
+Date:   Mon, 14 Feb 2022 10:24:46 +0100
+Message-Id: <20220214092507.375131199@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,73 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit c74ead223deb88bdf18af8c772d7ca5a9b6c3c2b ]
+[ Upstream commit 8a59bb93b7e3cca389af44781a429ac12ac49be6 ]
 
-Currently, on EEE capable platforms, if EEE SW timer is used, the SW
-timer cause 1 wakeup/s even if the TX has successfully entered EEE.
-Remove this unnecessary wakeup by only calling mod_timer() if we
-haven't successfully entered EEE.
+Define and store if server returns it supports fs_locations attribute
+as a capability.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ fs/nfs/nfs4proc.c         | 2 ++
+ include/linux/nfs_fs_sb.h | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 161e65333ed94..e6af26b2dcb81 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -400,7 +400,7 @@ static void stmmac_lpi_entry_timer_config(struct stmmac_priv *priv, bool en)
-  * Description: this function is to verify and enter in LPI mode in case of
-  * EEE.
-  */
--static void stmmac_enable_eee_mode(struct stmmac_priv *priv)
-+static int stmmac_enable_eee_mode(struct stmmac_priv *priv)
- {
- 	u32 tx_cnt = priv->plat->tx_queues_to_use;
- 	u32 queue;
-@@ -410,13 +410,14 @@ static void stmmac_enable_eee_mode(struct stmmac_priv *priv)
- 		struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
- 
- 		if (tx_q->dirty_tx != tx_q->cur_tx)
--			return; /* still unfinished work */
-+			return -EBUSY; /* still unfinished work */
- 	}
- 
- 	/* Check and enter in LPI mode */
- 	if (!priv->tx_path_in_lpi_mode)
- 		stmmac_set_eee_mode(priv, priv->hw,
- 				priv->plat->en_tx_lpi_clockgating);
-+	return 0;
- }
- 
- /**
-@@ -448,8 +449,8 @@ static void stmmac_eee_ctrl_timer(struct timer_list *t)
- {
- 	struct stmmac_priv *priv = from_timer(priv, t, eee_ctrl_timer);
- 
--	stmmac_enable_eee_mode(priv);
--	mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
-+	if (stmmac_enable_eee_mode(priv))
-+		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
- }
- 
- /**
-@@ -2637,8 +2638,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 
- 	if (priv->eee_enabled && !priv->tx_path_in_lpi_mode &&
- 	    priv->eee_sw_timer_en) {
--		stmmac_enable_eee_mode(priv);
--		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
-+		if (stmmac_enable_eee_mode(priv))
-+			mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
- 	}
- 
- 	/* We still have pending packets, let's call for a new scheduling */
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index 443eab71c9a9e..367a1b99b7550 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -3894,6 +3894,8 @@ static int _nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *f
+ 		if (res.attr_bitmask[2] & FATTR4_WORD2_SECURITY_LABEL)
+ 			server->caps |= NFS_CAP_SECURITY_LABEL;
+ #endif
++		if (res.attr_bitmask[0] & FATTR4_WORD0_FS_LOCATIONS)
++			server->caps |= NFS_CAP_FS_LOCATIONS;
+ 		if (!(res.attr_bitmask[0] & FATTR4_WORD0_FILEID))
+ 			server->fattr_valid &= ~NFS_ATTR_FATTR_FILEID;
+ 		if (!(res.attr_bitmask[1] & FATTR4_WORD1_MODE))
+diff --git a/include/linux/nfs_fs_sb.h b/include/linux/nfs_fs_sb.h
+index 2a9acbfe00f0f..9a6e70ccde56e 100644
+--- a/include/linux/nfs_fs_sb.h
++++ b/include/linux/nfs_fs_sb.h
+@@ -287,5 +287,5 @@ struct nfs_server {
+ #define NFS_CAP_COPY_NOTIFY	(1U << 27)
+ #define NFS_CAP_XATTR		(1U << 28)
+ #define NFS_CAP_READ_PLUS	(1U << 29)
+-
++#define NFS_CAP_FS_LOCATIONS	(1U << 30)
+ #endif
 -- 
 2.34.1
 
