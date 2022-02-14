@@ -2,102 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D390C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350614AbiBNLR4 (ORCPT
+        id S1350718AbiBNLSX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:17:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48348 "EHLO
+        Mon, 14 Feb 2022 06:18:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350657AbiBNLR3 (ORCPT
+        with ESMTP id S1350402AbiBNLSN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:17:29 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0EE175C2C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:49:59 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id y6-20020a7bc186000000b0037bdc5a531eso5407801wmi.0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:49:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DXv8SmLAPMNrPJ3mqwP/UuQ6ZTsnkTp239g0OTWzlWA=;
-        b=Mzulk2XClL7m/nGCOdw94t+dgDFGHB4aVksteuofaaRa6xxyPqxvdn7NK6SdQpTIMm
-         84gOQ2nkgwCF9lkU3ebqn9ocLqVhl9nK7Ol91VzuatvgUT3/MILOC8C+5Dge0ll5speM
-         OPvTq4XR4At4lH7P+VkO3WylRaVGmycHr8XnjFvvjFWoYFm2f1BQtXk2q6Pr8qQwOt3c
-         Nc9YMgKNlihGbhiwqPc3Hs7FekGV//l+Px+d3fDULIOGW9seSwIaQSDaiouk5PerQLqc
-         j1auWiU7PiaW3VMZu/4Uh2g4Wcc/fNkhXlYwqYQWnZU1G0FGf7yHWAlqbIYnf4cv1g8a
-         VHFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DXv8SmLAPMNrPJ3mqwP/UuQ6ZTsnkTp239g0OTWzlWA=;
-        b=kp1uMbT2eEdYfwolM8jHXQjWqRTxQA89o1POkVk/vJY2q9426X/9Uakfh+bymZ8PEQ
-         mLTKqZ9O5He1RcYrFw0SsQSn2OEpWndY9Q3EU4rkzNgC+vCUMDMfq72MfyJiGckPlWDB
-         gfdD3zbNB5livOoiEQt+dEIfybHjT5YfFa8CgjMUqDFdJg8BebeEJbT35OswfTcNoAal
-         eGS/JHe5wML4c5t0SLbJHcfc88FVY1TKLBLhyyCwqxajDTGXk0flieZvF5nuDEijCUiy
-         glgSx8o0Fjc3VEIdYQXN8DD1omJ5cGM/F2xyR6oaCfd27xip3sMOfAKf+qNd6ETF7qEO
-         6qhQ==
-X-Gm-Message-State: AOAM533E6SMEKrqkGY4pWEPWlI7N2gtg7h9TdJPzzCziW5X5+eP9hBxw
-        oiWBYeh8kJ1mGOQbUozB6PEAWA==
-X-Google-Smtp-Source: ABdhPJzKJsy80xYZ3+bzTwXnv+y+Y5fOp64rrpJitEd3V8DuS1Z1Eai8C0vh/48VKS2HutAE73zE3g==
-X-Received: by 2002:a05:600c:b59:: with SMTP id k25mr10603699wmr.170.1644835798574;
-        Mon, 14 Feb 2022 02:49:58 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id h6sm1920631wmq.8.2022.02.14.02.49.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 02:49:58 -0800 (PST)
-Message-ID: <7a796e98-ef79-e50f-77b8-0b7ae533f06a@linaro.org>
-Date:   Mon, 14 Feb 2022 10:49:56 +0000
+        Mon, 14 Feb 2022 06:18:13 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F211E657A0;
+        Mon, 14 Feb 2022 02:50:45 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.41:50118.1293107163
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
+        by 189.cn (HERMES) with SMTP id 90BA4100139;
+        Mon, 14 Feb 2022 18:50:37 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id b714a88f38064ad8b49ade0c13fcf78c for maxime@cerno.tech;
+        Mon, 14 Feb 2022 18:50:44 CST
+X-Transaction-ID: b714a88f38064ad8b49ade0c13fcf78c
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <afeeabbe-29ba-2878-c0c5-78f576f7865f@189.cn>
+Date:   Mon, 14 Feb 2022 18:50:36 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] dt-bindings: nvmem: SID: Add compatible for D1
+Subject: Re: [PATCH v7 1/7] drm/lsdc: add drm driver for loongson display
+ controller
 Content-Language: en-US
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-References: <20220203012502.10661-1-samuel@sholland.org>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <20220203012502.10661-1-samuel@sholland.org>
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>, Li Yi <liyi@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>
+References: <20220213141649.1115987-1-15330273260@189.cn>
+ <20220213141649.1115987-2-15330273260@189.cn>
+ <20220214101031.kerresldiuopil6l@houat>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <20220214101031.kerresldiuopil6l@houat>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+On 2022/2/14 18:10, Maxime Ripard wrote:
+> On Sun, Feb 13, 2022 at 10:16:43PM +0800, Sui Jingfeng wrote:
+>> From: suijingfeng <suijingfeng@loongson.cn>
+>>
+>> There is a display controller in loongson's LS2K1000 SoC and LS7A1000
+>> bridge chip, the DC is a PCI device in those chips. It has two display
+>> pipes but with only one hardware cursor. Each way has a DVO interface
+>> which provide RGB888 signals, vertical & horizontal synchronisations,
+>> data enable and the pixel clock. Each CRTC is able to scanout from
+>> 1920x1080 resolution at 60Hz. The maxmium resolution is 2048x2048
+>> according to the hardware spec.
+>>
+>> Loongson display controllers are simple which require scanout buffers
+>> to be physically contiguous. LS2K1000 is a SOC, Only system memory is
+>> available. Therefore CMA helper based driver is intended to be use,
+>> although it is possible to use VRAM helper based solution by carving
+>> out part of system memory as VRAM.
+>>
+>> On LS7A1000/LS7A2000 bridge chip, the DC is equipped with a dedicated
+>> video memory which is typically 64MB or more. In this case, VRAM helper
+>> based solution which scanout from local VRAM is reconmended to use.
+>> It is reliable to use for massive production, but CMA based helper
+>> solution is still usable on ls7a1000 and ls7a2000, at the price of
+>> the CRTC must access the FB in RAM through the PCIe bus and HT3.0 bus.
+>> This causes continuous traffic on the bus regardless of whether the FB
+>> image is updating or not. Sadly, it suffer from screen flickering under
+>> RAM pressure on LS7A1000. Luckily, It show extremely good condition on
+>> LS7A2000 even under stressapptest, Maybe the hardware engineer resolve
+>> this issue. Integrating two distict helpers based driver into one piece
+>> allow code sharing.
+>>
+>> We have also implemented demage update on top of CMA helper which copy
+>> the demaged region from the shadow framebuffer in system RAM to the real
+>> framebuffer in VRAM manually. This is intend to overcome the screen
+>> flicking issue on LS7A1000, but the performance is not good.
+>> Using "lsdc.dirty_update=1" in the kernel commmand line if you would like
+>> to have a try.
+>>
+>> For LS7A1000, there are 4 dedicated GPIOs whose control register is
+>> located at the DC register space, They are used to emulate two way i2c.
+>> One for DVO0, another for DVO1. This is the reason why this driver is
+>> not switch to drm bridge framework yet. LS2K1000 and LS2K0500 SoC don't
+>> have such GPIO hardwared, they grab i2c adapter from other module,
+>> either general purpose GPIO emulated i2c or hardware i2c adapter.
+>> Drm bridge and drm panel driver for the external encoder is suitable for
+>> those SoC. We have already implemented this on our downstream 4.19.190
+>> kernel. But due to the GPIO, PWM and I2C device driver support for
+>> LS2K1000 is not upstreamed yet, this driver still can be use to bring
+>> the graphic environment up by providing display timings or similar things
+>> in the device tree.
+>>
+>> The DC in LS7A1000 has only one hardware cursor, we simply let the two
+>> CRTC share it. The DC in LS7A2000 have two cursor, two built-in hdmi
+>> encoder and one transparent vga encoder and more, surport for LS7A2000
+>> is on the way. In short, we have built-in gpio emulated i2c support,
+>> we also have hardware cursor support. LS7A2000 The kind of tiny drivers
+>> in drm/tiny is not suitable for us.
+>>
+>>      +------+            +-----------------------------------+
+>>      | DDR4 |            |  +-------------------+            |
+>>      +------+            |  | PCIe Root complex |   LS7A1000 |
+>>         || MC0           |  +--++---------++----+            |
+>>    +----------+  HT 3.0  |     ||         ||                 |
+>>    | LS3A4000 |<-------->| +---++---+  +--++--+    +---------+   +------+
+>>    |   CPU    |<-------->| | GC1000 |  | LSDC |<-->| DDR3 MC |<->| VRAM |
+>>    +----------+          | +--------+  +-+--+-+    +---------+   +------+
+>>         || MC1           +---------------|--|----------------+
+>>      +------+                            |  |
+>>      | DDR4 |          +-------+   DVO0  |  |  DVO1   +------+
+>>      +------+   VGA <--|ADV7125|<--------+  +-------->|TFP410|--> DVI/HDMI
+>>                        +-------+                      +------+
+>>
+>> The above picture give a simple usage of LS7A1000, note that the encoder
+>> is not necessary adv7125 or tfp410, it is a choice of the downstream board
+>> manufacturer. Other candicate encoders can be ch7034b, sil9022 and ite66121
+>> lt8618 etc. Besides, the DC in both ls2k1000 and ls7k1000 has the same of
+>> PCI vendor id and pci device id. Both is 0x0014:0x7a06, the reverison id
+>> is also same. This is the firmware engineer's mistake, but such firmware
+>> and various boards ship with such firmware already released. We choose to
+>> deduce the chip's identification from information provided by device tree.
+>> For lsdc, there is only a 1:1 mapping of encoders and connectors.
+>>
+>> v2: fixup warnings reported by kernel test robot
+>>
+>> v3: fix more grammar mistakes in Kconfig reported by Randy Dunlap and give
+>>      more details about lsdc.
+>>
+>> v4:
+>>     1) Add dts required and explain why device tree is required.
+>>     2) Give more description about lsdc and vram helper base driver.
+>>     3) Fix warnings reported by kernel test robot.
+>>     4) Introduce stride_alignment member into struct lsdc_chip_desc, the
+>>        stride alignment is 256 bytes for ls7a1000, ls2k1000 and ls2k0500.
+>>        But ls7a2000 improve it to 32 bytes, for extend the support for the
+>>        device on coming
+>>
+>> v5:
+>>     1) using writel and readl replace writeq and readq, to fix kernel test
+>>        robot report build error on other archtecture
+>>     2) set default fb format to XRGB8888 at crtc reset time.
+>>     3) fix typos.
+>>
+>> v6:
+>>     1) Explain why we are not switch to drm dridge subsystem on ls2k1000.
+>>     2) Explain why tiny drm driver is not suitable for us.
+>>     3) Give a short description of the trival dirty uppdate implement based
+>>        on CMA helper.
+>>     4) code clean up
+>>
+>> v7:
+>>     1) Remove select I2C_GPIO and I2C_LS2X in Kconfig, it is not ready now
+>>     2) Licensing issues are fixed suggested by Krzysztof Kozlowski.
+>>     3) lsdc_pixpll_print() is removed, part of it move to debugfs.
+>>     4) Set prefer_shadow to true if vram based driver is in using.
+>>     5) Replace double blank lines with single line in all files
+>>     6) Verbose cmd line parameter is replaced with drm_dbg()
+>>     7) All warnnings reported by ./scripts/checkpatch.pl --strict are fixed
+>>     8) Get edid from dtb support is removed as suggested by Maxime Ripard
+>>     9) Fix typos and various improvement
+> A lot of the major comments I had haven't been fixed though: you *need*
+> to have a DT bindings description,
 
-On 03/02/2022 01:25, Samuel Holland wrote:
-> D1 has a SID like other Allwinner SoCs, but with a unique eFuse layout.
-> Add a new compatible string for it.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
+This driver works on most of board even no device tree is supplied, the dts are mainly
+supplement purpose. For example, it supports let you to tell which DVO is not get used.
+Even no device tree is provided, the driver still works.
 
+> Kconfig isn't the proper place to set the VRAM preference,
 
-Applied both thanks,
+It mainly helps you to code review, to tell you which function is VRAM helper related.
+DRM_LSDC_VRAM_DRIVER option is mean to be always enabled. It can be deselected if you
+only want CMA based solution. On LS2K1000, select this or deselect this doesn't matter.
 
---srini
-> 
->   .../devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml       | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml b/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
-> index 6687ab720304..e558587ff885 100644
-> --- a/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
-> +++ b/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
-> @@ -20,6 +20,7 @@ properties:
->         - const: allwinner,sun7i-a20-sid
->         - const: allwinner,sun8i-a83t-sid
->         - const: allwinner,sun8i-h3-sid
-> +      - const: allwinner,sun20i-d1-sid
->         - const: allwinner,sun50i-a64-sid
->         - items:
->             - const: allwinner,sun50i-a100-sid
+> the command line isn't either, the command line
+> isn't the solution for all your parameters, etc.
+
+The command line may not be a blocker, why support a command line block this driver be merged?
+You do NOT need to touch it, this driver will pick up the right driver instance to use.
+Command line is used to override the default behavior of the driver, it is only for advance user.
+
+> Those things are major blockers at the moment, so ignoring them won't
+> help getting this merged.
+>
+> Maxime
