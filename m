@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A93CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 700FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348665AbiBNKjm (ORCPT
+        id S1348646AbiBNKjr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:39:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48532 "EHLO
+        Mon, 14 Feb 2022 05:39:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350003AbiBNKgt (ORCPT
+        with ESMTP id S1349991AbiBNKgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:36:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263EC9FFC;
-        Mon, 14 Feb 2022 02:03:18 -0800 (PST)
+        Mon, 14 Feb 2022 05:36:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3569FE8;
+        Mon, 14 Feb 2022 02:03:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C802B60DDD;
-        Mon, 14 Feb 2022 10:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF06C340E9;
-        Mon, 14 Feb 2022 10:02:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18CEFB80CE1;
+        Mon, 14 Feb 2022 10:03:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AADEC340E9;
+        Mon, 14 Feb 2022 10:03:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832973;
-        bh=7dywxaiY+M967eUBC6Mz+LePl1QSR7NFa4x8qm8PoNw=;
+        s=korg; t=1644832991;
+        bh=PJHeGXva5+VseX84sjTYD+TkWsdaeyJBakqXYhk9zg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fipJ4b1c+A6Ls1RP1F5vKTF0g1YsvMZphClVOoEFuCkKTBhWSg88zKBsvDivCzoSa
-         TysQJNayLNdhpKrWFRwBwUtIXCK4oxObmJjvubVIrT1Gy/l6hclr4wLOH2gmCFI0iF
-         ZAzlB6xF1OUP+/yYAzvmQghWn5981Cehi6wZG1sM=
+        b=IscxmPCbbTq3aOrEYjGoSNd0gFPwiLmw03H2tznvuhabGUh5xFEWftmvkO4PXYoJX
+         etZl34CpfcWmf6sHDKlNFGjUCE/FCV40Uth9YBg6YKFKL0tY66NIvPlVyL6c39riMC
+         auqWvK2YjQtrY6ONXvD+LEHVyZc1AUhQq1qiFAZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@gmail.com>,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH 5.16 176/203] usb: raw-gadget: fix handling of dual-direction-capable endpoints
-Date:   Mon, 14 Feb 2022 10:27:00 +0100
-Message-Id: <20220214092516.223030292@linuxfoundation.org>
+        stable@vger.kernel.org, Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.16 190/203] s390/cio: verify the driver availability for path_event call
+Date:   Mon, 14 Feb 2022 10:27:14 +0100
+Message-Id: <20220214092516.709162994@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -49,44 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Vineeth Vijayan <vneethv@linux.ibm.com>
 
-commit 292d2c82b105d92082c2120a44a58de9767e44f1 upstream.
+commit dd9cb842fa9d90653a9b48aba52f89c069f3bc50 upstream.
 
-Under dummy_hcd, every available endpoint is *either* IN or OUT capable.
-But with some real hardware, there are endpoints that support both IN and
-OUT. In particular, the PLX 2380 has four available endpoints that each
-support both IN and OUT.
+If no driver is attached to a device or the driver does not provide the
+path_event function, an FCES path-event on this device could end up in a
+kernel-panic. Verify the driver availability before the path_event
+function call.
 
-raw-gadget currently gets confused and thinks that any endpoint that is
-usable as an IN endpoint can never be used as an OUT endpoint.
-
-Fix it by looking at the direction in the configured endpoint descriptor
-instead of looking at the hardware capabilities.
-
-With this change, I can use the PLX 2380 with raw-gadget.
-
-Fixes: f2c2e717642c ("usb: gadget: add raw-gadget interface")
-Cc: stable <stable@vger.kernel.org>
-Tested-by: Andrey Konovalov <andreyknvl@gmail.com>
-Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
-Signed-off-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/r/20220126205214.2149936-1-jannh@google.com
+Fixes: 32ef938815c1 ("s390/cio: Add support for FCES status notification")
+Cc: stable@vger.kernel.org
+Signed-off-by: Vineeth Vijayan <vneethv@linux.ibm.com>
+Suggested-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
+Reviewed-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/legacy/raw_gadget.c |    2 +-
+ drivers/s390/cio/device.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/gadget/legacy/raw_gadget.c
-+++ b/drivers/usb/gadget/legacy/raw_gadget.c
-@@ -1004,7 +1004,7 @@ static int raw_process_ep_io(struct raw_
- 		ret = -EBUSY;
- 		goto out_unlock;
+--- a/drivers/s390/cio/device.c
++++ b/drivers/s390/cio/device.c
+@@ -1194,7 +1194,7 @@ static int io_subchannel_chp_event(struc
+ 			else
+ 				path_event[chpid] = PE_NONE;
+ 		}
+-		if (cdev)
++		if (cdev && cdev->drv && cdev->drv->path_event)
+ 			cdev->drv->path_event(cdev, path_event);
+ 		break;
  	}
--	if ((in && !ep->ep->caps.dir_in) || (!in && ep->ep->caps.dir_in)) {
-+	if (in != usb_endpoint_dir_in(ep->ep->desc)) {
- 		dev_dbg(&dev->gadget->dev, "fail, wrong direction\n");
- 		ret = -EINVAL;
- 		goto out_unlock;
 
 
