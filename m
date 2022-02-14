@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 406E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:22:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346797AbiBNKWK (ORCPT
+        id S1346809AbiBNKWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:22:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48250 "EHLO
+        Mon, 14 Feb 2022 05:22:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346852AbiBNKUn (ORCPT
+        with ESMTP id S1346815AbiBNKUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:20:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCF991ACA;
-        Mon, 14 Feb 2022 01:55:20 -0800 (PST)
+        Mon, 14 Feb 2022 05:20:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DA97D289;
+        Mon, 14 Feb 2022 01:55:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E67160F86;
-        Mon, 14 Feb 2022 09:54:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC53AC340F0;
-        Mon, 14 Feb 2022 09:54:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3ADC7B80D6D;
+        Mon, 14 Feb 2022 09:55:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EEA3C340E9;
+        Mon, 14 Feb 2022 09:55:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832498;
-        bh=uTVbxloRA/oMSMkup+LNxAM+kjT2Mh6U5zYG9RnWECE=;
+        s=korg; t=1644832517;
+        bh=TheAArXQS3fi+rNGW9hay+xSdAToryKlCV4+R0BzZZs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TciBFB0/E2XiqRN7hWbzTjOoYtZn6DH+54N3jk3kwAxwDnPCW4inb4jwoTulx/sog
-         xFIxtxbdpXkvnL5fuNaEOYGceVSf0RqAOT7bebbT6ee14gWRZB3al0XhkiWnrisZDi
-         WEr8ECjS/sjtA1VjsP+T5N8chon6fBFRpJoMcS2g=
+        b=go+7vJwb8ZnSAjZ+2Lb4urcLIl7rYbBTEXEUU3ca92tHapYxx5bLpXKumnBot5jv5
+         EPIVKDky3yRFu1aVkv9bK4RSKvdOnB0ReaLBU2ZBXVNR53IGQWUeJo+qlbb07rQg4k
+         7g09DxttlFCTy25GaUVwe0FduyKA1vY2wukbjFdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 033/203] perf/x86/rapl: fix AMD event handling
-Date:   Mon, 14 Feb 2022 10:24:37 +0100
-Message-Id: <20220214092511.330036544@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andrey Skvortsov <andrej.skvortzov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.16 008/203] mmc: core: Wait for command setting Power Off Notification bit to complete
+Date:   Mon, 14 Feb 2022 10:24:12 +0100
+Message-Id: <20220214092510.501534324@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,69 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
 
-[ Upstream commit 0036fb00a756a2f6e360d44e2e3d2200a8afbc9b ]
+commit 379f56c24e698f14242f532b1d0a0f1747725e08 upstream.
 
-The RAPL events exposed under /sys/devices/power/events should only reflect
-what the underlying hardware actually support. This is how it works on Intel
-RAPL and Intel core/uncore PMUs in general.
-But on AMD, this was not the case. All possible RAPL events were advertised.
+SD card is allowed to signal busy on DAT0 up to 1s after the
+CMD49. According to SD spec (version 6.0 section 5.8.1.3) first host
+waits until busy of CMD49 is released and only then polls Power
+Management Status register up to 1s until the card indicates ready to
+power off.
 
-This is what it showed on an AMD Fam17h:
-$ ls /sys/devices/power/events/
-energy-cores        energy-gpu          energy-pkg          energy-psys
-energy-ram          energy-cores.scale  energy-gpu.scale    energy-pkg.scale
-energy-psys.scale   energy-ram.scale    energy-cores.unit   energy-gpu.unit
-energy-pkg.unit     energy-psys.unit    energy-ram.unit
+Without waiting for busy before polling status register sometimes card
+becomes unresponsive and system fails to suspend:
 
-Yet, on AMD Fam17h, only energy-pkg is supported.
+  [  205.907459] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+  [  206.421274] sunxi-mmc 1c0f000.mmc: data error, sending stop command
+  [  206.421321] sunxi-mmc 1c0f000.mmc: send stop command failed
+  [  206.421347] mmc0: error -110 reading status reg of PM func
+  [  206.421366] PM: dpm_run_callback(): mmc_bus_suspend+0x0/0x74 returns -110
+  [  206.421402] mmcblk mmc0:aaaa: PM: failed to suspend async: error -110
+  [  206.437064] PM: Some devices failed to suspend, or early wake event detected
 
-This patch fixes the problem. Given the way perf_msr_probe() works, the
-amd_rapl_msrs[] table has to have all entries filled out and in particular
-the group field, otherwise perf_msr_probe() defaults to making the event
-visible.
+Tested with Sandisk Extreme PRO A2 64GB on Allwinner A64 system.
 
-With the patch applied, the kernel now only shows was is actually supported:
-
-$ ls /sys/devices/power/events/
-energy-pkg  energy-pkg.scale  energy-pkg.unit
-
-The patch also uses the RAPL_MSR_MASK because only the 32-bits LSB of the
-RAPL counters are relevant when reading power consumption.
-
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220105185659.643355-1-eranian@google.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+Fixes: 2c5d42769038 ("mmc: core: Add support for Power Off Notification for SD cards")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220115121447.641524-1-andrej.skvortzov@gmail.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/rapl.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/mmc/core/sd.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
-index 85feafacc445d..77e3a47af5ad5 100644
---- a/arch/x86/events/rapl.c
-+++ b/arch/x86/events/rapl.c
-@@ -536,11 +536,14 @@ static struct perf_msr intel_rapl_spr_msrs[] = {
-  * - perf_msr_probe(PERF_RAPL_MAX)
-  * - want to use same event codes across both architectures
-  */
--static struct perf_msr amd_rapl_msrs[PERF_RAPL_MAX] = {
--	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr },
-+static struct perf_msr amd_rapl_msrs[] = {
-+	[PERF_RAPL_PP0]  = { 0, &rapl_events_cores_group, 0, false, 0 },
-+	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr, false, RAPL_MSR_MASK },
-+	[PERF_RAPL_RAM]  = { 0, &rapl_events_ram_group,   0, false, 0 },
-+	[PERF_RAPL_PP1]  = { 0, &rapl_events_gpu_group,   0, false, 0 },
-+	[PERF_RAPL_PSYS] = { 0, &rapl_events_psys_group,  0, false, 0 },
- };
+--- a/drivers/mmc/core/sd.c
++++ b/drivers/mmc/core/sd.c
+@@ -67,7 +67,7 @@ static const unsigned int sd_au_size[] =
+ 		__res & __mask;						\
+ 	})
  
--
- static int rapl_cpu_offline(unsigned int cpu)
- {
- 	struct rapl_pmu *pmu = cpu_to_rapl_pmu(cpu);
--- 
-2.34.1
-
+-#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 2000
++#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 1000
+ #define SD_WRITE_EXTR_SINGLE_TIMEOUT_MS 1000
+ 
+ struct sd_busy_data {
+@@ -1664,6 +1664,12 @@ static int sd_poweroff_notify(struct mmc
+ 		goto out;
+ 	}
+ 
++	/* Find out when the command is completed. */
++	err = mmc_poll_for_busy(card, SD_WRITE_EXTR_SINGLE_TIMEOUT_MS, false,
++				MMC_BUSY_EXTR_SINGLE);
++	if (err)
++		goto out;
++
+ 	cb_data.card = card;
+ 	cb_data.reg_buf = reg_buf;
+ 	err = __mmc_poll_for_busy(card, SD_POWEROFF_NOTIFY_TIMEOUT_MS,
 
 
