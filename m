@@ -2,162 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC162C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:19:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E89C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357398AbiBNSTY (ORCPT
+        id S1357410AbiBNSUQ convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:19:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32928 "EHLO
+        Mon, 14 Feb 2022 13:20:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiBNSTX (ORCPT
+        with ESMTP id S229684AbiBNSUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:19:23 -0500
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E826580D8;
-        Mon, 14 Feb 2022 10:19:14 -0800 (PST)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [80.241.60.233])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 14 Feb 2022 13:20:09 -0500
+X-Greylist: delayed 67 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 10:20:01 PST
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 863BB652F8
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:20:01 -0800 (PST)
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-50-1WN-g-mKN5yG-edIyRc2Qg-1; Mon, 14 Feb 2022 13:18:48 -0500
+X-MC-Unique: 1WN-g-mKN5yG-edIyRc2Qg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4JyCCz6Ld1z9sSM;
-        Mon, 14 Feb 2022 19:19:11 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
-        t=1644862749;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fSNa1XXhMflYfEl9flLMmS6tKFpzfbgDV0wJBFFW1JA=;
-        b=tezwYnUQqH7RQDjLAvGA87PdwlPMoGt+e/NrKEmKHUMw6xuIaBVjSbmjPx5zydbahRvhHr
-        Cx+WIAdJQxRwrebFbm4LRBQBzYCgFMeM4BC/iucG4s5GcobCsLg57qa1ZQEmztSgRskvUr
-        YbbZu1gO9enrKvi+9lT49tepoCoZPAoWYNFCuPXoFZJxjHLGjzU5zTpRZ8pbEQB798swR8
-        dCaMs1h8NxZEWjd/zed7jLBz6LJhpcM19G+wv2UnkCxiLXP4868n1AVLBDV1jpkQEme9rj
-        IMVoS4zzUZ6hqSE/FddURCsOZiS+6hr0ZKhDNCNySfHNAFkQRW/6c1ROJ2VG7w==
-Message-ID: <2cdb16a3d94506f453a5722c860d2f17b5dd5b1d.camel@sylv.io>
-Subject: Re: [PATCH v2 4/4] pmbus (pli1209bc): Add regulator support
-From:   sylv <sylv@sylv.io>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Patrick Rudolph <patrick.rudolph@9elements.com>
-Date:   Mon, 14 Feb 2022 19:19:05 +0100
-In-Reply-To: <62de6f93-12eb-838f-884d-f1ef96ab6e22@roeck-us.net>
-References: <cover.1644834803.git.sylv@sylv.io>
-         <fc5b0ba1f7d41e88ef066c3ff23aaf882c19c543.1644834803.git.sylv@sylv.io>
-         <62de6f93-12eb-838f-884d-f1ef96ab6e22@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A2A6E814243;
+        Mon, 14 Feb 2022 18:18:46 +0000 (UTC)
+Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B4B5584784;
+        Mon, 14 Feb 2022 18:18:41 +0000 (UTC)
+From:   Alexey Gladkov <legion@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Containers <containers@lists.linux.dev>
+Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Daniel Walsh <dwalsh@redhat.com>,
+        Davidlohr Bueso <dbueso@suse.de>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Serge Hallyn <serge@hallyn.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH v4 0/2] ipc: Store mq and ipc sysctls in the ipc namespace
+Date:   Mon, 14 Feb 2022 19:18:13 +0100
+Message-Id: <cover.1644862280.git.legion@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=legion@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-14 at 09:40 -0800, Guenter Roeck wrote:
-> On 2/14/22 04:40, Marcello Sylvester Bauer wrote:
-> > Add regulator support for PLI1209BC Digital Supervisor.
-> > 
-> > Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
-> > ---
-> >   drivers/hwmon/pmbus/Kconfig     |  7 +++++++
-> >   drivers/hwmon/pmbus/pli1209bc.c | 31
-> > +++++++++++++++++++++++++++++++
-> >   2 files changed, 38 insertions(+)
-> > 
-> > diff --git a/drivers/hwmon/pmbus/Kconfig
-> > b/drivers/hwmon/pmbus/Kconfig
-> > index 831db423bea0..8b8f0d8733b2 100644
-> > --- a/drivers/hwmon/pmbus/Kconfig
-> > +++ b/drivers/hwmon/pmbus/Kconfig
-> > @@ -319,6 +319,13 @@ config SENSORS_PLI1209BC
-> >           This driver can also be built as a module. If so, the
-> > module will
-> >           be called pli1209bc.
-> >   
-> > +config SENSORS_PLI1209BC_REGULATOR
-> > +       bool "Regulator support for PLI1209BC"
-> > +       depends on SENSORS_PLI1209BC && REGULATOR
-> > +       help
-> > +         If you say yes here you get regulator support for Vicor
-> > PLI1209BC
-> > +         Digital Supervisor.
-> > +
-> >   config SENSORS_PM6764TR
-> >         tristate "ST PM6764TR"
-> >         help
-> > diff --git a/drivers/hwmon/pmbus/pli1209bc.c
-> > b/drivers/hwmon/pmbus/pli1209bc.c
-> > index 8a9af2ccc46f..7212d73f6e04 100644
-> > --- a/drivers/hwmon/pmbus/pli1209bc.c
-> > +++ b/drivers/hwmon/pmbus/pli1209bc.c
-> > @@ -8,6 +8,7 @@
-> >   #include <linux/i2c.h>
-> >   #include <linux/module.h>
-> >   #include <linux/pmbus.h>
-> > +#include <linux/regulator/driver.h>
-> >   #include "pmbus.h"
-> >   
-> >   /*
-> > @@ -32,11 +33,37 @@ static int pli1209bc_read_word_data(struct
-> > i2c_client *client, int page,
-> >                 if (data < 0)
-> >                         return data;
-> >                 return data * 10;
-> > +       /*
-> > +        * PMBUS_READ_VOUT and PMBUS_READ_TEMPERATURE_1 return
-> > invalid data
-> > +        * when the BCM is turned off. Since it is not possible to
-> > return
-> > +        * ENODATA error, return zero instead.
-> > +        */
-> > +       case PMBUS_READ_VOUT:
-> > +       case PMBUS_READ_TEMPERATURE_1:
-> > +               data = pmbus_read_word_data(client, page, phase,
-> > +                                           PMBUS_STATUS_WORD);
-> > +               if (data < 0)
-> > +                       return data;
-> > +               if (data & PB_STATUS_POWER_GOOD_N)
-> > +                       return 0L;
-> 
-> Why 0L ? The return value of pli1209bc_read_word_data() is int.
+This patchset changes the implementation of mq and ipc sysctls. It moves the
+sysctls inside the ipc namespace. This will allow us to manage these sysctls
+inside the user namespace.
 
-ack. 0L makes no sense here.
+--
 
-> 
-> > +               return pmbus_read_word_data(client, page, phase,
-> > reg);
-> >         default:
-> >                 return -ENODATA;
-> >         }
-> >   }
-> >   
-> > +#if IS_ENABLED(CONFIG_SENSORS_PLI1209BC_REGULATOR)
-> > +static const struct regulator_desc pli1209bc_reg_desc = {
-> > +       .name = "vout2",
-> > +       .id = 1,
-> > +       .of_match = of_match_ptr("vout2"),
-> > +       .regulators_node = of_match_ptr("regulators"),
-> > +       .ops = &pmbus_regulator_ops,
-> > +       .type = REGULATOR_VOLTAGE,
-> > +       .owner = THIS_MODULE,
-> > +};
-> > +#endif
-> > +
-> >   static struct pmbus_driver_info pli1209bc_info = {
-> >         .pages = 2,
-> >         .format[PSC_VOLTAGE_IN] = direct,
-> > @@ -74,6 +101,10 @@ static struct pmbus_driver_info pli1209bc_info
-> > = {
-> >             | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP
-> >             | PMBUS_HAVE_STATUS_IOUT | PMBUS_HAVE_STATUS_INPUT,
-> >         .read_word_data = pli1209bc_read_word_data,
-> > +#if IS_ENABLED(CONFIG_SENSORS_PLI1209BC_REGULATOR)
-> > +       .num_regulators = 1,
-> > +       .reg_desc = &pli1209bc_reg_desc,
-> > +#endif
-> >   };
-> >   
-> >   static int pli1209bc_probe(struct i2c_client *client)
-> 
+Alexey Gladkov (2):
+  ipc: Store mqueue sysctls in the ipc namespace
+  ipc: Store ipc sysctls in the ipc namespace
+
+ include/linux/ipc_namespace.h |  37 ++++++-
+ ipc/ipc_sysctl.c              | 189 ++++++++++++++++++++++------------
+ ipc/mq_sysctl.c               | 121 ++++++++++++----------
+ ipc/mqueue.c                  |  10 +-
+ ipc/namespace.c               |  10 ++
+ 5 files changed, 235 insertions(+), 132 deletions(-)
+
+-- 
+2.33.0
 
