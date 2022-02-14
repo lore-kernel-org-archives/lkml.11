@@ -2,92 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A41C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7367AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354171AbiBNNdG (ORCPT
+        id S1354176AbiBNNet (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:33:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47946 "EHLO
+        Mon, 14 Feb 2022 08:34:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242090AbiBNNdE (ORCPT
+        with ESMTP id S239467AbiBNNer (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:33:04 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9591549264
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:32:56 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id s10so13353003wrb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:32:56 -0800 (PST)
+        Mon, 14 Feb 2022 08:34:47 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC78755499
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:34:39 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id d27so26890660wrc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:34:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=I9JiPLxl5rUxI3PgRFUPaRwr5y2I4XVH1+w9QXqoIDk=;
-        b=EdRemXb4WctxqcQjKGQRRUSwUR68w6z1tUu6jFPVCYSu2qJwFHx9DomI+tUYurYm6Z
-         4FYQefakDrTyQdRXSKSVlx1Cgl4mbomdlAfppE9yyuQd6V0K/Rrt7R4MBjoGqIt7BzOE
-         P31fpg8nTQv34sBYZm/RkPibPtRuF7Hy6PUpKiA5GScsugNgb09nS5vJMlBGhYKfsYD3
-         btPtEAARFN7AQjRfEQ60MQjFGyW8zlcNflmZXxyaM9OZLIRxGwmKAawIZ63gQD/QTZ0O
-         6q3W7Nat0nQ1Fd0GCSrqsI9Ln9w+DfMDC+sU4dDnYFPYiDtVQMdR9TWnP552AlknLTy2
-         oXeg==
+        bh=nz9p5jSC1DhT6mm0AqjV9XVq3u9ZSbE5dRhq0+4ZGAY=;
+        b=yDZfXROHvzd9hfec0EsgR/nRrcLvjTOVZ/h8Hgu0quFaoXIyx8A/JzlmbekNqBpFGk
+         EqgqofPEvPYZi4bKjuBMqaMa3CQIzsUyOCN3pIKO6FjZVkWCLfqoUheG1LbtCvUbbYJH
+         TVc7sVH+rKXGAvNRuMmO2muXFBU5oDDEaO3lF7JgAhiBg4Rn+QC2SiegysmeWD7blTD1
+         lQAIPqc7ln/bUJFR05OFXHaRw5SROIGViw+qOQAdQl7IKcVvMSGspVyF7+BQjo4kFHcf
+         +kh9N0BX5NJ6i6/PD6jCjkcjIqwJh4nx5XzBP/BVg7jyJlhDEo0Q16ByzuL/pwAccVui
+         7FlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=I9JiPLxl5rUxI3PgRFUPaRwr5y2I4XVH1+w9QXqoIDk=;
-        b=6fW5x0YCY1/YSV2wEfJcCoIsYZCPIRWU7vcjyyuoVWqkZ/20WfFsXKugAfVMR7ENpc
-         9T9ubwlP9k8Eys+wwBj6BCFgmjhUHqIVUiYl4a0ZESWk9ftlRFdwMvaRtvnzstyH0Svd
-         LCEcsGQChqhPwA1caaPEd4Z5hl4nOW8k7bT1uN3QChiBRt8rt+GT2haxPCFbPXqTBgM4
-         kpOI3KcL/9qM4QRI2Qd4l1PFFEkS356SzypXh5YvNTPJz+dtn4xpq7Mtv5cjnMyPrraB
-         +e+jx7wiclTrHGyQOHo207gvSWtftPQ70HEuyBm+rWKYm4p2XRq4A+K03tvBMy+jKJ02
-         BtXQ==
-X-Gm-Message-State: AOAM532E6hTVRv+nvanvlPddWRhZ0Hlzxz+cBPsKmwSK9esqLNJymg1j
-        3oLsKCgHBHxnL50isyX7bWLZ5w==
-X-Google-Smtp-Source: ABdhPJzBj32BlcfgaBSh3pAhx+ojoha2NOJ3vhdEpsjUZ2ODBzIOh5kM+gS7tXi+u7oJJq5Sc+2Gtg==
-X-Received: by 2002:adf:e10e:: with SMTP id t14mr11233637wrz.299.1644845575128;
-        Mon, 14 Feb 2022 05:32:55 -0800 (PST)
+        bh=nz9p5jSC1DhT6mm0AqjV9XVq3u9ZSbE5dRhq0+4ZGAY=;
+        b=F2zegYac/O+W4boRsgV4sNQYsCxSKcUoq5B8JbwnjNPWe3wDKXTJV8LSdOHpbg5woF
+         5T7DqT+Gpu3Pn/TsJDM7GSTz8g575K5GrHwieNmh3PQVKpBNtDIyAYncBhYNm27h4998
+         jS9voB72MsLVbSOs594jiGti/1uGh8VG34Ec33FilG1QH01TcZiXDHFQDfiiYUDRoYOH
+         yB5XU4xSST2DUUluWEvnHlp1RWBCQrcgxqZSGN1OH4+MYME/vq6lxkGBFQ3Yd0rmb4jQ
+         OqcdmWxNeHOnuMWkelm/O4/yEgGBkztbYwd2ZlX5gUl+1IGxbVuQ930McDaHlfuRwX8Q
+         ZlLw==
+X-Gm-Message-State: AOAM531idC0MAZbsivMUkeQ4NQ3gDsTIqxYzPafljMjSiAuF8qFzwYDQ
+        IlKzogSWY72U4JclZehdvetNKQYZbKkO5g==
+X-Google-Smtp-Source: ABdhPJz6PzNBPCFytVg9nuHqsUnMO1k3pq4ZBoPvWIoEehwAD5hMSEtW58DaBejs5El6BBP9MmA5/g==
+X-Received: by 2002:a5d:48cb:: with SMTP id p11mr11659823wrs.229.1644845678500;
+        Mon, 14 Feb 2022 05:34:38 -0800 (PST)
 Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id z7sm8492737wml.40.2022.02.14.05.32.54
+        by smtp.gmail.com with ESMTPSA id q23sm10491885wmj.44.2022.02.14.05.34.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 05:32:54 -0800 (PST)
-Date:   Mon, 14 Feb 2022 13:32:53 +0000
+        Mon, 14 Feb 2022 05:34:38 -0800 (PST)
+Date:   Mon, 14 Feb 2022 13:34:36 +0000
 From:   Lee Jones <lee.jones@linaro.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH] mfd: sprd: Add SPI device ID table
-Message-ID: <YgpaBWGMa26tnM2R@google.com>
-References: <20220202144336.16514-1-broonie@kernel.org>
+To:     Claudiu.Beznea@microchip.com
+Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND][PATCH] mfd: syscon: allow mapping a range of addresses
+Message-ID: <YgpabAkQZGoQvQ80@google.com>
+References: <20220201112050.3466927-1-claudiu.beznea@microchip.com>
+ <3488527f-60a0-d1bc-0a1e-d41f00ce6fbb@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220202144336.16514-1-broonie@kernel.org>
+In-Reply-To: <3488527f-60a0-d1bc-0a1e-d41f00ce6fbb@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 02 Feb 2022, Mark Brown wrote:
+On Mon, 14 Feb 2022, Claudiu.Beznea@microchip.com wrote:
 
-> Currently autoloading for SPI devices does not use the DT ID table, it uses
-> SPI modalises. Supporting OF modalises is going to be difficult if not
-> impractical, an attempt was made but has been reverted, so ensure that
-> module autoloading works for this driver by adding a SPI device ID table.
-> 
-> Fixes: 96c8395e2166 ("spi: Revert modalias changes")
-> Signed-off-by: Mark Brown <broonie@kernel.org>
-> Cc: Orson Zhai <orsonzhai@gmail.com>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> ---
-> 
-> Rebased onto v5.17-rc1.
-> 
->  drivers/mfd/sprd-sc27xx-spi.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+> For the moment, please ignore this patch.
 
-Applied, thanks.
+I literally just got around to this - how funny!
+
+As you were Arnd.
+
+> On 01.02.2022 13:20, Claudiu Beznea wrote:
+> > Allow the mapping of a range of addresses for syscon. This is done through
+> > regmap_config::wr_table, regmap_config::rd_table. Previously, only one
+> > range could have been allocated to a syscon via
+> > regmap_config::max_register. The code is needed for SAMA7G5 whose reset
+> > controller contains a register (at offset 0xE001D0E4, see below) that is
+> > used to control the USB PHYs but that register is not located continuously
+> > in reset controller address space, as follows:
 
 -- 
 Lee Jones [李琼斯]
