@@ -2,96 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A39D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFDD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245548AbiBNJuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:50:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45728 "EHLO
+        id S233139AbiBNJu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:50:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245224AbiBNJpv (ORCPT
+        with ESMTP id S245345AbiBNJpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:45:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F378C706DF;
-        Mon, 14 Feb 2022 01:38:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 710EC61193;
-        Mon, 14 Feb 2022 09:38:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F904C340F3;
-        Mon, 14 Feb 2022 09:38:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831522;
-        bh=JBPKQ49itj41uadUEPuSatkximwIDIrG7Qjp9HSeSXM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x+fw2pH4yLAm6KOYAgb0y16uk99r8IxDWgy9meA0lAXnWYKDgS5QOsCj6N4rAGqy9
-         VS/hwaw8cmc8/5piJTs4tLo2Gpl9+cEOle53fdfHPC7l8V6j8c/DFWKozyxd4d9m10
-         OjSW3seKRI9ZTr/o23rpJrY+5fZoRBY1rzZDp9y8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.10 010/116] NFSD: Clamp WRITE offsets
-Date:   Mon, 14 Feb 2022 10:25:09 +0100
-Message-Id: <20220214092459.036735272@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
-References: <20220214092458.668376521@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 04:45:53 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C1660D9F;
+        Mon, 14 Feb 2022 01:38:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644831538; x=1676367538;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0IGPbPVaQO9WmcVVZypsyEn9AxDkiOr4ZxM5KcPK1wc=;
+  b=MVi4kPkioulQr2CO1lP/7xOWSPUzzTsokGKHEhud34EeXYOAiOLJ30LQ
+   y/9BT79qy8PUNiWHJISdv/HMDKoGGKLhkLAncbved2N9/StNILxs5iA0Z
+   L7wqcWxkYvUBZojD6QOwUjGz3MePLkZMFarC/pMx9q4AvmMpodlkbz5YX
+   tuuk7RWf9uFvYw7stYJWJ773eA44roEpDdQzPjwO44duph93rNUhjZ5BH
+   fS5yeyigcYGJg8+65Z28L54tuTFBvu+WKIVip+HrX5M3tc3/hIovrsONY
+   XkCkIWG5QyZfxC8nZdr9wgHXEyYhbgyUo19+Hspka+XoNq8DrDbfLhEsU
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="247647693"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="247647693"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 01:38:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="635052312"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 01:38:51 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJXoo-0008M7-E2; Mon, 14 Feb 2022 09:38:50 +0000
+Date:   Mon, 14 Feb 2022 17:38:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guixin Liu <kanie@linux.alibaba.com>, bostroesser@gmail.com,
+        martin.petersen@oracle.com
+Cc:     kbuild-all@lists.01.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xiaoguang.wang@linux.alibaba.com, xlpang@linux.alibaba.com
+Subject: Re: [PATCH V2] scsi: target: tcmu: Make cmd_ring_size changeable via
+ configfs.
+Message-ID: <202202141721.OdtEVrDJ-lkp@intel.com>
+References: <1644808523-21069-1-git-send-email-kanie@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644808523-21069-1-git-send-email-kanie@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+Hi Guixin,
 
-commit 6260d9a56ab352b54891ec66ab0eced57d55abc6 upstream.
+Thank you for the patch! Perhaps something to improve:
 
-Ensure that a client cannot specify a WRITE range that falls in a
-byte range outside what the kernel's internal types (such as loff_t,
-which is signed) can represent. The kiocb iterators, invoked in
-nfsd_vfs_write(), should properly limit write operations to within
-the underlying file system's s_maxbytes.
+[auto build test WARNING on mkp-scsi/for-next]
+[also build test WARNING on v5.17-rc4 next-20220211]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+url:    https://github.com/0day-ci/linux/commits/Guixin-Liu/scsi-target-tcmu-Make-cmd_ring_size-changeable-via-configfs/20220214-111810
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
+config: xtensa-allyesconfig (https://download.01.org/0day-ci/archive/20220214/202202141721.OdtEVrDJ-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/c972a1533164208e331a5a4d34a7ed0bb44b17ba
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Guixin-Liu/scsi-target-tcmu-Make-cmd_ring_size-changeable-via-configfs/20220214-111810
+        git checkout c972a1533164208e331a5a4d34a7ed0bb44b17ba
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash drivers/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/target/target_core_user.c: In function 'tcmu_show_configfs_dev_params':
+>> drivers/target/target_core_user.c:2627:49: warning: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'u32' {aka 'unsigned int'} [-Wformat=]
+    2627 |         bl += sprintf(b + bl, "CmdRingSizeMB: %lu\n",
+         |                                               ~~^
+         |                                                 |
+         |                                                 long unsigned int
+         |                                               %u
+    2628 |                       (udev->cmdr_size + CMDR_OFF) >> 20);
+         |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                                    |
+         |                                                    u32 {aka unsigned int}
+   drivers/target/target_core_user.c: In function 'tcmu_cmd_ring_size_mb_show':
+   drivers/target/target_core_user.c:2743:45: warning: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'u32' {aka 'unsigned int'} [-Wformat=]
+    2743 |         return snprintf(page, PAGE_SIZE, "%lu\n",
+         |                                           ~~^
+         |                                             |
+         |                                             long unsigned int
+         |                                           %u
+    2744 |                         (udev->cmdr_size + CMDR_OFF) >> 20);
+         |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                                      |
+         |                                                      u32 {aka unsigned int}
+
+
+vim +2627 drivers/target/target_core_user.c
+
+  2616	
+  2617	static ssize_t tcmu_show_configfs_dev_params(struct se_device *dev, char *b)
+  2618	{
+  2619		struct tcmu_dev *udev = TCMU_DEV(dev);
+  2620		ssize_t bl = 0;
+  2621	
+  2622		bl = sprintf(b + bl, "Config: %s ",
+  2623			     udev->dev_config[0] ? udev->dev_config : "NULL");
+  2624		bl += sprintf(b + bl, "Size: %llu ", udev->dev_size);
+  2625		bl += sprintf(b + bl, "MaxDataAreaMB: %u ", udev->data_area_mb);
+  2626		bl += sprintf(b + bl, "DataPagesPerBlk: %u", udev->data_pages_per_blk);
+> 2627		bl += sprintf(b + bl, "CmdRingSizeMB: %lu\n",
+  2628			      (udev->cmdr_size + CMDR_OFF) >> 20);
+  2629	
+  2630		return bl;
+  2631	}
+  2632	
+
 ---
- fs/nfsd/nfs3proc.c |    5 +++++
- fs/nfsd/nfs4proc.c |    5 +++--
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
---- a/fs/nfsd/nfs3proc.c
-+++ b/fs/nfsd/nfs3proc.c
-@@ -183,6 +183,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
- 				(unsigned long long) argp->offset,
- 				argp->stable? " stable" : "");
- 
-+	resp->status = nfserr_fbig;
-+	if (argp->offset > (u64)OFFSET_MAX ||
-+	    argp->offset + argp->len > (u64)OFFSET_MAX)
-+		return rpc_success;
-+
- 	fh_copy(&resp->fh, &argp->fh);
- 	resp->committed = argp->stable;
- 	nvecs = svc_fill_write_vector(rqstp, rqstp->rq_arg.pages,
---- a/fs/nfsd/nfs4proc.c
-+++ b/fs/nfsd/nfs4proc.c
-@@ -1008,8 +1008,9 @@ nfsd4_write(struct svc_rqst *rqstp, stru
- 	unsigned long cnt;
- 	int nvecs;
- 
--	if (write->wr_offset >= OFFSET_MAX)
--		return nfserr_inval;
-+	if (write->wr_offset > (u64)OFFSET_MAX ||
-+	    write->wr_offset + write->wr_buflen > (u64)OFFSET_MAX)
-+		return nfserr_fbig;
- 
- 	cnt = write->wr_buflen;
- 	trace_nfsd_write_start(rqstp, &cstate->current_fh,
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
