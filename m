@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92792C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C839DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345254AbiBNKNQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:13:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43992 "EHLO
+        id S240529AbiBNKNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:13:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345525AbiBNKMO (ORCPT
+        with ESMTP id S1345759AbiBNKND (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:12:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102C2652D3;
-        Mon, 14 Feb 2022 01:50:46 -0800 (PST)
+        Mon, 14 Feb 2022 05:13:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08BE652FB;
+        Mon, 14 Feb 2022 01:50:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0EFB612BF;
-        Mon, 14 Feb 2022 09:50:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 794CCC340E9;
-        Mon, 14 Feb 2022 09:50:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DF11612B4;
+        Mon, 14 Feb 2022 09:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66806C340E9;
+        Mon, 14 Feb 2022 09:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832245;
-        bh=nyQhR6VxYrmQChXEtTWPCthKdRv7SdJZk83vIwv/vAc=;
+        s=korg; t=1644832254;
+        bh=H9cXK0gjH9HujVBKkb1ImW/0yXvlxEJUAwGTbWYhUqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fgCiyVvtELDzHiiOqPOm97ZbtRRC7L16D2qvQTjonekj1ztRVpRhu5Zm4Kjdk3UNQ
-         G6OC61h4pStZkKlptUhjdr1Kgaj82xzENJbc28qzXUtx1zLd1py1SjKPNH85iqOAbb
-         BjgwgBOwo7Yuz31Y9S2EuOASzEHM3vPoPs5mrY08=
+        b=2rG7G+a0cVGbs0RnVRn2lKqouBeXZl+uTfJuREddBuTsuhcoX+HuRdt7uJmE4MBTJ
+         NEIvQOe+PG+ECErJw4zHfkRjvHY/1/0AK24zJX7S89UbF+44+BcItAvLjo62ofZc83
+         /FwMka8k1/O/gDCZ2VkM027SnsG/lOHr7Wk/mJtc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 098/172] net: sparx5: Fix get_stat64 crash in tcpdump
-Date:   Mon, 14 Feb 2022 10:25:56 +0100
-Message-Id: <20220214092509.793186955@linuxfoundation.org>
+Subject: [PATCH 5.15 127/172] dpaa2-eth: unregister the netdev before disconnecting from the PHY
+Date:   Mon, 14 Feb 2022 10:26:25 +0100
+Message-Id: <20220214092510.798339926@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,38 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steen Hegelund <steen.hegelund@microchip.com>
+From: Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
 
-[ Upstream commit ed14fc7a79ab43e9f2cb1fa9c1733fdc133bba30 ]
+[ Upstream commit 9ccc6e0c8959a019bb40f6b18704b142c04b19a8 ]
 
-This problem was found with Sparx5 when the tcpdump tool requests the
-do_get_stats64 (sparx5_get_stats64) statistic.
+The netdev should be unregistered before we are disconnecting from the
+MAC/PHY so that the dev_close callback is called and the PHY and the
+phylink workqueues are actually stopped before we are disconnecting and
+destroying the phylink instance.
 
-The portstats pointer was incorrectly incremented when fetching priority
-based statistics.
-
-Fixes: af4b11022e2d (net: sparx5: add ethtool configuration and statistics support)
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Link: https://lore.kernel.org/r/20220203102900.528987-1-steen.hegelund@microchip.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 719479230893 ("dpaa2-eth: add MAC/PHY support through phylink")
+Signed-off-by: Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-index 59783fc46a7b9..10b866e9f7266 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-@@ -1103,7 +1103,7 @@ void sparx5_get_stats64(struct net_device *ndev,
- 	stats->tx_carrier_errors = portstats[spx5_stats_tx_csense_cnt];
- 	stats->tx_window_errors = portstats[spx5_stats_tx_late_coll_cnt];
- 	stats->rx_dropped = portstats[spx5_stats_ana_ac_port_stat_lsb_cnt];
--	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++stats)
-+	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx)
- 		stats->rx_dropped += portstats[spx5_stats_green_p0_rx_port_drop
- 					       + idx];
- 	stats->tx_dropped = portstats[spx5_stats_tx_local_drop];
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 1108e1730841b..110075336a757 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -4511,12 +4511,12 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
+ #ifdef CONFIG_DEBUG_FS
+ 	dpaa2_dbg_remove(priv);
+ #endif
++
++	unregister_netdev(net_dev);
+ 	rtnl_lock();
+ 	dpaa2_eth_disconnect_mac(priv);
+ 	rtnl_unlock();
+ 
+-	unregister_netdev(net_dev);
+-
+ 	dpaa2_eth_dl_port_del(priv);
+ 	dpaa2_eth_dl_traps_unregister(priv);
+ 	dpaa2_eth_dl_unregister(priv);
 -- 
 2.34.1
 
