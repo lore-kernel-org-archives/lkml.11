@@ -2,116 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C714BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6323CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352349AbiBNLr3 (ORCPT
+        id S1352409AbiBNLpo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:47:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42338 "EHLO
+        Mon, 14 Feb 2022 06:45:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352218AbiBNLjp (ORCPT
+        with ESMTP id S1353084AbiBNLna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:39:45 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0043C51;
-        Mon, 14 Feb 2022 03:30:45 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id E338D1F437F7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644838244;
-        bh=QaLaTj9ziNtqxf12oz66KYW1D7p03OX8Bk66flIHsxs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ggZon2tzhy2Vqc9LmMHVOVLHNWSS7LUED7MTJYersNyW0PsnvLKnLdtvJtCUxt5Bw
-         qIpDJmh9DzTonS45VhdVbnFEXOWOuCYIImcW9l18+iuCLiPeGi5lf43gC0fLIm04dR
-         3d9F5v7UI37CBTZiQnq4QmmGdHxu8t7PNOX4k2yYZHkgSWiJOID55Pnyx4wOa4RmXf
-         F+Y8lg+bfeeuBe+gU0GBFK3P+RoWPoZQLIn10DOtQfU6fsaRoPI1GnhID32s488D3P
-         anaw2Ro3+yCn0mJwvTWrAmm7gkZmDSdI3A4KhQqvONpnmIavSdnfb2zmYD+JwwH3tf
-         Fi4Pk3cQn8faQ==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     thierry.reding@gmail.com
-Cc:     u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        matthias.bgg@gmail.com, linux-pwm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 1/2] pwm: pwm-mediatek: Simplify error handling with dev_err_probe()
-Date:   Mon, 14 Feb 2022 12:30:37 +0100
-Message-Id: <20220214113038.79130-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.33.1
+        Mon, 14 Feb 2022 06:43:30 -0500
+X-Greylist: delayed 2169 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 03:35:27 PST
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFFB5F49;
+        Mon, 14 Feb 2022 03:35:27 -0800 (PST)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nJZ4E-00080o-TO; Mon, 14 Feb 2022 11:58:50 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Anson Huang <anson.huang@nxp.com>,
+        Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>,
+        Rahul Tanwar <rtanwar@maxlinear.com>,
+        Jeff LaBundy <jeff@labundy.com>,
+        Yash Shah <yash.shah@sifive.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Vignesh R <vigneshr@ti.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH 06/15] dt-bindings: pwm: rockchip: include generic pwm schema
+Date:   Mon, 14 Feb 2022 11:58:49 +0100
+Message-ID: <2270696.mDkAqzPR1c@diego>
+In-Reply-To: <20220214081605.161394-6-krzysztof.kozlowski@canonical.com>
+References: <20220214081605.161394-1-krzysztof.kozlowski@canonical.com> <20220214081605.161394-6-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use dev_err_probe() to simplify handling errors in pwm_mediatek_probe().
+Am Montag, 14. Februar 2022, 09:15:56 CET schrieb Krzysztof Kozlowski:
+> Include generic pwm.yaml schema, which enforces PWM node naming and
+> brings pwm-cells requirement.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/pwm/pwm-mediatek.c | 30 +++++++++++-------------------
- 1 file changed, 11 insertions(+), 19 deletions(-)
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index 0d4dd80e9f07..c7d5ca09a684 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -227,18 +227,14 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	pc->clk_top = devm_clk_get(&pdev->dev, "top");
--	if (IS_ERR(pc->clk_top)) {
--		dev_err(&pdev->dev, "clock: top fail: %ld\n",
--			PTR_ERR(pc->clk_top));
--		return PTR_ERR(pc->clk_top);
--	}
-+	if (IS_ERR(pc->clk_top))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk_top),
-+				     "clock: top failed\n");
- 
- 	pc->clk_main = devm_clk_get(&pdev->dev, "main");
--	if (IS_ERR(pc->clk_main)) {
--		dev_err(&pdev->dev, "clock: main fail: %ld\n",
--			PTR_ERR(pc->clk_main));
--		return PTR_ERR(pc->clk_main);
--	}
-+	if (IS_ERR(pc->clk_main))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk_main),
-+				     "clock: main failed\n");
- 
- 	for (i = 0; i < pc->soc->num_pwms; i++) {
- 		char name[8];
-@@ -246,11 +242,9 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 		snprintf(name, sizeof(name), "pwm%d", i + 1);
- 
- 		pc->clk_pwms[i] = devm_clk_get(&pdev->dev, name);
--		if (IS_ERR(pc->clk_pwms[i])) {
--			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
--				name, PTR_ERR(pc->clk_pwms[i]));
--			return PTR_ERR(pc->clk_pwms[i]);
--		}
-+		if (IS_ERR(pc->clk_pwms[i]))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk_pwms[i]),
-+					     "clock: %s failed\n", name);
- 	}
- 
- 	pc->chip.dev = &pdev->dev;
-@@ -258,10 +252,8 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 	pc->chip.npwm = pc->soc->num_pwms;
- 
- 	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
- 
- 	return 0;
- }
--- 
-2.33.1
+> ---
+>  .../devicetree/bindings/pwm/pwm-rockchip.yaml | 74 ++++++++++---------
+>  1 file changed, 38 insertions(+), 36 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+> index 81a54a4e8e3e..a336ff9364a9 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+> @@ -51,42 +51,44 @@ properties:
+>  required:
+>    - compatible
+>    - reg
+> -  - "#pwm-cells"
+> -
+> -if:
+> -  properties:
+> -    compatible:
+> -      contains:
+> -        enum:
+> -          - rockchip,rk3328-pwm
+> -          - rockchip,rv1108-pwm
+> -
+> -then:
+> -  properties:
+> -    clocks:
+> -      items:
+> -        - description: Used to derive the functional clock for the device.
+> -        - description: Used as the APB bus clock.
+> -
+> -    clock-names:
+> -      items:
+> -        - const: pwm
+> -        - const: pclk
+> -
+> -  required:
+> -    - clocks
+> -    - clock-names
+> -
+> -else:
+> -  properties:
+> -    clocks:
+> -      maxItems: 1
+> -      description:
+> -        Used both to derive the functional clock
+> -        for the device and as the bus clock.
+> -
+> -  required:
+> -    - clocks
+> +
+> +allOf:
+> +  - $ref: pwm.yaml#
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - rockchip,rk3328-pwm
+> +              - rockchip,rv1108-pwm
+> +
+> +    then:
+> +      properties:
+> +        clocks:
+> +          items:
+> +            - description: Used to derive the functional clock for the device.
+> +            - description: Used as the APB bus clock.
+> +
+> +        clock-names:
+> +          items:
+> +            - const: pwm
+> +            - const: pclk
+> +
+> +      required:
+> +        - clocks
+> +        - clock-names
+> +
+> +    else:
+> +      properties:
+> +        clocks:
+> +          maxItems: 1
+> +          description:
+> +            Used both to derive the functional clock
+> +            for the device and as the bus clock.
+> +
+> +      required:
+> +        - clocks
+>  
+>  additionalProperties: false
+>  
+> 
+
+
+
 
