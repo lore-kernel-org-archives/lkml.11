@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E939C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244505AbiBNKUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:20:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44074 "EHLO
+        id S1346476AbiBNKUF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:20:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346273AbiBNKPn (ORCPT
+        with ESMTP id S1346494AbiBNKPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:15:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3857B55F;
-        Mon, 14 Feb 2022 01:52:40 -0800 (PST)
+        Mon, 14 Feb 2022 05:15:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0931678069;
+        Mon, 14 Feb 2022 01:52:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74C606131D;
-        Mon, 14 Feb 2022 09:52:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49074C340E9;
-        Mon, 14 Feb 2022 09:52:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4667C612BF;
+        Mon, 14 Feb 2022 09:52:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22667C340E9;
+        Mon, 14 Feb 2022 09:52:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832351;
-        bh=2BBZbbHHx50oBUEy83Jzex7N90VUJ1hapnj9wSM9Ri4=;
+        s=korg; t=1644832373;
+        bh=CLfqbK5DAgyx3E+ykodxSz0Gwtxu7xIMZXMF5qlQwTE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rUAPM7Ujr/OV445nbRzT2fFMl/5A/xP3xxaUBvdEqTtL9iJqTptKlyheL3miSxv6S
-         XlCNjo+u83scT1Lzj9UV5CqsHh084jCDnacJCY7RICJqlNAy/z+7+Pk3g10DUt1E86
-         BTEVsqbVETap9kv3zmp2dtpiZSynX4Udk/FR1Fx4=
+        b=j2JVbCZIr5Y+4IMXsARQW2xoA2GwIQfjIgmUUCD/sILsMMwasupXgkGgfwsaCQrKE
+         lnQhq0osuW5q8HGhP9Ze7xrIK4q6oylJQug/cSRBUlCEhV/ONfa/KINSQy/NOwoHZn
+         O3N21oLUzsLspXLoDs2jbF5fzhJZyIVN9KP1Rvko=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Robert=20=C5=9Awi=C4=99cki?= <robert@swiecki.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.15 159/172] signal: HANDLER_EXIT should clear SIGNAL_UNKILLABLE
-Date:   Mon, 14 Feb 2022 10:26:57 +0100
-Message-Id: <20220214092511.883393416@linuxfoundation.org>
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH 5.15 134/172] vt_ioctl: fix array_index_nospec in vt_setactivate
+Date:   Mon, 14 Feb 2022 10:26:32 +0100
+Message-Id: <20220214092511.036875993@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,40 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-commit 5c72263ef2fbe99596848f03758ae2dc593adf2c upstream.
+commit 61cc70d9e8ef5b042d4ed87994d20100ec8896d9 upstream.
 
-Fatal SIGSYS signals (i.e. seccomp RET_KILL_* syscall filter actions)
-were not being delivered to ptraced pid namespace init processes. Make
-sure the SIGNAL_UNKILLABLE doesn't get set for these cases.
+array_index_nospec ensures that an out-of-bounds value is set to zero
+on the transient path. Decreasing the value by one afterwards causes
+a transient integer underflow. vsa.console should be decreased first
+and then sanitized with array_index_nospec.
 
-Reported-by: Robert Święcki <robert@swiecki.net>
-Suggested-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Fixes: 00b06da29cf9 ("signal: Add SA_IMMUTABLE to ensure forced siganls do not get changed")
-Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Link: https://lore.kernel.org/lkml/878rui8u4a.fsf@email.froward.int.ebiederm.org
+Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
+Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
+Amsterdam.
+
+Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220127144406.3589293-1-jakobkoschel@gmail.com
+Cc: stable <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/signal.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/vt/vt_ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -1339,9 +1339,10 @@ force_sig_info_to_task(struct kernel_sig
- 	}
- 	/*
- 	 * Don't clear SIGNAL_UNKILLABLE for traced tasks, users won't expect
--	 * debugging to leave init killable.
-+	 * debugging to leave init killable. But HANDLER_EXIT is always fatal.
- 	 */
--	if (action->sa.sa_handler == SIG_DFL && !t->ptrace)
-+	if (action->sa.sa_handler == SIG_DFL &&
-+	    (!t->ptrace || (handler == HANDLER_EXIT)))
- 		t->signal->flags &= ~SIGNAL_UNKILLABLE;
- 	ret = send_signal(sig, info, t, PIDTYPE_PID);
- 	spin_unlock_irqrestore(&t->sighand->siglock, flags);
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -599,8 +599,8 @@ static int vt_setactivate(struct vt_seta
+ 	if (vsa.console == 0 || vsa.console > MAX_NR_CONSOLES)
+ 		return -ENXIO;
+ 
+-	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES + 1);
+ 	vsa.console--;
++	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES);
+ 	console_lock();
+ 	ret = vc_allocate(vsa.console);
+ 	if (ret) {
 
 
