@@ -2,100 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0803DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 07:07:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A820C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 07:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241259AbiBNHIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 02:08:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59634 "EHLO
+        id S241096AbiBNHIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 02:08:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241257AbiBNHIB (ORCPT
+        with ESMTP id S229931AbiBNHIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 02:08:01 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A07B57B3D
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 23:07:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644822474; x=1676358474;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zRwIjWadERt36ALUSui8bA9C99V5TX7zIVkUucu64Fk=;
-  b=kARk2L75EgygpKjUlKJStPO6T7Hbbdr7hx75DLG4hCKyJ9YF3dlkwEUv
-   tSsHueHgwVOKktJiDC5xb+mPpxz5zWc3+OXEkz0EQEJSfgwBkfbn9HD16
-   7jLcnM5c6llx8iyJkpIxlC+ymtTfyB1NQ5fI+c7N3wko1XzdN+cthR1u7
-   qU/IrQOOKGdc/rhWjZS/QJKkFatVktDlEX2BQthOsaOZJfieqxVo3M3AC
-   ++l9zuIRJW7cLNEgHVIIikVXKfT86OaCO49kAkp4Ohvd6Z73cO4yTVLF+
-   HU9coh+H92VyudDGUkIpplszhXn8MKdYiBcTnJROF9SksvMTE4pi/8INO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="249778422"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="249778422"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 23:07:53 -0800
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="543255797"
-Received: from amrobles-mobl1.amr.corp.intel.com (HELO pujfalus-desk.ger.corp.intel.com) ([10.249.47.75])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 23:07:51 -0800
-From:   Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org,
-        pierre-louis.bossart@linux.intel.com,
-        ranjani.sridharan@linux.intel.com
-Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
-        daniel.baluta@nxp.com, tiwai@suse.com,
-        linux-kernel@vger.kernel.org, fred.oh@linux.intel.com
-Subject: [PATCH] ASoC: SOF: Makefile: Fix randconfig sof-client build when SND_SOC_SOF=y
-Date:   Mon, 14 Feb 2022 09:07:52 +0200
-Message-Id: <20220214070752.21063-1-peter.ujfalusi@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 14 Feb 2022 02:08:48 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F93757B3D
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 23:08:40 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id 10so9842528plj.1
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 23:08:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VRsrjLJJwkV+1G8dUcK8QMCphluC37yJVoC3bjiX4u4=;
+        b=TSXgYem9rsDI+/sOsl6rf/IZrkuhDPCQ0v/G8QWp2E2q35aTi7UqzbfAGlykhejZqB
+         8/1pG1QdbB65J1vfBzBWzayBfR22xYGgTIbYZ7IIMviZ0kp903UfNvoHbnLk14HoK9XI
+         XDvgXyvOV2YHLGvWoRjHfssDFFTNZnUsummpE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VRsrjLJJwkV+1G8dUcK8QMCphluC37yJVoC3bjiX4u4=;
+        b=ALqeLAnKLfBYzt0Yjdfoz5HBgjfixFArHhbch8nPdxEpzxEmNG+tcp/Zjt3fShpmpM
+         g7W/sGHLRXLA89nfY6mV0ViIBbMD0+IaAW7lBs7jsMbKf61gNBEOtGnbyUVDufkDSEWW
+         c3ZDXD5sauB7m+bxDc7yE9v6EbKlVo3aWxy/C5pJqnTVhdLhW2IVkyUo1Tdnzu+OFcrj
+         zEA6XFonzN5OHpDOokgUBT3uq741Ums1fGPzWXNy1pU4zNZw3kHQZfxkq4v1lwj8PeSs
+         XGhMPCppcE5jPAAOe38nD4xNQYiEGrHTDVTRO23CpvgHwQAP89uagbsn+avak5Ehs+hy
+         smBw==
+X-Gm-Message-State: AOAM533t7/agYWJtzVWRah6EIzXXqbrZrG37a2Q/ngSjsPb0iEEL+/fH
+        cJ0BkvFIWvWqufstRbdyEaAMgCYIfcVK4A==
+X-Google-Smtp-Source: ABdhPJzlnqNkMpfB3fQ7XS+bVL2JHeWKM4eyRb0dMkmxQcMZvnlv34tG6kXlyBXqSqtYqokbz9Y/Ow==
+X-Received: by 2002:a17:90a:142:: with SMTP id z2mr4020369pje.160.1644822520052;
+        Sun, 13 Feb 2022 23:08:40 -0800 (PST)
+Received: from google.com ([2401:fa00:8f:203:3a3d:6c6e:58a7:8903])
+        by smtp.gmail.com with ESMTPSA id a14sm9774083pgw.27.2022.02.13.23.08.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Feb 2022 23:08:39 -0800 (PST)
+Date:   Mon, 14 Feb 2022 16:08:35 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH printk v1 03/13] printk: use percpu flag instead of
+ cpu_online()
+Message-ID: <Ygn/8yNrHnZEomJy@google.com>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-4-john.ogness@linutronix.de>
+ <YgaJZtY+EH9JIGyo@alley>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgaJZtY+EH9JIGyo@alley>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+On (22/02/11 17:05), Petr Mladek wrote:
+> I dug more into the history to be more confident about the change.
+> I am not sure that it is safe.
+> 
+> CON_ANYTIME really seems to be related to per-CPU variables and early
+> boot, see the commit 76a8ad293912cd2f01eca ("[PATCH] Make printk work
+> for really early debugging").
 
-Intel's kernel test robot found the following randconfig combination:
-SND_SOC_SOF=y
-SND_SOC_SOF_CLIENT=m
+Hmm... This looks a bit tricky. It seems that the commit in question
+is concerned with per-CPU variables access indeed; not printk() per-CPU
+access though but per-CPU access from con->write(). I guess console_unlock()
+did not use to access per-CPU variables before, it does now, so that
+can_use_console() in fact protects both printk (which certainly happens)
+and con->write() (do we even have it?) per-CPU access
 
-In this the sof-client object is not going to be built into the snd-sof.o
-and we will have undefined references to the sof-client functions.
+	console_unlock()
+	{
+		if (!can_use_console())
+			return;
 
-Fixes: 6955d9512d0e ("ASoC: SOF: Introduce IPC SOF client support")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
----
-Hi Mark, Pierre,
+		for (;;) {
+			printk_safe_enter_irqsave() -> __this_cpu()
 
-When the client support was added we did some permutation tests (at least I did)
-but missed this combination.
-It is a valid one for sure and the proper fix is via the Makefile.
-
-Sorry for mising this
-
-Regards,
-Peter
-
- sound/soc/sof/Makefile | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/sof/Makefile b/sound/soc/sof/Makefile
-index 4d31282c847d..a0459f06c68a 100644
---- a/sound/soc/sof/Makefile
-+++ b/sound/soc/sof/Makefile
-@@ -2,7 +2,9 @@
- 
- snd-sof-objs := core.o ops.o loader.o ipc.o pcm.o pm.o debug.o topology.o\
- 		control.o trace.o iomem-utils.o sof-audio.o stream-ipc.o
--snd-sof-$(CONFIG_SND_SOC_SOF_CLIENT) += sof-client.o
-+ifneq ($(CONFIG_SND_SOC_SOF_CLIENT),)
-+snd-sof-objs += sof-client.o
-+endif
- 
- snd-sof-$(CONFIG_SND_SOC_SOF_COMPRESS) += compress.o
- 
--- 
-2.35.1
-
+			printk_safe_exit_irqrestore() -> __this_cpu()
+		}
+	}
