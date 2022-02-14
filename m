@@ -2,96 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE306C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A00A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352545AbiBNLoo (ORCPT
+        id S1352542AbiBNLpF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:44:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45246 "EHLO
+        Mon, 14 Feb 2022 06:45:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349397AbiBNLoE (ORCPT
+        with ESMTP id S1352730AbiBNLoo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:44:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA176476;
-        Mon, 14 Feb 2022 03:36:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2306FB80E63;
-        Mon, 14 Feb 2022 11:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 346BFC340E9;
-        Mon, 14 Feb 2022 11:36:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644838609;
-        bh=TlEzTKDzz5YLQbPZsQhzfVGSadqt4B9CIscYLj+LK0g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kugVbjDXHW+279ffyykAIl+lm4lroL1fP+sYFb5z/GkuL+jLxnZCzK674q5/Wn6C2
-         xjUNWDD19u30ntzVU9q9KxkAOE/zR2OxqMnT0xcEPJwLjnF29KIH0D9ip0npLUDbGW
-         R3XlYJIIsEZ2ipmVcjVXYSMxP6KajNa5BHU9VzG0=
-Date:   Mon, 14 Feb 2022 12:36:47 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Sarah Sharp <sarah.a.sharp@linux.intel.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_ugoswami@quicinc.com, Jung Daehwan <dh10.jung@samsung.com>
-Subject: Re: [PATCH] xhci: reduce xhci_handshake timeout in xhci_reset
-Message-ID: <Ygo+zxEu0gVh4THE@kroah.com>
-References: <1644836663-29220-1-git-send-email-quic_pkondeti@quicinc.com>
+        Mon, 14 Feb 2022 06:44:44 -0500
+Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6E7CFD;
+        Mon, 14 Feb 2022 03:39:39 -0800 (PST)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id 727E836D; Mon, 14 Feb 2022 12:39:37 +0100 (CET)
+Date:   Mon, 14 Feb 2022 12:39:36 +0100
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Will Deacon <will@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 3/8] iommu: Extend iommu_at[de]tach_device() for
+ multi-device groups
+Message-ID: <Ygo/eCRFnraY01WA@8bytes.org>
+References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
+ <20220106022053.2406748-4-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1644836663-29220-1-git-send-email-quic_pkondeti@quicinc.com>
+In-Reply-To: <20220106022053.2406748-4-baolu.lu@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 04:34:23PM +0530, Pavankumar Kondeti wrote:
-> From: Daehwan Jung <dh10.jung@samsung.com>
-> 
-> xhci_reset() is called with interrupts disabled. Waiting 10 seconds for
-> controller reset and controller ready operations can be fatal to the
-> system when controller is timed out. Reduce the timeout to 1 second
-> and print a error message when the time out happens.
-> 
-> Fixes: 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
-> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
-> Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-> ---
->  drivers/usb/host/xhci.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-> index dc357ca..ec4df72 100644
-> --- a/drivers/usb/host/xhci.c
-> +++ b/drivers/usb/host/xhci.c
-> @@ -196,7 +196,7 @@ int xhci_reset(struct xhci_hcd *xhci)
->  		udelay(1000);
+On Thu, Jan 06, 2022 at 10:20:48AM +0800, Lu Baolu wrote:
+>  int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+>  {
+>  	struct iommu_group *group;
+> -	int ret;
+> +	int ret = 0;
+> +
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +		return -EINVAL;
 >  
->  	ret = xhci_handshake(&xhci->op_regs->command,
-> -			CMD_RESET, 0, 10 * 1000 * 1000);
-> +			CMD_RESET, 0, 1 * 1000 * 1000);
->  	if (ret)
->  		return ret;
+>  	group = iommu_group_get(dev);
+>  	if (!group)
+>  		return -ENODEV;
 >  
-> @@ -210,7 +210,7 @@ int xhci_reset(struct xhci_hcd *xhci)
->  	 * than status until the "Controller Not Ready" flag is cleared.
->  	 */
->  	ret = xhci_handshake(&xhci->op_regs->status,
-> -			STS_CNR, 0, 10 * 1000 * 1000);
-> +			STS_CNR, 0, 1 * 1000 * 1000);
+> -	/*
+> -	 * Lock the group to make sure the device-count doesn't
+> -	 * change while we are attaching
+> -	 */
+>  	mutex_lock(&group->mutex);
+> -	ret = -EINVAL;
+> -	if (iommu_group_device_count(group) != 1)
+> -		goto out_unlock;
+> +	if (group->owner_cnt) {
+> +		/*
+> +		 * Group has been used for kernel-api dma or claimed explicitly
+> +		 * for exclusive occupation. For backward compatibility, device
+> +		 * in a singleton group is allowed to ignore setting the
+> +		 * drv.no_kernel_api_dma field.
+> +		 */
+> +		if ((group->domain == group->default_domain &&
+> +		     iommu_group_device_count(group) != 1) ||
+> +		    group->owner) {
+> +			ret = -EBUSY;
+> +			goto unlock_out;
+> +		}
+> +	}
 >  
->  	xhci->usb2_rhub.bus_state.port_c_suspend = 0;
->  	xhci->usb2_rhub.bus_state.suspended_ports = 0;
-> -- 
-> 2.7.4
-> 
+> -	ret = __iommu_attach_group(domain, group);
+> +	if (!group->attach_cnt) {
+> +		ret = __iommu_attach_group(domain, group);
+> +		if (ret)
+> +			goto unlock_out;
+> +	} else {
+> +		if (group->domain != domain) {
+> +			ret = -EPERM;
+> +			goto unlock_out;
+> +		}
+> +	}
+>  
+> -out_unlock:
+> +	group->owner_cnt++;
+> +	group->attach_cnt++;
+> +
+> +unlock_out:
+>  	mutex_unlock(&group->mutex);
+>  	iommu_group_put(group);
 
-I do not see any "print an error message" change here.  Where is that
-addition?
+This extends iommu_attach_device() to behave as iommu_attach_group(),
+changing the domain for the whole group. Wouldn't it be better to scrap
+the iommu_attach_device() interface instead and only rely on
+iommu_attach_group()? This way it is clear that a call changes the whole
+group.
 
-confused,
+IIUC this work is heading towards allowing multiple domains in one group
+as long as the group is owned by one entity. That is a valid
+requirement, but the way to get there is in my eyes:
 
-greg k-h
+	1) Introduce a concept of a sub-group (or whatever we want to
+	   call it), which groups devices together which must be in the
+	   same domain because they use the same request ID and thus
+	   look all the same to the IOMMU.
+
+	2) Keep todays IOMMU groups to group devices together which can
+	   bypass the IOMMU when talking to each other, like
+	   multi-function devices and devices behind a no-ACS bridge.
+
+	3) Rework group->domain and group->default_domain, eventually
+	   moving them to sub-groups.
+
+This is an important distinction to make and also the reason the
+iommu_attach/detach_device() interface will always be misleading. Item
+1) in this list will also be beneficial to other parts of the iommu
+code, namely iommu-dma code which can have finer-grained DMA-API domains
+with sub-groups instead of groups.
+
+Regards,
+
+	Joerg
+
