@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62129C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E484C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346603AbiBNKTd (ORCPT
+        id S1346313AbiBNKTk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:19:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44742 "EHLO
+        Mon, 14 Feb 2022 05:19:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347981AbiBNKRC (ORCPT
+        with ESMTP id S1347999AbiBNKRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:17:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A318CDA5;
-        Mon, 14 Feb 2022 01:54:28 -0800 (PST)
+        Mon, 14 Feb 2022 05:17:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049E08CDAE;
+        Mon, 14 Feb 2022 01:54:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B999B80DC4;
-        Mon, 14 Feb 2022 09:53:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92146C340E9;
-        Mon, 14 Feb 2022 09:53:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0510661291;
+        Mon, 14 Feb 2022 09:54:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA8E1C340E9;
+        Mon, 14 Feb 2022 09:54:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832436;
-        bh=HgDS/vqrYnhvkyXDkH5OZTa9pHSx5ejvwP0/rYor4Qc=;
+        s=korg; t=1644832448;
+        bh=1ntWSla+5nh9tEUa/mvCSg1/ISzaLNJ5FQu7JQZLhyo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z8wpV+UAAUWC2PGSlOcKfVvjqtV07hvmkXIe8dALe92A5EDdgPFsQ782dgdwF+My4
-         8NNOILzHJ4dIoAPgwCYjyrcJg0ylOeEGwcW86OcucT49nJNMod0/liisdflH9se0bn
-         2h60VTyOO3LpRZ1EGmqrygak5bg8efE2uVNw8SLQ=
+        b=u+tb+laQkad2/gOcVAvh0vDJ4lqRhwXnuV2HQnJhYjm71KfzfrgnETqsaoOmMRYKp
+         jRIFa/fGXEAJkiQ9FUXtHnWzDY9+Otxn80T99c3oPAxOuC65Qsu4g4fSxjdFcpLasK
+         UUS+ooBEYczvW0g/jaY1IH5uIVxeloRlbkr1lwfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.16 014/203] NFS: Fix initialisation of nfs_client cl_flags field
-Date:   Mon, 14 Feb 2022 10:24:18 +0100
-Message-Id: <20220214092510.708862613@linuxfoundation.org>
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.16 018/203] NFSD: Fix offset type in I/O trace points
+Date:   Mon, 14 Feb 2022 10:24:22 +0100
+Message-Id: <20220214092510.839136424@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,41 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 468d126dab45718feeb728319be20bd869a5eaa7 upstream.
+commit 6a4d333d540041d244b2fca29b8417bfde20af81 upstream.
 
-For some long forgotten reason, the nfs_client cl_flags field is
-initialised in nfs_get_client() instead of being initialised at
-allocation time. This quirk was harmless until we moved the call to
-nfs_create_rpc_client().
+NFSv3 and NFSv4 use u64 offset values on the wire. Record these values
+verbatim without the implicit type case to loff_t.
 
-Fixes: dd99e9f98fbf ("NFSv4: Initialise connection to the server in nfs4_alloc_client()")
-Cc: stable@vger.kernel.org # 4.8.x
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/client.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfsd/trace.h |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
---- a/fs/nfs/client.c
-+++ b/fs/nfs/client.c
-@@ -177,6 +177,7 @@ struct nfs_client *nfs_alloc_client(cons
- 	INIT_LIST_HEAD(&clp->cl_superblocks);
- 	clp->cl_rpcclient = ERR_PTR(-EINVAL);
+--- a/fs/nfsd/trace.h
++++ b/fs/nfsd/trace.h
+@@ -320,14 +320,14 @@ TRACE_EVENT(nfsd_export_update,
+ DECLARE_EVENT_CLASS(nfsd_io_class,
+ 	TP_PROTO(struct svc_rqst *rqstp,
+ 		 struct svc_fh	*fhp,
+-		 loff_t		offset,
+-		 unsigned long	len),
++		 u64		offset,
++		 u32		len),
+ 	TP_ARGS(rqstp, fhp, offset, len),
+ 	TP_STRUCT__entry(
+ 		__field(u32, xid)
+ 		__field(u32, fh_hash)
+-		__field(loff_t, offset)
+-		__field(unsigned long, len)
++		__field(u64, offset)
++		__field(u32, len)
+ 	),
+ 	TP_fast_assign(
+ 		__entry->xid = be32_to_cpu(rqstp->rq_xid);
+@@ -335,7 +335,7 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
+ 		__entry->offset = offset;
+ 		__entry->len = len;
+ 	),
+-	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%lld len=%lu",
++	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%llu len=%u",
+ 		  __entry->xid, __entry->fh_hash,
+ 		  __entry->offset, __entry->len)
+ )
+@@ -344,8 +344,8 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
+ DEFINE_EVENT(nfsd_io_class, nfsd_##name,	\
+ 	TP_PROTO(struct svc_rqst *rqstp,	\
+ 		 struct svc_fh	*fhp,		\
+-		 loff_t		offset,		\
+-		 unsigned long	len),		\
++		 u64		offset,		\
++		 u32		len),		\
+ 	TP_ARGS(rqstp, fhp, offset, len))
  
-+	clp->cl_flags = cl_init->init_flags;
- 	clp->cl_proto = cl_init->proto;
- 	clp->cl_nconnect = cl_init->nconnect;
- 	clp->cl_max_connect = cl_init->max_connect ? cl_init->max_connect : 1;
-@@ -427,7 +428,6 @@ struct nfs_client *nfs_get_client(const
- 			list_add_tail(&new->cl_share_link,
- 					&nn->nfs_client_list);
- 			spin_unlock(&nn->nfs_client_lock);
--			new->cl_flags = cl_init->init_flags;
- 			return rpc_ops->init_client(new, cl_init);
- 		}
- 
+ DEFINE_NFSD_IO_EVENT(read_start);
 
 
