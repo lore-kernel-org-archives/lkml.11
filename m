@@ -2,123 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82959C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbiBNUKY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:10:24 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43156 "EHLO
+        id S229818AbiBNUNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:13:35 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229474AbiBNUKW (ORCPT
+        with ESMTP id S229685AbiBNUNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:10:22 -0500
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BEE15AF23;
-        Mon, 14 Feb 2022 12:10:06 -0800 (PST)
-Received: by mail-oo1-xc2e.google.com with SMTP id r15-20020a4ae5cf000000b002edba1d3349so20723597oov.3;
-        Mon, 14 Feb 2022 12:10:06 -0800 (PST)
+        Mon, 14 Feb 2022 15:13:33 -0500
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC92124C0B;
+        Mon, 14 Feb 2022 12:13:15 -0800 (PST)
+Received: by mail-lj1-f182.google.com with SMTP id w6so3730182ljj.3;
+        Mon, 14 Feb 2022 12:13:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hl4qsjV2/BjMWMt6d0Z5bX8ipVYCO7ywdol0OaxdhA0=;
-        b=IT1f6OznZuk6hhgifsQ27Cjw3NiaxwNL+YnYQG4ggfQgJ3mKSVh7q1ieT1KNP766sL
-         LsrymuBJHzd+MBjDTImy4QQ81fdfzndb8+Ya5+zRC/Ue3FZZnzErbzmwD8cVg8ppA7RN
-         rjJ0sGRvcehtw1ukBFiCy6B0XI+NC7GZ7GPdUyTRJzSGcXbno7CC/7n7OCqMq6TMne0a
-         jxgH2vDw/aViqp74PmqDqKZxwqQheluqp2UgqiDKVSra5KxXeq4XoMF+EFJthtKsy6Pi
-         tL3S9i6TdVmhd54+JED8GxA99Asgu5WbSHnt06pKvY7mjVIFkFSc9pu8LP6duGydT5SB
-         XTrA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wqUSZ1SFW0NVtpHilGjkTlF5P0e9ASySJ2SjHGW0nSw=;
+        b=YIAQ1zoMH5dWivilhSnkKSw0ctqFeyghOXilT5ojvzNBk2EnLfoQon/bgeqsc8Km3W
+         6jHN8k5Qeo7Fx15/trIUSKneHxu3rvCGNVAeQq65RusjDPnbBoETVPHcwtFvTIrA9oTL
+         W/1oHNmeG3qOagVgIrpPbpoOncfvapoLBbkUkYCbaV0AjaEoQ2WM90rJFgzIDkubPIXN
+         CY0rrLYo/vUGTjnHCd4JqzoYCfeLnKJHI13nGfqtGcEMuhWlSsv4iatlUtvk4K0c1cD0
+         BGzncRcWz/ZswZJ/H44Qfmhwy+7Vzhh9X9USEhblozjd6Z3Z9SQFikB/rS/bIqZX4gPU
+         N0qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hl4qsjV2/BjMWMt6d0Z5bX8ipVYCO7ywdol0OaxdhA0=;
-        b=sMxk8n8PhdH4qqELdihiNWrViRoejtlntz/SPUcBDEBLjJ4Xfy0h7JXWeUiquskcl+
-         ni9JKM6n7cgDu5SdrsWLSBw6kisrR4sJULPKgH2arz/NK/Hb7r/3rbspg9L66zXUhOUh
-         nhhKY/U9Euytj7dWcyRpX8pJlE5RNrWDUumzWrg3orR97IkCWDdsQnITHH7Y5pWb1yX6
-         7DFGYNNtlBBk8O+oHrPHXlwKNUIm7KzpLQD26rkkMfVAjL/ZuMx+kCWWRlSD1OkV5atx
-         CPhXKzcxn6Bzy6OzkYAgoMrr6QFhZ5ckG/CI9WA/rP8wIhg/EOtnrPRIsYynLPkpDuat
-         FBYg==
-X-Gm-Message-State: AOAM5301qCUtRaxxTzouCrsBWR4Xtkw/8UC8GdiSyAHIpRRlLaaCUX4b
-        x/eUTnJVdpmHXD9KP5jQkHNtfDCeHFMxD4OzPODxZUiB
-X-Google-Smtp-Source: ABdhPJz3af0Y9Mc8Z6rmvm36o5KBI6HjJruaU9QKo+S+kx9Fka41SIEiQiI9icVHJKzio5HgHzYrP/hKwpOIT3wovtE=
-X-Received: by 2002:a17:90a:178d:b0:1b9:75ce:34d8 with SMTP id
- q13-20020a17090a178d00b001b975ce34d8mr292785pja.228.1644868555400; Mon, 14
- Feb 2022 11:55:55 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wqUSZ1SFW0NVtpHilGjkTlF5P0e9ASySJ2SjHGW0nSw=;
+        b=hrI/up3TLm8gtieHD9m/w5c8W446xrswfsC56Fq/SOwf5Pu4hbyKiyO5E9162gr6r3
+         fZOfV0ocOA7nqXEAs+EW4m1mtPQsKygdqtIh95UiZASRW8F4jipotXgEEC48O26+wTD2
+         3cSzOI7bhlnD5ePWNAQe0XUGKTwKRTPhku+k54AR1ENOEk6RFrkAyAg+PYWu0vWiw8XA
+         yo6WBQujGAwl2BXwBe3g90U2ELLWU0PEY6yXkG2QI8bdeZWs+cfH07ls7IYdWZGU2ul0
+         5mkxklTERniW4mcwqgw7T4mGQRPD3YqoPOR4WlvmV6wGid5ERzmcWi4vrBxVJXITwG3d
+         3g5Q==
+X-Gm-Message-State: AOAM532HiT9PxONK77XODJm1n3oPlkTjHoZMLXeumXlaE/gxEu7JWmMg
+        Hzg9Rq63LSewEfaEqoTCh35kHCP0xMmzfA==
+X-Google-Smtp-Source: ABdhPJwYjRppPFpB8UmNIkcxwOS9n2u16iELvDzGqpJ83lEytB+M9F4emEDKG8XNnA9Ps3JOsWEvHg==
+X-Received: by 2002:a17:907:c15:: with SMTP id ga21mr263554ejc.80.1644866797427;
+        Mon, 14 Feb 2022 11:26:37 -0800 (PST)
+Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
+        by smtp.gmail.com with ESMTPSA id 17sm2683352eja.57.2022.02.14.11.26.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 11:26:36 -0800 (PST)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
+        hverkuil-cisco@xs4all.nl, jonas@kwiboo.se, nicolas@ndufresne.ca,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com, Alex Bee <knaerzche@gmail.com>,
+        jc@kynesim.co.uk
+Subject: Re: Re: [RFC] media: uapi: Move HEVC stateless controls out of staging
+Date:   Mon, 14 Feb 2022 20:26:34 +0100
+Message-ID: <2302767.NG923GbCHz@kista>
+In-Reply-To: <903ca214-9576-33aa-8412-7c71c9d8ac09@collabora.com>
+References: <20220201123439.353854-1-benjamin.gaignard@collabora.com> <8038233.T7Z3S40VBb@kista> <903ca214-9576-33aa-8412-7c71c9d8ac09@collabora.com>
 MIME-Version: 1.0
-References: <20220210224933.379149-1-yury.norov@gmail.com> <20220210224933.379149-46-yury.norov@gmail.com>
- <CAJZ5v0hWse+A6ipWiAgfgzSQA52=e45WZgrRX9hUTsekkQjBig@mail.gmail.com>
- <YgqurDJYAqHjpKmf@yury-laptop> <CAJZ5v0jMwi7Jbx=tEC6GHW7iSe9_9EM6B31e949y0wFEp3V6qA@mail.gmail.com>
-In-Reply-To: <CAJZ5v0jMwi7Jbx=tEC6GHW7iSe9_9EM6B31e949y0wFEp3V6qA@mail.gmail.com>
-From:   Yury Norov <yury.norov@gmail.com>
-Date:   Mon, 14 Feb 2022 11:55:43 -0800
-Message-ID: <CAAH8bW9yRaTa+b8RVkKAe-By-GG_2rEA-WwxsrTuExdQw4qCOQ@mail.gmail.com>
-Subject: Re: [PATCH 45/49] ACPI: replace nodes__weight with nodes_weight_ge
- for numa
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 11:45 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Mon, Feb 14, 2022 at 8:36 PM Yury Norov <yury.norov@gmail.com> wrote:
+Dne ponedeljek, 14. februar 2022 ob 18:25:01 CET je Benjamin Gaignard=20
+napisal(a):
+>=20
+> Le 13/02/2022 =C3=A0 12:33, Jernej =C5=A0krabec a =C3=A9crit :
+> > Hi Benjamin,
 > >
-> > On Mon, Feb 14, 2022 at 08:18:27PM +0100, Rafael J. Wysocki wrote:
-> > > On Fri, Feb 11, 2022 at 1:31 AM Yury Norov <yury.norov@gmail.com> wrote:
-> > > >
-> > > > acpi_map_pxm_to_node() calls nodes_weight() to compare the weight
-> > > > of nodemask with a given number. We can do it more efficiently with
-> > > > nodes_weight_eq() because conditional nodes_weight may stop
-> > > > traversing the nodemask earlier, as soon as condition is (or is not)
-> > > > met.
-> > > >
-> > > > Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> > > > ---
-> > > >  drivers/acpi/numa/srat.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/acpi/numa/srat.c b/drivers/acpi/numa/srat.c
-> > > > index 3b818ab186be..fe7a7996f553 100644
-> > > > --- a/drivers/acpi/numa/srat.c
-> > > > +++ b/drivers/acpi/numa/srat.c
-> > > > @@ -67,7 +67,7 @@ int acpi_map_pxm_to_node(int pxm)
-> > > >         node = pxm_to_node_map[pxm];
-> > > >
-> > > >         if (node == NUMA_NO_NODE) {
-> > > > -               if (nodes_weight(nodes_found_map) >= MAX_NUMNODES)
-> > > > +               if (nodes_weight_ge(nodes_found_map, MAX_NUMNODES))
-> > > >                         return NUMA_NO_NODE;
-> > > >                 node = first_unset_node(nodes_found_map);
-> > > >                 __acpi_map_pxm_to_node(pxm, node);
-> > > > --
-> > >
-> > > Applied as 5.18 material, thanks!
+> > CC: Alex, John
 > >
-> > It depends on patches 44 and 26. Are you applying them too?
->
-> No, I'm not (I've only received this one directly).
->
-> I'll drop this patch now and please feel free to add my ACK to it.
+> > Sorry for late response, but I've been very busy last week.
+> >
+> > First of all, thank you for doing this! It's about time that HEVC moves
+> > forward.
+> >
+> > Dne torek, 01. februar 2022 ob 13:34:39 CET je Benjamin Gaignard=20
+napisal(a):
+> >> The HEVC stateless 'uAPI' was staging and marked explicitly in the
+> >> V4L2 specification that it will change and is unstable.
+> >>
+> >> Note that these control IDs were never exported as a public API,
+> >> they were only defined in kernel-local headers (hevc-ctrls.h).
+> >>
+> >> While moving the controls out of staging they are renamed and
+> >> control IDs get new numbers.
+> >> Drivers (Hantro, Cedrus) and Documentation are updated accordaly.
+> > accordaly -> accordingly
+> >
+> >> Additional structures fields has been added for RKVDEC driver usage.
+> > You should do separate patch for that, preceding this one. One patch=20
+should
+> > only do one thing.
+>=20
+> I will do that in v2
+>=20
+> >
+> > I also suggest that you add additional patch for removing bit_size fiel=
+d in
+> > struct v4l2_ctrl_hevc_slice_params. Similar fields were already removed=
+=20
+from
+> > MPEG2 and H264 structures. Bit size can be deduced from output buffer s=
+ize=20
+and
+> > it doesn't hurt if bit size in Cedrus is set to bigger value than actua=
+l=20
+slice
+> > bit size.
+>=20
+> ok
+>=20
+> >
+> >> Hantro dedicated control is moving to hantro-media.h
+> >> Since hevc-ctrls.h content has been dispatched in others file, remove =
+it.
+> >>
+> >> fluster tests results on IMX8MQ is 77/147 for HEVC codec.
+> >>
+> >> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> > Note that Cedrus still needs additional information in order to decode=
+=20
+some
+> > HEVC videos. Missing info is num_entry_point_offsets and list of all
+> > entry_point_offset_minus1 (obviously, num_entry_point_offsets in size).
+> >
+> > I suggest that this is represented in a new control, which would use=20
+dynamic
+> > array feature, written by Hans. While Cedrus supports max. 256 entries,=
+ it=20
+can
+> > be much bigger in theory, but in reality, it's much smaller (like 4-8
+> > entries).
+>=20
+> I haven't seen yet any user for these fields but I will create a new cont=
+rol=20
+like
+> #define V4L2_CID_STATELESS_HEVC_ENTRY_POINT	(V4L2_CID_CODEC_STATELESS_BAS=
+E +=20
+407)
+>=20
+> struct v4l2_ctrl_hevc_entry_point_offset {
+> 	__u32	entry_point_offset_minus1;
+> };
 
-OK, thanks.
+Yeah, Cedrus is currently the only mainline driver that needs that in order=
+ to=20
+fully work. I think John used num_entry_point_offsets in his (out of tree) =
+RPi=20
+HEVC decoding driver too.
+
+Wouldn't be easier to just use u32 directly? This is just array of numbers,=
+ so=20
+nothing else will be added in that struct...
+
+Anyway, once you add this, I'll quickly update driver to take advantage of =
+it.
+
+>=20
+> and add it in the documentation:
+> ``V4L2_CID_STATELESS_HEVC_ENTRY_POINT (struct)``
+>      Specifies the i-th entry point offset in bytes and is represented by
+>      offset_len_minus1 plus 1 bits.
+>      This control is a dynamically sized array. The number of entry point
+>      offsets is reported by the ``elems`` field.
+>      This bitstream parameter is defined according to :ref:`hevc`.
+>      They are described in section 7.4.7.1 "General slice segment header
+>      semantics" of the specification.
+>=20
+> >
+> > Last but not least, data_bit_offset should be better defined. Currently=
+ it
+> > points right after last header bit, just like Cedrus needs it. However,=
+=20
+there
+> > is padding after that, at least 1 bit and 8 bits at most, so slice data=
+=20
+always
+> > starts from byte aligned address. It probably make sense to rework that=
+=20
+field
+> > to be byte offset, not bit, just like in VA-API. Note that RPi HEVC dri=
+ver=20
+also
+> > uses byte aligned address directly. Cedrus would need some kind of=20
+workaround
+> > and only one that works is this one:
+> > https://github.com/bootlin/libva-v4l2-request/blob/master/src/h265.c#L1=
+91-L209
+>=20
+> If Cedrus driver is happy with this definition I will keep it like that.
+> When providing offset in bit is more accurate and any driver can align th=
+e=20
+value
+> if needed, the reverse (byte -> bit) isn't possible.
+
+If I'm not mistaken, HEVC standard actually requires that slice data starts=
+ at=20
+byte aligned address, so nothing would be lost for correctness of uAPI.
+
+I already had this discussion with John and IIRC conclusion was to have byt=
+e=20
+aligned value here. John, can you please confirm if my interpretation is=20
+correct?
+
+Best regards,
+Jernej
+
+>=20
+> Regards,
+> Benjamin
+>=20
+> >
+> > Best regards,
+> > Jernej
+> >
+> >
+>=20
+
+
