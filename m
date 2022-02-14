@@ -2,88 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D241BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231372AbiBNVc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:32:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49606 "EHLO
+        id S231417AbiBNVei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:34:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231420AbiBNVaq (ORCPT
+        with ESMTP id S231362AbiBNVdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:30:46 -0500
-Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B8214235D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:30:36 -0800 (PST)
-Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
-        by finn.localdomain with esmtp (Exim 4.93)
-        (envelope-from <tharvey@gateworks.com>)
-        id 1nJivO-00AkGx-Ej; Mon, 14 Feb 2022 21:30:22 +0000
-From:   Tim Harvey <tharvey@gateworks.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Sergey Organov <sorganov@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>
-Subject: [PATCH] serial: imx: leave IRTS disabled if using modem-control CTS
-Date:   Mon, 14 Feb 2022 13:30:20 -0800
-Message-Id: <20220214213020.685-1-tharvey@gateworks.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 14 Feb 2022 16:33:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8477D156944;
+        Mon, 14 Feb 2022 13:31:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3EC261149;
+        Mon, 14 Feb 2022 19:26:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C2AC340E9;
+        Mon, 14 Feb 2022 19:26:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644866774;
+        bh=8OIKkvvfaqbfiXx6HxLgwmXQKPZd32nQMI4wVpB9sD4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MxGGXIGkFK3CQXZOaO3MxVKKNcdlFIdqEiLYYwvcsmotbSYi4+niO7T6w0y/Qsua6
+         +qOy+uDFncgkHa9ru6UhJLZUb7DpjOT6WqjYqSCzl28dLbMtpxc40Ve56UjKeyfWvk
+         Q2xjEOXs/LQElo5sypnmq/CtYx2Dcgq1AafFBKCZ3wvXiDIXIfCOm/VLVB6n5RiD5y
+         +8FP8qW3jE2S9wcTdiEjopUteIXFlit6r/Vd6aSO90xDPfnBHGZTSnXwdqISulFSgU
+         1KZeseVtOR4GFs76lBfN5B2Q8seMbHAt/asKmz0HBdOHcjwJUpcPF5XFnWyEzY3KhI
+         Ts+6ZrUefW+0w==
+Date:   Mon, 14 Feb 2022 19:26:12 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Jens Axboe <axboe@kernel.dk>, Theodore Ts'o <tytso@mit.edu>,
+        Christoph Hellwig <hch@lst.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Satya Tangirala <satyat@google.com>
+Subject: Re: linux-next: manual merge of the block tree with the fscrypt tree
+Message-ID: <Ygqs1PrwXnV1eu8/@gmail.com>
+References: <20220214121139.2e5a4be5@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214121139.2e5a4be5@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If using modem-control gpios for CTS we must leave IRTS disabled
-as otherwise the hardware will only transmit based on the internal RTS
-pin routed to it.
+On Mon, Feb 14, 2022 at 12:11:39PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the block tree got a conflict in:
+> 
+>   fs/iomap/direct-io.c
+> 
+> between commit:
+> 
+>   489734ef94f4 ("iomap: support direct I/O with fscrypt using blk-crypto")
+> 
+> from the fscrypt tree and commit:
+> 
+>   07888c665b40 ("block: pass a block_device and opf to bio_alloc")
+> 
+> from the block tree.
+> 
+> I fixed it up (I think - see below) and can carry the fix as necessary.
+> This is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
 
-This allows hardware flow control to be used with cts-gpios.
+Looks fine to me, thanks.
 
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
----
- drivers/tty/serial/imx.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index df8a0c8b8b29..bf2bb987a51f 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -201,6 +201,7 @@ struct imx_port {
- 	unsigned int		old_status;
- 	unsigned int		have_rtscts:1;
- 	unsigned int		have_rtsgpio:1;
-+	unsigned int		have_ctsgpio:1;
- 	unsigned int		dte_mode:1;
- 	unsigned int		inverted_tx:1;
- 	unsigned int		inverted_rx:1;
-@@ -1674,8 +1675,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 		if (ucr2 & UCR2_CTS)
- 			ucr2 |= UCR2_CTSC;
- 	}
--
--	if (termios->c_cflag & CRTSCTS)
-+	if (!sport->have_ctsgpio && termios->c_cflag & CRTSCTS)
- 		ucr2 &= ~UCR2_IRTS;
- 	if (termios->c_cflag & CSTOPB)
- 		ucr2 |= UCR2_STPB;
-@@ -2227,6 +2227,9 @@ static int imx_uart_probe(struct platform_device *pdev)
- 	if (of_get_property(np, "fsl,dte-mode", NULL))
- 		sport->dte_mode = 1;
- 
-+	if (of_get_property(np, "cts-gpios", NULL))
-+		sport->have_ctsgpio = 1;
-+
- 	if (of_get_property(np, "rts-gpios", NULL))
- 		sport->have_rtsgpio = 1;
- 
--- 
-2.17.1
-
+- Eric
