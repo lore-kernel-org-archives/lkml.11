@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84012C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C46C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346644AbiBNKTu (ORCPT
+        id S1346645AbiBNKTy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:19:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44650 "EHLO
+        Mon, 14 Feb 2022 05:19:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348114AbiBNKRI (ORCPT
+        with ESMTP id S1348185AbiBNKRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:17:08 -0500
+        Mon, 14 Feb 2022 05:17:11 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC038E18A;
-        Mon, 14 Feb 2022 01:54:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9714A8E19C;
+        Mon, 14 Feb 2022 01:54:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F99661236;
-        Mon, 14 Feb 2022 09:54:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35E54C340E9;
-        Mon, 14 Feb 2022 09:54:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 680686137C;
+        Mon, 14 Feb 2022 09:54:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C37C340E9;
+        Mon, 14 Feb 2022 09:54:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832470;
-        bh=TTBJeXbq5yAFOFz/yrsHu+gLD33xprQvk2fi8ibSHGQ=;
+        s=korg; t=1644832473;
+        bh=YM/MiN94tclE5DakqWiee+fJMcKbPpmVpnWIdmn1l24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I2WNbL1TYO2g6Qk/qExeF3GAfUSZL1IkluO56mTaMPduy3mhXanmvHwVnc3Awj7zG
-         T69ypL43YGVRsVFQk8zwtjT6fBRn+6r3Nf8InxlA6aZ1P8Ly7FMp/nsxsFBOlKn27R
-         ThPMkvkvDOJMew0UrVRPQNV7A8YMDLKDUMrzy9MM=
+        b=iwCbOm8qPN7HFBpBM9HptoX3oL2N4LtubpNqCRvdbkgMMw9MnvxBAWHObeN6mVc9n
+         Wv0PvrrLkm+ZsUtlmABJ04PdblsJ4Tz3zNX55XuXmxBMFJkNoBEQ0R2p+SXNJ+9LL4
+         nlKFz8M/A7yYsljGLuim8m3aTFTGxHIS1OnsHPvs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
         Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 024/203] NFSv4 remove zero number of fs_locations entries error check
-Date:   Mon, 14 Feb 2022 10:24:28 +0100
-Message-Id: <20220214092511.032576775@linuxfoundation.org>
+Subject: [PATCH 5.16 025/203] NFSv4 store server support for fs_location attribute
+Date:   Mon, 14 Feb 2022 10:24:29 +0100
+Message-Id: <20220214092511.064640598@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,46 +52,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 90e12a3191040bd3854d3e236c35921e4e92a044 ]
+[ Upstream commit 8a59bb93b7e3cca389af44781a429ac12ac49be6 ]
 
-Remove the check for the zero length fs_locations reply in the
-xdr decoding, and instead check for that in the migration code.
+Define and store if server returns it supports fs_locations attribute
+as a capability.
 
 Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
 Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4state.c | 3 +++
- fs/nfs/nfs4xdr.c   | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ fs/nfs/nfs4proc.c         | 2 ++
+ include/linux/nfs_fs_sb.h | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
-index f63dfa01001c9..f3265575c28d2 100644
---- a/fs/nfs/nfs4state.c
-+++ b/fs/nfs/nfs4state.c
-@@ -2106,6 +2106,9 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
- 	}
- 
- 	result = -NFS4ERR_NXIO;
-+	if (!locations->nlocations)
-+		goto out;
-+
- 	if (!(locations->fattr.valid & NFS_ATTR_FATTR_V4_LOCATIONS)) {
- 		dprintk("<-- %s: No fs_locations data, migration skipped\n",
- 			__func__);
-diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
-index 801119b7a5964..71a00e48bd2dd 100644
---- a/fs/nfs/nfs4xdr.c
-+++ b/fs/nfs/nfs4xdr.c
-@@ -3696,8 +3696,6 @@ static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, st
- 	if (unlikely(!p))
- 		goto out_eio;
- 	n = be32_to_cpup(p);
--	if (n <= 0)
--		goto out_eio;
- 	for (res->nlocations = 0; res->nlocations < n; res->nlocations++) {
- 		u32 m;
- 		struct nfs4_fs_location *loc;
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index 322ff45ad15ca..f924d3029d13b 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -3874,6 +3874,8 @@ static int _nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *f
+ 		if (res.attr_bitmask[2] & FATTR4_WORD2_SECURITY_LABEL)
+ 			server->caps |= NFS_CAP_SECURITY_LABEL;
+ #endif
++		if (res.attr_bitmask[0] & FATTR4_WORD0_FS_LOCATIONS)
++			server->caps |= NFS_CAP_FS_LOCATIONS;
+ 		if (!(res.attr_bitmask[0] & FATTR4_WORD0_FILEID))
+ 			server->fattr_valid &= ~NFS_ATTR_FATTR_FILEID;
+ 		if (!(res.attr_bitmask[1] & FATTR4_WORD1_MODE))
+diff --git a/include/linux/nfs_fs_sb.h b/include/linux/nfs_fs_sb.h
+index 2a9acbfe00f0f..9a6e70ccde56e 100644
+--- a/include/linux/nfs_fs_sb.h
++++ b/include/linux/nfs_fs_sb.h
+@@ -287,5 +287,5 @@ struct nfs_server {
+ #define NFS_CAP_COPY_NOTIFY	(1U << 27)
+ #define NFS_CAP_XATTR		(1U << 28)
+ #define NFS_CAP_READ_PLUS	(1U << 29)
+-
++#define NFS_CAP_FS_LOCATIONS	(1U << 30)
+ #endif
 -- 
 2.34.1
 
