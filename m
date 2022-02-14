@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78704C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C67EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348373AbiBNKhw (ORCPT
+        id S1348580AbiBNKiC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:37:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43770 "EHLO
+        Mon, 14 Feb 2022 05:38:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348339AbiBNKes (ORCPT
+        with ESMTP id S1348343AbiBNKes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:34:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C551115F;
-        Mon, 14 Feb 2022 02:01:42 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADF6116A;
+        Mon, 14 Feb 2022 02:01:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFADEB80DFE;
-        Mon, 14 Feb 2022 10:01:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6140C340F0;
-        Mon, 14 Feb 2022 10:01:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCC3860909;
+        Mon, 14 Feb 2022 10:01:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C09C340EF;
+        Mon, 14 Feb 2022 10:01:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832899;
-        bh=73+Jfh2LwBaG5LGIUyw6QX/yEA7vXUv691IUNXbaKZQ=;
+        s=korg; t=1644832903;
+        bh=hrcrTy0cRXNwgEcLdpsqXuhhWEcEWyiPMkeNf8MiMww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V5haO/ByeFs6Jl1biw1UKZrLiFjvb4twcYZ59dxp1KxFP9tRPMvXYMkWg5/ypZAx0
-         JNg1bRyhlVe5MICJU+NFnPHIlfwlJkONJqK1U7LpRgaa6R1jl2jcp2aMLh+jkjPduo
-         wr6SXy20pNX7Zq2HH2CYBdPXqF+xFXHNxwtS5soA=
+        b=eC1jJAzUd+pVOOspYzsyvv+L16D4x3rI3dfQ5nl+nAW/oak3Jok0WegHAGzE7EWZY
+         UQZINjzRcISXxlnUaksu72Cihur/2+9BfbMrrZnxIGXeI7eh++wLSeb3kp3VrCRxRn
+         +uSttIFg1vylxmEk/Cz6+VQFjZBHrWpQ89+v0yNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Colin Foster <colin.foster@in-advantage.com>,
+        stable@vger.kernel.org, Rafael Richter <rafael.richter@gin.de>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 160/203] net: mscc: ocelot: fix mutex lock error during ethtool stats read
-Date:   Mon, 14 Feb 2022 10:26:44 +0100
-Message-Id: <20220214092515.675063913@linuxfoundation.org>
+Subject: [PATCH 5.16 161/203] net: dsa: mv88e6xxx: fix use-after-free in mv88e6xxx_mdios_unregister
+Date:   Mon, 14 Feb 2022 10:26:45 +0100
+Message-Id: <20220214092515.706740856@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,83 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Foster <colin.foster@in-advantage.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 7fbf6795d127a3b1bb39b0e42579904cf6db1624 ]
+[ Upstream commit 51a04ebf21122d5c76a716ecd9bfc33ea44b2b39 ]
 
-An ongoing workqueue populates the stats buffer. At the same time, a user
-might query the statistics. While writing to the buffer is mutex-locked,
-reading from the buffer wasn't. This could lead to buggy reads by ethtool.
+Since struct mv88e6xxx_mdio_bus *mdio_bus is the bus->priv of something
+allocated with mdiobus_alloc_size(), this means that mdiobus_free(bus)
+will free the memory backing the mdio_bus as well. Therefore, the
+mdio_bus->list element is freed memory, but we continue to iterate
+through the list of MDIO buses using that list element.
 
-This patch fixes the former blamed commit, but the bug was introduced in
-the latter.
+To fix this, use the proper list iterator that handles element deletion
+by keeping a copy of the list element next pointer.
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-Fixes: 1e1caa9735f90 ("ocelot: Clean up stats update deferred work")
-Fixes: a556c76adc052 ("net: mscc: Add initial Ocelot switch support")
-Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/all/20220210150451.416845-2-colin.foster@in-advantage.com/
+Fixes: f53a2ce893b2 ("net: dsa: mv88e6xxx: don't use devres for mdiobus")
+Reported-by: Rafael Richter <rafael.richter@gin.de>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220210174017.3271099-1-vladimir.oltean@nxp.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index ac5849436d021..02edd383dea22 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1609,12 +1609,11 @@ void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data)
- }
- EXPORT_SYMBOL(ocelot_get_strings);
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index fcd648d0f6372..70cea1b95298a 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3465,10 +3465,10 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
+ static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
  
-+/* Caller must hold &ocelot->stats_lock */
- static void ocelot_update_stats(struct ocelot *ocelot)
  {
- 	int i, j;
+-	struct mv88e6xxx_mdio_bus *mdio_bus;
++	struct mv88e6xxx_mdio_bus *mdio_bus, *p;
+ 	struct mii_bus *bus;
  
--	mutex_lock(&ocelot->stats_lock);
--
- 	for (i = 0; i < ocelot->num_phys_ports; i++) {
- 		/* Configure the port to read the stats from */
- 		ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(i), SYS_STAT_CFG);
-@@ -1633,8 +1632,6 @@ static void ocelot_update_stats(struct ocelot *ocelot)
- 					      ~(u64)U32_MAX) + val;
- 		}
- 	}
--
--	mutex_unlock(&ocelot->stats_lock);
- }
+-	list_for_each_entry(mdio_bus, &chip->mdios, list) {
++	list_for_each_entry_safe(mdio_bus, p, &chip->mdios, list) {
+ 		bus = mdio_bus->bus;
  
- static void ocelot_check_stats_work(struct work_struct *work)
-@@ -1643,7 +1640,9 @@ static void ocelot_check_stats_work(struct work_struct *work)
- 	struct ocelot *ocelot = container_of(del_work, struct ocelot,
- 					     stats_work);
- 
-+	mutex_lock(&ocelot->stats_lock);
- 	ocelot_update_stats(ocelot);
-+	mutex_unlock(&ocelot->stats_lock);
- 
- 	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
- 			   OCELOT_STATS_CHECK_DELAY);
-@@ -1653,12 +1652,16 @@ void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
- {
- 	int i;
- 
-+	mutex_lock(&ocelot->stats_lock);
-+
- 	/* check and update now */
- 	ocelot_update_stats(ocelot);
- 
- 	/* Copy all counters */
- 	for (i = 0; i < ocelot->num_stats; i++)
- 		*data++ = ocelot->stats[port * ocelot->num_stats + i];
-+
-+	mutex_unlock(&ocelot->stats_lock);
- }
- EXPORT_SYMBOL(ocelot_get_ethtool_stats);
- 
+ 		if (!mdio_bus->external)
 -- 
 2.34.1
 
