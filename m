@@ -2,85 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD26C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0BFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352211AbiBNLrL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:47:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40904 "EHLO
+        id S233000AbiBNLjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:39:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352298AbiBNLjq (ORCPT
+        with ESMTP id S1351964AbiBNLj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:39:46 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0757A182
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:31:23 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-33-HZLmr3MgPfiUko5afxgPeg-1; Mon, 14 Feb 2022 11:31:20 +0000
-X-MC-Unique: HZLmr3MgPfiUko5afxgPeg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Mon, 14 Feb 2022 11:31:20 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Mon, 14 Feb 2022 11:31:20 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Anshuman Khandual' <anshuman.khandual@arm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>
-Subject: RE: [PATCH v6] mm: Uninline copy_overflow()
-Thread-Topic: [PATCH v6] mm: Uninline copy_overflow()
-Thread-Index: AQHYIYjMC3FpzIXiNkq6GDkdEvYuRayS6GVg
-Date:   Mon, 14 Feb 2022 11:31:20 +0000
-Message-ID: <1157d90c7335458cab4ef471c63a1d52@AcuMS.aculab.com>
-References: <e1723b9cfa924bcefcd41f69d0025b38e4c9364e.1644819985.git.christophe.leroy@csgroup.eu>
- <50eed483-9f0a-7aee-1bfd-e89106a80424@arm.com>
-In-Reply-To: <50eed483-9f0a-7aee-1bfd-e89106a80424@arm.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 14 Feb 2022 06:39:29 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43814BC86;
+        Mon, 14 Feb 2022 03:29:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644838175; x=1676374175;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xqXAjqj9UB3uzzHP4hrVah9w4aiJB22TXUi2vtc3JR4=;
+  b=bndRfRJgZAuW1GRN5IIqbeieYL5ioaa0Mlnc61PqzcrmWgbg0y+Z/oQ0
+   9aEbzDtvTCj226l1RvwVKLT50NX8q3qcqs0bRh/EiqrDKVZ6dPmsBRasX
+   lYj4jRi7cnsgneRboNhna52fmV+32J/f55bSw2GYAHymiadehgHF4nr8i
+   iIr+OxuURf1U/TAR4FSD2o+PIJ5IjAWz5mDd4E6+y4nrWWOCIhOBLh3KK
+   HGJFu4NZCAWNa2cIOoLAJW8tN95Qefq1g0veqaVzZEFfUStS3jAo7cqCH
+   BIqzy88aW6427ktsuUjVviKwtGRcnJeft+IrnNtAnUsyUQptoRXzpQq9L
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="250276718"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="250276718"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:29:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="587166931"
+Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2022 03:29:32 -0800
+From:   Tianfei zhang <tianfei.zhang@intel.com>
+To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
+        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     corbet@lwn.net, Tianfei zhang <tianfei.zhang@intel.com>
+Subject: [PATCH v1 0/7] Add Intel OFS support for DFL driver
+Date:   Mon, 14 Feb 2022 06:26:12 -0500
+Message-Id: <20220214112619.219761-1-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogQW5zaHVtYW4gS2hhbmR1YWwNCj4gU2VudDogMTQgRmVicnVhcnkgMjAyMiAwOTo1NA0K
-Li4uDQo+ID4gV2l0aCAtV2lubGluZSwgR0NDIHRlbGxzOg0KPiA+DQo+ID4gCS9pbmNsdWRlL2xp
-bnV4L3RocmVhZF9pbmZvLmg6MjEyOjIwOiB3YXJuaW5nOiBpbmxpbmluZyBmYWlsZWQgaW4gY2Fs
-bCB0byAnY29weV9vdmVyZmxvdyc6IGNhbGwNCj4gaXMgdW5saWtlbHkgYW5kIGNvZGUgc2l6ZSB3
-b3VsZCBncm93IFstV2lubGluZV0NCj4gPg0KPiA+IGNvcHlfb3ZlcmZsb3coKSBpcyBhIG5vbiBj
-b25kaXRpb25hbCB3YXJuaW5nIGNhbGxlZCBieQ0KPiA+IGNoZWNrX2NvcHlfc2l6ZSgpIG9uIGFu
-IGVycm9yIHBhdGguDQo+ID4NCj4gPiBjaGVja19jb3B5X3NpemUoKSBoYXZlIHRvIHJlbWFpbiBp
-bmxpbmVkIGluIG9yZGVyIHRvIGJlbmVmaXQNCj4gPiBmcm9tIGNvbnN0YW50IGZvbGRpbmcsIGJ1
-dCBjb3B5X292ZXJmbG93KCkgaXMgbm90IHdvcnRoIGlubGluaW5nLg0KPiA+DQo+ID4gVW5pbmxp
-bmUgdGhlIHdhcm5pbmcgd2hlbiBDT05GSUdfQlVHIGlzIHNlbGVjdGVkLg0KPiA+DQo+ID4gV2hl
-biBDT05GSUdfQlVHIGlzIG5vdCBzZWxlY3RlZCwgV0FSTigpIGRvZXMgbm90aGluZyBzbyBza2lw
-IGl0Lg0KPiA+DQo+ID4gVGhpcyByZWR1Y2VzIHRoZSBzaXplIG9mIHZtbGludXggYnkgYWxtb3N0
-IDRrYnl0ZXMuDQo+IA0KDQo+ID4gK3ZvaWQgX19jb3B5X292ZXJmbG93KGludCBzaXplLCB1bnNp
-Z25lZCBsb25nIGNvdW50KTsNCj4gPiArDQo+ID4gIHN0YXRpYyBpbmxpbmUgdm9pZCBjb3B5X292
-ZXJmbG93KGludCBzaXplLCB1bnNpZ25lZCBsb25nIGNvdW50KQ0KPiA+ICB7DQo+ID4gLQlXQVJO
-KDEsICJCdWZmZXIgb3ZlcmZsb3cgZGV0ZWN0ZWQgKCVkIDwgJWx1KSFcbiIsIHNpemUsIGNvdW50
-KTsNCj4gPiArCWlmIChJU19FTkFCTEVEKENPTkZJR19CVUcpKQ0KPiA+ICsJCV9fY29weV9vdmVy
-ZmxvdyhzaXplLCBjb3VudCk7DQo+ID4gIH0NCg0KPiBKdXN0IHdvbmRlcmluZywgaXMgdGhpcyB0
-aGUgb25seSBzdWNoIHNjZW5hcmlvIHdoaWNoIHJlc3VsdHMgaW4NCj4gYW4gYXZvaWRhYmxlIGJs
-b2F0ZWQgdm1saW51eCBpbWFnZSA/DQoNClRoZSBtb3JlIGludGVyZXN0aW5nIHF1ZXN0aW9uIGlz
-IHdoZXRoZXIgdGhlIGNhbGwgdG8gX19jb3B5X292ZXJmbG93KCkNCmlzIGFjdHVhbGx5IHNpZ25p
-ZmljYW50bHkgc21hbGxlciB0aGFuIHRoZSBvbmUgdG8gV0FSTigpPw0KQW5kIGlmIHNvIHdoeS4N
-Cg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2Fk
-LCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5v
-OiAxMzk3Mzg2IChXYWxlcykNCg==
+This patchset adding IOFS (Intel Open FPGA stack) support for
+DFL driver. IOFS is Intel's version of a common core set of
+RTL to allow customers to easily interface to logic and IP
+on the FPGA. IOFS leverage the DFL for the implementation of
+the FPGA RTL design.
+
+Patch 1, adds architecture description about IOFS support for DFL
+in documentation.
+Patch 2, checks feature type during the user interrupt enumeration.
+On IOFS, the Feature ID of the PMCI device and Port User Interrupts
+are identical.
+Patch 3, allows a port may not be connected any local BAR space.
+Patch 4 and 5, fix VF creation when ports have no local
+BAR space and no port connected to VF.
+Patch 6, handles dfl's starting with AFU and allows for VFs
+to be created.
+Patch 7, adds PCIe Device ID for OFS. 
+
+Matthew Gerlach (5):
+  fpga: dfl: Allow for ports with no local bar space.
+  fpga: dfl: fix VF creation when ports have no local BAR space
+  drivers: fpga: dfl: handle empty port list
+  fpga: dfl: Handle dfl's starting with AFU
+  fpga: dfl: pci: Add generic OFS PCI PID
+
+Tianfei Zhang (2):
+  Documentation: fpga: dfl: add description of IOFS
+  fpga: dfl: check feature type before parse irq info
+
+ Documentation/fpga/dfl.rst | 99 +++++++++++++++++++++++++++++++++++++-
+ drivers/fpga/dfl-pci.c     | 19 +++++++-
+ drivers/fpga/dfl.c         | 47 +++++++++++++-----
+ 3 files changed, 151 insertions(+), 14 deletions(-)
+
+
+base-commit: f1baf68e1383f6ed93eb9cff2866d46562607a43
+-- 
+2.17.1
 
