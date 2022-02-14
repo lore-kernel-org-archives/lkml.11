@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C863EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345116AbiBNKKD (ORCPT
+        id S1345344AbiBNKKI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:10:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36246 "EHLO
+        Mon, 14 Feb 2022 05:10:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345851AbiBNKHF (ORCPT
+        with ESMTP id S1346000AbiBNKHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:07:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F6E74DE4;
-        Mon, 14 Feb 2022 01:49:41 -0800 (PST)
+        Mon, 14 Feb 2022 05:07:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B596C1C8;
+        Mon, 14 Feb 2022 01:49:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E94161238;
-        Mon, 14 Feb 2022 09:49:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 649E0C340E9;
-        Mon, 14 Feb 2022 09:49:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2EDB61291;
+        Mon, 14 Feb 2022 09:49:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF135C340E9;
+        Mon, 14 Feb 2022 09:49:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832181;
-        bh=5IU/2Rkm7fO5A9wkV5Una3P/EvDC8prg70sABLS3KJY=;
+        s=korg; t=1644832196;
+        bh=hVT9vcrsMu3iXmmfL1aKgU0xyFqeb/Z1AIQblrY07wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1gywfdbHB++L5WvpkFR1fkbBkma0rcQAm2/PVY7pikZoe8664rykNs1QV62bMWDnQ
-         6dKV7FlR3JGxF7oxjckE07alMiutglxrrEnZB+fJNQy/R3zs+Us2aFLO6oXF1ssmIg
-         uLNTUifMGHLcvbNTbIRZpVqPi9xvz0MGX2ZhglDA=
+        b=MoI3/8dVhCJlQibrqCjia0dGTvGbolSOulEmf7YLm+bL8ldubz7Om63BuvqfTQFmj
+         eGC8IXSmslF5BMVQ1zY7FLotkdAnFRfGoNG4bt2Fnqmoe1CpOICQ4BPXpOFunsInsA
+         zUAn/OUbK5M0taQwxdnWmpG1T+Pyy/js5DQAS2JM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Marek Vasut <marex@denx.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
+        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 105/172] drm/panel: simple: Assign data from panel_dpi_probe() correctly
-Date:   Mon, 14 Feb 2022 10:26:03 +0100
-Message-Id: <20220214092510.026118532@linuxfoundation.org>
+Subject: [PATCH 5.15 110/172] bonding: pair enable_port with slave_arr_updates
+Date:   Mon, 14 Feb 2022 10:26:08 +0100
+Message-Id: <20220214092510.224523668@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -55,45 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+From: Mahesh Bandewar <maheshb@google.com>
 
-[ Upstream commit 6df4432a5eca101b5fd80fbee41d309f3d67928d ]
+[ Upstream commit 23de0d7b6f0e3f9a6283a882594c479949da1120 ]
 
-In the function panel_simple_probe() the pointer panel->desc is
-assigned to the passed pointer desc. If function panel_dpi_probe()
-is called panel->desc will be updated, but further on only desc
-will be evaluated. So update the desc pointer to be able to use
-the data from the function panel_dpi_probe().
+When 803.2ad mode enables a participating port, it should update
+the slave-array. I have observed that the member links are participating
+and are part of the active aggregator while the traffic is egressing via
+only one member link (in a case where two links are participating). Via
+kprobes I discovered that slave-arr has only one link added while
+the other participating link wasn't part of the slave-arr.
 
-Fixes: 4a1d0dbc8332 ("drm/panel: simple: add panel-dpi support")
+I couldn't see what caused that situation but the simple code-walk
+through provided me hints that the enable_port wasn't always associated
+with the slave-array update.
 
-Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Cc: Marek Vasut <marex@denx.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-To: dri-devel@lists.freedesktop.org
-Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Marek Vasut <marex@denx.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220201110153.3479-1-cniedermaier@dh-electronics.com
+Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
+Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Link: https://lore.kernel.org/r/20220207222901.1795287-1-maheshb@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-simple.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/bonding/bond_3ad.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index 9b6c4e6c38a1b..b7b654f2dfd90 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -721,6 +721,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc,
- 		err = panel_dpi_probe(dev, panel);
- 		if (err)
- 			goto free_ddc;
-+		desc = panel->desc;
- 	} else {
- 		if (!of_get_display_timing(dev->of_node, "panel-timing", &dt))
- 			panel_simple_parse_panel_timing_node(dev, panel, &dt);
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 6006c2e8fa2bc..9fd1d6cba3cda 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -1021,8 +1021,8 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
+ 				if (port->aggregator &&
+ 				    port->aggregator->is_active &&
+ 				    !__port_is_enabled(port)) {
+-
+ 					__enable_port(port);
++					*update_slave_arr = true;
+ 				}
+ 			}
+ 			break;
+@@ -1779,6 +1779,7 @@ static void ad_agg_selection_logic(struct aggregator *agg,
+ 			     port = port->next_port_in_aggregator) {
+ 				__enable_port(port);
+ 			}
++			*update_slave_arr = true;
+ 		}
+ 	}
+ 
 -- 
 2.34.1
 
