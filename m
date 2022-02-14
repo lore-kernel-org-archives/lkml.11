@@ -2,119 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D01CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232370AbiBNMXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:23:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53240 "EHLO
+        id S232781AbiBNMYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 07:24:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231752AbiBNMXK (ORCPT
+        with ESMTP id S230341AbiBNMYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:23:10 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10023488BC
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:23:00 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id d187so28884556pfa.10
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:23:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/fKGi+aZQ8kJT7QB416GU61uDV70ufNvidZa81KvKic=;
-        b=vFo0Obd+cFUSjtmLDB9peVEXAhk0DLQBiiq4f52M15K/JE4k2KaeXTU4+2erbAs+M3
-         hQ+7O84f/waEaWBZc1z0oIFctBC3wtpjLUu/5Bz0N8cG6eWmFGx27Rb5v6oSDU5JC4lJ
-         qIryjPbQ90X4+yosO/XNkxGTh/NYC9DycZnWOl8PwsaIXG6gzF9l0QhE3FEMPtQ2DTa+
-         hQg1YpY+V6N5N56ivvxl2AUyBvLZ1fd2VzzcrMTYW+b070MtabsWPLxLE5jFTjzhHPUk
-         2QvKMqmIUXYknu1ZQzCRTWin6t6t+zSnZEOhrcjYEqKn/VObB3MJmPLjPrhV9hrJz5JB
-         SuMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/fKGi+aZQ8kJT7QB416GU61uDV70ufNvidZa81KvKic=;
-        b=E/8SuzWLkKQMJLFXdHiVx4mM0SplFJaCn9YiR0CC8J/eRb2y8siy70gzS+aG1OlmtN
-         E4xYKYwJlQexw1JiUdCxhnZQhGcdLNDHntQvQph0oORhD9j2mJ7m57+IqZzzuMcOeQJo
-         V+vICkU8hERQ2uSX4Q5/9UDmfY4yeNU0R/Z+N+DE7mSeN/TemX29Y6kM5dSvNRsjfdz7
-         wMcPTwIMKG9y0+QWdKp70e8UzxPaHIxHnw4hDFD9fqQ2dx1rM/LS7mSGo5aTydmTVHTK
-         JT4C1l8aqRlt3SPUy32J7XQ2NUxAOLroFLunywoFkCnWn4XWBWT496GnS/bx5UQR4qVZ
-         SqQA==
-X-Gm-Message-State: AOAM532x18C2DpL3VD4/FTj0BFewlsdaARibSfrNCxhy/dyRZ/+vrR0E
-        dZVSAY3fsOIrNXntqvkOSnoXN1UmyXLeEjgL5Dwggw==
-X-Google-Smtp-Source: ABdhPJxfIQjis1IV1rr41YtGuFAtEtzkv9eQMAqKqqEbZ7g0+Ak8gVF6z76sM07Thkhv3lDma6t3q6PxxQlOdEQ9t7k=
-X-Received: by 2002:a62:3605:: with SMTP id d5mr14076862pfa.68.1644841379524;
- Mon, 14 Feb 2022 04:22:59 -0800 (PST)
+        Mon, 14 Feb 2022 07:24:14 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9B5496A8;
+        Mon, 14 Feb 2022 04:24:07 -0800 (PST)
+Date:   Mon, 14 Feb 2022 13:24:03 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644841445;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=h86e3ywIoIWlbZPAA6Jb40sJGWIa4y4aW4PEf5FISKc=;
+        b=L1biZruAax2Ck/UnNbngqfbl/5zvAaOWQ/1WHg3B+3qCesTXtHg2+D2xyqghWD4zEywB7m
+        JKL7v3hrMsFC+TkFd3FynvQ11b9hl6fuW0eyJb0nBHQV3amC2BMqKkIyY+VIpa9NCKCGHZ
+        SE+JzHvDU+VCypv8RdBkot9lEqtMGk70CNLq6bkKkmWPtCOrRWz11i4uXIrZzOPyhKG3gI
+        BvqZKBe70Nlb9IQRptJEJ6ugy61rDjCXtQmN4iplwU+0cnbhi7yv0eAqYkydBQIXbc+aC9
+        4BSUMulHjVBT7zIasOROHnLauN6iGxGFdceIoAe5HkCqXOKs5+cHqdVm29XU1Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644841445;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=h86e3ywIoIWlbZPAA6Jb40sJGWIa4y4aW4PEf5FISKc=;
+        b=A5Yq4ovpwjdT2GKFmXxZ4tFEOHvQubrYC6ppNh99lBT7t8Yf8oJba7VokpclVC1I9ANn3m
+        gEldm3YBuQO/euCA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: Re: [PATCH 7/8] kernel/fork: Only cache the VMAP stack in
+ finish_task_switch().
+Message-ID: <YgpJ41q35k+KCsk4@linutronix.de>
+References: <20220125152652.1963111-1-bigeasy@linutronix.de>
+ <20220125152652.1963111-8-bigeasy@linutronix.de>
+ <00f9c7a6-2d1d-f871-e9bc-00e2217f40f9@kernel.org>
+ <YgpGnFlTS+2Ugfw4@linutronix.de>
 MIME-Version: 1.0
-References: <20220214090020.89984-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220214090020.89984-1-yang.lee@linux.alibaba.com>
-From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
-Date:   Mon, 14 Feb 2022 13:22:48 +0100
-Message-ID: <CAOtMz3O5ygQQDU_WNNdJGW4+6Vi02zDebhWLic9Sm7UGSpFyVQ@mail.gmail.com>
-Subject: Re: [PATCH -next v2] i2c: designware: remove unneeded semicolon
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YgpGnFlTS+2Ugfw4@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pon., 14 lut 2022 o 10:00 Yang Li <yang.lee@linux.alibaba.com> napisa=C5=82=
-(a):
->
-> Eliminate the following coccicheck warning:
+On 2022-02-14 13:10:06 [+0100], To Andy Lutomirski wrote:
+> 
+> I think I could use the first few bytes of the stack as a RCU-head. Let
+> me try that.
 
-nit: warnings
+task::stack_vm_area and ::stack. Now I remember why I went for that bit.
+But I do have (hopefully) a better idea now.
 
-> ./drivers/i2c/busses/i2c-designware-amdpsp.c:172:2-3: Unneeded semicolon
-> ./drivers/i2c/busses/i2c-designware-amdpsp.c:245:2-3: Unneeded semicolon
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> > --Andy
 
-Beside a nit above:
-Reviewed-by: Jan Dabros <jsd@semihalf.com>
-
-Best Regards,
-Jan
-
-> ---
->
-> --Changes in v2:
->   According to Jan's suggestion
->   Fix the same problem in check_i2c_req_sts() function.
->
->  drivers/i2c/busses/i2c-designware-amdpsp.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/i2c/busses/i2c-designware-amdpsp.c b/drivers/i2c/bus=
-ses/i2c-designware-amdpsp.c
-> index 752e0024db03..9d37becbd846 100644
-> --- a/drivers/i2c/busses/i2c-designware-amdpsp.c
-> +++ b/drivers/i2c/busses/i2c-designware-amdpsp.c
-> @@ -172,7 +172,7 @@ static int check_i2c_req_sts(struct psp_i2c_req *req)
->         case PSP_I2C_REQ_STS_INV_PARAM:
->         default:
->                 return -EIO;
-> -       };
-> +       }
->  }
->
->  static int psp_send_check_i2c_req(struct psp_i2c_req *req)
-> @@ -245,7 +245,7 @@ static int psp_acquire_i2c_bus(void)
->         if (psp_i2c_access_count) {
->                 psp_i2c_access_count++;
->                 goto cleanup;
-> -       };
-> +       }
->
->         status =3D psp_send_i2c_req(PSP_I2C_REQ_ACQUIRE);
->         if (status) {
-> --
-> 2.20.1.7.g153144c
->
+Sebastian
