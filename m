@@ -2,56 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD485C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C60C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351704AbiBNLxF (ORCPT
+        id S1351857AbiBNLxj convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:53:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54862 "EHLO
+        Mon, 14 Feb 2022 06:53:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235729AbiBNLxD (ORCPT
+        with ESMTP id S242465AbiBNLxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:53:03 -0500
-Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15478C35
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:52:56 -0800 (PST)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-        id BE7412FB; Mon, 14 Feb 2022 12:52:54 +0100 (CET)
-Date:   Mon, 14 Feb 2022 12:52:53 +0100
-From:   Joerg Roedel <joro@8bytes.org>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        daniel.m.jordan@oracle.com, Jon.Grimm@amd.com, wei.huang2@amd.com,
-        terry.bowman@amd.com
-Subject: Re: [PATCH] iommu/amd: Fix I/O page table memory leak
-Message-ID: <YgpClRRdOR/1DXJE@8bytes.org>
-References: <20220210154745.11524-1-suravee.suthikulpanit@amd.com>
+        Mon, 14 Feb 2022 06:53:35 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26ED8C35;
+        Mon, 14 Feb 2022 03:53:28 -0800 (PST)
+Date:   Mon, 14 Feb 2022 11:52:58 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v2 1/2] dts: x1000: Fix missing TCU clock in tcu device
+ node
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <ACMA7R.XSUTVF0NI87S3@crapouillou.net>
+In-Reply-To: <20220212150927.39513-1-aidanmacdonald.0x0@gmail.com>
+References: <20220212150927.39513-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210154745.11524-1-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 09:47:45AM -0600, Suravee Suthikulpanit wrote:
-> The current logic updates the I/O page table mode for the domain
-> before calling the logic to free memory used for the page table.
-> This results in IOMMU page table memory leak, and can be observed
-> when launching VM w/ pass-through devices.
-> 
-> Fix by freeing the memory used for page table before updating the mode.
-> 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Reported-by: Daniel Jordan <daniel.m.jordan@oracle.com>
-> Tested-by: Daniel Jordan <daniel.m.jordan@oracle.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Fixes: e42ba0633064 ("iommu/amd: Restructure code for freeing page table")
-> Link: https://lore.kernel.org/all/20220118194720.urjgi73b7c3tq2o6@oracle.com/
-> ---
->  drivers/iommu/amd/io_pgtable.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+Hi,
 
-Applied, thanks.
+Le sam., févr. 12 2022 at 15:09:27 +0000, Aidan MacDonald 
+<aidanmacdonald.0x0@gmail.com> a écrit :
+> This should've been present all along, but was omitted due to
+> a mistake in the TCU driver.
+> 
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+
+Cheers,
+-Paul
+
+> ---
+> v1 -> v2: 
+> https://lore.kernel.org/linux-mips/20220209230145.18943-1-aidanmacdonald.0x0@gmail.com/
+> 
+>  * Split DTS changes to separate patch.
+> 
+>  arch/mips/boot/dts/ingenic/x1000.dtsi | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi 
+> b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> index 8bd27edef216..c69df8eb158e 100644
+> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
+> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> @@ -111,8 +111,9 @@ tcu: timer@10002000 {
+> 
+>  		clocks = <&cgu X1000_CLK_RTCLK>,
+>  			 <&cgu X1000_CLK_EXCLK>,
+> -			 <&cgu X1000_CLK_PCLK>;
+> -		clock-names = "rtc", "ext", "pclk";
+> +			 <&cgu X1000_CLK_PCLK>,
+> +			 <&cgu X1000_CLK_TCU>;
+> +		clock-names = "rtc", "ext", "pclk", "tcu";
+> 
+>  		interrupt-controller;
+>  		#interrupt-cells = <1>;
+> --
+> 2.34.1
+> 
+
 
