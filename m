@@ -2,203 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbiBNVtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:49:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49428 "EHLO
+        id S231454AbiBNVte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:49:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbiBNVtM (ORCPT
+        with ESMTP id S230516AbiBNVtc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:49:12 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E368D194170;
-        Mon, 14 Feb 2022 13:48:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644875339; x=1676411339;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SgCkQ2NGl6kNtBv0PJ01OQfL9X/ihdcLA+SoGtX1dco=;
-  b=mGfVtYBpHKL1Or1xkO8Dqjumhw3zaH6UWJctosUH2uVoDYSbK2RWX9j2
-   g0wQVosg8FoDwEToFl7y6J0wYEpbHOMcserf+EZodGM9dZhREOZWqXVag
-   sfVB/ZXwM/+OzRyS4p+tL/Mb7Ydp64aT74Nhu+qG8DGoJNeSdFKavoyQu
-   LQYOPhmQiPPnLCe2A/GtlLJ0VPyO/j8KXP+6OoD3fje1+kh8MntDsEYHG
-   RsyJ2dQrjtQRg4QoU2kkBIaBmkIyyveLGTywHAdhu55Y37/603R+6Sq5F
-   A+pTeCQQNl0F5Kh9akmYAd+5tBY9QYiwfYyz2u1rEz9UwNqck/UoafY+a
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250137064"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="250137064"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 13:33:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="587370369"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2022 13:33:06 -0800
-Received: from debox1-desk4.intel.com (unknown [10.255.228.161])
-        by linux.intel.com (Postfix) with ESMTP id 87CAF580D3A;
-        Mon, 14 Feb 2022 13:33:06 -0800 (PST)
-From:   "David E. Box" <david.e.box@linux.intel.com>
-To:     hdegoede@redhat.com, david.e.box@linux.intel.com,
-        mgross@linux.intel.com, rjw@rjwysocki.net,
-        srinivas.pandruvada@intel.com
-Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH 1/3] platform/x86/intel: pmt: Remove bin_attribute mmap support to runtime pm
-Date:   Mon, 14 Feb 2022 13:32:56 -0800
-Message-Id: <20220214213258.1929462-2-david.e.box@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220214213258.1929462-1-david.e.box@linux.intel.com>
-References: <20220214213258.1929462-1-david.e.box@linux.intel.com>
+        Mon, 14 Feb 2022 16:49:32 -0500
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B9619414D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:49:23 -0800 (PST)
+Received: by mail-qk1-x732.google.com with SMTP id b35so15624429qkp.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:49:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HduNWSXwHF2qMp2tKTU9szIHjs3c1KQrYw+jf8BZZPM=;
+        b=215dMlHoklWFE+75szJr/Y820Jgsu6uYnJPnIt2MoQCGOJqW3qsQAALF4vXlV9bVTf
+         oaY8xA66Iez3WRkyPgpYJ3sJx9jd6pDLsWo5K6Iofc1NmBq5OSY4k07jmhOfFpT9SM6p
+         /9JaJyDct5CGz4+UyIutmyUdQFUDTMH4jFG/WLfxmBUQRnsdSk8hw5YKSyeGHnHIkEUH
+         3Rzw8AHUCnbs7Wi+ORDMhd1492oL8mFwaYTPkjLGBF1qRd+vM4lIINt6AGmoCT8JQVxw
+         MR3RWrJXhYYwa/QgmZ2012SBgF6iPaTdSiOwNh5JC9a+J4bDdec2LxCpQ7Pitsj9HTYN
+         qvqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HduNWSXwHF2qMp2tKTU9szIHjs3c1KQrYw+jf8BZZPM=;
+        b=1q6aYdtOTeu+wOQkPjvLS2i+lt6YtNuOEAsnKX8YGFV2H7RYbb/uI5y2pHgzrwTgYe
+         n77Kdm4fqSWFJ+R+4RX+/WFrYRVoWSJAOnBFeNQjCN9kCKrL+TzYEEizY1qrr01fOS7O
+         yacQGo57ddi/Oaqop8RDBw8jdU1KeHGgMuZ9z6vrEUAHHUZ9Sx2CTEkoKJgDVIV+dbZN
+         3eD9XMnPhWwfRZbim19HxvBXLkBTbua4+V0kLdAGDaqja3X3/hm/IZ1ThcLBZxt3TM/e
+         priIyTsTJ1fcmbhxEIj998gktk+JtqyviFHKEjwdIIJIK9qJVEvF1LNnL+BEPQclmCOe
+         eLAA==
+X-Gm-Message-State: AOAM531NgeqD9yBYOY+lZw7u3fyvilBrbi1HbiBUp4PwoI1hjTkzp9Wu
+        YNUTNHsDFOCJTfkpl+J1r97urA==
+X-Google-Smtp-Source: ABdhPJyiRZjNZ7NyCD66Td1gEAAhNJr5fwSQTasB43SkAUHLAcSMqVyxeErZVQxtBTjDHLDXHSpppw==
+X-Received: by 2002:a05:620a:128c:: with SMTP id w12mr560649qki.464.1644875362346;
+        Mon, 14 Feb 2022 13:49:22 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id 5sm18474167qtp.81.2022.02.14.13.49.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 13:49:22 -0800 (PST)
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, CGEL <cgel.zte@gmail.com>,
+        Minchan Kim <minchan@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Yu Zhao <yuzhao@google.com>
+Subject: [PATCH] mm: page_io: fix psi memory pressure error on cold swapins
+Date:   Mon, 14 Feb 2022 16:49:21 -0500
+Message-Id: <20220214214921.419687-1-hannes@cmpxchg.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PMT devices need to support runtime D3. However, binary attributes don't
-provide access to open/release methods that could be used to control
-runtime pm. Therefore, remove the mmap operation. The data may still be
-accessed with read() calls.
+Once upon a time, all swapins counted toward memory pressure[1]. Then
+Joonsoo introduced workingset detection for anonymous pages and we
+gained the ability to distinguish hot from cold swapins[2][3]. But we
+failed to update swap_readpage() accordingly, and now we account
+partial memory pressure in the swapin path of cold memory.
 
-Signed-off-by: David E. Box <david.e.box@linux.intel.com>
+Not for all situations - which adds more inconsistency: paths using
+the conventional submit_bio() and lock_page() route will not see much
+pressure - unless storage itself is heavily congested and the bio
+submissions stall. ZRAM and ZSWAP do most of the work directly from
+swap_readpage() and will see all swapins reflected as pressure.
+
+Restore consistency by making all swapin stall accounting conditional
+on the page actually being part of the workingset.
+
+[1] commit 937790699be9 ("mm/page_io.c: annotate refault stalls from swap_readpage")
+[2] commit aae466b0052e ("mm/swap: implement workingset detection for anonymous LRU")
+[3] commit cad8320b4b39 ("mm/swap: don't SetPageWorkingset unconditionally during swapin")
+
+Reported-by: CGEL <cgel.zte@gmail.com>
+Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Minchan Kim <minchan@google.com>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Cc: Yu Zhao <yuzhao@google.com>
 ---
-V0 comments:
+ mm/page_io.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-I expect that this is an undesirable solution because of the ABI change.
-I don't know if anyone is using this ABI outside of our Intel tools which
-are willing to make this change. I'd rather find a solution to keep the
-mmap support. I initially wrote a patch to simply add the missing open and
-release callbacks to binary attributes but this was thought to be too heavy
-handed in our internal review. I'm open to suggestions. Thanks.
-
-David
-
- .../ABI/testing/sysfs-class-intel_pmt         | 24 +++++++-------
- drivers/platform/x86/intel/pmt/class.c        | 31 -------------------
- 2 files changed, 12 insertions(+), 43 deletions(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-class-intel_pmt b/Documentation/ABI/testing/sysfs-class-intel_pmt
-index ed4c886a21b1..4182f67dcef8 100644
---- a/Documentation/ABI/testing/sysfs-class-intel_pmt
-+++ b/Documentation/ABI/testing/sysfs-class-intel_pmt
-@@ -15,10 +15,10 @@ Description:
- 		The telem<x> directory contains files describing an instance of
- 		a PMT telemetry device that exposes hardware telemetry. Each
- 		telem<x> directory has an associated telem file. This file
--		may be opened and mapped or read to access the telemetry space
--		of the device. The register layout of the telemetry space is
--		determined from an XML file that matches the PCI device id and
--		GUID for the device.
-+		may be opened and read to access the telemetry space of the
-+		device. The register layout of the telemetry space is determined
-+		from an XML file that matches the PCI device id and GUID for the
-+		device.
+diff --git a/mm/page_io.c b/mm/page_io.c
+index 61c792f916fa..f6296ee25014 100644
+--- a/mm/page_io.c
++++ b/mm/page_io.c
+@@ -359,6 +359,7 @@ int swap_readpage(struct page *page, bool synchronous)
+ 	struct bio *bio;
+ 	int ret = 0;
+ 	struct swap_info_struct *sis = page_swap_info(page);
++	bool workingset = PageWorkingset(page);
+ 	unsigned long pflags;
  
- What:		/sys/class/intel_pmt/telem<x>/telem
- Date:		October 2020
-@@ -26,7 +26,7 @@ KernelVersion:	5.10
- Contact:	David Box <david.e.box@linux.intel.com>
- Description:
- 		(RO) The telemetry data for this telemetry device. This file
--		may be mapped or read to obtain the data.
-+		may be read to obtain the data.
+ 	VM_BUG_ON_PAGE(!PageSwapCache(page) && !synchronous, page);
+@@ -370,7 +371,8 @@ int swap_readpage(struct page *page, bool synchronous)
+ 	 * or the submitting cgroup IO-throttled, submission can be a
+ 	 * significant part of overall IO time.
+ 	 */
+-	psi_memstall_enter(&pflags);
++	if (workingset)
++		psi_memstall_enter(&pflags);
+ 	delayacct_swapin_start();
  
- What:		/sys/class/intel_pmt/telem<x>/guid
- Date:		October 2020
-@@ -43,7 +43,7 @@ KernelVersion:	5.10
- Contact:	David Box <david.e.box@linux.intel.com>
- Description:
- 		(RO) The size of telemetry region in bytes that corresponds to
--		the mapping size for the telem file.
-+		the size of the telem file.
+ 	if (frontswap_load(page) == 0) {
+@@ -431,7 +433,8 @@ int swap_readpage(struct page *page, bool synchronous)
+ 	bio_put(bio);
  
- What:		/sys/class/intel_pmt/telem<x>/offset
- Date:		October 2020
-@@ -51,7 +51,7 @@ KernelVersion:	5.10
- Contact:	David Box <david.e.box@linux.intel.com>
- Description:
- 		(RO) The offset of telemetry region in bytes that corresponds to
--		the mapping for the telem file.
-+		the size of the telem file.
- 
- What:		/sys/class/intel_pmt/crashlog<x>
- Date:		October 2020
-@@ -61,10 +61,10 @@ Description:
- 		The crashlog<x> directory contains files for configuring an
- 		instance of a PMT crashlog device that can perform crash data
- 		recording. Each crashlog<x> device has an associated crashlog
--		file. This file can be opened and mapped or read to access the
--		resulting crashlog buffer. The register layout for the buffer
--		can be determined from an XML file of specified GUID for the
--		parent device.
-+		file. This file can be opened and read to access the resulting
-+		crashlog buffer. The register layout for the buffer can be
-+		determined from an XML file of specified GUID for the parent
-+		device.
- 
- What:		/sys/class/intel_pmt/crashlog<x>/crashlog
- Date:		October 2020
-@@ -72,7 +72,7 @@ KernelVersion:	5.10
- Contact:	David Box <david.e.box@linux.intel.com>
- Description:
- 		(RO) The crashlog buffer for this crashlog device. This file
--		may be mapped or read to obtain the data.
-+		may be read to obtain the data.
- 
- What:		/sys/class/intel_pmt/crashlog<x>/guid
- Date:		October 2020
-diff --git a/drivers/platform/x86/intel/pmt/class.c b/drivers/platform/x86/intel/pmt/class.c
-index 1c9e3f3ea41c..85fc159961c1 100644
---- a/drivers/platform/x86/intel/pmt/class.c
-+++ b/drivers/platform/x86/intel/pmt/class.c
-@@ -68,36 +68,6 @@ intel_pmt_read(struct file *filp, struct kobject *kobj,
- 	return count;
+ out:
+-	psi_memstall_leave(&pflags);
++	if (workingset)
++		psi_memstall_leave(&pflags);
+ 	delayacct_swapin_end();
+ 	return ret;
  }
- 
--static int
--intel_pmt_mmap(struct file *filp, struct kobject *kobj,
--		struct bin_attribute *attr, struct vm_area_struct *vma)
--{
--	struct intel_pmt_entry *entry = container_of(attr,
--						     struct intel_pmt_entry,
--						     pmt_bin_attr);
--	unsigned long vsize = vma->vm_end - vma->vm_start;
--	struct device *dev = kobj_to_dev(kobj);
--	unsigned long phys = entry->base_addr;
--	unsigned long pfn = PFN_DOWN(phys);
--	unsigned long psize;
--
--	if (vma->vm_flags & (VM_WRITE | VM_MAYWRITE))
--		return -EROFS;
--
--	psize = (PFN_UP(entry->base_addr + entry->size) - pfn) * PAGE_SIZE;
--	if (vsize > psize) {
--		dev_err(dev, "Requested mmap size is too large\n");
--		return -EINVAL;
--	}
--
--	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
--	if (io_remap_pfn_range(vma, vma->vm_start, pfn,
--		vsize, vma->vm_page_prot))
--		return -EAGAIN;
--
--	return 0;
--}
--
- static ssize_t
- guid_show(struct device *dev, struct device_attribute *attr, char *buf)
- {
-@@ -263,7 +233,6 @@ static int intel_pmt_dev_register(struct intel_pmt_entry *entry,
- 	sysfs_bin_attr_init(&entry->pmt_bin_attr);
- 	entry->pmt_bin_attr.attr.name = ns->name;
- 	entry->pmt_bin_attr.attr.mode = 0440;
--	entry->pmt_bin_attr.mmap = intel_pmt_mmap;
- 	entry->pmt_bin_attr.read = intel_pmt_read;
- 	entry->pmt_bin_attr.size = entry->size;
- 
 -- 
-2.25.1
+2.34.1
 
