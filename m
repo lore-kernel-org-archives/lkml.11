@@ -2,103 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3580AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:54:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349422AbiBNKyf (ORCPT
+        id S1349455AbiBNKyl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:54:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43810 "EHLO
+        Mon, 14 Feb 2022 05:54:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349736AbiBNKyB (ORCPT
+        with ESMTP id S1349339AbiBNKyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:54:01 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113A289CE1;
-        Mon, 14 Feb 2022 02:19:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644833967; x=1676369967;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Ip8ECjYU3CIeQjPLRao5dfe4kBXCOpu/TG5z8yOdjjM=;
-  b=K9wu0nFQPdXfl5eNnWftfBmk3WcxpDrRGAVPNd1c8JXkCFZjE6fO2hIJ
-   jWirZV7ZM5uc1Dh9zEkG90wjfUDbxXoal6RqjjRxDUBrPRPnanNa7WpPi
-   mzJM0ewKzVOXTP+ZS+m+ppONIgLyVgLM8ghwqhSQKhxPVuJW9Qu7LJkNs
-   8TUQLAUwWDMmzHN+ZWusmFL3rGC7LWfTt17d5+MG/RdhL8qg+H33vhZN7
-   s+AUUXHFYxaFmR7xPJFJrUZmauXI6L848wlyrqDg8kuhuhRdvUwOc54le
-   OFxpO67rQfdHLHVzOta/6XIkGt4rYgrsi36S0lTmtIP402X1/DvoLwQFE
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="230697751"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="230697751"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 02:19:26 -0800
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="501691178"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 02:19:23 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJYR8-004PH0-Vm;
-        Mon, 14 Feb 2022 12:18:26 +0200
-Date:   Mon, 14 Feb 2022 12:18:26 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Gary Guo <gary@garyguo.net>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v4 12/20] vsprintf: add new `%pA` format specifier
-Message-ID: <YgosclY9ebD3t020@smile.fi.intel.com>
-References: <20220212130410.6901-1-ojeda@kernel.org>
- <20220212130410.6901-13-ojeda@kernel.org>
+        Mon, 14 Feb 2022 05:54:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3A789CEB;
+        Mon, 14 Feb 2022 02:19:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC3ECB80DFE;
+        Mon, 14 Feb 2022 10:19:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C731C340F4;
+        Mon, 14 Feb 2022 10:19:26 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="KPM49c59"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644833963;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uXyOZa2DqzfFgsJ7rFwjQ8rxXT43Pi8c1Wt/XancfYs=;
+        b=KPM49c599dfFLb0/tVyRbdwBPfufgAjgcs9YCxTY6pJ4Ua0ixL/I4y01cB0wB3WfVhU/oj
+        em8TdVNok5zbKoLwNCTwhlAB3tx7OpBXFKvrnl+/3YdKNllGVsfznHNRMiT1oe5MU7Gth1
+        ZXVFNaVpRprBSRB1Thge6sQsOZym4ag=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c0d3dcc9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 14 Feb 2022 10:19:22 +0000 (UTC)
+Received: by mail-yb1-f180.google.com with SMTP id l125so11414997ybl.4;
+        Mon, 14 Feb 2022 02:19:22 -0800 (PST)
+X-Gm-Message-State: AOAM530YS/qgD6i4/lONCkiiqESAxzt3KvZJDquiSlWiF+lVknsGCK8k
+        J674sDjFn60H6/saugGk3ZFQerFnAHxb5rFrMf8=
+X-Google-Smtp-Source: ABdhPJw3gFWatSo1Y6jV4gB75V0xWxyOFOmjPvNd5QIFQn+mMGqoFG7fKgRXKN3l3QNdXQ8DqfrausXl2kVpFlIhrHM=
+X-Received: by 2002:a25:dc14:: with SMTP id y20mr8337357ybe.115.1644833961454;
+ Mon, 14 Feb 2022 02:19:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220212130410.6901-13-ojeda@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Received: by 2002:a05:7110:88a:b0:15e:9450:8ed4 with HTTP; Mon, 14 Feb 2022
+ 02:19:20 -0800 (PST)
+In-Reply-To: <CAHmME9okFEVqTM9c9fQY02UiiNBkpaZMLSYMhzHs8FqtpV1F1g@mail.gmail.com>
+References: <YgZ6IEbiDgz5X1ON@linutronix.de> <20220211162515.554867-1-Jason@zx2c4.com>
+ <YgaSYlVEBOxfJbSD@linutronix.de> <CAHmME9rC_q4LGq2JaAAeGbtRA2cibTe9bnvhMLng+QnzAy2DVg@mail.gmail.com>
+ <YgaV0UZO1KfmtLLh@linutronix.de> <CAHmME9qR02XCX48D+AoT1rOFyNo_GXubyHPzoX01BYkJDX7p1A@mail.gmail.com>
+ <YgaZuShru2HQiFXg@linutronix.de> <CAHmME9oZMFN80M98Mt6JysPSMTJoXfKTjHuxG6BQSsC=+0z5fg@mail.gmail.com>
+ <YgacTN2zHeBhWw5d@linutronix.de> <CAHmME9okFEVqTM9c9fQY02UiiNBkpaZMLSYMhzHs8FqtpV1F1g@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 14 Feb 2022 11:19:20 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pDcL6vaoHGqiK+eGeS10f+kW3xRft=ZJFk-Dnxh8+eMg@mail.gmail.com>
+Message-ID: <CAHmME9pDcL6vaoHGqiK+eGeS10f+kW3xRft=ZJFk-Dnxh8+eMg@mail.gmail.com>
+Subject: Re: [PATCH v6] random: defer fast pool mixing to worker
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 12, 2022 at 02:03:38PM +0100, Miguel Ojeda wrote:
+On 2/13/22, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> Hey Sebastian,
+>
+> On Fri, Feb 11, 2022 at 6:26 PM Sebastian Andrzej Siewior
+> <bigeasy@linutronix.de> wrote:
+>> Sure. I can do the CPU-HP notifier later one once we are done with
+>> everything. I acked the v7, don't see a road block.
+>
+> I've been running this over the weekend and performance is generally okay.
+>
+> # perf top --symbols $(objdump -t
+> /usr/src/linux/drivers/char/random.o|fgrep 'F .text'|awk '{print
+> $6}'|tr '\n' ,) -F max -g
+>
+> One thing I noticed though was that add_interrupt_randomness spends
+> most of its time on:
+>
+>     lock   xadd   %eax,0x38(%rbp)
+>
+> So, as expected, those atomics really need to go. Indeed we might be
+> best off with the CPU hotplug notifier for setting the count back to
+> zero.
+>
+> Do you want to prepare a patch for this? Or should I take a stab at it?
 
-> From: Gary Guo <gary@garyguo.net>
-
-Not sure I understand this...
-
-> This patch adds a format specifier `%pA` to `vsprintf` which formats
-> a pointer as `core::fmt::Arguments`. Doing so allows us to directly
-> format to the internal buffer of `printf`, so we do not have to use
-> a temporary buffer on the stack to pre-assemble the message on
-> the Rust side.
-> 
-> This specifier is intended only to be used from Rust and not for C, so
-> `checkpatch.pl` is intentionally unchanged to catch any misuse.
-> 
-> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
-> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
-> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
-> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-
-> Signed-off-by: Gary Guo <gary@garyguo.net>
-
-...together with this in the current SoB chain.
-
-> Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
-> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
-
-I'm wondering if you considered to use %pV.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+FYI, I was overwhelmed with a compulsion to try doing it myself and
+posted that here
+https://lore.kernel.org/lkml/20220213215343.11652-1-Jason@zx2c4.com/
+which is now pending your review.
