@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEF3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239754AbiBNJiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:38:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52506 "EHLO
+        id S243858AbiBNJiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:38:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244398AbiBNJfz (ORCPT
+        with ESMTP id S245003AbiBNJg3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:35:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2FC2AE7E;
-        Mon, 14 Feb 2022 01:33:42 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388EB6D19A;
+        Mon, 14 Feb 2022 01:34:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6759661113;
-        Mon, 14 Feb 2022 09:33:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41FC2C340E9;
-        Mon, 14 Feb 2022 09:33:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A76C60DFD;
+        Mon, 14 Feb 2022 09:34:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73C20C340E9;
+        Mon, 14 Feb 2022 09:34:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831184;
-        bh=Pj7iVm9wumsnEISLPdad7YpFuQ1JhNBS58i1zhLW9zs=;
+        s=korg; t=1644831258;
+        bh=+G1g/Z93f1zz309HBo79pRVjKS1a7Jevtkt1wE2TZEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YhkSTYYbS+NBRzrXpRllyKdwWjoTkA3mr0Q4lK2Yc6O6zGwWGvYWIfv4MUzCiQvWQ
-         L9q5OzLHs1sZMGeEHVtRLQWVtfkE80a4252ik+oU/vDHvX91rK5//8jXR4qAWb51u3
-         4VLrRNZ6cYKykl0EnLXbHkA4lrfek4Uixeeq+F8w=
+        b=mkXTt+siXdN98Fv32cxSw7Kh+UnycrnQMsUQsaaStCs+ZxjUqd9oNH2LixVfx0zrz
+         ipb7Dvkj/R+JQoTMCkYBprIDhsAWa8ZAzhC5mPbaXirnXuHPNO8SGgPcxCs+eaYXkB
+         jC0jDOVN07KJcPJZR/kpqh4+gXrijlJcocco4HMg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 4.19 06/49] NFS: Fix initialisation of nfs_client cl_flags field
-Date:   Mon, 14 Feb 2022 10:25:32 +0100
-Message-Id: <20220214092448.507996176@linuxfoundation.org>
+        stable@vger.kernel.org, Scott Russell <Scott.Russell2@ncr.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.19 46/49] USB: serial: cp210x: add CPI Bulk Coin Recycler id
+Date:   Mon, 14 Feb 2022 10:26:12 +0100
+Message-Id: <20220214092449.828379405@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -49,41 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 468d126dab45718feeb728319be20bd869a5eaa7 upstream.
+commit 6ca0c6283340d819bf9c7d8e76be33c9fbd903ab upstream.
 
-For some long forgotten reason, the nfs_client cl_flags field is
-initialised in nfs_get_client() instead of being initialised at
-allocation time. This quirk was harmless until we moved the call to
-nfs_create_rpc_client().
+Add the device id for the Crane Payment Innovation / Money Controls Bulk
+Coin Recycler:
 
-Fixes: dd99e9f98fbf ("NFSv4: Initialise connection to the server in nfs4_alloc_client()")
-Cc: stable@vger.kernel.org # 4.8.x
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+	https://www.cranepi.com/en/system/files/Support/OM_BCR_EN_V1-04_0.pdf
+
+Reported-by: Scott Russell <Scott.Russell2@ncr.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/client.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/cp210x.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/nfs/client.c
-+++ b/fs/nfs/client.c
-@@ -180,6 +180,7 @@ struct nfs_client *nfs_alloc_client(cons
- 	INIT_LIST_HEAD(&clp->cl_superblocks);
- 	clp->cl_rpcclient = ERR_PTR(-EINVAL);
- 
-+	clp->cl_flags = cl_init->init_flags;
- 	clp->cl_proto = cl_init->proto;
- 	clp->cl_net = get_net(cl_init->net);
- 
-@@ -427,7 +428,6 @@ struct nfs_client *nfs_get_client(const
- 			list_add_tail(&new->cl_share_link,
- 					&nn->nfs_client_list);
- 			spin_unlock(&nn->nfs_client_lock);
--			new->cl_flags = cl_init->init_flags;
- 			return rpc_ops->init_client(new, cl_init);
- 		}
- 
+--- a/drivers/usb/serial/cp210x.c
++++ b/drivers/usb/serial/cp210x.c
+@@ -70,6 +70,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(0x0FCF, 0x1004) }, /* Dynastream ANT2USB */
+ 	{ USB_DEVICE(0x0FCF, 0x1006) }, /* Dynastream ANT development board */
+ 	{ USB_DEVICE(0x0FDE, 0xCA05) }, /* OWL Wireless Electricity Monitor CM-160 */
++	{ USB_DEVICE(0x106F, 0x0003) },	/* CPI / Money Controls Bulk Coin Recycler */
+ 	{ USB_DEVICE(0x10A6, 0xAA26) }, /* Knock-off DCU-11 cable */
+ 	{ USB_DEVICE(0x10AB, 0x10C5) }, /* Siemens MC60 Cable */
+ 	{ USB_DEVICE(0x10B5, 0xAC70) }, /* Nokia CA-42 USB */
 
 
