@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6655C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88CE1C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344126AbiBNJz5 (ORCPT
+        id S1344097AbiBNJzx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:55:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34406 "EHLO
+        Mon, 14 Feb 2022 04:55:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343837AbiBNJvW (ORCPT
+        with ESMTP id S1343746AbiBNJvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:22 -0500
+        Mon, 14 Feb 2022 04:51:20 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1AC166F9E;
-        Mon, 14 Feb 2022 01:42:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA3A66227;
+        Mon, 14 Feb 2022 01:42:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 124CE611B8;
-        Mon, 14 Feb 2022 09:42:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4028C340E9;
-        Mon, 14 Feb 2022 09:42:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB80C611F3;
+        Mon, 14 Feb 2022 09:42:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6B46C340E9;
+        Mon, 14 Feb 2022 09:42:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831733;
-        bh=lUg6UgIUo1yE4iHE1a1K4H9EBvuK+VqmJ7QfNaWBFas=;
+        s=korg; t=1644831721;
+        bh=hG9jkos58WAdkn3Ip/Te7FXuqEYEgOqyyoE7Oxk6cmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGg+C+kvxt/msxqCOfAmYh0s/SGD4VxigpB0eJUJWy42pNb9colYWQ+gLFElK2dWu
-         6mTrar2n1jFXYYzcxTypCa3KiSlo+j3hURaI3i9ETXcJ0L0FZXsYfRd+ZG3GNpmLu0
-         1pcFwRUI4nPv+Et4CGf7I2Zra836oJDUx4siLskY=
+        b=d/Plt2lkpjfAaUB6+XgdUGIlGPEfV5ofrimDG50A6+I028x539eg1surTafMOvv/K
+         UcjRB8gOXi7z60XBgPbJDmIlLfUjPr0DaCvVYMll8kJNEcWYbyx67bUZ66LXt/xa2r
+         9duj57piaXnijKpFjYlEhb3cK9eq/qnd3yT8edM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Lunn <andrew@lunn.ch>, Andrew Jeffery <andrew@aj.id.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 079/116] net: mdio: aspeed: Add missing MODULE_DEVICE_TABLE
-Date:   Mon, 14 Feb 2022 10:26:18 +0100
-Message-Id: <20220214092501.501545931@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.10 043/116] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
+Date:   Mon, 14 Feb 2022 10:25:42 +0100
+Message-Id: <20220214092500.177939491@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -51,36 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joel Stanley <joel@jms.id.au>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit bc1c3c3b10db4f37c41e6107751a8d450d9c431c ]
+commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
 
-Fix loading of the driver when built as a module.
+Currently, SD card fails to mount due to the following pinctrl error:
 
-Fixes: f160e99462c6 ("net: phy: Add mdio-aspeed")
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Acked-by: Andrew Jeffery <andrew@aj.id.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
+[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
+[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
+[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
+
+Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
+is already been used by the mmc0-pins-fixup pinctrl group.
+
+With this change the rootfs can be mounted and the imx23-evk board can
+boot successfully.
+
+Cc: <stable@vger.kernel.org>
+Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/mdio/mdio-aspeed.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/imx23-evk.dts |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
-index 966c3b4ad59d1..e2273588c75b6 100644
---- a/drivers/net/mdio/mdio-aspeed.c
-+++ b/drivers/net/mdio/mdio-aspeed.c
-@@ -148,6 +148,7 @@ static const struct of_device_id aspeed_mdio_of_match[] = {
- 	{ .compatible = "aspeed,ast2600-mdio", },
- 	{ },
- };
-+MODULE_DEVICE_TABLE(of, aspeed_mdio_of_match);
- 
- static struct platform_driver aspeed_mdio_driver = {
- 	.driver = {
--- 
-2.34.1
-
+--- a/arch/arm/boot/dts/imx23-evk.dts
++++ b/arch/arm/boot/dts/imx23-evk.dts
+@@ -79,7 +79,6 @@
+ 						MX23_PAD_LCD_RESET__GPIO_1_18
+ 						MX23_PAD_PWM3__GPIO_1_29
+ 						MX23_PAD_PWM4__GPIO_1_30
+-						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+ 					>;
+ 					fsl,drive-strength = <MXS_DRIVE_4mA>;
+ 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
 
 
