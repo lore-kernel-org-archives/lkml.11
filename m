@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F42C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E39C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233441AbiBNJph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:45:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33934 "EHLO
+        id S244687AbiBNJpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:45:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245068AbiBNJn6 (ORCPT
+        with ESMTP id S245111AbiBNJoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:43:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C516CA6F;
-        Mon, 14 Feb 2022 01:38:08 -0800 (PST)
+        Mon, 14 Feb 2022 04:44:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F53C6D18E;
+        Mon, 14 Feb 2022 01:38:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0E77B80D83;
-        Mon, 14 Feb 2022 09:38:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7A53C340E9;
-        Mon, 14 Feb 2022 09:38:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4C7EB80DC4;
+        Mon, 14 Feb 2022 09:38:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 017F6C340E9;
+        Mon, 14 Feb 2022 09:38:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831485;
-        bh=cTfUMZissMI9IeGEkEU24qJMhW+DUACGHuB3TU20yqw=;
+        s=korg; t=1644831488;
+        bh=ZSq3veFCTru8SYDIQac3U/vHQgYxxYNddu41EAVyz4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kBRdar0fDwpt2qFV90w9R4GzguQjjCNUgUSHy3bxgIMfQszuEEx0yxwtJHii1Kvk6
-         9aJPhuvWtwqx2gda5TrW9fak8LP4L0tphBAE/3djsnp9dm0aBVE3dZhZXwI9vPZ8tE
-         cX33KAhIjBmx/2al0fQBQzEDcONn4zFrz+1Lnx6s=
+        b=k8gMYdluW3RMHK14cxzkVCKJYBmw7SUSWsEPX2Kjra+J4vhgZVz5y+XoEXKjHbuY9
+         70+3JdoS8OKPFhaX23zgh/HZNJF2zwCZYHGqF6IPlqfymRMVMhVRAF9ChHoxufNVm1
+         /wJ1MtzgHfQHBy+duo7SnOI25A4zCtfjWrCM04kM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Song Liu <song@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.4 70/71] perf: Fix list corruption in perf_cgroup_switch()
-Date:   Mon, 14 Feb 2022 10:26:38 +0100
-Message-Id: <20220214092454.390214911@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.4 71/71] ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE
+Date:   Mon, 14 Feb 2022 10:26:39 +0100
+Message-Id: <20220214092454.423611860@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,52 +48,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <song@kernel.org>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit 5f4e5ce638e6a490b976ade4a40017b40abb2da0 upstream.
+commit dc0075ba7f387fe4c48a8c674b11ab6f374a6acc upstream.
 
-There's list corruption on cgrp_cpuctx_list. This happens on the
-following path:
+Commit 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while
+suspended to idle") made acpi_ec_dispatch_gpe() check
+pm_wakeup_pending(), but that is before canceling the SCI wakeup,
+so pm_wakeup_pending() is always true.  This causes the loop in
+acpi_ec_dispatch_gpe() to always terminate after one iteration which
+may not be correct.
 
-  perf_cgroup_switch: list_for_each_entry(cgrp_cpuctx_list)
-      cpu_ctx_sched_in
-         ctx_sched_in
-            ctx_pinned_sched_in
-              merge_sched_in
-                  perf_cgroup_event_disable: remove the event from the list
+Address this issue by canceling the SCI wakeup earlier, from
+acpi_ec_dispatch_gpe() itself.
 
-Use list_for_each_entry_safe() to allow removing an entry during
-iteration.
-
-Fixes: 058fe1c0440e ("perf/core: Make cgroup switch visit only cpuctxs with cgroup events")
-Signed-off-by: Song Liu <song@kernel.org>
-Reviewed-by: Rik van Riel <riel@surriel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220204004057.2961252-1-song@kernel.org
+Fixes: 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while suspended to idle")
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/acpi/ec.c    |   10 ++++++++++
+ drivers/acpi/sleep.c |   14 ++++----------
+ 2 files changed, 14 insertions(+), 10 deletions(-)
 
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -799,7 +799,7 @@ static DEFINE_PER_CPU(struct list_head,
-  */
- static void perf_cgroup_switch(struct task_struct *task, int mode)
- {
--	struct perf_cpu_context *cpuctx;
-+	struct perf_cpu_context *cpuctx, *tmp;
- 	struct list_head *list;
- 	unsigned long flags;
+--- a/drivers/acpi/ec.c
++++ b/drivers/acpi/ec.c
+@@ -2003,6 +2003,16 @@ bool acpi_ec_dispatch_gpe(void)
+ 		return true;
  
-@@ -810,7 +810,7 @@ static void perf_cgroup_switch(struct ta
- 	local_irq_save(flags);
+ 	/*
++	 * Cancel the SCI wakeup and process all pending events in case there
++	 * are any wakeup ones in there.
++	 *
++	 * Note that if any non-EC GPEs are active at this point, the SCI will
++	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
++	 * should be missed by canceling the wakeup here.
++	 */
++	pm_system_cancel_wakeup();
++
++	/*
+ 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
+ 	 * to allow the caller to process events properly after that.
+ 	 */
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -1003,19 +1003,13 @@ static bool acpi_s2idle_wake(void)
+ 		if (acpi_check_wakeup_handlers())
+ 			return true;
  
- 	list = this_cpu_ptr(&cgrp_cpuctx_list);
--	list_for_each_entry(cpuctx, list, cgrp_cpuctx_entry) {
-+	list_for_each_entry_safe(cpuctx, tmp, list, cgrp_cpuctx_entry) {
- 		WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
+-		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
++		/*
++		 * Check non-EC GPE wakeups and if there are none, cancel the
++		 * SCI-related wakeup and dispatch the EC GPE.
++		 */
+ 		if (acpi_ec_dispatch_gpe())
+ 			return true;
  
- 		perf_ctx_lock(cpuctx, cpuctx->task_ctx);
+-		/*
+-		 * Cancel the SCI wakeup and process all pending events in case
+-		 * there are any wakeup ones in there.
+-		 *
+-		 * Note that if any non-EC GPEs are active at this point, the
+-		 * SCI will retrigger after the rearming below, so no events
+-		 * should be missed by canceling the wakeup here.
+-		 */
+-		pm_system_cancel_wakeup();
+ 		acpi_os_wait_events_complete();
+ 
+ 		/*
 
 
