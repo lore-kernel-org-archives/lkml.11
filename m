@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3031FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD888C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244458AbiBNJjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:39:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52466 "EHLO
+        id S232263AbiBNJj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:39:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245519AbiBNJgt (ORCPT
+        with ESMTP id S243562AbiBNJhX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A758D6DAB4;
-        Mon, 14 Feb 2022 01:34:44 -0800 (PST)
+        Mon, 14 Feb 2022 04:37:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8431660D86;
+        Mon, 14 Feb 2022 01:35:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 052B6B80DC6;
-        Mon, 14 Feb 2022 09:34:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E23FC340E9;
-        Mon, 14 Feb 2022 09:34:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F7CA61163;
+        Mon, 14 Feb 2022 09:35:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 774E5C340F0;
+        Mon, 14 Feb 2022 09:35:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831280;
-        bh=81aYpI91jq53HB2t3OGicrrculO2wPexrRicI87XbMQ=;
+        s=korg; t=1644831305;
+        bh=8tqkdPSe1TX4gYfhZraComcw/+m05OtfO1tnPVdC2rA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qMnTnK9ar2fmhqXGj8Yx9mWTafUitwWLl1BBEGc8+Z5Ts4PyFmSp96DZFgoO+n0ww
-         D9TBMDd9FoMAeTMcUv3ZptV2iV6IHr0s8Su1lDTRF4R6qHYWEMLFqSgv8hPdQQDbXi
-         7Z7uQr4wr+XYaUIc/z3Ke1oBjOGD7MqWgcp5CvuU=
+        b=KSiv7W4Y3oHEwkxYeizkO6QiDkd8TpwO7JWuunaFG/A1+8BKSpoblBCzZB5PXUGOn
+         OzejjohDIY0qjLfSgjcZMLjDe181R7f+mAQWunriaosysZjhaR1n+cykt4AH49ihN8
+         YD5Dtn3YCOqEYtQS4337drtj9kZiUnsNjH2v0T4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 32/49] tipc: rate limit warning for received illegal binding update
-Date:   Mon, 14 Feb 2022 10:25:58 +0100
-Message-Id: <20220214092449.355989042@linuxfoundation.org>
+Subject: [PATCH 5.4 12/71] NFSv4 only print the label when its queried
+Date:   Mon, 14 Feb 2022 10:25:40 +0100
+Message-Id: <20220214092452.442678468@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
-References: <20220214092448.285381753@linuxfoundation.org>
+In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
+References: <20220214092452.020713240@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit c7223d687758462826a20e9735305d55bb874c70 ]
+[ Upstream commit 2c52c8376db7160a1dd8a681c61c9258405ef143 ]
 
-It would be easy to craft a message containing an illegal binding table
-update operation. This is handled correctly by the code, but the
-corresponding warning printout is not rate limited as is should be.
-We fix this now.
+When the bitmask of the attributes doesn't include the security label,
+don't bother printing it. Since the label might not be null terminated,
+adjust the printing format accordingly.
 
-Fixes: b97bf3fd8f6a ("[TIPC] Initial merge")
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/name_distr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs4xdr.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-index 836e629e8f4ab..661bc2551a0a2 100644
---- a/net/tipc/name_distr.c
-+++ b/net/tipc/name_distr.c
-@@ -290,7 +290,7 @@ static bool tipc_update_nametbl(struct net *net, struct distr_item *i,
- 		pr_warn_ratelimited("Failed to remove binding %u,%u from %x\n",
- 				    type, lower, node);
- 	} else {
--		pr_warn("Unrecognized name table message received\n");
-+		pr_warn_ratelimited("Unknown name table message received\n");
+diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
+index 9a022a4fb9643..0fc08d22c9218 100644
+--- a/fs/nfs/nfs4xdr.c
++++ b/fs/nfs/nfs4xdr.c
+@@ -4187,10 +4187,11 @@ static int decode_attr_security_label(struct xdr_stream *xdr, uint32_t *bitmap,
+ 		} else
+ 			printk(KERN_WARNING "%s: label too long (%u)!\n",
+ 					__func__, len);
++		if (label && label->label)
++			dprintk("%s: label=%.*s, len=%d, PI=%d, LFS=%d\n",
++				__func__, label->len, (char *)label->label,
++				label->len, label->pi, label->lfs);
  	}
- 	return false;
+-	if (label && label->label)
+-		dprintk("%s: label=%s, len=%d, PI=%d, LFS=%d\n", __func__,
+-			(char *)label->label, label->len, label->pi, label->lfs);
+ 	return status;
  }
+ 
 -- 
 2.34.1
 
