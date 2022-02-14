@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0804CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:59:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344439AbiBNJ7y (ORCPT
+        id S1344469AbiBNKAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:59:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45150 "EHLO
+        Mon, 14 Feb 2022 05:00:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344668AbiBNJ4Y (ORCPT
+        with ESMTP id S1344935AbiBNJ4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:56:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C7D6EF33;
-        Mon, 14 Feb 2022 01:44:49 -0800 (PST)
+        Mon, 14 Feb 2022 04:56:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A6980922;
+        Mon, 14 Feb 2022 01:45:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5C8860FA2;
-        Mon, 14 Feb 2022 09:44:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5582C340E9;
-        Mon, 14 Feb 2022 09:44:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10C8EB80DBE;
+        Mon, 14 Feb 2022 09:44:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27809C340E9;
+        Mon, 14 Feb 2022 09:44:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831888;
-        bh=HgDS/vqrYnhvkyXDkH5OZTa9pHSx5ejvwP0/rYor4Qc=;
+        s=korg; t=1644831897;
+        bh=gpbeclegATzXSwiYUP4rmYfVC4AJPTkIi9VDx8w7zHk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0rA8rRTGbfghWuNZIstJME242Bm0djNGdv7rYvU3OYnz57tjSl0k6BAjYrVX4Ip27
-         wQ/IOhAbuz6TpQE82peJkk9xzuEBqiIRyZbSR9gBB3joLbySioBi4zR7XCCeXQFFJT
-         ZHnJcSibV+WoAXNNoi+epAGSYl3ld2FckQVS6eX8=
+        b=tqYHxeVmGq1T8ZVI3ajXR0G54nLLCOEDXi8WCEWiUqnOzzieYUmJAUXRnvcpanNx6
+         sDwBnMBHR3FNQiQnaoxKG7AOOvURLtL+TylM/UJKiNSf4hLWXIUBwbTsS3+B0h6IFt
+         dlkW63pZgs6I005bBZwgwvL9ZRL/RdPb3S8PGbgo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.15 012/172] NFS: Fix initialisation of nfs_client cl_flags field
-Date:   Mon, 14 Feb 2022 10:24:30 +0100
-Message-Id: <20220214092506.798720785@linuxfoundation.org>
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.15 015/172] NFSD: Clamp WRITE offsets
+Date:   Mon, 14 Feb 2022 10:24:33 +0100
+Message-Id: <20220214092506.911643818@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,41 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 468d126dab45718feeb728319be20bd869a5eaa7 upstream.
+commit 6260d9a56ab352b54891ec66ab0eced57d55abc6 upstream.
 
-For some long forgotten reason, the nfs_client cl_flags field is
-initialised in nfs_get_client() instead of being initialised at
-allocation time. This quirk was harmless until we moved the call to
-nfs_create_rpc_client().
+Ensure that a client cannot specify a WRITE range that falls in a
+byte range outside what the kernel's internal types (such as loff_t,
+which is signed) can represent. The kiocb iterators, invoked in
+nfsd_vfs_write(), should properly limit write operations to within
+the underlying file system's s_maxbytes.
 
-Fixes: dd99e9f98fbf ("NFSv4: Initialise connection to the server in nfs4_alloc_client()")
-Cc: stable@vger.kernel.org # 4.8.x
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/client.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfsd/nfs3proc.c |    5 +++++
+ fs/nfsd/nfs4proc.c |    5 +++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
---- a/fs/nfs/client.c
-+++ b/fs/nfs/client.c
-@@ -177,6 +177,7 @@ struct nfs_client *nfs_alloc_client(cons
- 	INIT_LIST_HEAD(&clp->cl_superblocks);
- 	clp->cl_rpcclient = ERR_PTR(-EINVAL);
+--- a/fs/nfsd/nfs3proc.c
++++ b/fs/nfsd/nfs3proc.c
+@@ -199,6 +199,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
+ 				(unsigned long long) argp->offset,
+ 				argp->stable? " stable" : "");
  
-+	clp->cl_flags = cl_init->init_flags;
- 	clp->cl_proto = cl_init->proto;
- 	clp->cl_nconnect = cl_init->nconnect;
- 	clp->cl_max_connect = cl_init->max_connect ? cl_init->max_connect : 1;
-@@ -427,7 +428,6 @@ struct nfs_client *nfs_get_client(const
- 			list_add_tail(&new->cl_share_link,
- 					&nn->nfs_client_list);
- 			spin_unlock(&nn->nfs_client_lock);
--			new->cl_flags = cl_init->init_flags;
- 			return rpc_ops->init_client(new, cl_init);
- 		}
++	resp->status = nfserr_fbig;
++	if (argp->offset > (u64)OFFSET_MAX ||
++	    argp->offset + argp->len > (u64)OFFSET_MAX)
++		return rpc_success;
++
+ 	fh_copy(&resp->fh, &argp->fh);
+ 	resp->committed = argp->stable;
+ 	nvecs = svc_fill_write_vector(rqstp, rqstp->rq_arg.pages,
+--- a/fs/nfsd/nfs4proc.c
++++ b/fs/nfsd/nfs4proc.c
+@@ -1018,8 +1018,9 @@ nfsd4_write(struct svc_rqst *rqstp, stru
+ 	unsigned long cnt;
+ 	int nvecs;
  
+-	if (write->wr_offset >= OFFSET_MAX)
+-		return nfserr_inval;
++	if (write->wr_offset > (u64)OFFSET_MAX ||
++	    write->wr_offset + write->wr_buflen > (u64)OFFSET_MAX)
++		return nfserr_fbig;
+ 
+ 	cnt = write->wr_buflen;
+ 	trace_nfsd_write_start(rqstp, &cstate->current_fh,
 
 
