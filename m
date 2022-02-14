@@ -2,179 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 644D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11897C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352908AbiBNLmd (ORCPT
+        id S1352638AbiBNLmh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:42:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42188 "EHLO
+        Mon, 14 Feb 2022 06:42:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353773AbiBNLmA (ORCPT
+        with ESMTP id S1353940AbiBNLmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:42:00 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D13E66239;
-        Mon, 14 Feb 2022 03:33:45 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id h18so4226803edb.7;
-        Mon, 14 Feb 2022 03:33:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XoIGUc7L1CNxby6hJQisyEzt3VmpKa35bNMvST/YPuE=;
-        b=JlN98nyPpMDUKHiyYlGiPuS7cQJHiFTCs3X6VJUvUDUyjMH04GGi1UiVpeTpW0etd5
-         piy+HN1nnL3JqFiwFC2q/KiFgk8tp6xOXEZMSUjbGTto63xB0ZZ8rKvn4Id3sx0suOa3
-         YqnROkPIS+UkqAqF6v8eCKUPgbumINw1KwtblAfeFsP49L/S5BzM8XiM0V4mJaV5yGys
-         AzA4WejMe721YwVpHQe5uv1AaDYxvmB/fCtrLcaaaS+k21qCVsEUZViAc60oeaP6Ni4A
-         dMAgEtn2oQ4cX7A8MWI9CpcMuiyLePimbafnMB1L28kzbj9t4geyzCVGcLgd5cP5TmhT
-         I8bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XoIGUc7L1CNxby6hJQisyEzt3VmpKa35bNMvST/YPuE=;
-        b=fju/APajZwRvSTMVZzJBvlx5hzM9PKgP7sDw+YhNC5Rg8sc7TixE3mq0lhisOUvRoy
-         xVx+QrIghOKUgAHDiEZD1REtIYAeOI/Pkv2OnpalcdeoLBNXqrLaXhf349Dt9wUycu5r
-         A7fiDO/hR5c9Ti+tYXApW/O2DbmTTHW+Xd+ktRDUmZt+Qj1ah0Yyn5DiWvn6nlaxjQVn
-         J+OKYrfWwjOkqEgS09xFqYIlA1OzxPsPH1fNY+YH5VaBnQTrQRm5uno4dOlefqIPKwbv
-         Cw5EdqkaSLAe9MqMf4p6/bqVeCYRSBCaYbIkxXqu4YlVUwo5Nb5jFF7YP3K8XiPV8/Tw
-         ktgw==
-X-Gm-Message-State: AOAM530zy1nADY8Ir72KnjHwFfForsXOXSbVbI0CckAo5s8LIMupbrGA
-        yPR0vaArHetjDcG+nQIosMVhJdihyjmxlfzaDsk=
-X-Google-Smtp-Source: ABdhPJxdjDrQ1VObEg1fJDmTAzjNNascf/eT/ASfc96PvXg+NyV2kooWdTZhgBk30cN/cpVwEf4p/OyzKfS1/Y1gQqI=
-X-Received: by 2002:a05:6402:4254:: with SMTP id g20mr15512109edb.281.1644838422989;
- Mon, 14 Feb 2022 03:33:42 -0800 (PST)
+        Mon, 14 Feb 2022 06:42:05 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A653E673E6;
+        Mon, 14 Feb 2022 03:33:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644838406;
+        bh=l0MId2ooioe9nhI8ydZZddkQWWaIGBE574K+uHgUpuI=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=A2LNuKntQMEkGCFnYD7TVHURXPujekwDJjHaU4Ab1f6o/YaPUIwSmb8jbL/i65RwJ
+         BUC4HebW/iH1lxZ/G37Gdx+siqtH/lYV4jcki7eW1DotdV8gm4DEXqGnt/A0pEDw53
+         eihs0JuRWJUKr3NI3oOdgbytKFKHVY1iRC13F/ww=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from p100 ([92.116.168.11]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MfpOT-1nvML908EL-00gDvH; Mon, 14
+ Feb 2022 12:33:26 +0100
+Date:   Mon, 14 Feb 2022 12:33:23 +0100
+From:   Helge Deller <deller@gmx.de>
+To:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        linux-kernel@vger.kernel.org,
+        David Laight <David.Laight@aculab.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andreas Schwab <schwab@linux-m68k.org>
+Cc:     linux-parisc@vger.kernel.org
+Subject: [PATCH v2] fat: Use pointer to simple type in put_user()
+Message-ID: <Ygo+A9MREmC1H3kr@p100>
 MIME-Version: 1.0
-References: <20220214033620.4059-1-jagathjog1996@gmail.com> <20220214033620.4059-4-jagathjog1996@gmail.com>
-In-Reply-To: <20220214033620.4059-4-jagathjog1996@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 14 Feb 2022 13:32:14 +0200
-Message-ID: <CAHp75VcWym5vyDAVyTUCpj=Qkm28VUaqdqJ7VuFL_bsb0fmhaA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] iio: potentiometer: Add support for Maxim DS3502
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:6VtQofOaDIt+6iCeywwAg3EM05gYptORwCwQO6QaD16L6NNbGSk
+ faH/tRWWzIG05lHz2ajmbbyv20IkzFoqX2uJ54ZY0nAfU3IXkpC6vG/qaqCIFpJGmqAK5MA
+ jg36avzJjIm6KCxILXxlgUpvdkOYlwdGcAWH1z14POYziyZVAkmc+f1B0AAg5/7Q1gt/kPt
+ 6YA7S7vjC8VFiMIiQl3lQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:1SDUOhDczFs=:yfH/Gjw6hI+2r5fxYBDdtz
+ 7znt6IV6ZExhqbalPWIAgpXi9ze8Na0N5AfKZAxyqeFYOqBQUcRTtBR5dGDEKCz36XJQtDblm
+ YfZplPONsF5bwGG56Gr4pSpmQs/V9TM/o158LDgMGlnzoX2RgJcRAIW0qmM+xKg3Y8obZ+0ZT
+ ONRe8VM62LOmiZYSQF6IrKEg4dgU8aM8kkJ8W3k8vEFjqJPNGTQx2VMFArg5mgKZhu882PTOA
+ qD5hNlHcw9cK7XQLcxPmtG8VBQKu/x6WCOzo2W6S2TVl+weEhR8CpunsESxZ9DHYLD7KnU9g9
+ zSkE2e7DtnAHxE9J91a4mAcKt4wN1LL4fhMmlifmiybAeULucegU52QvE4XzC+FHVVSnTFiBS
+ Vy4e5UX+WhsICc43K1HrsGnjqBJV8wRmG2/AFwsi5EEtRW3zcCneWVcAKuLttGGBlCHaoUC+r
+ P2J42ppcJr6AKwSjc1H3u6GswlO/udTe5SdcresE2MLNm/eLgUwYoGgEa74GQHTHB+PLMjaYd
+ /r3ify9Lleid7/sONPUuktzhvzFeoMWNcfrS+Vr26k1C+SpUMPPECXD0OdBCW4qU6xHZXZTwo
+ dhiXd0ZoKAG28l2gErYQ1Q0bDGL9AkalLujlusRab/m5KQhKbTkikMTYqNpewkeN7IKaDWRFV
+ wMGShI/jKwmrdKEsVv6rS/98lCN2pw/aLD8UwdJtgQdYhKFui3IttwzNMc2SMdV8tVeAZHrJJ
+ mCGnQmXQAh8BQXGdqt4VxAvvzU6jMiB+K2QzazaQJC0IeNa07t+odIaYfnRK3QOJvAwjVNnMj
+ wNp2Gti9oNvCQM1rj7C1FeUcoKhPW31UWZUexRjXFnm9xk6Ivi/FRJltuQROWlhVKPg2Hir+c
+ AyAxD0p2VWyCfdMUgrGCTj7050Ze49OEe6FMfZxzbFHATCK0dBLq2eOyc1BxO7ZHs3ZT13qbo
+ BXxAS2ZS/7k/6QCO3YZeuRU3NlhyeU9w4YSXMVUaqr/SpyCmmfTwRusFt/jPV3Ndyq8RNgLNC
+ 39lsItA6/hQowFrKXVsKDvjZkgyZnsgbW9n3kHzkM75StXmUKw4PepcTy9yTLiLkuIsqkf+sm
+ HZ+cwaviMjn74Q=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 5:36 AM Jagath Jog J <jagathjog1996@gmail.com> wrote:
->
-> The DS3502 is a 7-bit, nonvolatile digital potentiometer featuring
-> an output voltage range of up to 15.5V.
-> DS3502 support is implemented into existing ds1803 driver
+The put_user(val,ptr) macro wants a pointer to a simple type, but in
+fat_ioctl_filldir() the d_name field references an "array of chars".
+Be more accurate and explicitly give the pointer to the first character
+of the d_name[] array.
 
-Be consistent here and in other commit messages with how you refer to
-the IC parts, i.e.
-DS1803. Don't forget English grammar and punctuation, i.e. missed period above.
+I noticed that issue while trying to optimize the parisc put_user() macro
+and used an intermediate variable to store the pointer. In that case I
+got this error:
 
-> Datasheet: https://datasheets.maximintegrated.com/en/ds/DS3502.pdf
+In file included from include/linux/uaccess.h:11,
+                 from include/linux/compat.h:17,
+                 from fs/fat/dir.c:18:
+fs/fat/dir.c: In function =E2=80=98fat_ioctl_filldir=E2=80=99:
+fs/fat/dir.c:725:33: error: invalid initializer
+  725 |                 if (put_user(0, d2->d_name)                     ||=
+         \
+      |                                 ^~
+include/asm/uaccess.h:152:33: note: in definition of macro =E2=80=98__put_=
+user=E2=80=99
+  152 |         __typeof__(ptr) __ptr =3D ptr;                            =
+\
+      |                                 ^~~
+fs/fat/dir.c:759:1: note: in expansion of macro =E2=80=98FAT_IOCTL_FILLDIR=
+_FUNC=E2=80=99
+  759 | FAT_IOCTL_FILLDIR_FUNC(fat_ioctl_filldir, __fat_dirent)
 
->
 
-A tag block may not have blank lines. Drop it.
+Andreas Schwab <schwab@linux-m68k.org> suggested to use
+   __typeof__(&*(ptr)) __ptr =3D ptr;
+instead. This works, but nevertheless it's probably reasonable to
+fix the original caller too.
 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 
-...
+__
+v2: Adjusted the description with input from David Laight
+    <David.Laight@ACULAB.COM> and Andreas Schwab <schwab@linux-m68k.org>.
 
-> -       tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
-> +       tristate "Maxim Integrated DS1803 and similar Digital Potentiometer driver"
-
-Please, list them like other drivers do:
-
-       tristate "Maxim Integrated DS1803/DS... Digital Potentiometer driver"
-
-...
-
-> -         Say yes here to build support for the Maxim Integrated DS1803
-> -         digital potentiometer chip.
-> +         Say yes here to build support for the Maxim Integrated DS1803 and
-> +         similar digital potentiometer chip.
-
-Same here.
-
-...
-
-> - * Maxim Integrated DS1803 digital potentiometer driver
-> + * Maxim Integrated DS1803 and similar digital potentiometer driver
-
-Same here.
-
-...
-
-> -#define DS1803_MAX_POS         255
-> -#define DS1803_WRITE(chan)     (0xa8 | ((chan) + 1))
-
-Not sure why these were removed (or moved?)
-
-...
-
-> +static const struct ds1803_cfg ds1803_cfg[] = {
-> +       [DS1803_010] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  10,
-> +                        .channels = ds1803_channels,
-> +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
-> +       [DS1803_050] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  50,
-> +                        .channels = ds1803_channels,
-> +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
-> +       [DS1803_100] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms = 100,
-> +                        .channels = ds1803_channels,
-> +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
-> +       [DS3502] =     { .wipers = 1, .avail = { 0, 1, 127 }, .kohms =  10,
-> +                        .channels = ds3502_channels,
-> +                        .num_channels = ARRAY_SIZE(ds3502_channels) },
->  };
-
-Split this on a per type basis. I believe it won't be too much work,
-also, consider adding channels as a separate preparatory patch as you
-did with avail.
-
-...
-
-> -       data->cfg = &ds1803_cfg[id->driver_data];
-> +       data->chip_type = (uintptr_t)device_get_match_data(dev);
-> +       if (data->chip_type < DS1803_010 || data->chip_type > DS3502)
-> +               data->chip_type = id->driver_data;
-
-Split it into a separate patch and use pointer validation instead:
-
-data->cfg = ...
-if (!data->cfg)
-  data->cfg = ...id->driver_data;
-
-...
-
-> -       { .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
-> -       { .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
-> -       { .compatible = "maxim,ds1803-100", .data = &ds1803_cfg[DS1803_100] },
-> +       { .compatible = "maxim,ds1803-010", .data = (void *)DS1803_010 },
-> +       { .compatible = "maxim,ds1803-050", .data = (void *)DS1803_050 },
-> +       { .compatible = "maxim,ds1803-100", .data = (void *)DS1803_100 },
-
-This is not good, please use pointers as it was before.
-
-> +       { .compatible = "maxim,ds3502",     .data = (void *)DS3502 },
-
-Ditto. Create a new, separate structure for this type.
-
-...
-
->         { "ds1803-010", DS1803_010 },
->         { "ds1803-050", DS1803_050 },
->         { "ds1803-100", DS1803_100 },
-> +       { "ds3502",     DS3502     },
-
-Too many spaces.
-Besides this, please create a new prerequisite patch to convert this
-to use pointers as above.
-
--- 
-With Best Regards,
-Andy Shevchenko
+diff --git a/fs/fat/dir.c b/fs/fat/dir.c
+index c4a274285858..249825017da7 100644
+=2D-- a/fs/fat/dir.c
++++ b/fs/fat/dir.c
+@@ -722,7 +722,7 @@ static int func(struct dir_context *ctx, const char *n=
+ame, int name_len,   \
+ 		if (name_len >=3D sizeof(d1->d_name))			   \
+ 			name_len =3D sizeof(d1->d_name) - 1;		   \
+ 									   \
+-		if (put_user(0, d2->d_name)			||	   \
++		if (put_user(0, &d2->d_name[0])			||	   \
+ 		    put_user(0, &d2->d_reclen)			||	   \
+ 		    copy_to_user(d1->d_name, name, name_len)	||	   \
+ 		    put_user(0, d1->d_name + name_len)		||	   \
