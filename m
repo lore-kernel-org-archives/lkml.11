@@ -2,131 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AD2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353824AbiBNND3 (ORCPT
+        id S1353834AbiBNNDs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:03:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51002 "EHLO
+        Mon, 14 Feb 2022 08:03:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349874AbiBNND1 (ORCPT
+        with ESMTP id S1353815AbiBNNDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:03:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23674C7A4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:03:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F7476145C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0FB7C340E9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:03:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644843798;
-        bh=aYi+WuTKinDGu6rJHTWCY9MMsW30L++vnHKXTv6N/7k=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Js2KJ8uR+WjuUUisj1EBog/SomMJdWFDgc81vtBlWIFkRN6I0N24c25OSwSc0mWeW
-         bVMIkUu80yvQqbEpgHU8v1x64S69uXWffSVoyylT9ECC9sN3aliDYgjey0a8a2g8g/
-         M3hA/LwpjIony87lF/AAMGEqh4A2+q/176JxkKD2bCqsAUPA3pOvzUMXiHgO6jACK/
-         DsYZu6E/eOuZy3gjMt4tzgl8A8fNC1xZhpSxWoJsPaxO9QbR8vwYkrE10gGUR8QBau
-         /Rszf8nKSJUhr0A8QjY682wcG7NBQY8C4IhgGyHlHvIIp3yr2E6BQgXOHl0AbBN7/V
-         iCem6MEwF23BQ==
-Received: by mail-yb1-f169.google.com with SMTP id c6so45873944ybk.3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:03:18 -0800 (PST)
-X-Gm-Message-State: AOAM530rFumX36Y14yfcFbpj3t4OmkBO2vS5mkXF6DcwMOhoCO5GKNwO
-        c02mS/rCQdcf0zZR51Y6YX5rbXzYr3EqxL/sn3Q=
-X-Google-Smtp-Source: ABdhPJzhAoAJwPZSAwevB+toA63MV1dToPPq7bQhjEOifWG8aDOj/YiWn5INbL1kJK9AeaM60Nn1ZgjDhOi0xuePWAM=
-X-Received: by 2002:a81:a888:: with SMTP id f130mr13961966ywh.46.1644843797800;
- Mon, 14 Feb 2022 05:03:17 -0800 (PST)
+        Mon, 14 Feb 2022 08:03:46 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0146C4E398;
+        Mon, 14 Feb 2022 05:03:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644843816; x=1676379816;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=uYL3xhBbVCpZum9f3FYlZNyjCU4f4j5OTyoAWlPvpNY=;
+  b=DfUjxrZWdZDFb1nb1nvpJkkTausQcs/+JV76OIQUL13LF75UtZrDzzuH
+   laOX2483R+wvEOKEb7xZv7KrvUNkGceD7lwAnvkpgl+3teNPfe1lTFDU/
+   uVlMWGvqdT8zbA8f8MdnITwKCFZ6UXfmoiY7AP21bYOQlfUHiR5AXdq2E
+   gViaA0do2JB8v+4cCWlnjI3LTLDXEi06AbuiXa2gaoP6HYUaTxRmfubLB
+   gDSnWAYVXkZrpodJ29tfqSxJIzonI4Xf/S9bpeByedXC/evhfpchx0UhR
+   dQLq6GN+KBJXlx/cEoYI8Bvh5DyqdUyVgIaT7wn+4PRYowxHsnIzC7h7Z
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="274654534"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="274654534"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 05:03:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="495569219"
+Received: from mylly.fi.intel.com (HELO [10.237.72.51]) ([10.237.72.51])
+  by orsmga006.jf.intel.com with ESMTP; 14 Feb 2022 05:03:34 -0800
+Message-ID: <307ca790-e9ca-c8f3-e0f7-28ad594db2aa@linux.intel.com>
+Date:   Mon, 14 Feb 2022 15:03:33 +0200
 MIME-Version: 1.0
-References: <20220214081210.3999831-1-ogabbay@kernel.org> <20220214081210.3999831-2-ogabbay@kernel.org>
- <20220214103829.1319-1-hdanton@sina.com>
-In-Reply-To: <20220214103829.1319-1-hdanton@sina.com>
-From:   Oded Gabbay <ogabbay@kernel.org>
-Date:   Mon, 14 Feb 2022 15:02:51 +0200
-X-Gmail-Original-Message-ID: <CAFCwf11CZ_DrhUdxO1PpX_v=2i8GS_Vzd4DrERdbtZm-_V+FrA@mail.gmail.com>
-Message-ID: <CAFCwf11CZ_DrhUdxO1PpX_v=2i8GS_Vzd4DrERdbtZm-_V+FrA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] habanalabs: allow user to set allocation page size
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Ohad Sharabi <osharabi@habana.ai>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.1
+Subject: Re: [PATCH -next v2 RESEND] i2c: designware: remove unneeded
+ semicolon
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>, jsd@semihalf.com
+Cc:     andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+References: <20220214124701.105814-1-yang.lee@linux.alibaba.com>
+From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
+In-Reply-To: <20220214124701.105814-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 12:48 PM Hillf Danton <hdanton@sina.com> wrote:
->
-> On Mon, 14 Feb 2022 10:12:10 +0200 Ohad Sharabi wrote:
-> >
-> >  struct hl_mem_in {
-> >       union {
-> > -             /* HL_MEM_OP_ALLOC- allocate device memory */
-> > +             /**
-> > +              * structure for device memory allocation (used with the HL_MEM_OP_ALLOC op)
-> > +              * @mem_size: memory size to allocate
-> > +              * @page_size: page size to use on allocation. when the value is 0 the default page
-> > +              *             size will be taken.
-> > +              */
->
-> Nit, the 80-column-char format is prfered.
-Maybe it is preferred, but afaik it is now allowed to use 100-chars,
-and checkpatch no longer shouts about
-it, so I don't see the harm.
->
-> Wonder how to get the available page sizes in userspace?
-We will add an opcode to our INFO ioctl to return the available page sizes.
-The user will need to query this at the beginning of the application run.
+Hi
 
+On 2/14/22 14:47, Yang Li wrote:
+> Eliminate the following coccicheck warnings:
+> ./drivers/i2c/busses/i2c-designware-amdpsp.c:172:2-3: Unneeded semicolon
+> ./drivers/i2c/busses/i2c-designware-amdpsp.c:245:2-3: Unneeded semicolon
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+> 
+> --Changes in v2:
+>    According to Jan's suggestion
+>    Fix the same problem in check_i2c_req_sts() function.
+> 
+>   drivers/i2c/busses/i2c-designware-amdpsp.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+For future contributions: Technically this would be v3 rather than v2 
+RESEND since you fixed the typo in commit log noted by Jan for v2.
 
->
-> >               struct {
-> > -                     /* Size to alloc */
-> >                       __u64 mem_size;
-> > +                     __u64 page_size;
-> >               } alloc;
-> >
-> > -             /* HL_MEM_OP_FREE - free device memory */
-> > +             /**
-> > +              * structure for free-ing device memory (used with the HL_MEM_OP_FREE op)
-> > +              * @handle: handle returned from HL_MEM_OP_ALLOC
->
-> Nit, add a seperate cleanup patch for changes with no link to page size.
-Yes, correct, I will split this up.
+Please use RESEND only if you'll send exactly the same version for 
+instance if you didn't receive any comments for several weeks or some 
+recipient was missing from Cc field.
 
-Thanks,
-Oded
->
-> > +              */
-> >               struct {
-> > -                     /* Handle returned from HL_MEM_OP_ALLOC */
-> >                       __u64 handle;
-> >               } free;
-> >
-> > -             /* HL_MEM_OP_MAP - map device memory */
-> > +             /**
-> > +              * structure for mapping device memory (used with the HL_MEM_OP_MAP op)
-> > +              * @hint_addr: requested virtual address of mapped memory.
-> > +              *             the driver will try to map the requested region to this hint
-> > +              *             address, as long as the address is valid and not already mapped.
-> > +              *             the user should check the returned address of the IOCTL to make
-> > +              *             sure he got the hint address.
-> > +              *             passing 0 here means that the driver will choose the address itself.
-> > +              * @handle: handle returned from HL_MEM_OP_ALLOC.
-> > +              */
-> >               struct {
-> > -                     /*
-> > -                      * Requested virtual address of mapped memory.
-> > -                      * The driver will try to map the requested region to
-> > -                      * this hint address, as long as the address is valid
-> > -                      * and not already mapped. The user should check the
-> > -                      * returned address of the IOCTL to make sure he got
-> > -                      * the hint address. Passing 0 here means that the
-> > -                      * driver will choose the address itself.
-> > -                      */
-> >                       __u64 hint_addr;
-> > -                     /* Handle returned from HL_MEM_OP_ALLOC */
-> >                       __u64 handle;
-> >               } map_device;
+I believe Jan will give Reviewed-by tag to this version too.
+
+Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
