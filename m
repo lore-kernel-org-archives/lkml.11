@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97352C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:47:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245085AbiBNJrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:47:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43864 "EHLO
+        id S245269AbiBNJrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:47:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245205AbiBNJo6 (ORCPT
+        with ESMTP id S244917AbiBNJpW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:44:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D986A02E;
-        Mon, 14 Feb 2022 01:38:25 -0800 (PST)
+        Mon, 14 Feb 2022 04:45:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F4360AB4;
+        Mon, 14 Feb 2022 01:38:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAB056102D;
-        Mon, 14 Feb 2022 09:38:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EF2FC340E9;
-        Mon, 14 Feb 2022 09:38:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3687760FA2;
+        Mon, 14 Feb 2022 09:38:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E77AC340E9;
+        Mon, 14 Feb 2022 09:38:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831504;
-        bh=FrmbRpw4yMtPFrZtcLJTy2zpIJYaSZTPwnuhF0NyZ0c=;
+        s=korg; t=1644831513;
+        bh=0KFL7EUzAu7Eb7oUe3MpZrguecfrpKt/qiwj88UrN+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iWlH3xDZB2PJTP+Awlw+6sR/7YBRiWaCVXOGscd6K67SPN+4F6yZlt5g7vdqzzi7+
-         xDkfuuuOpmONhRnFuyG4CGjnL3F2I/1uqqXuWZNsKsBic2nrTrdfNKDl3QOsO9bdn+
-         jAsvJKTNJqZfbOWmaTjwdx5Qi4HPxW7sLGExxUI4=
+        b=AEM7AslL8YL8mXRR1ohfq7qoD/noLthviCz+X2oJ/YxfN3xBHi5fl21E2zJZvBEBI
+         JmSY+Ey+brG1ysXfYJ1/gDj++pv10iwuQDSk7dzxKvNFmNMbNRkAsxYWbkNuMxiesJ
+         s+NsgAt+e+XiT1FdPl8dzJTr42+Suyvc8OeHbr2s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Hofman <pavel.hofman@ivitera.com>
-Subject: [PATCH 5.4 61/71] usb: gadget: f_uac2: Define specific wTerminalType
-Date:   Mon, 14 Feb 2022 10:26:29 +0100
-Message-Id: <20220214092454.090637841@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stephan Brunner <s.brunner@stephan-brunner.net>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 64/71] USB: serial: ch341: add support for GW Instek USB2.0-Serial devices
+Date:   Mon, 14 Feb 2022 10:26:32 +0100
+Message-Id: <20220214092454.184088121@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -47,49 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Hofman <pavel.hofman@ivitera.com>
+From: Stephan Brunner <s.brunner@stephan-brunner.net>
 
-commit 5432184107cd0013761bdfa6cb6079527ef87b95 upstream.
+commit fa77ce201f7f2d823b07753575122d1ae5597fbe upstream.
 
-Several users have reported that their Win10 does not enumerate UAC2
-gadget with the existing wTerminalType set to
-UAC_INPUT_TERMINAL_UNDEFINED/UAC_INPUT_TERMINAL_UNDEFINED, e.g.
-https://github.com/raspberrypi/linux/issues/4587#issuecomment-926567213.
-While the constant is officially defined by the USB terminal types
-document, e.g. XMOS firmware for UAC2 (commonly used for Win10) defines
-no undefined output terminal type in its usbaudio20.h header.
+Programmable lab power supplies made by GW Instek, such as the
+GPP-2323, have a USB port exposing a serial port to control the device.
 
-Therefore wTerminalType of EP-IN is set to
-UAC_INPUT_TERMINAL_MICROPHONE and wTerminalType of EP-OUT to
-UAC_OUTPUT_TERMINAL_SPEAKER for the UAC2 gadget.
+Stringing the supplied Windows driver, references to the ch341 chip are
+found. Binding the existing ch341 driver to the VID/PID of the GPP-2323
+("GW Instek USB2.0-Serial" as per the USB product name) works out of the
+box, communication and control is now possible.
 
-Signed-off-by: Pavel Hofman <pavel.hofman@ivitera.com>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220131071813.7433-1-pavel.hofman@ivitera.com
+This patch should work with any GPP series power supply due to
+similarities in the product line.
+
+Signed-off-by: Stephan Brunner <s.brunner@stephan-brunner.net>
+Link: https://lore.kernel.org/r/4a47b864-0816-6f6a-efee-aa20e74bcdc6@stephan-brunner.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/f_uac2.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/serial/ch341.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/gadget/function/f_uac2.c
-+++ b/drivers/usb/gadget/function/f_uac2.c
-@@ -176,7 +176,7 @@ static struct uac2_input_terminal_descri
- 
- 	.bDescriptorSubtype = UAC_INPUT_TERMINAL,
- 	/* .bTerminalID = DYNAMIC */
--	.wTerminalType = cpu_to_le16(UAC_INPUT_TERMINAL_UNDEFINED),
-+	.wTerminalType = cpu_to_le16(UAC_INPUT_TERMINAL_MICROPHONE),
- 	.bAssocTerminal = 0,
- 	/* .bCSourceID = DYNAMIC */
- 	.iChannelNames = 0,
-@@ -204,7 +204,7 @@ static struct uac2_output_terminal_descr
- 
- 	.bDescriptorSubtype = UAC_OUTPUT_TERMINAL,
- 	/* .bTerminalID = DYNAMIC */
--	.wTerminalType = cpu_to_le16(UAC_OUTPUT_TERMINAL_UNDEFINED),
-+	.wTerminalType = cpu_to_le16(UAC_OUTPUT_TERMINAL_SPEAKER),
- 	.bAssocTerminal = 0,
- 	/* .bSourceID = DYNAMIC */
- 	/* .bCSourceID = DYNAMIC */
+--- a/drivers/usb/serial/ch341.c
++++ b/drivers/usb/serial/ch341.c
+@@ -84,6 +84,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(0x1a86, 0x5523) },
+ 	{ USB_DEVICE(0x1a86, 0x7522) },
+ 	{ USB_DEVICE(0x1a86, 0x7523) },
++	{ USB_DEVICE(0x2184, 0x0057) },
+ 	{ USB_DEVICE(0x4348, 0x5523) },
+ 	{ USB_DEVICE(0x9986, 0x7523) },
+ 	{ },
 
 
