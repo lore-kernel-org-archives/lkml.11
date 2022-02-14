@@ -2,91 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D77C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230504AbiBNVGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:06:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55038 "EHLO
+        id S230172AbiBNVHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:07:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbiBNVG2 (ORCPT
+        with ESMTP id S229693AbiBNVHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:06:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC15135486
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:06:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23CF26114D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA887C340E9;
-        Mon, 14 Feb 2022 19:50:48 +0000 (UTC)
-Date:   Mon, 14 Feb 2022 14:50:47 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] ftrace: Remove unused ftrace_startup_enable() stub
-Message-ID: <20220214145047.35b9df58@gandalf.local.home>
-In-Reply-To: <20220214192847.488166-1-nathan@kernel.org>
-References: <20220214192847.488166-1-nathan@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 14 Feb 2022 16:07:15 -0500
+Received: from mail-vs1-xe4a.google.com (mail-vs1-xe4a.google.com [IPv6:2607:f8b0:4864:20::e4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28833107D03
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:07:07 -0800 (PST)
+Received: by mail-vs1-xe4a.google.com with SMTP id u25-20020a67f659000000b0031aa82b8e6cso1678213vso.16
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:07:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ImRH9XpLCVO1AMuO+0vNf/s5u0DDeswWDZhxgck4GTg=;
+        b=ia0I32JcmImFFnzIt0dqwG5SCKqP3qmsRwXloN2N+PGLZBEGdTIaEiefH7BWNWqVDV
+         XMS+2Qp8Gn8onGXQeidk1/eyV4BGFi+iJhdN5bKvPJSt2bg+7rhKiGoeYBxP9FhA8CTR
+         ZWoyXjaKKmoBd+EBuh92636y9JchIAmpQ3EhRAMYKrxLuOo3E0MC5nisdofLJORwfLTW
+         FCDE8f34hR/2mfBaRfsTXU9/JO6WZYM/AUOz11NiIoVBd3A8lbSxa736AgJ+yBIv6y5d
+         lcdtYUtgEQeM49nnc+LcevfvZeXK1740krM6xLH5nTDNjp2PbKluWQJP+muJeHu0xTS/
+         9cPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ImRH9XpLCVO1AMuO+0vNf/s5u0DDeswWDZhxgck4GTg=;
+        b=gZga9Zk1ucEFOK++QmN6lSKlwRf9UMBrua5NHQnxrs3HnYzRttjazzox1IfJy3mDHa
+         xrYNk7xV6T8Ye8IkB4rC4vpgjFUy0vdgzZQK3Y/1+4j9+RIAHAbfRRHF+vKGk5GMq2C2
+         /YpvZ8n7I7FWcxZ3DsLVGkmwC0+doKv6BK2oLLvf6a1BbKa0NUbfQGazdE4lIgDVGRyJ
+         DV3Ll2JM0be54cwalsMQ5mqUnhdK44Kl53e+IYXbE946lPnPwITQjXDaAejMbTEcrZK6
+         7X6LAZ2EyOe8wFzeAsICQDrifL7m1YHakak2vmEH9yQF+bbrxRTpLAXnI/uVaZVDEQKL
+         2sVA==
+X-Gm-Message-State: AOAM5326LVxDGxy5uMSN1st3vr1NQQe39f7uJ+RkNCd1qoPhaMA61p6+
+        xwGebNd67P2MB2JP70cp7QVJLCPlS3nT
+X-Google-Smtp-Source: ABdhPJw4BEO7Wb+8vsvCdbSI6yFU0rSYMXuBhd6tOWudkdTVun04vOC8de/M5fPlrqu4GEYS3RMYa2UPop+A
+X-Received: from kalutes-cloudtop-1.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f1])
+ (user=kalutes job=sendgmr) by 2002:a05:6a00:a87:: with SMTP id
+ b7mr470587pfl.51.1644868771650; Mon, 14 Feb 2022 11:59:31 -0800 (PST)
+Date:   Mon, 14 Feb 2022 19:59:08 +0000
+Message-Id: <20220214195908.4070138-1-kalutes@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH] Virtio-balloon: add user space API for sizing
+From:   Kameron Lutes <kalutes@google.com>
+To:     "Michael S . Tsirkin" <mst@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org,
+        kvm@vger.kernel.org
+Cc:     Suleiman Souhlal <suleiman@chromium.org>,
+        Charles William Dick <cwd@google.com>,
+        Kameron Lutes <kalutes@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022 12:28:47 -0700
-Nathan Chancellor <nathan@kernel.org> wrote:
+This new linux API will allow user space applications to directly
+control the size of the virtio-balloon. This is useful in
+situations where the guest must quickly respond to drastically
+increased memory pressure and cannot wait for the host to adjust
+the balloon's size.
 
-> When building with clang + CONFIG_DYNAMIC_FTRACE=n + W=1, there is a
-> warning:
-> 
->   kernel/trace/ftrace.c:7194:20: error: unused function 'ftrace_startup_enable' [-Werror,-Wunused-function]
->   static inline void ftrace_startup_enable(int command) { }
->                      ^
->   1 error generated.
-> 
-> Clang warns on instances of static inline functions in .c files with W=1
-> after commit 6863f5643dd7 ("kbuild: allow Clang to find unused static
-> inline functions for W=1 build").
-> 
-> The ftrace_startup_enable() stub has been unused since
-> commit e1effa0144a1 ("ftrace: Annotate the ops operation on update"),
-> where its use outside of the CONFIG_DYNAMIC_TRACE section was replaced
-> by ftrace_startup_all().  Remove it to resolve the warning.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Under the current wording of the Virtio spec, guest driven
+behavior such as this is permitted:
 
-Thanks,
+VIRTIO Version 1.1 Section 5.5.6
+"The device is driven either by the receipt of a configuration
+change notification, or by changing guest memory needs, such as
+performing memory compaction or responding to out of memory
+conditions."
 
-I'll queue this up for the next merge window. (After it passes all my
-testing of course).
+The intended use case for this API is one where the host
+communicates a deflation limit to the guest. The guest may then
+choose to respond to memory pressure by deflating its balloon down
+to the guest's allowable limit.
 
--- Steve
+Signed-off-by: Kameron Lutes <kalutes@google.com>
+---
+ drivers/virtio/virtio_balloon.c | 55 +++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
-> ---
->  kernel/trace/ftrace.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index f9feb197b2da..a4b462b6f944 100644
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -7191,7 +7191,6 @@ static int __init ftrace_nodyn_init(void)
->  core_initcall(ftrace_nodyn_init);
->  
->  static inline int ftrace_init_dyn_tracefs(struct dentry *d_tracer) { return 0; }
-> -static inline void ftrace_startup_enable(int command) { }
->  static inline void ftrace_startup_all(int command) { }
->  
->  # define ftrace_startup_sysctl()	do { } while (0)
-> 
-> base-commit: 754e0b0e35608ed5206d6a67a791563c631cec07
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index f4c34a2a6b8e..aa06305a3137 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -878,6 +878,54 @@ static int virtio_balloon_register_shrinker(struct virtio_balloon *vb)
+ 	return register_shrinker(&vb->shrinker);
+ }
+ 
++static ssize_t balloon_size_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct virtio_device *vdev = container_of(dev, struct virtio_device, dev);
++	u32 num_pages;
++
++	/*
++	 * Read the size directly from the balloon's configuration.
++	 * The caller expects the balloon size enforced by the host,
++	 * not the actual balloon size
++	 */
++	virtio_cread(vdev, struct virtio_balloon_config, num_pages,
++		     &num_pages);
++
++	return sprintf(buf, "0x%x", num_pages);
++}
++
++static ssize_t balloon_size_store(struct device *dev,
++				  struct device_attribute *attr,
++				  const char *buf, size_t count)
++{
++	struct virtio_device *vdev = container_of(dev, struct virtio_device, dev);
++	u32 num_pages;
++	int err;
++
++	err = kstrtou32(buf, 0, &num_pages);
++
++	if (err < 0) {
++		dev_err(dev, "Failed to read balloon size from file\n");
++		return err;
++	}
++
++	/*
++	 * Write num_pages back to the balloon's config section
++	 */
++	virtio_cwrite_le(vdev, struct virtio_balloon_config, num_pages,
++		      &num_pages);
++
++	/*
++	 * Signal to the balloon that the configuration has changed.
++	 * This triggers any necessary resizing actions
++	 */
++	virtballoon_changed(vdev);
++
++	return count;
++}
++static DEVICE_ATTR_RW(balloon_size);
++
+ static int virtballoon_probe(struct virtio_device *vdev)
+ {
+ 	struct virtio_balloon *vb;
+@@ -1015,12 +1063,19 @@ static int virtballoon_probe(struct virtio_device *vdev)
+ 			goto out_unregister_oom;
+ 	}
+ 
++	err = device_create_file(&vb->vdev->dev, &dev_attr_balloon_size);
++	if (err)
++		goto out_unregister_page_reporting;
++
+ 	virtio_device_ready(vdev);
+ 
+ 	if (towards_target(vb))
+ 		virtballoon_changed(vdev);
+ 	return 0;
+ 
++out_unregister_page_reporting:
++	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
++		page_reporting_unregister(&vb->pr_dev_info);
+ out_unregister_oom:
+ 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
+ 		unregister_oom_notifier(&vb->oom_nb);
+-- 
+2.35.1.265.g69c8d7142f-goog
 
