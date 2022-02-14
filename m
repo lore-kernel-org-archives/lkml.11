@@ -2,164 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8871EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243146AbiBNJ32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:29:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42538 "EHLO
+        id S243286AbiBNJ3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:29:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243147AbiBNJ3H (ORCPT
+        with ESMTP id S243180AbiBNJ3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:29:07 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665B560D81
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:28:57 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id u1so11985689wrg.11
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:28:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KStTxY9XVfRTy0jNX2vsLO+sccZ6tcP3+MXbZKzhUog=;
-        b=RRmTvdH206P9cFagseNai5Qkh/Y3gvxhEZYcItRUx3Z9rEGdbrrj8+RMSJBQMDQ6Ti
-         /KIXUPdzytBTQ0ksw/z3Qy94t1bAcG+ahCZXsO5wv9qTuL6ocOaX36x2KxnoYqtfHLdE
-         nFbBnJLi7GqAsDtg8KQ+jO0zGiDqzGuWjOsar7FHjFlqRu68oHIVacm6iRybNRxOjlTl
-         Qws1U8zaHo6hRAFlR2mkexqUTohqw7KSmEu/U0A0tn4DOBw/2YdbewEFZPnm+YTTOocr
-         Wb13phnqsbITLtgPk2htUT1bTW3fTdqeyiUuqExmM68oWDlGVOFyFj6r2o+jO7ofAevM
-         SIag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KStTxY9XVfRTy0jNX2vsLO+sccZ6tcP3+MXbZKzhUog=;
-        b=quo+OAGwTzK5dWYeAdQlSl7ZNM17MjsitX1oZ+3twGWKCt6al7K/GczVz5HtVfzPm4
-         0EbAJdjZIA9dicWc4cBzz9cvXH+qyF8L2NCn93ZbT1JHiv8HcIKzVK9FTSUzpeTeikkr
-         SJ4ldLr+bW6OovPrR+kI85CzU7+u+3w7SBtZMCirrthxaM5jby2BzfaDwT1ZDp3K1cUy
-         rImp/2AbG0dJ8yqkV2uDjJ164+S8KY+qtIj4QjMTae+6UA2tdIRVeVijEuwqOtvV+QQv
-         IeGBPDhY1EE3X4jPi5wISSYm0idFByAityMwcdPSSPVhGz8KnEY4NsO9RaDgNPQoHWig
-         WnXQ==
-X-Gm-Message-State: AOAM533c3R0OOADVnPi9+X1yPARy9G0bUjbphwvBJvUI6vikSZ7Ow9rw
-        rOYXq2JxNy/JzCZOToLdkZli7A==
-X-Google-Smtp-Source: ABdhPJyGQ/UgchooSSeFiGSP/VpjbWioBhy23eoI5rS7fHkwylzEihvSntyQAg6+0NSZa+CRPy+XjA==
-X-Received: by 2002:adf:fe01:: with SMTP id n1mr10579723wrr.141.1644830935927;
-        Mon, 14 Feb 2022 01:28:55 -0800 (PST)
-Received: from localhost.localdomain (179.160.117.78.rev.sfr.net. [78.117.160.179])
-        by smtp.gmail.com with ESMTPSA id o14sm11182012wmr.3.2022.02.14.01.28.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 01:28:55 -0800 (PST)
-From:   Julien STEPHAN <jstephan@baylibre.com>
-To:     angelogioacchino.delregno@collabora.com
-Cc:     Julien STEPHAN <jstephan@baylibre.com>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS FOR MEDIATEK),
-        linux-mediatek@lists.infradead.org (moderated list:DRM DRIVERS FOR
-        MEDIATEK),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v4] drm/mediatek: allow commands to be sent during video mode
-Date:   Mon, 14 Feb 2022 10:27:42 +0100
-Message-Id: <20220214092742.3461587-1-jstephan@baylibre.com>
+        Mon, 14 Feb 2022 04:29:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164EF60D98;
+        Mon, 14 Feb 2022 01:29:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C36EFB80DBE;
+        Mon, 14 Feb 2022 09:29:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05795C340EF;
+        Mon, 14 Feb 2022 09:28:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644830939;
+        bh=vwF6gNRgQO7TFMXzHmjxc+EqI+yYk6QLvAAhdN4hvHE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BF+xzMK6WcpLcVDbX9PMTSzi/mmrole2kV2Up6OTrMrH5P9tKbIVKNJrvUvKY4MP7
+         3soV35/sCEkazlBlVk7fBTwuDfsmLAQ42aGhZ2Mxil/22mOlaj8xRN1JDNRKxHTAek
+         LEsPgiEOt/2rAL+yuLmX4Z35GWX+gEQzRvC4xGOo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.9 29/34] USB: serial: ftdi_sio: add support for Brainboxes US-159/235/320
+Date:   Mon, 14 Feb 2022 10:25:55 +0100
+Message-Id: <20220214092446.890523443@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
+References: <20220214092445.946718557@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mipi dsi panel drivers can use mipi_dsi_dcs_{set,get}_display_brightness()
-to request backlight changes.
+From: Cameron Williams <cang1@live.co.uk>
 
-This can be done during panel initialization (dsi is in command mode)
-or afterwards (dsi is in Video Mode).
+commit fbb9b194e15a63c56c5664e76ccd0e85c6100cea upstream.
 
-When the DSI is in Video Mode, all commands are rejected.
+This patch adds support for the Brainboxes US-159, US-235 and US-320
+USB-to-Serial devices.
 
-Detect current DSI mode in mtk_dsi_host_transfer() and switch modes
-temporarily to allow commands to be sent.
-
-Signed-off-by: Julien STEPHAN <jstephan@baylibre.com>
-Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Changes in v4:
-    - fix missing space:  "ret : recv_cnt;"
-Changes in v3:
-    - increase readability of code and use correct return variable (see
-      comment
-https://lore.kernel.org/linux-mediatek/4907bdc1-b4a6-e9ad-5cfa-266fc20c0bec@collabora.com/)
+ drivers/usb/serial/ftdi_sio.c     |    3 +++
+ drivers/usb/serial/ftdi_sio_ids.h |    3 +++
+ 2 files changed, 6 insertions(+)
 
-Changes in v2:
-    - update commit message to be more descriptive
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -964,6 +964,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_023_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_034_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_101_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_159_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_2_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_3_PID) },
+@@ -972,12 +973,14 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_6_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_7_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_8_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_235_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_257_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_2_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_3_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_4_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_313_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_320_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_324_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_2_PID) },
+--- a/drivers/usb/serial/ftdi_sio_ids.h
++++ b/drivers/usb/serial/ftdi_sio_ids.h
+@@ -1505,6 +1505,9 @@
+ #define BRAINBOXES_VX_023_PID		0x1003 /* VX-023 ExpressCard 1 Port RS422/485 */
+ #define BRAINBOXES_VX_034_PID		0x1004 /* VX-034 ExpressCard 2 Port RS422/485 */
+ #define BRAINBOXES_US_101_PID		0x1011 /* US-101 1xRS232 */
++#define BRAINBOXES_US_159_PID		0x1021 /* US-159 1xRS232 */
++#define BRAINBOXES_US_235_PID		0x1017 /* US-235 1xRS232 */
++#define BRAINBOXES_US_320_PID		0x1019 /* US-320 1xRS422/485 */
+ #define BRAINBOXES_US_324_PID		0x1013 /* US-324 1xRS422/485 1Mbaud */
+ #define BRAINBOXES_US_606_1_PID		0x2001 /* US-606 6 Port RS232 Serial Port 1 and 2 */
+ #define BRAINBOXES_US_606_2_PID		0x2002 /* US-606 6 Port RS232 Serial Port 3 and 4 */
 
- drivers/gpu/drm/mediatek/mtk_dsi.c | 33 ++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 5d90d2eb0019..abdd9cdebd86 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -891,24 +891,33 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
- 	u8 read_data[16];
- 	void *src_addr;
- 	u8 irq_flag = CMD_DONE_INT_FLAG;
-+	u32 dsi_mode;
-+	int ret;
-
--	if (readl(dsi->regs + DSI_MODE_CTRL) & MODE) {
--		DRM_ERROR("dsi engine is not command mode\n");
--		return -EINVAL;
-+	dsi_mode = readl(dsi->regs + DSI_MODE_CTRL);
-+	if (dsi_mode & MODE) {
-+		mtk_dsi_stop(dsi);
-+		ret = mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
-+		if (ret)
-+			goto restore_dsi_mode;
- 	}
-
- 	if (MTK_DSI_HOST_IS_READ(msg->type))
- 		irq_flag |= LPRX_RD_RDY_INT_FLAG;
-
--	if (mtk_dsi_host_send_cmd(dsi, msg, irq_flag) < 0)
--		return -ETIME;
-+	ret = mtk_dsi_host_send_cmd(dsi, msg, irq_flag);
-+	if (ret)
-+		goto restore_dsi_mode;
-
--	if (!MTK_DSI_HOST_IS_READ(msg->type))
--		return 0;
-+	if (!MTK_DSI_HOST_IS_READ(msg->type)) {
-+		recv_cnt = 0;
-+		goto restore_dsi_mode;
-+	}
-
- 	if (!msg->rx_buf) {
- 		DRM_ERROR("dsi receive buffer size may be NULL\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto restore_dsi_mode;
- 	}
-
- 	for (i = 0; i < 16; i++)
-@@ -933,7 +942,13 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
- 	DRM_INFO("dsi get %d byte data from the panel address(0x%x)\n",
- 		 recv_cnt, *((u8 *)(msg->tx_buf)));
-
--	return recv_cnt;
-+restore_dsi_mode:
-+	if (dsi_mode & MODE) {
-+		mtk_dsi_set_mode(dsi);
-+		mtk_dsi_start(dsi);
-+	}
-+
-+	return ret < 0 ? ret : recv_cnt;
- }
-
- static const struct mipi_dsi_host_ops mtk_dsi_ops = {
---
-2.35.1
 
