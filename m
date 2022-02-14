@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A0B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237576AbiBNJaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:30:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42884 "EHLO
+        id S243288AbiBNJaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:30:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243112AbiBNJ3i (ORCPT
+        with ESMTP id S243158AbiBNJ3l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:29:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62C760AAF;
-        Mon, 14 Feb 2022 01:29:18 -0800 (PST)
+        Mon, 14 Feb 2022 04:29:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC12B60D92;
+        Mon, 14 Feb 2022 01:29:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1578FB80DC5;
-        Mon, 14 Feb 2022 09:29:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BF4BC340E9;
-        Mon, 14 Feb 2022 09:29:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D8E6B80DC9;
+        Mon, 14 Feb 2022 09:29:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7235DC340E9;
+        Mon, 14 Feb 2022 09:29:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830955;
-        bh=vKR3XLW8cjvpm8Z/9x3036EkCMG759mpw8h0+7mcmx4=;
+        s=korg; t=1644830959;
+        bh=iAl+cwZj3wJT1MYhfX0W439uv0dF9qdN6Y9wFUrV0dg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LknpxJ+mLeCdvnhrisnzYzAsRmGYVjV4/JzAk5G/O27MK3pvlMlqQMWKD26FJpygM
-         82ecXLPTjAHv+ouhbGCFgvG1tpZscTjIhIIV9/XhnTY0nTIr4fVpoc7rG77h8G7bxJ
-         GCeyOobc8oeKDfRdSS3dDQ3e4JNv/tpqNqZzgS/M=
+        b=jG8+n1PF1vpHIFuNUMp1vk2hFl/VRgwD/dZCl48Q6fiixc10Raj2keJ0PYEbJS+sC
+         oNGwla83GnL/5Jg3JG4kTQzMI6NW2BiKRonMhqVBy8+4EtcBpzW6DTYcnQ+/xS0s78
+         h6HYVBFcJ12g/VhvBOaVPctKQsE3oE6tePA7QkKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 4.9 34/34] hwmon: (dell-smm) Speed up setting of fan speed
-Date:   Mon, 14 Feb 2022 10:26:00 +0100
-Message-Id: <20220214092447.051660332@linuxfoundation.org>
+        stable@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 20/34] net: fix a memleak when uncloning an skb dst and its metadata
+Date:   Mon, 14 Feb 2022 10:25:46 +0100
+Message-Id: <20220214092446.600609884@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
@@ -49,70 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf <W_Armin@gmx.de>
+From: Antoine Tenart <atenart@kernel.org>
 
-commit c0d79987a0d82671bff374c07f2201f9bdf4aaa2 upstream.
+[ Upstream commit 9eeabdf17fa0ab75381045c867c370f4cc75a613 ]
 
-When setting the fan speed, i8k_set_fan() calls i8k_get_fan_status(),
-causing an unnecessary SMM call since from the two users of this
-function, only i8k_ioctl_unlocked() needs to know the new fan status
-while dell_smm_write() ignores the new fan status.
-Since SMM calls can be very slow while also making error reporting
-difficult for dell_smm_write(), remove the function call from
-i8k_set_fan() and call it separately in i8k_ioctl_unlocked().
+When uncloning an skb dst and its associated metadata, a new
+dst+metadata is allocated and later replaces the old one in the skb.
+This is helpful to have a non-shared dst+metadata attached to a specific
+skb.
 
-Tested on a Dell Inspiron 3505.
+The issue is the uncloned dst+metadata is initialized with a refcount of
+1, which is increased to 2 before attaching it to the skb. When
+tun_dst_unclone returns, the dst+metadata is only referenced from a
+single place (the skb) while its refcount is 2. Its refcount will never
+drop to 0 (when the skb is consumed), leading to a memory leak.
 
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20211021190531.17379-6-W_Armin@gmx.de
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this by removing the call to dst_hold in tun_dst_unclone, as the
+dst+metadata refcount is already 1.
+
+Fixes: fc4099f17240 ("openvswitch: Fix egress tunnel info.")
+Cc: Pravin B Shelar <pshelar@ovn.org>
+Reported-by: Vlad Buslov <vladbu@nvidia.com>
+Tested-by: Vlad Buslov <vladbu@nvidia.com>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/dell-smm-hwmon.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ include/net/dst_metadata.h | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/hwmon/dell-smm-hwmon.c
-+++ b/drivers/hwmon/dell-smm-hwmon.c
-@@ -294,7 +294,7 @@ static int i8k_get_fan_nominal_speed(int
+diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
+index 33ca53057f318..6a6f1d3bf8538 100644
+--- a/include/net/dst_metadata.h
++++ b/include/net/dst_metadata.h
+@@ -111,7 +111,6 @@ static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
+ #endif
+ 
+ 	skb_dst_drop(skb);
+-	dst_hold(&new_md->dst);
+ 	skb_dst_set(skb, &new_md->dst);
+ 	return new_md;
  }
- 
- /*
-- * Set the fan speed (off, low, high). Returns the new fan status.
-+ * Set the fan speed (off, low, high, ...).
-  */
- static int i8k_set_fan(int fan, int speed)
- {
-@@ -303,7 +303,7 @@ static int i8k_set_fan(int fan, int spee
- 	speed = (speed < 0) ? 0 : ((speed > i8k_fan_max) ? i8k_fan_max : speed);
- 	regs.ebx = (fan & 0xff) | (speed << 8);
- 
--	return i8k_smm(&regs) ? : i8k_get_fan_status(fan);
-+	return i8k_smm(&regs);
- }
- 
- static int i8k_get_temp_type(int sensor)
-@@ -417,7 +417,7 @@ static int
- i8k_ioctl_unlocked(struct file *fp, unsigned int cmd, unsigned long arg)
- {
- 	int val = 0;
--	int speed;
-+	int speed, err;
- 	unsigned char buff[16];
- 	int __user *argp = (int __user *)arg;
- 
-@@ -478,7 +478,11 @@ i8k_ioctl_unlocked(struct file *fp, unsi
- 		if (copy_from_user(&speed, argp + 1, sizeof(int)))
- 			return -EFAULT;
- 
--		val = i8k_set_fan(val, speed);
-+		err = i8k_set_fan(val, speed);
-+		if (err < 0)
-+			return err;
-+
-+		val = i8k_get_fan_status(val);
- 		break;
- 
- 	default:
+-- 
+2.34.1
+
 
 
