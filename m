@@ -2,123 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A32C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F41C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbiBNVQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:16:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58296 "EHLO
+        id S230319AbiBNVQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:16:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230319AbiBNVQS (ORCPT
+        with ESMTP id S230392AbiBNVQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:16:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9581133C8;
-        Mon, 14 Feb 2022 13:16:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 778A16115B;
-        Mon, 14 Feb 2022 19:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5FFAC340FD;
-        Mon, 14 Feb 2022 19:40:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644867624;
-        bh=5szbHF9etsKpvbwWwwc9H/Y1QakuvzjKYGUIBcYFA80=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=e8SkA3FlLGu70hI/WgHcE1Xcld6ahEqgd/8aP3tnN+Ui+6c+MZmJxArGum1LdtmAc
-         TVm8LqkWXJbpel0WqJluZlN0q2Rc8pObOFXCjWsE1d3haVSN1sOjQ5hKRVHWsZ71lN
-         9Hnj9zqBHSBBx6qUNlA6sc7rmD8pMbOGHJ9SDDCXuRY9FNQ7binWt4bsfA/Yof8Egb
-         Ksm8rfkNmn9T9/rsBeFI1yBap4xnb6nVmSKUusmotl5Q02Llm+mwF8WcKWget2RALt
-         X3B6AavEfyIeX6XUTomqUIV78jVQAYplU/28sKTs9My6dabsF705ywSdaO+p8h0D4l
-         JZS2fHyItMkuQ==
-Received: by mail-wm1-f54.google.com with SMTP id x3-20020a05600c21c300b0037c01ad715bso96481wmj.2;
-        Mon, 14 Feb 2022 11:40:24 -0800 (PST)
-X-Gm-Message-State: AOAM532dvZbtvOPm1OVJdRP6UdnKTYMjhyzK9noTSPV4d2TnlmwY4VjK
-        c6zphPR526O7Yd9rGGuLi8qjsl/2HmGocLZjIrU=
-X-Google-Smtp-Source: ABdhPJzTYqCeBLA8ZZTCXfIkkUBrupnk+RLzKXVQdywxm2I/SfNIqW0R0tvlKvR6EMssd+gXW/CMf7zH4TFa2LGJB14=
-X-Received: by 2002:a05:600c:1d27:b0:37c:74bb:2b4d with SMTP id
- l39-20020a05600c1d2700b0037c74bb2b4dmr252362wms.82.1644867623104; Mon, 14 Feb
- 2022 11:40:23 -0800 (PST)
+        Mon, 14 Feb 2022 16:16:29 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79DA111DE7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:16:15 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id c10so5795332pfv.8
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:16:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7CzXZHBrjrvvHPuFEDIUoa2XYSCdiIOC+ZXymIl1Gq0=;
+        b=DLytup8/nMFdOQpyOX32iLWswu2Lulci0Fe3QMhFaiTB94l2eFbralSxvQAHWw0Abi
+         eMBgf9GgT+3emlXnMtYFbLB8+fCbzYJCtn5FPEK0aM6ahcRxN/pBwtNPTnwicu4pOuMN
+         h1eKmzTSyxcEdz8Xf9DJQZvl62kNNYWtiHsrE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7CzXZHBrjrvvHPuFEDIUoa2XYSCdiIOC+ZXymIl1Gq0=;
+        b=3H+b+mrMZxBs5S3d7C5RHIBIQ/Zq4nnqMyQxZ0ciw21TYUA0feQxb7m3TGhMFmACLF
+         TiUzV4hx0XXIYgTnEuY/8zNOi8Fkqn+z1vNUMbki7XIdjnQv/CEM5bN5j3YcprK4564E
+         2XvirR9E+ALJMGsq7dvN652763eaRhyHUIqCBMXpY16hykmOGTcUqthY4wGhX5HvflxD
+         QuOvn8/V/XV3hYDBTxbxoXE5v7qpKoMpP2pSpor6rYxAsR4Ln45cD1QhWJtL4NR+INHj
+         Ze/obDcO9gTjCsoUvh/yjoTHTWSPtmWG7PZycLMe0OEg68YBwzdp3C5DyJpQGkGbFlEL
+         j3Pw==
+X-Gm-Message-State: AOAM532wvDogJZGNiT8x6PcXzhGF6CHdrJTiUdwV7ZqOIejPVOFD4Izk
+        HIQx/SRwnHso9uwk4V//B9FX3kl3mCM/5g==
+X-Google-Smtp-Source: ABdhPJwEa/+o++xM1jvGn6J4uA1jnNEs+L6LOssFo6u6kFTNXF/whFKH0nAMuVk0P4sIE7mk5RwzkA==
+X-Received: by 2002:a65:584d:: with SMTP id s13mr389414pgr.369.1644866055556;
+        Mon, 14 Feb 2022 11:14:15 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id oa10sm12985799pjb.54.2022.02.14.11.14.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 11:14:15 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Marco Elver <elver@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Alexander Potapenko <glider@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        kasan-dev@googlegroups.com, Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v2 1/2] stack: Introduce CONFIG_RANDOMIZE_KSTACK_OFFSET
+Date:   Mon, 14 Feb 2022 11:14:03 -0800
+Message-Id: <164486603894.3748820.17377347049312013591.b4-ty@chromium.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220131090521.1947110-1-elver@google.com>
+References: <20220131090521.1947110-1-elver@google.com>
 MIME-Version: 1.0
-References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-11-arnd@kernel.org>
- <YgqL/NJ3YHEAhj4i@infradead.org>
-In-Reply-To: <YgqL/NJ3YHEAhj4i@infradead.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 14 Feb 2022 20:40:07 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3eOw=QpxWFnODE61EFt8oGPJ7dcusfbPSD1vdEsUmekQ@mail.gmail.com>
-Message-ID: <CAK8P3a3eOw=QpxWFnODE61EFt8oGPJ7dcusfbPSD1vdEsUmekQ@mail.gmail.com>
-Subject: Re: [PATCH 10/14] uaccess: remove most CONFIG_SET_FS users
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Brian Cain <bcain@codeaurora.org>,
-        Helge Deller <deller@gmx.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        linux-csky@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SYNOPSYS ARC ARCHITECTURE" 
-        <linux-snps-arc@lists.infradead.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Openrisc <openrisc@lists.librecores.org>,
-        Greentime Hu <green.hu@gmail.com>,
-        Stafford Horne <shorne@gmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Nick Hu <nickhu@andestech.com>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Richard Weinberger <richard@nod.at>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 6:06 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Mon, Feb 14, 2022 at 05:34:48PM +0100, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > On almost all architectures, there are no remaining callers
-> > of set_fs(), so CONFIG_SET_FS can be disabled, along with
-> > removing the thread_info field and any references to it.
-> >
-> > This turns access_ok() into a cheaper check against TASK_SIZE_MAX.
->
-> Wouldn't it make more sense to just merge this into the last patch?
+On Mon, 31 Jan 2022 10:05:20 +0100, Marco Elver wrote:
+> The randomize_kstack_offset feature is unconditionally compiled in when
+> the architecture supports it.
+> 
+> To add constraints on compiler versions, we require a dedicated Kconfig
+> variable. Therefore, introduce RANDOMIZE_KSTACK_OFFSET.
+> 
+> Furthermore, this option is now also configurable by EXPERT kernels:
+> while the feature is supposed to have zero performance overhead when
+> disabled, due to its use of static branches, there are few cases where
+> giving a distribution the option to disable the feature entirely makes
+> sense. For example, in very resource constrained environments, which
+> would never enable the feature to begin with, in which case the
+> additional kernel code size increase would be redundant.
+> 
+> [...]
 
-Yes, sounds good. I wasn't sure at first if there is enough buy-in to get
-all architectures cleaned up, and I hadn't done the ia64 patch, so it
-seemed more important to do this part early, but now it seems that it
-will all go in at the same time, so doing this as part of a big removal
-at the end makes sense.
+Applied to for-next/hardening, thanks!
 
-        Arnd
+[1/2] stack: Introduce CONFIG_RANDOMIZE_KSTACK_OFFSET
+      https://git.kernel.org/kees/c/8cb37a5974a4
+[2/2] stack: Constrain and fix stack offset randomization with Clang builds
+      https://git.kernel.org/kees/c/efa90c11f62e
+
+-- 
+Kees Cook
+
