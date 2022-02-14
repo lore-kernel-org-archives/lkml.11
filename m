@@ -2,101 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5157C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C73CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352210AbiBNMEo (ORCPT
+        id S1352433AbiBNME6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:04:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33710 "EHLO
+        Mon, 14 Feb 2022 07:04:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352448AbiBNME3 (ORCPT
+        with ESMTP id S1352513AbiBNMEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:04:29 -0500
-Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FF0B2BDE;
-        Mon, 14 Feb 2022 04:04:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=U+JDY
-        cv4Sgjbhmy74T8cF1JfikTdJpu6pHvaldP6AWY=; b=j+3OgVHiT/HQT4Ly8J28I
-        y8zfPY9WRl22n2RdMJ/oBNd80oywFYic3YwDSbL9Qab8Xb2n0i3iWneEniUf26LF
-        dFaAISezUDlG2tSyjIwixqXJkZXbPAwPSaglTGCRBRyKQjgTD6AEGhAzP52w2y/V
-        20+1ojt1gvf8Akb8HzUV0k=
-Received: from localhost.localdomain (unknown [49.76.218.253])
-        by smtp3 (Coremail) with SMTP id DcmowAAn1Pz3RApiYcDMAQ--.15568S2;
-        Mon, 14 Feb 2022 20:03:05 +0800 (CST)
-From:   wonder_rock@126.com
-To:     rdunlap@infradead.org
-Cc:     axboe@kernel.dk, guoren@kernel.org, linux-csky@vger.kernel.org,
-        linux-kernel@vger.kernel.org, wonder_rock@126.com
-Subject: [PATCH 1/1] csky: Fix versioncheck warnings
-Date:   Mon, 14 Feb 2022 20:02:50 +0800
-Message-Id: <20220214120250.10256-1-wonder_rock@126.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <98208fa3-4b28-cdeb-7699-dbd9d66bfa60@infradead.org>
-References: <98208fa3-4b28-cdeb-7699-dbd9d66bfa60@infradead.org>
+        Mon, 14 Feb 2022 07:04:43 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40062ADA
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:04:27 -0800 (PST)
+Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jy2vB2rsnz67bH2;
+        Mon, 14 Feb 2022 20:04:06 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 14 Feb 2022 13:04:24 +0100
+Received: from [10.47.81.62] (10.47.81.62) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Mon, 14 Feb
+ 2022 12:04:24 +0000
+Message-ID: <1da1252e-59d0-77d1-0419-242528739392@huawei.com>
+Date:   Mon, 14 Feb 2022 12:04:25 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcmowAAn1Pz3RApiYcDMAQ--.15568S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Aw47Xr1rZF4Dur17Ar1kZrb_yoW8Ww15pF
-        1DZrZ5KrW5Cw18tr9rAr1qyas0q3WDGw1xX347KFWUZF47tFWqqrs5Crn0yr1DXFWv9w4r
-        WF43Gr45GrWDXaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UcSdkUUUUU=
-X-Originating-IP: [49.76.218.253]
-X-CM-SenderInfo: xzrqvv5ubu0ubn6rjloofrz/1tbiuRmngVpD7wfTewAAsf
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 2/2] perf jevents: Add support for HiSilicon CPA PMU
+ aliasing
+To:     Qi Liu <liuqi115@huawei.com>, "will@kernel.org" <will@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+CC:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linuxarm <linuxarm@huawei.com>,
+        Zhangshaokun <zhangshaokun@hisilicon.com>
+References: <20220214114228.40859-1-liuqi115@huawei.com>
+ <20220214114228.40859-3-liuqi115@huawei.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220214114228.40859-3-liuqi115@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.81.62]
+X-ClientProxiedBy: lhreml703-chm.china.huawei.com (10.201.108.52) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Deyan Wang <wonder_rock@126.com>
+On 14/02/2022 11:42, Qi Liu wrote:
+> Add support for HiSilicon CPA PMU aliasing.
+> 
+> The kernel driver is in drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
+> 
+> Signed-off-by: Qi Liu<liuqi115@huawei.com>
 
-arch/csky/include/asm/io.h: 8 linux/version.h not needed.
-arch/csky/kernel/process.c: 5 linux/version.h not needed.
-arch/csky/mm/dma-mapping.c: 12 linux/version.h not needed.
+You realy should cc the perf tool list and maintainers there also.
 
-Signed-off-by: Deyan Wang <wonder_rock@126.com>
----
- arch/csky/include/asm/io.h | 1 -
- arch/csky/kernel/process.c | 1 -
- arch/csky/mm/dma-mapping.c | 1 -
- 3 files changed, 3 deletions(-)
+Reviewed-by: John Garry <john.garry@huawei.com>
 
-diff --git a/arch/csky/include/asm/io.h b/arch/csky/include/asm/io.h
-index f82654053dc0..ed53f0b47388 100644
---- a/arch/csky/include/asm/io.h
-+++ b/arch/csky/include/asm/io.h
-@@ -5,7 +5,6 @@
- 
- #include <linux/pgtable.h>
- #include <linux/types.h>
--#include <linux/version.h>
- 
- /*
-  * I/O memory access primitives. Reads are ordered relative to any
-diff --git a/arch/csky/kernel/process.c b/arch/csky/kernel/process.c
-index 3d0ca22cd0e2..5de04707aa07 100644
---- a/arch/csky/kernel/process.c
-+++ b/arch/csky/kernel/process.c
-@@ -2,7 +2,6 @@
- // Copyright (C) 2018 Hangzhou C-SKY Microsystems co.,ltd.
- 
- #include <linux/module.h>
--#include <linux/version.h>
- #include <linux/sched.h>
- #include <linux/sched/task_stack.h>
- #include <linux/sched/debug.h>
-diff --git a/arch/csky/mm/dma-mapping.c b/arch/csky/mm/dma-mapping.c
-index c3a775a7e8f9..82447029feb4 100644
---- a/arch/csky/mm/dma-mapping.c
-+++ b/arch/csky/mm/dma-mapping.c
-@@ -9,7 +9,6 @@
- #include <linux/mm.h>
- #include <linux/scatterlist.h>
- #include <linux/types.h>
--#include <linux/version.h>
- #include <asm/cache.h>
- 
- static inline void cache_op(phys_addr_t paddr, size_t size,
--- 
-2.25.1
+> +	},
+> +	{
+> +		"MetricExpr": "(p0_wr_dat * 64 + p0_rd_dat_64b * 64 + p0_rd_dat_32b * 32) / cpa_cycles",
+> +		"BriefDescription": "Average bandwidth of CPA Port 0",
+> +		"MetricGroup": "CPA",
 
+nit: maybe this should have a more distrinct name
+
+> +		"MetricName": "p0_avg_bw",
+> +		"Compat": "0x00000030",
+
+JFYI, I have a rewrite of the perf tool system pmu metric support that 
+will not require us to add the compat here.
+
+> +		"Unit": "hisi_sicl,cpa"
+
+Thanks,
+John
