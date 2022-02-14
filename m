@@ -2,141 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD346C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D93C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347539AbiBNKdV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:33:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41270 "EHLO
+        id S242325AbiBNKdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:33:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347894AbiBNKbt (ORCPT
+        with ESMTP id S1347648AbiBNKbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:31:49 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF23BE0;
-        Mon, 14 Feb 2022 02:00:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644832808; x=1676368808;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=pdaKJlAT99zvWSgNNF1VUPdCxF67X30I6vH6ZtJgEK8=;
-  b=b7o25zNyyjhXHYu+Fk/s/N8PJfe9GSmKbyTdUkkvRYb3kwMHqYAlkVEy
-   2BNUI9yEBiBoKNJwfZup9awXWHLYHfmEkYC2YWxxql0lpQsCztgPXdSd6
-   pPGD0Yg7oDrNhnWHdB9uIWb9X9V0omZ6O+J9CdRnBXdYEL5fOJtvM3n7I
-   s=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Feb 2022 01:59:57 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 01:59:56 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 14 Feb 2022 01:59:55 -0800
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 14 Feb 2022 01:59:50 -0800
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v13 00/10] Add support for audio on SC7280 based targets
-Date:   Mon, 14 Feb 2022 15:29:37 +0530
-Message-ID: <1644832778-16064-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 14 Feb 2022 05:31:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1592389;
+        Mon, 14 Feb 2022 02:00:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A272F60921;
+        Mon, 14 Feb 2022 10:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C70C340EF;
+        Mon, 14 Feb 2022 10:00:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832807;
+        bh=TpPBO9LX7Ed0/HpASURHSpURkqAJAx0uV/TvLyhfA2g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=L8HZd6dBIu7+3PZzUmvKa/DHxp+7AmskcBJY3Rv1GVvFwLXdQCd17WFZZqPSFFssZ
+         sncjGmyXYcvny0TU+4WBC89NkQMgoS8DQWVB8RTBL5O385De/u2k3vIX49RYKO3428
+         ykbMevEiqFrQwkhBXrI9v1Ft5lVSC5ZYMOgbrXAE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Helge Deller <deller@gmx.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 130/203] fbcon: Avoid cap set but not used warning
+Date:   Mon, 14 Feb 2022 10:26:14 +0100
+Message-Id: <20220214092514.651071842@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch set is to add support for Audio over wcd codec,
-digital mics, through digital codecs and without ADSP.
+From: Helge Deller <deller@gmx.de>
 
-Changes Since V12:
-    -- Fix typo errors.
-Changes Since V11:
-    -- Fix kernel robot issue on arguments type mismatch.
-Changes Since V10:
-    -- Split bulk clock voting to individual clock voting as per use case in cdc-dma driver.
-    -- Add missing codec dma clocks.
-    -- Update rxtx lpm buffer size.
-Changes Since V9:
-    -- Change individual clock voting to bulk clock voting of lpass-sc7280 platform driver.
-    -- Remove redundant clocks in lpass variant structure.
-    -- Add mclk for MI2S based headset path.
-    -- Remove unused lpass variant structure members in lpass header.
-Changes Since V8:
-    -- Fix errors in sc7280 lpass cpu dt-bindings.
-    -- Move to quicinc domain email id's.
-Changes Since V7:
-    -- Fix indentation errors.
-    -- Bisect patches to avoid interdependency.
-Changes Since V6:
-    -- Split cdc dma regmap config macros.
-    -- Add write dma reg fields for i2s path.
-    -- Add helper function to distinguish rxtx and va dma ports.
-    -- Optimizing clock and reg name in cpu dt-bindings.
-    -- Update buffer management for cdc dma path.
-    -- Remove Kconfig fields of machine driver.
-Changes Since V5:
-    -- Include MI2S primary node to snd_soc_dai_driver in lpass-sc7280 platform driver.
-    -- Move dependency patch list to corresponding patch.
-    -- Add support for missing cdc-dma ports.
-    -- Change if/else conditional statements to switch cases.
-    -- Add missing error handlings.
-    -- Typo errors fix.
-Changes Since V4:
-    -- Remove unused variable in lpass-sc7280 platform driver.
-Changes Since V3:
-    -- Remove redundant power domain controls. As power domains can be configured from dtsi.
-Changes Since V2:
-    -- Split lpass sc7280 cpu driver patch and create regmap config patch.
-    -- Create patches based on latest kernel tip.
-    -- Add helper function to get dma control and lpaif handle.
-    -- Remove unused variables.
-Changes Since V1:
-    -- Typo errors fix
-    -- CPU driver readable/writable apis optimization.
-    -- Add Missing config patch
-    -- Add Common api for repeated dmactl initialization.
+[ Upstream commit 50b10528aad568c95f772039d4b3093b4aea7439 ]
 
-Srinivasa Rao Mandadapu (10):
-  ASoC: qcom: SC7280: Update config for building codec dma drivers
-  ASoC: qcom: Move lpass_pcm_data structure to lpass header
-  ASoC: qcom: lpass: Add dma fields for codec dma lpass interface
-  ASoC: qcom: Add helper function to get dma control and lpaif handle
-  ASoC: qcom: Add register definition for codec rddma and wrdma
-  ASoC: qcom: Add regmap config support for codec dma driver
-  ASoC: qcom: Add support for codec dma driver
-  ASoC: qcom: Add lpass CPU driver for codec dma control
-  ASoC: dt-bindings: Add SC7280 lpass cpu bindings
-  ASoC: qcom: lpass-sc7280: Add platform driver for lpass audio
+Fix this kernel test robot warning:
 
- .../devicetree/bindings/sound/qcom,lpass-cpu.yaml  |  75 ++-
- sound/soc/qcom/Kconfig                             |  11 +
- sound/soc/qcom/Makefile                            |   4 +
- sound/soc/qcom/lpass-cdc-dma.c                     | 304 ++++++++++
- sound/soc/qcom/lpass-cpu.c                         | 244 +++++++-
- sound/soc/qcom/lpass-lpaif-reg.h                   | 127 ++++-
- sound/soc/qcom/lpass-platform.c                    | 617 ++++++++++++++++++---
- sound/soc/qcom/lpass-sc7280.c                      | 447 +++++++++++++++
- sound/soc/qcom/lpass.h                             | 145 +++++
- 9 files changed, 1887 insertions(+), 87 deletions(-)
- create mode 100644 sound/soc/qcom/lpass-cdc-dma.c
- create mode 100644 sound/soc/qcom/lpass-sc7280.c
+  drivers/video/fbdev/core/fbcon.c: In function 'fbcon_init':
+  drivers/video/fbdev/core/fbcon.c:1028:6: warning: variable 'cap' set but not used [-Wunused-but-set-variable]
 
+The cap variable is only used when CONFIG_FRAMEBUFFER_CONSOLE_LEGACY_ACCELERATION
+is enabled. Drop the temporary variable and use info->flags instead.
+
+Fixes: 87ab9f6b7417 ("Revert "fbcon: Disable accelerated scrolling")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/YgFB4xqI+As196FR@p100
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/core/fbcon.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index f36829eeb5a93..2fc1b80a26ad9 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -1025,7 +1025,7 @@ static void fbcon_init(struct vc_data *vc, int init)
+ 	struct vc_data *svc = *default_mode;
+ 	struct fbcon_display *t, *p = &fb_display[vc->vc_num];
+ 	int logo = 1, new_rows, new_cols, rows, cols;
+-	int cap, ret;
++	int ret;
+ 
+ 	if (WARN_ON(info_idx == -1))
+ 	    return;
+@@ -1034,7 +1034,6 @@ static void fbcon_init(struct vc_data *vc, int init)
+ 		con2fb_map[vc->vc_num] = info_idx;
+ 
+ 	info = registered_fb[con2fb_map[vc->vc_num]];
+-	cap = info->flags;
+ 
+ 	if (logo_shown < 0 && console_loglevel <= CONSOLE_LOGLEVEL_QUIET)
+ 		logo_shown = FBCON_LOGO_DONTSHOW;
+@@ -1137,8 +1136,8 @@ static void fbcon_init(struct vc_data *vc, int init)
+ 	ops->graphics = 0;
+ 
+ #ifdef CONFIG_FRAMEBUFFER_CONSOLE_LEGACY_ACCELERATION
+-	if ((cap & FBINFO_HWACCEL_COPYAREA) &&
+-	    !(cap & FBINFO_HWACCEL_DISABLED))
++	if ((info->flags & FBINFO_HWACCEL_COPYAREA) &&
++	    !(info->flags & FBINFO_HWACCEL_DISABLED))
+ 		p->scrollmode = SCROLL_MOVE;
+ 	else /* default to something safe */
+ 		p->scrollmode = SCROLL_REDRAW;
 -- 
-2.7.4
+2.34.1
+
+
 
