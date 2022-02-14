@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21646C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245501AbiBNJt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:49:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43946 "EHLO
+        id S245618AbiBNJuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:50:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344450AbiBNJrA (ORCPT
+        with ESMTP id S1344411AbiBNJq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:47:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23658B840;
-        Mon, 14 Feb 2022 01:40:36 -0800 (PST)
+        Mon, 14 Feb 2022 04:46:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4E760D90;
+        Mon, 14 Feb 2022 01:40:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 603A0B80DA9;
-        Mon, 14 Feb 2022 09:40:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 811EEC340E9;
-        Mon, 14 Feb 2022 09:40:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A043860F87;
+        Mon, 14 Feb 2022 09:40:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E4CCC340E9;
+        Mon, 14 Feb 2022 09:40:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831628;
-        bh=UX+GEMDUAS7nFBJYboDCQWscl6eu2O7XhcLAoI0Vx2c=;
+        s=korg; t=1644831625;
+        bh=ZIoruihJRDf1q4OFLPrXAa1XVhoSo5Vgetf4aKxnfEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p4oviLV2W3mAdqOb+4dftt+N65EkPwItHvjn1p9HmcdW94ZPr9YfAxFUtgA0h0ieN
-         QLScOJuH6P7LL95geI+s821HgUID2TBHmkW6x8C3/P8Q/edm1zZ0vfxvogUA0War0V
-         O4hcxCmXLUabWBB3s8Xqw2t74PMG7Ych/YVN4s54=
+        b=ebLL3tSaQVHlY0KN7ojK9q9/R/rnFJAAJy9sGtwqB/fcubFfRxieVCEQ1giXKcln6
+         IIYfA1CBlebvL61jXFSnyZw+VJq4EWKnztmA0gnyU5BavaqcyrufoEGr7wmEMUK93q
+         a6yq34ME5uxqYMrQeOQ1E7YAiFggQQtfJpAH+41Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Stefan Hansson <newbyte@disroot.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.10 044/116] ARM: dts: Fix boot regression on Skomer
-Date:   Mon, 14 Feb 2022 10:25:43 +0100
-Message-Id: <20220214092500.219193748@linuxfoundation.org>
+        stable@vger.kernel.org, Zheng Wu <wu.zheng@intel.com>,
+        Ye Jinhe <jinhe.ye@intel.com>, Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 035/116] nvme-pci: add the IGNORE_DEV_SUBNQN quirk for Intel P4500/P4600 SSDs
+Date:   Mon, 14 Feb 2022 10:25:34 +0100
+Message-Id: <20220214092459.901116421@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,35 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Wu Zheng <wu.zheng@intel.com>
 
-commit d9058d6a0e92d8e4a00855f8fe204792f42794db upstream.
+[ Upstream commit 25e58af4be412d59e056da65cc1cefbd89185bd2 ]
 
-The signal routing on the Skomer board was incorrect making
-it impossible to mount root from the SD card. Fix this up.
+The Intel P4500/P4600 SSDs do not report a subsystem NQN despite claiming
+compliance to a standards version where reporting one is required.
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Cc: stable@vger.kernel.org
-Cc: Stefan Hansson <newbyte@disroot.org>
-Link: https://lore.kernel.org/r/20220205235312.446730-1-linus.walleij@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Add the IGNORE_DEV_SUBNQN quirk to not fail the initialization of a
+second such SSDs in a system.
+
+Signed-off-by: Zheng Wu <wu.zheng@intel.com>
+Signed-off-by: Ye Jinhe <jinhe.ye@intel.com>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/ste-ux500-samsung-skomer.dts |    4 ----
- 1 file changed, 4 deletions(-)
+ drivers/nvme/host/pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/ste-ux500-samsung-skomer.dts
-+++ b/arch/arm/boot/dts/ste-ux500-samsung-skomer.dts
-@@ -154,10 +154,6 @@
- 			cap-sd-highspeed;
- 			cap-mmc-highspeed;
- 			/* All direction control is used */
--			st,sig-dir-cmd;
--			st,sig-dir-dat0;
--			st,sig-dir-dat2;
--			st,sig-dir-dat31;
- 			st,sig-pin-fbclk;
- 			full-pwr-cycle;
- 			vmmc-supply = <&ab8500_ldo_aux3_reg>;
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 1b85349f57af0..97afeb898b253 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3198,7 +3198,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_DEALLOCATE_ZEROES, },
+ 	{ PCI_VDEVICE(INTEL, 0x0a54),	/* Intel P4500/P4600 */
+ 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
+-				NVME_QUIRK_DEALLOCATE_ZEROES, },
++				NVME_QUIRK_DEALLOCATE_ZEROES |
++				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_VDEVICE(INTEL, 0x0a55),	/* Dell Express Flash P4600 */
+ 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
+ 				NVME_QUIRK_DEALLOCATE_ZEROES, },
+-- 
+2.34.1
+
 
 
