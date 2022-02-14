@@ -2,156 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 571F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F822C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbiBNVSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:18:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36200 "EHLO
+        id S230434AbiBNVSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:18:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230396AbiBNVSY (ORCPT
+        with ESMTP id S230442AbiBNVS3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:18:24 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2991D13C243
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:18:14 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id 4so18772716oil.11
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:18:14 -0800 (PST)
+        Mon, 14 Feb 2022 16:18:29 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD53211628B;
+        Mon, 14 Feb 2022 13:18:19 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id p14so15806734ejf.11;
+        Mon, 14 Feb 2022 13:18:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lUDAX0UaDPTHJ9u8BBzfbhja83Bgj8HqOrB2yYnjOXM=;
-        b=VFULTseLnwoWoQSLrikwObkqrgWEDJsgEoShox8nAP9wuMRLYLSmINgZVPuS4zJCYq
-         AY+rJI2tTabEed97CNniygA5XGKmOrXxLL+dqf5LJsVaIMA+QxlQKmlOxLVW3MPyEQOW
-         ZtZ4oDJOQLly/BilNjT4JcO3Qc4hVnFdspg2L6GzChP02kiowqdnpSk3qcJBLKZzsP0E
-         LQOUETeZSPr1OgoOyaK1JtHOTBP1ihk0bK5wukpFaWyN8SjOlX96peTYbEzeUHuSIcP3
-         kErjTwCsp+aGM83fy1ZyKBkFtKkFORMEFCjsOWRHwsOb1sx0pkSNSAWQmxneJL40R6Rz
-         fXKQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=99BahZfDqfQoln2rf6Bj3xU3QXecprDtHuHMCBkgrcQ=;
+        b=qhf19N3SLoLekl8nSgEbpHiFYk6ResBtkXfsJl63wafe0VQ0y5uwdcbx4dh7Api/cr
+         pq4kpVN3rz8ufkFRa9PQhw12DgU06aBBMlGjIZ82TXZkn5kbidmhueb3xMvAz8cyvLFK
+         23OCsQ5snWWXIQrfygum5Ml7tz1ev7oa/U9muYVV8pA1ru4b2uJnVoNiHqJAUlw6HTVD
+         4YwuEf7WP8XA/Rm/UEIkIOK+MRnmJTKW4dRGuT49tZEp3Adgnjs0GNTOr22NQe/Yb5r4
+         ZRdbMxoYgxE3NBz9Kcl1JoZpZ2VWWqZLEqmaXpiuwLy5eS4Rlf+vH+mqr6eGRoqwxN34
+         hTIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lUDAX0UaDPTHJ9u8BBzfbhja83Bgj8HqOrB2yYnjOXM=;
-        b=x4BjQYd41J76UTSPC3ac8L9oysTAKVksMbjFlGYgnzqXGk3cPO7YmRYimx19iv3mib
-         Pqm8rUOFPTpFrDKXO5qNaF6y/xKhInunHJGAHvZOZ3i/BWRuRef2GpNNYPpGQPfMCwEA
-         AHSDiDptahWS5qLuHXatiXrFXU1XUbVI0ilSq/SshAIKuIwUqta278Rmv1wMgT62Tfln
-         7Q1rZ/eEcCIYL7vmBpvgzfa1s2uvODqSGFwHwVPPQ9QBgZB4nWqU3obKh4HOSFUCUy9W
-         jJoNizX+7f8YUb7/H8ZagHF8CniYwKnE11vRPB6vBDff0NRbEu4bc0u/7IACRAqpfl/6
-         OqeA==
-X-Gm-Message-State: AOAM532MguSng4hI9xB1droneinrwY9w5CMSTyske4NHVyahl2q8L5Es
-        GF9PaDnVpYaF9At7C31iOkCU8nBaXwKfFw==
-X-Google-Smtp-Source: ABdhPJxxpY4/tEbGo0g+V8BNk8kQ7NowXtqTBM2bOEDe8a9owPVdSth3Obtc2+mwubfJzK+qB57Q9Q==
-X-Received: by 2002:a17:90a:1b2c:b0:1b8:ab57:309f with SMTP id q41-20020a17090a1b2c00b001b8ab57309fmr248913pjq.48.1644866647585;
-        Mon, 14 Feb 2022 11:24:07 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id nn16sm15099137pjb.2.2022.02.14.11.24.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=99BahZfDqfQoln2rf6Bj3xU3QXecprDtHuHMCBkgrcQ=;
+        b=8MvPCrp9Qh5VxH2eo86CV29dxKzn8thbL0ONZVBFka85iaKFnH1b0dMWsgzz8zE0mR
+         3k9A4OeUByrY9Y1Wni31rKSwFze+yTqTiR4Erd9Tms0t+aKDE527JJ5NfE4tCGKWZ8Le
+         AUeUxqyr1hntfjfkxJC3zkTqwgPhEmQfNOM8hvmK3cv7EmqASyRdo6uWc7GRvBM1jahg
+         UVDkpTtN0gnqR+GEpCP+cTpEW+akEFA8qb5QWdfqovmSubzEmknQqY1UPgCSX4DqE+QO
+         jENLitKRUII5Rimq2jZ7vgeHYHrSTWqDJyZDd+L7fGKl+J8SuFufKK6ns6B+MLaM3Ui3
+         P+GQ==
+X-Gm-Message-State: AOAM5322brr9yqyWrOx1rmIPNZS5W+a3qnOxarsVgsGYVHpXDNeAIBKw
+        +koQZSToxcZVQ2eHjHiKL3v5Q6LMfyjS/g==
+X-Google-Smtp-Source: ABdhPJwiFYCfncVtqTqjdVCBhQycol1aX209bItLXOycZar8UGc4dq3/BcvtHafFwyhS52svnZjIdA==
+X-Received: by 2002:a17:907:16aa:: with SMTP id hc42mr167762ejc.307.1644865723011;
+        Mon, 14 Feb 2022 11:08:43 -0800 (PST)
+Received: from kista.localdomain (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
+        by smtp.gmail.com with ESMTPSA id m17sm2316338ejn.118.2022.02.14.11.08.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 11:24:06 -0800 (PST)
-Date:   Mon, 14 Feb 2022 19:24:03 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com
-Subject: Re: [PATCH 12/12] KVM: x86: do not unload MMU roots on all role
- changes
-Message-ID: <YgqsU8j80M1ZpWPx@google.com>
-References: <20220209170020.1775368-1-pbonzini@redhat.com>
- <20220209170020.1775368-13-pbonzini@redhat.com>
- <YgavcP/jb5njjKKn@google.com>
- <5f42d1ef-f6b7-c339-32b9-f4cf48c21841@redhat.com>
+        Mon, 14 Feb 2022 11:08:42 -0800 (PST)
+From:   Jernej Skrabec <jernej.skrabec@gmail.com>
+To:     mripard@kernel.org, paul.kocialkowski@bootlin.com
+Cc:     mchehab@kernel.org, wens@csie.org, gregkh@linuxfoundation.org,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: [PATCH] media: cedrus: h264: Fix neighbour info buffer size
+Date:   Mon, 14 Feb 2022 20:08:39 +0100
+Message-Id: <20220214190839.707889-1-jernej.skrabec@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5f42d1ef-f6b7-c339-32b9-f4cf48c21841@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022, Paolo Bonzini wrote:
-> On 2/11/22 19:48, Sean Christopherson wrote:
-> > On Wed, Feb 09, 2022, Paolo Bonzini wrote:
-> > > @@ -5045,8 +5046,8 @@ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
-> > >   void kvm_mmu_reset_context(struct kvm_vcpu *vcpu)
-> > >   {
-> > > -	kvm_mmu_unload(vcpu);
-> > >   	kvm_init_mmu(vcpu);
-> > > +	kvm_mmu_new_pgd(vcpu, vcpu->arch.cr3);
-> > 
-> > This is too risky IMO, there are far more flows than just MOV CR0/CR4 that are
-> > affected, e.g. SMM transitions, KVM_SET_SREG, etc...
-> 
-> SMM exit does flush the TLB because RSM clears CR0.PG (I did check this :)).
-> SMM re-entry then does not need to flush.  But I don't think SMM exit should
-> flush the TLB *for non-SMM roles*.
+According to BSP library source, H264 neighbour info buffer size needs
+to be 32 kiB for H6. This is similar to H265 decoding, which also needs
+double buffer size in comparison to older Cedrus core generations.
 
-I'm not concerned about the TLB flush aspects so much as the addition of
-kvm_mmu_new_pgd() in new paths.
+Increase buffer size to cover H6 needs. Since increase is not that big
+in absolute numbers, it doesn't make sense to complicate logic for older
+generations.
 
-> For KVM_SET_SREGS I'm not sure if it should flush the TLB, but I agree it is
-> certainly safer to keep it that way.
-> 
-> > Given that kvm_post_set_cr{0,4}() and kvm_vcpu_reset() explicitly handle CR0.PG
-> > and CR4.SMEP toggling, I highly doubt the other flows are correct in all instances.
-> > The call to kvm_mmu_new_pgd() is also
-> 
-> *white noise*
-> 
-> > To minimize risk, we should leave kvm_mmu_reset_context() as is (rename it if
-> > necessary) and instead add a new helper to handle kvm_post_set_cr{0,4}().  In
-> > the future we can/should work on avoiding unload in all paths, but again, future
-> > problem.
-> 
-> I disagree on this.  There aren't many calls to kvm_mmu_reset_context.
+Issue was discovered using iommu and cross checked with BSP library
+source.
 
-All the more reason to do things incrementally.  I have no objection to allowing
-all flows to reuse a cached (or current) root, I'm objecting to converting them
-all in a single patch.  
+Fixes: 6eb9b758e307 ("media: cedrus: Add H264 decoding support")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > > -	if ((cr0 ^ old_cr0) & KVM_MMU_CR0_ROLE_BITS)
-> > > +	if ((cr0 ^ old_cr0) & KVM_MMU_CR0_ROLE_BITS) {
-> > > +		/* Flush the TLB if CR0 is changed 1 -> 0.  */
-> > > +		if ((old_cr0 & X86_CR0_PG) && !(cr0 & X86_CR0_PG))
-> > > +			kvm_mmu_unload(vcpu);
-> > 
-> > Calling kvm_mmu_unload() instead of requesting a flush isn't coherent with respect
-> > to the comment, or with SMEP handling.  And the SMEP handling isn't coherent with
-> > respect to the changelog.  Please elaborate :-)
-> 
-> Yep, will do (the CR0.PG=0 case is similar to the CR0.PCIDE=0 case below).
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+index b4173a8926d6..d8fb93035470 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+@@ -38,7 +38,7 @@ struct cedrus_h264_sram_ref_pic {
+ 
+ #define CEDRUS_H264_FRAME_NUM		18
+ 
+-#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(16 * SZ_1K)
++#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(32 * SZ_1K)
+ #define CEDRUS_MIN_PIC_INFO_BUF_SIZE       (130 * SZ_1K)
+ 
+ static void cedrus_h264_write_sram(struct cedrus_dev *dev,
+-- 
+2.35.1
 
-Oh, you're freeing all roots to ensure a future MOV CR3 with NO_FLUSH and PCIDE=1
-can't reuse a stale root.  That's necessary if and only if the MMU is shadowing
-the guest, non-nested TDP MMUs just need to flush the guest's TLB.  The same is
-true for the PCIDE case, i.e. we could optimize that too, though the main motivation
-would be to clarify why all roots are unloaded.
-
-> Using kvm_mmu_unload() avoids loading a cached root just to throw it away
-> immediately after,
-
-The shadow paging case will throw it away, but not the non-nested TDP MMU case?
-
-> but I can change this to a new KVM_REQ_MMU_UPDATE_ROOT flag that does
-> 
-> 	kvm_mmu_new_pgd(vcpu, vcpu->arch.cr3);
-
-I don't think that's necessary, I was just confused by the discrepancy.
-
-> By the way, I have a possibly stupid question.  In kvm_set_cr3 (called e.g.
-> from emulator_set_cr()) there is
-> 
->  	if (cr3 != kvm_read_cr3(vcpu))
-> 		kvm_mmu_new_pgd(vcpu, cr3);
-> 
-> What makes this work if mmu_is_nested(vcpu)?
-
-Hmm, nothing.  VMX is "broken" anyways because it will kick out to userspace with
-X86EMUL_UNHANDLEABLE due to the CR3 intercept check.  SVM is also broken in that
-it doesn't check INTERCEPT_CR3_WRITE, e.g. will do the wrong thing even if L1 wants
-to intercept CR3 accesses.
-
-> Should this also have an "if (... & !tdp_enabled)"?
-
-Yes?  That should avoid the nested mess.  This patch also needs to handle CR0 and
-CR4 modifications if L2 is active, e.g. if L1 choose not to intercept CR0/CR4.
-kvm_post_set_cr_reinit_mmu() would be a lovely landing spot for that check :-D
