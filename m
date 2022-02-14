@@ -2,42 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E15EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236797AbiBNJjb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:39:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51520 "EHLO
+        id S243959AbiBNJjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:39:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244430AbiBNJf4 (ORCPT
+        with ESMTP id S244535AbiBNJgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:35:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72693B860;
-        Mon, 14 Feb 2022 01:33:46 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED30B1AD9D;
+        Mon, 14 Feb 2022 01:33:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EE63B80DC8;
-        Mon, 14 Feb 2022 09:32:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64D75C36AE2;
-        Mon, 14 Feb 2022 09:32:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3526F60FFC;
+        Mon, 14 Feb 2022 09:33:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A4F8C340E9;
+        Mon, 14 Feb 2022 09:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831175;
-        bh=VUVBaAGZBaqswhE6D4PLK24XkRlHN39JFF+flQEuJME=;
+        s=korg; t=1644831200;
+        bh=4RHKtD2d2DGhQCEoOtiljSMyW0D9xXcbs4ICzooPkGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N81RxcXldb+TyixZSmApK07uyFvRKwXEuHMiIejqcmxCGabOSCcLc06Ph7lmiEpvo
-         eVFrLJjat5eI//BotZmy+8Fs3Y4a0yN/7sQgHSVzJ7d+Zk7JJ0NmQcvIGL0JL2lgqz
-         uEHC69n3WD6bIQo+RVf5Qk92sMxOqUlzmV34akU8=
+        b=yttdMwaH1radMk10/gB5i8OWi2f7WaPgwInAJOLNrW8simP+KZslbKy//kvENidFg
+         wtdgDAi/0HiXww1Pp4azFQr03HXbJY0T37LFBfl+f9/01fPBPU373iBenOj7KGrZg0
+         ZLCB1o13OlqWDZHRKGSuMMDYY7SVOABIWSKz1MpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Zihua <guozihua@huawei.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 4.19 03/49] ima: Allow template selection with ima_template[_fmt]= after ima_hash=
-Date:   Mon, 14 Feb 2022 10:25:29 +0100
-Message-Id: <20220214092448.408520344@linuxfoundation.org>
+        stable@vger.kernel.org, Zechuan Chen <chenzechuan1@huawei.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jianlin Lv <Jianlin.Lv@arm.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        Yang Jihong <yangjihong1@huawei.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.19 21/49] perf probe: Fix ppc64 perf probe add events failed case
+Date:   Mon, 14 Feb 2022 10:25:47 +0100
+Message-Id: <20220214092448.997112587@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -49,84 +62,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+From: Zechuan Chen <chenzechuan1@huawei.com>
 
-commit bb8e52e4906f148c2faf6656b5106cf7233e9301 upstream.
+commit 4624f199327a704dd1069aca1c3cadb8f2a28c6f upstream.
 
-Commit c2426d2ad5027 ("ima: added support for new kernel cmdline parameter
-ima_template_fmt") introduced an additional check on the ima_template
-variable to avoid multiple template selection.
+Because of commit bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms
+lookup across powerpc ABIv1 and ABIv2"), in ppc64 ABIv1, our perf
+command eliminates the need to use the prefix "." at the symbol name.
 
-Unfortunately, ima_template could be also set by the setup function of the
-ima_hash= parameter, when it calls ima_template_desc_current(). This causes
-attempts to choose a new template with ima_template= or with
-ima_template_fmt=, after ima_hash=, to be ignored.
+But when the command "perf probe -a schedule" is executed on ppc64
+ABIv1, it obtains two symbol address information through /proc/kallsyms,
+for example:
 
-Achieve the goal of the commit mentioned with the new static variable
-template_setup_done, so that template selection requests after ima_hash=
-are not ignored.
+  cat /proc/kallsyms | grep -w schedule
+  c000000000657020 T .schedule
+  c000000000d4fdb8 D schedule
 
-Finally, call ima_init_template_list(), if not already done, to initialize
-the list of templates before lookup_template_desc() is called.
+The symbol "D schedule" is not a function symbol, and perf will print:
+"p:probe/schedule _text+13958584"Failed to write event: Invalid argument
 
-Reported-by: Guo Zihua <guozihua@huawei.com>
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-Cc: stable@vger.kernel.org
-Fixes: c2426d2ad5027 ("ima: added support for new kernel cmdline parameter ima_template_fmt")
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Therefore, when searching symbols from map and adding probe point for
+them, a symbol type check is added. If the type of symbol is not a
+function, skip it.
+
+Fixes: bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms lookup across powerpc ABIv1 and ABIv2")
+Signed-off-by: Zechuan Chen <chenzechuan1@huawei.com>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jianlin Lv <Jianlin.Lv@arm.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
+Cc: Yang Jihong <yangjihong1@huawei.com>
+Link: https://lore.kernel.org/r/20211228111338.218602-1-chenzechuan1@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/integrity/ima/ima_template.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ tools/perf/util/probe-event.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/security/integrity/ima/ima_template.c
-+++ b/security/integrity/ima/ima_template.c
-@@ -31,6 +31,7 @@ static struct ima_template_desc builtin_
+--- a/tools/perf/util/probe-event.c
++++ b/tools/perf/util/probe-event.c
+@@ -2919,6 +2919,9 @@ static int find_probe_trace_events_from_
+ 	for (j = 0; j < num_matched_functions; j++) {
+ 		sym = syms[j];
  
- static LIST_HEAD(defined_templates);
- static DEFINE_SPINLOCK(template_list);
-+static int template_setup_done;
- 
- static struct ima_template_field supported_fields[] = {
- 	{.field_id = "d", .field_init = ima_eventdigest_init,
-@@ -57,10 +58,11 @@ static int __init ima_template_setup(cha
- 	struct ima_template_desc *template_desc;
- 	int template_len = strlen(str);
- 
--	if (ima_template)
-+	if (template_setup_done)
- 		return 1;
- 
--	ima_init_template_list();
-+	if (!ima_template)
-+		ima_init_template_list();
- 
- 	/*
- 	 * Verify that a template with the supplied name exists.
-@@ -84,6 +86,7 @@ static int __init ima_template_setup(cha
- 	}
- 
- 	ima_template = template_desc;
-+	template_setup_done = 1;
- 	return 1;
- }
- __setup("ima_template=", ima_template_setup);
-@@ -92,7 +95,7 @@ static int __init ima_template_fmt_setup
- {
- 	int num_templates = ARRAY_SIZE(builtin_templates);
- 
--	if (ima_template)
-+	if (template_setup_done)
- 		return 1;
- 
- 	if (template_desc_init_fields(str, NULL, NULL) < 0) {
-@@ -103,6 +106,7 @@ static int __init ima_template_fmt_setup
- 
- 	builtin_templates[num_templates - 1].fmt = str;
- 	ima_template = builtin_templates + num_templates - 1;
-+	template_setup_done = 1;
- 
- 	return 1;
- }
++		if (sym->type != STT_FUNC)
++			continue;
++
+ 		tev = (*tevs) + ret;
+ 		tp = &tev->point;
+ 		if (ret == num_matched_functions) {
 
 
