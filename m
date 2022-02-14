@@ -2,165 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2C8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8522EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345635AbiBNKwl (ORCPT
+        id S1349391AbiBNKxQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:52:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43774 "EHLO
+        Mon, 14 Feb 2022 05:53:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349391AbiBNKvz (ORCPT
+        with ESMTP id S1349230AbiBNKwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:51:55 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B93469CD8;
-        Mon, 14 Feb 2022 02:16:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644833793; x=1676369793;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=iMfir8Hys8PoRkg7XbbXRj39pNMes8hLErnltaIltH8=;
-  b=H0pRtYXVokRBX+RGOdsauOP2aIBK1vtMoRGVk+VDUjA0gjIToKp08alR
-   Tm18cVC3x44oAcrbuiqx/MzOE8OK4CduA2tcM/A1XkQRsBI7PovauGPJd
-   0kz34pErXmws8kirxEiFlrcm3UmngipUs6aMo6zPHQmDtF9jNxNgty5Eu
-   x+fAcade60DLDG7Rwc6dU+y5s++sSBiaXXsF0yEQzBwK49KC3bxrLe4wT
-   TpB1A+VMBkcYrK8YoNp/BJt8twTNALUNIl+xHo6DUgdP8dwR9lZ7s8WuF
-   dPG9EmE0KsElsnrAyZkL2fICumUH0C3VBRwIxaCvdCGRHPC478tlmkk2s
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="230023834"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="230023834"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 02:16:32 -0800
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="603187011"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 02:16:17 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJYLy-004PC8-6n;
-        Mon, 14 Feb 2022 12:13:06 +0200
-Date:   Mon, 14 Feb 2022 12:13:01 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-phy@lists.infradead.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Guenter Roeck <groeck@chromium.org>, linux-spi@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        John Garry <john.garry@huawei.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Benson Leung <bleung@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        linux-renesas-soc@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 1/2] platform: make platform_get_irq_optional()
- optional
-Message-ID: <YgorLXUr8aT+1ttv@smile.fi.intel.com>
-References: <20220212201631.12648-1-s.shtylyov@omp.ru>
- <20220212201631.12648-2-s.shtylyov@omp.ru>
- <20220214071351.pcvstrzkwqyrg536@pengutronix.de>
+        Mon, 14 Feb 2022 05:52:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C49B6D4F3;
+        Mon, 14 Feb 2022 02:17:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0BE7B80CE1;
+        Mon, 14 Feb 2022 10:17:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 294DFC340E9;
+        Mon, 14 Feb 2022 10:17:25 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="GMTy9/EB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644833843;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Jw405377p5pf78FxoLUva1syQCUGCgspeYSlO0IejV4=;
+        b=GMTy9/EB5tvbuSzl4i1XKCjQG22qMWmmiWB8Q58w0XqR+nii/eKMIhotStFOmv4KY2OBN6
+        EquKXuFi7KfMaCw8qrdT86DvNbBT06mgQrXpHtXOV+vO8wZxyHfoEMXrtr/F9xNqQLE//8
+        V22IUBtaU+ur+GAOhx8pMm3Cx/tk0lI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id cbe58d8c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 14 Feb 2022 10:17:23 +0000 (UTC)
+Received: by mail-yb1-f175.google.com with SMTP id y129so44506406ybe.7;
+        Mon, 14 Feb 2022 02:17:22 -0800 (PST)
+X-Gm-Message-State: AOAM531Zj1WK4Jf1vUTLCheS+MTrUDHffZ+aNaeNfGl+M9nc1kfEXHN5
+        YX5u0Ggcg4LZZQjDXfhJ5aGQ1X2a5P7xySPiweY=
+X-Google-Smtp-Source: ABdhPJypKR734I9ZoaN1nIvZPaPH70+bSE5lKqUpay4t8mJCk+EWO5LpYh+k6Jm4Xufe+s0nfpAKcWEa/qD1EiRVksw=
+X-Received: by 2002:a25:c006:: with SMTP id c6mr11165505ybf.457.1644833841790;
+ Mon, 14 Feb 2022 02:17:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220214071351.pcvstrzkwqyrg536@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Received: by 2002:a05:7110:88a:b0:15e:9450:8ed4 with HTTP; Mon, 14 Feb 2022
+ 02:17:20 -0800 (PST)
+In-Reply-To: <YgoeBYJ5nwc8BTG3@linutronix.de>
+References: <YgZ6IEbiDgz5X1ON@linutronix.de> <20220211162515.554867-1-Jason@zx2c4.com>
+ <YgaSYlVEBOxfJbSD@linutronix.de> <CAHmME9rC_q4LGq2JaAAeGbtRA2cibTe9bnvhMLng+QnzAy2DVg@mail.gmail.com>
+ <YgaV0UZO1KfmtLLh@linutronix.de> <CAHmME9rsOWuprpYqo9G9eUboQwUxRgWqYRYgyHG7cNOG16c5EA@mail.gmail.com>
+ <YgoeBYJ5nwc8BTG3@linutronix.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 14 Feb 2022 11:17:20 +0100
+X-Gmail-Original-Message-ID: <CAHmME9otmV1QCX29D_DXsHB-41puTKurWtyZ39huPZtD4mt5ng@mail.gmail.com>
+Message-ID: <CAHmME9otmV1QCX29D_DXsHB-41puTKurWtyZ39huPZtD4mt5ng@mail.gmail.com>
+Subject: Re: [PATCH v6] random: defer fast pool mixing to worker
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 08:13:51AM +0100, Uwe Kleine-König wrote:
-> On Sat, Feb 12, 2022 at 11:16:30PM +0300, Sergey Shtylyov wrote:
-> > This patch is based on the former Andy Shevchenko's patch:
-> > 
-> > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
-> > 
-> > Currently platform_get_irq_optional() returns an error code even if IRQ
-> > resource simply has not been found.  It prevents the callers from being
-> > error code agnostic in their error handling:
-> > 
-> > 	ret = platform_get_irq_optional(...);
-> > 	if (ret < 0 && ret != -ENXIO)
-> > 		return ret; // respect deferred probe
-> > 	if (ret > 0)
-> > 		...we get an IRQ...
-> > 
-> > All other *_optional() APIs seem to return 0 or NULL in case an optional
-> > resource is not available.  Let's follow this good example, so that the
-> > callers would look like:
-> > 
-> > 	ret = platform_get_irq_optional(...);
-> > 	if (ret < 0)
-> > 		return ret;
-> > 	if (ret > 0)
-> > 		...we get an IRQ...
-> > 
-> > Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> > Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-> 
-> While this patch is better than v1, I still don't like it for the
-> reasons discussed for v1. (i.e. 0 isn't usable as a dummy value which I
-> consider the real advantage for the other _get_optional() functions.)
+On 2/14/22, Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+> to
+> | - Does anything anywhere call get_random_xx() before the worker has a
+> |   chance to run?
+>
+> Once you queue a work item I don't think that the scheduler needs to put
+> it on the CPU right away. It may have already have other tasks waiting
+> including some with a RT priority.
+> Also, the lock is irqsave() so they can be users in an interrupt
+> handler. I remember the original reason why I made it irqsave is because
+> something did kmalloc() and SLUB somehow asked for random bits.
 
-I think you haven't reacted anyhow to my point that you mixing apples and
-bananas together when comparing this 0 to the others _optional APIs.
+Right. So there are two sides of the questions: 1) how bad is this
+actual race, and are there any drivers that do regularly get bit by
+this? 2) There's a largeish window between workqueue_init_early()
+setting up the system highprio workqueue, and workqueue_init()
+enabling queued workers to actually run. Interrupts also get enabled
+in the interim. Does anything get bit by that window?
 
-> Apart from that, I think the subject is badly chosen. With "Make
-> somefunc() optional" I would expect that you introduce a Kconfig symbol
-> that results in the function not being available when disabled.
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Jason
