@@ -2,106 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5750C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5067CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231336AbiBNV3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:29:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43252 "EHLO
+        id S231350AbiBNV3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:29:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbiBNV3F (ORCPT
+        with ESMTP id S231324AbiBNV3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:29:05 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F8B10E2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:28:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644874136; x=1676410136;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=vQTr1pJP/ZuLa7nTq51NMvNV6GS8nBWlHsGKMteM/68=;
-  b=Bq3lWyY2JoauNzTneViDvv2mByySxKFNSqKtrsPvtfJO56o3X3O0IeaS
-   d9dcQB/aa7NFC4mpUI5LZAQYFuiGRrqRVJG5VCaqZs/6NwSpEdiy/GXdw
-   fPrFpeCmqZeCoY0TK1I0vFWWiSm3b+lHgAsxcW+GR7Z8OEcrFmlw/jQ2S
-   wt4Y4MJhBsIYDSD58RFearsWQKwm3W+5E5hXgTCRz2Z/cp11d1USsBXIw
-   H4O103C5ODHV4BfY5oJG6dfPbTU3G16FSfxoBfMdq9ILaOfzmTxTZVGpm
-   2+mIGNqMf8oNwdn9Q96lp6kCS9DgRblqvsznFiY1p9UtHNAZU7iHkS1an
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="313440827"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="313440827"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 11:20:24 -0800
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="543849190"
-Received: from racamill-t15-2.amr.corp.intel.com (HELO [10.251.23.156]) ([10.251.23.156])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 11:20:24 -0800
-Message-ID: <6b50671d-883f-561a-bf7d-5ae01c2cc312@intel.com>
-Date:   Mon, 14 Feb 2022 11:20:20 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Mon, 14 Feb 2022 16:29:43 -0500
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AD913FA9;
+        Mon, 14 Feb 2022 13:29:35 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 80DB5580593;
+        Mon, 14 Feb 2022 16:29:33 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute2.internal (MEProxy); Mon, 14 Feb 2022 16:29:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=e4v6AJqxv1yPHN
+        FtXns14bhk4nbzQ0lLtskgxFCqFXg=; b=aF8hmvj19DhWjKDc1bfcOW93NLhAGe
+        x9RZnIrENOXXSZ2opKXLSxNhChLk4xQb6ndxqCWl+rhRT+iraGRwPJwqwfNRMRPu
+        SggMCJIRG8mDSHmjnp36HsPW8c3kRU4FEJXnVm79zD1SGg2ZZ2leEP8vS9EwRHsT
+        n00lLGz/X+G8ZZZCBuXkVH+7NNn89Mnh2FdzdEm6Jk+2grb9JX2uJLLbrK0QMOOc
+        dTCaxQ4/+jb2j0XOZhWAN39BfTz81vJEpSs+MUBc4EygEosd5PEIF+rIUEBawRmh
+        c6/3v4q4CtWQKEgXbvK2EBxOAcQ/Xy/oZZZ3FwvejSo7k1zFCBHVv6jg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=e4v6AJqxv1yPHNFtX
+        ns14bhk4nbzQ0lLtskgxFCqFXg=; b=eUyt+i9jZcPJx4Z3B/N2xrvbNLZO4TM5k
+        rOt3iIQz9wZzHeSPQz29i1RRGYbJc4h9ZtR6b/yBoHiMCqvzrVDXJg5zlLOkL0z6
+        jQQWUVhDed1w6ycbhbotSmADBqxRVrBlTmrBYU66kczN5PRkyrOD/pZ38Giw5d3p
+        5rfJ0rczinhHLxUrrWCHvGKehHBNssgRAkAP/T2lJ9SNonGHMocBYuXw6EmgYHCK
+        0RiJAuSZ422TURYgardukgA59GEBsppjDOsbNpw4lFOg8mbiHi6f4JejoaQ/wkpe
+        1T4t+5SSdfRqf6t1oCM0x9pGZROUDofigUO60pqGGF3npfZWhOz9Q==
+X-ME-Sender: <xms:vckKYgS9KQ7JHuWHjbIqAz4aQEZGqwvjf1jun2f_bGTvh2liP_SrZA>
+    <xme:vckKYtwuPYcFOOy5JM9n2dCDtg7q3ZkeudtWqol0gRfZ6QOGGXjh8yE4hc6smNM93
+    pxUrrWTGMNgkFRUQ9A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjedvgddugeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfulhgr
+    uggvucghrghtkhhinhhsfdcuoehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+    eqnecuggftrfgrthhtvghrnhepueeiffetjeeitefgveetleehveduheetiefhhfethedt
+    teelgeettddvvedvudegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
+    hilhhfrhhomhepshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhm
+X-ME-Proxy: <xmx:vckKYt3zVn-fRTGxiG0CooS0N3ljgcQFzfWTE1TNsPzvdlpmsBGl7g>
+    <xmx:vckKYkDPvRGfKRKyyIdI4yn6oSsgVascO58TcgYEi30kndShnE8-kQ>
+    <xmx:vckKYpiCSOHobRZLHjHj0Vnt0hpGG0oaoSh6c2eXpYgTNiZhYd5kgw>
+    <xmx:vckKYubqtIEY_Ou1yyGHFvVrF2VgXGxKu8X8G46qv6MlIGzYTnfBPQwi8CI>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 0D187F6007E; Mon, 14 Feb 2022 16:29:33 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4748-g31a5b5f50e-fm-cal2020-20220204.001-g31a5b5f5
+Mime-Version: 1.0
+Message-Id: <046eebf9-c62a-4843-9779-d8495cc62417@www.fastmail.com>
+In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
+References: <20220214092452.020713240@linuxfoundation.org>
+Date:   Mon, 14 Feb 2022 16:29:32 -0500
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-7-ira.weiny@intel.com>
- <9c4a8275-236d-67b6-07f9-5e46f66396c0@intel.com>
- <20220128231015.GK785175@iweiny-DESK2.sc.intel.com>
- <f72b0e17-11bf-b12e-fe7a-d38b0833acdc@intel.com>
- <20220204190851.GY785175@iweiny-DESK2.sc.intel.com>
- <20220209053430.GL785175@iweiny-DESK2.sc.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH V8 06/44] mm/pkeys: Add Kconfig options for PKS
-In-Reply-To: <20220209053430.GL785175@iweiny-DESK2.sc.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 5.4 00/71] 5.4.180-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/8/22 21:34, Ira Weiny wrote:
->>> In other words, there are two things that must happen before the code
->>> gets compiled in:
->>>
->>> 1. Arch support
->>> 2. One or more features to use the arch support
->> Yes.  I really think we are both say the same thing with different words.
-> Is the following more clear?
-> 
-> <commit>
-> 
-> PKS is only useful to kernel consumers and is only available on some
-> architectures.  If no kernel consumers are configured or PKS support is
-> not available the PKS code can be eliminated from the compile.
-> 
-> Define a Kconfig structure which allows kernel consumers to detect
-> architecture support (ARCH_HAS_SUPERVISOR_PKEYS) and, if available,
-> indicate that PKS should be compiled in (ARCH_ENABLE_SUPERVISOR_PKEYS).
-> 
-> In this patch ARCH_ENABLE_SUPERVISOR_PKEYS remains off until the first
-> kernel consumer sets it.
+On Mon, Feb 14, 2022, at 4:25 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.180 release.
+> There are 71 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
+> Anything received after that time might be too late.
 
-It's a bit more clear.  I wish it was more clear about the problem.  I
-think it would be well-served to add some specifics and clarify the
-*problem*.  Maybe something like:
+5.4.180-rc1 on my x86_64 test system compiled and booted with no errors or regressions.
 
-== Problem ==
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
-PKS support is provided by core x86 architecture code.  Its consumers,
-however, may be far-flung device drivers like NVDIMM support.  The PKS
-core architecture code is dead weight without a consumer.
-
---- maybe add one example ---
-
-== Solution ==
-
-Avoid even compiling in the core PKS code if there are no consumers.
-
-== Details ==
+Thanks,
+Slade
