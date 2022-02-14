@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB92C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0924C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346947AbiBNKYo (ORCPT
+        id S1346216AbiBNKYt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:24:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50542 "EHLO
+        Mon, 14 Feb 2022 05:24:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346966AbiBNKXJ (ORCPT
+        with ESMTP id S1346323AbiBNKWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:23:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F8860ABD;
-        Mon, 14 Feb 2022 01:56:17 -0800 (PST)
+        Mon, 14 Feb 2022 05:22:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3944E6CA51;
+        Mon, 14 Feb 2022 01:56:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69CE060FA2;
-        Mon, 14 Feb 2022 09:56:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30708C340E9;
-        Mon, 14 Feb 2022 09:56:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD60BB80D83;
+        Mon, 14 Feb 2022 09:56:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8A34C340E9;
+        Mon, 14 Feb 2022 09:56:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832576;
-        bh=rLhsafBCTYJ0kb1t3aQgksvKXgmCdBjj0TYBC5ydbvs=;
+        s=korg; t=1644832564;
+        bh=qTrfWGKcQwK9/K1vsVW9O6dZ74LUQqD2R9r8ZglHc68=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qr5X/Ib7TtF7pxsQwsLicwDuC4/Pd8XHsynGdYDOi2hWz9T62BbD6rhCXDd7MOCRE
-         QC9vHv5zSTKOCuMleeof4JtobGf92jpAs4l3png3rvjozHG07J3fIqPaVXp7HfTfIh
-         RvKPAnXU6MmvyLPN1UCgqxh0ZsfFhfu5dMru69Zg=
+        b=1RlayJZzaZqXjWyPvGZDw8ZTZGteDiUBa8NfN/PaPT8je9Xti273uqFWOmW1S14XA
+         ys6PDXSYXxhTlmcvowu0HaiCKsSS5tKvghzulIBRluyOhI59mzfJhDqGE26+oeVpZa
+         p780SQygq0mFlZ2ARv0BUTujFK6ZPp1acGejbYnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
-        James Clark <james.clark@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 058/203] perf: Always wake the parent event
-Date:   Mon, 14 Feb 2022 10:25:02 +0100
-Message-Id: <20220214092512.228339005@linuxfoundation.org>
+Subject: [PATCH 5.16 055/203] drm/amdgpu/display: adjust msleep limit in dp_wait_for_training_aux_rd_interval
+Date:   Mon, 14 Feb 2022 10:24:59 +0100
+Message-Id: <20220214092512.114435140@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,94 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 961c39121759ad09a89598ec4ccdd34ae0468a19 ]
+[ Upstream commit dc919d670c6fd1ac81ebf31625cd19579f7b3d4c ]
 
-When using per-process mode and event inheritance is set to true,
-forked processes will create a new perf events via inherit_event() ->
-perf_event_alloc(). But these events will not have ring buffers
-assigned to them. Any call to wakeup will be dropped if it's called on
-an event with no ring buffer assigned because that's the object that
-holds the wakeup list.
+Some architectures (e.g., ARM) have relatively low udelay limits.
+On most architectures, anything longer than 2000us is not recommended.
+Change the check to align with other similar checks in DC.
 
-If the child event is disabled due to a call to
-perf_aux_output_begin() or perf_aux_output_end(), the wakeup is
-dropped leaving userspace hanging forever on the poll.
-
-Normally the event is explicitly re-enabled by userspace after it
-wakes up to read the aux data, but in this case it does not get woken
-up so the event remains disabled.
-
-This can be reproduced when using Arm SPE and 'stress' which forks once
-before running the workload. By looking at the list of aux buffers read,
-it's apparent that they stop after the fork:
-
-  perf record -e arm_spe// -vvv -- stress -c 1
-
-With this patch applied they continue to be printed. This behaviour
-doesn't happen when using systemwide or per-cpu mode.
-
-Reported-by: Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>
-Signed-off-by: James Clark <james.clark@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20211206113840.130802-2-james.clark@arm.com
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/events/core.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 04e6e2dae60e4..a0e21d0f36d7a 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6004,6 +6004,8 @@ static void ring_buffer_attach(struct perf_event *event,
- 	struct perf_buffer *old_rb = NULL;
- 	unsigned long flags;
- 
-+	WARN_ON_ONCE(event->parent);
-+
- 	if (event->rb) {
- 		/*
- 		 * Should be impossible, we set this when removing
-@@ -6061,6 +6063,9 @@ static void ring_buffer_wakeup(struct perf_event *event)
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+index ccd6cdbe46f43..b97be2e9088ce 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -201,7 +201,7 @@ void dp_wait_for_training_aux_rd_interval(
+ 	uint32_t wait_in_micro_secs)
  {
- 	struct perf_buffer *rb;
- 
-+	if (event->parent)
-+		event = event->parent;
-+
- 	rcu_read_lock();
- 	rb = rcu_dereference(event->rb);
- 	if (rb) {
-@@ -6074,6 +6079,9 @@ struct perf_buffer *ring_buffer_get(struct perf_event *event)
- {
- 	struct perf_buffer *rb;
- 
-+	if (event->parent)
-+		event = event->parent;
-+
- 	rcu_read_lock();
- 	rb = rcu_dereference(event->rb);
- 	if (rb) {
-@@ -6772,7 +6780,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
- 	if (WARN_ON_ONCE(READ_ONCE(sampler->oncpu) != smp_processor_id()))
- 		goto out;
- 
--	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
-+	rb = ring_buffer_get(sampler);
- 	if (!rb)
- 		goto out;
- 
-@@ -6838,7 +6846,7 @@ static void perf_aux_sample_output(struct perf_event *event,
- 	if (WARN_ON_ONCE(!sampler || !data->aux_size))
- 		return;
- 
--	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
-+	rb = ring_buffer_get(sampler);
- 	if (!rb)
- 		return;
- 
+ #if defined(CONFIG_DRM_AMD_DC_DCN)
+-	if (wait_in_micro_secs > 16000)
++	if (wait_in_micro_secs > 1000)
+ 		msleep(wait_in_micro_secs/1000);
+ 	else
+ 		udelay(wait_in_micro_secs);
 -- 
 2.34.1
 
