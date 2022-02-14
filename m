@@ -2,141 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC627C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233393AbiBNSsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:48:10 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52000 "EHLO
+        id S230002AbiBNSuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 13:50:20 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiBNSsI (ORCPT
+        with ESMTP id S229524AbiBNSuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:48:08 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1263574DEE;
-        Mon, 14 Feb 2022 10:47:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644864472; x=1676400472;
-  h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ekRjbB8Xr3cd6nK9ZonihX8LkoahzdWDfNA9LgE3lAA=;
-  b=aFNl57ZLk3xxN8m13d1hUEIm/QPg+Y3Mr5oterlEKWv/KTyd0K4dWvG9
-   Cg9ualE/WxKUuu3Slb6RHddaGPxuSSvUbaNzyZ9emZeoKqfXRBaf3nWdN
-   Ga/WDGYTcixZte2txVlfIfbwLfHJyjl5bMOLA8NQ6ML+QaNT9BzIEaopC
-   Mpo5RsVliEywcizJDvBMGvvUipVEOmaK8e4CQxC66QKDUjKFCwgMhpKG0
-   PGoijcHtomN0YEQgfWeP5NYCy3hjotnY+wwIlxshCbgD7F5eYAT3zhHS/
-   uOg7dOOJOFKg96M8JV6+xCupbONcq/732LDKXgmukBZM1QdJ+Svr6j/94
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250365379"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="250365379"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 10:47:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="703230321"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga005.jf.intel.com with ESMTP; 14 Feb 2022 10:47:30 -0800
-Received: from debox1-desk1.jf.intel.com (debox1-desk1.jf.intel.com [10.54.75.53])
-        by linux.intel.com (Postfix) with ESMTP id 300B8580638;
-        Mon, 14 Feb 2022 10:47:30 -0800 (PST)
-Message-ID: <29515b9c1a250b060174af74299ab6187e346387.camel@linux.intel.com>
-Subject: Re: [PATCH V7 2/3] tools arch x86: Add Intel SDSi provisiong tool
-From:   "David E. Box" <david.e.box@linux.intel.com>
-Reply-To: david.e.box@linux.intel.com
-To:     Hans de Goede <hdegoede@redhat.com>, gregkh@linuxfoundation.org,
-        andriy.shevchenko@linux.intel.com, srinivas.pandruvada@intel.com,
-        mgross@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Date:   Mon, 14 Feb 2022 10:47:30 -0800
-In-Reply-To: <16187bb8-ebe6-f260-c255-530095472a03@redhat.com>
-References: <20220212013252.1293396-1-david.e.box@linux.intel.com>
-         <20220212013252.1293396-3-david.e.box@linux.intel.com>
-         <16187bb8-ebe6-f260-c255-530095472a03@redhat.com>
-Organization: David E. Box
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        Mon, 14 Feb 2022 13:50:19 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BE47D299
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:50:02 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id c5-20020a17090a1d0500b001b904a7046dso32723pjd.1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:50:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DgckHGaAkZcrGYa6I90wSGex+wSps1HIk1YzJ1huHBo=;
+        b=RJZZX4DXXXc2Vva5RTK54qqa2xE6JBudRSuqI1jH8ljthTNxhlQbRoXtDtgKJ/Vtd3
+         9ARstZWodppgVy/ebyhHmFuYiBxh2UAqBhQ/E2HUbJnV47uO0Je2ybKWozhvnHoZFa/n
+         PJQElJg2hTvwZbmARt5NeCK94ASxd9CeE+VG/w+N1dmHyu0dDtOclUaqiUiNGpkFSUQg
+         FZd/gMLsHHcB5kTYNCETi/yTUZV4pWlqn5DSfzTBdjoGNc8fIJcLvalCCW8W3xbvIE7v
+         wuorMvmulrHFt/gA587y5lKfUCWoYEIdYQ5T7VeAAMwZtcUqBjcMest87frN83K7Je1T
+         nMHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DgckHGaAkZcrGYa6I90wSGex+wSps1HIk1YzJ1huHBo=;
+        b=T9CC9in9IHUhCvsK+m6hcKpzD6e/EN3OZXInNffLsBn8HKdRrybKhkvRSoS5S4UGZM
+         wQRiwVcMf283uBWMM8sgB71oVK3hLXFhKQFdcPuK2L5T6bXkFv7VHwiCMtlZokF9bg22
+         mG9YSP59KxN4kEyHP7GtMwj339Jts8Zp0bESMIswMOhe8Q+Kk77qdN82oIeMUA/aUk3j
+         TRA70serCaMxWNm02SQ1CinwqYxaDGswlKHr3QTg8QpIbY68mdtUyKqMt3DlqR41E2u5
+         biHeI+FGRCeox/XxtPZ2zXSI++W2TfY40v1kRYj+DHyCnZAv7XX5DecgU8DvepWuXyP/
+         dp5g==
+X-Gm-Message-State: AOAM531ikLh2hYUZbWBQOw6Lv6Gd4FgKXb4YdOl5Sl+eG3blN+fRpgwg
+        WyvOVzlUav7fXUFX8sKbuhI=
+X-Google-Smtp-Source: ABdhPJwJMB9C8naMZb2fI5M9G0VerPo7wYHQv0HzQTYEZm+nvYJla2KU96FqYyucOl71Ghs2t/6Q6g==
+X-Received: by 2002:a17:90b:4f87:: with SMTP id qe7mr40474pjb.77.1644864385890;
+        Mon, 14 Feb 2022 10:46:25 -0800 (PST)
+Received: from [192.168.122.100] (133-175-21-116.tokyo.ap.gmo-isp.jp. [133.175.21.116])
+        by smtp.gmail.com with ESMTPSA id v2sm14583655pjt.55.2022.02.14.10.46.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 10:46:25 -0800 (PST)
+Message-ID: <cedb1604-e024-2738-5b33-15703a653803@gmail.com>
+Date:   Tue, 15 Feb 2022 03:46:18 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [BUG] mtd: cfi_cmdset_0002: write regression since v4.17-rc1
+Content-Language: en-US
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        linux-mtd@lists.infradead.org, Joakim.Tjernlund@infinera.com,
+        miquel.raynal@bootlin.com, vigneshr@ti.com, richard@nod.at,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Cc:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Brian Norris <computersforpeace@gmail.com>,
+        David Woodhouse <dwmw2@infradead.org>, marek.vasut@gmail.com,
+        cyrille.pitchen@wedev4u.fr,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linuxppc-dev@lists.ozlabs.org
+References: <b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de>
+ <dff2abcc-5813-2f2c-35ba-f03cd1f35ac3@leemhuis.info>
+ <e11b76dc-5539-fb7e-da1c-a5005713d6b0@gmail.com>
+ <3dbbcee5-81fc-cdf5-9f8b-b6ccb95beddc@pengutronix.de>
+ <0f2cfcac-83ca-51a9-f92c-ff6495dca1d7@gmail.com>
+ <b231b498-c8d2-28af-ce66-db8c168047f7@pengutronix.de>
+ <66ee55d9-4f20-6722-6097-e53c2108ea07@gmail.com>
+ <579eab10-594c-d6b2-0ddb-ea6ab8e02856@pengutronix.de>
+From:   Tokunori Ikegami <ikegami.t@gmail.com>
+In-Reply-To: <579eab10-594c-d6b2-0ddb-ea6ab8e02856@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-14 at 11:56 +0100, Hans de Goede wrote:
-> Hi,
-> 
-> On 2/12/22 02:32, David E. Box wrote:
-> > Add tool for key certificate and activation payload provisioning on
-> > Intel CPUs supporting Software Defined Silicon (SDSi).
-> > 
-> > Signed-off-by: David E. Box <david.e.box@linux.intel.com>
-> > ---
-> > V7
-> >   - No changes.
-> > V6
-> >   - No changes.
-> > V5
-> >   - Update copyright to 2022
-> > V4
-> >   - No changes.
-> > V3
-> >   - Move from samples to tools.
-> >   - Fix bit fields in availability structure.
-> >   - Check provisioning availability before issuing command.
-> > 
-> > V2
-> >   - New patch.
-> > 
-> >  MAINTAINERS                        |   1 +
-> >  tools/arch/x86/intel_sdsi/Makefile |   9 +
-> >  tools/arch/x86/intel_sdsi/sdsi.c   | 540 +++++++++++++++++++++++++++++
-> >  3 files changed, 550 insertions(+)
-> >  create mode 100644 tools/arch/x86/intel_sdsi/Makefile
-> >  create mode 100644 tools/arch/x86/intel_sdsi/sdsi.c
-> > 
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 29d0945f5a63..80325cbde3bd 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -9873,6 +9873,7 @@ INTEL SDSI DRIVER
-> >  M:     David E. Box <david.e.box@linux.intel.com>
-> >  S:     Supported
-> >  F:     drivers/platform/x86/intel/sdsi.c
-> > +F:     tools/arch/x86/intel_sdsi/
-> >  
-> >  INTEL SKYLAKE INT3472 ACPI DEVICE DRIVER
-> >  M:     Daniel Scally <djrscally@gmail.com>
-> > diff --git a/tools/arch/x86/intel_sdsi/Makefile
-> > b/tools/arch/x86/intel_sdsi/Makefile
-> > new file mode 100644
-> > index 000000000000..1c2d102ff8fb
-> > --- /dev/null
-> > +++ b/tools/arch/x86/intel_sdsi/Makefile
-> > @@ -0,0 +1,9 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +
-> > +.PHONY: sdsi
-> > +
-> > +sdsi: sdsi.o
-> > +       $(CC) -Wall $^ -o $@
-> > +
-> > +clean:
-> > +       rm *.o sdsi
-> 
-> I assume that this is also going to be an official tool (next to a UI one?)
-> which users may use to provision AKCs and CAPs ?
-> 
-> In that case the binary really should also be named intel_sdsi like the
-> directory
-> and an install target should be added, see for example how:
-> 
-> tools/arch/x86/kcpuid/Makefile
-> 
-> does this.
+Hi Ahmad-san,
 
-Will do.
+On 2022/02/15 1:22, Ahmad Fatoum wrote:
+> Hello Tokunori-san,
+>
+> On 13.02.22 17:47, Tokunori Ikegami wrote:
+>> Hi Ahmad-san,
+>>
+>> Thanks for your confirmations. Sorry for late to reply.
+> No worries. I appreciate you taking the time.
+>
+>> Could you please try the patch attached to disable the chip_good() change as before?
+>> I think this should work for S29GL964N since the chip_ready() is used and works as mentioned.
+> yes, this resolves my issue:
+> Tested-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Thanks for your testing. I have just sent the patch to review.
+>
+>>>>> Doesn't seem to be a buffered write issue here though as the writes
+>>>>> did work fine before dfeae1073583. Any other ideas?
+>>>> At first I thought the issue is possible to be resolved by using the word write instead of the buffered writes.
+>>>> Now I am thinking to disable the changes dfeae1073583 partially with any condition if possible.
+>>> What seems to work for me is checking if chip_good or chip_ready
+>>> and map_word is equal to 0xFF. I can't justify why this is ok though.
+>>> (Worst case bus is floating at this point of time and Hi-Z is read
+>>> as 0xff on CPU data lines...)
+>> Sorry I am not sure about this.
+>> I thought the chip_ready() itself is correct as implemented as the data sheet in the past.
+>> But it did not work correctly so changed to use chip_good() instead as it is also correct.
+> What exactly in the datasheet makes you believe chip_good is not appropriate?
+I just mentioned about the actual issue behaviors as not worked 
+chip_good() on S29GL964N and not worked chip_ready() on 
+MX29GL512FHT2I-11G before etc.
+Anyway let me recheck the data sheet details as just checked it again 
+quickly but needed more investigation to understand.
 
-David
+Regards,
+Ikegami
 
-
+>
+> Cheers,
+> Ahmad
+>
+>
