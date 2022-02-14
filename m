@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE02C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF3EBC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345054AbiBNKBQ (ORCPT
+        id S1345118AbiBNKBW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:01:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43718 "EHLO
+        Mon, 14 Feb 2022 05:01:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345102AbiBNJ4f (ORCPT
+        with ESMTP id S1345110AbiBNJ4f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:56:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100FB811A3;
-        Mon, 14 Feb 2022 01:45:10 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC72811A0;
+        Mon, 14 Feb 2022 01:45:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A4106120C;
-        Mon, 14 Feb 2022 09:45:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70F4FC340E9;
-        Mon, 14 Feb 2022 09:45:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9BECB80DC4;
+        Mon, 14 Feb 2022 09:45:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9D2C36AE3;
+        Mon, 14 Feb 2022 09:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831909;
-        bh=2Q4J71DeR1ZLeLCSBBdVkEDu4STaEUAYDUFQqNBJD4g=;
+        s=korg; t=1644831906;
+        bh=GxhdHPylJZGUA7W2V1+Kn1+bjgaht4Bynzk8qHwc30I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffNvjiDRR6Fvr2foUmjzReGLZyrz5JvJwMUIVx2qQ9MwaRGyapITpKBjtHYB6HNyj
-         EGAOKeSAoEH2PQ0aH9jz5n/J1vxIR2Od42US+ICLZF1v6NpjyJTeXgNRkCDtdlTHBa
-         lERXffTKdo4KhA22V4qbuhUsi8e4bucJvz8rEJ3E=
+        b=te+LB/gOy90bQDlvHVkPEK+vs7CZHgte2AibXMSsIvG/LQP0/jwcY8DvMku599ZgA
+         +mplAbgmp75apwrzUKqgehKXaf8SY5sbQx8A3Gb4iz96YCBKKb318nTQJ3PNS+86p5
+         IU27kad/SGw0E6S2zjPhHkm4YbzO5lnpv/LPJm1Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
         Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-Subject: [PATCH 5.15 019/172] thermal/drivers/int340x: processor_thermal: Suppot 64 bit RFIM responses
-Date:   Mon, 14 Feb 2022 10:24:37 +0100
-Message-Id: <20220214092507.051805810@linuxfoundation.org>
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        Srinivas Pandruvada <srinivas.pIandruvada@linux.intel.com>
+Subject: [PATCH 5.15 018/172] thermal/drivers/int340x: Improve the tcc offset saving for suspend/resume
+Date:   Mon, 14 Feb 2022 10:24:36 +0100
+Message-Id: <20220214092507.012140145@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,140 +52,209 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-commit aeb58c860dc516794fdf7ff89d96ead2644d5889 upstream.
+commit c4fcf1ada4ae63e0aab6afd19ca2e7d16833302c upstream.
 
-Some of the RFIM mail box command returns 64 bit values. So enhance
-mailbox interface to return 64 bit values and use them for RFIM
-commands.
+When the driver resumes, the tcc offset is set back to its previous
+value. But this only works if the value was user defined as otherwise
+the offset isn't saved. This asymmetric logic is harder to maintain and
+introduced some issues.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Fixes: 5d6fbc96bd36 ("thermal/drivers/int340x: processor_thermal: Export additional attributes")
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Improve the logic by saving the tcc offset in a suspend op, so the right
+value is always restored after a resume.
+
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Tested-by: Srinivas Pandruvada <srinivas.pI andruvada@linux.intel.com>
+Link: https://lore.kernel.org/r/20210909085613.5577-3-atenart@kernel.org
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/intel/int340x_thermal/processor_thermal_device.h |    2 
- drivers/thermal/intel/int340x_thermal/processor_thermal_mbox.c   |   22 +++++-----
- drivers/thermal/intel/int340x_thermal/processor_thermal_rfim.c   |   10 ++--
- 3 files changed, 19 insertions(+), 15 deletions(-)
+ drivers/thermal/intel/int340x_thermal/int3401_thermal.c                     |    8 +-
+ drivers/thermal/intel/int340x_thermal/processor_thermal_device.c            |   36 +++++++---
+ drivers/thermal/intel/int340x_thermal/processor_thermal_device.h            |    1 
+ drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci.c        |   18 ++++-
+ drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci_legacy.c |    8 +-
+ 5 files changed, 60 insertions(+), 11 deletions(-)
 
+--- a/drivers/thermal/intel/int340x_thermal/int3401_thermal.c
++++ b/drivers/thermal/intel/int340x_thermal/int3401_thermal.c
+@@ -44,15 +44,21 @@ static int int3401_remove(struct platfor
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
++static int int3401_thermal_suspend(struct device *dev)
++{
++	return proc_thermal_suspend(dev);
++}
+ static int int3401_thermal_resume(struct device *dev)
+ {
+ 	return proc_thermal_resume(dev);
+ }
+ #else
++#define int3401_thermal_suspend NULL
+ #define int3401_thermal_resume NULL
+ #endif
+ 
+-static SIMPLE_DEV_PM_OPS(int3401_proc_thermal_pm, NULL, int3401_thermal_resume);
++static SIMPLE_DEV_PM_OPS(int3401_proc_thermal_pm, int3401_thermal_suspend,
++			 int3401_thermal_resume);
+ 
+ static struct platform_driver int3401_driver = {
+ 	.probe = int3401_add,
+--- a/drivers/thermal/intel/int340x_thermal/processor_thermal_device.c
++++ b/drivers/thermal/intel/int340x_thermal/processor_thermal_device.c
+@@ -68,8 +68,7 @@ static const struct attribute_group powe
+ 	.name = "power_limits"
+ };
+ 
+-static ssize_t tcc_offset_degree_celsius_show(struct device *dev,
+-			       struct device_attribute *attr, char *buf)
++static int tcc_get_offset(void)
+ {
+ 	u64 val;
+ 	int err;
+@@ -78,8 +77,20 @@ static ssize_t tcc_offset_degree_celsius
+ 	if (err)
+ 		return err;
+ 
+-	val = (val >> 24) & 0x3f;
+-	return sprintf(buf, "%d\n", (int)val);
++	return (val >> 24) & 0x3f;
++}
++
++static ssize_t tcc_offset_degree_celsius_show(struct device *dev,
++					      struct device_attribute *attr,
++					      char *buf)
++{
++	int tcc;
++
++	tcc = tcc_get_offset();
++	if (tcc < 0)
++		return tcc;
++
++	return sprintf(buf, "%d\n", tcc);
+ }
+ 
+ static int tcc_offset_update(unsigned int tcc)
+@@ -107,8 +118,6 @@ static int tcc_offset_update(unsigned in
+ 	return 0;
+ }
+ 
+-static int tcc_offset_save = -1;
+-
+ static ssize_t tcc_offset_degree_celsius_store(struct device *dev,
+ 				struct device_attribute *attr, const char *buf,
+ 				size_t count)
+@@ -131,8 +140,6 @@ static ssize_t tcc_offset_degree_celsius
+ 	if (err)
+ 		return err;
+ 
+-	tcc_offset_save = tcc;
+-
+ 	return count;
+ }
+ 
+@@ -345,6 +352,18 @@ void proc_thermal_remove(struct proc_the
+ }
+ EXPORT_SYMBOL_GPL(proc_thermal_remove);
+ 
++static int tcc_offset_save = -1;
++
++int proc_thermal_suspend(struct device *dev)
++{
++	tcc_offset_save = tcc_get_offset();
++	if (tcc_offset_save < 0)
++		dev_warn(dev, "failed to save offset (%d)\n", tcc_offset_save);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(proc_thermal_suspend);
++
+ int proc_thermal_resume(struct device *dev)
+ {
+ 	struct proc_thermal_device *proc_dev;
+@@ -352,6 +371,7 @@ int proc_thermal_resume(struct device *d
+ 	proc_dev = dev_get_drvdata(dev);
+ 	proc_thermal_read_ppcc(proc_dev);
+ 
++	/* Do not update if saving failed */
+ 	if (tcc_offset_save >= 0)
+ 		tcc_offset_update(tcc_offset_save);
+ 
 --- a/drivers/thermal/intel/int340x_thermal/processor_thermal_device.h
 +++ b/drivers/thermal/intel/int340x_thermal/processor_thermal_device.h
-@@ -80,7 +80,7 @@ void proc_thermal_rfim_remove(struct pci
- int proc_thermal_mbox_add(struct pci_dev *pdev, struct proc_thermal_device *proc_priv);
- void proc_thermal_mbox_remove(struct pci_dev *pdev);
- 
--int processor_thermal_send_mbox_cmd(struct pci_dev *pdev, u16 cmd_id, u32 cmd_data, u32 *cmd_resp);
-+int processor_thermal_send_mbox_cmd(struct pci_dev *pdev, u16 cmd_id, u32 cmd_data, u64 *cmd_resp);
+@@ -83,6 +83,7 @@ void proc_thermal_mbox_remove(struct pci
+ int processor_thermal_send_mbox_cmd(struct pci_dev *pdev, u16 cmd_id, u32 cmd_data, u32 *cmd_resp);
  int proc_thermal_add(struct device *dev, struct proc_thermal_device *priv);
  void proc_thermal_remove(struct proc_thermal_device *proc_priv);
- int proc_thermal_suspend(struct device *dev);
---- a/drivers/thermal/intel/int340x_thermal/processor_thermal_mbox.c
-+++ b/drivers/thermal/intel/int340x_thermal/processor_thermal_mbox.c
-@@ -24,7 +24,7 @@
- 
- static DEFINE_MUTEX(mbox_lock);
- 
--static int send_mbox_cmd(struct pci_dev *pdev, u16 cmd_id, u32 cmd_data, u32 *cmd_resp)
-+static int send_mbox_cmd(struct pci_dev *pdev, u16 cmd_id, u32 cmd_data, u64 *cmd_resp)
- {
- 	struct proc_thermal_device *proc_priv;
- 	u32 retries, data;
-@@ -69,12 +69,16 @@ static int send_mbox_cmd(struct pci_dev
- 			goto unlock_mbox;
- 		}
- 
--		if (cmd_id == MBOX_CMD_WORKLOAD_TYPE_READ) {
--			data = readl((void __iomem *) (proc_priv->mmio_base + MBOX_OFFSET_DATA));
--			*cmd_resp = data & 0xff;
--		}
--
- 		ret = 0;
-+
-+		if (!cmd_resp)
-+			break;
-+
-+		if (cmd_id == MBOX_CMD_WORKLOAD_TYPE_READ)
-+			*cmd_resp = readl((void __iomem *) (proc_priv->mmio_base + MBOX_OFFSET_DATA));
-+		else
-+			*cmd_resp = readq((void __iomem *) (proc_priv->mmio_base + MBOX_OFFSET_DATA));
-+
- 		break;
- 	} while (--retries);
- 
-@@ -83,7 +87,7 @@ unlock_mbox:
- 	return ret;
++int proc_thermal_suspend(struct device *dev);
+ int proc_thermal_resume(struct device *dev);
+ int proc_thermal_mmio_add(struct pci_dev *pdev,
+ 			  struct proc_thermal_device *proc_priv,
+--- a/drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci.c
++++ b/drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci.c
+@@ -314,6 +314,20 @@ static void proc_thermal_pci_remove(stru
  }
  
--int processor_thermal_send_mbox_cmd(struct pci_dev *pdev, u16 cmd_id, u32 cmd_data, u32 *cmd_resp)
-+int processor_thermal_send_mbox_cmd(struct pci_dev *pdev, u16 cmd_id, u32 cmd_data, u64 *cmd_resp)
- {
- 	return send_mbox_cmd(pdev, cmd_id, cmd_data, cmd_resp);
- }
-@@ -154,7 +158,7 @@ static ssize_t workload_type_show(struct
- 				   char *buf)
+ #ifdef CONFIG_PM_SLEEP
++static int proc_thermal_pci_suspend(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct proc_thermal_device *proc_priv;
++	struct proc_thermal_pci *pci_info;
++
++	proc_priv = pci_get_drvdata(pdev);
++	pci_info = proc_priv->priv_data;
++
++	if (!pci_info->no_legacy)
++		return proc_thermal_suspend(dev);
++
++	return 0;
++}
+ static int proc_thermal_pci_resume(struct device *dev)
  {
  	struct pci_dev *pdev = to_pci_dev(dev);
--	u32 cmd_resp;
-+	u64 cmd_resp;
- 	int ret;
+@@ -335,10 +349,12 @@ static int proc_thermal_pci_resume(struc
+ 	return 0;
+ }
+ #else
++#define proc_thermal_pci_suspend NULL
+ #define proc_thermal_pci_resume NULL
+ #endif
  
- 	ret = send_mbox_cmd(pdev, MBOX_CMD_WORKLOAD_TYPE_READ, 0, &cmd_resp);
-@@ -188,7 +192,7 @@ static bool workload_req_created;
+-static SIMPLE_DEV_PM_OPS(proc_thermal_pci_pm, NULL, proc_thermal_pci_resume);
++static SIMPLE_DEV_PM_OPS(proc_thermal_pci_pm, proc_thermal_pci_suspend,
++			 proc_thermal_pci_resume);
  
- int proc_thermal_mbox_add(struct pci_dev *pdev, struct proc_thermal_device *proc_priv)
- {
--	u32 cmd_resp;
-+	u64 cmd_resp;
- 	int ret;
- 
- 	/* Check if there is a mailbox support, if fails return success */
---- a/drivers/thermal/intel/int340x_thermal/processor_thermal_rfim.c
-+++ b/drivers/thermal/intel/int340x_thermal/processor_thermal_rfim.c
-@@ -195,7 +195,7 @@ static ssize_t rfi_restriction_store(str
- 				     const char *buf, size_t count)
- {
- 	u16 cmd_id = 0x0008;
--	u32 cmd_resp;
-+	u64 cmd_resp;
- 	u32 input;
- 	int ret;
- 
-@@ -215,14 +215,14 @@ static ssize_t rfi_restriction_show(stru
- 				    char *buf)
- {
- 	u16 cmd_id = 0x0007;
--	u32 cmd_resp;
-+	u64 cmd_resp;
- 	int ret;
- 
- 	ret = processor_thermal_send_mbox_cmd(to_pci_dev(dev), cmd_id, 0, &cmd_resp);
- 	if (ret)
- 		return ret;
- 
--	return sprintf(buf, "%u\n", cmd_resp);
-+	return sprintf(buf, "%llu\n", cmd_resp);
+ static const struct pci_device_id proc_thermal_pci_ids[] = {
+ 	{ PCI_DEVICE_DATA(INTEL, ADL_THERMAL, PROC_THERMAL_FEATURE_RAPL | PROC_THERMAL_FEATURE_FIVR | PROC_THERMAL_FEATURE_DVFS | PROC_THERMAL_FEATURE_MBOX) },
+--- a/drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci_legacy.c
++++ b/drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci_legacy.c
+@@ -107,15 +107,21 @@ static void proc_thermal_pci_remove(stru
  }
  
- static ssize_t ddr_data_rate_show(struct device *dev,
-@@ -230,14 +230,14 @@ static ssize_t ddr_data_rate_show(struct
- 				  char *buf)
+ #ifdef CONFIG_PM_SLEEP
++static int proc_thermal_pci_suspend(struct device *dev)
++{
++	return proc_thermal_suspend(dev);
++}
+ static int proc_thermal_pci_resume(struct device *dev)
  {
- 	u16 cmd_id = 0x0107;
--	u32 cmd_resp;
-+	u64 cmd_resp;
- 	int ret;
- 
- 	ret = processor_thermal_send_mbox_cmd(to_pci_dev(dev), cmd_id, 0, &cmd_resp);
- 	if (ret)
- 		return ret;
- 
--	return sprintf(buf, "%u\n", cmd_resp);
-+	return sprintf(buf, "%llu\n", cmd_resp);
+ 	return proc_thermal_resume(dev);
  }
+ #else
++#define proc_thermal_pci_suspend NULL
+ #define proc_thermal_pci_resume NULL
+ #endif
  
- static DEVICE_ATTR_RW(rfi_restriction);
+-static SIMPLE_DEV_PM_OPS(proc_thermal_pci_pm, NULL, proc_thermal_pci_resume);
++static SIMPLE_DEV_PM_OPS(proc_thermal_pci_pm, proc_thermal_pci_suspend,
++			 proc_thermal_pci_resume);
+ 
+ static const struct pci_device_id proc_thermal_pci_ids[] = {
+ 	{ PCI_DEVICE_DATA(INTEL, BDW_THERMAL, 0) },
 
 
