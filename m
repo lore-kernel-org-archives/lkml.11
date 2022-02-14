@@ -2,177 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99CE4C3526F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F66C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345499AbiBNJ4r convert rfc822-to-8bit (ORCPT
+        id S1345261AbiBNJ4m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:56:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33298 "EHLO
+        Mon, 14 Feb 2022 04:56:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344915AbiBNJwH (ORCPT
+        with ESMTP id S1344132AbiBNJvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:52:07 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40C26D39F;
-        Mon, 14 Feb 2022 01:43:24 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21E8UM9r022252;
-        Mon, 14 Feb 2022 09:42:45 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e6rt10krx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 09:42:44 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21E9aDv8025445;
-        Mon, 14 Feb 2022 09:42:42 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3e64h92qwy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 09:42:42 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21E9gee032047572
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Feb 2022 09:42:40 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E2D43AE053;
-        Mon, 14 Feb 2022 09:42:39 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 49CD8AE051;
-        Mon, 14 Feb 2022 09:42:39 +0000 (GMT)
-Received: from smtp.tlslab.ibm.com (unknown [9.101.4.1])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Mon, 14 Feb 2022 09:42:39 +0000 (GMT)
-Received: from yukon.ibmuc.com (unknown [9.171.60.190])
-        by smtp.tlslab.ibm.com (Postfix) with ESMTP id D05AE2201E5;
-        Mon, 14 Feb 2022 10:42:37 +0100 (CET)
-From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-Subject: [PATCH 01/10] mtd: spi-nor: aspeed: Rename Kconfig option
-Date:   Mon, 14 Feb 2022 10:42:22 +0100
-Message-Id: <20220214094231.3753686-2-clg@kaod.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214094231.3753686-1-clg@kaod.org>
-References: <20220214094231.3753686-1-clg@kaod.org>
+        Mon, 14 Feb 2022 04:51:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93D96581B;
+        Mon, 14 Feb 2022 01:42:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38F21B80DC1;
+        Mon, 14 Feb 2022 09:42:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB32C340E9;
+        Mon, 14 Feb 2022 09:42:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644831749;
+        bh=j4NjT9wPBSn60O5aF8wnGLros10t+vYrPu6cKZCp8Cw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JiH93W5AhhIuowagpxJ4JhnC6qfYfpP7832Yzhuuu5Chmrtly16zzGigVuGzZ6MYU
+         lphuGf6pzB1g+Qy4lMtab8qOF4rOn1mUc9Dmn4WJ0Job1KqippXxSqfuiKM1RvsgQ2
+         76ZUvGNmWT56ZxNB/WmlnvXtELJFiK9y6JWqh2KU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 084/116] ice: fix IPIP and SIT TSO offload
+Date:   Mon, 14 Feb 2022 10:26:23 +0100
+Message-Id: <20220214092501.668211968@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
+References: <20220214092458.668376521@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gX7JK45671uxdo1i3RwU_vYpKq31PP3t
-X-Proofpoint-ORIG-GUID: gX7JK45671uxdo1i3RwU_vYpKq31PP3t
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_01,2022-02-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=703
- impostorscore=0 suspectscore=0 priorityscore=1501 phishscore=0
- clxscore=1034 mlxscore=0 lowpriorityscore=0 adultscore=0 spamscore=0
- bulkscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202140058
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To prepare transition to the new Aspeed SMC SPI controller driver using
-the spi-mem interface, change the kernel CONFIG option of the current
-driver to reflect that the implementation uses the MTD SPI-NOR interface.
-Once the new driver is sufficiently exposed, we should remove the old one.
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-Signed-off-by: Cédric Le Goater <clg@kaod.org>
+[ Upstream commit 46b699c50c0304cdbd725d7740073a7f9d5edb10 ]
+
+The driver was avoiding offload for IPIP (at least) frames due to
+parsing the inner header offsets incorrectly when trying to check
+lengths.
+
+This length check works for VXLAN frames but fails on IPIP frames
+because skb_transport_offset points to the inner header in IPIP
+frames, which meant the subtraction of transport_header from
+inner_network_header returns a negative value (-20).
+
+With the code before this patch, everything continued to work, but GSO
+was being used to segment, causing throughputs of 1.5Gb/s per thread.
+After this patch, throughput is more like 10Gb/s per thread for IPIP
+traffic.
+
+Fixes: e94d44786693 ("ice: Implement filter sync, NDO operations and bump version")
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/configs/aspeed_g4_defconfig     | 2 +-
- arch/arm/configs/aspeed_g5_defconfig     | 2 +-
- arch/arm/configs/multi_v5_defconfig      | 2 +-
- arch/arm/configs/multi_v7_defconfig      | 2 +-
- drivers/mtd/spi-nor/controllers/Kconfig  | 2 +-
- drivers/mtd/spi-nor/controllers/Makefile | 2 +-
- 6 files changed, 6 insertions(+), 6 deletions(-)
+ .../net/ethernet/intel/ice/ice_lan_tx_rx.h    |  1 +
+ drivers/net/ethernet/intel/ice/ice_main.c     | 25 +++++++++++++------
+ 2 files changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/configs/aspeed_g4_defconfig b/arch/arm/configs/aspeed_g4_defconfig
-index b4a1b2ed1a17..964536444cd7 100644
---- a/arch/arm/configs/aspeed_g4_defconfig
-+++ b/arch/arm/configs/aspeed_g4_defconfig
-@@ -64,7 +64,7 @@ CONFIG_MTD_BLOCK=y
- CONFIG_MTD_PARTITIONED_MASTER=y
- CONFIG_MTD_SPI_NOR=y
- # CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is not set
--CONFIG_SPI_ASPEED_SMC=y
-+CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
- CONFIG_MTD_UBI=y
- CONFIG_MTD_UBI_FASTMAP=y
- CONFIG_MTD_UBI_BLOCK=y
-diff --git a/arch/arm/configs/aspeed_g5_defconfig b/arch/arm/configs/aspeed_g5_defconfig
-index ccc4240ee4b5..e809236ca88b 100644
---- a/arch/arm/configs/aspeed_g5_defconfig
-+++ b/arch/arm/configs/aspeed_g5_defconfig
-@@ -103,7 +103,7 @@ CONFIG_MTD_BLOCK=y
- CONFIG_MTD_PARTITIONED_MASTER=y
- CONFIG_MTD_SPI_NOR=y
- # CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is not set
--CONFIG_SPI_ASPEED_SMC=y
-+CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
- CONFIG_MTD_UBI=y
- CONFIG_MTD_UBI_FASTMAP=y
- CONFIG_MTD_UBI_BLOCK=y
-diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
-index 80a3ae02d759..49083ef05fb0 100644
---- a/arch/arm/configs/multi_v5_defconfig
-+++ b/arch/arm/configs/multi_v5_defconfig
-@@ -103,7 +103,7 @@ CONFIG_MTD_RAW_NAND=y
- CONFIG_MTD_NAND_ATMEL=y
- CONFIG_MTD_NAND_ORION=y
- CONFIG_MTD_SPI_NOR=y
--CONFIG_SPI_ASPEED_SMC=y
-+CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
- CONFIG_MTD_UBI=y
- CONFIG_BLK_DEV_LOOP=y
- CONFIG_ATMEL_SSC=m
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index 33572998dbbe..fc1b69256b64 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -217,7 +217,7 @@ CONFIG_MTD_NAND_DAVINCI=y
- CONFIG_MTD_NAND_STM32_FMC2=y
- CONFIG_MTD_NAND_PL35X=y
- CONFIG_MTD_SPI_NOR=y
--CONFIG_SPI_ASPEED_SMC=m
-+CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=m
- CONFIG_MTD_UBI=y
- CONFIG_BLK_DEV_LOOP=y
- CONFIG_BLK_DEV_RAM=y
-diff --git a/drivers/mtd/spi-nor/controllers/Kconfig b/drivers/mtd/spi-nor/controllers/Kconfig
-index 5c0e0ec2e6d1..876a47042fec 100644
---- a/drivers/mtd/spi-nor/controllers/Kconfig
-+++ b/drivers/mtd/spi-nor/controllers/Kconfig
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0-only
--config SPI_ASPEED_SMC
-+config SPI_ASPEED_SMC_MTD_SPI_NOR
- 	tristate "Aspeed flash controllers in SPI mode"
- 	depends on ARCH_ASPEED || COMPILE_TEST
- 	depends on HAS_IOMEM && OF
-diff --git a/drivers/mtd/spi-nor/controllers/Makefile b/drivers/mtd/spi-nor/controllers/Makefile
-index e7abba491d98..1e28297fb1e8 100644
---- a/drivers/mtd/spi-nor/controllers/Makefile
-+++ b/drivers/mtd/spi-nor/controllers/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--obj-$(CONFIG_SPI_ASPEED_SMC)	+= aspeed-smc.o
-+obj-$(CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR)	+= aspeed-smc.o
- obj-$(CONFIG_SPI_HISI_SFC)	+= hisi-sfc.o
- obj-$(CONFIG_SPI_NXP_SPIFI)	+= nxp-spifi.o
- obj-$(CONFIG_SPI_INTEL_SPI)	+= intel-spi.o
+diff --git a/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h b/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
+index c0ee0541e53fc..847e1ef8e1064 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
++++ b/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
+@@ -507,6 +507,7 @@ struct ice_tx_ctx_desc {
+ 			(0x3FFFFULL << ICE_TXD_CTX_QW1_TSO_LEN_S)
+ 
+ #define ICE_TXD_CTX_QW1_MSS_S	50
++#define ICE_TXD_CTX_MIN_MSS	64
+ 
+ enum ice_tx_ctx_desc_cmd_bits {
+ 	ICE_TX_CTX_DESC_TSO		= 0x01,
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 4c7d1720113a0..fb4656902634c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -6787,6 +6787,7 @@ ice_features_check(struct sk_buff *skb,
+ 		   struct net_device __always_unused *netdev,
+ 		   netdev_features_t features)
+ {
++	bool gso = skb_is_gso(skb);
+ 	size_t len;
+ 
+ 	/* No point in doing any of this if neither checksum nor GSO are
+@@ -6799,24 +6800,32 @@ ice_features_check(struct sk_buff *skb,
+ 	/* We cannot support GSO if the MSS is going to be less than
+ 	 * 64 bytes. If it is then we need to drop support for GSO.
+ 	 */
+-	if (skb_is_gso(skb) && (skb_shinfo(skb)->gso_size < 64))
++	if (gso && (skb_shinfo(skb)->gso_size < ICE_TXD_CTX_MIN_MSS))
+ 		features &= ~NETIF_F_GSO_MASK;
+ 
+-	len = skb_network_header(skb) - skb->data;
++	len = skb_network_offset(skb);
+ 	if (len > ICE_TXD_MACLEN_MAX || len & 0x1)
+ 		goto out_rm_features;
+ 
+-	len = skb_transport_header(skb) - skb_network_header(skb);
++	len = skb_network_header_len(skb);
+ 	if (len > ICE_TXD_IPLEN_MAX || len & 0x1)
+ 		goto out_rm_features;
+ 
+ 	if (skb->encapsulation) {
+-		len = skb_inner_network_header(skb) - skb_transport_header(skb);
+-		if (len > ICE_TXD_L4LEN_MAX || len & 0x1)
+-			goto out_rm_features;
++		/* this must work for VXLAN frames AND IPIP/SIT frames, and in
++		 * the case of IPIP frames, the transport header pointer is
++		 * after the inner header! So check to make sure that this
++		 * is a GRE or UDP_TUNNEL frame before doing that math.
++		 */
++		if (gso && (skb_shinfo(skb)->gso_type &
++			    (SKB_GSO_GRE | SKB_GSO_UDP_TUNNEL))) {
++			len = skb_inner_network_header(skb) -
++			      skb_transport_header(skb);
++			if (len > ICE_TXD_L4LEN_MAX || len & 0x1)
++				goto out_rm_features;
++		}
+ 
+-		len = skb_inner_transport_header(skb) -
+-		      skb_inner_network_header(skb);
++		len = skb_inner_network_header_len(skb);
+ 		if (len > ICE_TXD_IPLEN_MAX || len & 0x1)
+ 			goto out_rm_features;
+ 	}
 -- 
 2.34.1
+
+
 
