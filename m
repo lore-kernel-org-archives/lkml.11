@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92296C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BC8C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345806AbiBNKKy (ORCPT
+        id S1345955AbiBNKLU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:10:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35458 "EHLO
+        Mon, 14 Feb 2022 05:11:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346103AbiBNKH0 (ORCPT
+        with ESMTP id S1345245AbiBNKIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:07:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2999C75C00;
-        Mon, 14 Feb 2022 01:50:03 -0800 (PST)
+        Mon, 14 Feb 2022 05:08:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CF275C37;
+        Mon, 14 Feb 2022 01:50:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B87B761284;
-        Mon, 14 Feb 2022 09:50:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E69CC340E9;
-        Mon, 14 Feb 2022 09:50:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E82D2B80DC8;
+        Mon, 14 Feb 2022 09:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEFE1C340F1;
+        Mon, 14 Feb 2022 09:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832202;
-        bh=HeaVS8YJXYExBvHJjvzB8Zo18vyuqr4/tONb6YB89pU=;
+        s=korg; t=1644832211;
+        bh=DrjitRWyezSPq3nPLzHzoi5LlKZRoVPa3+u+GnJEjtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ViL9Q97CG3kctPeYrLMFmyP/jeSTlUQ+uKJNac+sWw64eqSzuOdXVEzcZ/FdN6V/T
-         nkwW+zLNHEY4zQz7KtEyGRU0DwnVl5YBbzi5SAE4cxmrA2FsV5mOOOP/88B52eSXUU
-         jh32mgeMq/zWDKdbi9reI1j7JXnxi9QivGP8hNSw=
+        b=FKbfPUTAPssvH8gtSAyUTsaSHa9+fshNk/vu37WSifzFYQFK99CvgiNefXtUBLOjE
+         Zw/TB+wLXGth7jOIf6Kk215ifJs3O78RrhQq1WGVpaT9etlJQiRv4oXUnLGfzTy9W8
+         zB6drm/3hGqzI/KqpHxvCSp1rE4JFaKdWvh31JiQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Mathias Krause <minipli@grsecurity.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 112/172] net: dsa: ar9331: register the mdiobus under devres
-Date:   Mon, 14 Feb 2022 10:26:10 +0100
-Message-Id: <20220214092510.298066364@linuxfoundation.org>
+Subject: [PATCH 5.15 097/172] misc: fastrpc: avoid double fput() on failed usercopy
+Date:   Mon, 14 Feb 2022 10:25:55 +0100
+Message-Id: <20220214092509.760885873@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -52,67 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Mathias Krause <minipli@grsecurity.net>
 
-[ Upstream commit 50facd86e9fbc4b93fe02e5fe05776047f45dbfb ]
+[ Upstream commit 46963e2e0629cb31c96b1d47ddd89dc3d8990b34 ]
 
-As explained in commits:
-74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
-5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
+If the copy back to userland fails for the FASTRPC_IOCTL_ALLOC_DMA_BUFF
+ioctl(), we shouldn't assume that 'buf->dmabuf' is still valid. In fact,
+dma_buf_fd() called fd_install() before, i.e. "consumed" one reference,
+leaving us with none.
 
-mdiobus_free() will panic when called from devm_mdiobus_free() <-
-devres_release_all() <- __device_release_driver(), and that mdiobus was
-not previously unregistered.
+Calling dma_buf_put() will therefore put a reference we no longer own,
+leading to a valid file descritor table entry for an already released
+'file' object which is a straight use-after-free.
 
-The ar9331 is an MDIO device, so the initial set of constraints that I
-thought would cause this (I2C or SPI buses which call ->remove on
-->shutdown) do not apply. But there is one more which applies here.
+Simply avoid calling dma_buf_put() and rely on the process exit code to
+do the necessary cleanup, if needed, i.e. if the file descriptor is
+still valid.
 
-If the DSA master itself is on a bus that calls ->remove from ->shutdown
-(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
-between the switch and the DSA master, and device_links_unbind_consumers()
-will unbind the ar9331 switch driver on shutdown.
-
-So the same treatment must be applied to all DSA switch drivers, which
-is: either use devres for both the mdiobus allocation and registration,
-or don't use devres at all.
-
-The ar9331 driver doesn't have a complex code structure for mdiobus
-removal, so just replace of_mdiobus_register with the devres variant in
-order to be all-devres and ensure that we don't free a still-registered
-bus.
-
-Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6cffd79504ce ("misc: fastrpc: Add support for dmabuf exporter")
+Acked-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Mathias Krause <minipli@grsecurity.net>
+Link: https://lore.kernel.org/r/20220127130218.809261-1-minipli@grsecurity.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/qca/ar9331.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/misc/fastrpc.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index a6bfb6abc51a7..5d476f452396c 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -378,7 +378,7 @@ static int ar9331_sw_mbus_init(struct ar9331_sw_priv *priv)
- 	if (!mnp)
- 		return -ENODEV;
- 
--	ret = of_mdiobus_register(mbus, mnp);
-+	ret = devm_of_mdiobus_register(dev, mbus, mnp);
- 	of_node_put(mnp);
- 	if (ret)
- 		return ret;
-@@ -1093,7 +1093,6 @@ static void ar9331_sw_remove(struct mdio_device *mdiodev)
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index f3002653bd010..86d8fb8c0148b 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -1286,7 +1286,14 @@ static int fastrpc_dmabuf_alloc(struct fastrpc_user *fl, char __user *argp)
  	}
  
- 	irq_domain_remove(priv->irqdomain);
--	mdiobus_unregister(priv->mbus);
- 	dsa_unregister_switch(&priv->ds);
+ 	if (copy_to_user(argp, &bp, sizeof(bp))) {
+-		dma_buf_put(buf->dmabuf);
++		/*
++		 * The usercopy failed, but we can't do much about it, as
++		 * dma_buf_fd() already called fd_install() and made the
++		 * file descriptor accessible for the current process. It
++		 * might already be closed and dmabuf no longer valid when
++		 * we reach this point. Therefore "leak" the fd and rely on
++		 * the process exit path to do any required cleanup.
++		 */
+ 		return -EFAULT;
+ 	}
  
- 	reset_control_assert(priv->sw_reset);
 -- 
 2.34.1
 
