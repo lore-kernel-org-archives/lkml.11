@@ -2,158 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D07C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 979EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbiBNUpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:45:39 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37906 "EHLO
+        id S229682AbiBNUpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:45:51 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiBNUp2 (ORCPT
+        with ESMTP id S229639AbiBNUp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:45:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C22B1BAC5B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:42:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644871248;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=e6EPVeD6do3pRt+tnipJnjeqzRh8UgXYDY8NcL5v4TA=;
-        b=AyAhWbb4fU4DPMvm2ehH4ZEiyR6xcoIH4oSSk2PaBj/cAmXZVCriNq3r8MyI+Z72VotDga
-        OZmk27N7CmEDKkwDFeyPRhtamEwa+gwqq1LgqhSKWQqXb3+QTUADLmCE9I6vYGOTnOd+8v
-        3uJAqLHwX81NelpoDM3CIMcTL2P3Gzk=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-404-JbWKjxSONqqgxBt7XRawNQ-1; Mon, 14 Feb 2022 14:53:19 -0500
-X-MC-Unique: JbWKjxSONqqgxBt7XRawNQ-1
-Received: by mail-qk1-f199.google.com with SMTP id bi17-20020a05620a319100b0050850bdcbb2so9844406qkb.17
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:53:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=e6EPVeD6do3pRt+tnipJnjeqzRh8UgXYDY8NcL5v4TA=;
-        b=OFf2KK76j/WYvSz7ppsSEKkgiRwNMNCBKNaXzKTgMfMmyssGzy0LCDeL4guqczWqXd
-         7leUjkGgng1gAIOxtcOx5iUNUY3UyTs/bJRrO4/6OW3AHXmCJlojQ1DHsyOLr+Mm5XWR
-         /pTd6hO0q+ZWTnPtj7PgdfisIebp14Dp658+1kHDALlNjp3VvoXAVyepROikVSzh//eO
-         PGzioSySfRR8A2vjk5i85g2P2clUFXathUIXCAK1VshbEMYrqh7lifSXtrcQYw1dZTJh
-         iwSyppT6OiuxxrqTrVgcytg3tc7li22I4r0NiuDR5/m4TYxMaWQ3/biU3xcsxLW+6U7i
-         SdHQ==
-X-Gm-Message-State: AOAM530Wk9xuyedMw84iS2YfNz3p9wCO4d7rD9mAvVMoHTz08UvhfLSc
-        /dWEXbJ0N43X3L8m3IjNTs/KpIhoC1qQyjqSJKOeU8giSK12pQpR1epxzv/EV/qKq9QrJYk4xST
-        wAkYiJGY21KEr7rAsI8LOBABL
-X-Received: by 2002:ac8:5950:: with SMTP id 16mr442158qtz.104.1644868398656;
-        Mon, 14 Feb 2022 11:53:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwfG6/1k0rBJt+vzNdA66ptivPgVKhtvF3fESYrk5a1gNiCTywfjuzFjb7lbQg3RurGL/bZLg==
-X-Received: by 2002:ac8:5950:: with SMTP id 16mr442138qtz.104.1644868398345;
-        Mon, 14 Feb 2022 11:53:18 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id e64sm123461qkd.122.2022.02.14.11.53.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 11:53:17 -0800 (PST)
-Date:   Mon, 14 Feb 2022 11:53:14 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     syzbot <syzbot+ecb1e7e51c52f68f7481@syzkaller.appspotmail.com>
-Cc:     bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        jgross@suse.com, linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, peterz@infradead.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Song Liu <song@kernel.org>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in __text_poke
-Message-ID: <20220214195314.gv7gzxqza346ztnf@treble>
-References: <00000000000076b4bf05d7fed1f1@google.com>
+        Mon, 14 Feb 2022 15:45:29 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2851524287C;
+        Mon, 14 Feb 2022 12:42:47 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 2C98292009E; Mon, 14 Feb 2022 21:42:05 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 221CC92009D;
+        Mon, 14 Feb 2022 20:42:05 +0000 (GMT)
+Date:   Mon, 14 Feb 2022 20:42:05 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] parport_pc: Also enable driver for PCI systems
+In-Reply-To: <624931c5da90387324a97be57745b13af4738bda.camel@linux.ibm.com>
+Message-ID: <alpine.DEB.2.21.2202142018060.34636@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2202122313460.34636@angie.orcam.me.uk>  <CAMuHMdW-utcFzCZTgqONjxs=U662nF0=aBQu7Zi7FBQouwiA3g@mail.gmail.com>  <alpine.DEB.2.21.2202140833290.34636@angie.orcam.me.uk>
+ <624931c5da90387324a97be57745b13af4738bda.camel@linux.ibm.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <00000000000076b4bf05d7fed1f1@google.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding Song, this is likely the same issue as 
+On Mon, 14 Feb 2022, Niklas Schnelle wrote:
 
-https://lkml.kernel.org/r/0000000000007646bd05d7f81943@google.com
+> > While older versions of the driver did have to be explicitly configured 
+> > for MMIO rather than port I/O, a feature added with commit e89a2cfb7d7b 
+> > ("[TC] defxx: TURBOchannel support"), the driver has been improved with 
+> > commit 795e272e5474 ("FDDI: defxx: Implement dynamic CSR I/O address space 
+> > selection") and the selection of the I/O space to use now fully automatic.
+> 
+> Very interesting and thanks for the input! On s390 we really only have
+> very few different PCI devices and I can only test another hand full
+> with my private x86 and ARM systems.
 
-On Mon, Feb 14, 2022 at 10:45:19AM -0800, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-> git tree:       bpf-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=173474ac700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-> dashboard link: https://syzkaller.appspot.com/bug?extid=ecb1e7e51c52f68f7481
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+ecb1e7e51c52f68f7481@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: vmalloc-out-of-bounds in memcmp+0x16f/0x1c0 lib/string.c:770
-> Read of size 8 at addr ffffffffa0013400 by task syz-executor.3/26377
-> 
-> CPU: 1 PID: 26377 Comm: syz-executor.3 Not tainted 5.16.0-syzkaller-11655-ge5313968c41b #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description.constprop.0.cold+0xf/0x336 mm/kasan/report.c:255
->  __kasan_report mm/kasan/report.c:442 [inline]
->  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
->  memcmp+0x16f/0x1c0 lib/string.c:770
->  memcmp include/linux/fortify-string.h:269 [inline]
->  __text_poke+0x5a2/0x8c0 arch/x86/kernel/alternative.c:1056
->  text_poke_copy+0x66/0xa0 arch/x86/kernel/alternative.c:1132
->  bpf_arch_text_copy+0x21/0x40 arch/x86/net/bpf_jit_comp.c:2426
->  bpf_jit_binary_pack_finalize+0x43/0x170 kernel/bpf/core.c:1098
->  bpf_int_jit_compile+0x9d5/0x12f0 arch/x86/net/bpf_jit_comp.c:2383
->  bpf_prog_select_runtime+0x4d4/0x8a0 kernel/bpf/core.c:2163
->  bpf_prog_load+0xfe6/0x2250 kernel/bpf/syscall.c:2349
->  __sys_bpf+0x68a/0x59a0 kernel/bpf/syscall.c:4640
->  __do_sys_bpf kernel/bpf/syscall.c:4744 [inline]
->  __se_sys_bpf kernel/bpf/syscall.c:4742 [inline]
->  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4742
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f8a1c276059
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f8a1abca168 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 00007f8a1c389030 RCX: 00007f8a1c276059
-> RDX: 0000000000000064 RSI: 00000000202a0fb8 RDI: 0000000000000005
-> RBP: 00007f8a1c2d008d R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007ffe9ad17dff R14: 00007f8a1abca300 R15: 0000000000022000
->  </TASK>
-> 
-> 
-> Memory state around the buggy address:
->  ffffffffa0013300: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->  ffffffffa0013380: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >ffffffffa0013400: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->                    ^
->  ffffffffa0013480: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->  ffffffffa0013500: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> ==================================================================
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
+ Note that for TURBOchannel support, which is likewise MMIO only, the 
+driver has this:
 
--- 
-Josh
+#if defined(CONFIG_EISA) || defined(CONFIG_PCI)
+#define dfx_use_mmio bp->mmio
+#else
+#define dfx_use_mmio true
+#endif
 
+so if your proposal to add HAS_IOPORT goes forward it'll be enough if we 
+update the condition to:
+
+#if defined(CONFIG_HAS_IOPORT)
+
+or maybe even rewrite the entire piece as:
+
+#define dfx_use_mmio (!IS_ENABLED(CONFIG_HAS_IOPORT) || bp->mmio)
+
+and all the port I/O stuff will be optimised away by the compiler.  The 
+only part of the driver that actually cannot do without port I/O is EISA 
+support, which uses the EISA slot port I/O space for BAR accesses even 
+if the actual CSR block has been set up to be decoded in the MMIO space.
+
+> >  Then what about the other FDDI driver there, SKFP?  It's not marked as
+> > LEGACY_PCI, although it's not selectable anyway due to the dependency of 
+> > FDDI on LEGACY_PCI.
+> > 
+> >  Niklas, what was the criterion for placing the LEGACY_PCI dependency?
+> 
+> Hmm, honestly I haven't really worked on this recently. There were some
+> open questions from Bjorn towards Arnd and I was waiting for his reply
+> but I guess he missed those. I think what you noticed was the main
+> problem, there wasn't really a clear set of criteria for LEGACY_PCI and
+> even for HAS_IOPORT we missed some uses if they were not compiled on
+> s390's allyesconfig due to other dependencies.
+
+ A dynamic boolean variable might be good having for platforms which may 
+or may not have PCI port I/O available depending on the specific system 
+model in addition to a compile-time constant of HAS_IOPORT.  I looked 
+into it briefly in the context of the POWER9 system when I got it back 
+in 2020, but figured out it wasn't straightforward enough and decided I 
+could not afford the time for a proper investigation.
+
+> >  Also do you plan to post an updated series anytime soon?  I'm asking 
+> > because like with the m68k port also the MIPS one needs a more finegrained 
+> > approach and I suspect there may be other corner cases and I'd rather look 
+> > at the most recent version of your series.  Otherwise I'll have a look 
+> > through your original submission, but it may have to wait until the next 
+> > weekend due to my other commitments.
+> 
+> That sounds like you do see a need for something like HAS_IOPORT too,
+> correct? Maybe with some input what you need and possibly stripping the
+> LEGACY_PCI option it might make sense to do a new version. Rather than
+> possibly getting in your way could directly work in your input.
+
+ Yes, it does seem to me like a good direction, but will surely require 
+some coordination from platform and driver maintainers, as it's not 
+always easy for someone not familiar with a specific piece what the 
+context is (such as with the defxx driver as I noted above).
+
+  Maciej
