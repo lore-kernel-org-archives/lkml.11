@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D58DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231808AbiBNJms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:42:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33978 "EHLO
+        id S240655AbiBNJmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:42:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245000AbiBNJlD (ORCPT
+        with ESMTP id S245063AbiBNJlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB41A193;
-        Mon, 14 Feb 2022 01:36:55 -0800 (PST)
+        Mon, 14 Feb 2022 04:41:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C69A196;
+        Mon, 14 Feb 2022 01:37:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C0B061172;
-        Mon, 14 Feb 2022 09:36:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4100EC340E9;
-        Mon, 14 Feb 2022 09:36:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A019660DFD;
+        Mon, 14 Feb 2022 09:37:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C992C340E9;
+        Mon, 14 Feb 2022 09:37:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831414;
-        bh=LUzrZ0HODNmYMs1a86YjqdHJIgQG8o+g6TrynlDeyVU=;
+        s=korg; t=1644831421;
+        bh=qlTXMgDZRk4SlT/fqVq8NbjrNQm0Jg7jri67W8G3os0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W6qb8Thn9nP2kNcBlCUsowZJmRFSZdr2xHwyX+s5MDWVg9tnMrWtnwCwEGepdsTWj
-         Ig4XlCnRocEbkS0itqDbzPbaCsOZ+l1w0QXzyg7+TA4gTYtoDt1J+6THacbh7Rbkgi
-         R3tqxBiO+vdifl579SblYVY7cO1hbVecFfJSqGDA=
+        b=P479Zq2bL3cjEU2N4cHCy00QVF2wULOnu7wiFu+bnTRkE8F8rguC0Ictq0i4Tyguy
+         NtbKF0VLX6i6xXbw/ezlZgPqMxM8XX2U/7JzVhNGl1yqhE8Og0Yy2wr7aheLgr8Ult
+         Yh5SW2a2MbzhYjD946/r81N4Ws/OwXS+yNXCY9Kk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Lunn <andrew@lunn.ch>, Andrew Jeffery <andrew@aj.id.au>,
+        stable@vger.kernel.org,
+        Selwin Sebastian <Selwin.Sebastian@amd.com>,
+        Raju Rangoju <Raju.Rangoju@amd.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 47/71] net: mdio: aspeed: Add missing MODULE_DEVICE_TABLE
-Date:   Mon, 14 Feb 2022 10:26:15 +0100
-Message-Id: <20220214092453.635370227@linuxfoundation.org>
+Subject: [PATCH 5.4 49/71] net: amd-xgbe: disable interrupts during pci removal
+Date:   Mon, 14 Feb 2022 10:26:17 +0100
+Message-Id: <20220214092453.698935832@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -50,34 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joel Stanley <joel@jms.id.au>
+From: Raju Rangoju <Raju.Rangoju@amd.com>
 
-[ Upstream commit bc1c3c3b10db4f37c41e6107751a8d450d9c431c ]
+[ Upstream commit 68c2d6af1f1e469544d6cbe9a601d96fb9c00e7f ]
 
-Fix loading of the driver when built as a module.
+Hardware interrupts are enabled during the pci probe, however,
+they are not disabled during pci removal.
 
-Fixes: f160e99462c6 ("net: phy: Add mdio-aspeed")
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Acked-by: Andrew Jeffery <andrew@aj.id.au>
+Disable all hardware interrupts during pci removal to avoid any
+issues.
+
+Fixes: e75377404726 ("amd-xgbe: Update PCI support to use new IRQ functions")
+Suggested-by: Selwin Sebastian <Selwin.Sebastian@amd.com>
+Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/mdio-aspeed.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/phy/mdio-aspeed.c b/drivers/net/phy/mdio-aspeed.c
-index 966c3b4ad59d1..e2273588c75b6 100644
---- a/drivers/net/phy/mdio-aspeed.c
-+++ b/drivers/net/phy/mdio-aspeed.c
-@@ -148,6 +148,7 @@ static const struct of_device_id aspeed_mdio_of_match[] = {
- 	{ .compatible = "aspeed,ast2600-mdio", },
- 	{ },
- };
-+MODULE_DEVICE_TABLE(of, aspeed_mdio_of_match);
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
+index 7b86240ecd5fe..c4f1fc97987ae 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
+@@ -418,6 +418,9 @@ static void xgbe_pci_remove(struct pci_dev *pdev)
  
- static struct platform_driver aspeed_mdio_driver = {
- 	.driver = {
+ 	pci_free_irq_vectors(pdata->pcidev);
+ 
++	/* Disable all interrupts in the hardware */
++	XP_IOWRITE(pdata, XP_INT_EN, 0x0);
++
+ 	xgbe_free_pdata(pdata);
+ }
+ 
 -- 
 2.34.1
 
