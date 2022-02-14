@@ -2,111 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B87CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:50:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E77AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240107AbiBNDuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 22:50:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36358 "EHLO
+        id S240124AbiBNDxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 22:53:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiBNDuK (ORCPT
+        with ESMTP id S237909AbiBNDxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 22:50:10 -0500
-X-Greylist: delayed 572 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 19:50:03 PST
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A6956212;
-        Sun, 13 Feb 2022 19:50:03 -0800 (PST)
-Received: from [192.168.192.153] (unknown [50.126.114.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Sun, 13 Feb 2022 22:53:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51A495622D
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 19:52:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644810778;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=k5gXQFIv5vbKifedeqqMIbptAWWOjXJO6QmZ5mrBFnQ=;
+        b=JWlL6/t+C8iop5Ex+ozPIf9neyJd0b4S/p4kJWr/2jZ+h0W7HUTeqMMrklFKVLjmfCsg1j
+        ue1Xr39kHDJeCyNBYK4eG0RYZMLIi6AyX1HxCyTvLojUX53cPG7EV9kaP63yiS6sYmqnOZ
+        XZ1Orm8Ob6wrLlTpZZdU6bXS/yzSHu4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-30-Bm3C-TOJP8Kv9GMyVUkbow-1; Sun, 13 Feb 2022 22:52:55 -0500
+X-MC-Unique: Bm3C-TOJP8Kv9GMyVUkbow-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 6C8E13FCCC;
-        Mon, 14 Feb 2022 03:40:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644810027;
-        bh=6JLxTZevHMlYVeby6Lh6UMpeElkbmngwOfI8fZ79xvs=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=vbNM+WcB0HwKMysA+G3Flz3Xwz9BisL3jgsF+SgUnRpMhPqpcy1L6cQEjdSIKiXb2
-         bpmU7iCYAzm+H5DaTXTgbi4K2ql2nKoWeX8YcCEsctpwtW0COIvPdEPvkqFWxBMupb
-         8j2VSnMdN4leF6TM/dpkGSmq8LlBUth3R9YPRdmd+pSlbR7zLQzwsut/+wgAdTz77j
-         +TM9bK7Xs8Tb8m41ljhuihvpucpKV6U9gEg3ADBgWX/AhVww6UK2bn4VMwVQJ3t771
-         HkQQk+PnG1e4HLzoOgf6TWrXi1zjsu7tzbU+qlqrluaj5P8BIELViE2RN4YIqO+zZe
-         WeHJHsAjq9f0Q==
-Message-ID: <f42b0010-3a7b-e781-5b7e-ac975c36c102@canonical.com>
-Date:   Sun, 13 Feb 2022 19:40:18 -0800
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 09E931006AA0;
+        Mon, 14 Feb 2022 03:52:52 +0000 (UTC)
+Received: from localhost (ovpn-12-173.pek2.redhat.com [10.72.12.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 808024CEC8;
+        Mon, 14 Feb 2022 03:52:46 +0000 (UTC)
+Date:   Mon, 14 Feb 2022 11:52:43 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        kexec@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: Re: [PATCH v20 3/5] arm64: kdump: reimplement crashkernel=X
+Message-ID: <YgnSCxlr1O2ZZ1sO@MiWiFi-R3L-srv>
+References: <20220124084708.683-1-thunder.leizhen@huawei.com>
+ <20220124084708.683-4-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] apparmor: fix aa_label_asxprint return check
-Content-Language: en-US
-To:     trix@redhat.com, jmorris@namei.org, serge@hallyn.com,
-        nathan@kernel.org, ndesaulniers@google.com
-Cc:     apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20220213213228.2806682-1-trix@redhat.com>
-From:   John Johansen <john.johansen@canonical.com>
-Organization: Canonical
-In-Reply-To: <20220213213228.2806682-1-trix@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124084708.683-4-thunder.leizhen@huawei.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/13/22 13:32, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> Clang static analysis reports this issue
-> label.c:1802:3: warning: 2nd function call argument
->   is an uninitialized value
->   pr_info("%s", str);
->   ^~~~~~~~~~~~~~~~~~
-> 
-> str is set from a successful call to aa_label_asxprint(&str, ...)
-> On failure a negative value is returned, not a -1.  So change
-> the check.
-> 
-> Fixes: f1bd904175e8 ("apparmor: add the base fns() for domain labels")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-
-Acked-by: John Johansen <john.johansen@canonical.com>
-
-thanks I have pulled this into my tree
-
-> ---
->  security/apparmor/label.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/security/apparmor/label.c b/security/apparmor/label.c
-> index 9eb9a9237926..a658b67c784c 100644
-> --- a/security/apparmor/label.c
-> +++ b/security/apparmor/label.c
-> @@ -1744,7 +1744,7 @@ void aa_label_xaudit(struct audit_buffer *ab, struct aa_ns *ns,
->  	if (!use_label_hname(ns, label, flags) ||
->  	    display_mode(ns, label, flags)) {
->  		len  = aa_label_asxprint(&name, ns, label, flags, gfp);
-> -		if (len == -1) {
-> +		if (len < 0) {
->  			AA_DEBUG("label print error");
->  			return;
->  		}
-> @@ -1772,7 +1772,7 @@ void aa_label_seq_xprint(struct seq_file *f, struct aa_ns *ns,
->  		int len;
+On 01/24/22 at 04:47pm, Zhen Lei wrote:
+......
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 6c653a2c7cff052..a5d43feac0d7d96 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -71,6 +71,30 @@ phys_addr_t arm64_dma_phys_limit __ro_after_init;
+>  #define CRASH_ADDR_LOW_MAX	arm64_dma_phys_limit
+>  #define CRASH_ADDR_HIGH_MAX	MEMBLOCK_ALLOC_ACCESSIBLE
 >  
->  		len = aa_label_asxprint(&str, ns, label, flags, gfp);
-> -		if (len == -1) {
-> +		if (len < 0) {
->  			AA_DEBUG("label print error");
->  			return;
->  		}
-> @@ -1795,7 +1795,7 @@ void aa_label_xprintk(struct aa_ns *ns, struct aa_label *label, int flags,
->  		int len;
+> +static int __init reserve_crashkernel_low(unsigned long long low_size)
+> +{
+> +	unsigned long long low_base;
+> +
+> +	/* passed with crashkernel=0,low ? */
+> +	if (!low_size)
+> +		return 0;
+> +
+> +	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
+> +	if (!low_base) {
+> +		pr_err("cannot allocate crashkernel low memory (size:0x%llx).\n", low_size);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	pr_info("crashkernel low memory reserved: 0x%llx - 0x%llx (%lld MB)\n",
+> +		low_base, low_base + low_size, low_size >> 20);
+> +
+> +	crashk_low_res.start = low_base;
+> +	crashk_low_res.end   = low_base + low_size - 1;
+> +	insert_resource(&iomem_resource, &crashk_low_res);
+> +
+> +	return 0;
+> +}
+> +
+>  /*
+>   * reserve_crashkernel() - reserves memory for crash kernel
+
+My another concern is the crashkernel=,low handling. In this patch, the
+code related to low memory is obscure. Wondering if we should make them
+explicit with a little redundant but very clear code flows. Saying this
+because the code must be very clear to you and reviewers, it may be
+harder for later code reader or anyone interested to understand.
+
+1) crashkernel=X,high
+2) crashkernel=X,high crashkernel=Y,low
+3) crashkernel=X,high crashkernel=0,low
+4) crashkernel=X,high crashkernel='messy code',low
+5) crashkernel=X //fall back to high memory, low memory is required then.
+
+It could be me thinking about it too much. I made changes to your patch
+with a tuning, not sure if it's OK to you. Otherwise, this patchset
+works very well for all above test cases, it's ripe to be merged for
+wider testing.
+
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index a5d43feac0d7..671862c56d7d 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -94,7 +94,8 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
+ 
+ 	return 0;
+ }
+-
++/*Words explaining why it's 256M*/
++#define DEFAULT_CRASH_KERNEL_LOW_SIZE SZ_256M
+ /*
+  * reserve_crashkernel() - reserves memory for crash kernel
+  *
+@@ -105,10 +106,10 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
+ static void __init reserve_crashkernel(void)
+ {
+ 	unsigned long long crash_base, crash_size;
+-	unsigned long long crash_low_size = SZ_256M;
++	unsigned long long crash_low_size;
+ 	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+ 	int ret;
+-	bool fixed_base;
++	bool fixed_base, high;
+ 	char *cmdline = boot_command_line;
+ 
+ 	/* crashkernel=X[@offset] */
+@@ -126,7 +127,10 @@ static void __init reserve_crashkernel(void)
+ 		ret = parse_crashkernel_low(cmdline, 0, &low_size, &crash_base);
+ 		if (!ret)
+ 			crash_low_size = low_size;
++		else
++			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
+ 
++		high = true;
+ 		crash_max = CRASH_ADDR_HIGH_MAX;
+ 	}
+ 
+@@ -134,7 +138,7 @@ static void __init reserve_crashkernel(void)
+ 	crash_size = PAGE_ALIGN(crash_size);
+ 
+ 	/* User specifies base address explicitly. */
+-	if (crash_base)
++	if (fixed_base)
+ 		crash_max = crash_base + crash_size;
+ 
+ retry:
+@@ -156,7 +160,10 @@ static void __init reserve_crashkernel(void)
+ 		return;
+ 	}
+ 
+-	if (crash_base >= SZ_4G && reserve_crashkernel_low(crash_low_size)) {
++	if (crash_base >= SZ_4G && !high) 
++		crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
++
++	if (reserve_crashkernel_low(crash_low_size)) {
+ 		memblock_phys_free(crash_base, crash_size);
+ 		return;
+ 	}
+
+>   *
+> @@ -81,29 +105,62 @@ phys_addr_t arm64_dma_phys_limit __ro_after_init;
+>  static void __init reserve_crashkernel(void)
+>  {
+>  	unsigned long long crash_base, crash_size;
+> +	unsigned long long crash_low_size = SZ_256M;
+>  	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+>  	int ret;
+> +	bool fixed_base;
+> +	char *cmdline = boot_command_line;
 >  
->  		len = aa_label_asxprint(&str, ns, label, flags, gfp);
-> -		if (len == -1) {
-> +		if (len < 0) {
->  			AA_DEBUG("label print error");
->  			return;
->  		}
+> -	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
+> +	/* crashkernel=X[@offset] */
+> +	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
+>  				&crash_size, &crash_base);
+> -	/* no crashkernel= or invalid value specified */
+> -	if (ret || !crash_size)
+> -		return;
+> +	if (ret || !crash_size) {
+> +		unsigned long long low_size;
+>  
+> +		/* crashkernel=X,high */
+> +		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
+> +		if (ret || !crash_size)
+> +			return;
+> +
+> +		/* crashkernel=X,low */
+> +		ret = parse_crashkernel_low(cmdline, 0, &low_size, &crash_base);
+> +		if (!ret)
+> +			crash_low_size = low_size;
+> +
+> +		crash_max = CRASH_ADDR_HIGH_MAX;
+> +	}
+> +
+> +	fixed_base = !!crash_base;
+>  	crash_size = PAGE_ALIGN(crash_size);
+>  
+>  	/* User specifies base address explicitly. */
+>  	if (crash_base)
+>  		crash_max = crash_base + crash_size;
+>  
+> +retry:
+>  	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+>  					       crash_base, crash_max);
+>  	if (!crash_base) {
+> +		/*
+> +		 * Attempt to fully allocate low memory failed, fall back
+> +		 * to high memory, the minimum required low memory will be
+> +		 * reserved later.
+> +		 */
+> +		if (!fixed_base && (crash_max == CRASH_ADDR_LOW_MAX)) {
+> +			crash_max = CRASH_ADDR_HIGH_MAX;
+> +			goto retry;
+> +		}
+> +
+>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
+>  			crash_size);
+>  		return;
+>  	}
+>  
+> +	if (crash_base >= SZ_4G && reserve_crashkernel_low(crash_low_size)) {
+> +		memblock_phys_free(crash_base, crash_size);
+> +		return;
+> +	}
+> +
+>  	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
+>  		crash_base, crash_base + crash_size, crash_size >> 20);
+>  
+> @@ -112,6 +169,9 @@ static void __init reserve_crashkernel(void)
+>  	 * map. Inform kmemleak so that it won't try to access it.
+>  	 */
+>  	kmemleak_ignore_phys(crash_base);
+> +	if (crashk_low_res.end)
+> +		kmemleak_ignore_phys(crashk_low_res.start);
+> +
+>  	crashk_res.start = crash_base;
+>  	crashk_res.end = crash_base + crash_size - 1;
+>  	insert_resource(&iomem_resource, &crashk_res);
+> -- 
+> 2.25.1
+> 
 
