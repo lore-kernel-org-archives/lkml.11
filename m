@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6799C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B85AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347859AbiBNKc7 (ORCPT
+        id S1347917AbiBNKdB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:32:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37492 "EHLO
+        Mon, 14 Feb 2022 05:33:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348119AbiBNKar (ORCPT
+        with ESMTP id S1348959AbiBNKbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:30:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE706A3A7;
-        Mon, 14 Feb 2022 01:59:21 -0800 (PST)
+        Mon, 14 Feb 2022 05:31:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9819DD6D;
+        Mon, 14 Feb 2022 01:59:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCB9860B33;
-        Mon, 14 Feb 2022 09:59:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1914C340E9;
-        Mon, 14 Feb 2022 09:59:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D7D560C38;
+        Mon, 14 Feb 2022 09:59:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B5CCC340F0;
+        Mon, 14 Feb 2022 09:59:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832760;
-        bh=zxZs4NkyjrI2gPfX4TXx/y5il8D5vI+faSq/lO+mImo=;
+        s=korg; t=1644832797;
+        bh=fgTxHlgAuSLN0JbaPkeomaLEwcnrryB9lPiCvLTAvSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XaxbBQzfDvb9b6Fdc3+3hj9lnTUdF1PD5DspaLeXVdHPNfEJyhELACeW6oZRQ3xn3
-         sOQWbirwhVkYy2N1dKeTIp9S4e30psL9DIZIsRHvBVSlvWvbMCMbYuAFJpAPM9rffZ
-         ESa9buv2ABFjkagrv++yccpZU7VWl1fS6USuadnI=
+        b=y/TR2+VXMUgFS9mYyP34RC9ClyoCYqQSSap7gzDSyIsSmfFjjN8qxkXYybexhFlyS
+         2XTt0qdx+ywQoCU6zAAFtkNpOgX/uyGz9m4iv92viXKAWDhzNLPwXM3DFnxBWsUPLa
+         AqEx9z4XQFLi2N1N7iPokHhz6abeC0kTRJ9ViCpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 116/203] netfilter: nft_payload: dont allow th access for fragments
-Date:   Mon, 14 Feb 2022 10:26:00 +0100
-Message-Id: <20220214092514.195957183@linuxfoundation.org>
+Subject: [PATCH 5.16 127/203] ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE
+Date:   Mon, 14 Feb 2022 10:26:11 +0100
+Message-Id: <20220214092514.556008650@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,79 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit a9e8503def0fd4ed89ade1f61c315f904581d439 ]
+[ Upstream commit dc0075ba7f387fe4c48a8c674b11ab6f374a6acc ]
 
-Loads relative to ->thoff naturally expect that this points to the
-transport header, but this is only true if pkt->fragoff == 0.
+Commit 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while
+suspended to idle") made acpi_ec_dispatch_gpe() check
+pm_wakeup_pending(), but that is before canceling the SCI wakeup,
+so pm_wakeup_pending() is always true.  This causes the loop in
+acpi_ec_dispatch_gpe() to always terminate after one iteration which
+may not be correct.
 
-This has little effect for rulesets with connection tracking/nat because
-these enable ip defra. For other rulesets this prevents false matches.
+Address this issue by canceling the SCI wakeup earlier, from
+acpi_ec_dispatch_gpe() itself.
 
-Fixes: 96518518cc41 ("netfilter: add nftables")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while suspended to idle")
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_exthdr.c  | 2 +-
- net/netfilter/nft_payload.c | 9 +++++----
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ drivers/acpi/ec.c    | 10 ++++++++++
+ drivers/acpi/sleep.c | 14 ++++----------
+ 2 files changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
-index dbe1f2e7dd9ed..9e927ab4df151 100644
---- a/net/netfilter/nft_exthdr.c
-+++ b/net/netfilter/nft_exthdr.c
-@@ -167,7 +167,7 @@ nft_tcp_header_pointer(const struct nft_pktinfo *pkt,
- {
- 	struct tcphdr *tcph;
+diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
+index b9c44e6c5e400..1712990bf2ad8 100644
+--- a/drivers/acpi/ec.c
++++ b/drivers/acpi/ec.c
+@@ -2051,6 +2051,16 @@ bool acpi_ec_dispatch_gpe(void)
+ 	if (acpi_any_gpe_status_set(first_ec->gpe))
+ 		return true;
  
--	if (pkt->tprot != IPPROTO_TCP)
-+	if (pkt->tprot != IPPROTO_TCP || pkt->fragoff)
- 		return NULL;
++	/*
++	 * Cancel the SCI wakeup and process all pending events in case there
++	 * are any wakeup ones in there.
++	 *
++	 * Note that if any non-EC GPEs are active at this point, the SCI will
++	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
++	 * should be missed by canceling the wakeup here.
++	 */
++	pm_system_cancel_wakeup();
++
+ 	/*
+ 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
+ 	 * to allow the caller to process events properly after that.
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 9f237dc9d45fc..8513410ca2fc2 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -739,21 +739,15 @@ bool acpi_s2idle_wake(void)
+ 			return true;
+ 		}
  
- 	tcph = skb_header_pointer(pkt->skb, nft_thoff(pkt), sizeof(*tcph), buffer);
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 58e96a0fe0b4c..a4fbce560bddb 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -83,7 +83,7 @@ static int __nft_payload_inner_offset(struct nft_pktinfo *pkt)
- {
- 	unsigned int thoff = nft_thoff(pkt);
+-		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
++		/*
++		 * Check non-EC GPE wakeups and if there are none, cancel the
++		 * SCI-related wakeup and dispatch the EC GPE.
++		 */
+ 		if (acpi_ec_dispatch_gpe()) {
+ 			pm_pr_dbg("ACPI non-EC GPE wakeup\n");
+ 			return true;
+ 		}
  
--	if (!(pkt->flags & NFT_PKTINFO_L4PROTO))
-+	if (!(pkt->flags & NFT_PKTINFO_L4PROTO) || pkt->fragoff)
- 		return -1;
+-		/*
+-		 * Cancel the SCI wakeup and process all pending events in case
+-		 * there are any wakeup ones in there.
+-		 *
+-		 * Note that if any non-EC GPEs are active at this point, the
+-		 * SCI will retrigger after the rearming below, so no events
+-		 * should be missed by canceling the wakeup here.
+-		 */
+-		pm_system_cancel_wakeup();
+ 		acpi_os_wait_events_complete();
  
- 	switch (pkt->tprot) {
-@@ -147,7 +147,7 @@ void nft_payload_eval(const struct nft_expr *expr,
- 		offset = skb_network_offset(skb);
- 		break;
- 	case NFT_PAYLOAD_TRANSPORT_HEADER:
--		if (!(pkt->flags & NFT_PKTINFO_L4PROTO))
-+		if (!(pkt->flags & NFT_PKTINFO_L4PROTO) || pkt->fragoff)
- 			goto err;
- 		offset = nft_thoff(pkt);
- 		break;
-@@ -657,7 +657,7 @@ static void nft_payload_set_eval(const struct nft_expr *expr,
- 		offset = skb_network_offset(skb);
- 		break;
- 	case NFT_PAYLOAD_TRANSPORT_HEADER:
--		if (!(pkt->flags & NFT_PKTINFO_L4PROTO))
-+		if (!(pkt->flags & NFT_PKTINFO_L4PROTO) || pkt->fragoff)
- 			goto err;
- 		offset = nft_thoff(pkt);
- 		break;
-@@ -696,7 +696,8 @@ static void nft_payload_set_eval(const struct nft_expr *expr,
- 	if (priv->csum_type == NFT_PAYLOAD_CSUM_SCTP &&
- 	    pkt->tprot == IPPROTO_SCTP &&
- 	    skb->ip_summed != CHECKSUM_PARTIAL) {
--		if (nft_payload_csum_sctp(skb, nft_thoff(pkt)))
-+		if (pkt->fragoff == 0 &&
-+		    nft_payload_csum_sctp(skb, nft_thoff(pkt)))
- 			goto err;
- 	}
- 
+ 		/*
 -- 
 2.34.1
 
