@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6457C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A140C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243292AbiBNJcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:32:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43072 "EHLO
+        id S243465AbiBNJcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:32:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243171AbiBNJb2 (ORCPT
+        with ESMTP id S243344AbiBNJbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:31:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B034AE41;
-        Mon, 14 Feb 2022 01:30:23 -0800 (PST)
+        Mon, 14 Feb 2022 04:31:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC0FAE59;
+        Mon, 14 Feb 2022 01:30:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEB14B80DC5;
-        Mon, 14 Feb 2022 09:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E854CC340E9;
-        Mon, 14 Feb 2022 09:30:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26F9360F87;
+        Mon, 14 Feb 2022 09:30:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05122C340E9;
+        Mon, 14 Feb 2022 09:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831021;
-        bh=Ug9e0H5vXPr8eJ+XBkiyzsIfVnY04iyCxHeJHXPLEp8=;
+        s=korg; t=1644831024;
+        bh=uCy9zei6+glFa+/0WU4PdY4k4NNYd49dDfkkI9f0W6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mkXG7IX/pNdLRoEuurW+TqZpygqJgAnRjWQVhQyBW8C8Sm4gVzF27dTLmdggqXyA6
-         0r/kYL+mRS+ZfOAWVV0ldf4f/mkeP5E74jjITKRFJanEACpUqCs8SA0xd5ZL9/1I4V
-         oL7a1Wu0GAHWvzDsT3MfPNHrnAx5O8z2rall7Lz0=
+        b=Eqtur7icnjvCYi/KQ/WzJnZF//Z1F1Afd6xdk9KG3GtyDt2e7yZn2P5SGvWMZ9Ln0
+         2tqVRI8UXHv9Wbs6d1hz0wGbBb++12hth3P4k68ywS+EzM1VtBuKB82E4ZYTosIgtU
+         O/c602xkP4K+b2Vn+ZZZ2mN+wXo4vytBZj7203Po=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 19/44] ARM: dts: meson: Fix the UART compatible strings
-Date:   Mon, 14 Feb 2022 10:25:42 +0100
-Message-Id: <20220214092448.537068998@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 4.14 02/44] ima: Remove ima_policy file before directory
+Date:   Mon, 14 Feb 2022 10:25:25 +0100
+Message-Id: <20220214092447.980494510@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -50,69 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Stefan Berger <stefanb@linux.ibm.com>
 
-[ Upstream commit 5225e1b87432dcf0d0fc3440824b91d04c1d6cc1 ]
+commit f7333b9572d0559e00352a926c92f29f061b4569 upstream.
 
-The dt-bindings for the UART controller only allow the following values
-for Meson6 SoCs:
-- "amlogic,meson6-uart", "amlogic,meson-ao-uart"
-- "amlogic,meson6-uart"
+The removal of ima_dir currently fails since ima_policy still exists, so
+remove the ima_policy file before removing the directory.
 
-Use the correct fallback compatible string "amlogic,meson-ao-uart" for
-AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
-domain UART controllers.
-
-Fixes: ec9b59162fd831 ("ARM: dts: meson6: use stable UART bindings")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211227180026.4068352-2-martin.blumenstingl@googlemail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4af4662fa4a9 ("integrity: IMA policy")
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/meson.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ security/integrity/ima/ima_fs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
-index cd6ad072e72c1..05dfd74a40044 100644
---- a/arch/arm/boot/dts/meson.dtsi
-+++ b/arch/arm/boot/dts/meson.dtsi
-@@ -86,14 +86,14 @@ hwrng: rng@8100 {
- 			};
+--- a/security/integrity/ima/ima_fs.c
++++ b/security/integrity/ima/ima_fs.c
+@@ -486,11 +486,11 @@ int __init ima_fs_init(void)
  
- 			uart_A: serial@84c0 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84c0 0x18>;
- 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
- 			};
- 
- 			uart_B: serial@84dc {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84dc 0x18>;
- 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
-@@ -131,7 +131,7 @@ saradc: adc@8680 {
- 			};
- 
- 			uart_C: serial@8700 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x8700 0x18>;
- 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
-@@ -196,7 +196,7 @@ ir_receiver: ir-receiver@480 {
- 			};
- 
- 			uart_AO: serial@4c0 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart";
- 				reg = <0x4c0 0x18>;
- 				interrupts = <GIC_SPI 90 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
--- 
-2.34.1
-
+ 	return 0;
+ out:
++	securityfs_remove(ima_policy);
+ 	securityfs_remove(violations);
+ 	securityfs_remove(runtime_measurements_count);
+ 	securityfs_remove(ascii_runtime_measurements);
+ 	securityfs_remove(binary_runtime_measurements);
+ 	securityfs_remove(ima_dir);
+-	securityfs_remove(ima_policy);
+ 	return -1;
+ }
 
 
