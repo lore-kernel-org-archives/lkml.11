@@ -2,175 +2,528 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F27E6C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 618B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:34:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231916AbiBNWdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 17:33:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43640 "EHLO
+        id S231921AbiBNWep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 17:34:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbiBNWdr (ORCPT
+        with ESMTP id S229550AbiBNWeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 17:33:47 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F8813C27B;
-        Mon, 14 Feb 2022 14:33:38 -0800 (PST)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21ELrUnq012537;
-        Mon, 14 Feb 2022 22:32:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=KH7PhZv86pJmZAECyDrEHhT1RhG70HibOpQSq1zBsgg=;
- b=MXjoqzQWJtifsAJ1SkA2CuYAvDG303yilvF0I/x+AY8eH3TA/TjxhAR+lb9BTfKCXiOC
- dYJQDyrdlj/Qv2TKuC++Y0rUEWnRViW+Yvz91cIpBwMnSe93j7Vmm9pKgpoWMp6N2cA6
- DTXOHeUj9DKFqW4Waig4rL+Vd1UHTJGuUTgeY5W+f29ZVsIa/2wHy3mFypxga6jGGGES
- TNuOhDBpSx1uGdWGuo+94aur8LTwOLelkJ3ADryqPQeZWvb1NrIdOq8uKXY9LlHFNADJ
- tKEOcQaMBjVqRjoJZsP8lofKwkE1tWwlbKOD8s0Md8DuJIw7AsngsWg3xq6KELkfBx1f oA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7c4eb3p4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 22:32:56 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21EMHLa6021763;
-        Mon, 14 Feb 2022 22:32:54 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04fra.de.ibm.com with ESMTP id 3e64h9rhu1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 22:32:54 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21EMWpgC48103780
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Feb 2022 22:32:51 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A61C611C054;
-        Mon, 14 Feb 2022 22:32:51 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 220F211C052;
-        Mon, 14 Feb 2022 22:32:50 +0000 (GMT)
-Received: from sig-9-65-70-53.ibm.com (unknown [9.65.70.53])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 14 Feb 2022 22:32:50 +0000 (GMT)
-Message-ID: <36f85113f181f78eda3576823bd92be3f9cd1802.camel@linux.ibm.com>
-Subject: Re: [PATCH] ima: Calculate digest in ima_inode_hash() if not
- available
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        Florent Revest <revest@chromium.org>
-Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Mon, 14 Feb 2022 17:32:49 -0500
-In-Reply-To: <cc6bcb7742dc432ba990ee38b5909496@huawei.com>
-References: <20220211104828.4061334-1-roberto.sassu@huawei.com>
-         <537635732d9cbcc42bcf7be5ed932d284b03d39f.camel@linux.ibm.com>
-         <cc6bcb7742dc432ba990ee38b5909496@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: GkRQ1rIxliyunm-29IisWEIsNOJXmUvf
-X-Proofpoint-ORIG-GUID: GkRQ1rIxliyunm-29IisWEIsNOJXmUvf
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Mon, 14 Feb 2022 17:34:44 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6641913C392;
+        Mon, 14 Feb 2022 14:34:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644878075; x=1676414075;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=QaDtaXhAnhQ3ENA1RtyoSpbmQfXZKKE9wFsf4hcLPFg=;
+  b=fC1XQKPj5k7gDlHWjAgSRcsJX2OdCjcDfEHYOqzszNqZkvScvXcWLdyB
+   m55CSadKFnc9pnNJp5p0YHCl8B/fRbDmTROqkBXHAxtL8Zs+VyOyOY4bV
+   Cdn3Y1MIlypXcy3w91rVkUltdMnzImV8QBHYS2aw1wZoPVtGeCKxpFLuC
+   ko0O0F+yFlmKxyyhHWeCK47WZXZ0G0wWU9tOYIxI7nleiovkhP+Cpl/Yd
+   RNgBoRjfKi/HcDYuwxywmmBlRqh1RslyTmwbIdiJe2PL6X0AuPuIhKyur
+   XDukQVjK2Xv2wRfdkrIF4gT8qMo/jhKmcd0fYC3uxg8dDka3STsBHvZhl
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230162136"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="230162136"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 14:34:35 -0800
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="635474025"
+Received: from junliao-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.133.237])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 14:34:34 -0800
+Message-ID: <50025eeb1826c929342e9f600b5c2d91eed6d2ed.camel@linux.intel.com>
+Subject: Re: [RFC PATCH 4/4] tools/thermal: Add thermal daemon skeleton
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Date:   Mon, 14 Feb 2022 14:34:34 -0800
+In-Reply-To: <20220214210446.255780-4-daniel.lezcano@linaro.org>
+References: <20220214210446.255780-1-daniel.lezcano@linaro.org>
+         <20220214210446.255780-4-daniel.lezcano@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_07,2022-02-14_03,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- adultscore=0 clxscore=1015 lowpriorityscore=0 impostorscore=0
- suspectscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202140128
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-14 at 17:05 +0000, Roberto Sassu wrote:
-> > From: Mimi Zohar [mailto:zohar@linux.ibm.com]
-> > Sent: Sunday, February 13, 2022 2:06 PM
-> > Hi Roberto,
-> > 
-> > On Fri, 2022-02-11 at 11:48 +0100, Roberto Sassu wrote:
-> > > __ima_inode_hash() checks if a digest has been already calculated by
-> > > looking for the integrity_iint_cache structure associated to the passed
-> > > inode.
-> > >
-> > > Users of ima_file_hash() and ima_inode_hash() (e.g. eBPF) might be
-> > > interested in obtaining the information without having to setup an IMA
-> > > policy so that the digest is always available at the time they call one of
-> > > those functions.
-> > >
-> > > Open a new file descriptor in __ima_inode_hash(), so that this function
-> > > could invoke ima_collect_measurement() to calculate the digest if it is not
-> > > available. Still return -EOPNOTSUPP if the calculation failed.
-> > >
-> > > Instead of opening a new file descriptor, the one from ima_file_hash()
-> > > could have been used. However, since ima_inode_hash() was created to
-> > obtain
-> > > the digest when the file descriptor is not available, it could benefit from
-> > > this change too. Also, the opened file descriptor might be not suitable for
-> > > use (file descriptor opened not for reading).
-> > >
-> > > This change does not cause memory usage increase, due to using a temporary
-> > > integrity_iint_cache structure for the digest calculation, and due to
-> > > freeing the ima_digest_data structure inside integrity_iint_cache before
-> > > exiting from __ima_inode_hash().
-> > >
-> > > Finally, update the test by removing ima_setup.sh (it is not necessary
-> > > anymore to set an IMA policy) and by directly executing /bin/true.
-> > >
-> > > Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> > 
-> > Although this patch doesn't directly modify either ima_file_hash() or
-> > ima_inode_hash(),  this change affects both functions.  ima_file_hash()
-> > was introduced to be used with eBPF.  Based on Florent's post, changing
-> > the ima_file_hash() behavor seems fine.  Since I have no idea whether
-> > anyone is still using ima_inode_hash(), perhaps it would be safer to
-> > limit this behavior change to just ima_file_hash().
+On Mon, 2022-02-14 at 22:04 +0100, Daniel Lezcano wrote:
+> This change provides a simple daemon skeleton. It provides an example
+> of how to use the thermal library.
 > 
-> Hi Mimi
+> The goal of this skeleton is to give a base brick for anyone
+> interested in writing its own thermal engine.
 > 
-> ok.
+> In the future, it will evolve with more features.
 > 
-> I found that just checking that iint->ima_hash is not NULL is not enough
-> (ima_inode_hash() might still return the old digest after a file write).
-> Should I replace that check with !(iint->flags & IMA_COLLECTED)?
-> Or should I do only for ima_file_hash() and recalculate the digest
-> if necessary?
+From the code, doesn't seam to have a function to daemonize.
+So may be not call a daemon if that is true. mainloop() is just an
+infinite loop polling netlink messages.
 
-Updating the file hash after each write would really impact IMA
-performance.  If you really want to detect any file change, no matter
-how frequently it occurs, your best bet would be to track i_generation
-and i_version.  Stefan is already adding "i_generation" for IMA
-namespacing.
+Also thermald will confuse with the standard thermald distributed with
+every distro. May be thermal_control_sample as this a sample for future
+development.
 
+Thanks,
+Srinivas
+
+
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> ---
+>  tools/Makefile                    |  16 +-
+>  tools/thermal/thermald/Build      |   2 +
+>  tools/thermal/thermald/Makefile   |  27 +++
+>  tools/thermal/thermald/thermald.c | 275
+> ++++++++++++++++++++++++++++++
+>  4 files changed, 317 insertions(+), 3 deletions(-)
+>  create mode 100644 tools/thermal/thermald/Build
+>  create mode 100644 tools/thermal/thermald/Makefile
+>  create mode 100644 tools/thermal/thermald/thermald.c
 > 
-> > Please update the ima_file_hash() doc.  While touching this area, I'd
-> > appreciate your fixing the first doc line in both ima_file_hash() and
-> > ima_inode_hash() cases, which wraps spanning two lines.
-> 
-> Did you mean to make the description shorter or to have everything
-> in one line? According to the kernel documentation (kernel-doc.rst),
-> having the brief description in multiple lines should be fine.
-
-Thanks for checking kernel-doc.   The "brief description"  not wrapping
-across multiple lines did in fact change.
-
-> > Please split the IMA from the eBPF changes.
-> 
-> Ok.
-
--- 
-thanks,
-
-Mimi
+> diff --git a/tools/Makefile b/tools/Makefile
+> index 78615f8cb463..a8c4a65ac953 100644
+> --- a/tools/Makefile
+> +++ b/tools/Makefile
+> @@ -32,6 +32,7 @@ help:
+>         @echo '  spi                    - spi tools'
+>         @echo '  tmon                   - thermal monitoring and
+> tuning tool'
+>         @echo '  thermometer            - temperature capture tool'
+> +       @echo '  thermald               - thermal monitoring tool'
+>         @echo '  thermal                - thermal library'
+>         @echo '  tracing                - misc tracing tools'
+>         @echo '  turbostat              - Intel CPU idle stats and
+> freq reporting tool'
+> @@ -99,6 +100,9 @@ tmon: FORCE
+>  thermometer: FORCE
+>         $(call descend,thermal/$@)
+>  
+> +thermald: FORCE thermal
+> +       $(call descend,thermal/$@)
+> +
+>  freefall: FORCE
+>         $(call descend,laptop/$@)
+>  
+> @@ -109,7 +113,7 @@ all: acpi cgroup counter cpupower gpio hv
+> firewire \
+>                 perf selftests bootconfig spi turbostat usb \
+>                 virtio vm bpf x86_energy_perf_policy \
+>                 tmon freefall iio objtool kvm_stat wmi \
+> -               pci debugging tracing thermal thermometer
+> +               pci debugging tracing thermal thermometer thermald
+>  
+>  acpi_install:
+>         $(call descend,power/$(@:_install=),install)
+> @@ -135,6 +139,9 @@ tmon_install:
+>  thermometer_install:
+>         $(call descend,thermal/$(@:_install=),install)
+>  
+> +thermald_install:
+> +       $(call descend,thermal/$(@:_install=),install)
+> +
+>  freefall_install:
+>         $(call descend,laptop/$(@:_install=),install)
+>  
+> @@ -147,7 +154,7 @@ install: acpi_install cgroup_install
+> counter_install cpupower_install gpio_insta
+>                 virtio_install vm_install bpf_install
+> x86_energy_perf_policy_install \
+>                 tmon_install freefall_install objtool_install
+> kvm_stat_install \
+>                 wmi_install pci_install debugging_install intel-
+> speed-select_install \
+> -               tracing_install thermometer_install
+> +               tracing_install thermometer_install thermald_install
+>  
+>  acpi_clean:
+>         $(call descend,power/acpi,clean)
+> @@ -183,6 +190,9 @@ turbostat_clean x86_energy_perf_policy_clean
+> intel-speed-select_clean:
+>  thermometer_clean:
+>         $(call descend,thermal/thermometer,clean)
+>  
+> +thermald_clean:
+> +       $(call descend,thermal/thermald,clean)
+> +
+>  tmon_clean:
+>         $(call descend,thermal/tmon,clean)
+>  
+> @@ -197,6 +207,6 @@ clean: acpi_clean cgroup_clean counter_clean
+> cpupower_clean hv_clean firewire_cl
+>                 vm_clean bpf_clean iio_clean
+> x86_energy_perf_policy_clean tmon_clean \
+>                 freefall_clean build_clean libbpf_clean
+> libsubcmd_clean \
+>                 gpio_clean objtool_clean leds_clean wmi_clean
+> pci_clean firmware_clean debugging_clean \
+> -               intel-speed-select_clean tracing_clean thermal_clean
+> thermometer_clean
+> +               intel-speed-select_clean tracing_clean thermal_clean
+> thermometer_clean thermald_clean
+>  
+>  .PHONY: FORCE
+> diff --git a/tools/thermal/thermald/Build
+> b/tools/thermal/thermald/Build
+> new file mode 100644
+> index 000000000000..23a8ff56d290
+> --- /dev/null
+> +++ b/tools/thermal/thermald/Build
+> @@ -0,0 +1,2 @@
+> +thermald-y += thermald.o
+> +
+> diff --git a/tools/thermal/thermald/Makefile
+> b/tools/thermal/thermald/Makefile
+> new file mode 100644
+> index 000000000000..c74e87c2b233
+> --- /dev/null
+> +++ b/tools/thermal/thermald/Makefile
+> @@ -0,0 +1,27 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +# Makefile for cgroup tools
+> +
+> +ifeq ($(srctree),)
+> +srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+> +srctree := $(patsubst %/,%,$(dir $(srctree)))
+> +srctree := $(patsubst %/,%,$(dir $(srctree)))
+> +# $(info Determined 'srctree' to be $(srctree))
+> +endif
+> +
+> +CFLAGS = -Wall -Wextra
+> +CFLAGS += -I$(srctree)/tools/thermal/lib
+> +CFLAGS += -I$(srctree)/tools/lib/thermal/include
+> +
+> +LDFLAGS = -L$(srctree)/tools/thermal/lib
+> +LDFLAGS += -L$(srctree)/tools/lib/thermal
+> +LDFLAGS += -lthermal_tools
+> +LDFLAGS += -lthermal
+> +LDFLAGS += -lconfig
+> +LDFLAGS += -lnl-genl-3 -lnl-3
+> +
+> +all: thermald
+> +%: %.c
+> +       $(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+> +
+> +clean:
+> +       $(RM) thermald
+> diff --git a/tools/thermal/thermald/thermald.c
+> b/tools/thermal/thermald/thermald.c
+> new file mode 100644
+> index 000000000000..92ced613c06e
+> --- /dev/null
+> +++ b/tools/thermal/thermald/thermald.c
+> @@ -0,0 +1,275 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Thermal monitoring tool based on the thermal netlink events.
+> + *
+> + * Copyright (C) 2022 Linaro Ltd.
+> + *
+> + * Author: Daniel Lezcano <daniel.lezcano@kernel.org>
+> + */
+> +#include <errno.h>
+> +#include <fcntl.h>
+> +#include <libgen.h>
+> +#include <limits.h>
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <string.h>
+> +#include <signal.h>
+> +#include <unistd.h>
+> +
+> +#include <syslog.h>
+> +
+> +#include <sys/epoll.h>
+> +#include <sys/stat.h>
+> +#include <sys/types.h>
+> +
+> +#include <thermal.h>
+> +#include "thermal-tools.h"
+> +
+> +struct options {
+> +       int loglevel;
+> +       int logopt;
+> +       int interactive;
+> +};
+> +
+> +struct thermal_data {
+> +       struct thermal_zone *tz;
+> +       struct thermal_handler *th;
+> +};
+> +
+> +static int show_trip(struct thermal_trip *tt, __maybe_unused void
+> *arg)
+> +{
+> +       INFO("trip id=%d, type=%d, temp=%d, hyst=%d\n",
+> +            tt->id, tt->type, tt->temp, tt->hyst);
+> +
+> +       return 0;
+> +}              
+> +
+> +static int show_temp(struct thermal_zone *tz, __maybe_unused void
+> *arg)
+> +{
+> +       thermal_cmd_get_temp(arg, tz);
+> +
+> +       INFO("temperature: %d\n", tz->temp);
+> +
+> +       return 0;
+> +}
+> +
+> +static int show_governor(struct thermal_zone *tz, __maybe_unused
+> void *arg)
+> +{
+> +       thermal_cmd_get_governor(arg, tz);
+> +
+> +       INFO("governor: '%s'\n", tz->governor);
+> +       
+> +       return 0;
+> +}
+> +
+> +static int show_tz(struct thermal_zone *tz, __maybe_unused void
+> *arg)
+> +{
+> +       INFO("thermal zone '%s', id=%d\n", tz->name, tz->id);
+> +
+> +       for_each_thermal_trip(tz->trip, show_trip, NULL);
+> +
+> +       show_temp(tz, arg);
+> +       
+> +       show_governor(tz, arg);
+> +       
+> +       return 0;
+> +}
+> +
+> +static int tz_create(const char *name, int tz_id, __maybe_unused
+> void *arg)
+> +{
+> +       INFO("Thermal zone '%s'/%d created\n", name, tz_id);
+> +
+> +       return 0;
+> +}
+> +
+> +static int tz_delete(int tz_id, __maybe_unused void *arg)
+> +{
+> +       INFO("Thermal zone %d deleted\n", tz_id);
+> +
+> +       return 0;
+> +}
+> +
+> +static int tz_disable(int tz_id, void *arg)
+> +{
+> +       struct thermal_data *td = arg;
+> +       struct thermal_zone *tz = thermal_zone_find_by_id(td->tz,
+> tz_id);
+> +
+> +       INFO("Thermal zone %d ('%s') disabled\n", tz_id, tz->name);
+> +
+> +       return 0;
+> +}
+> +
+> +static int tz_enable(int tz_id, void *arg)
+> +{
+> +       struct thermal_data *td = arg;
+> +       struct thermal_zone *tz = thermal_zone_find_by_id(td->tz,
+> tz_id);
+> +
+> +       INFO("Thermal zone %d ('%s') enabled\n", tz_id, tz->name);
+> +
+> +       return 0;
+> +}
+> +
+> +static int trip_high(int tz_id, int trip_id, int temp, void *arg)
+> +{
+> +       struct thermal_data *td = arg;
+> +       struct thermal_zone *tz = thermal_zone_find_by_id(td->tz,
+> tz_id);
+> +
+> +       INFO("Thermal zone %d ('%s'): trip point %d crossed way up
+> with %d °C\n",
+> +            tz_id, tz->name, trip_id, temp);
+> +
+> +       return 0;
+> +}
+> +
+> +static int trip_low(int tz_id, int trip_id, int temp, void *arg)
+> +{
+> +       struct thermal_data *td = arg;
+> +       struct thermal_zone *tz = thermal_zone_find_by_id(td->tz,
+> tz_id);
+> +
+> +       INFO("Thermal zone %d ('%s'): trip point %d crossed way down
+> with %d °C\n",
+> +            tz_id, tz->name, trip_id, temp);
+> +
+> +       return 0;
+> +}
+> +
+> +static int trip_add(int tz_id, int trip_id, int type, int temp, int
+> hyst, __maybe_unused void *arg)
+> +{
+> +       INFO("Trip point added %d: id=%d, type=%d, temp=%d,
+> hyst=%d\n",
+> +            tz_id, trip_id, type, temp, hyst);
+> +
+> +       return 0;
+> +}
+> +
+> +static int trip_delete(int tz_id, int trip_id, __maybe_unused void
+> *arg)
+> +{
+> +       INFO("Trip point deleted %d: id=%d\n", tz_id, trip_id);
+> +
+> +       return 0;
+> +}
+> +
+> +static int trip_change(int tz_id, int trip_id, int type, int temp,
+> int hyst, __maybe_unused void *arg)
+> +{
+> +       struct thermal_data *td = arg;
+> +       struct thermal_zone *tz = thermal_zone_find_by_id(td->tz,
+> tz_id);
+> +
+> +       INFO("Trip point changed %d: id=%d, type=%d, temp=%d,
+> hyst=%d\n",
+> +            tz_id, trip_id, type, temp, hyst);
+> +
+> +       tz->trip[trip_id].type = type;
+> +       tz->trip[trip_id].temp = temp;
+> +       tz->trip[trip_id].hyst = hyst;
+> +
+> +       return 0;
+> +}
+> +
+> +static int cdev_add(const char *name, int cdev_id, int max_state,
+> __maybe_unused void *arg)
+> +{
+> +       INFO("Cooling device '%s'/%d (max state=%d) added\n", name,
+> cdev_id, max_state);
+> +
+> +       return 0;
+> +}
+> +
+> +static int cdev_delete(int cdev_id, __maybe_unused void *arg)
+> +{
+> +       INFO("Cooling device %d deleted", cdev_id);
+> +
+> +       return 0;
+> +}
+> +
+> +static int cdev_update(int cdev_id, int cur_state, __maybe_unused
+> void *arg)
+> +{
+> +       INFO("cdev:%d state:%d\n", cdev_id, cur_state);
+> +
+> +       return 0;
+> +}
+> +
+> +static int gov_change(int tz_id, const char *name, __maybe_unused
+> void *arg)
+> +{
+> +       struct thermal_data *td = arg;
+> +       struct thermal_zone *tz = thermal_zone_find_by_id(td->tz,
+> tz_id);
+> +
+> +       INFO("%s: governor changed %s -> %s\n", tz->name, tz-
+> >governor, name);
+> +
+> +       strcpy(tz->governor, name);
+> +
+> +       return 0;
+> +}
+> +
+> +static struct thermal_ops ops = {
+> +       .events.tz_create       = tz_create,
+> +       .events.tz_delete       = tz_delete,
+> +       .events.tz_disable      = tz_disable,
+> +       .events.tz_enable       = tz_enable,
+> +       .events.trip_high       = trip_high,
+> +       .events.trip_low        = trip_low,
+> +       .events.trip_add        = trip_add,
+> +       .events.trip_delete     = trip_delete,
+> +       .events.trip_change     = trip_change,
+> +       .events.cdev_add        = cdev_add,
+> +       .events.cdev_delete     = cdev_delete,
+> +       .events.cdev_update     = cdev_update,
+> +       .events.gov_change      = gov_change
+> +};
+> +
+> +static int thermal_event(__maybe_unused int fd, __maybe_unused void
+> *arg)
+> +{
+> +       struct thermal_data *td = arg;
+> +
+> +       return thermal_events_handle(td->th, td);
+> +}
+> +
+> +static int options_init(int argc, char *argv[], struct options
+> *options)
+> +{
+> +       int opt;
+> +       
+> +       while ((opt = getopt(argc, argv, "sl:")) != -1) {
+> +               switch (opt) {
+> +              case 'l':
+> +                      options->loglevel = log_str2level(optarg);
+> +                      break;
+> +              case 's':
+> +                      options->logopt |= TO_STDOUT;
+> +                      break;
+> +               default: /* '?' */
+> +                      ERROR("Usage: %s \n", argv[0]);
+> +                      return -1;
+> +               }
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +int main(int argc, char *argv[])
+> +{
+> +       struct thermal_data td;
+> +       struct options options = {
+> +               .loglevel = LOG_DEBUG,
+> +               .logopt = LOG_SYSLOG
+> +       };
+> +
+> +       if (options_init(argc, argv, &options))
+> +               return 1;
+> +
+> +       if (!(options.logopt & TO_STDOUT) && daemon(0, 0))
+> +               return 1;
+> +       
+> +       if (log_init(options.loglevel, basename(argv[0]),
+> options.logopt))
+> +               return 1;
+> +
+> +       td.th = thermal_init(&ops);
+> +       if (!td.th)
+> +               return 1;
+> +
+> +       td.tz = thermal_zone_discover(td.th);
+> +       if (!td.tz)
+> +               return 1;
+> +
+> +       for_each_thermal_zone(td.tz, show_tz, td.th);
+> +       
+> +       if (mainloop_init())
+> +               return 1;
+> +
+> +       if (mainloop_add(thermal_events_fd(td.th), thermal_event,
+> &td))
+> +               return 1;
+> +
+> +       return mainloop(-1);
+> +}
 
