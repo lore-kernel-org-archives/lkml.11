@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FF0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244265AbiBNJhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:37:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51582 "EHLO
+        id S243333AbiBNJhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:37:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244626AbiBNJgF (ORCPT
+        with ESMTP id S245204AbiBNJge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160C866F97;
-        Mon, 14 Feb 2022 01:33:59 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C288467347;
+        Mon, 14 Feb 2022 01:34:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36BEA60FFF;
-        Mon, 14 Feb 2022 09:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBAEDC340E9;
-        Mon, 14 Feb 2022 09:33:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47BB5B80DA9;
+        Mon, 14 Feb 2022 09:34:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 811FEC340E9;
+        Mon, 14 Feb 2022 09:34:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831219;
-        bh=l0212FSHtUxE+34kUIAZLJhq/HpoQd/R+RJu5Jxqgx0=;
+        s=korg; t=1644831264;
+        bh=npV7+7qWHd5WvacA6RlehkZNwnLWwdwZj0cIKganXdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0x0S0uyNlt6clmDWgp5erKFEmDzISvbDUG8P8CCIqBP1Bf1rez9FqEyBcujyCdOhj
-         2xvw3WmCz95qMyG+GAoA0x1Vy8dq85TCUUIegcSzRXjsPmiXwGM5RmVlKTxbEsXQNd
-         VLv49Fze/Ih7b5oxjGnVII3FTDuBJzh9XdRTFEIg=
+        b=UlA9uRuwk+QtZlGjWmvVd/NvCcre72MvtJEa3SEXZMVduWj/A1g1Mu7dAEn7Vh0w+
+         7Lmdt/x3SbGOBEQVMXR26U5qKgPOdDc0pgN/KhW7SAN3EmpmqlQ83fwuFaKq/El2++
+         EFP+ZoQIbohcEMtX3L+neUHnbNDI8iB0BD9qkk+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 27/49] bonding: pair enable_port with slave_arr_updates
-Date:   Mon, 14 Feb 2022 10:25:53 +0100
-Message-Id: <20220214092449.187127135@linuxfoundation.org>
+        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 4.19 48/49] hwmon: (dell-smm) Speed up setting of fan speed
+Date:   Mon, 14 Feb 2022 10:26:14 +0100
+Message-Id: <20220214092449.900018489@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -50,55 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Bandewar <maheshb@google.com>
+From: Armin Wolf <W_Armin@gmx.de>
 
-[ Upstream commit 23de0d7b6f0e3f9a6283a882594c479949da1120 ]
+commit c0d79987a0d82671bff374c07f2201f9bdf4aaa2 upstream.
 
-When 803.2ad mode enables a participating port, it should update
-the slave-array. I have observed that the member links are participating
-and are part of the active aggregator while the traffic is egressing via
-only one member link (in a case where two links are participating). Via
-kprobes I discovered that slave-arr has only one link added while
-the other participating link wasn't part of the slave-arr.
+When setting the fan speed, i8k_set_fan() calls i8k_get_fan_status(),
+causing an unnecessary SMM call since from the two users of this
+function, only i8k_ioctl_unlocked() needs to know the new fan status
+while dell_smm_write() ignores the new fan status.
+Since SMM calls can be very slow while also making error reporting
+difficult for dell_smm_write(), remove the function call from
+i8k_set_fan() and call it separately in i8k_ioctl_unlocked().
 
-I couldn't see what caused that situation but the simple code-walk
-through provided me hints that the enable_port wasn't always associated
-with the slave-array update.
+Tested on a Dell Inspiron 3505.
 
-Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Link: https://lore.kernel.org/r/20220207222901.1795287-1-maheshb@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Reviewed-by: Pali Rohár <pali@kernel.org>
+Link: https://lore.kernel.org/r/20211021190531.17379-6-W_Armin@gmx.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_3ad.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hwmon/dell-smm-hwmon.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 93dfcef8afc4b..035923876c617 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -1012,8 +1012,8 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
- 				if (port->aggregator &&
- 				    port->aggregator->is_active &&
- 				    !__port_is_enabled(port)) {
--
- 					__enable_port(port);
-+					*update_slave_arr = true;
- 				}
- 			}
- 			break;
-@@ -1760,6 +1760,7 @@ static void ad_agg_selection_logic(struct aggregator *agg,
- 			     port = port->next_port_in_aggregator) {
- 				__enable_port(port);
- 			}
-+			*update_slave_arr = true;
- 		}
- 	}
+--- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -304,7 +304,7 @@ static int i8k_get_fan_nominal_speed(int
+ }
  
--- 
-2.34.1
-
+ /*
+- * Set the fan speed (off, low, high). Returns the new fan status.
++ * Set the fan speed (off, low, high, ...).
+  */
+ static int i8k_set_fan(int fan, int speed)
+ {
+@@ -316,7 +316,7 @@ static int i8k_set_fan(int fan, int spee
+ 	speed = (speed < 0) ? 0 : ((speed > i8k_fan_max) ? i8k_fan_max : speed);
+ 	regs.ebx = (fan & 0xff) | (speed << 8);
+ 
+-	return i8k_smm(&regs) ? : i8k_get_fan_status(fan);
++	return i8k_smm(&regs);
+ }
+ 
+ static int i8k_get_temp_type(int sensor)
+@@ -430,7 +430,7 @@ static int
+ i8k_ioctl_unlocked(struct file *fp, unsigned int cmd, unsigned long arg)
+ {
+ 	int val = 0;
+-	int speed;
++	int speed, err;
+ 	unsigned char buff[16];
+ 	int __user *argp = (int __user *)arg;
+ 
+@@ -491,7 +491,11 @@ i8k_ioctl_unlocked(struct file *fp, unsi
+ 		if (copy_from_user(&speed, argp + 1, sizeof(int)))
+ 			return -EFAULT;
+ 
+-		val = i8k_set_fan(val, speed);
++		err = i8k_set_fan(val, speed);
++		if (err < 0)
++			return err;
++
++		val = i8k_get_fan_status(val);
+ 		break;
+ 
+ 	default:
 
 
