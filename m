@@ -2,140 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BDBDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348941AbiBNKuZ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:50:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38816 "EHLO
+        id S242837AbiBNKua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:50:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349339AbiBNKtr (ORCPT
+        with ESMTP id S1349373AbiBNKuD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:49:47 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B9B652CE;
-        Mon, 14 Feb 2022 02:13:54 -0800 (PST)
-Date:   Mon, 14 Feb 2022 10:13:37 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v15 1/7] drm/ingenic: Fix support for JZ4780 HDMI output
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Paul Boddie <paul@boddie.org.uk>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
-        letux-kernel@openphoenux.org,
-        Ezequiel Garcia <ezequiel@collabora.com>
-Message-Id: <PQHA7R.CIX6XS4CFLMM3@crapouillou.net>
-In-Reply-To: <9d3a2000d2bb014f1afb0613537bdc523202135d.1644681054.git.hns@goldelico.com>
-References: <cover.1644681054.git.hns@goldelico.com>
-        <9d3a2000d2bb014f1afb0613537bdc523202135d.1644681054.git.hns@goldelico.com>
+        Mon, 14 Feb 2022 05:50:03 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B6FE652E1;
+        Mon, 14 Feb 2022 02:14:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644833643;
+        bh=NJguhNB55E9/WKFECmG7d2N9Rue9x0n0DNEEN++l5Nk=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=PBq75XyjJzomQaVQCtYpr6NpWOhh4v+uoB5qNLGE8NK1q6PcgvesWNjionklyiJbP
+         AANdOxtu/GYJzC9EcAMvjUxWqcZVLomXNeWWCjcaKlWds4OIJh69nFtwhsokzqHbRK
+         dU04RtYo8Z+lK++cFJq9O3relYGs2gfZxX8sU1us=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.168.11]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MIwzA-1nYSaP36Py-00KN34; Mon, 14
+ Feb 2022 11:14:03 +0100
+Message-ID: <886cb762-2532-c170-d615-d7ddf1e1561c@gmx.de>
+Date:   Mon, 14 Feb 2022 11:13:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
+ case
+Content-Language: en-US
+To:     Andreas Schwab <schwab@linux-m68k.org>,
+        David Laight <David.Laight@ACULAB.COM>
+Cc:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>
+References: <YgmB01p+p45Cihhg@p100>
+ <49a26b7a30254d9fb9653c2f815eaa28@AcuMS.aculab.com>
+ <8735klx0fv.fsf@igel.home>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <8735klx0fv.fsf@igel.home>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:18jQ/5rJjEX5ks5twOE2mKlfPxOdq4oPQ1bQlJtKcaHDKLgz0H5
+ miXvP8Jp8DpK5m1kKhQvEKkk1iNFWQU1MJx+Gmk1EA5Vk/SPQrB42ziPdXQV1B6q94dVXFa
+ guxIdqp6P2/o1mlL3BGTMMZfjYefh0tcgDXwDJy6V/mDPd+CyoP5huAQcgg16RoCgvtEmiQ
+ IgBN7u7G5Ql/Gqt8lYwqg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:fE5wd9SVEes=:eAZblA0EVauqZK7lkJZNB6
+ P3UYP6IMHiUCXxgR7Sosn+hO3IhgwZtlggfWpc958E76o2hlQAr2bImpO6GdFz1TJklziD7kG
+ swcXdsF/+KRtXXawx9ZP7lDj9IZERiAe0scLnXHWGC+oBxj786gjH9sd5Q59rAixkQSAXV4KV
+ 3aEW5PNjCXFFrbmbpwkBsnBPLs66iPG03hzy722BakOxyjj76pg+fOy3dLWeNIOj1Y4DqgwDQ
+ 6oiZZ5N6ACZBxjjSzct13bCsIKA9gaOed3BMQAxjf96KDfsjWi4C1KBrP6qeqHQZyLRPuG+9e
+ PcFQmZ5G4aJDQkzd9x08Yo+K7h5yy+HEiN5Blmwk73n2zrI1xqsGzuTwf5hjiHJw9CYSJ5gj4
+ FWDe5d5WNa9L/Cq0Cse9zv97ibxKnBvLKrn3q9kSwuWg1nStW6H1BZcUfySEizRizpLI3gqon
+ Y/eUkRFVQ3lB2zP6n1ws33O755gmthcfMkNOeaX81EhB70XeRdx4MQ9GFway0cHhh1ayQs6C+
+ QXsN7QyijlQnJFy+RNQC9zbOvl2LUHPm5yNCbYKxvYki2MWm4ojjIedQiw8JDu6Leqw7GlMWc
+ sCb+ivqJ8spWpsnMSxzznugCQELLvzfkDc1IKDnhBkbrNgjG+m4HTBFNlQGAPZcNU00eJEtOW
+ zX1Iiw4umYw0qEm2KYC/RKHoHry92OBXas+l8Q53xsHy3b+1WyGu8HFSfZ17zOxNTy6LZDEX+
+ eolPkf14CawsekWGunu0SrExLsd0qS6+2iFzXleJlgX6o8J21q7m5MgOrjt9QNsYcotnpvJOn
+ 6b+PXHxvGt2p0buzvbR6wo7uzzQ4ZgJx5bPCWweri+EY+XQOSbzJk1VEjdUhuOMBv8NK9/fGG
+ nvvwvaFooW+0n8uLuaSwhfzpBxoRo4nW+fLgxol4GgJkUFeHUS7mWGA4GUoTJ2yqJ1WBe71fM
+ z2yn5dTXDdanWM4ld6jL9BPhi9v9WcH+pQSzJQAzG+sPkqyfpps1h7mBFzf9TvlMpvnS8r72Q
+ kJYak93TP/5ECYK9mFXeNjfFXs4Xw/gbH24jyHth5b9rI99NuOLO0K1P+p1wl8Y6BGrHnPrqz
+ jQKh8otGF4BYLM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 2/14/22 10:27, Andreas Schwab wrote:
+> On Feb 14 2022, David Laight wrote:
+>
+>> The 'bug' is caused by put_user() trying to do:
+>> 	__typeof__(ptr) __ptr =3D ptr;
+>> where __typeof__ is returning char[n] not char *.
+>>
+>> I've tried a few things but can't get __typeof__ to
+>> generate a suitable type for both a simple type and array.
+>
+> Does it work to use __typeof__(&*(ptr))?
 
-Le sam., févr. 12 2022 at 16:50:49 +0100, H. Nikolaus Schaller 
-<hns@goldelico.com> a écrit :
-> From: Paul Boddie <paul@boddie.org.uk>
-> 
-> We have to make sure that
-> - JZ_LCD_OSDC_ALPHAEN is set
-> - plane f0 is disabled and not seen from user-space
+Yes, this works.
 
-Actually it will still be seen from user-space, but it won't be 
-possible to use it. So before applying I'll change this to:
-"plane f0 is disabled as it's not working yet"
-
-If that's OK with you.
-
-Cheers,
--Paul
-
-> 
-> Tested on MIPS Creator CI20 board.
-> 
-> Signed-off-by: Paul Boddie <paul@boddie.org.uk>
-> Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c 
-> b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-> index 7f10d6eed549d..dcf44cb00821f 100644
-> --- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-> +++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-> @@ -65,8 +65,10 @@ struct ingenic_dma_hwdescs {
->  struct jz_soc_info {
->  	bool needs_dev_clk;
->  	bool has_osd;
-> +	bool has_alpha;
->  	bool map_noncoherent;
->  	bool use_extended_hwdesc;
-> +	bool plane_f0_not_working;
->  	unsigned int max_width, max_height;
->  	const u32 *formats_f0, *formats_f1;
->  	unsigned int num_formats_f0, num_formats_f1;
-> @@ -453,7 +455,7 @@ static int ingenic_drm_plane_atomic_check(struct 
-> drm_plane *plane,
->  	if (!crtc)
->  		return 0;
-> 
-> -	if (plane == &priv->f0)
-> +	if (priv->soc_info->plane_f0_not_working && plane == &priv->f0)
->  		return -EINVAL;
-> 
->  	crtc_state = drm_atomic_get_existing_crtc_state(state,
-> @@ -1055,6 +1057,7 @@ static int ingenic_drm_bind(struct device *dev, 
-> bool has_components)
->  	long parent_rate;
->  	unsigned int i, clone_mask = 0;
->  	int ret, irq;
-> +	u32 osdc = 0;
-> 
->  	soc_info = of_device_get_match_data(dev);
->  	if (!soc_info) {
-> @@ -1312,7 +1315,10 @@ static int ingenic_drm_bind(struct device 
-> *dev, bool has_components)
-> 
->  	/* Enable OSD if available */
->  	if (soc_info->has_osd)
-> -		regmap_write(priv->map, JZ_REG_LCD_OSDC, JZ_LCD_OSDC_OSDEN);
-> +		osdc |= JZ_LCD_OSDC_OSDEN;
-> +	if (soc_info->has_alpha)
-> +		osdc |= JZ_LCD_OSDC_ALPHAEN;
-> +	regmap_write(priv->map, JZ_REG_LCD_OSDC, osdc);
-> 
->  	mutex_init(&priv->clk_mutex);
->  	priv->clock_nb.notifier_call = ingenic_drm_update_pixclk;
-> @@ -1511,7 +1517,9 @@ static const struct jz_soc_info jz4770_soc_info 
-> = {
->  static const struct jz_soc_info jz4780_soc_info = {
->  	.needs_dev_clk = true,
->  	.has_osd = true,
-> +	.has_alpha = true,
->  	.use_extended_hwdesc = true,
-> +	.plane_f0_not_working = true,	/* REVISIT */
->  	.max_width = 4096,
->  	.max_height = 2048,
->  	.formats_f1 = jz4770_formats_f1,
-> --
-> 2.33.0
-> 
-
+Helge
 
