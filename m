@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F888C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243516AbiBNJbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:31:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42556 "EHLO
+        id S232402AbiBNJbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:31:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243441AbiBNJbR (ORCPT
+        with ESMTP id S243504AbiBNJbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:31:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB56BF53;
-        Mon, 14 Feb 2022 01:30:15 -0800 (PST)
+        Mon, 14 Feb 2022 04:31:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71497BF64;
+        Mon, 14 Feb 2022 01:30:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF069B80D83;
-        Mon, 14 Feb 2022 09:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20F07C340EF;
-        Mon, 14 Feb 2022 09:30:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05B5D60F8F;
+        Mon, 14 Feb 2022 09:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9270C340EF;
+        Mon, 14 Feb 2022 09:30:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831012;
-        bh=nYslgeNak5ILpjm8/69W2TdwvNNOr5bMUskwb787vUs=;
+        s=korg; t=1644831018;
+        bh=nwAcgOvUUbyu0b9uqfYy5jUAsPqE5sOsSIj2K8lsWbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zPrmCe+6e9qBXrhwXJXjroaF8hksaNszvrcrUindG88A0bpLxcD7feIEM+6uz8IVL
-         AYTzzLvr/p7XxYXLCla7QhxUypSZNYgQrxrtoYG1yyUR0cPjHIuGQGqeCcbMKk4QH7
-         1rrPNs/aTt0/zG6l0Yt1WW1lCNh6SuB6Zk9otaLY=
+        b=Ny0O3+gUmhLJKOQYRXewrbFKp3kadr+oKHF59i9ihypUlnjJHGaRlbaYGIxzUphuP
+         NskXIz24yXy/Cm8yVpxJYGNPJVZtzZRH0ygn00/rMcMZj+Ief71I9028hnn4oal4YN
+         62q9rUF9dXhfynFXSF436ISb/mutVobPLdKL6xj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 16/44] Revert "net: axienet: Wait for PhyRstCmplt after core reset"
-Date:   Mon, 14 Feb 2022 10:25:39 +0100
-Message-Id: <20220214092448.434681680@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 4.14 18/44] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
+Date:   Mon, 14 Feb 2022 10:25:41 +0100
+Message-Id: <20220214092448.505375269@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -47,38 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit ff594e1b6f39f07f050759de2d27c36b7739c0c9.
+From: Fabio Estevam <festevam@gmail.com>
 
-Breaks the build on 4.14 and 4.9.
+commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
 
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Currently, SD card fails to mount due to the following pinctrl error:
+
+[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
+[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
+[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
+[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
+
+Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
+is already been used by the mmc0-pins-fixup pinctrl group.
+
+With this change the rootfs can be mounted and the imx23-evk board can
+boot successfully.
+
+Cc: <stable@vger.kernel.org>
+Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 10 ----------
- 1 file changed, 10 deletions(-)
+ arch/arm/boot/dts/imx23-evk.dts |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index d2ba466613c0a..7876e56a5b5db 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -279,16 +279,6 @@ static int axienet_dma_bd_init(struct net_device *ndev)
- 	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET,
- 			  cr | XAXIDMA_CR_RUNSTOP_MASK);
- 
--	/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has finished */
--	ret = read_poll_timeout(axienet_ior, value,
--				value & XAE_INT_PHYRSTCMPLT_MASK,
--				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
--				XAE_IS_OFFSET);
--	if (ret) {
--		dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n", __func__);
--		return ret;
--	}
--
- 	return 0;
- out:
- 	axienet_dma_bd_release(ndev);
--- 
-2.34.1
-
+--- a/arch/arm/boot/dts/imx23-evk.dts
++++ b/arch/arm/boot/dts/imx23-evk.dts
+@@ -48,7 +48,6 @@
+ 						MX23_PAD_LCD_RESET__GPIO_1_18
+ 						MX23_PAD_PWM3__GPIO_1_29
+ 						MX23_PAD_PWM4__GPIO_1_30
+-						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+ 					>;
+ 					fsl,drive-strength = <MXS_DRIVE_4mA>;
+ 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
 
 
