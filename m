@@ -2,454 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 602B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57543C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357426AbiBNSUX convert rfc822-to-8bit (ORCPT
+        id S1357416AbiBNSWY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:20:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33376 "EHLO
+        Mon, 14 Feb 2022 13:22:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357405AbiBNSUP (ORCPT
+        with ESMTP id S1348869AbiBNSWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:20:15 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A9E0652DF
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:20:07 -0800 (PST)
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-639-xmApq_c0O9aJ6JyWvjj16A-1; Mon, 14 Feb 2022 13:19:01 -0500
-X-MC-Unique: xmApq_c0O9aJ6JyWvjj16A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 022401091DA2;
-        Mon, 14 Feb 2022 18:19:00 +0000 (UTC)
-Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 22B9D8477A;
-        Mon, 14 Feb 2022 18:18:53 +0000 (UTC)
-From:   Alexey Gladkov <legion@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Containers <containers@lists.linux.dev>
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Walsh <dwalsh@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH v4 2/2] ipc: Store ipc sysctls in the ipc namespace
-Date:   Mon, 14 Feb 2022 19:18:15 +0100
-Message-Id: <be6f9d014276f4dddd0c3aa05a86052856c1c555.1644862280.git.legion@kernel.org>
-In-Reply-To: <cover.1644862280.git.legion@kernel.org>
-References: <cover.1644862280.git.legion@kernel.org>
+        Mon, 14 Feb 2022 13:22:22 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B94E0D2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:22:13 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id l9so9595362plg.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:22:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3lf6aWAMMF8x0ksRHMk2/ZMhShybab0gNxcrkOJeaEA=;
+        b=TrzsLlC8akpRgInaSWfHjrpJ/hOkT0uExIR6zoHuXIoyCKKM7Bt64SDkVaa2JxyJew
+         avrn9rmZdYysznTzUpgGTfksZuxuteTKVnbqnIxMNcH1PvaV8QFfmVFTDsBPcIPI/VZD
+         zMXs4g06rWysmbkjcvIu9FMwS0JeDlVoeJSOvRVkAFX1iaYgDlujyzFegN48/WauBHG7
+         g2qVOXJ4a5oYI1+3G9AbTbKJQXOu6CVFAN5k2BhAc7IqHVdfT1JZrnE2HUERmSWG1xps
+         UaaVaE3VjorIptbKqbjitZ+sAiN1KOh4KO96KBUrZ3WSNJ2WvlyMTvqNiLt5EuT0H48Y
+         h/lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3lf6aWAMMF8x0ksRHMk2/ZMhShybab0gNxcrkOJeaEA=;
+        b=PNG2EkQrLyHwe6jioxBm/UQD5OfsgQx3LHfhAgGt05EBQ2k31a7FvyIIgCGEbtsSyr
+         pJFRUG2NO9GiJW/UvbrOH/CPr+gplNdG11/igng1cuhMM3YoR8AloKXp6nPCWQqrjE4j
+         5rxpwOJ3tNoXLHGTHfT5L3uQL1vbv79+voGlhS5nMqe9XXiwuhUBeaZEWD3+sC7wWzeS
+         uEgyfUkhoDMsyP8fMIFJ6zefcSW5n11RQaWV4ZJrH4IVigb/YQJkL4BRv7QZ+ErWBPE/
+         8inWmGxgq2729fONenaLUw8icOgRmavRJ1CtgViaVM1rOT5PCQtWYGRlZOz8SBEYLK9i
+         /bGg==
+X-Gm-Message-State: AOAM532prv5nLHcXr9rA7JzSVmyI+hGG3Py3WmTqkgb60+My/ZeR535A
+        zEJUub4UbKGILRfoZM/ZbAJJZw==
+X-Google-Smtp-Source: ABdhPJy0vYddQB71wBgDXGEbjDBhvyykkKtMovCif5Ui8Ku4qon38pmZykD5ApuHhqxO8imONMthDQ==
+X-Received: by 2002:a17:902:eac5:: with SMTP id p5mr66590pld.160.1644862932491;
+        Mon, 14 Feb 2022 10:22:12 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id ip10sm15436pjb.11.2022.02.14.10.22.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 10:22:11 -0800 (PST)
+Date:   Mon, 14 Feb 2022 11:22:08 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Tanmay Shah <tanmay.shah@xilinx.com>
+Cc:     bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        michal.simek@xilinx.com, laurent.pinchart@ideasonboard.com,
+        ben.levinsky@xilinx.com, bill.mills@linaro.org,
+        sergei.korneichuk@xilinx.com, arun.balaji.kannan@xilinx.com,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 1/6] dt-bindings: remoteproc: Add Xilinx RPU subsystem
+ bindings
+Message-ID: <20220214182208.GA101373@p14s>
+References: <20220210112824.2084724-1-tanmay.shah@xilinx.com>
+ <20220210112824.2084724-2-tanmay.shah@xilinx.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=legion@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210112824.2084724-2-tanmay.shah@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ipc sysctls are not available for modification inside the user
-namespace. Following the mqueue sysctls, we changed the implementation
-to be more userns friendly.
+On Thu, Feb 10, 2022 at 03:28:19AM -0800, Tanmay Shah wrote:
+> Xilinx ZynqMP platform has dual-core ARM Cortex R5 Realtime Processing
+> Unit(RPU) subsystem. This patch adds dt-bindings for RPU subsystem (cluster).
+> 
+> Signed-off-by: Tanmay Shah <tanmay.shah@xilinx.com>
+> ---
+> 
+> Changes in v3:
+>   - None
+> 
+>  .../bindings/remoteproc/xlnx,r5f-rproc.yaml   | 139 ++++++++++++++++++
+>  include/dt-bindings/power/xlnx-zynqmp-power.h |   6 +
+>  2 files changed, 145 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+> new file mode 100644
+> index 000000000000..d43f0b16ad7f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+> @@ -0,0 +1,139 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/remoteproc/xlnx,r5f-rproc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Xilinx R5F processor subsystem
+> +
+> +maintainers:
+> +  - Ben Levinsky <ben.levinsky@xilinx.com>
+> +  - Tanmay Shah <tanmay.shah@xilinx.com>
+> +
+> +description: |
+> +  The Xilinx platforms include a pair of Cortex-R5F processors (RPU) for
+> +  real-time processing based on the Cortex-R5F processor core from ARM.
+> +  The Cortex-R5F processor implements the Arm v7-R architecture and includes a
+> +  floating-point unit that implements the Arm VFPv3 instruction set.
+> +
+> +properties:
+> +  compatible:
+> +    const: xlnx,zynqmp-r5fss
+> +
+> +  xlnx,cluster-mode:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: |
+> +      The RPU MPCore can operate in split mode(Dual-processor performance), Safety
+> +      lock-step mode(Both RPU cores execute the same code in lock-step,
+> +      clock-for-clock) or Single CPU mode (RPU core 0 can be held in reset while
+> +      core 1 runs normally). The processor does not support dynamic configuration.
+> +      Switching between modes is only permitted immediately after a processor reset.
+> +      If set to  1 then lockstep mode and if 0 then split mode.
+> +      If set to  2 then single CPU mode. When not defined, default will be lockstep mode.
+> +
+> +  "#address-cells":
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 1
+> +
+> +  reg:
+> +    items:
+> +      - description: RPU subsystem status and control registers
+> +
+> +patternProperties:
+> +  "^r5f-[a-f0-9]+$":
+> +    type: object
+> +    description: |
+> +      The RPU is located in the Low Power Domain of the Processor Subsystem.
+> +      Each processor includes separate L1 instruction and data caches and
+> +      tightly coupled memories (TCM). System memory is cacheable, but the TCM
+> +      memory space is non-cacheable.
+> +
+> +      Each RPU contains one 64KB memory and two 32KB memories that
+> +      are accessed via the TCM A and B port interfaces, for a total of 128KB
+> +      per processor. In lock-step mode, the processor has access to 256KB of
+> +      TCM memory.
+> +
+> +    properties:
+> +      compatible:
+> +        const: xlnx,zynqmp-r5f
+> +
+> +      power-domains:
+> +        description: |
+> +          phandle to a PM domain provider node and an args specifier containing
+> +          the r5f0 and r5f1 node id value.
+> +
+> +      reg:
+> +        items:
+> +          - description: RPU0 and RPU1 control and status registers
+> +
+> +      mboxes:
+> +        items:
+> +          - description: |
+> +              Bi-directional channel to send data to RPU and receive ack from RPU.
+> +              Request and response message buffers are available and each buffer is 32 bytes.
+> +          - description: |
+> +              Bi-directional channel to receive data from RPU and send ack from RPU.
+> +              Request and response message buffers are available and each buffer is 32 bytes.
+> +        minItems: 1
+> +
+> +      mbox-names:
+> +        items:
+> +          - const: tx
+> +          - const: rx
+> +        minItems: 1
+> +
+> +      sram:
+> +        $ref: /schemas/types.yaml#/definitions/phandle-array
+> +        minItems: 1
+> +        description: |
+> +          phandles to one or more reserved on-chip SRAM regions. Other than TCM,
+> +          the RPU can execute instructions and access data from, the OCM memory,
+> +          the main DDR memory, and other system memories.
+> +
+> +          The regions should be defined as child nodes of the respective SRAM
+> +          node, and should be defined as per the generic bindings in,
+> +          Documentation/devicetree/bindings/sram/sram.yaml
+> +
+> +      memory-region:
+> +        $ref: /schemas/types.yaml#/definitions/phandle-array
+> +        description: |
+> +          List of phandles to the reserved memory regions associated with the
+> +          remoteproc device. This is variable and describes the memories shared with
+> +          the remote processor (e.g. remoteproc firmware and carveouts, rpmsg
+> +          vrings, ...). This reserved memory region will be allocated on DDR memory.
+> +          See Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> 
 
-So far, the changes do not provide additional access to files. This
-will be done in a future patch.
+Aside from "compatible" and "power-domains", none of the above properties appear
+in the example below, making this patchset harder to review.
 
-Signed-off-by: Alexey Gladkov <legion@kernel.org>
----
- include/linux/ipc_namespace.h |  21 ++++
- ipc/ipc_sysctl.c              | 189 ++++++++++++++++++++++------------
- ipc/namespace.c               |   4 +
- 3 files changed, 147 insertions(+), 67 deletions(-)
+I am pretty sure to have commented on this earlier...
 
-diff --git a/include/linux/ipc_namespace.h b/include/linux/ipc_namespace.h
-index fa787d97d60a..e3e8c8662b49 100644
---- a/include/linux/ipc_namespace.h
-+++ b/include/linux/ipc_namespace.h
-@@ -67,6 +67,9 @@ struct ipc_namespace {
- 	struct ctl_table_set	mq_set;
- 	struct ctl_table_header	*mq_sysctls;
- 
-+	struct ctl_table_set	ipc_set;
-+	struct ctl_table_header	*ipc_sysctls;
-+
- 	/* user_ns which owns the ipc ns */
- 	struct user_namespace *user_ns;
- 	struct ucounts *ucounts;
-@@ -188,4 +191,22 @@ static inline bool setup_mq_sysctls(struct ipc_namespace *ns)
- }
- 
- #endif /* CONFIG_POSIX_MQUEUE_SYSCTL */
-+
-+#ifdef CONFIG_SYSVIPC_SYSCTL
-+
-+bool setup_ipc_sysctls(struct ipc_namespace *ns);
-+void retire_ipc_sysctls(struct ipc_namespace *ns);
-+
-+#else /* CONFIG_SYSVIPC_SYSCTL */
-+
-+static inline void retire_ipc_sysctls(struct ipc_namespace *ns)
-+{
-+}
-+
-+static inline bool setup_ipc_sysctls(struct ipc_namespace *ns)
-+{
-+	return true;
-+}
-+
-+#endif /* CONFIG_SYSVIPC_SYSCTL */
- #endif
-diff --git a/ipc/ipc_sysctl.c b/ipc/ipc_sysctl.c
-index f101c171753f..15210ac47e9e 100644
---- a/ipc/ipc_sysctl.c
-+++ b/ipc/ipc_sysctl.c
-@@ -13,43 +13,22 @@
- #include <linux/capability.h>
- #include <linux/ipc_namespace.h>
- #include <linux/msg.h>
-+#include <linux/slab.h>
- #include "util.h"
- 
--static void *get_ipc(struct ctl_table *table)
--{
--	char *which = table->data;
--	struct ipc_namespace *ipc_ns = current->nsproxy->ipc_ns;
--	which = (which - (char *)&init_ipc_ns) + (char *)ipc_ns;
--	return which;
--}
--
--static int proc_ipc_dointvec(struct ctl_table *table, int write,
--		void *buffer, size_t *lenp, loff_t *ppos)
--{
--	struct ctl_table ipc_table;
--
--	memcpy(&ipc_table, table, sizeof(ipc_table));
--	ipc_table.data = get_ipc(table);
--
--	return proc_dointvec(&ipc_table, write, buffer, lenp, ppos);
--}
--
--static int proc_ipc_dointvec_minmax(struct ctl_table *table, int write,
-+static int proc_ipc_dointvec_minmax_orphans(struct ctl_table *table, int write,
- 		void *buffer, size_t *lenp, loff_t *ppos)
- {
-+	struct ipc_namespace *ns = table->extra1;
- 	struct ctl_table ipc_table;
-+	int err;
- 
- 	memcpy(&ipc_table, table, sizeof(ipc_table));
--	ipc_table.data = get_ipc(table);
- 
--	return proc_dointvec_minmax(&ipc_table, write, buffer, lenp, ppos);
--}
-+	ipc_table.extra1 = SYSCTL_ZERO;
-+	ipc_table.extra2 = SYSCTL_ONE;
- 
--static int proc_ipc_dointvec_minmax_orphans(struct ctl_table *table, int write,
--		void *buffer, size_t *lenp, loff_t *ppos)
--{
--	struct ipc_namespace *ns = current->nsproxy->ipc_ns;
--	int err = proc_ipc_dointvec_minmax(table, write, buffer, lenp, ppos);
-+	err = proc_dointvec_minmax(&ipc_table, write, buffer, lenp, ppos);
- 
- 	if (err < 0)
- 		return err;
-@@ -58,17 +37,6 @@ static int proc_ipc_dointvec_minmax_orphans(struct ctl_table *table, int write,
- 	return err;
- }
- 
--static int proc_ipc_doulongvec_minmax(struct ctl_table *table, int write,
--		void *buffer, size_t *lenp, loff_t *ppos)
--{
--	struct ctl_table ipc_table;
--	memcpy(&ipc_table, table, sizeof(ipc_table));
--	ipc_table.data = get_ipc(table);
--
--	return proc_doulongvec_minmax(&ipc_table, write, buffer,
--					lenp, ppos);
--}
--
- static int proc_ipc_auto_msgmni(struct ctl_table *table, int write,
- 		void *buffer, size_t *lenp, loff_t *ppos)
- {
-@@ -87,11 +55,17 @@ static int proc_ipc_auto_msgmni(struct ctl_table *table, int write,
- static int proc_ipc_sem_dointvec(struct ctl_table *table, int write,
- 	void *buffer, size_t *lenp, loff_t *ppos)
- {
-+	struct ipc_namespace *ns = table->extra1;
-+	struct ctl_table ipc_table;
- 	int ret, semmni;
--	struct ipc_namespace *ns = current->nsproxy->ipc_ns;
-+
-+	memcpy(&ipc_table, table, sizeof(ipc_table));
-+
-+	ipc_table.extra1 = NULL;
-+	ipc_table.extra2 = NULL;
- 
- 	semmni = ns->sem_ctls[3];
--	ret = proc_ipc_dointvec(table, write, buffer, lenp, ppos);
-+	ret = proc_dointvec(table, write, buffer, lenp, ppos);
- 
- 	if (!ret)
- 		ret = sem_check_semmni(current->nsproxy->ipc_ns);
-@@ -108,12 +82,18 @@ static int proc_ipc_sem_dointvec(struct ctl_table *table, int write,
- static int proc_ipc_dointvec_minmax_checkpoint_restore(struct ctl_table *table,
- 		int write, void *buffer, size_t *lenp, loff_t *ppos)
- {
--	struct user_namespace *user_ns = current->nsproxy->ipc_ns->user_ns;
-+	struct ipc_namespace *ns = table->extra1;
-+	struct ctl_table ipc_table;
- 
--	if (write && !checkpoint_restore_ns_capable(user_ns))
-+	if (write && !checkpoint_restore_ns_capable(ns->user_ns))
- 		return -EPERM;
- 
--	return proc_ipc_dointvec_minmax(table, write, buffer, lenp, ppos);
-+	memcpy(&ipc_table, table, sizeof(ipc_table));
-+
-+	ipc_table.extra1 = SYSCTL_ZERO;
-+	ipc_table.extra2 = SYSCTL_INT_MAX;
-+
-+	return proc_dointvec_minmax(&ipc_table, write, buffer, lenp, ppos);
- }
- #endif
- 
-@@ -121,27 +101,27 @@ int ipc_mni = IPCMNI;
- int ipc_mni_shift = IPCMNI_SHIFT;
- int ipc_min_cycle = RADIX_TREE_MAP_SIZE;
- 
--static struct ctl_table ipc_kern_table[] = {
-+static struct ctl_table ipc_sysctls[] = {
- 	{
- 		.procname	= "shmmax",
- 		.data		= &init_ipc_ns.shm_ctlmax,
- 		.maxlen		= sizeof(init_ipc_ns.shm_ctlmax),
- 		.mode		= 0644,
--		.proc_handler	= proc_ipc_doulongvec_minmax,
-+		.proc_handler	= proc_doulongvec_minmax,
- 	},
- 	{
- 		.procname	= "shmall",
- 		.data		= &init_ipc_ns.shm_ctlall,
- 		.maxlen		= sizeof(init_ipc_ns.shm_ctlall),
- 		.mode		= 0644,
--		.proc_handler	= proc_ipc_doulongvec_minmax,
-+		.proc_handler	= proc_doulongvec_minmax,
- 	},
- 	{
- 		.procname	= "shmmni",
- 		.data		= &init_ipc_ns.shm_ctlmni,
- 		.maxlen		= sizeof(init_ipc_ns.shm_ctlmni),
- 		.mode		= 0644,
--		.proc_handler	= proc_ipc_dointvec_minmax,
-+		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &ipc_mni,
- 	},
-@@ -151,15 +131,13 @@ static struct ctl_table ipc_kern_table[] = {
- 		.maxlen		= sizeof(init_ipc_ns.shm_rmid_forced),
- 		.mode		= 0644,
- 		.proc_handler	= proc_ipc_dointvec_minmax_orphans,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_ONE,
- 	},
- 	{
- 		.procname	= "msgmax",
- 		.data		= &init_ipc_ns.msg_ctlmax,
- 		.maxlen		= sizeof(init_ipc_ns.msg_ctlmax),
- 		.mode		= 0644,
--		.proc_handler	= proc_ipc_dointvec_minmax,
-+		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_INT_MAX,
- 	},
-@@ -168,7 +146,7 @@ static struct ctl_table ipc_kern_table[] = {
- 		.data		= &init_ipc_ns.msg_ctlmni,
- 		.maxlen		= sizeof(init_ipc_ns.msg_ctlmni),
- 		.mode		= 0644,
--		.proc_handler	= proc_ipc_dointvec_minmax,
-+		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &ipc_mni,
- 	},
-@@ -186,7 +164,7 @@ static struct ctl_table ipc_kern_table[] = {
- 		.data		= &init_ipc_ns.msg_ctlmnb,
- 		.maxlen		= sizeof(init_ipc_ns.msg_ctlmnb),
- 		.mode		= 0644,
--		.proc_handler	= proc_ipc_dointvec_minmax,
-+		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_INT_MAX,
- 	},
-@@ -204,8 +182,6 @@ static struct ctl_table ipc_kern_table[] = {
- 		.maxlen		= sizeof(init_ipc_ns.ids[IPC_SEM_IDS].next_id),
- 		.mode		= 0666,
- 		.proc_handler	= proc_ipc_dointvec_minmax_checkpoint_restore,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_INT_MAX,
- 	},
- 	{
- 		.procname	= "msg_next_id",
-@@ -213,8 +189,6 @@ static struct ctl_table ipc_kern_table[] = {
- 		.maxlen		= sizeof(init_ipc_ns.ids[IPC_MSG_IDS].next_id),
- 		.mode		= 0666,
- 		.proc_handler	= proc_ipc_dointvec_minmax_checkpoint_restore,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_INT_MAX,
- 	},
- 	{
- 		.procname	= "shm_next_id",
-@@ -222,25 +196,106 @@ static struct ctl_table ipc_kern_table[] = {
- 		.maxlen		= sizeof(init_ipc_ns.ids[IPC_SHM_IDS].next_id),
- 		.mode		= 0666,
- 		.proc_handler	= proc_ipc_dointvec_minmax_checkpoint_restore,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_INT_MAX,
- 	},
- #endif
- 	{}
- };
- 
--static struct ctl_table ipc_root_table[] = {
--	{
--		.procname	= "kernel",
--		.mode		= 0555,
--		.child		= ipc_kern_table,
--	},
--	{}
-+static struct ctl_table_set *set_lookup(struct ctl_table_root *root)
-+{
-+	return &current->nsproxy->ipc_ns->ipc_set;
-+}
-+
-+static int set_is_seen(struct ctl_table_set *set)
-+{
-+	return &current->nsproxy->ipc_ns->ipc_set == set;
-+}
-+
-+static struct ctl_table_root set_root = {
-+	.lookup = set_lookup,
- };
- 
-+bool setup_ipc_sysctls(struct ipc_namespace *ns)
-+{
-+	struct ctl_table *tbl;
-+
-+	setup_sysctl_set(&ns->ipc_set, &set_root, set_is_seen);
-+
-+	tbl = kmemdup(ipc_sysctls, sizeof(ipc_sysctls), GFP_KERNEL);
-+	if (tbl) {
-+		int i;
-+
-+		for (i = 0; i < ARRAY_SIZE(ipc_sysctls); i++) {
-+			if (tbl[i].data == &init_ipc_ns.shm_ctlmax) {
-+				tbl[i].data = &ns->shm_ctlmax;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.shm_ctlall) {
-+				tbl[i].data = &ns->shm_ctlall;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.shm_ctlmni) {
-+				tbl[i].data = &ns->shm_ctlmni;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.shm_rmid_forced) {
-+				tbl[i].data = &ns->shm_rmid_forced;
-+				tbl[i].extra1 = ns;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.msg_ctlmax) {
-+				tbl[i].data = &ns->msg_ctlmax;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.msg_ctlmni) {
-+				tbl[i].data = &ns->msg_ctlmni;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.msg_ctlmnb) {
-+				tbl[i].data = &ns->msg_ctlmnb;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.sem_ctls) {
-+				tbl[i].data = &ns->sem_ctls;
-+				tbl[i].extra1 = ns;
-+#ifdef CONFIG_CHECKPOINT_RESTORE
-+			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_SEM_IDS].next_id) {
-+				tbl[i].data = &ns->ids[IPC_SEM_IDS].next_id;
-+				tbl[i].extra1 = ns;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_MSG_IDS].next_id) {
-+				tbl[i].data = &ns->ids[IPC_MSG_IDS].next_id;
-+				tbl[i].extra1 = ns;
-+
-+			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_SHM_IDS].next_id) {
-+				tbl[i].data = &ns->ids[IPC_SHM_IDS].next_id;
-+				tbl[i].extra1 = ns;
-+#endif
-+			} else {
-+				tbl[i].data = NULL;
-+			}
-+		}
-+
-+		ns->ipc_sysctls = __register_sysctl_table(&ns->ipc_set, "kernel", tbl);
-+	}
-+	if (!ns->ipc_sysctls) {
-+		kfree(tbl);
-+		retire_sysctl_set(&ns->ipc_set);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+void retire_ipc_sysctls(struct ipc_namespace *ns)
-+{
-+	struct ctl_table *tbl;
-+
-+	tbl = ns->ipc_sysctls->ctl_table_arg;
-+	unregister_sysctl_table(ns->ipc_sysctls);
-+	retire_sysctl_set(&ns->ipc_set);
-+	kfree(tbl);
-+}
-+
- static int __init ipc_sysctl_init(void)
- {
--	register_sysctl_table(ipc_root_table);
-+	if (!setup_ipc_sysctls(&init_ipc_ns)) {
-+		pr_warn("ipc sysctl registration failed\n");
-+		return -ENOMEM;
-+	}
- 	return 0;
- }
- 
-diff --git a/ipc/namespace.c b/ipc/namespace.c
-index f760243ca685..754f3237194a 100644
---- a/ipc/namespace.c
-+++ b/ipc/namespace.c
-@@ -63,6 +63,9 @@ static struct ipc_namespace *create_ipc_ns(struct user_namespace *user_ns,
- 	if (!setup_mq_sysctls(ns))
- 		goto fail_put;
- 
-+	if (!setup_ipc_sysctls(ns))
-+		goto fail_put;
-+
- 	sem_init_ns(ns);
- 	msg_init_ns(ns);
- 	shm_init_ns(ns);
-@@ -130,6 +133,7 @@ static void free_ipc_ns(struct ipc_namespace *ns)
- 	shm_exit_ns(ns);
- 
- 	retire_mq_sysctls(ns);
-+	retire_ipc_sysctls(ns);
- 
- 	dec_ipc_namespaces(ns->ucounts);
- 	put_user_ns(ns->user_ns);
--- 
-2.33.0
+More comments to come later or tomorrow.
 
+Thanks,
+Mathieu
+
+> +    required:
+> +      - compatible
+> +      - power-domains
+> +
+> +    unevaluatedProperties: false
+> +
+> +required:
+> +  - compatible
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    r5fss: r5fss@ff9a0000 {
+> +        compatible = "xlnx,zynqmp-r5fss";
+> +        xlnx,cluster-mode = <1>;
+> +
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +        reg = <0xff9a0000 0x228>;
+> +
+> +        r5f-0 {
+> +            compatible = "xlnx,zynqmp-r5f";
+> +            power-domains = <&zynqmp_firmware 0x7>;
+> +        };
+> +
+> +        r5f-1 {
+> +            compatible = "xlnx,zynqmp-r5f";
+> +            power-domains = <&zynqmp_firmware 0x8>;
+> +        };
+> +    };
+> +...
+> diff --git a/include/dt-bindings/power/xlnx-zynqmp-power.h b/include/dt-bindings/power/xlnx-zynqmp-power.h
+> index 0d9a412fd5e0..618024cbb20d 100644
+> --- a/include/dt-bindings/power/xlnx-zynqmp-power.h
+> +++ b/include/dt-bindings/power/xlnx-zynqmp-power.h
+> @@ -6,6 +6,12 @@
+>  #ifndef _DT_BINDINGS_ZYNQMP_POWER_H
+>  #define _DT_BINDINGS_ZYNQMP_POWER_H
+>  
+> +#define		PD_RPU_0	7
+> +#define		PD_RPU_1	8
+> +#define		PD_R5_0_ATCM	15
+> +#define		PD_R5_0_BTCM	16
+> +#define		PD_R5_1_ATCM	17
+> +#define		PD_R5_1_BTCM	18
+>  #define		PD_USB_0	22
+>  #define		PD_USB_1	23
+>  #define		PD_TTC_0	24
+> -- 
+> 2.25.1
+> 
