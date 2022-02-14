@@ -2,104 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4230C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240002AbiBND1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 22:27:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55578 "EHLO
+        id S240003AbiBND3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 22:29:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231786AbiBND1t (ORCPT
+        with ESMTP id S231786AbiBND3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 22:27:49 -0500
-X-Greylist: delayed 1729 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 19:27:43 PST
-Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C94E55487
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 19:27:43 -0800 (PST)
-Received: from dread.disaster.area (pa49-186-85-251.pa.vic.optusnet.com.au [49.186.85.251])
-        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id EFDDD10C71FF;
-        Mon, 14 Feb 2022 13:58:50 +1100 (AEDT)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1nJRZh-00BlIw-Ju; Mon, 14 Feb 2022 13:58:49 +1100
-Date:   Mon, 14 Feb 2022 13:58:49 +1100
-From:   Dave Chinner <david@fromorbit.com>
-To:     Ritesh Harjani <riteshh@linux.ibm.com>
-Cc:     syzbot <syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com>,
-        djwong@kernel.org, fgheet255t@gmail.com, hch@infradead.org,
-        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] WARNING in iomap_iter
-Message-ID: <20220214025849.GP59729@dread.disaster.area>
-References: <000000000000f2075605d04f9964@google.com>
- <00000000000011f55805d7d8352c@google.com>
- <20220213143410.qdqxlixuzgtq56yl@riteshh-domain>
+        Sun, 13 Feb 2022 22:29:48 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B415555487;
+        Sun, 13 Feb 2022 19:29:40 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JxqTZ23tlz4xQp;
+        Mon, 14 Feb 2022 14:29:38 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644809379;
+        bh=icM+9Xu69fBIx/89EewjmfGendiahiG7T3/u5TE2rqg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=cEz1MfXBSgoRhz3dOhD72kHtNaOLArkY7YrYmU1ORalKQrsZqpdb/p4Oarp0Z5r/h
+         BUZG7EMVCoFmPuzPMBE0xsmr+P8PZMG3G25xPdys+E27AhGIPvo5/luBIqn/su/1Zw
+         kAJUlJCA0wekk3MAc67Wi/PZu/OhfiVlDp+hWfW9sVLRjFZXsm6EGeRnvsfz/pkyGu
+         XJEnO+NvinGUcpPrNAs5iAnzH0FSoID5mzcl17CI/Bzay0BCLJeIYuzLU0m2piWPb5
+         2WuNfHhN4bAZ5flITqmxjaoCL3s5KghoHUyhtnKAkUzuJSRg75EwvSgbzAXblKXu06
+         mBkAa5IkBIglA==
+Date:   Mon, 14 Feb 2022 14:29:36 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     Ajish Koshy <Ajish.Koshy@microchip.com>,
+        John Garry <john.garry@huawei.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Viswas G <Viswas.G@microchip.com>
+Subject: linux-next: manual merge of the scsi-mkp tree with Linus' tree
+Message-ID: <20220214142936.41bd3e7d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220213143410.qdqxlixuzgtq56yl@riteshh-domain>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=VuxAv86n c=1 sm=1 tr=0 ts=6209c56b
-        a=2CV4XU02g+4RbH+qqUnf+g==:117 a=2CV4XU02g+4RbH+qqUnf+g==:17
-        a=kj9zAlcOel0A:10 a=oGFeUVbbRNcA:10 a=edf1wS77AAAA:8 a=7-415B0cAAAA:8
-        a=9nmZ6OI4_2a5T7hfYiMA:9 a=CjuIK1q_8ugA:10 a=DcSpbTIhAlouE1Uv7lRv:22
-        a=biEYGPWJfzWAr4FL6Ov7:22
+Content-Type: multipart/signed; boundary="Sig_/xQ5Ke=WuXxsG1cQ003LFOS0";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 08:04:10PM +0530, Ritesh Harjani wrote:
-> On 22/02/12 12:41PM, syzbot wrote:
-> > syzbot has found a reproducer for the following issue on:
-> >
-> > HEAD commit:    83e396641110 Merge tag 'soc-fixes-5.17-1' of git://git.ker..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=11fe01a4700000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=88e0a6a3dbf057cf
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=a8e049cd3abd342936b6
-> > compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14f8cad2700000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132c16ba700000
-> 
-> FYI - I could reproduce with above C reproduer on my setup 5.17-rc3.
-> I was also able to hit it with XFS <below stack shows that>
-> 
-> So here is some initial analysis on this one. I haven't completely debugged it
-> though. I am just putting my observations here for others too.
-> 
-> It seems iomap_dio_rw is getting called with a negative iocb->ki_pos value.
-> (I haven't yet looked into when can this happen. Is it due to negative loop
-> device mapping range offset or something?)
-> 
-> i.e.
-> (gdb) p iocb->ki_pos
-> $101 = -2147483648
-> (gdb) p /x iocb->ki_pos
-> $102 = 0xffffffff80000000
-> (gdb)
-> 
-> This when passed to ->iomap_begin() sometimes is resulting into iomap->offset
-> which is a positive value and hence hitting below warn_on_once in
-> iomap_iter_done().
-> 
-> 		WARN_ON_ONCE(iter->iomap.offset > iter->pos)
-> 
-> 1. So I think the question here is what does it mean when xfs/ext4_file_read_iter()
->    is called with negative iocb->ki_pos value?
-> 2. Also when can iocb->ki_pos be negative?
+--Sig_/xQ5Ke=WuXxsG1cQ003LFOS0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Sounds like a bug in the loop driver, not a problem with the iomap
-DIO code. The IO path normally checks the position via
-rw_verify_area() high up in the IO path, so by the time iocb->ki_pos
-gets to filesystems and low level IO routines it's supposed to have
-already been checked against overflows. Looks to me like the loop
-driver is not checking the back end file position it calculates for
-overflows...
+Hi all,
 
+Today's linux-next merge of the scsi-mkp tree got conflicts in:
+
+  drivers/scsi/pm8001/pm8001_hwi.c
+  drivers/scsi/pm8001/pm80xx_hwi.c
+
+between commit:
+
+  c26b85ea1636 ("scsi: pm80xx: Fix double completion for SATA devices")
+
+from Linus' tree and commit:
+
+  26fc0ea74fcb ("scsi: libsas: Drop SAS_TASK_AT_INITIATOR")
+
+from the scsi-mkp tree.
+
+I fixed it up (the former removed the code modified by the latter) and
+can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
 Cheers,
+Stephen Rothwell
 
-Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+--Sig_/xQ5Ke=WuXxsG1cQ003LFOS0
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIJzKAACgkQAVBC80lX
+0GzJMwf9GthKj+KbjLjtI1SABGJ36+LZysPXU1k702dMXPWS7jQISXnfO/G2iDTH
+x8BOcK5HeV1Goz+FzBWBu1cj+jC7ikATkNnGnletmvf3WsZUP82SxemaKh5HyFM8
+Z4p9TlnrSV9W7F6Jtvum4Z8bvxpbQgMzgF55f8Rbd/EzklaEAzVlh8Ebh2KVJW2+
+SwQ4nUWgJihYarn7lhXdraUv8NJvD5I0Xvawsf/VT8749ZOReaCufg2dVZUdMVST
+hzvIMsaOm+7C72mkUb6mtzzuAvSJUp6c+716zlhoKLoFZh1PL2IZgODRIr7s9mB+
+dGcZNuJeRb1ZA87wiH8F6cbfQbqByQ==
+=bx/o
+-----END PGP SIGNATURE-----
+
+--Sig_/xQ5Ke=WuXxsG1cQ003LFOS0--
