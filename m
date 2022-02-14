@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69386C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C527DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346967AbiBNKXL (ORCPT
+        id S1343877AbiBNKXN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:23:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51396 "EHLO
+        Mon, 14 Feb 2022 05:23:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347149AbiBNKUu (ORCPT
+        with ESMTP id S1346337AbiBNKTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:20:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1CB6E359;
-        Mon, 14 Feb 2022 01:55:32 -0800 (PST)
+        Mon, 14 Feb 2022 05:19:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A172890253;
+        Mon, 14 Feb 2022 01:55:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C39BB80D83;
-        Mon, 14 Feb 2022 09:55:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 470F7C36AF6;
-        Mon, 14 Feb 2022 09:55:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11F18B80DCF;
+        Mon, 14 Feb 2022 09:55:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 200A2C340E9;
+        Mon, 14 Feb 2022 09:55:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832508;
-        bh=MwkTiZJoksLSxaggOf2WpxBsuCuWyZjip0DdOvCxCRY=;
+        s=korg; t=1644832501;
+        bh=GmHD2H6wXTPw4OsDfCiRyEE9zZtwRyeGAsCLUx/cKAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PFoy/y/QFmgTKXsHi+x7Qepr3wFfFNAyI+PhUhMm7BwSrfAAYPTmiLOH+zSCVQhh5
-         Ex9Gy0vnfrR7MnrBmGahJr5L2vyFDIInFgF3R7h6BkiY6Ug+TbhujdVj97Ek9lFdjJ
-         rb+E87+M6QlaLBgVOcqd3+JWdTqIi3V/rGE5XGVU=
+        b=SQhZw3Yh1WLh8z/aFdtjVlpUC+blT/xndlBeKkgbyeTijlagT0/yQAuQp34YfwXyO
+         iJZtB5SFtnOSQvr2e07AWv5p9u9TMPqhrz59FhisQ5yMuxE/6pMmEUVZohVEmD++L8
+         IXmfHlHfJhnYPYM0Iiuv3L7F0yfuESLKxxqbjT+Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, xuhaifeng <xuhaifeng@oppo.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 035/203] sched: Avoid double preemption in __cond_resched_*lock*()
-Date:   Mon, 14 Feb 2022 10:24:39 +0100
-Message-Id: <20220214092511.400682464@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.16 007/203] mmc: sdhci-of-esdhc: Check for error num after setting mask
+Date:   Mon, 14 Feb 2022 10:24:11 +0100
+Message-Id: <20220214092510.471179552@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,64 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 7e406d1ff39b8ee574036418a5043c86723170cf ]
+commit 40c67c291a93f8846c4a972c9ef1b7ba4544c8d0 upstream.
 
-For PREEMPT/DYNAMIC_PREEMPT the *_unlock() will already trigger a
-preemption, no point in then calling preempt_schedule_common()
-*again*.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
+And since the sdhci_setup_host() has already checked the return value of
+the enable_dma, we need not check it in sdhci_resume_host() again.
 
-Use _cond_resched() instead, since this is a NOP for the preemptible
-configs while it provide a preemption point for the others.
-
-Reported-by: xuhaifeng <xuhaifeng@oppo.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/YcGnvDEYBwOiV0cR@hirez.programming.kicks-ass.net
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5552d7ad596c ("mmc: sdhci-of-esdhc: set proper dma mask for ls104x chips")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220112083156.1124782-1-jiasheng@iscas.ac.cn
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/core.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/mmc/host/sdhci-of-esdhc.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 77563109c0ea0..d24823b3c3f9f 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -8176,9 +8176,7 @@ int __cond_resched_lock(spinlock_t *lock)
+--- a/drivers/mmc/host/sdhci-of-esdhc.c
++++ b/drivers/mmc/host/sdhci-of-esdhc.c
+@@ -524,12 +524,16 @@ static void esdhc_of_adma_workaround(str
  
- 	if (spin_needbreak(lock) || resched) {
- 		spin_unlock(lock);
--		if (resched)
--			preempt_schedule_common();
--		else
-+		if (!_cond_resched())
- 			cpu_relax();
- 		ret = 1;
- 		spin_lock(lock);
-@@ -8196,9 +8194,7 @@ int __cond_resched_rwlock_read(rwlock_t *lock)
+ static int esdhc_of_enable_dma(struct sdhci_host *host)
+ {
++	int ret;
+ 	u32 value;
+ 	struct device *dev = mmc_dev(host->mmc);
  
- 	if (rwlock_needbreak(lock) || resched) {
- 		read_unlock(lock);
--		if (resched)
--			preempt_schedule_common();
--		else
-+		if (!_cond_resched())
- 			cpu_relax();
- 		ret = 1;
- 		read_lock(lock);
-@@ -8216,9 +8212,7 @@ int __cond_resched_rwlock_write(rwlock_t *lock)
+ 	if (of_device_is_compatible(dev->of_node, "fsl,ls1043a-esdhc") ||
+-	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc"))
+-		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
++	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc")) {
++		ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
++		if (ret)
++			return ret;
++	}
  
- 	if (rwlock_needbreak(lock) || resched) {
- 		write_unlock(lock);
--		if (resched)
--			preempt_schedule_common();
--		else
-+		if (!_cond_resched())
- 			cpu_relax();
- 		ret = 1;
- 		write_lock(lock);
--- 
-2.34.1
-
+ 	value = sdhci_readl(host, ESDHC_DMA_SYSCTL);
+ 
 
 
