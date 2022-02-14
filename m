@@ -2,144 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F48C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352820AbiBNLnq (ORCPT
+        id S1352575AbiBNLkB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:43:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43210 "EHLO
+        Mon, 14 Feb 2022 06:40:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352666AbiBNLnV (ORCPT
+        with ESMTP id S1352021AbiBNLja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:43:21 -0500
+        Mon, 14 Feb 2022 06:39:30 -0500
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB03310FA;
-        Mon, 14 Feb 2022 03:35:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D07DF40;
+        Mon, 14 Feb 2022 03:29:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644838513; x=1676374513;
+  t=1644838185; x=1676374185;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=YGHaP2hnU1orIs+CLY7os5ijsM1R9T/d7HZLRE0xrlA=;
-  b=dX6mTdeqdXBZBd/pj2j2TYNlmdNVZFw7mTNtAKYMSuBo115sinKvmJrT
-   qCD3uZTLOdwmtV/3K6W7EUVdU/QLwq4EOnoE0T7gMPK4JVt7nJBL5habt
-   Vxa/S3Kef5cYNP5X0mVo36cveEcKxGnhdq5QAydpYCFHHrC+Sh//eoyDH
-   XGIeLW0dRtOGLNPgkUKwQKCcp1TJtzcbIrZu5l6xoK9+rPN9lRYflpg6o
-   /7274SqBNOoblX7c9nu2Bv/xFA9zVD0qCv74FvCMVR8rGfYeaXgiuY+km
-   SqxFULvcS3Me8QL4or5/DReeb5V77A5REPijD2OACxwZZRgzxrMN0PLYR
+  bh=LyVZUfq/4Kt0u89YufhzKsBwro574htmaUqau0RQcl0=;
+  b=bV7YjWRDXHWJeQFEoqNSyv7beWasxmTvNQB33sA6mqmBi/z0raVD8Tck
+   X+wxmHFswIP8z4CE2M8b3pGxh8xncZ3VD5IUvqsDNKhbHcAHv7Oesi9IX
+   W+q/TVfTehdEYK1zNrtXMCMhb2UL9UZg141z5AQThVSXdZvBo32EWwNqa
+   Shvl5CWJeE25o+LNPR1M84/qiKoVXOc9zq4OeRoYQFAQKsKFt/8jzyFgX
+   E/+w4vXb0iFR3s6Ol3QWntomASwZnZACMQasFI2ZldQG7OqQWFcd9545H
+   dLFHfxs9jijYX3Ciopc6wPivu3q30f7MJLWb7a/qUa5Fiuc6bsuvn9Uoh
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="250277559"
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="250276737"
 X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="250277559"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:35:10 -0800
+   d="scan'208";a="250276737"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:29:45 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="775096766"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga005.fm.intel.com with ESMTP; 14 Feb 2022 03:34:59 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 21EBYuXA031487;
-        Mon, 14 Feb 2022 11:34:57 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v10 10/15] FG-KASLR: use a scripted approach to handle .text.* sections
-Date:   Mon, 14 Feb 2022 12:34:34 +0100
-Message-Id: <20220214113434.5256-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220211153706.GW23216@worktop.programming.kicks-ass.net>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com> <20220209185752.1226407-11-alexandr.lobakin@intel.com> <20220211153706.GW23216@worktop.programming.kicks-ass.net>
+   d="scan'208";a="587167021"
+Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2022 03:29:42 -0800
+From:   Tianfei zhang <tianfei.zhang@intel.com>
+To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
+        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     corbet@lwn.net, Matthew Gerlach <matthew.gerlach@linux.intel.com>,
+        Tianfei Zhang <tianfei.zhang@intel.com>
+Subject: [PATCH v1 4/7] fpga: dfl: fix VF creation when ports have no local BAR space
+Date:   Mon, 14 Feb 2022 06:26:16 -0500
+Message-Id: <20220214112619.219761-5-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220214112619.219761-1-tianfei.zhang@intel.com>
+References: <20220214112619.219761-1-tianfei.zhang@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Fri, 11 Feb 2022 16:37:06 +0100
+From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-> On Wed, Feb 09, 2022 at 07:57:47PM +0100, Alexander Lobakin wrote:
-> > +sub read_sections {
-> > +	open(my $fh, "\"$readelf\" -SW \"$file\" 2>/dev/null |")
-> > +		or die "$0: ERROR: failed to execute \"$readelf\": $!";
-> > +
-> > +	while (<$fh>) {
-> > +		my $name;
-> > +		my $align;
-> > +		chomp;
-> > +
-> > +		($name, $align) = $_ =~ /^\s*\[[\s0-9]*\]\s*(\.\S*)\s*[A-Z]*\s*[0-9a-f]{16}\s*[0-9a-f]*\s*[0-9a-f]*\s*[0-9a-f]*\s*[0-9a-f]{2}\s*[A-Z]{2}\s*[0-9]\s*[0-9]\s*([0-9]*)$/;
-> 
-> Is there really no readable way to write this?
+When a port is not connected to the same PCIe endpoint as
+the FME, the port does not need to be released before being
+virtualized.  Fix VF creation code to handle this new use
+case.
 
-I'm no regexp master, so I'd be glad if someone could help improve
-this :D I only tried to optimize it using online tools, and they
-eventually didn't help.
-It could probably be replaced with a pipe to `cut` or `tr`, I'll
-take a look a bit later if there won't be any other proposals.
+Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+---
+ drivers/fpga/dfl.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-> 
-> > +
-> > +		if (!defined($name)) {
-> > +			next;
-> > +		}
-> > +
-> > +		## Clang 13 onwards emits __cfi_check_fail only on final
-> > +		## linking, so it won't appear in .o files and will be
-> > +		## missing in @sections. Add it manually to prevent
-> > +		## spawning orphans.
-> > +		if ($name eq ".text.__cfi_check_fail") {
-> > +			$has_ccf = 1;
-> > +		}
-> 
-> How is that relevant, x86-64 doesn't and won't do clang-cfi.
+diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+index 26f8cf890700..cfc539a656f0 100644
+--- a/drivers/fpga/dfl.c
++++ b/drivers/fpga/dfl.c
+@@ -1705,15 +1705,22 @@ EXPORT_SYMBOL_GPL(dfl_fpga_cdev_config_ports_pf);
+ int dfl_fpga_cdev_config_ports_vf(struct dfl_fpga_cdev *cdev, int num_vfs)
+ {
+ 	struct dfl_feature_platform_data *pdata;
+-	int ret = 0;
++	int ret = 0, port_count = 0;
+ 
+ 	mutex_lock(&cdev->lock);
++
++	list_for_each_entry(pdata, &cdev->port_dev_list, node) {
++		if (pdata->dev)
++			continue;
++		port_count++;
++	}
++
+ 	/*
+ 	 * can't turn multiple ports into 1 VF device, only 1 port for 1 VF
+ 	 * device, so if released port number doesn't match VF device number,
+ 	 * then reject the request with -EINVAL error code.
+ 	 */
+-	if (cdev->released_port_num != num_vfs) {
++	if (port_count && cdev->released_port_num != num_vfs) {
+ 		ret = -EINVAL;
+ 		goto done;
+ 	}
+-- 
+2.17.1
 
-1. One of my test cases was based on Sami's ClangCFI x86 series from
-   LKML (the one that was getting patched by objtool :P).
-2. ClangCFI is present on ARM64 and it can receive FG-KASLR in a
-   future, why not make it work together from the start?
-
-Re "won't do" -- sorry for trying to hijack this thread a bit, but
-did I miss something? The last comments I've read were that LLVM
-tools need to change their approach for CFI on x86, and Sami went
-redo it, but I can't recall any "life-time" nacks.
-
-Thanks,
-Al
