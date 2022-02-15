@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61670C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C07C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240261AbiBOPaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:30:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47442 "EHLO
+        id S240135AbiBOPbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:31:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240129AbiBOPaG (ORCPT
+        with ESMTP id S240164AbiBOPa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:30:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FD2B0E96;
-        Tue, 15 Feb 2022 07:28:46 -0800 (PST)
+        Tue, 15 Feb 2022 10:30:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D987B5601;
+        Tue, 15 Feb 2022 07:28:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47257615F0;
-        Tue, 15 Feb 2022 15:28:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75A35C340EB;
-        Tue, 15 Feb 2022 15:28:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45D47B81AFD;
+        Tue, 15 Feb 2022 15:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2292DC36AE7;
+        Tue, 15 Feb 2022 15:28:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938925;
-        bh=ZD01o9rSSE8LUE0dVcK7GaEZOVJK7nnDEiRaEzbfzEQ=;
+        s=k20201202; t=1644938932;
+        bh=jtUIix8YE2fPyTynYc8qgmVp0lmvN90YoZI+APmQjhk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BvgygTRtrXZqKefTAIGD0ISD87KDH41n9RoXSWys68dYXuip8rfW2MCu++uDtFUed
-         KS1d8q5wFzjTk/ZLaCksploM/jMqlTLw5mtx3iCnkqnMGv9yV2mu4aqA6wFtPQHung
-         oatrlsI/I6dlHxhDH2Nn7H+Q8p41YXPle/jEI4riKccKQcVuMsKBVKRhwO7vFsXwGw
-         9yDVHhefOHWCqDetiN487D6GRJmGqtKj1m5eea8W1r4Sn3ZFehQwBdCgyD4rTYrKdv
-         nWo1VHu1XZ34PQaoo+rilRtuwsK/bNgq04sgkgGbpluBtO71BbvJwAR7DNH1rfX+2R
-         X6BM4q0qLIInw==
+        b=WOyE0cSz4vqqrYWMXtxdJKVgCwgS/3+dWa0bgxUI8/0eAo+wBo5dlFDiGtWSq4p5v
+         npzKdR7OnPoA15uZdp3xaKDR5wB9wD3cdgQiOxlak/NH7xTbMLd9GU4uT0Z7tNCROu
+         Fvym5HfngsoN3dgrFXsNZj8R6pH0R4cSWprGeP2URdjQLT7yHFL9pjjqwMhglVCkz/
+         CpY11YAFqY0RaWHWN5pRPUJxh+8GU81acdMj7pOczaHSYdSi7O2CW0ViYZRlbNRhrc
+         C1eS+NpJJr+IKusUcVJ9j9cKiqHkEh2yJALnheLmtHLmJMJUdjDG1MBEtQGV8FTnZ3
+         tHqsr7aqWmqGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guo Ren <guoren@linux.alibaba.com>,
-        Anup Patel <anup@brainfault.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>, paul.walmsley@sifive.com,
-        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 07/33] irqchip/sifive-plic: Add missing thead,c900-plic match string
-Date:   Tue, 15 Feb 2022 10:28:05 -0500
-Message-Id: <20220215152831.580780-7-sashal@kernel.org>
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, senozhatsky@chromium.org,
+        sfrench@samba.org, hyc.lee@gmail.com, linux-cifs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/33] ksmbd: fix same UniqueId for dot and dotdot entries
+Date:   Tue, 15 Feb 2022 10:28:08 -0500
+Message-Id: <20220215152831.580780-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152831.580780-1-sashal@kernel.org>
 References: <20220215152831.580780-1-sashal@kernel.org>
@@ -56,47 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
+[ Upstream commit 97550c7478a2da93e348d8c3075d92cddd473a78 ]
 
-The thead,c900-plic has been used in opensbi to distinguish
-PLIC [1]. Although PLICs have the same behaviors in Linux,
-they are different hardware with some custom initializing in
-firmware(opensbi).
+ksmbd sets the inode number to UniqueId. However, the same UniqueId for
+dot and dotdot entry is set to the inode number of the parent inode.
+This patch set them using the current inode and parent inode.
 
-Qute opensbi patch commit-msg by Samuel:
-
-  The T-HEAD PLIC implementation requires setting a delegation bit
-  to allow access from S-mode. Now that the T-HEAD PLIC has its own
-  compatible string, set this bit automatically from the PLIC driver,
-  instead of reaching into the PLIC's MMIO space from another driver.
-
-[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
-
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Cc: Anup Patel <anup@brainfault.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Samuel Holland <samuel@sholland.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-sifive-plic.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/ksmbd/smb_common.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
-index 259065d271ef0..09cc98266d30f 100644
---- a/drivers/irqchip/irq-sifive-plic.c
-+++ b/drivers/irqchip/irq-sifive-plic.c
-@@ -398,3 +398,4 @@ static int __init plic_init(struct device_node *node,
+diff --git a/fs/ksmbd/smb_common.c b/fs/ksmbd/smb_common.c
+index 707490ab1f4c4..f2e7e3a654b34 100644
+--- a/fs/ksmbd/smb_common.c
++++ b/fs/ksmbd/smb_common.c
+@@ -308,14 +308,17 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
+ 	for (i = 0; i < 2; i++) {
+ 		struct kstat kstat;
+ 		struct ksmbd_kstat ksmbd_kstat;
++		struct dentry *dentry;
  
- IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
- IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
-+IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
+ 		if (!dir->dot_dotdot[i]) { /* fill dot entry info */
+ 			if (i == 0) {
+ 				d_info->name = ".";
+ 				d_info->name_len = 1;
++				dentry = dir->filp->f_path.dentry;
+ 			} else {
+ 				d_info->name = "..";
+ 				d_info->name_len = 2;
++				dentry = dir->filp->f_path.dentry->d_parent;
+ 			}
+ 
+ 			if (!match_pattern(d_info->name, d_info->name_len,
+@@ -327,7 +330,7 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
+ 			ksmbd_kstat.kstat = &kstat;
+ 			ksmbd_vfs_fill_dentry_attrs(work,
+ 						    user_ns,
+-						    dir->filp->f_path.dentry->d_parent,
++						    dentry,
+ 						    &ksmbd_kstat);
+ 			rc = fn(conn, info_level, d_info, &ksmbd_kstat);
+ 			if (rc)
 -- 
 2.34.1
 
