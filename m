@@ -2,92 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C547C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 930B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233858AbiBODUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 22:20:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43790 "EHLO
+        id S229851AbiBODYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 22:24:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233811AbiBODTz (ORCPT
+        with ESMTP id S229508AbiBODYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 22:19:55 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0088520F59;
-        Mon, 14 Feb 2022 19:19:46 -0800 (PST)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21F2WvHh022038;
-        Tue, 15 Feb 2022 03:19:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=Y457YTdXV5O2I0r5weXh5J18vYtPaowY8zWk4jkV6kU=;
- b=XwaUh/E67LGicq3GJRmDmiTDoXxgqnFK+jYeJuxMTI3wdmOuAEiEISohH76MIJxtorzt
- hp12XbkOIGD5dLeVieWzuFDjSL+s2oWYY0UsRx5+29757SdzcmmPA4/YbMU1RjQWZcoj
- 1QS5tk7RMygnVvlmH8LxXUtW63Yy5lTIAXtWNOIyLhIVnWaBEiuH07kOtMG0wqIh8w/9
- rtzN6izxDGaVg4k3630c4rhYRQrqcOhcJuYHeiB26WL0h1nbcpfWRiP0Pzq3zPArNYDJ
- 2KXY+rv0JRSqB2OWnYgzSpfruGmY0blpW9T2Cx4t0yn4b67spMyqOSQ/4wZztqCwy1Uq ng== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e63ad6bqw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 03:19:31 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21F3GpFC057595;
-        Tue, 15 Feb 2022 03:19:30 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 3e620wpgsh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 03:19:30 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21F3JMPC064243;
-        Tue, 15 Feb 2022 03:19:30 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by userp3030.oracle.com with ESMTP id 3e620wpgqq-6;
-        Tue, 15 Feb 2022 03:19:29 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Kees Cook <keescook@chromium.org>,
-        Michael Cyr <mikecyr@linux.ibm.com>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-hardening@vger.kernel.org, target-devel@vger.kernel.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] scsi: ibmvscsis: Silence -Warray-bounds warning
-Date:   Mon, 14 Feb 2022 22:19:18 -0500
-Message-Id: <164489513313.15031.7832986884338779882.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220208061231.3429486-1-keescook@chromium.org>
-References: <20220208061231.3429486-1-keescook@chromium.org>
+        Mon, 14 Feb 2022 22:24:34 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2BBAB459
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:24:25 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id m22so13394626pfk.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:24:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rWi/O5nJDLI+tNetDw/Ev6zUKQmU4GrSqp5n8nSHbx4=;
+        b=cH3SsTCDZtptXFpBGJiNfLdA+WiZF819l8uh4FCwJbLHyll5CCg1qQyeVnRoIKp0jd
+         UzTEGrAlDFLKsvfrLUPO2cyQR7V8ge2XkoQ76Do/DMHT5XY4Gys7TrBRKgJTcK/CKEly
+         NlpoI7nSrO+zRLa4y6WYqMQnU4BaXsL7QZgFK1+3TkAAXpuULDQPczgJbKC98r6I07hN
+         YWvIa+3/YuKK6iLw/sv9VTnWWPpNNZ8240Zfz+VdH8+oIZuRojFuS6hk3KXv46B82zzJ
+         pj6n8qmDE390S58ISOapvDx0gWqpFiIcYo0EQ8RQG/T6QEiBLoXoi/BiG029qFkQud7u
+         RW8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rWi/O5nJDLI+tNetDw/Ev6zUKQmU4GrSqp5n8nSHbx4=;
+        b=S7uKmmPFwHP7DszGw4dqpxMkao2GqtS849mtSe1kTeAnsbHuyctA4UKS3Q779Fk7qr
+         SDgpQ48M1h/7VQeh7uGp5ebxZ9IeT/WKEIgMRQMpGg50GhH2Y1nzHCh680uNfKYUyb1C
+         eU2Eg1BakrP+XiXyVd52zMx5va53LaNn/VQoaZOjTyujn7+mZmlja7oIs9Mv6VuLHygG
+         7a2cOdx5z1BsHBRsAkMc7zaaLDX524YiiKzWF4bXIgrei0hqsr35uUJ2i95AsWM6bvRK
+         LrJdgt0skotGM1W7VrD4LKW7ZRiR1PrvILkvpo1VHugfZyGUbZJfY234tQTE1JvSI1d9
+         RRug==
+X-Gm-Message-State: AOAM530FeQBX6i3UFEtd9sY8gyHcCrjSE9SFqkU7qD0CtHfeDLJmfIp1
+        hGnJzpUXP5265kTrd/iENpsu0LOjDwo=
+X-Google-Smtp-Source: ABdhPJzwvvVrlxC6vO4ybEODwecpFbI0/rwqAnm8JDxaOmnd4sWkMfFcz7DKurU1f8V0miTnOJAYcA==
+X-Received: by 2002:a63:864a:: with SMTP id x71mr1865535pgd.272.1644895464775;
+        Mon, 14 Feb 2022 19:24:24 -0800 (PST)
+Received: from 7YHHR73.igp.broadcom.net (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id b2sm803390pgg.59.2022.02.14.19.24.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 19:24:24 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Al Cooper <alcooperx@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM BRCMSTB USB2
+        and USB3 PHY DRIVER),
+        linux-phy@lists.infradead.org (open list:GENERIC PHY FRAMEWORK)
+Subject: [PATCH v2] phy: usb: Add "wake on" functionality for newer Synopsis XHCI controllers
+Date:   Mon, 14 Feb 2022 19:24:21 -0800
+Message-Id: <20220215032422.5179-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: SLlgXN1neJdbvyITMnETiSiq6oqy43In
-X-Proofpoint-ORIG-GUID: SLlgXN1neJdbvyITMnETiSiq6oqy43In
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 22:12:31 -0800, Kees Cook wrote:
+From: Al Cooper <alcooperx@gmail.com>
 
-> Instead of doing a cast to storage that is too small, add a union for
-> the high 64 bits. Silences the warnings under -Warray-bounds:
-> 
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c: In function 'ibmvscsis_send_messages':
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1934:44: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
->  1934 |                                         crq->valid = VALID_CMD_RESP_EL;
->       |                                            ^~
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
->  1875 |         u64 msg_hi = 0;
->       |             ^~~~~~
-> 
-> [...]
+Add "wake on" support for the newer Synopsis based XHCI only controller.
+This works on the 72165 and 72164 and newer chips and does not work
+on 7216 based systems. Also switch the USB sysclk to a slower clock
+on suspend to save additional power in S2. The clock switch will only
+save power on the 72165b0 and newer chips and is a nop on older chips.
 
-Applied to 5.18/scsi-queue, thanks!
+Signed-off-by: Al Cooper <alcooperx@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v2:
 
-[1/1] scsi: ibmvscsis: Silence -Warray-bounds warning
-      https://git.kernel.org/mkp/scsi/c/03e4383c7ce3
+- properly subject with 'phy: '
 
+ .../phy/broadcom/phy-brcm-usb-init-synopsys.c | 46 +++++++++++++++----
+ 1 file changed, 38 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/phy/broadcom/phy-brcm-usb-init-synopsys.c b/drivers/phy/broadcom/phy-brcm-usb-init-synopsys.c
+index e63457e145c7..d2524b70ea16 100644
+--- a/drivers/phy/broadcom/phy-brcm-usb-init-synopsys.c
++++ b/drivers/phy/broadcom/phy-brcm-usb-init-synopsys.c
+@@ -47,6 +47,8 @@
+ #define   USB_CTRL_USB_PM_SOFT_RESET_MASK		0x40000000
+ #define   USB_CTRL_USB_PM_BDC_SOFT_RESETB_MASK		0x00800000
+ #define   USB_CTRL_USB_PM_XHC_SOFT_RESETB_MASK		0x00400000
++#define   USB_CTRL_USB_PM_XHC_PME_EN_MASK		0x00000010
++#define   USB_CTRL_USB_PM_XHC_S2_CLK_SWITCH_EN_MASK	0x00000008
+ #define USB_CTRL_USB_PM_STATUS		0x08
+ #define USB_CTRL_USB_DEVICE_CTL1	0x10
+ #define   USB_CTRL_USB_DEVICE_CTL1_PORT_MODE_MASK	0x00000003
+@@ -190,10 +192,6 @@ static void usb_init_common(struct brcm_usb_init_params *params)
+ 
+ 	pr_debug("%s\n", __func__);
+ 
+-	USB_CTRL_UNSET(ctrl, USB_PM, USB_PWRDN);
+-	/* 1 millisecond - for USB clocks to settle down */
+-	usleep_range(1000, 2000);
+-
+ 	if (USB_CTRL_MASK(USB_DEVICE_CTL1, PORT_MODE)) {
+ 		reg = brcm_usb_readl(USB_CTRL_REG(ctrl, USB_DEVICE_CTL1));
+ 		reg &= ~USB_CTRL_MASK(USB_DEVICE_CTL1, PORT_MODE);
+@@ -222,6 +220,17 @@ static void usb_wake_enable_7211b0(struct brcm_usb_init_params *params,
+ 		USB_CTRL_UNSET(ctrl, CTLR_CSHCR, ctl_pme_en);
+ }
+ 
++static void usb_wake_enable_7216(struct brcm_usb_init_params *params,
++				 bool enable)
++{
++	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
++
++	if (enable)
++		USB_CTRL_SET(ctrl, USB_PM, XHC_PME_EN);
++	else
++		USB_CTRL_UNSET(ctrl, USB_PM, XHC_PME_EN);
++}
++
+ static void usb_init_common_7211b0(struct brcm_usb_init_params *params)
+ {
+ 	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
+@@ -295,6 +304,20 @@ static void usb_init_common_7211b0(struct brcm_usb_init_params *params)
+ 	usb2_eye_fix_7211b0(params);
+ }
+ 
++static void usb_init_common_7216(struct brcm_usb_init_params *params)
++{
++	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
++
++	USB_CTRL_UNSET(ctrl, USB_PM, XHC_S2_CLK_SWITCH_EN);
++	USB_CTRL_UNSET(ctrl, USB_PM, USB_PWRDN);
++
++	/* 1 millisecond - for USB clocks to settle down */
++	usleep_range(1000, 2000);
++
++	usb_wake_enable_7216(params, false);
++	usb_init_common(params);
++}
++
+ static void usb_init_xhci(struct brcm_usb_init_params *params)
+ {
+ 	pr_debug("%s\n", __func__);
+@@ -302,14 +325,20 @@ static void usb_init_xhci(struct brcm_usb_init_params *params)
+ 	xhci_soft_reset(params, 0);
+ }
+ 
+-static void usb_uninit_common(struct brcm_usb_init_params *params)
++static void usb_uninit_common_7216(struct brcm_usb_init_params *params)
+ {
+ 	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
+ 
+ 	pr_debug("%s\n", __func__);
+ 
+-	USB_CTRL_SET(ctrl, USB_PM, USB_PWRDN);
++	if (!params->wake_enabled) {
++		USB_CTRL_SET(ctrl, USB_PM, USB_PWRDN);
+ 
++		/* Switch to using slower clock during suspend to save power */
++		USB_CTRL_SET(ctrl, USB_PM, XHC_S2_CLK_SWITCH_EN);
++	} else {
++		usb_wake_enable_7216(params, true);
++	}
+ }
+ 
+ static void usb_uninit_common_7211b0(struct brcm_usb_init_params *params)
+@@ -371,9 +400,9 @@ static void usb_set_dual_select(struct brcm_usb_init_params *params, int mode)
+ 
+ static const struct brcm_usb_init_ops bcm7216_ops = {
+ 	.init_ipp = usb_init_ipp,
+-	.init_common = usb_init_common,
++	.init_common = usb_init_common_7216,
+ 	.init_xhci = usb_init_xhci,
+-	.uninit_common = usb_uninit_common,
++	.uninit_common = usb_uninit_common_7216,
+ 	.uninit_xhci = usb_uninit_xhci,
+ 	.get_dual_select = usb_get_dual_select,
+ 	.set_dual_select = usb_set_dual_select,
+@@ -396,6 +425,7 @@ void brcm_usb_dvr_init_7216(struct brcm_usb_init_params *params)
+ 
+ 	params->family_name = "7216";
+ 	params->ops = &bcm7216_ops;
++	params->suspend_with_clocks = true;
+ }
+ 
+ void brcm_usb_dvr_init_7211b0(struct brcm_usb_init_params *params)
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.25.1
+
