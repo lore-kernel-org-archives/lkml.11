@@ -2,118 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D51AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:59:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3427EC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236180AbiBOJ7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:59:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35086 "EHLO
+        id S236267AbiBOKAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:00:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236176AbiBOJ7l (ORCPT
+        with ESMTP id S236219AbiBOKAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:59:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D797D10E07B
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:59:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644919169;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RFs5onejenQ3kCvmT0LfSSKhonV10nIm+61L2qx/dBw=;
-        b=VhQvhJuEFYBO0qa2EgnDrgF/omLfz5lfxhS0PZq5AKum4wqL06MfWIJuVXCqSRfYCf3cPk
-        J9rnrZajKSzIlj9mHwdp5i7kapw3VeLveyyVWCoW8sacO67JZg/MkMDrzCR8H1C3QfzvDH
-        3MM93r+xm7HEtBoGB8g7RTisYLYnrDk=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-675-U7xmFvLMPtGWAZmhpcCoGg-1; Tue, 15 Feb 2022 04:59:28 -0500
-X-MC-Unique: U7xmFvLMPtGWAZmhpcCoGg-1
-Received: by mail-wm1-f72.google.com with SMTP id v185-20020a1cacc2000000b0034906580813so1142203wme.1
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:59:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RFs5onejenQ3kCvmT0LfSSKhonV10nIm+61L2qx/dBw=;
-        b=jptjbQ+km556HRGd1rs518dC5XQSI0h44bwS+Px0PaSRRDU5crc2WvPGb1O5oN2f+r
-         PvCpzzkcUvN5QLjtEiBwj+qyyTr2cs4tw0I4tIxTT05PTwdhRGZ8Rd3akKYcQrR4hKp1
-         +W7768bnJ3igS6mwuxBAp3qcc6n1IOGr4LTu1FCQXgedgX9180YKg1meF3i72eB4wCvQ
-         ff1o+TdXZscE4aE4IHI6G2+y4eEjP6c/THz0Bxmzr1r0tFH02WKuMlgxSFNXPXPlJHsl
-         sqL3Yxhjjo6XQ5IkLiTLHPhnw4YSito9lmu5yT9XveRp0Jso8ROdjj3W+teHfBAIbGbd
-         HciA==
-X-Gm-Message-State: AOAM532X0MwQqdBaKcPWoYHFCHz5GgRSzLvot0uY2FalivTuwkceDMvm
-        ZM7izfvDCgR0wMGLhj65NHfytxoTcgp8YGKL6yb7wFGhSqwyN8LXTOCGlq8FfCGAzNHi1tVYXXa
-        xqvlmPWyM1qc1GPhk54Anu429
-X-Received: by 2002:adf:f8cb:: with SMTP id f11mr2529942wrq.61.1644919167294;
-        Tue, 15 Feb 2022 01:59:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwyf07QPKhcpmzkRYD8dtwY0N1LIJJxcaaknto183gW0tYcjUv+VlAV6/UoHcblLhZOXokAGQ==
-X-Received: by 2002:adf:f8cb:: with SMTP id f11mr2529926wrq.61.1644919167092;
-        Tue, 15 Feb 2022 01:59:27 -0800 (PST)
-Received: from [10.33.192.183] (nat-pool-str-t.redhat.com. [149.14.88.106])
-        by smtp.gmail.com with ESMTPSA id 20sm12933136wmk.26.2022.02.15.01.59.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 01:59:26 -0800 (PST)
-Message-ID: <c01824a7-9d15-1356-2530-04c6112ace65@redhat.com>
-Date:   Tue, 15 Feb 2022 10:59:25 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] selftests: kvm: Check whether SIDA memop fails for normal
- guests
-Content-Language: en-US
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     David Hildenbrand <david@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220215074824.188440-1-thuth@redhat.com>
- <801aa4ea-ca26-7561-95f3-162b0f680929@linux.ibm.com>
-From:   Thomas Huth <thuth@redhat.com>
-In-Reply-To: <801aa4ea-ca26-7561-95f3-162b0f680929@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Tue, 15 Feb 2022 05:00:50 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C2D10E077;
+        Tue, 15 Feb 2022 02:00:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644919241; x=1676455241;
+  h=from:to:cc:subject:date:message-id;
+  bh=lYN6Qt8tApo+mea5juR8zMaYnSACX0anmwkxsl1TNos=;
+  b=Cg9ZfaWptoawplX5DPprpkQKtST1gKNBq7h+cl3OU5+UAFdLiTfjSwn9
+   6PraFl+iH2725PB3dCbxdPooLlVczplWVeqVx0iaYrDKF/YJ8O2ThdRQh
+   HTZP7/8Do2lLomca0/VPZCc5fR1A23cMNjEuspT7TCsGUPFMEMfPj/cM9
+   U=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 15 Feb 2022 02:00:40 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 15 Feb 2022 02:00:38 -0800
+X-QCInternal: smtphost
+Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 15 Feb 2022 15:30:24 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
+        id 2A906466C; Tue, 15 Feb 2022 15:30:23 +0530 (+0530)
+From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        jassisinghbrar@gmail.com, manivannan.sadhasivam@linaro.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+Subject: [PATCH v2 0/7] Add APCS support for SDX65
+Date:   Tue, 15 Feb 2022 15:30:20 +0530
+Message-Id: <1644919220-27041-1-git-send-email-quic_rohiagar@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/02/2022 10.54, Janis Schoetterl-Glausch wrote:
-> On 2/15/22 08:48, Thomas Huth wrote:
->> Commit 2c212e1baedc ("KVM: s390: Return error on SIDA memop on normal
->> guest") fixed the behavior of the SIDA memops for normal guests. It
->> would be nice to have a way to test whether the current kernel has
->> the fix applied or not. Thus add a check to the KVM selftests for
->> these two memops.
->>
->> Signed-off-by: Thomas Huth <thuth@redhat.com>
->> ---
->>   tools/testing/selftests/kvm/s390x/memop.c | 15 +++++++++++++++
->>   1 file changed, 15 insertions(+)
->>
->> diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
->> index 9f49ead380ab..d19c3ffdea3f 100644
->> --- a/tools/testing/selftests/kvm/s390x/memop.c
->> +++ b/tools/testing/selftests/kvm/s390x/memop.c
->> @@ -160,6 +160,21 @@ int main(int argc, char *argv[])
->>   	run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
->>   	vcpu_run(vm, VCPU_ID);                  /* Run to sync new state */
->>
->> +	/* Check that the SIDA calls are rejected for non-protected guests */
->> +	ksmo.gaddr = 0;
->> +	ksmo.flags = 0;
->> +	ksmo.size = 8;
->> +	ksmo.op = KVM_S390_MEMOP_SIDA_READ;
->> +	ksmo.buf = (uintptr_t)mem1;
->> +	ksmo.sida_offset = 0x1c0;
-> 
-> What is the rational for that constant?
-> Any would do, as long as size + offset < PAGE_SIZE, correct?
+Hello,
 
-Right, it's rather a random value.
+Changes from v1:
+ - Addressed Mani's comments and made necessary changes.
+ - Removed the last patch from the series as it became redundant after making changes.
 
-  Thomas
+This series adds APCS mailbox and clock support for SDX65. The APCS IP
+in SDX65 provides IPC and clock functionalities. Hence, mailbox support
+is added to the "qcom-apcs-ipc-mailbox" driver and a dedicated clock
+driver "apcs-sdx65" is added.
+
+Thanks,
+Rohit
+
+Rohit Agarwal (7):
+  dt-bindings: mailbox: Add binding for SDX65 APCS
+  mailbox: qcom: Add support for SDX65 APCS IPC
+  dt-bindings: clock: Add A7 PLL binding for SDX65
+  clk: qcom: Add A7 PLL support for SDX65
+  ARM: dts: qcom: sdx65: Add support for A7 PLL clock
+  ARM: dts: qcom: sdx65: Add support for APCS block
+  clk: qcom: Add SDX65 APCS clock controller support
+
+ Documentation/devicetree/bindings/clock/qcom,a7pll.yaml |  3 ++-
+ .../bindings/mailbox/qcom,apcs-kpss-global.yaml         |  1 +
+ arch/arm/boot/dts/qcom-sdx65.dtsi                       | 17 +++++++++++++++++
+ drivers/clk/qcom/Kconfig                                | 12 ++++++------
+ drivers/clk/qcom/a7-pll.c                               |  1 +
+ drivers/mailbox/qcom-apcs-ipc-mailbox.c                 |  5 +++++
+ 6 files changed, 32 insertions(+), 7 deletions(-)
+
+-- 
+2.7.4
 
