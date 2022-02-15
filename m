@@ -2,190 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233728AbiBOGFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 01:05:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57390 "EHLO
+        id S232532AbiBOGH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 01:07:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiBOGFs (ORCPT
+        with ESMTP id S229773AbiBOGHU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 01:05:48 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F37C4B65
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 22:05:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644905139; x=1676441139;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9T1Zhf11T2THdcQwM7OSO3iT2Z5DgFxy8/YrIQD9NXo=;
-  b=WaKmqozGyUvm8nvU8tUej+LN9pq1W3Z4VtOFLwXW0Hrumi30jdss/VOt
-   B2vh2I6QRtUR47xV5OMwvNiyGT728sGzdMunuEoRV1BvTDtZ6RY49x5qK
-   N36RPQK6LLsXl89Z/ENpAV1YpgKh1XL0d+PQ4rE2QmdeRiHsiMNF9yrbm
-   VZP7+BSguWHphcQvFWSdCU3aKq2Kkku/kWYf0uZ/4OaUYUO0iBQ+l8tul
-   lA1Txghh1FXpjp3Kb5RakDK0yWeVgyKebW98dWvE/XS1HmleQcJGgEI6X
-   mtFSZMVb4fmCSU34eoXKGrE3vfaHCmn9vXVEs8EIYysgSdS2HOZGil2U/
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230893924"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="230893924"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 22:05:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="703453297"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 14 Feb 2022 22:05:36 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJqy0-0009K4-9B; Tue, 15 Feb 2022 06:05:36 +0000
-Date:   Tue, 15 Feb 2022 14:05:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Manisha Chinthapally <manisha.chinthapally@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mchinth:sep_socwatch_linux_5_16 1/1]
- drivers/platform/x86/socperf/socperfdrv.c:1637:17: sparse: sparse: incorrect
- type in initializer (incompatible argument 2 (different address spaces))
-Message-ID: <202202151426.RB8miR3A-lkp@intel.com>
+        Tue, 15 Feb 2022 01:07:20 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD50D43AF3;
+        Mon, 14 Feb 2022 22:07:02 -0800 (PST)
+X-UUID: a2cb53b2c3f644f8bba8ce770ec60631-20220215
+X-UUID: a2cb53b2c3f644f8bba8ce770ec60631-20220215
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <chun-jie.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 609010241; Tue, 15 Feb 2022 14:06:56 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 15 Feb 2022 14:06:54 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 15 Feb 2022 14:06:54 +0800
+Message-ID: <5c2b97a1260b9349b151448d09e6308c2a3b252b.camel@mediatek.com>
+Subject: Re: [PATCH v3 01/31] clk: mediatek: Use %pe to print errors
+From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
+To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Tue, 15 Feb 2022 14:06:48 +0800
+In-Reply-To: <20220208124034.414635-2-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
+         <20220208124034.414635-2-wenst@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/mchinth/linux sep_socwatch_linux_5_16
-head:   4cbfca15a262729ae8557758b49226fe4769f582
-commit: 4cbfca15a262729ae8557758b49226fe4769f582 [1/1] Platform/x86 Updated SEP/SOCPERF drivers to latest version
-config: i386-randconfig-s002-20220214 (https://download.01.org/0day-ci/archive/20220215/202202151426.RB8miR3A-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/mchinth/linux/commit/4cbfca15a262729ae8557758b49226fe4769f582
-        git remote add mchinth https://github.com/mchinth/linux
-        git fetch --no-tags mchinth sep_socwatch_linux_5_16
-        git checkout 4cbfca15a262729ae8557758b49226fe4769f582
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/platform/x86/socperf/
+On Tue, 2022-02-08 at 20:40 +0800, Chen-Yu Tsai wrote:
+> If %pe is used to print errors, a string representation of the error
+> would be printed instead of a number as with %ld. Also, all the sites
+> printing errors are deriving the error code from a pointer. Using %pe
+> is more straightforward.
+> 
+> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+> Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+> ---
+>  drivers/clk/mediatek/clk-apmixed.c |  2 +-
+>  drivers/clk/mediatek/clk-cpumux.c  |  6 ++----
+>  drivers/clk/mediatek/clk-mtk.c     | 18 ++++++------------
+>  drivers/clk/mediatek/clk-mux.c     |  6 ++----
+>  drivers/clk/mediatek/clk-pll.c     |  3 +--
+>  drivers/clk/mediatek/reset.c       |  3 +--
+>  6 files changed, 13 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/clk/mediatek/clk-apmixed.c
+> b/drivers/clk/mediatek/clk-apmixed.c
+> index caa9119413f1..a29339cc26c4 100644
+> --- a/drivers/clk/mediatek/clk-apmixed.c
+> +++ b/drivers/clk/mediatek/clk-apmixed.c
+> @@ -92,7 +92,7 @@ struct clk * __init
+> mtk_clk_register_ref2usb_tx(const char *name,
+>  	clk = clk_register(NULL, &tx->hw);
+>  
+>  	if (IS_ERR(clk)) {
+> -		pr_err("Failed to register clk %s: %ld\n", name,
+> PTR_ERR(clk));
+> +		pr_err("Failed to register clk %s: %pe\n", name, clk);
+>  		kfree(tx);
+>  	}
+>  
+> diff --git a/drivers/clk/mediatek/clk-cpumux.c
+> b/drivers/clk/mediatek/clk-cpumux.c
+> index e188018bc906..cab5095416b6 100644
+> --- a/drivers/clk/mediatek/clk-cpumux.c
+> +++ b/drivers/clk/mediatek/clk-cpumux.c
+> @@ -87,8 +87,7 @@ int mtk_clk_register_cpumuxes(struct device_node
+> *node,
+>  
+>  	regmap = device_node_to_regmap(node);
+>  	if (IS_ERR(regmap)) {
+> -		pr_err("Cannot find regmap for %pOF: %ld\n", node,
+> -		       PTR_ERR(regmap));
+> +		pr_err("Cannot find regmap for %pOF: %pe\n", node,
+> regmap);
+>  		return PTR_ERR(regmap);
+>  	}
+>  
+> @@ -97,8 +96,7 @@ int mtk_clk_register_cpumuxes(struct device_node
+> *node,
+>  
+>  		clk = mtk_clk_register_cpumux(mux, regmap);
+>  		if (IS_ERR(clk)) {
+> -			pr_err("Failed to register clk %s: %ld\n",
+> -			       mux->name, PTR_ERR(clk));
+> +			pr_err("Failed to register clk %s: %pe\n", mux-
+> >name, clk);
+>  			continue;
+>  		}
+>  
+> diff --git a/drivers/clk/mediatek/clk-mtk.c
+> b/drivers/clk/mediatek/clk-mtk.c
+> index 8d5791b3f460..519a461cbb6f 100644
+> --- a/drivers/clk/mediatek/clk-mtk.c
+> +++ b/drivers/clk/mediatek/clk-mtk.c
+> @@ -70,8 +70,7 @@ void mtk_clk_register_fixed_clks(const struct
+> mtk_fixed_clk *clks,
+>  					      rc->rate);
+>  
+>  		if (IS_ERR(clk)) {
+> -			pr_err("Failed to register clk %s: %ld\n",
+> -					rc->name, PTR_ERR(clk));
+> +			pr_err("Failed to register clk %s: %pe\n", rc-
+> >name, clk);
+>  			continue;
+>  		}
+>  
+> @@ -97,8 +96,7 @@ void mtk_clk_register_factors(const struct
+> mtk_fixed_factor *clks,
+>  				CLK_SET_RATE_PARENT, ff->mult, ff-
+> >div);
+>  
+>  		if (IS_ERR(clk)) {
+> -			pr_err("Failed to register clk %s: %ld\n",
+> -					ff->name, PTR_ERR(clk));
+> +			pr_err("Failed to register clk %s: %pe\n", ff-
+> >name, clk);
+>  			continue;
+>  		}
+>  
+> @@ -122,8 +120,7 @@ int mtk_clk_register_gates_with_dev(struct
+> device_node *node,
+>  
+>  	regmap = device_node_to_regmap(node);
+>  	if (IS_ERR(regmap)) {
+> -		pr_err("Cannot find regmap for %pOF: %ld\n", node,
+> -				PTR_ERR(regmap));
+> +		pr_err("Cannot find regmap for %pOF: %pe\n", node,
+> regmap);
+>  		return PTR_ERR(regmap);
+>  	}
+>  
+> @@ -141,8 +138,7 @@ int mtk_clk_register_gates_with_dev(struct
+> device_node *node,
+>  				gate->shift, gate->ops, gate->flags,
+> dev);
+>  
+>  		if (IS_ERR(clk)) {
+> -			pr_err("Failed to register clk %s: %ld\n",
+> -					gate->name, PTR_ERR(clk));
+> +			pr_err("Failed to register clk %s: %pe\n",
+> gate->name, clk);
+>  			continue;
+>  		}
+>  
+> @@ -264,8 +260,7 @@ void mtk_clk_register_composites(const struct
+> mtk_composite *mcs,
+>  		clk = mtk_clk_register_composite(mc, base, lock);
+>  
+>  		if (IS_ERR(clk)) {
+> -			pr_err("Failed to register clk %s: %ld\n",
+> -					mc->name, PTR_ERR(clk));
+> +			pr_err("Failed to register clk %s: %pe\n", mc-
+> >name, clk);
+>  			continue;
+>  		}
+>  
+> @@ -293,8 +288,7 @@ void mtk_clk_register_dividers(const struct
+> mtk_clk_divider *mcds,
+>  			mcd->div_width, mcd->clk_divider_flags, lock);
+>  
+>  		if (IS_ERR(clk)) {
+> -			pr_err("Failed to register clk %s: %ld\n",
+> -				mcd->name, PTR_ERR(clk));
+> +			pr_err("Failed to register clk %s: %pe\n", mcd-
+> >name, clk);
+>  			continue;
+>  		}
+>  
+> diff --git a/drivers/clk/mediatek/clk-mux.c
+> b/drivers/clk/mediatek/clk-mux.c
+> index 6d3a50eb7d6f..89f23e111d91 100644
+> --- a/drivers/clk/mediatek/clk-mux.c
+> +++ b/drivers/clk/mediatek/clk-mux.c
+> @@ -175,8 +175,7 @@ int mtk_clk_register_muxes(const struct mtk_mux
+> *muxes,
+>  
+>  	regmap = device_node_to_regmap(node);
+>  	if (IS_ERR(regmap)) {
+> -		pr_err("Cannot find regmap for %pOF: %ld\n", node,
+> -		       PTR_ERR(regmap));
+> +		pr_err("Cannot find regmap for %pOF: %pe\n", node,
+> regmap);
+>  		return PTR_ERR(regmap);
+>  	}
+>  
+> @@ -187,8 +186,7 @@ int mtk_clk_register_muxes(const struct mtk_mux
+> *muxes,
+>  			clk = mtk_clk_register_mux(mux, regmap, lock);
+>  
+>  			if (IS_ERR(clk)) {
+> -				pr_err("Failed to register clk %s:
+> %ld\n",
+> -				       mux->name, PTR_ERR(clk));
+> +				pr_err("Failed to register clk %s:
+> %pe\n", mux->name, clk);
+>  				continue;
+>  			}
+>  
+> diff --git a/drivers/clk/mediatek/clk-pll.c
+> b/drivers/clk/mediatek/clk-pll.c
+> index 60d7ffa0b924..f04f724e12e5 100644
+> --- a/drivers/clk/mediatek/clk-pll.c
+> +++ b/drivers/clk/mediatek/clk-pll.c
+> @@ -378,8 +378,7 @@ void mtk_clk_register_plls(struct device_node
+> *node,
+>  		clk = mtk_clk_register_pll(pll, base);
+>  
+>  		if (IS_ERR(clk)) {
+> -			pr_err("Failed to register clk %s: %ld\n",
+> -					pll->name, PTR_ERR(clk));
+> +			pr_err("Failed to register clk %s: %pe\n", pll-
+> >name, clk);
+>  			continue;
+>  		}
+>  
+> diff --git a/drivers/clk/mediatek/reset.c
+> b/drivers/clk/mediatek/reset.c
+> index ffe464ce7ff8..bcec4b89f449 100644
+> --- a/drivers/clk/mediatek/reset.c
+> +++ b/drivers/clk/mediatek/reset.c
+> @@ -100,8 +100,7 @@ static void
+> mtk_register_reset_controller_common(struct device_node *np,
+>  
+>  	regmap = device_node_to_regmap(np);
+>  	if (IS_ERR(regmap)) {
+> -		pr_err("Cannot find regmap for %pOF: %ld\n", np,
+> -				PTR_ERR(regmap));
+> +		pr_err("Cannot find regmap for %pOF: %pe\n", np,
+> regmap);
+>  		return;
+>  	}
+>  
 
-
-sparse warnings: (new ones prefixed by >>)
-   drivers/platform/x86/socperf/socperfdrv.c:208:13: sparse: sparse: function 'SOCPERF_Read_Data3' with external linkage has definition
-   drivers/platform/x86/socperf/socperfdrv.c:1175:13: sparse: sparse: function 'lwpmudrv_Stop_Mem' with external linkage has definition
-   drivers/platform/x86/socperf/socperfdrv.c:1392:22: sparse: sparse: function 'socperf_Service_IOCTL' with external linkage has definition
-   drivers/platform/x86/socperf/socperfdrv.c:1516:13: sparse: sparse: function 'socperf_Device_Control' with external linkage has definition
-   drivers/platform/x86/socperf/socperfdrv.c:1602:12: sparse: sparse: function 'SOCPERF_Abnormal_Terminate' with external linkage has definition
-   drivers/platform/x86/socperf/socperfdrv.c:104:22: sparse: sparse: symbol 'socperf_drv_version' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:105:5: sparse: sparse: symbol 'read_unc_ctr_info' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:106:10: sparse: sparse: symbol 'dispatch_uncore' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:108:14: sparse: sparse: symbol 'socperf_global_ec' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:109:14: sparse: sparse: symbol 'socperf_abnormal_terminate' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:110:11: sparse: sparse: symbol 'socperf_control' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:114:8: sparse: sparse: symbol 'socperf_pcb_size' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got unsigned int [usertype] * @@
-   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse:     expected void const volatile [noderef] __user *ptr
-   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse:     got unsigned int [usertype] *
-   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __user *__ptr_pu @@     got unsigned int [usertype] * @@
-   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse:     expected void [noderef] __user *__ptr_pu
-   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse:     got unsigned int [usertype] *
-   drivers/platform/x86/socperf/socperfdrv.c:328:37: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got void *[usertype] buf_drv_to_usr @@
-   drivers/platform/x86/socperf/socperfdrv.c:328:37: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:328:37: sparse:     got void *[usertype] buf_drv_to_usr
-   drivers/platform/x86/socperf/socperfdrv.c:407:62: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got void *[usertype] buf_drv_to_usr @@
-   drivers/platform/x86/socperf/socperfdrv.c:407:62: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:407:62: sparse:     got void *[usertype] buf_drv_to_usr
-   drivers/platform/x86/socperf/socperfdrv.c:559:63: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char *[usertype] buf_usr_to_drv @@
-   drivers/platform/x86/socperf/socperfdrv.c:559:63: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:559:63: sparse:     got char *[usertype] buf_usr_to_drv
-   drivers/platform/x86/socperf/socperfdrv.c:641:39: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char *[usertype] buf_usr_to_drv @@
-   drivers/platform/x86/socperf/socperfdrv.c:641:39: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:641:39: sparse:     got char *[usertype] buf_usr_to_drv
-   drivers/platform/x86/socperf/socperfdrv.c:742:64: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char *[usertype] buf_usr_to_drv @@
-   drivers/platform/x86/socperf/socperfdrv.c:742:64: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:742:64: sparse:     got char *[usertype] buf_usr_to_drv
-   drivers/platform/x86/socperf/socperfdrv.c:1043:43: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned int [usertype] * @@
-   drivers/platform/x86/socperf/socperfdrv.c:1043:43: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:1043:43: sparse:     got unsigned int [usertype] *
-   drivers/platform/x86/socperf/socperfdrv.c:1066:29: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *[usertype] buf_drv_to_usr @@
-   drivers/platform/x86/socperf/socperfdrv.c:1066:29: sparse:     expected void [noderef] __user *to
-   drivers/platform/x86/socperf/socperfdrv.c:1066:29: sparse:     got char *[usertype] buf_drv_to_usr
-   drivers/platform/x86/socperf/socperfdrv.c:1089:28: sparse: sparse: Using plain integer as NULL pointer
-   drivers/platform/x86/socperf/socperfdrv.c:1100:29: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *[usertype] buf_drv_to_usr @@
-   drivers/platform/x86/socperf/socperfdrv.c:1100:29: sparse:     expected void [noderef] __user *to
-   drivers/platform/x86/socperf/socperfdrv.c:1100:29: sparse:     got char *[usertype] buf_drv_to_usr
-   drivers/platform/x86/socperf/socperfdrv.c:1135:45: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned long long [usertype] * @@
-   drivers/platform/x86/socperf/socperfdrv.c:1135:45: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:1135:45: sparse:     got unsigned long long [usertype] *
-   drivers/platform/x86/socperf/socperfdrv.c:1154:29: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *[usertype] buf_drv_to_usr @@
-   drivers/platform/x86/socperf/socperfdrv.c:1154:29: sparse:     expected void [noderef] __user *to
-   drivers/platform/x86/socperf/socperfdrv.c:1154:29: sparse:     got char *[usertype] buf_drv_to_usr
-   drivers/platform/x86/socperf/socperfdrv.c:1175:13: sparse: sparse: symbol 'lwpmudrv_Stop_Mem' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:1286:54: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char *[usertype] buf_usr_to_drv @@
-   drivers/platform/x86/socperf/socperfdrv.c:1286:54: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:1286:54: sparse:     got char *[usertype] buf_usr_to_drv
-   drivers/platform/x86/socperf/socperfdrv.c:1310:30: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *[usertype] buf_drv_to_usr @@
-   drivers/platform/x86/socperf/socperfdrv.c:1310:30: sparse:     expected void [noderef] __user *to
-   drivers/platform/x86/socperf/socperfdrv.c:1310:30: sparse:     got char *[usertype] buf_drv_to_usr
-   drivers/platform/x86/socperf/socperfdrv.c:1348:26: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *buf @@
-   drivers/platform/x86/socperf/socperfdrv.c:1348:26: sparse:     expected void [noderef] __user *to
-   drivers/platform/x86/socperf/socperfdrv.c:1348:26: sparse:     got char *buf
-   drivers/platform/x86/socperf/socperfdrv.c:1368:76: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char const * @@
-   drivers/platform/x86/socperf/socperfdrv.c:1368:76: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:1368:76: sparse:     got char const *
-   drivers/platform/x86/socperf/socperfdrv.c:1392:22: sparse: sparse: symbol 'socperf_Service_IOCTL' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:1537:55: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got struct IOCTL_ARGS_NODE_S [usertype] *[usertype] @@
-   drivers/platform/x86/socperf/socperfdrv.c:1537:55: sparse:     expected void const [noderef] __user *from
-   drivers/platform/x86/socperf/socperfdrv.c:1537:55: sparse:     got struct IOCTL_ARGS_NODE_S [usertype] *[usertype]
-   drivers/platform/x86/socperf/socperfdrv.c:1516:13: sparse: sparse: symbol 'socperf_Device_Control' was not declared. Should it be static?
-   drivers/platform/x86/socperf/socperfdrv.c:1602:12: sparse: sparse: symbol 'SOCPERF_Abnormal_Terminate' was not declared. Should it be static?
->> drivers/platform/x86/socperf/socperfdrv.c:1637:17: sparse: sparse: incorrect type in initializer (incompatible argument 2 (different address spaces)) @@     expected int ( *read )( ... ) @@     got int ( * )( ... ) @@
-   drivers/platform/x86/socperf/socperfdrv.c:1637:17: sparse:     expected int ( *read )( ... )
-   drivers/platform/x86/socperf/socperfdrv.c:1637:17: sparse:     got int ( * )( ... )
->> drivers/platform/x86/socperf/socperfdrv.c:1638:18: sparse: sparse: incorrect type in initializer (incompatible argument 2 (different address spaces)) @@     expected int ( *write )( ... ) @@     got int ( * )( ... ) @@
-   drivers/platform/x86/socperf/socperfdrv.c:1638:18: sparse:     expected int ( *write )( ... )
-   drivers/platform/x86/socperf/socperfdrv.c:1638:18: sparse:     got int ( * )( ... )
-
-vim +1637 drivers/platform/x86/socperf/socperfdrv.c
-
-f57492d07625dd Manisha Chinthapally 2019-05-01  1619  
-f57492d07625dd Manisha Chinthapally 2019-05-01  1620  /*****************************************************************************************
-f57492d07625dd Manisha Chinthapally 2019-05-01  1621   *
-f57492d07625dd Manisha Chinthapally 2019-05-01  1622   *   Driver Entry / Exit functions that will be called on when the driver is loaded and
-f57492d07625dd Manisha Chinthapally 2019-05-01  1623   *   unloaded
-f57492d07625dd Manisha Chinthapally 2019-05-01  1624   *
-f57492d07625dd Manisha Chinthapally 2019-05-01  1625   ****************************************************************************************/
-f57492d07625dd Manisha Chinthapally 2019-05-01  1626  
-f57492d07625dd Manisha Chinthapally 2019-05-01  1627  /*
-f57492d07625dd Manisha Chinthapally 2019-05-01  1628   * Structure that declares the usual file access functions
-f57492d07625dd Manisha Chinthapally 2019-05-01  1629   * First one is for lwpmu_c, the control functions
-f57492d07625dd Manisha Chinthapally 2019-05-01  1630   */
-f57492d07625dd Manisha Chinthapally 2019-05-01  1631  static struct file_operations socperf_Fops = {
-f57492d07625dd Manisha Chinthapally 2019-05-01  1632  	.owner = THIS_MODULE,
-f57492d07625dd Manisha Chinthapally 2019-05-01  1633  	IOCTL_OP = socperf_Device_Control,
-f57492d07625dd Manisha Chinthapally 2019-05-01  1634  #if defined(CONFIG_COMPAT) && defined(DRV_EM64T)
-f57492d07625dd Manisha Chinthapally 2019-05-01  1635  	.compat_ioctl = socperf_Device_Control_Compat,
-f57492d07625dd Manisha Chinthapally 2019-05-01  1636  #endif
-f57492d07625dd Manisha Chinthapally 2019-05-01 @1637  	.read = socperf_Read,
-f57492d07625dd Manisha Chinthapally 2019-05-01 @1638  	.write = socperf_Write,
-f57492d07625dd Manisha Chinthapally 2019-05-01  1639  	.open = socperf_Open,
-f57492d07625dd Manisha Chinthapally 2019-05-01  1640  	.release = NULL,
-f57492d07625dd Manisha Chinthapally 2019-05-01  1641  	.llseek = NULL,
-f57492d07625dd Manisha Chinthapally 2019-05-01  1642  };
-f57492d07625dd Manisha Chinthapally 2019-05-01  1643  
-
-:::::: The code at line 1637 was first introduced by commit
-:::::: f57492d07625dddac7920eccdb5be08c55ee16fa platform/x86: SOCPERF3 support for sep & socwatch
-
-:::::: TO: Manisha Chinthapally <manisha.chinthapally@intel.com>
-:::::: CC: Faycal Benmlih <faycal.benmlih@intel.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
