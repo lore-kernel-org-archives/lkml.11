@@ -2,118 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B729EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236883AbiBOKzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:55:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46640 "EHLO
+        id S236752AbiBOKzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:55:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236756AbiBOKyq (ORCPT
+        with ESMTP id S236818AbiBOKzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:54:46 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AACD76DA;
-        Tue, 15 Feb 2022 02:54:37 -0800 (PST)
-Date:   Tue, 15 Feb 2022 10:54:33 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644922475;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Tue, 15 Feb 2022 05:55:06 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59195DB4A7;
+        Tue, 15 Feb 2022 02:54:45 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id DE5091F38A;
+        Tue, 15 Feb 2022 10:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644922483; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=z/exb0we9AvmagPywoajGH1z+BLIs+h/v7q1Ipl6ITk=;
-        b=aLXEYtko55uSr45ctGYEi1XiLDCMF/sGERNFt5akm1kh3EWyd7vV/caF31mEeI8thPy5XZ
-        x4LtCLUHArtrojd9PhieSc2ma2NDI4nxIoCVZz7PwuBzcpcnQ/ojOYZ5+M21dLIyawh0fU
-        kbUAno1h9GKuEgJkb4+m9w2QTLzYhzXWsuo7jrG0NUE6ZDRbebh2Xjpc2K9ju3Ck9abz/v
-        rDzFEHRB7M7uHz102IzBDN+TdigTFQ7RYLw6S67kwxYAJawVk+wp3fzqddV8+Je9hAxRjl
-        ptAPLGeikj/yyL4+ffrGqP3+PUi9SPUpwNdNvN6Mo9M87jJi1ds9tWVGoTu6PA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644922475;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z/exb0we9AvmagPywoajGH1z+BLIs+h/v7q1Ipl6ITk=;
-        b=q7+SD0ss3Ln/RItMXIuYY7qYbMMZzHCdI9GKBrIHCjynCW7CLacThigs8mWf35g924LHlq
-        L8TfABmcSiW3v7Ag==
-From:   "tip-bot2 for Fenghua Yu" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/pasid] mm: Change CONFIG option for mm->pasid field
-Cc:     Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Lu Baolu <baolu.lu@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220207230254.3342514-3-fenghua.yu@intel.com>
-References: <20220207230254.3342514-3-fenghua.yu@intel.com>
+        bh=rfmZMUuiUWbSeaZevcuqK5Mt/Es3rIbFyHjyVGT5YLk=;
+        b=JXAKRttIkXBQcHMO45e1zb+//IypCL2y+IoK473DR0Kkc2DjsFjmK5JqYTxeEIf1QHH9oM
+        3Qp8r5Suv51YYQoUGvtMC/y64zk92ycL/PaR0UTDqPjfWCs3LaB5FMVMLSTL5gAhHlBHIj
+        qU7gHmxDlEHT0GNGGEtmrrfP3zzlrW0=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B4FD813C51;
+        Tue, 15 Feb 2022 10:54:43 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OuSvK3OGC2LZLAAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Tue, 15 Feb 2022 10:54:43 +0000
+Date:   Tue, 15 Feb 2022 11:54:42 +0100
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, Alexey Gladkov <legion@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        containers@lists.linux-foundation.org, stable@vger.kernel.org
+Subject: Re: [PATCH 4/8] ucounts: Only except the root user in init_user_ns
+ from RLIMIT_NPROC
+Message-ID: <20220215105442.GF21589@blackbody.suse.cz>
+References: <87o83e2mbu.fsf@email.froward.int.ebiederm.org>
+ <20220211021324.4116773-4-ebiederm@xmission.com>
 MIME-Version: 1.0
-Message-ID: <164492247321.16921.8754359025993339959.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211021324.4116773-4-ebiederm@xmission.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/pasid branch of tip:
+On Thu, Feb 10, 2022 at 08:13:20PM -0600, "Eric W. Biederman" <ebiederm@xmission.com> wrote:
+> @@ -1881,7 +1881,7 @@ static int do_execveat_common(int fd, struct filename *filename,
+[...]
+> -	    (current_user() != INIT_USER) &&
+> +	    (current_ucounts() != &init_ucounts) &&
+[...]
+> @@ -2027,7 +2027,7 @@ static __latent_entropy struct task_struct *copy_process(
+[...]
+> -		if (p->real_cred->user != INIT_USER &&
+> +		if ((task_ucounts(p) != &init_ucounts) &&
 
-Commit-ID:     7a853c2d5951419fdf3c1c9d2b6f5a38f6a6857d
-Gitweb:        https://git.kernel.org/tip/7a853c2d5951419fdf3c1c9d2b6f5a38f6a6857d
-Author:        Fenghua Yu <fenghua.yu@intel.com>
-AuthorDate:    Mon, 07 Feb 2022 15:02:45 -08:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 14 Feb 2022 19:23:50 +01:00
+These substitutions make sense to me.
 
-mm: Change CONFIG option for mm->pasid field
+>  		    !capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
+>  			goto bad_fork_cleanup_count;
+>  	}
+> diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
+> index 6b2e3ca7ee99..f0c04073403d 100644
+> --- a/kernel/user_namespace.c
+> +++ b/kernel/user_namespace.c
+> @@ -123,6 +123,8 @@ int create_user_ns(struct cred *new)
+>  		ns->ucount_max[i] = INT_MAX;
+>  	}
+>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC));
+> +	if (new->ucounts == &init_ucounts)
+> +		set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, RLIMIT_INFINITY);
+>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MSGQUEUE, rlimit(RLIMIT_MSGQUEUE));
+>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPENDING));
+>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
 
-This currently depends on CONFIG_IOMMU_SUPPORT. But it is only
-needed when CONFIG_IOMMU_SVA option is enabled.
+First, I wanted to object this double fork_init() but I realized it's
+relevant for newly created user_ns.
 
-Change the CONFIG guards around definition and initialization
-of mm->pasid field.
+Second, I think new->ucounts would be correct at this point and the
+check should be
 
-Suggested-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20220207230254.3342514-3-fenghua.yu@intel.com
----
- include/linux/mm_types.h | 2 +-
- kernel/fork.c            | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> if (ucounts == &init_ucounts)
 
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 5140e5f..c5cbfd7 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -631,7 +631,7 @@ struct mm_struct {
- #endif
- 		struct work_struct async_put_work;
- 
--#ifdef CONFIG_IOMMU_SUPPORT
-+#ifdef CONFIG_IOMMU_SVA
- 		u32 pasid;
- #endif
- 	} __randomize_layout;
-diff --git a/kernel/fork.c b/kernel/fork.c
-index d75a528..6ee7551 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -1021,7 +1021,7 @@ static void mm_init_owner(struct mm_struct *mm, struct task_struct *p)
- 
- static void mm_init_pasid(struct mm_struct *mm)
- {
--#ifdef CONFIG_IOMMU_SUPPORT
-+#ifdef CONFIG_IOMMU_SVA
- 	mm->pasid = INIT_PASID;
- #endif
- }
+i.e. before set_cred_ucounts() new->ucounts may not be correct.
+
+I'd suggest also a comment in the create_user_ns() explaining the
+reason is to exempt global root from RLIMINT_NRPOC also indirectly via
+descendant user_nss.
+
+Thanks,
+Michal
