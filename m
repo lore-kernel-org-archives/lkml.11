@@ -2,152 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 091DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237891AbiBOMnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:43:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56222 "EHLO
+        id S237586AbiBOMoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:44:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237586AbiBOMnZ (ORCPT
+        with ESMTP id S237936AbiBOMn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:43:25 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B7310F221;
+        Tue, 15 Feb 2022 07:43:29 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFA71111BC
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:42:40 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id u6so36618664lfc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:42:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bZ/hPvhB6l/GT98IyjxTlesdblulBOqx0t8aw3A0jHw=;
+        b=uJNVxw9rQQ9Ric3MtAGmVVmQ9e9tx8jQSgqxtiLH6Tj9yRS0M5phMpCdbQO2CuS6Lo
+         2HGd2G5RWhNEhynYJ75YmyD3ubNHBr+EmixSyhOVAAc1UFQlJYdRqEZ9tyVhySlGZVE7
+         dAd0xOczoO+SD/q/GWS5j625mh91rbBwm1JR6GZHaUA/Ox9usN2kusbueTAnKHUJ6kjf
+         fk7v8g69zom2gOxNIPReCCZP0/wysVgPU1aXmkvq6tMliKexaCj588lYYxM2fkBbdADt
+         T+UPbUVFQeVZzDNCmcWzvU9c5LGMxOlCAWo3RDuQeVVxuK30MNLWblvyBbxH/cfOpYTh
+         OVaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bZ/hPvhB6l/GT98IyjxTlesdblulBOqx0t8aw3A0jHw=;
+        b=RuB3OyvzHXxjFsIvrIz3yinlnUW8iyqCwwX3Epuj45LXQWmVhFB6QuyhyBZChhrujM
+         kzJGd5XDi+nPH583AqCf17Lw8TkA66rUw0plYzVCRdRc+ZnM94LSENd4QnK9OdtnPm5/
+         Xd+/wO5khD7WWd4jKL979b5CwjrPEEPL/+iyK2x9ylK/bMqDRv0OK4bfmjfXsfWY1gA2
+         KjqrLrKtSCKA1e7KeSZkyNtkDlnX2aWHYChklaowNhNw5hkoPT9Ybjl2zULqDgoMo4yi
+         0q+2UPCA1uGBMoVxsbWX5DzdZ8BDSfvn7MYe3M0QCNO2ry2bbEvuuHD6Uc7K82pbe6vT
+         2UBw==
+X-Gm-Message-State: AOAM531vodVPjjLBDO4N9osuHGVN794HbcJNUy7Puo5MNdLVdzswq6Gz
+        E3wcTwEDKdsHvqS8DFZUhjHfxw==
+X-Google-Smtp-Source: ABdhPJxentoESgiyNbBHAOr5c+HaAA+la7EJnNo75HfMC7ZWYPBFxfJ60zcCmBwrME44zYZL66IF7A==
+X-Received: by 2002:a19:6549:: with SMTP id c9mr3066138lfj.150.1644928958898;
+        Tue, 15 Feb 2022 04:42:38 -0800 (PST)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id bf10sm4394566ljb.130.2022.02.15.04.42.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 15 Feb 2022 04:42:37 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Jygh14TCXz9sT9;
-        Tue, 15 Feb 2022 13:41:37 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id VRNGzQt5ARFU; Tue, 15 Feb 2022 13:41:37 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jyggn5Wrhz9sSs;
-        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id B2F2C8B776;
-        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id BdNYLY9V5Ia4; Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.174])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8E2B88B783;
-        Tue, 15 Feb 2022 13:41:24 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21FCfGlx080625
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 13:41:16 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21FCfGE5080624;
-        Tue, 15 Feb 2022 13:41:16 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org,
-        Nicholas Piggin <npiggin@gmail.com>
-Subject: [PATCH v4 05/13] powerpc: Prepare func_desc_t for refactorisation
-Date:   Tue, 15 Feb 2022 13:41:00 +0100
-Message-Id: <5c36105e08b27b98450535bff48d71b690c19739.1644928018.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1644928018.git.christophe.leroy@csgroup.eu>
-References: <cover.1644928018.git.christophe.leroy@csgroup.eu>
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 6DD81103F44; Tue, 15 Feb 2022 15:43:31 +0300 (+03)
+Date:   Tue, 15 Feb 2022 15:43:31 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v10 21/45] x86/mm: Add support to validate memory when
+ changing C-bit
+Message-ID: <20220215124331.i4vgww733fv5owrx@box.shutemov.name>
+References: <20220209181039.1262882-1-brijesh.singh@amd.com>
+ <20220209181039.1262882-22-brijesh.singh@amd.com>
+ <YgZ427v95xcdOKSC@zn.tnic>
+ <0242e383-5406-7504-ff3d-cf2e8dfaf8a3@amd.com>
+ <Ygj2Wx6jtNEEmbh9@zn.tnic>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1644928860; l=2077; s=20211009; h=from:subject:message-id; bh=eWkkuij94sQttgAjC+jIa2BG2RuNWEw1XF6aQWvveWc=; b=6KWY1N85qhp/0sxCJnv1UoBK4k+ZGhhchobwArncRfu9c3+b6FiSTKuPJJgkJlD50nKWY4e4QBwD 1i8VefRzCpgfpvyKvqM9tBXVnMmuxERO8jkMlrcK10bne8QpRDyL
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ygj2Wx6jtNEEmbh9@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation of making func_desc_t generic, change the ELFv2
-version to a struct containing 'addr' element.
+On Sun, Feb 13, 2022 at 01:15:23PM +0100, Borislav Petkov wrote:
+> On Fri, Feb 11, 2022 at 11:27:54AM -0600, Brijesh Singh wrote:
+> > > Simply have them always present. They will have !0 values on the
+> > > respective guest types and 0 otherwise. This should simplify a lot of
+> > > code and another unconditionally present u64 won't be the end of the
+> > > world.
+> > >
+> > > Any other aspect I'm missing?
+> > 
+> > I think that's mostly about it. IIUC, the recommendation is to define a
+> > new callback in x86_platform_op. The callback will be invoked
+> > unconditionally; The default implementation for this callback is NOP;
+> > The TDX and SEV will override with the platform specific implementation.
+> > I think we may able to handle everything in one callback hook but having
+> > pre and post will be a more desirable. Here is why I am thinking so:
+> > 
+> > * On SNP, the page must be invalidated before clearing the _PAGE_ENC
+> > from the page table attribute
+> > 
+> > * On SNP, the page must be validated after setting the _PAGE_ENC in the
+> > page table attribute.
+> 
+> Right, we could have a pre- and post- callback, if that would make
+> things simpler/clearer.
+> 
+> Also, in thinking further about the encryption mask, we could make it a
+> *single*, *global* variable called cc_mask which each guest type sets it
+> as it wants to.
 
-This allows using single helpers common to ELFv1 and ELFv2 and
-reduces the amount of #ifdef's
+I don't think it works. TDX and SME/SEV has opposite polarity of the mask.
+SME/SEV has to clear the mask to share the page. TDX has to set it.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Acked-by: Nicholas Piggin <npiggin@gmail.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
----
- arch/powerpc/kernel/module_64.c | 36 ++++++++++++++++-----------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+Making a single global mask only increases confusion.
 
-diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module_64.c
-index 46e8eeb7c432..ff93ef4cb5a2 100644
---- a/arch/powerpc/kernel/module_64.c
-+++ b/arch/powerpc/kernel/module_64.c
-@@ -33,19 +33,17 @@
- #ifdef PPC64_ELF_ABI_v2
- 
- /* An address is simply the address of the function. */
--typedef unsigned long func_desc_t;
-+typedef struct {
-+	unsigned long addr;
-+} func_desc_t;
- 
- static func_desc_t func_desc(unsigned long addr)
- {
--	return addr;
--}
--static unsigned long func_addr(unsigned long addr)
--{
--	return addr;
--}
--static unsigned long stub_func_addr(func_desc_t func)
--{
--	return func;
-+	func_desc_t desc = {
-+		.addr = addr,
-+	};
-+
-+	return desc;
- }
- 
- /* PowerPC64 specific values for the Elf64_Sym st_other field.  */
-@@ -70,14 +68,6 @@ static func_desc_t func_desc(unsigned long addr)
- {
- 	return *(struct func_desc *)addr;
- }
--static unsigned long func_addr(unsigned long addr)
--{
--	return func_desc(addr).addr;
--}
--static unsigned long stub_func_addr(func_desc_t func)
--{
--	return func.addr;
--}
- static unsigned int local_entry_offset(const Elf64_Sym *sym)
- {
- 	return 0;
-@@ -93,6 +83,16 @@ void *dereference_module_function_descriptor(struct module *mod, void *ptr)
- }
- #endif
- 
-+static unsigned long func_addr(unsigned long addr)
-+{
-+	return func_desc(addr).addr;
-+}
-+
-+static unsigned long stub_func_addr(func_desc_t func)
-+{
-+	return func.addr;
-+}
-+
- #define STUB_MAGIC 0x73747562 /* stub */
- 
- /* Like PPC32, we need little trampolines to do > 24-bit jumps (into
 -- 
-2.34.1
-
+ Kirill A. Shutemov
