@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:36:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC24EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240573AbiBOPge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:36:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45210 "EHLO
+        id S240744AbiBOPgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:36:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240689AbiBOPf1 (ORCPT
+        with ESMTP id S240690AbiBOPf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 10:35:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268631275E2;
-        Tue, 15 Feb 2022 07:31:02 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400161275D8;
+        Tue, 15 Feb 2022 07:30:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D07B1B8185B;
-        Tue, 15 Feb 2022 15:31:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08EA4C340F1;
-        Tue, 15 Feb 2022 15:30:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D346661688;
+        Tue, 15 Feb 2022 15:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 174A8C340EB;
+        Tue, 15 Feb 2022 15:30:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939059;
-        bh=MIJPmwim3A/3JWC/apyrNa0p77Qn/Rdwy0Wfo9mLmZ4=;
+        s=k20201202; t=1644939057;
+        bh=Tp7Y9YHMOncNoiZZF7GWXAcQGmy39O0B35RFEcRctCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dNzKmdxj7x9kgiDfg0uRbJvAOrATQSCnAw2+Vj/ATY71eswbHEVEILK6ETvIq1BaE
-         oX99DHhDdGw2somS8KRVGCzJZYxzZWv3/pDUH3rm7zmv+oL5HkqzMcIwCaiLOC9PW3
-         7ETJ+yjb/qO/r5KplX7RVUE766ZOuW7bbYR5s8w8vQIcLxdzg0yf5qzmMN18BevB+p
-         w686TLOZf4R2XeO/YjxLWilvzN4deEJP8sOiMmXF1XSHxHM8hDRCAhmN/p3yicqcft
-         44CrUggs40l3/XgXwBIPODLRuXmH5r98AOAzq2r28vN4eLyZa0QJVRq8o9kBfm9yjh
-         I2Js8w98ugodg==
+        b=PMPm82cSl99aE8ZYOjciVuXoisbBWkZRx4Tydr5+cSzyPn9louex23MWvcQDPR2W6
+         ZamMyWu+MACbIMvfSb08rZoyB4xNdsG9zY3EUA0sA0Ko9AMuVNyRuK6bxYy+8XGlEy
+         vQBMUTbtlnkDC+C4dy22OK88lxVnKYRhb7eRd1UFaTtGfrBHBXvZ9UHueBTPV9Cvnn
+         VE9BjKKmJTv+JzNQiTUZo0QPRkR0k3ANdtNhEx9Wf9wKTejMV0Fnfj7V1dgI6wH1Uu
+         RUcUqYs3uJGPaqCkAIIUmmY7PBIJ2sdl+mubB8OgDjlEZq1w7QZ1w0vkjt92Jpkbck
+         23tb/iKyRL5Eg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 14/17] NFSD: Fix offset type in I/O trace points
-Date:   Tue, 15 Feb 2022 10:30:34 -0500
-Message-Id: <20220215153037.581579-14-sashal@kernel.org>
+Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, hjc@rock-chips.com,
+        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 12/17] drm/rockchip: dw_hdmi: Do not leave clock enabled in error case
+Date:   Tue, 15 Feb 2022 10:30:32 -0500
+Message-Id: <20220215153037.581579-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215153037.581579-1-sashal@kernel.org>
 References: <20220215153037.581579-1-sashal@kernel.org>
@@ -50,62 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
 
-[ Upstream commit 6a4d333d540041d244b2fca29b8417bfde20af81 ]
+[ Upstream commit c0cfbb122275da1b726481de5a8cffeb24e6322b ]
 
-NFSv3 and NFSv4 use u64 offset values on the wire. Record these values
-verbatim without the implicit type case to loff_t.
+The driver returns an error when devm_phy_optional_get() fails leaving
+the previously enabled clock turned on. Change order and enable the
+clock only after the phy has been acquired.
 
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220126145549.617165-3-s.hauer@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/trace.h | 14 +++++++-------
+ drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c | 14 +++++++-------
  1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/fs/nfsd/trace.h b/fs/nfsd/trace.h
-index b073bdc2e6e89..127db5351d016 100644
---- a/fs/nfsd/trace.h
-+++ b/fs/nfsd/trace.h
-@@ -53,14 +53,14 @@ TRACE_EVENT(nfsd_compound_status,
- DECLARE_EVENT_CLASS(nfsd_io_class,
- 	TP_PROTO(struct svc_rqst *rqstp,
- 		 struct svc_fh	*fhp,
--		 loff_t		offset,
--		 unsigned long	len),
-+		 u64		offset,
-+		 u32		len),
- 	TP_ARGS(rqstp, fhp, offset, len),
- 	TP_STRUCT__entry(
- 		__field(u32, xid)
- 		__field(u32, fh_hash)
--		__field(loff_t, offset)
--		__field(unsigned long, len)
-+		__field(u64, offset)
-+		__field(u32, len)
- 	),
- 	TP_fast_assign(
- 		__entry->xid = be32_to_cpu(rqstp->rq_xid);
-@@ -68,7 +68,7 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
- 		__entry->offset = offset;
- 		__entry->len = len;
- 	),
--	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%lld len=%lu",
-+	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%llu len=%u",
- 		  __entry->xid, __entry->fh_hash,
- 		  __entry->offset, __entry->len)
- )
-@@ -77,8 +77,8 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
- DEFINE_EVENT(nfsd_io_class, nfsd_##name,	\
- 	TP_PROTO(struct svc_rqst *rqstp,	\
- 		 struct svc_fh	*fhp,		\
--		 loff_t		offset,		\
--		 unsigned long	len),		\
-+		 u64		offset,		\
-+		 u32		len),		\
- 	TP_ARGS(rqstp, fhp, offset, len))
+diff --git a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
+index 906891b03a38d..7805091bac32d 100644
+--- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
+@@ -528,13 +528,6 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
+ 		return ret;
+ 	}
  
- DEFINE_NFSD_IO_EVENT(read_start);
+-	ret = clk_prepare_enable(hdmi->vpll_clk);
+-	if (ret) {
+-		DRM_DEV_ERROR(hdmi->dev, "Failed to enable HDMI vpll: %d\n",
+-			      ret);
+-		return ret;
+-	}
+-
+ 	hdmi->phy = devm_phy_optional_get(dev, "hdmi");
+ 	if (IS_ERR(hdmi->phy)) {
+ 		ret = PTR_ERR(hdmi->phy);
+@@ -543,6 +536,13 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
+ 		return ret;
+ 	}
+ 
++	ret = clk_prepare_enable(hdmi->vpll_clk);
++	if (ret) {
++		DRM_DEV_ERROR(hdmi->dev, "Failed to enable HDMI vpll: %d\n",
++			      ret);
++		return ret;
++	}
++
+ 	drm_encoder_helper_add(encoder, &dw_hdmi_rockchip_encoder_helper_funcs);
+ 	drm_encoder_init(drm, encoder, &dw_hdmi_rockchip_encoder_funcs,
+ 			 DRM_MODE_ENCODER_TMDS, NULL);
 -- 
 2.34.1
 
