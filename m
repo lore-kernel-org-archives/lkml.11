@@ -2,64 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 235C4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:20:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237073AbiBOLUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:20:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40288 "EHLO
+        id S237049AbiBOLWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:22:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237036AbiBOLUq (ORCPT
+        with ESMTP id S232529AbiBOLWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:20:46 -0500
-Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99711107D1A;
-        Tue, 15 Feb 2022 03:20:34 -0800 (PST)
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 3F369210DAD6
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH] ata: add/use ata_taskfile::{error|status} fields
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <e99172ca-cf0e-5510-60fc-b19dc48658ac@omp.ru>
- <49690264-a2b8-b11e-e944-1d2333f73334@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <f3786f07-0892-143c-e457-de6b0e93a5b3@omp.ru>
-Date:   Tue, 15 Feb 2022 14:20:30 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Tue, 15 Feb 2022 06:22:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA8CAB443
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:22:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 714D3B8189E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:22:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CDE8C340EB;
+        Tue, 15 Feb 2022 11:22:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644924125;
+        bh=YM659guN7Ehu66dhhti1I+YQb0J114KDfyZoR/1vhJY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RNst1mMVJxEauL7rSHN+Tn1AlEK155HwfbJFADHoa6bOcMcTBqhFYgEC3nqOXPTlH
+         /GZlRawuI4ZpbnKYKPVN9wVg+PbrK7n6VXMOtWrOsCU2J5196pWUTZw7CRvWaCzE3s
+         CKKdZQcF+vsxwK6ieBX+c+eAJolWSO5bFTFmP2yNr4rTi9gAXKdxafvVUBI0mve3pI
+         62wFfQuIgvn+/SrLkZA2NDNxDUErX6/aeNsZua6vvFp0Sg/2x48THg2H3YFBfCOCmV
+         SdKRtqRdJl16UhVjb/K/T6E9W/8CoG9c88iGgGPbVgdMLJ8cdkx/1OkTaqh65V4Z1D
+         1zqC4QrCilv9A==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nJvuF-0081yk-2S; Tue, 15 Feb 2022 11:22:03 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH] genirq/debugfs: Use irq_print_chip() when provided by irqchip
+Date:   Tue, 15 Feb 2022 11:21:54 +0000
+Message-Id: <20220215112154.1360040-1-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <49690264-a2b8-b11e-e944-1d2333f73334@omp.ru>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, tglx@linutronix.de
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/15/22 12:13 AM, Sergey Shtylyov wrote:
+Since irqchips have the option to implement irq_print_chip, use this
+when available to output the irqchip name in debugfs.
 
->> Add the explicit error and status register fields to 'struct ata_taskfile'
->> using the anonymous *union*s ('struct ide_taskfile' had that for ages!) and
->> update the libata taskfile code accordingly. There should be no object code
->> changes resulting from that...
->>
->> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
->>
->> ---
->> This patch is against the 'for-next' branch of Damien Le Moal's 'libata.git'
->> repo plus just posted 'drivers/ata/libata-scsi.c' patch.
-> 
->    Oh, and the 2 patch series for 'drivers/ata/libata-sff.c' posted not so long ago...
-> There are only some offsets, so should probably apply indeptendently as well... :-)
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+---
 
-   The 0-day robot found a bug in the file I forgot to build check, so scratch this patch.
-I've now fixed the bug and built tested all affected files, and gonna post v2 later today...
+Notes:
+    I plan to take this into 5.18 as part of this[1] series.
+    
+    [1] https://lore.kernel.org/all/20220209162607.1118325-1-maz@kernel.org
 
-MBR, Sergey
+ kernel/irq/debugfs.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/irq/debugfs.c b/kernel/irq/debugfs.c
+index e4cff358b437..2b43f5f5033d 100644
+--- a/kernel/irq/debugfs.c
++++ b/kernel/irq/debugfs.c
+@@ -69,8 +69,12 @@ irq_debug_show_chip(struct seq_file *m, struct irq_data *data, int ind)
+ 		seq_printf(m, "chip: None\n");
+ 		return;
+ 	}
+-	seq_printf(m, "%*schip:    %s\n", ind, "", chip->name);
+-	seq_printf(m, "%*sflags:   0x%lx\n", ind + 1, "", chip->flags);
++	seq_printf(m, "%*schip:    ", ind, "");
++	if (chip->irq_print_chip)
++		chip->irq_print_chip(data, m);
++	else
++		seq_printf(m, "%s", chip->name);
++	seq_printf(m, "\n%*sflags:   0x%lx\n", ind + 1, "", chip->flags);
+ 	irq_debug_show_bits(m, ind, chip->flags, irqchip_flags,
+ 			    ARRAY_SIZE(irqchip_flags));
+ }
+-- 
+2.34.1
+
