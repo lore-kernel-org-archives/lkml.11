@@ -2,91 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 768BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF82CC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236457AbiBOKYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:24:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40526 "EHLO
+        id S236486AbiBOKYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:24:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234641AbiBOKYQ (ORCPT
+        with ESMTP id S236453AbiBOKYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:24:16 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A905022B3E
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 02:24:04 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1F98B1EC053C;
-        Tue, 15 Feb 2022 11:23:59 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644920639;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=YMEDspMueOD9ny1l4hFIylPEZFOXYFx2U0095V28zwk=;
-        b=P5VdaizqzMiRFWOmyV4HlFBxmzoca+iGR2xKTrDbb3xERvDfbywq8DlOoPUgBkLrA3vZQo
-        9PmoGaHkWXGKFUkoukVszGXGu8kM3R3mmOXDf50vn9KU/CYcGSJgjSR6LB9YqBgEP8hfwi
-        Y24GQTXajM+Awd7RPS/4WbQ8IWrcKJY=
-Date:   Tue, 15 Feb 2022 11:24:01 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
-        antonio.gomez.iglesias@linux.intel.com, neelima.krishnan@intel.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
-Message-ID: <Ygt/QSTSMlUJnzFS@zn.tnic>
-References: <5bd785a1d6ea0b572250add0c6617b4504bc24d1.1644440311.git.pawan.kumar.gupta@linux.intel.com>
- <YgqToxbGQluNHABF@zn.tnic>
- <20220214224121.ilhu23cfjdyhvahk@guptapa-mobl1.amr.corp.intel.com>
- <YgrltbToK8+tG2qK@zn.tnic>
- <20220215002014.mb7g4y3hfefmyozx@guptapa-mobl1.amr.corp.intel.com>
+        Tue, 15 Feb 2022 05:24:17 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D610922B3E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 02:24:07 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id v12so31289673wrv.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 02:24:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yheAniF0b6YkThnNE53f6BLG90+fIq+Lpxxu/aXM9PQ=;
+        b=GLyey6r/f9CmsAcYOpwFsXlueKIOjQtPpUvxSmFinLSUTMJN8YvMxrJ0D9vat3hSpp
+         kK5iaUHOP8rUI5Pam3ZQv6YoB45CXbM7o6RWzY1cAmYxgbly5hTZx1W1sL11G6cF+GqN
+         PsKBqxxbV9l5oHrBvH1Ykxv9nE/j6p4vrSrFE0oohrT8Df+RSqNrpnKGYd5ibZBGRMWW
+         f7IDjZVin7/usCk36NfA4QGpIsI7jUe3TJ3+AWmlEFybvti3+LeOy2ot4acVWCeqchJe
+         12ZnWyW6/t6btNNs6rjJglBxkXmHBwfcGybJBBhY36tSg9wLz0xnxuF2Zj4/H370wbO+
+         tjJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yheAniF0b6YkThnNE53f6BLG90+fIq+Lpxxu/aXM9PQ=;
+        b=kzhGFmWKonTNkUmVmfYVqnp+QSld9iIw2G7McsapvM29wLxfZ5L9+QDDsIOUANWwR5
+         xrlYkDDUkDc9O6ft/JxnF7Z0Zg8c9JguUKgzbfhGNcnVdFkeZ/8rK1ic//WUPyOupIIN
+         NP/eFDGm4nCAOJUJvijaZlu5lj3NrCo8fR3b6m4dXluG/NA+9ybihosdCfk8S0QLeW+u
+         TT3HCnIIJc4RfPelr/IAQSfOg5H/0m6NXR2w3AElIpTod38fJjRULtrLvp4QyTXRkb/i
+         CQpty4OBMh3SfKf+KVTbTIdASwvYdFXZq/FIjMmuE+/zpY5DhiykWi1SNAe6El6Bq1vn
+         iFig==
+X-Gm-Message-State: AOAM533ML9IpgIb8jE2P9pRE+1LaPqUHzzeu2qbFMqyIdKBOQp4OAbbr
+        kJfiBoTKHWAhuo7N5vzRhqx/A9FsU7M2rDdFtxgKcQ==
+X-Google-Smtp-Source: ABdhPJyqchpD0AQQenT8srcc7TOgqmYacME/qw1r4e63mnHDlpWQDpYEVlRB3exN4scEv+KnyIqUsIgMvHibQ8uenyk=
+X-Received: by 2002:a5d:4e45:: with SMTP id r5mr2632030wrt.313.1644920646281;
+ Tue, 15 Feb 2022 02:24:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220215002014.mb7g4y3hfefmyozx@guptapa-mobl1.amr.corp.intel.com>
+References: <20220215090211.911366-1-atishp@rivosinc.com> <20220215090211.911366-5-atishp@rivosinc.com>
+In-Reply-To: <20220215090211.911366-5-atishp@rivosinc.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Tue, 15 Feb 2022 15:53:54 +0530
+Message-ID: <CAAhSdy29nzXFesfeMjY_FkTmTZ4yrHjGxTweBCVn-wFFHnMV=A@mail.gmail.com>
+Subject: Re: [PATCH v3 4/6] RISC-V: Implement multi-letter ISA extension
+ probing framework
+To:     Atish Patra <atishp@rivosinc.com>
+Cc:     "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        DTML <devicetree@vger.kernel.org>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 04:20:14PM -0800, Pawan Gupta wrote:
-> ... we are calling tsx_clear_cpuid() unconditionally.
+On Tue, Feb 15, 2022 at 2:32 PM Atish Patra <atishp@rivosinc.com> wrote:
+>
+> Multi-letter extensions can be probed using exising
+> riscv_isa_extension_available API now. It doesn't support versioning
+> right now as there is no use case for it.
+> Individual extension specific implementation will be added during
+> each extension support.
+>
+> Signed-off-by: Atish Patra <atishp@rivosinc.com>
+> ---
+>  arch/riscv/include/asm/hwcap.h | 18 ++++++++++++++++++
+>  arch/riscv/kernel/cpufeature.c | 27 ++++++++++++++++++++++++---
+>  2 files changed, 42 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
+> index 5ce50468aff1..170bd80da520 100644
+> --- a/arch/riscv/include/asm/hwcap.h
+> +++ b/arch/riscv/include/asm/hwcap.h
+> @@ -34,7 +34,25 @@ extern unsigned long elf_hwcap;
+>  #define RISCV_ISA_EXT_s                ('s' - 'a')
+>  #define RISCV_ISA_EXT_u                ('u' - 'a')
+>
+> +/*
+> + * Increse this to higher value as kernel support more ISA extensions.
+> + */
+>  #define RISCV_ISA_EXT_MAX      64
+> +#define RISCV_ISA_EXT_NAME_LEN_MAX 32
+> +
+> +/* The base ID for multi-letter ISA extensions */
+> +#define RISCV_ISA_EXT_BASE 26
+> +
+> +/*
+> + * This enum represent the logical ID for each multi-letter RISC-V ISA extension.
+> + * The logical ID should start from RISCV_ISA_EXT_BASE and must not exceed
+> + * RISCV_ISA_EXT_MAX. 0-25 range is reserved for single letter
+> + * extensions while all the multi-letter extensions should define the next
+> + * available logical extension id.
+> + */
+> +enum riscv_isa_ext_id {
+> +       RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
+> +};
+>
+>  unsigned long riscv_isa_extension_base(const unsigned long *isa_bitmap);
+>
+> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> index cd9eb34f8d11..af9a57ad3d4e 100644
+> --- a/arch/riscv/kernel/cpufeature.c
+> +++ b/arch/riscv/kernel/cpufeature.c
+> @@ -83,7 +83,7 @@ void __init riscv_fill_hwcap(void)
+>
+>         for_each_of_cpu_node(node) {
+>                 unsigned long this_hwcap = 0;
+> -               unsigned long this_isa = 0;
+> +               uint64_t this_isa = 0;
 
-I know, that's why I asked...
+Why not use a bitmap here ?
 
-> > If those CPUs which support only disabling TSX through MSR_IA32_TSX_CTRL
-> > but don't have MSR_TSX_FORCE_ABORT - if those CPUs set
-> > X86_FEATURE_RTM_ALWAYS_ABORT too, then this should work.
+>
+>                 if (riscv_of_processor_hartid(node) < 0)
+>                         continue;
+> @@ -167,12 +167,22 @@ void __init riscv_fill_hwcap(void)
+>                         if (*isa != '_')
+>                                 --isa;
+>
+> +#define SET_ISA_EXT_MAP(name, bit)                                             \
 
-... this^^.
+Where is this macro used ?
 
-IOW, what are you fixing here exactly?
+> +                       do {                                                    \
+> +                               if ((ext_end - ext == sizeof(name) - 1) &&      \
+> +                                    !memcmp(ext, name, sizeof(name) - 1)) {    \
+> +                                       this_isa |= (1UL << bit);               \
 
-Let's look at the two callsites of tsx_clear_cpuid():
+You can use set_bit() here when using bitmap.
 
-1. tsx_init: that will do something on X86_FEATURE_RTM_ALWAYS_ABORT CPUs.
+> +                                       pr_info("Found ISA extension %s", name);\
+> +                               }                                               \
+> +                       } while (false)                                         \
+> +
+>                         if (unlikely(ext_err))
+>                                 continue;
+>                         if (!ext_long) {
+>                                 this_hwcap |= isa2hwcap[(unsigned char)(*ext)];
+>                                 this_isa |= (1UL << (*ext - 'a'));
+>                         }
+> +#undef SET_ISA_EXT_MAP
+>                 }
+>
+>                 /*
+> @@ -185,10 +195,21 @@ void __init riscv_fill_hwcap(void)
+>                 else
+>                         elf_hwcap = this_hwcap;
+>
+> -               if (riscv_isa[0])
+> +               if (riscv_isa[0]) {
 
-2. init_intel: that will get called when
+You can use bitmap_weight() here
 
-	tsx_ctrl_state == TSX_CTRL_RTM_ALWAYS_ABORT
+> +#if IS_ENABLED(CONFIG_32BIT)
+> +                       riscv_isa[0] &= this_isa & 0xFFFFFFFF;
+> +                       riscv_isa[1] &= this_isa >> 32;
+> +#else
+>                         riscv_isa[0] &= this_isa;
+> -               else
+> +#endif
+> +               } else {
+> +#if IS_ENABLED(CONFIG_32BIT)
+> +                       riscv_isa[0] = this_isa & 0xFFFFFFFF;
+> +                       riscv_isa[1] = this_isa >> 32;
+> +#else
+>                         riscv_isa[0] = this_isa;
+> +#endif
+> +               }
+>         }
+>
+>         /* We don't support systems with F but without D, so mask those out
+> --
+> 2.30.2
+>
 
-But TSX_CTRL_RTM_ALWAYS_ABORT gets set only when
-X86_FEATURE_RTM_ALWAYS_ABORT is set. I.e., the first case, in
-tsx_init().
-
-So, IIUC, you wanna fix the case where CPUs which set
-X86_FEATURE_RTM_ALWAYS_ABORT but *don't* have MSR_TSX_FORCE_ABORT, those
-CPUs should still disable TSX through MSR_IA32_TSX_CTRL.
-
-Correct?
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Regards,
+Anup
