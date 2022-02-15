@@ -2,127 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 04:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84D3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 04:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231439AbiBOEeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 23:34:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39090 "EHLO
+        id S233362AbiBOEfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 23:35:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229852AbiBOEep (ORCPT
+        with ESMTP id S230152AbiBOEfH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 23:34:45 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3658AA9A63
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 20:34:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644899675; x=1676435675;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sQoCwA26t7bohLjBxsistapM0bOlvqxoeLeHcbXfGVU=;
-  b=j7t7DWgBzpSMFvCWV2UcCE74tLSL3aL6Jngj8y11tkksUbBr5cWFzfaz
-   Ax0uWf2/97Ze51Xhkec4uXO8wdMowc3y7zrL+6GOgqaHgUUEswJHU0Lrp
-   pLLZaf9kIwgEpF2FiNAQnM2nm8GeNVr/wJTvqtp6neAs1E3h0DndJaynl
-   s3iP4RillAsG69Le9eZ3BJT9lxhkoIXXLsSyaIM8jzJvSVbx/vYZFywzb
-   0s/HNDFB6bzSAKOiYyclzUWGCdAgjrRmpB6Z4HWORs079tzu4iflbRnBu
-   LPWXVHV8XBrEzOUfvlJ1jL+H/4FH5yKw8n4OlbfJV8I5E5POcoNv/Oq58
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250194201"
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="250194201"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 20:34:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="485951089"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2022 20:34:33 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJpXs-0009Gr-IU; Tue, 15 Feb 2022 04:34:32 +0000
-Date:   Tue, 15 Feb 2022 12:33:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jlayton:ceph-sparse-read 13/13] net/ceph/messenger_v2.c:3642:56:
- warning: variable 'recved' is uninitialized when used here
-Message-ID: <202202151220.h4Fu215q-lkp@intel.com>
+        Mon, 14 Feb 2022 23:35:07 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13970A9A79
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 20:34:58 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id l43-20020a9d1cab000000b005aa50ff5869so13061252ota.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 20:34:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LndteQAuZoPXbHZvKr9QSUB1aB53+hdRP336/tKDh20=;
+        b=dk+mVdbPwGVxuwzXDePGfsNV/kfTyDfEAzSZjuhZWcaD3DH5e8mDuOmpIr+oJVXTBq
+         Xf1sorRIYEisiS/hfcEP1dAW8LvXxMYvbaujwKrQwxzkDjOJU7ekWgTgFzh6uJqszFQa
+         6TP23+bc7F85FuVJ5Gbk669iLMFskIGtNvOgBq2PsKBfwR5U/wFypEX+YxQ5K86vuzWs
+         ZHztPidfTAKQxq/Zyl6Tl8h2N4j6QlTJGuSw7bPGE8MTkM2RlJOuPy7yL5xoSRZfIt87
+         0TzPPTBdbnBWD1ESUXCPr/QrZml3BZ8Qg3u7xXfCp9pkxNV8oqTlQZx7gPTnAMZX9aav
+         CTSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LndteQAuZoPXbHZvKr9QSUB1aB53+hdRP336/tKDh20=;
+        b=znfC70gQBGO8rG/9w1xhOUjiH8YCC+nlOI87HNDcDZdoAHVm6lstSq2/AhpLq8TAFT
+         zikNEM7TRWsxNSFapUwDW+NvIS8sx0XMzt8ybUVCHMJ/98SDSE9XH9Jwl91Q8dftAXdI
+         FnS/piwGvCD2L9kTwcbLDYGgZxveX1BWrJ/mEUqV5zqwTaX95wG+merLTic8Lx/crrpA
+         Py+Niu3qTAASOz/9OVvojT9QnyCXvbYXm2PtG//9xHeFx4iP6X2fSKFiwkaJ45+PUxvK
+         0pH60wcJY1M0y9B7wXICyRkmT5po15C+X+MEZolPjCbclWE7KIwNjXmB4UuC7RRp21Tx
+         mIMw==
+X-Gm-Message-State: AOAM531eYhXwroBuXBTmCNhwlyCRiNkBubMYeJ/s6wueJtJ5srSqxXLl
+        m/1TUt0zsM8GP2N/l8bn8PT96w==
+X-Google-Smtp-Source: ABdhPJwJ7vpnfKRUoUNI6lDoqpsP+C8DQRXFdG731kpULE9N3n08RtH4xL/oCyGdt/jYsagEtF9dXQ==
+X-Received: by 2002:a9d:4e89:: with SMTP id v9mr739083otk.177.1644899697265;
+        Mon, 14 Feb 2022 20:34:57 -0800 (PST)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id v31sm13563934ott.25.2022.02.14.20.34.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 20:34:56 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/msm/dpu: Disable boot loader configured data paths
+Date:   Mon, 14 Feb 2022 20:37:08 -0800
+Message-Id: <20220215043708.1256854-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git ceph-sparse-read
-head:   c0521644c264a8578ab61182209f303610af16e7
-commit: c0521644c264a8578ab61182209f303610af16e7 [13/13] libceph: add revoke support for sparse data
-config: i386-randconfig-a003-20220214 (https://download.01.org/0day-ci/archive/20220215/202202151220.h4Fu215q-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 37f422f4ac31c8b8041c6b62065263314282dab6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git/commit/?id=c0521644c264a8578ab61182209f303610af16e7
-        git remote add jlayton https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git
-        git fetch --no-tags jlayton ceph-sparse-read
-        git checkout c0521644c264a8578ab61182209f303610af16e7
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/ceph/
+It's typical for the bootloader to configure CTL_0 for the boot splash
+or EFIFB, but for non-DSI use cases the DPU driver tend to pick another
+CTL and the system might end up with two configured data paths producing
+data on the same INTF. In particular as the IOMMU configuration isn't
+retained from the bootloader one of the data paths will push underflow
+color, resulting in screen flickering.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Naturally the end goal would be to inherit the bootloader's
+configuration and provide the user with a glitch-free handover from the
+boot configuration to a running DPU.
 
-All warnings (new ones prefixed by >>):
+But such effort will affect clocks, regulators, power-domains etc, and
+will take time to implement. So in the meantime this patch simply
+disables all the data paths, on platforms that has CTL_FETCH_ACTIVE, to
+avoid the graphical artifacts.
 
->> net/ceph/messenger_v2.c:3642:56: warning: variable 'recved' is uninitialized when used here [-Wuninitialized]
-           dout("%s con %p recved %d resid %d\n", __func__, con, recved, resid);
-                                                                 ^~~~~~
-   include/linux/ceph/ceph_debug.h:35:45: note: expanded from macro 'dout'
-   # define dout(fmt, ...) pr_debug(" " fmt, ##__VA_ARGS__)
-                                               ^~~~~~~~~~~
-   include/linux/printk.h:570:26: note: expanded from macro 'pr_debug'
-           dynamic_pr_debug(fmt, ##__VA_ARGS__)
-                                   ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:163:22: note: expanded from macro 'dynamic_pr_debug'
-                              pr_fmt(fmt), ##__VA_ARGS__)
-                                             ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
-           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-                                                                 ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
-                   func(&id, ##__VA_ARGS__);               \
-                               ^~~~~~~~~~~
-   net/ceph/messenger_v2.c:3635:12: note: initialize the variable 'recved' to silence this warning
-           int recved, resid;  /* current piece of data */
-                     ^
-                      = 0
-   1 warning generated.
-
-
-vim +/recved +3642 net/ceph/messenger_v2.c
-
-  3632	
-  3633	static void revoke_at_prepare_sparse_data(struct ceph_connection *con)
-  3634	{
-  3635		int recved, resid;  /* current piece of data */
-  3636		int remaining;
-  3637	
-  3638		WARN_ON(con_secure(con));
-  3639		WARN_ON(!data_len(con->in_msg));
-  3640		WARN_ON(!iov_iter_is_bvec(&con->v2.in_iter));
-  3641		resid = iov_iter_count(&con->v2.in_iter);
-> 3642		dout("%s con %p recved %d resid %d\n", __func__, con, recved, resid);
-  3643	
-  3644		remaining = CEPH_EPILOGUE_PLAIN_LEN + con->v2.data_len_remain;
-  3645		con->v2.in_iter.count -= resid;
-  3646		set_in_skip(con, resid + remaining);
-  3647		con->v2.in_state = IN_S_FINISH_SKIP;
-  3648	}
-  3649	
-
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c | 13 +++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h |  6 ++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c    |  2 ++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c     | 17 +++++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h     |  8 ++++++++
+ 5 files changed, 46 insertions(+)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
+index 02da9ecf71f1..69d4849484fa 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
+@@ -357,6 +357,18 @@ static void dpu_hw_ctl_clear_all_blendstages(struct dpu_hw_ctl *ctx)
+ 	DPU_REG_WRITE(c, CTL_FETCH_PIPE_ACTIVE, 0);
+ }
+ 
++static void dpu_hw_ctl_disable_boot_config(struct dpu_hw_ctl *ctx)
++{
++	if (ctx->caps->features & BIT(DPU_CTL_FETCH_ACTIVE)) {
++		/*
++		 * Disable the pipe fetch and trigger a start, to disable the
++		 * data path
++		 */
++		DPU_REG_WRITE(&ctx->hw, CTL_FETCH_PIPE_ACTIVE, 0);
++		DPU_REG_WRITE(&ctx->hw, CTL_START, 0x1);
++	}
++}
++
+ static void dpu_hw_ctl_setup_blendstage(struct dpu_hw_ctl *ctx,
+ 	enum dpu_lm lm, struct dpu_hw_stage_cfg *stage_cfg)
+ {
+@@ -590,6 +602,7 @@ static void _setup_ctl_ops(struct dpu_hw_ctl_ops *ops,
+ 	ops->trigger_pending = dpu_hw_ctl_trigger_pending;
+ 	ops->reset = dpu_hw_ctl_reset_control;
+ 	ops->wait_reset_status = dpu_hw_ctl_wait_reset_status;
++	ops->disable_boot_config = dpu_hw_ctl_disable_boot_config;
+ 	ops->clear_all_blendstages = dpu_hw_ctl_clear_all_blendstages;
+ 	ops->setup_blendstage = dpu_hw_ctl_setup_blendstage;
+ 	ops->get_bitmask_sspp = dpu_hw_ctl_get_bitmask_sspp;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
+index 806c171e5df2..c2734f6ab760 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
+@@ -159,6 +159,12 @@ struct dpu_hw_ctl_ops {
+ 	 */
+ 	void (*clear_all_blendstages)(struct dpu_hw_ctl *ctx);
+ 
++	/**
++	 * Disable the configuration setup by the bootloader
++	 * @ctx	      : ctl path ctx pointer
++	 */
++	void (*disable_boot_config)(struct dpu_hw_ctl *ctx);
++
+ 	/**
+ 	 * Configure layer mixer to pipe configuration
+ 	 * @ctx       : ctl path ctx pointer
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index cedc631f8498..eef2f017031a 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -1107,6 +1107,8 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
+ 
+ 	dpu_kms->rm_init = true;
+ 
++	dpu_rm_clear_boot_config(&dpu_kms->rm, dpu_kms->catalog);
++
+ 	dpu_kms->hw_mdp = dpu_hw_mdptop_init(MDP_TOP, dpu_kms->mmio,
+ 					     dpu_kms->catalog);
+ 	if (IS_ERR(dpu_kms->hw_mdp)) {
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
+index f9c83d6e427a..3365c5e41e28 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #define pr_fmt(fmt)	"[drm:%s] " fmt, __func__
++#include <linux/delay.h>
+ #include "dpu_kms.h"
+ #include "dpu_hw_lm.h"
+ #include "dpu_hw_ctl.h"
+@@ -229,6 +230,22 @@ int dpu_rm_init(struct dpu_rm *rm,
+ 	return rc ? rc : -EFAULT;
+ }
+ 
++void dpu_rm_clear_boot_config(struct dpu_rm *rm, struct dpu_mdss_cfg *cat)
++{
++	struct dpu_hw_ctl *ctl;
++	int i;
++
++	for (i = CTL_0; i < CTL_MAX; i++) {
++		if (!rm->ctl_blks[i - CTL_0])
++			continue;
++
++		DPU_DEBUG("disabling ctl%d boot configuration\n", i - CTL_0);
++
++		ctl = to_dpu_hw_ctl(rm->ctl_blks[i - CTL_0]);
++		ctl->ops.disable_boot_config(ctl);
++	}
++}
++
+ static bool _dpu_rm_needs_split_display(const struct msm_display_topology *top)
+ {
+ 	return top->num_intf > 1;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
+index 1f12c8d5b8aa..d3e084541e67 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
+@@ -88,5 +88,13 @@ void dpu_rm_release(struct dpu_global_state *global_state,
+ int dpu_rm_get_assigned_resources(struct dpu_rm *rm,
+ 	struct dpu_global_state *global_state, uint32_t enc_id,
+ 	enum dpu_hw_blk_type type, struct dpu_hw_blk **blks, int blks_size);
++
++/**
++ * dpu_rm_clear_boot_config() - Tear down any data paths configured by boot
++ * @rm: DPU Resource Manager handle
++ * @cat: Pointer to hardware catalog
++ */
++void dpu_rm_clear_boot_config(struct dpu_rm *rm, struct dpu_mdss_cfg *cat);
++
+ #endif /* __DPU_RM_H__ */
+ 
+-- 
+2.33.1
+
