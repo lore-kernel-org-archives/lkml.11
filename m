@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F4EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234021AbiBOFXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:23:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52872 "EHLO
+        id S234053AbiBOFXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:23:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234034AbiBOFXR (ORCPT
+        with ESMTP id S234035AbiBOFXR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 00:23:17 -0500
-Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CADE128640
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:23:08 -0800 (PST)
-X-QQ-mid: bizesmtp5t1644902571ta1e0kja4
+Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BCA1285B5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:23:07 -0800 (PST)
+X-QQ-mid: bizesmtp5t1644902565tyu1h22fl
 Received: from localhost.localdomain (unknown [58.240.82.166])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 15 Feb 2022 13:22:49 +0800 (CST)
+        id ; Tue, 15 Feb 2022 13:22:43 +0800 (CST)
 X-QQ-SSF: 0140000000200020C000000A0000000
-X-QQ-FEAT: dpyQmELDBxFOkaeF2OHMMffhgLVBgman+tjRIPgz1RGBjLOUD5n1napWVa6EC
-        BHb8uBYeK6YNgP8VDiG1EzmrK4Qhlf/VsbQU863WB3LGblInFaCpresSObm4yMarFmOeIjp
-        uuJSuJyRCLPJ7wRK07ADMOt//KRW65mUqZlxhTzzOZjS4XsG2jGTjXXflTy93ZXizLUrJJy
-        HwEFEPCqZz3ImK1WxkY6dQvbLW8BFO5+7oKHODhXsFuYZIwCAa29Os+loh4YcApm2jbYfCe
-        8iM2B/LTvnKCpL9xI0j2+1SfjvhHWK0jvyc+ZhXahi3qdu8B9fqwccDPqQXlPod7Si2zvIV
-        ETpY/ETcktIJUwYPRPqXlL/2bgDiMVsQJkvN26YJhTTEdxUUr4=
+X-QQ-FEAT: Mzskoac49Oip4WXK1Y7S5M9ZGsXmnK8cNEfK6nbZzmWWG9p5iuO0dRmcp6qzx
+        c+WTlOlw09+ssQ8XqeiHhC4jz6vHbdZpbU9kzvmHe7G/jwPFLetkDV49qqiBjbBOtvDF/hg
+        SYl8obQlnT3f+KDmbFJP3QZQOHi4gR5nPKOgsVIR78cPkEE4iQw11+2A1R05avK64fAnlPu
+        Pt0pw+aWB6rMmkBvs69Ux8ipifnJ7pFcwkOC+9qz4YmaGURKziwBtjLsqBmWf7TzqlijLBZ
+        YVBGens9uxBTq5gPcdxzL3PWF+RRVDmAr/LMD+crDtyNT1h8H6T81ZVwwF0H74TS5Vjg++V
+        rKD5LAgyAURe84Qys3sAmG2RofGOEt1ahm5kY7jVWsutTBsjJs=
 X-QQ-GoodBg: 1
 From:   Zhen Ni <nizhen@uniontech.com>
 To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
@@ -33,183 +33,130 @@ To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
         keescook@chromium.org
 Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         Zhen Ni <nizhen@uniontech.com>
-Subject: [PATCH 6/8] sched: Move uclamp_util sysctls to core.c
-Date:   Tue, 15 Feb 2022 13:22:12 +0800
-Message-Id: <20220215052214.5286-7-nizhen@uniontech.com>
+Subject: [PATCH 4/8] sched: Move deadline_period sysctls to deadline.c
+Date:   Tue, 15 Feb 2022 13:22:10 +0800
+Message-Id: <20220215052214.5286-5-nizhen@uniontech.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220215052214.5286-1-nizhen@uniontech.com>
 References: <20220215052214.5286-1-nizhen@uniontech.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign1
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
 X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-move uclamp_util sysctls to core.c and use the new
+move deadline_period sysctls to deadline.c and use the new
 register_sysctl_init() to register the sysctl interface.
 
 Signed-off-by: Zhen Ni <nizhen@uniontech.com>
 ---
- include/linux/sched/sysctl.h |  8 ------
- kernel/sched/core.c          | 48 +++++++++++++++++++++++++++---------
- kernel/sysctl.c              | 23 -----------------
- 3 files changed, 37 insertions(+), 42 deletions(-)
+ include/linux/sched/sysctl.h |  3 ---
+ kernel/sched/deadline.c      | 42 +++++++++++++++++++++++++++++-------
+ kernel/sysctl.c              | 14 ------------
+ 3 files changed, 34 insertions(+), 25 deletions(-)
 
 diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
-index 5515b54bfb57..9fe879602c4f 100644
+index 99fbf61464ab..81187a8c625d 100644
 --- a/include/linux/sched/sysctl.h
 +++ b/include/linux/sched/sysctl.h
-@@ -21,18 +21,10 @@ enum sched_tunable_scaling {
+@@ -21,9 +21,6 @@ enum sched_tunable_scaling {
  	SCHED_TUNABLESCALING_END,
  };
  
--#ifdef CONFIG_UCLAMP_TASK
--extern unsigned int sysctl_sched_uclamp_util_min;
--extern unsigned int sysctl_sched_uclamp_util_max;
--extern unsigned int sysctl_sched_uclamp_util_min_rt_default;
--#endif
+-extern unsigned int sysctl_sched_dl_period_max;
+-extern unsigned int sysctl_sched_dl_period_min;
 -
- #ifdef CONFIG_CFS_BANDWIDTH
- extern unsigned int sysctl_sched_cfs_bandwidth_slice;
- #endif
+ #ifdef CONFIG_UCLAMP_TASK
+ extern unsigned int sysctl_sched_uclamp_util_min;
+ extern unsigned int sysctl_sched_uclamp_util_max;
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index d2c072b0ef01..9ed9ace11151 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -20,6 +20,40 @@
  
--int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
--		void *buffer, size_t *lenp, loff_t *ppos);
- int sysctl_numa_balancing(struct ctl_table *table, int write, void *buffer,
- 		size_t *lenp, loff_t *ppos);
+ struct dl_bandwidth def_dl_bandwidth;
  
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 276033cceaf2..c4dab5535575 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -1243,10 +1243,10 @@ static void set_load_weight(struct task_struct *p)
- static DEFINE_MUTEX(uclamp_mutex);
- 
- /* Max allowed minimum utilization */
--unsigned int sysctl_sched_uclamp_util_min = SCHED_CAPACITY_SCALE;
-+static unsigned int sysctl_sched_uclamp_util_min = SCHED_CAPACITY_SCALE;
- 
- /* Max allowed maximum utilization */
--unsigned int sysctl_sched_uclamp_util_max = SCHED_CAPACITY_SCALE;
-+static unsigned int sysctl_sched_uclamp_util_max = SCHED_CAPACITY_SCALE;
- 
- /*
-  * By default RT tasks run at the maximum performance point/capacity of the
-@@ -1263,7 +1263,7 @@ unsigned int sysctl_sched_uclamp_util_max = SCHED_CAPACITY_SCALE;
-  * This knob will not override the system default sched_util_clamp_min defined
-  * above.
-  */
--unsigned int sysctl_sched_uclamp_util_min_rt_default = SCHED_CAPACITY_SCALE;
-+static unsigned int sysctl_sched_uclamp_util_min_rt_default = SCHED_CAPACITY_SCALE;
- 
- /* All clamps are required to be less or equal than these values */
- static struct uclamp_se uclamp_default[UCLAMP_CNT];
-@@ -1716,7 +1716,7 @@ static void uclamp_update_root_tg(void)
- static void uclamp_update_root_tg(void) { }
- #endif
- 
--int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
-+static int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
- 				void *buffer, size_t *lenp, loff_t *ppos)
- {
- 	bool update_root_tg = false;
-@@ -4360,8 +4360,12 @@ static int sysctl_schedstats(struct ctl_table *table, int write, void *buffer,
- 		set_schedstats(state);
- 	return err;
- }
-+#endif /* CONFIG_PROC_SYSCTL */
-+#endif /* CONFIG_SCHEDSTATS */
- 
--static struct ctl_table sched_schedstats_sysctls[] = {
++/*
++ * Default limits for DL period; on the top end we guard against small util
++ * tasks still getting ridiculously long effective runtimes, on the bottom end we
++ * guard against timer DoS.
++ */
++static unsigned int sysctl_sched_dl_period_max = 1 << 22; /* ~4 seconds */
++static unsigned int sysctl_sched_dl_period_min = 100;     /* 100 us */
 +#ifdef CONFIG_SYSCTL
-+static struct ctl_table sched_core_sysctls[] = {
-+#ifdef CONFIG_SCHEDSTATS
- 	{
- 		.procname       = "sched_schedstats",
- 		.data           = NULL,
-@@ -4371,17 +4375,39 @@ static struct ctl_table sched_schedstats_sysctls[] = {
- 		.extra1         = SYSCTL_ZERO,
- 		.extra2         = SYSCTL_ONE,
- 	},
-+#endif /* CONFIG_SCHEDSTATS */
-+#ifdef CONFIG_UCLAMP_TASK
++static struct ctl_table sched_dl_sysctls[] = {
 +	{
-+		.procname       = "sched_util_clamp_min",
-+		.data           = &sysctl_sched_uclamp_util_min,
++		.procname       = "sched_deadline_period_max_us",
++		.data           = &sysctl_sched_dl_period_max,
 +		.maxlen         = sizeof(unsigned int),
 +		.mode           = 0644,
-+		.proc_handler   = sysctl_sched_uclamp_handler,
++		.proc_handler   = proc_dointvec,
 +	},
 +	{
-+		.procname       = "sched_util_clamp_max",
-+		.data           = &sysctl_sched_uclamp_util_max,
++		.procname       = "sched_deadline_period_min_us",
++		.data           = &sysctl_sched_dl_period_min,
 +		.maxlen         = sizeof(unsigned int),
 +		.mode           = 0644,
-+		.proc_handler   = sysctl_sched_uclamp_handler,
++		.proc_handler   = proc_dointvec,
 +	},
-+	{
-+		.procname       = "sched_util_clamp_min_rt_default",
-+		.data           = &sysctl_sched_uclamp_util_min_rt_default,
-+		.maxlen         = sizeof(unsigned int),
-+		.mode           = 0644,
-+		.proc_handler   = sysctl_sched_uclamp_handler,
-+	},
-+#endif /* CONFIG_UCLAMP_TASK */
- 	{}
- };
--
--static int __init sched_schedstats_sysctl_init(void)
-+static int __init sched_core_sysctl_init(void)
++	{}
++};
++
++static int __init sched_dl_sysctl_init(void)
++{
++	register_sysctl_init("kernel", sched_dl_sysctls);
++	return 0;
++}
++late_initcall(sched_dl_sysctl_init);
++#endif
++
+ static inline struct task_struct *dl_task_of(struct sched_dl_entity *dl_se)
  {
--	register_sysctl_init("kernel", sched_schedstats_sysctls);
-+	register_sysctl_init("kernel", sched_core_sysctls);
- 	return 0;
+ 	return container_of(dl_se, struct task_struct, dl);
+@@ -2854,14 +2888,6 @@ void __getparam_dl(struct task_struct *p, struct sched_attr *attr)
+ 	attr->sched_flags |= dl_se->flags;
  }
--late_initcall(sched_schedstats_sysctl_init);
--#endif /* CONFIG_PROC_SYSCTL */
--#endif /* CONFIG_SCHEDSTATS */
-+late_initcall(sched_core_sysctl_init);
-+#endif /* CONFIG_SYSCTL */
  
+-/*
+- * Default limits for DL period; on the top end we guard against small util
+- * tasks still getting ridiculously long effective runtimes, on the bottom end we
+- * guard against timer DoS.
+- */
+-unsigned int sysctl_sched_dl_period_max = 1 << 22; /* ~4 seconds */
+-unsigned int sysctl_sched_dl_period_min = 100;     /* 100 us */
+-
  /*
-  * fork()/clone()-time setup:
+  * This function validates the new parameters of a -deadline task.
+  * We ask for the deadline not being zero, and greater or equal
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index cfcbd17005af..d811e471f7d3 100644
+index 73cccd935d65..f4434d22246b 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1674,29 +1674,6 @@ static struct ctl_table kern_table[] = {
+@@ -1674,20 +1674,6 @@ static struct ctl_table kern_table[] = {
  		.extra2		= SYSCTL_ONE,
  	},
  #endif /* CONFIG_NUMA_BALANCING */
--#ifdef CONFIG_UCLAMP_TASK
 -	{
--		.procname	= "sched_util_clamp_min",
--		.data		= &sysctl_sched_uclamp_util_min,
+-		.procname	= "sched_deadline_period_max_us",
+-		.data		= &sysctl_sched_dl_period_max,
 -		.maxlen		= sizeof(unsigned int),
 -		.mode		= 0644,
--		.proc_handler	= sysctl_sched_uclamp_handler,
+-		.proc_handler	= proc_dointvec,
 -	},
 -	{
--		.procname	= "sched_util_clamp_max",
--		.data		= &sysctl_sched_uclamp_util_max,
+-		.procname	= "sched_deadline_period_min_us",
+-		.data		= &sysctl_sched_dl_period_min,
 -		.maxlen		= sizeof(unsigned int),
 -		.mode		= 0644,
--		.proc_handler	= sysctl_sched_uclamp_handler,
+-		.proc_handler	= proc_dointvec,
 -	},
--	{
--		.procname	= "sched_util_clamp_min_rt_default",
--		.data		= &sysctl_sched_uclamp_util_min_rt_default,
--		.maxlen		= sizeof(unsigned int),
--		.mode		= 0644,
--		.proc_handler	= sysctl_sched_uclamp_handler,
--	},
--#endif
- #ifdef CONFIG_CFS_BANDWIDTH
  	{
- 		.procname	= "sched_cfs_bandwidth_slice_us",
+ 		.procname	= "sched_rr_timeslice_ms",
+ 		.data		= &sysctl_sched_rr_timeslice,
 -- 
 2.20.1
 
