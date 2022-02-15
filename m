@@ -2,79 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16542C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244489AbiBOWMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 17:12:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51496 "EHLO
+        id S244495AbiBOWMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 17:12:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243913AbiBOWL7 (ORCPT
+        with ESMTP id S243913AbiBOWMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 17:11:59 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2259C26579
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:11:49 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id v4so539657pjh.2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:11:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dg8Bbqo8xrTURRSZr1gbJA1kXH+dR6Cfw/CPc1vh5OA=;
-        b=JWDZBiIvBXJ+xyw/ssMlbLaY+HL0dGj6fRKKopQM/zAdOrPiEpBBbN0hIHBWPjTwv7
-         phWt006J1z/OGnlE0pZ1IAr4MBG61MAESVtMLCJJLdN03Qgw5ph3ybjNDcm5KLD4H/Bn
-         dWXl2k4tg6j6b6r3iLke/JjQOqtAWGhWjmz+5X/AmIsbrRbdPwocCDW6gnbjWLV+8CGP
-         6XBgMZj2Vbtv7WovHLG8U9O+XTiFW1Esdpsq5PDNf7YwiqhlubKB9tjZcJrQw+cD3SxG
-         3OYRHWmQVG+2jcAaW9y66JUIwQHgJwy+IQgpES3zBB50Hn7Ps4/BtqJ1QikahSxmXMbV
-         ZLTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dg8Bbqo8xrTURRSZr1gbJA1kXH+dR6Cfw/CPc1vh5OA=;
-        b=SfDRmASEJXSCbwzGcWooxdtRuqEX0iu9lpZ9md94NtKADo5ESFtApw774ti4/35ICj
-         7GAnTusVNE4RqqFmC8nRKe/kWSEOEsRtHwNXIA7lGqQH3kUy5Fs0Yqrq8bf0mp0PRSy6
-         nFNZUTsP3ZxbTI1wyAUWoRPqk1TyGlM/uDKqjpSiOitptQq4z46SiDJxOTqfaU5KHV6S
-         8tcG8mSZtdkv41KjvEKf0boy8+62ZpJhRXudL6v4PesbOi/w4EcOplKiuYfal3euhjI9
-         5JAgZcQ6gz6W5TmziXVDWsN1lZB+0YG7KtBrDTJ0PX9tJzmdMDNTi+3XnYYh1I/RerDo
-         O3iw==
-X-Gm-Message-State: AOAM5319cn7nxaquiOFEv6cGQERw6zXFGTkqBl09oU83gsG9YNj5xZJb
-        D0bI4OeZCtlNDOVT64QvZ7rrq/arUOX2itIV5boyzw==
-X-Google-Smtp-Source: ABdhPJyiswDhX6qkwwQts1SFepTHj/P5w6WGlYQlgTjrpG3xns33VOfe9EvdjD9DCBoIscPBLRLRybo05bZTeUzOoys=
-X-Received: by 2002:a17:90a:e7cb:: with SMTP id kb11mr1046139pjb.220.1644963108677;
- Tue, 15 Feb 2022 14:11:48 -0800 (PST)
-MIME-Version: 1.0
-References: <20220127124058.1172422-1-ruansy.fnst@fujitsu.com> <20220127124058.1172422-3-ruansy.fnst@fujitsu.com>
-In-Reply-To: <20220127124058.1172422-3-ruansy.fnst@fujitsu.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 15 Feb 2022 14:11:42 -0800
-Message-ID: <CAPcyv4jMBm3ewWeQX7eZDaHT4aD8eOPcxYBiiZT1ZmaV9z-A2g@mail.gmail.com>
-Subject: Re: [PATCH v10 2/9] mm: factor helpers for memory_failure_dev_pagemap
-To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux MM <linux-mm@kvack.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        "Darrick J. Wong" <djwong@kernel.org>, david <david@fromorbit.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jane Chu <jane.chu@oracle.com>, Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 15 Feb 2022 17:12:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF2127CC3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:12:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FD09B819E8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:12:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1B71C340EB;
+        Tue, 15 Feb 2022 22:12:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1644963158;
+        bh=BPqqLIY3ImvN6qeE7/pDaAPIFxvHggrWbmxk+038ayU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aS08xiLS+FrfVdHvVqNYRDX80mKKpb7SU6cVoK3/6CDQovYEqaCG3fJAuNwKp9HAm
+         DJArx1+kQyeRUkvESL8jBIeuwk2s+Hm8c19xUGa50rwZ9NMpUk1X+5qIHP/7HTGYwF
+         7dmdZBCHE8ZJINEJ2DSn4gBQFoSawWk5O1c1lYdA=
+Date:   Tue, 15 Feb 2022 14:12:36 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     cgel.zte@gmail.com
+Cc:     hughd@google.com, mike.kravetz@oracle.com, kirill@shutemov.name,
+        songliubraving@fb.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, yang.yang29@zte.com.cn,
+        wang.yong12@zte.com.cn, Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH linux-next] Fix shmem huge page failed to set
+ F_SEAL_WRITE attribute problem
+Message-Id: <20220215141236.de1a3eca3a8a52d04507c50f@linux-foundation.org>
+In-Reply-To: <20220215073743.1769979-1-cgel.zte@gmail.com>
+References: <20220215073743.1769979-1-cgel.zte@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 4:41 AM Shiyang Ruan <ruansy.fnst@fujitsu.com> wrote:
->
-> memory_failure_dev_pagemap code is a bit complex before introduce RMAP
-> feature for fsdax.  So it is needed to factor some helper functions to
-> simplify these code.
->
-> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
-> Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+On Tue, 15 Feb 2022 07:37:43 +0000 cgel.zte@gmail.com wrote:
 
-Looks good,
+> From: wangyong <wang.yong12@zte.com.cn>
+> 
+> After enabling tmpfs filesystem to support transparent hugepage with the
+> following command:
+>  echo always > /sys/kernel/mm/transparent_hugepage/shmem_enabled
+> The docker program adds F_SEAL_WRITE through the following command will
+> prompt EBUSY.
+>  fcntl(5, F_ADD_SEALS, F_SEAL_WRITE)=-1.
+> 
+> It is found that in memfd_wait_for_pins function, the page_count of
+> hugepage is 512 and page_mapcount is 0, which does not meet the
+> conditions:
+>  page_count(page) - page_mapcount(page) != 1.
+> But the page is not busy at this time, therefore, the page_order of
+> hugepage should be taken into account in the calculation.
 
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+What are the real-world runtime effects of this?
+
+Do we think that this fix (or one similar to it) should be backported
+into -stable kernels?
+
+If "yes" then Mike's 5d752600a8c373 ("mm: restructure memfd code") will
+get in the way because it moved lots of code around.
+
+But then, that's four years old and perhaps that's far enough back in
+time.
+
