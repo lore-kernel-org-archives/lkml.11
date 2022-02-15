@@ -2,74 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F005C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B3EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241091AbiBOPri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:47:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35516 "EHLO
+        id S240555AbiBOPrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:47:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241269AbiBOPrW (ORCPT
+        with ESMTP id S240966AbiBOPpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:47:22 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E82CFBA4;
-        Tue, 15 Feb 2022 07:46:12 -0800 (PST)
-Date:   Tue, 15 Feb 2022 16:46:09 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644939970;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qEoj4mtlQVRRs6/6d8GaUUFXpcwiomjAL9sone681ow=;
-        b=X6gZDDvzy0Gw2Py/F4ZZoB+hsDF5zDkWf7v971/LigaPKniUQS9BxooEKi3qlcTq0f193Z
-        CZxTojO+cQrmdhEA8CRFICdpq0BO75E3qthBj42SqEKI1hjUPiIrJ7lf9tz3kddCuESPP6
-        rqH7Pn/mlXpAlnJZuWF/LMSj1oUdnJdtQbIsmb4p/KqFElPxNDP46Q/0fm46RciJzL32DY
-        ylg8/zeKzuKvYkJuZ4zafaXtui/p2e+iZVE6T3DJnHn2CYnm9rKK2KMF2jZWLPFN0rEIUa
-        v/3g8mtYoT2OEhbtl55rZD3PhB+XqzewGsHq0w1R3Ft90LWNorPKUpR7bxG7qw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644939970;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qEoj4mtlQVRRs6/6d8GaUUFXpcwiomjAL9sone681ow=;
-        b=biMHfMQ835e1UpRnlTmHgGmqBm5gQcME2t7bLKWswSicWiCwflGxTeRUn8J1nxOLr0sS1U
-        0FmWvII7n7PGbABw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH v4 0/7] Provide and use generic_handle_irq_safe() where
- appropriate.
-Message-ID: <YgvKwd525feJkBHV@linutronix.de>
-References: <20220211181500.1856198-1-bigeasy@linutronix.de>
- <Ygu6UewoPbYC9yPa@google.com>
- <Ygu9xtrMxxq36FRH@linutronix.de>
- <YgvD1HpN2oyalDmj@google.com>
- <YgvH4ROUQVgusBdA@linutronix.de>
- <YgvJ1fCUYmaV0Mbx@google.com>
+        Tue, 15 Feb 2022 10:45:32 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAE8123BD2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:41:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644939662; x=1676475662;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=QV2lpkZ1uoeX6MQ6u1abca3syu0nEO8PCNGkVo6xNn8=;
+  b=IVxYpOEkOnnQv3WyV+EjQIZFCnmjOR9St01j6y03v3nAk9Je/lbTrQ5g
+   bkPLMGt7XyKErTk4U+/DoVgfV8qpbZTB/Kc+Lm6Lx9BVbKOVghY3fpkbR
+   7kg/78MbDJVLcevJNimKy+UVNcCIylbemckhh1gldsQX61rsy8xpdMJIe
+   fMnS113aMZJlP+gJWwnNyuU6kcFH3lZP23P8dh/0HQmZxTpL0QAFPmMQf
+   cF0/3R9W4Pt30R2y4zjhacFQBuW3JEgSO5WyBn/fnMoxp4GHJnerYhCch
+   HYF3Nlj3GiQQnNZbFWzZz8zAbXHRc+/K/Z5LcYRfKq7wiT96zan77AnoG
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250320820"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="250320820"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 07:40:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="539378825"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.92]) ([10.237.72.92])
+  by fmsmga007.fm.intel.com with ESMTP; 15 Feb 2022 07:40:46 -0800
+Message-ID: <f2c2389e-db62-c307-b5d7-6a8d9df70b7e@intel.com>
+Date:   Tue, 15 Feb 2022 17:40:45 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YgvJ1fCUYmaV0Mbx@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH V2 0/2] perf/x86/intel/pt: Add support for event tracing
+ and TNT disabling
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        H Peter Anvin <hpa@zytor.com>
+References: <20220126104815.2807416-1-adrian.hunter@intel.com>
+ <YgvIJop34KuyUIx6@hirez.programming.kicks-ass.net>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <YgvIJop34KuyUIx6@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-15 15:42:13 [+0000], Lee Jones wrote:
-> So there aren't any hard dependencies between the driver changes?
+On 15/02/2022 17:35, Peter Zijlstra wrote:
+> On Wed, Jan 26, 2022 at 12:48:13PM +0200, Adrian Hunter wrote:
+>> Hi
+>>
+>> As of Intel SDM (https://www.intel.com/sdm) version 076, there are 2 new
+>> Intel PT features called Event Trace and TNT-Disable.
+>>
+>> Event Trace exposes details about asynchronous events such as interrupts
+>> and VM-Entry/Exit.
+>>
+>> TNT-Disable disables TNT packets to reduce the tracing overhead, but with
+>> the result that exact control flow information is lost.
+> 
+> What's a TNT?
 
-Correct. #2 - #7 depend on #1. The order of #2+ is not relevant.
-
-Sebastian
+The TNT packet indicates whether conditional branches were taken
+or not taken.
