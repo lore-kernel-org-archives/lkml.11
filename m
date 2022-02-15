@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4611C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 876AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:32:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241634AbiBOQcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:32:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49772 "EHLO
+        id S241651AbiBOQcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:32:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241585AbiBOQcW (ORCPT
+        with ESMTP id S241586AbiBOQcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 11:32:22 -0500
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2100.outbound.protection.outlook.com [40.107.255.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB038A6CC;
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2133.outbound.protection.outlook.com [40.107.215.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9F68A6E1;
         Tue, 15 Feb 2022 08:32:11 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hLxPslF9DHWRq74KjZUX/EawNlj07V+TmryVl+5kQ8FJtWjW8s3h0lrUCM4kZF7HfraB+nQzbjKxXZlNSDm0dphdqBSCbSDI0Pt0EXzMF2KNQdCBZSXNSp8v0jVVSd5I6ubUMVm+lZ7yCbzNRFoMNtznQzBZj4+1sWUEnhY5AAFupvVfZJp0licrjhfVjzoYdPNUwHbul00wHVMh1ORpoN3a/Wcn3h+hXdJelS+qRBoz35AHnE4+mc0bR9A1wQYG9Vxo0SCAHbNuQJYQ4biVU4dSQqQYJOMvc21FJPuE2oxTfh7v9g97KGXFSwYIL60OMTy31IyLxhZq9y6WoKLu9Q==
+ b=oTvkgq54ZBdI5nerCkEmiWj5cRGQDcqjLLZLf4jqSIkb9TQFnMIEl8joHj0dP4qrKD3aKfgGCr5W9/BziXIM2pNzd5y5PmbWRidUihqx4VjfaZ+F7pPBwHiJ4JLPOZa9t22Q76AfQhrdjJv3VhKS77Y8knb5VumiYqSaZRLgeYt9ZklJK/mFpT3VWJSwYs1xA7ARdUC6gS2mfFUDFhBxN1T4/lFRr9G69lKQ7kdjiaIJDtsNgvObTmg+IOwmnGm4/fvvtra34HWr5/UwSEZ3SMVAE7sAN9W+VK3DcGUaaDVSPvr1DZPQJ3FVhmKwDUbrbBiIHdkilBi7PEwV50bFvA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hMP2YqBHAlWOGkvGdU94kNAJu/iajJTp9mhP6z85si4=;
- b=mfv2D4pkErQt4Kla7kIDG4VRLdeQ7ubM9GLvwdGiEu9GOK5eg1uHIxoMf3rsjWKNE9ZmWPvMZW0XuciFrTljWEbcAOoUBciTXEl1Y+7wZQPbZRYX/5KC/ciyTEzaQXT+yy78Ov8LxuzKyPWRGMtWwpqggX4mHpFiYgNun8qjXJy+IXXoLJskW1MKsNqbsv4HzWzSjm6hvtmXDo2wZK/Hp0F3lAbgB+uv1ioxWhqG+t4gZSas/GMROJN3opMNqKEXh5jaNhGOqUpYE7EkXd8AOsSEYExNljb9IFT9gzTds7Rb+TOzUvRQwa+aKj/3j3xjtrjwSUFBLAtMh6Wij8LNQg==
+ bh=nkc4b+GAsp5S7whUqw4Uxmql5q276mZk4wtcrC4q11A=;
+ b=bJNjNQaXs3qKTOOCv/gEjNl8QAcbVrEGhhly6Vkxc/yNqWw9IJz2PfQbpaQZ7JyWzVzdtk3wWa6Delr4tEzaNfpIYs+KEP3jEFsVUNMZQTwI/V8kmbwMH3vpI1cRo1hBpEQ89fJogovJsmAb0btfzs2L4N662Y5V5DmfMwg2U3cSka0NNJwxKQ2bdLe+jFsz4wqg+l0s+DXBPjRs8pEBR0DqKxMPp+KEJghG6PqlTp2xr7LhNDeakNsA9w3RSwm58baujKpDA3gI2dHemBtBh1kGFs55yZ4QmSPxAzeZJl3LUsL2tFOEd+zQg+3zXFymJQTPHNJK8Eg3RTcVRdkRAA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hMP2YqBHAlWOGkvGdU94kNAJu/iajJTp9mhP6z85si4=;
- b=Fq2fNJ/Mx2ObfDe9ukfm112bwoDvO/cF9oNWa/KIBGin/6EmcrxzbetmMNLn/sFD/5TG2XhcZ+OlhyovLX33jKI5sLQRSVgA0dbtXdmJ1KWwzfdmswsCI+8CAyHEybtUMy084+qdvKIJ4nudZJq/rLSLdZCS1JSfTeYtJYKifco=
+ bh=nkc4b+GAsp5S7whUqw4Uxmql5q276mZk4wtcrC4q11A=;
+ b=jnx9zFOqTzPl1ZBmpk1uAdIZOounJ26cg9lTXHsmiDHhwQE3iPsnK+G9cy6y5fGj6e/lqKwEInrOe/GPaSqidgXdlJcM6rfp/902HMsrZa2lteDTiNQnLtzofUvyOcof+eiKSb8ggtmthNn87hHG63y1Y9Rx0ZoL9bUMkYgogok=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=quantatw.com;
 Received: from HK0PR04MB3282.apcprd04.prod.outlook.com (2603:1096:203:89::17)
- by SI2PR04MB4602.apcprd04.prod.outlook.com (2603:1096:4:130::13) with
+ by SI2PR04MB5695.apcprd04.prod.outlook.com (2603:1096:4:1a7::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Tue, 15 Feb
- 2022 16:32:06 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.14; Tue, 15 Feb
+ 2022 16:32:08 +0000
 Received: from HK0PR04MB3282.apcprd04.prod.outlook.com
  ([fe80::ec21:c033:761d:3e03]) by HK0PR04MB3282.apcprd04.prod.outlook.com
  ([fe80::ec21:c033:761d:3e03%4]) with mapi id 15.20.4975.018; Tue, 15 Feb 2022
- 16:32:06 +0000
+ 16:32:08 +0000
 From:   Potin Lai <potin.lai@quantatw.com>
 To:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
         Andrew Jeffery <andrew@aj.id.au>
@@ -47,9 +47,9 @@ Cc:     Patrick Williams <patrick@stwcx.xyz>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
         Potin Lai <potin.lai@quantatw.com>
-Subject: [PATCH v3 01/10] ARM: dts: aspeed: bletchley: switch sled numbering to 1-based
-Date:   Wed, 16 Feb 2022 00:31:42 +0800
-Message-Id: <20220215163151.32252-2-potin.lai@quantatw.com>
+Subject: [PATCH v3 06/10] ARM: dts: aspeed: bletchley: add interrupt support for sled io expander
+Date:   Wed, 16 Feb 2022 00:31:47 +0800
+Message-Id: <20220215163151.32252-7-potin.lai@quantatw.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220215163151.32252-1-potin.lai@quantatw.com>
 References: <20220215163151.32252-1-potin.lai@quantatw.com>
@@ -59,392 +59,139 @@ X-ClientProxiedBy: HK2PR02CA0141.apcprd02.prod.outlook.com
  (2603:1096:203:89::17)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 810c4729-602f-4fbc-827b-08d9f0a0b406
-X-MS-TrafficTypeDiagnostic: SI2PR04MB4602:EE_
-X-Microsoft-Antispam-PRVS: <SI2PR04MB4602D89FF46AC5D927A747088E349@SI2PR04MB4602.apcprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:418;
+X-MS-Office365-Filtering-Correlation-Id: cea83412-2a14-4ec7-58cf-08d9f0a0b567
+X-MS-TrafficTypeDiagnostic: SI2PR04MB5695:EE_
+X-Microsoft-Antispam-PRVS: <SI2PR04MB56956492B3C21028777754938E349@SI2PR04MB5695.apcprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iuflWkZJzG3zvcs/GQ87n3h782vhise4Zd5BoSb50wb1YqydScEH/q0FYBL1o37c06AZ4Cw6jPPQkAGW8U6r3SumXDV8zI0l2iyWymmEP3D9O263llp7PZclUqaOY3r2ZBgMURBgtc89tAwTVNuLO0/SpB7Wx5bwUdMtlyt2yddLFivTHv07YmsZgQv6Nheq2pW2Yfeji4aBh6kE464P0ky/CeGDHVdjmHX9+85bEQ6WF+0O2pu6Rm9Vy6kQm1iYpCzMarGk6vcnAUX886QhFlJTrZNjCM7tWo2xjNKH7lDZtF/7Rcs4Qca5AUOxHUEe89GSHMxyVqfDJ1o6l/i+Z3bMcJtxjIyoB4mBIw/vG+WD14wi8J9Ki2h/zPjWPd7ZadwPyQreJmC/USBKd5VEa1gi6xM8xK4qqdlHLIcPvP5fFZ0uWdfT+lYFPNYgxdvofZW/leUT35ILdGIyB1+Y1fk6KF3Qk8AlgRM/U5OzWoOHIkR8lo0++Tsd63Q4IxqebNUlxNjIk96n5S6XUUORZblY7HlO6lSGpFnJ5J+TAWR2SYQmgGM+TN5ymrS2Ye5oRiLIvN6445ubNA6xcVxwtlnODXgMtUZeDVxUGVS+aEE8DuSrtb/vbu5JDeP3L+Jw7tpfpl/6cFaZ2hnRRXsJc6D9z1TXE8fcLgjTgFaSuSN95JnLYaXhh+bayN/9MFmkQvGSQ56AnIYklxzT/zKheA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(26005)(186003)(2616005)(36756003)(107886003)(6666004)(6506007)(52116002)(6512007)(83380400001)(508600001)(5660300002)(54906003)(110136005)(8936002)(38100700002)(8676002)(44832011)(6486002)(86362001)(66946007)(4326008)(66476007)(66556008)(316002)(2906002)(38350700002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: x5kc4vNgwwtDBSx6D/p7l+qWIcSMEhzEbbicQ0SqCTBXIKILrq8hO5xw+fqTS9GkP6bnLLPCkKiP5cNV8EPEbCseQdKbCZSJ05/fM8KFhkx7XehPZhSr19J6jCrjzs9dEOXql7GsExYK5vO9og+LFKEawuikdiOhW5xxnaYhU0BwI0ZJ0VOpbVgcKGhjaDoK0gKCX5SvK/Z9Kp67POK019DcSSJXe3ZSV4LjH7MHJ048+xcPF/5KpCHf7o1qHKaGry3Y7LR8EzdfNqX/ng2VsYwhjsPPVbaEDfQ5KvpD0houTG0OhdqPCQOV+wMZsnxhDf2v3Vzu3ebhMT4vTHqndsagvFzvtjAM+xFxs+ci+/e7xOu6H5klsHf5GK2Xd5oAzIqscOftRYDfmGFaQYZNviOeiQodUo12UeRVa7udXnsUwF80OoW6Zzy+2CzlF6jiP2MB/TGXUDh/sQYnekZByg3pDzvKCkbbMi0f/v1qEnkTGUZVAc1cArjhnJsZyG9M1sCrKQtxBlSmLDLPHrxoKlaYiPW9Cq52DRJVOvn7Irhx3kyF5OW373LGMK47YNXhFsqhLHgbLCXXXDALA0d2OD58dKHw+PRGqPZGhRQgIwUWkeRWO/nImOig4CwkzmgHkKz212Sfqbk8+ogjH0g7G6ONiE4mudP3TTI4gYZajBOSUSA0HvhtS8FpoDA3IiIsBZ8tjfymopRG6Bf56QG0dA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(6666004)(83380400001)(38350700002)(5660300002)(52116002)(8676002)(86362001)(2906002)(6512007)(36756003)(186003)(2616005)(1076003)(6506007)(26005)(107886003)(54906003)(110136005)(6486002)(66556008)(66946007)(8936002)(316002)(508600001)(44832011)(66476007)(38100700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ErhVzygLoVkJOjcZYEw33kBkEHxkeITbbHfpzIjz4BVsmRmKiDKmqg2UKhyW?=
- =?us-ascii?Q?dMnKgamlsLlWfyvkeLL4Mi1fOOkJnxSpOUFLmaq9YRDvgbt7pWG1VI6vbyQ6?=
- =?us-ascii?Q?agn8xDh03zMlQPWE0m0cIPJypDb35+bdnsbt9wT0DbLj82SHZZCeVq0jv3U1?=
- =?us-ascii?Q?cU64OmsRV8BwDsB0BS778TbyMlyIxEoOT6LTfSbdJculWTVgMVwBhDIkqYQM?=
- =?us-ascii?Q?IG/PttG1XJQqXIB6vyzVNrZNPpc0fKZdvLEAAk/57d/IwkyqXTYG8xcuU0DI?=
- =?us-ascii?Q?kmvNGu0sxW2wqO3jyTP/x0UmTQjZfqtAgKEUGLO/u/U9w8zPrDkK64k0RMyc?=
- =?us-ascii?Q?24myC/UlZAMf+Za8safC+2AYr93ZfAqpWlZ/JFXq2qiz2t3qe6Zz/cqNBTr/?=
- =?us-ascii?Q?D5OURK9qS29IGbmX0yfn5fVnlMk9SJPKpjXLml5UEL5oFxIMhCvJjOVbWnX+?=
- =?us-ascii?Q?zFfF8MnsbQiy48PeySkbmfFNzy3Q8Uj+CrE5yVVKpZRqPYdwoFESex6mqkOS?=
- =?us-ascii?Q?h/UbEi/EURwLM6ru++bFCV2zlzJH5JmUfJbwa7l7u+B+YKiQZu913Us2viTD?=
- =?us-ascii?Q?crpJzG3WKschaldFsyCPAFpXiI8tT55tHsqyVndw3vagR3idLZXi+OsXhKPk?=
- =?us-ascii?Q?zbm/v+WdxNpLOFwffy9HEwEWwOFPKKx0ohofWZdi0cjP0kwLoCTlwJ47NON3?=
- =?us-ascii?Q?JzyW20kiT0ViYyXQ43PQwFHqZ1K7lb7xTIia+jTqRtCVpoZq20yP7n1xO6EE?=
- =?us-ascii?Q?o3Emmhxxr4OufvpzXV7PjpsrUqrPlQrW1PjBNfB2i3Xfk/GUfrCLTugBPKlE?=
- =?us-ascii?Q?wPuXD2KPI8t6GQbUgwcjjdXIsL1zOvTf+xPEm9sYHiBGngHjbCZHKbeqcpow?=
- =?us-ascii?Q?4ycvvwmspQy9bacCcPhEoDw7rrKmsLpdj86V7aPEUc4lpCUi1WYelKWopVmx?=
- =?us-ascii?Q?ksBrBDJCt1SUbXNgPO/SsD9+80lNLCnmra53ASUZYIebffIc6/BomN1hGQ7C?=
- =?us-ascii?Q?JBuQNAJA4V/OiAQkTYlev3KUbyiQ1C1MOqQwtICRKJZ+goKisVRkE5Y2N3ew?=
- =?us-ascii?Q?aowK7x0Y6KcxqbcKlVRtEH2gPG+FsGoYGsc4w5pTA83LKZ19Lv2Wa//SQzbT?=
- =?us-ascii?Q?qUWOm39fqHvnJLaCLeL4+M5oewzS9BFW8xfAaZkiruWgZuwBU8WLTnLxZ4Nc?=
- =?us-ascii?Q?yiYNZ008vlKGyWGQ77YEyekehFZtDKuzLyAqsPVQ1bndknY2ZQDqhdCUDAIZ?=
- =?us-ascii?Q?45eo/vspKdYCbcuwLkM7i5W/1J45xdTO5X+qdDYIh46PrmIE53m8b3yBXLFm?=
- =?us-ascii?Q?g8GejHZbxq8xC2wa4dmn33i/kPNPzSibKq2xEDvqM6aJxBSE0Zb7xUo9/LDt?=
- =?us-ascii?Q?vybAnpOBzfS3fSAlLGHhMfFC4s+MOpTwA4pyqP83qwBIxa7SzErzcSsl4GVT?=
- =?us-ascii?Q?bXBUzoVziGFaFxs8mPrKdIPlUoMzvuNJB2A0WZelygI5aOrLpEKJvOPujDG2?=
- =?us-ascii?Q?mD/n1kKMp3+y3TXKf1oBCPa6UmIST6KHUmDKpCUQtu+VWUkeudfDQZcm2hKb?=
- =?us-ascii?Q?YhtgGGuRO0JOHeAe1P8CHGJECEkuvNVzX1zBS4OA8SxEBFrAjTudgIz+KGpm?=
- =?us-ascii?Q?ePYOe9KinWvb6T9TrbYy/ic=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8z93ayjRCPCCOHww/GhmK3PswGaQoVH/e+N/aKCBNDEEpXkKceehPzta/FoZ?=
+ =?us-ascii?Q?wPQziZWo0+wPNVTmVbP1a3I07lbFh12rkrd5jHrxDouAoTDS+MT+C8bYqmXB?=
+ =?us-ascii?Q?vbhrnechDG8vlwL2cKnOgajh1DSs57zhY6z0nL2l6NXq5lwMZ7g+kboa7inX?=
+ =?us-ascii?Q?wsOxOYG1dNyu9abNxu490Fi62dvHvheITXQlWRz5/TYZKK3mzO65RCpclOkR?=
+ =?us-ascii?Q?LsbUIE9jiIh9bE2sO9SpgTRGj+unjpVI/Jqlj58ChQHPK0CAVRLS+PJxqEUO?=
+ =?us-ascii?Q?X6yR4JqwurGI2cdil+Gn4g6zrkmF5mJCwutXbJs4OBZU79WtxnVGYUQXA3LA?=
+ =?us-ascii?Q?xhrV3ZUjwV748ttkWpCUnzzVTFwWFX3otzil71jtWxGaTg1qdjFnIQHbEVuK?=
+ =?us-ascii?Q?psPHV26QJYbpcE+QssaKKZ1ONXovcYm/ecIcjdTX/yd1VJymnCf+DsgHKqXE?=
+ =?us-ascii?Q?GCdVCLD0tNaiOLKnk+wApn5mZxq1rYCta6XflD84CCzY4DZXSOKUqGte305Z?=
+ =?us-ascii?Q?687J1JNm+9Hbh8n1qDShKq/9amDsp9PdHJrRqF8YI1TGg0FXn/4KtmfKfL5R?=
+ =?us-ascii?Q?gOT1IUID0njV7LYGAOv1YZnlpvGyTwYaKyrZ+PHgBuxMdg7jeaCLe73scRZX?=
+ =?us-ascii?Q?UtuSNh0PHnXmLl1TsdIKMlDAsENMANPRPdPlzCUQsnwxAeZRuXxoVIHJmP9o?=
+ =?us-ascii?Q?ndvJDhhisEF48k2p3SSnV3Ocl9ssDrxePy8v6sSdpjXZyqXO1xPlw4HBC2az?=
+ =?us-ascii?Q?VsnqQEF/iGNTyQxsMGd1gn9lOXdmOksmUJ2hsIizoEYK1rEHaxZy1v+qh6py?=
+ =?us-ascii?Q?fY10x5/1XVSJHPeg4Xo6xHLymDuZi+tQ81pkK8YgCPC/nMgyUfxM7esV66Ug?=
+ =?us-ascii?Q?ro9n/Xnh9hDVjrvKOW7NUy0B/WMyzLYdLGgk2arVopKEbn2izGeLPhGbylKg?=
+ =?us-ascii?Q?8bbrOET5mmTIyoAuVSijT7pc2UjMhbVp7HkRN651bNoUniWIRRdnzgxphH3/?=
+ =?us-ascii?Q?n4FMlinsVITilJd6y4rH1xzLBLt0jaIjGch1684MxoYao1HoyHBOMQQ2EVdN?=
+ =?us-ascii?Q?U/dz1gPisDVgt5DLV74yGbEQD9GYhT7RzkQWg80EACBmRNf9UBIVBdW66CPf?=
+ =?us-ascii?Q?oO0QIqYfz6thJcnEy0oWE498imCMHwI3GaGH1r4n+g4kKKfQQ4UoG36BAyGq?=
+ =?us-ascii?Q?DhQdrDTPgFk5BvfZMVnrwV4p6TUM+1kHkdXxB8TYXQjg+Ew/kJhgtBMJ2KJE?=
+ =?us-ascii?Q?sfl7Mz5yT2/VGlvoNVpCLP/LdYsGXvAVy4BTb7UnkrL3Rq01rHB+VRXUJxE2?=
+ =?us-ascii?Q?CBGay0p2nuf54hQTdbIXpCm13r4502AVowQty8lCaFIC0O5Hy+jiH0muM97n?=
+ =?us-ascii?Q?ARoBbeN7caP7Mxwu5oXL3PvgwK0vOCtCPF7d6oux/CHu7caFPdBA+LzF2OZj?=
+ =?us-ascii?Q?scaSDgf2XzBkMNpsYzvfow9+vxOsxd5/oxiIZhqIIF9oSGQHdDG1GW7QQW7d?=
+ =?us-ascii?Q?3PU/u3Z3nP6euj/7QG63JjHbO0o9anTjo7TS9fHHddeEzX2cps3Gvx7A14th?=
+ =?us-ascii?Q?YTjMezG/sK3EMkMKbgwpuqp/wZ+nHOWeUDIRaVsCKY5SIg3EoEasb8B25bJn?=
+ =?us-ascii?Q?uDSfz+Qu+5B54yzDLqLVX2c=3D?=
 X-OriginatorOrg: quantatw.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 810c4729-602f-4fbc-827b-08d9f0a0b406
+X-MS-Exchange-CrossTenant-Network-Message-Id: cea83412-2a14-4ec7-58cf-08d9f0a0b567
 X-MS-Exchange-CrossTenant-AuthSource: HK0PR04MB3282.apcprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 16:32:05.6801
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 16:32:07.9299
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Tu2OGCaVMJOe/MJx7ECBr1VYy+zrZDzd799VZPxaGkYtDk0snLY1zGH0DS6e2lfmb1zGbNaI2taOVp7yNgkpkg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR04MB4602
+X-MS-Exchange-CrossTenant-UserPrincipalName: icJli7AobAu/jzsmKmnd66TtwkT0cF/WEK5LdB884eFUiPe05uQwaYt2zV50e0ogKlNDynIQ6lWDqc5wtPXT0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR04MB5695
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch sled to 1-based to meet OpenBMC multi-host numbering rule
+Enable interrupt support for all sledx_ioexp, so userspace can monitor
+gpio from io expander by interrupt
 
 Signed-off-by: Potin Lai <potin.lai@quantatw.com>
 ---
- .../dts/aspeed-bmc-facebook-bletchley.dts     | 128 +++++++++---------
- 1 file changed, 64 insertions(+), 64 deletions(-)
+ .../dts/aspeed-bmc-facebook-bletchley.dts     | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
 diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-index f973ea883b97..e77736ed5c4c 100644
+index 08fa4c7b5ed4..ba9ac01cc585 100644
 --- a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
 +++ b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-@@ -101,16 +101,6 @@
- 			default-state = "off";
- 			gpios = <&fan_ioexp 15 GPIO_ACTIVE_HIGH>;
- 		};
--		sled0_amber {
--			retain-state-shutdown;
--			default-state = "off";
--			gpios = <&sled0_leds 0 GPIO_ACTIVE_LOW>;
--		};
--		sled0_blue {
--			retain-state-shutdown;
--			default-state = "off";
--			gpios = <&sled0_leds 1 GPIO_ACTIVE_LOW>;
--		};
- 		sled1_amber {
- 			retain-state-shutdown;
- 			default-state = "off";
-@@ -161,6 +151,16 @@
- 			default-state = "off";
- 			gpios = <&sled5_leds 1 GPIO_ACTIVE_LOW>;
- 		};
-+		sled6_amber {
-+			retain-state-shutdown;
-+			default-state = "off";
-+			gpios = <&sled6_leds 0 GPIO_ACTIVE_LOW>;
-+		};
-+		sled6_blue {
-+			retain-state-shutdown;
-+			default-state = "off";
-+			gpios = <&sled6_leds 1 GPIO_ACTIVE_LOW>;
-+		};
- 	};
- };
+@@ -6,6 +6,7 @@
+ #include <dt-bindings/gpio/aspeed-gpio.h>
+ #include <dt-bindings/usb/pd.h>
+ #include <dt-bindings/leds/leds-pca955x.h>
++#include <dt-bindings/interrupt-controller/irq.h>
  
-@@ -219,7 +219,7 @@
- 		reg = <0x4f>;
- 	};
- 
--	sled0_ioexp: pca9539@76 {
-+	sled1_ioexp: pca9539@76 {
- 		compatible = "nxp,pca9539";
- 		reg = <0x76>;
- 		#address-cells = <1>;
-@@ -228,13 +228,13 @@
+ / {
+ 	model = "Facebook Bletchley BMC";
+@@ -267,6 +268,9 @@
+ 		gpio-controller;
  		#gpio-cells = <2>;
  
++		interrupt-parent = <&gpio0>;
++		interrupts = <ASPEED_GPIO(M, 0) IRQ_TYPE_LEVEL_LOW>;
++
  		gpio-line-names =
--		"SLED0_MS_DETECT1","SLED0_VBUS_BMC_EN","SLED0_INA230_ALERT","SLED0_P12V_STBY_ALERT",
--		"SLED0_SSD_ALERT","SLED0_MS_DETECT0","SLED0_RST_CCG5","SLED0_FUSB302_INT",
--		"SLED0_MD_STBY_RESET","SLED0_MD_IOEXP_EN_FAULT","SLED0_MD_DIR","SLED0_MD_DECAY",
--		"SLED0_MD_MODE1","SLED0_MD_MODE2","SLED0_MD_MODE3","power-host0";
-+		"SLED1_MS_DETECT1","SLED1_VBUS_BMC_EN","SLED1_INA230_ALERT","SLED1_P12V_STBY_ALERT",
-+		"SLED1_SSD_ALERT","SLED1_MS_DETECT0","SLED1_RST_CCG5","SLED1_FUSB302_INT",
-+		"SLED1_MD_STBY_RESET","SLED1_MD_IOEXP_EN_FAULT","SLED1_MD_DIR","SLED1_MD_DECAY",
-+		"SLED1_MD_MODE1","SLED1_MD_MODE2","SLED1_MD_MODE3","power-host1";
- 	};
- 
--	sled0_leds: pca9552@67 {
-+	sled1_leds: pca9552@67 {
- 		compatible = "nxp,pca9552";
- 		reg = <0x67>;
- 		#address-cells = <1>;
-@@ -243,13 +243,13 @@
+ 		"SLED1_MS_DETECT1","SLED1_VBUS_BMC_EN","SLED1_INA230_ALERT","SLED1_P12V_STBY_ALERT",
+ 		"SLED1_SSD_ALERT","SLED1_MS_DETECT0","SLED1_RST_CCG5","SLED1_FUSB302_INT",
+@@ -330,6 +334,9 @@
+ 		gpio-controller;
  		#gpio-cells = <2>;
  
++		interrupt-parent = <&gpio0>;
++		interrupts = <ASPEED_GPIO(M, 1) IRQ_TYPE_LEVEL_LOW>;
++
  		gpio-line-names =
--		"led-sled0-amber","led-sled0-blue","SLED0_RST_IOEXP","",
-+		"led-sled1-amber","led-sled1-blue","SLED1_RST_IOEXP","",
- 		"","","","",
- 		"","","","",
- 		"","","","";
- 	};
- 
--	sled0_fusb302: typec-portc@22 {
-+	sled1_fusb302: typec-portc@22 {
- 		compatible = "fcs,fusb302";
- 		reg = <0x22>;
- 
-@@ -282,7 +282,7 @@
- 		reg = <0x4f>;
- 	};
- 
--	sled1_ioexp: pca9539@76 {
-+	sled2_ioexp: pca9539@76 {
- 		compatible = "nxp,pca9539";
- 		reg = <0x76>;
- 		#address-cells = <1>;
-@@ -291,13 +291,13 @@
+ 		"SLED2_MS_DETECT1","SLED2_VBUS_BMC_EN","SLED2_INA230_ALERT","SLED2_P12V_STBY_ALERT",
+ 		"SLED2_SSD_ALERT","SLED2_MS_DETECT0","SLED2_RST_CCG5","SLED2_FUSB302_INT",
+@@ -397,6 +404,9 @@
+ 		gpio-controller;
  		#gpio-cells = <2>;
  
++		interrupt-parent = <&gpio0>;
++		interrupts = <ASPEED_GPIO(M, 2) IRQ_TYPE_LEVEL_LOW>;
++
  		gpio-line-names =
--		"SLED1_MS_DETECT1","SLED1_VBUS_BMC_EN","SLED1_INA230_ALERT","SLED1_P12V_STBY_ALERT",
--		"SLED1_SSD_ALERT","SLED1_MS_DETECT0","SLED1_RST_CCG5","SLED1_FUSB302_INT",
--		"SLED1_MD_STBY_RESET","SLED1_MD_IOEXP_EN_FAULT","SLED1_MD_DIR","SLED1_MD_DECAY",
--		"SLED1_MD_MODE1","SLED1_MD_MODE2","SLED1_MD_MODE3","power-host1";
-+		"SLED2_MS_DETECT1","SLED2_VBUS_BMC_EN","SLED2_INA230_ALERT","SLED2_P12V_STBY_ALERT",
-+		"SLED2_SSD_ALERT","SLED2_MS_DETECT0","SLED2_RST_CCG5","SLED2_FUSB302_INT",
-+		"SLED2_MD_STBY_RESET","SLED2_MD_IOEXP_EN_FAULT","SLED2_MD_DIR","SLED2_MD_DECAY",
-+		"SLED2_MD_MODE1","SLED2_MD_MODE2","SLED2_MD_MODE3","power-host2";
- 	};
- 
--	sled1_leds: pca9552@67 {
-+	sled2_leds: pca9552@67 {
- 		compatible = "nxp,pca9552";
- 		reg = <0x67>;
- 		#address-cells = <1>;
-@@ -306,13 +306,13 @@
+ 		"SLED3_MS_DETECT1","SLED3_VBUS_BMC_EN","SLED3_INA230_ALERT","SLED3_P12V_STBY_ALERT",
+ 		"SLED3_SSD_ALERT","SLED3_MS_DETECT0","SLED3_RST_CCG5","SLED3_FUSB302_INT",
+@@ -460,6 +470,9 @@
+ 		gpio-controller;
  		#gpio-cells = <2>;
  
++		interrupt-parent = <&gpio0>;
++		interrupts = <ASPEED_GPIO(M, 3) IRQ_TYPE_LEVEL_LOW>;
++
  		gpio-line-names =
--		"led-sled1-amber","led-sled1-blue","SLED1_RST_IOEXP","",
-+		"led-sled2-amber","led-sled2-blue","SLED2_RST_IOEXP","",
- 		"","","","",
- 		"","","","",
- 		"","","","";
- 	};
- 
--	sled1_fusb302: typec-portc@22 {
-+	sled2_fusb302: typec-portc@22 {
- 		compatible = "fcs,fusb302";
- 		reg = <0x22>;
- 
-@@ -349,7 +349,7 @@
- 		reg = <0x4f>;
- 	};
- 
--	sled2_ioexp: pca9539@76 {
-+	sled3_ioexp: pca9539@76 {
- 		compatible = "nxp,pca9539";
- 		reg = <0x76>;
- 		#address-cells = <1>;
-@@ -358,13 +358,13 @@
+ 		"SLED4_MS_DETECT1","SLED4_VBUS_BMC_EN","SLED4_INA230_ALERT","SLED4_P12V_STBY_ALERT",
+ 		"SLED4_SSD_ALERT","SLED4_MS_DETECT0","SLED4_RST_CCG5","SLED4_FUSB302_INT",
+@@ -523,6 +536,9 @@
+ 		gpio-controller;
  		#gpio-cells = <2>;
  
++		interrupt-parent = <&gpio0>;
++		interrupts = <ASPEED_GPIO(M, 4) IRQ_TYPE_LEVEL_LOW>;
++
  		gpio-line-names =
--		"SLED2_MS_DETECT1","SLED2_VBUS_BMC_EN","SLED2_INA230_ALERT","SLED2_P12V_STBY_ALERT",
--		"SLED2_SSD_ALERT","SLED2_MS_DETECT0","SLED2_RST_CCG5","SLED2_FUSB302_INT",
--		"SLED2_MD_STBY_RESET","SLED2_MD_IOEXP_EN_FAULT","SLED2_MD_DIR","SLED2_MD_DECAY",
--		"SLED2_MD_MODE1","SLED2_MD_MODE2","SLED2_MD_MODE3","power-host2";
-+		"SLED3_MS_DETECT1","SLED3_VBUS_BMC_EN","SLED3_INA230_ALERT","SLED3_P12V_STBY_ALERT",
-+		"SLED3_SSD_ALERT","SLED3_MS_DETECT0","SLED3_RST_CCG5","SLED3_FUSB302_INT",
-+		"SLED3_MD_STBY_RESET","SLED3_MD_IOEXP_EN_FAULT","SLED3_MD_DIR","SLED3_MD_DECAY",
-+		"SLED3_MD_MODE1","SLED3_MD_MODE2","SLED3_MD_MODE3","power-host3";
- 	};
- 
--	sled2_leds: pca9552@67 {
-+	sled3_leds: pca9552@67 {
- 		compatible = "nxp,pca9552";
- 		reg = <0x67>;
- 		#address-cells = <1>;
-@@ -373,13 +373,13 @@
+ 		"SLED5_MS_DETECT1","SLED5_VBUS_BMC_EN","SLED5_INA230_ALERT","SLED5_P12V_STBY_ALERT",
+ 		"SLED5_SSD_ALERT","SLED5_MS_DETECT0","SLED5_RST_CCG5","SLED5_FUSB302_INT",
+@@ -586,6 +602,9 @@
+ 		gpio-controller;
  		#gpio-cells = <2>;
  
++		interrupt-parent = <&gpio0>;
++		interrupts = <ASPEED_GPIO(M, 5) IRQ_TYPE_LEVEL_LOW>;
++
  		gpio-line-names =
--		"led-sled2-amber","led-sled2-blue","SLED2_RST_IOEXP","",
-+		"led-sled3-amber","led-sled3-blue","SLED3_RST_IOEXP","",
- 		"","","","",
- 		"","","","",
- 		"","","","";
- 	};
- 
--	sled2_fusb302: typec-portc@22 {
-+	sled3_fusb302: typec-portc@22 {
- 		compatible = "fcs,fusb302";
- 		reg = <0x22>;
- 
-@@ -412,7 +412,7 @@
- 		reg = <0x4f>;
- 	};
- 
--	sled3_ioexp: pca9539@76 {
-+	sled4_ioexp: pca9539@76 {
- 		compatible = "nxp,pca9539";
- 		reg = <0x76>;
- 		#address-cells = <1>;
-@@ -421,13 +421,13 @@
- 		#gpio-cells = <2>;
- 
- 		gpio-line-names =
--		"SLED3_MS_DETECT1","SLED3_VBUS_BMC_EN","SLED3_INA230_ALERT","SLED3_P12V_STBY_ALERT",
--		"SLED3_SSD_ALERT","SLED3_MS_DETECT0","SLED3_RST_CCG5","SLED3_FUSB302_INT",
--		"SLED3_MD_STBY_RESET","SLED3_MD_IOEXP_EN_FAULT","SLED3_MD_DIR","SLED3_MD_DECAY",
--		"SLED3_MD_MODE1","SLED3_MD_MODE2","SLED3_MD_MODE3","power-host3";
-+		"SLED4_MS_DETECT1","SLED4_VBUS_BMC_EN","SLED4_INA230_ALERT","SLED4_P12V_STBY_ALERT",
-+		"SLED4_SSD_ALERT","SLED4_MS_DETECT0","SLED4_RST_CCG5","SLED4_FUSB302_INT",
-+		"SLED4_MD_STBY_RESET","SLED4_MD_IOEXP_EN_FAULT","SLED4_MD_DIR","SLED4_MD_DECAY",
-+		"SLED4_MD_MODE1","SLED4_MD_MODE2","SLED4_MD_MODE3","power-host4";
- 	};
- 
--	sled3_leds: pca9552@67 {
-+	sled4_leds: pca9552@67 {
- 		compatible = "nxp,pca9552";
- 		reg = <0x67>;
- 		#address-cells = <1>;
-@@ -436,13 +436,13 @@
- 		#gpio-cells = <2>;
- 
- 		gpio-line-names =
--		"led-sled3-amber","led-sled3-blue","SLED3_RST_IOEXP","",
-+		"led-sled4-amber","led-sled4-blue","SLED4_RST_IOEXP","",
- 		"","","","",
- 		"","","","",
- 		"","","","";
- 	};
- 
--	sled3_fusb302: typec-portc@22 {
-+	sled4_fusb302: typec-portc@22 {
- 		compatible = "fcs,fusb302";
- 		reg = <0x22>;
- 
-@@ -475,7 +475,7 @@
- 		reg = <0x4f>;
- 	};
- 
--	sled4_ioexp: pca9539@76 {
-+	sled5_ioexp: pca9539@76 {
- 		compatible = "nxp,pca9539";
- 		reg = <0x76>;
- 		#address-cells = <1>;
-@@ -484,13 +484,13 @@
- 		#gpio-cells = <2>;
- 
- 		gpio-line-names =
--		"SLED4_MS_DETECT1","SLED4_VBUS_BMC_EN","SLED4_INA230_ALERT","SLED4_P12V_STBY_ALERT",
--		"SLED4_SSD_ALERT","SLED4_MS_DETECT0","SLED4_RST_CCG5","SLED4_FUSB302_INT",
--		"SLED4_MD_STBY_RESET","SLED4_MD_IOEXP_EN_FAULT","SLED4_MD_DIR","SLED4_MD_DECAY",
--		"SLED4_MD_MODE1","SLED4_MD_MODE2","SLED4_MD_MODE3","power-host4";
-+		"SLED5_MS_DETECT1","SLED5_VBUS_BMC_EN","SLED5_INA230_ALERT","SLED5_P12V_STBY_ALERT",
-+		"SLED5_SSD_ALERT","SLED5_MS_DETECT0","SLED5_RST_CCG5","SLED5_FUSB302_INT",
-+		"SLED5_MD_STBY_RESET","SLED5_MD_IOEXP_EN_FAULT","SLED5_MD_DIR","SLED5_MD_DECAY",
-+		"SLED5_MD_MODE1","SLED5_MD_MODE2","SLED5_MD_MODE3","power-host5";
- 	};
- 
--	sled4_leds: pca9552@67 {
-+	sled5_leds: pca9552@67 {
- 		compatible = "nxp,pca9552";
- 		reg = <0x67>;
- 		#address-cells = <1>;
-@@ -499,13 +499,13 @@
- 		#gpio-cells = <2>;
- 
- 		gpio-line-names =
--		"led-sled4-amber","led-sled4-blue","SLED4_RST_IOEXP","",
-+		"led-sled5-amber","led-sled5-blue","SLED5_RST_IOEXP","",
- 		"","","","",
- 		"","","","",
- 		"","","","";
- 	};
- 
--	sled4_fusb302: typec-portc@22 {
-+	sled5_fusb302: typec-portc@22 {
- 		compatible = "fcs,fusb302";
- 		reg = <0x22>;
- 
-@@ -538,7 +538,7 @@
- 		reg = <0x4f>;
- 	};
- 
--	sled5_ioexp: pca9539@76 {
-+	sled6_ioexp: pca9539@76 {
- 		compatible = "nxp,pca9539";
- 		reg = <0x76>;
- 		#address-cells = <1>;
-@@ -547,13 +547,13 @@
- 		#gpio-cells = <2>;
- 
- 		gpio-line-names =
--		"SLED5_MS_DETECT1","SLED5_VBUS_BMC_EN","SLED5_INA230_ALERT","SLED5_P12V_STBY_ALERT",
--		"SLED5_SSD_ALERT","SLED5_MS_DETECT0","SLED5_RST_CCG5","SLED5_FUSB302_INT",
--		"SLED5_MD_STBY_RESET","SLED5_MD_IOEXP_EN_FAULT","SLED5_MD_DIR","SLED5_MD_DECAY",
--		"SLED5_MD_MODE1","SLED5_MD_MODE2","SLED5_MD_MODE3","power-host5";
-+		"SLED6_MS_DETECT1","SLED6_VBUS_BMC_EN","SLED6_INA230_ALERT","SLED6_P12V_STBY_ALERT",
-+		"SLED6_SSD_ALERT","SLED6_MS_DETECT0","SLED6_RST_CCG5","SLED6_FUSB302_INT",
-+		"SLED6_MD_STBY_RESET","SLED6_MD_IOEXP_EN_FAULT","SLED6_MD_DIR","SLED6_MD_DECAY",
-+		"SLED6_MD_MODE1","SLED6_MD_MODE2","SLED6_MD_MODE3","power-host6";
- 	};
- 
--	sled5_leds: pca9552@67 {
-+	sled6_leds: pca9552@67 {
- 		compatible = "nxp,pca9552";
- 		reg = <0x67>;
- 		#address-cells = <1>;
-@@ -562,13 +562,13 @@
- 		#gpio-cells = <2>;
- 
- 		gpio-line-names =
--		"led-sled5-amber","led-sled5-blue","SLED5_RST_IOEXP","",
-+		"led-sled6-amber","led-sled6-blue","SLED6_RST_IOEXP","",
- 		"","","","",
- 		"","","","",
- 		"","","","";
- 	};
- 
--	sled5_fusb302: typec-portc@22 {
-+	sled6_fusb302: typec-portc@22 {
- 		compatible = "fcs,fusb302";
- 		reg = <0x22>;
- 
-@@ -702,17 +702,17 @@
- 	/*F0-F7*/	"","","","","","","","",
- 	/*G0-G7*/	"","SWITCH_FRU_MUX","","","","","","",
- 	/*H0-H7*/	"presence-riser1","presence-riser2",
--			"presence-sled0","presence-sled1",
--			"presence-sled2","presence-sled3",
--			"presence-sled4","presence-sled5",
-+			"presence-sled1","presence-sled2",
-+			"presence-sled3","presence-sled4",
-+			"presence-sled5","presence-sled6",
- 	/*I0-I7*/	"REV_ID0","","REV_ID1","REV_ID2",
- 			"","","","",
- 	/*J0-J7*/	"","","","","","","","",
- 	/*K0-K7*/	"","","","","","","","",
- 	/*L0-L7*/	"","","","","","","","",
--	/*M0-M7*/	"ALERT_SLED0","ALERT_SLED1",
--			"ALERT_SLED2","ALERT_SLED3",
--			"ALERT_SLED4","ALERT_SLED5",
-+	/*M0-M7*/	"ALERT_SLED1","ALERT_SLED2",
-+			"ALERT_SLED3","ALERT_SLED4",
-+			"ALERT_SLED5","ALERT_SLED6",
- 			"P12V_AUX_ALERT1","",
- 	/*N0-N7*/	"","","","","","","","",
- 	/*O0-O7*/	"","","","",
+ 		"SLED6_MS_DETECT1","SLED6_VBUS_BMC_EN","SLED6_INA230_ALERT","SLED6_P12V_STBY_ALERT",
+ 		"SLED6_SSD_ALERT","SLED6_MS_DETECT0","SLED6_RST_CCG5","SLED6_FUSB302_INT",
 -- 
 2.17.1
 
