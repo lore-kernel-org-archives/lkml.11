@@ -2,72 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE505C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C95EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240889AbiBOPmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:42:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43622 "EHLO
+        id S235514AbiBOPms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:42:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241532AbiBOPlb (ORCPT
+        with ESMTP id S241642AbiBOPlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:41:31 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD91C0879
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:35:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=CGdco0upSenQ58aPKdUhFiDya/+9i1TLJILSogM9sLc=; b=H0oJ2SkQ0SKuzB5BB9LaNB+l2s
-        fnpbknaTsYEpjx6P5bth8l2QbzmiUuzxp/zRycqyzv2sf48v+Q8woTblfvmDxOIFuZJpmcBd1WE8v
-        O2MFd1mTVzmQbkWgMCKpOWWaU2Z6yguNyY9YmXENpjZlYYEjkE1ASQbggZAKBGpIUwUzs2aDa8fPZ
-        I3DyHVY49Y7kg639rwzPd2Ms6VCctTkgnYTmVpLuox9usd9j1IeARoR9AJlswcytkvAHzyO8jAdZB
-        KTENZlavLu9WfM1aWGkYo3x3v0G+XpPM6AdmTaLvFx84oL0ndks2YzeMnVr8gTytIgfrFHZTRc9jj
-        /WmLaldg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJzr6-00A8gN-TI; Tue, 15 Feb 2022 15:35:05 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 068C93001F3;
-        Tue, 15 Feb 2022 16:35:03 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id E60542D7640CD; Tue, 15 Feb 2022 16:35:02 +0100 (CET)
-Date:   Tue, 15 Feb 2022 16:35:02 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        H Peter Anvin <hpa@zytor.com>
-Subject: Re: [PATCH V2 0/2] perf/x86/intel/pt: Add support for event tracing
- and TNT disabling
-Message-ID: <YgvIJop34KuyUIx6@hirez.programming.kicks-ass.net>
-References: <20220126104815.2807416-1-adrian.hunter@intel.com>
+        Tue, 15 Feb 2022 10:41:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1719DB65
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:35:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C89616A0
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 15:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15830C340EB;
+        Tue, 15 Feb 2022 15:35:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644939347;
+        bh=WwwCEUptRQNEOeF0BNXF+xx9Qur6a0L+BPYNrj74ML4=;
+        h=Date:From:To:cc:Subject:From;
+        b=rOHu2/LhaO7fHu2VHeol8vWk8YYZ/0UpeMD4agxzaaHjJMnVrB6/21mitW1d9AWpg
+         ulWJBMza1COGX55mrxvXuMIvL1woTzZEj//naGbzGleCXVzH6p1c9T6r0kcfmRUw8P
+         IhJRzp9YwOJwbKScFiRj2oZZCVTuy1XBotPGFzlv7fxNhuUynAET0EKWvdnWaJ1hT+
+         SZUBPS0cNGhnMxu4lOeL42qgXR2OHfOXdt+qN8X1OHQ6zlXeIPe0wqaVwZFCVZ3eqk
+         b65pDxQbtIjJG/L0kUQbv0Gu56Dhy1FFD/Uvg4g+rEZrPeOKIJTVAzw3v1nydFTbJ9
+         34OXMKqqW4sKA==
+Date:   Tue, 15 Feb 2022 16:35:43 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+cc:     linux-kernel@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [GIT PULL] HID fixes
+Message-ID: <nycvar.YFH.7.76.2202151633100.11721@cbobk.fhfr.pm>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126104815.2807416-1-adrian.hunter@intel.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 12:48:13PM +0200, Adrian Hunter wrote:
-> Hi
-> 
-> As of Intel SDM (https://www.intel.com/sdm) version 076, there are 2 new
-> Intel PT features called Event Trace and TNT-Disable.
-> 
-> Event Trace exposes details about asynchronous events such as interrupts
-> and VM-Entry/Exit.
-> 
-> TNT-Disable disables TNT packets to reduce the tracing overhead, but with
-> the result that exact control flow information is lost.
+Linus,
 
-What's a TNT?
+please pull from
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git for-linus
+
+to receive HID subsystem fixes.
+
+=====
+- memory leak fix for hid-elo driver (Dongliang Mu)
+- fix for hangs on newer AMD platforms with amd_sfh-driven hardware 
+  (Basavaraj Natikar )
+- locking fix in i2c-hid (Daniel Thompson)
+- a few device-ID specific quirks
+=====
+
+Thanks.
+
+----------------------------------------------------------------
+Alex Henrie (1):
+      HID: apple: Set the tilde quirk flag on the Wellspring 5 and later
+
+Basavaraj Natikar (7):
+      HID: amd_sfh: Increase sensor command timeout
+      HID: amd_sfh: Add illuminance mask to limit ALS max value
+      HID: amd_sfh: Handle amd_sfh work buffer in PM ops
+      HID: amd_sfh: Correct the structure field name
+      HID: amd_sfh: Disable the interrupt for all command
+      HID: amd_sfh: Add functionality to clear interrupts
+      HID: amd_sfh: Add interrupt handler to process interrupts
+
+Daniel Thompson (1):
+      HID: i2c-hid: goodix: Fix a lockdep splat
+
+Dongliang Mu (1):
+      HID: elo: fix memory leak in elo_probe
+
+Sergio Costas (1):
+      HID:Add support for UGTABLET WP5540
+
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c             | 76 +++++++++++++++++++++-
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.h             |  4 +-
+ .../amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c  |  4 +-
+ drivers/hid/hid-apple.c                            | 16 ++---
+ drivers/hid/hid-elo.c                              |  1 +
+ drivers/hid/hid-ids.h                              |  1 +
+ drivers/hid/hid-quirks.c                           |  1 +
+ drivers/hid/i2c-hid/i2c-hid-of-goodix.c            | 28 ++++----
+ 8 files changed, 102 insertions(+), 29 deletions(-)
+
+-- 
+Jiri Kosina
+SUSE Labs
+
