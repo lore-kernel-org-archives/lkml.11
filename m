@@ -2,100 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C70C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1CE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235527AbiBOMX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:23:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33086 "EHLO
+        id S237348AbiBOMZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:25:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbiBOMX2 (ORCPT
+        with ESMTP id S232191AbiBOMZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:23:28 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757C965797
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:23:18 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id c4so13264984pfl.7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:23:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/vGpsroO/5ynMmmPCxpzvU3BbrtrxMXLbcoJ2oxfZUw=;
-        b=jvDpzCyNE1qA7kCpxOuQgmJ8nXakFWB+xDTaQ5qLriuUqdBIt2FlHGSYZGPR+09kpj
-         CbRwtmlK7/zrJgiQsBe9kGTUHBptLDFkmLdU87MSmoguriPt9Q4MkUwTuHJhI8LhrRdY
-         h1uqPe0AogX7f5/xorm+U+/y1rjHpmDW0RZf3h8oYTmZO4MILPdMZ1ofvZXg4QqNYMLx
-         m75GlFiQK6SeoHcvbxIniXlZ5VWGvFcy7VGvyIRXkm5le/JLwY2TvImsLGFfIKex6E5j
-         9TsSnkN7sMT9wqIkNi/0OIpkA04yOXhbfrHw88YnwXKnFfUG7gPcW13Jli1orQvey3BL
-         kL3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/vGpsroO/5ynMmmPCxpzvU3BbrtrxMXLbcoJ2oxfZUw=;
-        b=wtsPshysvQ79iWC8/nsDyetzVzmaayEqd2QWWQ9ol9S6fNEyCxXFgNeC1c3vM4kfQR
-         Ya8zi4ANEwcIygTqd5bxT01K23m/6c2MgWuz97VVxnZIX3qZPvzFQ+mGDSI74znI2/Yg
-         B7aCM7eMKGFK82zEPnVq+i6R/A5WNvxJBJTU+1CO7T03gu8XdAGufxbn/b6syeDDG7bt
-         ieSecS9adY+NufBRhW36AwAIUzxH4I4yBqOprH/qBTMQQ5rkNaVD9fAU8HRg+kFarcn0
-         1/XQu5S7Jwhm04WnCUZL1rIUX0pKqyn7HihBqZK99+KC/JlQGFHTM74c49V162UWM+RM
-         hgKQ==
-X-Gm-Message-State: AOAM530ROa1H7tH/IEHWtQ8VyEbJTqPmynUWYdAC/m9kKJ+IX2xSlXqF
-        eH7OYEhH9B1L2nryAvvBCzJQng==
-X-Google-Smtp-Source: ABdhPJzzNNNv3vukYQ33azaYf4qWPQyjIeFOE7w8XiLVxQT74HFsjInNJoyr/SE9wfwwtLgyDzl/lg==
-X-Received: by 2002:a63:87c3:: with SMTP id i186mr3310832pge.545.1644927797995;
-        Tue, 15 Feb 2022 04:23:17 -0800 (PST)
-Received: from [10.255.13.118] ([139.177.225.246])
-        by smtp.gmail.com with ESMTPSA id c3sm9459607pfd.129.2022.02.15.04.23.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 04:23:17 -0800 (PST)
-Message-ID: <86bbb33e-1e9b-70f9-237c-d0c02537380c@bytedance.com>
-Date:   Tue, 15 Feb 2022 20:23:13 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [Phishing Risk] [External] Re: [PATCH] sched/cpuacct: fix charge
- percpu cpuusage
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>, Peter Zijlstra <peterz@infradead.org>
-Cc:     arbn@yandex-team.com, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, Minye Zhu <zhuminye@bytedance.com>
-References: <20220213120118.93471-1-zhouchengming@bytedance.com>
- <YgoqPT67g2NcV/eH@hirez.programming.kicks-ass.net>
- <YgqmE9Id35av9NZk@slm.duckdns.org>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <YgqmE9Id35av9NZk@slm.duckdns.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 15 Feb 2022 07:25:36 -0500
+X-Greylist: delayed 437 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 04:25:25 PST
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98489107AA9
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:25:25 -0800 (PST)
+Received: from epcas3p2.samsung.com (unknown [182.195.41.20])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220215121802epoutp0224e8823b84944bcaceac18e348d4ebcc~T9NR5_Vfw1394113941epoutp02R
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 12:18:02 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220215121802epoutp0224e8823b84944bcaceac18e348d4ebcc~T9NR5_Vfw1394113941epoutp02R
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1644927482;
+        bh=gFH/O+Wwc4cOaRG+Ce3cxW3yMZxYDCdcbdpfz+GoqEI=;
+        h=Subject:Reply-To:From:To:Date:References:From;
+        b=jXCJwOE5sTQnteFunbis4gvquuLY4r+Fc++uZfECXWhSZHbCjnx8iKJaya1fe8GQC
+         WHqo4O6+qGPL7R8IjRF8aarMdqH5xsKCAjMxctUdpR5s9Mg6BYICwUTccQCglkCUey
+         wRoqw01oQUGub6pazRizoou1csXo6U4rEnpMovUM=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas3p2.samsung.com (KnoxPortal) with ESMTP id
+        20220215121801epcas3p2104ee63750619de84afdcdec064da235~T9NRYlWeI1114711147epcas3p2X;
+        Tue, 15 Feb 2022 12:18:01 +0000 (GMT)
+Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp1.localdomain
+        (Postfix) with ESMTP id 4Jyg8n5CJLz4x9Pp; Tue, 15 Feb 2022 12:18:01 +0000
+        (GMT)
+Mime-Version: 1.0
+Subject: [PATCH] scsi: ufs: Remove wlun_dev_to_hba()
+Reply-To: keosung.park@samsung.com
+Sender: Keoseong Park <keosung.park@samsung.com>
+From:   Keoseong Park <keosung.park@samsung.com>
+To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
+        "avri.altman@wdc.com" <avri.altman@wdc.com>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "bvanassche@acm.org" <bvanassche@acm.org>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "cang@codeaurora.org" <cang@codeaurora.org>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "asutoshd@codeaurora.org" <asutoshd@codeaurora.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <1891546521.01644927481711.JavaMail.epsvc@epcpadp4>
+Date:   Tue, 15 Feb 2022 20:40:02 +0900
+X-CMS-MailID: 20220215114002epcms2p1eb4e53507c96e0f24770af16aedcf5c6
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+X-Hop-Count: 3
+X-CMS-RootMailID: 20220215114002epcms2p1eb4e53507c96e0f24770af16aedcf5c6
+References: <CGME20220215114002epcms2p1eb4e53507c96e0f24770af16aedcf5c6@epcms2p1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/2/15 2:57 上午, Tejun Heo wrote:
-> On Mon, Feb 14, 2022 at 11:09:01AM +0100, Peter Zijlstra wrote:
->> --- a/kernel/sched/cpuacct.c
->> +++ b/kernel/sched/cpuacct.c
->> @@ -334,15 +334,13 @@ static struct cftype files[] = {
->>   */
->>  void cpuacct_charge(struct task_struct *tsk, u64 cputime)
->>  {
->> -	struct cpuacct *ca;
->>  	unsigned int cpu = task_cpu(tsk);
->> +	struct cpuacct *ca;
->>  
->> -	rcu_read_lock();
->> +	lockdep_assert_rq_held(cpu_rq(cpu));
->>  
->>  	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
->>  		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
->> -
->> -	rcu_read_unlock();
-> 
-> And probably expand the same to cgroup_account_cputime[_field]() too.
-> 
-> Thanks.
-> 
+Commit edc0596cc04b ("scsi: ufs: core: Stop clearing UNIT ATTENTIONS")
+removed all callers of wlun_dev_to_hba(). Hence also remove the macro itself.
 
-Good suggestion, will do.
+Signed-off-by: Keoseong Park <keosung.park@samsung.com>
+---
+ drivers/scsi/ufs/ufshcd.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Thanks.
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index 41d85b69fa50..1243d73d669b 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -83,8 +83,6 @@
+ /* Polling time to wait for fDeviceInit */
+ #define FDEVICEINIT_COMPL_TIMEOUT 1500 /* millisecs */
+ 
+-#define wlun_dev_to_hba(dv) shost_priv(to_scsi_device(dv)->host)
+-
+ #define ufshcd_toggle_vreg(_dev, _vreg, _on)				\
+ 	({                                                              \
+ 		int _ret;                                               \
+-- 
+2.17.1
+
