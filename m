@@ -2,165 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B44FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:21:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4451EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:23:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243756AbiBOTUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:20:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54810 "EHLO
+        id S241943AbiBOTXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:23:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243649AbiBOTUZ (ORCPT
+        with ESMTP id S234184AbiBOTXI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:20:25 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E12811596B;
-        Tue, 15 Feb 2022 11:19:51 -0800 (PST)
+        Tue, 15 Feb 2022 14:23:08 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAB58301A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:22:58 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id s133-20020a252c8b000000b0062112290d0bso27867847ybs.23
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:22:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644952792; x=1676488792;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=+c/sAVWbL+FsYmpW5HTm4iUSXm3Ddt3ihcr9mqI4b2I=;
-  b=fnPR4MITCOhMyOaujZ3EGk7wJQqit/7QW84jqPttvsV+R8XO9acRWROD
-   bqcQdpFmcfXLo8rSc8OSxsV4HAxOCb5r3gtRXsMgj7T1+4bJvBKj0mhwm
-   9naGo38xxdZKMOmiD1yjdRXrJTjk1ESjCKhMRUClt8hYZtZzEyT4Ol3gf
-   U=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 15 Feb 2022 11:19:51 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 11:19:50 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 15 Feb 2022 11:19:50 -0800
-Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 15 Feb 2022 11:19:44 -0800
-From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Andy Gross <agross@kernel.org>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wesley Cheng <wcheng@codeaurora.org>,
-        "Stephen Boyd" <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>
-CC:     <evicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-phy@lists.infradead.org>,
-        <linux-usb@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: [PATCH 2/3] phy: qcom-snps: Add support for overriding phy tuning parameters
-Date:   Wed, 16 Feb 2022 00:49:14 +0530
-Message-ID: <1644952755-15527-3-git-send-email-quic_c_sanm@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644952755-15527-1-git-send-email-quic_c_sanm@quicinc.com>
-References: <1644952755-15527-1-git-send-email-quic_c_sanm@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=+Qagel9nxFYYnNu2HO8CI3hbxGS3rPswiuqZekiakKs=;
+        b=li8UV/c9WCi6LXoDFvpYmTXYrRW7F85lEGiJd8p70kxSkOWAWsw/rBrAAy6p0krLV8
+         AheJXPAHJ4LQu1QXcJ062+EJcq3X1rx1XujfG9+LxPpF1E36wcG9csbxb8xHgQCizzDc
+         2Y/vkr4iJebx9bSFG6bdSg3Wg9aE8iY3nWgHNIY6a2mIgL9YtgMDY5h2NUGiC1ba3OGx
+         HDs7l7+gpVLbVImM2iDn+TnStY79NQ2OF+cOJA5ItPQbG3WkFyv8EEJ2u3KXiGCU4jn6
+         6f2nTGnhJjil6JPxiVTWl7XYCQ6OarH/2zom4PJA0tf8NdDV6x5DWtU/HH8/QdQPMR4X
+         v9wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=+Qagel9nxFYYnNu2HO8CI3hbxGS3rPswiuqZekiakKs=;
+        b=iXH94ZFNz1yIitCAmyT1Rdg2G1HqRPmwDzDaQaRTssKynGQZN8F/EB8OuowWzD0OLC
+         x9BgQjbQF7L4I9PBRKfy3dp4QxDGALtuK2wD9Vat2B9bDi9oZ3awdTxlzhLLc9rIlIz+
+         bKoeFB+UGWTscH+ftPBWjLGACe3v1ZvQm1LkS0WKDN7Em03vYRpxFXmiHt/SRaxjXqY7
+         XhDzBMKRPlHnNaDE6v+WEQEUhwD8ViKsum12qQA7U/4v/wNjXNZjo/frPDLOPlDF7RKI
+         2Fdgm5a0QnMqAxFfYteLOUW/1kjemHZ4aN5DCZrRbvEDSTfGltrcZ5zcw3dYc5i731Yd
+         i57w==
+X-Gm-Message-State: AOAM533J3dSYB5AAL1/qyNWmSyFzZjUX9dqWwk6icxgUNXGK0CZbk7oF
+        7S/bGHNSLsQfXvtyi0DkDGes0cl3VnQH
+X-Google-Smtp-Source: ABdhPJxAUxFFPS+GiBvMggHlTCE+Y2IVZgCgbqT1fUdihi1KYP3j9OJC2WvQbznhoZPN5QXJ9cWVtVmbBlPH
+X-Received: from bg.sfo.corp.google.com ([2620:15c:11a:202:c66c:3ade:392d:9c60])
+ (user=bgeffon job=sendgmr) by 2002:a81:1f89:: with SMTP id
+ f131mr357116ywf.261.1644952977298; Tue, 15 Feb 2022 11:22:57 -0800 (PST)
+Date:   Tue, 15 Feb 2022 11:22:33 -0800
+In-Reply-To: <543efc25-9b99-53cd-e305-d8b4d917b64b@intel.com>
+Message-Id: <20220215192233.8717-1-bgeffon@google.com>
+Mime-Version: 1.0
+References: <543efc25-9b99-53cd-e305-d8b4d917b64b@intel.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH stable 5.4,5.10] x86/fpu: Correct pkru/xstate inconsistency
+From:   Brian Geffon <bgeffon@google.com>
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Willis Kung <williskung@google.com>,
+        Guenter Roeck <groeck@google.com>,
+        Borislav Petkov <bp@suse.de>,
+        Andy Lutomirski <luto@kernel.org>, stable@vger.kernel.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        Brian Geffon <bgeffon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added support for overriding x0,x1,x2,x3 params for SNPS PHY.
+When eagerly switching PKRU in switch_fpu_finish() it checks that
+current is not a kernel thread as kernel threads will never use PKRU.
+It's possible that this_cpu_read_stable() on current_task
+(ie. get_current()) is returning an old cached value. To resolve this
+reference next_p directly rather than relying on current.
 
-Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+As written it's possible when switching from a kernel thread to a
+userspace thread to observe a cached PF_KTHREAD flag and never restore
+the PKRU. And as a result this issue only occurs when switching
+from a kernel thread to a userspace thread, switching from a non kernel
+thread works perfectly fine because all that is considered in that
+situation are the flags from some other non kernel task and the next fpu
+is passed in to switch_fpu_finish().
+
+This behavior only exists between 5.2 and 5.13 when it was fixed by a
+rewrite decoupling PKRU from xstate, in:
+  commit 954436989cc5 ("x86/fpu: Remove PKRU handling from switch_fpu_finish()")
+
+Unfortunately backporting the fix from 5.13 is probably not realistic as
+it's part of a 60+ patch series which rewrites most of the PKRU handling.
+
+Fixes: 0cecca9d03c9 ("x86/fpu: Eager switch PKRU state")
+Signed-off-by: Brian Geffon <bgeffon@google.com>
+Signed-off-by: Willis Kung <williskung@google.com>
+Tested-by: Willis Kung <williskung@google.com>
+Cc: <stable@vger.kernel.org> # v5.4.x
+Cc: <stable@vger.kernel.org> # v5.10.x
 ---
- drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c | 45 +++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ arch/x86/include/asm/fpu/internal.h | 13 ++++++++-----
+ arch/x86/kernel/process_32.c        |  6 ++----
+ arch/x86/kernel/process_64.c        |  6 ++----
+ 3 files changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c b/drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c
-index 7e61202..3cf90fa 100644
---- a/drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c
-+++ b/drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c
-@@ -51,6 +51,12 @@
- #define USB2_SUSPEND_N				BIT(2)
- #define USB2_SUSPEND_N_SEL			BIT(3)
- 
-+#define USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X0		(0x6c)
-+#define USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X1		(0x70)
-+#define USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X2		(0x74)
-+#define USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X3		(0x78)
-+#define PARAM_OVRD_MASK			0xFF
+diff --git a/arch/x86/include/asm/fpu/internal.h b/arch/x86/include/asm/fpu/internal.h
+index 03b3de491b5e..5ed702e2c55f 100644
+--- a/arch/x86/include/asm/fpu/internal.h
++++ b/arch/x86/include/asm/fpu/internal.h
+@@ -560,9 +560,11 @@ static inline void __fpregs_load_activate(void)
+  * The FPU context is only stored/restored for a user task and
+  * PF_KTHREAD is used to distinguish between kernel and user threads.
+  */
+-static inline void switch_fpu_prepare(struct fpu *old_fpu, int cpu)
++static inline void switch_fpu_prepare(struct task_struct *prev, int cpu)
+ {
+-	if (static_cpu_has(X86_FEATURE_FPU) && !(current->flags & PF_KTHREAD)) {
++	struct fpu *old_fpu = &prev->thread.fpu;
 +
- #define USB2_PHY_USB_PHY_CFG0			(0x94)
- #define UTMI_PHY_DATAPATH_CTRL_OVERRIDE_EN	BIT(0)
- #define UTMI_PHY_CMN_CTRL_OVERRIDE_EN		BIT(1)
-@@ -90,6 +96,11 @@ struct qcom_snps_hsphy {
++	if (static_cpu_has(X86_FEATURE_FPU) && !(prev->flags & PF_KTHREAD)) {
+ 		if (!copy_fpregs_to_fpstate(old_fpu))
+ 			old_fpu->last_cpu = -1;
+ 		else
+@@ -581,10 +583,11 @@ static inline void switch_fpu_prepare(struct fpu *old_fpu, int cpu)
+  * Load PKRU from the FPU context if available. Delay loading of the
+  * complete FPU state until the return to userland.
+  */
+-static inline void switch_fpu_finish(struct fpu *new_fpu)
++static inline void switch_fpu_finish(struct task_struct *next)
+ {
+ 	u32 pkru_val = init_pkru_value;
+ 	struct pkru_state *pk;
++	struct fpu *next_fpu = &next->thread.fpu;
  
- 	bool phy_initialized;
- 	enum phy_mode mode;
-+
-+	u8 override_x0;
-+	u8 override_x1;
-+	u8 override_x2;
-+	u8 override_x3;
- };
- 
- static inline void qcom_snps_hsphy_write_mask(void __iomem *base, u32 offset,
-@@ -222,6 +233,19 @@ static int qcom_snps_hsphy_init(struct phy *phy)
- 	qcom_snps_hsphy_write_mask(hsphy->base, USB2_PHY_USB_PHY_HS_PHY_CTRL1,
- 					VBUSVLDEXT0, VBUSVLDEXT0);
- 
-+	if (hsphy->override_x0)
-+		qcom_snps_hsphy_write_mask(hsphy->base, USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X0,
-+					PARAM_OVRD_MASK, hsphy->override_x0);
-+	if (hsphy->override_x1)
-+		qcom_snps_hsphy_write_mask(hsphy->base, USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X1,
-+					PARAM_OVRD_MASK, hsphy->override_x1);
-+	if (hsphy->override_x2)
-+		qcom_snps_hsphy_write_mask(hsphy->base, USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X2,
-+					PARAM_OVRD_MASK, hsphy->override_x2);
-+	if (hsphy->override_x3)
-+		qcom_snps_hsphy_write_mask(hsphy->base, USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X3,
-+					PARAM_OVRD_MASK, hsphy->override_x3);
-+
- 	qcom_snps_hsphy_write_mask(hsphy->base,
- 					USB2_PHY_USB_PHY_HS_PHY_CTRL_COMMON2,
- 					VREGBYPASS, VREGBYPASS);
-@@ -294,6 +318,7 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
- 	struct phy *generic_phy;
- 	int ret, i;
- 	int num;
-+	u32 value;
- 
- 	hsphy = devm_kzalloc(dev, sizeof(*hsphy), GFP_KERNEL);
- 	if (!hsphy)
-@@ -329,6 +354,26 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
- 		return ret;
+ 	if (!static_cpu_has(X86_FEATURE_FPU))
+ 		return;
+@@ -598,7 +601,7 @@ static inline void switch_fpu_finish(struct fpu *new_fpu)
+ 	 * PKRU state is switched eagerly because it needs to be valid before we
+ 	 * return to userland e.g. for a copy_to_user() operation.
+ 	 */
+-	if (!(current->flags & PF_KTHREAD)) {
++	if (!(next->flags & PF_KTHREAD)) {
+ 		/*
+ 		 * If the PKRU bit in xsave.header.xfeatures is not set,
+ 		 * then the PKRU component was in init state, which means
+@@ -607,7 +610,7 @@ static inline void switch_fpu_finish(struct fpu *new_fpu)
+ 		 * in memory is not valid. This means pkru_val has to be
+ 		 * set to 0 and not to init_pkru_value.
+ 		 */
+-		pk = get_xsave_addr(&new_fpu->state.xsave, XFEATURE_PKRU);
++		pk = get_xsave_addr(&next_fpu->state.xsave, XFEATURE_PKRU);
+ 		pkru_val = pk ? pk->pkru : 0;
  	}
+ 	__write_pkru(pkru_val);
+diff --git a/arch/x86/kernel/process_32.c b/arch/x86/kernel/process_32.c
+index b8ceec4974fe..352f876950ab 100644
+--- a/arch/x86/kernel/process_32.c
++++ b/arch/x86/kernel/process_32.c
+@@ -229,14 +229,12 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ {
+ 	struct thread_struct *prev = &prev_p->thread,
+ 			     *next = &next_p->thread;
+-	struct fpu *prev_fpu = &prev->fpu;
+-	struct fpu *next_fpu = &next->fpu;
+ 	int cpu = smp_processor_id();
  
-+	if (!of_property_read_u32(dev->of_node, "qcom,override_x0",
-+				  &value)) {
-+		hsphy->override_x0 = (u8)value;
-+	}
-+
-+	if (!of_property_read_u32(dev->of_node, "qcom,override_x1",
-+				  &value)) {
-+		hsphy->override_x1 = (u8)value;
-+	}
-+
-+	if (!of_property_read_u32(dev->of_node, "qcom,override_x2",
-+				  &value)) {
-+		hsphy->override_x2  = (u8)value;
-+	}
-+
-+	if (!of_property_read_u32(dev->of_node, "qcom,override_x3",
-+				  &value)) {
-+		hsphy->override_x3 = (u8)value;
-+	}
-+
- 	pm_runtime_set_active(dev);
- 	pm_runtime_enable(dev);
+ 	/* never put a printk in __switch_to... printk() calls wake_up*() indirectly */
+ 
+ 	if (!test_thread_flag(TIF_NEED_FPU_LOAD))
+-		switch_fpu_prepare(prev_fpu, cpu);
++		switch_fpu_prepare(prev_p, cpu);
+ 
  	/*
+ 	 * Save away %gs. No need to save %fs, as it was saved on the
+@@ -292,7 +290,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ 
+ 	this_cpu_write(current_task, next_p);
+ 
+-	switch_fpu_finish(next_fpu);
++	switch_fpu_finish(next_p);
+ 
+ 	/* Load the Intel cache allocation PQR MSR. */
+ 	resctrl_sched_in();
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index da3cc3a10d63..633788362906 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -505,15 +505,13 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ {
+ 	struct thread_struct *prev = &prev_p->thread;
+ 	struct thread_struct *next = &next_p->thread;
+-	struct fpu *prev_fpu = &prev->fpu;
+-	struct fpu *next_fpu = &next->fpu;
+ 	int cpu = smp_processor_id();
+ 
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_DEBUG_ENTRY) &&
+ 		     this_cpu_read(irq_count) != -1);
+ 
+ 	if (!test_thread_flag(TIF_NEED_FPU_LOAD))
+-		switch_fpu_prepare(prev_fpu, cpu);
++		switch_fpu_prepare(prev_p, cpu);
+ 
+ 	/* We must save %fs and %gs before load_TLS() because
+ 	 * %fs and %gs may be cleared by load_TLS().
+@@ -565,7 +563,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ 	this_cpu_write(current_task, next_p);
+ 	this_cpu_write(cpu_current_top_of_stack, task_top_of_stack(next_p));
+ 
+-	switch_fpu_finish(next_fpu);
++	switch_fpu_finish(next_p);
+ 
+ 	/* Reload sp0. */
+ 	update_task_stack(next_p);
 -- 
-2.7.4
+2.35.1.265.g69c8d7142f-goog
 
