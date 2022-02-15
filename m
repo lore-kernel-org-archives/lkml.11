@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75410C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE429C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237616AbiBOMUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:20:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58128 "EHLO
+        id S237623AbiBOMUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:20:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236232AbiBOMUK (ORCPT
+        with ESMTP id S235870AbiBOMUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 07:20:10 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38861074EE
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:19:59 -0800 (PST)
-Date:   Tue, 15 Feb 2022 12:19:55 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93681074F1
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:20:00 -0800 (PST)
+Date:   Tue, 15 Feb 2022 12:19:58 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644927596;
+        s=2020; t=1644927599;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dyM4Y7J7b4bK7UFlD0E5yLbZ9YLPHgg1Z8dWcUV0Tss=;
-        b=PSpzCnhFoxJ0L8RLJY4OR3wUUi6VY9GBo80I0ZfTTLH/TVfx9RhKVzjZngKS9JHRBWfrEI
-        HKcUNIUZGrdAFZDKXsnsz2oXIWPZF3/TXK4aKFaKmBV8UOblo/Z54MlbiEv7J7gaeMxYXw
-        lT2qFoVpRUKAo9HPyWJLvyNBOU/jt4XaVDaOUrcENFjKbZahbMDK9Q1mfV5n0T1ji+DsCi
-        K+u1+lWM/LuRkVePaBk+xc1aV1Z/iLSnfCzbLa7kOSlNNfFIUGrW+/hJoU+phtbsiOWVYF
-        xNHwYU2Fw2Lmu0EzEYsd0Ry0ZkGRgmRjJn9Q9IztTpRTHEyMGDLvSAxIGzA1Gg==
+        bh=xiLW8WjZPZYQEnHnh5i0L5iUY/db+6ioj24TYsVkwXY=;
+        b=OLnSoTpYSObKUM0NWfZ2N2nvG54J+tpq7gAy0q/M90xxIaPoU4ron7zHt/O4DmUxp3i1A8
+        t04MPqboWLeKWjB/J2Xr2K33LakBWa5raU+Hco2xseTBE23c/myEkmnb1b0OhkYOUxnSUH
+        OBiwZOa8tavRJYw5Dg/83CwdL02DpUOZzrA9lK26a/TNudTagjLa9ZvW6gpSaQLEp3mQ4W
+        Hr9QAiadF7JnQSKvoj1+DdQtUhRt8aj8Sc5A07AjYckfVU+68i/yibsO3jgLa+tfPU/Rie
+        NRhTzpAfiJTRFKZYz6xsSd0/yC/WEqXw9elPcmWL1DJ0oXXVSmR726gk5x4gFQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644927596;
+        s=2020e; t=1644927599;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dyM4Y7J7b4bK7UFlD0E5yLbZ9YLPHgg1Z8dWcUV0Tss=;
-        b=db+N8ZwMgCTW6gsY//3Wtz8kPIYBOJgopH+kQYPjwoZeiLmua2nT5RqYeSwpy6JP2hb0w+
-        y9ADv8I4FVbcQHAQ==
+        bh=xiLW8WjZPZYQEnHnh5i0L5iUY/db+6ioj24TYsVkwXY=;
+        b=XDSQ8v32G0R5lROFYyAsC4zlq1b6LIVz1OrgloMBloF6CjdMbgBL7ULbXg1CERpDlP05q8
+        FBtz8YAfmVRDxYCQ==
 From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/versatile-fpga: Switch to dynamic
- chip name output
+Subject: [irqchip: irq/irqchip-next] irqchip/lpc32xx: Switch to dynamic chip
+ name output
 Cc:     Marc Zyngier <maz@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>, tglx@linutronix.de
-In-Reply-To: <20220209162607.1118325-8-maz@kernel.org>
-References: <20220209162607.1118325-8-maz@kernel.org>
+In-Reply-To: <20220209162607.1118325-5-maz@kernel.org>
+References: <20220209162607.1118325-5-maz@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164492759537.16921.11531674759646795086.tip-bot2@tip-bot2>
+Message-ID: <164492759842.16921.2417198524555501420.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,201 +61,109 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Commit-ID:     3fb212a042fbd8eccbb2af1852e03ed7757b9600
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/3fb212a042fbd8eccbb2af1852e03ed7757b9600
+Commit-ID:     365550239f87342e3d29802fce0f5e9a044e8070
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/365550239f87342e3d29802fce0f5e9a044e8070
 Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Wed, 09 Feb 2022 16:26:04 
+AuthorDate:    Wed, 09 Feb 2022 16:26:01 
 Committer:     Marc Zyngier <maz@kernel.org>
 CommitterDate: Tue, 15 Feb 2022 11:25:46 
 
-irqchip/versatile-fpga: Switch to dynamic chip name output
+irqchip/lpc32xx: Switch to dynamic chip name output
 
-Move the name output to the relevant callback, which allows us
-some nice cleanups (mostly owing to the fact that the driver is
-now DT only.
-
-We also drop a random include directive from the ftintc010 driver.
+Instead of overriding the name field with the device name, use
+the relevant callback. This allows us to make the irq_chip structure
+const.
 
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220209162607.1118325-8-maz@kernel.org
+Link: https://lore.kernel.org/r/20220209162607.1118325-5-maz@kernel.org
 ---
- drivers/irqchip/irq-ftintc010.c        |  1 +-
- drivers/irqchip/irq-versatile-fpga.c   | 46 ++++++++++++++-----------
- include/linux/irqchip/versatile-fpga.h | 14 +--------
- 3 files changed, 26 insertions(+), 35 deletions(-)
- delete mode 100644 include/linux/irqchip/versatile-fpga.h
+ drivers/irqchip/irq-lpc32xx.c | 34 ++++++++++++++++++++++------------
+ 1 file changed, 22 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/irqchip/irq-ftintc010.c b/drivers/irqchip/irq-ftintc010.c
-index 5cc2688..46a3aa6 100644
---- a/drivers/irqchip/irq-ftintc010.c
-+++ b/drivers/irqchip/irq-ftintc010.c
-@@ -11,7 +11,6 @@
- #include <linux/irq.h>
- #include <linux/io.h>
- #include <linux/irqchip.h>
--#include <linux/irqchip/versatile-fpga.h>
- #include <linux/irqdomain.h>
- #include <linux/module.h>
- #include <linux/of.h>
-diff --git a/drivers/irqchip/irq-versatile-fpga.c b/drivers/irqchip/irq-versatile-fpga.c
-index f2757b6..ba543ed 100644
---- a/drivers/irqchip/irq-versatile-fpga.c
-+++ b/drivers/irqchip/irq-versatile-fpga.c
-@@ -7,12 +7,12 @@
- #include <linux/io.h>
- #include <linux/irqchip.h>
- #include <linux/irqchip/chained_irq.h>
--#include <linux/irqchip/versatile-fpga.h>
- #include <linux/irqdomain.h>
- #include <linux/module.h>
- #include <linux/of.h>
+diff --git a/drivers/irqchip/irq-lpc32xx.c b/drivers/irqchip/irq-lpc32xx.c
+index a29357f..4d70a85 100644
+--- a/drivers/irqchip/irq-lpc32xx.c
++++ b/drivers/irqchip/irq-lpc32xx.c
+@@ -11,6 +11,7 @@
  #include <linux/of_address.h>
  #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
 +#include <linux/seq_file.h>
- 
+ #include <linux/slab.h>
  #include <asm/exception.h>
- #include <asm/mach/irq.h>
-@@ -34,14 +34,12 @@
- /**
-  * struct fpga_irq_data - irq data container for the FPGA IRQ controller
-  * @base: memory offset in virtual memory
-- * @chip: chip container for this instance
-  * @domain: IRQ domain for this instance
-  * @valid: mask for valid IRQs on this controller
-  * @used_irqs: number of active IRQs on this controller
-  */
- struct fpga_irq_data {
+ 
+@@ -25,8 +26,8 @@
+ 
+ struct lpc32xx_irq_chip {
  	void __iomem *base;
--	struct irq_chip chip;
- 	u32 valid;
++	phys_addr_t addr;
  	struct irq_domain *domain;
- 	u8 used_irqs;
-@@ -67,6 +65,20 @@ static void fpga_irq_unmask(struct irq_data *d)
- 	writel(mask, f->base + IRQ_ENABLE_SET);
- }
- 
-+static void fpga_irq_print_chip(struct irq_data *d, struct seq_file *p)
-+{
-+	struct fpga_irq_data *f = irq_data_get_irq_chip_data(d);
-+
-+	seq_printf(p, irq_domain_get_of_node(f->domain)->name);
-+}
-+
-+static const struct irq_chip fpga_chip = {
-+	.irq_ack	= fpga_irq_mask,
-+	.irq_mask	= fpga_irq_mask,
-+	.irq_unmask	= fpga_irq_unmask,
-+	.irq_print_chip	= fpga_irq_print_chip,
-+};
-+
- static void fpga_irq_handle(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = irq_desc_get_chip(desc);
-@@ -116,7 +128,7 @@ static int handle_one_fpga(struct fpga_irq_data *f, struct pt_regs *regs)
-  * Keep iterating over all registered FPGA IRQ controllers until there are
-  * no pending interrupts.
-  */
--asmlinkage void __exception_irq_entry fpga_handle_irq(struct pt_regs *regs)
-+static asmlinkage void __exception_irq_entry fpga_handle_irq(struct pt_regs *regs)
- {
- 	int i, handled;
- 
-@@ -135,8 +147,7 @@ static int fpga_irqdomain_map(struct irq_domain *d, unsigned int irq,
- 	if (!(f->valid & BIT(hwirq)))
- 		return -EPERM;
- 	irq_set_chip_data(irq, f);
--	irq_set_chip_and_handler(irq, &f->chip,
--				handle_level_irq);
-+	irq_set_chip_and_handler(irq, &fpga_chip, handle_level_irq);
- 	irq_set_probe(irq);
- 	return 0;
- }
-@@ -146,8 +157,8 @@ static const struct irq_domain_ops fpga_irqdomain_ops = {
- 	.xlate = irq_domain_xlate_onetwocell,
+-	struct irq_chip chip;
  };
  
--void __init fpga_irq_init(void __iomem *base, const char *name, int irq_start,
--			  int parent_irq, u32 valid, struct device_node *node)
-+static void __init fpga_irq_init(void __iomem *base, int parent_irq,
-+				 u32 valid, struct device_node *node)
- {
- 	struct fpga_irq_data *f;
- 	int i;
-@@ -158,10 +169,6 @@ void __init fpga_irq_init(void __iomem *base, const char *name, int irq_start,
- 	}
- 	f = &fpga_irq_devices[fpga_irq_id];
- 	f->base = base;
--	f->chip.name = name;
--	f->chip.irq_ack = fpga_irq_mask;
--	f->chip.irq_mask = fpga_irq_mask;
--	f->chip.irq_unmask = fpga_irq_unmask;
- 	f->valid = valid;
- 
- 	if (parent_irq != -1) {
-@@ -169,20 +176,19 @@ void __init fpga_irq_init(void __iomem *base, const char *name, int irq_start,
- 						 f);
- 	}
- 
--	/* This will also allocate irq descriptors */
--	f->domain = irq_domain_add_simple(node, fls(valid), irq_start,
-+	f->domain = irq_domain_add_linear(node, fls(valid),
- 					  &fpga_irqdomain_ops, f);
- 
- 	/* This will allocate all valid descriptors in the linear case */
- 	for (i = 0; i < fls(valid); i++)
- 		if (valid & BIT(i)) {
--			if (!irq_start)
--				irq_create_mapping(f->domain, i);
-+			/* Is this still required? */
-+			irq_create_mapping(f->domain, i);
- 			f->used_irqs++;
- 		}
- 
- 	pr_info("FPGA IRQ chip %d \"%s\" @ %p, %u irqs",
--		fpga_irq_id, name, base, f->used_irqs);
-+		fpga_irq_id, node->name, base, f->used_irqs);
- 	if (parent_irq != -1)
- 		pr_cont(", parent IRQ: %d\n", parent_irq);
- 	else
-@@ -192,8 +198,8 @@ void __init fpga_irq_init(void __iomem *base, const char *name, int irq_start,
+ static struct lpc32xx_irq_chip *lpc32xx_mic_irqc;
+@@ -118,6 +119,24 @@ static int lpc32xx_irq_set_type(struct irq_data *d, unsigned int type)
+ 	return 0;
  }
  
- #ifdef CONFIG_OF
--int __init fpga_irq_of_init(struct device_node *node,
--			    struct device_node *parent)
-+static int __init fpga_irq_of_init(struct device_node *node,
-+				   struct device_node *parent)
++static void lpc32xx_irq_print_chip(struct irq_data *d, struct seq_file *p)
++{
++	struct lpc32xx_irq_chip *ic = irq_data_get_irq_chip_data(d);
++
++	if (ic == lpc32xx_mic_irqc)
++		seq_printf(p, "%08x.mic", ic->addr);
++	else
++		seq_printf(p, "%08x.sic", ic->addr);
++}
++
++static const struct irq_chip lpc32xx_chip = {
++	.irq_ack	= lpc32xx_irq_ack,
++	.irq_mask	= lpc32xx_irq_mask,
++	.irq_unmask	= lpc32xx_irq_unmask,
++	.irq_set_type	= lpc32xx_irq_set_type,
++	.irq_print_chip	= lpc32xx_irq_print_chip,
++};
++
+ static void __exception_irq_entry lpc32xx_handle_irq(struct pt_regs *regs)
  {
- 	void __iomem *base;
- 	u32 clear_mask;
-@@ -222,7 +228,7 @@ int __init fpga_irq_of_init(struct device_node *node,
- 		parent_irq = -1;
+ 	struct lpc32xx_irq_chip *ic = lpc32xx_mic_irqc;
+@@ -153,7 +172,7 @@ static int lpc32xx_irq_domain_map(struct irq_domain *id, unsigned int virq,
+ 	struct lpc32xx_irq_chip *ic = id->host_data;
+ 
+ 	irq_set_chip_data(virq, ic);
+-	irq_set_chip_and_handler(virq, &ic->chip, handle_level_irq);
++	irq_set_chip_and_handler(virq, &lpc32xx_chip, handle_level_irq);
+ 	irq_set_status_flags(virq, IRQ_LEVEL);
+ 	irq_set_noprobe(virq);
+ 
+@@ -183,6 +202,7 @@ static int __init lpc32xx_of_ic_init(struct device_node *node,
+ 	if (!irqc)
+ 		return -ENOMEM;
+ 
++	irqc->addr = addr;
+ 	irqc->base = of_iomap(node, 0);
+ 	if (!irqc->base) {
+ 		pr_err("%pOF: unable to map registers\n", node);
+@@ -190,21 +210,11 @@ static int __init lpc32xx_of_ic_init(struct device_node *node,
+ 		return -EINVAL;
  	}
  
--	fpga_irq_init(base, node->name, 0, parent_irq, valid_mask, node);
-+	fpga_irq_init(base, parent_irq, valid_mask, node);
- 
- 	/*
- 	 * On Versatile AB/PB, some secondary interrupts have a direct
-diff --git a/include/linux/irqchip/versatile-fpga.h b/include/linux/irqchip/versatile-fpga.h
-deleted file mode 100644
-index a978fc8..0000000
---- a/include/linux/irqchip/versatile-fpga.h
-+++ /dev/null
-@@ -1,14 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef PLAT_FPGA_IRQ_H
--#define PLAT_FPGA_IRQ_H
+-	irqc->chip.irq_ack = lpc32xx_irq_ack;
+-	irqc->chip.irq_mask = lpc32xx_irq_mask;
+-	irqc->chip.irq_unmask = lpc32xx_irq_unmask;
+-	irqc->chip.irq_set_type = lpc32xx_irq_set_type;
+-	if (is_mic)
+-		irqc->chip.name = kasprintf(GFP_KERNEL, "%08x.mic", addr);
+-	else
+-		irqc->chip.name = kasprintf(GFP_KERNEL, "%08x.sic", addr);
 -
--struct device_node;
--struct pt_regs;
--
--void fpga_handle_irq(struct pt_regs *regs);
--void fpga_irq_init(void __iomem *, const char *, int, int, u32,
--		struct device_node *node);
--int fpga_irq_of_init(struct device_node *node,
--		     struct device_node *parent);
--
--#endif
+ 	irqc->domain = irq_domain_add_linear(node, NR_LPC32XX_IC_IRQS,
+ 					     &lpc32xx_irq_domain_ops, irqc);
+ 	if (!irqc->domain) {
+ 		pr_err("unable to add irq domain\n");
+ 		iounmap(irqc->base);
+-		kfree(irqc->chip.name);
+ 		kfree(irqc);
+ 		return -ENODEV;
+ 	}
