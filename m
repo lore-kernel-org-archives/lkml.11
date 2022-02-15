@@ -2,150 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E155EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237206AbiBOLbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:31:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52962 "EHLO
+        id S237233AbiBOLbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:31:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237204AbiBOLbh (ORCPT
+        with ESMTP id S237227AbiBOLbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:31:37 -0500
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A3813F;
-        Tue, 15 Feb 2022 03:31:26 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id i10so5248819plr.2;
-        Tue, 15 Feb 2022 03:31:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EZoukMGiWXk1HvbuQEBDTM8Ki/Xg0Kqyx/8NN8gbO9E=;
-        b=hITaZk4Unk8D0kGzc2FEh+66ftm2EDL6Q+hY+NAZC9kemR0U6vIlv5uJfZI5mEmYIH
-         VX9UuhFDNGLrtiAJxx3kb1IrDSMW1gwp+H8A5ZBalvcbiwc5LezWhT3zyJBgWQfy96PP
-         +Hy9ZMqVOOgyEIYwCM7DV2N6hVsXp2ZGnQqqcgSt1Cu82VwBAaKBbada4x3H4IpB29xZ
-         otszGo2K0QxfmVWpwtDXk914od2VxdWoytjymxYlpL3HnA0nOpzY/6Dzv5P1O4l/JHXP
-         U2CnppXpmh33KM03L/CMjDZF8bdKR+4UNCF7rbWL3UhOGjRTyhbtA3h80QqcmLpE3tjU
-         dPDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EZoukMGiWXk1HvbuQEBDTM8Ki/Xg0Kqyx/8NN8gbO9E=;
-        b=Aplan3ysn5X4MNFeRN0YtdmpmS5qE6TxsOu4Sl272Rwx1tRdvTYKqWLUDQz2+yyUJe
-         zYmTjtggsnN6Qm/3P8LWW/A4XNRko9RKq5GM0yJD58kfXQ27lpMGLaUWjZXDB9P2SaME
-         KZM14YaWww91HJihoeJ9w8M0Reqr1j3CaIKt59fD8Vttbp6gIjEnilwHA3c2ndpgZFCM
-         kY8PZfZbqY+b9HtriDd/CBeEVm1Kz1WJ8W6msCy9yRN4+t68R5CCRGor1gg8Y0izqDgT
-         TlcU8/FpS8wsbWY8I51b4NmcojAPuZJcc/nUicYHn3D2HtRz+IaA52ibWWcd82svZ+FR
-         Me/w==
-X-Gm-Message-State: AOAM531I1WfWO0ktHP/qJvHstLp0G7LdzOoJSFFaF1UHWJuvaaI0GqRM
-        raPst0GtWCAM6aBYucPN/NU=
-X-Google-Smtp-Source: ABdhPJy9XPJ8vzb9sMMuNQpiDeLO/lvBwFzcUjikL+vVFLrUTRnmnbM3gnS9Hfq141ut/G2lGSyMcA==
-X-Received: by 2002:a17:90b:38ce:b0:1b9:e0dd:50ec with SMTP id nn14-20020a17090b38ce00b001b9e0dd50ecmr3778623pjb.163.1644924686104;
-        Tue, 15 Feb 2022 03:31:26 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.113])
-        by smtp.gmail.com with ESMTPSA id s11sm44515513pfu.58.2022.02.15.03.31.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 03:31:25 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org, kuba@kernel.org
-Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
-        mingo@redhat.com, yoshfuji@linux-ipv6.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        imagedong@tencent.com, talalahmad@google.com,
-        keescook@chromium.org, ilias.apalodimas@linaro.org, alobakin@pm.me,
-        memxor@gmail.com, atenart@kernel.org, bigeasy@linutronix.de,
-        pabeni@redhat.com, linyunsheng@huawei.com, arnd@arndb.de,
-        yajun.deng@linux.dev, roopa@nvidia.com, willemb@google.com,
-        vvs@virtuozzo.com, cong.wang@bytedance.com,
-        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
-Subject: [PATCH net-next 06/19] net: tcp: use kfree_skb_reason() for tcp_v{4,6}_do_rcv()
-Date:   Tue, 15 Feb 2022 19:27:59 +0800
-Message-Id: <20220215112812.2093852-7-imagedong@tencent.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215112812.2093852-1-imagedong@tencent.com>
-References: <20220215112812.2093852-1-imagedong@tencent.com>
+        Tue, 15 Feb 2022 06:31:45 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D4013CFB;
+        Tue, 15 Feb 2022 03:31:29 -0800 (PST)
+X-UUID: 39c9a947dafe4ffb826bdea49c2bf5e9-20220215
+X-UUID: 39c9a947dafe4ffb826bdea49c2bf5e9-20220215
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <irui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1084979076; Tue, 15 Feb 2022 19:31:25 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 15 Feb 2022 19:31:24 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 15 Feb 2022 19:31:23 +0800
+Message-ID: <f2bce3870b3eacce0c9bcdf5a022e11371a9ace4.camel@mediatek.com>
+Subject: Re: [PATCH v2, 03/10] dt-bindings: media: mtk-vcodec: Adds encoder
+ cores dt-bindings for mt8195
+From:   Irui Wang <irui.wang@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Hsin-Yi Wang <hsinyi@chromium.org>, <linux-media@vger.kernel.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        <linux-kernel@vger.kernel.org>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
+        Tomasz Figa <tfiga@google.com>, Yong Wu <yong.wu@mediatek.com>,
+        Maoguang Meng <maoguang.meng@mediatek.com>,
+        Longfei Wang <longfei.wang@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Date:   Tue, 15 Feb 2022 19:31:23 +0800
+In-Reply-To: <1642433742.919482.3923083.nullmailer@robh.at.kernel.org>
+References: <20220117120615.21687-1-irui.wang@mediatek.com>
+         <20220117120615.21687-4-irui.wang@mediatek.com>
+         <1642433742.919482.3923083.nullmailer@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Dear Rob,
 
-Replace kfree_skb() used in tcp_v4_do_rcv() and tcp_v6_do_rcv() with
-kfree_skb_reason().
+Many thanks for your comments.
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- net/ipv4/tcp_ipv4.c | 5 ++++-
- net/ipv6/tcp_ipv6.c | 4 +++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
+On Mon, 2022-01-17 at 09:35 -0600, Rob Herring wrote:
+> On Mon, 17 Jan 2022 20:06:08 +0800, Irui Wang wrote:
+> > Adds encoder cores dt-bindings for mt8195
+> > 
+> > Signed-off-by: Irui Wang <irui.wang@mediatek.com>
+> > ---
+> >  .../media/mediatek,vcodec-encoder-core.yaml   | 214
+> > ++++++++++++++++++
+> >  1 file changed, 214 insertions(+)
+> >  create mode 100644
+> > Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
+> > core.yaml
+> > 
+> 
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m
+> dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
+> core.example.dts:20:18: fatal error: dt-bindings/memory/mt8195-
+> memory-port.h: No such file or directory
+>    20 |         #include <dt-bindings/memory/mt8195-memory-port.h>
+>       |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[1]: *** [scripts/Makefile.lib:373:
+> Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
+> core.example.dt.yaml] Error 1
+> make[1]: *** Waiting for unfinished jobs....
+> make: *** [Makefile:1413: dt_binding_check] Error 2
+> 
+> doc reference errors (make refcheckdocs):
+> 
+> See https://patchwork.ozlabs.org/patch/1580741
+> 
+> This check can fail if there are any dependencies. The base for a
+> patch
+> series is generally the most recent rc1.
+> 
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up
+> to
+> date:
+> 
+> pip3 install dtschema --upgrade
+> 
+> Please check and re-submit.
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 15ef1bcff84f..036b855c1b14 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1708,6 +1708,7 @@ INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
-  */
- int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- {
-+	enum skb_drop_reason reason;
- 	struct sock *rsk;
- 
- 	if (sk->sk_state == TCP_ESTABLISHED) { /* Fast path */
-@@ -1730,6 +1731,7 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- 		return 0;
- 	}
- 
-+	reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	if (tcp_checksum_complete(skb))
- 		goto csum_err;
- 
-@@ -1757,7 +1759,7 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- reset:
- 	tcp_v4_send_reset(rsk, skb);
- discard:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, reason);
- 	/* Be careful here. If this function gets more complicated and
- 	 * gcc suffers from register pressure on the x86, sk (in %ebx)
- 	 * might be destroyed here. This current version compiles correctly,
-@@ -1766,6 +1768,7 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- 	return 0;
- 
- csum_err:
-+	reason = SKB_DROP_REASON_TCP_CSUM;
- 	trace_tcp_bad_csum(skb);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_CSUMERRORS);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 15090fe5af90..4d4af9b15c83 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1476,6 +1476,7 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- {
- 	struct ipv6_pinfo *np = tcp_inet6_sk(sk);
- 	struct sk_buff *opt_skb = NULL;
-+	enum skb_drop_reason reason;
- 	struct tcp_sock *tp;
- 
- 	/* Imagine: socket is IPv6. IPv4 packet arrives,
-@@ -1563,9 +1564,10 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- discard:
- 	if (opt_skb)
- 		__kfree_skb(opt_skb);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, reason);
- 	return 0;
- csum_err:
-+	reason = SKB_DROP_REASON_TCP_CSUM;
- 	trace_tcp_bad_csum(skb);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_CSUMERRORS);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
--- 
-2.34.1
+This new encoder yaml includes mt8195 iommu and power&clock node, so it
+depends on patches:
+iommu:
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=551641
+power:
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=580579
+
+which are not accept yet. 
+
+But IOMMU and power already send new version series patches, I will
+rebase this series in next version.
+
+Thanks
+BRs
+> 
 
