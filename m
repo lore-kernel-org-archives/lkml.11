@@ -2,197 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 030E4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78414C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234679AbiBOPmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:42:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43758 "EHLO
+        id S240745AbiBOPmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:42:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241268AbiBOPlI (ORCPT
+        with ESMTP id S241533AbiBOPlb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:41:08 -0500
-Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B9813FAEF
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:34:44 -0800 (PST)
-Received: by mail-oo1-xc2c.google.com with SMTP id i10-20020a4aab0a000000b002fccf890d5fso23621885oon.5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:34:44 -0800 (PST)
+        Tue, 15 Feb 2022 10:41:31 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B015DC1146
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:35:23 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id v186so57267857ybg.1
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:35:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=lICLxHXDz47Zrz6aevlppIMXuruBJmDOc0eDfWsdodY=;
-        b=aOv1eEN1wu7TUzfxLlt1pmrdqkCiCXVvy082d8mxVz2pU32xBefNtT/wpBtTs0PUsU
-         WwFnGpSIkEloJ/856De8fJh4guiKI0xAxyFNlzg4vVoQVc/WnoFJ/NrTRFzi2ESDqdqS
-         IId/m6wv/SOKu9M6zd5nap7i4WyFfVMLuaIL0gyYX6toG5+s7nLWd+i+tirCg8zHzsMg
-         SDTg2Cpv+nQTB3Nnka8YtN0Uh4zlr3FkijikOZoQ5KLcIGJr7Z+UqG6JPYyP/wxZaOAP
-         3ttr8rjFy8T8qhCw4YXvCBSfZSHlCEBXR4Qtn7kxh0iUgk7GOTH7GMz/rHQvW+sJrFCU
-         EvzA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=O4eypergZV3m6Zzdl4fNq7xKdAiZHF46BD1z85Nc8jg=;
+        b=QXVXjkwWhHxjoLXOmL4F9kN9NOD62pL1mWBMaTYzAESbupVXKNh5VqF9KgeTTv80NX
+         8qM68EjdMMonVbDhSSRJ/xxdMD/ZnUyHwl/MAXaBsdLu5vBPwCP3zq2uW6MXcDeKBWMg
+         LYAVlC8HVQcez0QQi1WnMtf35FtsRNXzyzL1S2Ty5WGzqw7aPbVl9hB3LSoWvi0p+LPb
+         m3hfDp+37V/UnGccbWP2lFtEQk3mAItXOd8GiHBVZWv2LGwEa8oyhACoUx/U+U1wpY8Q
+         s6evXE37CnbGzrC3sZPINlGMGyVjjpql9t1fBcWMI8aqIguTkyXmX3UXiePkMlSN6qMm
+         6k1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=lICLxHXDz47Zrz6aevlppIMXuruBJmDOc0eDfWsdodY=;
-        b=OM7c6ir/Kx2byMCJ8wYvMhk3FKJUx+mQK0PoLcWmYTGyp2JUPm6ebHZnuVEzE3Q/tk
-         ysfG4HWOKGfyvLEO3xQ9AmPZ+36rCrLVleJISuKUcTjHSJkP8BHPL6UyqM+ol0EHgafZ
-         bomTglzrlDhl2M6Be1kA6gkeB0Ssci3zSyoBhIShQDVKwYzAbjVLPpqpQPG2oNzDasHw
-         QLF7dXfyZBxaIUwsAwe7mBFykOFGEuUbUlMYzMjA24G+sH8MYzZmMIgtZmEnTBF6H6k9
-         S0cev3YZ93V2+mC8R4cnqycb3T8EJk9UlA9Yag+iwRyXepkk1tGBoRMRkQ3XL5ZlKNzR
-         bQBA==
-X-Gm-Message-State: AOAM531CYdH3ZUcLGcvJbqvv91uUtrf8M9P6lZ4aC+lsRzbdlbLqJA6F
-        rn0QTfZzSpEdJM17dH43Gik2LA==
-X-Google-Smtp-Source: ABdhPJzbWwU42jNoOxbpoCebn0T7UnHfSr29OBuXpn3I/sQBF5m3RpPW5CFBWyczhtgGB+fVXx6EUA==
-X-Received: by 2002:a05:6870:1059:b0:ce:c0c9:5b2 with SMTP id 25-20020a056870105900b000cec0c905b2mr1573971oaj.4.1644939283973;
-        Tue, 15 Feb 2022 07:34:43 -0800 (PST)
-Received: from yoga ([2600:1700:a0:3dc8:5c39:baff:fe03:898d])
-        by smtp.gmail.com with ESMTPSA id b8sm5414114oae.30.2022.02.15.07.34.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 07:34:43 -0800 (PST)
-Date:   Tue, 15 Feb 2022 09:34:41 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     Stephan Gerhold <stephan@gerhold.net>,
-        linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH 09/15] rpmsg: smd: Drop unnecessary condition for channel
- creation
-Message-ID: <YgvIEYOAZTFHN6fb@yoga>
-References: <20220112194118.178026-1-luca@z3ntu.xyz>
- <Yfhjil3pfZLa5g3j@builder.lan>
- <2615776.mvXUDI8C0e@g550jk>
- <3503848.e9J7NaK4W3@g550jk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=O4eypergZV3m6Zzdl4fNq7xKdAiZHF46BD1z85Nc8jg=;
+        b=sBkN4KjfLSRppCISU2TUO0zD/44gTTkA7n3ys7Eu18E6CDX2IjWGHVIRVq0Co3dbrY
+         K5R7ErsdP/sXT6pQqiKdyI1O0h+JZlFy6uWiegyYy3bvBsuhXpi0+3F94yU3DqRVch7k
+         XdKOdDRG4Oig9gKx3frG0DOQNWTI4NRmK3Fl69+Tq68hvWI4BGvLrmKW9qeipv3nG9FO
+         yRuZ3gdm6n8nR40AMI/efURr/k3iwxJZqZdGKX6MwPWdxF8ZEutaOA13vHhqIRIdcNSC
+         MHzGhIX5JUaGJuz1xE9alpF2p1j3CCyMNTQgVY2BqDvf2o0A7bZO0LvhKaR1cQDobGbA
+         XZXw==
+X-Gm-Message-State: AOAM530Tp9YXaTpXH1cW5mimwx1lNZNAdeQumDQbtmGJNITfdcWunaS/
+        0IZEaH1EGS6kCDQUhZo8r1gRvU3TAzjznbnk3S438Q==
+X-Google-Smtp-Source: ABdhPJxRvA4gT9FlG4INWIsLr7W6swMmTrbJAhDieVE8mfjvg+BfEtJeIG89DlINozKWNR5djGyY1BHeaHKW0G90v/A=
+X-Received: by 2002:a25:8885:: with SMTP id d5mr4091214ybl.383.1644939322315;
+ Tue, 15 Feb 2022 07:35:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3503848.e9J7NaK4W3@g550jk>
+References: <20220213150234.31602-1-thomas.liu@ucloud.cn> <CA+FuTSdODATw3hSAMv9aZUmJNM8ZE-YP58pr17bO9rGJUgfegw@mail.gmail.com>
+ <CFD9B65A-6762-4D9B-ADEB-B4C0B1902E02@ucloud.cn> <CA+FuTSfQOUEyEDnOU8VVZ=STw_ii-hTwyg-cvpcViPkVK4pLUA@mail.gmail.com>
+ <42554FCB-9180-4B32-B5CF-6D3236237D99@ucloud.cn> <CAF=yD-+1RSj_o8n5LDOLVyn_dvVQvmDQo5pacSoDFPOR3M2g5g@mail.gmail.com>
+In-Reply-To: <CAF=yD-+1RSj_o8n5LDOLVyn_dvVQvmDQo5pacSoDFPOR3M2g5g@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 15 Feb 2022 07:35:10 -0800
+Message-ID: <CANn89i+T=Ny7pfUomSsa1ub77u8LfYtRZPzmp_0-=oWKt0abLg@mail.gmail.com>
+Subject: Re: [PATCH] gso: do not skip outer ip header in case of ipip and net_failover
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Tao Liu <thomas.liu@ucloud.cn>, David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 13 Feb 14:51 CST 2022, Luca Weiss wrote:
+On Tue, Feb 15, 2022 at 7:01 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Mon, Feb 14, 2022 at 8:38 PM Tao Liu <thomas.liu@ucloud.cn> wrote:
+> >
+> > Sorry to resend it.
+> >
+> > 2022=E5=B9=B42=E6=9C=8814=E6=97=A5 12:27=EF=BC=8CWillem de Bruijn <will=
+emdebruijn.kernel@gmail.com> =E5=86=99=E9=81=93=EF=BC=9A
+> >
+> > On Sun, Feb 13, 2022 at 11:03 PM Tao Liu <thomas.liu@ucloud.cn> wrote:
+> >
+> >
+> > Sorry for bothering, just repost it.
+> >
+> > 2022=E5=B9=B42=E6=9C=8814=E6=97=A5 09:28=EF=BC=8CWillem de Bruijn <will=
+emdebruijn.kernel@gmail.com> =E5=86=99=E9=81=93=EF=BC=9A
+> >
+> > On Sun, Feb 13, 2022 at 10:10 AM Tao Liu <thomas.liu@ucloud.cn> wrote:
+> >
+> >
+> > We encouter a tcp drop issue in our cloud environment. Packet GROed in =
+host
+> > forwards to a VM virtio_net nic with net_failover enabled. VM acts as a
+> > IPVS LB with ipip encapsulation. The full path like:
+> > host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
+> > -> ipip encap -> net_failover tx -> virtio_net tx
+> >
+> > When net_failover transmits a ipip pkt (gso_type =3D 0x0103), there is =
+no gso
+> > performed because it supports TSO and GSO_IPXIP4. But network_header ha=
+s
+> > been pointing to inner ip header.
+> >
+> >
+> > If the packet is configured correctly, and net_failover advertises
+> > that it can handle TSO packets with IPIP encap, then still virtio_net
+> > should not advertise it and software GSO be applied on its
+> > dev_queue_xmit call.
+> >
+> > This is assuming that the packet not only has SKB_GSO_IPXIP4 correctly
+> > set, but also tunneling fields like skb->encapsulated and
+> > skb_inner_network_header.
+> >
+> > Thanks very much for your comment!
+> >
+> > Yes, the packet is correct. Another thing i have not pointed directly i=
+s
+> > that the pkt has SKB_GSO_DODGY. net_failover do not advertises GSO_ROBU=
+ST
+> > but virtio_net do.
+> >
+> >
+> > If net_failover does not advertise NETIF_F_GSO_ROBUST, then
+> > tcp_gso_segment will pass a packet with SKB_GSO_DODGY to the
+> > software gso stack, not taking the branch
+> >
+> >        if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
+> >
+> > As i tested, packet with SKB_GSO_DODGY hits this branch. packet's gso_t=
+ype=3D0x0103, which
+> > means SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4. net_failover mat=
+ches
+> > the condition.
+> >
+> > Consequently, tcp_gso_segment returns NULL, there is no software gso di=
+d here. And
+> > network_header points to inner iph.
+> >
+> > Software gso is did by virtio_net which not advertises NETIF_F_GSO_IPXI=
+P4. It skips the outer
+> > iph, and keeps it unchanged.
+> >
+> > ---
+> > net/ipv4/af_inet.c | 10 +++++++++-
+> > 1 file changed, 9 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> > index 9c465ba..f8b3f8a 100644
+> > --- a/net/ipv4/af_inet.c
+> > +++ b/net/ipv4/af_inet.c
+> > @@ -1425,10 +1425,18 @@ struct sk_buff *inet_gso_segment(struct sk_buff=
+ *skb,
+> > static struct sk_buff *ipip_gso_segment(struct sk_buff *skb,
+> >                                       netdev_features_t features)
+> > {
+> > +       struct sk_buff *segs;
+> > +       int nhoff;
+> > +
+> >       if (!(skb_shinfo(skb)->gso_type & SKB_GSO_IPXIP4))
+> >               return ERR_PTR(-EINVAL);
+> >
+> > -       return inet_gso_segment(skb, features);
+> > +       nhoff =3D skb_network_header(skb) - skb_mac_header(skb);
+> > +       segs =3D inet_gso_segment(skb, features);
+> > +       if (!segs)
+> > +               skb->network_header =3D skb_mac_header(skb) + nhoff - s=
+kb->head;
+> > +
+> > +       return segs;
+> > }
+> >
+> >
+> > If this would be needed for IPIP, then the same would be needed for SIT=
+, etc.
+> >
+> > Is the skb_network_header
+> >
+> > 1. correctly pointing to the outer header of the TSO packet before the
+> > call to inet_gso_segment
+> > 2. incorrectly pointing to the inner header of the (still) TSO packet
+> > after the call to inet_gso_segment
+> >
+> > inet_gso_segment already does the same operation: save nhoff, pull
+> > network header, call callbacks.gso_segment (which can be
+> > ipip_gso_segment->inet_gso_segment), then place the network header
+> > back at nhoff.
+> >
+> > values print in skb_mac_gso_segment() before callbacks.gso_segment:
+> > ipip:               vlan_depth=3D0 mac_len=3D0 skb->network_header=3D20=
+6
+> > net_failover:  vlan_depth=3D14 mac_len=3D14 skb->network_header=3D186
+> > virtio_net:      vlan_depth=3D34 mac_len=3D34 skb->network_header=3D206
+> >
+> > agree to add sit/ip4ip6/ip6ip6, and patch can be simplified as:
+> >
+> >
+> > If IPIP GSO was so broken, I think we would have found it long before.
+> >
+> > As said, inet_gso_segment should already do the right thing for ipip:
+> > it will be called twice.
+> >
+> >
+> > SKB_GSO_DODGY flag and net_failover conduct this issue. local traffic j=
+ust works fine.
+>
+> Got it. That is an uncommon combination. SKB_GSO_DODGY is set from
+> external virtio_net, which does not support tunnels. But a path with
+> an added tunnel might cause this combination.
+>
+> And inet_gso_segment resets the network header, both times, before
+> calling callbacks.gso_segment()
+>
+>         skb_reset_network_header(skb);
+>         nhoff =3D skb_network_header(skb) - skb_mac_header(skb);
+>
+>         [...]
+>
+>         if (likely(ops && ops->callbacks.gso_segment))
+>                 segs =3D ops->callbacks.gso_segment(skb, features);
+>
+> And resets that after for each skb in segs.
+>
+>         skb =3D segs;
+>         do {
+>                 [...]
+>                 skb->network_header =3D (u8 *)iph - skb->head;
+>
+> But does not do this if segs =3D=3D NULL.
+>
+> The packet has to be restored before it is passed to the device. I
+> think we have to handle this case correctly in inet_gso_segment,
+> instead of patching it up in all the various tunnel devices.
+>
+> The same holds for ipv6_gso_segment.
 
-> Hi Bjorn,
-> 
-> On Sonntag, 6. Februar 2022 21:17:22 CET Luca Weiss wrote:
-> > Hi Bjorn,
-> > 
-> > On Montag, 31. Jänner 2022 23:32:42 CET Bjorn Andersson wrote:
-> > > On Sun 16 Jan 10:30 CST 2022, Stephan Gerhold wrote:
-> > > > On Sun, Jan 16, 2022 at 05:08:29PM +0100, Luca Weiss wrote:
-> > > > > On Mittwoch, 12. Jänner 2022 22:39:53 CET Stephan Gerhold wrote:
-> > > > > > On Wed, Jan 12, 2022 at 08:40:58PM +0100, Luca Weiss wrote:
-> > > > > > > From: Vladimir Lypak <vladimir.lypak@gmail.com>
-> > > > > > > 
-> > > > > > > RPM Firmware on variety of newer SoCs such as MSM8917 (also likely
-> > > > > > > MSM8937, MSM8940, MSM8952), MSM8953 and on some MSM8916 devices)
-> > > > > > > doesn't
-> > > > > > > initiate opening of the SMD channel if it was previously opened by
-> > > > > > > bootloader. This doesn't allow probing of smd-rpm driver on such
-> > > > > > > devices
-> > > > > > > because there is a check that requires RPM this behaviour.
-> > > > > > > 
-> > > > > > > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-> > > > > > > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> > > > > > > Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> > > > > > 
-> > > > > > This is effectively a "Revert "Revert "rpmsg: smd: Create device for
-> > > > > > all
-> > > > > > channels""":
-> > > > > > 
-> > > > > > https://lore.kernel.org/linux-arm-msm/20171212235857.10432-3-bjorn.a
-> > > > > > nd
-> > > > > > ersson @linaro.org/
-> > > > > > https://lore.kernel.org/linux-arm-msm/20180315181244.8859-1-bjorn.an
-> > > > > > de
-> > > > > > rsson
-> > > > > > @linaro.org/
-> > > > > > 
-> > > > > > Won't this cause the same regression reported by Srinivas again?
-> > > > > 
-> > > > > Do you have any suggestion on another way to solve this? Without this
-> > > > > commit the regulators just won't probe at all, I haven't looked very
-> > > > > deep into it though given this patch solves it.
-> > > > > 
-> > > > > I guess worst case it'll become a devicetree property to enable this
-> > > > > quirk?
-> > > > 
-> > > > My spontaneous suggestion would be to skip the check only for the
-> > > > "rpm_requests" channel, e.g. something like
-> > > > 
-> > > > 	if (remote_state != SMD_CHANNEL_OPENING &&
-> > > > 	
-> > > > 	    remote_state != SMD_CHANNEL_OPENED &&
-> > > > 	    strcmp(channel->name, "rpm_requests")
-> > > > 		
-> > > > 		continue;
-> > > > 
-> > > > This will avoid changing the behavior for anything but the RPM channel.
-> > > > I don't think anything else is affected by the same problem (since the
-> > > > bootloader or earlier firmware should not make use of any other
-> > > > channel).
-> > > > Also, we definitely *always* want to open the channel to the RPM because
-> > > > otherwise almost everything breaks.
-> > > 
-> > > Last time this came up I asked if someone could test if the RPM is stuck
-> > > in the state machine trying to close the channel and as such we could
-> > > kick it by making sure that we "ack" the closing of the channel and
-> > > hence it would come back up again.
-> > > 
-> > > But I don't remember seeing any outcome of this.
-> > 
-> > Do you have a link to this or should I go digging in the archives?
-> 
-> Replying to myself, I went searching but couldn't find anything. If you have 
-> some PoC code I'd be happy to try but as I'm not familiar with rpm/smd at all 
-> I'd have to read myself into it first.
-> 
+Back in the days, GRO was modified so that we passed a context (nhoff)
+in called functions,
+instead of changing skb offsets. The concept of outer/inner header
+only works with 1 encap.
 
-A quick search didn't turn anything up on my side either.
+Perhaps it is time to do the same in GSO, to allow arbitrary levels of
+encapsulation.
+Then we no longer mess with these limited
+'network_header/inner_network_header' fields
+in the skb.
 
-And while I had suggestions of what could be tried, I don't have any
-devices myself that manifest this problem, so I haven't been able to
-debug it.
-
-> If Stephans suggestion with the strcmp(channel->name, "rpm_requests") is ok 
-> then I'd test this and use that in v2. I'd personally rather not spend too 
-> much time on this issue right now as it's blocking msm8953 completely (no 
-> regulators = no nothing),
-> 
-
-It's been a long time since this problem was initially reported, so I
-rather see us land the strcmp() hack to unblock you and others. Then
-someone who knows SMD can take a proper look at this.
-
-Regards,
-Bjorn
-
-> Regards
-> Luca
-> 
-> > 
-> > Regards
-> > Luca
-> > 
-> > > > Many solutions are possible though so at the end it is mostly up to
-> > > > Bjorn to decide I think. :)
-> > > 
-> > > I would prefer to get an answer to above question, but if that doesn't
-> > > work (or look like crap) I'm willing to take your suggestion of skipping
-> > > the continue for the rpm_requests channel. Obviously with a comment
-> > > above describing why we're carrying that special case.
-> > > 
-> > > Regards,
-> > > Bjorn
-> 
-> 
-> 
-> 
+Stuffing state in the skb has been a mistake I think.
