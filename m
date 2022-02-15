@@ -2,108 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0813C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5ABDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238684AbiBOPFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:05:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33256 "EHLO
+        id S239592AbiBOPGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:06:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234944AbiBOPFK (ORCPT
+        with ESMTP id S239557AbiBOPGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:05:10 -0500
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E68107D33
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:05:00 -0800 (PST)
-Received: from imladris.surriel.com ([96.67.55.152])
-        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <riel@shelob.surriel.com>)
-        id 1nJzNx-0001uA-LX; Tue, 15 Feb 2022 10:04:57 -0500
-Message-ID: <c5eefc68193669160429437f7151b53f60c1b755.camel@surriel.com>
-Subject: Re: [PATCH v2] mm: clean up hwpoison page cache page in fault path
-From:   Rik van Riel <riel@surriel.com>
-To:     Oscar Salvador <osalvador@suse.de>
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        linux-mm@kvack.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>
-Date:   Tue, 15 Feb 2022 10:04:57 -0500
-In-Reply-To: <Yguh5JUGHln/iRJ8@localhost.localdomain>
-References: <20220212213740.423efcea@imladris.surriel.com>
-         <Yguh5JUGHln/iRJ8@localhost.localdomain>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-cEEbhHLZGjBrDgd1rkUJ"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Tue, 15 Feb 2022 10:06:10 -0500
+Received: from p3plsmtpa09-10.prod.phx3.secureserver.net (p3plsmtpa09-10.prod.phx3.secureserver.net [173.201.193.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D2A108572
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:06:00 -0800 (PST)
+Received: from localhost ([82.17.115.212])
+        by :SMTPAUTH: with ESMTPA
+        id JzOvneUB7ApSlJzOxnv8kp; Tue, 15 Feb 2022 08:05:59 -0700
+X-CMAE-Analysis: v=2.4 cv=G8PZr/o5 c=1 sm=1 tr=0 ts=620bc157
+ a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
+ a=IkcTkHD0fZMA:10 a=eRuHl9Be23FFiiB-UZwA:9 a=QEXdDO2ut3YA:10
+X-SECURESERVER-ACCT: atomlin@atomlin.com
+Date:   Tue, 15 Feb 2022 15:05:57 +0000
+From:   Aaron Tomlin <atomlin@atomlin.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Aaron Tomlin <atomlin@redhat.com>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "cl@linux.com" <cl@linux.com>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "ghalat@redhat.com" <ghalat@redhat.com>,
+        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
+        "void@manifault.com" <void@manifault.com>,
+        "joe@perches.com" <joe@perches.com>,
+        "msuchanek@suse.de" <msuchanek@suse.de>,
+        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
+Subject: Re: [PATCH v5 13/13] module: Move version support into a separate
+ file
+Message-ID: <20220215150557.g7mvx47ibhjgweyo@ava.usersys.com>
+References: <20220209171118.3269581-1-atomlin@redhat.com>
+ <20220209171118.3269581-3-atomlin@redhat.com>
+ <14a1678f-0c56-1237-c5c7-4ca1bac4b42a@csgroup.eu>
+ <CANfR36gVY+1k7YJy0fn1z+mGv-LqEmZJSvSHXn_BFR4WC+oJrQ@mail.gmail.com>
+ <d3d87e3e-e13f-252a-1c06-f18a78af5d98@csgroup.eu>
 MIME-Version: 1.0
-Sender: riel@shelob.surriel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <d3d87e3e-e13f-252a-1c06-f18a78af5d98@csgroup.eu>
+X-CMAE-Envelope: MS4xfE6u2n9DvFiGsYMeR3knNtd1Uva+OFrVy9oEyo66zu27ZGI/MXq9RjqzQsM7JLBsAGQrHziUfDdZ7PdUHEDucW7KYBpPGXdMA/s8RfiJnGF60yp5OQYQ
+ 34/DADYiivZZnSXdDmDZacjYodnY31fPUWCaK3qKjfCC/vsG0fCkkBDofkzoDMhdkqppdsgwwMPmR/Bdtyad0GIOiI/dFI/FiLsnQqQmirhgLcu931KyiKwj
+ SlvzCVK19hmmJJQpNKfjg5Yr1yN70RRQZlxrhJp4L8kCi981iCR4BD8dPGNMonpNkobC83Ao7/y9NrV23L/CfXW7lAlCvrM3CfFmBy03x8hxADWskgR4dmje
+ XQMt+oVaFTySOqjuoLn1TEJRvtiUiD9wKcknPxlG1e8SRkMLOfcY/Iv31YpgV0RF6tR/bZYv3/WnRDs+Mp+3atcCwI+LrTQQahfVPVTXmWiB1ctlrMUi0M9r
+ /k9O/7j3TceeRL9hUZkWQiPtXognSDh4GSoqPybHOm3CLj/HtrnRsKG7HoR4xpx6mEknNrOTsvJECi1pWr2/Oeznfld1mJLvjR+r7KMrNtBFKzWpwZGpr+9Z
+ a8LD96SgYe1oEx0N3cWMiQiZgdp5vvnLrdhbDs6uKS/qKsN5jytzrRXnWi/Da74X2T/yKdrhm8GJ1GR4wejhOSAKOpTIFaVDVYO1UZ49HJcbyg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun 2022-02-13 18:29 +0000, Christophe Leroy wrote:
+> I'm not sure you can do that.
+> 
+>  From commit 8c8ef42aee8f ("module: include other structures in module 
+> version check") I understand that module_layout is there for some signature.
 
---=-cEEbhHLZGjBrDgd1rkUJ
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi Christophe,
 
-On Tue, 2022-02-15 at 13:51 +0100, Oscar Salvador wrote:
-> On Sat, Feb 12, 2022 at 09:37:40PM -0500, Rik van Riel wrote:
-> > Sometimes the page offlining code can leave behind a hwpoisoned
-> > clean
-> > page cache page. This can lead to programs being killed over and
-> > over
-> > and over again as they fault in the hwpoisoned page, get killed,
-> > and
-> > then get re-spawned by whatever wanted to run them.
->=20
-> Hi Rik,
->=20
-> Do you know how that exactly happens? We should not be really leaving
-> anything behind, and soft-offline (not hard) code works with the
-> premise
-> of only poisoning a page in case it was contained, so I am wondering
-> what is going on here.
->=20
-> In-use pagecache pages are migrated away, and the actual page is
-> contained, and for clean ones, we already do the
-> invalidate_inode_page()
-> and then contain it in case we succeed.
+I see. In which case, if I understand correctly, we'd have to ignore the
+report from Sparse. I will add a comment to hopefully suggest against
+removal.
 
-I do not know the exact failure case, since I have never
-caught a system in the act of leaking one of these pages.
 
-I just know I have seen this issue on systems where the
-"soft_offline: %#lx: invalidated\n" printk was the only
-offline method leaving any message in the kernel log.
+Kind regards,
 
-However, there are a few code paths through the soft
-offlining code path that don't seem to have any printks,
-so I am not sure exactly where things went wrong.
-
-I only really found the aftermath, and tested this patch
-by loading it as a kernel live patch module on some of
-those systems.
-
---=20
-All Rights Reversed.
-
---=-cEEbhHLZGjBrDgd1rkUJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmILwRkACgkQznnekoTE
-3oOatgf/VctfpxQ82Wr2xD3ogIG/T6vKdLWw/cOzRgJoZDyal2JxdXppe3Cu1IPt
-C8UGfdwh/LKsmFf2fUdux3aBc9abX4KAzntPkhnfN2ST3Bd4Eph8ejFoLQPsmFV8
-UMP966KO25wDVf8eovgXHQLB0gcIMVxivr72wOVXzZz2Iz0DzUovcYwjgPmt1NMG
-nGJ4Xre00BEPi0Pb1ktzGoAWOfC8iv27C+mMPR9cQY1RFDvkbAYhS33ch7ntKKHq
-9mbNXxIPlIFVR3Zh61qssRrZzGrX3L/PotkiTtZW9qPs+roaWHZQwSCyAhp6tNT5
-wCXIC1iwsAqEMS7Lxk74heUHTIscWw==
-=1vXq
------END PGP SIGNATURE-----
-
---=-cEEbhHLZGjBrDgd1rkUJ--
+-- 
+Aaron Tomlin
