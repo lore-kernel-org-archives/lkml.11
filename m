@@ -2,99 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D9DC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57F38C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237778AbiBOMlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:41:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49520 "EHLO
+        id S237788AbiBOMl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:41:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237683AbiBOMlp (ORCPT
+        with ESMTP id S237764AbiBOMlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:41:45 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EA413D78;
-        Tue, 15 Feb 2022 04:41:34 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Jyggq1Kddz9sSH;
-        Tue, 15 Feb 2022 13:41:27 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id vL9aUiplKei4; Tue, 15 Feb 2022 13:41:27 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jyggn1t3Mz9sSK;
-        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2E0C98B763;
-        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id xyvWSD6fdps8; Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.174])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 6F70E8B779;
-        Tue, 15 Feb 2022 13:41:24 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21FCfFPa080608
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 13:41:15 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21FCfF4F080607;
-        Tue, 15 Feb 2022 13:41:15 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH v4 01/13] powerpc: Fix 'sparse' checking on PPC64le
-Date:   Tue, 15 Feb 2022 13:40:56 +0100
-Message-Id: <ac1312f2451aa558bb2a8806b4d0aa2020f0c176.1644928018.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1644928018.git.christophe.leroy@csgroup.eu>
-References: <cover.1644928018.git.christophe.leroy@csgroup.eu>
+        Tue, 15 Feb 2022 07:41:51 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494C013FBA;
+        Tue, 15 Feb 2022 04:41:41 -0800 (PST)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jyggd3Bzzz685gn;
+        Tue, 15 Feb 2022 20:41:17 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Feb 2022 13:41:38 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kpsingh@kernel.org>,
+        <revest@chromium.org>
+CC:     <linux-integrity@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v2 1/6] ima: Fix documentation-related warnings in ima_main.c
+Date:   Tue, 15 Feb 2022 13:40:37 +0100
+Message-ID: <20220215124042.186506-2-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220215124042.186506-1-roberto.sassu@huawei.com>
+References: <20220215124042.186506-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1644928860; l=880; s=20211009; h=from:subject:message-id; bh=crZTv1K4CZKiS5ZWIVd8YKJws5q8Bf1xc6ZFmRIDlic=; b=h2sQgxQeKt0nGUlYcN53xt3DIURP341bRXkiE9Ch6rOTZHo+nST8Ypmr+POIh9zCsgCoq4Mkvije tugKrD4cBfTA8hFJ4+j176w0ONESz+yQzxrKLxEQr9SiBAbqUxfr
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'sparse' is architecture agnostic and knows nothing about ELF ABI
-version.
+Fix some warnings in ima_main.c, displayed with W=n make argument.
 
-Just like it gets arch and powerpc type and endian from Makefile,
-it also need to get _CALL_ELF from there, otherwise it won't set
-PPC64_ELF_ABI_v2 macro for PPC64le and won't check the correct code.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- arch/powerpc/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/integrity/ima/ima_main.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
-index ddc5a706760a..4d4d8175f4a1 100644
---- a/arch/powerpc/Makefile
-+++ b/arch/powerpc/Makefile
-@@ -213,7 +213,7 @@ CHECKFLAGS	+= -m$(BITS) -D__powerpc__ -D__powerpc$(BITS)__
- ifdef CONFIG_CPU_BIG_ENDIAN
- CHECKFLAGS	+= -D__BIG_ENDIAN__
- else
--CHECKFLAGS	+= -D__LITTLE_ENDIAN__
-+CHECKFLAGS	+= -D__LITTLE_ENDIAN__ -D_CALL_ELF=2
- endif
+diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/ima_main.c
+index 8c6e4514d494..946ba8a12eab 100644
+--- a/security/integrity/ima/ima_main.c
++++ b/security/integrity/ima/ima_main.c
+@@ -418,6 +418,7 @@ int ima_file_mmap(struct file *file, unsigned long prot)
  
- ifdef CONFIG_476FPE_ERR46
+ /**
+  * ima_file_mprotect - based on policy, limit mprotect change
++ * @vma: vm_area_struct protection is set to
+  * @prot: contains the protection that will be applied by the kernel.
+  *
+  * Files can be mmap'ed read/write and later changed to execute to circumvent
+@@ -610,8 +611,8 @@ EXPORT_SYMBOL_GPL(ima_inode_hash);
+ 
+ /**
+  * ima_post_create_tmpfile - mark newly created tmpfile as new
+- * @mnt_userns:	user namespace of the mount the inode was found from
+- * @file : newly created tmpfile
++ * @mnt_userns: user namespace of the mount the inode was found from
++ * @inode: inode of the newly created tmpfile
+  *
+  * No measuring, appraising or auditing of newly created tmpfiles is needed.
+  * Skip calling process_measurement(), but indicate which newly, created
+@@ -643,7 +644,7 @@ void ima_post_create_tmpfile(struct user_namespace *mnt_userns,
+ 
+ /**
+  * ima_post_path_mknod - mark as a new inode
+- * @mnt_userns:	user namespace of the mount the inode was found from
++ * @mnt_userns: user namespace of the mount the inode was found from
+  * @dentry: newly created dentry
+  *
+  * Mark files created via the mknodat syscall as new, so that the
+@@ -814,8 +815,8 @@ int ima_load_data(enum kernel_load_data_id id, bool contents)
+  * ima_post_load_data - appraise decision based on policy
+  * @buf: pointer to in memory file contents
+  * @size: size of in memory file contents
+- * @id: kernel load data caller identifier
+- * @description: @id-specific description of contents
++ * @load_id: kernel load data caller identifier
++ * @description: @load_id-specific description of contents
+  *
+  * Measure/appraise/audit in memory buffer based on policy.  Policy rules
+  * are written in terms of a policy identifier.
 -- 
-2.34.1
+2.32.0
 
