@@ -2,92 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69FDDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5C4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:16:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232460AbiBOAPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 19:15:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42872 "EHLO
+        id S231512AbiBOAQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 19:16:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbiBOAPL (ORCPT
+        with ESMTP id S232461AbiBOAQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 19:15:11 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3738106CBE;
-        Mon, 14 Feb 2022 16:15:02 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id f37so7475987lfv.8;
-        Mon, 14 Feb 2022 16:15:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=H3kQop1x+B3mlVKVDTMEImkl0y1zDfGnntwEOsoqZlA=;
-        b=Rw6IvHIpxdsyzZMq+qdiQyu9N3lB9zF8ukwsi7Sju5A7ovw350nTcbb+3nR2jXhUyi
-         wr8Arn3bhoUBjXjXCx+InJzC3r0XmT1LK44mTbTJIeJeV3gmyYxSCIQUHNPr6RR5amvP
-         65EMhmUVgAeX2PhzxzYfB/u8b9c3Mr2JvfRDKW4JiUntpbtMGwc0klSLuIxTeGoaDCrv
-         JW7CEm/vsjkQQb6FRkgrhNFLeWCwVgVkk7+ULPzyP8hMbAe3rAWXGsbx+f85itQ7rLc6
-         XpXfKZ7AuJl7nCY4LezF+dx2Wp7vxaiV+VtwnV5SHd22LozlxUu4tuF8F+DoF/p9aNyW
-         JhBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=H3kQop1x+B3mlVKVDTMEImkl0y1zDfGnntwEOsoqZlA=;
-        b=yQA9OqON3fRteLQ61iYxZlsDwYTo6/4T7OdwjUIzmFq2ZjDkuQbev42Dc2MpK3NMKy
-         DN4fnmcc7m91k+9cc24xQnpPmIkDQz583XRx9dsNPBItxECJ1QbgyG47KPjnD7Ox8Abo
-         kFGJD5LhE4qyRnjDMRIUkZ52oGUPQvUA2J65unUoC/3BxiZr1wLRTqP4oh8DeuSZbFz+
-         42bHRwQqCdt8zx4dynNUysTJSsswQO1EEFBBOeVmdcbmUfyDuhPrQnimPZIIdipmtF5L
-         FxrIRWEcJzFJQ9NeuQx6EsmFAKsZZ+7maMp0Cypj4D8X2ot/6ahlUpksnegudzvG14Tn
-         QC2g==
-X-Gm-Message-State: AOAM532NTQ9NjbSt1EReglMp6uwd7E3RDziTBMlHEyQemIAwTeX2cwWg
-        5LPV7s9vTIXQqAO+NSEaAsYeGvvlygKSGYgAOwF9UA==
-X-Google-Smtp-Source: ABdhPJzceiQhtkP8c9tKqXEGJpwTUWHMniBgkPfP5a1sYqEM1AuZ3IxHcE18xCbsut2F//PXuliQ3Q==
-X-Received: by 2002:a05:6512:2216:: with SMTP id h22mr1083623lfu.155.1644884100645;
-        Mon, 14 Feb 2022 16:15:00 -0800 (PST)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
-        by smtp.gmail.com with ESMTPSA id c4sm424773lfs.220.2022.02.14.16.14.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 16:15:00 -0800 (PST)
-Message-ID: <620af084.1c69fb81.5b25e.1c14@mx.google.com>
-Date:   Mon, 14 Feb 2022 16:15:00 -0800 (PST)
-X-Google-Original-Date: Tue, 15 Feb 2022 00:14:55 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
-Subject: RE: [PATCH 5.15 000/172] 5.15.24-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Mon, 14 Feb 2022 19:16:09 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E71B10B23C;
+        Mon, 14 Feb 2022 16:16:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644884160; x=1676420160;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wvKAq1YglJpEe9h3Kz3zHEnAV1lSCgE1d1UvSLjdlgI=;
+  b=KCQ8MSVSjTF3F0/Vc81lqWgWIcCg32SkmXvrqunCPe9FOYys5cl6qX76
+   ipyQI+qiy3+YU9PvCRDpLXg5LO5+eN2/eP0puysUpNGAhIu5oGyASW3Bi
+   kSFVK7gXtFNZ9C0zf97Y4iTX65arYrv2ob/V5rjHzkyfT8B7/lreGjIst
+   b9tSIlAo7v/pGygP8z8dYfhuwI9fuej0VDetF6hI3IfGvxGnIK9Hti/uH
+   UQ7171PydGK1t+2alYJ2DXR2d9oyAtSgMdQ4ZKdHTQzuvWFlIbnV85E2z
+   xXI6N3ThY3Ch2eqObYYlgfISUbEmO5rxwC2Mf/rucvQKevWREDXu8Zs4u
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249046304"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="249046304"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 16:16:00 -0800
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="496433493"
+Received: from junliao-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.133.237])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 16:15:59 -0800
+Message-ID: <78026a45db94ebd91e13eb335611a1d49a25b2e7.camel@linux.intel.com>
+Subject: Re: [RFC PATCH 4/4] tools/thermal: Add thermal daemon skeleton
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Date:   Mon, 14 Feb 2022 16:15:59 -0800
+In-Reply-To: <f249be05-74ef-6aeb-a561-462c3a76a194@linaro.org>
+References: <20220214210446.255780-1-daniel.lezcano@linaro.org>
+         <20220214210446.255780-4-daniel.lezcano@linaro.org>
+         <50025eeb1826c929342e9f600b5c2d91eed6d2ed.camel@linux.intel.com>
+         <f249be05-74ef-6aeb-a561-462c3a76a194@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022 10:24:18 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.15.24 release.
-> There are 172 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Tue, 2022-02-15 at 00:43 +0100, Daniel Lezcano wrote:
 > 
-> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
-> Anything received after that time might be too late.
+> Hi Srinivas,
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.24-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
+> On 14/02/2022 23:34, srinivas pandruvada wrote:
+> > On Mon, 2022-02-14 at 22:04 +0100, Daniel Lezcano wrote:
+> > > This change provides a simple daemon skeleton. It provides an
+> > > example
+> > > of how to use the thermal library.
+> > > 
+> > > The goal of this skeleton is to give a base brick for anyone
+> > > interested in writing its own thermal engine.
+> > > 
+> > > In the future, it will evolve with more features.
+> > > 
+> >  From the code, doesn't seam to have a function to daemonize.
 > 
-> thanks,
-> 
-> greg k-h
-> 
+> Yes, it does, see below. If the stdout output is set, then it won't 
+> daemonize.
+OK.
 
-5.15.24-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+> 
+> 
+> > So may be not call a daemon if that is true. mainloop() is just an
+> > infinite loop polling netlink messages.
+> > 
+> > Also thermald will confuse with the standard thermald distributed
+> > with
+> > every distro. May be thermal_control_sample as this a sample for
+> > future
+> > development.
+> 
+> Does thermal-engine fine ?
+fine.
+
+Thanks,
+Srinivas
+
+> 
+> > > Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> 
+> [ ... ]
+> 
+> > >   tools/thermal/thermald/thermald.c | 275
+> 
+> [ ... ]
+> 
+> > > +       if (!(options.logopt & TO_STDOUT) && daemon(0, 0))
+> > > +               return 1;
+> 
+> [ ... ]
+> 
 
