@@ -2,31 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E0D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 13:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9695C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 13:20:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238243AbiBONUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 08:20:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33364 "EHLO
+        id S238249AbiBONUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 08:20:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236492AbiBONUd (ORCPT
+        with ESMTP id S233006AbiBONUc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 08:20:33 -0500
+        Tue, 15 Feb 2022 08:20:32 -0500
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C86F406A
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 05:20:20 -0800 (PST)
-X-UUID: 0cd7c7ee83454b0ca9e02a15fc1d9314-20220215
-X-UUID: 0cd7c7ee83454b0ca9e02a15fc1d9314-20220215
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEBDF406D
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 05:20:18 -0800 (PST)
+X-UUID: dae550f7710c49e780f048a18a7ad624-20220215
+X-UUID: dae550f7710c49e780f048a18a7ad624-20220215
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 201544414; Tue, 15 Feb 2022 21:20:16 +0800
+        with ESMTP id 736834964; Tue, 15 Feb 2022 21:20:13 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 15 Feb 2022 21:20:15 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 15 Feb 2022 21:20:12 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 15 Feb 2022 21:20:15 +0800
+ Transport; Tue, 15 Feb 2022 21:20:12 +0800
 From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
 To:     <matthias.bgg@gmail.com>
 CC:     <chunkuang.hu@kernel.org>, <jitao.shi@mediatek.com>,
@@ -37,12 +38,10 @@ CC:     <chunkuang.hu@kernel.org>, <jitao.shi@mediatek.com>,
         <linux-kernel@vger.kernel.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [2/2] soc: mediatek: mmsys: add mmsys reset control for MT8186
-Date:   Tue, 15 Feb 2022 21:19:52 +0800
-Message-ID: <20220215131952.27861-3-rex-bc.chen@mediatek.com>
+Subject: [0/2] Add mmsys reset control for MT8186
+Date:   Tue, 15 Feb 2022 21:19:50 +0800
+Message-ID: <20220215131952.27861-1-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220215131952.27861-1-rex-bc.chen@mediatek.com>
-References: <20220215131952.27861-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -50,42 +49,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mmsys reset control register offset 0x160 for MT8186.
-
-This patch is based on mmsys patch for MT8186 on [1].
+This series is based on mmsys patch for MT8186 on [1].
 [1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220215075953.3310-4-rex-bc.chen@mediatek.com/
 
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
----
- drivers/soc/mediatek/mt8186-mmsys.h | 2 ++
- drivers/soc/mediatek/mtk-mmsys.c    | 1 +
- 2 files changed, 3 insertions(+)
+v1
+1. Add a new variable in mmsys driver data to control different register offset for different SoCs.
+2. Add MT8183 reset register offset.
+3. Add mmsys reset control for MT8186.
 
-diff --git a/drivers/soc/mediatek/mt8186-mmsys.h b/drivers/soc/mediatek/mt8186-mmsys.h
-index 7de329f2d729..c72ccf86ea28 100644
---- a/drivers/soc/mediatek/mt8186-mmsys.h
-+++ b/drivers/soc/mediatek/mt8186-mmsys.h
-@@ -52,6 +52,8 @@
- #define MT8186_DPI0_FROM_DITHER0			1
- #define MT8186_DPI0_FROM_RDMA0				2
- 
-+#define MT8186_MMSYS_SW0_RST_B				0x160
-+
- static const struct mtk_mmsys_routes mmsys_mt8186_routing_table[] = {
- 	{
- 		DDP_COMPONENT_OVL0, DDP_COMPONENT_RDMA0,
-diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
-index cab62c3eac05..4fc4c2c9ea20 100644
---- a/drivers/soc/mediatek/mtk-mmsys.c
-+++ b/drivers/soc/mediatek/mtk-mmsys.c
-@@ -63,6 +63,7 @@ static const struct mtk_mmsys_driver_data mt8186_mmsys_driver_data = {
- 	.clk_driver = "clk-mt8186-mm",
- 	.routes = mmsys_mt8186_routing_table,
- 	.num_routes = ARRAY_SIZE(mmsys_mt8186_routing_table),
-+	.sw0_rst_offset = MT8186_MMSYS_SW0_RST_B,
- };
- 
- static const struct mtk_mmsys_driver_data mt8192_mmsys_driver_data = {
+Rex-BC Chen (2):
+  soc: mediatek: mmsys: add sw0_rst_offset in mmsys driver data
+  soc: mediatek: mmsys: add mmsys reset control for MT8186
+
+ drivers/soc/mediatek/mt8183-mmsys.h | 2 ++
+ drivers/soc/mediatek/mt8186-mmsys.h | 2 ++
+ drivers/soc/mediatek/mtk-mmsys.c    | 7 +++++--
+ drivers/soc/mediatek/mtk-mmsys.h    | 3 +--
+ 4 files changed, 10 insertions(+), 4 deletions(-)
+
 -- 
 2.18.0
 
