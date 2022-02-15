@@ -2,142 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243495AbiBOTQ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:16:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39452 "EHLO
+        id S243510AbiBOTRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:17:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243482AbiBOTQ1 (ORCPT
+        with ESMTP id S241966AbiBOTRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:16:27 -0500
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D60E10A7C2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:16:16 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21FJGAbF001349;
-        Tue, 15 Feb 2022 13:16:10 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644952570;
-        bh=N7QUpF2nmxv/WQFThtwxd7D74QoOdQ5Va2kIaM7t/vQ=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=xl4ad6Qb1hdffz2grbH6fqI2f8JVDGwjHfV7XtuM1wCZjk234KT8NkFwbJLzAXkfG
-         3a/WNPpzYHWzowlWKcd5ffvmVCI1YfAHC8EV6gcgeRdLsfa8dQDZvFg0mjM501LwY3
-         +yBAKcLgcqLUNVoGKeFWKy3w9WNKVpmkGLfKjS+A=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21FJGAbD045258
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 15 Feb 2022 13:16:10 -0600
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 15
- Feb 2022 13:16:10 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 15 Feb 2022 13:16:10 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21FJG9nn023071;
-        Tue, 15 Feb 2022 13:16:10 -0600
-Date:   Wed, 16 Feb 2022 00:46:09 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     <Tudor.Ambarus@microchip.com>
-CC:     <michael@walle.cc>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <miquel.raynal@bootlin.com>,
-        <richard@nod.at>, <vigneshr@ti.com>
-Subject: Re: [PATCH v1 08/14] mtd: spi-nor: micron-st: convert USE_FSR to a
- manufacturer flag
-Message-ID: <20220215191609.tyudvewu4vu6o7td@ti.com>
-References: <20220202145853.4187726-1-michael@walle.cc>
- <20220202145853.4187726-9-michael@walle.cc>
- <0eee21f3-8c03-3d82-dc5f-6d9d6fc7fc45@microchip.com>
+        Tue, 15 Feb 2022 14:17:08 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F8FEDF04;
+        Tue, 15 Feb 2022 11:16:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644952616;
+        bh=QBp47Ao8hk1CypxEZVLu5PS8jzIXoGO+0fq3zbtf9bQ=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=cS1govI+VnsRtVJW00iWERhGrFI1JlFEAu4sa+vlm/ER6rORqZAKiNor+H7Nw15XH
+         7JPbsg1EXdKbZa87wp5zLwVx/5G6qD5REv7ycd4tJZfdvrwwN6dOAsDWyIYO2NrPfl
+         r8cf9Wo2Bm0y0OtVOzelKtI1e6DxcoY4Zzna8BB0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
+ (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1MrQEn-1o6XKy3VLz-00oV9N; Tue, 15 Feb 2022 20:11:27 +0100
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     pali@kernel.org
+Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/7] hwmon: (dell-smm) Make fan/temp sensor number a u8
+Date:   Tue, 15 Feb 2022 20:11:09 +0100
+Message-Id: <20220215191113.16640-4-W_Armin@gmx.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220215191113.16640-1-W_Armin@gmx.de>
+References: <20220215191113.16640-1-W_Armin@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <0eee21f3-8c03-3d82-dc5f-6d9d6fc7fc45@microchip.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:bauKB2E27lkfRLxkS9zFka7i5hru7LsSR+EZsJwrIs51NxKcNY+
+ e8+6bIdsGQbuw0o3jTvZwcCO76Msg/9REDY5BEsTRvpU4fOYF5IXxoY9OfOFNXlmLv7EJnu
+ +TXK5PV3rpbulDjATZGtLbOaUvaj6+EXarSBSCMH69B0Qr7tZGpKK7HcCMZahQ7hviCH0V8
+ GQdH/sbaCAEHhpfZxMmkg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:gx3tOgB5GhY=:5K2eZ/FF0upJ/F8nR7VnFY
+ SE2EnWv4r20ckBGp9RBn+xjFK2diY2SWsmulmPylwAT2R8I6KHTvlyIVJH1/nW/NjAdOlqK+n
+ DdESihLlDKi2I9ushLl1uckvkQUBpT8KhdFFWF+h8JAL2xFo/K1HnlNMLRaJoYsaCheB+Rpw6
+ PiYmrL3q3TqhC6pH8oVg51S1yPqcX9olEC1X87EiP5y4hclLrHbQzp3QUa18eAURamc84gehP
+ Ha8XHvIu8up3897eRpd/lD0G2Aov3jobJoeXtlBMpxe5k3Z/KxYsySYLSYgeuLUhAvIfri3ko
+ olkVrQjqYBSWWmWpRylWHE5owMnnW357SH+mPWK7LIGfiIVRVGXTpVUrl1wikQT4OLtE/QcC3
+ X94mFFiUMF56WH8gIijC2Y6AXP7QQz1akeyhs/Z1ER/DxHO+1Umb0azJVrH+dKd2OHX5G5n0v
+ tmpqI0TWAVpLLrqvwToYrmIIA1rBwCLAUe9SEnQTPrL9DLQKIdgZfZGwXpe3Qo5JxPBw5ge+T
+ o9Zl44o3GCTcakXGHKcHPqHV8yq0e9pP9uNorCi22ed3nTU0PLUH9qXAr+kDYCCDzPc+vQZmW
+ J5iGb9vwhC2CcWaRDGJgpRZxzRNK3xb3rRjXlcj90I2GuRPi5IMHbxJv2OBRnTcbyqNGg/tUo
+ 8vxB3NUkhSHtBeGGwr8JyMnJ3HWKIfObpsCN0Uvc9OccNuV10baAKjfXfmLUxUiu/cZPCYRt1
+ RMnVvbc7PV6yi2TIlbTpnnNUGwGQvB8AtZgrXMUZnMM/RxqFm4aG2cmKgvnOkao4m8SgaJ4ux
+ qbamAJ9pU7E4gCjNVyPvYooxJuSaN3iInykDnqs+DJGb3uGIeI9pML7nJ6U7jat/BtXP8grWn
+ rEmNXCghij7vXJuM7WRv1wqRfLr4gAzi4xpECOHdtJemAJez4IupYYgpaj3Cg95w2KhRuKym7
+ /del75wW2fzsRNGIT2on4nDC8zp5fhpR92VmtYd5W3rEYAPIUKlhMLDSjm4RvrGY5VWsgke1p
+ I3D7ePpxO6kVC2d5yILfXm5afoVnSrPV5MknYfKg3aeBalLqWmosojEKappKNbZszoyPfCd1+
+ EeDwGRtSvy9JzU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/02/22 03:37AM, Tudor.Ambarus@microchip.com wrote:
-> On 2/2/22 16:58, Michael Walle wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > Now that all functions using that flag are local to the micron module,
-> > we can convert the flag to a manufacturer one.
-> > 
-> > Signed-off-by: Michael Walle <michael@walle.cc>
-> > ---
-> >  drivers/mtd/spi-nor/core.c      |  3 --
-> >  drivers/mtd/spi-nor/core.h      |  3 --
-> >  drivers/mtd/spi-nor/micron-st.c | 92 +++++++++++++++++++++------------
-> >  3 files changed, 59 insertions(+), 39 deletions(-)
-> > 
-> > diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-> > index e9d9880149d2..be65aaa954ca 100644
-> > --- a/drivers/mtd/spi-nor/core.c
-> > +++ b/drivers/mtd/spi-nor/core.c
-> > @@ -2499,9 +2499,6 @@ static void spi_nor_init_flags(struct spi_nor *nor)
-> > 
-> >         if (flags & USE_CLSR)
-> >                 nor->flags |= SNOR_F_USE_CLSR;
-> > -
-> > -       if (flags & USE_FSR)
-> > -               nor->flags |= SNOR_F_USE_FSR;
-> >  }
-> > 
-> >  /**
-> > diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-> > index fabc01ae9a81..a02bf54289fb 100644
-> > --- a/drivers/mtd/spi-nor/core.h
-> > +++ b/drivers/mtd/spi-nor/core.h
-> > @@ -12,7 +12,6 @@
-> >  #define SPI_NOR_MAX_ID_LEN     6
-> > 
-> >  enum spi_nor_option_flags {
-> > -       SNOR_F_USE_FSR          = BIT(0),
-> >         SNOR_F_HAS_SR_TB        = BIT(1),
-> >         SNOR_F_NO_OP_CHIP_ERASE = BIT(2),
-> >         SNOR_F_USE_CLSR         = BIT(4),
-> > @@ -349,7 +348,6 @@ struct spi_nor_fixups {
-> >   *   NO_CHIP_ERASE:           chip does not support chip erase.
-> >   *   SPI_NOR_NO_FR:           can't do fastread.
-> >   *   USE_CLSR:                use CLSR command.
-> > - *   USE_FSR:                 use flag status register
-> >   *
-> >   * @no_sfdp_flags:  flags that indicate support that can be discovered via SFDP.
-> >   *                  Used when SFDP tables are not defined in the flash. These
-> > @@ -401,7 +399,6 @@ struct flash_info {
-> >  #define NO_CHIP_ERASE                  BIT(7)
-> >  #define SPI_NOR_NO_FR                  BIT(8)
-> >  #define USE_CLSR                       BIT(9)
-> > -#define USE_FSR                                BIT(10)
-> > 
-> >         u8 no_sfdp_flags;
-> >  #define SPI_NOR_SKIP_SFDP              BIT(0)
-> > diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
-> > index c66580e8aa00..33531c101ccb 100644
-> > --- a/drivers/mtd/spi-nor/micron-st.c
-> > +++ b/drivers/mtd/spi-nor/micron-st.c
-> > @@ -8,6 +8,8 @@
-> > 
-> >  #include "core.h"
-> > 
-> > +#define USE_FSR                BIT(0)
-> 
-> please add a description and inform the reader that this is a manufacturer specific
-> flash_info flag.
+Right now, we only use bits 0 to 7 of the fan/temp sensor number
+by doing number & 0xff. Passing the value as a u8 makes this
+step unnecessary. Also add checks to the ioctl handler since
+users might get confused when passing 0x00000101 does the same
+as passing 0x00000001.
 
-+1
+Tested on a Dell Inspiron 3505.
 
-> Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ drivers/hwmon/dell-smm-hwmon.c | 68 ++++++++++++++++++++++------------
+ 1 file changed, 45 insertions(+), 23 deletions(-)
 
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon=
+.c
+index 3b49e55d060f..a102034a1d38 100644
+=2D-- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -21,6 +21,7 @@
+ #include <linux/errno.h>
+ #include <linux/hwmon.h>
+ #include <linux/init.h>
++#include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/platform_device.h>
+@@ -254,46 +255,52 @@ static int i8k_smm(struct smm_regs *regs)
+ /*
+  * Read the fan status.
+  */
+-static int i8k_get_fan_status(const struct dell_smm_data *data, int fan)
++static int i8k_get_fan_status(const struct dell_smm_data *data, u8 fan)
+ {
+-	struct smm_regs regs =3D { .eax =3D I8K_SMM_GET_FAN, };
++	struct smm_regs regs =3D {
++		.eax =3D I8K_SMM_GET_FAN,
++		.ebx =3D fan,
++	};
 
+ 	if (data->disallow_fan_support)
+ 		return -EINVAL;
 
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+-	regs.ebx =3D fan & 0xff;
+ 	return i8k_smm(&regs) ? : regs.eax & 0xff;
+ }
+
+ /*
+  * Read the fan speed in RPM.
+  */
+-static int i8k_get_fan_speed(const struct dell_smm_data *data, int fan)
++static int i8k_get_fan_speed(const struct dell_smm_data *data, u8 fan)
+ {
+-	struct smm_regs regs =3D { .eax =3D I8K_SMM_GET_SPEED, };
++	struct smm_regs regs =3D {
++		.eax =3D I8K_SMM_GET_SPEED,
++		.ebx =3D fan,
++	};
+
+ 	if (data->disallow_fan_support)
+ 		return -EINVAL;
+
+-	regs.ebx =3D fan & 0xff;
+ 	return i8k_smm(&regs) ? : (regs.eax & 0xffff) * data->i8k_fan_mult;
+ }
+
+ /*
+  * Read the fan type.
+  */
+-static int _i8k_get_fan_type(const struct dell_smm_data *data, int fan)
++static int _i8k_get_fan_type(const struct dell_smm_data *data, u8 fan)
+ {
+-	struct smm_regs regs =3D { .eax =3D I8K_SMM_GET_FAN_TYPE, };
++	struct smm_regs regs =3D {
++		.eax =3D I8K_SMM_GET_FAN_TYPE,
++		.ebx =3D fan,
++	};
+
+ 	if (data->disallow_fan_support || data->disallow_fan_type_call)
+ 		return -EINVAL;
+
+-	regs.ebx =3D fan & 0xff;
+ 	return i8k_smm(&regs) ? : regs.eax & 0xff;
+ }
+
+-static int i8k_get_fan_type(struct dell_smm_data *data, int fan)
++static int i8k_get_fan_type(struct dell_smm_data *data, u8 fan)
+ {
+ 	/* I8K_SMM_GET_FAN_TYPE SMM call is expensive, so cache values */
+ 	if (data->fan_type[fan] =3D=3D INT_MIN)
+@@ -305,14 +312,16 @@ static int i8k_get_fan_type(struct dell_smm_data *da=
+ta, int fan)
+ /*
+  * Read the fan nominal rpm for specific fan speed.
+  */
+-static int __init i8k_get_fan_nominal_speed(const struct dell_smm_data *d=
+ata, int fan, int speed)
++static int __init i8k_get_fan_nominal_speed(const struct dell_smm_data *d=
+ata, u8 fan, int speed)
+ {
+-	struct smm_regs regs =3D { .eax =3D I8K_SMM_GET_NOM_SPEED, };
++	struct smm_regs regs =3D {
++		.eax =3D I8K_SMM_GET_NOM_SPEED,
++		.ebx =3D fan | (speed << 8),
++	};
+
+ 	if (data->disallow_fan_support)
+ 		return -EINVAL;
+
+-	regs.ebx =3D (fan & 0xff) | (speed << 8);
+ 	return i8k_smm(&regs) ? : (regs.eax & 0xffff) * data->i8k_fan_mult;
+ }
+
+@@ -333,7 +342,7 @@ static int i8k_enable_fan_auto_mode(const struct dell_=
+smm_data *data, bool enabl
+ /*
+  * Set the fan speed (off, low, high, ...).
+  */
+-static int i8k_set_fan(const struct dell_smm_data *data, int fan, int spe=
+ed)
++static int i8k_set_fan(const struct dell_smm_data *data, u8 fan, int spee=
+d)
+ {
+ 	struct smm_regs regs =3D { .eax =3D I8K_SMM_SET_FAN, };
+
+@@ -341,33 +350,35 @@ static int i8k_set_fan(const struct dell_smm_data *d=
+ata, int fan, int speed)
+ 		return -EINVAL;
+
+ 	speed =3D (speed < 0) ? 0 : ((speed > data->i8k_fan_max) ? data->i8k_fan=
+_max : speed);
+-	regs.ebx =3D (fan & 0xff) | (speed << 8);
++	regs.ebx =3D fan | (speed << 8);
+
+ 	return i8k_smm(&regs);
+ }
+
+-static int __init i8k_get_temp_type(int sensor)
++static int __init i8k_get_temp_type(u8 sensor)
+ {
+-	struct smm_regs regs =3D { .eax =3D I8K_SMM_GET_TEMP_TYPE, };
++	struct smm_regs regs =3D {
++		.eax =3D I8K_SMM_GET_TEMP_TYPE,
++		.ebx =3D sensor,
++	};
+
+-	regs.ebx =3D sensor & 0xff;
+ 	return i8k_smm(&regs) ? : regs.eax & 0xff;
+ }
+
+ /*
+  * Read the cpu temperature.
+  */
+-static int _i8k_get_temp(int sensor)
++static int _i8k_get_temp(u8 sensor)
+ {
+ 	struct smm_regs regs =3D {
+ 		.eax =3D I8K_SMM_GET_TEMP,
+-		.ebx =3D sensor & 0xff,
++		.ebx =3D sensor,
+ 	};
+
+ 	return i8k_smm(&regs) ? : regs.eax & 0xff;
+ }
+
+-static int i8k_get_temp(int sensor)
++static int i8k_get_temp(u8 sensor)
+ {
+ 	int temp =3D _i8k_get_temp(sensor);
+
+@@ -500,6 +511,9 @@ static long i8k_ioctl(struct file *fp, unsigned int cm=
+d, unsigned long arg)
+ 		if (copy_from_user(&val, argp, sizeof(int)))
+ 			return -EFAULT;
+
++		if (val > U8_MAX || val < 0)
++			return -EINVAL;
++
+ 		val =3D i8k_get_fan_speed(data, val);
+ 		break;
+
+@@ -507,6 +521,9 @@ static long i8k_ioctl(struct file *fp, unsigned int cm=
+d, unsigned long arg)
+ 		if (copy_from_user(&val, argp, sizeof(int)))
+ 			return -EFAULT;
+
++		if (val > U8_MAX || val < 0)
++			return -EINVAL;
++
+ 		val =3D i8k_get_fan_status(data, val);
+ 		break;
+
+@@ -517,6 +534,9 @@ static long i8k_ioctl(struct file *fp, unsigned int cm=
+d, unsigned long arg)
+ 		if (copy_from_user(&val, argp, sizeof(int)))
+ 			return -EFAULT;
+
++		if (val > U8_MAX || val < 0)
++			return -EINVAL;
++
+ 		if (copy_from_user(&speed, argp + 1, sizeof(int)))
+ 			return -EFAULT;
+
+@@ -924,7 +944,8 @@ static int __init dell_smm_init_hwmon(struct device *d=
+ev)
+ {
+ 	struct dell_smm_data *data =3D dev_get_drvdata(dev);
+ 	struct device *dell_smm_hwmon_dev;
+-	int i, state, err;
++	int state, err;
++	u8 i;
+
+ 	for (i =3D 0; i < DELL_SMM_NO_TEMP; i++) {
+ 		data->temp_type[i] =3D i8k_get_temp_type(i);
+@@ -1245,7 +1266,8 @@ static int __init dell_smm_probe(struct platform_dev=
+ice *pdev)
+ {
+ 	struct dell_smm_data *data;
+ 	const struct dmi_system_id *id, *fan_control;
+-	int fan, ret;
++	int ret;
++	u8 fan;
+
+ 	data =3D devm_kzalloc(&pdev->dev, sizeof(struct dell_smm_data), GFP_KERN=
+EL);
+ 	if (!data)
+=2D-
+2.30.2
+
