@@ -2,471 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD41C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F03C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237570AbiBOMRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:17:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56872 "EHLO
+        id S237580AbiBOMSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:18:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233984AbiBOMRa (ORCPT
+        with ESMTP id S234884AbiBOMSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:17:30 -0500
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306AA1074DF;
-        Tue, 15 Feb 2022 04:17:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=8CtI45VWznLgRJQ3ssy47pHs7UB4qilR2OnOc0r/6MI=;
-        b=i8gUbndEAhosom8LoMm+HQ8nSDkOsazEttFTSArF1OlyyR2MeMKXUxtwneKdyX4FPrkXK95G5SHBf
-         frQgg034wFADchOdXUGsAlebaYiKe1I+4GOJkEEkqsPt9ey5stSs1FTqr7jLvzo1kpWCbW7fwFEfd2
-         CTfn2XyR3PSjQPeutriDy/Sxaw/Reara299iOOa9iDsGhoHrx0he21banKG2OJnZkookwHSeC019zN
-         rAxDqSdkEaCHZbKf6amXbNySOpwKzK4iv3cSLH7hdnZp40uEGS/FQu3T2f47pAawiRthZ/tDf7qnX2
-         t0HddEj5ogEb6go6vnag47EugRm79GA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1403, Stamp: 3], Multi: [Enabled, t: (0.000012,0.031498)], BW: [Enabled, t: (0.000024,0.000002)], RTDA: [Enabled, t: (0.102431), Hit: No, Details: v2.25.0; Id: 15.52kbdd.1frul147b.9fu8], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from localhost.localdomain ([178.70.66.234])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 15 Feb 2022 15:17:00 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, system@metrotek.ru,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Subject: [PATCH v2] fpga: microsemi-spi: add Microsemi FPGA manager
-Date:   Tue, 15 Feb 2022 14:58:53 +0300
-Message-Id: <20220215115853.26491-1-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
-References: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
+        Tue, 15 Feb 2022 07:18:45 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4564B1074E1;
+        Tue, 15 Feb 2022 04:18:35 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id b14so7221804ede.9;
+        Tue, 15 Feb 2022 04:18:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Xq2jvVOWw99k+EzkKpclX9QGXWedMY9k22KEFFs6jsk=;
+        b=c4ogmbcUG2iJFi+BDJCrq3bsPGWN6kY2PqKCyWXKpXRw/ljmZX+gqjc1VS+Qyozx3e
+         ylQdqk+DR3Ip2dVdtZDg65D4aXbdHPFpZj61SNXF7Bu+qBmbY2DDbjzkOaz5tWyPLpKY
+         vgvCodUPdzt7FKu9TZw/k7V5yqilo2FV4GmdFPFzF7heJ1Z7/yMMXxRxfJhQvBFophI3
+         YSMOB/UvHGcXMmhqPXiRGbfIqyCyp8ZO7E02Fx6uzRL9lGuvyy7DngxEmKn/1SubJwcw
+         Czw1FStP2/72HiHL34rz5jJnLqJ82XS2bwZG52NU/l64fBfmlUrB2uCVDaQoQAdjaOco
+         8AOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Xq2jvVOWw99k+EzkKpclX9QGXWedMY9k22KEFFs6jsk=;
+        b=V6I/bSQ7BoibtoF/vOs3pA3rVv8zFPZBzne1JEW5xHyvoHIOcq3MMqg9bFlOpsli+Q
+         msWOQUr+k6Hu9hrf7hLOPldP86zfzD37M5NsTbzbUKitAx4BcRIusfjHEaY2LM1Vb9rI
+         9GWF8S/+kI4Y2yvbQR686zOvaEuUQZt33ZKI/d/dVaTPqya0XXQ/ThYoRC7yKl8T2Exb
+         iyvjBr7OcjmHkn8P0egQSeUBGCLmQItfgG5nPImiXeRTmtF23q6smoS7Y+Atu7zVn2YK
+         NP/3RMYJIi9zdJS7zfX1twUVCFYCzXqP7D+gUbp2km5T7DcD+joGchYg9lSbRf4LYpEh
+         vhHg==
+X-Gm-Message-State: AOAM531FLe9K+ijNhsgxnB0V6AsvDmYMUxY9TidivHtxmrfjVEyGEOyo
+        9CjEmrChX4rowzJ9vFw5Y8w=
+X-Google-Smtp-Source: ABdhPJwKSrrktnTwJ3otHZVNysl6dxBiSOZopsbOfrJ11xv7Xg7cY0F1WEZoJzVjWAvS/30VOC4nUQ==
+X-Received: by 2002:aa7:d858:: with SMTP id f24mr3694596eds.156.1644927513671;
+        Tue, 15 Feb 2022 04:18:33 -0800 (PST)
+Received: from krava ([83.240.63.12])
+        by smtp.gmail.com with ESMTPSA id v8sm4138713edc.30.2022.02.15.04.18.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 04:18:33 -0800 (PST)
+Date:   Tue, 15 Feb 2022 13:18:31 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     "Tzvetomir Stoyanov (VMware)" <tz.stoyanov@gmail.com>
+Cc:     acme@kernel.org, jolsa@redhat.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] libperf: Add API for allocating new thread map
+Message-ID: <YguaF9kmFyoZ1ZhC@krava>
+References: <20220210085225.551891-1-tz.stoyanov@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210085225.551891-1-tz.stoyanov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to the FPGA manager for programming Microsemi Polarfire
-FPGAs over slave SPI interface.
+On Thu, Feb 10, 2022 at 10:52:25AM +0200, Tzvetomir Stoyanov (VMware) wrote:
+> The existing API perf_thread_map__new_dummy() allocates new thread map
+> for one thread. I couldn't find a way to reallocate the map with more
+> threads, or to allocate a new map for more than one thread. Having
+> multiple threads in a thread map is essential for some use cases.
+> That's why a new API is proposed, which allocates a new thread map
+> for given number of threads:
+>  perf_thread_map__new()
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
-Changelog:
-  v1 -> v2: fix printk formating
+I'm ok with that, just wondering if we should call it 'perf_thread_map__new_nr'
+because we already have perf_cpu_map__new(const char *cpu_list) so
+it might be better to keep perf_cpu_map and perf_thread_map in sync
 
- drivers/fpga/Kconfig         |   9 +
- drivers/fpga/Makefile        |   1 +
- drivers/fpga/microsemi-spi.c | 366 +++++++++++++++++++++++++++++++++++
- 3 files changed, 376 insertions(+)
- create mode 100644 drivers/fpga/microsemi-spi.c
+Arnaldo, thoughts on this?
 
-diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-index 991b3f361ec9..25c2631a387c 100644
---- a/drivers/fpga/Kconfig
-+++ b/drivers/fpga/Kconfig
-@@ -243,4 +243,13 @@ config FPGA_MGR_VERSAL_FPGA
- 	  configure the programmable logic(PL).
- 
- 	  To compile this as a module, choose M here.
-+
-+config FPGA_MGR_MICROSEMI_SPI
-+	tristate "Microsemi FPGA manager"
-+	depends on SPI
-+	select CRC_CCITT
-+	help
-+	  FPGA manager driver support for Microsemi Polarfire FPGAs
-+	  programming over slave SPI interface.
-+
- endif # FPGA
-diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-index 0bff783d1b61..8b3d818546a6 100644
---- a/drivers/fpga/Makefile
-+++ b/drivers/fpga/Makefile
-@@ -19,6 +19,7 @@ obj-$(CONFIG_FPGA_MGR_XILINX_SPI)	+= xilinx-spi.o
- obj-$(CONFIG_FPGA_MGR_ZYNQ_FPGA)	+= zynq-fpga.o
- obj-$(CONFIG_FPGA_MGR_ZYNQMP_FPGA)	+= zynqmp-fpga.o
- obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)      += versal-fpga.o
-+obj-$(CONFIG_FPGA_MGR_MICROSEMI_SPI)	+= microsemi-spi.o
- obj-$(CONFIG_ALTERA_PR_IP_CORE)         += altera-pr-ip-core.o
- obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)    += altera-pr-ip-core-plat.o
- 
-diff --git a/drivers/fpga/microsemi-spi.c b/drivers/fpga/microsemi-spi.c
-new file mode 100644
-index 000000000000..facbc8f600be
---- /dev/null
-+++ b/drivers/fpga/microsemi-spi.c
-@@ -0,0 +1,366 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Microsemi Polarfire FPGA programming over slave SPI interface.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+#include <linux/of_device.h>
-+#include <linux/fpga/fpga-mgr.h>
-+#include <linux/delay.h>
-+#include <linux/crc-ccitt.h>
-+
-+#define	SPI_ISC_ENABLE		0x0B
-+#define	SPI_ISC_DISABLE		0x0C
-+#define	SPI_READ_STATUS		0x00
-+#define	SPI_READ_DATA		0x01
-+#define	SPI_FRAME_INIT		0xAE
-+#define	SPI_FRAME		0xEE
-+#define	SPI_PRG_MODE		0x01
-+#define	SPI_RELEASE		0x23
-+
-+#define	SPI_FRAME_SIZE	16
-+
-+#define	HEADER_SIZE_OFFSET		24
-+#define	DATA_SIZE_OFFSET		55
-+
-+#define	LOOKUP_TABLE_RECORD_SIZE	9
-+#define	LOOKUP_TABLE_BLOCK_ID_OFFSET	0
-+#define	LOOKUP_TABLE_BLOCK_START_OFFSET	1
-+
-+#define	COMPONENTS_SIZE_ID	5
-+#define	BITSTREAM_ID		8
-+
-+#define	BITS_PER_COMPONENT_SIZE	22
-+
-+#define	STATUS_POLL_TIMEOUT_MS	1000
-+#define	STATUS_BUSY		BIT(0)
-+#define	STATUS_READY		BIT(1)
-+#define	STATUS_SPI_VIOLATION	BIT(2)
-+#define	STATUS_SPI_ERROR	BIT(3)
-+
-+struct microsemi_fpga_priv {
-+	struct spi_device *spi;
-+	bool program_mode;
-+};
-+
-+static enum fpga_mgr_states microsemi_fpga_ops_state(struct fpga_manager *mgr)
-+{
-+	struct microsemi_fpga_priv *priv = mgr->priv;
-+	struct spi_device *spi = priv->spi;
-+	bool program_mode = priv->program_mode;
-+	ssize_t status;
-+
-+	status = spi_w8r8(spi, SPI_READ_STATUS);
-+
-+	if (!program_mode && !status)
-+		return FPGA_MGR_STATE_OPERATING;
-+
-+	return FPGA_MGR_STATE_UNKNOWN;
-+}
-+
-+static int poll_status_not_busy(struct spi_device *spi, u8 mask)
-+{
-+	ssize_t status, timeout = STATUS_POLL_TIMEOUT_MS;
-+
-+	while (timeout--) {
-+		status = spi_w8r8(spi, SPI_READ_STATUS);
-+		if (status < 0)
-+			return status;
-+
-+		if (mask) {
-+			if (!(status & STATUS_BUSY) && (status & mask))
-+				return status;
-+		} else {
-+			if (!(status & STATUS_BUSY))
-+				return status;
-+		}
-+
-+		mdelay(1);
-+	}
-+
-+	return -EBUSY;
-+}
-+
-+static int microsemi_spi_write(struct spi_device *spi, const void *buf,
-+			       size_t buf_size)
-+{
-+	int status = poll_status_not_busy(spi, 0);
-+
-+	if (status < 0)
-+		return status;
-+
-+	return spi_write(spi, buf, buf_size);
-+}
-+
-+static int microsemi_spi_write_then_read(struct spi_device *spi,
-+					 const void *txbuf, size_t txbuf_size,
-+					 void *rxbuf, size_t rxbuf_size)
-+{
-+	const u8 read_command[] = { SPI_READ_DATA };
-+	int ret;
-+
-+	ret = microsemi_spi_write(spi, txbuf, txbuf_size);
-+	if (ret)
-+		return ret;
-+
-+	ret = poll_status_not_busy(spi, STATUS_READY);
-+	if (ret < 0)
-+		return ret;
-+
-+	return spi_write_then_read(spi, read_command, sizeof(read_command),
-+				   rxbuf, rxbuf_size);
-+}
-+
-+static int microsemi_fpga_ops_write_init(struct fpga_manager *mgr,
-+					 struct fpga_image_info *info,
-+					 const char *buf, size_t count)
-+{
-+	const u8 isc_en_command[] = { SPI_ISC_ENABLE };
-+	const u8 program_mode[] = { SPI_FRAME_INIT, SPI_PRG_MODE };
-+	struct microsemi_fpga_priv *priv = mgr->priv;
-+	struct spi_device *spi = priv->spi;
-+	struct device *dev = &mgr->dev;
-+	u32 isc_ret;
-+	int ret;
-+
-+	if (info->flags & FPGA_MGR_PARTIAL_RECONFIG) {
-+		dev_err(dev, "Partial reconfiguration is not supported\n");
-+
-+		return -EOPNOTSUPP;
-+	}
-+
-+	ret = microsemi_spi_write_then_read(spi, isc_en_command,
-+					    sizeof(isc_en_command),
-+					    &isc_ret, sizeof(isc_ret));
-+	if (ret || isc_ret) {
-+		dev_err(dev, "Failed to enable ISC: %d\n", ret ? ret : isc_ret);
-+
-+		return -EFAULT;
-+	}
-+
-+	ret = microsemi_spi_write(spi, program_mode, sizeof(program_mode));
-+	if (ret) {
-+		dev_err(dev, "Failed to enter program mode: %d\n", ret);
-+
-+		return ret;
-+	}
-+
-+	priv->program_mode = true;
-+
-+	return 0;
-+}
-+
-+static ssize_t lookup_block_start(int id, const char *buf, size_t buf_size)
-+{
-+	u8 header_size, blocks_num, block_id;
-+	u32 block_start, i;
-+
-+	header_size = *(buf + HEADER_SIZE_OFFSET);
-+
-+	if (header_size > buf_size)
-+		return -EFAULT;
-+
-+	blocks_num = *(buf + header_size - 1);
-+
-+	if (header_size + blocks_num * LOOKUP_TABLE_RECORD_SIZE > buf_size)
-+		return -EFAULT;
-+
-+	for (i = 0; i < blocks_num; i++) {
-+		block_id = *(buf + header_size + LOOKUP_TABLE_RECORD_SIZE * i +
-+			     LOOKUP_TABLE_BLOCK_ID_OFFSET);
-+
-+		if (block_id == id) {
-+			memcpy(&block_start,
-+			       buf + header_size +
-+			       LOOKUP_TABLE_RECORD_SIZE * i +
-+			       LOOKUP_TABLE_BLOCK_START_OFFSET,
-+			       sizeof(block_start));
-+
-+			return le32_to_cpu(block_start);
-+		}
-+	}
-+
-+	return -EFAULT;
-+}
-+
-+static ssize_t parse_bitstream_size(const char *buf, size_t buf_size)
-+{
-+	ssize_t	bitstream_size = 0, components_size_start = 0,
-+		component_size_byte_num, component_size_byte_off, i;
-+	u16 components_num;
-+	u32 component_size;
-+
-+	memcpy(&components_num, buf + DATA_SIZE_OFFSET, sizeof(components_num));
-+	components_num = le16_to_cpu(components_num);
-+
-+	components_size_start = lookup_block_start(COMPONENTS_SIZE_ID, buf,
-+						   buf_size);
-+	if (components_size_start < 0)
-+		return components_size_start;
-+
-+	if (components_size_start +
-+	    DIV_ROUND_UP(components_num * BITS_PER_COMPONENT_SIZE,
-+			 BITS_PER_BYTE) > buf_size)
-+		return -EFAULT;
-+
-+	for (i = 0; i < components_num; i++) {
-+		component_size_byte_num =
-+			(i * BITS_PER_COMPONENT_SIZE) / BITS_PER_BYTE;
-+		component_size_byte_off =
-+			(i * BITS_PER_COMPONENT_SIZE) % BITS_PER_BYTE;
-+
-+		memcpy(&component_size,
-+		       buf + components_size_start + component_size_byte_num,
-+		       sizeof(component_size));
-+		component_size = le32_to_cpu(component_size);
-+		component_size >>= component_size_byte_off;
-+		component_size &= GENMASK(BITS_PER_COMPONENT_SIZE - 1, 0);
-+
-+		bitstream_size += component_size;
-+	}
-+
-+	return bitstream_size;
-+}
-+
-+static int microsemi_fpga_ops_write(struct fpga_manager *mgr, const char *buf,
-+				    size_t count)
-+{
-+	ssize_t bitstream_start = 0, bitstream_size;
-+	struct microsemi_fpga_priv *priv = mgr->priv;
-+	struct spi_device *spi = priv->spi;
-+	struct device *dev = &mgr->dev;
-+	u8 tmp_buf[SPI_FRAME_SIZE + 1];
-+	int ret, i;
-+
-+	if (crc_ccitt(0, buf, count)) {
-+		dev_err(dev, "CRC error\n");
-+
-+		return -EINVAL;
-+	}
-+
-+	bitstream_start = lookup_block_start(BITSTREAM_ID, buf, count);
-+	if (bitstream_start < 0) {
-+		dev_err(dev, "Failed to find bitstream start %zd\n",
-+			bitstream_start);
-+
-+		return bitstream_start;
-+	}
-+
-+	bitstream_size = parse_bitstream_size(buf, count);
-+	if (bitstream_size < 0) {
-+		dev_err(dev, "Failed to parse bitstream size %zd\n",
-+			bitstream_size);
-+
-+		return bitstream_size;
-+	}
-+
-+	if (bitstream_start + bitstream_size * SPI_FRAME_SIZE > count) {
-+		dev_err(dev,
-+			"Bitstram outruns firmware. Bitstream start %zd, bitstream size %zd, firmware size %zu\n",
-+			bitstream_start, bitstream_size * SPI_FRAME_SIZE, count);
-+
-+		return -EFAULT;
-+	}
-+
-+	for (i = 0; i < bitstream_size; i++) {
-+		tmp_buf[0] = SPI_FRAME;
-+		memcpy(tmp_buf + 1, buf + bitstream_start + i * SPI_FRAME_SIZE,
-+		       SPI_FRAME_SIZE);
-+
-+		ret = microsemi_spi_write(spi, tmp_buf, sizeof(tmp_buf));
-+		if (ret) {
-+			dev_err(dev,
-+				"Failed to write bitstream frame number %d of %zd\n",
-+				i, bitstream_size);
-+
-+			return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int microsemi_fpga_ops_write_complete(struct fpga_manager *mgr,
-+					     struct fpga_image_info *info)
-+{
-+	const u8 isc_dis_command[] = { SPI_ISC_DISABLE };
-+	const u8 release_command[] = { SPI_RELEASE };
-+	struct microsemi_fpga_priv *priv = mgr->priv;
-+	struct spi_device *spi = priv->spi;
-+	struct device *dev = &mgr->dev;
-+	int ret;
-+
-+	ret = microsemi_spi_write(spi, isc_dis_command,
-+				  sizeof(isc_dis_command));
-+	if (ret) {
-+		dev_err(dev, "Failed to disable ISC: %d\n", ret);
-+
-+		return ret;
-+	}
-+
-+	mdelay(1);
-+
-+	ret = microsemi_spi_write(spi, release_command,
-+				  sizeof(release_command));
-+	if (ret) {
-+		dev_err(dev, "Failed to exit program mode: %d\n", ret);
-+
-+		return ret;
-+	}
-+
-+	priv->program_mode = false;
-+
-+	return 0;
-+}
-+
-+static const struct fpga_manager_ops microsemi_fpga_ops = {
-+	.state = microsemi_fpga_ops_state,
-+	.write_init = microsemi_fpga_ops_write_init,
-+	.write = microsemi_fpga_ops_write,
-+	.write_complete = microsemi_fpga_ops_write_complete,
-+};
-+
-+static int microsemi_fpga_probe(struct spi_device *spi)
-+{
-+	struct microsemi_fpga_priv *priv;
-+	struct device *dev = &spi->dev;
-+	struct fpga_manager *mgr;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->spi = spi;
-+
-+	mgr = devm_fpga_mgr_register(dev, "Microsemi FPGA Manager",
-+				     &microsemi_fpga_ops, priv);
-+
-+	return PTR_ERR_OR_ZERO(mgr);
-+}
-+
-+static const struct spi_device_id microsemi_fpga_spi_ids[] = {
-+	{ .name = "polarfire-fpga-mgr", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, microsemi_fpga_spi_ids);
-+
-+static const struct of_device_id microsemi_fpga_of_ids[] = {
-+	{ .compatible = "mscc,polarfire-fpga-mgr" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, microsemi_fpga_of_ids);
-+
-+static struct spi_driver microsemi_fpga_driver = {
-+	.probe = microsemi_fpga_probe,
-+	.id_table = microsemi_fpga_spi_ids,
-+	.driver = {
-+		.name = "microsemi_fpga_manager",
-+		.of_match_table = of_match_ptr(microsemi_fpga_of_ids),
-+	},
-+};
-+
-+module_spi_driver(microsemi_fpga_driver);
-+
-+MODULE_DESCRIPTION("Microsemi FPGA Manager");
-+MODULE_LICENSE("GPL");
--- 
-2.34.1
+jirka
 
-
+> 
+> Signed-off-by: Tzvetomir Stoyanov (VMware) <tz.stoyanov@gmail.com>
+> ---
+>  tools/lib/perf/Documentation/libperf.txt |  1 +
+>  tools/lib/perf/include/perf/threadmap.h  |  1 +
+>  tools/lib/perf/libperf.map               |  1 +
+>  tools/lib/perf/tests/test-threadmap.c    | 27 ++++++++++++++++++++++++
+>  tools/lib/perf/threadmap.c               | 15 +++++++++----
+>  5 files changed, 41 insertions(+), 4 deletions(-)
+> 
+> diff --git a/tools/lib/perf/Documentation/libperf.txt b/tools/lib/perf/Documentation/libperf.txt
+> index 32c5051c24eb..9cbd41c29bff 100644
+> --- a/tools/lib/perf/Documentation/libperf.txt
+> +++ b/tools/lib/perf/Documentation/libperf.txt
+> @@ -62,6 +62,7 @@ SYNOPSIS
+>    struct perf_thread_map;
+>  
+>    struct perf_thread_map *perf_thread_map__new_dummy(void);
+> +  struct perf_thread_map *perf_thread_map__new(int nr);
+>  
+>    void perf_thread_map__set_pid(struct perf_thread_map *map, int thread, pid_t pid);
+>    char *perf_thread_map__comm(struct perf_thread_map *map, int thread);
+> diff --git a/tools/lib/perf/include/perf/threadmap.h b/tools/lib/perf/include/perf/threadmap.h
+> index a7c50de8d010..47d433416040 100644
+> --- a/tools/lib/perf/include/perf/threadmap.h
+> +++ b/tools/lib/perf/include/perf/threadmap.h
+> @@ -8,6 +8,7 @@
+>  struct perf_thread_map;
+>  
+>  LIBPERF_API struct perf_thread_map *perf_thread_map__new_dummy(void);
+> +LIBPERF_API struct perf_thread_map *perf_thread_map__new(int nr);
+>  
+>  LIBPERF_API void perf_thread_map__set_pid(struct perf_thread_map *map, int thread, pid_t pid);
+>  LIBPERF_API char *perf_thread_map__comm(struct perf_thread_map *map, int thread);
+> diff --git a/tools/lib/perf/libperf.map b/tools/lib/perf/libperf.map
+> index 93696affda2e..240a2f087b70 100644
+> --- a/tools/lib/perf/libperf.map
+> +++ b/tools/lib/perf/libperf.map
+> @@ -11,6 +11,7 @@ LIBPERF_0.0.1 {
+>  		perf_cpu_map__empty;
+>  		perf_cpu_map__max;
+>  		perf_cpu_map__has;
+> +		perf_thread_map__new;
+>  		perf_thread_map__new_dummy;
+>  		perf_thread_map__set_pid;
+>  		perf_thread_map__comm;
+> diff --git a/tools/lib/perf/tests/test-threadmap.c b/tools/lib/perf/tests/test-threadmap.c
+> index 5e2a0291e94c..3388bf36dfc0 100644
+> --- a/tools/lib/perf/tests/test-threadmap.c
+> +++ b/tools/lib/perf/tests/test-threadmap.c
+> @@ -11,9 +11,12 @@ static int libperf_print(enum libperf_print_level level,
+>  	return vfprintf(stderr, fmt, ap);
+>  }
+>  
+> +#define THREADS_NR	5
+> +
+>  int test_threadmap(int argc, char **argv)
+>  {
+>  	struct perf_thread_map *threads;
+> +	int i;
+>  
+>  	__T_START;
+>  
+> @@ -27,6 +30,30 @@ int test_threadmap(int argc, char **argv)
+>  	perf_thread_map__put(threads);
+>  	perf_thread_map__put(threads);
+>  
+> +	threads = perf_thread_map__new(THREADS_NR);
+> +	if (!threads)
+> +		tests_failed++;
+> +
+> +	if (perf_thread_map__nr(threads) != THREADS_NR)
+> +		tests_failed++;
+> +
+> +	for (i = 0; i < THREADS_NR; i++) {
+> +		if (perf_thread_map__pid(threads, i) != -1)
+> +			tests_failed++;
+> +	}
+> +
+> +	for (i = 1; i < THREADS_NR; i++)
+> +		perf_thread_map__set_pid(threads, i, i * 100);
+> +
+> +	if (perf_thread_map__pid(threads, 0) != -1)
+> +		tests_failed++;
+> +
+> +	for (i = 1; i < THREADS_NR; i++) {
+> +		if (perf_thread_map__pid(threads, i) != i * 100)
+> +			tests_failed++;
+> +	}
+> +	perf_thread_map__put(threads);
+> +
+>  	__T_END;
+>  	return tests_failed == 0 ? 0 : -1;
+>  }
+> diff --git a/tools/lib/perf/threadmap.c b/tools/lib/perf/threadmap.c
+> index e92c368b0a6c..843fe1070cc9 100644
+> --- a/tools/lib/perf/threadmap.c
+> +++ b/tools/lib/perf/threadmap.c
+> @@ -42,18 +42,25 @@ char *perf_thread_map__comm(struct perf_thread_map *map, int thread)
+>  	return map->map[thread].comm;
+>  }
+>  
+> -struct perf_thread_map *perf_thread_map__new_dummy(void)
+> +struct perf_thread_map *perf_thread_map__new(int nr)
+>  {
+> -	struct perf_thread_map *threads = thread_map__alloc(1);
+> +	struct perf_thread_map *threads = thread_map__alloc(nr);
+> +	int i;
+>  
+>  	if (threads != NULL) {
+> -		perf_thread_map__set_pid(threads, 0, -1);
+> -		threads->nr = 1;
+> +		for (i = 0; i < nr; i++)
+> +			perf_thread_map__set_pid(threads, i, -1);
+> +		threads->nr = nr;
+>  		refcount_set(&threads->refcnt, 1);
+>  	}
+>  	return threads;
+>  }
+>  
+> +struct perf_thread_map *perf_thread_map__new_dummy(void)
+> +{
+> +	return perf_thread_map__new(1);
+> +}
+> +
+>  static void perf_thread_map__delete(struct perf_thread_map *threads)
+>  {
+>  	if (threads) {
+> -- 
+> 2.34.1
+> 
