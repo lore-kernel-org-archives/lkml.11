@@ -2,72 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D6AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35863C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbiBODwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 22:52:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51726 "EHLO
+        id S232178AbiBODzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 22:55:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiBODwA (ORCPT
+        with ESMTP id S229561AbiBODzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 22:52:00 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5D810783D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:51:50 -0800 (PST)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JyRvS04FXzccm8;
-        Tue, 15 Feb 2022 11:50:44 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
- (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 15 Feb
- 2022 11:51:48 +0800
-From:   Baokun Li <libaokun1@huawei.com>
-To:     <richard@nod.at>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <libaokun1@huawei.com>, <yukuai3@huawei.com>,
-        Zhihao Cheng <chengzhihao1@huawei.com>
-Subject: [PATCH -next] ubifs: rename_whiteout: correct old_dir size computing
-Date:   Tue, 15 Feb 2022 12:07:36 +0800
-Message-ID: <20220215040736.2839939-1-libaokun1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 14 Feb 2022 22:55:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514F411942F
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:55:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2F83B80C6D
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:55:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E37CBC340EC;
+        Tue, 15 Feb 2022 03:55:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644897309;
+        bh=BvxNL/RFVc1uJpXylwAbdhKDQPT/RCenbb87HvmLBmc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ssu1nFuwAUbwi6N5yX3DvmCSE0r4PGCXtzxdwRRvbiHRiDyCoRPh9np8ZSvqeZQLB
+         y/Ape3MErHrvX+nLd++MVT7V+rYfaph5uAthilu1KLw8YzJLWp6wTVw0RSPmoovh0w
+         bf3TUn+YCpiB7y5abjyiSwcl7iIUeTiM4dTscsjK2xmJfdMumFGC/WN+kAVV+MAMtC
+         oZtHRdVCOrWXNfvyeYeXO3w6+EZRYL51bf+Mrmp6Gx0YEMJ7zdZwotIDim6dsNaYIn
+         gz6+aO7khOPw4UAQQieYPzwq5iIc1BaSWO055zyPLnaTkWNktsEJt4Wm5ytP3NPE8X
+         7xIYiPH/ZA4Qw==
+Date:   Mon, 14 Feb 2022 19:55:06 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     axboe@fb.com, hch@lst.de, sagi@grimberg.me,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] nvme: Fix missing error code in
+ nvme_configure_directives()
+Message-ID: <20220215035506.GA1663897@dhcp-10-100-145-180.wdc.com>
+References: <20220215033632.104124-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220215033632.104124-1-jiapeng.chong@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When renaming the whiteout file, the old whiteout file is not deleted.
-Therefore, we add the old dentry size to the old dir like XFS.
-Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
-in check_indes.
+On Tue, Feb 15, 2022 at 11:36:32AM +0800, Jiapeng Chong wrote:
+> The error code is missing in this code scenario, add the error code
+> '-EINVAL' to the return value 'ret'.
+> 
+> Eliminate the follow smatch warning:
+> 
+> drivers/nvme/host/core.c:780 nvme_configure_directives() warn: missing
+> error code 'ret'.
 
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
----
- fs/ubifs/dir.c | 3 +++
- 1 file changed, 3 insertions(+)
+Nak, the code is correct as-is, just like it was the previous time you
+posted this patch:
 
-diff --git a/fs/ubifs/dir.c b/fs/ubifs/dir.c
-index ae082a0be2a3..86151889548e 100644
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -1402,6 +1402,9 @@ static int do_rename(struct inode *old_dir, struct dentry *old_dentry,
- 			iput(whiteout);
- 			goto out_release;
- 		}
-+
-+		/* Add the old_dentry size to the old_dir size. */
-+		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
- 	}
- 
- 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
--- 
-2.31.1
-
+  http://lists.infradead.org/pipermail/linux-nvme/2021-September/027339.html
