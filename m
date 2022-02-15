@@ -2,126 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DC4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E25BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241557AbiBOQ1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:27:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33402 "EHLO
+        id S241578AbiBOQ1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:27:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241546AbiBOQ1F (ORCPT
+        with ESMTP id S241558AbiBOQ1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:27:05 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEA766F95
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:26:53 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id h14-20020a17090a130e00b001b88991a305so3440687pja.3
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:26:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4AlrkeeOh0/Ufcc3UhsLjdJdRVpoM+riWwT9RuQlIRU=;
-        b=d0pWAwFclxXSjZn3YA4K8V/CwPcWGI1yTN7bKBa+B683NUF8r5WKYsm+VGWk7Vqaez
-         eTDpe4b4sWabolPl84kzQWLnIryk75cvpwhx2vHaq12wHPi7IgJ+ljgw5QChAU6b5KGs
-         MUQQtkJ/4tjH/8foiyaxX4P+jQnNGaAQ0nH+3PY2H8gezxYZRMALMexDENJVdWb+uMVo
-         c4aV+Hs0FpOVSU4MRhW+Rmo3C9OAtWlmSmAe/5zkGSHJNUI7lEIjhFjcy2ltYGPlx4Rz
-         2UFm0jzGVjjjUg9G6lONM41KO33LGQH0Mh/CJNrLs7WjgctuadQu5dImAX0RerSwTTAY
-         C2/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4AlrkeeOh0/Ufcc3UhsLjdJdRVpoM+riWwT9RuQlIRU=;
-        b=35v20skVu49urNWGENljn/vbO8Qitd3GPqnTnc5hmRToydasNO1B53Lr4a7W/bAXe/
-         jLymc3L5FTpMLEB9YWoa8nHtl9TOIfa0JNZqGgpos8aYvujR/QVRClX2cSW9HqH07+Z/
-         GQkIKZK9EQCkILwPoksNqYLTjKuxnRd5343JOr21+uRIi2Dsk7ZP4OhSUQQNMb8m0uju
-         GNMaTeXerfFmLaEr1UZXeVtapT5+E+pp9sUGiIgmBwulSF5VFyAgRvZjkr5hJJMaAiFl
-         AiBWHS+tPtQmroujpGVHz64rMkVapbNEhbNccQQsotZJxdc9BDjK176sXZRUxiYvtUvc
-         XTYw==
-X-Gm-Message-State: AOAM531S5kqNt1aDwK8awGTEL9KkHLgH1oVS6RdDMmM+2rcEObJsN0iH
-        7xA+pvSgPQIvVQ3h4vEH7WkwpcqarmSz3g==
-X-Google-Smtp-Source: ABdhPJzwgO018qz0B77mszx1CmVsyurVkt4dBBqXVTV6Jfw1+PjyE7MG5D5NZVyMRs+57WNG/ZcL2w==
-X-Received: by 2002:a17:902:ed89:: with SMTP id e9mr5235867plj.88.1644942412865;
-        Tue, 15 Feb 2022 08:26:52 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id g6sm20404223pfv.158.2022.02.15.08.26.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 08:26:52 -0800 (PST)
-Date:   Tue, 15 Feb 2022 16:26:48 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Wanpeng Li <kernellwp@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] KVM: Fix lockdep false negative during host resume
-Message-ID: <YgvUSCjukIxvpDlf@google.com>
-References: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
+        Tue, 15 Feb 2022 11:27:25 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE716BDDB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:27:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644942433; x=1676478433;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FhUgSu8QDriqHaKgF3RSsaX1eOMu6Th4q4D3Ki12HOQ=;
+  b=IL6/NkCWfuMMlWKFaDwipGZ7FZU6IJE4Rggi3SAymxwhvXou9JiTShK2
+   QzjSvTtGxUOquKXtFCjJPGIEF8xVbkpRKPqH/LCR+RLByQbDUNdFucLeP
+   cbFVuQvmKHGKbs+Z4hYbWYqLRLFiZSqGs6S0Q0aFVdDuGmgmn4/2ezyOe
+   3E6pAzuAHYneXAKU2cVZArd3o9NFkXzmXKTUsshYjFYwnXkvUZdxSdn9K
+   ra04DyydTVphQBV9QqcsCWjnJVRDboml99qg4xoigCrAwsU0hjf3AKCJO
+   xcU6Y+2G0ifOoEImj4WaNHje8lADoR5M8cFxNDxcL31hCEVeFRuleHAb1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250128868"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="250128868"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 08:27:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="502523569"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2022 08:27:07 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id A3748107; Tue, 15 Feb 2022 18:27:22 +0200 (EET)
+Date:   Tue, 15 Feb 2022 19:27:22 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@intel.com>, tglx@linutronix.de,
+        mingo@redhat.com, luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 22/29] x86/tdx: Make pages shared in ioremap()
+Message-ID: <20220215162722.cvzik5r57spr2krz@black.fi.intel.com>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220124150215.36893-23-kirill.shutemov@linux.intel.com>
+ <YgFIaJ8ijgQQ04Nv@zn.tnic>
+ <1d77e91c-e151-7846-6cd4-6264236ca5ae@intel.com>
+ <YgFWpGQfA84Y0mW/@zn.tnic>
+ <20220214220926.fjwlyieatwjhcpij@black.fi.intel.com>
+ <f1dfc268-7b2f-9980-27ce-0b5bb1aea962@amd.com>
+ <20220215154118.ldpvvk5seljntl44@black.fi.intel.com>
+ <dd21e54a-a431-4d6f-47b7-ab1a3e8e0cc8@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
+In-Reply-To: <dd21e54a-a431-4d6f-47b7-ab1a3e8e0cc8@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022, Wanpeng Li wrote:
-> From: Wanpeng Li <wanpengli@tencent.com>
+On Tue, Feb 15, 2022 at 09:55:16AM -0600, Tom Lendacky wrote:
+> On 2/15/22 09:41, Kirill A. Shutemov wrote:
+> > On Tue, Feb 15, 2022 at 08:49:34AM -0600, Tom Lendacky wrote:
+> > > On 2/14/22 16:09, Kirill A. Shutemov wrote:
+> > > > On Mon, Feb 07, 2022 at 06:28:04PM +0100, Borislav Petkov wrote:
+> > > > > On Mon, Feb 07, 2022 at 08:57:39AM -0800, Dave Hansen wrote:
+> > > > > > We can surely *do* this with cc_something() helpers.  It's just not as
+> > > > > > easy as making cc_set/cc_clear().
+> > > > > 
+> > > > > Sure, that's easy: cc_pgprot_{enc,dec}() or so.
+> > > > 
+> > > > So, I've ended up with this in <asm/pgtable.h>
+> > > > 
+> > > > /*
+> > > >    * Macros to add or remove encryption attribute
+> > > >    */
+> > > > #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
+> > > > pgprotval_t cc_enc(pgprotval_t protval);
+> > > > pgprotval_t cc_dec(pgprotval_t protval);
+> > > > #define pgprot_encrypted(prot)	__pgprot(cc_enc(pgprot_val(prot)))
+> > > > #define pgprot_decrypted(prot)	__pgprot(cc_dec(pgprot_val(prot)))
+> > > > #else
+> > > > #define pgprot_encrypted(prot) (prot)
+> > > > #define pgprot_decrypted(prot) (prot)
+> > > > #endif
+> > > 
+> > > A couple of things. I think cc_pgprot_enc() and cc_pgprot_dec() would be
+> > > more descriptive/better names to use here.
+> > > 
+> > > Also, can they be defined in include/linux/cc_platform.h (with two versions
+> > > based on CONFIG_ARCH_HAS_CC_PLATFORM) and have that included here? Or is
+> > > there some header file include issues when trying to include it? That would
+> > > clean this block up into just two lines.
+> > 
+> > Well, pgprotval_t is x86-specific. It cannot be used in generic headers.
 > 
-> I saw the below splatting after the host suspended and resumed.
+> Ah, right.
 > 
->    WARNING: CPU: 0 PID: 2943 at kvm/arch/x86/kvm/../../../virt/kvm/kvm_main.c:5531 kvm_resume+0x2c/0x30 [kvm]
->    CPU: 0 PID: 2943 Comm: step_after_susp Tainted: G        W IOE     5.17.0-rc3+ #4
->    RIP: 0010:kvm_resume+0x2c/0x30 [kvm]
->    Call Trace:
->     <TASK>
->     syscore_resume+0x90/0x340
->     suspend_devices_and_enter+0xaee/0xe90
->     pm_suspend.cold+0x36b/0x3c2
->     state_store+0x82/0xf0
->     kernfs_fop_write_iter+0x1b6/0x260
->     new_sync_write+0x258/0x370
->     vfs_write+0x33f/0x510
->     ksys_write+0xc9/0x160
->     do_syscall_64+0x3b/0xc0
->     entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > We can use u64 here instead. It is wider than pgprotval_t on 2-level
+> > paging x86, but should work.
 > 
-> lockdep_is_held() can return -1 when lockdep is disabled which triggers
-> this warning. Let's use lockdep_assert_not_held() which can detect 
-> incorrect calls while holding a lock and it also avoids false negatives
-> when lockdep is disabled.
+> Hmm..., yeah. Maybe unsigned long? CONFIG_ARCH_HAS_CC_PLATFORM is X86_64
+> only, so 2-level paging wouldn't be applicable when an unsigned long is
+> 64-bits?
+
+Hm. So for !CONFIG_ARCH_HAS_CC_PLATFORM it has to be define, if we would
+try static inline dummy instead it will break x86 PAE as upper bit get
+trancated when passed via helper.
+
+I donno.
+
+> I'll let the maintainers weigh in on that.
 > 
-
-Fixes: 2eb06c306a57 ("KVM: Fix spinlock taken warning during host resume")
-
-> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> ---
->  virt/kvm/kvm_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > But with u64 as type, I'm not sure 'pgprot' in the name is jutified.
 > 
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index 83c57bcc6eb6..3f861f33bfe0 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -5528,7 +5528,7 @@ static void kvm_resume(void)
->  {
->  	if (kvm_usage_count) {
->  #ifdef CONFIG_LOCKDEP
+> Maybe cc_mask_{enc,dec}()? It just sounds like cc_{enc,dec}() is actually
+> performing encryption or decryption and can be confusing.
 
-The #ifdef can be dropped, it was added only to omit the WARN_ON.
+cc_{enc,dec}_mask() sounds better to me.
 
-With that,
-
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-
-> -		WARN_ON(lockdep_is_held(&kvm_count_lock));
-> +		lockdep_assert_not_held(&kvm_count_lock);
->  #endif
->  		hardware_enable_nolock(NULL);
->  	}
-> -- 
-> 2.25.1
-> 
+-- 
+ Kirill A. Shutemov
