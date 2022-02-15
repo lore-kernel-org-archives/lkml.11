@@ -2,97 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1CE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23818C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237348AbiBOMZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:25:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34546 "EHLO
+        id S237644AbiBOM0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:26:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232191AbiBOMZg (ORCPT
+        with ESMTP id S229997AbiBOM0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:25:36 -0500
-X-Greylist: delayed 437 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 04:25:25 PST
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98489107AA9
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:25:25 -0800 (PST)
-Received: from epcas3p2.samsung.com (unknown [182.195.41.20])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220215121802epoutp0224e8823b84944bcaceac18e348d4ebcc~T9NR5_Vfw1394113941epoutp02R
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 12:18:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220215121802epoutp0224e8823b84944bcaceac18e348d4ebcc~T9NR5_Vfw1394113941epoutp02R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1644927482;
-        bh=gFH/O+Wwc4cOaRG+Ce3cxW3yMZxYDCdcbdpfz+GoqEI=;
-        h=Subject:Reply-To:From:To:Date:References:From;
-        b=jXCJwOE5sTQnteFunbis4gvquuLY4r+Fc++uZfECXWhSZHbCjnx8iKJaya1fe8GQC
-         WHqo4O6+qGPL7R8IjRF8aarMdqH5xsKCAjMxctUdpR5s9Mg6BYICwUTccQCglkCUey
-         wRoqw01oQUGub6pazRizoou1csXo6U4rEnpMovUM=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas3p2.samsung.com (KnoxPortal) with ESMTP id
-        20220215121801epcas3p2104ee63750619de84afdcdec064da235~T9NRYlWeI1114711147epcas3p2X;
-        Tue, 15 Feb 2022 12:18:01 +0000 (GMT)
-Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp1.localdomain
-        (Postfix) with ESMTP id 4Jyg8n5CJLz4x9Pp; Tue, 15 Feb 2022 12:18:01 +0000
-        (GMT)
-Mime-Version: 1.0
-Subject: [PATCH] scsi: ufs: Remove wlun_dev_to_hba()
-Reply-To: keosung.park@samsung.com
-Sender: Keoseong Park <keosung.park@samsung.com>
-From:   Keoseong Park <keosung.park@samsung.com>
-To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "cang@codeaurora.org" <cang@codeaurora.org>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "asutoshd@codeaurora.org" <asutoshd@codeaurora.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <1891546521.01644927481711.JavaMail.epsvc@epcpadp4>
-Date:   Tue, 15 Feb 2022 20:40:02 +0900
-X-CMS-MailID: 20220215114002epcms2p1eb4e53507c96e0f24770af16aedcf5c6
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220215114002epcms2p1eb4e53507c96e0f24770af16aedcf5c6
-References: <CGME20220215114002epcms2p1eb4e53507c96e0f24770af16aedcf5c6@epcms2p1>
+        Tue, 15 Feb 2022 07:26:49 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3916C6D4EA;
+        Tue, 15 Feb 2022 04:26:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644927999; x=1676463999;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mAOEDZwZltc79R8ljIE8KX8QQVn+66VpKFi11FYX9sU=;
+  b=EIRnqus/hw2MB3+g30fZIVTkAA6ie9U1gepphGQMgCYF7bcFVdxdDTtg
+   Jw4Rspe+xJvqyIffeEDop8Tg63yWWPERS1LJmpduO+Lgf4VsgK9KPUbix
+   N7S4GNlcJEl3HyGDag0JG541eXnE3huoLcj0aFQUpZF+GA0Bf5BOT5wDc
+   AMdm62Z1GMvuKUdypqTTe+hZFDnQK+loJuk/jbe1gDhJbJ46TN2cQ3D31
+   QTrExDQW4Bz0y8CcDgSpOKiQM9mtgEV1xVENcGQikC/5MPUDWAkEgJfIS
+   uxhE3Sze9hDRH7xlQYMI/V2sk501L54NIYP6GKgzMO4gC1OM6STU9yZWS
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230303529"
+X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
+   d="scan'208";a="230303529"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 04:26:39 -0800
+X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
+   d="scan'208";a="624765025"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 04:26:37 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nJwtq-004upb-TR;
+        Tue, 15 Feb 2022 14:25:42 +0200
+Date:   Tue, 15 Feb 2022 14:25:42 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Qing Wang <wangqing@vivo.com>
+Subject: Re: [PATCH v1 1/1] serial: 8250_mid: Balance reference count for PCI
+ DMA device
+Message-ID: <YgubxsqouAl1zXFK@smile.fi.intel.com>
+References: <20220215100920.41984-1-andriy.shevchenko@linux.intel.com>
+ <db576c63-73e2-b5f8-bc8b-057bdab2264d@kernel.org>
+ <YguAncl92hV2vUkm@smile.fi.intel.com>
+ <YguBEJ1cc0TMQLuE@smile.fi.intel.com>
+ <f8ffca37-6029-6103-e3cf-0c2c62d04485@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f8ffca37-6029-6103-e3cf-0c2c62d04485@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit edc0596cc04b ("scsi: ufs: core: Stop clearing UNIT ATTENTIONS")
-removed all callers of wlun_dev_to_hba(). Hence also remove the macro itself.
+On Tue, Feb 15, 2022 at 12:08:26PM +0100, Jiri Slaby wrote:
+> On 15. 02. 22, 11:31, Andy Shevchenko wrote:
+> > On Tue, Feb 15, 2022 at 12:29:49PM +0200, Andy Shevchenko wrote:
+> > > On Tue, Feb 15, 2022 at 11:11:41AM +0100, Jiri Slaby wrote:
+> > > > On 15. 02. 22, 11:09, Andy Shevchenko wrote:
+> > > > > The pci_get_slot() increases its reference count, the caller
+> > > > > must decrement the reference count by calling pci_dev_put().
+> > > 
+> > > > And what about the -EINVAL case?
+> > > 
+> > > What about it? The ->probe() calls ->exit() in its error path.
+> > > Or did I miss something?
+> > 
+> > Or you mean that we call pci_dev_put() on NULL pointer?
+> > This is completely valid case and handled in the callee.
+> 
+> No, I mixed up patches :P. This was meant as a comment to
+> "serial: 8250_lpss: Balance reference count for PCI DMA device"
+> 
+> byt_serial_exit() isn't called when byt_serial_setup() fails with EINVAL if
+> I'm looking correctly.
 
-Signed-off-by: Keoseong Park <keosung.park@samsung.com>
----
- drivers/scsi/ufs/ufshcd.c | 2 --
- 1 file changed, 2 deletions(-)
+I see now, thanks for catching this!
+I will send a v2 soon.
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 41d85b69fa50..1243d73d669b 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -83,8 +83,6 @@
- /* Polling time to wait for fDeviceInit */
- #define FDEVICEINIT_COMPL_TIMEOUT 1500 /* millisecs */
- 
--#define wlun_dev_to_hba(dv) shost_priv(to_scsi_device(dv)->host)
--
- #define ufshcd_toggle_vreg(_dev, _vreg, _on)				\
- 	({                                                              \
- 		int _ret;                                               \
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
