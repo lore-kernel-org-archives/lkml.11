@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10038C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:54:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236813AbiBOKzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:55:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46572 "EHLO
+        id S236776AbiBOKzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:55:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236746AbiBOKyo (ORCPT
+        with ESMTP id S236762AbiBOKyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:54:44 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0179FD76D5;
-        Tue, 15 Feb 2022 02:54:33 -0800 (PST)
-Date:   Tue, 15 Feb 2022 10:54:31 -0000
+        Tue, 15 Feb 2022 05:54:47 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EC3D76E7;
+        Tue, 15 Feb 2022 02:54:37 -0800 (PST)
+Date:   Tue, 15 Feb 2022 10:54:34 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644922472;
+        s=2020; t=1644922475;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+CtiqOjmcSE5w3uoz5XtZZ0sT7IhhUmcMpf2HZeZbHY=;
-        b=ceH5SeWM2oDowLqSMzEXUnMy13U8HXx4UaC/AXLXjnqiENucar9+ocs6x00e2isOYK3W7i
-        RPoTppXKoq9Uf4u/O1YoEe29UbKN4/UGG6+gbsSCJyaK/6SkQsRAU/UoTa50WFokhsGVI4
-        uU/XPrBIFwJkaD3QkzzVw2vvgfmQfGFbDBfWgfg/tuodEgEyuu0R7+o+GJxaKDuBTOfdyV
-        Cw1Jhbx3S/Ib6T2udSry2f/jYBWzT8rLC1S41vpGfbFsh6m1xxgmh1ikpvKfgQHFjqE9EL
-        iM++Qe32ugOcC/me+6pTGC/OMgmPlzx9epYO45fkp+93EakXMz16VsPXmf0HWA==
+        bh=9WLXWNwzM0R5KqI1zFxtan97Z/TsiLLMHcR38JZo594=;
+        b=YlpOw2ClLUkDVyEHpu8zNXzepJkC8ak2Ta5BxpbLHkh35kaGxbBsmsxvFAbXOCyQEzcWHR
+        i2WPM6YEcdWAZHjVh/zIotQBHmYaVPGRCerbLJsWY0/neIkyFh5tHAlYnvs0Vwt1piVJpH
+        ChXgyPAwVH4xhZN0DuG6ISCKI8kUr0VX1YKmuhYVcMEXUDAA3AYepFm0NL4s3RIN10BDWP
+        9aDIHw668k52ex+bmdZ76S6MIQU9mESsKu46iCEJnpNPMOAo4eDmxvECNL440LuNUWoq1Q
+        yOFEvXIfj3mnvJ3Uy6vW5uSiJEDtQv8gSEr5+LcfSOhaxMbeNHTHtzoxgfiwkA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644922472;
+        s=2020e; t=1644922475;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+CtiqOjmcSE5w3uoz5XtZZ0sT7IhhUmcMpf2HZeZbHY=;
-        b=rT2+hEz+6dTRn6shBHLm8eLHocoOCgYXaVeZ3iwDzk4C3bMwMj4Pmp9GPJ1OxlihPWEfh+
-        +A3NjR17NDD85FDQ==
+        bh=9WLXWNwzM0R5KqI1zFxtan97Z/TsiLLMHcR38JZo594=;
+        b=zD3UZxbZlTT3BxvcZbtadfA5nBuss1cogchnTNLlShFpPxObNZWK6jbMO7TZHKeX8/mlV0
+        588OdRkVNjKGRrCg==
 From:   "tip-bot2 for Fenghua Yu" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/pasid] kernel/fork: Initialize mm's PASID
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+Subject: [tip: x86/pasid] iommu/sva: Rename CONFIG_IOMMU_SVA_LIB to CONFIG_IOMMU_SVA
+Cc:     Fenghua Yu <fenghua.yu@intel.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Lu Baolu <baolu.lu@linux.intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220207230254.3342514-5-fenghua.yu@intel.com>
-References: <20220207230254.3342514-5-fenghua.yu@intel.com>
+In-Reply-To: <20220207230254.3342514-2-fenghua.yu@intel.com>
+References: <20220207230254.3342514-2-fenghua.yu@intel.com>
 MIME-Version: 1.0
-Message-ID: <164492247138.16921.3316731042536397446.tip-bot2@tip-bot2>
+Message-ID: <164492247418.16921.12518467729688631427.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,120 +63,110 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/pasid branch of tip:
 
-Commit-ID:     a6cbd44093ef305b02ad5f80ed54abf0148a696c
-Gitweb:        https://git.kernel.org/tip/a6cbd44093ef305b02ad5f80ed54abf0148a696c
+Commit-ID:     7ba564722d98e3e7bc3922ad4f2885ca0336674e
+Gitweb:        https://git.kernel.org/tip/7ba564722d98e3e7bc3922ad4f2885ca0336674e
 Author:        Fenghua Yu <fenghua.yu@intel.com>
-AuthorDate:    Mon, 07 Feb 2022 15:02:47 -08:00
+AuthorDate:    Mon, 07 Feb 2022 15:02:44 -08:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 14 Feb 2022 19:51:47 +01:00
+CommitterDate: Mon, 14 Feb 2022 19:17:46 +01:00
 
-kernel/fork: Initialize mm's PASID
+iommu/sva: Rename CONFIG_IOMMU_SVA_LIB to CONFIG_IOMMU_SVA
 
-A new mm doesn't have a PASID yet when it's created. Initialize
-the mm's PASID on fork() or for init_mm to INVALID_IOASID (-1).
+This CONFIG option originally only referred to the Shared
+Virtual Address (SVA) library. But it is now also used for
+non-library portions of code.
 
-INIT_PASID (0) is reserved for kernel legacy DMA PASID. It cannot be
-allocated to a user process. Initializing the process's PASID to 0 may
-cause confusion that's why the process uses the reserved kernel legacy
-DMA PASID. Initializing the PASID to INVALID_IOASID (-1) explicitly
-tells the process doesn't have a valid PASID yet.
+Drop the "_LIB" suffix so that there is just one configuration
+option for all code relating to SVA.
 
-Even though the only user of mm_pasid_init() is in fork.c, define it in
-<linux/sched/mm.h> as the first of three mm/pasid life cycle functions
-(init/set/drop) to keep these all together.
-
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20220207230254.3342514-5-fenghua.yu@intel.com
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/r/20220207230254.3342514-2-fenghua.yu@intel.com
 ---
- include/linux/sched/mm.h | 10 ++++++++++
- kernel/fork.c            | 10 ++--------
- mm/init-mm.c             |  4 ++++
- 3 files changed, 16 insertions(+), 8 deletions(-)
+ drivers/iommu/Kconfig         | 6 +++---
+ drivers/iommu/Makefile        | 2 +-
+ drivers/iommu/intel/Kconfig   | 2 +-
+ drivers/iommu/iommu-sva-lib.h | 6 +++---
+ 4 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index aa5f09c..c74d1ed 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -8,6 +8,7 @@
- #include <linux/mm_types.h>
- #include <linux/gfp.h>
- #include <linux/sync_core.h>
-+#include <linux/ioasid.h>
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 3eb68fa..c79a0df 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -144,8 +144,8 @@ config IOMMU_DMA
+ 	select IRQ_MSI_IOMMU
+ 	select NEED_SG_DMA_LENGTH
  
- /*
-  * Routines for handling mm_structs
-@@ -433,4 +434,13 @@ static inline void membarrier_update_current_mm(struct mm_struct *next_mm)
- }
- #endif
+-# Shared Virtual Addressing library
+-config IOMMU_SVA_LIB
++# Shared Virtual Addressing
++config IOMMU_SVA
+ 	bool
+ 	select IOASID
  
+@@ -379,7 +379,7 @@ config ARM_SMMU_V3
+ config ARM_SMMU_V3_SVA
+ 	bool "Shared Virtual Addressing support for the ARM SMMUv3"
+ 	depends on ARM_SMMU_V3
+-	select IOMMU_SVA_LIB
++	select IOMMU_SVA
+ 	select MMU_NOTIFIER
+ 	help
+ 	  Support for sharing process address spaces with devices using the
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index bc7f730..44475a9 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+ obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+-obj-$(CONFIG_IOMMU_SVA_LIB) += iommu-sva-lib.o io-pgfault.o
++obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
+ obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
+ obj-$(CONFIG_APPLE_DART) += apple-dart.o
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 247d0f2..39a06d2 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -52,7 +52,7 @@ config INTEL_IOMMU_SVM
+ 	select PCI_PRI
+ 	select MMU_NOTIFIER
+ 	select IOASID
+-	select IOMMU_SVA_LIB
++	select IOMMU_SVA
+ 	help
+ 	  Shared Virtual Memory (SVM) provides a facility for devices
+ 	  to access DMA resources through process address space by
+diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
+index 0311550..95dc3eb 100644
+--- a/drivers/iommu/iommu-sva-lib.h
++++ b/drivers/iommu/iommu-sva-lib.h
+@@ -17,7 +17,7 @@ struct device;
+ struct iommu_fault;
+ struct iopf_queue;
+ 
+-#ifdef CONFIG_IOMMU_SVA_LIB
 +#ifdef CONFIG_IOMMU_SVA
-+static inline void mm_pasid_init(struct mm_struct *mm)
-+{
-+	mm->pasid = INVALID_IOASID;
-+}
-+#else
-+static inline void mm_pasid_init(struct mm_struct *mm) {}
-+#endif
-+
- #endif /* _LINUX_SCHED_MM_H */
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 6ee7551..deacd2c 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -97,6 +97,7 @@
- #include <linux/scs.h>
- #include <linux/io_uring.h>
- #include <linux/bpf.h>
-+#include <linux/sched/mm.h>
+ int iommu_queue_iopf(struct iommu_fault *fault, void *cookie);
  
- #include <asm/pgalloc.h>
- #include <linux/uaccess.h>
-@@ -1019,13 +1020,6 @@ static void mm_init_owner(struct mm_struct *mm, struct task_struct *p)
- #endif
- }
+ int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);
+@@ -28,7 +28,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
+ void iopf_queue_free(struct iopf_queue *queue);
+ int iopf_queue_discard_partial(struct iopf_queue *queue);
  
--static void mm_init_pasid(struct mm_struct *mm)
--{
--#ifdef CONFIG_IOMMU_SVA
--	mm->pasid = INIT_PASID;
--#endif
--}
--
- static void mm_init_uprobes_state(struct mm_struct *mm)
+-#else /* CONFIG_IOMMU_SVA_LIB */
++#else /* CONFIG_IOMMU_SVA */
+ static inline int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
  {
- #ifdef CONFIG_UPROBES
-@@ -1054,7 +1048,7 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
- 	mm_init_cpumask(mm);
- 	mm_init_aio(mm);
- 	mm_init_owner(mm, p);
--	mm_init_pasid(mm);
-+	mm_pasid_init(mm);
- 	RCU_INIT_POINTER(mm->exe_file, NULL);
- 	mmu_notifier_subscriptions_init(mm);
- 	init_tlb_flush_pending(mm);
-diff --git a/mm/init-mm.c b/mm/init-mm.c
-index b4a6f38..fbe7844 100644
---- a/mm/init-mm.c
-+++ b/mm/init-mm.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/atomic.h>
- #include <linux/user_namespace.h>
-+#include <linux/ioasid.h>
- #include <asm/mmu.h>
- 
- #ifndef INIT_MM_CONTEXT
-@@ -38,6 +39,9 @@ struct mm_struct init_mm = {
- 	.mmlist		= LIST_HEAD_INIT(init_mm.mmlist),
- 	.user_ns	= &init_user_ns,
- 	.cpu_bitmap	= CPU_BITS_NONE,
-+#ifdef CONFIG_IOMMU_SVA
-+	.pasid		= INVALID_IOASID,
-+#endif
- 	INIT_MM_CONTEXT(init_mm)
- };
- 
+ 	return -ENODEV;
+@@ -64,5 +64,5 @@ static inline int iopf_queue_discard_partial(struct iopf_queue *queue)
+ {
+ 	return -ENODEV;
+ }
+-#endif /* CONFIG_IOMMU_SVA_LIB */
++#endif /* CONFIG_IOMMU_SVA */
+ #endif /* _IOMMU_SVA_LIB_H */
