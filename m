@@ -2,101 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 759B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E235C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236776AbiBOK6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:58:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60508 "EHLO
+        id S236825AbiBOLAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:00:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236813AbiBOK6x (ORCPT
+        with ESMTP id S232569AbiBOLAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:58:53 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440DCDB4B9
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 02:58:33 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21F4STA4031155;
-        Tue, 15 Feb 2022 04:55:37 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=9pRI9DHKMGrjxTpdktKuGS8mctU4c81Pqefuj9Uotc8=;
- b=Jp3pzaNepVGVVDVl+Igkfk8BlLbu+gQbUcdAqV4rmSlO7FBvUIArT6iofAI2ZVycyqDm
- I6ENQqlHwdhB0+AThKzsyqp5J/gYbBKgmnPAyfnOo7MEiW2wnQw35uQsKxHJk89NTL9q
- LYi+vBNq4bukYemDZJHLtHZjAkBHZ7Pgfinb3vAQ1TTqtH0nExM4b+2mlCRIl9ixx257
- YNH7fsSe6yz0pgFUIjWZGiAG5YbtDiHwbiwihAYQna8wcXRqhjEw7YzfhQBsB6k0ux7M
- hvXNPA0LNpqeacn+OSoXI7IefUr8DR1YjZlu737ncMPlvUBbvNPOUtF/RGiMZLER3fI0 uQ== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3e7kx7sbp9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 15 Feb 2022 04:55:36 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 15 Feb
- 2022 10:55:35 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Tue, 15 Feb 2022 10:55:35 +0000
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 48B4811C7;
-        Tue, 15 Feb 2022 10:55:35 +0000 (UTC)
-Date:   Tue, 15 Feb 2022 10:55:35 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Shengjiu Wang <shengjiu.wang@freescale.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Viorel Suman <viorel.suman@nxp.com>,
-        <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ASoC: codec: wm8960: complete discharge on BIAS
- OFF->STANDBY
-Message-ID: <20220215105535.GE38351@ediswmail.ad.cirrus.com>
-References: <20220208121727.4461-1-viorel.suman@oss.nxp.com>
+        Tue, 15 Feb 2022 06:00:14 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F0BF9562;
+        Tue, 15 Feb 2022 03:00:03 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id qx21so3585538ejb.13;
+        Tue, 15 Feb 2022 03:00:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:date:in-reply-to:references:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=ghHnLt9KrJYO+G0i0QzfYNVgGr31SkfKmR4sqVkFlfs=;
+        b=Qgc2DVgHtdjILhRGkVrfMOxv9fz1gHVsohxebaioI2GQpfys/aMW1kuUyIfG48kORc
+         g+2QE5e9NYiCG5OaEaL6aq1GQu7ywGewcW954t7/VW9n6UrZSsryS82Faz1Yyp2hUhFS
+         ecuxrTqjq8emgnviOntB956S4OSQaPf8zH4XeL7qL+/C7Xmnm62KDYmfkGwR+NviiVnX
+         NYxqcK5/trQY4oEn611Jv6AAQPtwsC4uRB/J1IvuHh7wAg8OWJ0dYszHwKL3j05Z8z97
+         /+uaTf6kF1gpquLwlZk7MpT4Nw6OjzdJIx+x4bFeikc7pHf1pVYdg9D/+sNJEyZ4Lbzr
+         O3gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=ghHnLt9KrJYO+G0i0QzfYNVgGr31SkfKmR4sqVkFlfs=;
+        b=1GzBw6ZxrdkykNWanWPsx6mFRKyMSUt13e6qD0juyhesMukWO24snWU8YunsfNC5q0
+         YLHQlEAH0gjx2PxkbACgCE+zCrVxniMpFerxi8iyXXts/FavHlR3vUJAsELFJDas9+HO
+         dLSy6I4ybUIEjBxEeErH7qjrUmWajJuGnvEWb2vW3jwb3pfGyI41KY2zlXnzZA4osspv
+         cPOWTLonNcyxSxvQHYZD0AuTdK/1b0zJTAC0/ed3qvfrOGW+Onmj3sXy1E9m1lscxKkq
+         rVk1pd/qqDx+nZmfRDzmBlBVO3APwpzc1NDdqVFacnAW/tr7bYfVNAsEXuZ48GhAuO/o
+         tRZA==
+X-Gm-Message-State: AOAM530lFNzffTAIRrq0cQtjo4Oec4ie5A0GQr4GKB2feFE95fuStDhI
+        B/AaLk4Cv1IUlWANvZz9vUXUBO/NsMno2A==
+X-Google-Smtp-Source: ABdhPJwj/drfAuAWcIW3L+1EOkn9TG0P70eiS4wI5AnmiJdAA3KfpO1RZpUhHLgClx/hrpcheXMTHA==
+X-Received: by 2002:a17:906:a212:: with SMTP id r18mr2500109ejy.598.1644922802461;
+        Tue, 15 Feb 2022 03:00:02 -0800 (PST)
+Received: from ubuntu-laptop (p4fd5939b.dip0.t-ipconnect.de. [79.213.147.155])
+        by smtp.googlemail.com with ESMTPSA id q8sm5619340edd.10.2022.02.15.03.00.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 03:00:02 -0800 (PST)
+Message-ID: <1cb4db5f707692afedb005e2577f667f5e48e66e.camel@gmail.com>
+Subject: Re: [PATCH v1] scsi: ufs: remove clk_scaling_lock when clkscaling
+ isn't supported.
+From:   Bean Huo <huobean@gmail.com>
+To:     Kiwoong Kim <kwmad.kim@samsung.com>,
+        'Adrian Hunter' <adrian.hunter@intel.com>,
+        'Avri Altman' <Avri.Altman@wdc.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alim.akhtar@samsung.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, beanhuo@micron.com,
+        cang@codeaurora.org, sc.suh@samsung.com, hy50.seo@samsung.com,
+        sh425.lee@samsung.com, bhoon95.kim@samsung.com,
+        vkumar.1997@samsung.com
+Date:   Tue, 15 Feb 2022 12:00:00 +0100
+In-Reply-To: <000001d81fcb$3b962f30$b2c28d90$@samsung.com>
+References: <CGME20220205074128epcas2p40901c37a7328e825d8697f8d3269edba@epcas2p4.samsung.com>
+         <1644046760-83345-1-git-send-email-kwmad.kim@samsung.com>
+         <DM6PR04MB657519E60FAFA19434531CE2FC2B9@DM6PR04MB6575.namprd04.prod.outlook.com>
+         <007101d81eed$4d120a60$e7361f20$@samsung.com>
+         <3f2938f7-2a9e-60e8-5237-fe7ebc3b4296@intel.com>
+         <000001d81fcb$3b962f30$b2c28d90$@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220208121727.4461-1-viorel.suman@oss.nxp.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: HvhLj2FcgwmuXl1hKIbOImqGwRK0Hy7H
-X-Proofpoint-GUID: HvhLj2FcgwmuXl1hKIbOImqGwRK0Hy7H
-X-Proofpoint-Spam-Reason: safe
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 02:17:27PM +0200, Viorel Suman (OSS) wrote:
-> From: Viorel Suman <viorel.suman@nxp.com>
+On Sat, 2022-02-12 at 13:44 +0900, Kiwoong Kim wrote:
+> > The error handler really should have exclusive access.  One of the
+> > places
+> > you change does explain that:
+> > 
+> >  		 * Hold the scaling lock just in case dev cmds
+> >  		 * are sent via bsg and/or sysfs.
+> >  		 */
+> > -		down_write(&hba->clk_scaling_lock);
+> > +		if (ufshcd_is_clkscaling_supported(hba))
+> > +			down_write(&hba->clk_scaling_lock); 
 > 
-> On BIAS STANDBY->OFF transition the current implementation sleeps
-> 600ms on suspend in order to discharge the chip. The suspend is
-> propagated from "snd_soc_suspend" call for all audio cards in a
-> serial fashion, thus in case of boards like i.MX8DXL EVK which has
-> 3 distinct WM8960 codecs the total cumulated sleep on suspend is 1.8
-> seconds.
+> Yeah.., I saw the comment but didn't get why.
 > 
-> On the other hand the BIAS OFF->STANDBY transition happens
-> asynchronously with regard to "snd_soc_resume" - the call is
-> propagated from "soc_resume_deferred" which is just scheduled
-> from "snd_soc_resume", each card having its own work scheduled to
-> execute "soc_resume_deferred" call.
+> Is there anyone who knows why it's necessary for all SoCs?
+> At lease, I know there is no reason to forbid concurrent executions
+> of dev cmd and power mode change.
 > 
-> The patch performs discharge completion on BIAS OFF->STANDBY transition
-> so that the cumulated effect on suspend described above is avoided
-> and discharge is completed in paralel in case of multiple WM8960
-> codecs on the board.
+> If there's nothing, how about adding a quick to ignore it?
 > 
-> Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
-> ---
+> Thanks.
+> Kiwoong Kim
+> 
 
-Apologies Mark not sure how I missed this one, a bit late now,
-but the change looks good to me.
+The name of clk_scaling_lock has explained everything, for the platform
+which doesn't support load-based clk scaling, doesn't need to hold this
+lock.
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Acked-by: Bean Huo <beanhuo@micron.com>
 
-Thanks,
-Charles
