@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF291C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB302C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239863AbiBOP1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:27:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46304 "EHLO
+        id S239868AbiBOP1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:27:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239829AbiBOP1g (ORCPT
+        with ESMTP id S239849AbiBOP1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:27:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667FEA6505;
-        Tue, 15 Feb 2022 07:27:21 -0800 (PST)
+        Tue, 15 Feb 2022 10:27:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5D6A66E5;
+        Tue, 15 Feb 2022 07:27:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05135615E6;
-        Tue, 15 Feb 2022 15:27:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75028C36AE2;
-        Tue, 15 Feb 2022 15:27:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25CD7615F0;
+        Tue, 15 Feb 2022 15:27:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 855C5C340F1;
+        Tue, 15 Feb 2022 15:27:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938840;
-        bh=H/fR1pHcd6IqJQK3Dd1OyYzgmulAJOBsJJZHyTg8cng=;
+        s=k20201202; t=1644938846;
+        bh=BYt9citSXOz0UnRst2j9rf/R7XfHPUHgwQp3sxEVeCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=udGla094FDakVSUDRnrE+nAr/WOkhmMV+A0aWaSLgzSpb2KsatxRsgni2h+uVx7ip
-         lK3JzvqDw5lVooQb0yet/iB76j0VcnMrP7hkprqQs4GzildhzSWX5G9X/Hino7FCni
-         YaJsStUTMGyjREm6WEvtRyX+1QiMfm2q/F96mAhzp7WIfYgd1tSByivtopo1qfVDRq
-         6m1CJnOB05HUk+ZhNDWmn/+fBt/DDsuRqWT8tZsBZyHhAUZ+1Ok02ccNPxmB2tnVQq
-         8GwhZ+kkjGmdk7T3BKpycpdBgYdjDH0THC383wWAh0s3TDLvLm+xo+LFNeFsi2gKPq
-         XEqaoJ19Ez5MA==
+        b=KN7lB1DHlFPn+ic0b4yvnrtb1HHrRnCFSDmUbFpAsp0nI7JXTyvhGNvpsCU44VZWK
+         tp/K814eflufcnn2432noFfE+ugUUb5aVwib/vwtXmxbgfMz5HGAwo7LDCQgCsaZHL
+         QXqVuEIk1Hbz0eA/D3TI80OSuFu0T+ewc2SjA7mYcrIfUmABVhFvWgA0sr4yfKPS77
+         KI6Uw9NtsmfCg9OC22+zw0RPkO6nH8Du4Sx1IhAqBZCjoqtRmd2d1yiK/PaoMtpqMt
+         qlGD3nD0IG1hJcg5x6ZKrLw+92lIvMZqv+fcnSXHFECMTy7er4dMNtKy36drUqCLAm
+         Eoep4WUeWjHrQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, senozhatsky@chromium.org,
-        sfrench@samba.org, hyc.lee@gmail.com, linux-cifs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 10/34] ksmbd: fix same UniqueId for dot and dotdot entries
-Date:   Tue, 15 Feb 2022 10:26:33 -0500
-Message-Id: <20220215152657.580200-10-sashal@kernel.org>
+Cc:     Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 14/34] arm64: dts: meson-g12: drop BL32 region from SEI510/SEI610
+Date:   Tue, 15 Feb 2022 10:26:37 -0500
+Message-Id: <20220215152657.580200-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
 References: <20220215152657.580200-1-sashal@kernel.org>
@@ -52,52 +54,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-[ Upstream commit 97550c7478a2da93e348d8c3075d92cddd473a78 ]
+[ Upstream commit f26573e2bc9dfd551a0d5c6971f18cc546543312 ]
 
-ksmbd sets the inode number to UniqueId. However, the same UniqueId for
-dot and dotdot entry is set to the inode number of the parent inode.
-This patch set them using the current inode and parent inode.
+The BL32/TEE reserved-memory region is now inherited from the common
+family dtsi (meson-g12-common) so we can drop it from board files.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-4-christianshewitt@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smb_common.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts | 8 --------
+ arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts  | 8 --------
+ 2 files changed, 16 deletions(-)
 
-diff --git a/fs/ksmbd/smb_common.c b/fs/ksmbd/smb_common.c
-index ef7f42b0290a8..9a7e211dbf4f4 100644
---- a/fs/ksmbd/smb_common.c
-+++ b/fs/ksmbd/smb_common.c
-@@ -308,14 +308,17 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
- 	for (i = 0; i < 2; i++) {
- 		struct kstat kstat;
- 		struct ksmbd_kstat ksmbd_kstat;
-+		struct dentry *dentry;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+index d8838dde0f0f4..4fb31c2ba31c4 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+@@ -157,14 +157,6 @@ vddio_ao1v8: regulator-vddio_ao1v8 {
+ 		regulator-always-on;
+ 	};
  
- 		if (!dir->dot_dotdot[i]) { /* fill dot entry info */
- 			if (i == 0) {
- 				d_info->name = ".";
- 				d_info->name_len = 1;
-+				dentry = dir->filp->f_path.dentry;
- 			} else {
- 				d_info->name = "..";
- 				d_info->name_len = 2;
-+				dentry = dir->filp->f_path.dentry->d_parent;
- 			}
+-	reserved-memory {
+-		/* TEE Reserved Memory */
+-		bl32_reserved: bl32@5000000 {
+-			reg = <0x0 0x05300000 0x0 0x2000000>;
+-			no-map;
+-		};
+-	};
+-
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+index 427475846fc70..a5d79f2f7c196 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+@@ -203,14 +203,6 @@ vddio_ao1v8: regulator-vddio_ao1v8 {
+ 		regulator-always-on;
+ 	};
  
- 			if (!match_pattern(d_info->name, d_info->name_len,
-@@ -327,7 +330,7 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
- 			ksmbd_kstat.kstat = &kstat;
- 			ksmbd_vfs_fill_dentry_attrs(work,
- 						    user_ns,
--						    dir->filp->f_path.dentry->d_parent,
-+						    dentry,
- 						    &ksmbd_kstat);
- 			rc = fn(conn, info_level, d_info, &ksmbd_kstat);
- 			if (rc)
+-	reserved-memory {
+-		/* TEE Reserved Memory */
+-		bl32_reserved: bl32@5000000 {
+-			reg = <0x0 0x05300000 0x0 0x2000000>;
+-			no-map;
+-		};
+-	};
+-
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
 -- 
 2.34.1
 
