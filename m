@@ -2,111 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5946FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA481C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:29:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234388AbiBOG0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 01:26:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40734 "EHLO
+        id S234413AbiBOGaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 01:30:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234031AbiBOG0i (ORCPT
+        with ESMTP id S232447AbiBOG36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 01:26:38 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC82DE91;
-        Mon, 14 Feb 2022 22:26:27 -0800 (PST)
-X-UUID: d29e7747ab784e26815e4689f12baa0c-20220215
-X-UUID: d29e7747ab784e26815e4689f12baa0c-20220215
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 903098370; Tue, 15 Feb 2022 14:26:24 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 15 Feb 2022 14:26:23 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 15 Feb 2022 14:26:23 +0800
-Message-ID: <d40d0c2ddf7d59c53d12cb57a94608425d4d2de1.camel@mediatek.com>
-Subject: Re: [PATCH v3 08/31] clk: mediatek: cpumux: Clean up included
- headers
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Date:   Tue, 15 Feb 2022 14:26:23 +0800
-In-Reply-To: <20220208124034.414635-9-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
-         <20220208124034.414635-9-wenst@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 15 Feb 2022 01:29:58 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC64B11E3E9;
+        Mon, 14 Feb 2022 22:29:48 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 11DDB68AA6; Tue, 15 Feb 2022 07:29:43 +0100 (CET)
+Date:   Tue, 15 Feb 2022 07:29:42 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        will@kernel.org, guoren@kernel.org, bcain@codeaurora.org,
+        geert@linux-m68k.org, monstr@monstr.eu, tsbogend@alpha.franken.de,
+        nickhu@andestech.com, green.hu@gmail.com, dinguyen@kernel.org,
+        shorne@gmail.com, deller@gmx.de, mpe@ellerman.id.au,
+        peterz@infradead.org, mingo@redhat.com, mark.rutland@arm.com,
+        hca@linux.ibm.com, dalias@libc.org, davem@davemloft.net,
+        richard@nod.at, x86@kernel.org, jcmvbkbc@gmail.com,
+        ebiederm@xmission.com, akpm@linux-foundation.org, ardb@kernel.org,
+        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org
+Subject: Re: [PATCH 09/14] m68k: drop custom __access_ok()
+Message-ID: <20220215062942.GA12551@lst.de>
+References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-10-arnd@kernel.org> <Ygr11RGjj3C9uAUg@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ygr11RGjj3C9uAUg@zeniv-ca.linux.org.uk>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-08 at 20:40 +0800, Chen-Yu Tsai wrote:
-> Some headers with the declaration of functions and structures aren't
-> directly included. Explicitly include them so that future changes to
-> other headers would not result in an unexpected build break.
-> 
-> On the header side, add forward declarations for any data structures
-> whose pointers are used in function signatures. No headers are
-> required.
-> 
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-> Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
+On Tue, Feb 15, 2022 at 12:37:41AM +0000, Al Viro wrote:
+> Perhaps simply wrap that sucker into #ifdef CONFIG_CPU_HAS_ADDRESS_SPACES
+> (and trim the comment down to "coldfire and 68000 will pick generic
+> variant")?
 
-Reviewed-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> ---
->  drivers/clk/mediatek/clk-cpumux.c | 3 +++
->  drivers/clk/mediatek/clk-cpumux.h | 4 ++++
->  2 files changed, 7 insertions(+)
-> 
-> diff --git a/drivers/clk/mediatek/clk-cpumux.c
-> b/drivers/clk/mediatek/clk-cpumux.c
-> index 344c6399b22f..658aee789f44 100644
-> --- a/drivers/clk/mediatek/clk-cpumux.c
-> +++ b/drivers/clk/mediatek/clk-cpumux.c
-> @@ -5,8 +5,11 @@
->   */
->  
->  #include <linux/clk-provider.h>
-> +#include <linux/container_of.h>
-> +#include <linux/err.h>
->  #include <linux/mfd/syscon.h>
->  #include <linux/module.h>
-> +#include <linux/regmap.h>
->  #include <linux/slab.h>
->  
->  #include "clk-mtk.h"
-> diff --git a/drivers/clk/mediatek/clk-cpumux.h
-> b/drivers/clk/mediatek/clk-cpumux.h
-> index a538f2bbef0d..b07e89f7c283 100644
-> --- a/drivers/clk/mediatek/clk-cpumux.h
-> +++ b/drivers/clk/mediatek/clk-cpumux.h
-> @@ -7,6 +7,10 @@
->  #ifndef __DRV_CLK_CPUMUX_H
->  #define __DRV_CLK_CPUMUX_H
->  
-> +struct clk_onecell_data;
-> +struct device_node;
-> +struct mtk_composite;
-> +
->  int mtk_clk_register_cpumuxes(struct device_node *node,
->  			      const struct mtk_composite *clks, int
-> num,
->  			      struct clk_onecell_data *clk_data);
-
+I wonder if we should invert CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE,
+select the separate address space config for s390, sparc64, non-coldfire
+m68k and mips with EVA and then just have one single access_ok for
+overlapping address space (as added by Arnd) and non-overlapping ones
+(always return true).
