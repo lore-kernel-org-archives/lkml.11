@@ -2,93 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3606DC3527A
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:24:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE65C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243663AbiBOTZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:25:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58104 "EHLO
+        id S243665AbiBOTZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:25:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbiBOTY6 (ORCPT
+        with ESMTP id S243672AbiBOTZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:24:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79308566E;
-        Tue, 15 Feb 2022 11:24:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 513F3617CB;
-        Tue, 15 Feb 2022 19:24:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8127AC340EB;
-        Tue, 15 Feb 2022 19:24:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644953086;
-        bh=kUCZYr9eynBGfoyFNpGztKhdR0TjeWfPR20goAdEojo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pgheRwOAKjRlXMfJul10RwEjs5CBKHR/i0QEhyIM79774uc0ovg3u5myvyhB8s/qu
-         xkZdoun6Ve/NuXn1+qZDB9F/trYlid+yq9euKiwm3PP7bJ4zoGvDfPTjgfeWCzsH6f
-         Z5GtGABFqXnkSAxbAOokUuetZQuukvg8GogLN1PAUilOeXNWgORbaiYjI/aeCr++5W
-         YWvZj7f6KVH+xfahOEVmZaopl52rdr1jj6eaQg39ut/UgM8cVQWsEKIq8K1eRZzAAa
-         TaPAe7uN1AmbZCmz+9XMV8T/S9ihvGxGOcJfBqdWD8uwk44Sq4S7ITZBKug7wSeC6N
-         S7tHpNRHJfaSA==
-Date:   Tue, 15 Feb 2022 13:32:21 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        linux-crypto@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, mpi3mr-linuxdrv.pdl@broadcom.com,
-        linux-staging@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org, sparmaintainer@unisys.com,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-ext4@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devel@acpica.org, linux-arch@vger.kernel.org, linux-mm@kvack.org,
-        greybus-dev@lists.linaro.org, linux-i3c@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] treewide: Replace zero-length arrays with
- flexible-array members
-Message-ID: <20220215193221.GA884407@embeddedor>
-References: <20220215174743.GA878920@embeddedor>
- <202202151016.C0471D6E@keescook>
- <20220215192110.GA883653@embeddedor>
- <Ygv8wY75hNqS7zO6@unreal>
+        Tue, 15 Feb 2022 14:25:16 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8A889CF1
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:25:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644953105; x=1676489105;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bzxN+JXfARX0iLuZPQmKWFNdlx1ZM24GNHMulr1Dihc=;
+  b=cuVNXvK210JaudCrAAxN//QtgFY0DVfmklOuz/acU8Ke8LSzFi+WhAZg
+   734GPx54Dfd8dqEeuRebRkVu2yJXOctrD3ttQowYBmxZ/bTCmevFuOOvX
+   9uDtDMpbpyOSlsoguH7E7XZRG5K7ZieR7AafeFArvTFFCqKNeRPwJfNT2
+   zYG1Bjf8FP9Mo+uuYMFGfBGYLEZCh0d+YCd9roJ3IGUgyZrniQPAwHjRA
+   Ks83OwB7gy1vXufazAnoIGWjI8aO5KSReebRJ8ISVwi/f8rA0+uflHv96
+   s/swuAUD1pwAo2AbElEtL4gvHoPrV5YzHTapyya2rifQ2e3BGTSwV5nVB
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="231063976"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="231063976"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 11:25:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="570971078"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 15 Feb 2022 11:25:03 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nK3Rf-0009y5-68; Tue, 15 Feb 2022 19:25:03 +0000
+Date:   Wed, 16 Feb 2022 03:24:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>
+Subject: [arnd-playground:set_fs 8/14]
+ arch/mips/sibyte/common/sb_tbprof.c:449:14: sparse: sparse: incorrect type
+ in argument 1 (different address spaces)
+Message-ID: <202202160307.mgIyyenx-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ygv8wY75hNqS7zO6@unreal>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 09:19:29PM +0200, Leon Romanovsky wrote:
-> On Tue, Feb 15, 2022 at 01:21:10PM -0600, Gustavo A. R. Silva wrote:
-> > On Tue, Feb 15, 2022 at 10:17:40AM -0800, Kees Cook wrote:
-> > > On Tue, Feb 15, 2022 at 11:47:43AM -0600, Gustavo A. R. Silva wrote:
-> > > 
-> > > These all look trivially correct to me. Only two didn't have the end of
-> > > the struct visible in the patch, and checking those showed them to be
-> > > trailing members as well, so:
-> > > 
-> > > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > 
-> > I'll add this to my -next tree.
-> 
-> I would like to ask you to send mlx5 patch separately to netdev. We are working
-> to delete that file completely and prefer to avoid from unnecessary merge conflicts.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git set_fs
+head:   de161bb7b9111bef5b76a5736cc611eb9c908586
+commit: 350a8879499d07c361d5a2cd1a22c1c44cbdeb20 [8/14] uaccess: generalize access_ok()
+config: mips-randconfig-s031-20220214 (https://download.01.org/0day-ci/archive/20220216/202202160307.mgIyyenx-lkp@intel.com/config)
+compiler: mips64el-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/commit/?id=350a8879499d07c361d5a2cd1a22c1c44cbdeb20
+        git remote add arnd-playground https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git
+        git fetch --no-tags arnd-playground set_fs
+        git checkout 350a8879499d07c361d5a2cd1a22c1c44cbdeb20
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/sibyte/common/
 
-Oh OK. Sure thing; I will do so.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks
---
-Gustavo
+
+sparse warnings: (new ones prefixed by >>)
+   command-line: note: in included file:
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
+   builtin:0:0: sparse: this was the original definition
+>> arch/mips/sibyte/common/sb_tbprof.c:449:14: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __user *ptr @@     got char *buf @@
+   arch/mips/sibyte/common/sb_tbprof.c:449:14: sparse:     expected void const [noderef] __user *ptr
+   arch/mips/sibyte/common/sb_tbprof.c:449:14: sparse:     got char *buf
+   arch/mips/sibyte/common/sb_tbprof.c:464:38: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *dest @@
+   arch/mips/sibyte/common/sb_tbprof.c:464:38: sparse:     expected void [noderef] __user *to
+   arch/mips/sibyte/common/sb_tbprof.c:464:38: sparse:     got char *dest
+   arch/mips/sibyte/common/sb_tbprof.c:515:23: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected int [noderef] __user *__p @@     got int * @@
+   arch/mips/sibyte/common/sb_tbprof.c:515:23: sparse:     expected int [noderef] __user *__p
+   arch/mips/sibyte/common/sb_tbprof.c:515:23: sparse:     got int *
+   arch/mips/sibyte/common/sb_tbprof.c:531:27: sparse: sparse: incorrect type in initializer (incompatible argument 2 (different address spaces)) @@     expected long ( *read )( ... ) @@     got long ( * )( ... ) @@
+   arch/mips/sibyte/common/sb_tbprof.c:531:27: sparse:     expected long ( *read )( ... )
+   arch/mips/sibyte/common/sb_tbprof.c:531:27: sparse:     got long ( * )( ... )
+
+vim +449 arch/mips/sibyte/common/sb_tbprof.c
+
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  439  
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  440  static ssize_t sbprof_tb_read(struct file *filp, char *buf,
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  441  			      size_t size, loff_t *offp)
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  442  {
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  443  	int cur_sample, sample_off, cur_count, sample_left;
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  444  	char *src;
+d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  445  	int   count   =	 0;
+d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  446  	char *dest    =	 buf;
+d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  447  	long  cur_off = *offp;
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  448  
+96d4f267e40f950 arch/mips/sibyte/common/sb_tbprof.c      Linus Torvalds 2019-01-03 @449  	if (!access_ok(buf, size))
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  450  		return -EFAULT;
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  451  
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  452  	mutex_lock(&sbp.lock);
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  453  
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  454  	count = 0;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  455  	cur_sample = cur_off / TB_SAMPLE_SIZE;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  456  	sample_off = cur_off % TB_SAMPLE_SIZE;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  457  	sample_left = TB_SAMPLE_SIZE - sample_off;
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  458  
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  459  	while (size && (cur_sample < sbp.next_tb_sample)) {
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  460  		int err;
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  461  
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  462  		cur_count = size < sample_left ? size : sample_left;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  463  		src = (char *)(((long)sbp.sbprof_tbbuf[cur_sample])+sample_off);
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  464  		err = __copy_to_user(dest, src, cur_count);
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  465  		if (err) {
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  466  			*offp = cur_off + cur_count - err;
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  467  			mutex_unlock(&sbp.lock);
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  468  			return err;
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  469  		}
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  470  		pr_debug(DEVNAME ": read from sample %d, %d bytes\n",
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  471  			 cur_sample, cur_count);
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  472  		size -= cur_count;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  473  		sample_left -= cur_count;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  474  		if (!sample_left) {
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  475  			cur_sample++;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  476  			sample_off = 0;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  477  			sample_left = TB_SAMPLE_SIZE;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  478  		} else {
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  479  			sample_off += cur_count;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  480  		}
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  481  		cur_off += cur_count;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  482  		dest += cur_count;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  483  		count += cur_count;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  484  	}
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  485  	*offp = cur_off;
+bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  486  	mutex_unlock(&sbp.lock);
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  487  
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  488  	return count;
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  489  }
+^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  490  
+
+:::::: The code at line 449 was first introduced by commit
+:::::: 96d4f267e40f9509e8a66e2b39e8b95655617693 Remove 'type' argument from access_ok() function
+
+:::::: TO: Linus Torvalds <torvalds@linux-foundation.org>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
