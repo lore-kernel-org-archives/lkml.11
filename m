@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F33AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233971AbiBOFXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:23:01 -0500
+        id S233984AbiBOFXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:23:03 -0500
 Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233947AbiBOFW4 (ORCPT
+        with ESMTP id S233954AbiBOFW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:22:56 -0500
-Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2636B189F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:22:46 -0800 (PST)
-X-QQ-mid: bizesmtp5t1644902547tsp35647n
+        Tue, 15 Feb 2022 00:22:59 -0500
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C789F4063
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:22:49 -0800 (PST)
+X-QQ-mid: bizesmtp5t1644902561tzzjips6z
 Received: from localhost.localdomain (unknown [58.240.82.166])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 15 Feb 2022 13:22:24 +0800 (CST)
+        id ; Tue, 15 Feb 2022 13:22:38 +0800 (CST)
 X-QQ-SSF: 0140000000200020C000000A0000000
-X-QQ-FEAT: zD6y7hNAcUDbGi6sRXWRi3wXhFyUY5Kn98iWC3bjWYp+e/CQuRyw3d0iUAK7L
-        gvE6gGEjpOsM3wlBr4zE4vN96WJmtvVhSgX6DqQ8fzvr4qlz/QI+grTtHFsXk+rS5T2HG/G
-        D61U4pitJjEY4voVHo2pA0+5hoMwyEah3+f6alQJ7fIxxQ4NXsaMNNzh5doFTbf0f+RI5wr
-        5fFi22i3VFfBZdJZcP3D3j/hcVHIcJjJCMS3zHSrq+TkmBMeiLvvN634ANEI0W8pvIUaqSh
-        FeThDaO7WYyqOro6PEGeoPG2GzgR/+DqJuwPFtQBj27sQdKV89+ECl/ujOQhlm/jk1/c+74
-        ujGdvAMUczsjZ7wPo+QU6cysUtVE+X8nYgtU9ueps3lK1c/LkQ=
+X-QQ-FEAT: Y/4E1fKPEOqoGyqfUFoOLTaTISDmsGL2y6JfQamRKoE2MPjnwEwu9kI9jdBvV
+        Unz7v0/u3jmdthGwl0OHbj+cbWgIQsn+2vK+hjJvuUQGBdfWgDOTyQESVpZwV3cbyKZpFJ+
+        x7bcsaMLBhiM+Kdsdef8BK7lfqguN6UwG+e1Eqh9bI21TF89B4Xvz9Ajmx77Sw/8DPClqRB
+        4/FV+YVarbxFSPMR/nopLeQECn/t3ZjBnnROi4QpnCdXGEuyIbqFm7qI73prfSQWhYok2gA
+        kAXT0jROT/OOQR8DvhP3I6woB9qOVVseymyGxp7k+aHxVEs2BLSaN1yQhtmtZIJ18xinopU
+        nBSc7+aG+9ht0yj2BQSjuV+2CzcAE0SR6KgdDlA
 X-QQ-GoodBg: 1
 From:   Zhen Ni <nizhen@uniontech.com>
 To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
@@ -33,108 +33,196 @@ To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
         keescook@chromium.org
 Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         Zhen Ni <nizhen@uniontech.com>
-Subject: [PATCH 1/8] sched: Move child_runs_first sysctls to fair.c
-Date:   Tue, 15 Feb 2022 13:22:07 +0800
-Message-Id: <20220215052214.5286-2-nizhen@uniontech.com>
+Subject: [PATCH 3/8] sched: Move rt_period/runtime sysctls to rt.c
+Date:   Tue, 15 Feb 2022 13:22:09 +0800
+Message-Id: <20220215052214.5286-4-nizhen@uniontech.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220215052214.5286-1-nizhen@uniontech.com>
 References: <20220215052214.5286-1-nizhen@uniontech.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign7
 X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-move child_runs_first sysctls to fair.c and use the new
+move rt_period/runtime sysctls to rt.c and use the new
 register_sysctl_init() to register the sysctl interface.
 
 Signed-off-by: Zhen Ni <nizhen@uniontech.com>
 ---
- include/linux/sched/sysctl.h |  2 --
- kernel/sched/fair.c          | 19 +++++++++++++++++++
- kernel/sched/sched.h         |  2 ++
- kernel/sysctl.c              |  7 -------
- 4 files changed, 21 insertions(+), 9 deletions(-)
+ include/linux/sched/sysctl.h | 11 ---------
+ kernel/sched/core.c          | 13 -----------
+ kernel/sched/rt.c            | 43 +++++++++++++++++++++++++++++++++++-
+ kernel/sched/sched.h         |  4 ++++
+ kernel/sysctl.c              | 14 ------------
+ 5 files changed, 46 insertions(+), 39 deletions(-)
 
 diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
-index 3f2b70f8d32c..5490ba24783a 100644
+index ffe42509a595..99fbf61464ab 100644
 --- a/include/linux/sched/sysctl.h
 +++ b/include/linux/sched/sysctl.h
-@@ -14,8 +14,6 @@ extern unsigned long sysctl_hung_task_timeout_secs;
- enum { sysctl_hung_task_timeout_secs = 0 };
+@@ -21,15 +21,6 @@ enum sched_tunable_scaling {
+ 	SCHED_TUNABLESCALING_END,
+ };
+ 
+-/*
+- *  control realtime throttling:
+- *
+- *  /proc/sys/kernel/sched_rt_period_us
+- *  /proc/sys/kernel/sched_rt_runtime_us
+- */
+-extern unsigned int sysctl_sched_rt_period;
+-extern int sysctl_sched_rt_runtime;
+-
+ extern unsigned int sysctl_sched_dl_period_max;
+ extern unsigned int sysctl_sched_dl_period_min;
+ 
+@@ -48,8 +39,6 @@ extern int sched_rr_timeslice;
+ 
+ int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
+ 		size_t *lenp, loff_t *ppos);
+-int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
+-		size_t *lenp, loff_t *ppos);
+ int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
+ 		void *buffer, size_t *lenp, loff_t *ppos);
+ int sysctl_numa_balancing(struct ctl_table *table, int write, void *buffer,
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 3c1239c61b45..276033cceaf2 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -81,12 +81,6 @@ const_debug unsigned int sysctl_sched_nr_migrate = 8;
+ const_debug unsigned int sysctl_sched_nr_migrate = 32;
  #endif
  
--extern unsigned int sysctl_sched_child_runs_first;
+-/*
+- * period over which we measure -rt task CPU usage in us.
+- * default: 1s
+- */
+-unsigned int sysctl_sched_rt_period = 1000000;
 -
- enum sched_tunable_scaling {
- 	SCHED_TUNABLESCALING_NONE,
- 	SCHED_TUNABLESCALING_LOG,
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 8fc35fd779f8..4ac1bfe8ca4f 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -77,6 +77,25 @@ static unsigned int sched_nr_latency = 8;
-  * parent will (try to) run first.
-  */
- unsigned int sysctl_sched_child_runs_first __read_mostly;
+ __read_mostly int scheduler_running;
+ 
+ #ifdef CONFIG_SCHED_CORE
+@@ -380,13 +374,6 @@ sched_core_dequeue(struct rq *rq, struct task_struct *p, int flags) { }
+ 
+ #endif /* CONFIG_SCHED_CORE */
+ 
+-/*
+- * part of the period that we allow rt tasks to run in us.
+- * default: 0.95s
+- */
+-int sysctl_sched_rt_runtime = 950000;
+-
+-
+ /*
+  * Serialization rules:
+  *
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 7b4f4fbbb404..1106828c4236 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -16,6 +16,47 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
+ 
+ struct rt_bandwidth def_rt_bandwidth;
+ 
++/*
++ * period over which we measure -rt task CPU usage in us.
++ * default: 1s
++ */
++unsigned int sysctl_sched_rt_period = 1000000;
++
++/*
++ * part of the period that we allow rt tasks to run in us.
++ * default: 0.95s
++ */
++int sysctl_sched_rt_runtime = 950000;
++
++static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
++		size_t *lenp, loff_t *ppos);
 +#ifdef CONFIG_SYSCTL
-+static struct ctl_table sched_child_runs_first_sysctls[] = {
++static struct ctl_table sched_rt_sysctls[] = {
 +	{
-+		.procname       = "sched_child_runs_first",
-+		.data           = &sysctl_sched_child_runs_first,
++		.procname       = "sched_rt_period_us",
++		.data           = &sysctl_sched_rt_period,
 +		.maxlen         = sizeof(unsigned int),
 +		.mode           = 0644,
-+		.proc_handler   = proc_dointvec,
++		.proc_handler   = sched_rt_handler,
++	},
++	{
++		.procname       = "sched_rt_runtime_us",
++		.data           = &sysctl_sched_rt_runtime,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = sched_rt_handler,
 +	},
 +	{}
 +};
 +
-+static int __init sched_child_runs_first_sysctl_init(void)
++static int __init sched_rt_sysctl_init(void)
 +{
-+	register_sysctl_init("kernel", sched_child_runs_first_sysctls);
++	register_sysctl_init("kernel", sched_rt_sysctls);
 +	return 0;
 +}
-+late_initcall(sched_child_runs_first_sysctl_init);
++late_initcall(sched_rt_sysctl_init);
 +#endif
- 
- /*
-  * SCHED_OTHER wake-up granularity.
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 9b33ba9c3c42..27465635c774 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -96,6 +96,8 @@ extern __read_mostly int scheduler_running;
- extern unsigned long calc_load_update;
- extern atomic_long_t calc_load_tasks;
- 
-+extern unsigned int sysctl_sched_child_runs_first;
 +
- extern void calc_global_load_tick(struct rq *this_rq);
- extern long calc_load_fold_active(struct rq *this_rq, long adjust);
- 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 1cb7ca68cd4e..24a99b5b7da8 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1652,13 +1652,6 @@ int proc_do_static_key(struct ctl_table *table, int write,
+ static enum hrtimer_restart sched_rt_period_timer(struct hrtimer *timer)
+ {
+ 	struct rt_bandwidth *rt_b =
+@@ -2928,7 +2969,7 @@ static void sched_rt_do_global(void)
+ 	raw_spin_unlock_irqrestore(&def_rt_bandwidth.rt_runtime_lock, flags);
  }
  
- static struct ctl_table kern_table[] = {
+-int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
++static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
+ 		size_t *lenp, loff_t *ppos)
+ {
+ 	int old_period, old_runtime;
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 27465635c774..385e74095434 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -102,6 +102,10 @@ extern void calc_global_load_tick(struct rq *this_rq);
+ extern long calc_load_fold_active(struct rq *this_rq, long adjust);
+ 
+ extern void call_trace_sched_update_nr_running(struct rq *rq, int count);
++
++extern unsigned int sysctl_sched_rt_period;
++extern int sysctl_sched_rt_runtime;
++
+ /*
+  * Helpers for converting nanosecond timing to jiffy resolution
+  */
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 88ff6b27f8ab..73cccd935d65 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1674,20 +1674,6 @@ static struct ctl_table kern_table[] = {
+ 		.extra2		= SYSCTL_ONE,
+ 	},
+ #endif /* CONFIG_NUMA_BALANCING */
 -	{
--		.procname	= "sched_child_runs_first",
--		.data		= &sysctl_sched_child_runs_first,
+-		.procname	= "sched_rt_period_us",
+-		.data		= &sysctl_sched_rt_period,
 -		.maxlen		= sizeof(unsigned int),
 -		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
+-		.proc_handler	= sched_rt_handler,
 -	},
- #ifdef CONFIG_SCHEDSTATS
+-	{
+-		.procname	= "sched_rt_runtime_us",
+-		.data		= &sysctl_sched_rt_runtime,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= sched_rt_handler,
+-	},
  	{
- 		.procname	= "sched_schedstats",
+ 		.procname	= "sched_deadline_period_max_us",
+ 		.data		= &sysctl_sched_dl_period_max,
 -- 
 2.20.1
 
 
-.
+
