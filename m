@@ -2,79 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AE9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:30:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A31DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238646AbiBOOae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:30:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51410 "EHLO
+        id S238637AbiBOOag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:30:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238635AbiBOOa1 (ORCPT
+        with ESMTP id S238639AbiBOOac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:30:27 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E610BEDF11;
+        Tue, 15 Feb 2022 09:30:32 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5C06EEA7C
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:30:14 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6EACD1396;
+        Tue, 15 Feb 2022 06:30:14 -0800 (PST)
+Received: from [10.1.28.155] (e127744.cambridge.arm.com [10.1.28.155])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2B0153F718;
         Tue, 15 Feb 2022 06:30:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5A7D5CE1FE7;
-        Tue, 15 Feb 2022 14:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 92B45C340F8;
-        Tue, 15 Feb 2022 14:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644935410;
-        bh=BNpHF5ZbFhswEdFNrdVNUhGYlhfjthh+/3dIEwBWkyo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IJdVJe0eVaqY31JG/azMG2y4iIeb0UmtMnQR8xuAxQ8kPM1+KoUHYaybzfcbe52/J
-         EWSRx5dKeCnEAdpMq+83ZU8h7tGzMcbAuTS4CPxQga0kaJo8vTblV31S7ZuG13U059
-         HnSuQC3PbulYdrb9YRqSE3O0Rr20YIKv4FCgnZyZp50DK5omduCwwj7tMdP35UQVrY
-         HLKDITZ/OHokeWU6AOb+r5ssGu3Cqnc2ABLR29I0bsDx/3IT+HD1sGci74Yek9nuoA
-         0e0o7mF9GwW0PE/EcshtJnx4hUL5k0PWbp6v7BHQ5Ir9zfcVShfp8MaIbG+6bEYSVh
-         ssT0pVGLrZqeA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 81DCDE6D447;
-        Tue, 15 Feb 2022 14:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+Subject: Re: [RFC PATCH 1/2] perf: arm_spe: Fix consistency of PMSCR register
+ bit CX
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        will@kernel.org, mark.rutland@arm.com, james.clark@arm.com
+References: <20220117124432.3119132-1-german.gomez@arm.com>
+ <20220117124432.3119132-2-german.gomez@arm.com>
+ <20220205153940.GB391033@leoy-ThinkPad-X240s>
+ <4d5951ee-d7d2-1e76-eb24-5f3c46d1662c@arm.com>
+ <20220208130047.GA273989@leoy-ThinkPad-X240s>
+ <e68839bc-b4f0-1fe8-1748-484254ded37a@arm.com>
+ <20220211104528.GA475776@leoy-ThinkPad-X240s>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <d59e99ad-dfc6-27ee-d952-7455d8e9fda6@arm.com>
+Date:   Tue, 15 Feb 2022 14:29:27 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220211104528.GA475776@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] virtio_net: Fix code indent error
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164493541052.26708.11689283036672859693.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Feb 2022 14:30:10 +0000
-References: <Ygi65QUzYL9oawO8@fedora>
-In-Reply-To: <Ygi65QUzYL9oawO8@fedora>
-To:     Michael Catanzaro <mcatanzaro.kernel@gmail.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sun, 13 Feb 2022 02:01:41 -0600 you wrote:
-> This patch fixes the checkpatch.pl warning:
-> 
-> ERROR: code indent should use tabs where possible #3453: FILE: drivers/net/virtio_net.c:3453: ret = register_virtio_driver(&virtio_net_driver);$
-> 
-> Uneccessary newline was also removed making line 3453 now 3452.
-> 
-> Signed-off-by: Michael Catanzaro <mcatanzaro.kernel@gmail.com>
-> 
+On 11/02/2022 10:45, Leo Yan wrote:
+> Hi German,
+>
+> On Thu, Feb 10, 2022 at 05:23:50PM +0000, German Gomez wrote:
+>
 > [...]
+>
+>>>>>> One way to fix this is by caching the value of the CX bit during the
+>>>>>> initialization of the PMU event, so that it remains consistent for the
+>>>>>> duration of the session.
+>>>>>>
+>>>>>> [...]
+>>> So the patch makes sense to me.  Just a minor comment:
+>>>
+>>> Here we can define a u64 for recording pmscr value rather than a
+>>> bool value.
+>>>
+>>> struct arm_spe_pmu {
+>>>     ...
+>>>     u64 pmscr;
+>>> };
+>> I agree with the comment from Will that it makes more sense to store the
+>> value of the register in the perf_event somehow (due to misunderstanding
+>> from my side, I thought arm_spe_pmu struct was local to the session).
+> It's shame that I miss this point :) As you said, struct arm_spe_pmu is
+> a data structure for Arm SPE device driver instance and it's not
+> allocated for perf session.
+>
+>> What about perf_event's void *pmu_private?
+> Before we use perf_event::pmu_private, could you check the data
+> structure arm_spe_pmu_buf firstly?  This data structure is allocated
+> when setup AUX ring buffer (so it's allocated for perf session).
+> IIUC, the function arm_spe_pmu_setup_aux() will be invoked in the perf
+> process, so it's good for us to initialize pmscr in this function.
+Thanks for the suggestion. I recorded the following stacktrace:
 
-Here is the summary with links:
-  - virtio_net: Fix code indent error
-    https://git.kernel.org/netdev/net-next/c/4f50ef152ec6
+ perf-323841 [052] d.... 3996.528812: arm_spe_pmu_setup_aux: (arm_spe_pmu_setup_aux+0x60/0x1c0 [arm_spe_pmu])
+ perf-323841 [052] d.... 3996.528813: <stack trace>
+ => kprobe_dispatcher
+ => kprobe_breakpoint_handler
+ => call_break_hook
+ => brk_handler
+ => do_debug_exception
+ => el1_dbg
+ => el1h_64_sync_handler
+ => el1h_64_sync
+ => arm_spe_pmu_setup_aux
+ => perf_mmap
+ => mmap_region
+ => do_mmap
+ => vm_mmap_pgoff
+ => ksys_mmap_pgoff
+ => __arm64_sys_mmap
+ => invoke_syscall
+ => el0_svc_common.constprop.0
+ => do_el0_svc
+ => el0_svc
+ => el0t_64_sync_handler
+ => el0t_64_sync
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+So for a v2 I may include something like this:
 
+diff --git a/drivers/perf/arm_spe_pmu.c b/drivers/perf/arm_spe_pmu.c
+index d44bcc29d..aadec5a0e 100644
+--- a/drivers/perf/arm_spe_pmu.c
++++ b/drivers/perf/arm_spe_pmu.c
+@@ -45,6 +45,7 @@ struct arm_spe_pmu_buf {
+     int                    nr_pages;
+     bool                    snapshot;
+     void                    *base;
++    u64                    pmscr;
+ };
+ 
+ struct arm_spe_pmu {
+@@ -748,7 +749,7 @@ static void arm_spe_pmu_start(struct perf_event *event, int flags)
+         write_sysreg_s(reg, SYS_PMSICR_EL1);
+     }
+ 
+-    reg = arm_spe_event_to_pmscr(event);
++    reg = ((struct arm_spe_pmu_buf *) perf_get_aux(handle))->pmscr;
+     isb();
+     write_sysreg_s(reg, SYS_PMSCR_EL1);
+ }
+@@ -855,6 +856,8 @@ static void *arm_spe_pmu_setup_aux(struct perf_event *event, void **pages,
+     if (!pglist)
+         goto out_free_buf;
+ 
++    buf->pmscr = arm_spe_event_to_pmscr(event);
++
+     for (i = 0; i < nr_pages; ++i)
+         pglist[i] = virt_to_page(pages[i]);
 
+>
+> Thanks,
+> Leo
