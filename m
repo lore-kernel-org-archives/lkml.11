@@ -2,167 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4956C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0924EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244510AbiBOWNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 17:13:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56432 "EHLO
+        id S244511AbiBOWOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 17:14:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244212AbiBOWNI (ORCPT
+        with ESMTP id S241830AbiBOWOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 17:13:08 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00BE27CC3;
-        Tue, 15 Feb 2022 14:12:57 -0800 (PST)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FMCD6A010478;
-        Tue, 15 Feb 2022 22:12:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=/cHHipy2Vrf9DNNqEWGyjkLiea6SsZVNuOOjBxjrCp8=;
- b=j4xmLzvTx/oD+6UhdbP9yHye6S8y4DqnnfA+ocCaun/sTfdtGSUn3OzGe01rIKDXMJxr
- m+IQnLJrye3iO49GLeSttLyYMWGnEzWRua+aohPWJYlsh6KMDAQ1aiFe5Aw5xFyMyNtT
- CKsCLQUf/l/XB6zRvYtyJgoivn7wwVBwZEvwQ3TypUcXM9SEIs9FgLT/6Go2Wo3Q8POw
- y7lLMm78W0lw6bCj3B94/E7sxT1laqr3zP+u22oRTXr72QdvJ2302Pv8Bo334ribwvXK
- JyE05+8BwtI3sKQESO1ECSydSGCX0AayuHmbApvZ2UPL/bWqporQUJ1mdNchkAGvQ7HD Sg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8mrjr06p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 22:12:42 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21FMCguW011036;
-        Tue, 15 Feb 2022 22:12:42 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8mrjr06c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 22:12:41 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21FM81qo005730;
-        Tue, 15 Feb 2022 22:12:39 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03fra.de.ibm.com with ESMTP id 3e64ha1spe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 22:12:39 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21FMCZvR40108478
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 22:12:35 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 975044C046;
-        Tue, 15 Feb 2022 22:12:35 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 088C44C040;
-        Tue, 15 Feb 2022 22:12:33 +0000 (GMT)
-Received: from sig-9-65-88-149.ibm.com (unknown [9.65.88.149])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 15 Feb 2022 22:12:32 +0000 (GMT)
-Message-ID: <c3f6f6c8a9db34cc1cdc1000f9272c2b36445e15.camel@linux.ibm.com>
-Subject: Re: [PATCH 4/4] module, KEYS: Make use of platform keyring for
- signature verification
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Michal =?ISO-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Philipp Rudo <prudo@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        AKASHI Takahiro <takahiro.akashi@linaro.org>,
-        James Morse <james.morse@arm.com>,
-        Dave Young <dyoung@redhat.com>,
-        Kairui Song <kasong@redhat.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-modules@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        stable@kernel.org, Eric Snowberg <eric.snowberg@oracle.com>
-Date:   Tue, 15 Feb 2022 17:12:32 -0500
-In-Reply-To: <20220215204730.GQ3113@kunlun.suse.cz>
-References: <cover.1644953683.git.msuchanek@suse.de>
-         <840433bc93a58d6dfc4d96c34c0c3b158a0e669d.1644953683.git.msuchanek@suse.de>
-         <3e39412657a4b0839bcf38544d591959e89877b8.camel@linux.ibm.com>
-         <20220215204730.GQ3113@kunlun.suse.cz>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        Tue, 15 Feb 2022 17:14:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A152227CCA
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:14:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644963269;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0SgVDXV404yMNw+CNJPlab88lztIU+ojT1PQnfND6pg=;
+        b=LWBnKJNaJetTAOCODlUxESNd6GNovueiPKnRoVZi4TIi2cC677hbz+1n++3AydLg6r7VsO
+        WcRspo4w4DReeAMmbnZO+/eLmEnWySGufH5aa65w4Sg3lpD4/1FZwGl/srkBVjUq6B1H4Z
+        /SP8a6Nfy7nt2DfUZj4TCRS2/FIroNw=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-631-4bxrQ4XPPuqkFC_NYeoUMg-1; Tue, 15 Feb 2022 17:14:28 -0500
+X-MC-Unique: 4bxrQ4XPPuqkFC_NYeoUMg-1
+Received: by mail-oo1-f71.google.com with SMTP id l10-20020a4ac60a000000b002de84253574so129277ooq.19
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:14:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=0SgVDXV404yMNw+CNJPlab88lztIU+ojT1PQnfND6pg=;
+        b=2DtlVzWHai3uJxRsCE8wrTUgh0xvwOlAOUCdBCIiuy7dLbiWYAiI1+OBUxHWlm2OSt
+         /wl0bZjbwwddtsGcZfG7yCWYJXGf9EbEpuYULR1NjziQMuo0ERQl6EUJ2sZ/uoBMATmf
+         yYZYH4TG3oiCVn7KBVAguzGgzt3g98bAaStyMGMdJbHTntD54We8sexIqwaqlmibN5hd
+         izBv6plZ3jNWwHt3WVlLPxpEgFkY+apKBUIvHgwqVLgK3U11DOOQtS8hqwVablrecMa2
+         jCz936GGYscte5Uwa9tvMEvELUH6WY5J6HMBJ7dQlfRWra1WRz76+tS7aa9oHI9E0Mgj
+         mnMg==
+X-Gm-Message-State: AOAM530GK2F8nxLuTEwQrSuUu7EMIiK2/ikSUCd1Q+leIIjx65DsZ5wY
+        /2VhN7WAsDBZP5ONCZ3ikvfbU5T90Y4yax/0e+0VFrjmcCW46jS1uhrQpDatunqjuZTGha2Brwp
+        MY6XoxN0Ap+BNXYsBrGGJZflS
+X-Received: by 2002:a9d:634c:: with SMTP id y12mr426953otk.247.1644963267663;
+        Tue, 15 Feb 2022 14:14:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzVXfIWZdTFKoCWv5zBjTEK28rZYLt4d2ssRGQsRnGv5qqbZqev0beqgPvRqsVb8AYyrRoeMg==
+X-Received: by 2002:a9d:634c:: with SMTP id y12mr426943otk.247.1644963267400;
+        Tue, 15 Feb 2022 14:14:27 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id 8sm13835736oav.28.2022.02.15.14.14.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 14:14:26 -0800 (PST)
+Date:   Tue, 15 Feb 2022 14:14:24 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Valdis =?utf-8?Q?Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Justin Forbes <jmforbes@linuxtx.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2] tools: Fix use-after-free for realloc(..., 0)
+Message-ID: <20220215221424.hmnei74ar5gtqfy2@treble>
+References: <20220213182443.4037039-1-keescook@chromium.org>
+ <20220214200730.a3qz6ocy2ohwafrt@treble>
+ <YgwQO1Z0UmV241vg@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Lfgs039T7NiW0yrKmn-MSn9TZGi34WFG
-X-Proofpoint-GUID: BGuDujqa9oRYPvZ-QlR_Ad2lgoH2nzLt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-15_07,2022-02-14_04,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 suspectscore=0
- bulkscore=0 priorityscore=1501 phishscore=0 clxscore=1015
- lowpriorityscore=0 malwarescore=0 mlxlogscore=999 mlxscore=0
- impostorscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202150126
+In-Reply-To: <YgwQO1Z0UmV241vg@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-15 at 21:47 +0100, Michal Suchánek wrote:
-> Hello,
-> 
-> On Tue, Feb 15, 2022 at 03:08:18PM -0500, Mimi Zohar wrote:
-> > [Cc'ing Eric Snowberg]
-> > 
-> > Hi Michal,
-> > 
-> > On Tue, 2022-02-15 at 20:39 +0100, Michal Suchanek wrote:
-> > > Commit 278311e417be ("kexec, KEYS: Make use of platform keyring for signature verify")
-> > > adds support for use of platform keyring in kexec verification but
-> > > support for modules is missing.
+On Tue, Feb 15, 2022 at 05:42:35PM -0300, Arnaldo Carvalho de Melo wrote:
+> Em Mon, Feb 14, 2022 at 12:07:30PM -0800, Josh Poimboeuf escreveu:
+> > On Sun, Feb 13, 2022 at 10:24:43AM -0800, Kees Cook wrote:
+> > > GCC 12 was correctly reporting a potential use-after-free condition in
+> > > the xrealloc helper. Fix the warning by avoiding an implicit "free(ptr)"
+> > > when size == 0:
 > > > 
-> > > Add support for verification of modules with keys from platform keyring
-> > > as well.
+> > > In file included from help.c:12:
+> > > In function 'xrealloc',
+> > >     inlined from 'add_cmdname' at help.c:24:2: subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+> > >    56 |                 ret = realloc(ptr, size);
+> > >       |                       ^~~~~~~~~~~~~~~~~~
+> > > subcmd-util.h:52:21: note: call to 'realloc' here
+> > >    52 |         void *ret = realloc(ptr, size);
+> > >       |                     ^~~~~~~~~~~~~~~~~~
+> > > subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+> > >    58 |                         ret = realloc(ptr, 1);
+> > >       |                               ^~~~~~~~~~~~~~~
+> > > subcmd-util.h:52:21: note: call to 'realloc' here
+> > >    52 |         void *ret = realloc(ptr, size);
+> > >       |                     ^~~~~~~~~~~~~~~~~~
+> > > 
+> > > Reported-by: "Valdis KlÄ“tnieks" <valdis.kletnieks@vt.edu>
+> > > Fixes: 2f4ce5ec1d44 ("perf tools: Finalize subcmd independence")
+> > > Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+> > > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > > ---
+> > > v1: https://lore.kernel.org/lkml/20220212181855.3460176-1-keescook@chromium.org/
+> > > v2: simplify logic (josh)
 > > 
-> > Permission for loading the pre-OS keys onto the "platform" keyring and
-> > using them is limited to verifying the kexec kernel image, nothing
-> > else.
+> > Thanks, running through testing now.
 > 
-> Why is the platform keyring limited to kexec, and nothing else?
-> 
-> It should either be used for everything or for nothing. You have the
-> option to compile it in and then it should be used, and the option to
-> not compile it in and then it cannot be used.
-> 
-> There are two basic use cases:
-> 
-> (1) there is a vendor key which is very hard to use so you sign
-> something small and simple like shim with the vendor key, and sign your
-> kernel and modules with your own key that's typically enrolled with shim
-> MOK, and built into the kernel.
-> 
-> (2) you import your key into the firmware, and possibly disable the
-> vendor key. You can load the kernel directly without shim, and then your
-> signing key is typically in the platform keyring and built into the
-> kernel.
-> 
-> In neither case do I see any reason to use some keyrings for kexec and
-> other keyrings for modules.
+> I assume that testing went ok, may I add a Tested-by: you?
 
-When building your own kernel there isn't a problem.  Additional keys
-may be built into the kernel image, which are loaded onto the
-".builtin_trusted_keys" keyring, and may be stored in MOK.  Normally
-different keys are used for signing the kernel image and kernel
-modules.  Kernel modules can be signed by the build time ephemeral
-kernel module signing key, which is built into the kernel and
-automatically loaded onto the ".builtin_trusted_keys" keyring.
- 
-Similarly distros build the kernel module signing key into the kernel,
-which is built into the kernel and loaded onto the
-".builtin_trusted_keys" keyring.  By loading the pre-OS keys onto the
-".platform" keyring,  kexec may verify the distro or other signed
-kernel images.
+Yes, feel free to add:
+
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
 -- 
-thanks,
-
-Mimi
+Josh
 
