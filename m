@@ -2,132 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5445C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F20ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241183AbiBOPqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:46:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59852 "EHLO
+        id S241191AbiBOPqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:46:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241141AbiBOPpz (ORCPT
+        with ESMTP id S241231AbiBOPp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:45:55 -0500
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0984CEA1E;
-        Tue, 15 Feb 2022 07:42:51 -0800 (PST)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21FBXjgK004249;
-        Tue, 15 Feb 2022 16:42:47 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=1NItCu9SWalObc1QZs2qiIgpnRXaojBJO4YO8ejOjmI=;
- b=L/4Yqbzg9bqm2rYdZJhrMvEDpSO4BWfHIpp3kxOHSFnzFubcPJhOtpOex5wIP8Zany8S
- wcanTfGQOYdFT9w/B2DnG1yW+5PheFRifbEIuyLEIvhxB16lIgsFIs/XtDOaSxc+VL/h
- 7+EWDesYKSYnCRxRhR062ixSLLek4gPeSJth5ue06Oq+yIwaIlj7zXPS9SsSqfKaPjFE
- soccpTzGukTC+W1PJzIP84iR5PQQQRIm4ZioR6s6Q2qor1A1ZYQX48MpWlT3QldOsEEz
- zsKpOOZB6ndnHFDaYgMK7lzwogi1YC/PmMj+h41wyNX2RxAftSX2vxm5+X+nbC4UF29r XQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e87me31fj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 16:42:47 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5312D10002A;
-        Tue, 15 Feb 2022 16:42:47 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 46AA222D161;
-        Tue, 15 Feb 2022 16:42:47 +0100 (CET)
-Received: from [10.48.1.238] (10.75.127.51) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 15 Feb
- 2022 16:42:46 +0100
-Subject: Re: [PATCH v2] usb: dwc2: drd: fix soft connect when gadget is
- unconfigured
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <hminas@synopsys.com>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <amelie.delaunay@foss.st.com>, <alexandre.torgue@foss.st.com>
-References: <1644923059-3619-1-git-send-email-fabrice.gasnier@foss.st.com>
- <Yguy5OMW477VmMuv@kroah.com>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Message-ID: <dab7c8fe-0cf5-66a6-bf84-25fe84b4a221@foss.st.com>
-Date:   Tue, 15 Feb 2022 16:42:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 15 Feb 2022 10:45:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359E7D15C6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:42:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FEC56173E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 15:42:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF950C340EB;
+        Tue, 15 Feb 2022 15:42:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644939778;
+        bh=vzyFMhGsfn/rk38bV9aGlalnsputB6BGCOL+8B6o7Ag=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cNI7u7wCnN07cGh93W7Jd2myp7Re0Mh/JT2m2U4uaG4f9AeseBcC/QduH/JcqR04y
+         cP5NTTOKadVvlnJHKQICUaTDLLqurPFWI9LN+Lm27I6SM+jRQB/YfyBmEVNGETBSip
+         B8P2lD1yNsvJ1H0/skAMArzHE2BsIntxz39fGWxnxLUA3h79TO5ny3U4vfgQCotx1m
+         KsZPsbtJ7LGVFW56/a4/r/i/yUGNHH1Hdwl7X/pM0qLmwA5Ia6WbkVOBO6R+6FGLGY
+         EtagshxnP+Kt9dJlwccOjjLqEAdZu6+gaqTzJ3vor5es0Ap3N5RFxdg3ITxcSL5qkZ
+         ZugoJMetxYw/w==
+Date:   Tue, 15 Feb 2022 23:34:59 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Atish Patra <atishp@rivosinc.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
+        ryabinin.a.a@gmail.com, glider@google.com, andreyknvl@gmail.com,
+        dvyukov@google.com, alexandre.ghiti@canonical.com,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: Re: [PATCH 0/3] unified way to use static key and optimize
+ pgtable_l4_enabled
+Message-ID: <YgvIIw1CV4gxn2lS@xhacker>
+References: <20220125165036.987-1-jszhang@kernel.org>
+ <mhng-41f2520d-7583-41b3-ae7a-95e74117676a@palmer-ri-x1c9>
 MIME-Version: 1.0
-In-Reply-To: <Yguy5OMW477VmMuv@kroah.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-15_04,2022-02-14_04,2021-12-02_01
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <mhng-41f2520d-7583-41b3-ae7a-95e74117676a@palmer-ri-x1c9>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/15/22 3:04 PM, Greg KH wrote:
-> On Tue, Feb 15, 2022 at 12:04:19PM +0100, Fabrice Gasnier wrote:
->> When the gadget driver hasn't been (yet) configured, and the cable is
->> connected to a HOST, the SFTDISCON gets cleared unconditionally, so the
->> HOST tries to enumerate it.
->> At the host side, this can result in a stuck USB port or worse. When
->> getting lucky, some dmesg can be observed at the host side:
->>  new high-speed USB device number ...
->>  device descriptor read/64, error -110
->>
->> Fix it in drd, by checking the enabled flag before calling
->> dwc2_hsotg_core_connect(). It will be called later, once configured,
->> by the normal flow:
->> - udc_bind_to_driver
->>  - usb_gadget_connect
->>    - dwc2_hsotg_pullup
->>      - dwc2_hsotg_core_connect
->>
->> Fixes: 17f934024e84 ("usb: dwc2: override PHY input signals with usb role switch support")
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
->> ---
->> Changes in v2:
->> - Fix build error: 'struct dwc2_hsotg' has no member named 'enabled';
->>   as reported by the kernel test robot.
->>   https://lore.kernel.org/all/202202112236.AwoOTtHO-lkp@intel.com/
->>   Add dwc2_is_device_enabled() macro to handle this.
->> ---
->>  drivers/usb/dwc2/core.h | 2 ++
->>  drivers/usb/dwc2/drd.c  | 6 ++++--
->>  2 files changed, 6 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/usb/dwc2/core.h b/drivers/usb/dwc2/core.h
->> index 8a63da3..8a7751b 100644
->> --- a/drivers/usb/dwc2/core.h
->> +++ b/drivers/usb/dwc2/core.h
->> @@ -1418,6 +1418,7 @@ void dwc2_hsotg_core_connect(struct dwc2_hsotg *hsotg);
->>  void dwc2_hsotg_disconnect(struct dwc2_hsotg *dwc2);
->>  int dwc2_hsotg_set_test_mode(struct dwc2_hsotg *hsotg, int testmode);
->>  #define dwc2_is_device_connected(hsotg) (hsotg->connected)
->> +#define dwc2_is_device_enabled(hsotg) ((hsotg)->enabled)
+On Mon, Feb 14, 2022 at 03:52:44PM -0800, Palmer Dabbelt wrote:
+> On Tue, 25 Jan 2022 08:50:33 PST (-0800), jszhang@kernel.org wrote:
+> > Currently, riscv has several features why may not be supported on all
+> > riscv platforms, for example, FPU, SV48 and so on. To support unified
+> > kernel Image style, we need to check whether the feature is suportted
+> > or not. If the check sits at hot code path, then performance will be
+> > impacted a lot. static key can be used to solve the issue. In the
+> > past FPU support has been converted to use static key mechanism. I
+> > believe we will have similar cases in the future. For example, the
+> > SV48 support can take advantage of static key[1].
+> > 
+> > patch1 introduces an unified mechanism to use static key for riscv cpu
+> > features.
+> > patch2 converts has_cpu() to use the mechanism.
+> > patch3 uses the mechanism to optimize pgtable_l4_enabled.
+> > 
+> > [1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/011164.html
+> > 
+> > Jisheng Zhang (3):
+> >   riscv: introduce unified static key mechanism for CPU features
+> >   riscv: replace has_fpu() with system_supports_fpu()
+> >   riscv: convert pgtable_l4_enabled to static key
 > 
-> Why the extra ()?  dwc2_is_device_connected does not have it, so this
-> one probably should not either, right?
+> I see some build failures from LKP, but I don't see a v2.  LMK if I missed
+> it.
 
-Hi Greg,
+Hi Palmer,
 
-I was wondering the same, checkpatch complains without it:
+I also saw the build failure due to RV32, fixing it is easy but I have
+some thoughts/questions here after reading Atish's "fraemework for RISC-V
+ISA extensions" series. 
 
-CHECK: Macro argument 'hsotg' may be better as '(hsotg)' to avoid
-precedence issues
+Hi All,
 
-I can remove the extra () in a v3 if you wish ?
+I'm considering how to support cpu features or new ISA extensions.
+IMHO, we will need some static keys for ISA extenstions as well as
+the cpu features. for example:
 
-Thanks for reviewing,
-Best Regards,
-Fabrice
+if (static_branch_likely(&has_isa_ext_foo))
+	do_something;
+
+So I have a big question here about CPU features VS. ISA extensions:
+
+1. Is CPU feature == ISA extension?
+If yes, then it seems we'd better rebase this series on the ISA
+extension series. If no, which is the super set? If CPU feature
+is the super set, then if one kind of future cpu feature is implemented
+via. the ISA extension, do we need to combine the cpu feature bitmap
+with the ISA extension bitmap? how?
+
+2. Is SV48 considered as riscv ISA extension?
+
+I will also comment in Atish's series.
+
+Thanks
 
 > 
-> thanks,
-> 
-> greg k-h
-> 
+> > 
+> >  arch/riscv/Makefile                 |   3 +
+> >  arch/riscv/include/asm/cpufeature.h | 105 ++++++++++++++++++++++++++++
+> >  arch/riscv/include/asm/pgalloc.h    |   8 +--
+> >  arch/riscv/include/asm/pgtable-64.h |  21 +++---
+> >  arch/riscv/include/asm/pgtable.h    |   3 +-
+> >  arch/riscv/include/asm/switch_to.h  |   9 +--
+> >  arch/riscv/kernel/cpu.c             |   2 +-
+> >  arch/riscv/kernel/cpufeature.c      |  29 ++++++--
+> >  arch/riscv/kernel/process.c         |   2 +-
+> >  arch/riscv/kernel/signal.c          |   4 +-
+> >  arch/riscv/mm/init.c                |  23 +++---
+> >  arch/riscv/mm/kasan_init.c          |   6 +-
+> >  arch/riscv/tools/Makefile           |  22 ++++++
+> >  arch/riscv/tools/cpucaps            |   6 ++
+> >  arch/riscv/tools/gen-cpucaps.awk    |  40 +++++++++++
+> >  15 files changed, 234 insertions(+), 49 deletions(-)
+> >  create mode 100644 arch/riscv/include/asm/cpufeature.h
+> >  create mode 100644 arch/riscv/tools/Makefile
+> >  create mode 100644 arch/riscv/tools/cpucaps
+> >  create mode 100755 arch/riscv/tools/gen-cpucaps.awk
