@@ -2,129 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E990C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F34C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240951AbiBOPr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:47:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60232 "EHLO
+        id S239596AbiBOPrf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:47:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241161AbiBOPrO (ORCPT
+        with ESMTP id S241238AbiBOPrQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:47:14 -0500
-Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C173CC0539
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:46:03 -0800 (PST)
-Received: by mail-vk1-xa31.google.com with SMTP id j9so2915902vkj.1
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:46:03 -0800 (PST)
+        Tue, 15 Feb 2022 10:47:16 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42882CC53B
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:46:09 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id d7so9315347ilf.8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:46:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BedxqyA3+r1aQxFPn5bMgkj70sSLNh7OJO9s5zLmB+g=;
-        b=pS9E5M7E21dgGsY388BFHVXaAKwO4RSi+3GNyKpePpG3i3/VSPOaDNIH5KE1pGiK+E
-         EcpJrr127komE34aJPyorPnQj9zlij5HTo1kogQW6DHZRo+grYjzFweW1HK4Il3zblRa
-         jYkudAN3kN/oIpqt0XZl+YHkA9oi2yMEMtOwBzLr4KWrkGsH6Ae6xdVF9JF8Sac19VVa
-         6sNQZFBLTSOJ4TXZXc7uGA2NxcIfOMWSeQzwUdi9l8q6BUvqrKa99joJ7b0pFsJt2Vml
-         JI3g+gYxn/2caKC8oZEXlCnkjuHC/kltUBaoD9BBJ2mrqyVGTNmYZEgFTuUTm9tbzz2R
-         znVQ==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zQs21yv2f+We8y2ER6IR8G/EJEy1JELXcGjZReUP8ME=;
+        b=UjT5GW/IvoqiKyKL8/Wl5k3GSDeoRbZKenU7cV9xB29VZJr/+VmO7z3nPvExTJ6cb3
+         RYCsVfzRFtabEK+bcZGvIIJey/nm/15EfDpaXq8hFFeX91x+S8HmLkfsRdIzXahDn7IY
+         qUm4N4kSN4imaKgCjD323SsyZiAU1WhgCWiD8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BedxqyA3+r1aQxFPn5bMgkj70sSLNh7OJO9s5zLmB+g=;
-        b=HPZHZPovWhIPGRFCj7Dj5bbP7/B+NJFtT6bJSNWRdR6amjAlOaUs5zUDef7WRWvbYI
-         s8zjnN96GAH/P6tnTFplA34wrq0abF1gugAeuBjPQsKoiJTWb4moZds69gj/7XgMC+Qd
-         ctDQeKNErw8UoihBSzFVr1bA/04/dZEt581LIPzpvI/VavSFaXVNNL+CBesumnrnazIC
-         jXYKS9aip4M/wH46K10lvkg+4uJhohOU4h/65fLpiZgN6MY1LaL4l8hkcuox3JgqpHwi
-         DSPtSk3qqAXEaCiYPheczYexfORQweVCeVhQF3iYwveXqhB3Ig2dG1LqDkN9DnVXm6Wl
-         Ly3Q==
-X-Gm-Message-State: AOAM531NflDWKaj4kPxUDXyJ2Ui5rLVDFIBzKnu3ZgpefZVucIobtFep
-        UNoppfXIkxj8i+k/zOlw3d0iSw1mvxg=
-X-Google-Smtp-Source: ABdhPJz8myMWlyAxIjrSlDpCe1/y32nhwu0oUb49Td4a0nYbYmSgZMKV4x/JZ66LPYp/Qny3KMNZSg==
-X-Received: by 2002:a05:6122:2319:: with SMTP id bq25mr1453055vkb.41.1644939962442;
-        Tue, 15 Feb 2022 07:46:02 -0800 (PST)
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
-        by smtp.gmail.com with ESMTPSA id o11sm52705vsl.0.2022.02.15.07.46.01
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zQs21yv2f+We8y2ER6IR8G/EJEy1JELXcGjZReUP8ME=;
+        b=egXHylE+yTCBJvJAgp7+eItLgfws4IPgoCJi8BESNuxVYh77zOWWf/JLMgSxhKoqrB
+         ICfA7q9k6/bANeL0SEYPb2FsdIgLdK2+DFgzlwIhkmLfLpXateTXyZ4RnfLmA7Qw1ZS1
+         ZIP4mtI8qeOBy5wP6DqSIkTxw520igFZQv5r6j/wIcuuXEzvHHzmVcHo4OvlvxiFgzOp
+         mVOtArZnbjE0KmJC4/ELHmdZS9VYiCCbt5UI0HPqf0W+2IQYQOn/0K/OlKS4qQNxIjKC
+         mcaBl9qodpS5xK0IAxnNkWJ4NL/danPD+Whl1Xzu6TMIghJCzT+ejOgHHviy/KKORKQ4
+         RryQ==
+X-Gm-Message-State: AOAM532VoPtxRpEWMSfZV1fNh8dWEHpR/pUK+/YGWwEUMifSoxqBFju3
+        iQ17DmtwzXXVG83gEyv6Cb0Abw==
+X-Google-Smtp-Source: ABdhPJwzLkAFx8rhlhLaDU9FF8txtiwWC2frhOjc/xUT8iwtOAyMUlXov0SQjOW9BE8EqiULkIY4IQ==
+X-Received: by 2002:a92:db0e:: with SMTP id b14mr2943259iln.153.1644939968545;
+        Tue, 15 Feb 2022 07:46:08 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id 12sm13323337ilx.20.2022.02.15.07.46.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 07:46:01 -0800 (PST)
-Received: by mail-ua1-f48.google.com with SMTP id v5so10036677uam.3
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:46:01 -0800 (PST)
-X-Received: by 2002:ab0:384c:: with SMTP id h12mr1480520uaw.122.1644939961027;
- Tue, 15 Feb 2022 07:46:01 -0800 (PST)
+        Tue, 15 Feb 2022 07:46:08 -0800 (PST)
+Subject: Re: [PATCH v2 1/6] ima: Fix documentation-related warnings in
+ ima_main.c
+To:     Roberto Sassu <roberto.sassu@huawei.com>, zohar@linux.ibm.com,
+        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kpsingh@kernel.org, revest@chromium.org
+Cc:     linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220215124042.186506-1-roberto.sassu@huawei.com>
+ <20220215124042.186506-2-roberto.sassu@huawei.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <759a70de-a06b-592c-de4a-f7c74fbe4619@linuxfoundation.org>
+Date:   Tue, 15 Feb 2022 08:46:07 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20220213150234.31602-1-thomas.liu@ucloud.cn> <CA+FuTSdODATw3hSAMv9aZUmJNM8ZE-YP58pr17bO9rGJUgfegw@mail.gmail.com>
- <CFD9B65A-6762-4D9B-ADEB-B4C0B1902E02@ucloud.cn> <CA+FuTSfQOUEyEDnOU8VVZ=STw_ii-hTwyg-cvpcViPkVK4pLUA@mail.gmail.com>
- <42554FCB-9180-4B32-B5CF-6D3236237D99@ucloud.cn> <CAF=yD-+1RSj_o8n5LDOLVyn_dvVQvmDQo5pacSoDFPOR3M2g5g@mail.gmail.com>
- <CANn89i+T=Ny7pfUomSsa1ub77u8LfYtRZPzmp_0-=oWKt0abLg@mail.gmail.com>
-In-Reply-To: <CANn89i+T=Ny7pfUomSsa1ub77u8LfYtRZPzmp_0-=oWKt0abLg@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 15 Feb 2022 10:45:24 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSc9ZeuLE7tqNT-GnqHb27SE7UAtVRVsZHR+dV6ua=UKPA@mail.gmail.com>
-Message-ID: <CA+FuTSc9ZeuLE7tqNT-GnqHb27SE7UAtVRVsZHR+dV6ua=UKPA@mail.gmail.com>
-Subject: Re: [PATCH] gso: do not skip outer ip header in case of ipip and net_failover
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Tao Liu <thomas.liu@ucloud.cn>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220215124042.186506-2-roberto.sassu@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > Got it. That is an uncommon combination. SKB_GSO_DODGY is set from
-> > external virtio_net, which does not support tunnels. But a path with
-> > an added tunnel might cause this combination.
-> >
-> > And inet_gso_segment resets the network header, both times, before
-> > calling callbacks.gso_segment()
-> >
-> >         skb_reset_network_header(skb);
-> >         nhoff = skb_network_header(skb) - skb_mac_header(skb);
-> >
-> >         [...]
-> >
-> >         if (likely(ops && ops->callbacks.gso_segment))
-> >                 segs = ops->callbacks.gso_segment(skb, features);
-> >
-> > And resets that after for each skb in segs.
-> >
-> >         skb = segs;
-> >         do {
-> >                 [...]
-> >                 skb->network_header = (u8 *)iph - skb->head;
-> >
-> > But does not do this if segs == NULL.
-> >
-> > The packet has to be restored before it is passed to the device. I
-> > think we have to handle this case correctly in inet_gso_segment,
-> > instead of patching it up in all the various tunnel devices.
-> >
-> > The same holds for ipv6_gso_segment.
->
-> Back in the days, GRO was modified so that we passed a context (nhoff)
-> in called functions,
-> instead of changing skb offsets. The concept of outer/inner header
-> only works with 1 encap.
->
-> Perhaps it is time to do the same in GSO, to allow arbitrary levels of
-> encapsulation.
-> Then we no longer mess with these limited
-> 'network_header/inner_network_header' fields
-> in the skb.
->
-> Stuffing state in the skb has been a mistake I think.
+On 2/15/22 5:40 AM, Roberto Sassu wrote:
+> Fix some warnings in ima_main.c, displayed with W=n make argument.
+> 
 
-If we could unwind those skb inner_* fields (and reclaim the skbuff
-space!) that would be fantastic.
+Thank you for fixing these. Doc builds are full of them and few less
+is welcome.
 
-Immediately for this bug: perhaps it can be fixed by resetting the
-network_header on the gso skb if segs == NULL. As the offset is stored
-on the stack.
+Adding the warns or summary of them to change log will be good.
+
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> ---
+>   security/integrity/ima/ima_main.c | 11 ++++++-----
+>   1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/ima_main.c
+> index 8c6e4514d494..946ba8a12eab 100644
+> --- a/security/integrity/ima/ima_main.c
+> +++ b/security/integrity/ima/ima_main.c
+> @@ -418,6 +418,7 @@ int ima_file_mmap(struct file *file, unsigned long prot)
+>   
+>   /**
+>    * ima_file_mprotect - based on policy, limit mprotect change
+> + * @vma: vm_area_struct protection is set to
+>    * @prot: contains the protection that will be applied by the kernel.
+>    *
+
+
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
