@@ -2,97 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C03C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242995AbiBOSSO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:18:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34960 "EHLO
+        id S243003AbiBOSSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:18:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242974AbiBOSSE (ORCPT
+        with ESMTP id S237532AbiBOSSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 13:18:04 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F165119879;
-        Tue, 15 Feb 2022 10:17:53 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 7B67D1F448F3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644949071;
-        bh=h/COUe+915WJwYQPSbDM5m4K3JjxoSrR771H/V9/JBc=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=VUrykP2Mk8dxmzXlHic+VmIbYYW+LmAzj6vPHmF7Qkg3g8jCQZVTiEaUYoscEhcfS
-         hViby0dbf6astOyftkLqX7cA/BNMrwjN5wI4jXXa2sizRCKvrELKZ+X7zuZtGAwwMl
-         h05B2YBuf+EuumrEq6rV2oLJ/YpkwHdTWK7BhluC88xvK16vpYO3uePljeIOlljNf7
-         AWtxjdLUdm/nAMC8JZKw9JnoVlgt/sfeBiIIxmufa6I4z9pHhP7PS8FwxNvZwxcnur
-         7SOFWe9V+FrXIjSXaSYDfKoilpQcu5m9y3DzTla0Oshju1D5u2vrxE1k8C2QhIkDAF
-         +UiUHfjMzb4hw==
-Message-ID: <4b739847-0622-c221-33b3-9fe428a52bc0@collabora.com>
-Date:   Tue, 15 Feb 2022 23:17:39 +0500
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 166F111987F;
+        Tue, 15 Feb 2022 10:17:54 -0800 (PST)
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21FBOdZP005191;
+        Tue, 15 Feb 2022 18:17:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version; s=pps0720;
+ bh=RCkzmuESPRr4IslVHQvPvdBg55wuFVjTn9z8RMSyDR4=;
+ b=Ews5Rs0BxWZ1Qrp2HP5T4/NmZzcug5qg29f5MpGDrL0PO9cSgEmK1znOBhRlUWJ5kcQf
+ jS02mtPt2u+W69hDnTzGvuP1zfMF8i9eZKHT3tjlx3uHWdub/ToE17DtXRI4wDHniZm9
+ w/4CDm4AuzAKFSh83MQD/N7bf0mGlNlartLDKQb1ZTJCxJj9Tyh9FpCuN1sk3Xr7kU63
+ WjOfpb5pCL6TszNyrM802VLu1kYB5NesLYwKnIf2atjeIaKLogxZS7eoHo5hmhDLYvnt
+ Jgsm2t7WZgRu08bmaKE7Z9EY9GHj8xW0ngKIdPrIk//qriNu3rMX9SQtD4wrzwfKWlb6 6g== 
+Received: from g4t3426.houston.hpe.com (g4t3426.houston.hpe.com [15.241.140.75])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3e8b92ugyv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 18:17:32 +0000
+Received: from hpe.com (unknown [15.115.65.69])
+        by g4t3426.houston.hpe.com (Postfix) with ESMTP id D7D6D54;
+        Tue, 15 Feb 2022 18:17:31 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     nick.hawkins@hpe.com, verdun@hpe.com
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH] [v1] dt-bindings: timer: Add HPE GXP Timer binding
+Date:   Tue, 15 Feb 2022 12:19:35 -0600
+Message-Id: <20220215181936.41551-1-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <nick.hawkins@hpe.com>
+References: <nick.hawkins@hpe.com>
+X-Proofpoint-GUID: i-Dgm6jTiXXXdOm-5Xv1gUJkP2Zf4Di3
+X-Proofpoint-ORIG-GUID: i-Dgm6jTiXXXdOm-5Xv1gUJkP2Zf4Di3
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     usama.anjum@collabora.com, Shuah Khan <skhan@linuxfoundation.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        "luto@amacapital.net" <luto@amacapital.net>,
-        "wad@chromium.org" <wad@chromium.org>,
-        "christian@brauner.io" <christian@brauner.io>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
- missing headers
-Content-Language: en-US
-To:     Sherry Yang <sherry.yang@oracle.com>
-References: <20220210203049.67249-1-sherry.yang@oracle.com>
- <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
- <85DF69B3-3932-4227-978C-C6DAC7CAE64D@oracle.com>
- <66140ffb-306e-2956-2f6b-c017a38e18f8@collabora.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <66140ffb-306e-2956-2f6b-c017a38e18f8@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-15_05,2022-02-14_04,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
+ priorityscore=1501 adultscore=0 mlxlogscore=999 bulkscore=0 spamscore=0
+ mlxscore=0 impostorscore=0 phishscore=0 suspectscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202150106
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-On 2/14/22 9:12 PM, Muhammad Usama Anjum wrote:
->>> "../../../../usr/include/" directory doesn't have header files if
->>> different output directory is used for kselftests build like "make -C
->>> tools/tests/selftest O=build". Can you try adding recently added
->>> variable, KHDR_INCLUDES here which makes this kind of headers inclusion
->>> easy and correct for other build combinations as well?
->>>
->>>
->>
->> Hi Muhammad,
->>
->> I just pulled linux-next, and tried with KHDR_INCLUDES. It works. Very nice 
->> work! I really appreciate you made headers inclusion compatible. However, 
->> my case is a little more complicated. It will throw warnings with -I, using 
->> -isystem can suppress these warnings, more details please refer to 
->> https://lore.kernel.org/all/C340461A-6FD2-440A-8EFC-D7E85BF48DB5@oracle.com/
->>
->> According to this case, do you think will it be better to export header path 
->> (KHDR_INCLUDES) without “-I”?
-> Well said. I've thought about it and it seems like -isystem is better
-> than -I. I've sent a patch:
-> https://lore.kernel.org/linux-kselftest/20220214160756.3543590-1-usama.anjum@collabora.com/
-> I'm looking forward to discussion on it.
-The patch has been accepted. It should appear in linux-next soon. You
-should be able to use KHDR_INCLUDES easily now.
+Description: Creating binding for the GXP timer to be used in device tree.
+ GXP is the name of the HPE SoC.
+ This SoC is used to implement BMC features of HPE servers
+  (all ProLiant, Synergy, and many Apollo, and Superdome machines)
+   It does support many features including:
+        ARMv7 architecture, and it is based on a Cortex A9 core
+        Use an AXI bus to which
+                a memory controller is attached, as well as
+                 multiple SPI interfaces to connect boot flash,
+                 and ROM flash, a 10/100/1000 Mac engine which
+                 supports SGMII (2 ports) and RMII
+                Multiple I2C engines to drive connectivity with a
+				 host infrastructure
+                A video engine which support VGA and DP, as well as
+                 an hardware video encoder
+                Multiple PCIe ports
+                A PECI interface, and LPC eSPI
+                Multiple UART for debug purpose, and Virtual UART for
+                 host connectivity
+                A GPIO engine.
 
-Thanks,
-Usama
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+---
+ .../bindings/timer/hpe,gxp-timer.yaml         | 45 +++++++++++++++++++
+ MAINTAINERS                                   |  6 +++
+ 2 files changed, 51 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
+
+diff --git a/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml b/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
+new file mode 100644
+index 000000000000..1f4e345c5fb8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/timer/hpe,gxp-timer.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: HPE GXP TIMER
++
++maintainers:
++  - Nick Hawkins <nick.hawkins@hpe.com>
++  - Jean-Marie Verdun <verdun@hpe.com>
++
++properties:
++  compatible:
++    const: hpe,gxp-timer
++
++  reg:
++    items:
++      - description: T0CNT register
++      - description: T0CS register
++      - description: TIMELO register
++
++  interrupts:
++    maxItems: 1
++
++  clock-frequency:
++    description: The frequency of the clock that drives the counter, in Hz.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clock-frequency
++
++additionalProperties: false
++
++examples:
++  - |
++    timer@10003000 {
++        compatible = "hpe,gxp-timer";
++        reg = <0xc0000080 0x1>, <0xc0000094 0x01>, <0xc0000088 0x08>;
++        interrupts = <0>;
++        interrupt-parent = <&vic0>;
++        clock-frequency = <400000000>;
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f41088418aae..8c2c1e8e0934 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8385,6 +8385,12 @@ L:	linux-efi@vger.kernel.org
+ S:	Maintained
+ F:	block/partitions/efi.*
+ 
++GXP TIMER
++M:	Nick Hawkins <nick.hawkins@hpe.com>
++M:	Jean-Marie Verdun <verdun@hpe.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
++
+ H8/300 ARCHITECTURE
+ M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+ L:	uclinux-h8-devel@lists.sourceforge.jp (moderated for non-subscribers)
+-- 
+2.17.1
+
