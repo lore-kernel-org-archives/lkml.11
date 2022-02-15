@@ -2,111 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C49C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1463AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239772AbiBOPX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:23:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33894 "EHLO
+        id S238834AbiBOPZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:25:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239671AbiBOPXW (ORCPT
+        with ESMTP id S230210AbiBOPZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:23:22 -0500
-Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8418A6D9;
-        Tue, 15 Feb 2022 07:23:05 -0800 (PST)
-Received: by mail-il1-f172.google.com with SMTP id z18so15085199iln.2;
-        Tue, 15 Feb 2022 07:23:05 -0800 (PST)
+        Tue, 15 Feb 2022 10:25:14 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F13C8E19B
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:25:04 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id h5so520639ioj.3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:25:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=STSfeMkR8sO6JKdBEzPJOeiPGWaxCEMoqHon21FihTU=;
+        b=YJUS8WZ6GALIAGJCgBqidA/jRC7Y4VlfQon9K7eJGbV5JFiV8G0w1bkomi5BZCStpo
+         emu7g8n7Y+/hd7YAaj3mNC5X9GOT0unsqyZ6koBcMT4NHVx/u3LydOeUDO6Ov0P1JZAE
+         iT3hqQ4GGlayHiq7Kauf4oVzTr3qwGqqaWZNE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=weEvHFGw/9QrnqnqUkvam9o2UqOWSm/GuPZ0OggVVNQ=;
-        b=1x5L9HafIFpsdZxjcoP8leFUxgFlVA56WOiYGvKXlS1E1MTY4l1GfBfR4W+oeTxliw
-         DgIabpyUYbJbSRCkLcfV7r68Z4rkgxm2FDiTJubjzEpqVo+oqS2SQB0pShK8Uwoi0pTb
-         oKC0LR1/hflYHRDrjcsoISv4/IQ75vH+oircY50aZTGKiRY6sanKQiQsVb4rd2DI4dAt
-         YnhjI1EDpqBJeOWjH7BnyI5czWDoPRAbSjEg8ct/JhCZeVsmIJfeDcKikKWiQ5SxipaM
-         cDe1+OPivyVk+r/7HrjptJuo0ZL5Qi1nKX/Ff7rbS2CIn4UBV4ezhMM6ahOdzaJH+ptL
-         F+kQ==
-X-Gm-Message-State: AOAM531HqaPyjDZpITTVFZIrKwL4/6B8jPxrNlHYOhZgSljCnjMncnxV
-        zM0FTeJHLQQXXZE7qEa7WA==
-X-Google-Smtp-Source: ABdhPJx0i8zDZMxvbpR55JFaMOBoAnq9vyYPRDhu7kRCJt5Fp29eRsmM2h5R5u7LBsygSSfAXjGvNw==
-X-Received: by 2002:a05:6e02:b2e:: with SMTP id e14mr2821250ilu.302.1644938585205;
-        Tue, 15 Feb 2022 07:23:05 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id z5sm8889997ilu.45.2022.02.15.07.23.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 07:23:04 -0800 (PST)
-Received: (nullmailer pid 3450862 invoked by uid 1000);
-        Tue, 15 Feb 2022 15:22:45 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Cristian Marussi <cristian.marussi@arm.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, peter.hilber@opensynergy.com,
-        Jonathan.Cameron@Huawei.com, sudeep.holla@arm.com,
-        f.fainelli@gmail.com, vincent.guittot@linaro.org,
-        devicetree@vger.kernel.org, souvik.chakravarty@arm.com,
-        etienne.carriere@linaro.org, linux-kernel@vger.kernel.org,
-        igor.skalkin@opensynergy.com, linux-arm-kernel@lists.infradead.org,
-        james.quinlan@broadcom.com
-In-Reply-To: <20220213195832.27932-5-cristian.marussi@arm.com>
-References: <20220213195832.27932-1-cristian.marussi@arm.com> <20220213195832.27932-5-cristian.marussi@arm.com>
-Subject: Re: [PATCH v4 4/8] dt-bindings: firmware: arm,scmi: Add atomic-threshold-us optional property
-Date:   Tue, 15 Feb 2022 09:22:45 -0600
-Message-Id: <1644938565.068934.3450861.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=STSfeMkR8sO6JKdBEzPJOeiPGWaxCEMoqHon21FihTU=;
+        b=GTwaaMGLhbqKr2ImTE41KvadiS469Vxnyb7Q2ENrevCqQg58AeUvglsoTlIf8w6YQL
+         Pe+tHSYVM8x8jBaCcWbIvxqtUTxvEQ/oErKClC44/2lhYiqqkQ/l7XfR9cLx/H4+R+wh
+         2s1BCn2T7QJisS4toEWWIOvPT4VcsfMVoczgwjsyPLN2PA7OZaH/PjbdIBG6IaRR5ZP/
+         /RYBRTGo1kVR3rrGxpUpLzswwiW8ulbIzXvATU3HsVxEwUjEWPhCmsfg6U00O7a/Y79K
+         zPkcVNqowbNOQk6Y41qQcs5xrTs0hV+Mu2noiLQMnZ0bTyhAnjfUIZ5/otlmeLs47TGZ
+         ib0w==
+X-Gm-Message-State: AOAM530qOFnmG0n52BfxzK23CG37wnK7Bz5puWmLcrYeMV19a9ed9RNT
+        JP4YIKmIgRyMliYHmUd6g/AiDQ==
+X-Google-Smtp-Source: ABdhPJy+IcgP1I/EPyq/Kpzq9SYpM21us3QTIGn6lhDEubr9KH/TzO2vI54UO9yXV6od31OPqFQCyA==
+X-Received: by 2002:a05:6602:2ac1:: with SMTP id m1mr2681467iov.123.1644938703517;
+        Tue, 15 Feb 2022 07:25:03 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id r13sm10603485ilb.35.2022.02.15.07.25.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 07:25:03 -0800 (PST)
+Subject: Re: [PATCH] selftests: kvm: Check whether SIDA memop fails for normal
+ guests
+To:     Thomas Huth <thuth@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220215074824.188440-1-thuth@redhat.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <d576d8f7-980f-3bc6-87ad-5a6ae45609b8@linuxfoundation.org>
+Date:   Tue, 15 Feb 2022 08:25:02 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+MIME-Version: 1.0
+In-Reply-To: <20220215074824.188440-1-thuth@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 13 Feb 2022 19:58:28 +0000, Cristian Marussi wrote:
-> SCMI protocols in the platform can optionally signal to the OSPM agent
-> the expected execution latency for a specific resource/operation pair.
+On 2/15/22 12:48 AM, Thomas Huth wrote:
+> Commit 2c212e1baedc ("KVM: s390: Return error on SIDA memop on normal
+> guest") fixed the behavior of the SIDA memops for normal guests. It
+> would be nice to have a way to test whether the current kernel has
+> the fix applied or not. Thus add a check to the KVM selftests for
+> these two memops.
 > 
-> Introduce an SCMI system wide optional property to describe a global time
-> threshold which can be configured on a per-platform base to determine the
-> opportunity, or not, for an SCMI command advertised to have a higher
-> latency than the threshold, to be considered for atomic operations:
-> high-latency SCMI synchronous commands should be preferably issued in the
-> usual non-atomic mode.
-> 
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> Signed-off-by: Thomas Huth <thuth@redhat.com>
 > ---
-> v3 --> v4
-> - renamed property to atomic-threshold-us
-> v1 --> v2
-> - rephrased the property description
-> ---
->  .../devicetree/bindings/firmware/arm,scmi.yaml        | 11 +++++++++++
->  1 file changed, 11 insertions(+)
+>   tools/testing/selftests/kvm/s390x/memop.c | 15 +++++++++++++++
+>   1 file changed, 15 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+> index 9f49ead380ab..d19c3ffdea3f 100644
+> --- a/tools/testing/selftests/kvm/s390x/memop.c
+> +++ b/tools/testing/selftests/kvm/s390x/memop.c
+> @@ -160,6 +160,21 @@ int main(int argc, char *argv[])
+>   	run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
+>   	vcpu_run(vm, VCPU_ID);                  /* Run to sync new state */
+>   
+> +	/* Check that the SIDA calls are rejected for non-protected guests */
+> +	ksmo.gaddr = 0;
+> +	ksmo.flags = 0;
+> +	ksmo.size = 8;
+> +	ksmo.op = KVM_S390_MEMOP_SIDA_READ;
+> +	ksmo.buf = (uintptr_t)mem1;
+> +	ksmo.sida_offset = 0x1c0;
+> +	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+> +	TEST_ASSERT(rv == -1 && errno == EINVAL,
+> +		    "ioctl does not reject SIDA_READ in non-protected mode");
+
+Printing what passed would be a good addition to understand the tests that
+get run and expected to pass.
+
+> +	ksmo.op = KVM_S390_MEMOP_SIDA_WRITE;
+> +	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+> +	TEST_ASSERT(rv == -1 && errno == EINVAL,
+> +		    "ioctl does not reject SIDA_WRITE in non-protected mode");
+> +
+
+Same here.
+
+>   	kvm_vm_free(vm);
+>   
+>   	return 0;
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Something to consider in a follow-on patch and future changes to these tests.
 
-yamllint warnings/errors:
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/firmware/arm,scmi.yaml: properties:atomic-threshold-us: '$ref' should not be valid under {'const': '$ref'}
-	hint: Standard unit suffix properties don't need a type $ref
-	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/firmware/arm,scmi.yaml: ignoring, error in schema: properties: atomic-threshold-us
-Documentation/devicetree/bindings/firmware/arm,scmi.example.dt.yaml:0:0: /example-0/firmware/scmi: failed to match any schema with compatible: ['arm,scmi']
-Documentation/devicetree/bindings/firmware/arm,scmi.example.dt.yaml:0:0: /example-1/firmware/scmi: failed to match any schema with compatible: ['arm,scmi-smc']
-Documentation/devicetree/bindings/mailbox/arm,mhu.example.dt.yaml:0:0: /example-1/firmware/scmi: failed to match any schema with compatible: ['arm,scmi']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1592136
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+thanks,
+-- Shuah
