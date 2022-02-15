@@ -2,92 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8593C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB257C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243173AbiBOSnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:43:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45700 "EHLO
+        id S243178AbiBOSoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:44:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243171AbiBOSm7 (ORCPT
+        with ESMTP id S241980AbiBOSoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:42:59 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DB927FEA
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:42:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644950566; x=1676486566;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Uq3mK2F4oBeJy49d6SR0mO9NdzovVt3JSrPgHEwNGYw=;
-  b=W5YTAaFfp7s1FpSHaJ9WNGYT3P2ugleLxF6xKi8I8zrdGd5Vj8hX7AOe
-   QxerCg3RQ3Vm37LVgzaFJBmG19y7NGIkqbZkPuemIep89kORBbrnHTTr3
-   8CougRYcS/lBM38SHVjwBzYrZ+A1+KSIw6qPaKTGtohR3UFgwFW1TrXWw
-   NT+atc1II32rMbbFet12Hq21a0o484tWISodtRPkYZYfVRrRpwdZZz2DL
-   wfAzkfk9tJxVfMIcmWtFzU0ZXZwQk/2A6dg91WQQOciZIXRZJ0MDbGe18
-   yOWXbed1HRZuRc3dF7VKzn4hnR9cPSkNylRa+72Fc+Kn+oLEARqOj+6y7
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="311167725"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="311167725"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 10:42:43 -0800
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="624957742"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.60])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 10:42:43 -0800
-Date:   Tue, 15 Feb 2022 10:42:42 -0800
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     Jue Wang <juew@google.com>
-Cc:     Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [PATCH] x86/mce: Add workaround for SKX/CLX/CPX spurious machine
- checks
-Message-ID: <Ygv0IncyBA3pXR7Q@agluck-desk3.sc.intel.com>
-References: <CAPcxDJ7nriZEJHF6dMPR7tQ+dGuueyRjw1NC+4CbjxiAT_S+ZA@mail.gmail.com>
- <20220208150945.266978-1-juew@google.com>
+        Tue, 15 Feb 2022 13:44:00 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E176B27FF6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:43:49 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id h11so15523473ilq.9
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:43:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=A0+kP93DPXHvr6brEvM8VXEFzWB0S5lRFdtA9kDJkyE=;
+        b=VbnG0DTFoD5oInsLnSpyK8TY1b9yTtEV8jmDclcI0lVoHXaRfQ+1Kei06xf8rXYF7T
+         Wg/jkDG2mswlylVxkUyUwagh7VpOigDobBSIN+ruOXrKdEbqescCjLVZjKa5xcviv9J2
+         6BHdIVuOY/izVwkXKs6tMZ1SXb1wuGFnkP+R4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=A0+kP93DPXHvr6brEvM8VXEFzWB0S5lRFdtA9kDJkyE=;
+        b=QpE2M4zPcDWkK7tRYsMbd/I2REEkYC87riK+uxfAF66mWn4kDUQgaLN7Z1UvfVsQht
+         HjTzqpBxCTNlBjF9SpB6O11FH8ifGNpvL90nhLQYFV9BqeABD7tEvO1nNXpUme/wA7cn
+         +HX28iw/mXDxSo/5WmY/oIAiUopWCBhODa2b3tKhQC6h5opfs40Cdp4ED97Yipyq9E3n
+         OHDE3wHxP4Vt8zFD3vNLHfConQmHOjD67Vl+lhyeOjSLYAG7540VK8PgBCvKJC+Nufob
+         rZqnnjOsEcVX57ZEG71trMiQsBOOnJivqpMnNDVmKdNqYC5G5vyHLqpp958OQ2EMItrD
+         To+w==
+X-Gm-Message-State: AOAM530v66vDbVaHIsQVYASod3ucRqPQLPAuEjsXz4FzvlWctfLy6wXu
+        f65ovjcJslCoSQWOyP4c+2rmCQ==
+X-Google-Smtp-Source: ABdhPJy2vlGZWPGrF4v8TITllv20RRsSaBCpm9YRhgNODL/5uMIm2Jii7qjTHVGojYsoa6gztygi5g==
+X-Received: by 2002:a05:6e02:1bc1:: with SMTP id x1mr258711ilv.268.1644950629300;
+        Tue, 15 Feb 2022 10:43:49 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id s16sm12850411iow.10.2022.02.15.10.43.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 10:43:49 -0800 (PST)
+Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
+ missing headers
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Sherry Yang <sherry.yang@oracle.com>
+Cc:     "shuah@kernel.org" <shuah@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        "luto@amacapital.net" <luto@amacapital.net>,
+        "wad@chromium.org" <wad@chromium.org>,
+        "christian@brauner.io" <christian@brauner.io>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220210203049.67249-1-sherry.yang@oracle.com>
+ <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
+ <85DF69B3-3932-4227-978C-C6DAC7CAE64D@oracle.com>
+ <66140ffb-306e-2956-2f6b-c017a38e18f8@collabora.com>
+ <4b739847-0622-c221-33b3-9fe428a52bc0@collabora.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <2f59f86c-dbd7-7dbf-021d-bc62ebbe2a43@linuxfoundation.org>
+Date:   Tue, 15 Feb 2022 11:43:48 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220208150945.266978-1-juew@google.com>
+In-Reply-To: <4b739847-0622-c221-33b3-9fe428a52bc0@collabora.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 07:09:45AM -0800, Jue Wang wrote:
-> +static bool quirk_skylake_repmov(void)
-> +{
-> +	u64 mcgstatus = mce_rdmsrl(MSR_IA32_MCG_STATUS);
-> +	u64 misc_enable = __rdmsr(MSR_IA32_MISC_ENABLE);
-> +
-> +	if ((mcgstatus & MCG_STATUS_LMCES) &&
-> +	    unlikely(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING)) {
-> +		u64 mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
-> +
+On 2/15/22 11:17 AM, Muhammad Usama Anjum wrote:
+> 
+> On 2/14/22 9:12 PM, Muhammad Usama Anjum wrote:
+>>>> "../../../../usr/include/" directory doesn't have header files if
+>>>> different output directory is used for kselftests build like "make -C
+>>>> tools/tests/selftest O=build". Can you try adding recently added
+>>>> variable, KHDR_INCLUDES here which makes this kind of headers inclusion
+>>>> easy and correct for other build combinations as well?
+>>>>
+>>>>
+>>>
+>>> Hi Muhammad,
+>>>
+>>> I just pulled linux-next, and tried with KHDR_INCLUDES. It works. Very nice
+>>> work! I really appreciate you made headers inclusion compatible. However,
+>>> my case is a little more complicated. It will throw warnings with -I, using
+>>> -isystem can suppress these warnings, more details please refer to
+>>> https://lore.kernel.org/all/C340461A-6FD2-440A-8EFC-D7E85BF48DB5@oracle.com/
+>>>
+>>> According to this case, do you think will it be better to export header path
+>>> (KHDR_INCLUDES) without “-I”?
+>> Well said. I've thought about it and it seems like -isystem is better
+>> than -I. I've sent a patch:
+>> https://lore.kernel.org/linux-kselftest/20220214160756.3543590-1-usama.anjum@collabora.com/
+>> I'm looking forward to discussion on it.
+> The patch has been accepted. It should appear in linux-next soon. You
+> should be able to use KHDR_INCLUDES easily now.
+> 
 
-Needs a comment that this big blob of logic is checking for a software
-recoverable data fetch error.
+Sherry,
 
-> +		if ((mc1_status &
-> +		     (MCI_STATUS_VAL|MCI_STATUS_OVER|MCI_STATUS_UC|MCI_STATUS_EN|
-> +		      MCI_STATUS_ADDRV|MCI_STATUS_MISCV|MCI_STATUS_PCC|
-> +		      MCI_STATUS_AR|MCI_STATUS_S)) ==
-> +		    (MCI_STATUS_VAL|MCI_STATUS_UC|MCI_STATUS_EN|MCI_STATUS_ADDRV|
-> +		     MCI_STATUS_MISCV|MCI_STATUS_AR|MCI_STATUS_S)) {
-> +			msr_clear_bit(MSR_IA32_MISC_ENABLE,
-> +				      MSR_IA32_MISC_ENABLE_FAST_STRING_BIT);
-> +			mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
-> +			mce_wrmsrl(MSR_IA32_MCx_STATUS(1), 0);
-> +			pr_err_once("Errata detected, disable fast string copy instructions.\n");
-> +			return true;
-> +		}
-> +	}
-> +	return false;
-> +}
+I pulled in your patch as a fix as is for 5.17-rc5.
 
-Otherwise:
+Using KHDR_INCLUDES can be separate patch for next release.
+This way the fix is going to be pulled for this release
+without dependencies on other patches.
 
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-
--Tony
+thanks,
+-- Shuah
