@@ -2,79 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F511C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F75C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238793AbiBOOka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:40:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48702 "EHLO
+        id S238790AbiBOOkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:40:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238773AbiBOOkX (ORCPT
+        with ESMTP id S238776AbiBOOk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:40:23 -0500
+        Tue, 15 Feb 2022 09:40:28 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D2010243A;
-        Tue, 15 Feb 2022 06:40:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6F610242B;
+        Tue, 15 Feb 2022 06:40:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E23DB81A66;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D34CEB81A6B;
         Tue, 15 Feb 2022 14:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E754BC340F3;
-        Tue, 15 Feb 2022 14:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 97BE9C340FE;
+        Tue, 15 Feb 2022 14:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1644936011;
-        bh=W+PZiXTkYYnYXtN8VwBPcPEFiBLPX741Pr608myZGug=;
+        bh=BTyAeRKUCX4nKPYoAM+bIom35KvgaYtL0Oy8gSmCoDE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZZqIsTFR8P4fhKOYLoIsdyVtOw6Ic3k9rD5JeUlevGOn/VHt+ySFeUqtByqqApGFM
-         dkujXNapxRFLOGxNUoOc98VkzM5fPzKyEZ0/ws7vqs7DPySW40EeG8QOxorHwjMcXE
-         RRxA8U69C8Eov70j7L7TpVm9zqQAOfxL7FE+BeYEIItMoVXNY2FmyGnXghtghVD+6R
-         JRu8/ngo0yAFbGJ5igYex2Xkjz8pn9LtqSc6RrE6/ESLpAQUo9vNZLr8di2LXHN5lK
-         SUxyDLl1P8iHP9vsU1J3lkH/cNXuAAh0dW/iTb8XH9gh8f2ga9sFvexxES4vNa+A4I
-         BWBeYBZeX6iEw==
+        b=YejL76nfui5aLYADmVTo96nTaPeaEnTJ02HyrUARC4v5zor6etUqN0+K5WStyL5fE
+         3YooPk6lOcE8aRNvxIgvP893jhsYIBli59Lcnvx5PU1eazIjC63IywLGcuj/7uwIy7
+         2+1QhDI8a7OypWcHU2u3HocIEQKpIQ4dCuvaK9qcqmHvfBrVHH8Y9sSRdbYCoRHuje
+         snAEwJiGXKX2+VxznNVy2WhwEDeRaco8oca11+B8L3O0gQvBacpphbP8jPkKbAOAx6
+         etIhHrL6ZdS5IiQsnnjM04DNNyLFA1Ksc/mt/OXW1Jd68LoVeIEZHmvWX6d0w9rjxL
+         WfaVPfm5yosWg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D23B0E6D447;
-        Tue, 15 Feb 2022 14:40:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 84E5EE6D447;
+        Tue, 15 Feb 2022 14:40:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] dpaa2-switch: fix default return of
- dpaa2_switch_flower_parse_mirror_key
+Subject: Re: [PATCH] net: hso: Use GFP_KERNEL instead of GFP_ATOMIC when possible
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164493601085.31968.17393307108905491138.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Feb 2022 14:40:10 +0000
-References: <20220214154139.2891275-1-trix@redhat.com>
-In-Reply-To: <20220214154139.2891275-1-trix@redhat.com>
-To:     Tom Rix <trix@redhat.com>
-Cc:     ioana.ciornei@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        nathan@kernel.org, ndesaulniers@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Message-Id: <164493601153.31968.17892021066503340871.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Feb 2022 14:40:11 +0000
+References: <93e4c78983de9a20b1f9009d79116591f20fd1c2.1644865733.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <93e4c78983de9a20b1f9009d79116591f20fd1c2.1644865733.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 14 Feb 2022 07:41:39 -0800 you wrote:
-> From: Tom Rix <trix@redhat.com>
+On Mon, 14 Feb 2022 20:09:06 +0100 you wrote:
+> hso_create_device() is only called from function that already use
+> GFP_KERNEL. And all the callers are called from the probe function.
 > 
-> Clang static analysis reports this representative problem
-> dpaa2-switch-flower.c:616:24: warning: The right operand of '=='
->   is a garbage value
->   tmp->cfg.vlan_id == vlan) {
->                    ^  ~~~~
-> vlan is set in dpaa2_switch_flower_parse_mirror_key(). However
-> this function can return success without setting vlan.  So
-> change the default return to -EOPNOTSUPP.
+> So there is no need here to explicitly require a GFP_ATOMIC when
+> allocating memory.
+> 
+> Use GFP_KERNEL instead.
 > 
 > [...]
 
 Here is the summary with links:
-  - dpaa2-switch: fix default return of dpaa2_switch_flower_parse_mirror_key
-    https://git.kernel.org/netdev/net/c/2a36ed7c1cd5
+  - net: hso: Use GFP_KERNEL instead of GFP_ATOMIC when possible
+    https://git.kernel.org/netdev/net-next/c/25ce79db8042
 
 You are awesome, thank you!
 -- 
