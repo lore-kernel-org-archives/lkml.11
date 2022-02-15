@@ -2,82 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC50C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60626C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239469AbiBOOxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:53:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33078 "EHLO
+        id S239327AbiBOOyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:54:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239290AbiBOOwH (ORCPT
+        with ESMTP id S239492AbiBOOxa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:52:07 -0500
-Received: from outbound-smtp47.blacknight.com (outbound-smtp47.blacknight.com [46.22.136.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB4A939CA
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:51:34 -0800 (PST)
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp47.blacknight.com (Postfix) with ESMTPS id 34214FA89D
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:51:33 +0000 (GMT)
-Received: (qmail 14272 invoked from network); 15 Feb 2022 14:51:32 -0000
-Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.17.223])
-  by 81.17.254.9 with ESMTPA; 15 Feb 2022 14:51:32 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Aaron Lu <aaron.lu@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 1/5] mm/page_alloc: Fetch the correct pcp buddy during bulk free
-Date:   Tue, 15 Feb 2022 14:51:07 +0000
-Message-Id: <20220215145111.27082-2-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220215145111.27082-1-mgorman@techsingularity.net>
-References: <20220215145111.27082-1-mgorman@techsingularity.net>
+        Tue, 15 Feb 2022 09:53:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911F4102423;
+        Tue, 15 Feb 2022 06:52:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72C1DB819FA;
+        Tue, 15 Feb 2022 14:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17ADDC340EB;
+        Tue, 15 Feb 2022 14:52:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644936763;
+        bh=oHvI812wnFSZHuTw2mFyGnMQwXFVGo3Bnh6xMpiP8xM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jdjq0iQ6XSjhEYl/rI1cMvQa82uF75FAMOBXuy7bNuCfqoEzx0NcmpyeJezq3L7ew
+         URSopB2PK2NyBTFqz0r9jyPK2VTDNfvtCppZSP+t/GCERdYQYdJeqcuUfxQTnisZGk
+         cml/ziTELZQLptSUs5TIbSmtef8xgYwEfUX5FM4xwuEroLXwZLYf6WX9pi+1ywDUuS
+         9fvEnwP8w+a9j8ocwNXhu3KI8iM3Pwv6bip2xkgj5FfrcDyGIyZDCMd5SlM+GYLRRq
+         iX5V4PuFkYkSFlEBva298QHJEU3lHX8AMH6Y1EMJnWftKenGvzPucWDqwumNzOQtgf
+         JgvPE//08keuw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id C3089400FE; Tue, 15 Feb 2022 11:52:40 -0300 (-03)
+Date:   Tue, 15 Feb 2022 11:52:40 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     James Clark <james.clark@arm.com>, mathieu.poirier@linaro.org,
+        coresight@lists.linaro.org, leo.yan@linaro.com,
+        mike.leach@linaro.org, Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH v2 3/6] perf cs-etm: Update deduction of TRCCONFIGR
+ register for branch broadcast
+Message-ID: <Ygu+OHnxYAyqLFwB@kernel.org>
+References: <20220113091056.1297982-1-james.clark@arm.com>
+ <20220113091056.1297982-4-james.clark@arm.com>
+ <25b85560-dd95-2569-d1bc-872902d6343f@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <25b85560-dd95-2569-d1bc-872902d6343f@arm.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-free_pcppages_bulk() prefetches buddies about to be freed but the
-order must also be passed in as PCP lists store multiple orders.
+Em Fri, Jan 28, 2022 at 11:25:24AM +0000, Suzuki K Poulose escreveu:
+> On 13/01/2022 09:10, James Clark wrote:
+> > Now that a config flag for branch broadcast has been added, take it into
+> > account when trying to deduce what the driver would have programmed the
+> > TRCCONFIGR register to.
 
-Fixes: 44042b449872 ("mm/page_alloc: allow high-order pages to be stored on the per-cpu lists")
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
----
- mm/page_alloc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Thanks, applied this one, the tools/ part.
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 3589febc6d31..08de32cfd9bb 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1432,10 +1432,10 @@ static bool bulkfree_pcp_prepare(struct page *page)
- }
- #endif /* CONFIG_DEBUG_VM */
+- Arnaldo
+
  
--static inline void prefetch_buddy(struct page *page)
-+static inline void prefetch_buddy(struct page *page, unsigned int order)
- {
- 	unsigned long pfn = page_to_pfn(page);
--	unsigned long buddy_pfn = __find_buddy_pfn(pfn, 0);
-+	unsigned long buddy_pfn = __find_buddy_pfn(pfn, order);
- 	struct page *buddy = page + (buddy_pfn - pfn);
- 
- 	prefetch(buddy);
-@@ -1512,7 +1512,7 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 			 * prefetch buddy for the first pcp->batch nr of pages.
- 			 */
- 			if (prefetch_nr) {
--				prefetch_buddy(page);
-+				prefetch_buddy(page, order);
- 				prefetch_nr--;
- 			}
- 		} while (count > 0 && --batch_free && !list_empty(list));
+> > Reviewed-by: Leo Yan <leo.yan@linaro.org>
+> > Signed-off-by: James Clark <james.clark@arm.com>
+> > ---
+> >   tools/include/linux/coresight-pmu.h | 2 ++
+> >   tools/perf/arch/arm/util/cs-etm.c   | 3 +++
+> >   2 files changed, 5 insertions(+)
+> > 
+> > diff --git a/tools/include/linux/coresight-pmu.h b/tools/include/linux/coresight-pmu.h
+> > index 4ac5c081af93..6c2fd6cc5a98 100644
+> > --- a/tools/include/linux/coresight-pmu.h
+> > +++ b/tools/include/linux/coresight-pmu.h
+> > @@ -18,6 +18,7 @@
+> >    * ETMv3.5/PTM doesn't define ETMCR config bits with prefix "ETM3_" and
+> >    * directly use below macros as config bits.
+> >    */
+> > +#define ETM_OPT_BRANCH_BROADCAST 8
+> >   #define ETM_OPT_CYCACC		12
+> >   #define ETM_OPT_CTXTID		14
+> >   #define ETM_OPT_CTXTID2		15
+> > @@ -25,6 +26,7 @@
+> >   #define ETM_OPT_RETSTK		29
+> >   /* ETMv4 CONFIGR programming bits for the ETM OPTs */
+> > +#define ETM4_CFG_BIT_BB         3
+> >   #define ETM4_CFG_BIT_CYCACC	4
+> >   #define ETM4_CFG_BIT_CTXTID	6
+> >   #define ETM4_CFG_BIT_VMID	7
+> > diff --git a/tools/perf/arch/arm/util/cs-etm.c b/tools/perf/arch/arm/util/cs-etm.c
+> > index 293a23bf8be3..c7ef4e9b4a3a 100644
+> > --- a/tools/perf/arch/arm/util/cs-etm.c
+> > +++ b/tools/perf/arch/arm/util/cs-etm.c
+> > @@ -527,6 +527,9 @@ static u64 cs_etmv4_get_config(struct auxtrace_record *itr)
+> >   	if (config_opts & BIT(ETM_OPT_CTXTID2))
+> >   		config |= BIT(ETM4_CFG_BIT_VMID) |
+> >   			  BIT(ETM4_CFG_BIT_VMID_OPT);
+> > +	if (config_opts & BIT(ETM_OPT_BRANCH_BROADCAST))
+> > +		config |= BIT(ETM4_CFG_BIT_BB);
+> > +
+> >   	return config;
+> 
+> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> 
+> >   }
+
 -- 
-2.31.1
 
+- Arnaldo
