@@ -2,207 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29687C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244447AbiBOVhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 16:37:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59070 "EHLO
+        id S236919AbiBOVij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 16:38:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237183AbiBOVhB (ORCPT
+        with ESMTP id S244467AbiBOVih (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 16:37:01 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196C427142
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:36:50 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id z13so443739edc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:36:50 -0800 (PST)
+        Tue, 15 Feb 2022 16:38:37 -0500
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72106F747E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:38:24 -0800 (PST)
+Received: by mail-qk1-x735.google.com with SMTP id m25so9374qka.9
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:38:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o/RjAcnj/P9iFyycjmIpcPmKzDn80maylg4OrK5xRPo=;
-        b=cNGFpCJ+0b+KbIXxTB+YwkIJ4mUOxAOlFnAx+3bK16/dN7GMf9kDzvOWRP0vz07z8w
-         C4uezKMMkI3csmVrY+Uts5zmT69fX8Jy73IewfTjwbjlh62ceeYRdg6gfhz4sq1Gbrkr
-         T1i87AKL0vuj/NDYZtlhrF9Xu/AziOS7k5k9ZaF/4voyBwqRxMALHRud0tg9m28AY4nW
-         ZiI+Pjbzcbe6SLEQNC3wecFlFiILFr4Ma1xLV0uw1aF7Di107zwPJ8vBERT+mNVSTGdw
-         8EXZy974+7YikEpYEGMTc/0W0gKGDtUCPRNZfW7DmNZtogLVYj0V1QM2MdaXNNyR1G/f
-         XN2A==
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=J1afD2UuA2twxlw8ZzYufWhFKO6wr/3kutM+ZjyetLk=;
+        b=Wcl7oY9fxL+v3oPFd1xJprCDBFPC/SUL0s385FIv9KvKn7xQn+INxXiqJqW1x8EuFK
+         7F3FLwEtLULlwb0dFj1iPOckU4U+s4WbW5s2R5XHL24xywKiiuJ50feMlNcrr3xKzU80
+         4ckWEYm2nGOh3ZFkrH/7ajWwCHGBfW6v4bdyJLj/PLx6TMItmI6xrQ64wW6XEWUtLkV+
+         xoValrFu7CWuxwnvIC3AGYTuWz9HTpBrk2HvxgS/7CEbc67DYyznj9+agowFE6ShYp9R
+         yURG3NrplLpz7e9vOZ90uF6zp9+zUhUeGBb81PjGwmUk4HJKYJ3zsddSR9OVYYC1Awu3
+         P5wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o/RjAcnj/P9iFyycjmIpcPmKzDn80maylg4OrK5xRPo=;
-        b=HGh6E8HhA93yIXfS/6UjkSi4M3VpcR/nCmUuXF9sKkWa/8ijZLT9MlFD2DMwZ+Kl1M
-         Q9zSp1asH40wccD/Ac3t1ePsKB6ewqhWiodh/jlzhf3+s3qzJWFviRcmCAjqeyZzr3wM
-         F/hgySj2IBE+qnBKaDRqeiihGmL18tuIELFLL4TkHHTq7uaphVSku0qmCGHLUaedyypB
-         HOHsWFkSS2t0n8dEPruBOpk6RgHsfbHIZpJDgWTzbjkR8FvzsDNLWCSaPHhiw+Zgi6xa
-         6ND1kE3TdGhmndEfQUDTS5MkFEL+2GZxZ0AauLhU+1h4fOTS3jUIkzZ6a9ARcThC1QxM
-         7tbA==
-X-Gm-Message-State: AOAM531x21uUiHkIgwpbepPxbM8AdNMF8dy8Ai7K1WYfh0CPgv+/b3B4
-        I5DzT7Tn2driWllZ8YCBYGf3kx30JBvIIzMuTD5rrA==
-X-Google-Smtp-Source: ABdhPJzHpa3ym9OOwzeV7u/rAZWOtejaunMqDOOM0tA3wPN6dBl5ljtfJT7Th2pT6ZlhURSDVHYWLaz/nQccMQ69678=
-X-Received: by 2002:a05:6402:33a:: with SMTP id q26mr943424edw.432.1644961008444;
- Tue, 15 Feb 2022 13:36:48 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=J1afD2UuA2twxlw8ZzYufWhFKO6wr/3kutM+ZjyetLk=;
+        b=HoEkwA5/nkR1RM3B/gpvGjAQ87Qsm6lCVlukqYC2Ht200pjrpxl3ZDZHTzZuoiJZrJ
+         VbBc+MbNAe1CDjkFJ88D23xVNdoLPsD3PrkTGhbD+2QZnnAZvoG+1g/LMsxr+qkOGm8B
+         k0QmzNwK8OwW0FWrFyfSQBWdy1mGdn45JXD+6jn0WVgbALFzS3YHETsCP5yp4BeRFGhB
+         h+XOOEDF04LL00IcdjbN7dKWlhzYG58TG9pyVuyyTzBQaRusWo4SBMJHQGXBj7GJEeQq
+         RFkpkmPYprJ7NK7X88EzA0pXzAA9LfKjBd4sDBXXsQ/4jCS8Gr262/ca6HzmOhGTLS9C
+         JuIw==
+X-Gm-Message-State: AOAM532PAHc8tK3oF385NmdFMTvd/wMBjN10ASRT66y5Gb5lzTw0ympz
+        W0PD2kJ4t8XhQ+v4MONyZi3tKg==
+X-Google-Smtp-Source: ABdhPJwSnmcbyCFnLifXS/yn/JrFTpEWFiC13xTSxk+iFYmllr+zSaMVP3leFQFjySBg2IBVEq4+gA==
+X-Received: by 2002:ae9:ddc1:: with SMTP id r184mr607603qkf.549.1644961103396;
+        Tue, 15 Feb 2022 13:38:23 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id o81sm427231qke.134.2022.02.15.13.38.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 13:38:22 -0800 (PST)
+Date:   Tue, 15 Feb 2022 13:38:20 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Matthew Wilcox <willy@infradead.org>
+cc:     Hugh Dickins <hughd@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        David Hildenbrand <david@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v2 04/13] mm/munlock: rmap call mlock_vma_page()
+ munlock_vma_page()
+In-Reply-To: <YgvFMjWPITbD1o64@casper.infradead.org>
+Message-ID: <3c6097a7-df8c-f39c-36e8-8b5410e76c8a@google.com>
+References: <55a49083-37f9-3766-1de9-9feea7428ac@google.com> <501673c-a5a-6c5f-ab65-38545dfb723d@google.com> <YgvFMjWPITbD1o64@casper.infradead.org>
 MIME-Version: 1.0
-References: <20220215153644.3654582-1-bgeffon@google.com> <56fc0ced-d8d2-146f-6ca8-b95bd7e0b4f5@intel.com>
- <CABXOdTcU1eLLzjRdJiwfVpoJi8WqYXj5bTrJ_-tm4pgRZK0uYw@mail.gmail.com>
-In-Reply-To: <CABXOdTcU1eLLzjRdJiwfVpoJi8WqYXj5bTrJ_-tm4pgRZK0uYw@mail.gmail.com>
-From:   Brian Geffon <bgeffon@google.com>
-Date:   Tue, 15 Feb 2022 16:36:12 -0500
-Message-ID: <CADyq12xG=mRcdkBU9Y=4dW5j8U8xuzU4x+1d_qSy-opcJHZduw@mail.gmail.com>
-Subject: Re: [PATCH] x86/fpu: Correct pkru/xstate inconsistency
-To:     Guenter Roeck <groeck@google.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Willis Kung <williskung@google.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        "# v4 . 10+" <stable@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 4:14 PM Guenter Roeck <groeck@google.com> wrote:
->
-> On Tue, Feb 15, 2022 at 9:13 AM Dave Hansen <dave.hansen@intel.com> wrote:
-> >
-> > On 2/15/22 07:36, Brian Geffon wrote:
-> > > There are two issues with PKRU handling prior to 5.13.
-> >
-> > Are you sure both of these issues were introduced by 0cecca9d03c?  I'm
-> > surprised that the get_xsave_addr() issue is not older.
-> >
-> > Should this be two patches?
-> >
-> > > The first is that when eagerly switching PKRU we check that current
-> >
-> > Don't forget to write in imperative mood.  No "we's", please.
-> >
-> > https://www.kernel.org/doc/html/latest/process/maintainer-tip.html
-> >
-> > This goes for changelogs and comments too.
-> >
-> > > is not a kernel thread as kernel threads will never use PKRU. It's
-> > > possible that this_cpu_read_stable() on current_task (ie.
-> > > get_current()) is returning an old cached value. By forcing the read
-> > > with this_cpu_read() the correct task is used. Without this it's
-> > > possible when switching from a kernel thread to a userspace thread
-> > > that we'll still observe the PF_KTHREAD flag and never restore the
-> > > PKRU. And as a result this issue only occurs when switching from a
-> > > kernel thread to a userspace thread, switching from a non kernel
-> > > thread works perfectly fine because all we consider in that situation
-> > > is the flags from some other non kernel task and the next fpu is
-> > > passed in to switch_fpu_finish().
-> >
-> > It makes *sense* that there would be a place in the context switch code
-> > where 'current' is wonky, but I never realized this.  This seems really
-> > fragile, but *also* trivially detectable.
-> >
-> > Is the PKRU code really the only code to use 'current' in a buggy way
-> > like this?
-> >
-> > > The second issue is when using write_pkru() we only write to the
-> > > xstate when the feature bit is set because get_xsave_addr() returns
-> > > NULL when the feature bit is not set. This is problematic as the CPU
-> > > is free to clear the feature bit when it observes the xstate in the
-> > > init state, this behavior seems to be documented a few places throughout
-> > > the kernel. If the bit was cleared then in write_pkru() we would happily
-> > > write to PKRU without ever updating the xstate, and the FPU restore on
-> > > return to userspace would load the old value agian.
-> >
-> >
-> >                                                 ^ again
-> >
-> > It's probably worth noting that the AMD init tracker is a lot more
-> > aggressive than Intel's.  On Intel, I think XRSTOR is the only way to
-> > get back to the init state.  You're obviously hitting this on AMD.
-> >
->
-> Brian should correct me here, but I think we have seen this with one
-> specific Intel CPU.
->
-> Brian, would it make sense to list the affected CPU model(s), or at
-> least the ones where we have observed the problem ?
+On Tue, 15 Feb 2022, Matthew Wilcox wrote:
+> On Mon, Feb 14, 2022 at 06:26:39PM -0800, Hugh Dickins wrote:
+> > Add vma argument to mlock_vma_page() and munlock_vma_page(), make them
+> > inline functions which check (vma->vm_flags & VM_LOCKED) before calling
+> > mlock_page() and munlock_page() in mm/mlock.c.
+> > 
+> > Add bool compound to mlock_vma_page() and munlock_vma_page(): this is
+> > because we have understandable difficulty in accounting pte maps of THPs,
+> > and if passed a PageHead page, mlock_page() and munlock_page() cannot
+> > tell whether it's a pmd map to be counted or a pte map to be ignored.
+> > 
+> [...]
+> > 
+> > Mlock accounting on THPs has been hard to define, differed between anon
+> > and file, involved PageDoubleMap in some places and not others, required
+> > clear_page_mlock() at some points.  Keep it simple now: just count the
+> > pmds and ignore the ptes, there is no reason for ptes to undo pmd mlocks.
+> 
+> How would you suggest we handle the accounting for folios which are
+> intermediate in size between PMDs and PTEs?  eg, an order-4 page?
+> Would it make sense to increment mlock_count by HUGE_PMD_NR for
+> each PMD mapping and by 1 for each PTE mapping?
 
-The only CPU I have access to at the moment with OSPKE is an 11th Gen
-Core i5-1135G7, so that's the only one I've observed it on. I can try
-to search around for other hardware.
+I think you're asking the wrong question here, but perhaps you've
+already decided there's only one satisfactory answer to the right question.
 
-Brian
+To answer what you've asked: it doesn't matter at all how you count them
+in mlock_count, just so long as they are counted up and down consistently.
+Since it's simplest just to count 1 in mlock_count for each pmd or pte,
+I prefer that (as I did with THPs); but if you prefer to count pmds up
+and down by HUGE_PMD_NR, that works too.
 
->
-> Thanks,
-> Guenter
->
-> > It's also *very* unlikely that PKRU gets back to a value of 0.  I think
-> > we added a selftest for this case in later kernels.
-> >
-> > That helps explain why this bug hung around for so long.
-> >
-> > > diff --git a/arch/x86/include/asm/fpu/internal.h b/arch/x86/include/asm/fpu/internal.h
-> > > index 03b3de491b5e..540bda5bdd28 100644
-> > > --- a/arch/x86/include/asm/fpu/internal.h
-> > > +++ b/arch/x86/include/asm/fpu/internal.h
-> > > @@ -598,7 +598,7 @@ static inline void switch_fpu_finish(struct fpu *new_fpu)
-> > >        * PKRU state is switched eagerly because it needs to be valid before we
-> > >        * return to userland e.g. for a copy_to_user() operation.
-> > >        */
-> > > -     if (!(current->flags & PF_KTHREAD)) {
-> > > +     if (!(this_cpu_read(current_task)->flags & PF_KTHREAD)) {
-> >
-> > This really deserves a specific comment.
-> >
-> > >               /*
-> > >                * If the PKRU bit in xsave.header.xfeatures is not set,
-> > >                * then the PKRU component was in init state, which means
-> > > diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-> > > index 9e71bf86d8d0..aa381b530de0 100644
-> > > --- a/arch/x86/include/asm/pgtable.h
-> > > +++ b/arch/x86/include/asm/pgtable.h
-> > > @@ -140,16 +140,22 @@ static inline void write_pkru(u32 pkru)
-> > >       if (!boot_cpu_has(X86_FEATURE_OSPKE))
-> > >               return;
-> > >
-> > > -     pk = get_xsave_addr(&current->thread.fpu.state.xsave, XFEATURE_PKRU);
-> > > -
-> > >       /*
-> > >        * The PKRU value in xstate needs to be in sync with the value that is
-> > >        * written to the CPU. The FPU restore on return to userland would
-> > >        * otherwise load the previous value again.
-> > >        */
-> > >       fpregs_lock();
-> > > -     if (pk)
-> > > -             pk->pkru = pkru;
-> > > +     /*
-> > > +      * The CPU is free to clear the feature bit when the xstate is in the
-> > > +      * init state. For this reason, we need to make sure the feature bit is
-> > > +      * reset when we're explicitly writing to pkru. If we did not then we
-> > > +      * would write to pkru and it would not be saved on a context switch.
-> > > +      */
-> > > +     current->thread.fpu.state.xsave.header.xfeatures |= XFEATURE_MASK_PKRU;
-> >
-> > I don't think we need to describe how the init optimization works again.
-> >  I'm also not sure it's worth mentioning context switches here.  It's a
-> > wider problem than that.  Maybe:
-> >
-> >         /*
-> >          * All fpregs will be XRSTOR'd from this buffer before returning
-> >          * to userspace.  Ensure that XRSTOR does not init PKRU and that
-> >          * get_xsave_addr() will work.
-> >          */
-> >
-> > > +     pk = get_xsave_addr(&current->thread.fpu.state.xsave, XFEATURE_PKRU);
-> > > +     BUG_ON(!pk);
-> >
-> > A BUG_ON() a line before a NULL pointer dereference doesn't tend to do
-> > much good.
-> >
-> > > +     pk->pkru = pkru;
-> > >       __write_pkru(pkru);
-> > >       fpregs_unlock();
-> > >  }
-> >
+Though, reading again, you're asking about a PMD mapping of an order-4
+page?  I don't understand how that could be allowed (except on some
+non-x86 architecture where the page table fits only 16 pages).
+
+The question I thought you should be asking is about how to count them
+in Mlocked.  That's tough; but I take it for granted that you would not
+want per-subpage flags and counts involved (or not unless forced to do
+so by some regression that turns out to matter).  And I think the only
+satisfactory answer is to count the whole compound_nr() as Mlocked
+when any part of it (a single pte, a series of ptes, a pmd) is mlocked;
+and (try to) move folio to Unevictable whenever any part of it is mlocked.
+
+That differs from what Kirill decided for THPs (which I cannot
+confidently describe, but something like count pmd as Mlocked, don't count
+ptes as Mlocked, but uncount pmd if any ptes), and what I simplified it to
+in the mm/munlock series (count pmd as Mlocked, ignore ptes), and will
+tend to show larger numbers for Mlocked than before; but alternatives
+seem unworkable to me.
+
+Hugh
