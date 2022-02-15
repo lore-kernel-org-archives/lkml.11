@@ -2,128 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E9F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A566FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240214AbiBOPbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:31:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46370 "EHLO
+        id S240235AbiBOPbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:31:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240058AbiBOPa0 (ORCPT
+        with ESMTP id S240157AbiBOPaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:30:26 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54F1C0849
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:28:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644938934; x=1676474934;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=CNkkyV8OXoISEdxMr9xw0emMq/NP2qfPJ4QtHLz9mWU=;
-  b=IxWYzCx6q1I45MBnQ0GnLdIJYc0coIsTUjbvI3VuxgqvFY0Qu293Sx5z
-   sY7fbiTzKvgCXl3q+yDl3xGtqoQjZAeJjea91Zu7ETSMkeEg5fpOpw9uF
-   RjCndCKep1WzX2yiRNYVt+Zgr7aZ65VxtvvugUuWkY2C133yVopfeLYhu
-   ttgxT9OS9UJRRaoz9JF7DK2IfJ2LeRPUWz8zFUZ/wDqkYfN16GC4YdQ29
-   V8kK4aoiMTB4vfzOYh3LrYvarZ7VZtmpNARVNgFXSoJpl12qXgpYaNksa
-   NWItk3vl6WIuvDelFLPqJ5Wpi+uu8qANStcyxnaa7fWST47m7HZYHQefF
-   w==;
-IronPort-SDR: nXKiRn6I5wtM0Aid4B0KMR91QqOHjFsXR5wHKJ0YW3JLBCKqHmGKgqH39/TbMShUQvwLnOTh2u
- Ap5iXJe+XReFF5Od34mGEfcq4R5PEKu9MqnDBt3Z3M5vMT0scg5UYIQvOjwMWKKtRIF2TP8B8I
- 6q6t7KOESiGqUzVba+6gjRtJ5e8iQO4vrNSNgQQ3qYdueaYaJyG8d2wSBo2urlLBq4uVb9Uahw
- soC4HQgIz7dGmYsfwUQqbcxJpADJQLYLTtbcb9h23jyo5SmJ7g7N7EHBtMF4wiUPo3tQSBc8UL
- LJBp5zvvz1X1f19aESq++xqS
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="146046829"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Feb 2022 08:28:53 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 15 Feb 2022 08:28:53 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 15 Feb 2022 08:28:48 -0700
-From:   <conor.dooley@microchip.com>
-To:     <aou@eecs.berkeley.edu>, <paul.walmsley@sifive.com>,
-        <palmer@dabbelt.com>, <arnd@arndb.de>, <olof@lixom.net>,
-        <linux-riscv@lists.infradead.org>
-CC:     <robh+dt@kernel.org>, <cyril.jean@microchip.com>,
-        <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
-        <jassisinghbrar@gmail.com>, <j.neuschaefer@gmx.net>,
-        <sfr@canb.auug.org.au>, <damien.lemoal@wdc.com>,
-        <atishp@atishpatra.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>,
-        <claudiu.beznea@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Conor Dooley" <conor.dooley@microchip.com>
-Subject: [PATCH v3 0/1] soc: add microchip polarfire soc system controller
-Date:   Tue, 15 Feb 2022 15:31:53 +0000
-Message-ID: <20220215153153.4136503-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 15 Feb 2022 10:30:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9668BB12DF;
+        Tue, 15 Feb 2022 07:28:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D3E1615D9;
+        Tue, 15 Feb 2022 15:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64517C36AE2;
+        Tue, 15 Feb 2022 15:28:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644938930;
+        bh=7/S17zKKZcRI0PTGG5WL6TzosOzrdPRFquTzATca4EI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Smw+CSe9/Ugu32kgdLdtTBTdTnBMvCvcPurTivm0sPj6Mhitm4yF257/OGjXZW/NX
+         gScMeUVPS7wnlXck3dHGTzRjSGwwu86we7tKW6iEb7Ic4HP3hpE+C+Hn9bK5Hym1fr
+         Zy14BPPD1YGgQwxPvSxUYyBD1HnPkg+ju2M9TaKGTBbreMVvwICX491igHvbaFct0+
+         DkQxm0sjHvoyEloydbvARn3B2zggnBwHltwTvdrLMNhrXl3w5eLlf48B66IKbr20Sd
+         TZEI7Gf6PB8Y5c5RPUtLVVcXZBZQuDRxib7kiEY4089B0Kd6urU4tWCaP4fh21n75/
+         EIpBotF1Xh8ng==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Florian Westphal <fw@strlen.de>,
+        Vivek Thrivikraman <vivek.thrivikraman@est.tech>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        davem@davemloft.net, kuba@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 09/33] netfilter: conntrack: don't refresh sctp entries in closed state
+Date:   Tue, 15 Feb 2022 10:28:07 -0500
+Message-Id: <20220215152831.580780-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215152831.580780-1-sashal@kernel.org>
+References: <20220215152831.580780-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Florian Westphal <fw@strlen.de>
 
-Since I submitted version 1 of this driver, I attempted to upstream
-bindings for devices dependant on the system controller [0]. In that
-process, Rob said that since they were devices with no resources,
-other than a reference to the system controller, the devices should
-not be in the device tree & instead they should be created by the
-system controller (which it now does).
+[ Upstream commit 77b337196a9d87f3d6bb9b07c0436ecafbffda1e ]
 
-Since the sub devices using mpfs_sys_controller_get will now have the
-system controller as their parent, this function now just checks if the
-parent device is compatible. If the parent is compatible, the sub-
-device then attempts to register as a consumer of the system controller
+Vivek Thrivikraman reported:
+ An SCTP server application which is accessed continuously by client
+ application.
+ When the session disconnects the client retries to establish a connection.
+ After restart of SCTP server application the session is not established
+ because of stale conntrack entry with connection state CLOSED as below.
 
-@Arnd Hopefully this clears up the issues you had with reference
-counting & the lack of checks as to whether the device found by
-mpfs_sys_controller_get was in fact a system controller.
+ (removing this entry manually established new connection):
 
-Depends on [0] to change the compatible string in the dt-binding.
-Thanks,
-Conor.
+ sctp 9 CLOSED src=10.141.189.233 [..]  [ASSURED]
 
-Changes since v2:
-- system controller is no longer an mfd, system controller now creates
-  sub devices for itself.
-- specify that a mpfs_mss_msg is used in mpfs_blocking_transaction
-  rather than using a void pointer.
-- as the subdevices are now all created by the system controller, the
-  get() function now checks that the requesting device's parent is
-  compatible.
-- mpfs_sys_controller_get now passes a pointer to the device that is
-  trying to register as a consumer rather than a device node.
+Just skip timeout update of closed entries, we don't want them to
+stay around forever.
 
-Changes since v1:
-- system controller is now an mfd
-- parentage is now used to get the device node on the system controller
-- mpfs_sys_controller_get() now updates the reference count
-- "polarfire-soc" in compat string changed to "mpfs"
+Reported-and-tested-by: Vivek Thrivikraman <vivek.thrivikraman@est.tech>
+Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1579
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/netfilter/nf_conntrack_proto_sctp.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-[0] https://lore.kernel.org/linux-riscv/20220214135840.168236-1-conor.dooley@microchip.com/
-
-Conor Dooley (1):
-  soc: add microchip polarfire soc system controller
-
- drivers/soc/Kconfig                         |   1 +
- drivers/soc/Makefile                        |   1 +
- drivers/soc/microchip/Kconfig               |  10 +
- drivers/soc/microchip/Makefile              |   1 +
- drivers/soc/microchip/mpfs-sys-controller.c | 194 ++++++++++++++++++++
- include/soc/microchip/mpfs.h                |   4 +-
- 6 files changed, 209 insertions(+), 2 deletions(-)
- create mode 100644 drivers/soc/microchip/Kconfig
- create mode 100644 drivers/soc/microchip/Makefile
- create mode 100644 drivers/soc/microchip/mpfs-sys-controller.c
-
+diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
+index 2394238d01c91..5a936334b517a 100644
+--- a/net/netfilter/nf_conntrack_proto_sctp.c
++++ b/net/netfilter/nf_conntrack_proto_sctp.c
+@@ -489,6 +489,15 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
+ 			pr_debug("Setting vtag %x for dir %d\n",
+ 				 ih->init_tag, !dir);
+ 			ct->proto.sctp.vtag[!dir] = ih->init_tag;
++
++			/* don't renew timeout on init retransmit so
++			 * port reuse by client or NAT middlebox cannot
++			 * keep entry alive indefinitely (incl. nat info).
++			 */
++			if (new_state == SCTP_CONNTRACK_CLOSED &&
++			    old_state == SCTP_CONNTRACK_CLOSED &&
++			    nf_ct_is_confirmed(ct))
++				ignore = true;
+ 		}
+ 
+ 		ct->proto.sctp.state = new_state;
 -- 
-2.35.1
+2.34.1
 
