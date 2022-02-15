@@ -2,144 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A31DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:30:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F57DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238637AbiBOOag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:30:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51500 "EHLO
+        id S238650AbiBOOap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:30:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238639AbiBOOac (ORCPT
+        with ESMTP id S238656AbiBOOam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:30:32 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5C06EEA7C
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:30:14 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6EACD1396;
-        Tue, 15 Feb 2022 06:30:14 -0800 (PST)
-Received: from [10.1.28.155] (e127744.cambridge.arm.com [10.1.28.155])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2B0153F718;
-        Tue, 15 Feb 2022 06:30:13 -0800 (PST)
-Subject: Re: [RFC PATCH 1/2] perf: arm_spe: Fix consistency of PMSCR register
- bit CX
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        will@kernel.org, mark.rutland@arm.com, james.clark@arm.com
-References: <20220117124432.3119132-1-german.gomez@arm.com>
- <20220117124432.3119132-2-german.gomez@arm.com>
- <20220205153940.GB391033@leoy-ThinkPad-X240s>
- <4d5951ee-d7d2-1e76-eb24-5f3c46d1662c@arm.com>
- <20220208130047.GA273989@leoy-ThinkPad-X240s>
- <e68839bc-b4f0-1fe8-1748-484254ded37a@arm.com>
- <20220211104528.GA475776@leoy-ThinkPad-X240s>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <d59e99ad-dfc6-27ee-d952-7455d8e9fda6@arm.com>
-Date:   Tue, 15 Feb 2022 14:29:27 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 15 Feb 2022 09:30:42 -0500
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7835EEA73;
+        Tue, 15 Feb 2022 06:30:30 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id o23so1450384oie.10;
+        Tue, 15 Feb 2022 06:30:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=o8JsroBWHtIyrUhOn7dBaIXgVTUEl2NPmoZI9J5M7E4=;
+        b=ifEIW3QyLIEZKOFGn1FWXIry5z0Qay9I8omD8m3/vwpHfFyn/gHzJv/UwFDjNCbHOy
+         VO3/TxAvNOcLKNwOW0g44qaSAg/Y0X5hIzOy7p7RUsGHVxqxXpvGFhUpuCLGL7Ikt5kO
+         hEfNdVggmT/piyRxBhNbeFU5rcnpi/lJyv2rpYOPfmCLvd1ECK58o9Xb1bQnNW4aAg7P
+         494In7Sosgo8F9jjLzFOZ712RSjGjA1/FgazyRROU/nZMfqB+/0rNDUcFqwjFZWZEG4W
+         jCfhjvBgm6/lCZrdin3d84fC/Py4V3LOgv8HO0S/0r4087uvBxOidGkL7nTntuywYh9Q
+         N+QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=o8JsroBWHtIyrUhOn7dBaIXgVTUEl2NPmoZI9J5M7E4=;
+        b=2Nj5K7/8asei1ur660gNBe2kKEc21hMwTk9k7wQhGLqhLjacXU7hQ9/C4FjlRay2hp
+         OqEDB5Jr5xh62nYhKOR53FKn74aaBTWK2/Biid8vpzLFgC/bYUnBSLsp8hotVYk2kbUZ
+         ZTglIojYxXn0n55cl5BQxtPCsZ0ed85V+nognISragvX9z1cVrHDGct1xzxD69DrfirC
+         4iKI8ptRWxQbpb0A5c2U+kpBaWZ4f7s2UhfuT5Ksa1FwzZfJL1SFJ3ehS134ryW2O1Ci
+         8NR2cjqqFpsOGT6ulB2vQTSSyzybHJHxg9DhbiqfqG0jvFc5CkzwgYdksyBFhQf2ZJg7
+         1tDw==
+X-Gm-Message-State: AOAM531oxvgv97kjVNkgrM+saIvxXOD+4Bl930RBc5tacmv+ezvhUGDM
+        V3F6U6hXwxlX0sgWGgYb6ns=
+X-Google-Smtp-Source: ABdhPJwgF72oQR19E3uWYYaiJfKoD2vkjQwg+o0A+S/ZSkYjnRF039u9W2p4p8TBAT9ywgIuTXH7OQ==
+X-Received: by 2002:a05:6808:1644:b0:2cd:6d80:9af1 with SMTP id az4-20020a056808164400b002cd6d809af1mr1709630oib.138.1644935429995;
+        Tue, 15 Feb 2022 06:30:29 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id l1sm13761263otd.18.2022.02.15.06.30.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 06:30:29 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <489b76f9-fbaf-dae0-c90d-c52ee0de92a4@roeck-us.net>
+Date:   Tue, 15 Feb 2022 06:30:26 -0800
 MIME-Version: 1.0
-In-Reply-To: <20220211104528.GA475776@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
 Content-Language: en-US
+To:     Alexander Sverdlin <alexander.sverdlin@nokia.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Matija Glavinic-Pecotic <matija.glavinic-pecotic.ext@nokia.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Krzysztof Adamski <krzysztof.adamski@nokia.com>,
+        linux-efi@vger.kernel.org
+References: <YfP0osb45uJldtM9@localhost.localdomain>
+ <YfQTZTUNaeGi+8tG@FVFF77S0Q05N> <YfRorCpk0seVGI+5@localhost.localdomain>
+ <Yfk8hQB1eon7oeYU@FVFF77S0Q05N>
+ <79bcce92-abb2-4c3e-7193-d18e144da8a0@nokia.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2] arm64: move efi_reboot to restart handler
+In-Reply-To: <79bcce92-abb2-4c3e-7193-d18e144da8a0@nokia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2/15/22 00:44, Alexander Sverdlin wrote:
+> Hello Mark, Ard,
+> 
+> On 01/02/2022 14:58, Mark Rutland wrote:
+>>> You could argue that restart handlers were not created for that but they
+>>> suit this purpose ideally and it wouldn't make much sense (in my
+>>> opinion) to add yet another notifier chain that would run before reset
+>>> notifiers, for code that is not supposed to reset the whole system and
+>>> this is exacly what I would have to do if efi_reboot() is forced to be
+>>> called before all handlers.
+>>
+>> As above, I think that's just using the wrong interface, and the reboot
+>> notifier mechanism *already* exists, so I'm really confused here.
+>>
+>> Have I misunderstood what you're trying to achieve?
+>>
+>> Is there some problem with the reboot notifier mechanism that I am unaware of?
+>> e.g. do we bypass them in some case where you think they're needed?
+>>
+>> Are you simply unaware of reboot notifiers?
+> 
+> Could you please check the simple case of pwrseq_emmc.c?
+> 
+> While that's currently the only example of this kind upstream I can imagine
+> further use-cases, especially in storage area like above.
+> 
+> Would you suggest it's illegal usage of register_restart_handler()?
+> Do we need to fix pwrseq_emmc.c by introducing new atomic notifier chain
+> which will be called before restart handlers, so that it works on
+> emergency_restart()?
+> 
 
-On 11/02/2022 10:45, Leo Yan wrote:
-> Hi German,
->
-> On Thu, Feb 10, 2022 at 05:23:50PM +0000, German Gomez wrote:
->
-> [...]
->
->>>>>> One way to fix this is by caching the value of the CX bit during the
->>>>>> initialization of the PMU event, so that it remains consistent for the
->>>>>> duration of the session.
->>>>>>
->>>>>> [...]
->>> So the patch makes sense to me.  Just a minor comment:
->>>
->>> Here we can define a u64 for recording pmscr value rather than a
->>> bool value.
->>>
->>> struct arm_spe_pmu {
->>>     ...
->>>     u64 pmscr;
->>> };
->> I agree with the comment from Will that it makes more sense to store the
->> value of the register in the perf_event somehow (due to misunderstanding
->> from my side, I thought arm_spe_pmu struct was local to the session).
-> It's shame that I miss this point :) As you said, struct arm_spe_pmu is
-> a data structure for Arm SPE device driver instance and it's not
-> allocated for perf session.
->
->> What about perf_event's void *pmu_private?
-> Before we use perf_event::pmu_private, could you check the data
-> structure arm_spe_pmu_buf firstly?  This data structure is allocated
-> when setup AUX ring buffer (so it's allocated for perf session).
-> IIUC, the function arm_spe_pmu_setup_aux() will be invoked in the perf
-> process, so it's good for us to initialize pmscr in this function.
-Thanks for the suggestion. I recorded the following stacktrace:
+Abuse isn't just about using an API for something it isn't originally intended
+for, abuse is also to intentionally _not_ use an API, as it is currently done
+by the EFI restart code for arm64. Also, keep in mind that the same argument
+(our restart handler _must_ be executed under all circumstances and does therefore
+not use the restart API) is likely going to be used again in the future. All
+it takes is for some other standard (or chip vendor, for that matter) to declare
+their restart handler mandatory if present. That means there will be other
+non-users of the restart API in the future, and you simply can not rely on it
+being used. That was clearly not the intention of the restart API - quite the
+opposite - but it is what it is.
 
- perf-323841 [052] d.... 3996.528812: arm_spe_pmu_setup_aux: (arm_spe_pmu_setup_aux+0x60/0x1c0 [arm_spe_pmu])
- perf-323841 [052] d.... 3996.528813: <stack trace>
- => kprobe_dispatcher
- => kprobe_breakpoint_handler
- => call_break_hook
- => brk_handler
- => do_debug_exception
- => el1_dbg
- => el1h_64_sync_handler
- => el1h_64_sync
- => arm_spe_pmu_setup_aux
- => perf_mmap
- => mmap_region
- => do_mmap
- => vm_mmap_pgoff
- => ksys_mmap_pgoff
- => __arm64_sys_mmap
- => invoke_syscall
- => el0_svc_common.constprop.0
- => do_el0_svc
- => el0_svc
- => el0t_64_sync_handler
- => el0t_64_sync
+Given that, I'd suggest to cut your losses and try to find another solution
+for your problem. That may be to introduce yet another API, one that is called
+before the EFI restart handling but that is always called, unlike reboot
+notifiers, or simply stick with out-of-tree code.
 
-So for a v2 I may include something like this:
-
-diff --git a/drivers/perf/arm_spe_pmu.c b/drivers/perf/arm_spe_pmu.c
-index d44bcc29d..aadec5a0e 100644
---- a/drivers/perf/arm_spe_pmu.c
-+++ b/drivers/perf/arm_spe_pmu.c
-@@ -45,6 +45,7 @@ struct arm_spe_pmu_buf {
-     int                    nr_pages;
-     bool                    snapshot;
-     void                    *base;
-+    u64                    pmscr;
- };
- 
- struct arm_spe_pmu {
-@@ -748,7 +749,7 @@ static void arm_spe_pmu_start(struct perf_event *event, int flags)
-         write_sysreg_s(reg, SYS_PMSICR_EL1);
-     }
- 
--    reg = arm_spe_event_to_pmscr(event);
-+    reg = ((struct arm_spe_pmu_buf *) perf_get_aux(handle))->pmscr;
-     isb();
-     write_sysreg_s(reg, SYS_PMSCR_EL1);
- }
-@@ -855,6 +856,8 @@ static void *arm_spe_pmu_setup_aux(struct perf_event *event, void **pages,
-     if (!pglist)
-         goto out_free_buf;
- 
-+    buf->pmscr = arm_spe_event_to_pmscr(event);
-+
-     for (i = 0; i < nr_pages; ++i)
-         pglist[i] = virt_to_page(pages[i]);
-
->
-> Thanks,
-> Leo
+Guenter
