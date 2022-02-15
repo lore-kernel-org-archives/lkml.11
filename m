@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240582AbiBOPef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:34:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41092 "EHLO
+        id S240593AbiBOPeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:34:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240419AbiBOPct (ORCPT
+        with ESMTP id S240435AbiBOPdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:32:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62207120F54;
-        Tue, 15 Feb 2022 07:30:07 -0800 (PST)
+        Tue, 15 Feb 2022 10:33:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB633124C18;
+        Tue, 15 Feb 2022 07:30:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F23CB6167E;
-        Tue, 15 Feb 2022 15:30:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 292D6C36AE9;
-        Tue, 15 Feb 2022 15:30:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AE1CB8185B;
+        Tue, 15 Feb 2022 15:30:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5E2BC340EB;
+        Tue, 15 Feb 2022 15:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939006;
-        bh=IN67m1B3ZHGoI5hJjuFTOuQe6kviWvaaiA1kqxlzm1w=;
+        s=k20201202; t=1644939025;
+        bh=yuq7N6KXFH+m2wC+MZgvdB7GI5U4Ag5FX7Z/OFPQx8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dwDQXcMU6eDQgkW0sALoD4AJL7X9JWTtEK0lQEC9jtVuHVWlUWzb5gV8F3YMu6gJI
-         etCaLXG1yMZAS5uT801TAmXeDTaTXxHXxFh3sNSYdEc5eiL+egGCUb8vefKuIfkys1
-         iYceBNIhXmiwvnMsfvLb+x0KZoxI0a9KbTKjPg/Lisq3UH0P9dKshQKLDsw4OUp9w1
-         XrEkT42t1ITV6Po16MQghYCv6zni5QnhXqks76rbjSBA6aXya9bN3gfDcIPafiK378
-         LxXkRsSHxliHA8opB00BiOVpPOuLHpnQ70co2IM+RZzIet4kBLMvBv/S1/a1GOIdMT
-         M0hVfxj0cr0Cw==
+        b=Z4nb+gYmForXbFbDuw5GRHKqCbyg9ZK24glTqiA8c3oO9qswvr+cmKbtuzkxmkUNr
+         vcNNd/hD9HCHc1Va4pSc1DUzTDOVXtp8QK6upyYPi/RtmPTvSfxSsVv+O74I6ZX8c+
+         LlcGU8afbO1iGN4dVi1zZWQHAKA+z9SVdGHKc3gF2WVydHd0q+vOpoUQd3cik/VkMv
+         f6H3iNSmzm8Y4vEGjjxvvDD4Ot6eBNB5sxd6OFdJskURLHjty2SVTxojIf+faEkCgV
+         5khOnTtT3QMkruh0BETNwNxMtLIkw7oDa62zMlnxnQ4lNtLKU1+KccAaHYWvwxj//P
+         /ieATCodpb8JA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guo Ren <guoren@linux.alibaba.com>,
-        Anup Patel <anup@brainfault.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>, paul.walmsley@sifive.com,
-        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 05/23] irqchip/sifive-plic: Add missing thead,c900-plic match string
-Date:   Tue, 15 Feb 2022 10:29:39 -0500
-Message-Id: <20220215152957.581303-5-sashal@kernel.org>
+Cc:     Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Iwona Winiarska <iwona.winiarska@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        chiawei_wang@aspeedtech.com, yangyingliang@huawei.com,
+        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.10 16/23] soc: aspeed: lpc-ctrl: Block error printing on probe defer cases
+Date:   Tue, 15 Feb 2022 10:29:50 -0500
+Message-Id: <20220215152957.581303-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152957.581303-1-sashal@kernel.org>
 References: <20220215152957.581303-1-sashal@kernel.org>
@@ -56,47 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
 
-[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
+[ Upstream commit 301a5d3ad2432d7829f59432ca0a93a6defbb9a1 ]
 
-The thead,c900-plic has been used in opensbi to distinguish
-PLIC [1]. Although PLICs have the same behaviors in Linux,
-they are different hardware with some custom initializing in
-firmware(opensbi).
+Add a checking code when it gets -EPROBE_DEFER while getting a clock
+resource. In this case, it doesn't need to print out an error message
+because the probing will be re-visited.
 
-Qute opensbi patch commit-msg by Samuel:
-
-  The T-HEAD PLIC implementation requires setting a delegation bit
-  to allow access from S-mode. Now that the T-HEAD PLIC has its own
-  compatible string, set this bit automatically from the PLIC driver,
-  instead of reaching into the PLIC's MMIO space from another driver.
-
-[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
-
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Cc: Anup Patel <anup@brainfault.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Samuel Holland <samuel@sholland.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
+Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Reviewed-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Link: https://lore.kernel.org/r/20211104173709.222912-1-jae.hyun.yoo@intel.com
+Link: https://lore.kernel.org/r/20220201070118.196372-1-joel@jms.id.au'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-sifive-plic.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/soc/aspeed/aspeed-lpc-ctrl.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
-index 926e55d838cb1..bd99ee0ae433d 100644
---- a/drivers/irqchip/irq-sifive-plic.c
-+++ b/drivers/irqchip/irq-sifive-plic.c
-@@ -400,3 +400,4 @@ static int __init plic_init(struct device_node *node,
+diff --git a/drivers/soc/aspeed/aspeed-lpc-ctrl.c b/drivers/soc/aspeed/aspeed-lpc-ctrl.c
+index 040c7dc1d4792..71b555c715d2e 100644
+--- a/drivers/soc/aspeed/aspeed-lpc-ctrl.c
++++ b/drivers/soc/aspeed/aspeed-lpc-ctrl.c
+@@ -251,10 +251,9 @@ static int aspeed_lpc_ctrl_probe(struct platform_device *pdev)
+ 	}
  
- IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
- IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
-+IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
+ 	lpc_ctrl->clk = devm_clk_get(dev, NULL);
+-	if (IS_ERR(lpc_ctrl->clk)) {
+-		dev_err(dev, "couldn't get clock\n");
+-		return PTR_ERR(lpc_ctrl->clk);
+-	}
++	if (IS_ERR(lpc_ctrl->clk))
++		return dev_err_probe(dev, PTR_ERR(lpc_ctrl->clk),
++				     "couldn't get clock\n");
+ 	rc = clk_prepare_enable(lpc_ctrl->clk);
+ 	if (rc) {
+ 		dev_err(dev, "couldn't enable clock\n");
 -- 
 2.34.1
 
