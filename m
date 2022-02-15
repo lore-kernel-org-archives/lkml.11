@@ -2,180 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5B9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEFAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234524AbiBOGff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 01:35:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46994 "EHLO
+        id S233297AbiBOGft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 01:35:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233731AbiBOGfe (ORCPT
+        with ESMTP id S234572AbiBOGfo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 01:35:34 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E16DB16C9;
-        Mon, 14 Feb 2022 22:35:23 -0800 (PST)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JyWSN6srjz1FCsp;
-        Tue, 15 Feb 2022 14:31:00 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
- (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 15 Feb
- 2022 14:35:20 +0800
-From:   Baokun Li <libaokun1@huawei.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>,
-        <oliver.sang@intel.com>, <beibei.si@intel.com>, <jannh@google.com>,
-        <mszeredi@redhat.com>, <torvalds@linux-foundation.org>,
-        <libaokun1@huawei.com>, <yukuai3@huawei.com>
-Subject: [PATCH 5.10] fget: clarify and improve __fget_files() implementation
-Date:   Tue, 15 Feb 2022 14:51:07 +0800
-Message-ID: <20220215065107.3045023-1-libaokun1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 15 Feb 2022 01:35:44 -0500
+Received: from ni.piap.pl (ni.piap.pl [195.187.100.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7255FB152C;
+        Mon, 14 Feb 2022 22:35:31 -0800 (PST)
+Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
+        by ni.piap.pl (Postfix) with ESMTPSA id 12541C3F2A51;
+        Tue, 15 Feb 2022 07:35:29 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 12541C3F2A51
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
+        t=1644906929; bh=c5b+LcvuGmpR0VUI74j1aAULUejbVi0ii7vQKTAYMwE=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=iQEABUQoh9Dbxeg1eolGietOPCW+nkb0hUE+Dj/adG9m+mVzjJs/d7mGxhLxPAEWQ
+         orCvf1iycDOJ7Bxhvze/1ZCXDuLwKTTW+KiE0rqysmMab9KmxWwgZ+hNskZrZMm1Op
+         VT5+9rD1Xl028mBIqxtm94ziOOIdbHs3/Xjf+np0=
+From:   =?utf-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Koen Vandeputte <koen.vandeputte@citymesh.com>,
+        Dexuan Cui <dexuan.linux@gmail.com>
+Subject: Re: PCI: Race condition in pci_create_sysfs_dev_files (can't boot)
+References: <20220208234023.GA505306@bhelgaas>
+Sender: khalasa@piap.pl
+Date:   Tue, 15 Feb 2022 07:35:28 +0100
+In-Reply-To: <20220208234023.GA505306@bhelgaas> (Bjorn Helgaas's message of
+        "Tue, 8 Feb 2022 17:40:23 -0600")
+Message-ID: <m3czjovdqn.fsf@t19.piap.pl>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-KLMS-Rule-ID: 3
+X-KLMS-Message-Action: skipped
+X-KLMS-AntiSpam-Status: not scanned, whitelist
+X-KLMS-AntiPhishing: not scanned, whitelist
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, not scanned, whitelist
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+Hi Bjorn,
 
-commit e386dfc56f837da66d00a078e5314bc8382fab83 upstream.
+Bjorn Helgaas <helgaas@kernel.org> writes:
 
-Commit 054aa8d439b9 ("fget: check that the fd still exists after getting
-a ref to it") fixed a race with getting a reference to a file just as it
-was being closed.  It was a fairly minimal patch, and I didn't think
-re-checking the file pointer lookup would be a measurable overhead,
-since it was all right there and cached.
+> Koen collected some interesting logs at
+> https://lore.kernel.org/all/cd4812f0-1de3-0582-936c-ba30906595af@citymesh=
+.com/
+> They're from v5.10, which was before all of Krzysztof W's nice work
+> converting to static attributes, but Koen's log shows the error
+> happening in the pci_sysfs_init() initcall, which is *after*
+> imx6_pcie_probe():
+>
+>   imx6_pcie_probe                # probably device initcall (level 6)
+>     ...
+>       pci_create_sysfs_dev_files
+>
+>   pci_sysfs_init                 # late initcall (level 7)
+>     pci_create_sysfs_dev_files
+>       "sysfs: cannot create duplicate filename"
 
-But I was wrong, as pointed out by the kernel test robot.
+Well, imx6_pcie_probe() is called indirectly by
+platform_driver_register(). I guess it doesn't know about the initcall
+ordering, after it's registered.
 
-The 'poll2' case of the will-it-scale.per_thread_ops benchmark regressed
-quite noticeably.  Admittedly it seems to be a very artificial test:
-doing "poll()" system calls on regular files in a very tight loop in
-multiple threads.
+It looks like the problem is the imx6_pcie_probe() (via
+dw_pcie_host_init() -> pci_host_probe()) is interfering with
+pci_sysfs_init(). This may eventually cause some invalid memory access
+as well.
 
-That means that basically all the time is spent just looking up file
-descriptors without ever doing anything useful with them (not that doing
-'poll()' on a regular file is useful to begin with).  And as a result it
-shows the extra "re-check fd" cost as a sore thumb.
+BTW I thought for a moment that maybe 5.14 is free from this. I was
+wrong. The problem doesn't manifest itself on my custom i.MX6 device
+(using Tinyrex CPU module from Voipac/Fedevel, perhaps because I don't
+use any PCI devices there). It does on Ventana SBC from Gateworks,
+though. BTW the above (and below) is v5.16.
 
-Happily, the regression is fixable by just writing the code to loook up
-the fd to be better and clearer.  There's still a cost to verify the
-file pointer, but now it's basically in the noise even for that
-benchmark that does nothing else - and the code is more understandable
-and has better comments too.
+It goes like this:
+[0.096212] do_initcall_level: 6
+[0.105625] imx6_pcie_init
+[0.106106] imx6_pcie_probe       <<<<<<<<<<<<<<<<<<<<<
+[0.106412] imx6q-pcie 1ffc000.pcie: host bridge /soc/pcie@1ffc000 ranges:
 
-[ Side note: this patch is also a classic case of one that looks very
-  messy with the default greedy Myers diff - it's much more legible with
-  either the patience of histogram diff algorithm ]
+[0.322613] imx6q-pcie 1ffc000.pcie: Link up
+[0.322776] imx6q-pcie 1ffc000.pcie: PCI host bridge to bus 0000:00
+[0.322790] pci_bus 0000:00: root bus resource [bus 00-ff]
 
-Link: https://lore.kernel.org/lkml/20211210053743.GA36420@xsang-OptiPlex-9020/
-Link: https://lore.kernel.org/lkml/20211213083154.GA20853@linux.intel.com/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Tested-by: Carel Si <beibei.si@intel.com>
-Cc: Jann Horn <jannh@google.com>
-Cc: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
----
- fs/file.c | 72 ++++++++++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 56 insertions(+), 16 deletions(-)
+[0.405251] do_initcall_level: 6 ENDs but imx6_pcie_probe() still active
+[0.405262] do_initcall_level: 7
 
-diff --git a/fs/file.c b/fs/file.c
-index 9d02352fa18c..79a76d04c7c3 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -817,28 +817,68 @@ void do_close_on_exec(struct files_struct *files)
- 	spin_unlock(&files->file_lock);
- }
- 
--static struct file *__fget_files(struct files_struct *files, unsigned int fd,
--				 fmode_t mask, unsigned int refs)
-+static inline struct file *__fget_files_rcu(struct files_struct *files,
-+	unsigned int fd, fmode_t mask, unsigned int refs)
- {
--	struct file *file;
-+	for (;;) {
-+		struct file *file;
-+		struct fdtable *fdt = rcu_dereference_raw(files->fdt);
-+		struct file __rcu **fdentry;
- 
--	rcu_read_lock();
--loop:
--	file = fcheck_files(files, fd);
--	if (file) {
--		/* File object ref couldn't be taken.
--		 * dup2() atomicity guarantee is the reason
--		 * we loop to catch the new file (or NULL pointer)
-+		if (unlikely(fd >= fdt->max_fds))
-+			return NULL;
-+
-+		fdentry = fdt->fd + array_index_nospec(fd, fdt->max_fds);
-+		file = rcu_dereference_raw(*fdentry);
-+		if (unlikely(!file))
-+			return NULL;
-+
-+		if (unlikely(file->f_mode & mask))
-+			return NULL;
-+
-+		/*
-+		 * Ok, we have a file pointer. However, because we do
-+		 * this all locklessly under RCU, we may be racing with
-+		 * that file being closed.
-+		 *
-+		 * Such a race can take two forms:
-+		 *
-+		 *  (a) the file ref already went down to zero,
-+		 *      and get_file_rcu_many() fails. Just try
-+		 *      again:
- 		 */
--		if (file->f_mode & mask)
--			file = NULL;
--		else if (!get_file_rcu_many(file, refs))
--			goto loop;
--		else if (__fcheck_files(files, fd) != file) {
-+		if (unlikely(!get_file_rcu_many(file, refs)))
-+			continue;
-+
-+		/*
-+		 *  (b) the file table entry has changed under us.
-+		 *       Note that we don't need to re-check the 'fdt->fd'
-+		 *       pointer having changed, because it always goes
-+		 *       hand-in-hand with 'fdt'.
-+		 *
-+		 * If so, we need to put our refs and try again.
-+		 */
-+		if (unlikely(rcu_dereference_raw(files->fdt) != fdt) ||
-+		    unlikely(rcu_dereference_raw(*fdentry) != file)) {
- 			fput_many(file, refs);
--			goto loop;
-+			continue;
- 		}
-+
-+		/*
-+		 * Ok, we have a ref to the file, and checked that it
-+		 * still exists.
-+		 */
-+		return file;
- 	}
-+}
-+
-+static struct file *__fget_files(struct files_struct *files, unsigned int fd,
-+				 fmode_t mask, unsigned int refs)
-+{
-+	struct file *file;
-+
-+	rcu_read_lock();
-+	file = __fget_files_rcu(files, fd, mask, refs);
- 	rcu_read_unlock();
- 
- 	return file;
--- 
-2.31.1
+[0.410393] pci_sysfs_init        <<<<<<<<<<<<<<<<<<<<<
+[0.410423] pci 0000:00:00.0: pci_create_sysfs_dev_files
 
+[0.410532] [<8068091c>] (pci_create_sysfs_dev_files)
+[0.410551] [<80918710>] (pci_sysfs_init)
+[0.410568] [<8010166c>] (do_one_initcall)
+
+[0.410717] pci_sysfs_init END    <<<<<<<<<<<<<<<<<<<<<
+
+[0.533843] [<803f1c74>] (pci_bus_add_devices)
+[0.533862] [<803f574c>] (pci_host_probe)
+[0.533879] [<80414310>] (dw_pcie_host_init)
+[0.533895] [<80681ac8>] (imx6_pcie_probe)
+[0.533915] [<8045e9e4>] (platform_probe)
+(Repeats multiple times, I guess for each PCI device)
+
+[0.543893] imx6_pcie_probe END   <<<<<<<<<<<<<<<<<<<<<
+
+[0.692244] do_initcall_level: 7 END
+--=20
+Krzysztof "Chris" Ha=C5=82asa
+
+Sie=C4=87 Badawcza =C5=81ukasiewicz
+Przemys=C5=82owy Instytut Automatyki i Pomiar=C3=B3w PIAP
+Al. Jerozolimskie 202, 02-486 Warszawa
