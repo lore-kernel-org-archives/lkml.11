@@ -2,101 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B963C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C056C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:07:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239614AbiBOPHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:07:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38608 "EHLO
+        id S239629AbiBOPHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:07:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236756AbiBOPG6 (ORCPT
+        with ESMTP id S238089AbiBOPHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:06:58 -0500
-X-Greylist: delayed 431 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 07:06:47 PST
-Received: from unicorn.mansr.com (unicorn.mansr.com [IPv6:2001:8b0:ca0d:8d8e::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C8F6384;
-        Tue, 15 Feb 2022 07:06:47 -0800 (PST)
-Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
-        by unicorn.mansr.com (Postfix) with ESMTPS id D195915360;
-        Tue, 15 Feb 2022 14:59:32 +0000 (GMT)
-Received: by raven.mansr.com (Postfix, from userid 51770)
-        id CEC7A219C0A; Tue, 15 Feb 2022 14:59:32 +0000 (GMT)
-From:   Mans Rullgard <mans@mansr.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Juergen Borleis <jbe@pengutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: dsa: lan9303: handle hwaccel VLAN tags
-Date:   Tue, 15 Feb 2022 14:59:13 +0000
-Message-Id: <20220215145913.10694-1-mans@mansr.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 15 Feb 2022 10:07:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89877F6;
+        Tue, 15 Feb 2022 07:07:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2621961545;
+        Tue, 15 Feb 2022 15:07:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 531E0C340EB;
+        Tue, 15 Feb 2022 15:07:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644937641;
+        bh=DnTGqvl5fmkyuT7QiMmF5etuFCDPQuPejculypF4zR8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KMhPySvQsC4weAIAxfHr2zKYI3AGymiL/maKadoaaxofEkJ4D3g1nJH3J8k1uZMB6
+         H608dLngMLgxtDoN7s/vE7P57fTIF66hwNQrGLoiRECkWj2Jbv9GO2t/zEtc1+owWa
+         qFg9MG40OsJjZlRsClHSSjy0j+5rJXHd52Hr22mHQmfxgKYLIKAMa9peuisx5I/WUf
+         8IV3dcqBTQx/6q2is2wMG1wEuF+dpsDNUsWe3p0zlGHJ52c0AUQryuZj2sskpQBXAX
+         6HWXWKEj/Irx6GcylVtLOwWGAt/MIOIA/kwY7zyX9A01hZkTy05dj+QZOSOCA8Z4R1
+         53cmMliKMxOTw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id DBD7D400FE; Tue, 15 Feb 2022 12:07:18 -0300 (-03)
+Date:   Tue, 15 Feb 2022 12:07:18 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     James Clark <james.clark@arm.com>,
+        linux-perf-users@vger.kernel.org, mathieu.poirier@linaro.org,
+        coresight@lists.linaro.org, Mike Leach <mike.leach@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] perf: cs-etm: Fix corrupt inject files when only
+ last branch option is enabled
+Message-ID: <YgvBpvYzAMCGSECj@kernel.org>
+References: <20220210200620.1227232-1-james.clark@arm.com>
+ <20220210200620.1227232-2-james.clark@arm.com>
+ <20220211160516.GD475776@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211160516.GD475776@leoy-ThinkPad-X240s>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check for a hwaccel VLAN tag on rx and use it if present.  Otherwise,
-use __skb_vlan_pop() like the other tag parsers do.  This fixes the case
-where the VLAN tag has already been consumed by the master.
+Em Sat, Feb 12, 2022 at 12:05:16AM +0800, Leo Yan escreveu:
+> On Thu, Feb 10, 2022 at 08:06:20PM +0000, James Clark wrote:
+> > Perf inject with Coresight data generates files that cannot be opened
+> > when only the last branch option is specified:
+> > 
+> >   perf inject -i perf.data --itrace=l -o inject.data
+> >   perf script -i inject.data
+> >   0x33faa8 [0x8]: failed to process type: 9 [Bad address]
+> > 
+> > This is because cs_etm__synth_instruction_sample() is called even when
+> > the sample type for instructions hasn't been setup. Last branch records
+> > are attached to instruction samples so it doesn't make sense to generate
+> > them when --itrace=i isn't specified anyway.
+> > 
+> > This change disables all calls of cs_etm__synth_instruction_sample()
+> > unless --itrace=i is specified, resulting in a file with no samples if
+> > only --itrace=l is provided, rather than a bad file.
+> > 
+> > Signed-off-by: James Clark <james.clark@arm.com>
+> 
+> Reviewed-by: Leo Yan <leo.yan@linaro.org>
 
-Signed-off-by: Mans Rullgard <mans@mansr.com>
----
- net/dsa/tag_lan9303.c | 21 +++++++--------------
- 1 file changed, 7 insertions(+), 14 deletions(-)
+Thanks, applied.
 
-diff --git a/net/dsa/tag_lan9303.c b/net/dsa/tag_lan9303.c
-index cb548188f813..7fe180941ac4 100644
---- a/net/dsa/tag_lan9303.c
-+++ b/net/dsa/tag_lan9303.c
-@@ -77,7 +77,6 @@ static struct sk_buff *lan9303_xmit(struct sk_buff *skb, struct net_device *dev)
+- Arnaldo
+
  
- static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev)
- {
--	__be16 *lan9303_tag;
- 	u16 lan9303_tag1;
- 	unsigned int source_port;
- 
-@@ -87,14 +86,15 @@ static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev)
- 		return NULL;
- 	}
- 
--	lan9303_tag = dsa_etype_header_pos_rx(skb);
--
--	if (lan9303_tag[0] != htons(ETH_P_8021Q)) {
--		dev_warn_ratelimited(&dev->dev, "Dropping packet due to invalid VLAN marker\n");
--		return NULL;
-+	skb_push_rcsum(skb, ETH_HLEN);
-+	if (skb_vlan_tag_present(skb)) {
-+		lan9303_tag1 = skb_vlan_tag_get(skb);
-+		__vlan_hwaccel_clear_tag(skb);
-+	} else {
-+		__skb_vlan_pop(skb, &lan9303_tag1);
- 	}
-+	skb_pull_rcsum(skb, ETH_HLEN);
- 
--	lan9303_tag1 = ntohs(lan9303_tag[1]);
- 	source_port = lan9303_tag1 & 0x3;
- 
- 	skb->dev = dsa_master_find_slave(dev, 0, source_port);
-@@ -103,13 +103,6 @@ static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev)
- 		return NULL;
- 	}
- 
--	/* remove the special VLAN tag between the MAC addresses
--	 * and the current ethertype field.
--	 */
--	skb_pull_rcsum(skb, 2 + 2);
--
--	dsa_strip_etype_header(skb, LAN9303_TAG_LEN);
--
- 	if (!(lan9303_tag1 & LAN9303_TAG_RX_TRAPPED_TO_CPU))
- 		dsa_default_offload_fwd_mark(skb);
- 
+> > ---
+> >  tools/perf/util/cs-etm.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/tools/perf/util/cs-etm.c b/tools/perf/util/cs-etm.c
+> > index 796a065a500e..8b95fb3c4d7b 100644
+> > --- a/tools/perf/util/cs-etm.c
+> > +++ b/tools/perf/util/cs-etm.c
+> > @@ -1553,6 +1553,7 @@ static int cs_etm__flush(struct cs_etm_queue *etmq,
+> >  		goto swap_packet;
+> >  
+> >  	if (etmq->etm->synth_opts.last_branch &&
+> > +	    etmq->etm->synth_opts.instructions &&
+> >  	    tidq->prev_packet->sample_type == CS_ETM_RANGE) {
+> >  		u64 addr;
+> >  
+> > @@ -1610,6 +1611,7 @@ static int cs_etm__end_block(struct cs_etm_queue *etmq,
+> >  	 * the trace.
+> >  	 */
+> >  	if (etmq->etm->synth_opts.last_branch &&
+> > +	    etmq->etm->synth_opts.instructions &&
+> >  	    tidq->prev_packet->sample_type == CS_ETM_RANGE) {
+> >  		u64 addr;
+> >  
+> > -- 
+> > 2.28.0
+> > 
+
 -- 
-2.35.1
 
+- Arnaldo
