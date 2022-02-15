@@ -2,95 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B32FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2D2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233692AbiBOCju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 21:39:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37038 "EHLO
+        id S233695AbiBOCkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 21:40:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiBOCjr (ORCPT
+        with ESMTP id S229924AbiBOCkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 21:39:47 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C9110AED7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:39:38 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id qk11so20838530ejb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:39:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jaryyCy86//dz9qBeVri9T8GTUIyNEYlglAv0ZptOz4=;
-        b=FEzhnt2zAT6+OZcXvJm33uyLiD9WzftgV+IrdJ9vkN4KXk7l0TWXF9J5ZoRYKfiRQf
-         NU8TUebskAjvRuyLeOuQpOdMCIRG5ZRURn8SRN4UVZKtEcEIeiKS3fvZ2EWf8EasUAYW
-         VX7jlJRIvxfphQp7Jez9rdkashnSoxH5UVi3g/44A8e+tpR463sNQThnGpLLoYJ7LFDD
-         VbsFJOTbYZ9LpImUKDeFhMQSwYleZlyFDNKv/S/ZZVc4LGvsLc7plah/hx+UNll9TK7n
-         PsVdW3JVdhpRlz8ReobPRLfijh9k/gey5KhKsWXWozrUlKLt1x7FDQhA+R6PktBH+7zp
-         r7ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jaryyCy86//dz9qBeVri9T8GTUIyNEYlglAv0ZptOz4=;
-        b=6IKMPwe7fmeLW9Y+3zDr4b6Qg8Bp2iC1g5hA3t2JQ+kQeho/eU7DgNkIIwFY6KU3PN
-         UC/ffkuwFFYkTZWt0OO65syWHuJI538LJMZqoGWvnw7yWlpqRQi0BuM/Z5/87BnN85r/
-         YrOrrFiMunAz8KiM9Mo6hh1vJAyKPVjHnteNk9moZjHPMEadSVYrSLMF6AiA8nil7u4j
-         ux6iLicOo2VSMGS42Y65mgBfotP7J+7euFjQaufR4b2hBCO/3AJZEX7JDGTHiHQ/Qvq4
-         i5OO11EDjgOFeV2I+sBUUPfF5SNjDzvc5ZF08AeDfV0Xfq0TzKas4LvxWVSHsWDCwwX4
-         95zw==
-X-Gm-Message-State: AOAM531CFpyvPdfl7GkX8kWnXbLZpGPt6m3lUzasRzvVAqKEnp1CMMzg
-        O/7YN48ZBtSuj4QAk4YLskI4+vIoGqE7MJ1PbY/XIn1H9y/Brw==
-X-Google-Smtp-Source: ABdhPJyxPBm3r3M0pR5LUTGeculiA4q6ITa+Z9MHI2p8eYNxjbLEm1/PlSc8I9cCf9TIigzR7beHjLcvluhKgrlCd8I=
-X-Received: by 2002:a17:906:782:: with SMTP id l2mr1249582ejc.631.1644892776838;
- Mon, 14 Feb 2022 18:39:36 -0800 (PST)
+        Mon, 14 Feb 2022 21:40:14 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB3C10AEE1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:40:05 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JyQG51HZfz8wZv;
+        Tue, 15 Feb 2022 10:36:45 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Feb 2022 10:40:02 +0800
+Subject: Re: [PATCH 2/8] mm/memory-failure.c: avoid walking page table when
+ vma_address() return -EFAULT
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
+CC:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220210141733.1908-1-linmiaohe@huawei.com>
+ <20220210141733.1908-3-linmiaohe@huawei.com> <20220214144826.GB2624914@u2004>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <1c464c41-81f4-fff9-c4e0-45fd4d05e34b@huawei.com>
+Date:   Tue, 15 Feb 2022 10:40:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-References: <20220214184104.1710107-1-dlatypov@google.com>
-In-Reply-To: <20220214184104.1710107-1-dlatypov@google.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Mon, 14 Feb 2022 18:39:25 -0800
-Message-ID: <CAGS_qxomM_mGzvFokZH5dnf7L3kCitB3dWD8JH56fPcDSb6PeA@mail.gmail.com>
-Subject: Re: [PATCH] thunderbolt: test: get running under UML, add kunitconfig
-To:     mika.westerberg@linux.intel.com
-Cc:     brendanhiggins@google.com, davidgow@google.com,
-        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220214144826.GB2624914@u2004>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:41 AM Daniel Latypov <dlatypov@google.com> wrote:
->
-> These tests didn't work under the normal `kunit.py run` command since
-> they require CONFIG_PCI=y, which could not be set on ARCH=um.
->
-> Commit 68f5d3f3b654 ("um: add PCI over virtio emulation driver") lets us
-> do so. To make it so people don't have to figure out how to do so, we
-> add a drivers/thunderbolt/.kunitconfig.
->
-> Can now run these tests using
-> $ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/thunderbolt
->
-> Potentially controversial bits:
-> 1. this .kunitconfig is UML-specific, can't do this for example
-> $ ./tools/testing/kunit/kunit.py run --arch=x86_64 --kunitconfig=drivers/thunderbolt
-> 2. this removes the manual call to __kunit_test_suites_init(), which
->    allowed us to control exactly when the tests got run.
+On 2022/2/14 22:48, Naoya Horiguchi wrote:
+> On Thu, Feb 10, 2022 at 10:17:27PM +0800, Miaohe Lin wrote:
+>> It's unnecessary to walk the page table when vma_address() return -EFAULT.
+>> Return early if so to save some cpu cycles.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> 
+> Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-kernel-test-robot points out something I had forgotten.
-Doing this prevents us from being able to build this test as a module.
+Many thanks for your review and Acked-by tag!
 
-kunit_test_suites() defines an init_module() which conflicts with the
-existing ones.
+> 
+> Does this patch fix the real problem rather than just saving cpu cycles?
+> Without this patch, "address == -EFAULT" seems to make pgd_offset() return
+> invalid pointer and result in some serious result like general protection fault.
 
-There's some relevant discussion about reworking how kunit modules
-work here, https://lore.kernel.org/linux-kselftest/e5fa413ed59083ca63f3479d507b972380da0dcf.camel@codeconstruct.com.au/
+I think you're right. We might dereference the invalid pointer in the following pagetable
+walk and results in general protection fault.
 
-So I think we have two options for this patch:
-a) proceed, but disable building the test as a module for now (tristate => bool)
-b) wait on this patch until kunit module support is refactored
+> If that's the case, this patch might be worth sending to stable.
 
-Basically the question is: does this slightly easier way of running
-the test seem worth losing the ability to test as a module in the
-short-term?
+But I'am not sure vma_address will return -EFAULT for dax pages in the real workload? If so, I will
+send a v2 with Fixes tag.
+
+Thanks again.
+
+> 
+> Thanks,
+> Naoya Horiguchi
+> 
+>> ---
+>>  mm/memory-failure.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+>> index b3ff7e99a421..f86819145ea8 100644
+>> --- a/mm/memory-failure.c
+>> +++ b/mm/memory-failure.c
+>> @@ -315,6 +315,8 @@ static unsigned long dev_pagemap_mapping_shift(struct page *page,
+>>  	pmd_t *pmd;
+>>  	pte_t *pte;
+>>
+>> +	if (address == -EFAULT)
+>> +		return 0;
+>>  	pgd = pgd_offset(vma->vm_mm, address);
+>>  	if (!pgd_present(*pgd))
+>>  		return 0;
+>> ---
+>> 2.23.0
+>>
+> .
+> 
+
