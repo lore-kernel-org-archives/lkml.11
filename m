@@ -2,133 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E621C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B8CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242338AbiBORNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:13:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39142 "EHLO
+        id S242349AbiBORO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:14:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242316AbiBORNV (ORCPT
+        with ESMTP id S242316AbiBOROP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:13:21 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F228E11ACED
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:13:10 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id s24so21461579oic.6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:13:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dkNaB6kzC0t6gTi2pQx30aeojCMITTvkle2ZzaYqdBM=;
-        b=Tl08YyyCqUz7jPsZpEIFs7dcAC/J3b3HZaMGn2NtoxJdeiQj1zWTIhiXMGBdMH83VQ
-         1PghJf9UK1UklkzjUbCFtG0ZVytd3YE5L/JU7Kj9Z9cs0Wvvd+DGV0TXm+DgvCOhGcRs
-         VqO1dAL9k6fwlwYV03cAC0TdOdS+Q/ZQe65153sA+YsBU6iS7zg3OCu919enunaT31XZ
-         6oWEyPxUX6PDYpqqXRNWTgCxfQoV6e0VL/fBBeLHnuF3Tf+jt5xEugirI7diCJWGCLov
-         0y2Sg+P0c8WXjiAhxG6TJ0z3N43nJ9hDxYQULHaF9eUw6VZjJNwxw8XyTyxWSPqnnyu6
-         bEnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dkNaB6kzC0t6gTi2pQx30aeojCMITTvkle2ZzaYqdBM=;
-        b=aiOvL/h1mfiO2Ne7K/2qlA5geruegeBON6vJurzl9F63RvsH1udQDl1XUbGV0Xx4sm
-         113Pmu9MamO5ID/jLv794Q/2AdH919lKzU++XqXTiqzjN9jjqSn8/Gb61nphpYhN4I3q
-         m+OKlvAZz5tgLepFyuD2mnSKMfmcqqqJUpeJb84/WHtSdQ7OpOY/4+1Rr2ROj0BIVr8k
-         JQmvdmaJKNqGa4R5Kmc7So85L9pGXo2L9IqVaY/3M+ny5havYObwbK5U5Nb1TnZhyvVW
-         wT6i7Yw8wcP6LYJOoCi4WY+obxUzUCm26GRuplyVVV+i9HPzTH2OsYRE5SYCa1MTVM+Y
-         oxuw==
-X-Gm-Message-State: AOAM532McjiblyzgyFxxSR9tT4SiRB2AKQ0R6fnPNo5xoAvy3QJSN6em
-        e7zA0UUdWlxkzGpgk9KyeoEsgJ6thoQnlVC4d7syqQ==
-X-Google-Smtp-Source: ABdhPJyF2d6aFudNgPHq5wPVAths+OUdollkoCVet7aNgbJuaRRSllKYLRFDUcSQY12kE4kPlhzrLKhEIuiY531pZK0=
-X-Received: by 2002:a05:6808:3021:b0:2d4:40f3:6b30 with SMTP id
- ay33-20020a056808302100b002d440f36b30mr605011oib.31.1644945190003; Tue, 15
- Feb 2022 09:13:10 -0800 (PST)
+        Tue, 15 Feb 2022 12:14:15 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D0B11ADD1;
+        Tue, 15 Feb 2022 09:14:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644945245; x=1676481245;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LCApQiubLMYDIIz9b4/VMCuMNN4EWjcVcJag/HJNFrY=;
+  b=Jd9le88tjVnn10+EuE9RXK1BJv5Utl0X4o1cyx96gPPbZtLTbl1NyifN
+   phSPDs4DinvBDs8ckOBv1EhjemHll6c4IwTFT7jC0ZtQEhWdhD/Cqat15
+   w59jDFaVk/7cDS0ZlZdZE8ouhbiWjLGWOpgpD2itKNSHJ3DbKp06hUrlF
+   6XHvPxQCTxjm2AISsy7W7XiOQ87o/Eh8pTe9wiTt62e1HqVumT/41ZT1C
+   vu0GC/OvBWFWTjQ1hc/g1zln6xw52ocqmC8P4QutCksLRzxZbF8I63REp
+   KdB4CcT3h23nwW9ZpGF8OXTNxTLhMwCsZ3Xd3kVQKF4u2RGwMVUqCy2LN
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250344198"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="250344198"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:08:38 -0800
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="636007518"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:08:37 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nK1Ik-0050M2-A1;
+        Tue, 15 Feb 2022 19:07:42 +0200
+Date:   Tue, 15 Feb 2022 19:07:41 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v1 1/4] pinctrl: tigerlake: Revert "Add Alder Lake-M ACPI
+ ID"
+Message-ID: <Ygvd3Z5k+e/8DqND@smile.fi.intel.com>
+References: <20220215152800.21104-1-andriy.shevchenko@linux.intel.com>
+ <YgvYeJSvwaCXzISF@lahna>
 MIME-Version: 1.0
-References: <00000000000038779505d5d8b372@google.com> <CANp29Y7WjwXwgxPrNq0XXjXPu+wGFqTreh9gry=O6aE7+cKpLQ@mail.gmail.com>
- <CA+zEjCvu76yW7zfM+qJUe+t5y23oPdzR4KDV1mOdqH8bB4GmTw@mail.gmail.com>
-In-Reply-To: <CA+zEjCvu76yW7zfM+qJUe+t5y23oPdzR4KDV1mOdqH8bB4GmTw@mail.gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 15 Feb 2022 18:12:58 +0100
-Message-ID: <CACT4Y+arufrRgwmN66wUU+_FGxMy-sTkjMQnRN8U2H2tQuhB7A@mail.gmail.com>
-Subject: Re: [syzbot] riscv/fixes boot error: can't ssh into the instance
-To:     Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Cc:     Aleksandr Nogikh <nogikh@google.com>,
-        linux-riscv@lists.infradead.org,
-        kasan-dev <kasan-dev@googlegroups.com>, palmer@dabbelt.com,
-        syzbot <syzbot+330a558d94b58f7601be@syzkaller.appspotmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgvYeJSvwaCXzISF@lahna>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Feb 2022 at 14:18, Alexandre Ghiti
-<alexandre.ghiti@canonical.com> wrote:
->
-> Hi Aleksandr,
->
-> On Wed, Feb 2, 2022 at 12:08 PM Aleksandr Nogikh <nogikh@google.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot has already not been able to fuzz its RISC-V instance for 97
->
-> That's a longtime, I'll take a look more regularly.
->
-> > days now because the compiled kernel cannot boot. I bisected the issue
-> > to the following commit:
-> >
-> > commit 54c5639d8f507ebefa814f574cb6f763033a72a5
-> > Author: Alexandre Ghiti <alexandre.ghiti@canonical.com>
-> > Date:   Fri Oct 29 06:59:27 2021 +0200
-> >
-> >     riscv: Fix asan-stack clang build
-> >
-> > Apparently, the problem appears on GCC-built RISC-V kernels with KASAN
-> > enabled. In the previous message syzbot mentions
-> > "riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU
-> > Binutils for Debian) 2.35.2", but the issue also reproduces finely on
-> > a newer GCC compiler: "riscv64-linux-gnu-gcc (Debian 11.2.0-10)
-> > 11.2.0, GNU ld (GNU Binutils for Debian) 2.37".
-> > For convenience, I also duplicate the .config file from the bot's
-> > message: https://syzkaller.appspot.com/x/.config?x=522544a2e0ef2a7d
-> >
-> > Can someone with KASAN and RISC-V expertise please take a look?
->
-> I'll take a look at that today.
->
-> Thanks for reporting the issue,
+On Tue, Feb 15, 2022 at 06:44:40PM +0200, Mika Westerberg wrote:
+> On Tue, Feb 15, 2022 at 05:27:57PM +0200, Andy Shevchenko wrote:
+> > It appears that last minute change moved ACPI ID of Alder Lake-M
+> > to the INTC1055, which is already in the driver.
+> > 
+> > This ID on the other hand will be used elsewhere.
+> > 
+> > This reverts commit 258435a1c8187f559549e515d2f77fa0b57bcd27.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-Hi Alex,
+Thanks!
 
-Do you have any updates on this? This is still blocking syzbot:
-https://syzkaller.appspot.com/bug?extid=330a558d94b58f7601be
+I have sent a PR to the Linus W. with this one patch.
 
-Do you use KASAN with clang or gcc? We can't boot riscv kernel with neither.
+> Please mark this for stable too as discussed.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> > --
-> > Best Regards,
-> > Aleksandr
-> >
-> >
-> > On Tue, Jan 18, 2022 at 11:26 AM syzbot
-> > <syzbot+330a558d94b58f7601be@syzkaller.appspotmail.com> wrote:
-> > >
-> > > Hello,
-> > >
-> > > syzbot found the following issue on:
-> > >
-> > > HEAD commit:    f6f7fbb89bf8 riscv: dts: sifive unmatched: Link the tmp451..
-> > > git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=1095f85bb00000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=522544a2e0ef2a7d
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=330a558d94b58f7601be
-> > > compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > userspace arch: riscv64
-> > >
-> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > Reported-by: syzbot+330a558d94b58f7601be@syzkaller.appspotmail.com
