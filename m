@@ -2,51 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49846C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7991DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239741AbiBOPL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:11:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53280 "EHLO
+        id S239436AbiBOPPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:15:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239713AbiBOPLp (ORCPT
+        with ESMTP id S234626AbiBOPPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:11:45 -0500
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A98F5DF9A
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:11:32 -0800 (PST)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nJzUH-0001XZ-00; Tue, 15 Feb 2022 16:11:29 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id B0FB9C24F4; Tue, 15 Feb 2022 16:03:00 +0100 (CET)
-Date:   Tue, 15 Feb 2022 16:03:00 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: arch/mips/sibyte/common/sb_tbprof.c:515:23: sparse: sparse:
- incorrect type in initializer (different address spaces)
-Message-ID: <20220215150300.GA23034@alpha.franken.de>
-References: <202202130432.4tPqXRgn-lkp@intel.com>
- <20220214080429.GA18136@lst.de>
+        Tue, 15 Feb 2022 10:15:49 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048253F308;
+        Tue, 15 Feb 2022 07:15:39 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id o2so37529669lfd.1;
+        Tue, 15 Feb 2022 07:15:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9HjfjdaOOin/bN5gqnNUktr7hRS40a6cu6WZxUerm6Y=;
+        b=HBgtjPThZvYXcJsedr1E+R8cFCEa4Ct3G2GricOHSJ9xUa3YJgvh49DpcSNcGVI8sp
+         7BMqnwrjt1cSF9h7lrwZpETViuFDigKHItENjybR4Z0+f90r33dnD2T0fAWbI/KhX0Xu
+         gHRKhYTHKBvphfWCcxCm2Z4MaozAE76wNiRYrEyb8ngDyHKZx/gakHAD5NFlq25PbRsy
+         aYIOUqmuuB9vSRa8os4jzCBHi1ntmW+1zU2kH9fquK5Tn/9BuIUyPkVpGPiJ1YU3KOGv
+         zU8kAvAWhNrUQbTlTnC6n6rSFGxznAaFxhFrnsjC6kBDjeNyWtdm3Vycx3SICt0CwJdb
+         IVDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9HjfjdaOOin/bN5gqnNUktr7hRS40a6cu6WZxUerm6Y=;
+        b=obvbQD4s8zLScMghhfZZsS+sNeOi/yI+VnoeI1Y9qKzzL4UmkGKOvhRL9Fbp4YTmCW
+         DgsvhafXaQ/ON6g7WueeCCRcdFJIvtX+DkkDoRYOWzlrdEAxcxk0kRgtZdlwAlJSMXEk
+         KQttf9+KYA32/aFPGMp5nC0g1YZiBD8nscTEcb3cBJQdpVT1SdG/2i6QkZuKRwMAY2kQ
+         TEAMejw9wlYE41wPOnStrWcg9IIZHPOlhdVtaPERuapwW9FUwabQtkhiL++rvf8RPpXC
+         PnAgpCMrg8LtUTDlivUYRSqwY/Rzd/pP4Bp/BT2yp2Gp3lVcLOyQqvNqrdelyPO0dhKw
+         vrlw==
+X-Gm-Message-State: AOAM531BIym+b4KEwgwxlTXIIoBOPUNtb8DOBPSUMrBj3FzcF16snFtO
+        nCn2EwKWTgOHqBYCzgIXRfH7bN9HlF/2xsglXmM=
+X-Google-Smtp-Source: ABdhPJzfmAs6GpMj4I35HRBE1sJHAgNLTgNO/8mLQXCtN22V56CmKVSUQSI6ZStRrZLbrhzY8U7fsA==
+X-Received: by 2002:a05:6512:32c1:: with SMTP id f1mr3459503lfg.674.1644938137123;
+        Tue, 15 Feb 2022 07:15:37 -0800 (PST)
+Received: from nergzd-desktop.localdomain ([62.122.67.26])
+        by smtp.gmail.com with ESMTPSA id t12sm4479598ljc.97.2022.02.15.07.15.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 07:15:36 -0800 (PST)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Henrik Rydberg <rydberg@bitmath.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v3 0/2] Add support for Imagis touchscreens
+Date:   Tue, 15 Feb 2022 17:15:24 +0200
+Message-Id: <20220215151527.84634-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.0
+In-Reply-To: <1644531943.391463.3262540.nullmailer@robh.at.kernel.org>
+References: <1644531943.391463.3262540.nullmailer@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214080429.GA18136@lst.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 09:04:29AM +0100, Christoph Hellwig wrote:
-> Thomas, can you find someone who cares about the sibyte support to
-> fix up the address space annotations in this code?
+Add support for Imagis touchscreens, used on various mobile
+devices such as Samsung Galaxy J5 (2015), J3 (2015), J5 (2016).
 
-I'll have a look.
+v2: rebase on top of the correct tree
+v3:
+- prefix all defines as IST3038C
+- use two tabs for all defines
+- add missing <linux/regulator/consumer.h> header
+- drop ADDR_LEN and DATA_LEN defines; use sizeof(reg_be) instead
+- use __be32 type for reg_be
+- add a comment about i2c read not being successful on first try
+- use "ret" instead of "res" in read_reg function
+- don't use the internal __cpu_to_be32 function, use cpu_to_be32 instead
+- use "error" instead of "ret" in interrupt handler
+- pass the slot state directly, without ternary operator
+- drop the dev_err in init_input_dev function
+- reorder the functions in _probe so that the chipid command is read as fast 
+as possible
+- don't use imagis_start in probe
+- initialize the irq after the chip is powered
+- save the return value in imagis_resume
+- drop WIDTH_MAJOR since only TOUCH_MAJOR is reported
+- the "chip detected" message is now dev_dbg
+- reorder headers so they are in alphabetic order
+- use GENMASK to generate masks for getting the X and Y coordinates and touch area
+- drop *_pressure from device tree bindings since the driver doesn't
+support reporting pressure
+- fix the typo with i2c address in device treee bindings (48 instead of 50)
+- add IRQF_NO_AUTOEN flag to avoid unbalanced irq enable
 
-Thomas.
+Markuss Broks (2):
+  dt-bindings: input/touchscreen: bindings for Imagis
+  Input: add Imagis touchscreen driver
+
+ .../input/touchscreen/imagis,ist3038c.yaml    |  78 +++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   6 +
+ drivers/input/touchscreen/Kconfig             |  10 +
+ drivers/input/touchscreen/Makefile            |   1 +
+ drivers/input/touchscreen/imagis.c            | 329 ++++++++++++++++++
+ 6 files changed, 426 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
+ create mode 100644 drivers/input/touchscreen/imagis.c
 
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.35.0
+
