@@ -2,91 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B81C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241289AbiBOQCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:02:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59276 "EHLO
+        id S241218AbiBOQFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:05:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241205AbiBOQCg (ORCPT
+        with ESMTP id S238118AbiBOQFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:02:36 -0500
-Received: from hs01.dk-develop.de (hs01.dk-develop.de [173.249.23.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E412BD;
-        Tue, 15 Feb 2022 08:02:25 -0800 (PST)
-From:   Danilo Krummrich <danilokrummrich@dk-develop.de>
-To:     dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linus.walleij@linaro.org,
-        Danilo Krummrich <danilokrummrich@dk-develop.de>
-Subject: [PATCH 4/4] input: ps2-gpio: don't send rx data before the stop bit
-Date:   Tue, 15 Feb 2022 17:02:08 +0100
-Message-Id: <20220215160208.34826-5-danilokrummrich@dk-develop.de>
-In-Reply-To: <20220215160208.34826-1-danilokrummrich@dk-develop.de>
-References: <20220215160208.34826-1-danilokrummrich@dk-develop.de>
+        Tue, 15 Feb 2022 11:05:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4A965BA;
+        Tue, 15 Feb 2022 08:04:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9B50B81AF1;
+        Tue, 15 Feb 2022 16:04:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8326EC340EB;
+        Tue, 15 Feb 2022 16:04:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644941089;
+        bh=4Fn2tQZHYMpisfGny9s7PMSOteToJFxy1fpDT9qsL/M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LyqJauKIRL7zzFOxSSzuV4sPvHKSMks6LI3MMs8fyKao/BGBPT0csBYTLJQeTW/JD
+         ps+YGpJ5YBqPHliptwQ/eEcJ275mryrK2t2bGi62nvnUp6UWafLdCEbzz079z6ucVd
+         Dgb69zOS6zpYfDdiUVv33JTYt0LEOCCjhyULPgUGwhI52lDB4T6ix82Fmjv230cqCd
+         XRqyoV+TClHwmZvAiic80eERxMH09CdM3xcQgxP3Pt0zBu8KeFI9q4ymsXYWSbj66/
+         OYnLtWQ34FueotGYUpxbz1zXQKuJ8XIOJXWE/ZBq/FrjFM2V65wBZJcXWSfDmzFkt1
+         DY7YI5Qr7mL9g==
+Date:   Tue, 15 Feb 2022 23:56:57 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Atish Patra <atishp@rivosinc.com>
+Cc:     linux-kernel@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-riscv@lists.infradead.org,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v3 0/6] Provide a fraemework for RISC-V ISA extensions
+Message-ID: <YgvNSeUekqEVS1yE@xhacker>
+References: <20220215090211.911366-1-atishp@rivosinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220215090211.911366-1-atishp@rivosinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sending the data before processing the stop bit from the device already
-saves the data of the current xfer in case the stop bit is missed.
+On Tue, Feb 15, 2022 at 01:02:05AM -0800, Atish Patra wrote:
+> This series implements a generic framework to parse multi-letter ISA
+> extensions. This series is based on Tsukasa's v3 isa extension improvement
+> series[1]. I have fixed few bugs and improved comments from that series
+> (PATCH1-3). I have not used PATCH 4 from that series as we are not using
+> ISA extension versioning as of now. We can add that later if required.
+> 
+> PATCH 4 allows the probing of multi-letter extensions via a macro.
+> It continues to use the common isa extensions between all the harts.
+> Thus hetergenous hart systems will only see the common ISA extensions.
+> 
+> PATCH 6 improves the /proc/cpuinfo interface for the available ISA extensions
+> via /proc/cpuinfo.
+> 
+> Here is the example output of /proc/cpuinfo:
+> (with debug patches in Qemu and Linux kernel)
+> 
+> / # cat /proc/cpuinfo
+> processor	: 0
+> hart		: 0
+> isa		: rv64imafdcsu
+> isa-ext		: sstc,sscofpmf
+> mmu		: sv48
+> 
+> processor	: 1
+> hart		: 1
+> isa		: rv64imafdcsu
+> isa-ext		: sstc,sscofpmf
+> mmu		: sv48
+> 
+> processor	: 2
+> hart		: 2
+> isa		: rv64imafdcsu
+> isa-ext		: sstc,sscofpmf
+> mmu		: sv48
+> 
+> processor	: 3
+> hart		: 3
+> isa		: rv64imafdcsu
+> isa-ext		: sstc,sscofpmf
+> mmu		: sv48
+> 
+> Anybody adding support for any new multi-letter extensions should add an
+> entry to the riscv_isa_ext_id and the isa extension array. 
+> E.g. The patch[2] adds the support for various ISA extensions.
 
-However, when TX xfers are enabled this introduces a race condition when
-a peripheral driver using the bus immediately requests a TX xfer from IRQ
-context.
+Hi Atish,
 
-Therefore the data must be send after receiving the stop bit, although
-it is possible the data is lost when missing the stop bit.
+Thanks for this series. I'm thinking cpu features VS ISA extenstions.
+I'm converting the sv48 to static key:
+https://lore.kernel.org/linux-riscv/20220125165036.987-1-jszhang@kernel.org/
 
-Signed-off-by: Danilo Krummrich <danilokrummrich@dk-develop.de>
----
- drivers/input/serio/ps2-gpio.c | 21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+Previously, I thought the SV48 as a cpu feature, and there will be
+more and more cpu features, so I implemented an unified static key
+mechanism for CPU features. But after reading this series, I think
+I may need to rebase(even reimplement) the above patch to your series.
+But I'm a bit confused by CPU features VS ISA extenstions now:
 
-diff --git a/drivers/input/serio/ps2-gpio.c b/drivers/input/serio/ps2-gpio.c
-index f47a967f7521..17091b137744 100644
---- a/drivers/input/serio/ps2-gpio.c
-+++ b/drivers/input/serio/ps2-gpio.c
-@@ -231,6 +231,13 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
- 			if (!drvdata->write_enable)
- 				goto err;
- 		}
-+		break;
-+	case PS2_STOP_BIT:
-+		/* stop bit should be high */
-+		if (unlikely(!data)) {
-+			dev_err(drvdata->dev, "RX: stop bit should be high\n");
-+			goto err;
-+		}
- 
- 		/* Do not send spurious ACK's and NACK's when write fn is
- 		 * not provided.
-@@ -242,21 +249,9 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
- 				break;
- 		}
- 
--		/* Let's send the data without waiting for the stop bit to be
--		 * sent. It may happen that we miss the stop bit. When this
--		 * happens we have no way to recover from this, certainly
--		 * missing the parity bit would be recognized when processing
--		 * the stop bit. When missing both, data is lost.
--		 */
- 		serio_interrupt(drvdata->serio, byte, rxflags);
- 		dev_dbg(drvdata->dev, "RX: sending byte 0x%x\n", byte);
--		break;
--	case PS2_STOP_BIT:
--		/* stop bit should be high */
--		if (unlikely(!data)) {
--			dev_err(drvdata->dev, "RX: stop bit should be high\n");
--			goto err;
--		}
-+
- 		cnt = byte = 0;
- 
- 		goto end; /* success */
--- 
-2.35.1
+1. Is cpu feature  == ISA extension?
 
+2. Is SV48 considered as ISA extension?
+If yes, now SV48 or not is determined during runtime, but current ISA
+extensions seem parsed from DT. So how to support those ISA extensions
+which can be determined during runtime?
+
+Could you please share your thought?
+
+Thanks
