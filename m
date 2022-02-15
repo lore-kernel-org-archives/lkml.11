@@ -2,122 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 905CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A24B1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:43:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242650AbiBORn2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:43:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33318 "EHLO
+        id S242653AbiBORoA convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:44:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242475AbiBORnY (ORCPT
+        with ESMTP id S229508AbiBORn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:43:24 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0202997BA0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:43:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644946993; x=1676482993;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=oj8OOXX1ckMDtALqPdHVZbRyMA1rseOv4Z7KiHNiDvY=;
-  b=EAU10a564pJkbX5e/PiSj6SbGRy/+Vu5Rx3Rw02nVSKMeTBu+nIY3gW8
-   caxhQ+AKZ3gubnjaxl9PPQGwoGvCOXbXXoQ3NEZnxk7f3BITZglvj1/zj
-   tNVd80Jxro6ObUuYO1hg1b0iPwx4yMokjxRCmFjtfWhcnWglPUJkdjtnK
-   EBlrW57mNDklg89V609aIzYCP6EQoIwrVwPLZJHND3GlWlW79VU1cQI7i
-   Kv4EGtvshaunRcZYRksj2qBbwaMnRC6j1qjP151AHDHw51uVeKVVZn0dj
-   VuJA3dvtC9iw+WPoSryP0W26aeXmNp40b2D/5VMm47hpyY4EdiSRewQiD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="231039124"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="231039124"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:43:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="636028684"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 15 Feb 2022 09:43:01 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nK1qv-0009td-1e; Tue, 15 Feb 2022 17:43:01 +0000
-Date:   Wed, 16 Feb 2022 01:42:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kevin Kim <ckkim@hardkernel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Dongjin Kim <tobetter@gmail.com>,
-        Olliver Schinagl <oliver@schinagl.nl>
-Subject: [tobetter:odroid-5.17.y 7/41] drivers/pwm/pwm-gpio.c:60:22: warning:
- no previous prototype for function 'gpio_pwm_timer'
-Message-ID: <202202160144.hjSHJs2v-lkp@intel.com>
+        Tue, 15 Feb 2022 12:43:59 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF77E5406;
+        Tue, 15 Feb 2022 09:43:48 -0800 (PST)
+Date:   Tue, 15 Feb 2022 17:43:35 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v2 00/12] iio: buffer-dma: write() and new DMABUF based
+ API
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Christian =?iso-8859-1?b?S/ZuaWc=?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Message-Id: <N8XC7R.5FP2M8552CGT3@crapouillou.net>
+In-Reply-To: <20220213184616.669b490b@jic23-huawei>
+References: <20220207125933.81634-1-paul@crapouillou.net>
+        <20220213184616.669b490b@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=iso-8859-13; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/tobetter/linux odroid-5.17.y
-head:   992855288ffabfafb16c8ed7ce9a81fc64cfc89a
-commit: 380f2027a31094e1f64a78ce0e424f02dea66bc7 [7/41] ODROID-COMMON: pwm: gpio: Add a generic gpio based PWM driver
-config: hexagon-allyesconfig (https://download.01.org/0day-ci/archive/20220216/202202160144.hjSHJs2v-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 37f422f4ac31c8b8041c6b62065263314282dab6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/tobetter/linux/commit/380f2027a31094e1f64a78ce0e424f02dea66bc7
-        git remote add tobetter https://github.com/tobetter/linux
-        git fetch --no-tags tobetter odroid-5.17.y
-        git checkout 380f2027a31094e1f64a78ce0e424f02dea66bc7
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/pwm/
+Hi Jonathan,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Le dim., févr. 13 2022 at 18:46:16 +0000, Jonathan Cameron 
+<jic23@kernel.org> a écrit :
+> On Mon,  7 Feb 2022 12:59:21 +0000
+> Paul Cercueil <paul@crapouillou.net> wrote:
+> 
+>>  Hi Jonathan,
+>> 
+>>  This is the V2 of my patchset that introduces a new userspace 
+>> interface
+>>  based on DMABUF objects to complement the fileio API, and adds 
+>> write()
+>>  support to the existing fileio API.
+> 
+> Hi Paul,
+> 
+> It's been a little while. Perhaps you could summarize the various view
+> points around the appropriateness of using DMABUF for this?
+> I appreciate it is a tricky topic to distil into a brief summary but
+> I know I would find it useful even if no one else does!
 
-All warnings (new ones prefixed by >>):
+So we want to have a high-speed interface where buffers of samples are 
+passed around between IIO devices and other devices (e.g. USB or 
+network), or made available to userspace without copying the data.
 
->> drivers/pwm/pwm-gpio.c:60:22: warning: no previous prototype for function 'gpio_pwm_timer' [-Wmissing-prototypes]
-   enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
-                        ^
-   drivers/pwm/pwm-gpio.c:60:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
-   ^
-   static 
-   1 warning generated.
+DMABUF is, at least in theory, exactly what we need. Quoting the 
+documentation 
+(https://www.kernel.org/doc/html/v5.15/driver-api/dma-buf.html):
+"The dma-buf subsystem provides the framework for sharing buffers for 
+hardware (DMA) access across multiple device drivers and subsystems, 
+and for synchronizing asynchronous hardware access. This is used, for 
+example, by drm ´prime¡ multi-GPU support, but is of course not 
+limited to GPU use cases."
+
+The problem is that right now DMABUF is only really used by DRM, and to 
+quote Daniel, "dma-buf looks like something super generic and useful, 
+until you realize that there's a metric ton of gpu/accelerator bagage 
+piled in".
+
+Still, it seems to be the only viable option. We could add a custom 
+buffer-passing interface, but that would mean implementing the same 
+buffer-passing interface on the network and USB stacks, and before we 
+know it we re-invented DMABUFs.
+
+Cheers,
+-Paul
 
 
-vim +/gpio_pwm_timer +60 drivers/pwm/pwm-gpio.c
+>> 
+>>  Changes since v1:
+>> 
+>>  - the patches that were merged in v1 have been (obviously) dropped 
+>> from
+>>    this patchset;
+>>  - the patch that was setting the write-combine cache setting has 
+>> been
+>>    dropped as well, as it was simply not useful.
+>>  - [01/12]:
+>>      * Only remove the outgoing queue, and keep the incoming queue, 
+>> as we
+>>        want the buffer to start streaming data as soon as it is 
+>> enabled.
+>>      * Remove IIO_BLOCK_STATE_DEQUEUED, since it is now functionally 
+>> the
+>>        same as IIO_BLOCK_STATE_DONE.
+>>  - [02/12]:
+>>      * Fix block->state not being reset in
+>>        iio_dma_buffer_request_update() for output buffers.
+>>      * Only update block->bytes_used once and add a comment about 
+>> why we
+>>        update it.
+>>      * Add a comment about why we're setting a different state for 
+>> output
+>>        buffers in iio_dma_buffer_request_update()
+>>      * Remove useless cast to bool (!!) in iio_dma_buffer_io()
+>>  - [05/12]:
+>>      Only allow the new IOCTLs on the buffer FD created with
+>>      IIO_BUFFER_GET_FD_IOCTL().
+>>  - [12/12]:
+>>      * Explicitly state that the new interface is optional and is
+>>        not implemented by all drivers.
+>>      * The IOCTLs can now only be called on the buffer FD returned by
+>>        IIO_BUFFER_GET_FD_IOCTL.
+>>      * Move the page up a bit in the index since it is core stuff 
+>> and not
+>>        driver-specific.
+>> 
+>>  The patches not listed here have not been modified since v1.
+>> 
+>>  Cheers,
+>>  -Paul
+>> 
+>>  Alexandru Ardelean (1):
+>>    iio: buffer-dma: split iio_dma_buffer_fileio_free() function
+>> 
+>>  Paul Cercueil (11):
+>>    iio: buffer-dma: Get rid of outgoing queue
+>>    iio: buffer-dma: Enable buffer write support
+>>    iio: buffer-dmaengine: Support specifying buffer direction
+>>    iio: buffer-dmaengine: Enable write support
+>>    iio: core: Add new DMABUF interface infrastructure
+>>    iio: buffer-dma: Use DMABUFs instead of custom solution
+>>    iio: buffer-dma: Implement new DMABUF based userspace API
+>>    iio: buffer-dmaengine: Support new DMABUF based userspace API
+>>    iio: core: Add support for cyclic buffers
+>>    iio: buffer-dmaengine: Add support for cyclic buffers
+>>    Documentation: iio: Document high-speed DMABUF based API
+>> 
+>>   Documentation/driver-api/dma-buf.rst          |   2 +
+>>   Documentation/iio/dmabuf_api.rst              |  94 +++
+>>   Documentation/iio/index.rst                   |   2 +
+>>   drivers/iio/adc/adi-axi-adc.c                 |   3 +-
+>>   drivers/iio/buffer/industrialio-buffer-dma.c  | 610 
+>> ++++++++++++++----
+>>   .../buffer/industrialio-buffer-dmaengine.c    |  42 +-
+>>   drivers/iio/industrialio-buffer.c             |  60 ++
+>>   include/linux/iio/buffer-dma.h                |  38 +-
+>>   include/linux/iio/buffer-dmaengine.h          |   5 +-
+>>   include/linux/iio/buffer_impl.h               |   8 +
+>>   include/uapi/linux/iio/buffer.h               |  30 +
+>>   11 files changed, 749 insertions(+), 145 deletions(-)
+>>   create mode 100644 Documentation/iio/dmabuf_api.rst
+>> 
+> 
 
-    59	
-  > 60	enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
-    61	{
-    62		struct gpio_pwm_data *gpio_data = container_of(timer,
-    63							      struct gpio_pwm_data,
-    64							      timer);
-    65		if (!gpio_data->run) {
-    66			gpio_pwm_off(gpio_data);
-    67			gpio_data->pin_on = false;
-    68			return HRTIMER_NORESTART;
-    69		}
-    70	
-    71		if (!gpio_data->pin_on) {
-    72			hrtimer_forward_now(&gpio_data->timer,
-    73					    ns_to_ktime(gpio_data->on_time));
-    74			gpio_pwm_on(gpio_data);
-    75			gpio_data->pin_on = true;
-    76		} else {
-    77			hrtimer_forward_now(&gpio_data->timer,
-    78					    ns_to_ktime(gpio_data->off_time));
-    79			gpio_pwm_off(gpio_data);
-    80			gpio_data->pin_on = false;
-    81		}
-    82	
-    83		return HRTIMER_RESTART;
-    84	}
-    85	
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
