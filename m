@@ -2,195 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 930B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 722DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiBODYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 22:24:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58276 "EHLO
+        id S231962AbiBOD2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 22:28:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiBODYe (ORCPT
+        with ESMTP id S229508AbiBOD2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 22:24:34 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2BBAB459
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:24:25 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id m22so13394626pfk.6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:24:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rWi/O5nJDLI+tNetDw/Ev6zUKQmU4GrSqp5n8nSHbx4=;
-        b=cH3SsTCDZtptXFpBGJiNfLdA+WiZF819l8uh4FCwJbLHyll5CCg1qQyeVnRoIKp0jd
-         UzTEGrAlDFLKsvfrLUPO2cyQR7V8ge2XkoQ76Do/DMHT5XY4Gys7TrBRKgJTcK/CKEly
-         NlpoI7nSrO+zRLa4y6WYqMQnU4BaXsL7QZgFK1+3TkAAXpuULDQPczgJbKC98r6I07hN
-         YWvIa+3/YuKK6iLw/sv9VTnWWPpNNZ8240Zfz+VdH8+oIZuRojFuS6hk3KXv46B82zzJ
-         pj6n8qmDE390S58ISOapvDx0gWqpFiIcYo0EQ8RQG/T6QEiBLoXoi/BiG029qFkQud7u
-         RW8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rWi/O5nJDLI+tNetDw/Ev6zUKQmU4GrSqp5n8nSHbx4=;
-        b=S7uKmmPFwHP7DszGw4dqpxMkao2GqtS849mtSe1kTeAnsbHuyctA4UKS3Q779Fk7qr
-         SDgpQ48M1h/7VQeh7uGp5ebxZ9IeT/WKEIgMRQMpGg50GhH2Y1nzHCh680uNfKYUyb1C
-         eU2Eg1BakrP+XiXyVd52zMx5va53LaNn/VQoaZOjTyujn7+mZmlja7oIs9Mv6VuLHygG
-         7a2cOdx5z1BsHBRsAkMc7zaaLDX524YiiKzWF4bXIgrei0hqsr35uUJ2i95AsWM6bvRK
-         LrJdgt0skotGM1W7VrD4LKW7ZRiR1PrvILkvpo1VHugfZyGUbZJfY234tQTE1JvSI1d9
-         RRug==
-X-Gm-Message-State: AOAM530FeQBX6i3UFEtd9sY8gyHcCrjSE9SFqkU7qD0CtHfeDLJmfIp1
-        hGnJzpUXP5265kTrd/iENpsu0LOjDwo=
-X-Google-Smtp-Source: ABdhPJzwvvVrlxC6vO4ybEODwecpFbI0/rwqAnm8JDxaOmnd4sWkMfFcz7DKurU1f8V0miTnOJAYcA==
-X-Received: by 2002:a63:864a:: with SMTP id x71mr1865535pgd.272.1644895464775;
-        Mon, 14 Feb 2022 19:24:24 -0800 (PST)
-Received: from 7YHHR73.igp.broadcom.net (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id b2sm803390pgg.59.2022.02.14.19.24.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 19:24:24 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Al Cooper <alcooperx@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM BRCMSTB USB2
-        and USB3 PHY DRIVER),
-        linux-phy@lists.infradead.org (open list:GENERIC PHY FRAMEWORK)
-Subject: [PATCH v2] phy: usb: Add "wake on" functionality for newer Synopsis XHCI controllers
-Date:   Mon, 14 Feb 2022 19:24:21 -0800
-Message-Id: <20220215032422.5179-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 14 Feb 2022 22:28:49 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02E362B246;
+        Mon, 14 Feb 2022 19:28:38 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.31:33306.1647321622
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id EE8B710023D;
+        Tue, 15 Feb 2022 11:28:34 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-bwdqx with ESMTP id 2b6fe703291b44efb88e993a70779992 for maxime@cerno.tech;
+        Tue, 15 Feb 2022 11:28:36 CST
+X-Transaction-ID: 2b6fe703291b44efb88e993a70779992
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <14340eb2-2557-e6f1-9252-8533f5a814df@189.cn>
+Date:   Tue, 15 Feb 2022 11:28:33 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7 1/7] drm/lsdc: add drm driver for loongson display
+ controller
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>, Li Yi <liyi@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>
+References: <20220213141649.1115987-1-15330273260@189.cn>
+ <20220213141649.1115987-2-15330273260@189.cn>
+ <20220214101031.kerresldiuopil6l@houat>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <20220214101031.kerresldiuopil6l@houat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Cooper <alcooperx@gmail.com>
 
-Add "wake on" support for the newer Synopsis based XHCI only controller.
-This works on the 72165 and 72164 and newer chips and does not work
-on 7216 based systems. Also switch the USB sysclk to a slower clock
-on suspend to save additional power in S2. The clock switch will only
-save power on the 72165b0 and newer chips and is a nop on older chips.
+On 2022/2/14 18:10, Maxime Ripard wrote:
+> On Sun, Feb 13, 2022 at 10:16:43PM +0800, Sui Jingfeng wrote:
+>> From: suijingfeng <suijingfeng@loongson.cn>
+>>
+>> There is a display controller in loongson's LS2K1000 SoC and LS7A1000
+>> bridge chip, the DC is a PCI device in those chips. It has two display
+>> pipes but with only one hardware cursor. Each way has a DVO interface
+>> which provide RGB888 signals, vertical & horizontal synchronisations,
+>> data enable and the pixel clock. Each CRTC is able to scanout from
+>> 1920x1080 resolution at 60Hz. The maxmium resolution is 2048x2048
+>> according to the hardware spec.
+>>
+>> Loongson display controllers are simple which require scanout buffers
+>> to be physically contiguous. LS2K1000 is a SOC, Only system memory is
+>> available. Therefore CMA helper based driver is intended to be use,
+>> although it is possible to use VRAM helper based solution by carving
+>> out part of system memory as VRAM.
+>>
+>> On LS7A1000/LS7A2000 bridge chip, the DC is equipped with a dedicated
+>> video memory which is typically 64MB or more. In this case, VRAM helper
+>> based solution which scanout from local VRAM is reconmended to use.
+>> It is reliable to use for massive production, but CMA based helper
+>> solution is still usable on ls7a1000 and ls7a2000, at the price of
+>> the CRTC must access the FB in RAM through the PCIe bus and HT3.0 bus.
+>> This causes continuous traffic on the bus regardless of whether the FB
+>> image is updating or not. Sadly, it suffer from screen flickering under
+>> RAM pressure on LS7A1000. Luckily, It show extremely good condition on
+>> LS7A2000 even under stressapptest, Maybe the hardware engineer resolve
+>> this issue. Integrating two distict helpers based driver into one piece
+>> allow code sharing.
+>>
+>> We have also implemented demage update on top of CMA helper which copy
+>> the demaged region from the shadow framebuffer in system RAM to the real
+>> framebuffer in VRAM manually. This is intend to overcome the screen
+>> flicking issue on LS7A1000, but the performance is not good.
+>> Using "lsdc.dirty_update=1" in the kernel commmand line if you would like
+>> to have a try.
+>>
+>> For LS7A1000, there are 4 dedicated GPIOs whose control register is
+>> located at the DC register space, They are used to emulate two way i2c.
+>> One for DVO0, another for DVO1. This is the reason why this driver is
+>> not switch to drm bridge framework yet. LS2K1000 and LS2K0500 SoC don't
+>> have such GPIO hardwared, they grab i2c adapter from other module,
+>> either general purpose GPIO emulated i2c or hardware i2c adapter.
+>> Drm bridge and drm panel driver for the external encoder is suitable for
+>> those SoC. We have already implemented this on our downstream 4.19.190
+>> kernel. But due to the GPIO, PWM and I2C device driver support for
+>> LS2K1000 is not upstreamed yet, this driver still can be use to bring
+>> the graphic environment up by providing display timings or similar things
+>> in the device tree.
+>>
+>> The DC in LS7A1000 has only one hardware cursor, we simply let the two
+>> CRTC share it. The DC in LS7A2000 have two cursor, two built-in hdmi
+>> encoder and one transparent vga encoder and more, surport for LS7A2000
+>> is on the way. In short, we have built-in gpio emulated i2c support,
+>> we also have hardware cursor support. LS7A2000 The kind of tiny drivers
+>> in drm/tiny is not suitable for us.
+>>
+>>      +------+            +-----------------------------------+
+>>      | DDR4 |            |  +-------------------+            |
+>>      +------+            |  | PCIe Root complex |   LS7A1000 |
+>>         || MC0           |  +--++---------++----+            |
+>>    +----------+  HT 3.0  |     ||         ||                 |
+>>    | LS3A4000 |<-------->| +---++---+  +--++--+    +---------+   +------+
+>>    |   CPU    |<-------->| | GC1000 |  | LSDC |<-->| DDR3 MC |<->| VRAM |
+>>    +----------+          | +--------+  +-+--+-+    +---------+   +------+
+>>         || MC1           +---------------|--|----------------+
+>>      +------+                            |  |
+>>      | DDR4 |          +-------+   DVO0  |  |  DVO1   +------+
+>>      +------+   VGA <--|ADV7125|<--------+  +-------->|TFP410|--> DVI/HDMI
+>>                        +-------+                      +------+
+>>
+>> The above picture give a simple usage of LS7A1000, note that the encoder
+>> is not necessary adv7125 or tfp410, it is a choice of the downstream board
+>> manufacturer. Other candicate encoders can be ch7034b, sil9022 and ite66121
+>> lt8618 etc. Besides, the DC in both ls2k1000 and ls7k1000 has the same of
+>> PCI vendor id and pci device id. Both is 0x0014:0x7a06, the reverison id
+>> is also same. This is the firmware engineer's mistake, but such firmware
+>> and various boards ship with such firmware already released. We choose to
+>> deduce the chip's identification from information provided by device tree.
+>> For lsdc, there is only a 1:1 mapping of encoders and connectors.
+>>
+>> v2: fixup warnings reported by kernel test robot
+>>
+>> v3: fix more grammar mistakes in Kconfig reported by Randy Dunlap and give
+>>      more details about lsdc.
+>>
+>> v4:
+>>     1) Add dts required and explain why device tree is required.
+>>     2) Give more description about lsdc and vram helper base driver.
+>>     3) Fix warnings reported by kernel test robot.
+>>     4) Introduce stride_alignment member into struct lsdc_chip_desc, the
+>>        stride alignment is 256 bytes for ls7a1000, ls2k1000 and ls2k0500.
+>>        But ls7a2000 improve it to 32 bytes, for extend the support for the
+>>        device on coming
+>>
+>> v5:
+>>     1) using writel and readl replace writeq and readq, to fix kernel test
+>>        robot report build error on other archtecture
+>>     2) set default fb format to XRGB8888 at crtc reset time.
+>>     3) fix typos.
+>>
+>> v6:
+>>     1) Explain why we are not switch to drm dridge subsystem on ls2k1000.
+>>     2) Explain why tiny drm driver is not suitable for us.
+>>     3) Give a short description of the trival dirty uppdate implement based
+>>        on CMA helper.
+>>     4) code clean up
+>>
+>> v7:
+>>     1) Remove select I2C_GPIO and I2C_LS2X in Kconfig, it is not ready now
+>>     2) Licensing issues are fixed suggested by Krzysztof Kozlowski.
+>>     3) lsdc_pixpll_print() is removed, part of it move to debugfs.
+>>     4) Set prefer_shadow to true if vram based driver is in using.
+>>     5) Replace double blank lines with single line in all files
+>>     6) Verbose cmd line parameter is replaced with drm_dbg()
+>>     7) All warnnings reported by ./scripts/checkpatch.pl --strict are fixed
+>>     8) Get edid from dtb support is removed as suggested by Maxime Ripard
+>>     9) Fix typos and various improvement
+> you *need* to have a DT bindings description
 
-Signed-off-by: Al Cooper <alcooperx@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v2:
-
-- properly subject with 'phy: '
-
- .../phy/broadcom/phy-brcm-usb-init-synopsys.c | 46 +++++++++++++++----
- 1 file changed, 38 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/phy/broadcom/phy-brcm-usb-init-synopsys.c b/drivers/phy/broadcom/phy-brcm-usb-init-synopsys.c
-index e63457e145c7..d2524b70ea16 100644
---- a/drivers/phy/broadcom/phy-brcm-usb-init-synopsys.c
-+++ b/drivers/phy/broadcom/phy-brcm-usb-init-synopsys.c
-@@ -47,6 +47,8 @@
- #define   USB_CTRL_USB_PM_SOFT_RESET_MASK		0x40000000
- #define   USB_CTRL_USB_PM_BDC_SOFT_RESETB_MASK		0x00800000
- #define   USB_CTRL_USB_PM_XHC_SOFT_RESETB_MASK		0x00400000
-+#define   USB_CTRL_USB_PM_XHC_PME_EN_MASK		0x00000010
-+#define   USB_CTRL_USB_PM_XHC_S2_CLK_SWITCH_EN_MASK	0x00000008
- #define USB_CTRL_USB_PM_STATUS		0x08
- #define USB_CTRL_USB_DEVICE_CTL1	0x10
- #define   USB_CTRL_USB_DEVICE_CTL1_PORT_MODE_MASK	0x00000003
-@@ -190,10 +192,6 @@ static void usb_init_common(struct brcm_usb_init_params *params)
- 
- 	pr_debug("%s\n", __func__);
- 
--	USB_CTRL_UNSET(ctrl, USB_PM, USB_PWRDN);
--	/* 1 millisecond - for USB clocks to settle down */
--	usleep_range(1000, 2000);
--
- 	if (USB_CTRL_MASK(USB_DEVICE_CTL1, PORT_MODE)) {
- 		reg = brcm_usb_readl(USB_CTRL_REG(ctrl, USB_DEVICE_CTL1));
- 		reg &= ~USB_CTRL_MASK(USB_DEVICE_CTL1, PORT_MODE);
-@@ -222,6 +220,17 @@ static void usb_wake_enable_7211b0(struct brcm_usb_init_params *params,
- 		USB_CTRL_UNSET(ctrl, CTLR_CSHCR, ctl_pme_en);
- }
- 
-+static void usb_wake_enable_7216(struct brcm_usb_init_params *params,
-+				 bool enable)
-+{
-+	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
-+
-+	if (enable)
-+		USB_CTRL_SET(ctrl, USB_PM, XHC_PME_EN);
-+	else
-+		USB_CTRL_UNSET(ctrl, USB_PM, XHC_PME_EN);
-+}
-+
- static void usb_init_common_7211b0(struct brcm_usb_init_params *params)
- {
- 	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
-@@ -295,6 +304,20 @@ static void usb_init_common_7211b0(struct brcm_usb_init_params *params)
- 	usb2_eye_fix_7211b0(params);
- }
- 
-+static void usb_init_common_7216(struct brcm_usb_init_params *params)
-+{
-+	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
-+
-+	USB_CTRL_UNSET(ctrl, USB_PM, XHC_S2_CLK_SWITCH_EN);
-+	USB_CTRL_UNSET(ctrl, USB_PM, USB_PWRDN);
-+
-+	/* 1 millisecond - for USB clocks to settle down */
-+	usleep_range(1000, 2000);
-+
-+	usb_wake_enable_7216(params, false);
-+	usb_init_common(params);
-+}
-+
- static void usb_init_xhci(struct brcm_usb_init_params *params)
- {
- 	pr_debug("%s\n", __func__);
-@@ -302,14 +325,20 @@ static void usb_init_xhci(struct brcm_usb_init_params *params)
- 	xhci_soft_reset(params, 0);
- }
- 
--static void usb_uninit_common(struct brcm_usb_init_params *params)
-+static void usb_uninit_common_7216(struct brcm_usb_init_params *params)
- {
- 	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
- 
- 	pr_debug("%s\n", __func__);
- 
--	USB_CTRL_SET(ctrl, USB_PM, USB_PWRDN);
-+	if (!params->wake_enabled) {
-+		USB_CTRL_SET(ctrl, USB_PM, USB_PWRDN);
- 
-+		/* Switch to using slower clock during suspend to save power */
-+		USB_CTRL_SET(ctrl, USB_PM, XHC_S2_CLK_SWITCH_EN);
-+	} else {
-+		usb_wake_enable_7216(params, true);
-+	}
- }
- 
- static void usb_uninit_common_7211b0(struct brcm_usb_init_params *params)
-@@ -371,9 +400,9 @@ static void usb_set_dual_select(struct brcm_usb_init_params *params, int mode)
- 
- static const struct brcm_usb_init_ops bcm7216_ops = {
- 	.init_ipp = usb_init_ipp,
--	.init_common = usb_init_common,
-+	.init_common = usb_init_common_7216,
- 	.init_xhci = usb_init_xhci,
--	.uninit_common = usb_uninit_common,
-+	.uninit_common = usb_uninit_common_7216,
- 	.uninit_xhci = usb_uninit_xhci,
- 	.get_dual_select = usb_get_dual_select,
- 	.set_dual_select = usb_set_dual_select,
-@@ -396,6 +425,7 @@ void brcm_usb_dvr_init_7216(struct brcm_usb_init_params *params)
- 
- 	params->family_name = "7216";
- 	params->ops = &bcm7216_ops;
-+	params->suspend_with_clocks = true;
- }
- 
- void brcm_usb_dvr_init_7211b0(struct brcm_usb_init_params *params)
--- 
-2.25.1
+Ok, I know that, it takes some time to document it though.
 
