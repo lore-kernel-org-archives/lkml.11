@@ -2,89 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EACC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60348C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242852AbiBOSFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:05:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43056 "EHLO
+        id S242857AbiBOSFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:05:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236250AbiBOSFE (ORCPT
+        with ESMTP id S236250AbiBOSFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:05:04 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46801C1146
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:04:54 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id r19so2588023oic.5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:04:54 -0800 (PST)
+        Tue, 15 Feb 2022 13:05:34 -0500
+Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96C6119410;
+        Tue, 15 Feb 2022 10:05:23 -0800 (PST)
+Received: by mail-vk1-xa2b.google.com with SMTP id f12so3503133vkl.2;
+        Tue, 15 Feb 2022 10:05:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8FkbrW//0IgWQygghqQsiP3JwGJ2D9CY24Xy8wfl6Kc=;
-        b=tCVAaYeTHV6om8mv2EbLq/7QqmPUcfldxZOtAV0HONmrxT0EjskE241oYjeqfycv8B
-         0DVZRo3e0S8sfb8KsqNbHB35hIn4ZWRVx4/M+gLO1WTSKxxpqiMwjVT1Rgrm1/XT+KUh
-         HopiXfN2G4kFIchQzDWKbr0dM9IFTGnEDniw0WMqp/Vj+VABo0PQWUlFH5A36LNrHiKB
-         Bv/5D5Q2veFU0ZB2RYh1QrXFrGFiEdBU38g4T/RNOsHqM5x1UDmsB3FV6WcLra7WMjD+
-         Evq78pqDmc/INmF2/F/QChm07sjXvKqufL5TWQEXH2seAUfZ+0+U5OZPw4F59Cr7zUBe
-         FOow==
+         :cc:content-transfer-encoding;
+        bh=gLFgGT6YwvXW1wx34JstmO2egBx2eW53mLM0rtTg/Sc=;
+        b=KID333ITUi73ySWGz7NI+m+E5EGqFpblrSqIqmNw1gXZev9/XDAyukTbxvSCm4gKSe
+         4hYTBpYMUl4w0qe6b2urizheFZs7flA7mMy2m+0fkW90KTAMc+4l9325zTeoom60nPYs
+         i+UJ1fb2Wu06ksFS/igVcQQwtTeaW27Mni+l43Dx8F84mRa5xhAlk0ArF6LaheuBX6UJ
+         WHqlzTFf2rTWdyR0g6exXoLT4XNmSbbdBXaXd9n+7Gd5TlNR6J7zfjZ5wdPk+lhxINmr
+         oHu0f4OoYTlA1u0+xeryBjS4Nv1D6zvvWZo2zQnWHVoFn8lk/rrpf7ABra2C4cpBlveU
+         hhcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8FkbrW//0IgWQygghqQsiP3JwGJ2D9CY24Xy8wfl6Kc=;
-        b=nmUlW3bYV93ddAY3wL5BO2NPG26GGbmabpIANT5DJSSR4xwyvukqKoOy31TxRNdFAh
-         ntl8v/RPBiFqZ06rcPc3C9e0yAQ9brxbPpZ2vzrpvYwfMu2QKn5CLii6QYco5qaLCCtC
-         KDnvpmUgDx+tY4f4qLa8eP1LQ2ZQvXMqGmqQ8tM618PqiJXVhzemnIPXMa6sm3TRjclZ
-         ajKUihKi1SDNPpegcsLcJjMvrwvsUA04OYEBs0T9q694HduEUFwCqBi/y3NKC3bptbKX
-         LVdXn51MCBcKf9Qa+kjQRta/mBUPnH60FUUnbte44e0ds21ZtNsuz2cUuVRSvAY58kFy
-         HGYg==
-X-Gm-Message-State: AOAM532e39c8zGdh+ZRTvGsRRaVSKYKFHISomqsx5WjrdoBRVpPO9bqK
-        sxgIjkPXtsFqM7NRw6vM5EIUlz3u8GGE93PBLSxrNw==
-X-Google-Smtp-Source: ABdhPJxNDbZDdo2yVpmlNODvXD6j6NahxG5NvwXi4o4t05Om9sq9lRIUr9w01zVeke8/LzOItBWhahCBTG9Hu8KAHqo=
-X-Received: by 2002:a05:6808:5c7:: with SMTP id d7mr29618oij.80.1644948293188;
- Tue, 15 Feb 2022 10:04:53 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gLFgGT6YwvXW1wx34JstmO2egBx2eW53mLM0rtTg/Sc=;
+        b=U8jzPXmfTs1E3eZFsBePME+9oxHNW7t85bCsW3NOyYsIVUERF94d2q5gUxqz2iDf8G
+         vXT3p8HGuNNrC7ambIS5pct8R4mFiW8h4zuFns2vDl9rXN7ilAThNSjUVIOsyd5jHuRi
+         9T/rIsG/BXRndmVAVm+YWVsVqmoBrQM/hacUT6aua3Y//YA6606zYv44/pXKiVhZAsqT
+         ZYgt1ZHaUlqcK5ZxL+FLKPOTMc5hP6FDuzX2DgV2wzN/SA7o08sR4hMNdfcopinz9UWV
+         fNZ7j21OeEtvjpvOV7M7yqyggDStLo6TcP7oozLS28h6nbtKImJoHFOdy7Ek+Y5FDpzq
+         l8AA==
+X-Gm-Message-State: AOAM5326sfqanDRs9LTumaCp+0bfmiqAw9HuzRQHvC7OzZZTw3W9ihQt
+        KK8bH4xXFC5uu5TWor9rQ/7yKCkVDVVsdRN8Oco=
+X-Google-Smtp-Source: ABdhPJwZ2c4DluFw+8AgtAZO4eg8n+SwcAKGWvctDBdUls3kAzfoEoE5KmSOu0LxpAWQttLVgi0QdO4HXYfEG/R2j3s=
+X-Received: by 2002:a05:6122:54e:: with SMTP id y14mr63443vko.37.1644948322750;
+ Tue, 15 Feb 2022 10:05:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20220214024134.223939-1-haiyue.wang@intel.com> <20220215051751.260866-1-haiyue.wang@intel.com>
-In-Reply-To: <20220215051751.260866-1-haiyue.wang@intel.com>
-From:   Bailey Forrest <bcf@google.com>
-Date:   Tue, 15 Feb 2022 10:04:42 -0800
-Message-ID: <CANH7hM5tYYU7GyYLboEVdin6xivV3LmbPxMxEa3sxb_YEBfH8w@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] gve: enhance no queue page list detection
-To:     Haiyue Wang <haiyue.wang@intel.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Tao Liu <xliutaox@google.com>,
-        John Fraker <jfraker@google.com>,
-        Yangchun Fu <yangchun@google.com>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20220126175604.17919-1-romain.perier@gmail.com>
+In-Reply-To: <20220126175604.17919-1-romain.perier@gmail.com>
+From:   Romain Perier <romain.perier@gmail.com>
+Date:   Tue, 15 Feb 2022 19:05:11 +0100
+Message-ID: <CABgxDo+hRsDo-Hmf4TUmuWQFo0+LnWOTrEQQz0beSjBhxkZ6_Q@mail.gmail.com>
+Subject: Re: [PATCH v4 0/8] ARM: mstar: cpupll
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, Daniel Palmer <daniel@0x0f.com>,
+        Romain Perier <romain.perier@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 9:52 PM Haiyue Wang <haiyue.wang@intel.com> wrote:
->
-> The commit
-> a5886ef4f4bf ("gve: Introduce per netdev `enum gve_queue_format`")
-> introduces three queue format type, only GVE_GQI_QPL_FORMAT queue has
-> page list. So it should use the queue page list number to detect the
-> zero size queue page list. Correct the design logic.
->
-> Using the 'queue_format == GVE_GQI_RDA_FORMAT' may lead to request zero
-> sized memory allocation, like if the queue format is GVE_DQO_RDA_FORMAT.
->
-> The kernel memory subsystem will return ZERO_SIZE_PTR, which is not NULL
-> address, so the driver can run successfully. Also the code still checks
-> the queue page list number firstly, then accesses the allocated memory,
-> so zero number queue page list allocation will not lead to access fault.
->
-> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+Hi,
 
-Reviewed-by: Bailey Forrest <bcf@google.com>
+ping :)
+
+Regards,
+Romain
+
+Le mer. 26 janv. 2022 =C3=A0 18:56, Romain Perier <romain.perier@gmail.com>=
+ a =C3=A9crit :
+>
+> This series adds a basic driver for the PLL that generates
+> the cpu clock on MStar/SigmaStar ARMv7 SoCs.
+>
+> Unfortunately there isn't much documentation for this thing
+> so there are few magic values and guesses.
+>
+> This needs to come after the MPLL DT changes.
+>
+> Changes since v3:
+> - Added Reviewed-by on Daniel's patches
+> - Removed "[PATCH v3 8/9] ARM: mstar: Add OPP table for mercury5"
+>
+> Changes since v2:
+> - Re-ordered Kconfig by name
+> - Re-ordered includes alphabetically and removed useless ones
+> - Used timeout for cpu_relax
+> - Returned DIV_ROUND_DOWN_ULL() directly in
+>   msc313_cpupll_frequencyforreg()
+> - Returned DIV_ROUND_DOWN_ULL() directly in
+>   msc313_cpupll_regforfrequecy()
+> - Reduced the number of lines for msc313_cpupll_of_match
+> - Removed CLK_IS_CRITICAL
+>
+> Changes since v1:
+> - Re-worked the series and ensure that 'make dt_binding_check' passes.
+>   The required commit is merged now, so it is okay.
+> - Fixed coding style issues in the driver and makes check_patch.pl happy
+> - Added one more commit for extending the opp_table for infinity2m.
+>
+> Daniel Palmer (7):
+>   dt-bindings: clk: mstar msc313 cpupll binding description
+>   clk: mstar: msc313 cpupll clk driver
+>   ARM: mstar: Add cpupll to base dtsi
+>   ARM: mstar: Link cpupll to cpu
+>   ARM: mstar: Link cpupll to second core
+>   ARM: mstar: Add OPP table for infinity
+>   ARM: mstar: Add OPP table for infinity3
+>
+> Romain Perier (1):
+>   ARM: mstar: Extend opp_table for infinity2m
+>
+>  .../bindings/clock/mstar,msc313-cpupll.yaml   |  45 ++++
+>  arch/arm/boot/dts/mstar-infinity.dtsi         |  34 +++
+>  arch/arm/boot/dts/mstar-infinity2m.dtsi       |  17 ++
+>  arch/arm/boot/dts/mstar-infinity3.dtsi        |  58 +++++
+>  arch/arm/boot/dts/mstar-v7.dtsi               |   9 +
+>  drivers/clk/mstar/Kconfig                     |   8 +
+>  drivers/clk/mstar/Makefile                    |   2 +-
+>  drivers/clk/mstar/clk-msc313-cpupll.c         | 221 ++++++++++++++++++
+>  8 files changed, 393 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/clock/mstar,msc313-=
+cpupll.yaml
+>  create mode 100644 drivers/clk/mstar/clk-msc313-cpupll.c
+>
+> --
+> 2.34.1
+>
