@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE4BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243248AbiBOSrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:47:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56268 "EHLO
+        id S243251AbiBOSrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:47:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243203AbiBOSqy (ORCPT
+        with ESMTP id S243205AbiBOSqz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:46:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017182B275
+        Tue, 15 Feb 2022 13:46:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE67B2BB0D
         for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:46:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 940B0616C7
+        by ams.source.kernel.org (Postfix) with ESMTPS id 808A7B81BE4
         for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 18:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F39A6C340F0;
-        Tue, 15 Feb 2022 18:46:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7D63C340F2;
+        Tue, 15 Feb 2022 18:46:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644950803;
-        bh=ZZVHYN24fbtWtWWxo9X93JAX+d6Sbd/BNMAjo9TCEWg=;
+        s=k20201202; t=1644950802;
+        bh=XXGeNtrspMb0Dwxmyk26Ohtm/O4a1cfPDFdOFE7eyIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NP7XJ7FkCwxUTWQFFr763Xtt20093Awuy17twpkb6nJw41/4NqPIacyVL3hmU9ByF
-         HLplaSE6hcS3hvIeCzj8RXP1ZZzMAH0w6RBU1YjjVYtrlA/tQvIXXC2OYEgsqrUYBD
-         luJAySzM/57YBSdNpiJxftfZK+sHD1iojcD+aLviUHRiqEtiw4sFUj9AlWw4/rnjTM
-         bL0jMZBAX/6fa48/U9i50bIRB/FHXStFnWvsyWomDlByrr/7LbyLV/iyWPMftAJM7w
-         4FhnO1a6V5DrOKWxdqVFsGDy2sfU40wMTnn5EBkS36vsjFFfzIhPOYQ+MzBUok5IjX
-         mXRhL+P7mArqA==
+        b=a3Asl/Q0jZHzZ8Fx18aS9Edo012+2tW8XzSsF+ko6ooB0CUZ014JYnq8gv3cZY7ho
+         ywxRC5EIwUEzNjahfZ5A7JXMOTEX1e/qYX7RQNx+lPvfBWHuK/n/ne7TIYCWNhSplS
+         fAei8gKcZhNrT6fYpgw/EuJya/XutP92YBGFVZQulobaWum0Qv8ydZGAPttHIbOusg
+         i13hw9VVXETh0QI6IEWmbw09HRwlYJFUXqXqXrHxcqLwGjUweJ0h4zhaM6EdfdmM1C
+         askxjC7YovIT/JDpyh0X1GLsXEqlscTjfRFmDmef49vmI2U09TBJJHIjju28rqt3MP
+         XvIQjnVzLjaNw==
 From:   SeongJae Park <sj@kernel.org>
 To:     akpm@linux-foundation.org
 Cc:     xhao@linux.alibaba.com, rientjes@google.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH 8/8] mm/damon/paddr,vaddr: Remove damon_{p,v}a_{target_valid,set_operations}()
-Date:   Tue, 15 Feb 2022 18:46:03 +0000
-Message-Id: <20220215184603.1479-9-sj@kernel.org>
+Subject: [PATCH 6/8] mm/damon/dbgfs: Use operations id for knowing if the target has pid
+Date:   Tue, 15 Feb 2022 18:46:01 +0000
+Message-Id: <20220215184603.1479-7-sj@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220215184603.1479-1-sj@kernel.org>
 References: <20220215184603.1479-1-sj@kernel.org>
@@ -46,115 +46,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because DAMON debugfs interface and DAMON-based proactive reclaim are
-now using monitoring operations via registration mechanism,
-damon_{p,v}a_{target_valid,set_operations}() functions have no user.
-This commit clean them up.
+DAMON debugfs interface depends on monitoring operations for virtual
+address spaces because it knows if the target has pid or not by seeing
+if the context is configured to use one of the virtual address space
+monitoring operation functions.  We can replace that check with
+'enum damon_ops_id' now, to make it independent.  This commit makes the
+change.
 
 Signed-off-by: SeongJae Park <sj@kernel.org>
 ---
- include/linux/damon.h | 10 ----------
- mm/damon/paddr.c      | 20 +-------------------
- mm/damon/vaddr.c      | 15 +--------------
- 3 files changed, 2 insertions(+), 43 deletions(-)
+ mm/damon/dbgfs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/damon.h b/include/linux/damon.h
-index 076da277b249..49c4a11ecf20 100644
---- a/include/linux/damon.h
-+++ b/include/linux/damon.h
-@@ -513,14 +513,4 @@ int damon_stop(struct damon_ctx **ctxs, int nr_ctxs);
+diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
+index 8bf9e38b60f4..05b574cbcea8 100644
+--- a/mm/damon/dbgfs.c
++++ b/mm/damon/dbgfs.c
+@@ -277,7 +277,7 @@ static ssize_t dbgfs_schemes_write(struct file *file, const char __user *buf,
  
- #endif	/* CONFIG_DAMON */
- 
--#ifdef CONFIG_DAMON_VADDR
--bool damon_va_target_valid(void *t);
--void damon_va_set_operations(struct damon_ctx *ctx);
--#endif	/* CONFIG_DAMON_VADDR */
--
--#ifdef CONFIG_DAMON_PADDR
--bool damon_pa_target_valid(void *t);
--void damon_pa_set_operations(struct damon_ctx *ctx);
--#endif	/* CONFIG_DAMON_PADDR */
--
- #endif	/* _DAMON_H */
-diff --git a/mm/damon/paddr.c b/mm/damon/paddr.c
-index d968bb38bd5d..7c263797a9a9 100644
---- a/mm/damon/paddr.c
-+++ b/mm/damon/paddr.c
-@@ -208,11 +208,6 @@ static unsigned int damon_pa_check_accesses(struct damon_ctx *ctx)
- 	return max_nr_accesses;
+ static inline bool target_has_pid(const struct damon_ctx *ctx)
+ {
+-	return ctx->ops.target_valid == damon_va_target_valid;
++	return ctx->ops.id == DAMON_OPS_VADDR;
  }
  
--bool damon_pa_target_valid(void *t)
--{
--	return true;
--}
--
- static unsigned long damon_pa_apply_scheme(struct damon_ctx *ctx,
- 		struct damon_target *t, struct damon_region *r,
- 		struct damos *scheme)
-@@ -261,19 +256,6 @@ static int damon_pa_scheme_score(struct damon_ctx *context,
- 	return DAMOS_MAX_SCORE;
- }
+ static ssize_t sprint_target_ids(struct damon_ctx *ctx, char *buf, ssize_t len)
+@@ -741,8 +741,8 @@ static struct damon_ctx *dbgfs_new_ctx(void)
+ 	if (!ctx)
+ 		return NULL;
  
--void damon_pa_set_operations(struct damon_ctx *ctx)
--{
--	ctx->ops.init = NULL;
--	ctx->ops.update = NULL;
--	ctx->ops.prepare_access_checks = damon_pa_prepare_access_checks;
--	ctx->ops.check_accesses = damon_pa_check_accesses;
--	ctx->ops.reset_aggregated = NULL;
--	ctx->ops.target_valid = damon_pa_target_valid;
--	ctx->ops.cleanup = NULL;
--	ctx->ops.apply_scheme = damon_pa_apply_scheme;
--	ctx->ops.get_scheme_score = damon_pa_scheme_score;
--}
--
- static int __init damon_pa_initcall(void)
- {
- 	struct damon_operations ops = {
-@@ -283,7 +265,7 @@ static int __init damon_pa_initcall(void)
- 		.prepare_access_checks = damon_pa_prepare_access_checks,
- 		.check_accesses = damon_pa_check_accesses,
- 		.reset_aggregated = NULL,
--		.target_valid = damon_pa_target_valid,
-+		.target_valid = NULL,
- 		.cleanup = NULL,
- 		.apply_scheme = damon_pa_apply_scheme,
- 		.get_scheme_score = damon_pa_scheme_score,
-diff --git a/mm/damon/vaddr.c b/mm/damon/vaddr.c
-index 87475ba37bec..b2ec0aa1ff45 100644
---- a/mm/damon/vaddr.c
-+++ b/mm/damon/vaddr.c
-@@ -653,7 +653,7 @@ static unsigned int damon_va_check_accesses(struct damon_ctx *ctx)
-  * Functions for the target validity check and cleanup
-  */
- 
--bool damon_va_target_valid(void *target)
-+static bool damon_va_target_valid(void *target)
- {
- 	struct damon_target *t = target;
- 	struct task_struct *task;
-@@ -739,19 +739,6 @@ static int damon_va_scheme_score(struct damon_ctx *context,
- 	return DAMOS_MAX_SCORE;
- }
- 
--void damon_va_set_operations(struct damon_ctx *ctx)
--{
--	ctx->ops.init = damon_va_init;
--	ctx->ops.update = damon_va_update;
--	ctx->ops.prepare_access_checks = damon_va_prepare_access_checks;
--	ctx->ops.check_accesses = damon_va_check_accesses;
--	ctx->ops.reset_aggregated = NULL;
--	ctx->ops.target_valid = damon_va_target_valid;
--	ctx->ops.cleanup = NULL;
--	ctx->ops.apply_scheme = damon_va_apply_scheme;
--	ctx->ops.get_scheme_score = damon_va_scheme_score;
--}
--
- static int __init damon_va_initcall(void)
- {
- 	struct damon_operations ops = {
+-	if (damon_select_ops(ctx, DAMON_OPS_VADDR) && damon_select_ops(ctx,
+-				DAMON_OPS_PADDR)) {
++	if (damon_select_ops(ctx, DAMON_OPS_VADDR) &&
++			damon_select_ops(ctx, DAMON_OPS_PADDR)) {
+ 		damon_destroy_ctx(ctx);
+ 		return NULL;
+ 	}
 -- 
 2.17.1
 
