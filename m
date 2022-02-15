@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9B4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9F3C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243154AbiBOSmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:42:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44264 "EHLO
+        id S243172AbiBOSmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:42:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241557AbiBOSmn (ORCPT
+        with ESMTP id S243155AbiBOSmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:42:43 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B72B27FE5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:42:32 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id u1so19899565wrg.11
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:42:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=17RfdOkFpQ0vqX6j3AbugB+kAjRG2bVcKwe0qdXZHnE=;
-        b=R0NFIY6PLX5Bq2GY7wQqcv1fzjR+HqhwNljCYJLfBmHLsZkNkH5UgW4x9kBi5gvXUt
-         Ss54ZIWiLGHlt9/QOiMPO7CGbXpioYIHjH9eSBDHqfbQhlFrWYzcqlbalgvqRQtDEPen
-         UqB+yc+2Kr94kHm3BsC8qfB8cjPpwgXUmshMQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=17RfdOkFpQ0vqX6j3AbugB+kAjRG2bVcKwe0qdXZHnE=;
-        b=CIeOKTVvit/nMjmOwZpvQ45mfFZCea3m8Ff0RVhTVlV9C6uZANBC2HqJxVqpyIKdGh
-         w3NCkO+o2B69R5XFtlPBlX+fSZie/oUdETAaWUGoyGXEaoNYoZAduFwTG2wq4lWnI2Kt
-         IYwLlPDaj74ClThJ83xQR4Gflvy/uQldncXu4xf6Ns0G8/iKAdQ0wpXuzNS6SHKiHBs8
-         9+gVSUzs74wlDPi7Mtg1BRYqZby2ZQlHdfP3VIS7Fp+aH1sZ4meIGkHBDilRJamrzOTr
-         jlAxacyJGZrl6BtSra7Bxz3y6l79iLStZU8Avks8UycLLMs+hSvjXKKwe6JtXpEkXApx
-         Wm0g==
-X-Gm-Message-State: AOAM532cZznRqwCJFV7nPVgpFJFocgMfCiC3GRwsY8wwknwNUXLLZSLF
-        4pPHMjVDDOir6cQy5jnNZCwQxA==
-X-Google-Smtp-Source: ABdhPJz54Ip87v52N6pTMY2GW3cc/euNgtBXo+zsV39RnEX7mH5FCghKMZBrBwTlkUeE9KcoPJKx/A==
-X-Received: by 2002:adf:ffce:: with SMTP id x14mr253920wrs.552.1644950551214;
-        Tue, 15 Feb 2022 10:42:31 -0800 (PST)
-Received: from beni.c.googlers.com.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
-        by smtp.gmail.com with ESMTPSA id a1sm14094017wri.36.2022.02.15.10.42.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 10:42:30 -0800 (PST)
-From:   Ricardo Ribalda <ribalda@chromium.org>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Cc:     Ricardo Ribalda <ribalda@chromium.org>
-Subject: [PATCH v2] media: uvcvideo: Fix handling on Bitmask controls
-Date:   Tue, 15 Feb 2022 18:42:28 +0000
-Message-Id: <20220215184228.2531386-1-ribalda@chromium.org>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+        Tue, 15 Feb 2022 13:42:52 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6929327FEA;
+        Tue, 15 Feb 2022 10:42:42 -0800 (PST)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FH4N62029572;
+        Tue, 15 Feb 2022 18:42:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2021-07-09; bh=zXmbrA+nSO5dCXMa3+3nbbOi7Ym51eV5ADJO++TfFv0=;
+ b=oqxhdoF2rIqYW/BJuSS/ErAWNzD765UjQwIZsoI1GRVfs8Q4rXVcbrU0FnnU2cLvawLF
+ AYQae2Cd1+DskOtQ8w0jBO1dosO2XnVLEnsQC0jWQs51B0aIWTzltga+MqrU8TT6TYuE
+ 6wZRUb+QiL0SiOtIHwASsKyJLCAD5FQ09A07Gzue+CMRKkVOs3wDPkZEg1hjEkmZf/0C
+ Y4R6t4FzGXAUV4f/3cdB3op7Dw+UoIkXqGgD7iu/thJxqgEhn1U8mAAj1qbkrBKeemu+
+ cBSwqrCWSrO7kIUkT7hFcBjN4Pf+m4/bIXwZOO2udmhOmdEx6mAWMMzdpbLPqSunLQcQ bw== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e8570taav-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 18:42:18 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21FIfEKi150005;
+        Tue, 15 Feb 2022 18:42:17 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 3e620xg50s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 18:42:17 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21FIgHrN152289;
+        Tue, 15 Feb 2022 18:42:17 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+        by userp3030.oracle.com with ESMTP id 3e620xg50h-1;
+        Tue, 15 Feb 2022 18:42:17 +0000
+From:   Sherry Yang <sherry.yang@oracle.com>
+To:     skhan@linuxfoundation.org, shuah@kernel.org, keescook@chromium.org,
+        luto@amacapital.net, wad@chromium.org, christian@brauner.io,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        usama.anjum@collabora.com, sherry.yang@oracle.com
+Subject: [PATCH v3] selftests/seccomp: Fix seccomp failure by adding missing headers
+Date:   Tue, 15 Feb 2022 10:42:15 -0800
+Message-Id: <20220215184215.40093-1-sherry.yang@oracle.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: NohrFFT0X_beyLbk1JWdxuHwTzUHtHwb
+X-Proofpoint-GUID: NohrFFT0X_beyLbk1JWdxuHwTzUHtHwb
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Minimum and step values for V4L2_CTRL_TYPE_BITMASK controls should be 0.
-There is no need to query the camera firmware about this and maybe get
-invalid results.
+seccomp_bpf failed on tests 47 global.user_notification_filter_empty
+and 48 global.user_notification_filter_empty_threaded when it's
+tested on updated kernel but with old kernel headers. Because old
+kernel headers don't have definition of macro __NR_clone3 which is
+required for these two tests. Use KHDR_INCLUDES to correctly reach
+the installed headers.
 
-Also value should be clamped to the min/max value advertised by the
-hardware.
-
-Fixes v4l2-compliane:
-Control ioctls (Input 0):
-                fail: v4l2-test-controls.cpp(97): minimum must be 0 for a bitmask control
-	test VIDIOC_QUERY_EXT_CTRL/QUERYMENU: FAIL
-
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
+Tested-by: Sherry Yang <sherry.yang@oracle.com>
 ---
- drivers/media/usb/uvc/uvc_ctrl.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ tools/testing/selftests/seccomp/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/uvc/uvc_ctrl.c b/drivers/media/usb/uvc/uvc_ctrl.c
-index b4f6edf968bc0..d8b9ab5b7fb85 100644
---- a/drivers/media/usb/uvc/uvc_ctrl.c
-+++ b/drivers/media/usb/uvc/uvc_ctrl.c
-@@ -1156,7 +1156,8 @@ static int __uvc_query_v4l2_ctrl(struct uvc_video_chain *chain,
- 		break;
- 	}
+diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+index 0ebfe8b0e147..7eaed95ba4b3 100644
+--- a/tools/testing/selftests/seccomp/Makefile
++++ b/tools/testing/selftests/seccomp/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
+-CFLAGS += -Wl,-no-as-needed -Wall
++CFLAGS += -Wl,-no-as-needed -Wall $(KHDR_INCLUDES)
+ LDFLAGS += -lpthread
  
--	if (ctrl->info.flags & UVC_CTRL_FLAG_GET_MIN)
-+	if (ctrl->info.flags & UVC_CTRL_FLAG_GET_MIN &&
-+	    mapping->v4l2_type != V4L2_CTRL_TYPE_BITMASK)
- 		v4l2_ctrl->minimum = mapping->get(mapping, UVC_GET_MIN,
- 				     uvc_ctrl_data(ctrl, UVC_CTRL_DATA_MIN));
- 
-@@ -1164,7 +1165,8 @@ static int __uvc_query_v4l2_ctrl(struct uvc_video_chain *chain,
- 		v4l2_ctrl->maximum = mapping->get(mapping, UVC_GET_MAX,
- 				     uvc_ctrl_data(ctrl, UVC_CTRL_DATA_MAX));
- 
--	if (ctrl->info.flags & UVC_CTRL_FLAG_GET_RES)
-+	if (ctrl->info.flags & UVC_CTRL_FLAG_GET_RES &&
-+	    mapping->v4l2_type != V4L2_CTRL_TYPE_BITMASK)
- 		v4l2_ctrl->step = mapping->get(mapping, UVC_GET_RES,
- 				  uvc_ctrl_data(ctrl, UVC_CTRL_DATA_RES));
- 
-@@ -1721,6 +1723,7 @@ int uvc_ctrl_set(struct uvc_fh *handle,
- 	/* Clamp out of range values. */
- 	switch (mapping->v4l2_type) {
- 	case V4L2_CTRL_TYPE_INTEGER:
-+	case V4L2_CTRL_TYPE_BITMASK:
- 		if (!ctrl->cached) {
- 			ret = uvc_ctrl_populate_cache(chain, ctrl);
- 			if (ret < 0)
+ TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
 -- 
-2.35.1.265.g69c8d7142f-goog
+2.31.1
 
