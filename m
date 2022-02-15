@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236211AbiBOKDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:03:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40122 "EHLO
+        id S235562AbiBOKEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:04:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230356AbiBOKDk (ORCPT
+        with ESMTP id S234188AbiBOKEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:03:40 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B978196;
-        Tue, 15 Feb 2022 02:03:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644919409; x=1676455409;
-  h=from:to:cc:subject:date:message-id;
-  bh=PX/WHKWbkuwa/EAALLC2/n7hI8uaF1SS9QQ5iBOgSbM=;
-  b=PcLjoarUW1XyjC9AU5rdloqvXO9IU2yd2QPVtLlsUITldfE31w83M89g
-   0pPobVntkMyppuz+Fb+LJei3stl7IzQW4nxnGOpPnOxdzdYU8He1Tu0wJ
-   bIYxIX2XAn9GShg9ywpy7mPKTY7GGci/8kH3ZO8tpkZQS8sEsZ1SitrUJ
-   8=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 15 Feb 2022 02:03:29 -0800
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 15 Feb 2022 02:03:28 -0800
-X-QCInternal: smtphost
-Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 15 Feb 2022 15:33:26 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id 256EE466C; Tue, 15 Feb 2022 15:33:25 +0530 (+0530)
-From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
-To:     manivannan.sadhasivam@linaro.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, jassisinghbrar@gmail.com
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH v2 2/7] mailbox: qcom: Add support for SDX65 APCS IPC
-Date:   Tue, 15 Feb 2022 15:33:20 +0530
-Message-Id: <1644919400-27487-1-git-send-email-quic_rohiagar@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 15 Feb 2022 05:04:09 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D5D317;
+        Tue, 15 Feb 2022 02:03:58 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644919436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0GQCwnsaZU0MpAE/uq/5vjVQ8fkLcXqKX/Mt5g4t1dw=;
+        b=22hCEKSsdLw8SfXQm0MMks6a2ILm3RXNdFSFHkOqZEmZFHae7JScxAM7ruDKLR76zzE0nB
+        bQMyw/JRetGpYbHqR9CUuPAQy9cjjdKxFkp92QlK5W9fRF0Dsef6jGhv0Bs/HK1TqWMLtu
+        ruC9BwIG6GAyCP0oWurPALkU3IRlkAguU0d7VW7MD64QpsfjFRdUkjOk7x/cBK4qhE73CM
+        nEHZ8A0rM4hVa6B2F0mv53buRZ7Jnc7lEYcHdqsixuYprLABJfRxLRqXuGR3cbYX3VgVhb
+        0Ak8gRH2V6I6JNXGoPSZd7T78Nhbwdm2THIPEcPDc3FTPIlEP5skS27P2nfRkg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644919436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0GQCwnsaZU0MpAE/uq/5vjVQ8fkLcXqKX/Mt5g4t1dw=;
+        b=8gLLKH1Egj/EfTRvnESRoEdVAYBPpMiswd0hHjPNNDEXBkLI16zb5B8letAJZMxTB2QKV7
+        iMGhHVnOpHYR9uAQ==
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: Re: [RFC V2 12/21] rv/reactor: Add the printk reactor
+In-Reply-To: <c1657d1c-0d2b-4aa3-c1ed-2ae6fdfcda86@kernel.org>
+References: <cover.1644830251.git.bristot@kernel.org>
+ <fad2d358d57dfffc084d482684ecc1d13b62b262.1644830251.git.bristot@kernel.org>
+ <10cf6003-6d2b-056b-11bb-3ae9c342a369@linuxfoundation.org>
+ <c1657d1c-0d2b-4aa3-c1ed-2ae6fdfcda86@kernel.org>
+Date:   Tue, 15 Feb 2022 11:09:55 +0106
+Message-ID: <87v8xg30qc.fsf@jogness.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In SDX65, the IPC bits are located in the APCS GCC block. Also, this block
-can provide clock functionality. Hence, add support for IPC with correct
-offset and name of the clock provider.
+On 2022-02-14, Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
+> On 2/14/22 18:25, Shuah Khan wrote:
+>> On=C2=A02/14/22=C2=A03:45=C2=A0AM,=C2=A0Daniel=C2=A0Bristot=C2=A0de=C2=
+=A0Oliveira=C2=A0wrote:
+>>> Note:=C2=A0do=C2=A0not=C2=A0use=C2=A0this=C2=A0reactor=C2=A0with=C2=A0r=
+q_lock=C2=A0taken,=C2=A0it=C2=A0will=C2=A0lock=C2=A0the
+>>> system=C2=A0until=C2=A0printk=C2=A0can=C2=A0handle=C2=A0that.
+>>=20
+>> Please=C2=A0give=C2=A0more=C2=A0details=C2=A0on=C2=A0"lock=C2=A0the=C2=
+=A0system"=C2=A0and=C2=A0how=C2=A0locking
+>> would=C2=A0impact=C2=A0users=C2=A0and=C2=A0system=C2=A0operation
+>
+> It is a deadlock on the rq_lock. Hopefully the new printk
+> implementation handles that better.
 
-Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
----
- drivers/mailbox/qcom-apcs-ipc-mailbox.c | 5 +++++
- 1 file changed, 5 insertions(+)
+I suggest using printk_deferred() for this reactor for now. With
+printk_deferred() the message and timestamp are immediately and
+locklessly stored in the buffer, and the printing is performed in a
+separate context. printk_deferred() is safe for all contexts.
 
-diff --git a/drivers/mailbox/qcom-apcs-ipc-mailbox.c b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
-index 9325d2a..54d7659 100644
---- a/drivers/mailbox/qcom-apcs-ipc-mailbox.c
-+++ b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
-@@ -53,6 +53,10 @@ static const struct qcom_apcs_ipc_data sdx55_apcs_data = {
- 	.offset = 0x1008, .clk_name = "qcom-sdx55-acps-clk"
- };
- 
-+static const struct qcom_apcs_ipc_data sdx65_apcs_data = {
-+	.offset = 0x1008, .clk_name = "qcom-sdx55-acps-clk"
-+};
-+
- static const struct regmap_config apcs_regmap_config = {
- 	.reg_bits = 32,
- 	.reg_stride = 4,
-@@ -159,6 +163,7 @@ static const struct of_device_id qcom_apcs_ipc_of_match[] = {
- 	{ .compatible = "qcom,sm8150-apss-shared", .data = &apps_shared_apcs_data },
- 	{ .compatible = "qcom,sm6115-apcs-hmss-global", .data = &msm8994_apcs_data },
- 	{ .compatible = "qcom,sdx55-apcs-gcc", .data = &sdx55_apcs_data },
-+	{ .compatible = "qcom,sdx65-apcs-gcc", .data = &sdx65_apcs_data },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, qcom_apcs_ipc_of_match);
--- 
-2.7.4
-
+John
