@@ -2,96 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7648AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233423AbiBOCKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 21:10:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56702 "EHLO
+        id S233466AbiBOCLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 21:11:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232846AbiBOCKR (ORCPT
+        with ESMTP id S232846AbiBOCLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 21:10:17 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB5E141444
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:10:09 -0800 (PST)
+        Mon, 14 Feb 2022 21:11:40 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B0D19C3A;
+        Mon, 14 Feb 2022 18:11:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644891009; x=1676427009;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KarI2KGIBoMIjz9i6cuv3KYdqwF8kbc+NTQdpXJE3+M=;
-  b=FsNlWmjhyOZDi489WZsUe3KBGfldmrfMgr77atLkI7gpSRsxl8D0a7FK
-   1UCkHJPwl98H/LYi6GO7zFUMWdYT4df42sws1JxyCEzJM+MJXk4IJSdXI
-   5+Kvxw+OINR2yyU74HAsZjuvv8wh64LtbxArJjzQNyn6n2amx7dvPU2EU
-   jNE0/2qEftIV6GVq73yBav1p92fAvujwZ2Uyw49634VBdkuCQ7o7iw0rO
-   IqO0K7uWASzshFfT7DAYJeWEDTypFC6hdbPv9D7vlClmjn06jqJxOQ+87
-   6gA09mnmwfZF5tsJNPikQe8DUeEeBvvCeFU5Zpx2dN4z4TrmaH614scKL
+  t=1644891091; x=1676427091;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+HeZRAeKFxW/cwuCZBqN2uQwwndDLWRt5wIFdHPT7oM=;
+  b=AuaIm1/q2OT+wy9PW+hgjnMIe7bEwjz7GYjQ21mcIsPrGAkCK5iylBVS
+   KpsmX9MNuK/ZWgogrIn+VAWfGzQOo0p1uR6dAyJpNKRLAAomLtVB9xQ6L
+   7nOgKIE4oTNy6Zv//HGT19Mm0ItMxUaMqwyNaJFzCIMqlYQybNdLEFAs6
+   epNKKhaE3ToKkSi65rh7XDtRDpICr9dbxyrHwph3AWKhgTTltN731u2ns
+   uWRB1jx3TWhLPoanDEaHwTv58xLc1FRdS0mk62y2z2nR161wyxI72nazz
+   Dym4s/EJztdhyOJDsaslFZYuclyFJXvRX+3j6dEqFwmcCeWa0fgoLtPSP
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="336657705"
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230867125"
 X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="336657705"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 18:10:09 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="230867125"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 18:11:31 -0800
 X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="680795973"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2022 18:10:04 -0800
-Message-ID: <a663613f-c417-715b-7071-1a992adb8c68@linux.intel.com>
-Date:   Tue, 15 Feb 2022 10:08:46 +0800
+   d="scan'208";a="703381197"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 18:11:27 -0800
+Date:   Tue, 15 Feb 2022 10:22:23 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zeng Guang <guang.zeng@intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: Re: [PATCH 02/11] KVM: VMX: Handle APIC-write offset wrangling in
+ VMX code
+Message-ID: <20220215022221.GA28478@gao-cwp>
+References: <20220204214205.3306634-1-seanjc@google.com>
+ <20220204214205.3306634-3-seanjc@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v3 06/10] drm/nouveau/device: Get right pgsize_bitmap of
- iommu_domain
-Content-Language: en-US
-To:     Joerg Roedel <joro@8bytes.org>
-References: <20220214015538.2828933-1-baolu.lu@linux.intel.com>
- <20220214015538.2828933-7-baolu.lu@linux.intel.com>
- <YgpQjJPZnnOJUepv@8bytes.org>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <YgpQjJPZnnOJUepv@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204214205.3306634-3-seanjc@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/14/22 8:52 PM, Joerg Roedel wrote:
-> On Mon, Feb 14, 2022 at 09:55:34AM +0800, Lu Baolu wrote:
->> The supported page sizes of an iommu_domain are saved in the pgsize_bitmap
->> field. Retrieve the value from the right place.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
->> Link: https://lore.kernel.org/r/20211218074546.1772553-1-baolu.lu@linux.intel.com
->> Reviewed-by: Christoph Hellwig <hch@lst.de>
->> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>--- a/arch/x86/kvm/vmx/vmx.c
+>+++ b/arch/x86/kvm/vmx/vmx.c
+>@@ -5302,9 +5302,16 @@ static int handle_apic_eoi_induced(struct kvm_vcpu *vcpu)
+> static int handle_apic_write(struct kvm_vcpu *vcpu)
+> {
+> 	unsigned long exit_qualification = vmx_get_exit_qual(vcpu);
+>-	u32 offset = exit_qualification & 0xfff;
 > 
-> Acked-by: Joerg Roedel <jroedel@suse.de>
-> 
-> I guess this is picked up by the DRM maintainers?
-> 
+>-	/* APIC-write VM exit is trap-like and thus no need to adjust IP */
+>+	/*
+>+	 * APIC-write VM-Exit is trap-like, KVM doesn't need to advance RIP and
+>+	 * hardware has done any necessary aliasing, offset adjustments, etc...
+>+	 * for the access.  I.e. the correct value has already been  written to
+>+	 * the vAPIC page for the correct 16-byte chunk.  KVM needs only to
+>+	 * retrieve the register value and emulate the access.
+>+	 */
+>+	u32 offset = exit_qualification & 0xff0;
 
-I would like this patch to go through the iommu tree. This series could
-not be compiled without this change.
+Can we take this opportunity to remove offset/exit_qualification?
+They are used just once.
 
-Best regards,
-baolu
+>+
+> 	kvm_apic_write_nodecode(vcpu, offset);
+> 	return 1;
+> }
+>-- 
+>2.35.0.263.gb82422642f-goog
+>
