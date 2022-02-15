@@ -2,87 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D90C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A62AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239114AbiBOOvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:51:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34068 "EHLO
+        id S239396AbiBOOwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:52:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239121AbiBOOuf (ORCPT
+        with ESMTP id S239504AbiBOOvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:50:35 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5896129BBF;
-        Tue, 15 Feb 2022 06:48:37 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9EF37210FA;
-        Tue, 15 Feb 2022 14:48:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644936515; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+yhpPTea/DqMlskYIss7cvQ5ZGd0scwjXa1I33ua2hg=;
-        b=vCogXRX9gwyCVqmqrQoZpcqRCMT/RAnB+gHyB1EB8ZFVOUQfLs9dbBYVk75RE5Hos/Srbl
-        /xLJBKlF9ibMbjqlFeMUOvXbFcIH25cHEhjCgJYA1X3F0uQkvRj6PNu1VEm94lzv4Ys0Ep
-        K+q9HywEzRlYDjcCqPQ0i1CbVxOY7b0=
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 97523A3B89;
-        Tue, 15 Feb 2022 14:48:35 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 96B8FDA818; Tue, 15 Feb 2022 15:44:51 +0100 (CET)
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Btrfs fixes for 5.17-rc5
-Date:   Tue, 15 Feb 2022 15:44:49 +0100
-Message-Id: <cover.1644935941.git.dsterba@suse.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 15 Feb 2022 09:51:39 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9570711B325;
+        Tue, 15 Feb 2022 06:50:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644936611; x=1676472611;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xFA9nntrtGrpU/cgN8W3xUF0mYNVZIjdFM78u82ttwU=;
+  b=GsA1Ih/U6EHGkLWy/ASI/7pjcl7fs9MnLUZNHtb1wO8JuvI6nqxsHCFz
+   IX6SwHcSqLDFA7eolfSrtNJn235A2qoycwqIGgz5Nk9HovJrAGo4HbV0M
+   g7mulxfE8V7mOvEyViZW/FXe3znO6RhnFsM5gqsAmAQPEBvhCytGsMaXf
+   bROfPE70FLZcfg8vrkGMpZyy4AEMPKBHSOMFdmIn5sPPgSsomSSznxMcg
+   HTUKpZEUhjN456Pv7i0L+k82z/ykPmsLtE2LmUyCga3WHY2ngVAj2IEmc
+   R0lUuCt8YY5RUVHe3d3EgBKdKy4bvG9yLHoKv8yJHejK/YHalKSkxrB4s
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="233907259"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="233907259"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 06:49:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="486204509"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 15 Feb 2022 06:49:52 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJz9L-0009lk-Vv; Tue, 15 Feb 2022 14:49:51 +0000
+Date:   Tue, 15 Feb 2022 22:49:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guixin Liu <kanie@linux.alibaba.com>, bostroesser@gmail.com,
+        martin.petersen@oracle.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xiaoguang.wang@linux.alibaba.com,
+        xlpang@linux.alibaba.com
+Subject: Re: [PATCH V3] scsi: target: tcmu: Make cmd_ring_size changeable via
+ configfs.
+Message-ID: <202202152239.8LJNreof-lkp@intel.com>
+References: <1644912216-97633-1-git-send-email-kanie@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644912216-97633-1-git-send-email-kanie@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Guixin,
 
-a few more fixups. Please pull, thanks.
+Thank you for the patch! Perhaps something to improve:
 
-* yield CPU more often when defragmenting a large file
+[auto build test WARNING on mkp-scsi/for-next]
+[also build test WARNING on v5.17-rc4 next-20220215]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-* skip defragmenting extents already under writeback
+url:    https://github.com/0day-ci/linux/commits/Guixin-Liu/scsi-target-tcmu-Make-cmd_ring_size-changeable-via-configfs/20220215-160505
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
+config: x86_64-randconfig-a005-20220214 (https://download.01.org/0day-ci/archive/20220215/202202152239.8LJNreof-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 37f422f4ac31c8b8041c6b62065263314282dab6)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/7f77700542b8196c546ef10656dda7a107d8d1ad
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Guixin-Liu/scsi-target-tcmu-Make-cmd_ring_size-changeable-via-configfs/20220215-160505
+        git checkout 7f77700542b8196c546ef10656dda7a107d8d1ad
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/target/
 
-* improve error message when send fails to write file data
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-* get rid of warning when mounted with flushoncommit
+All warnings (new ones prefixed by >>):
 
-----------------------------------------------------------------
-The following changes since commit 40cdc509877bacb438213b83c7541c5e24a1d9ec:
+>> drivers/target/target_core_user.c:2628:9: warning: format specifies type 'unsigned int' but the argument has type 'unsigned long' [-Wformat]
+                         (udev->cmdr_size + CMDR_OFF) >> 20);
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/target/target_core_user.c:2744:4: warning: format specifies type 'unsigned int' but the argument has type 'unsigned long' [-Wformat]
+                           (udev->cmdr_size + CMDR_OFF) >> 20);
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   2 warnings generated.
 
-  btrfs: skip reserved bytes warning on unmount after log cleanup failure (2022-01-31 16:06:50 +0100)
 
-are available in the Git repository at:
+vim +2628 drivers/target/target_core_user.c
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.17-rc4-tag
+  2616	
+  2617	static ssize_t tcmu_show_configfs_dev_params(struct se_device *dev, char *b)
+  2618	{
+  2619		struct tcmu_dev *udev = TCMU_DEV(dev);
+  2620		ssize_t bl = 0;
+  2621	
+  2622		bl = sprintf(b + bl, "Config: %s ",
+  2623			     udev->dev_config[0] ? udev->dev_config : "NULL");
+  2624		bl += sprintf(b + bl, "Size: %llu ", udev->dev_size);
+  2625		bl += sprintf(b + bl, "MaxDataAreaMB: %u ", udev->data_area_mb);
+  2626		bl += sprintf(b + bl, "DataPagesPerBlk: %u", udev->data_pages_per_blk);
+  2627		bl += sprintf(b + bl, "CmdRingSizeMB: %u\n",
+> 2628			      (udev->cmdr_size + CMDR_OFF) >> 20);
+  2629	
+  2630		return bl;
+  2631	}
+  2632	
 
-for you to fetch changes up to 2e7be9db125a0bf940c5d65eb5c40d8700f738b5:
-
-  btrfs: send: in case of IO error log it (2022-02-09 18:53:26 +0100)
-
-----------------------------------------------------------------
-Dāvis Mosāns (1):
-      btrfs: send: in case of IO error log it
-
-Filipe Manana (1):
-      btrfs: get rid of warning on transaction commit when using flushoncommit
-
-Qu Wenruo (2):
-      btrfs: don't hold CPU for too long when defragging a file
-      btrfs: defrag: don't try to defrag extents which are under writeback
-
- fs/btrfs/ioctl.c       |  5 +++++
- fs/btrfs/send.c        |  4 ++++
- fs/btrfs/transaction.c | 12 ++++++++++--
- 3 files changed, 19 insertions(+), 2 deletions(-)
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
