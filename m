@@ -2,125 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9164CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 094D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234189AbiBOFru (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:47:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33326 "EHLO
+        id S234196AbiBOFsA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:48:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiBOFrt (ORCPT
+        with ESMTP id S234190AbiBOFrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:47:49 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E680665D6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:47:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644904059; x=1676440059;
-  h=message-id:date:mime-version:cc:subject:to:references:
+        Tue, 15 Feb 2022 00:47:55 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613277652;
+        Mon, 14 Feb 2022 21:47:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644904066; x=1676440066;
+  h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=FB4ZrG+H6kHcJlMBI4utm8Pv+AllaomNjuD3vYEkBkw=;
-  b=nRC0zS16r33xIh/169umun5mIqiiN9N/M/cVFn2XYgON4cTXmrIc4OxU
-   qN6mSI0i4JyaBeaZYRQetxJpQ1Kq7MXAXSdVN01DvpfaGT06d6ROiIeRG
-   jf+FDPRp9dRcUnETECT/iVZsWCZ7iqt1R264PGSWeAljdGcWv1XUyQBr9
-   5ykGyqrrqbUmDaDvAhhwhtP8Mb8lpgWwcmBXE4uCF0mGWhsuSDcp/o2PA
-   VbzqXgRCklI3lNFeXTeBaP0OOZm8L3YvwsD42UdovUg8O768hzXqcsSrj
-   s+UAOnLbA/6lT9CvlvT1qmmhuWopEksDdX3mnzAFlVcyy1uHIp97D+R8Q
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="313529375"
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="313529375"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 21:47:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="680850350"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2022 21:47:36 -0800
-Message-ID: <b8420944-03ec-e426-e1fa-789b17604686@linux.intel.com>
-Date:   Tue, 15 Feb 2022 13:46:18 +0800
+  bh=tCYGnve93Lv4ejFxUIRd/Ltx7QSUv1nDOkb6h6k60F0=;
+  b=rI4MCAm/jQ//CTDIvhAcWj+A2sb1QyY+wKaPIM9RPbeANVGmh0npZwnB
+   mA6MMx7m44IkI67RdTrDPcbjTPTgHVlitB0Ytbh3A/EMggqA0FhvHuEa9
+   TCcjYxJsUoNxOg8+uY8ih1u4Hz5k2Sraym79B8SWArmI3JnLjF15K2BlS
+   Y=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Feb 2022 21:47:45 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 21:47:44 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 14 Feb 2022 21:47:43 -0800
+Received: from [10.216.16.231] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 14 Feb
+ 2022 21:47:38 -0800
+Message-ID: <33d67a7c-4f71-266a-f952-6d202ed4b51e@quicinc.com>
+Date:   Tue, 15 Feb 2022 11:17:32 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 10/11] iommu/vt-d: Use xarray for global
- device_domain_info
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH 2/8] mailbox: qcom: Add support for SDX65 APCS IPC
 Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
- <20220214025704.3184654-11-baolu.lu@linux.intel.com>
- <20220214140038.GB4160@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220214140038.GB4160@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <jassisinghbrar@gmail.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1644821755-27059-1-git-send-email-quic_rohiagar@quicinc.com>
+ <20220214083409.GB3494@thinkpad> <20220214084957.GH3494@thinkpad>
+From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
+In-Reply-To: <20220214084957.GH3494@thinkpad>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
 
-On 2/14/22 10:00 PM, Jason Gunthorpe wrote:
->> +
->> +/* Convert device source ID into the index of device_domain_array. */
->> +static inline unsigned long devi_idx(unsigned long seg, u8 bus, u8 devfn)
->> +{
->> +	return (seg << 16) | PCI_DEVID(bus, devfn);
->> +}
->>   
->>   /*
->> - * Iterate over elements in device_domain_list and call the specified
->> + * Iterate over elements in device_domain_array and call the specified
->>    * callback @fn against each element.
->>    */
->>   int for_each_device_domain(int (*fn)(struct device_domain_info *info,
->>   				     void *data), void *data)
->>   {
->> -	int ret = 0;
->> -	unsigned long flags;
->>   	struct device_domain_info *info;
->> +	unsigned long index;
->> +	int ret = 0;
->>   
->> -	spin_lock_irqsave(&device_domain_lock, flags);
->> -	list_for_each_entry(info, &device_domain_list, global) {
->> +	rcu_read_lock();
->> +	xa_for_each(&device_domain_array, index, info) {
->>   		ret = fn(info, data);
->> -		if (ret) {
->> -			spin_unlock_irqrestore(&device_domain_lock, flags);
->> -			return ret;
->> -		}
->> +		if (ret)
->> +			break;
-> And you probably shouldn't try to use RCU. It is really unclear how
-> this function can be useful while racing against
-> intel_iommu_release_device(), eg today the only user of this function
-> does:
-> 
-> static int search_pasid_table(struct device_domain_info *info, void *opaque)
-> {
-> 	struct pasid_table_opaque *data = opaque;
-> 
-> 	if (info->iommu->segment == data->segment &&
-> 	    info->bus == data->bus &&
-> 	    info->devfn == data->devfn &&
-> 
-> And even if you kfree_rcu(info) then 'info->iommu->' is still racy
-> unlocked.
-> 
-> RCU is complicated to use, it is not just a drop in replacement for a
-> spinlock.
-
-Thanks for your comments. I am going to stop this patch (and the next
-11/11) and spend more time figuring them out.
-
-Best regards,
-baolu
+On 2/14/2022 2:19 PM, Manivannan Sadhasivam wrote:
+> On Mon, Feb 14, 2022 at 02:04:14PM +0530, Manivannan Sadhasivam wrote:
+>> On Mon, Feb 14, 2022 at 12:25:55PM +0530, Rohit Agarwal wrote:
+>>> In SDX65, the IPC bits are located in the APCS GCC block. Also, this block
+>>> can provide clock functionality. Hence, add support for IPC with correct
+>>> offset and name of the clock provider.
+>>>
+>>> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+>> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+>>
+>> Thanks,
+>> Mani
+>>
+>>> ---
+>>>   drivers/mailbox/qcom-apcs-ipc-mailbox.c | 5 +++++
+>>>   1 file changed, 5 insertions(+)
+>>>
+>>> diff --git a/drivers/mailbox/qcom-apcs-ipc-mailbox.c b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+>>> index 9325d2a..3f8612c 100644
+>>> --- a/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+>>> +++ b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+>>> @@ -53,6 +53,10 @@ static const struct qcom_apcs_ipc_data sdx55_apcs_data = {
+>>>   	.offset = 0x1008, .clk_name = "qcom-sdx55-acps-clk"
+>>>   };
+>>>   
+>>> +static const struct qcom_apcs_ipc_data sdx65_apcs_data = {
+>>> +	.offset = 0x1008, .clk_name = "qcom-sdx65-acps-clk"
+>>> +};
+>>> +
+> After looking at patch 7/8, I think we should be able to reuse
+> "qcom-sdx55-acps-clk" for SDX65.
+Yes. Will update the patch. Thanks
+>
+> Thanks,
+> Mani
+>>>   static const struct regmap_config apcs_regmap_config = {
+>>>   	.reg_bits = 32,
+>>>   	.reg_stride = 4,
+>>> @@ -159,6 +163,7 @@ static const struct of_device_id qcom_apcs_ipc_of_match[] = {
+>>>   	{ .compatible = "qcom,sm8150-apss-shared", .data = &apps_shared_apcs_data },
+>>>   	{ .compatible = "qcom,sm6115-apcs-hmss-global", .data = &msm8994_apcs_data },
+>>>   	{ .compatible = "qcom,sdx55-apcs-gcc", .data = &sdx55_apcs_data },
+>>> +	{ .compatible = "qcom,sdx65-apcs-gcc", .data = &sdx65_apcs_data },
+>>>   	{}
+>>>   };
+>>>   MODULE_DEVICE_TABLE(of, qcom_apcs_ipc_of_match);
+>>> -- 
+>>> 2.7.4
+>>>
