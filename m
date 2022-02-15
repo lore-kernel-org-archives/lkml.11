@@ -2,227 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 984ADC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD5BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241237AbiBOQbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:31:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47198 "EHLO
+        id S241571AbiBOQcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:32:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbiBOQbs (ORCPT
+        with ESMTP id S236130AbiBOQcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:31:48 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8530344747
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:31:38 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id x193so21374234oix.0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:31:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8qvw6yBKslnptQAEGBK+TPeQpSTeAZ2XR520/qUmqko=;
-        b=ku36OtVat06YmsdQXzLJPPzujZv0oRg5u6WslCYojCY3zg3nh6fsrkORPv3u9pWRJs
-         i6LNjy6WkuQd2h0ap+DUulemJczX3f0HQeI4NNQzvFD86iy/3eA77uE4MBy/voBnglqZ
-         wUmhJ9AW7xswDT2GU3pkYqMlQQhl930vKf+kN6W9IB+j3hILh4K4JLQ4OfHhxnPF/pRH
-         yXBg3P0x3yQPQGl8C3NWH7lNWmLB4WoJcafzifTOnPfcdZ0jKOQjsEeQaewSO7Mw0w23
-         i3rq7OL3o7vvARv4HyThaMmBe0VyB2MywmjrCCL6ahxxtLcvsgN5uho22N+cQwb68uEi
-         WPiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8qvw6yBKslnptQAEGBK+TPeQpSTeAZ2XR520/qUmqko=;
-        b=E1FriTgMCvhT+qE517Kl8IuF6r+fZ4d7DAu2vuUIunHFblVFyG2Orw0kFrIx5wCfYz
-         5YW+pjlBg4ivYRLpffj6oIIbpVMw+LC+V+uxgVOVzFLMLbzZlWkKvroWeVsYxsQEZtFx
-         D6GIgYv9+X1S30/xbCLnyAb594xxIbjHtvcUVconB4s9MPMLGrEjqtJ2pxBIRfO+Ay3C
-         bxu8OS7lNNWB3GZGUmGmwXlA4vbxEnkpZ1QftLLU7JSeIQjBcuqzMacfPp6IV3ceYzp+
-         o42N1hNG1j/Hah2evvANnHVITg48c1QoicusCXZn6uhFkTNXt2j984Fe5HF6I1gjDgAd
-         OyPA==
-X-Gm-Message-State: AOAM532PGACDls+i8Kq94766gyuyEuKVHstAQsCpTACjgiKGWz2l7dez
-        gozKCB4ulvfF53L9BPsijPzjvg==
-X-Google-Smtp-Source: ABdhPJx1NHzLURoEZZtTBOsVuAbEOu7SN7/Q8HCr3dwJetsEmzt5pCEpmx67aE/WzgkEJNebGo5A4g==
-X-Received: by 2002:a05:6808:1482:b0:2ce:6ee7:2cf1 with SMTP id e2-20020a056808148200b002ce6ee72cf1mr1952114oiw.287.1644942697880;
-        Tue, 15 Feb 2022 08:31:37 -0800 (PST)
-Received: from yoga ([2600:1700:a0:3dc8:5c39:baff:fe03:898d])
-        by smtp.gmail.com with ESMTPSA id w17sm512720oik.30.2022.02.15.08.31.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 08:31:37 -0800 (PST)
-Date:   Tue, 15 Feb 2022 10:31:35 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 12/15] arm64: dts: qcom: Add SDM632 device tree
-Message-ID: <YgvVZ5iZn0UbyF3u@yoga>
-References: <20220112194118.178026-1-luca@z3ntu.xyz>
- <20220112194118.178026-13-luca@z3ntu.xyz>
+        Tue, 15 Feb 2022 11:32:00 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8A28879C;
+        Tue, 15 Feb 2022 08:31:49 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 54D881EC0518;
+        Tue, 15 Feb 2022 17:31:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644942703;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=cvlxRJuZ2ajCAnvFcq7AjH7roJyqu6nBgWYCPE7BuV8=;
+        b=p8RxN6gZHLFL3JMgdGVlrjZ2Q8S6h9K+LYQd+yUSC886YxDjCyTvIyj/BN7FreqiJnLeu8
+        6JGfX0Ei3XhqNkhC575yfdVQ0ysP50N1qoOOsYZGYWC+K4oyssyGoEn+OOP+l4Bu+QJT8h
+        f4M840uqRUjFDYdRSZAXqKQvo+j6k0s=
+Date:   Tue, 15 Feb 2022 17:31:45 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
+        antonio.gomez.iglesias@linux.intel.com, neelima.krishnan@intel.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
+Message-ID: <YgvVcdpmFCCn20A7@zn.tnic>
+References: <5bd785a1d6ea0b572250add0c6617b4504bc24d1.1644440311.git.pawan.kumar.gupta@linux.intel.com>
+ <YgqToxbGQluNHABF@zn.tnic>
+ <20220214224121.ilhu23cfjdyhvahk@guptapa-mobl1.amr.corp.intel.com>
+ <YgrltbToK8+tG2qK@zn.tnic>
+ <20220215002014.mb7g4y3hfefmyozx@guptapa-mobl1.amr.corp.intel.com>
+ <Ygt/QSTSMlUJnzFS@zn.tnic>
+ <20220215121103.vhb2lpoygxn3xywy@guptapa-mobl1.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220112194118.178026-13-luca@z3ntu.xyz>
+In-Reply-To: <20220215121103.vhb2lpoygxn3xywy@guptapa-mobl1.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 12 Jan 13:41 CST 2022, Luca Weiss wrote:
+On Tue, Feb 15, 2022 at 04:11:03AM -0800, Pawan Gupta wrote:
+> That is exactly what this patch is fixing. Please let me know if you
+> have any questions.
 
-> From: Vladimir Lypak <vladimir.lypak@gmail.com>
-> 
-> Snapdragon 632 is based on msm8953, add the devicee tree for that.
-> 
+Just one: does the explanation I've written for this mess, sound about
+right?
 
-The commit message is a little bit thin on details about the change.
+I'd like for this to be documented so that I don't scratch my head again
+when looking at this again later.
 
-> Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> ---
->  arch/arm64/boot/dts/qcom/sdm632.dtsi | 125 +++++++++++++++++++++++++++
->  1 file changed, 125 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sdm632.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sdm632.dtsi b/arch/arm64/boot/dts/qcom/sdm632.dtsi
-> new file mode 100644
-> index 000000000000..b80ba8a5ef3f
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sdm632.dtsi
-> @@ -0,0 +1,125 @@
-> +// SPDX-License-Identifier: BSD-3-Clause
-> +/* Copyright (c) 2022, The Linux Foundation. All rights reserved. */
-> +
-> +#include "msm8953.dtsi"
-> +
-> +/ {
-> +	thermal-zones {
-> +		/delete-node/cpu0-thermal;
+Btw, lemme add Cooper to Cc to doublecheck me - he usually knows those
+things.
 
-Below you replace cpu[4-7]-thermal. What about cpu[0-3]-thermal? And I
-would prefer the answer to be documented in the commit message.
+Thx.
 
-Regards,
-Bjorn
+---
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Date: Wed, 9 Feb 2022 13:04:36 -0800
+Subject: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
 
-> +		/delete-node/cpu1-thermal;
-> +		/delete-node/cpu2-thermal;
-> +		/delete-node/cpu3-thermal;
-> +		/delete-node/cpu4-thermal;
-> +		/delete-node/cpu5-thermal;
-> +		/delete-node/cpu6-thermal;
-> +		/delete-node/cpu7-thermal;
-> +		cpu4-thermal {
-> +			polling-delay-passive = <250>;
-> +			polling-delay = <1000>;
-> +			thermal-sensors = <&tsens0 5>;
-> +			trips {
-> +				cpu4_alert: trip-point0 {
-> +					temperature = <80000>;
-> +					hysteresis = <2000>;
-> +					type = "passive";
-> +				};
-> +				cpu4_crit: crit {
-> +					temperature = <100000>;
-> +					hysteresis = <2000>;
-> +					type = "critical";
-> +				};
-> +			};
-> +			cooling-maps {
-> +				map0 {
-> +					trip = <&cpu4_alert>;
-> +					cooling-device = <&CPU4 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> +				};
-> +			};
-> +		};
-> +		cpu5-thermal {
-> +			polling-delay-passive = <250>;
-> +			polling-delay = <1000>;
-> +			thermal-sensors = <&tsens0 6>;
-> +			trips {
-> +				cpu5_alert: trip-point0 {
-> +					temperature = <80000>;
-> +					hysteresis = <2000>;
-> +					type = "passive";
-> +				};
-> +				cpu5_crit: crit {
-> +					temperature = <100000>;
-> +					hysteresis = <2000>;
-> +					type = "critical";
-> +				};
-> +			};
-> +			cooling-maps {
-> +				map0 {
-> +					trip = <&cpu5_alert>;
-> +					cooling-device = <&CPU5 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> +				};
-> +			};
-> +		};
-> +		cpu6-thermal {
-> +			polling-delay-passive = <250>;
-> +			polling-delay = <1000>;
-> +			thermal-sensors = <&tsens0 7>;
-> +			trips {
-> +				cpu6_alert: trip-point0 {
-> +					temperature = <80000>;
-> +					hysteresis = <2000>;
-> +					type = "passive";
-> +				};
-> +				cpu6_crit: crit {
-> +					temperature = <100000>;
-> +					hysteresis = <2000>;
-> +					type = "critical";
-> +				};
-> +			};
-> +			cooling-maps {
-> +				map0 {
-> +					trip = <&cpu6_alert>;
-> +					cooling-device = <&CPU6 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> +				};
-> +			};
-> +		};
-> +		cpu7-thermal {
-> +			polling-delay-passive = <250>;
-> +			polling-delay = <1000>;
-> +			thermal-sensors = <&tsens0 8>;
-> +			trips {
-> +				cpu7_alert: trip-point0 {
-> +					temperature = <80000>;
-> +					hysteresis = <2000>;
-> +					type = "passive";
-> +				};
-> +				cpu7_crit: crit {
-> +					temperature = <100000>;
-> +					hysteresis = <2000>;
-> +					type = "critical";
-> +				};
-> +			};
-> +			cooling-maps {
-> +				map0 {
-> +					trip = <&cpu7_alert>;
-> +					cooling-device = <&CPU7 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> +				};
-> +			};
-> +		};
-> +	};
-> +};
-> +
-> +&CPU4 {
-> +	capacity-dmips-mhz = <1980>;
-> +};
-> +
-> +&CPU5 {
-> +	capacity-dmips-mhz = <1980>;
-> +};
-> +
-> +&CPU6 {
-> +	capacity-dmips-mhz = <1980>;
-> +};
-> +
-> +&CPU7 {
-> +	capacity-dmips-mhz = <1980>;
-> +};
-> -- 
-> 2.34.1
-> 
+tsx_clear_cpuid() uses MSR_TSX_FORCE_ABORT to clear CPUID.RTM and
+CPUID.HLE. Not all CPUs support MSR_TSX_FORCE_ABORT, alternatively use
+MSR_IA32_TSX_CTRL when supported.
+
+  [ bp: Document how and why TSX gets disabled. ]
+
+Fixes: 293649307ef9 ("x86/tsx: Clear CPUID bits when TSX always force aborts")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Tested-by: Neelima Krishnan <neelima.krishnan@intel.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/5bd785a1d6ea0b572250add0c6617b4504bc24d1.1644440311.git.pawan.kumar.gupta@linux.intel.com
+---
+ arch/x86/kernel/cpu/intel.c |  1 +
+ arch/x86/kernel/cpu/tsx.c   | 54 ++++++++++++++++++++++++++++++++-----
+ 2 files changed, 48 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index 8321c43554a1..8abf995677a4 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -722,6 +722,7 @@ static void init_intel(struct cpuinfo_x86 *c)
+ 	else if (tsx_ctrl_state == TSX_CTRL_DISABLE)
+ 		tsx_disable();
+ 	else if (tsx_ctrl_state == TSX_CTRL_RTM_ALWAYS_ABORT)
++		/* See comment over that function for more details. */
+ 		tsx_clear_cpuid();
+ 
+ 	split_lock_init();
+diff --git a/arch/x86/kernel/cpu/tsx.c b/arch/x86/kernel/cpu/tsx.c
+index 9c7a5f049292..2835fa89fc6f 100644
+--- a/arch/x86/kernel/cpu/tsx.c
++++ b/arch/x86/kernel/cpu/tsx.c
+@@ -58,7 +58,7 @@ void tsx_enable(void)
+ 	wrmsrl(MSR_IA32_TSX_CTRL, tsx);
+ }
+ 
+-static bool __init tsx_ctrl_is_supported(void)
++static bool tsx_ctrl_is_supported(void)
+ {
+ 	u64 ia32_cap = x86_read_arch_cap_msr();
+ 
+@@ -84,6 +84,44 @@ static enum tsx_ctrl_states x86_get_tsx_auto_mode(void)
+ 	return TSX_CTRL_ENABLE;
+ }
+ 
++/*
++ * Disabling TSX is not a trivial business.
++ *
++ * First of all, there's a CPUID bit: X86_FEATURE_RTM_ALWAYS_ABORT
++ * which says that TSX is practically disabled (all transactions are
++ * aborted by default). When that bit is set, the kernel unconditionally
++ * disables TSX.
++ *
++ * In order to do that, however, it needs to dance a bit:
++ *
++ * 1. The first method to disable it is through MSR_TSX_FORCE_ABORT and
++ * the MSR is present only when *two* CPUID bits are set:
++ *
++ * - X86_FEATURE_RTM_ALWAYS_ABORT
++ * - X86_FEATURE_TSX_FORCE_ABORT
++ *
++ * 2. The second method is for CPUs which do not have the above-mentioned
++ * MSR: those use a different MSR - MSR_IA32_TSX_CTRL and disable TSX
++ * through that one. Those CPUs can also have the initially mentioned
++ * CPUID bit X86_FEATURE_RTM_ALWAYS_ABORT set and for those the same strategy
++ * applies: TSX gets disabled unconditionally.
++ *
++ * When either of the two methods are present, the kernel disables TSX and
++ * clears the respective RTM and HLE feature flags.
++ *
++ * An additional twist in the whole thing presents late microcode loading
++ * which, when done, may cause for the X86_FEATURE_RTM_ALWAYS_ABORT CPUID
++ * bit to be set after the update.
++ *
++ * A subsequent hotplug operation on any logical CPU except the BSP will
++ * cause for the supported CPUID feature bits to get re-detected and, if
++ * RTM and HLE get cleared all of a sudden, but, userspace did consult
++ * them before the update, then funny explosions will happen. Long story
++ * short: the kernel doesn't modify CPUID feature bits after booting.
++ *
++ * That's why, this function's call in init_intel() doesn't clear the
++ * feature flags.
++ */
+ void tsx_clear_cpuid(void)
+ {
+ 	u64 msr;
+@@ -97,6 +135,10 @@ void tsx_clear_cpuid(void)
+ 		rdmsrl(MSR_TSX_FORCE_ABORT, msr);
+ 		msr |= MSR_TFA_TSX_CPUID_CLEAR;
+ 		wrmsrl(MSR_TSX_FORCE_ABORT, msr);
++	} else if (tsx_ctrl_is_supported()) {
++		rdmsrl(MSR_IA32_TSX_CTRL, msr);
++		msr |= TSX_CTRL_CPUID_CLEAR;
++		wrmsrl(MSR_IA32_TSX_CTRL, msr);
+ 	}
+ }
+ 
+@@ -106,13 +148,11 @@ void __init tsx_init(void)
+ 	int ret;
+ 
+ 	/*
+-	 * Hardware will always abort a TSX transaction if both CPUID bits
+-	 * RTM_ALWAYS_ABORT and TSX_FORCE_ABORT are set. In this case, it is
+-	 * better not to enumerate CPUID.RTM and CPUID.HLE bits. Clear them
+-	 * here.
++	 * Hardware will always abort a TSX transaction when CPUID
++	 * RTM_ALWAYS_ABORT is set. In this case, it is better not to enumerate
++	 * CPUID.RTM and CPUID.HLE bits. Clear them here.
+ 	 */
+-	if (boot_cpu_has(X86_FEATURE_RTM_ALWAYS_ABORT) &&
+-	    boot_cpu_has(X86_FEATURE_TSX_FORCE_ABORT)) {
++	if (boot_cpu_has(X86_FEATURE_RTM_ALWAYS_ABORT)) {
+ 		tsx_ctrl_state = TSX_CTRL_RTM_ALWAYS_ABORT;
+ 		tsx_clear_cpuid();
+ 		setup_clear_cpu_cap(X86_FEATURE_RTM);
+-- 
+2.29.2
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
