@@ -2,129 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5220AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233506AbiBOCRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 21:17:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48242 "EHLO
+        id S233518AbiBOCS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 21:18:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233502AbiBOCRl (ORCPT
+        with ESMTP id S229746AbiBOCSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 21:17:41 -0500
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 7B2B564F0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:17:31 -0800 (PST)
-Received: from jleng.ambarella.net (unknown [116.246.37.178])
-        by mail-app3 (Coremail) with SMTP id cC_KCgCXD1MWDQti9F1EDQ--.983S2;
-        Tue, 15 Feb 2022 10:17:01 +0800 (CST)
-From:   3090101217@zju.edu.cn
-To:     gregkh@linuxfoundation.org
-Cc:     balbi@kernel.org, jleng@ambarella.com,
-        laurent.pinchart@ideasonboard.com, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH v2] usb: gadget: f_uvc: fix superspeedplus transfer
-Date:   Tue, 15 Feb 2022 10:16:47 +0800
-Message-Id: <20220215021647.4316-1-3090101217@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <Ygow+EB1P84VflBb@kroah.com>
-References: <Ygow+EB1P84VflBb@kroah.com>
-X-CM-TRANSID: cC_KCgCXD1MWDQti9F1EDQ--.983S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGFykGFyfZF1xJr4xWr48WFg_yoW5AFyDpa
-        15A3WrAr45JFs5Xw48Aan5ury3Xa1fZa1DKrZ2q345ur43t3s5Ar90yryFg347XF45Zr48
-        CFsrJw4Skw1jkr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9vb7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2vYz4IE4I80cI0F6IAv
-        xc0EwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ew
-        Av7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY
-        6r1j6r4UM4x0Y48IcxkI7VAKI48JM4kE6xkIj40Ew7xC0wCF04k20xvY0x0EwIxGrwCFx2
-        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
-        6r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
-        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IY
-        s7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr
-        0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU8GsjUUUUUU==
-X-CM-SenderInfo: qtqziiyqrsilo62m3hxhgxhubq/1tbiAwQRBVNG3FHYyQAUsO
+        Mon, 14 Feb 2022 21:18:55 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92AD2C130
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:18:46 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so843615pjm.2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:18:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LE5Ci//amagXAhH1w3Y+8mfr5LN0dnFBZ6FzMdZav/I=;
+        b=QOCNe6KPTBbSfdFESoYihjYD98fQcmBKijavrQWBSjGhw8yO9dTAPdjqxu2qH+t1tX
+         S1l05G3aQbE4lDTn/s5F8/Y6mrn5JA2XNvNKiH+TNZSKde0ry126WnBbdSYmfvRtdxSo
+         nA+MlC61eucaniKvfo4vZVpAFxYrS0q90oyZ8UgW5yPzPggFXylEhdi7p4AwMFrXrxTB
+         /qGAnc/dLC6qqbUqgdmbyzs4YbHVy1vXzMl4jwSquK1K9x/wTICfO0hG5BJNkZPlU+Qf
+         G4U62UTnfXqgJ92wEak5Sp/Wvhe26YyhCz2/aaqJnS+HS1CQMrtmMXXW1kcb3i/XscpI
+         PHyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LE5Ci//amagXAhH1w3Y+8mfr5LN0dnFBZ6FzMdZav/I=;
+        b=Vd1xCUR/RRzxaCelAe+kuu+uU/rxbEs4ihTysxkHTgGy3rUubKfjPLSPCR2VUKzZ29
+         pdHa3MP2T1FqYcpIIAi46V2wYIoQ/5saHHG6Y4CnFkl1ZIaKqwieOm0Q3Rjxdr42r/UH
+         dTcpLSoaLIMAE5VGzetybBwwmKSVfGB/hLbJPAjXsh8qDUyddgo+db9itIFkswYAZou/
+         YWOumT2LIB87EKO/SjDadEiKrsxgym09mmoHVJRHLX4EczU5Mjwr/4r7/6LRoQKeFo5P
+         k8aahDrxxJUlgXhz9dSPGcAKOPG6OTImgrexqTa4zS/ntZGIc9Id4Hjo4uYLr3fhRm3G
+         Pp7w==
+X-Gm-Message-State: AOAM530FLLorFPV+rKDLbFPPpeM9ofvc2bCunggQcnvZlniAdvmGmIeH
+        W7M0YxLViBFYaURhyzydfbAZ8w==
+X-Google-Smtp-Source: ABdhPJx0/vQ1gYNmhES0TE6FuQAm+p7C0I+GWZ948BuCn3y0thsysZQHcGWGvJKcCPwBHgT8F7P+MA==
+X-Received: by 2002:a17:902:6b4a:: with SMTP id g10mr1862546plt.57.1644891525942;
+        Mon, 14 Feb 2022 18:18:45 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id m20sm38713234pfk.215.2022.02.14.18.18.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 18:18:45 -0800 (PST)
+Date:   Tue, 15 Feb 2022 02:18:41 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Suleiman Souhlal <suleiman@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, ssouhlal@freebsd.org,
+        hikalium@chromium.org, senozhatsky@chromium.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Anton Romanov <romanton@google.com>
+Subject: Re: [PATCH] kvm,x86: Use the refined tsc rate for the guest tsc.
+Message-ID: <YgsNgdYYMsp0uI1i@google.com>
+References: <20210803075914.3070477-1-suleiman@google.com>
+ <YQ1hOJNMnD6gCRjD@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YQ1hOJNMnD6gCRjD@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
++Anton
 
-UVC driver doesn't set ssp_descriptors in struct usb_function,
-If UVC uses superspeedplus UDC (e.g. cdnsp), when
-config_ep_by_speed_and_alt is called, the g->speed is
-USB_SPEED_SUPER_PLUS, and f->ssp_descriptors is NULL,
-So kernel will access NULL pointer of speed_desc.
+On Fri, Aug 06, 2021, Sean Christopherson wrote:
+> IIUC, this "fixes" a race where KVM is initialized before the second call to
+> tsc_refine_calibration_work() completes.  Fixes in quotes because it doesn't
+> actually fix the race, it just papers over the problem to get the desired behavior.
+> If the race can't be truly fixed, the changelog should explain why it can't be
+> fixed, otherwise fudging our way around the race is not justifiable.
+> 
+> Ideally, we would find a way to fix the race, e.g. by ensuring KVM can't load or
+> by stalling KVM initialization until refinement completes (or fails).  tsc_khz is
+> consumed by KVM in multiple paths, and initializing KVM before tsc_khz calibration
+> is fully refined means some part of KVM will use the wrong tsc_khz, e.g. the VMX
+> preemption timer.  Due to sanity checks in tsc_refine_calibration_work(), the delta
+> won't be more than 1%, but it's still far from ideal.
 
-Call trace:
- config_ep_by_speed_and_alt+0x3c/0x2a0 [libcomposite]
- uvc_function_set_alt+0xd4/0x2e8 [usb_f_uvc]
- set_config.constprop.0+0x154/0x3a0 [libcomposite]
- composite_setup+0x314/0xb44 [libcomposite]
- configfs_composite_setup+0x84/0xb0 [libcomposite]
- cdnsp_ep0_std_request+0x25c/0x470 [cdns3]
- cdnsp_setup_analyze+0x94/0x25c [cdns3]
- cdnsp_handle_event+0xe8/0x23c [cdns3]
- cdnsp_thread_irq_handler+0x58/0xe8 [cdns3]
- irq_thread_fn+0x2c/0xa0
- irq_thread+0x164/0x280
- kthread+0x128/0x134
- ret_from_fork+0x10/0x40
+Hmm, for systems with a constant TSC, KVM can fudge around the issue by not taking
+a snapshot.  It's still racy and potentially fragile, e.g. if userspace manages
+to create a vCPU before tsc_khz is refined, but it's not a bad standalone patch
+and if it fixes your use case...
 
-Signed-off-by: Jing Leng <jleng@ambarella.com>
----
- drivers/usb/gadget/function/f_uvc.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+The only other alternative I can come up with is add a one-off "notifier" for KVM,
+but that's rather gross, especially since TSC refinement is (hopefully) headed the
+way of the Dodo.
 
-diff --git a/drivers/usb/gadget/function/f_uvc.c b/drivers/usb/gadget/function/f_uvc.c
-index 71bb5e477dba..8fc9b035481e 100644
---- a/drivers/usb/gadget/function/f_uvc.c
-+++ b/drivers/usb/gadget/function/f_uvc.c
-@@ -478,6 +478,7 @@ uvc_copy_descriptors(struct uvc_device *uvc, enum usb_device_speed speed)
- 	void *mem;
- 
- 	switch (speed) {
-+	case USB_SPEED_SUPER_PLUS:
- 	case USB_SPEED_SUPER:
- 		uvc_control_desc = uvc->desc.ss_control;
- 		uvc_streaming_cls = uvc->desc.ss_streaming;
-@@ -521,7 +522,7 @@ uvc_copy_descriptors(struct uvc_device *uvc, enum usb_device_speed speed)
- 	      + uvc_control_ep.bLength + uvc_control_cs_ep.bLength
- 	      + uvc_streaming_intf_alt0.bLength;
- 
--	if (speed == USB_SPEED_SUPER) {
-+	if (speed == USB_SPEED_SUPER || speed == USB_SPEED_SUPER_PLUS) {
- 		bytes += uvc_ss_control_comp.bLength;
- 		n_desc = 6;
- 	} else {
-@@ -565,7 +566,7 @@ uvc_copy_descriptors(struct uvc_device *uvc, enum usb_device_speed speed)
- 	uvc_control_header->baInterfaceNr[0] = uvc->streaming_intf;
- 
- 	UVC_COPY_DESCRIPTOR(mem, dst, &uvc_control_ep);
--	if (speed == USB_SPEED_SUPER)
-+	if (speed == USB_SPEED_SUPER || speed == USB_SPEED_SUPER_PLUS)
- 		UVC_COPY_DESCRIPTOR(mem, dst, &uvc_ss_control_comp);
- 
- 	UVC_COPY_DESCRIPTOR(mem, dst, &uvc_control_cs_ep);
-@@ -727,6 +728,15 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
- 		}
- 	}
- 
-+	if (gadget_is_superspeed_plus(c->cdev->gadget)) {
-+		f->ssp_descriptors = uvc_copy_descriptors(uvc, USB_SPEED_SUPER_PLUS);
-+		if (IS_ERR(f->ssp_descriptors)) {
-+			ret = PTR_ERR(f->ssp_descriptors);
-+			f->ssp_descriptors = NULL;
-+			goto error;
-+		}
-+	}
+Does this remedy your issues?  Any idea if you need to support old CPUs that don't
+provide a constant TSC?
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index eaa3b5b89c5e..6a75c2748bff 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8708,13 +8708,13 @@ static int kvmclock_cpu_online(unsigned int cpu)
+
+ static void kvm_timer_init(void)
+ {
+-       max_tsc_khz = tsc_khz;
+-
+        if (!boot_cpu_has(X86_FEATURE_CONSTANT_TSC)) {
+ #ifdef CONFIG_CPU_FREQ
+                struct cpufreq_policy *policy;
+                int cpu;
+
++               max_tsc_khz = tsc_khz;
 +
- 	/* Preallocate control endpoint request. */
- 	uvc->control_req = usb_ep_alloc_request(cdev->gadget->ep0, GFP_KERNEL);
- 	uvc->control_buf = kmalloc(UVC_MAX_REQUEST_SIZE, GFP_KERNEL);
--- 
-2.17.1
-
+                cpu = get_cpu();
+                policy = cpufreq_cpu_get(cpu);
+                if (policy) {
+@@ -11144,7 +11144,7 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+        vcpu->arch.msr_platform_info = MSR_PLATFORM_INFO_CPUID_FAULT;
+        kvm_vcpu_mtrr_init(vcpu);
+        vcpu_load(vcpu);
+-       kvm_set_tsc_khz(vcpu, max_tsc_khz);
++       kvm_set_tsc_khz(vcpu, max_tsc_khz ? : tsc_khz);
+        kvm_vcpu_reset(vcpu, false);
+        kvm_init_mmu(vcpu);
+        vcpu_put(vcpu);
