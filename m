@@ -2,84 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6469EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 896E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236057AbiBOJrL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:47:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52984 "EHLO
+        id S236067AbiBOJse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:48:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiBOJrJ (ORCPT
+        with ESMTP id S233134AbiBOJsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:47:09 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F9DE6C09;
-        Tue, 15 Feb 2022 01:47:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644918420; x=1676454420;
-  h=date:from:to:subject:message-id:references:mime-version:
-   in-reply-to;
-  bh=E/JsYUfIGC9aSLOn8ZRZyR06XP7CeXXL9wOY5wpZbgg=;
-  b=gV3BNUZH3lJ2uTo+ZyoIB2UQK+151DkiceB5JWUL1frky+BY22mCy6eZ
-   Acsd/VA0CFrFj0HIGjFGjspWY0mhhzZfHzzWpcsKTTbwSRcWgFxHNnGtz
-   KfRGm5rrc/tSmxT+bh7kegMlrKWvch+fUMx/SSkUah1A+mLkyBH71vIQj
-   ju4XH2Z5U8nCbGfHd/sPi+xafq4vqEy/Oq+741ufQXczzrbesPolUTaCf
-   IBwMH0fqKX0nlAgjj2EBg5GWpffxBbVBHfMUWYaWY0QUiZEHlzzthjPfe
-   W10gj8hqXttQq2wEslopzQmVg71KXIwQENsRAWo3dBwntnJYuTVmqaRyf
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="233852838"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="233852838"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 01:47:00 -0800
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="587592065"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 01:46:58 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJuPL-004rzU-7m;
-        Tue, 15 Feb 2022 11:46:03 +0200
-Date:   Tue, 15 Feb 2022 11:46:02 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Ajay Gupta <ajayg@nvidia.com>,
-        "Shah, Nehal-bakulchandra" <nehal-bakulchandra.shah@amd.com>
-Subject: Re: [PATCH v3 1/5] i2c: Introduce common module to instantiate CCGx
- UCSI
-Message-ID: <Ygt2WhpJNF1/3k1j@smile.fi.intel.com>
-References: <20220105141935.24109-1-andriy.shevchenko@linux.intel.com>
- <YgttZtBkiV8k0ph/@kunai>
+        Tue, 15 Feb 2022 04:48:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851D3E6843;
+        Tue, 15 Feb 2022 01:48:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2164F611D9;
+        Tue, 15 Feb 2022 09:48:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 541D9C340EB;
+        Tue, 15 Feb 2022 09:48:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644918501;
+        bh=mtgWCmIxtYu+pI+a3qsD5U922sCEn6VGKZmy6iT7BwA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Uo45ixEngtxvGmZy42/+/B/CrC5rIf07aZrIKMDT0L1yKgQVjdZSd7NXVaGG4kvND
+         6USzuUsq11u4ey35aztktbCTtQ0xwIHBjp64apvdSLLg7j8UhJ9/PZXIkIqZabwF2x
+         8f87y5sxq9bCl3HayAXqvUCuy3n50Q4Lchh4i1NO7Hf6/RsW1NGCrUnSLuwNc53sk3
+         8eJ2x1exqYWCb9on035XdntfuJvT4eHufzUIhVyXDEndOWAUvFU9O7ZVls1mjZTJY6
+         CZVhEhxPq3VRYY/cXpTEiJ+9YuxUHQLuBTsuyrApUXrVmmBqJhR7z4cuzyfLaolffj
+         sl8qI9ARAtECg==
+Received: by pali.im (Postfix)
+        id A12CAF13; Tue, 15 Feb 2022 10:48:18 +0100 (CET)
+Date:   Tue, 15 Feb 2022 10:48:18 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Jan Palus <jpalus@fastmail.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [PATCH] PCI: mvebu: Fix merge conflicts in commit 91a8d79fc797
+Message-ID: <20220215094818.yl44tioh4spauh4q@pali>
+References: <20220214110228.25825-1-pali@kernel.org>
+ <20220214154628.GA8830@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YgttZtBkiV8k0ph/@kunai>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220214154628.GA8830@bhelgaas>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 10:07:50AM +0100, Wolfram Sang wrote:
-> On Wed, Jan 05, 2022 at 04:19:31PM +0200, Andy Shevchenko wrote:
-> > Introduce a common module to provide an API to instantiate UCSI device
-> > for Cypress CCGx Type-C controller. Individual bus drivers need to select
-> > this one on demand.
+On Monday 14 February 2022 09:46:28 Bjorn Helgaas wrote:
+> On Mon, Feb 14, 2022 at 12:02:28PM +0100, Pali Rohár wrote:
+> > Commit 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe
+> > Root Port via emulated bridge") was incorrectly applied from mailing list
+> > patch [1] to the linux git repository [2] probably due to resolving merge
+> > conflicts incorrectly. Fix it now.
 > > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > [1] - https://lore.kernel.org/r/20211125124605.25915-12-pali@kernel.org
+> > [2] - https://git.kernel.org/linus/91a8d79fc797
+> > 
+> > Fixes: 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe Root Port via emulated bridge")
+> > BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215540
+> > Reported-by: Jan Palus <jpalus@fastmail.com>
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
 > 
-> Applied to for-next, thanks!
+> Applied to for-linus for v5.17 with the following commit log, thanks!
+> 
+> commit c49ae619905e ("PCI: mvebu: Fix device enumeration regression")
+> Author: Pali Rohár <pali@kernel.org>
+> Date:   Mon Feb 14 12:02:28 2022 +0100
+> 
+>     PCI: mvebu: Fix device enumeration regression
+> 
+>     Jan reported that on Turris Omnia (Armada 385), no PCIe devices were
+>     detected after upgrading from v5.16.1 to v5.16.3 and identified the cause
+>     as the backport of 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus
+>     of PCIe Root Port via emulated bridge"), which appeared in v5.17-rc1.
+> 
+>     91a8d79fc797 was incorrectly applied from mailing list patch [1] to the
+>     linux git repository [2] probably due to resolving merge conflicts
+>     incorrectly. Fix it now.
+> 
+>     [1] https://lore.kernel.org/r/20211125124605.25915-12-pali@kernel.org
+>     [2] https://git.kernel.org/linus/91a8d79fc797
+> 
+>     [bhelgaas: commit log]
+>     BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215540
+>     Fixes: 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe Root Port via emulated bridge")
+>     Link: https://lore.kernel.org/r/20220214110228.25825-1-pali@kernel.org
+>     Link: https://lore.kernel.org/r/20220127234917.GA150851@bhelgaas
+>     Reported-by: Jan Palus <jpalus@fastmail.com>
+>     Signed-off-by: Pali Rohár <pali@kernel.org>
+>     Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 
-Thank you!
+Thanks!
 
-I hope at least AMD guys would be happy and can utilize this module for their
-new hardware.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> > ---
+> >  drivers/pci/controller/pci-mvebu.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+> > index 71258ea3d35f..f8e82c5e2d87 100644
+> > --- a/drivers/pci/controller/pci-mvebu.c
+> > +++ b/drivers/pci/controller/pci-mvebu.c
+> > @@ -1329,7 +1329,8 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
+> >  		 * indirectly via kernel emulated PCI bridge driver.
+> >  		 */
+> >  		mvebu_pcie_setup_hw(port);
+> > -		mvebu_pcie_set_local_dev_nr(port, 0);
+> > +		mvebu_pcie_set_local_dev_nr(port, 1);
+> > +		mvebu_pcie_set_local_bus_nr(port, 0);
+> >  	}
+> >  
+> >  	pcie->nports = i;
+> > -- 
+> > 2.20.1
+> > 
