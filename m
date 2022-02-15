@@ -2,110 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3414C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C49A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238540AbiBOOIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:08:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41014 "EHLO
+        id S238551AbiBOOJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:09:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238534AbiBOOIu (ORCPT
+        with ESMTP id S232295AbiBOOJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:08:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D720E6C968;
-        Tue, 15 Feb 2022 06:08:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E211B819E4;
-        Tue, 15 Feb 2022 14:08:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E9DC340EB;
-        Tue, 15 Feb 2022 14:08:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644934117;
-        bh=2a2WgalEeiELEcZIgFaEbv0GOqcKw+xpRsYr5cJFSDs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HztFqtJLPHvCezQO1GD5iRpPCr7Ta7PLfWgDt7fFYSlQVJm2xV+hZECStnXYjL8xN
-         s91ZHZBMU07zNpIJo/kd3ArBWpd3SAxSV7/sPwKNfN4Cb5e+K3Qggn6fsEvSedXqw7
-         VTg2EA2tExjDlNTci909HZyTiDhHpWffXBfBsZHM=
-Date:   Tue, 15 Feb 2022 15:08:34 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     3090101217@zju.edu.cn
-Cc:     balbi@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, pavel.hofman@ivitera.com,
-        ruslan.bilovol@gmail.com, Jing Leng <jleng@ambarella.com>
-Subject: Re: [PATCH v3] usb: gadget: f_uac1: add different speed transfers
- support
-Message-ID: <Yguz4hOBYTXRL35t@kroah.com>
-References: <YgprpGbtBpojsCmQ@kroah.com>
- <20220215030848.5709-1-3090101217@zju.edu.cn>
+        Tue, 15 Feb 2022 09:09:05 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB4E74635;
+        Tue, 15 Feb 2022 06:08:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644934135; x=1676470135;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=R65To4o9TE9cJawliYC3L2IrA50D6L/J7joHVO9YWBU=;
+  b=mdMYtWt9WI6lRPDNz2ouj43JXzlkA5rmikTqjjM4PvZiZnCAGOm2mBp+
+   ur4xOp4AJU3YH6JmVSh9683F/Scm/JkIcMPK2Ug1TGcSd4Svhbh6ismSA
+   ObxgYaLp4haJJP5iGZClcEzI57MBSNNnPQgzM93n4rNg4Zn2SP4ZDs78p
+   0+POyLcixwa11MdYyJByq6Srt+U7TcLjNONXmRdyQ8X6SRFX7LZc7Zv4U
+   bMWWPklOf1wIyJ9U5cBoEj7NJe1znxIk4X4jDbHrEUWVvqtid4VfhIAsH
+   tUZBS9wDonWGQdv8cok0t17PBv+JwbcFwSglQCSz5cYeMFFbAWUFy182g
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="311095043"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="311095043"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 06:08:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="502461353"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2022 06:08:51 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJyVe-0009jS-Tk; Tue, 15 Feb 2022 14:08:50 +0000
+Date:   Tue, 15 Feb 2022 22:07:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, sboyd@kernel.org,
+        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        abel.vesa@nxp.com
+Cc:     kbuild-all@lists.01.org, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH 3/4] clk: imx: support fracn gppll
+Message-ID: <202202152209.JA3vtPGE-lkp@intel.com>
+References: <20220215081835.790311-4-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220215030848.5709-1-3090101217@zju.edu.cn>
+In-Reply-To: <20220215081835.790311-4-peng.fan@oss.nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 11:08:48AM +0800, 3090101217@zju.edu.cn wrote:
-> From: Jing Leng <jleng@ambarella.com>
-> 
-> On page 61 of the UAC1 specification (
-> https://www.usb.org/sites/default/files/audio10.pdf),
-> bInterval is interval for polling endpoint for data transfers
-> expressed in milliseconds, must be set to 1.
-> 
-> On page 47 of the USB2.0 specification (
-> https://www.usb.org/sites/default/files/usb_20_20211008.zip),
-> An isochronous endpoint must specify its required bus access period.
-> Full-/high-speed endpoints must specify a desired period as
-> (2^(bInterval-1)) x F, where bInterval is in the range one to
-> (and including) 16 and F is 125 μs for high-speed and 1ms for full-speed.
-> 
-> On page 362 of the USB3.2 specification (
-> https://usb.org/sites/default/files/usb_32_20210125.zip),
-> The 'SuperSpeed Endpoint Companion Descriptor' shall only be
-> returned by Enhanced SuperSpeed devices that are operating at Gen X speed.
-> Each endpoint described in an interface is followed by a 'SuperSpeed
-> Endpoint Companion Descriptor'.
-> 
-> Currently uac1 driver doesn't set bInterval to 1 in full speed transfer
-> and doesn't have a 'SuperSpeed Endpoint Companion Descriptor' behind
-> 'Standard Endpoint Descriptor'.
-> 
-> So we should set bInterval to 1 in full speed transfer and set it to 4
-> in other speed transfers, and we should add 'SuperSpeed Endpoint Companion
-> Descriptor' behind 'Standard Endpoint Descriptor' for superspeed transfer.
-> 
-> Signed-off-by: Jing Leng <jleng@ambarella.com>
-> ---
->  drivers/usb/gadget/function/f_uac1.c | 276 ++++++++++++++++++++++-----
->  1 file changed, 225 insertions(+), 51 deletions(-)
+Hi "Peng,
 
-Where is the patch version information?
+Thank you for the patch! Yet something to improve:
 
-> +static struct usb_ss_ep_comp_descriptor as_out_ep_desc_comp = {
-> +	.bLength		= sizeof(as_out_ep_desc_comp),
-> +	.bDescriptorType	= USB_DT_SS_ENDPOINT_COMP,
-> +	.bMaxBurst		= 0,
-> +	.bmAttributes		= 0,
+[auto build test ERROR on shawnguo/for-next]
+[also build test ERROR on robh/for-next clk/clk-next v5.17-rc4 next-20220215]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Why are you setting values to 0 when you do not have to as that is the
-default value?
+url:    https://github.com/0day-ci/linux/commits/Peng-Fan-OSS/imx-add-i-MX93-clk-bindings-and-driver/20220215-162047
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git for-next
+config: nds32-randconfig-r001-20220214 (https://download.01.org/0day-ci/archive/20220215/202202152209.JA3vtPGE-lkp@intel.com/config)
+compiler: nds32le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/37b42f1a06ef92797e800461d1f46e849fa63c91
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Peng-Fan-OSS/imx-add-i-MX93-clk-bindings-and-driver/20220215-162047
+        git checkout 37b42f1a06ef92797e800461d1f46e849fa63c91
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash
 
-> @@ -891,7 +1098,6 @@ static int f_audio_get_alt(struct usb_function *f, unsigned intf)
->  	return -EINVAL;
->  }
->  
-> -
->  static void f_audio_disable(struct usb_function *f)
->  {
->  	struct f_uac1 *uac1 = func_to_uac1(f);
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The above change is not needed here.
+All errors (new ones prefixed by >>):
 
-thanks,
+   nds32le-linux-ld: drivers/clk/imx/clk-fracn-gppll.o: in function `clk_fracn_gppll_recalc_rate':
+   clk-fracn-gppll.c:(.text+0x434): undefined reference to `__udivdi3'
+>> nds32le-linux-ld: clk-fracn-gppll.c:(.text+0x438): undefined reference to `__udivdi3'
 
-greg k-h
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
