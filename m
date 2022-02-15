@@ -2,106 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5145BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 07:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E7DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 07:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234934AbiBOHsc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 02:48:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37000 "EHLO
+        id S234941AbiBOHsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 02:48:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233788AbiBOHsa (ORCPT
+        with ESMTP id S233863AbiBOHsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 02:48:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8205E90FD6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:48:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644911299;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S8TBMpDANby8RmP/LFmogH2MgUB/cxamBFb1C+IRX38=;
-        b=ECuQ6+fOI9cxDx2lbpHPd7IssXXnXTleML4APLvpxkd1NPE2a7g80F7XxuLreRP8/e1Ms1
-        i+bIWWd8HExn8woJfVtsKhECpnjD5p4+NDgl70tTMnr2PsOSeUgwPom9a8ULQuLbggmfjf
-        Uojw6to24vt1wpGHwWV6vbC0YxQxhHI=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-358-sn8W8v1RPb--Q_myZm7b5w-1; Tue, 15 Feb 2022 02:48:17 -0500
-X-MC-Unique: sn8W8v1RPb--Q_myZm7b5w-1
-Received: by mail-lf1-f70.google.com with SMTP id z24-20020a056512371800b0043ea4caa07cso5948162lfr.17
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:48:17 -0800 (PST)
+        Tue, 15 Feb 2022 02:48:40 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126C590FE5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:48:31 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D6E0C40259
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:48:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644911309;
+        bh=/BLkLFYTDkoy0icaFTEEg+rA2J/JmQ87eCI7Tsm29s4=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=AsAuCvsiRJRyxsa98jw05PEziRcrY8/6n4KXsEMGiv/RkGsKLUit7KoSS6hsUkOG8
+         H58BNAo+rt6lZOEZH1d/sHqxuMOUcL1tv7OJC7vkV9G6u7nV0J0o6pcOfFCWYeLbmD
+         k/sNcFfexQRdNKumTke/KP3rMPkNtBZK+ogqcjfkom56nKiA064CgiwO55nKR2k2z5
+         6tFV0eDqEA6gnsf6cHSO4/mF6Ecy62Korle/HSMF/O3llUgw1MqGAUclUYpJcTcG+E
+         8yAdwtksCvfC7HE/IRMUDuPdf2+lxrh5IhMtpzeJPhoAUE0KGirod0/VIJjfysfdhH
+         2wc+tmHBC0Pvg==
+Received: by mail-ed1-f69.google.com with SMTP id z8-20020a05640240c800b0041003c827edso10207225edb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:48:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S8TBMpDANby8RmP/LFmogH2MgUB/cxamBFb1C+IRX38=;
-        b=Ns3lQDwOO5E+UzOaNhIPZSscLT6OUnIN1E0Ct6csy8NgWLnvmq47ldUXmjFzfL4uOK
-         tT63chxyK5XQx9n+lZz3BYyDk1Ezp56fEZiQoyZAjD5p++LDNUm6VJz2naEI0U4kn5RQ
-         Q+tNg3fyX+OXFH7MjCRAirUlUsKa7cOgEqdYtFamF0O5tpFcK8w02oqGs1EmaQExVOdS
-         hEZioQB6yMfCURFmKP1t/S9J4q4Jn3Gi9RleR9RPirZZ4xZC4zkPSRjzF5GrzXj9G9h6
-         9dxUmfj/ZQmWQXO9JAELQSbYS9j9VZFSZav0xazYDBqVX8WubtPr3GYx2r2OfjxFD/AQ
-         SUsA==
-X-Gm-Message-State: AOAM530JOuvQpHo7PCMqUjyHhMKaCD1dUo7+qM5V5G3G048o9WYVAB9i
-        Nm93QMnMyHwORANmKJ2D1sMzKVcK9h+a9jwqTGjahrjujv61VZPINMSkAcFf7wbEpGDHROueL6S
-        6D1ZxNHn3vrtpPc9ycRQK3dbsvXCg+m/w2zrw1Y9u
-X-Received: by 2002:ac2:4437:: with SMTP id w23mr2253846lfl.481.1644911296355;
-        Mon, 14 Feb 2022 23:48:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzrPGSBjibGvDtlM9Z1Jt9MP9dvUIJlBBoHq0xmqexyKC5if7aafgy71D/1u2QPpo0U8LGebpqeueCGo0+ygO8=
-X-Received: by 2002:ac2:4437:: with SMTP id w23mr2253833lfl.481.1644911296148;
- Mon, 14 Feb 2022 23:48:16 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/BLkLFYTDkoy0icaFTEEg+rA2J/JmQ87eCI7Tsm29s4=;
+        b=gnZPZDwLazwhv2oMb6yZD54G5zOqvZBM1ueCbea4EDwHQeMfCpqvLnLxoQqPS/6zs4
+         vkChQHfZENKsSFRxPCBUdq3f2E1Yprb3NIiG1vYHacC2v+87Xb3oGLwujTw/rIIw8HOc
+         xBYE2mcBU95eibeEKfFi05tW5ruQE3CyoQHJiR5iBM91K+26ZeJEmcktCLzuLlP1ku9Y
+         KdYu5E5vILJRlLKiMa/AW/v9yGfmpGp9FcXkL2TbC7lN1YA4LfOTCdvj3OofBfza582H
+         dijlOsYOn9avQyg8n8l32UxkCp7qwCS70pjpqYp8EBsNTBs7+57cIFW2FlUWkAKhV0cT
+         qVRw==
+X-Gm-Message-State: AOAM532BcWa4ctLEd2rf7/VgnUy41gI7ZESZN81ShT76lTshvVDgnL/Y
+        p3rwEu8wMN/SC6h6HdXTRDvhFXOXb7ZBOl436g713UhLg1Dmbgp+0kPdquHYpZUPDvJPCgRoiVl
+        Jij8HFwiZDCCZmb3b9+RUtxj2GleoWg0i5WkQ+wZXeg==
+X-Received: by 2002:a05:6402:26c7:: with SMTP id x7mr2571505edd.151.1644911309471;
+        Mon, 14 Feb 2022 23:48:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxzPL6bZ87ZeeKAh5rp6FvE5VSLy/1ksnFjn1oCusi+AyfVE8IhUfVQttON0EX2l6IHA9kzfw==
+X-Received: by 2002:a05:6402:26c7:: with SMTP id x7mr2571499edd.151.1644911309301;
+        Mon, 14 Feb 2022 23:48:29 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id c29sm1188357ejj.149.2022.02.14.23.48.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 23:48:28 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: [PATCH v3 0/3] mfd/power/regulators: dt-bindings: max14577: convert to dtschema
+Date:   Tue, 15 Feb 2022 08:47:56 +0100
+Message-Id: <20220215074759.29402-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220215053430.24650-1-gdawar@xilinx.com>
-In-Reply-To: <20220215053430.24650-1-gdawar@xilinx.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 15 Feb 2022 15:48:04 +0800
-Message-ID: <CACGkMEs7UEFM=ospckg0-LMw92wj74D_NLPsZy6oSY=dio9V-w@mail.gmail.com>
-Subject: Re: [PATCH] Add definition of VIRTIO_F_IN_ORDER feature bit
-To:     Gautam Dawar <gautam.dawar@xilinx.com>
-Cc:     Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>, pabloc@xilinx.com,
-        Gautam Dawar <gdawar@xilinx.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 1:34 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
->
-> This patch adds the definition of VIRTIO_F_IN_ORDER feature bit
-> in the relevant header file to make it available in QEMU's
-> linux standard header file virtio_config.h, which is updated using
-> scripts/update-linux-headers.sh
->
-> Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+Hi,
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+Changes since v2
+================
+1. Add tags.
+2. Drop DTS patch (applied).
+3. mfd: Fix indentation in bindings example.
+4. regulator: Drop regulator-name requirement and use
+   unevaluatedProperties.
 
-> ---
->  include/uapi/linux/virtio_config.h | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/include/uapi/linux/virtio_config.h b/include/uapi/linux/virtio_config.h
-> index b5eda06f0d57..f0fb0ae021c0 100644
-> --- a/include/uapi/linux/virtio_config.h
-> +++ b/include/uapi/linux/virtio_config.h
-> @@ -82,6 +82,12 @@
->  /* This feature indicates support for the packed virtqueue layout. */
->  #define VIRTIO_F_RING_PACKED           34
->
-> +/*
-> + * Inorder feature indicates that all buffers are used by the device
-> + * in the same order in which they have been made available.
-> + */
-> +#define VIRTIO_F_IN_ORDER              35
-> +
->  /*
->   * This feature indicates that memory accesses by the driver and the
->   * device are ordered in a way described by the platform.
-> --
-> 2.30.1
->
+Changes since v1
+================
+1. MFD: Use absolute path to schemas
+2. Regulator: mention all allowed properties,
+   additionalProperties=false, add min/max values for voltages and
+   current, don't use patternProperties when not needed.
+
+Dependencies
+============
+1. DTS patch 1/4: nothing depends on it, sending here so Rob's automatic
+   checker won't complain about DTS.
+   I will take it via Samsung SoC tree.
+
+2. Final MFD patch (4/4) depends on regulator and power, so the last
+   patches (2+3+4) should go via same tree.
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (3):
+  dt-bindings: power: supply: maxim,max14577: convert to dtschema
+  regulator: dt-bindings: maxim,max14577: convert to dtschema
+  dt-bindings: mfd: maxim,max14577: convert to dtschema
+
+ .../devicetree/bindings/mfd/max14577.txt      | 147 -------------
+ .../bindings/mfd/maxim,max14577.yaml          | 195 ++++++++++++++++++
+ .../bindings/power/supply/maxim,max14577.yaml |  84 ++++++++
+ .../bindings/regulator/maxim,max14577.yaml    |  78 +++++++
+ MAINTAINERS                                   |   3 +-
+ 5 files changed, 359 insertions(+), 148 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mfd/max14577.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max14577.yaml
+ create mode 100644 Documentation/devicetree/bindings/power/supply/maxim,max14577.yaml
+ create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max14577.yaml
+
+-- 
+2.32.0
 
