@@ -2,57 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA415C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234086AbiBOFbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:31:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58814 "EHLO
+        id S234180AbiBOFcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:32:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234168AbiBOFa7 (ORCPT
+        with ESMTP id S234154AbiBOFcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:30:59 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B53F128DD3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:30:24 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 15 Feb 2022 00:32:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922EB8F9BD;
+        Mon, 14 Feb 2022 21:31:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JyV6P0VShz4y4n;
-        Tue, 15 Feb 2022 16:30:21 +1100 (AEDT)
-From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     mpe@ellerman.id.au, Wedson Almeida Filho <wedsonaf@google.com>
-Cc:     linux-kernel@vger.kernel.org, benh@kernel.crashing.org,
-        linuxppc-dev@lists.ozlabs.org, paulus@samba.org
-In-Reply-To: <20220202055123.2144842-1-wedsonaf@google.com>
-References: <20220202055123.2144842-1-wedsonaf@google.com>
-Subject: Re: [PATCH] powerpc/module_64: use module_init_section instead of patching names
-Message-Id: <164490279930.270256.11789081622461037215.b4-ty@ellerman.id.au>
-Date:   Tue, 15 Feb 2022 16:26:39 +1100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E508B80C6D;
+        Tue, 15 Feb 2022 05:31:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D521C340EC;
+        Tue, 15 Feb 2022 05:31:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644903089;
+        bh=+ZzowgUcYtr8+DeP7fjxh31Tuoh9AD2c4/Yi40f98Yw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cgDl7WXTUQzAUZ4Hoj46W6XNrmdm1WfcTUJ3PxjgDfMI0044lLvHhaFEoOEkfgm/2
+         yd4G8vvtUDNL7ScU00+OxXvK6yD8opDPtNGa2ase7T5vG3ae9Tipzs2wikDFX4Zr4k
+         1rc/qjl8TiSPqH1vFP38UwrdgtQ5HH0WYqZ5Uwq/h6qlJyhYnLyZvlGS2gg6ipIUbH
+         8GJesWgbDERb7X+8+qi+1ms0JUDonONjAN9UmSXNDIXiuRyzucEVjiGOzG7Nf+5DH6
+         DBD5rAN3rHkUq4+REhwEmKrBmJik4yVvtmaDh91mM5NThmC0QoCt1qrb61wxy5zHIf
+         sRztnViiqUhVQ==
+Date:   Mon, 14 Feb 2022 21:31:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Wang, Haiyue" <haiyue.wang@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        "David Awogbemila" <awogbemila@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        "Forrest, Bailey" <bcf@google.com>, Tao Liu <xliutaox@google.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        John Fraker <jfraker@google.com>,
+        "Yangchun Fu" <yangchun@google.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] gve: fix zero size queue page list allocation
+Message-ID: <20220214213127.3aa9ea5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <BYAPR11MB34959983354A8C81B065AB5EF7349@BYAPR11MB3495.namprd11.prod.outlook.com>
+References: <20220214024134.223939-1-haiyue.wang@intel.com>
+        <20220214212136.71e5b4c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BYAPR11MB34959983354A8C81B065AB5EF7349@BYAPR11MB3495.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Feb 2022 05:51:23 +0000, Wedson Almeida Filho wrote:
-> Without this patch, module init sections are disabled by patching their
-> names in arch-specific code when they're loaded (which prevents code in
-> layout_sections from finding init sections). This patch uses the new
-> arch-specific module_init_section instead.
+On Tue, 15 Feb 2022 05:25:49 +0000 Wang, Haiyue wrote:
+> > On Mon, 14 Feb 2022 10:41:29 +0800 Haiyue Wang wrote:  
+> > > According to the two functions 'gve_num_tx/rx_qpls', only the queue with
+> > > GVE_GQI_QPL_FORMAT format has queue page list.
+> > >
+> > > The 'queue_format == GVE_GQI_RDA_FORMAT' may lead to request zero sized
+> > > memory allocation, like if the queue format is GVE_DQO_RDA_FORMAT.
+> > >
+> > > The kernel memory subsystem will return ZERO_SIZE_PTR, which is not NULL
+> > > address, so the driver can run successfully. Also the code still checks
+> > > the queue page list number firstly, then accesses the allocated memory,
+> > > so zero number queue page list allocation will not lead to access fault.
+> > >
+> > > Use the queue page list number to detect no QPLs, it can avoid zero size
+> > > queue page list memory allocation.  
+> > 
+> > There's no bug here, strictly speaking, the driver will function
+> > correctly? In that case please repost without the Fixes tag and  
 > 
-> This allows modules that have .init_array sections to have the
-> initialisers properly called (on load, before init). Without this patch,
-> the initialisers are not called because .init_array is renamed to
-> _init_array, and thus isn't found by code in find_module_sections().
-> 
-> [...]
+> Code design bug, the 'queue_format == GVE_GQI_RDA_FORMAT' is not correct. But,
+> yes, it works. So still need to remove the tag ?
 
-Applied to powerpc/next.
+A bug is something that users can notice. If there are conditions under
+which this may lead to user-visible mis-behavior then we should keep
+the tag and send the patch to stable as well.
 
-[1/1] powerpc/module_64: use module_init_section instead of patching names
-      https://git.kernel.org/powerpc/c/d4be60fe66b7380530868ceebe549f8eebccacc5
-
-cheers
+If there is no user-visible problem here, then the patch is just
+future-proofing / refactoring and we should not risk introducing real
+bugs by making people backport it (which is what adding a Fixes will
+do).
