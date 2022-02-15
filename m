@@ -2,99 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 460A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6787FC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235695AbiBOJMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:12:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55844 "EHLO
+        id S235702AbiBOJNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:13:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235689AbiBOJMF (ORCPT
+        with ESMTP id S233369AbiBOJNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:12:05 -0500
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA511C92A
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:11:56 -0800 (PST)
-Received: by mail-qk1-x72b.google.com with SMTP id bs32so16773184qkb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:11:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YBQscFyooYL0WHuST9zmiXq7toDSTo9x20y433njXvY=;
-        b=CUvbeESCjAqhXzzfxF/YYa6U3SM4LMGYKlC7SDkDR1uhzWCLBoEldyNjHc/MwM+Jqt
-         4pPfqpLePsZCSFx+7tpIPqSBGnq4Hjeg6k1HyrJZukjNbYEQuobWYo41naoqODynPPZo
-         f4PX12XFozrF2o7h/ScjfH+qvIh6UT068hiTttGh0P4ulZuLI4lN0Rv0S3ewaEoYQ6H4
-         D8C69zV9DlfMSDeJ6mK8HrE+xx2GzFkpH79qQaz+FiWQVwyzsvhMl8DaNIWLVrAG9iol
-         d5IUK6aoMjRZQB2RfR0jEzeIYr6EChVWSe3awOtMZy1hiEkWLE7zO2rmxvsnq2gZT6PF
-         7Bnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YBQscFyooYL0WHuST9zmiXq7toDSTo9x20y433njXvY=;
-        b=w/muaDcgjYX+SsrpweDDyAkmquoPcJXSjlZFzr0D3KmxIOCIDEQzK/grQJrh7xWyl1
-         vgDO3ou1++xe1kuxgmWsLJJ7whz6aHt5dXW+Q7w6BYSMPPyO/BrR6Pr5x8jYXu5Egygc
-         QhykrZrOhhzqUnbi+jFiXKmm1ro/PjzODseAgwrVzwtu014xB2+UHiXqivA1EE6Ubg9W
-         H093R1JCzFhC/0XPgMgo/qNbVlXrDzW2j7smx+BhqA8kILwlNQlATDd948onX5TBnqi0
-         +LzAlvSckeZ2HdpWfeO3HGG38trzKocMxRsK3pI3kOqRfCgP+gEFHwIibGICt9sqbyIz
-         5shw==
-X-Gm-Message-State: AOAM531aQDJrl/bK+1xadi4+V/vIWPrK/8Q9Lnj+Ayf7+pm+zVJG3xEN
-        e6dMIHEuqIp8wPzB84Y6cb6xlvsccD0=
-X-Google-Smtp-Source: ABdhPJzt2l3x8XeZpyli8EcdnuyjGHmBO9r/EPioUdHk5iFiWxXUFc2BA0D+lX3UAgQSkHxG7KiAfw==
-X-Received: by 2002:a05:620a:2589:: with SMTP id x9mr1457241qko.335.1644916315265;
-        Tue, 15 Feb 2022 01:11:55 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id r3sm16683371qkm.56.2022.02.15.01.11.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 01:11:54 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: deng.changcheng@zte.com.cn
-To:     Felix.Kuehling@amd.com
-Cc:     alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] drm/amdkfd: Replace zero-length array with flexible-array member
-Date:   Tue, 15 Feb 2022 09:11:42 +0000
-Message-Id: <20220215091142.1775600-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 15 Feb 2022 04:13:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E751224BC1;
+        Tue, 15 Feb 2022 01:12:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 637BE616C6;
+        Tue, 15 Feb 2022 09:12:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5E00C34101;
+        Tue, 15 Feb 2022 09:12:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644916378;
+        bh=nPLs5v71E/xzzKRq/jdD2UxtX1DBSgxHKB2i8EHy1KY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=j3kUIfoQTYxq0nCVjg3xJUAdSTCwwH8temh7NFjmZfpkIjAXQ/i5eqNNYmAAO/ny1
+         Uhrqg321bjTbiL2bLfcsiw3L/YssCCJFSkB1FTV4deiCrv9oCd+WLuGBXT1JJy17rS
+         k8cMdKEehveud6wTzU+zMEsNNO9j8HHxKx2E1NBNFWFufNsE2sT4ymojJeWA5L/d5h
+         cw/DGlUHQEdW9cC4Q+y80YkhF8+ZZBz928QLF/gO6sphG+kkzt0wgVNEOYTAhGmy7s
+         fFzb6USqyb2JRrGEB+Xy9zVF9/7CIibD5o8jjgMioj1JxGYIThdIqK2msRJNx3V5hb
+         RhnYTF7LWjKEQ==
+Received: by mail-wr1-f53.google.com with SMTP id s10so17397971wrb.1;
+        Tue, 15 Feb 2022 01:12:58 -0800 (PST)
+X-Gm-Message-State: AOAM5326jOU9poDd7nicGzGVYqcKXu6zBv1rw1GVFd7ne8SXkSFiRPjk
+        0nhHrMbsfN7Si6N9gM2CoMfhsBGks4+0R8nwRUE=
+X-Google-Smtp-Source: ABdhPJwP302M1cXBE3IXsZS/v83gWi9XJR2q13sQJhY9b6tnSpJCd4099durtVh9QEm0yhQ4WeUq4MKNAAS9P/JPfzc=
+X-Received: by 2002:adf:f6ce:: with SMTP id y14mr2380558wrp.219.1644916376776;
+ Tue, 15 Feb 2022 01:12:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-9-arnd@kernel.org>
+ <CAMj1kXHixUFjV=4m3tzfGz7AiRWc-VczymbKuZq7dyZZNuLKxQ@mail.gmail.com>
+In-Reply-To: <CAMj1kXHixUFjV=4m3tzfGz7AiRWc-VczymbKuZq7dyZZNuLKxQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 15 Feb 2022 10:12:40 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2VfvDkueaJNTA9SiB+PFsi_Q17AX+aL46ueooW2ahmQw@mail.gmail.com>
+Message-ID: <CAK8P3a2VfvDkueaJNTA9SiB+PFsi_Q17AX+aL46ueooW2ahmQw@mail.gmail.com>
+Subject: Re: [PATCH 08/14] arm64: simplify access_ok()
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Brian Cain <bcain@codeaurora.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>, X86 ML <x86@kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        "open list:SYNOPSYS ARC ARCHITECTURE" 
+        <linux-snps-arc@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
+        linux-ia64@vger.kernel.org,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Openrisc <openrisc@lists.librecores.org>,
+        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "open list:S390" <linux-s390@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
+        <sparclinux@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>,
+        Robin Murphy <robin.murphy@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+On Tue, Feb 15, 2022 at 9:17 AM Ard Biesheuvel <ardb@kernel.org> wrote:
+> On Mon, 14 Feb 2022 at 17:37, Arnd Bergmann <arnd@kernel.org> wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+>
+> With set_fs() out of the picture, wouldn't it be sufficient to check
+> that bit #55 is clear? (the bit that selects between TTBR0 and TTBR1)
+> That would also remove the need to strip the tag from the address.
+>
+> Something like
+>
+>     asm goto("tbnz  %0, #55, %2     \n"
+>              "tbnz  %1, #55, %2     \n"
+>              :: "r"(addr), "r"(addr + size - 1) :: notok);
+>     return 1;
+> notok:
+>     return 0;
+>
+> with an additional sanity check on the size which the compiler could
+> eliminate for compile-time constant values.
 
-There is a regular need in the kernel to provide a way to declare having
-a dynamically sized set of trailing elements in a structure. Kernel code
-should always use "flexible array members" for these cases. The older
-style of one-element or zero-length arrays should no longer be used.
-Reference:
-https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+That should work, but I don't see it as a clear enough advantage to
+have a custom implementation. For the constant-size case, it probably
+isn't better than a compiler-scheduled comparison against a
+constant limit, but it does hurt maintainability when the next person
+wants to change the behavior of access_ok() globally.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
----
- drivers/gpu/drm/amd/amdkfd/kfd_priv.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If we want to get into micro-optimizing uaccess, I think a better target
+would be a CONFIG_CC_HAS_ASM_GOTO_OUTPUT version
+of __get_user()/__put_user as we have on x86 and powerpc.
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-index e54a52785690..7d39191d13f6 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-@@ -1084,7 +1084,7 @@ struct kfd_criu_svm_range_priv_data {
- 	uint64_t start_addr;
- 	uint64_t size;
- 	/* Variable length array of attributes */
--	struct kfd_ioctl_svm_attribute attrs[0];
-+	struct kfd_ioctl_svm_attribute attrs[];
- };
- 
- struct kfd_criu_queue_priv_data {
--- 
-2.25.1
-
+         Arnd
