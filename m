@@ -2,87 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65994C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE395C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235679AbiBOJLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:11:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52896 "EHLO
+        id S235684AbiBOJMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:12:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235674AbiBOJL3 (ORCPT
+        with ESMTP id S234986AbiBOJL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:11:29 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2531313DDF;
-        Tue, 15 Feb 2022 01:11:19 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id e17so14325424pfv.5;
-        Tue, 15 Feb 2022 01:11:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=CENX30cS1AwqRdGdR2LGQaXDhJCf//o48FSLd1tc1dM=;
-        b=EXpVWUDmG/suSPOYNy4mBNNV+Gq7GkpSFYiuNKXihpliObBZlZeaj+oh24WJxQz8F5
-         tp095SeKWhqL8MegSIxzs2lmJW56ohOJuRdLlXZZH7kFB7ih2L3685C580np9GeealHA
-         sV1ev7aZ8mOJTZe9nmcpiPbaZOj9bCafUvpwImMAKkjJNVWgcGxJIO74ziKY8n8AWUaq
-         GkaCpOkdUSzE9yP4YpxOucpy9dL7qSs+S0XVUjoE0pVMs53JEVEjJcF40qyI3zVedz6l
-         Ps37MnFNGXuZQuIj7LfLLEIgDaJogZdojdasL0l1xONhSyCc21ErThIkivZrTGn+3etv
-         4c5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=CENX30cS1AwqRdGdR2LGQaXDhJCf//o48FSLd1tc1dM=;
-        b=bBYnVlna7yAdx2i7JZOhl4wIfzl2CBzHjA/Qvzti3N6z5XpfaIWn0YfduBewCiKuDA
-         u4Lh2qS3qJoWu835ld3Ac7zLXU+t+P7SWQ+gLIfzn3q6DSnhPIBcbkyqjf4vawjThoeZ
-         TW8d5kH5TSfZ1Yyll/biFNwbxoaIJKYh/MabZLDQJAVShFXt3RjP0KUNVdXI+wFkz07Z
-         ztNxfj+2Hwzp22FtzA83Ykw8GqXw8DOAGQOAlPoCFJ9KiQYJL3ZGjx2UA/PmDMQE3vAs
-         dC/08jYMIBkoRPHPnJhcdSAzNdXTMwPfZXmpUo3X9K20HjAw1xHQFZucqr9evbQTbkvd
-         IY0g==
-X-Gm-Message-State: AOAM5330XELfHBQ/BZCn1xQP5SwibIX1pbD845YPO7gR8tR2z832Ckyh
-        nCYctVh89rLEboToBPnDHXw=
-X-Google-Smtp-Source: ABdhPJxgbzmTCJqIiTWlG5h2H7sIuaDs6lIwJVhjipJPrxaUDEMZTFJppnHGmXxUScH8x6CrkI+Mrg==
-X-Received: by 2002:a63:8549:: with SMTP id u70mr2785919pgd.266.1644916278530;
-        Tue, 15 Feb 2022 01:11:18 -0800 (PST)
-Received: from [192.168.43.80] (subs28-116-206-12-52.three.co.id. [116.206.12.52])
-        by smtp.gmail.com with ESMTPSA id j2sm39099118pfc.209.2022.02.15.01.11.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 01:11:18 -0800 (PST)
-Message-ID: <d82db5a9-ec38-28cd-831f-cb8755fb5a77@gmail.com>
-Date:   Tue, 15 Feb 2022 16:11:13 +0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: Re: [PATCH 5.16 000/203] 5.16.10-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 15 Feb 2022 04:11:56 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F22E1A398;
+        Tue, 15 Feb 2022 01:11:46 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 358E092009C; Tue, 15 Feb 2022 10:11:45 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 2E7E692009B;
+        Tue, 15 Feb 2022 09:11:45 +0000 (GMT)
+Date:   Tue, 15 Feb 2022 09:11:45 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Christoph Hellwig <hch@infradead.org>
+cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
         linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220214092510.221474733@linuxfoundation.org>
-Content-Language: en-US
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] parport_pc: Also enable driver for PCI systems
+In-Reply-To: <YgtQkjRe7fbXI/lS@infradead.org>
+Message-ID: <alpine.DEB.2.21.2202150901170.34636@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2202141955550.34636@angie.orcam.me.uk> <YgtQkjRe7fbXI/lS@infradead.org>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/02/22 16.24, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.10 release.
-> There are 203 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Mon, 14 Feb 2022, Christoph Hellwig wrote:
+
+> > ===================================================================
+> > --- linux-macro.orig/arch/arm64/include/asm/Kbuild
+> > +++ linux-macro/arch/arm64/include/asm/Kbuild
+> > @@ -3,6 +3,7 @@ generic-y += early_ioremap.h
+> >  generic-y += mcs_spinlock.h
+> >  generic-y += qrwlock.h
+> >  generic-y += qspinlock.h
+> > +generic-y += parport.h
 > 
+> Instead of adding generic-y just ad a mandatory-y in
+> include/asm-generic/Kbuild.
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0)
-and powerpc (ps3_defconfig, gcc 11.2.0).
+ I'm inconvinced.  Not all archs want it, 5 don't.
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
--- 
-An old man doll... just what I always wanted! - Clara
+  Maciej
