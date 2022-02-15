@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AB6C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C26B9C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240151AbiBOPaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:30:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46872 "EHLO
+        id S239988AbiBOPaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:30:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240088AbiBOP3u (ORCPT
+        with ESMTP id S240106AbiBOP3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:29:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EB7BF505;
-        Tue, 15 Feb 2022 07:28:33 -0800 (PST)
+        Tue, 15 Feb 2022 10:29:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A19AF1F9;
+        Tue, 15 Feb 2022 07:28:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3B94B81AF2;
-        Tue, 15 Feb 2022 15:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B00ACC340ED;
-        Tue, 15 Feb 2022 15:28:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51713615CE;
+        Tue, 15 Feb 2022 15:28:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF969C340F1;
+        Tue, 15 Feb 2022 15:28:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938906;
-        bh=DAAbBoy/+8vj/RU43Rs5h0wUvAztwDCxAx2l2dMqWXc=;
+        s=k20201202; t=1644938915;
+        bh=E8X8be894fHh241pFPixddfhnlq8eHFkwL8tLTXtjqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RuDm0E4xqIU3MQGD/mtjDS7WOEL219CYmOt0eVYPpIrM5UC9EVcQWKsAHVUyXVUi6
-         LuHGlMsgNYsDBLBtoJ86jNMEn8zH0CSNH3qjwDz0Kg6ddeZZ/xDp8hJd/QGGzmQFK3
-         anxgrE4GkBFLAPb4jTakd99aztsvPsLqDx5WfFu7NVYOV5sebEQvcfsz6PEom8sNac
-         gDMcUH6nRgQgk9wkMcf08x+deHRhsZxySt2Ge9VcfFLIDUhzocSgvH6qiXQwImX598
-         D1ohlGz7+RX9kN3Il79AbXN91V0ovkLbBNM6SMmoF89X3POWy2UtaygJ9fbyOpLo4o
-         lnuCurq4/HSoA==
+        b=G1HYo8frO0hwy/Id252sLBhPa/C18zMnSEwDmyRamIf863fWBD+C6HlcunLXfPMdX
+         ScTGY1vPohNnv1ho9+Y5jalsmU+vtDQgXBNiigphD3jlBQ4K62XGMt5BzGjBP21bfX
+         /Z8HU9i8/XKA5mJtQhaHrMSs9VuB/SgfaEGEa+DtTKGRP1ijQfskkBGjA2TPMn76bT
+         2VvSS5rhUegn2RdSHVxsbITaW64TyRtKGLrCjkO2VThwYin+6pwG3L6aSB9h2ZQeMd
+         uiFDhid63gsD99G6EGOs+j7g2Z+TxON3B/X/RIcQp+gq8Y4kSFeswVg29Vqi52oe/0
+         yKw3GzaYEBL+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Slark Xiao <slark_xiao@163.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 32/34] net: usb: qmi_wwan: Add support for Dell DW5829e
-Date:   Tue, 15 Feb 2022 10:26:55 -0500
-Message-Id: <20220215152657.580200-32-sashal@kernel.org>
+Cc:     Ye Guojin <ye.guojin@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 02/33] ARM: OMAP2+: adjust the location of put_device() call in omapdss_init_of
+Date:   Tue, 15 Feb 2022 10:28:00 -0500
+Message-Id: <20220215152831.580780-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
-References: <20220215152657.580200-1-sashal@kernel.org>
+In-Reply-To: <20220215152831.580780-1-sashal@kernel.org>
+References: <20220215152831.580780-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,65 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
+[ Upstream commit 34596ba380b03d181e24efd50e2f21045bde3696 ]
 
-Dell DW5829e same as DW5821e except the CAT level.
-DW5821e supports CAT16 but DW5829e supports CAT9.
-Also, DW5829e includes normal and eSIM type.
-Please see below test evidence:
+This was found by coccicheck:
+./arch/arm/mach-omap2/display.c, 272, 1-7, ERROR missing put_device;
+call of_find_device_by_node on line 258, but without a corresponding
+object release within this function.
 
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e6 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+Move the put_device() call before the if judgment.
 
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e4 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e-eSIM Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/qmi_wwan.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/mach-omap2/display.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index f510e82194705..2f2abc42cecea 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1399,6 +1399,8 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
- 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
- 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
-+	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
-+	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
- 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
- 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
- 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 6daaa645ae5d9..21413a9b7b6c6 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -263,9 +263,9 @@ static int __init omapdss_init_of(void)
+ 	}
+ 
+ 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
++	put_device(&pdev->dev);
+ 	if (r) {
+ 		pr_err("Unable to populate DSS submodule devices\n");
+-		put_device(&pdev->dev);
+ 		return r;
+ 	}
+ 
 -- 
 2.34.1
 
