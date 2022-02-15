@@ -2,154 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE6BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 07:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4EBC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234959AbiBOH6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 02:58:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48722 "EHLO
+        id S235005AbiBOIAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 03:00:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiBOH6U (ORCPT
+        with ESMTP id S229850AbiBOIAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 02:58:20 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE50913D30;
-        Mon, 14 Feb 2022 23:58:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644911890; x=1676447890;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=J2aPIxHkPt7CQ39Q+4Y+kmdrTWxBvdaiEZS2aBpap2A=;
-  b=e/vuIb1tdkKMEOdMSdPUsncrGuY3pungxMsNc/ECSoZcHrWZGefPvfe6
-   Zs96DpE68GYg90P/S1b3DzW4uyBlTyDxkUNRMrAjOU95SDYaHLYcPOfF/
-   Pst57rCEjB9CGF42f7dazjLmjTq1g72XnEe2QxjnOAaDjGJQdRvJdwOKU
-   EONX/ZwvwjPsbno9UhgYYeo7RYb6ctXzoVdT53f6mXCi78XpHdSQO1D0Z
-   ffnqWS1ldEd6BLt46YoDLe+1ZR/XqfttijaR8JIohSZRlAjPE4pS2nKOJ
-   mX30hQFq3nSZe3iZw5t+HVdnKG+IhQKkXV60Y8VzwVnywjqf/wd6VHKHe
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="233820899"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="233820899"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 23:58:10 -0800
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="496867207"
-Received: from twinkler-lnx.jer.intel.com ([10.12.91.43])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 23:58:08 -0800
-From:   Tomas Winkler <tomas.winkler@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [char-misc 1/4] mei: me: disable driver on the ign firmware
-Date:   Tue, 15 Feb 2022 09:57:45 +0200
-Message-Id: <20220215075748.264195-1-tomas.winkler@intel.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 15 Feb 2022 03:00:15 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AADC13D30
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 00:00:05 -0800 (PST)
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3237F4033B
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:00:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644912004;
+        bh=WKmF3ofcPXNkDjn7YKxiUvOekr6rsM7Z5lgS0lqXT8w=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=ImtJcd9Y2EJZSTmmzMcLpF6yEhEB6ow/DW0+JbMdIUNHvJ8MguMcaySEAfvTj3fzp
+         xLapMygUHhEfYchXZIThst6cwQXK8IWTNyPPe5ijKDpZ6LVwLd6my8Er0sC13gihUi
+         1V+CVAWmjIcUOgPoZ0yfaNTwczo0WIop6hXNbjgiTXX0FgykvsvMzuu96qSV2AYdHK
+         Dp5qmgWHiqQL77tPBNY1psn/N6EWfHYTE9ljby1J/79L+V2MqUKeLuyJP+HpsMYivf
+         7u/Jy5OmzGDeCyHRFXvZjGGGZ1owDbtjIRGlX5aqVTsui/N67OdFU1M0WpUw73+g4n
+         ohS2iRVjeqO5A==
+Received: by mail-ed1-f70.google.com with SMTP id z8-20020a05640240c800b0041003c827edso10225050edb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 00:00:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WKmF3ofcPXNkDjn7YKxiUvOekr6rsM7Z5lgS0lqXT8w=;
+        b=nR/s05hHhgKfgsJHNxjIpFMtdPtuRCGcKuVk9xIPcRUTuqGN3kKQg/21EDTZX3VjoQ
+         v8Bjs3m1TDUdgNGh+OTkZmYmwXGjId3OBlhf/ceKXbzz8RK6hvOs8sLIWHVt+kW47TQ6
+         GuBV4ukC1UJNnfiFBKc/6Z3nqBIn010JVchshX5jSzh/TM277RBMLI0zaiFZOMLc5C9Q
+         i/vZfBg2BgjSv6ihseqb8tdD4i4uZEhZF+2nOKN/S/JGlaeK4OMy7H7XDiV1u8OFy7u1
+         M5TnQx691mIVrjHznSwup9jq6zE2+HAZXONRzrYkYT9aMz8wHw3a6sP0qJtSE61lJrNK
+         F7BQ==
+X-Gm-Message-State: AOAM531zkg16Uk1D18gbMrWM5J1nHObDqfgsVti3VRiByRGItuYuzig5
+        mDv20zmuC/Ol8MuPOKGhNR2uv1pTZPUQ6WXliclSh2AQeYVJ0ukwfgF1CVs1QVO+HB4zUpU2Vbi
+        BpSpGTaAA68r8eo7q14H02VpDabKjmCRUOWxnbmoYvW02FTJtOvWSYni1gQ==
+X-Received: by 2002:a17:907:1c01:: with SMTP id nc1mr2010487ejc.659.1644912003555;
+        Tue, 15 Feb 2022 00:00:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwuZ4VRaFsrBt53zgXGJrUAfN8tOgQwKpQDCWWN0b0yuET7r2Bc26aSK/euYsuMQ1hH/V9RfLx8GOJpFFdq8EM=
+X-Received: by 2002:a17:907:1c01:: with SMTP id nc1mr2010457ejc.659.1644912003335;
+ Tue, 15 Feb 2022 00:00:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220214212154.8853-1-krzysztof.kozlowski@canonical.com> <20220215074030.3nugwproxjh3lwhl@pengutronix.de>
+In-Reply-To: <20220215074030.3nugwproxjh3lwhl@pengutronix.de>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Date:   Tue, 15 Feb 2022 08:59:52 +0100
+Message-ID: <CA+Eumj42Hojp1m4deuWnqMOaaNaupTSkzPaNbL_0eyBL-aDi_g@mail.gmail.com>
+Subject: Re: [PATCH v2 00/15] pwm: dt-bindings: Include generic pwm schema
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>,
+        Rahul Tanwar <rtanwar@maxlinear.com>,
+        Jeff LaBundy <jeff@labundy.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Vignesh R <vigneshr@ti.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+On Tue, 15 Feb 2022 at 08:40, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello,
+>
+> [dropped Anson Huang and Yash Shah from Cc: which were not reachable for
+> my last mail]
+>
+> On Mon, Feb 14, 2022 at 10:21:39PM +0100, Krzysztof Kozlowski wrote:
+> > Hi,
+> >
+> > Changes since v1:
+> > 1. Add tags.
+> > 2. Adjust subject (Uwe).
+>
+> However you only took a part of my suggestion ...
+>
+> > Krzysztof Kozlowski (15):
+> >   dt-bindings: pwm: allwinner,sun4i-a10: Include generic pwm schema
+> >   dt-bindings: pwm: imx: Include generic pwm schema
+> >   dt-bindings: pwm: intel,lgm: Include generic pwm schema
+> >   dt-bindings: pwm: iqs620a: Include generic pwm schema
+> >   dt-bindings: pwm: mxs: Include generic pwm schema
+> >   dt-bindings: pwm: rockchip: Include generic pwm schema
+> >   dt-bindings: pwm: sifive: Include generic pwm schema
+> >   dt-bindings: pwm: renesas,pwm: Include generic pwm schema
+> >   dt-bindings: pwm: toshiba,visconti: Include generic pwm schema
+> >   dt-bindings: pwm: brcm,bcm7038: Do not require pwm-cells twice
+> >   dt-bindings: pwm: intel,keembay: Do not require pwm-cells twice
+>
+> ... The actual patch has a space after the comma, I like this variant
+> without comma better as this is a compatible string.
 
-Add a quirk to disable MEI interface on Intel PCH Ignition (IGN)
-as the IGN firmware doesn't support the protocol.
+I am confused. My patch does not have comma after space. Your reply
+had such in the subject, but not in the proposed new subject you wrote
+in msg, so I left it as is. Without comma. If you still see comma, it
+is something with your mail client.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
----
- drivers/misc/mei/hw-me-regs.h |  1 +
- drivers/misc/mei/hw-me.c      | 23 ++++++++++++-----------
- 2 files changed, 13 insertions(+), 11 deletions(-)
+See:
+https://lore.kernel.org/linux-devicetree/20220214212154.8853-12-krzysztof.k=
+ozlowski@canonical.com/T/#u
 
-diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index 67bb6a25fd0a..888c27bc3f1a 100644
---- a/drivers/misc/mei/hw-me-regs.h
-+++ b/drivers/misc/mei/hw-me-regs.h
-@@ -120,6 +120,7 @@
- #define PCI_CFG_HFS_2         0x48
- #define PCI_CFG_HFS_3         0x60
- #  define PCI_CFG_HFS_3_FW_SKU_MSK   0x00000070
-+#  define PCI_CFG_HFS_3_FW_SKU_IGN   0x00000000
- #  define PCI_CFG_HFS_3_FW_SKU_SPS   0x00000060
- #define PCI_CFG_HFS_4         0x64
- #define PCI_CFG_HFS_5         0x68
-diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
-index d3a6c0728645..fbc4c9581864 100644
---- a/drivers/misc/mei/hw-me.c
-+++ b/drivers/misc/mei/hw-me.c
-@@ -1405,16 +1405,16 @@ static bool mei_me_fw_type_sps_4(const struct pci_dev *pdev)
- 	.quirk_probe = mei_me_fw_type_sps_4
- 
- /**
-- * mei_me_fw_type_sps() - check for sps sku
-+ * mei_me_fw_type_sps_ign() - check for sps or ign sku
-  *
-- * Read ME FW Status register to check for SPS Firmware.
-- * The SPS FW is only signaled in pci function 0
-+ * Read ME FW Status register to check for SPS or IGN Firmware.
-+ * The SPS/IGN FW is only signaled in pci function 0
-  *
-  * @pdev: pci device
-  *
-- * Return: true in case of SPS firmware
-+ * Return: true in case of SPS/IGN firmware
-  */
--static bool mei_me_fw_type_sps(const struct pci_dev *pdev)
-+static bool mei_me_fw_type_sps_ign(const struct pci_dev *pdev)
- {
- 	u32 reg;
- 	u32 fw_type;
-@@ -1427,14 +1427,15 @@ static bool mei_me_fw_type_sps(const struct pci_dev *pdev)
- 
- 	dev_dbg(&pdev->dev, "fw type is %d\n", fw_type);
- 
--	return fw_type == PCI_CFG_HFS_3_FW_SKU_SPS;
-+	return fw_type == PCI_CFG_HFS_3_FW_SKU_IGN ||
-+	       fw_type == PCI_CFG_HFS_3_FW_SKU_SPS;
- }
- 
- #define MEI_CFG_KIND_ITOUCH                     \
- 	.kind = "itouch"
- 
--#define MEI_CFG_FW_SPS                          \
--	.quirk_probe = mei_me_fw_type_sps
-+#define MEI_CFG_FW_SPS_IGN                      \
-+	.quirk_probe = mei_me_fw_type_sps_ign
- 
- #define MEI_CFG_FW_VER_SUPP                     \
- 	.fw_ver_supported = 1
-@@ -1535,7 +1536,7 @@ static const struct mei_cfg mei_me_pch12_sps_cfg = {
- 	MEI_CFG_PCH8_HFS,
- 	MEI_CFG_FW_VER_SUPP,
- 	MEI_CFG_DMA_128,
--	MEI_CFG_FW_SPS,
-+	MEI_CFG_FW_SPS_IGN,
- };
- 
- /* Cannon Lake itouch with quirk for SPS 5.0 and newer Firmware exclusion
-@@ -1545,7 +1546,7 @@ static const struct mei_cfg mei_me_pch12_itouch_sps_cfg = {
- 	MEI_CFG_KIND_ITOUCH,
- 	MEI_CFG_PCH8_HFS,
- 	MEI_CFG_FW_VER_SUPP,
--	MEI_CFG_FW_SPS,
-+	MEI_CFG_FW_SPS_IGN,
- };
- 
- /* Tiger Lake and newer devices */
-@@ -1562,7 +1563,7 @@ static const struct mei_cfg mei_me_pch15_sps_cfg = {
- 	MEI_CFG_FW_VER_SUPP,
- 	MEI_CFG_DMA_128,
- 	MEI_CFG_TRC,
--	MEI_CFG_FW_SPS,
-+	MEI_CFG_FW_SPS_IGN,
- };
- 
- /*
--- 
-2.34.1
+Also reply from Vijayakannan does not have comma:
+https://lore.kernel.org/linux-devicetree/20220214081605.161394-11-krzysztof=
+.kozlowski@canonical.com/T/#m80af695f2c751341bc971114aefa00ccc929a3ec
 
+> Also a # before
+> pwm-cells would be nice.
+
+I can add this.
+
+Best regards,
+Krzysztof
