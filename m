@@ -2,140 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D56DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5ABDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235986AbiBOJle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:41:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32992 "EHLO
+        id S236001AbiBOJlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:41:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235983AbiBOJlb (ORCPT
+        with ESMTP id S235992AbiBOJlg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:41:31 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCB0E4D07
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:41:20 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id p9so10520333wra.12
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:41:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=t1wflCr1vStMilehgvIe0w5v3TJPtXNP/omwaXqFnbs=;
-        b=X2ztBi1BvP5dZxfZSWhpEp86yS7NH+aFVQUGt8uylxVUHrTPgLxljm/I823I20QDAC
-         myDO9b6pKdhXfxOflamUH9a0V56xRHIzRt+zobHm2aSQI9lX2AtyVbvDJ4b/hbAVMJwj
-         O9vb1GNkZY2UcPTCqfIbCX+8y2sqNQNjI5x14V4+FrxOupZqMwREoOU7tUaRNhVammTS
-         15HBCcV5/vHuri9+ncnfWaytYpmQXGl85VY7/QOaHfZV4ygqrf/US1M/Trp4pBEdNttY
-         GmI4NuNrS9A1UQGLBpSYyXFp+7ZES8mph1JTwI5jnuKmU+GSd5GjMsnzQcXxqbHmEldG
-         KnAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t1wflCr1vStMilehgvIe0w5v3TJPtXNP/omwaXqFnbs=;
-        b=wyD84+PsfYNWD0W/tR42mRoHQZSL7LljoTMx6ynZHqCeX6SEEAJQTpaCH0n0M2VvEl
-         SOMGB0mU7rjvIDVezYzQrnXj5ZTYCj2O0TYG5a5PX2OgKSzr/FZyDosYJePigWKBuj7W
-         fJGrLtcJ3YALYCGZI4hvKHQ3jiRbRoYDf6Dfl5A2y40m4XHHluJuyP81uVLmPCfh5gsH
-         ViOnWTDjM8sObQB12eV2g0DsFHAoCjZSdSHV+fNAIBddviIt8MxWxKq1Lkxmf4zOeujo
-         2n7ixxNBcktEAIMhIoKnifpgRO6WqFFffuHn3XURc72YMyzFF/EUg6jq2LjRbC/VBhGf
-         UG5g==
-X-Gm-Message-State: AOAM531F7EpZDc7BAUqxbx46TpdWPtH3mHMAnarqCYXGm3DrCGEdo3IO
-        KIOL0NRecM6ACiKBxqkVWCE3m9sUd4c+9wccl+g/vQ==
-X-Google-Smtp-Source: ABdhPJycaBm0tTnyxaAYB2jLzb26nfkOtUFXqf8v+zAItEOizp7OLUjLiobN4Bd6P0OekZnQ3wsTWbSu3Eh+8hJtkd0=
-X-Received: by 2002:a5d:4209:: with SMTP id n9mr2515369wrq.86.1644918078895;
- Tue, 15 Feb 2022 01:41:18 -0800 (PST)
+        Tue, 15 Feb 2022 04:41:36 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890C92608;
+        Tue, 15 Feb 2022 01:41:25 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 399F71F424E2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644918083;
+        bh=yq8iJBJC4x3GV++oabST32A8rclogMDfHMgxC/dI6Yk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bJPM+pbQ2xVrL8VVd8LmIbEPyp0Lpi/YQCkn68h72V1EcuKipsmZsB+E4h2GLgPnR
+         F1pnpIK5gYzRDOsVv8RUB8tC7BdroPQ0Hlro8BdXYxX4KjHnq3V06s+D51yp09xsCU
+         vXR4BUZKXCojHE8TUc+w2nXHJRE1ku174kHK6TMkBgONYMuZW0GF1z0AKBUNZzs7mg
+         NrlEMtfjzC2prSETr+0GKJtYOJ6tiPCk8tR+84W/nem1LRGuAILxr4V7L65ecbiaHE
+         mMLIhUi9o4X7hog9f5OWjIqQKZ7B5m06IHyZIFWA1Z9HME2mjt6Ilkpu0dPLQuyCe/
+         S2W2AEDvnf7Lg==
+Message-ID: <15a24b12-e296-9d4e-211f-55553ac8f7da@collabora.com>
+Date:   Tue, 15 Feb 2022 10:41:21 +0100
 MIME-Version: 1.0
-References: <20220215090211.911366-1-atishp@rivosinc.com> <20220215090211.911366-2-atishp@rivosinc.com>
-In-Reply-To: <20220215090211.911366-2-atishp@rivosinc.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Tue, 15 Feb 2022 15:11:06 +0530
-Message-ID: <CAAhSdy0+K+ADhO0oSoW7QUF582UvbaUbNPyAcBs5RMhUsm91Rw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/6] RISC-V: Correctly print supported extensions
-To:     Atish Patra <atishp@rivosinc.com>
-Cc:     "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Tsukasa OI <research_trasio@irq.a4lg.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@atishpatra.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v4] media: mtk-vpu: Ensure alignment of 8 for DTCM buffer
+Content-Language: en-US
+To:     linux-media@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Alexandre Courbot <acourbot@chromium.org>, kernel@collabora.com,
+        dafna3@gmail.com, tiffany.lin@mediatek.com,
+        andrew-ct.chen@mediatek.com, minghsiu.tsai@mediatek.com,
+        houlong.wei@mediatek.com, mchehab@kernel.org,
+        matthias.bgg@gmail.com, hverkuil@xs4all.nl
+References: <20210920170408.1561-1-dafna.hirschfeld@collabora.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20210920170408.1561-1-dafna.hirschfeld@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 2:32 PM Atish Patra <atishp@rivosinc.com> wrote:
->
-> From: Tsukasa OI <research_trasio@irq.a4lg.com>
->
-> This commit replaces BITS_PER_LONG with number of alphabet letters.
->
-> Current ISA pretty-printing code expects extension 'a' (bit 0) through
-> 'z' (bit 25).  Although bit 26 and higher is not currently used (thus never
-> cause an issue in practice), it will be an annoying problem if we start to
-> use those in the future.
->
-> This commit disables printing high bits for now.
->
-> Signed-off-by: Tsukasa OI <research_trasio@irq.a4lg.com>
-> Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> Tested-by: Heiko Stuebner <heiko@sntech.de>
+Il 20/09/21 19:04, Dafna Hirschfeld ha scritto:
+> From: Alexandre Courbot <acourbot@chromium.org>
+> 
+> When running memcpy_toio:
+> memcpy_toio(send_obj->share_buf, buf, len);
+> it was found that errors appear if len is not a multiple of 8:
+> 
+> [58.350841] mtk-mdp 14001000.rdma: processing failed: -22
+> 
+> This patch ensures the copy of a multiple of 8 size by calling
+> round_up(len, 8) when copying
+> 
+> Fixes: e6599adfad30 ("media: mtk-vpu: avoid unaligned access to DTCM buffer.")
+> Signed-off-by: Alexandre Courbot <acourbot@chromium.org>
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+> Reviewed-by: Houlong Wei <houlong.wei@mediatek.com>
 
-Looks good to me.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Reviewed-by: Anup Patel <anup@brainfault.org>
+I acknowledge that this patch is getting very old and stale, but after some
+testing on MT8173, we were able to verify that it is essential for MediaTek MDP
+functionality, along with some other patches.
 
-Regards,
-Anup
+Without this one, it won't work.
 
-> ---
->  arch/riscv/kernel/cpufeature.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-> index d959d207a40d..dd3d57eb4eea 100644
-> --- a/arch/riscv/kernel/cpufeature.c
-> +++ b/arch/riscv/kernel/cpufeature.c
-> @@ -13,6 +13,8 @@
->  #include <asm/smp.h>
->  #include <asm/switch_to.h>
->
-> +#define NUM_ALPHA_EXTS ('z' - 'a' + 1)
-> +
->  unsigned long elf_hwcap __read_mostly;
->
->  /* Host ISA bitmap */
-> @@ -63,7 +65,7 @@ void __init riscv_fill_hwcap(void)
->  {
->         struct device_node *node;
->         const char *isa;
-> -       char print_str[BITS_PER_LONG + 1];
-> +       char print_str[NUM_ALPHA_EXTS + 1];
->         size_t i, j, isa_len;
->         static unsigned long isa2hwcap[256] = {0};
->
-> @@ -133,13 +135,13 @@ void __init riscv_fill_hwcap(void)
->         }
->
->         memset(print_str, 0, sizeof(print_str));
-> -       for (i = 0, j = 0; i < BITS_PER_LONG; i++)
-> +       for (i = 0, j = 0; i < NUM_ALPHA_EXTS; i++)
->                 if (riscv_isa[0] & BIT_MASK(i))
->                         print_str[j++] = (char)('a' + i);
->         pr_info("riscv: ISA extensions %s\n", print_str);
->
->         memset(print_str, 0, sizeof(print_str));
-> -       for (i = 0, j = 0; i < BITS_PER_LONG; i++)
-> +       for (i = 0, j = 0; i < NUM_ALPHA_EXTS; i++)
->                 if (elf_hwcap & BIT_MASK(i))
->                         print_str[j++] = (char)('a' + i);
->         pr_info("riscv: ELF capabilities %s\n", print_str);
-> --
-> 2.30.2
->
+Keeping this in mind, I would propose to get this one picked before it gets
+completely stale and requiring a rewrite.
+
+Cheers,
+Angelo
