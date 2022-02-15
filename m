@@ -2,85 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:19:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C53DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243611AbiBOTT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:19:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53822 "EHLO
+        id S243552AbiBOTUB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:20:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243585AbiBOTTr (ORCPT
+        with ESMTP id S243606AbiBOTT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:19:47 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B4310BBED;
-        Tue, 15 Feb 2022 11:19:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644952777; x=1676488777;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=gexs4JvegdKqrsb9mXRMPBkw4uzr7hXiX3Lra7mOZow=;
-  b=bqEr0+jEOd5Wftcw8toyDWb7maSVE6PHMk6NI14TLsU0sqtZ7mAxyqGk
-   iqtcXvBJJk3HH8LbgsITw7jcMxyetv8tTODDwZFy7fCtIQSg05JZZjIcw
-   x9s7TqsplIcTAzDzReSIiVRjJi8JEYSFioDe49H3UGEGf+Zt9dF/UXHno
-   4=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 15 Feb 2022 11:19:37 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 11:19:36 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 15 Feb 2022 11:19:35 -0800
-Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 15 Feb 2022 11:19:30 -0800
-From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Andy Gross <agross@kernel.org>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wesley Cheng <wcheng@codeaurora.org>,
-        "Stephen Boyd" <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>
-CC:     <evicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-phy@lists.infradead.org>,
-        <linux-usb@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: [PATCH 0/3] Add QCOM SNPS PHY overriding params support
-Date:   Wed, 16 Feb 2022 00:49:12 +0530
-Message-ID: <1644952755-15527-1-git-send-email-quic_c_sanm@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 15 Feb 2022 14:19:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6281C111FA6;
+        Tue, 15 Feb 2022 11:19:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2A9A61786;
+        Tue, 15 Feb 2022 19:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CD28C340EB;
+        Tue, 15 Feb 2022 19:19:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644952784;
+        bh=cQeVp2Uorr1VqCWrtUYRdec9lyODCH6aCatH65p8hvM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cInfFJZJtE4Yu/SlazAQPEPheZIU4zU8o4fuITT5GU4mHLGWrpOty3uY+xf0beAmo
+         bZBel0LtkoCziJzxmx/PpRxIiRcs866tLJcd71L+zP6UpF0FFraB034xXR1L7w10L2
+         PTFdXN7uNPPwPOUVaPtnsZXCiALXMg6vg0oy32N1dJpq3kLc37jg4eM53xqUl05Aeh
+         d5YH16VmN4VzDaP3Vw5Qhmko4KHojTLCFA6C1sYcGM2EtiTLCg/13FSfz2Ts6DwY6y
+         MwA4+FZneMOr+mAtcmMR4nIp9Mx5Wof4cv6syhzJFPNYLerKGVxj5UMnUg5hLAb4li
+         QrejTbVH2TRHw==
+Received: by pali.im (Postfix)
+        id B0700F13; Tue, 15 Feb 2022 20:19:41 +0100 (CET)
+Date:   Tue, 15 Feb 2022 20:19:41 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Armin Wolf <W_Armin@gmx.de>
+Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] hwmon: (dell-smm) Allow for specifying fan control
+ method as module parameter
+Message-ID: <20220215191941.azk5gpcn42ahcnna@pali>
+References: <20220215191113.16640-1-W_Armin@gmx.de>
+ <20220215191113.16640-2-W_Armin@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220215191113.16640-2-W_Armin@gmx.de>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added support for overriding tuning parameters in QCOM SNPS PHY
-from device tree.
+On Tuesday 15 February 2022 20:11:07 Armin Wolf wrote:
+> Right now, the only way to test if setting manual/auto fan control works
+> is to edit and recompile the module, which may be too cumbersome for
+> the average user.
 
-Sandeep Maheswaram (3):
-  dt-bindings: phy: qcom,usb-snps-femto-v2: Add phy override params
-    bindings
-  phy: qcom-snps: Add support for overriding phy tuning parameters
-  arm64: dts: qcom: sc7280: Update SNPS Phy params for SC7280 IDP device
+There is also another way suitable for testing purposes which do not
+requires any kernel patch. Call iopl(3) syscall which changes I/O
+privilege level to 3 and which allows to poke I/O registers.
 
- .../bindings/phy/qcom,usb-snps-femto-v2.yaml       | 16 ++++++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           |  4 ++
- drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c      | 45 ++++++++++++++++++++++
- 3 files changed, 65 insertions(+)
+> Allow for specifying the desired fan mode control method when loading
+> the module, but taint the kernel if so since there is the possibility
+> for strange side effects on non-whitelisted models.
+> Also update docs and kernel-parameters.txt accordingly.
+> 
+> Tested on a Dell Inspiron 3505.
+> 
+> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+> ---
+>  .../admin-guide/kernel-parameters.txt         |  3 +++
+>  Documentation/hwmon/dell-smm-hwmon.rst        | 21 ++++++++++------
+>  drivers/hwmon/dell-smm-hwmon.c                | 25 +++++++++++++------
+>  3 files changed, 35 insertions(+), 14 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index d68053db21cc..4f1b6c2b7ed1 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -968,6 +968,9 @@
+>  	dell_smm_hwmon.fan_max=
+>  			[HW] Maximum configurable fan speed.
+> 
+> +	dell_smm_hwmon.fan_mode_method=
+> +			[HW] Method to use for changing fan mode.
+> +
+>  	dfltcc=		[HW,S390]
+>  			Format: { on | off | def_only | inf_only | always }
+>  			on:       s390 zlib hardware support for compression on
+> diff --git a/Documentation/hwmon/dell-smm-hwmon.rst b/Documentation/hwmon/dell-smm-hwmon.rst
+> index beec88491171..564d99cda869 100644
+> --- a/Documentation/hwmon/dell-smm-hwmon.rst
+> +++ b/Documentation/hwmon/dell-smm-hwmon.rst
+> @@ -67,13 +67,16 @@ for your hardware. It is possible that codes that work for other
+>  laptops actually work for yours as well, or that you have to discover
+>  new codes.
+> 
+> -Check the list ``i8k_whitelist_fan_control`` in file
+> -``drivers/hwmon/dell-smm-hwmon.c`` in the kernel tree: as a first
+> -attempt you can try to add your machine and use an already-known code
+> -pair. If, after recompiling the kernel, you see that ``pwm1_enable``
+> -is present and works (i.e., you can manually control the fan speed),
+> -then please submit your finding as a kernel patch, so that other users
+> -can benefit from it. Please see
+> +As a first step, you can load the module with the module parameter
+> +``fan_mode_method`` set to 1 to test if your hardware works with
+> +an already know method for disabling automatic BIOS fan control.
+> +If ``pwm1_enable`` is now present and works (i.e., you can
+> +manually control the fan speed), then please submit your finding
+> +as a kernel patch, so that other users can benefit from it.
+> +Just add your model to the list ``i8k_whitelist_fan_control`` in
+> +file ``drivers/hwmon/dell-smm-hwmon.c`` in the kernel tree and use
+> +the already known code pair.
+> +Please read
+>  :ref:`Documentation/process/submitting-patches.rst <submittingpatches>`
+>  for information on submitting patches.
+> 
+> @@ -120,6 +123,10 @@ Module parameters
+>                     Maximum configurable fan speed. (default:
+>                     autodetect)
+> 
+> +* fan_mode_method:uint
+> +                   Method to use for changing fan mode (default:
+> +                   from whitelist)
+> +
+>  Legacy ``/proc`` interface
+>  --------------------------
+> 
+> diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
+> index 9949eeb79378..1c4cc516c8b2 100644
+> --- a/drivers/hwmon/dell-smm-hwmon.c
+> +++ b/drivers/hwmon/dell-smm-hwmon.c
+> @@ -111,6 +111,10 @@ static uint fan_max;
+>  module_param(fan_max, uint, 0);
+>  MODULE_PARM_DESC(fan_max, "Maximum configurable fan speed (default: autodetect)");
+> 
+> +static uint fan_mode_method;
+> +module_param_unsafe(fan_mode_method, uint, 0);
+> +MODULE_PARM_DESC(fan_mode_method, "Method to use for changing fan mode (default: from whitelist)");
 
--- 
-2.7.4
+No, please really do not introduce another kernel parameter for this
+driver. There are already many and we do not need to extend this list.
 
+> +
+>  struct smm_regs {
+>  	unsigned int eax;
+>  	unsigned int ebx;
+> @@ -677,7 +681,7 @@ static umode_t dell_smm_is_visible(const void *drvdata, enum hwmon_sensor_types
+> 
+>  			break;
+>  		case hwmon_pwm_enable:
+> -			if (data->auto_fan)
+> +			if (data->auto_fan && data->manual_fan)
+>  				/*
+>  				 * There is no command for retrieve the current status
+>  				 * from BIOS, and userspace/firmware itself can change
+> @@ -1282,14 +1286,21 @@ static int __init dell_smm_probe(struct platform_device *pdev)
+>  	data->i8k_fan_max = fan_max ? : I8K_FAN_HIGH;	/* Must not be 0 */
+>  	data->i8k_pwm_mult = DIV_ROUND_UP(255, data->i8k_fan_max);
+> 
+> -	fan_control = dmi_first_match(i8k_whitelist_fan_control);
+> -	if (fan_control && fan_control->driver_data) {
+> -		const struct i8k_fan_control_data *control = fan_control->driver_data;
+> +	/* value specified via module param overrides whitelist */
+> +	if (fan_mode_method > 0 && fan_mode_method <= ARRAY_SIZE(i8k_fan_control_data)) {
+> +		data->manual_fan = i8k_fan_control_data[fan_mode_method - 1].manual_fan;
+> +		data->auto_fan = i8k_fan_control_data[fan_mode_method - 1].auto_fan;
+> +	} else {
+> +		fan_control = dmi_first_match(i8k_whitelist_fan_control);
+> +		if (fan_control && fan_control->driver_data) {
+> +			const struct i8k_fan_control_data *control = fan_control->driver_data;
+> 
+> -		data->manual_fan = control->manual_fan;
+> -		data->auto_fan = control->auto_fan;
+> -		dev_info(&pdev->dev, "enabling support for setting automatic/manual fan control\n");
+> +			data->manual_fan = control->manual_fan;
+> +			data->auto_fan = control->auto_fan;
+> +		}
+>  	}
+> +	if (data->manual_fan && data->auto_fan)
+> +		dev_info(&pdev->dev, "enabling support for setting automatic/manual fan control\n");
+> 
+>  	if (!fan_mult) {
+>  		/*
+> --
+> 2.30.2
+> 
