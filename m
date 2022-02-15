@@ -2,223 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:43:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A84C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240783AbiBOPnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:43:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39604 "EHLO
+        id S240844AbiBOPnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:43:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241165AbiBOPlB (ORCPT
+        with ESMTP id S236426AbiBOPmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:41:01 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A3A13DE15;
-        Tue, 15 Feb 2022 07:34:31 -0800 (PST)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21FFXwV8039094;
-        Tue, 15 Feb 2022 09:33:58 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644939238;
-        bh=h/zYlGUEcc55g9uDoWcPM6icynXj9sCfC3wz2wPbMlI=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=HkQhHlHz4evf9qkhvc1KP9o7Ynwyec/ugo97uiN1mhCCOCqfCJVQammQpVOjTS+Pf
-         Be7nyf9Kk3bhynTxrb+JuvjvhIfXw54EG6SmrUFJn6aiJ+dprtX1veGYvMc5Kj4q9o
-         pV6eT63AzQbHDrzhP+yLG/FtdjSOfeXWLkcruMpU=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21FFXw47061286
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 15 Feb 2022 09:33:58 -0600
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 15
- Feb 2022 09:33:58 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 15 Feb 2022 09:33:58 -0600
-Received: from [10.250.233.196] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21FFXqVL025861;
-        Tue, 15 Feb 2022 09:33:53 -0600
-Message-ID: <bf3ea909-e0a5-eeac-12e9-c8a809685f48@ti.com>
-Date:   Tue, 15 Feb 2022 21:03:52 +0530
+        Tue, 15 Feb 2022 10:42:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1398D2040;
+        Tue, 15 Feb 2022 07:37:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55582B8185B;
+        Tue, 15 Feb 2022 15:37:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 819DCC340EB;
+        Tue, 15 Feb 2022 15:37:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644939439;
+        bh=TeR5xH8P329XvkDZu4avsJVXyHq0d1jVWjx4RDc8sRU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jKcWbNt2FCs2NwwDNK6LW15Wk25UyUzIcQ9KMmoXKZZqLb584v4MfMK2Q4fJi7HJf
+         46yy4lLCFelEmNYvEWfF3VUwriqJWZKRiNxjRN+ZoXwf9ixSDrK6aJixUORoKKoxn6
+         LFGC/EFtTkXOipiVqAIeYmPs9qltXZuSowspm9xp/GM0EKidVG6jtVZi2cv8DqpTtY
+         toY+Bob2PJZaVbl5afUM2LBoszCM9svukYXnBhpiXadk/u08eGluriFYeie5d1SvnS
+         eYiQYfW0hYBmZ1AgKLt3YbWkajvTwN5h/e2+mw2b6qyoY9XOqR+1/aDquBIj1nqVkU
+         YHj2EzIFFCj2A==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH] libperf: Fix perf_cpu_map__for_each_cpu macro
+Date:   Tue, 15 Feb 2022 16:37:13 +0100
+Message-Id: <20220215153713.31395-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 05/17] mtd: spinand: Define ctrl_ops for non-page
- read/write op templates
-Content-Language: en-US
-To:     Boris Brezillon <boris.brezillon@collabora.com>
-CC:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Mark Brown <broonie@kernel.org>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Daniel Palmer <daniel@0x0f.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <p.yadav@ti.com>
-References: <20220101074250.14443-1-a-nandan@ti.com>
- <20220101074250.14443-6-a-nandan@ti.com>
- <20220103110107.45594e78@collabora.com>
-From:   Apurva Nandan <a-nandan@ti.com>
-In-Reply-To: <20220103110107.45594e78@collabora.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Boris,
+Tzvetomir Stoyanov reported an issue with using macro
+perf_cpu_map__for_each_cpu using private perf_cpu object.
 
-On 03/01/22 15:31, Boris Brezillon wrote:
-> On Sat, 1 Jan 2022 13:12:38 +0530
-> Apurva Nandan <a-nandan@ti.com> wrote:
->
->> 'ctrl_ops' are op templates for non-page read/write operations,
->> which are: reset, get_feature, set_feature, write_enable, block_erase,
->> page_read and program_execute ops. The 'ctrl_ops' struct contains in it
->> op templates for each of this op, as well as enum spinand_protocol
->> denoting protocol of all these ops.
->>
->> We require these new op templates because of deviation in standard
->> SPINAND ops by manufacturers and also due to changes when there is a
->> change in SPI protocol/mode. This prevents the core from live-patching
->> and vendor-specific adjustments in ops.
->>
->> Define 'ctrl_ops', add macros to initialize it and add it in
->> spinand_device.
->>
->> Signed-off-by: Apurva Nandan <a-nandan@ti.com>
->> ---
->>   include/linux/mtd/spinand.h | 33 +++++++++++++++++++++++++++++++++
->>   1 file changed, 33 insertions(+)
->>
->> diff --git a/include/linux/mtd/spinand.h b/include/linux/mtd/spinand.h
->> index 439d8ce40e1d..e5df6220ec1e 100644
->> --- a/include/linux/mtd/spinand.h
->> +++ b/include/linux/mtd/spinand.h
->> @@ -356,6 +356,35 @@ struct spinand_op_variants {
->>   			sizeof(struct spi_mem_op),			\
->>   	}
->>   
->> +struct spinand_ctrl_ops {
->> +	const struct {
->> +		struct spi_mem_op reset;
->> +		struct spi_mem_op get_feature;
->> +		struct spi_mem_op set_feature;
->> +		struct spi_mem_op write_enable;
->> +		struct spi_mem_op block_erase;
->> +		struct spi_mem_op page_read;
->> +		struct spi_mem_op program_execute;
->> +	} ops;
->> +	const enum spinand_protocol protocol;
-> Do you really need that protocol field?
->
->> +};
->> +
->> +#define SPINAND_CTRL_OPS(__protocol, __reset, __get_feature, __set_feature,	\
->> +			 __write_enable, __block_erase, __page_read,		\
->> +			 __program_execute)					\
->> +	{									\
->> +		.ops = {							\
->> +			.reset = __reset,					\
->> +			.get_feature = __get_feature,				\
->> +			.set_feature = __set_feature,				\
->> +			.write_enable = __write_enable,				\
->> +			.block_erase = __block_erase,				\
->> +			.page_read = __page_read,				\
->> +			.program_execute = __program_execute,			\
->> +		},								\
->> +		.protocol = __protocol,						\
->> +	}
->> +
->>   /**
->>    * spinand_ecc_info - description of the on-die ECC implemented by a SPI NAND
->>    *		      chip
->> @@ -468,6 +497,8 @@ struct spinand_dirmap {
->>    * @data_ops.read_cache: read cache op template
->>    * @data_ops.write_cache: write cache op template
->>    * @data_ops.update_cache: update cache op template
->> + * @ctrl_ops: various SPI mem op templates for handling the flash device, i.e.
->> + *	      non page-read/write ops.
->>    * @select_target: select a specific target/die. Usually called before sending
->>    *		   a command addressing a page or an eraseblock embedded in
->>    *		   this die. Only required if your chip exposes several dies
->> @@ -498,6 +529,8 @@ struct spinand_device {
->>   		const struct spi_mem_op *update_cache;
->>   	} data_ops;
->>   
->> +	const struct spinand_ctrl_ops *ctrl_ops;
->> +
-> Okay, I had something slightly different in mind. First, I'd put all
-> templates in a struct:
->
-> struct spinand_op_templates {
-> 	const struct spi_mem_op *read_cache;
-> 	const struct spi_mem_op *write_cache;
-> 	const struct spi_mem_op *update_cache;
-> 	const struct spi_mem_op *reset;
-> 	const struct spi_mem_op *get_feature;
-> 	const struct spi_mem_op *set_feature;
-> 	const struct spi_mem_op *write_enable;
-> 	const struct spi_mem_op *block_erase;
-> 	const struct spi_mem_op *page_load;
-> 	const struct spi_mem_op *program_execute;
-> };
->
-> Then, at the spinand level, I'd define an array of templates:
->
-> enum spinand_protocol {
-> 	SPINAND_1S_1S_1S,
-> 	SPINAND_2S_2S_2S,
-> 	SPINAND_4S_4S_4S,
-> 	SPINAND_8S_8S_8S,
-> 	SPINAND_8D_8D_8D,
-> 	SPINAND_NUM_PROTOCOLS,
-> };
->
-> struct spinand_device {
-> 	...
-> 	enum spinand_protocol protocol;
-> 	const struct spinand_op_templates *op_templates[SPINAND_NUM_PROTOCOLS];
-> 	...
-> };
->
-> This way, you can easily pick the right set of operations based
-> on the protocol/mode you're in:
->
-> #define spinand_get_op_template(spinand, opname) \
-> 	((spinand)->op_templates[(spinand)->protocol]->opname)
->
-> static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
-> {
-> 	struct spi_mem_op op = *spinand_get_op_template(spinand, get_feature);
-> 	int ret;
->
-> 	...
-> }
+The issue is caused by recent change that wrapped cpu in struct
+perf_cpu to distinguish it from cpu indexes. We need to make
+struct perf_cpu public.
 
-I find a couple of issues with this  method,
+Adding simple test for using perf_cpu_map__for_each_cpu
+macro.
 
-1. read_cache, write_cache, update_cache op templates don't fit well 
-with the other non-data ops, as
-these data ops are used to create a dirmap, and that can be done only 
-once at probe time. Hence, there
-is a different mechanism of selecting of data ops and non-data ops. 
-Hence, this division in the op templates
-struct as data_ops and ctrl_ops is required. Currently, the core only 
-supports using a single protocol for
-data ops, chosen at the time of probing.
+Fixes: 6d18804b963b ("perf cpumap: Give CPUs their own type")
+Reported-by: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ tools/lib/perf/include/internal/cpumap.h |  6 +-----
+ tools/lib/perf/include/perf/cpumap.h     |  5 +++++
+ tools/lib/perf/libperf.map               |  1 +
+ tools/lib/perf/tests/test-cpumap.c       | 11 +++++++++++
+ 4 files changed, 18 insertions(+), 5 deletions(-)
 
-2. If we use this single op_templates struct, I can't think of any good 
-way to initialize these in the
-manufacturers driver (winbond.c), refer to 17th patch in this series. 
-Could you please suggest a macro
-implementation also for winbond.c with the suggested op_templates struct.
-
-Thanks,
-Apurva Nandan
+diff --git a/tools/lib/perf/include/internal/cpumap.h b/tools/lib/perf/include/internal/cpumap.h
+index 581f9ffb4237..1973a18c096b 100644
+--- a/tools/lib/perf/include/internal/cpumap.h
++++ b/tools/lib/perf/include/internal/cpumap.h
+@@ -3,11 +3,7 @@
+ #define __LIBPERF_INTERNAL_CPUMAP_H
+ 
+ #include <linux/refcount.h>
+-
+-/** A wrapper around a CPU to avoid confusion with the perf_cpu_map's map's indices. */
+-struct perf_cpu {
+-	int cpu;
+-};
++#include <perf/cpumap.h>
+ 
+ /**
+  * A sized, reference counted, sorted array of integers representing CPU
+diff --git a/tools/lib/perf/include/perf/cpumap.h b/tools/lib/perf/include/perf/cpumap.h
+index 15b8faafd615..4a2edbdb5e2b 100644
+--- a/tools/lib/perf/include/perf/cpumap.h
++++ b/tools/lib/perf/include/perf/cpumap.h
+@@ -7,6 +7,11 @@
+ #include <stdio.h>
+ #include <stdbool.h>
+ 
++/** A wrapper around a CPU to avoid confusion with the perf_cpu_map's map's indices. */
++struct perf_cpu {
++	int cpu;
++};
++
+ LIBPERF_API struct perf_cpu_map *perf_cpu_map__dummy_new(void);
+ LIBPERF_API struct perf_cpu_map *perf_cpu_map__default_new(void);
+ LIBPERF_API struct perf_cpu_map *perf_cpu_map__new(const char *cpu_list);
+diff --git a/tools/lib/perf/libperf.map b/tools/lib/perf/libperf.map
+index 93696affda2e..6fa0d651576b 100644
+--- a/tools/lib/perf/libperf.map
++++ b/tools/lib/perf/libperf.map
+@@ -2,6 +2,7 @@ LIBPERF_0.0.1 {
+ 	global:
+ 		libperf_init;
+ 		perf_cpu_map__dummy_new;
++		perf_cpu_map__default_new;
+ 		perf_cpu_map__get;
+ 		perf_cpu_map__put;
+ 		perf_cpu_map__new;
+diff --git a/tools/lib/perf/tests/test-cpumap.c b/tools/lib/perf/tests/test-cpumap.c
+index d39378eaf897..87b0510a556f 100644
+--- a/tools/lib/perf/tests/test-cpumap.c
++++ b/tools/lib/perf/tests/test-cpumap.c
+@@ -14,6 +14,8 @@ static int libperf_print(enum libperf_print_level level,
+ int test_cpumap(int argc, char **argv)
+ {
+ 	struct perf_cpu_map *cpus;
++	struct perf_cpu cpu;
++	int idx;
+ 
+ 	__T_START;
+ 
+@@ -27,6 +29,15 @@ int test_cpumap(int argc, char **argv)
+ 	perf_cpu_map__put(cpus);
+ 	perf_cpu_map__put(cpus);
+ 
++	cpus = perf_cpu_map__default_new();
++	if (!cpus)
++		return -1;
++
++	perf_cpu_map__for_each_cpu(cpu, idx, cpus)
++		__T("wrong cpu number", cpu.cpu != -1);
++
++	perf_cpu_map__put(cpus);
++
+ 	__T_END;
+ 	return tests_failed == 0 ? 0 : -1;
+ }
+-- 
+2.35.1
 
