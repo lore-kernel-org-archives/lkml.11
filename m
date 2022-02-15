@@ -2,172 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE878C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232481AbiBOAU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 19:20:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38206 "EHLO
+        id S232501AbiBOAYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 19:24:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbiBOAU0 (ORCPT
+        with ESMTP id S229671AbiBOAYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 19:20:26 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5795212D211;
-        Mon, 14 Feb 2022 16:20:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644884417; x=1676420417;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/KbEyiRn/Aaf8BrULpR7QEC8uKrRfLRRrv92U0AAhQQ=;
-  b=Mi+rZCUtPqVd1wpC4ajwH3hIAkqH8vpkDKo3me02wqcaMcctGY1Ur/9m
-   iiIZS6NXrxdi7vWPVZZorUFQCa5bVnIM0NrdCGto/9RAyaYfLlKzQzRjK
-   jySeus5mZCb8FPb40H7j5Vt5TJ2OvqOg6IR2gsboir3wKa0oXbwVBbc8T
-   AXKRvdytkIm2mGW7JzR/rG7+FHTmuln4Is7l7EMkdxk3HQJJ3IZA38KwN
-   vowikLE/U6iNxQlDjyx8aoiq/DwPEeD0pXvqpa/TSfvcqmZhUcAZCch6s
-   ZWS1b+oWEyr0gqT/m1eG/WCpdQtiNxA+MfCv5VnE3EPos+/IA77N0RLs7
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="310952320"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="310952320"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 16:20:17 -0800
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="496435214"
-Received: from guptapa-mobl1.amr.corp.intel.com ([10.212.244.212])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 16:20:16 -0800
-Date:   Mon, 14 Feb 2022 16:20:14 -0800
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
-        antonio.gomez.iglesias@linux.intel.com, neelima.krishnan@intel.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
-Message-ID: <20220215002014.mb7g4y3hfefmyozx@guptapa-mobl1.amr.corp.intel.com>
-References: <5bd785a1d6ea0b572250add0c6617b4504bc24d1.1644440311.git.pawan.kumar.gupta@linux.intel.com>
- <YgqToxbGQluNHABF@zn.tnic>
- <20220214224121.ilhu23cfjdyhvahk@guptapa-mobl1.amr.corp.intel.com>
- <YgrltbToK8+tG2qK@zn.tnic>
+        Mon, 14 Feb 2022 19:24:33 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41C31409DD
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 16:24:24 -0800 (PST)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21ELiTcO015623;
+        Tue, 15 Feb 2022 00:24:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=bpI3oA6uvdcXXK38Ap1/ZsnTvdZ3TQXzq3aaurKzXXc=;
+ b=eC47Ahf3WlFyBiCKx3CF2IEj4STsdOaoW93Upw+qcoi+Uhyn9K1LQPb8HwDmQjUi6SeM
+ thvZPGhi2YbznykhHHNF2FIBnjfXB5HPo7zt+dz8WwWZJUNcldXEymuMPeYmVw3a1NJj
+ euV97rhql8i8c2BEmK71nAGythawbSrIKo1q5KzqgTdfKbTgVLNGao+uubKLRn/IxmcI
+ KSxfE3zlVQ9bDFuejG0TkjX0vQX+mjPmoyluSAVCKpInZeni6Qk93urxW+5N30PgOvN7
+ 7URs1gOpHQIz9qSkV6FjNxkUEXUPBJpGio/c7dUS9blSY4oZ3VJ2mgVm7uATWuqN0rnb Aw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e63g1675k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 00:24:05 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21F0G2M1188442;
+        Tue, 15 Feb 2022 00:24:04 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2041.outbound.protection.outlook.com [104.47.66.41])
+        by aserp3020.oracle.com with ESMTP id 3e6qkxer0a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 00:24:04 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i0FtnTetpf2gIhFjEzbwkFQEEdlRNGV/sElMYwuoTFQX4h8auT6qDOHoDyDV1+xggRQ+l7RtxWhubWImd+2tX4Zh0SxUqSvaEy98ptQQIOQJbozCnxzc9ubHfJX29NY7DkKBI4lqKUJUsUMi59jPm18Ui7tmRyyMbwLt2Q6+zAd22iJtin4yTDNtBnA/Ysqn0JL0jfxqTPULD2me161xTpheyNzVlSSmxxHVYHMWE1poV0lEmDREsX4FaWf0lMxXKUHMeAVPK75WTn0wbA4lmRvmfP5ocM5aIvh9R4s+CsWwpPa4JrIlVpkNPBhnCkJBbjT07uGfhtibmwz70sK23A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bpI3oA6uvdcXXK38Ap1/ZsnTvdZ3TQXzq3aaurKzXXc=;
+ b=mh8TfCpbyMe1HvJCmJUq7p3JvyPnJ/CuZjyNAI5KCa4XdxPtpqmp9QS6ZYTeDYYpvvp8dC/xRyxhboOrqbkbFgsaghY3mSZF27Oudkx+rYRq2tVDjRimYa9vBpXdrvQbA7C7R0I8iOIIgMtalif99eq4Warq1DjtdXrwuWVl6vCaGjOrAO1w5iNTd6xWlW9qwrxUn3XEH0Gl+R61fyJz6NUyZZjIvMf22KJlgFglK/FiSm5qRH9AEX5dMISnnqdLuil8zuhpX2qtNpkkja3zSqM99hmOIpXL7kgt+cEiHuuPQoAEs1Nhai74vflZ7XDtuzOLmu3+v8hI+PozMYkQwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bpI3oA6uvdcXXK38Ap1/ZsnTvdZ3TQXzq3aaurKzXXc=;
+ b=nuyXZbC1Iz2EACHVC5+93/KcsSmjSqzsW0dAvMmvQ0zsOOca3059pphsugOi6+Pp1i5aiZwuV1AXnK1gCacPKQe8T9/WuKhvOhzqksC6o1TxIwsFglfN5yzslPylW5aD8oDqRCyzkZMUxnK0I79BP+QMxM/u7kw3fhaqAakUfDI=
+Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
+ by CO1PR10MB4516.namprd10.prod.outlook.com (2603:10b6:303:6e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Tue, 15 Feb
+ 2022 00:24:02 +0000
+Received: from BY5PR10MB4196.namprd10.prod.outlook.com
+ ([fe80::11f6:860e:575a:e6f1]) by BY5PR10MB4196.namprd10.prod.outlook.com
+ ([fe80::11f6:860e:575a:e6f1%5]) with mapi id 15.20.4975.019; Tue, 15 Feb 2022
+ 00:24:02 +0000
+From:   Mike Kravetz <mike.kravetz@oracle.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        David Hildenbrand <david@redhat.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: [PATCH v3 1/3] mm: enable MADV_DONTNEED for hugetlb mappings
+Date:   Mon, 14 Feb 2022 16:23:46 -0800
+Message-Id: <20220215002348.128823-2-mike.kravetz@oracle.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215002348.128823-1-mike.kravetz@oracle.com>
+References: <20220215002348.128823-1-mike.kravetz@oracle.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR03CA0128.namprd03.prod.outlook.com
+ (2603:10b6:303:8c::13) To BY5PR10MB4196.namprd10.prod.outlook.com
+ (2603:10b6:a03:20d::23)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YgrltbToK8+tG2qK@zn.tnic>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8659d293-d79e-4bb0-f584-08d9f019775c
+X-MS-TrafficTypeDiagnostic: CO1PR10MB4516:EE_
+X-Microsoft-Antispam-PRVS: <CO1PR10MB4516E6220A159FB89D91E137E2349@CO1PR10MB4516.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PUb+RNBKFSxfy/wKb2ousWFO7GDWrKhu/oVpNssFVgd1bBBViIZVIRvcIlAK2wQdn/sH/S+zTs2+0EbvDoUWKzdHsp8Ac7WPGACkMj2d6gUToEyt3TdTk6aVElxoa+XHVhKMO61JlYdu46qZm8dhH/AprExQNdHfX8e+aXCO1XxuGJlsFYZvtfouaUGu89XyG3VmJZraUGmdS8gVr4JZkg9MKf6et7l5UZFv559TAK8qlUdfr2tj2YFEduaNDyRW0fKNuPj8TECjgDhRuJXvJAA+A8ME6/U+1oKenMX4UvfXyEMVWsiXHb3CpQSjpAno8R9SvpaTwK0a5rLvTe2MYEyfzxjP8cmJ807jn7xQJS/yUdCUMlsqSzkDpyHIU8tKuR654y8dM+7cD52gfN1x7/swDvGkyI/KD7X2sLOZqFRre9v4vIxDdTs1rr1Mi17iqVYcDrzcpgRZvoi+IVaMPiVURBFi2Ikaei7NApNMbAdhhqa0qqaz7tjaICH29C7XrirTrtnifTpmvgHe7CWp4+V0KuENnE+Q8sSPK+hehRzvzaCbf2omLLCm/VjM6kmXP8CT4OrEZWlc8DL+/uQk5VBq+h5YUsBowbdqSL1KJAkINAs7NUsL6JZsAphxi4aOSdGL6xLwDBWu783zeKiD4KrmU9a07Th3ocGMHlIarjVCgZGpnkM1qtzTHaPthuFATeC9gJcgtNaTo3JnHeyHoQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(4326008)(8676002)(8936002)(66476007)(66556008)(6506007)(5660300002)(508600001)(316002)(52116002)(44832011)(7416002)(38350700002)(38100700002)(54906003)(36756003)(6486002)(6666004)(86362001)(186003)(107886003)(2616005)(6512007)(26005)(83380400001)(2906002)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4J5DhqWMHdAFfXDJZQh8gFowVcqJMXnC8kscpYf2rgUs8U6BH40S93We5Pbk?=
+ =?us-ascii?Q?29lB+pY+h5eelbYW6PL02DdSfP20D82vDZ9GCugTQJXQHZw0Zzjm7Epry+RF?=
+ =?us-ascii?Q?KAipcoppGF4WtT+MN+lswAurnzm+L6UnLpVwU4W8Dpya15EP5bHnJDAkOOIb?=
+ =?us-ascii?Q?zadBeF8Do6nLF/bk1RRzBOYDbsNgHTerm7HKcixyZgnZfoFbf+Q1CnETuyxT?=
+ =?us-ascii?Q?LnNZg/zZMXr7ENzMfwpW7pOhuqjOoZGyBUv/24TJJqZ5uX8hadBvHp6eHBlk?=
+ =?us-ascii?Q?kv7Fwddzz/XcC9ZeNmBbgnj/8SK/1LJ8ttWsVwymHIgPgOtaAdoNjNaW0dxD?=
+ =?us-ascii?Q?pHZN2W3xXEDGUwQ/ckMzNnAGz8iKo/xpjTp0d4hyZtNqAVrR65IPi0qDHxpK?=
+ =?us-ascii?Q?4IWe5V8hCnb6u7vhaUY6iX9tGsGhkeoUKf08W5XfV5iQ/iJoUU0zUUxDB0nx?=
+ =?us-ascii?Q?BjVxwSECL59ByA8anLSYd1IS3R/FcJdrUKOlPkpT6PnM/QwPxBcqDIivfUO/?=
+ =?us-ascii?Q?xgqAO7L72KZlKBQscgWrXNOHOK/hzRuyr205YMWj6+KhmFGWKxrntxggXawX?=
+ =?us-ascii?Q?kfTzYsjJP8d5gr4uOdXf/kxm3j7S9KLUU3fIiZyRZOPgegcj76O3KaBxiDxo?=
+ =?us-ascii?Q?26kA/s/uDAqKwkzKn/u+7KBR0gMtcjIRNXWX3lyqZUGL2u5EQHrRpBmHjAuo?=
+ =?us-ascii?Q?BURnlbmXVHYcP93kVA7O45vWRxCxATi57BqQuGM/bWKsCAujVjrNTXh/w1UG?=
+ =?us-ascii?Q?J582J7R9Fg4tFGNsunCctMVsctwLN4SX3EIQuXSgiwnHnRz9irCDQqcOV/Ky?=
+ =?us-ascii?Q?VRFtMuWJ+BgOwU8kOVB9Nb3w2q/5UEth/bZMmLhj76m9Tfa/+nD3Dy77EUhB?=
+ =?us-ascii?Q?2KVhPds92iTf6e/BwK5GgR4XgCjzBUiu+SUo3sk8rx7ObL3nicQnjXyp3y1T?=
+ =?us-ascii?Q?hcATBUm52ZT13At2QO1KfClQdOV/Tn24Ejt0lgYCH1BuDlTNhmalKyllLIqy?=
+ =?us-ascii?Q?Ou6a8rUpDx5ecSpmbY78xjgqr+dRbSmOvSZ8JijKz0T5V8/a2XLg1tniX0ZG?=
+ =?us-ascii?Q?eZ4rlkZygQZw0X/H92+YwYazvwzoBHiePS0obxcR7U/PmJxDc+q4UbufJwO3?=
+ =?us-ascii?Q?5o/wDWwBsm+qRJJ/XjcroHN9NsD4WjaKQQ0zacfM97yH7gFNguLVlH0IQeSH?=
+ =?us-ascii?Q?YNeTWIth4bZYquya1Ob5l5cMFEtGcSXrMWlP7sM0Mno8L7Qgka++hkXHor2b?=
+ =?us-ascii?Q?1nqk3q4Zacw2NffyW9vr8gJqsQai4dg3IiUKffBs+JyQ6HtZnkKRz3YHrwlo?=
+ =?us-ascii?Q?yx+kq65jNYk7SnGd3pS6CZsqcmlgHmKv+Cwy9xQPkB5u4yXLTsuSpdvbbTgB?=
+ =?us-ascii?Q?+/dbxiaNJYapQ/ZqmDUKSpEvWoMubftGisfVi1jsWvNm+J9qcuCM4pYQGqfd?=
+ =?us-ascii?Q?p37Qfl1uxerKPzvYySTlrAUfxDUZ93sSpxuK7aT2MtWADY+w1iQMCTKLd0eu?=
+ =?us-ascii?Q?ek9iiTp8oRSMtV6zi8rIMuqhNt9Q+zlexpyNh8IbqQbZ2rtHLw61dSLWXvFK?=
+ =?us-ascii?Q?Ph4xrEcittuqSbX2PXZ3qtOer2sqpGvzLlt/HFwGrdrDnwYDYqBO9QoT/R8D?=
+ =?us-ascii?Q?yiBkmYzIj89Ll3fMlUwsSlM=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8659d293-d79e-4bb0-f584-08d9f019775c
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 00:24:01.9252
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: atX4XXst0mgOxT9zBWXrlBk18Xt8hyfMxPhrlCXPK/reMKNeXINvhS8Pd32SqCzQI5ajcyy+Njq/hCJ9qmXNHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4516
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10258 signatures=673431
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 suspectscore=0
+ phishscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202150000
+X-Proofpoint-GUID: Iim7IaqlMWT-8TO0LR_ery1avForENQ0
+X-Proofpoint-ORIG-GUID: Iim7IaqlMWT-8TO0LR_ery1avForENQ0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15.02.2022 00:28, Borislav Petkov wrote:
->On Mon, Feb 14, 2022 at 02:41:21PM -0800, Pawan Gupta wrote:
->> X86_FEATURE_RTM_ALWAYS_ABORT is the precondition for
->> MSR_TFA_TSX_CPUID_CLEAR bit to exist. For current callers of
->> tsx_clear_cpuid() this condition is met, and test for
->> X86_FEATURE_RTM_ALWAYS_ABORT can be removed. But, all the future callers
->> must also have this check, otherwise the MSR write will fault.
->
->I meant something like this (completely untested):
->
->diff --git a/arch/x86/kernel/cpu/tsx.c b/arch/x86/kernel/cpu/tsx.c
->index c2343ea911e8..9d08a6b1726a 100644
->--- a/arch/x86/kernel/cpu/tsx.c
->+++ b/arch/x86/kernel/cpu/tsx.c
->@@ -84,7 +84,7 @@ static enum tsx_ctrl_states x86_get_tsx_auto_mode(void)
-> 	return TSX_CTRL_ENABLE;
-> }
->
->-void tsx_clear_cpuid(void)
->+bool tsx_clear_cpuid(void)
-> {
-> 	u64 msr;
->
->@@ -97,11 +97,14 @@ void tsx_clear_cpuid(void)
-> 		rdmsrl(MSR_TSX_FORCE_ABORT, msr);
-> 		msr |= MSR_TFA_TSX_CPUID_CLEAR;
-> 		wrmsrl(MSR_TSX_FORCE_ABORT, msr);
->+		return true;
-> 	} else if (tsx_ctrl_is_supported()) {
-> 		rdmsrl(MSR_IA32_TSX_CTRL, msr);
-> 		msr |= TSX_CTRL_CPUID_CLEAR;
-> 		wrmsrl(MSR_IA32_TSX_CTRL, msr);
+MADV_DONTNEED is currently disabled for hugetlb mappings.  This
+certainly makes sense in shared file mappings as the pagecache maintains
+a reference to the page and it will never be freed.  However, it could
+be useful to unmap and free pages in private mappings.  In addition,
+userfaultfd minor fault users may be able to simplify code by using
+MADV_DONTNEED.
 
-This will clear TSX CPUID when X86_FEATURE_RTM_ALWAYS_ABORT=0 also, because ...
+The primary thing preventing MADV_DONTNEED from working on hugetlb
+mappings is a check in can_madv_lru_vma().  To allow support for hugetlb
+mappings create and use a new routine madvise_dontneed_free_valid_vma()
+that allows hugetlb mappings in this specific case.
 
->+		return true;
-> 	}
->+	return false;
-> }
->
-> void __init tsx_init(void)
->@@ -114,9 +117,8 @@ void __init tsx_init(void)
-> 	 * RTM_ALWAYS_ABORT is set. In this case, it is better not to enumerate
-> 	 * CPUID.RTM and CPUID.HLE bits. Clear them here.
-> 	 */
->-	if (boot_cpu_has(X86_FEATURE_RTM_ALWAYS_ABORT)) {
->+	if (tsx_clear_cpuid()) {
+For normal mappings, madvise requires the start address be PAGE aligned
+and rounds up length to the next multiple of PAGE_SIZE.  Do similarly
+for hugetlb mappings: require start address be huge page size aligned and
+round up length to the next multiple of huge page size.  Use the new
+madvise_dontneed_free_valid_vma routine to check alignment and round up
+length/end.  zap_page_range requires this alignment for hugetlb vmas
+otherwise we will hit BUGs.
 
-... we are calling tsx_clear_cpuid() unconditionally.
+Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+---
+ mm/madvise.c | 33 ++++++++++++++++++++++++++++++---
+ 1 file changed, 30 insertions(+), 3 deletions(-)
 
-> 		tsx_ctrl_state = TSX_CTRL_RTM_ALWAYS_ABORT;
->-		tsx_clear_cpuid();
-> 		setup_clear_cpu_cap(X86_FEATURE_RTM);
-> 		setup_clear_cpu_cap(X86_FEATURE_HLE);
-> 		return;
->
->---
->
->but I'm guessing TSX should be disabled by default during boot only when
->X86_FEATURE_RTM_ALWAYS_ABORT is set.
+diff --git a/mm/madvise.c b/mm/madvise.c
+index bed872a2ad5f..ede6affa1350 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -554,9 +554,14 @@ static void madvise_cold_page_range(struct mmu_gather *tlb,
+ 	tlb_end_vma(tlb, vma);
+ }
+ 
++static inline bool can_madv_lru_non_huge_vma(struct vm_area_struct *vma)
++{
++	return !(vma->vm_flags & (VM_LOCKED|VM_PFNMAP));
++}
++
+ static inline bool can_madv_lru_vma(struct vm_area_struct *vma)
+ {
+-	return !(vma->vm_flags & (VM_LOCKED|VM_HUGETLB|VM_PFNMAP));
++	return can_madv_lru_non_huge_vma(vma) && !is_vm_hugetlb_page(vma);
+ }
+ 
+ static long madvise_cold(struct vm_area_struct *vma,
+@@ -829,6 +834,23 @@ static long madvise_dontneed_single_vma(struct vm_area_struct *vma,
+ 	return 0;
+ }
+ 
++static bool madvise_dontneed_free_valid_vma(struct vm_area_struct *vma,
++					    unsigned long start,
++					    unsigned long *end,
++					    int behavior)
++{
++	if (!is_vm_hugetlb_page(vma))
++		return can_madv_lru_non_huge_vma(vma);
++
++	if (behavior != MADV_DONTNEED)
++		return false;
++	if (start & ~huge_page_mask(hstate_vma(vma)))
++		return false;
++
++	*end = ALIGN(*end, huge_page_size(hstate_vma(vma)));
++	return true;
++}
++
+ static long madvise_dontneed_free(struct vm_area_struct *vma,
+ 				  struct vm_area_struct **prev,
+ 				  unsigned long start, unsigned long end,
+@@ -837,7 +859,7 @@ static long madvise_dontneed_free(struct vm_area_struct *vma,
+ 	struct mm_struct *mm = vma->vm_mm;
+ 
+ 	*prev = vma;
+-	if (!can_madv_lru_vma(vma))
++	if (!madvise_dontneed_free_valid_vma(vma, start, &end, behavior))
+ 		return -EINVAL;
+ 
+ 	if (!userfaultfd_remove(vma, start, end)) {
+@@ -859,7 +881,12 @@ static long madvise_dontneed_free(struct vm_area_struct *vma,
+ 			 */
+ 			return -ENOMEM;
+ 		}
+-		if (!can_madv_lru_vma(vma))
++		/*
++		 * Potential end adjustment for hugetlb vma is OK as
++		 * the check below keeps end within vma.
++		 */
++		if (!madvise_dontneed_free_valid_vma(vma, start, &end,
++						     behavior))
+ 			return -EINVAL;
+ 		if (end > vma->vm_end) {
+ 			/*
+-- 
+2.34.1
 
-That is correct.
-
->If those CPUs which support only disabling TSX through MSR_IA32_TSX_CTRL
->but don't have MSR_TSX_FORCE_ABORT - if those CPUs set
->X86_FEATURE_RTM_ALWAYS_ABORT too, then this should work.
->
->> There are certain cases where this will leave the system in an
->> inconsistent state, for example smt toggle after a late microcode update
->
->What is a "smt toggle"?
-
-Sorry, I should have been more clear. I meant:
-
-	# echo off > /sys/devices/system/cpu/smt/control
-	# echo on  > /sys/devices/system/cpu/smt/control
-
->You mean late microcode update and then offlining and onlining all
->logical CPUs except the BSP which would re-detect CPUID features?
-
-That could also be the problematic case.
-
->> that adds CPUID.RTM_ALWAYS_ABORT=1. During an smt toggle, if we
->> unconditionally clear CPUID.RTM and CPUID.HLE in init_intel(), half of
->> the CPUs will report TSX feature and other half will not.
->
->That is important and should be documented. Something like this perhaps:
->
->---
->
->diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
->index 8321c43554a1..6c7bca9d6f2e 100644
->--- a/arch/x86/kernel/cpu/intel.c
->+++ b/arch/x86/kernel/cpu/intel.c
->@@ -722,6 +722,13 @@ static void init_intel(struct cpuinfo_x86 *c)
-> 	else if (tsx_ctrl_state == TSX_CTRL_DISABLE)
-> 		tsx_disable();
-> 	else if (tsx_ctrl_state == TSX_CTRL_RTM_ALWAYS_ABORT)
->+		/*
->+		 * This call doesn't clear RTM and HLE X86_FEATURE bits because
->+		 * a late microcode reload adding MSR_TSX_FORCE_ABORT can cause
->+		 * for those bits to get cleared - something which the kernel
->+		 * cannot do due to userspace potentially already using said
->+		 * features.
->+		 */
-> 		tsx_clear_cpuid();
-
-Thanks, I will add this comment in the next revision.
-
-Pawan
