@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F56C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232917AbiBPK1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:27:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49798 "EHLO
+        id S232916AbiBPK12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:27:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232847AbiBPK1E (ORCPT
+        with ESMTP id S229729AbiBPK1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 16 Feb 2022 05:27:04 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B03A20DF00;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE02B210AF9;
         Wed, 16 Feb 2022 02:26:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1645007212; x=1676543212;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nMyJPHNHNbykUvL1ldDw43g9Lgmj3rxlbe9UP4TE4TU=;
-  b=LbvKrAsbm1veogHwejMseb/GSHsakvOukk0qH/iPQKChI/BRJlKKZHYY
-   3GVj+k2rQ7I+C2jXL4gyYhv2ozfr/khsDg1Eph3/QsAfV7qBannAPl0Ob
-   PMzUONCZ8lZMecj1THaclYGDOfo7a795Sg+/gqmWjwYdk/kmmBzPNQI2B
-   O1l9jv4gFzx/aAYtw+PPXaivYn2w8H7z5VETLG1ToXysdtChYnW+pEido
-   ZGsFz0qzaRIOZbA2fte7KeMU8lAp1R3k584d3QyQ4/rKE7/3VZsi4mvG7
-   TzP1EtHTeNWzLzUk842c1D9d3YkMtKn91+jP//vmwCKqzJzk2ODQA6W0U
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="231201156"
+  bh=j2ygaDTqFQonP4prthFBv11MRQhNuMTyC+t4CIkON/s=;
+  b=e2qmQhghbr9/3mlQ6lTc+khA9oee7BFL8LRa2B4fc/EEmMhuqlu2QPqw
+   nAAAr1Cn/YBVMbXfjy/YTkD3Bnh/NFoRwi8g/TdEfNeztdrMcp4vnA69R
+   qYNd7xqdUpB8D08FhU17mEiGuhVC/PWKAblhiohBd/JdsLOSRgWN1rHlF
+   Ipp9GQzmJ/K9yARZoduufbXKojLrRw7fXUwO85wYy1iTw9fLwwvM9NMfD
+   4uya9uHL8JJ4f+J15ga9PuhpOo3ncCXm/XzlQCND5PuQ6HCFv44AGSSgC
+   uAqcA+5jzrBmxBoXMvwIpw34Y8kPPO2lIshhfCFQ5Gu2WeBzWAP8HECRV
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="231201159"
 X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="231201156"
+   d="scan'208";a="231201159"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 02:26:51 -0800
 X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="498708574"
+   d="scan'208";a="498708588"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 02:26:50 -0800
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Sean Christopherson <sean.j.christopherson@intel.com>,
-        Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v9 03/17] KVM: x86: Load guest fpu state when accessing MSRs managed by XSAVES
-Date:   Tue, 15 Feb 2022 16:25:30 -0500
-Message-Id: <20220215212544.51666-4-weijiang.yang@intel.com>
+Cc:     Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v9 06/17] KVM: x86: Add Arch LBR MSRs to msrs_to_save_all list
+Date:   Tue, 15 Feb 2022 16:25:33 -0500
+Message-Id: <20220215212544.51666-7-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220215212544.51666-1-weijiang.yang@intel.com>
 References: <20220215212544.51666-1-weijiang.yang@intel.com>
@@ -55,124 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+Arch LBR MSR_ARCH_LBR_DEPTH and MSR_ARCH_LBR_CTL are queried by
+userspace application before it wants to {save|restore} the Arch LBR
+data. Other LBR related data MSRs are omitted here intentionally due
+to lengthy list(32*3). Userspace can still use KVM_{GET|SET}_MSRS to
+access them if necessary.
 
-If new feature MSRs are supported in XSS and passed through to the guest
-they are saved and restored by XSAVES/XRSTORS, i.e. in the guest's FPU
-state.
-
-Load the guest's FPU state if userspace is accessing MSRs whose values are
-managed by XSAVES so that the MSR helper, e.g. kvm_{get,set}_xsave_msr(),
-can simply do {RD,WR}MSR to access the guest's value.
-
-Because it's also used for the KVM_GET_MSRS device ioctl(), explicitly
-check that @vcpu is non-null before attempting to load guest state.  The
-XSS supporting MSRs cannot be retrieved via the device ioctl() without
-loading guest FPU state (which doesn't exist).
-
-MSRs that are switched through XSAVES are especially annoying due to the
-possibility of the kernel's FPU being used in IRQ context.  Disable IRQs
-and ensure the guest's FPU state is loaded when accessing such MSRs.
-
-Note that guest_cpuid_has() is not queried as host userspace is allowed
-to access MSRs that have not been exposed to the guest, e.g. it might do
-KVM_SET_MSRS prior to KVM_SET_CPUID2.
-
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Co-developed-by: Yang Weijiang <weijiang.yang@intel.com>
+Suggested-by: Jim Mattson <jmattson@google.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+Reviewed-by: Jim Mattson <jmattson@google.com>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/x86.c              | 44 ++++++++++++++++++++++++++++++++-
- 2 files changed, 46 insertions(+), 1 deletion(-)
+ arch/x86/kvm/x86.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 9d59dfc27e5a..0c3a6feb41eb 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1731,6 +1731,9 @@ int kvm_emulate_xsetbv(struct kvm_vcpu *vcpu);
- int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr);
- int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr);
- 
-+void kvm_get_xsave_msr(struct msr_data *msr_info);
-+void kvm_set_xsave_msr(struct msr_data *msr_info);
-+
- unsigned long kvm_get_rflags(struct kvm_vcpu *vcpu);
- void kvm_set_rflags(struct kvm_vcpu *vcpu, unsigned long rflags);
- int kvm_emulate_rdpmc(struct kvm_vcpu *vcpu);
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 8397e5bc4ed5..8891329d594c 100644
+index 8891329d594c..5d8a0364a3cc 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -125,6 +125,9 @@ static int kvm_vcpu_do_singlestep(struct kvm_vcpu *vcpu);
- static int __set_sregs2(struct kvm_vcpu *vcpu, struct kvm_sregs2 *sregs2);
- static void __get_sregs2(struct kvm_vcpu *vcpu, struct kvm_sregs2 *sregs2);
+@@ -1394,6 +1394,7 @@ static const u32 msrs_to_save_all[] = {
+ 	MSR_F15H_PERF_CTR3, MSR_F15H_PERF_CTR4, MSR_F15H_PERF_CTR5,
+ 	MSR_IA32_XFD, MSR_IA32_XFD_ERR,
+ 	MSR_IA32_XSS,
++	MSR_ARCH_LBR_CTL, MSR_ARCH_LBR_DEPTH,
+ };
  
-+static void kvm_load_guest_fpu(struct kvm_vcpu *vcpu);
-+static void kvm_put_guest_fpu(struct kvm_vcpu *vcpu);
-+
- struct kvm_x86_ops kvm_x86_ops __read_mostly;
- EXPORT_SYMBOL_GPL(kvm_x86_ops);
- 
-@@ -4072,6 +4075,36 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- }
- EXPORT_SYMBOL_GPL(kvm_get_msr_common);
- 
-+void __maybe_unused kvm_get_xsave_msr(struct msr_data *msr_info)
-+{
-+	local_irq_disable();
-+	if (test_thread_flag(TIF_NEED_FPU_LOAD))
-+		switch_fpu_return();
-+	rdmsrl(msr_info->index, msr_info->data);
-+	local_irq_enable();
-+}
-+EXPORT_SYMBOL_GPL(kvm_get_xsave_msr);
-+
-+void __maybe_unused kvm_set_xsave_msr(struct msr_data *msr_info)
-+{
-+	local_irq_disable();
-+	if (test_thread_flag(TIF_NEED_FPU_LOAD))
-+		switch_fpu_return();
-+	wrmsrl(msr_info->index, msr_info->data);
-+	local_irq_enable();
-+}
-+EXPORT_SYMBOL_GPL(kvm_set_xsave_msr);
-+
-+/*
-+ * If new features passthrough XSS managed MSRs to guest, it's required to
-+ * add separate checks here so as to load feature dependent guest MSRs before
-+ * access them.
-+ */
-+static bool is_xsaves_msr(u32 index)
-+{
-+	return false;
-+}
-+
- /*
-  * Read or write a bunch of msrs. All parameters are kernel addresses.
-  *
-@@ -4082,11 +4115,20 @@ static int __msr_io(struct kvm_vcpu *vcpu, struct kvm_msrs *msrs,
- 		    int (*do_msr)(struct kvm_vcpu *vcpu,
- 				  unsigned index, u64 *data))
- {
-+	bool fpu_loaded = false;
- 	int i;
- 
--	for (i = 0; i < msrs->nmsrs; ++i)
-+	for (i = 0; i < msrs->nmsrs; ++i) {
-+		if (vcpu && !fpu_loaded && supported_xss &&
-+		    is_xsaves_msr(entries[i].index)) {
-+			kvm_load_guest_fpu(vcpu);
-+			fpu_loaded = true;
-+		}
- 		if (do_msr(vcpu, entries[i].index, &entries[i].data))
+ static u32 msrs_to_save[ARRAY_SIZE(msrs_to_save_all)];
+@@ -6634,6 +6635,11 @@ static void kvm_init_msr_list(void)
+ 			if (!supported_xss)
+ 				continue;
  			break;
-+	}
-+	if (fpu_loaded)
-+		kvm_put_guest_fpu(vcpu);
- 
- 	return i;
- }
++		case MSR_ARCH_LBR_DEPTH:
++		case MSR_ARCH_LBR_CTL:
++			if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
++				continue;
++			break;
+ 		default:
+ 			break;
+ 		}
 -- 
 2.27.0
 
