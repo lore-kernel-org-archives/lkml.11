@@ -2,151 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB911C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 23:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C35C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 23:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244520AbiBOXbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 18:31:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35540 "EHLO
+        id S240760AbiBOXb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 18:31:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiBOXb2 (ORCPT
+        with ESMTP id S231760AbiBOXby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 18:31:28 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946C2F94E9
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 15:31:16 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id h5so369496ioj.3
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 15:31:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FCIgbleOoUZIo/u1NuclidM+6drC/fEPlkw9hx4YYSU=;
-        b=GvKO9px9ieVv+SBaUWQl5Z5hBvQQJMAyCOyiS2JwDx+XKQQp/2UHuEPMHl1XMEw3t+
-         jKQ/oSGEmyO8oPK4kXtaurAkGPbCXzS3axB1+4CyvMemDPEA4rS55bMksJsn+0sTuPCr
-         K5h95ZHFNwqWo5hnqkFP3eH75IYW2unez2DNo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FCIgbleOoUZIo/u1NuclidM+6drC/fEPlkw9hx4YYSU=;
-        b=JWIboXtVXmR86jClVZ3Djh4eKwVNBeHQQebheBjmvoBrf9Xb7N3ammaADxj/imZqCJ
-         MnMELTSrtJlUVYtKorrjWhE7Y+kvU7mhAmv2bcE2g97/aJT++y/fWi0k/APF88n2tJPm
-         vZ0gIW8H2DUEl8L0bVeM54piL38plZu6suFcx87/ZBn+oNCXO17+ItEEkoeJpXORpsO3
-         4DaNZ1McAOK6vPjf9p9HTKhck0RuAE5doQuijm32MIFlwUvzQ4vseXCi8xJzX4pdEliw
-         L4TgIsR0rm1xaMTbDDavTzbWDOSAK18dw97+5vRTA+M43gMjFAVzIF4Qce5Gju7/Zl6t
-         l26g==
-X-Gm-Message-State: AOAM532UoFjop5kZMlLcL2Ehjnr6ab3uElxEZv/GyyMzu3KObHjLAaMW
-        Qd4QYvsTSEDntupzE4OZu95bhmpOLpGRqQ==
-X-Google-Smtp-Source: ABdhPJzjSo1eOBfrK1fjEOO3QKP+URL9V/5WnWaARFt2KC0mX4W24WOD15CHWuPZAdlrmpnAB1gsWQ==
-X-Received: by 2002:a5d:8508:0:b0:62f:1fc2:d5d2 with SMTP id q8-20020a5d8508000000b0062f1fc2d5d2mr109750ion.13.1644967875821;
-        Tue, 15 Feb 2022 15:31:15 -0800 (PST)
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com. [209.85.166.54])
-        by smtp.gmail.com with ESMTPSA id s3sm19974360ilp.57.2022.02.15.15.31.13
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 15:31:14 -0800 (PST)
-Received: by mail-io1-f54.google.com with SMTP id r8so343815ioc.8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 15:31:13 -0800 (PST)
-X-Received: by 2002:a05:6602:15c6:b0:611:591d:1d9a with SMTP id
- f6-20020a05660215c600b00611591d1d9amr84044iow.177.1644967873090; Tue, 15 Feb
- 2022 15:31:13 -0800 (PST)
+        Tue, 15 Feb 2022 18:31:54 -0500
+X-Greylist: delayed 574 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 15:31:41 PST
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8559B65433;
+        Tue, 15 Feb 2022 15:31:40 -0800 (PST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1644967321; bh=oxkQ8fDff2RyUMjp4s/XquWC9mjWFRhyAC3CN7OibR0=;
+        h=From:To:Subject:In-Reply-To:References:Date:From;
+        b=BHhGm1ivKzDXxW39urxXsDcW9o58WBEd2ZtYXSLxYBzqTWqWg/o0qAcjzaBsESXCA
+         ORStYpUObPZCcUZQnn9becjxPhyYz50ZfF0IpmjyxxV0a3iq61jj8bSUMIMwKrIrfK
+         Zfe3GXZuihe4NZTcFvf1bplfqLMhebGQDqWpovo5X4Dx0MoL0KL4UbEkn4x2hcv0PG
+         BIB0Hy644SZUin9TgUF8p0HLDYki6ts+APQJ0diYsbAr9CPvoCM6TAyjdx182OtatO
+         htMO9mBpeiT8zNtYe8lHHSBE7bvn7GSWXMtt5hDdgLQRI83NuLPhviSslMfvGGGYKj
+         jzyWMuD+cGIkw==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, miaoqing@codeaurora.org,
+        Jason Cooper <jason@lakedaemon.net>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH] ath9k: use hw_random API instead of directly dumping
+ into random.c
+In-Reply-To: <20220215162812.195716-1-Jason@zx2c4.com>
+References: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
+ <20220215162812.195716-1-Jason@zx2c4.com>
+Date:   Wed, 16 Feb 2022 00:22:00 +0100
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87o8374sx3.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20220205001342.3155839-1-dianders@chromium.org>
-In-Reply-To: <20220205001342.3155839-1-dianders@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 15 Feb 2022 15:31:01 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=ULWobi5rDbZajiyPvd1TtLQg-x6EqTNgs2pWiGBUjPRg@mail.gmail.com>
-Message-ID: <CAD=FV=ULWobi5rDbZajiyPvd1TtLQg-x6EqTNgs2pWiGBUjPRg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/3] drm/panel-edp: Debugfs for panel-edp
-To:     dri-devel <dri-devel@lists.freedesktop.org>
-Cc:     Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Robert Foss <robert.foss@linaro.org>, lschyi@chromium.org,
-        Sam Ravnborg <sam@ravnborg.org>, jjsu@chromium.org,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-On Fri, Feb 4, 2022 at 4:14 PM Douglas Anderson <dianders@chromium.org> wrote:
+> Hardware random number generators are supposed to use the hw_random
+> framework. This commit turns ath9k's kthread-based design into a proper
+> hw_random driver.
 >
-> The main goal of this series is the final patch in the series: to
-> allow test code to reliably find out if we ended up hitting the
-> "fallback" case of the generic edp-panel driver where we don't
-> recognize a panel and choose to use super conservative timing.
+> This compiles, but I have no hardware or other ability to determine
+> whether it works. I'll leave further development up to the ath9k
+> and hw_random maintainers.
 >
-> Version 1 of the patch actually landed but was quickly reverted since
-> it was pointed out that it should have been done in debugfs, not
-> sysfs.
+> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/net/wireless/ath/ath9k/ath9k.h |  2 +-
+>  drivers/net/wireless/ath/ath9k/rng.c   | 62 +++++++++-----------------
+>  2 files changed, 23 insertions(+), 41 deletions(-)
 >
-> As discussed on IRC [1], we want this support to be under the
-> "connector" directory of debugfs but there was no existing way to do
-> that. Thus patch #2 in the series was born to try to plumb this
-> through. It was asserted that it would be OK to rely on a fairly
-> modern display pipeline for this plumbing and perhaps fail to populate
-> the debugfs file if we're using older/deprecated pipelines.
->
-> Patch #1 in the series was born because the bridge chip I was using
-> was still using an older/deprecated pipeline. While this doesn't get
-> us fully to a modern pipeline for ti-sn65dsi86 (it still doesn't move
-> to "NO_CONNECTOR") it hopefully moves us in the right direction.
->
-> This was tested on sc7180-trogdor devices with _both_ the ti-sn65dsi86
-> and the parade-ps8640 bridge chips (since some devices have one, some
-> the other). The parade-ps8640 already uses supports "NO_CONNECTOR",
-> luckily.
->
-> [1] https://people.freedesktop.org/~cbrill/dri-log/?channel=dri-devel&date=2022-02-02
->
-> Changes in v2:
-> - ("ti-sn65dsi86: Use drm_bridge_connector") new for v2.
-> - ("drm: Plumb debugfs_init through to panels") new for v2.
-> - Now using debugfs, not sysfs
->
-> Douglas Anderson (3):
->   drm/bridge: ti-sn65dsi86: Use drm_bridge_connector
->   drm: Plumb debugfs_init through to panels
->   drm/panel-edp: Allow querying the detected panel via debugfs
->
->  drivers/gpu/drm/bridge/panel.c         | 12 +++++
->  drivers/gpu/drm/bridge/ti-sn65dsi86.c  | 72 +++++---------------------
->  drivers/gpu/drm/drm_bridge_connector.c | 15 ++++++
->  drivers/gpu/drm/drm_debugfs.c          |  3 ++
->  drivers/gpu/drm/panel/panel-edp.c      | 37 +++++++++++--
->  include/drm/drm_bridge.h               |  7 +++
->  include/drm/drm_connector.h            |  7 +++
->  include/drm/drm_panel.h                |  8 +++
->  8 files changed, 98 insertions(+), 63 deletions(-)
+> diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h b/drivers/net/wireles=
+s/ath/ath9k/ath9k.h
+> index ef6f5ea06c1f..142f472903dc 100644
+> --- a/drivers/net/wireless/ath/ath9k/ath9k.h
+> +++ b/drivers/net/wireless/ath/ath9k/ath9k.h
+> @@ -1072,7 +1072,7 @@ struct ath_softc {
+>=20=20
+>  #ifdef CONFIG_ATH9K_HWRNG
+>  	u32 rng_last;
+> -	struct task_struct *rng_task;
+> +	struct hwrng rng_ops;
+>  #endif
+>  };
+>=20=20
+> diff --git a/drivers/net/wireless/ath/ath9k/rng.c b/drivers/net/wireless/=
+ath/ath9k/rng.c
+> index aae2bd3cac69..369b222908ba 100644
+> --- a/drivers/net/wireless/ath/ath9k/rng.c
+> +++ b/drivers/net/wireless/ath/ath9k/rng.c
+> @@ -22,9 +22,6 @@
+>  #include "hw.h"
+>  #include "ar9003_phy.h"
+>=20=20
+> -#define ATH9K_RNG_BUF_SIZE	320
+> -#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
 
-Landed these three patches to drm-misc-next w/ accumulated tags:
+So this comment says "quality: 10/32" but below you're setting "quality"
+as 320. No idea what the units are supposed to be, but is this right?
 
-$ git log --oneline -3
-6ed19359d6bd drm/panel-edp: Allow querying the detected panel via debugfs
-2509969a9862 drm: Plumb debugfs_init through to panels
-e283820cbf80 drm/bridge: ti-sn65dsi86: Use drm_bridge_connector
+>  static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
+>=20=20
+>  static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_s=
+ize)
 
-If it turns out that we want to add more reporting when debugfs calls
-return errors then I'm happy to submit follow-on patches. Discussion
-about that can be found in:
+This function takes buf as a *u32, and interprets buf_size as a number
+of u32s...
 
-https://lore.kernel.org/r/CAD=FV=Ut3N9syXbN7i939mNsx3h7-u9cU9j6=XFkz9vrh0Vseg@mail.gmail.com
+> @@ -72,61 +69,46 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
+>  	return delay;
+>  }
+>=20=20
+> -static int ath9k_rng_kthread(void *data)
+> +static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, bool=
+ wait)
+>  {
+> +	struct ath_softc *sc =3D container_of(rng, struct ath_softc, rng_ops);
+>  	int bytes_read;
+> -	struct ath_softc *sc =3D data;
+> -	u32 *rng_buf;
+> -	u32 delay, fail_stats =3D 0;
+> -
+> -	rng_buf =3D kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL);
+> -	if (!rng_buf)
+> -		goto out;
+> -
+> -	while (!kthread_should_stop()) {
+> -		bytes_read =3D ath9k_rng_data_read(sc, rng_buf,
+> -						 ATH9K_RNG_BUF_SIZE);
+> -		if (unlikely(!bytes_read)) {
+> -			delay =3D ath9k_rng_delay_get(++fail_stats);
+> -			wait_event_interruptible_timeout(rng_queue,
+> -							 kthread_should_stop(),
+> -							 msecs_to_jiffies(delay));
+> -			continue;
+> -		}
+> -
+> -		fail_stats =3D 0;
+> -
+> -		/* sleep until entropy bits under write_wakeup_threshold */
+> -		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
+> -					   ATH9K_RNG_ENTROPY(bytes_read));
+> -	}
+> +	u32 fail_stats =3D 0;
+>=20=20
+> -	kfree(rng_buf);
+> -out:
+> -	sc->rng_task =3D NULL;
+> +retry:
+> +	bytes_read =3D ath9k_rng_data_read(sc, buf, max);
 
-Unless something changes, though, my current plan is not to do
-follow-up patches and leave this as-is without any extra error
-reporting.
+... but AFAICT here you're calling it with a buffer size from hw_random
+that's in bytes?
 
--Doug
+-Toke
