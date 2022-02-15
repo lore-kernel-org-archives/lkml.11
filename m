@@ -2,97 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19DCCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A66BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243119AbiBOSh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:37:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35502 "EHLO
+        id S243127AbiBOSjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:39:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235305AbiBOShy (ORCPT
+        with ESMTP id S240500AbiBOSjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:37:54 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A33414024
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:37:43 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 998CC1EC054C;
-        Tue, 15 Feb 2022 19:37:37 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644950257;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=eiZd7abZTRheawir5Eg8sRvKVeTjedCspWOLi0oO0Q8=;
-        b=ZASfpJnOyyx9GrybIozgD8hHdpUS3Xz1NbNDelvsopu9Ax6a2AUExdHxr7JYDTqmIbOA+J
-        6jZnpRW0oj8IqXPoCk/6Oey3g0bgCGs+vkog26gKFyf5AB08LhLFlJwAkn3PXINPeSPbqz
-        EnjKIWbDpIice0X1kA9B+7kYIP8BQPE=
-Date:   Tue, 15 Feb 2022 19:37:38 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Ross Philipson <ross.philipson@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        daniel.kiper@oracle.com, dpsmith@apertussolutions.com,
-        tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com,
-        luto@amacapital.net, kanth.ghatraju@oracle.com,
-        trenchboot-devel@googlegroups.com
-Subject: Re: [PATCH 1/2] x86/boot: Fix memremap of setup_indirect structures
-Message-ID: <Ygvy8j9E7WPo6dx0@zn.tnic>
-References: <1643303056-22272-1-git-send-email-ross.philipson@oracle.com>
- <1643303056-22272-2-git-send-email-ross.philipson@oracle.com>
- <YgabtFd4Nkpgi+oW@zn.tnic>
- <2e584fc4-163a-0af4-abe0-9c14996918f2@oracle.com>
+        Tue, 15 Feb 2022 13:39:14 -0500
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB59FDA85E;
+        Tue, 15 Feb 2022 10:39:03 -0800 (PST)
+Received: from pps.filterd (m0150244.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21FCbhSf027207;
+        Tue, 15 Feb 2022 18:38:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version; s=pps0720;
+ bh=zauf/5fk/84eZzLuty5kiNbYNLB7kIi/6If/F+Ht028=;
+ b=gZvKSclvbLg3PP7EIcTRV7ha/sbqabmujm/zxk1wPGHeLyH/2BQVrPw4W/44uH63ls3J
+ qd1EEl/l0nkgQVTbeYevH4CNp8/v4tkxc1xQhENlIBqO2PC4RHcKivuRCFTN4Pj3ZZfD
+ LsbLTrdf5rJj0nzYbO9xREDFQRPkS5bwyL9BuTiZl9RbPXgI0f638xCBchLzy+0QHwOW
+ FbG5OmDYdSxmGvZkVgn27JVqIPLzM/sOOIhf91miyzhuud3XNwRCxNwTPwekVZvMGkig
+ 2QK52FxbliMlChxEqEGYjtsuPHQme7aDlmzzF+pXUzaoqByU4vZVn4SRlfDSuCeXm99A Vg== 
+Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3e8cba3969-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 18:38:42 +0000
+Received: from hpe.com (unknown [15.115.65.69])
+        by g4t3427.houston.hpe.com (Postfix) with ESMTP id F0CD75C;
+        Tue, 15 Feb 2022 18:38:40 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     nick.hawkins@hpe.com, verdun@hpe.com
+Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] [v1] dt-bindings: watchdog: Add HPE GXP Watchdog timer binding
+Date:   Tue, 15 Feb 2022 12:40:37 -0600
+Message-Id: <20220215184039.41882-1-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <nick.hawkins@hpe.com>
+References: <nick.hawkins@hpe.com>
+X-Proofpoint-ORIG-GUID: IC5osYlRBwWyNvwiOMS0aZhLee-Y3GNm
+X-Proofpoint-GUID: IC5osYlRBwWyNvwiOMS0aZhLee-Y3GNm
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <2e584fc4-163a-0af4-abe0-9c14996918f2@oracle.com>
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-15_05,2022-02-14_04,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
+ phishscore=0 adultscore=0 clxscore=1015 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 suspectscore=0 spamscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202150107
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 06:34:43AM -0500, Ross Philipson wrote:
-> It can if you run out of slots in the fixed map.
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Right. Or if any of the checks in __early_ioremap() fail. But those
-would at least warn.
+Description: Creating binding for the GXP watchdog timer to be used in
+ the device tree. This along with the
+  dt-bindings: timer: Add HPE GXP Timer binding patch will be used to
+   create the basic dts and dtsi for GXP.
+Information: GXP is the name of the HPE SoC.
+ This SoC is used to implement BMC features of HPE servers
+  (all ProLiant, Synergy, and many Apollo, and Superdome machines)
+   It does support many features including:
+        ARMv7 architecture, and it is based on a Cortex A9 core
+        Use an AXI bus to which
+                a memory controller is attached, as well as
+                 multiple SPI interfaces to connect boot flash,
+                 and ROM flash, a 10/100/1000 Mac engine which
+                 supports SGMII (2 ports) and RMII
+                Multiple I2C engines to drive connectivity with a
+				 host infrastructure
+                A video engine which support VGA and DP, as well as
+                 an hardware video encoder
+                Multiple PCIe ports
+                A PECI interface, and LPC eSPI
+                Multiple UART for debug purpose, and Virtual UART for
+                 host connectivity
+                A GPIO engine.
 
-> The only reason I did not check it for NULL was because it was not
-> checked elsewhere for NULL.
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+---
+ .../bindings/watchdog/hpe,gxp-wdt.yaml        | 37 +++++++++++++++++++
+ MAINTAINERS                                   |  6 +++
+ 2 files changed, 43 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
 
-Elsewhere in the tree or elsewhere in this file or in the setup_indirect
-adding code?
-
-> I guess there are two questions:
-> 
-> 1. Should I also fix it elsewhere in the code I am touching?
-
-Yes pls.
-
-> 2. What should I do on an allocation failure? In a routine like this it
-> seems to be a critical early boot failure.
-
-How so?
-
-I'd expect in the case of e820__reserve_setup_data(), for example, to
-not call e820__range_update* and not have those indirect ranges present
-in the e820 map. What the user intended might not work but it'll at
-least boot instead of floating dead in the water.
-
-And similar approach in the other places you're touching.
-
-You could even issue a warning or so so that users at least know what's
-going on. I'd say...
-
-> I guess the original intention might have been to let it just blow up
-> since there is no recovery but that is just conjecture...
-
-The original intention?
-
-Thx.
-
+diff --git a/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+new file mode 100644
+index 000000000000..6044496b4968
+--- /dev/null
++++ b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+@@ -0,0 +1,37 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/watchdog/hpe,gxp-wdt.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: HPE GXP Controlled Watchdog
++
++allOf:
++  - $ref: "watchdog.yaml#"
++
++maintainers:
++  - Nick Hawkins <nick.hawkins@hpe.com>
++  - Jean-Marie Verdun <verdun@hpe.com>
++
++properties:
++  compatible:
++    const: hpe,gxp-wdt
++
++  reg:
++    items:
++      - description: WDGRST register
++      - description: WDGCS register
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    watchdog0:  watchdog@c0000090 {
++      compatible = "hpe,gxp-wdt";
++      reg = <0xc0000090 0x02>, <0xc0000096 0x01>;
++    };
++
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f41088418aae..8c96f4db900c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8385,6 +8385,12 @@ L:	linux-efi@vger.kernel.org
+ S:	Maintained
+ F:	block/partitions/efi.*
+ 
++GXP WATCHDOG TIMER
++M:	Nick Hawkins <nick.hawkins@hpe.com>
++M:	Jean-Marie Verdun <verdun@hpe.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
++
+ H8/300 ARCHITECTURE
+ M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+ L:	uclinux-h8-devel@lists.sourceforge.jp (moderated for non-subscribers)
 -- 
-Regards/Gruss,
-    Boris.
+2.17.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
