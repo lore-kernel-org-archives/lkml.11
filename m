@@ -2,96 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F3E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242455AbiBORVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:21:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50174 "EHLO
+        id S242461AbiBORVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:21:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242444AbiBORVS (ORCPT
+        with ESMTP id S235576AbiBORVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:21:18 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A4F1A3BF;
-        Tue, 15 Feb 2022 09:21:08 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id qe15so17914383pjb.3;
-        Tue, 15 Feb 2022 09:21:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=OCLqAsQQSUQhD0m5JYw/9zd6UJoLhL6G2yE3q37RSqw=;
-        b=YrcNdzwF726l2sTSsLu1/lKPLlaxn5IhP2/JGKx8Rbl7esZuxh8xQ5GVdHC6qS09LH
-         ySlu8pivbV7JDAwwOLKXC3/rNH6haxRrOJCI20ZTrVqWnmchd1aXMctNnwwpQqWlAAhm
-         JcXuEMRedNIVioLjUx/vRWfJqNYVPeVR7AHTop1xNbjP2Z+yRDPNqsR0447I2xt3YMx+
-         yt/JWFVBHqrZ8Dzbkx91tdkvGrFBJCWBoFzuUz3rl/xWCyiTCsRQGJCqKKSM6S9KicAV
-         00N6M1D66DXgfOkd4lXfzG0Vx9u3SNTafghgztHnEmymw/CkGV2IdUEONzwpFfVb4g/e
-         Axxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=OCLqAsQQSUQhD0m5JYw/9zd6UJoLhL6G2yE3q37RSqw=;
-        b=DvTPLhRAxRF9C2Uej4MV2lIJVXTvPEBO+Jw2icaELOlfZbBTA1hWKndTLGqj0auG0Z
-         a5NaPeEqtQgrBG4UBR0tPR2+yKz9XadhVOnn3sqUraUcHG0HSBlEkvAVcCSZCD99DU0U
-         6Y8Nd3yrPxH4hHE2A9lQm+0xuRooXfHe879r4mpxi9Dq8oIofUckHYZTSf/u04JAt974
-         r7BSxQHfc1UN0SYrgnv0BXIRafoi/0vN2WI0mdEpgu5yrYxOLj5wfCLCXlMN1zDwPQ28
-         aNwUmnMzGfShiS7gtor8eGMgu5PehwGl2JzF0In4VbD2Fz356oJysKNWYOxzeYvP7TL8
-         oeSg==
-X-Gm-Message-State: AOAM532Ud9+iUqSX3GHIqZr6wlQtTyP7nt5xzMqYdWi/Eh41cF5+OfE2
-        sSb0A0E76IE21GFpbks6WXc=
-X-Google-Smtp-Source: ABdhPJydO6wRlpfxy88m6IuU0O5KOwZDdCkZT9fJ1rgZGvrx3d/1U7OGwID+nwXGTlxByal5ih1kSQ==
-X-Received: by 2002:a17:90b:3908:: with SMTP id ob8mr5494916pjb.73.1644945667640;
-        Tue, 15 Feb 2022 09:21:07 -0800 (PST)
-Received: from ?IPV6:2601:206:8000:2834::19b? ([2601:206:8000:2834::19b])
-        by smtp.gmail.com with ESMTPSA id f3sm42159084pfe.67.2022.02.15.09.21.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 09:21:06 -0800 (PST)
-Message-ID: <1fa05364-0987-de8c-ade3-663fa206f655@gmail.com>
-Date:   Tue, 15 Feb 2022 09:20:59 -0800
+        Tue, 15 Feb 2022 12:21:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10AC213E81
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:21:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644945696;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MJAI2/i3qbUEnuzeQbgr8jJpZHjNy09muYmO+N9B76s=;
+        b=OSp/yGV3RSCXDMhEbOU8rpBrXOGIgnxWsS3ei3gEomhD6EUUfImjnJLrHwqIPekouQzyNi
+        0EFgIUIFNC+VOezuX1gpv1hmaTwwvM//FZ41xoC9QLHwvcxy2xiJY4WBugKysArXz9fnBp
+        Om2G+03JBcJxP+668wydHhnpXzq8QrQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-657-1pneWBbtNsayS6Obpmgdmg-1; Tue, 15 Feb 2022 12:21:33 -0500
+X-MC-Unique: 1pneWBbtNsayS6Obpmgdmg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DE9071006AA0;
+        Tue, 15 Feb 2022 17:21:31 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F9D610A4B23;
+        Tue, 15 Feb 2022 17:21:31 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [GIT PULL] KVM changes for Linux 5.17-rc5
+Date:   Tue, 15 Feb 2022 12:21:31 -0500
+Message-Id: <20220215172131.3777266-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 5.16 000/203] 5.16.10-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220214092510.221474733@linuxfoundation.org>
-From:   Scott Bruce <smbruce@gmail.com>
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/14/22 01:24, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.10 release.
-> There are 203 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.10-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Linus,
 
-Build, dmesg, desktop use and s0ix suspend all look good on x86_64/Cezanne.
+The following changes since commit dfd42facf1e4ada021b939b4e19c935dcdd55566:
 
-Tested-by: Scott Bruce <smbruce@gmail.com>
+  Linux 5.17-rc3 (2022-02-06 12:20:50 -0800)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
+
+for you to fetch changes up to 710c476514313c74045c41c0571bb5178fd16e3d:
+
+  KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW (2022-02-14 07:44:51 -0500)
+
+----------------------------------------------------------------
+ARM:
+
+* Read HW interrupt pending state from the HW
+
+x86:
+
+* Don't truncate the performance event mask on AMD
+
+* Fix Xen runstate updates to be atomic when preempting vCPU
+
+* Fix for AMD AVIC interrupt injection race
+
+* Several other AMD fixes
+
+----------------------------------------------------------------
+This one missed rc4 closely.
+
+David Woodhouse (1):
+      KVM: x86/xen: Fix runstate updates to be atomic when preempting vCPU
+
+Jim Mattson (2):
+      KVM: x86/pmu: Don't truncate the PerfEvtSeln MSR when creating a perf event
+      KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW
+
+Marc Zyngier (1):
+      KVM: arm64: vgic: Read HW interrupt pending state from the HW
+
+Maxim Levitsky (10):
+      KVM: x86: SVM: don't passthrough SMAP/SMEP/PKE bits in !NPT && !gCR0.PG case
+      KVM: x86: nSVM: fix potential NULL derefernce on nested migration
+      KVM: x86: nSVM: mark vmcb01 as dirty when restoring SMM saved state
+      KVM: x86: nSVM/nVMX: set nested_run_pending on VM entry which is a result of RSM
+      KVM: x86: nSVM: expose clean bit support to the guest
+      KVM: x86: nSVM: deal with L1 hypervisor that intercepts interrupts but lets L2 control them
+      KVM: x86: lapic: don't touch irr_pending in kvm_apic_update_apicv when inhibiting it
+      KVM: x86: SVM: move avic definitions from AMD's spec to svm.h
+      KVM: SVM: extract avic_ring_doorbell
+      KVM: SVM: fix race between interrupt delivery and AVIC inhibition
+
+Muhammad Usama Anjum (1):
+      selftests: kvm: Remove absent target file
+
+Paolo Bonzini (2):
+      Merge tag 'kvmarm-fixes-5.17-3' of git://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm into HEAD
+      KVM: SVM: set IRR in svm_deliver_interrupt
+
+Sean Christopherson (1):
+      Revert "svm: Add warning message for AVIC IPI invalid target"
+
+ arch/arm64/kvm/vgic/vgic-mmio.c      |  2 +
+ arch/x86/include/asm/msr-index.h     |  1 +
+ arch/x86/include/asm/svm.h           | 36 +++++++++++++
+ arch/x86/kvm/lapic.c                 |  7 ++-
+ arch/x86/kvm/pmu.c                   |  7 +--
+ arch/x86/kvm/svm/avic.c              | 93 +++++++++-------------------------
+ arch/x86/kvm/svm/nested.c            | 26 +++++-----
+ arch/x86/kvm/svm/svm.c               | 85 ++++++++++++++++++++++++++-----
+ arch/x86/kvm/svm/svm.h               | 15 ++----
+ arch/x86/kvm/vmx/vmx.c               |  1 +
+ arch/x86/kvm/x86.c                   |  4 +-
+ arch/x86/kvm/xen.c                   | 97 +++++++++++++++++++++++++-----------
+ tools/testing/selftests/kvm/Makefile |  1 -
+ 13 files changed, 232 insertions(+), 143 deletions(-)
+
