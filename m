@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B583CC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D03C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240229AbiBOPcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:32:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46752 "EHLO
+        id S240415AbiBOPct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:32:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240444AbiBOPbW (ORCPT
+        with ESMTP id S240245AbiBOPap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:31:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D98510A7F7;
-        Tue, 15 Feb 2022 07:29:22 -0800 (PST)
+        Tue, 15 Feb 2022 10:30:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F15C1CB9;
+        Tue, 15 Feb 2022 07:29:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A90E0B81AF7;
-        Tue, 15 Feb 2022 15:29:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A399C340F1;
-        Tue, 15 Feb 2022 15:29:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FAA2615F0;
+        Tue, 15 Feb 2022 15:29:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 550FCC340ED;
+        Tue, 15 Feb 2022 15:29:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938959;
-        bh=BOnIhtOxhnn7VldcjnILH2G5d8hO49/zPZe3pqe3v6o=;
+        s=k20201202; t=1644938941;
+        bh=qJwGXYo41BOzEX6oFtnAmcbygBymqUp/dIQMb+BAvlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kb7/rZzWFfUeLaXnH1CVQWIlVb48NF6UqRL84jm9lnRCzQRyhZEUQmdV9kNf+F5bo
-         EU75YtnFPjNp1F0+x4sPa5XpOa6rsCArpZHA45wR0Z3ulqv1Z3SPOqVPNdMT3A8VOY
-         l+9bPrdCUQaJiKL5IjVAk16jzRjBEYEFLYzE9U66/c2TVXa4tBDR5y5avsBO+7EPfg
-         ZS0HbUuHBJRryf3AYWaTpuBxNppeieFPDj7/y2P0Qz+OC0dt32D0JSjNNDLo0o9Msf
-         8fUdGVjymnbTXNLqbQwOpFBjOcccFKn14xsXetIkhAjbjlCs+I46p3MOm1azYPsFck
-         O4CsfIuIyU9Kg==
+        b=nahRJDDaW6kPRRFQtFZRYjIY1K+nkmLgmWRu7jbRVDPB44seuo9RjaxscF15R5tff
+         oQ19wh8eePWzkxFRpapxf/9aXWAyYxKHBQkvd8yfqcCTGoESpyICuVAaMWhFIvZ3B7
+         tbPYIRjg6Slu83lySHr9X1zz/a7ZPOPwabJ2EGjm2ru9ryqOI/KfwSDmQvnem1akw9
+         hGTHpuQ96ngyImKwJTL8uc+cculNBQqZNu/DaA0oPbvJj+gI+RDojSOdkOKZnCNzEM
+         sLKMD2scSXYZYijYKR3pE0OzShthzJpJ73I3U7kdke6rCsCwWpYEWWoJBIFgFgr0b2
+         LVv4MANFMkjuQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>, hjc@rock-chips.com,
-        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 25/33] drm/rockchip: dw_hdmi: Do not leave clock enabled in error case
-Date:   Tue, 15 Feb 2022 10:28:23 -0500
-Message-Id: <20220215152831.580780-25-sashal@kernel.org>
+Cc:     Axel Rasmussen <axelrasmussen@google.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com,
+        linux-kselftest@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.15 16/33] selftests: fixup build warnings in pidfd / clone3 tests
+Date:   Tue, 15 Feb 2022 10:28:14 -0500
+Message-Id: <20220215152831.580780-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152831.580780-1-sashal@kernel.org>
 References: <20220215152831.580780-1-sashal@kernel.org>
@@ -54,54 +54,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Axel Rasmussen <axelrasmussen@google.com>
 
-[ Upstream commit c0cfbb122275da1b726481de5a8cffeb24e6322b ]
+[ Upstream commit e2aa5e650b07693477dff554053605976789fd68 ]
 
-The driver returns an error when devm_phy_optional_get() fails leaving
-the previously enabled clock turned on. Change order and enable the
-clock only after the phy has been acquired.
+These are some trivial fixups, which were needed to build the tests with
+clang and -Werror. The following issues are fixed:
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220126145549.617165-3-s.hauer@pengutronix.de
+- Remove various unused variables.
+- In child_poll_leader_exit_test, clang isn't smart enough to realize
+  syscall(SYS_exit, 0) won't return, so it complains we never return
+  from a non-void function. Add an extra exit(0) to appease it.
+- In test_pidfd_poll_leader_exit, ret may be branched on despite being
+  uninitialized, if we have !use_waitpid. Initialize it to zero to get
+  the right behavior in that case.
+
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ tools/testing/selftests/clone3/clone3.c    | 2 --
+ tools/testing/selftests/pidfd/pidfd_test.c | 6 +++---
+ tools/testing/selftests/pidfd/pidfd_wait.c | 5 ++---
+ 3 files changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-index 830bdd5e9b7ce..8677c82716784 100644
---- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-+++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-@@ -529,13 +529,6 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
- 		return ret;
- 	}
+diff --git a/tools/testing/selftests/clone3/clone3.c b/tools/testing/selftests/clone3/clone3.c
+index 076cf4325f783..cd4582129c7d6 100644
+--- a/tools/testing/selftests/clone3/clone3.c
++++ b/tools/testing/selftests/clone3/clone3.c
+@@ -126,8 +126,6 @@ static void test_clone3(uint64_t flags, size_t size, int expected,
  
--	ret = clk_prepare_enable(hdmi->vpll_clk);
--	if (ret) {
--		DRM_DEV_ERROR(hdmi->dev, "Failed to enable HDMI vpll: %d\n",
--			      ret);
--		return ret;
--	}
+ int main(int argc, char *argv[])
+ {
+-	pid_t pid;
 -
- 	hdmi->phy = devm_phy_optional_get(dev, "hdmi");
- 	if (IS_ERR(hdmi->phy)) {
- 		ret = PTR_ERR(hdmi->phy);
-@@ -544,6 +537,13 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
- 		return ret;
- 	}
+ 	uid_t uid = getuid();
  
-+	ret = clk_prepare_enable(hdmi->vpll_clk);
-+	if (ret) {
-+		DRM_DEV_ERROR(hdmi->dev, "Failed to enable HDMI vpll: %d\n",
-+			      ret);
-+		return ret;
-+	}
-+
- 	drm_encoder_helper_add(encoder, &dw_hdmi_rockchip_encoder_helper_funcs);
- 	drm_simple_encoder_init(drm, encoder, DRM_MODE_ENCODER_TMDS);
+ 	ksft_print_header();
+diff --git a/tools/testing/selftests/pidfd/pidfd_test.c b/tools/testing/selftests/pidfd/pidfd_test.c
+index 529eb700ac26a..9a2d64901d591 100644
+--- a/tools/testing/selftests/pidfd/pidfd_test.c
++++ b/tools/testing/selftests/pidfd/pidfd_test.c
+@@ -441,7 +441,6 @@ static void test_pidfd_poll_exec(int use_waitpid)
+ {
+ 	int pid, pidfd = 0;
+ 	int status, ret;
+-	pthread_t t1;
+ 	time_t prog_start = time(NULL);
+ 	const char *test_name = "pidfd_poll check for premature notification on child thread exec";
  
+@@ -500,13 +499,14 @@ static int child_poll_leader_exit_test(void *args)
+ 	 */
+ 	*child_exit_secs = time(NULL);
+ 	syscall(SYS_exit, 0);
++	/* Never reached, but appeases compiler thinking we should return. */
++	exit(0);
+ }
+ 
+ static void test_pidfd_poll_leader_exit(int use_waitpid)
+ {
+ 	int pid, pidfd = 0;
+-	int status, ret;
+-	time_t prog_start = time(NULL);
++	int status, ret = 0;
+ 	const char *test_name = "pidfd_poll check for premature notification on non-empty"
+ 				"group leader exit";
+ 
+diff --git a/tools/testing/selftests/pidfd/pidfd_wait.c b/tools/testing/selftests/pidfd/pidfd_wait.c
+index be2943f072f60..17999e082aa71 100644
+--- a/tools/testing/selftests/pidfd/pidfd_wait.c
++++ b/tools/testing/selftests/pidfd/pidfd_wait.c
+@@ -39,7 +39,7 @@ static int sys_waitid(int which, pid_t pid, siginfo_t *info, int options,
+ 
+ TEST(wait_simple)
+ {
+-	int pidfd = -1, status = 0;
++	int pidfd = -1;
+ 	pid_t parent_tid = -1;
+ 	struct clone_args args = {
+ 		.parent_tid = ptr_to_u64(&parent_tid),
+@@ -47,7 +47,6 @@ TEST(wait_simple)
+ 		.flags = CLONE_PIDFD | CLONE_PARENT_SETTID,
+ 		.exit_signal = SIGCHLD,
+ 	};
+-	int ret;
+ 	pid_t pid;
+ 	siginfo_t info = {
+ 		.si_signo = 0,
+@@ -88,7 +87,7 @@ TEST(wait_simple)
+ 
+ TEST(wait_states)
+ {
+-	int pidfd = -1, status = 0;
++	int pidfd = -1;
+ 	pid_t parent_tid = -1;
+ 	struct clone_args args = {
+ 		.parent_tid = ptr_to_u64(&parent_tid),
 -- 
 2.34.1
 
