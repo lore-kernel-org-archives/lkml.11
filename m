@@ -2,110 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F58CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CABBC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236421AbiBOKQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:16:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48502 "EHLO
+        id S236426AbiBOKRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:17:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234049AbiBOKQo (ORCPT
+        with ESMTP id S230074AbiBOKRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:16:44 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A61F27;
-        Tue, 15 Feb 2022 02:16:34 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id x11so1128214pll.10;
-        Tue, 15 Feb 2022 02:16:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=q3kUX6Dxx4EW1Q5ZjF1J+bSGyjInRYAGr/XgVtEwU/Y=;
-        b=nPxTeFWWAv6mE/U4pkG4JwVAvqL0RRxxC40zcSM1FXMQvl8Rd4YmBff77YkqcJ++Uv
-         x/qBLXXvsyhWtJYHp2m7R4tR2dheXwRNYXchhMSu9uUyoD9oXDWLOR6auGughQAxNDhT
-         bKYqfj/mIEmYG3VyZQTaZN0b+6o/PIUdIFUCIK0xJ/7DnLxA5FvISyfvDNqU8P1gM9Co
-         ox4Dflr9IDvhmKcFeuMPA8PQg8BOLpls2pFzxJpxoSN285yXNJxNJPg7B7psUkPSHNK9
-         EY21opk6aBnTEO482iaVMAVdXRXOLEK8INAZZSCrYrpRWm3U7hJ8xhJSXDCwm5pnnpby
-         cgdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=q3kUX6Dxx4EW1Q5ZjF1J+bSGyjInRYAGr/XgVtEwU/Y=;
-        b=4lX6SMjMCnPuPsryeX0LOl4s0go+vN9eKT0gzYLdxSY6CyRLIibC3zAjoNbVXz6ima
-         1vkgOzsB72sUhzvPrO+Q1RNiR/I2vXCxeXaC/Sd2xI0A7Ji+vC6XJgekQ4uh91DtkVIB
-         nYFUo7rYcCBl3dNKVz8FLVuxmr5wJGs8CbF4/Ntnp+YRCloT1ZZ88tSVaeXUWTFfa5Fo
-         66/TJOjPFEmbiYrj99ByVhz+JAQDcg5F8wTgQeVZqICJ+gAKrtX+MGG8c41lMq/lEIvm
-         sPTvD/KnFT5Z29kgaUMI06rUXys1yop7Z19PNMSEzbkImq5uZMC3cfmHrdqlypr5eV8Y
-         a9yw==
-X-Gm-Message-State: AOAM533vKzJOiDJUMKI4JeYL7l0MWzddNS8Op+uv9LvzGcJUIX/9wWin
-        eIfqwSdeRKzPy7i7RRiVMh+jGqGDZkM=
-X-Google-Smtp-Source: ABdhPJzXLDtNDf6vXkKZ56LqEbeTEAdpk8VCEhQoieBRwJ8b41W4LvBIvkDnb1/Bl+VdPfI/6yB+2w==
-X-Received: by 2002:a17:902:e889:: with SMTP id w9mr3350383plg.95.1644920193562;
-        Tue, 15 Feb 2022 02:16:33 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.114])
-        by smtp.googlemail.com with ESMTPSA id gk15sm17798302pjb.3.2022.02.15.02.16.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 15 Feb 2022 02:16:33 -0800 (PST)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] KVM: Fix lockdep false negative during host resume
-Date:   Tue, 15 Feb 2022 02:15:42 -0800
-Message-Id: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 15 Feb 2022 05:17:07 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D5CE06;
+        Tue, 15 Feb 2022 02:16:56 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 3D06A315;
+        Tue, 15 Feb 2022 11:16:54 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644920214;
+        bh=Vpqo09h7HCFknIrAzLb9ruVe3S9lzDoV2wmtEnovrZM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eII97Vsk5rHLoGL50vSPpRjgKdcEdLIKPoDiqNWqZnpU19DJ2/FHprYb5uL5BujWC
+         uVo9CFuR8UyB5ZTz3kL1F8LDh8kkXxfdxRtvOxqfHBpsiHJ0IrkH84bnpkqBoRakTO
+         ANpGvYa62FTXuMu+HtLom8QKCpwEMGqvZS/C1+4o=
+Date:   Tue, 15 Feb 2022 12:16:47 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 61/66] dt-bindings: media: Add Allwinner A31 ISP
+ bindings documentation
+Message-ID: <Ygt9j+rwEC+2aUjH@pendragon.ideasonboard.com>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-62-paul.kocialkowski@bootlin.com>
+ <YgE/+UmP4nJVxtRT@pendragon.ideasonboard.com>
+ <YgqAv2vLimYgRwDS@aptenodytes>
+ <YgqM3ZdMfEz+ZKo/@pendragon.ideasonboard.com>
+ <Ygt8LF8qx3rnxlgp@aptenodytes>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Ygt8LF8qx3rnxlgp@aptenodytes>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+Hi Paul,
 
-I saw the below splatting after the host suspended and resumed.
+On Tue, Feb 15, 2022 at 11:10:52AM +0100, Paul Kocialkowski wrote:
+> On Mon 14 Feb 22, 19:09, Laurent Pinchart wrote:
+> > On Mon, Feb 14, 2022 at 05:18:07PM +0100, Paul Kocialkowski wrote:
+> > > On Mon 07 Feb 22, 17:51, Laurent Pinchart wrote:
+> > > > On Sat, Feb 05, 2022 at 07:54:24PM +0100, Paul Kocialkowski wrote:
+> > > > > This introduces YAML bindings documentation for the Allwinner A31 Image
+> > > > > Signal Processor (ISP).
+> > > > > 
+> > > > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > > > > ---
+> > > > >  .../media/allwinner,sun6i-a31-isp.yaml        | 117 ++++++++++++++++++
+> > > > >  1 file changed, 117 insertions(+)
+> > > > >  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> > > > > 
+> > > > > diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> > > > > new file mode 100644
+> > > > > index 000000000000..2d87022c43ce
+> > > > > --- /dev/null
+> > > > > +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> > > > > @@ -0,0 +1,117 @@
+> > > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > > > > +%YAML 1.2
+> > > > > +---
+> > > > > +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
+> > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > > +
+> > > > > +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree Bindings
+> > > > > +
+> > > > > +maintainers:
+> > > > > +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > > > > +
+> > > > > +properties:
+> > > > > +  compatible:
+> > > > > +    enum:
+> > > > > +      - allwinner,sun6i-a31-isp
+> > > > > +      - allwinner,sun8i-v3s-isp
+> > > > > +
+> > > > > +  reg:
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  interrupts:
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  clocks:
+> > > > > +    items:
+> > > > > +      - description: Bus Clock
+> > > > > +      - description: Module Clock
+> > > > > +      - description: DRAM Clock
+> > > > 
+> > > > That's interesting, does the ISP have a dedicated DRAM ?
+> > > 
+> > > It doesn't, it actually uses the main DRAM with the "mbus" interconnect.
+> > > The clock is probably for the DMA engine.
+> > > 
+> > > > > +
+> > > > > +  clock-names:
+> > > > > +    items:
+> > > > > +      - const: bus
+> > > > > +      - const: mod
+> > > > > +      - const: ram
+> > > > > +
+> > > > > +  resets:
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  ports:
+> > > > > +    $ref: /schemas/graph.yaml#/properties/ports
+> > > > > +
+> > > > > +    properties:
+> > > > > +      port@0:
+> > > > > +        $ref: /schemas/graph.yaml#/$defs/port-base
+> > > > > +        description: CSI0 input port
+> > > > > +
+> > > > > +        properties:
+> > > > > +          reg:
+> > > > > +            const: 0
+> > > > > +
+> > > > > +          endpoint:
+> > > > > +            $ref: video-interfaces.yaml#
+> > > > > +            unevaluatedProperties: false
+> > > > 
+> > > > If no other property than remote-endpoint are allowed, I'd write
+> > > > 
+> > > >           endpoint:
+> > > >             $ref: video-interfaces.yaml#
+> > > > 	    remote-endpoint: true
+> > > >             additionalProperties: false
+> > > > 
+> > > > Same below.
+> > > > 
+> > > > > +
+> > > > > +        additionalProperties: false
+> > > > > +
+> > > > > +      port@1:
+> > > > > +        $ref: /schemas/graph.yaml#/$defs/port-base
+> > > > > +        description: CSI1 input port
+> > > > > +
+> > > > > +        properties:
+> > > > > +          reg:
+> > > > > +            const: 0
+> > > > 
+> > > > This should be 1.
+> > > 
+> > > Correct, thanks!
+> > > 
+> > > > > +
+> > > > > +          endpoint:
+> > > > > +            $ref: video-interfaces.yaml#
+> > > > > +            unevaluatedProperties: false
+> > > > > +
+> > > > > +        additionalProperties: false
+> > > > > +
+> > > > > +    anyOf:
+> > > > > +      - required:
+> > > > > +        - port@0
+> > > > > +      - required:
+> > > > > +        - port@1
+> > > > 
+> > > > As ports are an intrinsic property of the ISP, both should be required,
+> > > > but they don't have to be connected.
+> > > 
+> > > Well the ISP does have the ability to source from either CSI0 and CSI1
+> > > but I don't really get the point of declaring both ports when only one
+> > > of the two controllers is present.
+> > 
+> > If it's within an SoC I don't mind too much. What I usually insist on is
+> > declaring all ports even when no external devices are connected on the
+> > board. It may however be easier to implement things on the driver side
+> > when all the ports are declared, even for internal devices. I won't
+> > insist either way here.
+> > 
+> > > > By the way, how do you select at runtime which CSI-2 RX the ISP gets its
+> > > > image stream from ? Is it configured through registers of the ISP ?
+> > > 
+> > > Actually what the ISP gets is fully dependent on what is received by the
+> > > CSI controller it is connected to (which can be the mipi csi-2 controller
+> > > or its direct parallel pins), so the configuration happens on the CSI side.
+> > 
+> > OK, then how do you select at runtime which CSI the ISP gets its image
+> > stream from ? :-)
+> 
+> What is done in the driver is that all available csi(s) entities pads are linked
+> to a single csi sink media pad, which allows userspace to enable one or the
+> other. If there's only one, it's enabled by default.
+> 
+> The actual stream source (isp_dev->proc.source) is selected at link_validate
+> time and the source bit is set in sun6i_isp_proc_enable.
+> 
+> I hope this answers your question!
 
-   WARNING: CPU: 0 PID: 2943 at kvm/arch/x86/kvm/../../../virt/kvm/kvm_main.c:5531 kvm_resume+0x2c/0x30 [kvm]
-   CPU: 0 PID: 2943 Comm: step_after_susp Tainted: G        W IOE     5.17.0-rc3+ #4
-   RIP: 0010:kvm_resume+0x2c/0x30 [kvm]
-   Call Trace:
-    <TASK>
-    syscore_resume+0x90/0x340
-    suspend_devices_and_enter+0xaee/0xe90
-    pm_suspend.cold+0x36b/0x3c2
-    state_store+0x82/0xf0
-    kernfs_fop_write_iter+0x1b6/0x260
-    new_sync_write+0x258/0x370
-    vfs_write+0x33f/0x510
-    ksys_write+0xc9/0x160
-    do_syscall_64+0x3b/0xc0
-    entry_SYSCALL_64_after_hwframe+0x44/0xae
+Yes it does, thank you.
 
-lockdep_is_held() can return -1 when lockdep is disabled which triggers
-this warning. Let's use lockdep_assert_not_held() which can detect 
-incorrect calls while holding a lock and it also avoids false negatives
-when lockdep is disabled.
+While this works, it makes life a bit more complicated for userspace, as
+switching between the two sources require disabling the link first and
+then enabling the new one. This is something that caused issues in the
+libcamera simple pipeline handler, I ended up having to implement a
+workaround.
 
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
----
- virt/kvm/kvm_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Could you instead have two sink pads for the ISP, and select the sensor
+at stream on time instead of link validation time by checking which link
+is enabled ? If no links or both links are enabled, you can then return
+an error.
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 83c57bcc6eb6..3f861f33bfe0 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -5528,7 +5528,7 @@ static void kvm_resume(void)
- {
- 	if (kvm_usage_count) {
- #ifdef CONFIG_LOCKDEP
--		WARN_ON(lockdep_is_held(&kvm_count_lock));
-+		lockdep_assert_not_held(&kvm_count_lock);
- #endif
- 		hardware_enable_nolock(NULL);
- 	}
+Ideally I'd say such internal routing should use the new V4L2 subdev
+routing API that is currently being implemented (see [1]), but I don't
+know when it will land, and I don't want to delay your patch series.
+
+[1] https://lore.kernel.org/linux-media/20211130141536.891878-28-tomi.valkeinen@ideasonboard.com
+
+> > > > > +
+> > > > > +required:
+> > > > > +  - compatible
+> > > > > +  - reg
+> > > > > +  - interrupts
+> > > > > +  - clocks
+> > > > > +  - clock-names
+> > > > > +  - resets
+> > > > > +
+> > > > > +additionalProperties: false
+> > > > > +
+> > > > > +examples:
+> > > > > +  - |
+> > > > > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> > > > > +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
+> > > > > +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
+> > > > > +
+> > > > > +    isp: isp@1cb8000 {
+> > > > > +        compatible = "allwinner,sun8i-v3s-isp";
+> > > > > +        reg = <0x01cb8000 0x1000>;
+> > > > > +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+> > > > > +        clocks = <&ccu CLK_BUS_CSI>,
+> > > > > +             <&ccu CLK_CSI1_SCLK>,
+> > > > > +             <&ccu CLK_DRAM_CSI>;
+> > > > > +        clock-names = "bus", "mod", "ram";
+> > > > > +        resets = <&ccu RST_BUS_CSI>;
+> > > > > +
+> > > > > +        ports {
+> > > > > +            #address-cells = <1>;
+> > > > > +            #size-cells = <0>;
+> > > > > +
+> > > > > +            port@0 {
+> > > > > +                reg = <0>;
+> > > > > +
+> > > > > +                isp_in_csi0: endpoint {
+> > > > > +                    remote-endpoint = <&csi0_out_isp>;
+> > > > > +                };
+> > > > > +            };
+> > > > > +        };
+> > > > > +    };
+> > > > > +
+> > > > > +...
+
 -- 
-2.25.1
+Regards,
 
+Laurent Pinchart
