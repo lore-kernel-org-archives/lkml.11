@@ -2,160 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24EA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1ADEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241513AbiBOQWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:22:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43936 "EHLO
+        id S241526AbiBOQWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:22:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235138AbiBOQVx (ORCPT
+        with ESMTP id S236446AbiBOQWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:21:53 -0500
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161BE27156
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:21:42 -0800 (PST)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220215162140epoutp0236da4c135c3370f0c3ad37f8185a1135~UAh-5bviI0932009320epoutp02Y
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 16:21:40 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220215162140epoutp0236da4c135c3370f0c3ad37f8185a1135~UAh-5bviI0932009320epoutp02Y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1644942100;
-        bh=fcvR6uq94cSiqZp9MAZLuz25/68xDCkdfL8moNUqS9Y=;
-        h=From:To:In-Reply-To:Subject:Date:References:From;
-        b=botiWjIm7CgFIsC2xKcS3vL163u7Bee4nBsPSW+AHAFGYjdLwntHcZBSYL8Y17cft
-         uvKHGaoZ+erTBbHeD9Nasx8M3IwFTfE9vnMJydBhsrHK8CnrZ9tjdZFqzzaxIcxeUT
-         VHDxpdaa3xwczPK3xkpZCqVPhoC2A4eWiX6iZDis=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20220215162138epcas5p1b87c1854cb1e932f6989fcc0959a6004~UAh_sANW82399723997epcas5p1r;
-        Tue, 15 Feb 2022 16:21:38 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.178]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4JymYr0Typz4x9Pp; Tue, 15 Feb
-        2022 16:21:36 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        64.B2.06423.F03DB026; Wed, 16 Feb 2022 01:21:35 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220215162135epcas5p1a54157dd72d2ae529f336ea86955dfa9~UAh7B8fcQ2537525375epcas5p1d;
-        Tue, 15 Feb 2022 16:21:35 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220215162135epsmtrp277a881b0326f37dcaf1d2b3fb3c5777c~UAh7BFV0a3132731327epsmtrp2T;
-        Tue, 15 Feb 2022 16:21:35 +0000 (GMT)
-X-AuditID: b6c32a49-b13ff70000001917-04-620bd30f3b4d
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A7.2C.29871.E03DB026; Wed, 16 Feb 2022 01:21:34 +0900 (KST)
-Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220215162133epsmtip14be0eba52da5536d11cd773406f77aef~UAh5dk6WU0868808688epsmtip1P;
-        Tue, 15 Feb 2022 16:21:33 +0000 (GMT)
-From:   "Alim Akhtar" <alim.akhtar@samsung.com>
-To:     <keosung.park@samsung.com>, <avri.altman@wdc.com>,
-        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <bvanassche@acm.org>, <beanhuo@micron.com>, <cang@codeaurora.org>,
-        <adrian.hunter@intel.com>, <asutoshd@codeaurora.org>,
-        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-In-Reply-To: <1891546521.01644927481711.JavaMail.epsvc@epcpadp4>
-Subject: RE: [PATCH] scsi: ufs: Remove wlun_dev_to_hba()
-Date:   Tue, 15 Feb 2022 21:51:32 +0530
-Message-ID: <057401d82288$19a74980$4cf5dc80$@samsung.com>
+        Tue, 15 Feb 2022 11:22:19 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1F62717B
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:22:09 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id n19-20020a17090ade9300b001b9892a7bf9so3403520pjv.5
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:22:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aL1Ai2InGicb7ahZQpdv5e9x/ONiZjtIAS2dF1D0S2o=;
+        b=vNb54qajFSiKeRJfRAser6tmq4YROi3TaW6ql4v5+lZ8250zTZTJH1ttBk7phLtJE/
+         8X1xJ+aPM3gWHECS563y21SvX9Rb3Whn9VDu4xQqfZimFge8tVLTHWpcjfudVT/+xSBt
+         8IJLGbV1EzmvVRGWG1e5Loyjws1+uPfMdm116IGe1i+zsMKsxVCWtIalTFgUB7oct0lF
+         MuOPY3rMbsSUfKYcxS+iakLKgNb9dwlSZ87PA4NY2RqCylJGKpnIAotIGx0GuS7VLpnJ
+         JQm0c9L6L1JUKc9600lOKO4VcrpWaIkoCrIbss4X4+YQQR/UpMGs55jhnNOVQDUDnF39
+         YY1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aL1Ai2InGicb7ahZQpdv5e9x/ONiZjtIAS2dF1D0S2o=;
+        b=AoxhEf/0ms38mogKeZzpp06Yr228JqSKpk/cBgCIt0Uf2xmzdNGbnuc+ZUdxEceWMN
+         nSkNrXrxLCpMgZF1hHE5a0kex2q2Q9NIFDNn1ufss1OOxM4/T3/aXxJ19jCOkbF7Ro6G
+         MfloyRn7xZSln+lFdJ5M0yQsRExdbXi9qVnFMckKgz98uO9yWyYFCersHUc+JR7uddMJ
+         GcSL+SyXt8qkmv28ZK4Jpd232RUEwerEoWqKSk7xKqwB91/lt80W1qX+UVuzfvmvAM/d
+         Do8uLu/uqbFTu3J0zZTdbQjScn9ZndRQmo7hY424X1HQSTBWWuUv3Z49rS3ckEg0JYjm
+         a2HQ==
+X-Gm-Message-State: AOAM532QevUTaXbd25osnc2K/ldNZXsPdX+7iCFqJeBmlXWmrvUuX+7u
+        YuUELs0UDOMiJeb7EmrrBmS2tAsin7f9YZHf49i9Bg==
+X-Google-Smtp-Source: ABdhPJycTIiQcI++KSnaRXdKC1+/Za2TF78mUkZ2Pq3jl1G9S9TZeJkyWRyx3RI9dH9/htg5W9HUadriJMCICjLWGTY=
+X-Received: by 2002:a17:902:ce12:: with SMTP id k18mr4872669plg.34.1644942129125;
+ Tue, 15 Feb 2022 08:22:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQFC7VNpGREACNEdLWuCZe2EwhyDdwKa3nT5rapePlA=
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrMJsWRmVeSWpSXmKPExsWy7bCmli7/Ze4kgysvLC1OPlnDZrG37QS7
-        xcufV9ksDj7sZLGY9uEns8Wn9ctYLRbd2MZkcfzkO0aLy7vmsFl0X9/BZrH8+D8mB26Py1e8
-        PS739TJ5LN7zksljwqIDjB7f13eweXx8eovFo2/LKkaPz5vkPNoPdDMFcEZl22SkJqakFimk
-        5iXnp2TmpdsqeQfHO8ebmhkY6hpaWpgrKeQl5qbaKrn4BOi6ZeYAXaukUJaYUwoUCkgsLlbS
-        t7Mpyi8tSVXIyC8usVVKLUjJKTAp0CtOzC0uzUvXy0stsTI0MDAyBSpMyM7Ytq+FqaCfu2Lj
-        8w7GBsZ3HF2MnBwSAiYSJz6uY+ti5OIQEtjNKLHz0H4o5xOjxIL5H1ghnG+MElvmb2eDaem4
-        tY0dIrGXUWL/v9dQzktGiT/zVzOBVLEJ6ErsWNwGNktEYBmTxORNB1hBEpwCDhL7n9xiAbGF
-        BSwk3h28ANbAIqAqsWL3fbA4r4ClxMVrNxkhbEGJkzOfgMWZBeQltr+dwwxxhoLEz6fLwGaK
-        CFhJzGz+wwRRIy7x8ugRsIskBI5wSLzcPoURosFFYtOzo1C2sMSr41vYIWwpic/v9gJdygFk
-        Z0v07DKGCNdILJ13jAXCtpc4cGUOC0gJs4CmxPpd+hCr+CR6fz9hgujklehoE4KoVpVofncV
-        qlNaYmJ3NyuE7SHx4NkyZkhYtTNKXDp8gmkCo8IsJF/OQvLlLCTfzELYvICRZRWjZGpBcW56
-        arFpgWFeajk8xpPzczcxglOzlucOxrsPPugdYmTiYDzEKMHBrCTCG3eWM0mINyWxsiq1KD++
-        qDQntfgQoykw6CcyS4km5wOzQ15JvKGJpYGJmZmZiaWxmaGSOO/p9A2JQgLpiSWp2ampBalF
-        MH1MHJxSDUw2021Pbn0iL3Eu4bXao2ln1Exj0g/fV8o5prl6df02pllHs68l/eFfech8Tmqt
-        5O8Xv1//mNcl9+/RPtPM/zGmjjc6+I7HbZR+FRYepr16clbdlDsJXSeMXX6YXVBsu1GavW7B
-        RNmg0MBrP93FT/EUVj6o/lktbl4cuPDFiSmbOP9cqTpfemXOqi8La8rt9XhW/FmsUL1fcJb9
-        pFeNFew/9kg6KR2Kendy9/2yL2vf/ZAt5LzGG7lnSeCPyeX8U01+zH+lZh6+/Wb5oxdfv1mU
-        v7U4WHwt7zfHPcH/ViYnbWZbuGWIzy7K4Tru8OycbMqE7HOzfzY3r96r5lgYy2zhkCup9eua
-        Sd+OtO7m2OerlFiKMxINtZiLihMBq8SRElYEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprPIsWRmVeSWpSXmKPExsWy7bCSnC7fZe4kg/1XzS1OPlnDZrG37QS7
-        xcufV9ksDj7sZLGY9uEns8Wn9ctYLRbd2MZkcfzkO0aLy7vmsFl0X9/BZrH8+D8mB26Py1e8
-        PS739TJ5LN7zksljwqIDjB7f13eweXx8eovFo2/LKkaPz5vkPNoPdDMFcEZx2aSk5mSWpRbp
-        2yVwZWzb18JU0M9dsfF5B2MD4zuOLkZODgkBE4mOW9vYuxi5OIQEdjNKvLjwkhkiIS1xfeME
-        dghbWGLlv+dQRc8ZJT4+38UIkmAT0JXYsbiNDSQhIrCFSWL+vvVgCSGBVkaJ592ZIDangIPE
-        /ie3WEBsYQELiXcHLzCB2CwCqhIrdt8Hi/MKWEpcvHaTEcIWlDg58wlYnFlAW6L3YSsjhC0v
-        sf3tHKjrFCR+Pl3GCmKLCFhJzGz+wwRRIy7x8ugR9gmMQrOQjJqFZNQsJKNmIWlZwMiyilEy
-        taA4Nz232LDAMC+1XK84Mbe4NC9dLzk/dxMjOA61NHcwbl/1Qe8QIxMH4yFGCQ5mJRHeuLOc
-        SUK8KYmVValF+fFFpTmpxYcYpTlYlMR5L3SdjBcSSE8sSc1OTS1ILYLJMnFwSjUwZVydFHNG
-        i2duK8PtEJ9NZhN+fLCXmsbKFnK5P5gxb5Upl+q2clVngVPVO6ZNFvtoUP9okpv+fNNzz69r
-        rGHLF/+QZxzQaLfr4WrtXTX7PeMzJq2aekWq3X12VmjRsktfNk4uYj1Y++3EnBx+mcigJQds
-        Pk59vd8u9Mp8k/KtH0MfVhwrTzr19MzSC0n9+TU342L3LPz7lLeuUEtKpDE1ryX4a/UqaRbt
-        49yTftzPtlhplsq5MW6maMkapU3H0jtmrZA3vnOq9JBRKOsEHtGpfW9vXviTu2MR86bMyuoz
-        VT5rLu4tvhY98+8ON78Dbw2vVjCx+69fyPrC1F//dFXM9AnTZ3VuW5pVsV7NxX5emRJLcUai
-        oRZzUXEiAFSPjlkyAwAA
-X-CMS-MailID: 20220215162135epcas5p1a54157dd72d2ae529f336ea86955dfa9
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220215114002epcms2p1eb4e53507c96e0f24770af16aedcf5c6
-References: <CGME20220215114002epcms2p1eb4e53507c96e0f24770af16aedcf5c6@epcms2p1>
-        <1891546521.01644927481711.JavaMail.epsvc@epcpadp4>
+References: <55f5c077-061c-7e53-b02d-53dde1dd654f@molgen.mpg.de>
+In-Reply-To: <55f5c077-061c-7e53-b02d-53dde1dd654f@molgen.mpg.de>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 15 Feb 2022 08:22:02 -0800
+Message-ID: <CAPcyv4jSP4PTehMdkcpZfpDcz1HZ0ekjx+WztOiqpwGFU-1iBg@mail.gmail.com>
+Subject: Re: New warning: ACPI: CEDT not present
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, regressions@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
->-----Original Message-----
->From: Keoseong Park [mailto:keosung.park@samsung.com]
->Sent: Tuesday, February 15, 2022 5:10 PM
->To: ALIM AKHTAR <alim.akhtar@samsung.com>; avri.altman@wdc.com;
->jejb@linux.ibm.com; martin.petersen@oracle.com; bvanassche@acm.org;
->beanhuo@micron.com; cang@codeaurora.org; adrian.hunter@intel.com;
->asutoshd@codeaurora.org; linux-scsi@vger.kernel.org; linux-
->kernel@vger.kernel.org
->Subject: [PATCH] scsi: ufs: Remove wlun_dev_to_hba()
+On Mon, Feb 14, 2022 at 11:52 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
 >
->Commit edc0596cc04b ("scsi: ufs: core: Stop clearing UNIT ATTENTIONS")
->removed all callers of wlun_dev_to_hba(). Hence also remove the macro
->itself.
+> #regzbot introduced: 2d03e46a4bad20191d07b83ec1242d5f002577be
 >
->Signed-off-by: Keoseong Park <keosung.park@samsung.com>
->---
-
-
-Thanks!
-
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-
-> drivers/scsi/ufs/ufshcd.c | 2 --
-> 1 file changed, 2 deletions(-)
+> Dear Dan,
 >
->diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c index
->41d85b69fa50..1243d73d669b 100644
->--- a/drivers/scsi/ufs/ufshcd.c
->+++ b/drivers/scsi/ufs/ufshcd.c
->@@ -83,8 +83,6 @@
-> /* Polling time to wait for fDeviceInit */  #define
->FDEVICEINIT_COMPL_TIMEOUT 1500 /* millisecs */
 >
->-#define wlun_dev_to_hba(dv) shost_priv(to_scsi_device(dv)->host)
->-
-> #define ufshcd_toggle_vreg(_dev, _vreg, _on)
->	\
-> 	({                                                              \
-> 		int _ret;                                               \
->--
->2.17.1
+> On the Dell Latitude E7250, Linux 5.17-rc3 logs the warning below
+> (`dmesg --level=warn`):
+>
+>      ACPI: CEDT not present
+>
+> I think commit 2d03e46a4bad (ACPI: Add a context argument for table
+> parsing handlers), part of Linux since 5.17-rc1, is the reason.
+>
+> If I understand it correctly, CEDT is not to be expected on older
+> devices, so the warning is not justified. Can something be done about it?
 
+Rafael,
 
+I'm inclined to just delete the warning altogether, but special casing
+is also an option. Any preference?
+
+diff --git a/drivers/acpi/tables.c b/drivers/acpi/tables.c
+index 0741a4933f62..fb2e4a216154 100644
+--- a/drivers/acpi/tables.c
++++ b/drivers/acpi/tables.c
+@@ -399,7 +399,7 @@ int __init_or_acpilib acpi_table_parse_entries_array(
+                instance = acpi_apic_instance;
+
+        acpi_get_table(id, instance, &table_header);
+-       if (!table_header) {
++       if (!table_header && strcmp(id, ACPI_SIG_CEDT) != 0) {
+                pr_warn("%4.4s not present\n", id);
+                return -ENODEV;
+        }
