@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2265AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D98C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236515AbiBOPiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:38:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42696 "EHLO
+        id S240892AbiBOPiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:38:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240738AbiBOPf3 (ORCPT
+        with ESMTP id S240674AbiBOPfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:35:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BC7B7C5A;
-        Tue, 15 Feb 2022 07:31:18 -0800 (PST)
+        Tue, 15 Feb 2022 10:35:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC08B52;
+        Tue, 15 Feb 2022 07:31:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A2B615EF;
-        Tue, 15 Feb 2022 15:31:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC694C340EB;
-        Tue, 15 Feb 2022 15:31:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60CE8B8185B;
+        Tue, 15 Feb 2022 15:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E485C340EB;
+        Tue, 15 Feb 2022 15:31:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939077;
-        bh=r+bNCJC5D6dgqgospRgsdedmZ0Hcm+1d/jSHPYZYSUE=;
+        s=k20201202; t=1644939080;
+        bh=DFsLvK0i3BObqF26aZZdRrDS2/spMsYEUdcIUmBugTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cW33WECrKyTaOtQR/TkS7u4oVBPz3nm6z5cK7ianBk7s/TV9axAI7c9xngW+6UJLp
-         4d23BnGI6gLNApwPZQcHy7r9Ni6KrZt4mcQM02GvWDl0n0QgKiWNLtJ6FGMoDgMSmb
-         u3n/kQvaSlkjQJpgXxkCUmDuAMIXzsgmZbwPW3/nregypl9Z1gfFazlZpc9b/VRFFu
-         EOzcF3Auc9PgAoYMiPiSh2t91BOSdI8ZhK/L2/95ilT6gHwACIMt0sAQmUiar7Ry8S
-         0GpkrrhZHUxgYh1tGClB4ydSOwYdxt7+Xv2n7PlUSGRG/Pw5wbfOurCFXWsBqNN/3F
-         q+jMJEayVuCJw==
+        b=iLyC01idrBolzeqAy6JoE2pvaZ8glDcT35nwH0wU5MGdtfEMAhlvDHgplfhDrYHXR
+         6iF44/7x7KBfr4Ns8wxUSFGnCyEuEDBAgmGwPY2j5j3e5Dpw2HD0+vWNyVBnOeAAha
+         2jDC8Y4EMAw4gyFj8MJExbJ7+W69Apsd/BD4tRBD8BSINwsrerT3pRjh36r5dWom5v
+         LJTzeqXqrpMpJuWCuksgXWv1V+8/B+Y21slSHsXTJdKYIJK6j0iEPXOC0xGC3bJhLt
+         /SG2f7TKWSy103BJSDXGmLVz964pasfWkFuPDL22nOtE7fTMq9VxWf0s2DzamuTKe8
+         BNGx5YyFbUGEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     JaeSang Yoo <js.yoo.5b@gmail.com>, JaeSang Yoo <jsyoo5b@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 4.19 08/11] tracing: Fix tp_printk option related with tp_printk_stop_on_boot
-Date:   Tue, 15 Feb 2022 10:31:01 -0500
-Message-Id: <20220215153104.581786-8-sashal@kernel.org>
+Cc:     Slark Xiao <slark_xiao@163.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 10/11] net: usb: qmi_wwan: Add support for Dell DW5829e
+Date:   Tue, 15 Feb 2022 10:31:03 -0500
+Message-Id: <20220215153104.581786-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215153104.581786-1-sashal@kernel.org>
 References: <20220215153104.581786-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -51,47 +54,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: JaeSang Yoo <js.yoo.5b@gmail.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-[ Upstream commit 3203ce39ac0b2a57a84382ec184c7d4a0bede175 ]
+[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
 
-The kernel parameter "tp_printk_stop_on_boot" starts with "tp_printk" which is
-the same as another kernel parameter "tp_printk". If "tp_printk" setup is
-called before the "tp_printk_stop_on_boot", it will override the latter
-and keep it from being set.
+Dell DW5829e same as DW5821e except the CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+Also, DW5829e includes normal and eSIM type.
+Please see below test evidence:
 
-This is similar to other kernel parameter issues, such as:
-  Commit 745a600cf1a6 ("um: console: Ignore console= option")
-or init/do_mounts.c:45 (setup function of "ro" kernel param)
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Fix it by checking for a "_" right after the "tp_printk" and if that
-exists do not process the parameter.
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Link: https://lkml.kernel.org/r/20220208195421.969326-1-jsyoo5b@gmail.com
-
-Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
-[ Fixed up change log and added space after if condition ]
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/usb/qmi_wwan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 17e337a22c239..19a6b088f1e72 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -232,6 +232,10 @@ __setup("trace_clock=", set_trace_boot_clock);
- 
- static int __init set_tracepoint_printk(char *str)
- {
-+	/* Ignore the "tp_printk_stop_on_boot" param */
-+	if (*str == '_')
-+		return 0;
-+
- 	if ((strcmp(str, "=0") != 0 && strcmp(str, "=off") != 0))
- 		tracepoint_printk = 1;
- 	return 1;
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 54b37a30df18b..c2e872f926f1c 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1358,6 +1358,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
 -- 
 2.34.1
 
