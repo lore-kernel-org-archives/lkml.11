@@ -2,158 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6839C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F097C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242850AbiBOR41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:56:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42330 "EHLO
+        id S237123AbiBOR62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:58:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242778AbiBOR4N (ORCPT
+        with ESMTP id S231445AbiBOR61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:56:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B122110076B;
-        Tue, 15 Feb 2022 09:56:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 15 Feb 2022 12:58:27 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC51CB90F
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:58:16 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1F0061F37B;
+        Tue, 15 Feb 2022 17:58:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644947895; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PWnIgritZWDbPqJt4NsgSR71vtgK2UWzhthhnP5o4N8=;
+        b=ANXyuW7pa1fRxyk4Wi82kyjZCJBuqKX1zYvsPJuG/UniPdAKijCFcYg1yLlU+7XXtpIhMv
+        0CfdkivBt3YJc2YGKg4twu+MOatTDOXUrcl3jlvvw25cHxsarePAEQsuZz0UOWD5x7EPgY
+        rGuJDycszjodPi/gitL3YyXISA8J4vU=
+Received: from suse.cz (unknown [10.100.216.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8F2761662;
-        Tue, 15 Feb 2022 17:56:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62F9FC340EB;
-        Tue, 15 Feb 2022 17:56:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644947761;
-        bh=RW6YVaDJUsS8JVaYPBST0uEeqYkZIjQuU58SCjwO1rE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FkZ40rmL/bfiR2tDJxFdqEQG1gJMEL2JxCy404T8NX9D7ABZCxBkzehromlbioZ6c
-         RI2TDyvJcQ4PKIHmT6yBKKUkZP71O97i6YQe66ihRQDpNXQtQDTqoeMTz1NIS7PVg9
-         SX1qH8/gOYP20ZxBZUA9Ht121pUWOOEG7OEoYBKPGEiMys8n6mJTsQ7+oRTZ/i+Eky
-         RrD8OPAnVYripqAgpGbY9UVTTsKLgikBxvM+ZoCZ5dxhArqtOucPBG3ILgxhOVlXN1
-         AL9glzgO8JBZHUelsISQob5Q1bOXdIAbbIRZ32s/ISsO1EPxmD0weCENWb1YFvmsQy
-         B/Qh1rSP5acjg==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Aharon Landau <aharonl@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH rdma-next v2 4/5] RDMA/mlx5: Store ndescs instead of the translation table size
-Date:   Tue, 15 Feb 2022 19:55:32 +0200
-Message-Id: <e9dbfaa1f279793a6bd28ee5a31cb4f0f0d70f05.1644947594.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1644947594.git.leonro@nvidia.com>
-References: <cover.1644947594.git.leonro@nvidia.com>
+        by relay2.suse.de (Postfix) with ESMTPS id CC322A3B89;
+        Tue, 15 Feb 2022 17:58:14 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 18:58:14 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc:     Andre Kalb <andre.kalb@sma.de>, john.ogness@linutronix.de,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org
+Subject: Re: [PATCH v2] printk: Set console_set_on_cmdline=1 when
+ __add_preferred_console() is called with user_specified == true
+Message-ID: <YgvptpD/g4hj0bsp@alley>
+References: <YgKSbe9d3haHKMid@alley>
+ <YgpXWQqjfJBISG1v@pc6682>
+ <Ygsa7gfqlhZVWdDb@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ygsa7gfqlhZVWdDb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aharon Landau <aharonl@nvidia.com>
+On Tue 2022-02-15 12:15:58, Sergey Senozhatsky wrote:
+> On (22/02/14 14:21), Andre Kalb wrote:
+> > +static void set_user_specified(struct console_cmdline *c, bool user_specified)
+> > +{
+> > +	if (!user_specified)
+> > +		return;
+> > +
+> > +	c->user_specified = true;
+> > +	console_set_on_cmdline = 1;
+> > +}
+> 
+> In original code we always set c->user_specified. Is it guaranteed that
+> ->user_specified is properly initialized to 0? Maybe can do something like:
 
-Currently, ent->xlt stores the translation table size. This data should
-not be stored in the cache entry but be written directly to the mailbox.
-Store ndescs instead, and deduce the translation table size from it
-according to the access mode.
-Later in the series, ent->ndescs will help to search for entries.
+It is guaranteed. console_cmdline is a static array initialized with
+zeroes. The 2nd set_user_specified() call is done for a not-yet-used
+slot in the array, so it must be zero.
 
-Signed-off-by: Aharon Landau <aharonl@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/infiniband/hw/mlx5/mlx5_ib.h |  2 +-
- drivers/infiniband/hw/mlx5/mr.c      | 25 ++++++++++++++++++++++---
- drivers/infiniband/hw/mlx5/odp.c     |  8 ++------
- 3 files changed, 25 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index 751d02bc755b..4f04bb55c4c6 100644
---- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-+++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -763,9 +763,9 @@ struct mlx5_cache_ent {
- 
- 	char                    name[4];
- 	u32                     order;
--	u32			xlt;
- 	u32			access_mode;
- 	u32			page;
-+	unsigned int		ndescs;
- 
- 	u8 disabled:1;
- 	u8 fill_to_high_water:1;
-diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index 0c1dc13b4c45..eb14ea4bcbba 100644
---- a/drivers/infiniband/hw/mlx5/mr.c
-+++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -176,6 +176,25 @@ static void create_mkey_callback(int status, struct mlx5_async_work *context)
- 	spin_unlock_irqrestore(&ent->lock, flags);
- }
- 
-+static int get_mkc_octo_size(unsigned int access_mode, unsigned int ndescs)
-+{
-+	int ret = 0;
-+
-+	switch (access_mode) {
-+	case MLX5_MKC_ACCESS_MODE_MTT:
-+		ret = DIV_ROUND_UP(ndescs, MLX5_IB_UMR_OCTOWORD /
-+						   sizeof(struct mlx5_mtt));
-+		break;
-+	case MLX5_MKC_ACCESS_MODE_KSM:
-+		ret = DIV_ROUND_UP(ndescs, MLX5_IB_UMR_OCTOWORD /
-+						   sizeof(struct mlx5_klm));
-+		break;
-+	default:
-+		WARN_ON(1);
-+	}
-+	return ret;
-+}
-+
- static struct mlx5_ib_mr *alloc_cache_mr(struct mlx5_cache_ent *ent, void *mkc)
- {
- 	struct mlx5_ib_mr *mr;
-@@ -191,7 +210,8 @@ static struct mlx5_ib_mr *alloc_cache_mr(struct mlx5_cache_ent *ent, void *mkc)
- 	MLX5_SET(mkc, mkc, access_mode_1_0, ent->access_mode & 0x3);
- 	MLX5_SET(mkc, mkc, access_mode_4_2, (ent->access_mode >> 2) & 0x7);
- 
--	MLX5_SET(mkc, mkc, translations_octword_size, ent->xlt);
-+	MLX5_SET(mkc, mkc, translations_octword_size,
-+		 get_mkc_octo_size(ent->access_mode, ent->ndescs));
- 	MLX5_SET(mkc, mkc, log_page_size, ent->page);
- 	return mr;
- }
-@@ -701,8 +721,7 @@ int mlx5_mr_cache_init(struct mlx5_ib_dev *dev)
- 			continue;
- 
- 		ent->page = PAGE_SHIFT;
--		ent->xlt = (1 << ent->order) * sizeof(struct mlx5_mtt) /
--			   MLX5_IB_UMR_OCTOWORD;
-+		ent->ndescs = 1 << ent->order;
- 		ent->access_mode = MLX5_MKC_ACCESS_MODE_MTT;
- 		if ((dev->mdev->profile.mask & MLX5_PROF_MASK_MR_CACHE) &&
- 		    !dev->is_rep && mlx5_core_is_pf(dev->mdev) &&
-diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
-index f834c9590c51..41c964a45f89 100644
---- a/drivers/infiniband/hw/mlx5/odp.c
-+++ b/drivers/infiniband/hw/mlx5/odp.c
-@@ -1598,18 +1598,14 @@ void mlx5_odp_init_mr_cache_entry(struct mlx5_cache_ent *ent)
- 	switch (ent->order - 2) {
- 	case MLX5_IMR_MTT_CACHE_ENTRY:
- 		ent->page = PAGE_SHIFT;
--		ent->xlt = MLX5_IMR_MTT_ENTRIES *
--			   sizeof(struct mlx5_mtt) /
--			   MLX5_IB_UMR_OCTOWORD;
-+		ent->ndescs = MLX5_IMR_MTT_ENTRIES;
- 		ent->access_mode = MLX5_MKC_ACCESS_MODE_MTT;
- 		ent->limit = 0;
- 		break;
- 
- 	case MLX5_IMR_KSM_CACHE_ENTRY:
- 		ent->page = MLX5_KSM_PAGE_SHIFT;
--		ent->xlt = mlx5_imr_ksm_entries *
--			   sizeof(struct mlx5_klm) /
--			   MLX5_IB_UMR_OCTOWORD;
-+		ent->ndescs = mlx5_imr_ksm_entries;
- 		ent->access_mode = MLX5_MKC_ACCESS_MODE_KSM;
- 		ent->limit = 0;
- 		break;
--- 
-2.35.1
+> static void set_user_specified(struct console_cmdline *c, bool user_specified)
+> {
+> 	c->user_specified = user_specified;
 
+This will change the behavior for the 1st set_user_specified() call.
+It happens when the same console is added more times by device tree,
+SPCR, and/or command line. c->user_specified must stay "true" when
+at least one __add_preferred_console() call added it from the command line.
+
+> 	if (!user_specified)
+> 		return;
+> 
+> 	console_set_on_cmdline = 1;
+> }
+
+I agree that it is not obvious. It would make sense to add a comment
+into the code. I am going to propose something in a reply to the
+original post.
+
+Best Regards,
+Petr
