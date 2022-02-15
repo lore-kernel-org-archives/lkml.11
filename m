@@ -2,110 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40097C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236658AbiBOQ40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:56:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46728 "EHLO
+        id S242019AbiBOQ5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:57:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234973AbiBOQ4Z (ORCPT
+        with ESMTP id S234973AbiBOQ46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:56:25 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5059E119870
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:56:15 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id j12so35743953ybh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:56:15 -0800 (PST)
+        Tue, 15 Feb 2022 11:56:58 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B4CD64D1
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:56:47 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id p22so4533012lfu.5
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:56:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=algolia.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=YlbnjTvgntnfVcOa/EhaC2z63qHnpSdTA6htlssL+WQ=;
-        b=bk46Vhc2ajd84HHhGeRXsqLbc/cGSRyxZX/c1Llf14vsw65KsEUPwwU9HPp51fw4Xq
-         3q58SrpUFqhbH2GFeBSprgbQTqriEp3/k5p2gQ976nKGKFWKCxBix+9i5VvHuh02/sun
-         oO+En9eTYtfeMyiHeEoOlNEcIyYqM54DuS3oAOG8pDKIjRaEFME7K5qYBUmK36bwP/4X
-         GVpDqdTe1cmb79rWnDO0cRl7vsVSnibSGnWzvo809InInrTuGPFphqNB30AxGC1UcaYI
-         FKoXi0Ewc+M7Rxg1/S59gYqmJurInYl7YAmAIcivnj9uXodYpXdUKOlQT/LoTJgQNuQF
-         P0IQ==
+        bh=0C7AhvvDCQEHxLq+7h7ekt5xD4opxa7U4z1HlwOoACk=;
+        b=D6H0T2gdBsy/aGCBcVLV8acIUZ4Do105KWxFFVg3eA5BTwkGOnz0oG4LFEUN5O1iYB
+         L0dSwLlabwyJBPwnPZvtY08Zt6JukR/7UReQwvfWIVLvnJuQEY9jPmdq9Oxj03IEwkc1
+         t4hv+BtQ2w0FfwT53BdSBG5O9WmBIIUARS+O0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=YlbnjTvgntnfVcOa/EhaC2z63qHnpSdTA6htlssL+WQ=;
-        b=qiPfgdgGSNI44bkRPJ6dwcQOCuBaHjwPnmmEXiy4H1TqT+st0gnsi7xQp175J4NycT
-         OcoqFENbXrKs9yn9bWqbID/QSlP1BttCFeuGrrpTJn4mM1/0WQlJnsfE9xACKYpkAIvI
-         cB1e6jzMJ+x4SaaDIwxCmt0j+1Ns2up/9zrDgCkUGmjnCNZPcCNxoSXzuEau+Je+heIM
-         oDbIvdW2OyU+xJvutYfJQDeSG0JVaKbQ1LlcQqQ3vNsbARwGLRUuYIAKH1JQhKLLGr+q
-         VBqBb/qLWzJrOWkE/39+eYaeUVVguFR/Q0JnDpIjNbQi3OwadghAOeWHUjb1XUSy6bXE
-         6mng==
-X-Gm-Message-State: AOAM530t6AgsN6CzfDDXyQc61twHKvpFqDhLuloIFU49fbEvQOD8q+oZ
-        83V7DYiI5kCzzFH0oCjdpQjmXIqaqVpg3bzMC99jKA==
-X-Google-Smtp-Source: ABdhPJzikU0YU5BH/siNLMr0CFiPW39DzXn9G0PWcetR0q2McVSRzNwb57LXXgFzjHK4V7Q5u7TpAbaWPvg5gf658uk=
-X-Received: by 2002:a25:1845:: with SMTP id 66mr4653694yby.196.1644944174316;
- Tue, 15 Feb 2022 08:56:14 -0800 (PST)
+        bh=0C7AhvvDCQEHxLq+7h7ekt5xD4opxa7U4z1HlwOoACk=;
+        b=mVHxgX5Lffo1o/mztPBbCFTOZ0Jy0+9+7vfnhg6W+uuV3DEmU/B31I2oSlyDg06VkX
+         jqd7NKhXq9W6WLHCIqqtIGWbX57PXpx8AtieUApI4dCpUHD1m0A3fce8emnK/h3yNyQ9
+         M13pN4/CuWbzd00J11mn7Ty7NXJcWJi8xwxtS33DWNN1sPaZYKTjUagJ37AD7clLhHI+
+         HmARPf9a3oesU0/Go8Bpk9QOEbk4ARI+npMxEKBaDc3FUVrWgpM5KcHUMJ4BrdO23I7S
+         VKjD3jq1qeoyoohJH7InbF2Wd7BiqRAj66QBvhCMavK2JrHQcUiVHbThoRZdN6pVQrQf
+         1Czg==
+X-Gm-Message-State: AOAM5339zc2XC4qWDZMQ5ocoM4Urqdg3820FL1n3UyaZj2su9uW1pPF9
+        mKHtN7o+fX8sA59c6qvnxVEV+Vdi+dAOmJtjm4u7cA==
+X-Google-Smtp-Source: ABdhPJwwmwWIeki/es4R5uWFp0Glq1pZFR4PzkUkcdZeMMzxk/fj2daCt2UVktUUHUbKYpZlqLep4+PxhHm1oTszSM4=
+X-Received: by 2002:a05:6512:224f:: with SMTP id i15mr12537lfu.40.1644944205908;
+ Tue, 15 Feb 2022 08:56:45 -0800 (PST)
 MIME-Version: 1.0
-References: <20211122170301.764232470@infradead.org> <20211122170805.338489412@infradead.org>
- <6ebb0ab131c522f20c094294d49091fc@overdrivepizza.com> <202202081541.900F9E1B@keescook>
- <ad6c2633f39e39583bc5c5eaf7ccbe52@overdrivepizza.com> <202202082003.FA77867@keescook>
- <9ea50c51ee8db366430c9dc697a83923@overdrivepizza.com> <20220211133803.GV23216@worktop.programming.kicks-ass.net>
- <CABCJKuciRBnz4JxBDJC=+kuJn4pU2uBkWPBov7-VL2o2j0F4SA@mail.gmail.com> <20220214222550.GB23216@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220214222550.GB23216@worktop.programming.kicks-ass.net>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Tue, 15 Feb 2022 08:56:03 -0800
-Message-ID: <CABCJKuf-wouSCh4u43GPQHPPgG=mqOGboSoHPQRfmgQSBkFrMg@mail.gmail.com>
-Subject: Re: [RFC][PATCH 6/6] objtool: Add IBT validation / fixups
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Joao Moreira <joao@overdrivepizza.com>,
-        Kees Cook <keescook@chromium.org>, X86 ML <x86@kernel.org>,
-        hjl.tools@gmail.com, Josh Poimboeuf <jpoimboe@redhat.com>,
-        andrew.cooper3@citrix.com, LKML <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev
+References: <20220214210708.GA2167841@xavier-xps> <CAJfpegvVKWHhhXwOi9jDUOJi2BnYSDxZQrp1_RRrpVjjZ3Rs2w@mail.gmail.com>
+ <YguspMvu6M6NJ1hL@zeniv-ca.linux.org.uk> <YgvPbljmJXsR7ESt@zeniv-ca.linux.org.uk>
+In-Reply-To: <YgvPbljmJXsR7ESt@zeniv-ca.linux.org.uk>
+From:   Xavier Roche <xavier.roche@algolia.com>
+Date:   Tue, 15 Feb 2022 17:56:35 +0100
+Message-ID: <CAE9vp3LT6s+qASCyF2-dEjD4caR67NLT15ad+SXi1fPPGxS-tg@mail.gmail.com>
+Subject: Re: race between vfs_rename and do_linkat (mv and link)
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.vnet.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 2:25 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> On Mon, Feb 14, 2022 at 01:38:18PM -0800, Sami Tolvanen wrote:
-> > I'm fine with adding a trap mode that's used by default, but having
-> > more helpful diagnostics when something fails is useful even in
-> > production systems in my experience. This change results in a vmlinux
-> > that's another 0.92% smaller.
->
-> You can easily have the exception generate a nice warning, you can even
-> have it continue. You really don't need a call for that.
+On Tue, Feb 15, 2022 at 5:06 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> Does POSIX actually make any promises in that area?
 
-Sure, but wouldn't that require us to generate something like
-__bug_table, so we know where the CFI specific traps are?
+My understanding is that we inherit from the mandatory atomicity of
+all rename calls
+(https://pubs.opengroup.org/onlinepubs/000095399/functions/rename.html)
+> That specification requires that the action of the function be atomic.
 
-> > In this case the function has two indirect calls and Clang seems to
-> > prefer to emit just one ud2.
->
-> That will not allow you to recover from the exception. UD2 is not an
-> unconditional fail. It should have an out-going edge in this case too.
-
-Yes, CFI failures are not recoverable in that code. In fact, LLVM
-assumes that the llvm.trap intrinsic (i.e. ud2) never returns, but I
-suppose we could just use an int3 instead. I assume that's sufficient
-to stop speculation?
-
-> Also, you really should add a CS prefix to the retpoline thunk call if
-> you insist on using r11 (or any of the higher regs).
-
-I actually didn't touch the retpoline thunk call, that's exactly the
-code Clang normally generates.
-
-> > How would you like to deal with the 4-byte hashes in objtool? We
-> > either need to annotate all function symbols in the kernel, or we need
-> > a way to distinguish the hashes from random instructions, so we can
-> > also have functions that don't have a type hash.
->
-> Easiest would be to create a special section with all the hash offsets
-> in I suppose. A bit like -mfentry-section=name.
-
-OK, I'll take a look. With 64-bit hashes I was planning to use a known
-prefix, but that's not really an option with a 32-bit hash.
-
-Sami
+We also inherit from the link call that is required to be atomic
+(https://pubs.opengroup.org/onlinepubs/009695399/functions/link.html)
+> The link() function shall atomically create a new link for the existing file and the link count of the file shall be incremented by one
