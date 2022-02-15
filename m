@@ -2,102 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D828FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A18C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235434AbiBOI2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 03:28:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54214 "EHLO
+        id S235441AbiBOI2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 03:28:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiBOI2Y (ORCPT
+        with ESMTP id S235438AbiBOI21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 03:28:24 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF37C4879;
-        Tue, 15 Feb 2022 00:28:14 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id a8so42563167ejc.8;
-        Tue, 15 Feb 2022 00:28:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SWnhMGGy+Qpz+c59kaT1t8vcf7cPVieqeI/nb/UMyY0=;
-        b=NwBFcuP3hMOS43nGz3kR9HYYikVefnn4WTg79k5cBLGveJvvQetIswHbNBU6sw8xMi
-         6XHg1fO33keJYPrNSFWB/02kkUHhvtHPOEVut270AONcpg7Qte7OtI2UgwXzqh9ZxO6n
-         v050JGPNYGc1ijIAOp4CZSlP+chCPwnW7j82nPj75PZafGNWYC6hpUokRc14v/O7smw2
-         dWcubRyuYr1n9E+usxKNSKL7aWvenLtwtnkAOyuFpxZZlZeQ8SweNh/2ChF3DrerguHK
-         fYh0n2a5yayMQh7gW09CIF0bwUdMAGVX+Su/qxeKOhwoxYelcU2UV9u3aukOKktdtC2y
-         1HkQ==
+        Tue, 15 Feb 2022 03:28:27 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4EAC4879
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 00:28:16 -0800 (PST)
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 542C8402DF
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:28:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644913695;
+        bh=SYCs4rlwehI9uixUmtccsfBnafF4vNQ33COhcYadmEI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=tBluYdOGxVBJdCghfagQc0/1tR6gqng7Gt5xLxcleLnGrw3mKIhomILXpFvwTwMLl
+         tU8eab9peMmfl3U04spXQ48VRZ0K4PlEsBs4vZqsZp7zW55gjzOaUTDyUhzTgTfnaQ
+         UTl9ZNMO7fA2PO0t1JCv9WELSYxUKrmoi23lR205FBVi/wu639vovzX6bwK2SwSrbi
+         S56g4CE+45LQ3u8NYVaFZ+k0NItDVbeXHjPlTh8JUY26wlA7DeiFke8ZII+6NvO2jb
+         gdjbQgXLqTDKbV3bC8XYunE7089WVPaut+7O3hrNHf+uTOcA73mWFcGl2WSwG+AH5z
+         clJbh9uNgoGcA==
+Received: by mail-wm1-f70.google.com with SMTP id f26-20020a7bc8da000000b0037bd7f39dbbso1895794wml.3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 00:28:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SWnhMGGy+Qpz+c59kaT1t8vcf7cPVieqeI/nb/UMyY0=;
-        b=K5V0/ogl/p5KeY7rdEb85PzYMjQ6g+XMgnZ2s8Mbqy3w67RTmyjk6s36pbLCINLkuW
-         2wAJpvH04OfUTeu/chh6I9KNLAbCOdOgqnxYlSdok88C3PZ+/j99EYMCpp5je/qZZK4o
-         LrFlHsy2bcBD0L7rkvtKCvPWl+dTzADngldscn5l9kVzpj4SF0WnJcchbPXgZWFl6M+W
-         5sCuXl60Qe28jcTljwccAQlXixAt2OA1nI358l9ytaT/d0+UDY3MvioNISGfGnmIgAgC
-         Dwd03tz8v4tJ9NkRv2HiE+Wa4wWNaT6+1xZhLotm4zOUd5cfP3hEijeYecmXGJR0nAEG
-         CuHw==
-X-Gm-Message-State: AOAM532jIpIKb4L0Uf7KoObMnX+mFSapKS5J4oBktKrP5s3hF8mfVz5H
-        9vCUyBUfqouxFwwZMnnqoUjr5xxYVlwB5glesuBdG6rYIlr9Uw==
-X-Google-Smtp-Source: ABdhPJx14GTHZuqUbZl+yuxFiiZQ+Xs3VxeZAHz4UJ3/Zixlb6E2MASa05kTrhddrHhyGZYB5GP09WbaAvI8N0M+rZs=
-X-Received: by 2002:a17:906:99c5:: with SMTP id s5mr2030550ejn.497.1644913693136;
- Tue, 15 Feb 2022 00:28:13 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SYCs4rlwehI9uixUmtccsfBnafF4vNQ33COhcYadmEI=;
+        b=wz5IGzakW/eBw8hcilusQJj3yvE2Aw+C/Svt/oF3F6GpadgXdTgqh8nzijzZMMKqJ0
+         C/26sasHh1USqsT/wz3tIzKtFUl6bqwYTXyMbRL56X/fYzvYX1WpMXHriQS5GXh6szOB
+         bJBw2T0Hxvoz/UCgRB3j38HfL2RAAqzVSPWi2EYjM7QvRpr6IP9U+JMLxh+RKtQtAPMT
+         F9REPWCo5Yfl3RvZPzuIIbJHRWUb0DMMSZYhr6Z5b2ptQ6dTpXnZM6XmgwflQ5wO1VWu
+         R0fYxHv4IcH/qd42/tsSXfdsaL+SJ7Iiw+eHptMmfa7rRGN1X3HK7bHJKp5bmgOh5ZsB
+         NLPw==
+X-Gm-Message-State: AOAM531KKZG/BwWIMRuJrhW3IEnssZGf0bYU8LpH72AGk/CyzAMOBT+2
+        t9FlikjMIXGUA7GW02ZHc9fkrHjryg0viX73cO31owjo+fROsx5r6ZTT0M/1FL7Q1xPoSh7UulC
+        MJ8UWo1lLlv7OHU3pLWDArh/3QKBA9q8u1eFI3x5Rjw==
+X-Received: by 2002:adf:fe01:: with SMTP id n1mr2267116wrr.141.1644913695009;
+        Tue, 15 Feb 2022 00:28:15 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyh+hWeGmrip2gp+7LRc0NsiVtARyJICQ651r0zOjxPcx/VDhc7XmjHKyoi0nwmVdqqN1QhjQ==
+X-Received: by 2002:adf:fe01:: with SMTP id n1mr2267101wrr.141.1644913694842;
+        Tue, 15 Feb 2022 00:28:14 -0800 (PST)
+Received: from [192.168.0.106] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id o14sm14182083wmr.3.2022.02.15.00.28.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 00:28:14 -0800 (PST)
+Message-ID: <c6e226a5-55a2-89ac-1703-0a0d9bcaf259@canonical.com>
+Date:   Tue, 15 Feb 2022 09:28:13 +0100
 MIME-Version: 1.0
-References: <20220215042011.2266897-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220215042011.2266897-1-kai.heng.feng@canonical.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 15 Feb 2022 10:27:37 +0200
-Message-ID: <CAHp75VfBQPgrbuxazuoyDbFtGZR=rU5wqPhSXhkoiA_2HR1EHA@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: accel: adxl345: Add ACPI HID table
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 5/8] ARM: dts: exynos: fix ethernet node name for
+ different odroid boards
+Content-Language: en-US
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Scott Branden <sbranden@broadcom.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tony Lindgren <tony@atomide.com>
+Cc:     kernel@pengutronix.de, bcm-kernel-feedback-list@broadcom.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+References: <20220215080937.2263111-1-o.rempel@pengutronix.de>
+ <20220215080937.2263111-5-o.rempel@pengutronix.de>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220215080937.2263111-5-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 6:20 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> x86 boards may use ACPI HID "ADS0345" for adxl345 device.
->
-> Analog replied:
-> "ADS034X is not a valid PNP ID. ADS0345 would be.
-> I'm not aware that this ID is already taken.
-> Feel free to submit a mainline Linux input mailing list patch."
->
-> So add an ACPI match table for that accordingly.
+On 15/02/2022 09:09, Oleksij Rempel wrote:
+> The node name of Ethernet controller should be "ethernet" instead of
+> "usbether"
 
-Thank you for the update, my comments below.
+Missing full stop.
+Please also mention why this should be "ethernet" (e.g. because Ethernet
+dtschema requires it). This applies to other DTS patches as well.
 
-...
+Plus comments from Marc.
 
-> @@ -41,6 +41,7 @@ static int adxl345_i2c_probe(struct i2c_client *client,
->  static const struct i2c_device_id adxl345_i2c_id[] = {
->         { "adxl345", ADXL345 },
->         { "adxl375", ADXL375 },
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  arch/arm/boot/dts/exynos4412-odroidu3.dts       | 4 ++--
+>  arch/arm/boot/dts/exynos4412-odroidx.dts        | 8 ++++----
+>  arch/arm/boot/dts/exynos5410-odroidxu.dts       | 4 ++--
+>  arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts | 6 +++---
+>  arch/arm/boot/dts/exynos5422-odroidxu3.dts      | 6 +++---
+>  5 files changed, 14 insertions(+), 14 deletions(-)
+> 
 
-> +       { "ADS0345:00", ADXL345 },
->         { }
->  };
->
-
-This is wrong. First of all, on the left side you put the device
-instance name (which must not be in the ID tables, since the device
-instance name is "ID + instance number"). Second, the motivation of
-this is not clear, if the device is enumerated by ACPI, why do you
-care about board code?
-
-Just don't add anything to this table.
-
-The rest is good, but consider doing the same for _spi part of the driver.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Best regards,
+Krzysztof
