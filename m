@@ -2,184 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36842C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A881C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240091AbiBOPaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:30:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46384 "EHLO
+        id S240064AbiBOPa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:30:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240117AbiBOP3w (ORCPT
+        with ESMTP id S240102AbiBOP3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:29:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B929EBF53F;
-        Tue, 15 Feb 2022 07:28:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3BAB615F6;
-        Tue, 15 Feb 2022 15:28:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34064C340F4;
-        Tue, 15 Feb 2022 15:28:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938917;
-        bh=iPC6rs41KA4hADJiYkVNEN+JZ5gWdDD0SEeI8wwJ1HI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ParUpoZdAH+kH+6jGOolehXVj0goCB6KEtRni5+vx5tQIAzImomy/U57n2OJvOVsY
-         9HAQHnXfbn2+X+b0Ui2E1jI8WjF6JNxx4faeVEj12MwuiaqnIKm6goY4U0oWKyTc/5
-         Cb9VyByLMM50HmGUjsu/99Q5ZbUsQybyhXo9IL4fS+U0oOGSLZSFNJowsJZP8Eevhu
-         hXdcIewtuXvzKsRTyUsVDLrxT6FOYKy0uw9DXI0YV9ckXfpK82ih+H39bU40BM0rpO
-         KWvja2buIlkwUkgjO3MHJQRgjzhZFTPgnPdySaNZTlNaigyCnwUAyBClFffGFzyIS7
-         lt/h1gb0FsIjg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Al Cooper <alcooperx@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        kishon@ti.com, bcm-kernel-feedback-list@broadcom.com,
-        linux-phy@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 03/33] phy: usb: Leave some clocks running during suspend
-Date:   Tue, 15 Feb 2022 10:28:01 -0500
-Message-Id: <20220215152831.580780-3-sashal@kernel.org>
+        Tue, 15 Feb 2022 10:29:50 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7429BF52B;
+        Tue, 15 Feb 2022 07:28:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644938914; x=1676474914;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9CDhZJWW1q2vhq2fCgbv/Rf44s8ghp54BeJ5kvboSuc=;
+  b=Xkf9bTo/aMazx/d2L/BB9rn/04Yefef4Rk8V9wgDLh73Fh9+KjTQCmla
+   4AUqUB7GPhn3Ri9NmDePAb9Lbb0l8Q262mFpvVsfQ+FSuO2n22LXQXMct
+   yQxwhCvVoVedExdyGwNIVDW0m/sq2YVYltnFTT7ol2ZDjoFVEguoNaMcm
+   OmkuNw4C9agmDTjDbYYRPuvm4Q2A5n4uoveitBPi9zgtrcOZPtptDvCGC
+   tdnM80n+JeOhJD0w9UcFzeCW0pA8M5F+hs0wyzXYsNMPe6WhOktyi2Lnz
+   swD5LeNJgmUPwhuiET0TM+5zLHgKc6PRbwjNHNCcRg27DadzSZCGN9dvR
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250115603"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="250115603"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 07:27:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="587743696"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 15 Feb 2022 07:27:53 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 9754C107; Tue, 15 Feb 2022 17:28:09 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v1 1/4] pinctrl: tigerlake: Revert "Add Alder Lake-M ACPI ID"
+Date:   Tue, 15 Feb 2022 17:27:57 +0200
+Message-Id: <20220215152800.21104-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215152831.580780-1-sashal@kernel.org>
-References: <20220215152831.580780-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Cooper <alcooperx@gmail.com>
+It appears that last minute change moved ACPI ID of Alder Lake-M
+to the INTC1055, which is already in the driver.
 
-[ Upstream commit 42fed57046fc74586d7058bd51a1c10ac9c690cb ]
+This ID on the other hand will be used elsewhere.
 
-The PHY client driver does a phy_exit() call on suspend or rmmod and
-the PHY driver needs to know the difference because some clocks need
-to be kept running for suspend but can be shutdown on unbind/rmmod
-(or if there are no PHY clients at all).
+This reverts commit 258435a1c8187f559549e515d2f77fa0b57bcd27.
 
-The fix is to use a PM notifier so the driver can tell if a PHY
-client is calling exit() because of a system suspend or a driver
-unbind/rmmod.
-
-Signed-off-by: Al Cooper <alcooperx@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20211201180653.35097-2-alcooperx@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/phy/broadcom/phy-brcm-usb.c | 38 +++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ drivers/pinctrl/intel/pinctrl-tigerlake.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
-index 116fb23aebd99..0f1deb6e0eabf 100644
---- a/drivers/phy/broadcom/phy-brcm-usb.c
-+++ b/drivers/phy/broadcom/phy-brcm-usb.c
-@@ -18,6 +18,7 @@
- #include <linux/soc/brcmstb/brcmstb.h>
- #include <dt-bindings/phy/phy.h>
- #include <linux/mfd/syscon.h>
-+#include <linux/suspend.h>
- 
- #include "phy-brcm-usb-init.h"
- 
-@@ -70,12 +71,35 @@ struct brcm_usb_phy_data {
- 	int			init_count;
- 	int			wake_irq;
- 	struct brcm_usb_phy	phys[BRCM_USB_PHY_ID_MAX];
-+	struct notifier_block	pm_notifier;
-+	bool			pm_active;
+diff --git a/drivers/pinctrl/intel/pinctrl-tigerlake.c b/drivers/pinctrl/intel/pinctrl-tigerlake.c
+index 0bcd19597e4a..3ddaeffc0415 100644
+--- a/drivers/pinctrl/intel/pinctrl-tigerlake.c
++++ b/drivers/pinctrl/intel/pinctrl-tigerlake.c
+@@ -749,7 +749,6 @@ static const struct acpi_device_id tgl_pinctrl_acpi_match[] = {
+ 	{ "INT34C5", (kernel_ulong_t)&tgllp_soc_data },
+ 	{ "INT34C6", (kernel_ulong_t)&tglh_soc_data },
+ 	{ "INTC1055", (kernel_ulong_t)&tgllp_soc_data },
+-	{ "INTC1057", (kernel_ulong_t)&tgllp_soc_data },
+ 	{ }
  };
- 
- static s8 *node_reg_names[BRCM_REGS_MAX] = {
- 	"crtl", "xhci_ec", "xhci_gbl", "usb_phy", "usb_mdio", "bdc_ec"
- };
- 
-+static int brcm_pm_notifier(struct notifier_block *notifier,
-+			    unsigned long pm_event,
-+			    void *unused)
-+{
-+	struct brcm_usb_phy_data *priv =
-+		container_of(notifier, struct brcm_usb_phy_data, pm_notifier);
-+
-+	switch (pm_event) {
-+	case PM_HIBERNATION_PREPARE:
-+	case PM_SUSPEND_PREPARE:
-+		priv->pm_active = true;
-+		break;
-+	case PM_POST_RESTORE:
-+	case PM_POST_HIBERNATION:
-+	case PM_POST_SUSPEND:
-+		priv->pm_active = false;
-+		break;
-+	}
-+	return NOTIFY_DONE;
-+}
-+
- static irqreturn_t brcm_usb_phy_wake_isr(int irq, void *dev_id)
- {
- 	struct phy *gphy = dev_id;
-@@ -91,6 +115,9 @@ static int brcm_usb_phy_init(struct phy *gphy)
- 	struct brcm_usb_phy_data *priv =
- 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
- 
-+	if (priv->pm_active)
-+		return 0;
-+
- 	/*
- 	 * Use a lock to make sure a second caller waits until
- 	 * the base phy is inited before using it.
-@@ -120,6 +147,9 @@ static int brcm_usb_phy_exit(struct phy *gphy)
- 	struct brcm_usb_phy_data *priv =
- 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
- 
-+	if (priv->pm_active)
-+		return 0;
-+
- 	dev_dbg(&gphy->dev, "EXIT\n");
- 	if (phy->id == BRCM_USB_PHY_2_0)
- 		brcm_usb_uninit_eohci(&priv->ini);
-@@ -488,6 +518,9 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
-+	priv->pm_notifier.notifier_call = brcm_pm_notifier;
-+	register_pm_notifier(&priv->pm_notifier);
-+
- 	mutex_init(&priv->mutex);
- 
- 	/* make sure invert settings are correct */
-@@ -528,7 +561,10 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
- 
- static int brcm_usb_phy_remove(struct platform_device *pdev)
- {
-+	struct brcm_usb_phy_data *priv = dev_get_drvdata(&pdev->dev);
-+
- 	sysfs_remove_group(&pdev->dev.kobj, &brcm_usb_phy_group);
-+	unregister_pm_notifier(&priv->pm_notifier);
- 
- 	return 0;
- }
-@@ -539,6 +575,7 @@ static int brcm_usb_phy_suspend(struct device *dev)
- 	struct brcm_usb_phy_data *priv = dev_get_drvdata(dev);
- 
- 	if (priv->init_count) {
-+		dev_dbg(dev, "SUSPEND\n");
- 		priv->ini.wake_enabled = device_may_wakeup(dev);
- 		if (priv->phys[BRCM_USB_PHY_3_0].inited)
- 			brcm_usb_uninit_xhci(&priv->ini);
-@@ -578,6 +615,7 @@ static int brcm_usb_phy_resume(struct device *dev)
- 	 * Uninitialize anything that wasn't previously initialized.
- 	 */
- 	if (priv->init_count) {
-+		dev_dbg(dev, "RESUME\n");
- 		if (priv->wake_irq >= 0)
- 			disable_irq_wake(priv->wake_irq);
- 		brcm_usb_init_common(&priv->ini);
+ MODULE_DEVICE_TABLE(acpi, tgl_pinctrl_acpi_match);
 -- 
 2.34.1
 
