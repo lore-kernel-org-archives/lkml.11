@@ -2,117 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2F4C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242376AbiBORP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:15:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41016 "EHLO
+        id S242392AbiBORP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:15:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242362AbiBORPY (ORCPT
+        with ESMTP id S235480AbiBORP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:15:24 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D63311ADEA;
-        Tue, 15 Feb 2022 09:15:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644945312; x=1676481312;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0RT88KVIkpcIt49KegmwACI0CL9gcweN2MoVMiIbVRY=;
-  b=Ao0Y02dPb3pRuLZzfaEZnYMMkBBsWLxSaPYsbMLL0D9MpkzLQ39YaH+1
-   ZvXwnOefsgEeyS1M3HvdXVtf4F0I3vT4UGyVeek641LLxmM4IgGsBo2BC
-   3hubo6iaqCXuvDQzNiGkSFkxmLnLqcVaJPDzYOyGkwSkjEv77MLq0/1Nw
-   yURhrTO8z7y8SW0qtwpqkFkmDb5RFqJIFhfmCYzA28YXQDvbRJNS2LCa2
-   mwKIk1PPxuykw/80CqsEg6r9ELwU6jRMgegiWmxdXSBWduFgFOHLUHDHm
-   7tXHKockhkdhHTa/5UBJnuCb7141dH97E2dZxphT9wKef4MIaNlcXZqb2
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="274975411"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="274975411"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:12:41 -0800
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="486258571"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:12:34 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nK1MY-0050PZ-TS;
-        Tue, 15 Feb 2022 19:11:38 +0200
-Date:   Tue, 15 Feb 2022 19:11:38 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tan Jui Nee <jui.nee.tan@intel.com>,
-        Kate Hsuan <hpa@redhat.com>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Peter Tyser <ptyser@xes-inc.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Henning Schild <henning.schild@siemens.com>
-Subject: Re: [PATCH v4 5/8] mfd: lpc_ich: Add support for pinctrl in non-ACPI
- system
-Message-ID: <YgveyspHVXCp2ul+@smile.fi.intel.com>
-References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
- <20220131151346.45792-6-andriy.shevchenko@linux.intel.com>
- <YgvaqBB8fNVWp1lN@google.com>
+        Tue, 15 Feb 2022 12:15:56 -0500
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9249711ACED;
+        Tue, 15 Feb 2022 09:15:46 -0800 (PST)
+Received: by mail-pf1-f174.google.com with SMTP id d17so7834162pfl.0;
+        Tue, 15 Feb 2022 09:15:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LOeWWNlHO4AtZ7MgNQfE1a3OysB2klf6boBkFZ8uxlM=;
+        b=xwpTEYIL58wLES6TG/r+iIjr/6/ESsq0VZuLsYb/bzX61ZMopbHjPNkZ/UYW1xIKqm
+         7pfeCvQEoFRu0cI1M3eCdQ3rNv1lUO8NbdYS30VEyPMUXzWQTPqPripZG+Eu3wz/ywko
+         WIug7JQly4Koc0OH/CMMGCmg+9ZlvtDkw2phxEqh2DwiSmrut0vWLhWU6XTV6sYF6diK
+         3MrCFINM9NEz3i/mwshPb3h+9j6QUUSPbmQwXpLwQlvqQUJd0p6oZG2oS5ZoKXZ2pVxH
+         mMSyQwA6HxAD8RIQ2uyJoYPdgixLstrWXhqeyKPBiDfj9rIGoLx0eOaXSevMttxak2xF
+         +51g==
+X-Gm-Message-State: AOAM533pOYVucK0HBxMQD+19Lb67gZrUNX5pBxGLzsCyeqTzBbPFIsN6
+        17GJXy12OTJc1lXML1cYH60=
+X-Google-Smtp-Source: ABdhPJwo+9w+mXNq4JUW14oQEea7jDcOcI9ZAQyy5G7RH7CrGq5eG/xzvhzVB89wxZYY7O8g8H0Zsw==
+X-Received: by 2002:a63:4a65:: with SMTP id j37mr3897610pgl.358.1644945345971;
+        Tue, 15 Feb 2022 09:15:45 -0800 (PST)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id v12sm7567886pfu.155.2022.02.15.09.15.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 09:15:45 -0800 (PST)
+Message-ID: <6b298597-f3b3-e4a1-c59a-f704ad4c06e5@acm.org>
+Date:   Tue, 15 Feb 2022 09:15:43 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgvaqBB8fNVWp1lN@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v1] scsi: ufs: remove clk_scaling_lock when clkscaling
+ isn't supported.
+Content-Language: en-US
+To:     Kiwoong Kim <kwmad.kim@samsung.com>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
+        avri.altman@wdc.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, beanhuo@micron.com,
+        cang@codeaurora.org, adrian.hunter@intel.com, sc.suh@samsung.com,
+        hy50.seo@samsung.com, sh425.lee@samsung.com,
+        bhoon95.kim@samsung.com, vkumar.1997@samsung.com
+References: <CGME20220205074128epcas2p40901c37a7328e825d8697f8d3269edba@epcas2p4.samsung.com>
+ <1644046760-83345-1-git-send-email-kwmad.kim@samsung.com>
+ <62a5170b-48c0-a372-5392-08f5112d7a06@acm.org>
+ <007e01d82231$be8be250$3ba3a6f0$@samsung.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <007e01d82231$be8be250$3ba3a6f0$@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 04:54:00PM +0000, Lee Jones wrote:
-> On Mon, 31 Jan 2022, Andy Shevchenko wrote:
+On 2/14/22 22:03, Kiwoong Kim wrote:
+> The benefit that I think is not blocking dev cmd during submitting a scsi cmd.
 
-Thank you for the review, my answers below.
+Hi Kiwoong,
 
-...
+Both ufshcd_exec_dev_cmd() and previous versions of 
+ufshcd_queuecommand() obtain a reader lock on the clock scaling lock so 
+concurrent submission of both command types is allowed. I'm not aware of 
+any version of the UFS driver that serializes device commands against 
+SCSI commands.
 
-> > +static struct resource apl_gpio_resources[APL_GPIO_NR_DEVICES][2] = {
-> > +	[APL_GPIO_NORTH] = {
-> > +		DEFINE_RES_MEM(APL_GPIO_NORTH_OFFSET, 0x1000),
-> 
-> Are these 0x1000's being over-written in lpc_ich_init_pinctrl()?
-> 
-> If so, why pre-initialise?
+Additionally, please take a look at commit 8d077ede48c1 ("scsi: ufs: 
+Optimize the command queueing code"). That patch removes the clock 
+scaling lock from ufshcd_queuecommand().
 
-You mean to pre-initialize the offsets, but leave the length to be added
-in the function? It can be done, but it feels inconsistent, since we would
-have offsets and lengths in different places for the same thingy. That said,
-I prefer current way for the sake of consistency.
+Thanks,
 
-> > +		DEFINE_RES_IRQ(APL_GPIO_IRQ),
-> > +	},
-
-...
-
-> > +/* The order must be in sync with apl_pinctrl_soc_data */
-> 
-> Why does the order matter if you've pre-enumerated them all?
-
-Indeed. I will drop the confusing comment in the next version.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Bart.
