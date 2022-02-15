@@ -2,54 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 735D4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:46:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242684AbiBORqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:46:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40798 "EHLO
+        id S242713AbiBORq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:46:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238359AbiBORqU (ORCPT
+        with ESMTP id S242685AbiBORq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:46:20 -0500
-X-Greylist: delayed 68607 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 09:46:10 PST
-Received: from hs01.dk-develop.de (hs01.dk-develop.de [173.249.23.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B922DE6859;
-        Tue, 15 Feb 2022 09:46:10 -0800 (PST)
-Date:   Tue, 15 Feb 2022 18:46:06 +0100
-From:   Danilo Krummrich <danilokrummrich@dk-develop.de>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     dmitry.torokhov@gmail.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linus.walleij@linaro.org
-Subject: Re: dt-bindings: ps2-gpio: convert binding to json-schema
-Message-ID: <Ygvm3qzBZjY66zLq@pollux>
-References: <20220215165113.52659-1-danilokrummrich@dk-develop.de>
- <cce2459e-cb6e-898c-e130-e818bd427ef3@canonical.com>
+        Tue, 15 Feb 2022 12:46:28 -0500
+X-Greylist: delayed 1383 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 09:46:18 PST
+Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.146.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0D9E6C32
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:46:18 -0800 (PST)
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway33.websitewelcome.com (Postfix) with ESMTP id 01C771219C9E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:23:15 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id K1VpnmLeT22u3K1Vqn6oIm; Tue, 15 Feb 2022 11:21:14 -0600
+X-Authority-Reason: nr=8
+Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:59436 helo=[10.0.0.45])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nK1Vo-002nDW-7t; Tue, 15 Feb 2022 11:21:12 -0600
+Message-ID: <65172f14-bad6-37b1-d243-e91ca472d22e@kernel.org>
+Date:   Tue, 15 Feb 2022 18:21:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cce2459e-cb6e-898c-e130-e818bd427ef3@canonical.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC V2 12/21] rv/reactor: Add the printk reactor
+Content-Language: en-US
+To:     John Ogness <john.ogness@linutronix.de>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+References: <cover.1644830251.git.bristot@kernel.org>
+ <fad2d358d57dfffc084d482684ecc1d13b62b262.1644830251.git.bristot@kernel.org>
+ <10cf6003-6d2b-056b-11bb-3ae9c342a369@linuxfoundation.org>
+ <c1657d1c-0d2b-4aa3-c1ed-2ae6fdfcda86@kernel.org>
+ <87v8xg30qc.fsf@jogness.linutronix.de>
+ <45179cdb-2391-207a-2f7b-2dea828d1606@kernel.org>
+ <87r1842r1m.fsf@jogness.linutronix.de>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <87r1842r1m.fsf@jogness.linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 95.232.30.176
+X-Source-L: No
+X-Exim-ID: 1nK1Vo-002nDW-7t
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:59436
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 2
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+On 2/15/22 14:33, John Ogness wrote:
+> On 2022-02-15, Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
+>>> I suggest using printk_deferred() for this reactor for now. With
+>>> printk_deferred() the message and timestamp are immediately and
+>>> locklessly stored in the buffer, and the printing is performed in a
+>>> separate context. printk_deferred() is safe for all contexts.
+>> Question: Does it always postpone or only postpone when in a
+>> particular contexts, like, with irqs disabled?
+> printk_deferred() always postpones printing.
 
-On Tue, Feb 15, 2022 at 06:01:19PM +0100, Krzysztof Kozlowski wrote:
-> On 15/02/2022 17:51, Danilo Krummrich wrote:
-> > Changes since v1
-> > ================
-> >   - binding as separate patch (driver patch will be sent outside the scope of
-> >     this patch series)
-> 
-> Bindings patches are not a separate series, but a separate patches
-> within the series, so driver should be posted here as well.
-The changes are not dependent, as if a new property would have been added,
-which is why I removed it from the series. However, they're at least related.
-So if it's preferred, I'll add it to the series again.
-> 
-> Best regards,
-> Krzysztof
+That is why printk() seems to be the better option, though I can use the
+deferred option too.
 
-- Danilo
+Noting that, I am aware of printk_deferred(), and every once and while I am
+Cc'ed on patches suggesting changing printk() to printk_deferred(), but they are
+not, let's say, welcome [1]... that is why I am not using it.
+
+>> Note: do not use this reactor with rq_lock taken, it will lock the
+>> system until printk can handle that.
+> Perhaps you could explain thi comment in your commit message?  printk()
+> should never lock the system.
+
+I saw deadlocks in the past, and while testing the WIP monitor some time ago, it
+seems it depends on the console type. If such restriction does not exist
+anymore, I can remove that comment, it would be even better!
+
+[1]
+https://lore.kernel.org/lkml/e68888438cec9a1da53aaa1647720ade638d6ad4.1600705105.git.bristot@redhat.com/
+
+-- Daniel
