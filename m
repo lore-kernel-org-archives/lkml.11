@@ -2,71 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9695C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 13:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C01BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 13:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238249AbiBONUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 08:20:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33298 "EHLO
+        id S238216AbiBONV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 08:21:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233006AbiBONUc (ORCPT
+        with ESMTP id S236342AbiBONVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 08:20:32 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEBDF406D
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 05:20:18 -0800 (PST)
-X-UUID: dae550f7710c49e780f048a18a7ad624-20220215
-X-UUID: dae550f7710c49e780f048a18a7ad624-20220215
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 736834964; Tue, 15 Feb 2022 21:20:13 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 15 Feb 2022 21:20:12 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 15 Feb 2022 21:20:12 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <matthias.bgg@gmail.com>
-CC:     <chunkuang.hu@kernel.org>, <jitao.shi@mediatek.com>,
-        <xinlei.lee@mediatek.com>, <enric.balletbo@collabora.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [0/2] Add mmsys reset control for MT8186
-Date:   Tue, 15 Feb 2022 21:19:50 +0800
-Message-ID: <20220215131952.27861-1-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Tue, 15 Feb 2022 08:21:54 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B0E79207;
+        Tue, 15 Feb 2022 05:21:42 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id qk11so23803022ejb.2;
+        Tue, 15 Feb 2022 05:21:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WKmMxWqdYPFXSZT7mnWL7ZTECm1AlZU5riBIqMRpPLk=;
+        b=khEWBHLG3bxk0ep72t8J9tQ2ji5KIGpBcbVhBbLYmgNbfXHxlp+yHg8p37+HRH+ynr
+         g8Xm+W+L7Kb0NZqj1YUKEEa5lcKU8V06aEzdxIFp+V+E/1VBA8fno2UGwFRsIfFWYkCp
+         qYXYn9xKBaSr8nZenVlqt+Ftw1QKhYIwDFL7Khw0MqOyUyLHgIftbcE03R5oHV0sW+NW
+         btD5lS1JBdO6jiLeLKeu3Pk2yzDY8g/0YK9KGX/GloFYUslghiNB9Pyghat6RRPOrTNU
+         TDyJjum3ihO2PandmEGOO0ZnebMbRelbYjTxGxw0cdaI8k3HFKTm7Q4TkAadqeS3elZT
+         NJaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WKmMxWqdYPFXSZT7mnWL7ZTECm1AlZU5riBIqMRpPLk=;
+        b=5k0VIELsNVESSgprLh/S1s7kDr7Bk3I9sceL06kCV+2whOayk75PNDpaoRSuB7f0qT
+         o90F+N8MtHSM3Hr010PBVovkzxSvRx5nwwcayLjTRUtX3NB+wDoJ0kHd32KWt7Ci5fCG
+         Gstycne6zK1UP3d1yTrTGXixGOopE1NC9miROMl7uZECXgx0umGawb4y5ZMZBcJPybDn
+         C4Ve9WJ39HhfwVI397TL621Tk4LzU4Q9+WUjn3KyIn1b/ZisU50AMKDmAbdI5uo/zC8k
+         T0kRdARVe74B9AVv4SK6W000NHzGXX3OmCncBiqAT1ts2XzFKmWgGl1fOEOJppiblAdK
+         4cPg==
+X-Gm-Message-State: AOAM532zu+COW0rYZr0DLB/hU+eqKb+MaAzJTvWV76LDx7Cq3uwSTiBX
+        U4UpJBerAQAYkbRa+emGfps=
+X-Google-Smtp-Source: ABdhPJxl5M2BirM/42uwxouKJhl0w1w/Nqs69MkCi0ECifwJu5pg6fOelPmdCj6CgindrHzNEn4r4g==
+X-Received: by 2002:a17:906:99c6:: with SMTP id s6mr2491054ejn.747.1644931300538;
+        Tue, 15 Feb 2022 05:21:40 -0800 (PST)
+Received: from krava ([83.240.63.12])
+        by smtp.gmail.com with ESMTPSA id er13sm2444178edb.21.2022.02.15.05.21.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 05:21:39 -0800 (PST)
+Date:   Tue, 15 Feb 2022 14:21:38 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCH 0/8] bpf: Add fprobe link
+Message-ID: <Yguo4v7c+3A0oW/h@krava>
+References: <Yfq+PJljylbwJ3Bf@krava>
+ <CAADnVQKeTB=UgY4Gf-46EBa8rwWTu2wvi7hEj2sdVTALGJ0JEg@mail.gmail.com>
+ <YfvvfLlM1FOTgvDm@krava>
+ <20220204094619.2784e00c0b7359356458ca57@kernel.org>
+ <CAADnVQJYY0Xm6M9O02E5rOkdQPX39NOOS4tM2jpwRLQvP-qDBg@mail.gmail.com>
+ <20220204110704.7c6eaf43ff9c8f5fe9bf3179@kernel.org>
+ <CAADnVQJfq_10H0V+u0w0rzyZ9uy7vq=T-3BMDANjEN8A3-prsQ@mail.gmail.com>
+ <20220203211954.67c20cd3@gandalf.local.home>
+ <CAADnVQKjNJjZDs+ZV7vcusEkKuDq+sWhSD3M5GtvNeZMx3Fcmg@mail.gmail.com>
+ <20220204125942.a4bda408f536c2e3248955e1@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204125942.a4bda408f536c2e3248955e1@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is based on mmsys patch for MT8186 on [1].
-[1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220215075953.3310-4-rex-bc.chen@mediatek.com/
+On Fri, Feb 04, 2022 at 12:59:42PM +0900, Masami Hiramatsu wrote:
+> Hi Alexei,
+> 
+> On Thu, 3 Feb 2022 18:42:22 -0800
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> 
+> > On Thu, Feb 3, 2022 at 6:19 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+> > >
+> > > On Thu, 3 Feb 2022 18:12:11 -0800
+> > > Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > > > No, fprobe is NOT kprobe on ftrace, kprobe on ftrace is already implemented
+> > > > > transparently.
+> > > >
+> > > > Not true.
+> > > > fprobe is nothing but _explicit_ kprobe on ftrace.
+> > > > There was an implicit optimization for kprobe when ftrace
+> > > > could be used.
+> > > > All this new interface is doing is making it explicit.
+> > > > So a new name is not warranted here.
+> > > >
+> > > > > from that viewpoint, fprobe and kprobe interface are similar but different.
+> > > >
+> > > > What is the difference?
+> > > > I don't see it.
+> > >
+> > > IIUC, a kprobe on a function (or ftrace, aka fprobe) gives some extra
+> > > abilities that a normal kprobe does not. Namely, "what is the function
+> > > parameters?"
+> > >
+> > > You can only reliably get the parameters at function entry. Hence, by
+> > > having a probe that is unique to functions as supposed to the middle of a
+> > > function, makes sense to me.
+> > >
+> > > That is, the API can change. "Give me parameter X". That along with some
+> > > BTF reading, could figure out how to get parameter X, and record that.
+> > 
+> > This is more or less a description of kprobe on ftrace :)
+> > The bpf+kprobe users were relying on that for a long time.
+> > See PT_REGS_PARM1() macros in bpf_tracing.h
+> > They're meaningful only with kprobe on ftrace.
+> > So, no, fprobe is not inventing anything new here.
+> 
+> Hmm, you may be misleading why PT_REGS_PARAM1() macro works. You can use
+> it even if CONFIG_FUNCITON_TRACER=n if your kernel is built with
+> CONFIG_KPROBES=y. It is valid unless you put a probe out of function
+> entry.
+> 
+> > No one is using kprobe in the middle of the function.
+> > It's too difficult to make anything useful out of it,
+> > so no one bothers.
+> > When people say "kprobe" 99 out of 100 they mean
+> > kprobe on ftrace/fentry.
+> 
+> I see. But the kprobe is kprobe. It is not designed to support multiple
+> probe points. If I'm forced to say, I can rename the struct fprobe to
+> struct multi_kprobe, but that doesn't change the essence. You may need
+> to use both of kprobes and so-called multi_kprobe properly. (Someone
+> need to do that.)
 
-v1
-1. Add a new variable in mmsys driver data to control different register offset for different SoCs.
-2. Add MT8183 reset register offset.
-3. Add mmsys reset control for MT8186.
+hi,
+tying to kick things further ;-) I was thinking about bpf side of this
+and we could use following interface:
 
-Rex-BC Chen (2):
-  soc: mediatek: mmsys: add sw0_rst_offset in mmsys driver data
-  soc: mediatek: mmsys: add mmsys reset control for MT8186
+  enum bpf_attach_type {
+    ...
+    BPF_TRACE_KPROBE_MULTI
+  };
 
- drivers/soc/mediatek/mt8183-mmsys.h | 2 ++
- drivers/soc/mediatek/mt8186-mmsys.h | 2 ++
- drivers/soc/mediatek/mtk-mmsys.c    | 7 +++++--
- drivers/soc/mediatek/mtk-mmsys.h    | 3 +--
- 4 files changed, 10 insertions(+), 4 deletions(-)
+  enum bpf_link_type {
+    ...
+    BPF_LINK_TYPE_KPROBE_MULTI
+  };
 
--- 
-2.18.0
+  union bpf_attr {
 
+    struct {
+      ...
+      struct {
+        __aligned_u64   syms;
+        __aligned_u64   addrs;
+        __aligned_u64   cookies;
+        __u32           cnt;
+        __u32           flags;
+      } kprobe_multi;
+    } link_create;
+  }
+
+because from bpf user POV it's new link for attaching multiple kprobes
+and I agree new 'fprobe' type name in here brings more confusion, using
+kprobe_multi is straightforward
+
+thoguhts?
+
+thanks,
+jirka
