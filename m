@@ -2,221 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC1F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238555AbiBOOSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:18:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39488 "EHLO
+        id S238564AbiBOOSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:18:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233369AbiBOOSD (ORCPT
+        with ESMTP id S238551AbiBOOSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:18:03 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B43B0C4C
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:17:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644934673; x=1676470673;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dZokB8OTcXKd1FMSUXUzyQ+ssUZhn02LK0UeB6s6JPE=;
-  b=bolRDjiOdhSXJ1ACPrJhWhkYYi5w8qIOPw3fYoiYmhnNE4N7Lt2eQi9l
-   GlFUbYcvlOLCRhYI1JWwZ5KV0xXwrHhmF0VqXfiAYnCnAckquHDZflN23
-   5rV0lP1bhFM0/O5FWrk9dZbIMQ61kXgcdDUxeLCjb54tmfCVOgZE1wJjQ
-   TJ7CYd95vN6w4tgxvuhKHY/uEw1EUETUdmya0IVq2XBu+PshguiYxoNxB
-   HJ0H2CtWjZqZKXYsjN5Y01jiLsEduA7ENOtmcwy/CX+8rSMUsT5jpkIqU
-   DPZadE0ac74jsQDRHMfwzf/oU/g40kq3QW+swIoAMrNL4/fK0sxI3JUlC
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249193178"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="249193178"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 06:17:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="497182183"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 15 Feb 2022 06:17:51 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJyeN-0009k2-3H; Tue, 15 Feb 2022 14:17:51 +0000
-Date:   Tue, 15 Feb 2022 22:17:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [gustavoars:for-next/kspp-fam0] BUILD SUCCESS
- e1cec403b76b41f6e8d6339cd446fe540c4ef83f
-Message-ID: <620bb5fc.PsQ720CYCXHJFdU9%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 15 Feb 2022 09:18:15 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C0EB109E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:18:00 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id k3-20020a1ca103000000b0037bdea84f9cso1499075wme.1
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:18:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kynesim-co-uk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:references:in-reply-to
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=CG3P56xlFsoBU79QJPpFdYrXPhtp38683i1XknICllQ=;
+        b=B4qU0nqAzx/qiAZj1y+v9vFn/1D1VF+7O5sDkagPNYxDPi0kKEDrxFZs59OTl0Q0wY
+         +gZeTMkypecV6C9sbnkn/iWF4WBmLGQVjJ86A/QxUaiuPJdegV/WiPXQeKegfhW4YYQf
+         ZiP33FZa+o14B2hlB+rkDBhQDgsgAzXFfQJwEmUOQUX5ocXMvBD1rBKTg+usfVBT3eXk
+         W3snXxRd0TjHDF3iuZxPAoRxuBfBYv0DL+/HYH0oqE7X7/To4U7FjrQLRggIcqjxV6U0
+         BX477H1cBINxU2jers608Krj60f/PiKnpjkqR2utsR4s5n/fTMF9ZTHgMUXl3OzsmG1u
+         T4oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:references
+         :in-reply-to:user-agent:mime-version:content-transfer-encoding;
+        bh=CG3P56xlFsoBU79QJPpFdYrXPhtp38683i1XknICllQ=;
+        b=D+B8Kj1fIjH8SwWCJ6GH/CRjjSmeUBjjTjwWFRMcPYDN453BzlPRtpji/Wq6xDsNx+
+         vmfC5OSS8LseLPRVlu4mBatLzcV6TepkJACnTHfozFYL9or66JKz0ABO2R9PvqSFP+WC
+         hJmkSy9BdLWAQ+MgiWRpAt6UZud/bTQaSzxANVTDE5z5I3DgCJN2zUlOUli5lzcShW+8
+         58k1RP41W42zrImmpw+W7bZdBGUqHIsuIC2Y+f9DReIeF9RbEvFz5AI4J0pqAxVKZWcg
+         u4pr9AMDn9UImuI25om2GrP6GIY2KUVTZalBYpR2MoivhF9klDVgrzXe6oRThumOzONk
+         U9pA==
+X-Gm-Message-State: AOAM531OzZUpFVpFet4kjwRKU84PG/YLWYyPWASY+QDmlc/tDdcXbJjH
+        +RgUaG2DnkkfeWPKb2+mpf4ELw==
+X-Google-Smtp-Source: ABdhPJwXgJ7HnZxlPFUESAzSmrFq3Y5J8UCvZ0uCcLzfXnoYTam1CrM5dvh2jkgKvzQJEZNfaKqtxg==
+X-Received: by 2002:a05:600c:4e0a:b0:37b:c548:622a with SMTP id b10-20020a05600c4e0a00b0037bc548622amr3398548wmq.55.1644934679483;
+        Tue, 15 Feb 2022 06:17:59 -0800 (PST)
+Received: from CTHALPA.outer.uphall.net (cpc1-cmbg20-2-0-cust759.5-4.cable.virginm.net. [86.21.218.248])
+        by smtp.gmail.com with ESMTPSA id o20sm14929542wmq.21.2022.02.15.06.17.57
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Tue, 15 Feb 2022 06:17:58 -0800 (PST)
+From:   John Cox <jc@kynesim.co.uk>
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, hverkuil-cisco@xs4all.nl,
+        jonas@kwiboo.se, nicolas@ndufresne.ca, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com, knaerzche@gmail.com,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: Re: [RFC v2 6/8] media: uapi: Remove bit_size field from v4l2_ctrl_hevc_slice_params
+Date:   Tue, 15 Feb 2022 14:17:57 +0000
+Message-ID: <t2dn0hddgq22nt6a7sr6kl44irm3c2lj1j@4ax.com>
+References: <20220215110103.241297-1-benjamin.gaignard@collabora.com> <20220215110103.241297-7-benjamin.gaignard@collabora.com>
+In-Reply-To: <20220215110103.241297-7-benjamin.gaignard@collabora.com>
+User-Agent: ForteAgent/8.00.32.1272
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git for-next/kspp-fam0
-branch HEAD: e1cec403b76b41f6e8d6339cd446fe540c4ef83f  treewide: Replace zero-length arrays with flexible-array members
+Hi
 
-elapsed time: 720m
+>The bit size of the slice could be deduced from the buffer payload
+>so remove bit_size field to avoid duplicated the information.
 
-configs tested: 143
-configs skipped: 3
+I think this is a bad idea. In the future we are (I hope) going to want
+to have an array (variable) of slice headers all referring to the same
+bit buffer.  When we do that we will need this field.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+>Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>---
+> .../userspace-api/media/v4l/ext-ctrls-codec.rst       |  3 ---
+> drivers/staging/media/sunxi/cedrus/cedrus_h265.c      | 11 ++++-------
+> include/uapi/linux/v4l2-controls.h                    |  3 +--
+> 3 files changed, 5 insertions(+), 12 deletions(-)
+>
+>diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst =
+b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>index 3296ac3b9fca..c3ae97657fa7 100644
+>--- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>@@ -2965,9 +2965,6 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>     :stub-columns: 0
+>     :widths:       1 1 2
+>=20
+>-    * - __u32
+>-      - ``bit_size``
+>-      - Size (in bits) of the current slice data.
+>     * - __u32
+>       - ``data_bit_offset``
+>       - Offset (in bits) to the video data in the current slice data.
+>diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c =
+b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+>index 8ab2d9c6f048..db8c7475eeb8 100644
+>--- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+>+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+>@@ -312,8 +312,8 @@ static void cedrus_h265_setup(struct cedrus_ctx =
+*ctx,
+> 	const struct v4l2_hevc_pred_weight_table *pred_weight_table;
+> 	unsigned int width_in_ctb_luma, ctb_size_luma;
+> 	unsigned int log2_max_luma_coding_block_size;
+>+	size_t slice_bytes;
+> 	dma_addr_t src_buf_addr;
+>-	dma_addr_t src_buf_end_addr;
+> 	u32 chroma_log2_weight_denom;
+> 	u32 output_pic_list_index;
+> 	u32 pic_order_cnt[2];
+>@@ -370,8 +370,8 @@ static void cedrus_h265_setup(struct cedrus_ctx =
+*ctx,
+>=20
+> 	cedrus_write(dev, VE_DEC_H265_BITS_OFFSET, 0);
+>=20
+>-	reg =3D slice_params->bit_size;
+>-	cedrus_write(dev, VE_DEC_H265_BITS_LEN, reg);
+>+	slice_bytes =3D vb2_get_plane_payload(&run->src->vb2_buf, 0);
+>+	cedrus_write(dev, VE_DEC_H265_BITS_LEN, slice_bytes);
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20220214
-mips                 randconfig-c004-20220214
-nios2                            alldefconfig
-sh                          r7780mp_defconfig
-sh                            titan_defconfig
-ia64                         bigsur_defconfig
-powerpc                     tqm8541_defconfig
-powerpc                 mpc8540_ads_defconfig
-powerpc                     mpc83xx_defconfig
-arm                        trizeps4_defconfig
-xtensa                         virt_defconfig
-arc                     haps_hs_smp_defconfig
-xtensa                              defconfig
-arm                          lpd270_defconfig
-arm                        oxnas_v6_defconfig
-sh                     magicpanelr2_defconfig
-parisc                              defconfig
-mips                          rb532_defconfig
-powerpc                       maple_defconfig
-powerpc64                           defconfig
-arm                        mvebu_v7_defconfig
-parisc                           alldefconfig
-microblaze                          defconfig
-arm64                            alldefconfig
-m68k                          hp300_defconfig
-arm                     eseries_pxa_defconfig
-arm                            pleb_defconfig
-sh                           se7721_defconfig
-arm                         lpc18xx_defconfig
-powerpc                      bamboo_defconfig
-arc                        nsimosci_defconfig
-arm                  randconfig-c002-20220214
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-i386                          randconfig-a003
-i386                          randconfig-a001
-i386                          randconfig-a005
-x86_64               randconfig-a013-20220214
-x86_64               randconfig-a014-20220214
-x86_64               randconfig-a012-20220214
-x86_64               randconfig-a015-20220214
-x86_64               randconfig-a011-20220214
-x86_64               randconfig-a016-20220214
-i386                 randconfig-a013-20220214
-i386                 randconfig-a016-20220214
-i386                 randconfig-a012-20220214
-i386                 randconfig-a015-20220214
-i386                 randconfig-a011-20220214
-i386                 randconfig-a014-20220214
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-riscv                randconfig-r042-20220214
-arc                  randconfig-r043-20220214
-s390                 randconfig-r044-20220214
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
+I think one of these must be wrong. bit_size is in bits,
+vb2_get_plane_payload is in bytes?
 
-clang tested configs:
-riscv                randconfig-c006-20220214
-i386                 randconfig-c001-20220214
-x86_64               randconfig-c007-20220214
-powerpc              randconfig-c003-20220214
-arm                  randconfig-c002-20220214
-mips                 randconfig-c004-20220214
-arm                         lpc32xx_defconfig
-powerpc                 mpc8315_rdb_defconfig
-mips                          ath25_defconfig
-powerpc                     mpc5200_defconfig
-arm                  colibri_pxa300_defconfig
-arm                         bcm2835_defconfig
-mips                     cu1830-neo_defconfig
-arm                       spear13xx_defconfig
-powerpc                 xes_mpc85xx_defconfig
-powerpc                 mpc8313_rdb_defconfig
-mips                     loongson1c_defconfig
-arm                        magician_defconfig
-mips                         tb0287_defconfig
-arm                          moxart_defconfig
-powerpc                    gamecube_defconfig
-mips                     loongson2k_defconfig
-arm                       netwinder_defconfig
-arm                       versatile_defconfig
-powerpc                      ppc44x_defconfig
-x86_64               randconfig-a002-20220214
-x86_64               randconfig-a006-20220214
-x86_64               randconfig-a005-20220214
-x86_64               randconfig-a004-20220214
-x86_64               randconfig-a003-20220214
-x86_64               randconfig-a001-20220214
-i386                 randconfig-a004-20220214
-i386                 randconfig-a005-20220214
-i386                 randconfig-a006-20220214
-i386                 randconfig-a002-20220214
-i386                 randconfig-a003-20220214
-i386                 randconfig-a001-20220214
-hexagon              randconfig-r045-20220214
-hexagon              randconfig-r041-20220214
+Regards
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+John Cox
+=20
+> 	/* Source beginning and end addresses. */
+>=20
+>@@ -384,10 +384,7 @@ static void cedrus_h265_setup(struct cedrus_ctx =
+*ctx,
+>=20
+> 	cedrus_write(dev, VE_DEC_H265_BITS_ADDR, reg);
+>=20
+>-	src_buf_end_addr =3D src_buf_addr +
+>-			   DIV_ROUND_UP(slice_params->bit_size, 8);
+>-
+>-	reg =3D VE_DEC_H265_BITS_END_ADDR_BASE(src_buf_end_addr);
+>+	reg =3D VE_DEC_H265_BITS_END_ADDR_BASE(src_buf_addr + slice_bytes);
+> 	cedrus_write(dev, VE_DEC_H265_BITS_END_ADDR, reg);
+>=20
+> 	/* Coding tree block address */
+>diff --git a/include/uapi/linux/v4l2-controls.h =
+b/include/uapi/linux/v4l2-controls.h
+>index b1a3dc05f02f..27f5d272dc43 100644
+>--- a/include/uapi/linux/v4l2-controls.h
+>+++ b/include/uapi/linux/v4l2-controls.h
+>@@ -2457,7 +2457,6 @@ struct v4l2_hevc_pred_weight_table {
+> #define V4L2_HEVC_SLICE_PARAMS_FLAG_DEPENDENT_SLICE_SEGMENT	(1ULL << 9)
+>=20
+> struct v4l2_ctrl_hevc_slice_params {
+>-	__u32	bit_size;
+> 	__u32	data_bit_offset;
+>=20
+> 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
+>@@ -2484,7 +2483,7 @@ struct v4l2_ctrl_hevc_slice_params {
+> 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture timing SEI message */
+> 	__u8	pic_struct;
+>=20
+>-	__u8	reserved;
+>+	__u8	reserved[5];
+>=20
+> 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: General slice segment header */
+> 	__u32	slice_segment_addr;
