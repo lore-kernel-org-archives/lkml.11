@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0AC7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAD0C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239514AbiBOPd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:33:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41094 "EHLO
+        id S240418AbiBOPeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:34:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240398AbiBOPdn (ORCPT
+        with ESMTP id S237490AbiBOPdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:33:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6989AB0C50;
-        Tue, 15 Feb 2022 07:30:15 -0800 (PST)
+        Tue, 15 Feb 2022 10:33:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935A8A8EED;
+        Tue, 15 Feb 2022 07:30:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B1D9B81AF1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A974B8185B;
+        Tue, 15 Feb 2022 15:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E79C1C340F2;
         Tue, 15 Feb 2022 15:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3416C340ED;
-        Tue, 15 Feb 2022 15:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939013;
-        bh=uwYT2Vz1tLZIqhzxa8RyFvVFuyKaZ4zlvcPpdrD74a0=;
+        s=k20201202; t=1644939016;
+        bh=qJwGXYo41BOzEX6oFtnAmcbygBymqUp/dIQMb+BAvlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ipJKShTcqh/+0xJF1Xp6KpbLUTAJF29oyCViGjclU3QWkcxKBgvH0yQ4wPutDgcPc
-         /bOPYaqNXdZZU2sca+mnwBijeupkq5CKUTqvJvojCDok/v4jPUSU9wabah7clDWAYt
-         mGJD1ROPH/XpEMfWd2sCokHNHyeUiFDYTf+FIjCaVky+0HgKFqAKNfq+qVfbLNJEU1
-         fvlg8QOLV/02rUImo77PEcB1D7lXCKTEX1dRy3tuZ0ZwYVvSyn6NorFjhLyZbY+jcf
-         1l/MLfscxgcakmsGDHVaWTyLZmneoYZeRiwGxRfI3wPx3J7GJWEUxLXXrMTWGI+Sbb
-         HRF5X0Vi9CcKQ==
+        b=toB1+tjH280Rxab4Nq+JVo9pwKh2LgmrB5RKdUOE/uZduzmBq6H+kPVbMKU0zRciA
+         mJjElqXB+Ia5qWu2VXlLauPBAzOeaYc1Q9ofQ0lXVEmFzAEM9TYe0xuoRL/CQ7QIf4
+         rnKuOUhTgWna9N07VFKM84d6t5MwYgLND1GNat21OPZwIn9oU4schUGBp82J0EQka1
+         vVU/wx9wZgxXVB0Y+nQ9XZERS9IK36MLzCBk6vtTVihqYDYp7j+g2FssWEL1QI85OU
+         5dgVJLSKVjPoRRLQnzy253nP6+t3FBLXl2mvZFf1bRKOGw1n0MJwlQUR6F9Pq8YZdO
+         u7daHQgz5gUiw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 09/23] arm64: dts: meson-g12: drop BL32 region from SEI510/SEI610
-Date:   Tue, 15 Feb 2022 10:29:43 -0500
-Message-Id: <20220215152957.581303-9-sashal@kernel.org>
+Cc:     Axel Rasmussen <axelrasmussen@google.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com,
+        linux-kselftest@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 11/23] selftests: fixup build warnings in pidfd / clone3 tests
+Date:   Tue, 15 Feb 2022 10:29:45 -0500
+Message-Id: <20220215152957.581303-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152957.581303-1-sashal@kernel.org>
 References: <20220215152957.581303-1-sashal@kernel.org>
@@ -54,62 +54,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Axel Rasmussen <axelrasmussen@google.com>
 
-[ Upstream commit f26573e2bc9dfd551a0d5c6971f18cc546543312 ]
+[ Upstream commit e2aa5e650b07693477dff554053605976789fd68 ]
 
-The BL32/TEE reserved-memory region is now inherited from the common
-family dtsi (meson-g12-common) so we can drop it from board files.
+These are some trivial fixups, which were needed to build the tests with
+clang and -Werror. The following issues are fixed:
 
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220126044954.19069-4-christianshewitt@gmail.com
+- Remove various unused variables.
+- In child_poll_leader_exit_test, clang isn't smart enough to realize
+  syscall(SYS_exit, 0) won't return, so it complains we never return
+  from a non-void function. Add an extra exit(0) to appease it.
+- In test_pidfd_poll_leader_exit, ret may be branched on despite being
+  uninitialized, if we have !use_waitpid. Initialize it to zero to get
+  the right behavior in that case.
+
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts | 8 --------
- arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts  | 8 --------
- 2 files changed, 16 deletions(-)
+ tools/testing/selftests/clone3/clone3.c    | 2 --
+ tools/testing/selftests/pidfd/pidfd_test.c | 6 +++---
+ tools/testing/selftests/pidfd/pidfd_wait.c | 5 ++---
+ 3 files changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
-index 4d5b3e514b514..71f91e31c1818 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
-@@ -157,14 +157,6 @@ vddio_ao1v8: regulator-vddio_ao1v8 {
- 		regulator-always-on;
- 	};
+diff --git a/tools/testing/selftests/clone3/clone3.c b/tools/testing/selftests/clone3/clone3.c
+index 076cf4325f783..cd4582129c7d6 100644
+--- a/tools/testing/selftests/clone3/clone3.c
++++ b/tools/testing/selftests/clone3/clone3.c
+@@ -126,8 +126,6 @@ static void test_clone3(uint64_t flags, size_t size, int expected,
  
--	reserved-memory {
--		/* TEE Reserved Memory */
--		bl32_reserved: bl32@5000000 {
--			reg = <0x0 0x05300000 0x0 0x2000000>;
--			no-map;
--		};
--	};
+ int main(int argc, char *argv[])
+ {
+-	pid_t pid;
 -
- 	sdio_pwrseq: sdio-pwrseq {
- 		compatible = "mmc-pwrseq-simple";
- 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
-index 5ab139a34c018..c21178e9c6064 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
-@@ -203,14 +203,6 @@ vddio_ao1v8: regulator-vddio_ao1v8 {
- 		regulator-always-on;
- 	};
+ 	uid_t uid = getuid();
  
--	reserved-memory {
--		/* TEE Reserved Memory */
--		bl32_reserved: bl32@5000000 {
--			reg = <0x0 0x05300000 0x0 0x2000000>;
--			no-map;
--		};
--	};
--
- 	sdio_pwrseq: sdio-pwrseq {
- 		compatible = "mmc-pwrseq-simple";
- 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
+ 	ksft_print_header();
+diff --git a/tools/testing/selftests/pidfd/pidfd_test.c b/tools/testing/selftests/pidfd/pidfd_test.c
+index 529eb700ac26a..9a2d64901d591 100644
+--- a/tools/testing/selftests/pidfd/pidfd_test.c
++++ b/tools/testing/selftests/pidfd/pidfd_test.c
+@@ -441,7 +441,6 @@ static void test_pidfd_poll_exec(int use_waitpid)
+ {
+ 	int pid, pidfd = 0;
+ 	int status, ret;
+-	pthread_t t1;
+ 	time_t prog_start = time(NULL);
+ 	const char *test_name = "pidfd_poll check for premature notification on child thread exec";
+ 
+@@ -500,13 +499,14 @@ static int child_poll_leader_exit_test(void *args)
+ 	 */
+ 	*child_exit_secs = time(NULL);
+ 	syscall(SYS_exit, 0);
++	/* Never reached, but appeases compiler thinking we should return. */
++	exit(0);
+ }
+ 
+ static void test_pidfd_poll_leader_exit(int use_waitpid)
+ {
+ 	int pid, pidfd = 0;
+-	int status, ret;
+-	time_t prog_start = time(NULL);
++	int status, ret = 0;
+ 	const char *test_name = "pidfd_poll check for premature notification on non-empty"
+ 				"group leader exit";
+ 
+diff --git a/tools/testing/selftests/pidfd/pidfd_wait.c b/tools/testing/selftests/pidfd/pidfd_wait.c
+index be2943f072f60..17999e082aa71 100644
+--- a/tools/testing/selftests/pidfd/pidfd_wait.c
++++ b/tools/testing/selftests/pidfd/pidfd_wait.c
+@@ -39,7 +39,7 @@ static int sys_waitid(int which, pid_t pid, siginfo_t *info, int options,
+ 
+ TEST(wait_simple)
+ {
+-	int pidfd = -1, status = 0;
++	int pidfd = -1;
+ 	pid_t parent_tid = -1;
+ 	struct clone_args args = {
+ 		.parent_tid = ptr_to_u64(&parent_tid),
+@@ -47,7 +47,6 @@ TEST(wait_simple)
+ 		.flags = CLONE_PIDFD | CLONE_PARENT_SETTID,
+ 		.exit_signal = SIGCHLD,
+ 	};
+-	int ret;
+ 	pid_t pid;
+ 	siginfo_t info = {
+ 		.si_signo = 0,
+@@ -88,7 +87,7 @@ TEST(wait_simple)
+ 
+ TEST(wait_states)
+ {
+-	int pidfd = -1, status = 0;
++	int pidfd = -1;
+ 	pid_t parent_tid = -1;
+ 	struct clone_args args = {
+ 		.parent_tid = ptr_to_u64(&parent_tid),
 -- 
 2.34.1
 
