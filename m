@@ -2,90 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E75C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E40DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235917AbiBOJck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:32:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34020 "EHLO
+        id S235932AbiBOJcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:32:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235916AbiBOJcc (ORCPT
+        with ESMTP id S235910AbiBOJcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 04:32:32 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F236AA007
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:32:22 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2CE86210DC;
-        Tue, 15 Feb 2022 09:32:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644917541; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KYdGeFsANOtOABOCKg2n5btFGKH4PKRKWZczmP67Y4c=;
-        b=Fre+2KMos1Xt+rzKEa0yiIruHha9K585218YxzHlAprj3wPnd0UmAjNDO0DHnOvj8I85EA
-        8qWBQ1+65aI05croPjluXpbDyoll3bC7Hs4+mQpwSmwWUif6BvnvediTZJTFwLVB7+EflY
-        v+3muQf3MguEBQ5s+V4KTIjsqnksXqU=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 148E0A3B85;
-        Tue, 15 Feb 2022 09:32:21 +0000 (UTC)
-Date:   Tue, 15 Feb 2022 10:32:20 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Alexander Potapenko <glider@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [PATCH printk v1 01/13] printk: rename cpulock functions
-Message-ID: <YgtzJPa7XJ5Ozdhf@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-2-john.ogness@linutronix.de>
- <YgZaMkUU5Ve2GV9D@alley>
- <87fsopcvnj.fsf@jogness.linutronix.de>
- <20220211155727.49ab86f5@gandalf.local.home>
- <YgbPcAHgC1FLRXdR@hirez.programming.kicks-ass.net>
+X-Greylist: delayed 23324 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 01:32:21 PST
+Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C505AA9A5C
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:32:21 -0800 (PST)
+X-QQ-mid: bizesmtp2t1644917531t66ccd9kc
+Received: from localhost.localdomain (unknown [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 15 Feb 2022 17:32:05 +0800 (CST)
+X-QQ-SSF: 0140000000200080F000B00A0000000
+X-QQ-FEAT: F3yR32iATbgklh27lGq5tmZdbM4BroG2zC+MoChFBvUBJw3dz/XV5tF4AMP7m
+        GT49uGSkDABNBmC/sIap6xsmXO5VQuZorJbElQqXMGy/+vr10Htkpu2WYBXO6jRULojXSYQ
+        Pait/JFZodpUoUigZGPmhzVoXRv2+XN+RavQE1kXMcbvdkhB0bpiC7OvgH2OXuzT5SBg3jP
+        afpc0N8G/MASrule1yESUz0RYIVF4H0ZYRAbOeGeVk+pDmVmzMSPS3SoWjve9FXHD99UBkT
+        NG8J/+CE7n6NFI5cYyIVfImQEOmc28Q1/M5xo0jtbl3COlzehO1b9LwegKSWWECBhnn24jG
+        bgsM8GkHdr+Dmqt0Q7jX9N5pJLVLg==
+X-QQ-GoodBg: 2
+From:   sujiaxun <sujiaxun@uniontech.com>
+To:     mcgrof@kernel.org
+Cc:     keescook@chromium.org, yzaikin@google.com,
+        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        sujiaxun <sujiaxun@uniontech.com>
+Subject: [PATCH] [v2] mm: move oom_kill sysctls to their own file
+Date:   Tue, 15 Feb 2022 17:32:03 +0800
+Message-Id: <20220215093203.31032-1-sujiaxun@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgbPcAHgC1FLRXdR@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign2
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-02-11 22:04:48, Peter Zijlstra wrote:
-> On Fri, Feb 11, 2022 at 03:57:27PM -0500, Steven Rostedt wrote:
-> > On Fri, 11 Feb 2022 15:48:08 +0106
-> > John Ogness <john.ogness@linutronix.de> wrote:
-> > 
-> > > It is because (as in the example above), taking this "lock" does not
-> > > provide synchronization to data. It is only synchronizing between
-> > > CPUs. It was Steven's suggestion to call the thing a cpu_sync object and
-> > > nobody in the RT Track seemed to disagree.
-> > 
-> > I love causing trouble ;-)
-> > 
-> > Actually, it wasn't just my suggestion. IIRC, I believe Peter Zijlstra was
-> > against calling it a lock (Peter, you can use lore to see the context here).
-> 
-> All I remember is that it was in a room and I was late, I can't even
-> remember what City we were all in at the time. Was this Lisbon?
-> 
-> Anyway, as Steve said, it isn't really a strict exclusion thing, it only
-> avoids the most egregious inter-cpu interleaving. I'm down with
-> goldi-locks, something has to have that name :-)
+kernel/sysctl.c is a kitchen sink where everyone leaves their dirty
+dishes, this makes it very difficult to maintain.
 
-You troublemakers :-)
+To help with this maintenance let's start by moving sysctls to places
+where they actually belong.  The proc sysctl maintainers do not want to
+know what sysctl knobs you wish to add for your own piece of code, we just
+care about the core logic.
 
-OK, I know, I am the troublemaker here.
+So move the oom_kill sysctls to its own file.
 
-Best Regards,
-Petr
+Signed-off-by: sujiaxun <sujiaxun@uniontech.com>
+---
+ include/linux/oom.h |  4 ----
+ kernel/sysctl.c     | 23 -----------------------
+ mm/oom_kill.c       | 37 ++++++++++++++++++++++++++++++++++---
+ 3 files changed, 34 insertions(+), 30 deletions(-)
+
+diff --git a/include/linux/oom.h b/include/linux/oom.h
+index 2db9a1432511..02d1e7bbd8cd 100644
+--- a/include/linux/oom.h
++++ b/include/linux/oom.h
+@@ -123,8 +123,4 @@ extern void oom_killer_enable(void);
+
+ extern struct task_struct *find_lock_task_mm(struct task_struct *p);
+
+-/* sysctls */
+-extern int sysctl_oom_dump_tasks;
+-extern int sysctl_oom_kill_allocating_task;
+-extern int sysctl_panic_on_oom;
+ #endif /* _INCLUDE_LINUX_OOM_H */
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 788b9a34d5ab..40d822fbb6d5 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -2352,29 +2352,6 @@ static struct ctl_table vm_table[] = {
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= SYSCTL_TWO,
+ 	},
+-	{
+-		.procname	= "panic_on_oom",
+-		.data		= &sysctl_panic_on_oom,
+-		.maxlen		= sizeof(sysctl_panic_on_oom),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= SYSCTL_ZERO,
+-		.extra2		= SYSCTL_TWO,
+-	},
+-	{
+-		.procname	= "oom_kill_allocating_task",
+-		.data		= &sysctl_oom_kill_allocating_task,
+-		.maxlen		= sizeof(sysctl_oom_kill_allocating_task),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
+-	},
+-	{
+-		.procname	= "oom_dump_tasks",
+-		.data		= &sysctl_oom_dump_tasks,
+-		.maxlen		= sizeof(sysctl_oom_dump_tasks),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
+-	},
+ 	{
+ 		.procname	= "overcommit_ratio",
+ 		.data		= &sysctl_overcommit_ratio,
+diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+index 6b875acabd1e..677703866d03 100644
+--- a/mm/oom_kill.c
++++ b/mm/oom_kill.c
+@@ -52,9 +52,37 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/oom.h>
+
+-int sysctl_panic_on_oom;
+-int sysctl_oom_kill_allocating_task;
+-int sysctl_oom_dump_tasks = 1;
++static int sysctl_panic_on_oom;
++static int sysctl_oom_kill_allocating_task;
++static int sysctl_oom_dump_tasks = 1;
++
++#ifdef CONFIG_SYSCTL
++static struct ctl_table vm_oom_kill_table[] = {
++	{
++		.procname	= "panic_on_oom",
++		.data		= &sysctl_panic_on_oom,
++		.maxlen		= sizeof(sysctl_panic_on_oom),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_TWO,
++	},
++	{
++		.procname	= "oom_kill_allocating_task",
++		.data		= &sysctl_oom_kill_allocating_task,
++		.maxlen		= sizeof(sysctl_oom_kill_allocating_task),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
++	{
++		.procname	= "oom_dump_tasks",
++		.data		= &sysctl_oom_dump_tasks,
++		.maxlen		= sizeof(sysctl_oom_dump_tasks),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	}
++};
++#endif
+
+ /*
+  * Serializes oom killer invocations (out_of_memory()) from all contexts to
+@@ -680,6 +708,9 @@ static void wake_oom_reaper(struct task_struct *tsk)
+ static int __init oom_init(void)
+ {
+ 	oom_reaper_th = kthread_run(oom_reaper, NULL, "oom_reaper");
++#ifdef CONFIG_SYSCTL
++	register_sysctl_init("vm", vm_oom_kill_table);
++#endif
+ 	return 0;
+ }
+ subsys_initcall(oom_init)
+--
+2.20.1
+
+
+
