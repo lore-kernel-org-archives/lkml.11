@@ -2,89 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22422C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBAB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243728AbiBOTgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:36:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35818 "EHLO
+        id S243739AbiBOTg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:36:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243697AbiBOTgW (ORCPT
+        with ESMTP id S243725AbiBOTgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:36:22 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9B5B91E9
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:36:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=liRxA7Be2R6OYlNY16xNdTFCNkvY6XWDtvHFmw5ABlo=; b=U9hAVd/6U9mNdSYuwR3fObXqn4
-        j6U4IPsKAorlGQx30QxyZiTlUcRqwYdosMWPJgAJJgedYjeCda3m9HRTjrtod7+BKcQZgvFNXqJJj
-        WJxY7ATKpYqntKZErCKp0OjFrK7WDUpbM9lGhUWXCuf4jL+uI/7lLrxplpNFEVoCX8DsFuGjCMOWi
-        x89ebTXLLSRGDFKd7LhnfXclgoL56squ3QwhbhyKPQ1BTlT4wqStkNz7qDV4WtW3O5TOWuIRB8WYh
-        2sQKMOuSTO7omUJ677MoW1qee4e9W0Z9bc2Ak8ofOs3goFvmM1gQWCJTO+4WxcSZAAi3puu5OQoOW
-        lfA7nbNA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nK3cD-00E7Ua-CJ; Tue, 15 Feb 2022 19:35:57 +0000
-Date:   Tue, 15 Feb 2022 19:35:57 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        David Hildenbrand <david@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v2 00/13] mm/munlock: rework of mlock+munlock page
- handling
-Message-ID: <YgwAnYVfg+38leFs@casper.infradead.org>
-References: <55a49083-37f9-3766-1de9-9feea7428ac@google.com>
+        Tue, 15 Feb 2022 14:36:23 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB766C24A2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:36:10 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 921C51F382;
+        Tue, 15 Feb 2022 19:36:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644953769; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ii5TNPWsUIAw9A7FnVbIdGfffp+xa+Xc1AZj2a+jkto=;
+        b=ii/Z6CGN1NybTstlvc1PJeSPlw7jeLLEf4yJ0N3iydUQMZ4W73O1hjmYbZOJJ3kmcxketp
+        WxSLGwC0YW0ZrK1j/Bh/BmTt8TX9AyDJHjOWSvrUTqnvov20ZM+kUynCs0Vk+sHIPeS0eD
+        MHOIc0TRYJnf1ZAf3AYyfDnSTGsmQtU=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 62467A3B83;
+        Tue, 15 Feb 2022 19:36:09 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 20:36:05 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     Yang Shi <shy828301@gmail.com>,
+        syzbot <syzbot+2ccf63a4bd07cf39cab0@syzkaller.appspotmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in __oom_reap_task_mm
+Message-ID: <YgwApdvLhxFU26j5@dhcp22.suse.cz>
+References: <00000000000072ef2c05d7f81950@google.com>
+ <CAHbLzkpr=xHC7C2+wkOGUB24924T4L1Lx_v+m1Ke8Ku3ym7wYw@mail.gmail.com>
+ <Ygt5cAS78BFxVwkg@dhcp22.suse.cz>
+ <CAJuCfpGf8HLh=tfrnK3VFd2QO9bgzuM9HyDY8PYYxJkbdbmYRA@mail.gmail.com>
+ <CAHbLzkpKGq8XaLx3G1=oJ-TsZiqC+A+CaVK5=Mjzo1Jo0qA3DQ@mail.gmail.com>
+ <CAJuCfpE833u+Z909yaLgGEJV7O10fVw-_eG1nH=w4b3+PbxrLg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <55a49083-37f9-3766-1de9-9feea7428ac@google.com>
+In-Reply-To: <CAJuCfpE833u+Z909yaLgGEJV7O10fVw-_eG1nH=w4b3+PbxrLg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 06:18:34PM -0800, Hugh Dickins wrote:
-> Andrew, many thanks for including v1 and fixes in mmotm: please now replace
+On Tue 15-02-22 10:10:53, Suren Baghdasaryan wrote:
+> On Tue, Feb 15, 2022 at 9:53 AM Yang Shi <shy828301@gmail.com> wrote:
+[...]
+> > Isn't the below race possible?
+> >
+> >           CPU A                                     CPU B
+> > exiting:
+> >   mmap_write_lock
+> >   remove_vma()
+> >   mmap_write_unlock
+> >                                                 process_mrelease:
+> >                                                   mmap_read_lock
+> >                                                   __oom_reap_task_mm
+> >                                                   mmap_read_unlock
+> >
 > 
-> mm-munlock-delete-page_mlock-and-all-its-works.patch
-> mm-munlock-delete-foll_mlock-and-foll_populate.patch
-> mm-munlock-delete-munlock_vma_pages_all-allow-oomreap.patch
-> mm-munlock-rmap-call-mlock_vma_page-munlock_vma_page.patch
-> mm-munlock-replace-clear_page_mlock-by-final-clearance.patch
-> mm-munlock-maintain-page-mlock_count-while-unevictable.patch
-> mm-munlock-mlock_pte_range-when-mlocking-or-munlocking.patch
-> mm-migrate-__unmap_and_move-push-good-newpage-to-lru.patch
-> mm-munlock-delete-smp_mb-from-__pagevec_lru_add_fn.patch
-> mm-munlock-mlock_page-munlock_page-batch-by-pagevec.patch
-> mm-munlock-mlock_page-munlock_page-batch-by-pagevec-fix.patch
-> mm-munlock-mlock_page-munlock_page-batch-by-pagevec-fix-2.patch
-> mm-munlock-page-migration-needs-mlock-pagevec-drained.patch
-> mm-thp-collapse_file-do-try_to_unmapttu_batch_flush.patch
-> mm-thp-shrink_page_list-avoid-splitting-vm_locked-thp.patch
-> 
-> by the following thirteen of v2. As before, some easy fixups will be
-> needed to apply in mm/huge_memory.c, but otherwise expected to be clean.
-> 
-> Many thanks to Vlastimil Babka for his review of 01 through 11, and
-> to Matthew Wilcox for graciously volunteering to rebase his over these.
+> Sure, that sequence (would not call it a race) is possible but in this
+> case __oom_reap_task_mm will find no vmas in the mm because exit_mmap
+> freed and removed all of them.
 
-I have now pushed these 13 patches to my for-next branch:
-
-git://git.infradead.org/users/willy/pagecache.git for-next
-
-and rebased my folio patches on top.  Mostly that involved dropping
-my mlock-related patches, although there were a few other adjustments
-that needed to be made.  That should make Stephen's merge resolution
-much easier once Andrew drops v1 of these patches from his tree.
-
+I didn't really have chance to have a closer look but I do not see
+exit_mmap doing mm->mmap = NULL so the pointer can be a freed vma unless
+I am missing something. I thought we've had it in your patches? Has this
+got lost somewhere in the process?
+-- 
+Michal Hocko
+SUSE Labs
