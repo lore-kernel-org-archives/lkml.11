@@ -2,87 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6541C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0613FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236939AbiBOLIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:08:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33480 "EHLO
+        id S236953AbiBOLKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:10:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiBOLIj (ORCPT
+        with ESMTP id S236940AbiBOLK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:08:39 -0500
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AEE107D07;
-        Tue, 15 Feb 2022 03:08:29 -0800 (PST)
-Received: by mail-ej1-f50.google.com with SMTP id jg20so18482378ejc.3;
-        Tue, 15 Feb 2022 03:08:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9sbWkD2U+y8Lkxl8cJufoOZ+3ZJ3ycFIwhx8nuwGqqg=;
-        b=QJ/GtD4b945oNmNC2ECiJnFSTPVGKWj/0p5eIy2kYCzcO19hD7olWpywMoljcThpC2
-         o+br1nVAGfDHBmX1SoinPG2KuKZlaIOcgvJdPGp6ClyheNMVC4l1gkzHwWtkh1fRO6gQ
-         9McQ56fZsyDxl6PHAhFYyNsmdlLgUF7IdzHxfUq++aFqRd05r3A6CS6b+nixdM7Rj60v
-         jt0ZQP+GhHZM78pxEi/DmJ1rx+ojur1brzqnUP0V0EcNc0s8WDnWWpedpu4A1FMgXPKi
-         Wluqev63vkmVXnoWduVbPbVnArYX/ytlk+45Gr0xWSwTYtqTmsrUgFVuJTFlTLm5L9R2
-         CXpA==
-X-Gm-Message-State: AOAM5309brMPvOeNiRpNycmhuwrZf9TSvoFLLlSKwn8XelLSNMlvv7CX
-        53S+/fj/uq/5DKBCHqKckAbRWUczy8c=
-X-Google-Smtp-Source: ABdhPJxlka2khF6Q0W4fGy3UoXtwupRBZYZCs1Q88uAdbmhixt2LsF3jbpSxB6K4UJENSmSiiCiWSg==
-X-Received: by 2002:a17:906:99c2:: with SMTP id s2mr2481497ejn.317.1644923307918;
-        Tue, 15 Feb 2022 03:08:27 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id z5sm11521283eja.20.2022.02.15.03.08.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 03:08:27 -0800 (PST)
-Message-ID: <f8ffca37-6029-6103-e3cf-0c2c62d04485@kernel.org>
-Date:   Tue, 15 Feb 2022 12:08:26 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v1 1/1] serial: 8250_mid: Balance reference count for PCI
- DMA device
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tue, 15 Feb 2022 06:10:28 -0500
+X-Greylist: delayed 962 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 03:10:15 PST
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F6E107ABF;
+        Tue, 15 Feb 2022 03:10:15 -0800 (PST)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21F6vGcF025181;
+        Tue, 15 Feb 2022 04:54:07 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=PODMain02222019;
+ bh=ZA1HdUqFb+HwEJ8FdZvVs2kz00f9tkNcxNpgQ96eXPE=;
+ b=lGmOC8ZryEdtSW6TmatZkTJzoP+AWgpXfYNMPHZYDqOELAAOkswAJd3800duR5wd/1XY
+ UazWcy3Mmlb0gUCWnOWeAtX8/huO7lrMjN45NONAb0JjHc1qDpfnLhOfkk/BfqxUCsQR
+ iw1qk3Ql8x3Hf3/W7vB37+ttGka3X/UpEeDoIexx8JYFA5O+Zs2lHRSmW3n7gXjq3it3
+ zJhqNHuhve05z6g7odf7uTFvLL/OFsj7ua5agi0lU6K/+3AXEF8ou6yVtxh3GFVTZkFz
+ VYivd+vtinxoLtGWxQWra2ShNXIyshcV/Fkly0ZOAiB6JaoNWHV6ZkrW/8oEfPlabOx3 gA== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3e7qq197c4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 15 Feb 2022 04:54:07 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 15 Feb
+ 2022 10:54:05 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Tue, 15 Feb 2022 10:54:05 +0000
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 060682A9;
+        Tue, 15 Feb 2022 10:54:05 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 10:54:05 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+CC:     Mark Brown <broonie@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Qing Wang <wangqing@vivo.com>
-References: <20220215100920.41984-1-andriy.shevchenko@linux.intel.com>
- <db576c63-73e2-b5f8-bc8b-057bdab2264d@kernel.org>
- <YguAncl92hV2vUkm@smile.fi.intel.com> <YguBEJ1cc0TMQLuE@smile.fi.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <YguBEJ1cc0TMQLuE@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: Re: [PATCH v2] regmap-irq: Use regmap_irq_update_bits instead of
+ regmap_write
+Message-ID: <20220215105405.GD38351@ediswmail.ad.cirrus.com>
+References: <20220119142953.1804-1-quic_pkumpatl@quicinc.com>
+ <CGME20220208122955eucas1p2d4e32f51224242e9ebd0bce58b9c04ca@eucas1p2.samsung.com>
+ <39f1b598-58ca-1e3d-3065-8dd692ee7c9f@samsung.com>
+ <20220208133957.GC112838@ediswmail.ad.cirrus.com>
+ <20220208135036.GD112838@ediswmail.ad.cirrus.com>
+ <YgJ2hG2vwUclA/zF@sirena.org.uk>
+ <20220208143316.GE112838@ediswmail.ad.cirrus.com>
+ <YgKBEIapL8MAQAoI@sirena.org.uk>
+ <22d9bf04-e069-c6a3-4d59-974a9402b0f7@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <22d9bf04-e069-c6a3-4d59-974a9402b0f7@quicinc.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: O5SJEsYmLvIZhquG6L90YoFUWeq5Uh9q
+X-Proofpoint-GUID: O5SJEsYmLvIZhquG6L90YoFUWeq5Uh9q
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15. 02. 22, 11:31, Andy Shevchenko wrote:
-> On Tue, Feb 15, 2022 at 12:29:49PM +0200, Andy Shevchenko wrote:
->> On Tue, Feb 15, 2022 at 11:11:41AM +0100, Jiri Slaby wrote:
->>> On 15. 02. 22, 11:09, Andy Shevchenko wrote:
->>>> The pci_get_slot() increases its reference count, the caller
->>>> must decrement the reference count by calling pci_dev_put().
->>
->>> And what about the -EINVAL case?
->>
->> What about it? The ->probe() calls ->exit() in its error path.
->> Or did I miss something?
+On Tue, Feb 15, 2022 at 03:06:24PM +0530, Prasad Kumpatla wrote:
+> On 2/8/2022 8:11 PM, Mark Brown wrote:
+> >On Tue, Feb 08, 2022 at 02:33:16PM +0000, Charles Keepax wrote:
+> >>On Tue, Feb 08, 2022 at 01:56:20PM +0000, Mark Brown wrote:
+> ISR = Interrupt status register
+> ICR = Interrupt clear register
 > 
-> Or you mean that we call pci_dev_put() on NULL pointer?
-> This is completely valid case and handled in the callee.
+> When the Invert_ack is
+>  *
+>    *FALSE*: For ICR,writing 1 will clear , writing 0 has no effect.
+>  *
+>    *TRUE* : For ICR, writing 0 will clear , writing 1 has no effect
+> and clear_ack
+> 
+>  *
+>    *TRUE* :  Some hardware doesn’t support auto clear for ICR,  Need
+>    explicitly clear the ICR
+>  *
+>    *FALSE *:  No need to clear ICR, as HW will reset.
+> 
+> Consider the following scenario,  where Invert_ack is false and
+> clear_ack is true.
+> 
+> Say Default ISR=0x00 & ICR=0x00 and ISR is triggered with 2
+> interrupts making ISR = 0x11.
+> 
+> *Step1:* Say ISR is set 0x11 (store status_buff = ISR). ISR needs to
+> be cleared with the help of ICR once the Interrupt is processed.
+> 
+> *Step 2:* Write ICR = 0x11 (status_buff), this will clear the ISR to 0x00.
+> 
+> *Step 3:* Issue - In the existing code, ICR is written with ICR =
+> ~(status_buff) i.e ICR = 0xEE à This will block all the interrupts
+> from raising except for interrupts 0 and 4.
+> 
 
-No, I mixed up patches :P. This was meant as a comment to
-"serial: 8250_lpss: Balance reference count for PCI DMA device"
+Ok yes I the issue here now. I hadn't quite realised there was
+hardware where you actually had to manually clear the ACK bits.
 
-byt_serial_exit() isn't called when byt_serial_setup() fails with EINVAL 
-if I'm looking correctly.
+> Code snippet for step 3
+> *if*(chip->clear_ack) {
+> *if*(chip->ack_invert && !ret)
+> ret = regmap_write(map, reg,
+> data->status_buf[i]);
+> *else**if*(!ret)
+> ret = regmap_write(map, reg,
+> ~data->status_buf[i]);
+> 
+> Solution: Since ICR does not clear automatically, writing 0x00 into
+> ICR explicitly will clear the ICR (ICR = 0x00) allowing all the
+> interrupts to raise.
+> 
+> So I’m thinking to implement as below.
+> if (chip->clear_ack) {
+> if (chip->ack_invert && !ret)
+> - ret = regmap_write(map, reg,
+> - data->status_buf[i]);
+> + ret = regmap_write(map, reg, 0xff);
+> else if (!ret)
+> - ret = regmap_write(map, reg,
+> - ~data->status_buf[i]);
+> + ret = regmap_write(map, reg, 0x00);
+> }
 
-thanks,
--- 
-js
-suse labs
+I think this looks much safer, the values you are writing should
+have no effect, other than clearing the ACKs you just set.
+
+Thanks,
+Charles
