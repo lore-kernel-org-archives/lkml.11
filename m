@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2567FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 20:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12942C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 20:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244059AbiBOUKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 15:10:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48018 "EHLO
+        id S244035AbiBOUKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 15:10:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244035AbiBOUKf (ORCPT
+        with ESMTP id S244038AbiBOUKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 15:10:35 -0500
+        Tue, 15 Feb 2022 15:10:36 -0500
 Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A090A9BB8D;
-        Tue, 15 Feb 2022 12:10:24 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21FKAABN018352;
-        Tue, 15 Feb 2022 14:10:10 -0600
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36E4B0A78;
+        Tue, 15 Feb 2022 12:10:25 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21FKA9bI018348;
+        Tue, 15 Feb 2022 14:10:09 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
         s=ti-com-17Q1; t=1644955810;
-        bh=Yzs9bQL+fzzXPue+6DYO/rUdl1Rzy2UO44OkP5PVI48=;
+        bh=tMaUBK9GS2DYL8XYqxg51eAoO9e0JArwp8CSwzE7WZg=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=JxLP7I1aLDjPxqzXohpluAfY9yO6tHY8YzfmGg7aWIjUob0qmTKwKdHTZmvtGyIBw
-         GieK3vyD4DUGszmjvR4f+B4W2lZkKdRdD05jCmwKIrIJ6S/2bUfRZ8hTPL25pxeyaH
-         elftIcU7J63gAwPkeD1O7IbuDcDyz9867LWqL1QM=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21FKAAII114907
+        b=FFV5muA7ouHmwwi/WFmMbyXwVNrfZzAbnCxixFrwCnDQpcAA2Vf75rzz5BXpM78kl
+         xjG7TFUsC2GyDuB8spzeS9xZJ55USDT+yse6+wXAfRwUh04v7nYKlzUz7DJbaMTDG0
+         UwYbEMn6/sLh5q5xZ4yQTcOu+aNqLqg5UVzdn7q4=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21FKA9UV105494
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 15 Feb 2022 14:10:10 -0600
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 15 Feb 2022 14:10:09 -0600
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 15
  Feb 2022 14:10:09 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
  Frontend Transport; Tue, 15 Feb 2022 14:10:09 -0600
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21FKA99j057352;
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21FKA9pV127941;
         Tue, 15 Feb 2022 14:10:09 -0600
 From:   Nishanth Menon <nm@ti.com>
 To:     Tero Kristo <kristo@kernel.org>,
@@ -49,9 +49,9 @@ CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Rob Herring <robh+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
         <stable@vger.kernel.org>
-Subject: [PATCH 5/5] arm64: dts: ti: k3-j721s2: Fix gic-v3 compatible regs
-Date:   Tue, 15 Feb 2022 14:10:08 -0600
-Message-ID: <20220215201008.15235-6-nm@ti.com>
+Subject: [PATCH 3/5] arm64: dts: ti: k3-j7200: Fix gic-v3 compatible regs
+Date:   Tue, 15 Feb 2022 14:10:06 -0600
+Message-ID: <20220215201008.15235-4-nm@ti.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220215201008.15235-1-nm@ti.com>
 References: <20220215201008.15235-1-nm@ti.com>
@@ -77,45 +77,45 @@ gic-v2 emulation.
 [2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
 [3] https://developer.arm.com/documentation/100095/0002/way1382452674438
 
-Fixes: b8545f9d3a54 ("arm64: dts: ti: Add initial support for J721S2 SoC")
+Fixes: d361ed88455f ("arm64: dts: ti: Add support for J7200 SoC")
 Cc: stable@vger.kernel.org
 Reported-by: Marc Zyngier <maz@kernel.org>
 Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
 Testing: based on next-20220215
-J721s2-evm Log: https://gist.github.com/nmenon/302b0bcfbb1b5b8743fa5c242eb7d15f
+j7200-evm: https://gist.github.com/nmenon/23a7844a794a0123af9b211eee2b7d0b
 
- arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi | 5 ++++-
- arch/arm64/boot/dts/ti/k3-j721s2.dtsi      | 1 +
+ arch/arm64/boot/dts/ti/k3-j7200-main.dtsi | 5 ++++-
+ arch/arm64/boot/dts/ti/k3-j7200.dtsi      | 1 +
  2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-index b04db1d3ab61..be7f39299894 100644
---- a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-@@ -34,7 +34,10 @@ gic500: interrupt-controller@1800000 {
+diff --git a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
+index 05a627ad6cdc..16684a2f054d 100644
+--- a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
+@@ -54,7 +54,10 @@ gic500: interrupt-controller@1800000 {
  		#interrupt-cells = <3>;
  		interrupt-controller;
- 		reg = <0x00 0x01800000 0x00 0x200000>, /* GICD */
--		      <0x00 0x01900000 0x00 0x100000>; /* GICR */
-+		      <0x00 0x01900000 0x00 0x100000>, /* GICR */
-+		      <0x00 0x6f000000 0x00 0x2000>,   /* GICC */
-+		      <0x00 0x6f010000 0x00 0x1000>,   /* GICH */
-+		      <0x00 0x6f020000 0x00 0x2000>;   /* GICV */
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01900000 0x00 0x100000>;	/* GICR */
++		      <0x00 0x01900000 0x00 0x100000>,	/* GICR */
++		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
++		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
++		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
  
  		/* vcpumntirq: virtual CPU interface maintenance interrupt */
  		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-diff --git a/arch/arm64/boot/dts/ti/k3-j721s2.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2.dtsi
-index fe5234c40f6c..7b930a85a29d 100644
---- a/arch/arm64/boot/dts/ti/k3-j721s2.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721s2.dtsi
-@@ -119,6 +119,7 @@ cbass_main: bus@100000 {
- 			 <0x00 0x18000000 0x00 0x18000000 0x00 0x08000000>, /* PCIe1 DAT0 */
- 			 <0x00 0x64800000 0x00 0x64800000 0x00 0x0070c000>, /* C71_1 */
- 			 <0x00 0x65800000 0x00 0x65800000 0x00 0x0070c000>, /* C71_2 */
-+			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
- 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00400000>, /* MSMC RAM */
+diff --git a/arch/arm64/boot/dts/ti/k3-j7200.dtsi b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
+index 64fef4e67d76..b6da0454cc5b 100644
+--- a/arch/arm64/boot/dts/ti/k3-j7200.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
+@@ -129,6 +129,7 @@ cbass_main: bus@100000 {
+ 			 <0x00 0x00a40000 0x00 0x00a40000 0x00 0x00000800>, /* timesync router */
+ 			 <0x00 0x01000000 0x00 0x01000000 0x00 0x0d000000>, /* Most peripherals */
  			 <0x00 0x30000000 0x00 0x30000000 0x00 0x0c400000>, /* MAIN NAVSS */
++			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
+ 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00800000>, /* MSMC RAM */
+ 			 <0x00 0x18000000 0x00 0x18000000 0x00 0x08000000>, /* PCIe1 DAT0 */
  			 <0x41 0x00000000 0x41 0x00000000 0x01 0x00000000>, /* PCIe1 DAT1 */
 -- 
 2.31.1
