@@ -2,100 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E99C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:36:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244425AbiBOVdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 16:33:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52888 "EHLO
+        id S244440AbiBOVga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 16:36:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244415AbiBOVdu (ORCPT
+        with ESMTP id S243511AbiBOVg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 16:33:50 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27775F4057;
-        Tue, 15 Feb 2022 13:33:39 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id t14so408725ljh.8;
-        Tue, 15 Feb 2022 13:33:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=Ovvir5BtpZLZ8DCjyJs2646HrpaMhCZVk8jBms3NL6w=;
-        b=dCy5EmnocrQKemV8SOj+IlR/sNEHWp1BrACPRUYSEzyeUijyBIqMX7SJJOfCk9zKZq
-         RuzvecWZC6XYj8VaJTm2lX/mwx5PfJq4Lmc4L+QMcnkmMUwXBZjEzGDxzpZ2G9jAMlf5
-         dnGBIw8ZqgTLNP8JK7Td6hmXG4OxO9Nu10wkL6tjPWCHI8xFlhGTTHFRBJ0Qt4Q/zmhv
-         LZ3GRWU9NDow8/aR/dmhTmxInK89gaY2czlLuI5WosqE7YeSvbOiROwGSMxSFLKz7GGC
-         pSn+OaIDLKKBjbtDOu7wxxn1/tYB/O3TGSUtthAL0qvyzTD+y83EG+Z4TqHJA7pF5TZS
-         L1KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ovvir5BtpZLZ8DCjyJs2646HrpaMhCZVk8jBms3NL6w=;
-        b=ZhnVxIHQJVESsABUcRYNaot25r93kmbx5gp/stmxNcZyfbjtAi1suhsfvfp2jnQyxr
-         P9dFqgkUJI7KVt9lrxqI/mC2G7XWVwSwBvRxVe2Jk7EZrBhdcpcaG1p1ZvP/j0Sust35
-         iEHZ0NhtEP6TgfnH2s/+FidwhnVkHbF0R7yM576QtxRpU4PFkSDS+I2xGX2FS2siRv+h
-         Kxv5TqZ00PEEjrgxq6V0twu/Q8S/Vl9xCval2LtqAaL4kcj5l0ivM6IIriIaImaV148E
-         D5yvuRb1RWMy0nYuw2tfntkcfero2R7UDGQT76qTis8lERHv1lNU8z32ZTnj8YyCLols
-         VHpQ==
-X-Gm-Message-State: AOAM532zYT4KRCK5hNYDNQEqhVaIYpK5dZp2rGH17MK97NjyXjqX/sdW
-        orslHZXIUNiO/CakY1z10TQ=
-X-Google-Smtp-Source: ABdhPJyApZwOB54j1wGuh+A5cT9IZ70e0f6fM/BpGnGfw64Q4qGeMP1F38CSuo7bSA4zsY9lqc/jrQ==
-X-Received: by 2002:a05:651c:199e:: with SMTP id bx30mr705963ljb.274.1644960817394;
-        Tue, 15 Feb 2022 13:33:37 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id k5sm162684ljc.4.2022.02.15.13.33.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 13:33:36 -0800 (PST)
-Message-ID: <bfed059f-046c-63e9-800f-b8c9b1544471@gmail.com>
-Date:   Wed, 16 Feb 2022 00:33:35 +0300
+        Tue, 15 Feb 2022 16:36:26 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07569AD87
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:36:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644960975; x=1676496975;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=8gzKBru8GgOzz6cp/s/35s7HP2t1xdgR2V/cuCWSmiI=;
+  b=Ei6gvXUgZXKWwOdP2Y4HNCvCKgRnjDhMsO6z/aUDwDuB1zpeSf0QVMUQ
+   S6K6a4UqqlQKGxtk9gJSetsO58HoV3wfIHH8w6KswW6ltpstM7ZTDZdWW
+   g0wt2TFk3Ck05CBOU/3MW+K1J95mFoU3ipTb+uTZPxcjBSbP048FFHKbD
+   zu3TW/cdzFimCDWHpIliN+Uisqz34n8CU0x4rzqYauJVJkUOnkZtPANtk
+   MMb6wyyUO+ZhzUqbx6T8IzdhNW6JCIsJPdu917AhTnKP35EcTORcHgpds
+   kTOifmfbTzah05yDcN2pv19kt7o2Irj6yY6Z5+/TmgnUS0/IqfRBv7QNA
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250404639"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="250404639"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 13:36:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="539553214"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 15 Feb 2022 13:36:08 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 640A1166; Tue, 15 Feb 2022 23:36:24 +0200 (EET)
+Date:   Wed, 16 Feb 2022 00:36:24 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     "Kuppuswamy, Sathyanarayanan" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        Kai Huang <kai.huang@intel.com>
+Subject: Re: [PATCHv2 16/29] x86/boot: Add a trampoline for booting APs via
+ firmware handoff
+Message-ID: <20220215213624.tzdahmbhucupwtqe@black.fi.intel.com>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220124150215.36893-17-kirill.shutemov@linux.intel.com>
+ <Yfpqk0amEbcyte+w@zn.tnic>
+ <25fec256-7feb-e94d-5e37-3a174b6c6a66@linux.intel.com>
+ <Yf0vB+TBR2AjHmV5@zn.tnic>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH RESEND] i2c: tegra: Add SMBus block read function
-Content-Language: en-US
-To:     Akhil R <akhilrajeev@nvidia.com>,
-        "christian.koenig@amd.com" <christian.koenig@amd.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "sumit.semwal@linaro.org" <sumit.semwal@linaro.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        Svyatoslav Ryhel <clamor95@gmail.com>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Krishna Yarlagadda <kyarlagadda@nvidia.com>
-References: <20220210153603.61894-1-akhilrajeev@nvidia.com>
- <ae6d300f-962d-9731-bb78-3594b4c31aea@gmail.com>
- <DM5PR12MB18502CF86E602F7071A1EA58C0309@DM5PR12MB1850.namprd12.prod.outlook.com>
- <94fc8b11-6149-56ca-a028-cf7f39930992@gmail.com>
- <ff83adba-7919-fa48-4637-a4cb9b94a8e1@gmail.com>
- <f3db5152-0e1f-4258-4cfd-521828a243c2@gmail.com>
- <DM5PR12MB18509DCA809CCE62A4A74133C0339@DM5PR12MB1850.namprd12.prod.outlook.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <DM5PR12MB18509DCA809CCE62A4A74133C0339@DM5PR12MB1850.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yf0vB+TBR2AjHmV5@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-14.02.2022 07:49, Akhil R пишет:
->> It's unclear to me what's the point of emulating
->> I2C_FUNC_SMBUS_READ_BLOCK_DATA within the driver if you could use
->> i2c_smbus_read_i2c_block_data().
-> We are looking to support I2C_M_RECV_LEN where the length is read from the
-> first byte of data. I see that i2c_smbus_read_i2c_block_data() requires the length
-> to be passed from the client driver.
+On Fri, Feb 04, 2022 at 02:49:59PM +0100, Borislav Petkov wrote:
+> On Fri, Feb 04, 2022 at 03:27:19AM -0800, Kuppuswamy, Sathyanarayanan wrote:
+> > trampoline_start and sev_es_trampoline_start are not mutually exclusive.
+> > Both are
+> > used in arch/x86/kernel/sev.c.
 > 
-> BTW, I2C_FUNC_SMBUS_WRITE_BLOCK_DATA is also expected to be supported.
-> It is included in I2C_FUNC_SMBUS_EMUL. I suppose, it doesn't require any additional
-> change in the driver. The client driver should populate the first byte as the length
-> of data to be transferred.
+> I know - I've asked J�rg to have a look here.
+> 
+> > But trampoline_start64 can be removed and replaced with trampoline_start.
+> > But using
+> > _*64 suffix makes it clear that is used for 64 bit(CONFIG_X86_64).
+> > 
+> > Adding it for clarity seems to be fine to me.
+> 
+> Does it matter if the start IP is the same for all APs? Or do will there
+> be a case where you have some APs starting from the 32-bit trampoline
+> and some from the 64-bit one, on the same system? (that would be weird
+> but what do I know...)
 
-Please support both read and write.
+I'm not sure I follow. SMP bring up is new topic for me.
+
+We want a single kernel binary that boots everywhere, so we cannot know at
+build time if a secondary CPU will start in 32- or 64-bit mode.
+
+How can signle trampoline_start cover all cases?
+
+-- 
+ Kirill A. Shutemov
