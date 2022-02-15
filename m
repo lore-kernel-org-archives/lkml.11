@@ -2,81 +2,321 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E9CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:05:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E880C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:06:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243784AbiBOWFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 17:05:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38998 "EHLO
+        id S243838AbiBOWGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 17:06:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235480AbiBOWFq (ORCPT
+        with ESMTP id S235480AbiBOWGq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 17:05:46 -0500
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34BD1EEE4;
-        Tue, 15 Feb 2022 14:05:35 -0800 (PST)
-Received: from fsav114.sakura.ne.jp (fsav114.sakura.ne.jp [27.133.134.241])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 21FM58u9053588;
-        Wed, 16 Feb 2022 07:05:08 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav114.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp);
- Wed, 16 Feb 2022 07:05:08 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 21FM58hL053577
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 16 Feb 2022 07:05:08 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <06b2f59c-3c96-9443-7a23-f1c957a41d9b@I-love.SAKURA.ne.jp>
-Date:   Wed, 16 Feb 2022 07:05:05 +0900
+        Tue, 15 Feb 2022 17:06:46 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1189FE01A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:06:35 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id v8-20020a17090a634800b001bb78857ccdso2175265pjs.1
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:06:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VVrjCQk0e2bEXbKTkyebIDZYiYKF0U8p5xUNgx6nAe0=;
+        b=nE35RWa6oDgBalrevFEPRO4+2X1WpWNqXc18NzpTgKw5LYA/qcTsaEbTbUcF5+1vny
+         yinI0tL2Ot6PPN326SGxQFjZJw7wM6Ak/gPKz3EexZH9k6ekyuItMdahLbM5M328yY9f
+         IB1FQymUIQ5G+Q/15li4O96F2jwU1xjrnmCkkyUVXlCXvgjP8jBgYvFO/miqvK26On6U
+         guLecixg3/nlWPYYO9/Fy4Rc2CSSKsXpjLwSBwBiGyY/V86ic7L+kpL/cbjgLb+mrNnU
+         Dj4LsAPhCboWHCBb7jVbBlNPYixLLKaDYizQHgOchXufz+VZR2/rExv3NHWvYNjoqIKV
+         +DUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VVrjCQk0e2bEXbKTkyebIDZYiYKF0U8p5xUNgx6nAe0=;
+        b=6n2wsDqxLbEsqnVjsKFvm35fkvL8Z/EV0ByilF5aZjynYxSLmoF90QDpaIK9lqyKFz
+         q3fmQEw3E3GaE8o9QZQKczOS6ntL+p8+ayRfstVpxDP+oJqYh7/QR0OdEFXEfICVGJSc
+         JnBDXmhUSIaAZxykmzdua5/TEzAqoeIZPqbjtSBcwySKiMtgtSLLMACWpSXSUmsT/MiR
+         7WEO8lsZZeI5EYHyCgDPW2ayB0PBqPNmiFHriWKO5rDBHbVuuknX77ri/nW+vZpOj5oE
+         oRxueEI1sQ7k8Q6Iuz4Hp0unMKCb5TQInw3DJDxWs4apXYdvJUCmV4EvRW2OswfsxlXO
+         QuBA==
+X-Gm-Message-State: AOAM533HLqKo5An1bQyORAdkn+1Y+x50wYE8C/SAEgBXakRbusJy/wgW
+        WcfYXZJZUyS5WecirkpJmogZkoQmzuNxSyhPhwy8Cw==
+X-Google-Smtp-Source: ABdhPJwlpdC05oj7M5BjmWhQxUU9avBLaGs7R0OLF51skyfT2cwCjdpjxdAijHrqBSuda/rYLUu8zubxJ+5FrHrRYqg=
+X-Received: by 2002:a17:90a:e7cb:: with SMTP id kb11mr1025329pjb.220.1644962794472;
+ Tue, 15 Feb 2022 14:06:34 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [syzbot] possible deadlock in worker_thread
-Content-Language: en-US
-To:     Bart Van Assche <bvanassche@acm.org>,
-        Haakon Bugge <haakon.bugge@oracle.com>
-Cc:     Tejun Heo <tj@kernel.org>,
-        syzbot <syzbot+831661966588c802aae9@syzkaller.appspotmail.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        LKML <linux-kernel@vger.kernel.org>,
-        OFED mailing list <linux-rdma@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-References: <0000000000005975a605d7aef05e@google.com>
- <8ea57ddf-a09c-43f2-4285-4dfb908ad967@acm.org>
- <ccd04d8a-154b-543e-e1c3-84bc655508d1@I-love.SAKURA.ne.jp>
- <71d6f14e-46af-cc5a-bc70-af1cdc6de8d5@acm.org>
- <309c86b7-2a4c-1332-585f-7bcd59cfd762@I-love.SAKURA.ne.jp>
- <aa2bf24e-981a-a811-c5d8-a75f0b8f693a@acm.org>
- <2959649d-cfbc-bdf2-02ac-053b8e7af030@I-love.SAKURA.ne.jp>
- <YgnQGZWT/n3VAITX@slm.duckdns.org>
- <8ebd003c-f748-69b4-3a4f-fb80a3f39d36@I-love.SAKURA.ne.jp>
- <YgqSsuSN5C7StvKx@slm.duckdns.org>
- <a07e464c-69c6-6165-e88c-5a2eded79138@I-love.SAKURA.ne.jp>
- <76616D2F-14F2-4D83-9DB4-576FB2ACB72C@oracle.com>
- <fb854eea-a7e7-b526-a989-95784c1c593c@I-love.SAKURA.ne.jp>
- <1b70929f-1f73-c549-64c1-94cea2c1a36c@acm.org>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <1b70929f-1f73-c549-64c1-94cea2c1a36c@acm.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <YfqBLxjr5zz1TU91@infradead.org> <20220213125832.2722009-1-ruansy.fnst@fujitsu.com>
+In-Reply-To: <20220213125832.2722009-1-ruansy.fnst@fujitsu.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 15 Feb 2022 14:06:26 -0800
+Message-ID: <CAPcyv4j9VTGxsNv4QFMONTjh_NWPkQ3dkG-uKvTyRp+X0bBvew@mail.gmail.com>
+Subject: Re: [PATCH v10.1 1/9] dax: Introduce holder for dax_device
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>, david <david@fromorbit.com>,
+        Jane Chu <jane.chu@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/02/16 2:05, Bart Van Assche wrote:
-> On 2/15/22 04:48, Tetsuo Handa wrote:
->> I do not want to do like
->>
->> -    system_wq = alloc_workqueue("events", 0, 0);
->> +    system_wq = alloc_workqueue("events", __WQ_SYSTEM_WIDE, 0);
->>
->> because the intent of this change is to ask developers to create their own WQs.
-> 
-> I want more developers to use the system-wide workqueues since that reduces memory usage. That matters for embedded devices running Linux.
+On Sun, Feb 13, 2022 at 4:58 AM Shiyang Ruan <ruansy.fnst@fujitsu.com> wrote:
+>
+> v10.1 update:
+>  - Fix build error reported by kernel test robot
+>  - Add return code to dax_register_holder()
+>  - Add write lock to prevent concurrent registrations
+>  - Rename dax_get_holder() to dax_holder()
+>  - Add kernel doc for new added functions
+>
+> To easily track filesystem from a pmem device, we introduce a holder for
+> dax_device structure, and also its operation.  This holder is used to
+> remember who is using this dax_device:
+>  - When it is the backend of a filesystem, the holder will be the
+>    instance of this filesystem.
+>  - When this pmem device is one of the targets in a mapped device, the
+>    holder will be this mapped device.  In this case, the mapped device
+>    has its own dax_device and it will follow the first rule.  So that we
+>    can finally track to the filesystem we needed.
+>
+> The holder and holder_ops will be set when filesystem is being mounted,
+> or an target device is being activated.
+>
+> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+> ---
+>  drivers/dax/super.c | 95 +++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/dax.h | 30 ++++++++++++++
+>  2 files changed, 125 insertions(+)
+>
+> diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+> index e3029389d809..d7fb4c36bf16 100644
+> --- a/drivers/dax/super.c
+> +++ b/drivers/dax/super.c
+> @@ -21,6 +21,9 @@
+>   * @cdev: optional character interface for "device dax"
+>   * @private: dax driver private data
+>   * @flags: state and boolean properties
+> + * @ops: operations for dax_device
+> + * @holder_data: holder of a dax_device: could be filesystem or mapped device
+> + * @holder_ops: operations for the inner holder
+>   */
+>  struct dax_device {
+>         struct inode inode;
+> @@ -28,6 +31,9 @@ struct dax_device {
+>         void *private;
+>         unsigned long flags;
+>         const struct dax_operations *ops;
+> +       void *holder_data;
+> +       struct percpu_rw_semaphore holder_rwsem;
 
-Reserving a kernel thread for WQ_MEM_RECLAIM WQ might consume some memory,
-but I don't think that creating a !WQ_MEM_RECLAIM WQ consumes much memory.
+This lock is not necessary, see below...
+
+> +       const struct dax_holder_operations *holder_ops;
+>  };
+>
+>  static dev_t dax_devt;
+> @@ -193,6 +199,29 @@ int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
+>  }
+>  EXPORT_SYMBOL_GPL(dax_zero_page_range);
+>
+> +int dax_holder_notify_failure(struct dax_device *dax_dev, u64 off,
+> +                             u64 len, int mf_flags)
+> +{
+> +       int rc, id;
+> +
+> +       id = dax_read_lock();
+> +       if (!dax_alive(dax_dev)) {
+> +               rc = -ENXIO;
+> +               goto out;
+> +       }
+> +
+> +       if (!dax_dev->holder_ops) {
+> +               rc = -EOPNOTSUPP;
+> +               goto out;
+> +       }
+> +
+> +       rc = dax_dev->holder_ops->notify_failure(dax_dev, off, len, mf_flags);
+> +out:
+> +       dax_read_unlock(id);
+> +       return rc;
+> +}
+> +EXPORT_SYMBOL_GPL(dax_holder_notify_failure);
+> +
+>  #ifdef CONFIG_ARCH_HAS_PMEM_API
+>  void arch_wb_cache_pmem(void *addr, size_t size);
+>  void dax_flush(struct dax_device *dax_dev, void *addr, size_t size)
+> @@ -268,6 +297,13 @@ void kill_dax(struct dax_device *dax_dev)
+>
+>         clear_bit(DAXDEV_ALIVE, &dax_dev->flags);
+>         synchronize_srcu(&dax_srcu);
+> +
+> +       /* Lock to prevent concurrent registrations. */
+> +       percpu_down_write(&dax_dev->holder_rwsem);
+> +       /* clear holder data */
+> +       dax_dev->holder_ops = NULL;
+> +       dax_dev->holder_data = NULL;
+> +       percpu_up_write(&dax_dev->holder_rwsem);
+>  }
+>  EXPORT_SYMBOL_GPL(kill_dax);
+>
+> @@ -393,6 +429,7 @@ struct dax_device *alloc_dax(void *private, const struct dax_operations *ops)
+>
+>         dax_dev->ops = ops;
+>         dax_dev->private = private;
+> +       percpu_init_rwsem(&dax_dev->holder_rwsem);
+>         return dax_dev;
+>
+>   err_dev:
+> @@ -409,6 +446,64 @@ void put_dax(struct dax_device *dax_dev)
+>  }
+>  EXPORT_SYMBOL_GPL(put_dax);
+>
+> +/**
+> + * dax_holder() - obtain the holder of a dax device
+> + * @dax_dev: a dax_device instance
+> +
+> + * Return: the holder's data which represents the holder if registered,
+> + * otherwize NULL.
+> + */
+> +void *dax_holder(struct dax_device *dax_dev)
+> +{
+> +       if (!dax_alive(dax_dev))
+> +               return NULL;
+> +
+> +       return dax_dev->holder_data;
+> +}
+> +EXPORT_SYMBOL_GPL(dax_holder);
+> +
+> +/**
+> + * dax_register_holder() - register a holder to a dax device
+> + * @dax_dev: a dax_device instance
+> + * @holder: a pointer to a holder's data which represents the holder
+> + * @ops: operations of this holder
+> +
+> + * Return: negative errno if an error occurs, otherwise 0.
+> + */
+> +int dax_register_holder(struct dax_device *dax_dev, void *holder,
+> +               const struct dax_holder_operations *ops)
+> +{
+> +       if (!dax_alive(dax_dev))
+> +               return -ENXIO;
+> +
+> +       /* Already registered */
+> +       if (dax_holder(dax_dev))
+> +               return -EBUSY;
+
+Delete this...
+
+> +
+> +       /* Lock to prevent concurrent registrations. */
+> +       percpu_down_write(&dax_dev->holder_rwsem);
+
+...and just use cmpxchg:
+
+if (cmpxchg(&dax_dev->holder_data, NULL, holder))
+    return -EBUSY;
+dax_dev->holder_ops = ops;
+
+...and then on the release side you can require that the caller
+specify @holder before clearing to make the unregistration symmetric:
+
+if (cmpxchg(&dax_dev->holder_data, holder, NULL) != holder))
+    return -EBUSY;
+dax_dev->holder_ops = NULL;
+
+
+> +       dax_dev->holder_data = holder;
+> +       dax_dev->holder_ops = ops;
+> +       percpu_up_write(&dax_dev->holder_rwsem);
+> +
+> +       return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(dax_register_holder);
+> +
+> +/**
+> + * dax_unregister_holder() - unregister the holder for a dax device
+> + * @dax_dev: a dax_device instance
+> + */
+> +void dax_unregister_holder(struct dax_device *dax_dev)
+
+Per above, require the holder to pass in their holder_data again.
+
+> +{
+> +       if (!dax_alive(dax_dev))
+> +               return;
+> +
+> +       dax_dev->holder_data = NULL;
+> +       dax_dev->holder_ops = NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(dax_unregister_holder);
+> +
+>  /**
+>   * inode_dax: convert a public inode into its dax_dev
+>   * @inode: An inode with i_cdev pointing to a dax_dev
+> diff --git a/include/linux/dax.h b/include/linux/dax.h
+> index 9fc5f99a0ae2..9800d84e5b7d 100644
+> --- a/include/linux/dax.h
+> +++ b/include/linux/dax.h
+> @@ -32,8 +32,24 @@ struct dax_operations {
+>         int (*zero_page_range)(struct dax_device *, pgoff_t, size_t);
+>  };
+>
+> +struct dax_holder_operations {
+> +       /*
+> +        * notify_failure - notify memory failure into inner holder device
+> +        * @dax_dev: the dax device which contains the holder
+> +        * @offset: offset on this dax device where memory failure occurs
+> +        * @len: length of this memory failure event
+> +        * @flags: action flags for memory failure handler
+> +        */
+> +       int (*notify_failure)(struct dax_device *dax_dev, u64 offset,
+> +                       u64 len, int mf_flags);
+> +};
+> +
+>  #if IS_ENABLED(CONFIG_DAX)
+>  struct dax_device *alloc_dax(void *private, const struct dax_operations *ops);
+> +int dax_register_holder(struct dax_device *dax_dev, void *holder,
+> +               const struct dax_holder_operations *ops);
+> +void dax_unregister_holder(struct dax_device *dax_dev);
+> +void *dax_holder(struct dax_device *dax_dev);
+>  void put_dax(struct dax_device *dax_dev);
+>  void kill_dax(struct dax_device *dax_dev);
+>  void dax_write_cache(struct dax_device *dax_dev, bool wc);
+> @@ -53,6 +69,18 @@ static inline bool daxdev_mapping_supported(struct vm_area_struct *vma,
+>         return dax_synchronous(dax_dev);
+>  }
+>  #else
+> +static inline int dax_register_holder(struct dax_device *dax_dev, void *holder,
+> +               const struct dax_holder_operations *ops)
+> +{
+> +       return 0;
+> +}
+> +static inline void dax_unregister_holder(struct dax_device *dax_dev)
+> +{
+> +}
+> +static inline void *dax_holder(struct dax_device *dax_dev)
+> +{
+> +       return NULL;
+> +}
+>  static inline struct dax_device *alloc_dax(void *private,
+>                 const struct dax_operations *ops)
+>  {
+> @@ -185,6 +213,8 @@ size_t dax_copy_to_iter(struct dax_device *dax_dev, pgoff_t pgoff, void *addr,
+>                 size_t bytes, struct iov_iter *i);
+>  int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
+>                         size_t nr_pages);
+> +int dax_holder_notify_failure(struct dax_device *dax_dev, u64 off, u64 len,
+> +               int mf_flags);
+>  void dax_flush(struct dax_device *dax_dev, void *addr, size_t size);
+>
+>  ssize_t dax_iomap_rw(struct kiocb *iocb, struct iov_iter *iter,
+> --
+> 2.34.1
+>
+>
+>
