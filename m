@@ -2,184 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241471AbiBOQLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:11:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42022 "EHLO
+        id S241476AbiBOQMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:12:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241575AbiBOQLV (ORCPT
+        with ESMTP id S241473AbiBOQMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:11:21 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C966ACE91D
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:11:07 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id h5so717027ioj.3
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:11:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Uya3VrJ5mbeW5e3EiyZomdfwW6pYC+/8k7L0vXEy/64=;
-        b=GqhrTd29C1Fa/GF7XdeyaZQ3hqUrBB2h17CHBFffHv2hxDx4zjmbEz0vOyg0Iq6R4M
-         2H7TFNA3sVqU8hkGQKByqZzQE7IH19x0/irG56NJvKU+wpiHH9Dv0RwN43FfYB3shghc
-         QMqwnn6TGVnovhyQd07APJlJB7dev7UiXwUtc=
+        Tue, 15 Feb 2022 11:12:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB6CD14006
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:12:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644941542;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6yTu+Qfv1IpPv7AVu5hlJ/Sl4wvDv7oYgI9LSyTBR/g=;
+        b=IBcgMB4djne8MHc2fNes7w9YLiOhr16HhYcojvK5vNK6Ag9WuEDVZzNr8tjHnn4LS+90GU
+        WozG4rvXKJLNov2fvWpRjdRgpjl1fQpqa6POz3fc9CHl41q0+YYBpB+Ht0wqKHAjMbn1R8
+        usZFLjHcBcAxVrgFk4b4oqVCikm2usE=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-140-ZIe89mLnO06MgdxT7TendA-1; Tue, 15 Feb 2022 11:12:15 -0500
+X-MC-Unique: ZIe89mLnO06MgdxT7TendA-1
+Received: by mail-ej1-f71.google.com with SMTP id o4-20020a170906768400b006a981625756so7565134ejm.0
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:12:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Uya3VrJ5mbeW5e3EiyZomdfwW6pYC+/8k7L0vXEy/64=;
-        b=gx9CtzNZJ2i3kdylPROMYTJ2oxhn+JNVY4SG2JTtmRt1Dyb8n89sccTr0nFlhwBgx3
-         rLJAu77dBo+R3mSTCIaw29TKp+UHTHDDF5ajo3xsJ+xDAqAUFIhoydnH2EYMfdqsGAJr
-         8oUqn0h+2jgZt00GzYq0hXy+bVD3hBWJyIm3auT2WFIIRnIGdJIbMqihtEgccy46hPaj
-         UaAD/teeCKktoeFOCfMLOx8d2zlmHmF8xEy7vLI8lQjopMjfMYtCgFIe+OdC9Jemt4g2
-         dpD+ElXM+q7dqQhmqrgVNI5/fCB2mx2VsNAGkc+S4o8PCci7Ai+S4oGMF3In81zUrdxv
-         Vjbg==
-X-Gm-Message-State: AOAM530oYtVeZH7vjgaVvkLy4bHY+1lDrKnfrzkQgF+cMhHFhkdWuh+g
-        LZiqtkPXc0p9btRz2ACJ979O0w==
-X-Google-Smtp-Source: ABdhPJwNMQ+hD4yYnX67fbKxMkuWIh4ikYUTO3MVI4i6Lb6x2R7QnWChrXVehVMDRoy3LOMo6wasHA==
-X-Received: by 2002:a05:6638:6bb:: with SMTP id d27mr3009674jad.231.1644941467203;
-        Tue, 15 Feb 2022 08:11:07 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id l2sm5384520ilv.66.2022.02.15.08.11.06
+        bh=6yTu+Qfv1IpPv7AVu5hlJ/Sl4wvDv7oYgI9LSyTBR/g=;
+        b=3wX96ShIlfP+BQl2cCzh8EddpftFVIAL9L6TC7Y8tUizBYiHpkUvowyYSW5qIrgw9y
+         pur6xZcsHCoOx+dVlUnKdxGrCa5y6M/Luf0zuI4bm6d19SrPcPAiDstpYsEXVC0TzNbo
+         uY2EPAVy42VyhB66sDVgBO49q9NpVumx4MDIN1Dw9IRpHd6u3BSbNbDZ9zg2exjtTIwb
+         pBAXGFRsHX4s7stUGHM5nXucR/HMTn+7LDAgCX5o2cd5RIM2fTYcaFVp6s/sZoLHQlgc
+         qEHYHgZqdiy23IuFJAb6xah3O2SoblKIgW1j/N0kpW0EUSojju3dfTFb8h4Qxkem1q8u
+         CXNw==
+X-Gm-Message-State: AOAM530m/iVakaWVlvPw+N3UnAKZa6zbapAgUDi/I53x4wyrCf3O5Czq
+        WTY+t0SongCwy41sfmfxu4rqTOxZ2ruQwvIToU0uW7r9glKn/TAZw4SI8LYTrM6Amrr+CXfWhws
+        I6Z7+PM79Uw30RBxYJKoUFZvA
+X-Received: by 2002:a50:8e4b:: with SMTP id 11mr4650937edx.445.1644941533364;
+        Tue, 15 Feb 2022 08:12:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzftckYd5NKJC5MMKL5KSz/KVu2PoAWMB8ocFZSkMTrbX9sgdnbBvEL3rXT/dAeLNasexhiOQ==
+X-Received: by 2002:a50:8e4b:: with SMTP id 11mr4650912edx.445.1644941533147;
+        Tue, 15 Feb 2022 08:12:13 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id m28sm4256482ejn.50.2022.02.15.08.12.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 08:11:06 -0800 (PST)
-Subject: Re: [PATCH v2 6/6] selftests/bpf: Add test for
- bpf_lsm_kernel_read_file()
-To:     Roberto Sassu <roberto.sassu@huawei.com>, zohar@linux.ibm.com,
-        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kpsingh@kernel.org, revest@chromium.org
-Cc:     linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220215124042.186506-1-roberto.sassu@huawei.com>
- <20220215124042.186506-7-roberto.sassu@huawei.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <a06aaff2-2760-faff-db00-082543953bfe@linuxfoundation.org>
-Date:   Tue, 15 Feb 2022 09:11:05 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 15 Feb 2022 08:12:12 -0800 (PST)
+Message-ID: <05332ea8-2849-e567-1db3-3bdee97c2193@redhat.com>
+Date:   Tue, 15 Feb 2022 17:12:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <20220215124042.186506-7-roberto.sassu@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [RFC 0/2] x86/PCI: Ignore EFI memmap MMIO entries
 Content-Language: en-US
+To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220214151759.98267-1-hdegoede@redhat.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220214151759.98267-1-hdegoede@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/15/22 5:40 AM, Roberto Sassu wrote:
-> Test the ability of bpf_lsm_kernel_read_file() to call the sleepable
-> functions bpf_ima_inode_hash() or bpf_ima_file_hash() to obtain a
-> measurement of a loaded IMA policy.
+Hi All,
+
+On 2/14/22 16:17, Hans de Goede wrote:
+> Hi All,
 > 
-> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> ---
->   tools/testing/selftests/bpf/ima_setup.sh      |  2 ++
->   .../selftests/bpf/prog_tests/test_ima.c       |  3 +-
->   tools/testing/selftests/bpf/progs/ima.c       | 28 ++++++++++++++++---
->   3 files changed, 28 insertions(+), 5 deletions(-)
+> Here is a new attempt at fixing the issue where on some laptops
+> there are EFI memmap MMIO entries covering the entire PCI bridge
+> mem window, causing Linux to be unable to find free space to
+> assign to unassigned BARs.
 > 
-> diff --git a/tools/testing/selftests/bpf/ima_setup.sh b/tools/testing/selftests/bpf/ima_setup.sh
-> index 8e62581113a3..82530f19f85a 100755
-> --- a/tools/testing/selftests/bpf/ima_setup.sh
-> +++ b/tools/testing/selftests/bpf/ima_setup.sh
-> @@ -51,6 +51,7 @@ setup()
->   
->   	ensure_mount_securityfs
->   	echo "measure func=BPRM_CHECK fsuuid=${mount_uuid}" > ${IMA_POLICY_FILE}
-> +	echo "measure func=BPRM_CHECK fsuuid=${mount_uuid}" > ${mount_dir}/policy_test
->   }
->   
->   cleanup() {
-> @@ -74,6 +75,7 @@ run()
->   	local mount_dir="${tmp_dir}/mnt"
->   	local copied_bin_path="${mount_dir}/$(basename ${TEST_BINARY})"
->   
-> +	echo ${mount_dir}/policy_test > ${IMA_POLICY_FILE}
->   	exec "${copied_bin_path}"
->   }
->   
-> diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-> index 62bf0e830453..c4a62d7b70df 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-> @@ -97,8 +97,9 @@ void test_test_ima(void)
->   	/*
->   	 * 1 sample with use_ima_file_hash = false
->   	 * 2 samples with use_ima_file_hash = true (./ima_setup.sh, /bin/true)
-> +	 * 1 sample with use_ima_file_hash = true (IMA policy)
->   	 */
-> -	ASSERT_EQ(err, 3, "num_samples_or_err");
-> +	ASSERT_EQ(err, 4, "num_samples_or_err");
->   	ASSERT_NEQ(ima_hash_from_bpf, 0, "ima_hash");
->   
->   close_clean:
-> diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
-> index 9bb63f96cfc0..9b4c03f30a1c 100644
-> --- a/tools/testing/selftests/bpf/progs/ima.c
-> +++ b/tools/testing/selftests/bpf/progs/ima.c
-> @@ -20,8 +20,7 @@ char _license[] SEC("license") = "GPL";
->   
->   bool use_ima_file_hash;
->   
-> -SEC("lsm.s/bprm_committed_creds")
-> -void BPF_PROG(ima, struct linux_binprm *bprm)
-> +static void ima_test_common(struct file *file)
->   {
->   	u64 ima_hash = 0;
->   	u64 *sample;
-> @@ -31,10 +30,10 @@ void BPF_PROG(ima, struct linux_binprm *bprm)
->   	pid = bpf_get_current_pid_tgid() >> 32;
->   	if (pid == monitored_pid) {
->   		if (!use_ima_file_hash)
-> -			ret = bpf_ima_inode_hash(bprm->file->f_inode, &ima_hash,
-> +			ret = bpf_ima_inode_hash(file->f_inode, &ima_hash,
->   						 sizeof(ima_hash));
->   		else
-> -			ret = bpf_ima_file_hash(bprm->file, &ima_hash,
-> +			ret = bpf_ima_file_hash(file, &ima_hash,
->   						sizeof(ima_hash));
->   		if (ret < 0 || ima_hash == 0)
+> This is marked as RFC atm because I'm waiting for feedback from
+> testers.
 
-Is this considered an error? Does it make sense for this test to be
-void type and not return the error to its callers? One of the callers
-below seems to care for return values.
+Unfortunately the troublesome 0xdfa00000-0xdfa0ffff region on
+the Lenovo X1 carbon gen 2 is marked as MMIO by the EFI memmap,
+so the approach from this series won't work.
 
->   			return;
-> @@ -49,3 +48,24 @@ void BPF_PROG(ima, struct linux_binprm *bprm)
->   
->   	return;
->   }
-> +
-> +SEC("lsm.s/bprm_committed_creds")
-> +void BPF_PROG(ima, struct linux_binprm *bprm)
-> +{
-> +	ima_test_common(bprm->file);
-> +}
-> +
-> +SEC("lsm.s/kernel_read_file")
-> +int BPF_PROG(kernel_read_file, struct file *file, enum kernel_read_file_id id,
-> +	     bool contents)
-> +{
-> +	if (!contents)
-> +		return 0;
-> +
-> +	if (id != READING_POLICY)
-> +		return 0;
-> +
-> +	ima_test_common(file);
+Interestingly enough this RFC series does seem to help to fix
+the suspend/resume on this x1c2, since for some reason merely
+splitting the original:
 
-This one here.
+BIOS-e820: [mem 0x00000000dceff000-0x00000000dfa0ffff] reserved
 
-> +
-> +	return 0;
-> +}
-> 
+range into:
 
-thanks,
--- Shuah
+BIOS-e820: [mem 0x00000000dceff000-0x00000000df9fffff] reserved
+BIOS-e820: [mem 0x00000000dfa00000-0x00000000dfa0ffff] MMIO
+
+causes the PCI resource allocation code to pick slightly
+different resources avoiding the troublesome overlap, see:
+https://bugzilla.redhat.com/show_bug.cgi?id=2029207
+for logs.
+
+But I don't think we should rely in this, since from a
+arch_remove_reservations() pov the troublesome overlap area
+which is now marked as MMIO is fair game for PCI bars with
+the change to allow MMIO areas for PCI bars, so things seem
+to mostly work by sheer luck after this RFC series.
+
+So now I have yet another plan to fix this (see below) I'll get
+that tested and assuming it works post that as a proper patch.
+
+Regards,
+
+Hans
+
+
+
+diff --git a/arch/x86/include/asm/pci_x86.h b/arch/x86/include/asm/pci_x86.h
+index 490411dba438..573e1323f490 100644
+--- a/arch/x86/include/asm/pci_x86.h
++++ b/arch/x86/include/asm/pci_x86.h
+@@ -64,6 +64,8 @@ void pcibios_scan_specific_bus(int busn);
+ 
+ /* pci-irq.c */
+ 
++struct pci_dev;
++
+ struct irq_info {
+ 	u8 bus, devfn;			/* Bus, device and function */
+ 	struct {
+@@ -232,3 +234,9 @@ static inline void mmio_config_writel(void __iomem *pos, u32 val)
+ # define x86_default_pci_init_irq	NULL
+ # define x86_default_pci_fixup_irqs	NULL
+ #endif
++
++#if defined CONFIG_PCI && defined CONFIG_ACPI
++extern bool pci_use_e820;
++#else
++#define pci_use_e820 true
++#endif
+diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
+index 9b9fb7882c20..e8dc9bc327bd 100644
+--- a/arch/x86/kernel/resource.c
++++ b/arch/x86/kernel/resource.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <linux/ioport.h>
+ #include <asm/e820/api.h>
++#include <asm/pci_x86.h>
+ 
+ static void resource_clip(struct resource *res, resource_size_t start,
+ 			  resource_size_t end)
+@@ -28,6 +29,9 @@ static void remove_e820_regions(struct resource *avail)
+ 	int i;
+ 	struct e820_entry *entry;
+ 
++	if (!pci_use_e820)
++		return;
++
+ 	for (i = 0; i < e820_table->nr_entries; i++) {
+ 		entry = &e820_table->entries[i];
+ 
+diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+index 052f1d78a562..7167934819b3 100644
+--- a/arch/x86/pci/acpi.c
++++ b/arch/x86/pci/acpi.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <linux/efi.h>
+ #include <linux/pci.h>
+ #include <linux/acpi.h>
+ #include <linux/init.h>
+@@ -21,6 +22,7 @@ struct pci_root_info {
+ 
+ static bool pci_use_crs = true;
+ static bool pci_ignore_seg;
++bool pci_use_e820 = true;
+ 
+ static int __init set_use_crs(const struct dmi_system_id *id)
+ {
+@@ -291,6 +293,28 @@ static bool resource_is_pcicfg_ioport(struct resource *res)
+ 		res->start == 0xCF8 && res->end == 0xCFF;
+ }
+ 
++static bool resource_matches_efi_mmio_region(const struct resource *res)
++{
++	unsigned long long start, end;
++	efi_memory_desc_t *md;
++
++	if (!efi_enabled(EFI_MEMMAP))
++		return false;
++
++	for_each_efi_memory_desc(md) {
++		if (md->type != EFI_MEMORY_MAPPED_IO)
++			continue;
++
++		start = md->phys_addr;
++		end = start + (md->num_pages << EFI_PAGE_SHIFT) - 1;
++
++		if (res->start >= start && res->end <= end)
++			return true;
++	}
++
++	return false;
++}
++
+ static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
+ {
+ 	struct acpi_device *device = ci->bridge;
+@@ -300,9 +324,16 @@ static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
+ 
+ 	status = acpi_pci_probe_root_resources(ci);
+ 	if (pci_use_crs) {
+-		resource_list_for_each_entry_safe(entry, tmp, &ci->resources)
++		resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
+ 			if (resource_is_pcicfg_ioport(entry->res))
+ 				resource_list_destroy_entry(entry);
++			if (resource_matches_efi_mmio_region(entry->res)) {
++				dev_info(&device->dev,
++					"host bridge window %pR is marked by EFI as MMIO\n",
++					entry->res);
++				pci_use_e820 = false;
++			}
++		}
+ 		return status;
+ 	}
+ 
+
