@@ -2,138 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A75C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:19:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A3CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237584AbiBOMTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:19:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57720 "EHLO
+        id S237597AbiBOMUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:20:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiBOMTs (ORCPT
+        with ESMTP id S232094AbiBOMUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:19:48 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE8C1074E6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:19:39 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id f6so13583481pfj.11
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:19:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=t4VIfPOAozNC70kbDOl2dbBGsgdLxKSP4QJrhlwbu5k=;
-        b=yyPjnmR65ZCx8CliAl5MrjTv9+HVfnSjBHgKjhUGGWHpNtMQ3MrbqjhZKmbJ4Ko+bx
-         LumaWc5vrjhUHkrk/GCHfhEIlw9m+hQrIdOHvCwdRhQ1vbLqCIPgfRipClamscTA3LDw
-         SwC3RN+HIeuaP2HLdtnAivns5km7Haf5yjKAJo2tIX7G6Fh+5ia+S7KGem6DBgSpCOTR
-         Sn84/Y8jlIekJSXbhd8KTg4O1LOakBoFxYDA8U1ADohldqKVPkYVOFRPUt7MaCC+TSib
-         TFrGXB+d33NMx/ESGHZHd6JMgsDxUI6Yyjf9WypdjvJDM1ml6XV/fgLioq40ccaxEFy1
-         R/Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=t4VIfPOAozNC70kbDOl2dbBGsgdLxKSP4QJrhlwbu5k=;
-        b=On4sAnvfbYhmzb1qjMhqi7YBpuBEWYlnR19C7rbfr1rj2TEupfFXsvZwDB0xWYSpCF
-         IXZtmEu7l5VK9moRfYcd5brzA403SjTu/KtIAZT5X9i/r+bFLi2KtRAdz5BpJ4VCPX43
-         zR59sCR4W5VYBkumTWKa/wN/D1/QiJ9ziAsIvqmhnestb6G9pHgTBXAntwhNBMBD6+H1
-         tYPe+PYNl2JuYMHUonrtEa/jWo709y7Uzk6bgkRJAB2tFqa256hCiyRNAAvCHlT/0FfJ
-         2yR4sidyGn1CCgk8gxBqvYNGB/skSX5yac8/ARRzzsAq74vMw+D87IofurO9et7XEC8h
-         ik4Q==
-X-Gm-Message-State: AOAM532BAF+NuWSLrCeFmPeZwaxWVJ14Ww5iPJCnZ/X2q7cMX6j5BfgB
-        BW5C9My6QpCScuUqbLcAjNS6nUIpK9J7Jg==
-X-Google-Smtp-Source: ABdhPJyyX/bNQ6faE4RjKlHG3VF68qqDZQ25cF/jMO0cIIJIK7Zt3bWZ6ezKMnlD1KgSLiGYM7nuuw==
-X-Received: by 2002:a05:6a00:2444:: with SMTP id d4mr4123710pfj.46.1644927578757;
-        Tue, 15 Feb 2022 04:19:38 -0800 (PST)
-Received: from [10.255.13.118] ([139.177.225.246])
-        by smtp.gmail.com with ESMTPSA id s9sm5706044pjk.1.2022.02.15.04.19.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 04:19:38 -0800 (PST)
-Message-ID: <b3f9e3c5-679d-1a15-f797-5e211d543a68@bytedance.com>
-Date:   Tue, 15 Feb 2022 20:19:33 +0800
+        Tue, 15 Feb 2022 07:20:09 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82F51074E7
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:19:59 -0800 (PST)
+Date:   Tue, 15 Feb 2022 12:19:57 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644927598;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=smDRKqrC9C3n679OqcRW68vfO63IJFXsaluYNs0VyhU=;
+        b=pUUtBF80jx3ahjcXANctkgAQUHx+U+Nz5Dnsetk9eJpLsyNUUNngkVgrpQocr9Ipo0bE2z
+        O2miY6VP3DU15OIAm0sHCeNyVRtZ3kB0vPTftXhReofcyuOkKzSHrt/xm3PIVEMCBcwtZS
+        5UD4HR/0IbOU03pid4PHCd3rN0YIPUuHCCVHQ4BVHLZGBjl680Rcpto/xnkpVDyPwKYesA
+        +rY9kNrXJFOVWvvNEmgv4Dx3AVgmNbbxO9awGMdbpS6Rk+p0DaJ8zAa4w90hBFPusNOGSi
+        crbPcYjiuHnNZsvWhrXTJt3eFTUQbBwUq0G9mqTLyz3NYpIV6tje8k7uHxKExg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644927598;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=smDRKqrC9C3n679OqcRW68vfO63IJFXsaluYNs0VyhU=;
+        b=OFysl6gEzqKIe7sHA4b2PZXu2uXmvP2MGbOOAhBvYOkmqxvOJ/8VvKHBFfaiq/0LDWJREh
+        eTMAF6z2I5r3oeAA==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] irqchip/mvebu-pic: Switch to dynamic chip
+ name output
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>, tglx@linutronix.de
+In-Reply-To: <20220209162607.1118325-6-maz@kernel.org>
+References: <20220209162607.1118325-6-maz@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [External] Re: [PATCH] sched/cpuacct: fix charge percpu cpuusage
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     tj@kernel.org, arbn@yandex-team.com, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, Minye Zhu <zhuminye@bytedance.com>
-References: <20220213120118.93471-1-zhouchengming@bytedance.com>
- <YgoqPT67g2NcV/eH@hirez.programming.kicks-ass.net>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <YgoqPT67g2NcV/eH@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164492759747.16921.12872550962294322927.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/2/14 6:09 下午, Peter Zijlstra wrote:
-> On Sun, Feb 13, 2022 at 08:01:18PM +0800, Chengming Zhou wrote:
->> The cpuacct_account_field() is always called by the current task
->> itself, so it's ok to use __this_cpu_add() to charge the tick time.
->>
->> But cpuacct_charge() maybe called by update_curr() in load_balance()
->> on a random CPU, different from the CPU on which the task is running.
->> So __this_cpu_add() will charge that cputime to a random incorrect CPU.
->>
->> Reported-by: Minye Zhu <zhuminye@bytedance.com>
->> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> 
-> Can I get a Fixes: tag for this?
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Yes, Fixes: 73e6aafd9ea8 ("sched/cpuacct: Simplify the cpuacct code")
-I will send a patch v2 to add it.
+Commit-ID:     421f16238a9da88ce1f2e3a103866de095cc15f6
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/421f16238a9da88ce1f2e3a103866de095cc15f6
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Wed, 09 Feb 2022 16:26:02 
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Tue, 15 Feb 2022 11:25:46 
 
-> 
->> ---
->>  kernel/sched/cpuacct.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
->> index 3d06c5e4220d..75fbc212cb71 100644
->> --- a/kernel/sched/cpuacct.c
->> +++ b/kernel/sched/cpuacct.c
->> @@ -335,11 +335,12 @@ static struct cftype files[] = {
->>  void cpuacct_charge(struct task_struct *tsk, u64 cputime)
->>  {
->>  	struct cpuacct *ca;
->> +	unsigned int cpu = task_cpu(tsk);
->>  
->>  	rcu_read_lock();
->>  
->>  	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
->> -		__this_cpu_add(*ca->cpuusage, cputime);
->> +		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
->>  
->>  	rcu_read_unlock();
->>  }
-> 
-> Also, while we there, what about this as an additional patch?
-> 
-> --- a/kernel/sched/cpuacct.c
-> +++ b/kernel/sched/cpuacct.c
-> @@ -334,15 +334,13 @@ static struct cftype files[] = {
->   */
->  void cpuacct_charge(struct task_struct *tsk, u64 cputime)
->  {
-> -	struct cpuacct *ca;
->  	unsigned int cpu = task_cpu(tsk);
-> +	struct cpuacct *ca;
->  
-> -	rcu_read_lock();
-> +	lockdep_assert_rq_held(cpu_rq(cpu));
->  
->  	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
->  		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
-> -
-> -	rcu_read_unlock();
->  }
->  
->  /*
+irqchip/mvebu-pic: Switch to dynamic chip name output
 
-This is much better, I will send an additional patch to include this.
+Instead of overriding the name field, track the corresponding device
+and use the relevant callback to output its name.
 
-Thanks.
+This allows us to make the irq_chip structure const.
 
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220209162607.1118325-6-maz@kernel.org
+---
+ drivers/irqchip/irq-mvebu-pic.c | 28 ++++++++++++++++++----------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/irqchip/irq-mvebu-pic.c b/drivers/irqchip/irq-mvebu-pic.c
+index 870f986..ef3d364 100644
+--- a/drivers/irqchip/irq-mvebu-pic.c
++++ b/drivers/irqchip/irq-mvebu-pic.c
+@@ -18,6 +18,7 @@
+ #include <linux/module.h>
+ #include <linux/of_irq.h>
+ #include <linux/platform_device.h>
++#include <linux/seq_file.h>
+ 
+ #define PIC_CAUSE	       0x0
+ #define PIC_MASK	       0x4
+@@ -29,7 +30,7 @@ struct mvebu_pic {
+ 	void __iomem *base;
+ 	u32 parent_irq;
+ 	struct irq_domain *domain;
+-	struct irq_chip irq_chip;
++	struct platform_device *pdev;
+ };
+ 
+ static void mvebu_pic_reset(struct mvebu_pic *pic)
+@@ -66,6 +67,20 @@ static void mvebu_pic_unmask_irq(struct irq_data *d)
+ 	writel(reg, pic->base + PIC_MASK);
+ }
+ 
++static void mvebu_pic_print_chip(struct irq_data *d, struct seq_file *p)
++{
++	struct mvebu_pic *pic = irq_data_get_irq_chip_data(d);
++
++	seq_printf(p, dev_name(&pic->pdev->dev));
++}
++
++static const struct irq_chip mvebu_pic_chip = {
++	.irq_mask	= mvebu_pic_mask_irq,
++	.irq_unmask	= mvebu_pic_unmask_irq,
++	.irq_eoi	= mvebu_pic_eoi_irq,
++	.irq_print_chip	= mvebu_pic_print_chip,
++};
++
+ static int mvebu_pic_irq_map(struct irq_domain *domain, unsigned int virq,
+ 			     irq_hw_number_t hwirq)
+ {
+@@ -73,8 +88,7 @@ static int mvebu_pic_irq_map(struct irq_domain *domain, unsigned int virq,
+ 
+ 	irq_set_percpu_devid(virq);
+ 	irq_set_chip_data(virq, pic);
+-	irq_set_chip_and_handler(virq, &pic->irq_chip,
+-				 handle_percpu_devid_irq);
++	irq_set_chip_and_handler(virq, &mvebu_pic_chip, handle_percpu_devid_irq);
+ 	irq_set_status_flags(virq, IRQ_LEVEL);
+ 	irq_set_probe(virq);
+ 
+@@ -120,22 +134,16 @@ static int mvebu_pic_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *node = pdev->dev.of_node;
+ 	struct mvebu_pic *pic;
+-	struct irq_chip *irq_chip;
+ 
+ 	pic = devm_kzalloc(&pdev->dev, sizeof(struct mvebu_pic), GFP_KERNEL);
+ 	if (!pic)
+ 		return -ENOMEM;
+ 
++	pic->pdev = pdev;
+ 	pic->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pic->base))
+ 		return PTR_ERR(pic->base);
+ 
+-	irq_chip = &pic->irq_chip;
+-	irq_chip->name = dev_name(&pdev->dev);
+-	irq_chip->irq_mask = mvebu_pic_mask_irq;
+-	irq_chip->irq_unmask = mvebu_pic_unmask_irq;
+-	irq_chip->irq_eoi = mvebu_pic_eoi_irq;
+-
+ 	pic->parent_irq = irq_of_parse_and_map(node, 0);
+ 	if (pic->parent_irq <= 0) {
+ 		dev_err(&pdev->dev, "Failed to parse parent interrupt\n");
