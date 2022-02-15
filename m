@@ -2,130 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:30:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64BBFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237149AbiBOLal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:30:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51250 "EHLO
+        id S232589AbiBOLa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:30:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237139AbiBOLae (ORCPT
+        with ESMTP id S237175AbiBOLas (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:30:34 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD14710855E
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:30:24 -0800 (PST)
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2020940333
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:30:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644924623;
-        bh=TQsWKxzWtW4CbZduV18nJ8RuXExNAqdKgvnVntrHDhc=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=Ih4nybmos/dYj9ptGC8iIbrR2f0liEqTSJ7K5toAJyiI0DQbr488UQsDEHvUkOBVL
-         Rel72W18wTWMaSFvUjpo+7TlK9i01THlKC/6k/DSkZvHICnVQRQ2xU2R+0HJrl4he1
-         YHT4anh7KNyaz10OJKGaYVmYQUgDDUdyZKduLJf2Sx3QZScuF7A0Mo+VOvnyrSHFNH
-         JiI+AimC3ocKRBnlzJ7TW+tz6pmJx5nN2ITd8FWoq48/Uwwq/9wavUQ9Kp+93d/dmS
-         c5Fb7s8L/CbmzaajY7ADu/ULYKHT8Lpch8yJUYnrWsz689GU06n2OLnMgy64Bx0g+g
-         SWO/AQdN/CHNA==
-Received: by mail-oo1-f72.google.com with SMTP id u13-20020a4ab5cd000000b002e021ad5bbcso12390976ooo.17
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:30:23 -0800 (PST)
+        Tue, 15 Feb 2022 06:30:48 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FD2108BE4;
+        Tue, 15 Feb 2022 03:30:39 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id y5so34381819pfe.4;
+        Tue, 15 Feb 2022 03:30:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JnniAd21EY8afdlsgFug6BUpPk02YT/3Ko5AD7mlY8M=;
+        b=EzWLPid2Z+SJowrlIhoOYMZgdSusGpE4xyNsetMY5ULLe7gEFA1qDLG9ruIGswluyr
+         UgwrHEVJb4/SiE24t7zTOny9xYaw4QT56+ihTUnSEdHjGsOGHUte4NUcfTIXoc+SCyyM
+         OXqH/KcjZSOi5hiyLeJc3nsDslMKWd2x+dLdWhv+scVS/uiTCe7nXDxpXoLmNSvpEPOs
+         1T7092/hePMomU5FSTeNJxlyyiTam/obQDkPXUqDWBijrhVIxgbOoQk/ArjRwNEFAPub
+         BEkYAFfNzoOZ4SU7SsZ/eG4MMsRk7SJ49Ut5tz/WOVfnJFQ6IX4e50Yf2uAOaBonQn6H
+         vdrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TQsWKxzWtW4CbZduV18nJ8RuXExNAqdKgvnVntrHDhc=;
-        b=yGOjyi9AHseaIh2e/peFvy7VS1lLS6HbkuytRpYV0NQ4ALHWK0M3CvA6or8F8HRCW+
-         jWIJVJLn6sRFhoB94PNoaVbu4oAwky9rb3qzbDmdZ/79dgnxFzVZKthpYYJlqb/ukReh
-         1gpLVQ2tKUMDPKxcCzkfSGuN2mklJL+dqPsX/70sTObrtq2DTYh5tjmISlANNaTgRNtt
-         OZ+xFNl19PB57HHoEm7gUwrI7t1Y4fWHd8QjKSmRXHOh0UoZQEnJIKlEovcVOZqWmgtL
-         ngXFjKatJydoKzPjovN9tngxRaN9+HyKvX/OZ0exkepYRIxoVSyVATgwnPgL3xx+VgIC
-         GG8A==
-X-Gm-Message-State: AOAM5331Tpc753r2mMrndm1cQJMFZatxLsWffbHD6ja8pG+6xGEbhAcB
-        2u8FYNkPtEDt+wXDy9AZpl4w7FhwY9GhDNzflvdvP1xJWtLKfSc0yacCLrI2XRwU3/MhCQWsczc
-        c9vJEiAyrvoJ9kc8J7xej/O8/hghQE9K8WHFGi0YeiGlM8erL2pNEwWmd3g==
-X-Received: by 2002:a05:6870:1019:b0:ce:c0c9:631 with SMTP id 25-20020a056870101900b000cec0c90631mr1163423oai.131.1644924621950;
-        Tue, 15 Feb 2022 03:30:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxSDV3cX4UNce8B0x7g5PwElp6clHoeO17u/5Wi9aFeC595MGFUPB0PzJhz/IbYfeFikE2Tp9YmYSfowWCVBTw=
-X-Received: by 2002:a05:6870:1019:b0:ce:c0c9:631 with SMTP id
- 25-20020a056870101900b000cec0c90631mr1163415oai.131.1644924621695; Tue, 15
- Feb 2022 03:30:21 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JnniAd21EY8afdlsgFug6BUpPk02YT/3Ko5AD7mlY8M=;
+        b=uAqoJvf5gvbkOcsrHheKXTxZ2ED/IFeSFj78FxK1vuE88tZYsJdYbIWZLw/fu6GMX1
+         k2o0RLMl+kZTjHZ20kAneYePQoZlgaCQ9xmyscFW9z6ChXO3jVnGbDCANxKUlx6H0Brd
+         eE+aCvjCNfcbu5NaXd88hFZ+R+p13O5NG22bLYhH7P6TCx48sUKPQjXnYbyyS9ElV4fY
+         Y4lO/f6C3ilsMxamz8bjIc5JfGq/c0uTfVe95kwlgcPgW7lCU0kwx6jCzYR8qxulU43j
+         JSl6tkCMTn8NGhO2Dg0AIrH5lq9RwRck6MzG29UYg4kaD1N18PyOiYDtRRDh34D/GZoZ
+         rKLQ==
+X-Gm-Message-State: AOAM531228G5yEBRYJ3sTGgGi3nDn4AxTsm0zFlDGRGoKSgMbHCPPCm5
+        s3xhO69hfjCKIOA+Q56D1Ro=
+X-Google-Smtp-Source: ABdhPJwN5Ih91tdIz/KopWZlUuhmNrw3qjN8BS1BAPwVKdVyzfSefMsGZEzRYHv/YQeK+QKN5tM20Q==
+X-Received: by 2002:a63:f508:: with SMTP id w8mr3230195pgh.236.1644924638566;
+        Tue, 15 Feb 2022 03:30:38 -0800 (PST)
+Received: from localhost.localdomain ([203.205.141.113])
+        by smtp.gmail.com with ESMTPSA id s11sm44515513pfu.58.2022.02.15.03.30.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 03:30:38 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org
+Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
+        mingo@redhat.com, yoshfuji@linux-ipv6.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        imagedong@tencent.com, talalahmad@google.com,
+        keescook@chromium.org, ilias.apalodimas@linaro.org, alobakin@pm.me,
+        memxor@gmail.com, atenart@kernel.org, bigeasy@linutronix.de,
+        pabeni@redhat.com, linyunsheng@huawei.com, arnd@arndb.de,
+        yajun.deng@linux.dev, roopa@nvidia.com, willemb@google.com,
+        vvs@virtuozzo.com, cong.wang@bytedance.com,
+        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
+Subject: [PATCH net-next 02/19] net: tcp: add skb drop reasons to tcp_v4_rcv()
+Date:   Tue, 15 Feb 2022 19:27:55 +0800
+Message-Id: <20220215112812.2093852-3-imagedong@tencent.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215112812.2093852-1-imagedong@tencent.com>
+References: <20220215112812.2093852-1-imagedong@tencent.com>
 MIME-Version: 1.0
-References: <20220215042011.2266897-1-kai.heng.feng@canonical.com> <CAHp75VfBQPgrbuxazuoyDbFtGZR=rU5wqPhSXhkoiA_2HR1EHA@mail.gmail.com>
-In-Reply-To: <CAHp75VfBQPgrbuxazuoyDbFtGZR=rU5wqPhSXhkoiA_2HR1EHA@mail.gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Tue, 15 Feb 2022 19:30:10 +0800
-Message-ID: <CAAd53p6tjWtKSqDDG_hjbFGKeR7-L3uYwgOTRNHfwAhmE8nV+g@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: accel: adxl345: Add ACPI HID table
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 4:28 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Tue, Feb 15, 2022 at 6:20 AM Kai-Heng Feng
-> <kai.heng.feng@canonical.com> wrote:
-> >
-> > x86 boards may use ACPI HID "ADS0345" for adxl345 device.
-> >
-> > Analog replied:
-> > "ADS034X is not a valid PNP ID. ADS0345 would be.
-> > I'm not aware that this ID is already taken.
-> > Feel free to submit a mainline Linux input mailing list patch."
-> >
-> > So add an ACPI match table for that accordingly.
->
-> Thank you for the update, my comments below.
->
-> ...
->
-> > @@ -41,6 +41,7 @@ static int adxl345_i2c_probe(struct i2c_client *client,
-> >  static const struct i2c_device_id adxl345_i2c_id[] = {
-> >         { "adxl345", ADXL345 },
-> >         { "adxl375", ADXL375 },
->
-> > +       { "ADS0345:00", ADXL345 },
-> >         { }
-> >  };
-> >
->
-> This is wrong. First of all, on the left side you put the device
-> instance name (which must not be in the ID tables, since the device
-> instance name is "ID + instance number"). Second, the motivation of
-> this is not clear, if the device is enumerated by ACPI, why do you
-> care about board code?
+From: Menglong Dong <imagedong@tencent.com>
 
-I was uncertain on this at first, but later I saw some drivers use
-this form (*:00) too, so I just followed through.
+Use kfree_skb_reason() for some path in tcp_v4_rcv() that missed before,
+including:
 
-The intention is to accommodate adxl345_i2c_probe() without any modification.
+SKB_DROP_REASON_SOCKET_FILTER
+SKB_DROP_REASON_XFRM_POLICY
 
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ net/ipv4/tcp_ipv4.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
->
-> Just don't add anything to this table.
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 6873f46fc8ba..a93921fb498f 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2057,6 +2057,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 			iph = ip_hdr(skb);
+ 			tcp_v4_fill_cb(skb, iph, th);
+ 			nsk = tcp_check_req(sk, skb, req, false, &req_stolen);
++		} else {
++			drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
+ 		}
+ 		if (!nsk) {
+ 			reqsk_put(req);
+@@ -2092,8 +2094,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		}
+ 	}
+ 
+-	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb))
++	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb)) {
++		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+ 		goto discard_and_relse;
++	}
+ 
+ 	if (tcp_v4_inbound_md5_hash(sk, skb, dif, sdif))
+ 		goto discard_and_relse;
+@@ -2137,8 +2141,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 
+ no_tcp_socket:
+ 	drop_reason = SKB_DROP_REASON_NO_SOCKET;
+-	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
++	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb)) {
++		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+ 		goto discard_it;
++	}
+ 
+ 	tcp_v4_fill_cb(skb, iph, th);
+ 
+@@ -2166,6 +2172,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 
+ do_time_wait:
+ 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb)) {
++		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+ 		inet_twsk_put(inet_twsk(sk));
+ 		goto discard_it;
+ 	}
+-- 
+2.34.1
 
-Got it.
-
->
-> The rest is good, but consider doing the same for _spi part of the driver.
-
-OK, will do.
-
-Kai-Heng
-
->
-> --
-> With Best Regards,
-> Andy Shevchenko
