@@ -2,140 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8476C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA91CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234596AbiBOGlr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 01:41:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51914 "EHLO
+        id S234604AbiBOGmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 01:42:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234583AbiBOGlo (ORCPT
+        with ESMTP id S234597AbiBOGl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 01:41:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A86B7C50;
-        Mon, 14 Feb 2022 22:41:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21B15B817A0;
-        Tue, 15 Feb 2022 06:41:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C25BDC36AE2;
-        Tue, 15 Feb 2022 06:41:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644907291;
-        bh=jEmPVNZaBNwt/VLaRLc3lHKKicFk8z2UL+ikTy2DTQI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=JwYoRmnaQEoFzUSq4tfhgUI8/LxYHECZ+i2D+1+J74DSWArNIsM9FCwb+T8mKbOsh
-         RSNWgcVWh9EJ/etpOjmpPZauvrj+QaCjvTCjCaZkiHR3F5qmHisDUiK9SSUo2qXBLY
-         Yj4h0xL71i5a8/1oIelqnABk0CJVn43MiVew+rcgqk4N5IaMxH2dM/ULoT5Lh5Itv4
-         JIhwCy0WX+RoPrhc9KPQifO/ou7WeN0X33qJ9b1zQLDPfwpM6+uWlkxNSmaALrhVEj
-         kRQ4nOXGLGi7HG7PwaihDIjIRot/wjJnjiBOuY3Mg393XYtdXVoGQ6/ACn1YCo3n4Z
-         n7RgzsEI+FRMQ==
-Received: by mail-yb1-f172.google.com with SMTP id p5so52903496ybd.13;
-        Mon, 14 Feb 2022 22:41:31 -0800 (PST)
-X-Gm-Message-State: AOAM532TOcXuCx8Y5vHNvLO3pvtqPpKj7/YYqVf93WR45A+26wnHIxiY
-        YoD3C0PlJKX4zwcdmTEtHe5h0abhwp7lcSz3NkE=
-X-Google-Smtp-Source: ABdhPJzswv2sMMGR1rXWoD7A42tM1dR/Z1aNC51Ziw3g8/36nUyzOBhKeFLX0p7x0D7ZhQw2xxq2Ng3glg3YGjqy2lM=
-X-Received: by 2002:a5b:a03:: with SMTP id k3mr2546249ybq.219.1644907290851;
- Mon, 14 Feb 2022 22:41:30 -0800 (PST)
-MIME-Version: 1.0
-References: <00000000000073b3e805d7fed17e@google.com> <462fa505-25a8-fd3f-cc36-5860c6539664@iogearbox.net>
-In-Reply-To: <462fa505-25a8-fd3f-cc36-5860c6539664@iogearbox.net>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 14 Feb 2022 22:41:19 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6rPx3JqpPdQVdZN-YtZp1SbuW1j+SVNs48UVEYv68s1A@mail.gmail.com>
-Message-ID: <CAPhsuW6rPx3JqpPdQVdZN-YtZp1SbuW1j+SVNs48UVEYv68s1A@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in bpf_jit_free
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     syzbot <syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Tue, 15 Feb 2022 01:41:59 -0500
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66268C1172
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 22:41:50 -0800 (PST)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220215064147epoutp031fb19538c68513839883927a2ac4bdf0~T4nsiV2ta2458624586epoutp03L
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:41:47 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220215064147epoutp031fb19538c68513839883927a2ac4bdf0~T4nsiV2ta2458624586epoutp03L
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1644907307;
+        bh=uYuVoc8TLG5pnyaXF/S+/Ss83yCwqhKJwuUxsFkXcD4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OZOGjYPbRrM1u60ro5V+x1GJI2VYxsqRqqk667N16j9+bLu1bLE39wuNW7kX2+4TM
+         5w+46K9FrCP4IjF5dU9LubU6A6nuNASsSKEKUlkdRyejXaoFj3/c6CSSC+twaSAZQX
+         w+so1Q/0jbwhUuytDQijuqPFg5SZlAi+7/FA2di4=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220215064147epcas2p2ad99f62b76f65789911defc7de98304a~T4nsKogGf2025620256epcas2p2Y;
+        Tue, 15 Feb 2022 06:41:47 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.69]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4JyWhm1XXqz4x9Q3; Tue, 15 Feb
+        2022 06:41:44 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        1A.52.35137.16A4B026; Tue, 15 Feb 2022 15:38:25 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220215064139epcas2p4669383cd1a2937ce5884335856be457d~T4nlaJU6z2843428434epcas2p4N;
+        Tue, 15 Feb 2022 06:41:39 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220215064139epsmtrp20c7fd16c90eb1427795db762e37dc096~T4nlYtDWi1742317423epsmtrp2D;
+        Tue, 15 Feb 2022 06:41:39 +0000 (GMT)
+X-AuditID: b6c32a46-da1ff70000018941-18-620b4a612069
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        80.53.08738.32B4B026; Tue, 15 Feb 2022 15:41:39 +0900 (KST)
+Received: from ubuntu (unknown [12.36.155.120]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220215064139epsmtip14d824f0e0cbc8c6cd20bd524ae674f66~T4nlPr6Di1847318473epsmtip1k;
+        Tue, 15 Feb 2022 06:41:39 +0000 (GMT)
+Date:   Tue, 15 Feb 2022 15:39:25 +0900
+From:   Jung Daehwan <dh10.jung@samsung.com>
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        "quic_wcheng@quicinc.com" <quic_wcheng@quicinc.com>,
+        "quic_jackp@quicinc.com" <quic_jackp@quicinc.com>
+Subject: Re: [PATCH v2 1/2] usb: dwc3: Not set DWC3_EP_END_TRANSFER_PENDING
+ in ep cmd fails
+Message-ID: <20220215063925.GC144890@ubuntu>
+MIME-Version: 1.0
+In-Reply-To: <ff604504-00df-0c1b-673e-892e42737f7a@synopsys.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprOJsWRmVeSWpSXmKPExsWy7bCmmW6iF3eSwcE1JhbH2p6wWzQvXs9m
+        cXnXHDaLRctamS12/VvEZLFpdx+rxaoFB9gd2D02repk89g/dw27x8Q9dR5b9n9m9Pi8SS6A
+        NSrbJiM1MSW1SCE1Lzk/JTMv3VbJOzjeOd7UzMBQ19DSwlxJIS8xN9VWycUnQNctMwfoCiWF
+        ssScUqBQQGJxsZK+nU1RfmlJqkJGfnGJrVJqQUpOgXmBXnFibnFpXrpeXmqJlaGBgZEpUGFC
+        dsadCZ+YCuZJVPTsvsDWwHhTuIuRk0NCwETi3/mnTF2MXBxCAjsYJW7f3MEI4XxilPi/4xAb
+        SJWQwGdGiWsXA2A6eqZfhCraxSjxfksjK4TzhFGi4fBOsA4WAVWJN1c/MYLYbAJaEvd+nGAG
+        sUUEdCQOnDgPto9ZYDmTRMf5k2AJYYFYiQvb2sCaeYGKJrVMYIawBSVOznzCAmJzCjhITOh9
+        ARTn4BAVUJF4dbAeZI6EwF92iTOHDzNDnOcisffmKlYIW1ji1fEt7BC2lMTnd3vZIOxiiV2f
+        WpkgmhsYJRofnIBqNpaY9awd7GpmgQyJvoZpLCDLJASUJY7cYoEI80l0HP7LDhHmlehoE4Lo
+        VJaYfnkC1FpJiYOvz0FN9JD43bsIGr69TBIrrvYyT2CUn4XktVlItkHYOhILdn9imwW0gllA
+        WmL5Pw4IU1Ni/S79BYysqxjFUguKc9NTi40KjOCxnZyfu4kRnEK13HYwTnn7Qe8QIxMH4yFG
+        CQ5mJRHeuLOcSUK8KYmVValF+fFFpTmpxYcYTYERNZFZSjQ5H5jE80riDU0sDUzMzAzNjUwN
+        zJXEeb1SNiQKCaQnlqRmp6YWpBbB9DFxcEo1MO22a/eaFWxumpoUcWmBsoP7dVNehS8L5opo
+        XZh6t8fqhIl94oSbE670Ch7+tUrjB+fEsz4LXD3LOj8oLxTV5X2ttGtHaJOqgPlEnn0dL223
+        8/XFb77j/jvog8rJ1abd7zco//vOv9rS/FHZ5xVPJJqXX9uzjDXhzzxlpfqoNbc2/Stwc5Ey
+        W7U7YFX0FMuiqJmcX3wiAgQm9JYf/nOyI97XRXLJO5XAzbZRdhqXerwfbgmcZinKsZir5dL+
+        yV1FaUq1J9tYNCX2/lKWeRFiEh3w7Y75N+dNUnvZlsZuVGu6Iq+W9uU+pwNfg/1MBvOPz1LC
+        X26YkLI79O2yuSlxBR1eMXfCf8vfl5GsvqfwUImlOCPRUIu5qDgRAMUnHnMqBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrLLMWRmVeSWpSXmKPExsWy7bCSnK6yN3eSwZ8jGhbH2p6wWzQvXs9m
+        cXnXHDaLRctamS12/VvEZLFpdx+rxaoFB9gd2D02repk89g/dw27x8Q9dR5b9n9m9Pi8SS6A
+        NYrLJiU1J7MstUjfLoErY/LKS4wF90QrVvz/xNTAuEmwi5GTQ0LARKJn+kXGLkYuDiGBHYwS
+        Hx+9Y4RISEosnXuDHcIWlrjfcoQVougRo8SxfavAEiwCqhJvrn4Ca2AT0JK49+MEM4gtIqAj
+        ceDEeSaQBmaBlUwSU7vmsoIkhAViJS5sa2MDsXmBiia1TGCGmNrLJLH+1ERWiISgxMmZT1hA
+        bGagqTf+vQSaxAFkS0ss/8cBEuYUcJCY0PuCGSQsKqAi8epg/QRGwVlImmchaZ6F0LyAkXkV
+        o2RqQXFuem6xYYFRXmq5XnFibnFpXrpecn7uJkZwDGhp7WDcs+qD3iFGJg7GQ4wSHMxKIrxx
+        ZzmThHhTEiurUovy44tKc1KLDzFKc7AoifNe6DoZLySQnliSmp2aWpBaBJNl4uCUamDKYLP9
+        Oql3YtYdKdOEW73hXAfVd8lNemW5vdBnJ4PJpzdN5f29Yq0r+z8qduzk1VZgtPoUuM5Lep78
+        Fkdjb9FrqtbNmxTmf91dUj7ft4iRcVYyixrr+pnPJGOlBP5+4Tqo5nXQWnST1TTXe0L/62Zf
+        jNtneH3bruD1XE4/Ol6wab+sYeX1LDytbHCvW2bXujt7SqPD1wl3d6/L9DCJmPzV4uapQ9VL
+        n+efWh4TPnft440dzzwZzLae1tdStd6yfc3DkxOX5S2SYrTQe8Qhyvn4XtLE49f5HBbsSLGr
+        2Ko77+JRC8PfTY5rn59MzvT4KLq5KKloZUxnd+fEwv6f3h23Fj79lKHx+/x6pVyxFR+VWIoz
+        Eg21mIuKEwFJTdE08AIAAA==
+X-CMS-MailID: 20220215064139epcas2p4669383cd1a2937ce5884335856be457d
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----.rW42XXn7_Ji6OxwuAF4RAMbP.qed.OeqKlvEhSLhB3noATS=_e8880_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220214111149epcas2p1a1faeda037991885fd6f2f026fa44ec5
+References: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
+        <CGME20220214111149epcas2p1a1faeda037991885fd6f2f026fa44ec5@epcas2p1.samsung.com>
+        <1644836933-141376-2-git-send-email-dh10.jung@samsung.com>
+        <ff604504-00df-0c1b-673e-892e42737f7a@synopsys.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 3:52 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Song, ptal.
->
-> On 2/14/22 7:45 PM, syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-> > git tree:       bpf-next
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=10baced8700000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=2f649ec6d2eea1495a8f
-> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> >
-> > Unfortunately, I don't have any reproducer for this issue yet.
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com
-> >
-> > ==================================================================
-> > BUG: KASAN: vmalloc-out-of-bounds in bpf_jit_binary_pack_free kernel/bpf/core.c:1120 [inline]
-> > BUG: KASAN: vmalloc-out-of-bounds in bpf_jit_free+0x2b5/0x2e0 kernel/bpf/core.c:1151
-> > Read of size 4 at addr ffffffffa0001a80 by task kworker/0:18/13642
-> >
-> > CPU: 0 PID: 13642 Comm: kworker/0:18 Not tainted 5.16.0-syzkaller-11655-ge5313968c41b #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Workqueue: events bpf_prog_free_deferred
-> > Call Trace:
-> >   <TASK>
-> >   __dump_stack lib/dump_stack.c:88 [inline]
-> >   dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-> >   print_address_description.constprop.0.cold+0xf/0x336 mm/kasan/report.c:255
-> >   __kasan_report mm/kasan/report.c:442 [inline]
-> >   kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
-> >   bpf_jit_binary_pack_free kernel/bpf/core.c:1120 [inline]
-> >   bpf_jit_free+0x2b5/0x2e0 kernel/bpf/core.c:1151
-> >   bpf_prog_free_deferred+0x5c1/0x790 kernel/bpf/core.c:2524
-> >   process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
-> >   worker_thread+0x657/0x1110 kernel/workqueue.c:2454
-> >   kthread+0x2e9/0x3a0 kernel/kthread.c:377
-> >   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-> >   </TASK>
+------.rW42XXn7_Ji6OxwuAF4RAMbP.qed.OeqKlvEhSLhB3noATS=_e8880_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
-I think this is the same issue as [1], that the 2MB page somehow got freed
-while still in use. I couldn't spot any bug with bpf_prog_pack allocate/free
-logic. I haven't got luck reproducing it either. Will continue tomorrow.
+Hi Thinh,
 
+On Mon, Feb 14, 2022 at 06:44:33PM +0000, Thinh Nguyen wrote:
+> Hi,
+> 
+> Daehwan Jung wrote:
+> > It always sets DWC3_EP_END_TRANSFER_PENDING in dwc3_stop_active_transfer
+> > even if dwc3_send_gadget_ep_cmd fails. It can cause some problems like
+> 
+> How does it fail? Timed out?
 
-[1] https://lore.kernel.org/netdev/0000000000007646bd05d7f81943@google.com/t/
+Yes, timed out.
+> 
+> > skipping clear stall commmand or giveback from dequeue. We fix to set it
+> > only when ep cmd success. Additionally, We clear DWC3_EP_TRANSFER_STARTED
+> > for next trb to start transfer not update transfer.
+> 
+> We shouldn't do this. Things will be out of sync. It may work for 1
+> scenario, but it won't work for others.
+> 
+> Please help me understand a few things:
+> 
+> 1) What is the scenario that triggers this? Is it random?
+> 
+ep cmd timeout occurs on dequeue request from user side. End Transfer command
+would be sent in dwc3_stop_active transfer.
 
-> >
-> >
-> > Memory state around the buggy address:
-> >   ffffffffa0001980: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >   ffffffffa0001a00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >> ffffffffa0001a80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >                     ^
-> >   ffffffffa0001b00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >   ffffffffa0001b80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> > ==================================================================
-> >
-> >
+> 2) Are there other traffics pending while issuing the End Transfer
+> command? If so, what transfer type(s)?
+> 
+I haven't checked it yet. 
+
+> 3) Have you tried increasing the timeout?
+> 
+No, I haven't.
+> BR,
+> Thinh
+> 
+
+This issue occurs very rarely on customer. I only have restricted
+information. That's why I've been trying to reproduce it.
+
+Wesley may have run into same issue and you can see this issue in detail.
+https://protect2.fireeye.com/v1/url?k=9d423b69-fc3fd32e-9d43b026-74fe485fff30-77a099b52659410d&q=1&e=20b4d9f5-2599-4f57-8b6a-7c4ec167d228&u=https%3A%2F%2Flore.kernel.org%2Flinux-usb%2F20220203080017.27339-1-quic_wcheng%40quicinc.com%2F
+
+Best Regards,
+Jung Daehwan
+> 
+> > 
+> > Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
 > > ---
-> > This report is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this issue. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> >
->
+> >  drivers/usb/dwc3/gadget.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+> > index 183b90923f51..3ad3bc5813ca 100644
+> > --- a/drivers/usb/dwc3/gadget.c
+> > +++ b/drivers/usb/dwc3/gadget.c
+> > @@ -2044,6 +2044,12 @@ static int dwc3_gadget_ep_dequeue(struct usb_ep *ep,
+> >  				dwc3_gadget_move_cancelled_request(r,
+> >  						DWC3_REQUEST_STATUS_DEQUEUED);
+> >  
+> > +			/* If ep cmd fails, then force to giveback cancelled requests here */
+> > +			if (!(dep->flags & DWC3_EP_END_TRANSFER_PENDING)) {
+> > +				dep->flags &= ~DWC3_EP_TRANSFER_STARTED;
+> > +				dwc3_gadget_ep_cleanup_cancelled_requests(dep);
+> > +			}
+> > +
+> >  			dep->flags &= ~DWC3_EP_WAIT_TRANSFER_COMPLETE;
+> >  
+> >  			goto out;
+> > @@ -3645,7 +3651,7 @@ static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
+> >  
+> >  	if (!interrupt)
+> >  		dep->flags &= ~DWC3_EP_TRANSFER_STARTED;
+> > -	else
+> > +	else if (!ret)
+> >  		dep->flags |= DWC3_EP_END_TRANSFER_PENDING;
+> >  }
+> >  
+> 
+
+------.rW42XXn7_Ji6OxwuAF4RAMbP.qed.OeqKlvEhSLhB3noATS=_e8880_
+Content-Type: text/plain; charset="utf-8"
+
+
+------.rW42XXn7_Ji6OxwuAF4RAMbP.qed.OeqKlvEhSLhB3noATS=_e8880_--
