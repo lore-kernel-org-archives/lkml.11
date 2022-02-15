@@ -2,50 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CCAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 20:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE399C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 20:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239034AbiBOUxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 15:53:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48588 "EHLO
+        id S244227AbiBOUyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 15:54:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237170AbiBOUxv (ORCPT
+        with ESMTP id S243103AbiBOUyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 15:53:51 -0500
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDFD626AF7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 12:53:39 -0800 (PST)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nK4pP-0003YA-00; Tue, 15 Feb 2022 21:53:39 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 8C25FC24F5; Tue, 15 Feb 2022 21:52:56 +0100 (CET)
-Date:   Tue, 15 Feb 2022 21:52:56 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Nemanja Rakovic <nemanja.rakovic@syrmia.com>
-Cc:     linux-kernel@vger.kernel.org, dragan.mladjenovic@syrmia.com,
-        elver@google.com
-Subject: Re: [PATCH V2] mips: Enable KCSAN
-Message-ID: <20220215205256.GA27866@alpha.franken.de>
-References: <20220211162142.2402-1-nemanja.rakovic@syrmia.com>
+        Tue, 15 Feb 2022 15:54:04 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DBE27165;
+        Tue, 15 Feb 2022 12:53:53 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nK4pa-0007bZ-UA; Tue, 15 Feb 2022 21:53:50 +0100
+Message-ID: <2adc3231-2f5c-78c0-7a68-e5a8a1363b55@leemhuis.info>
+Date:   Tue, 15 Feb 2022 21:53:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220211162142.2402-1-nemanja.rakovic@syrmia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] Input: psmouse - set up dependency between PS/2 and SMBus
+ companions
+Content-Language: en-BZ
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rajat Jain <rajatja@google.com>, Wolfram Sang <wsa@kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Hugh Dickins <hughd@google.com>, linux-kernel@vger.kernel.org
+References: <YgwQN8ynO88CPMju@google.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <YgwQN8ynO88CPMju@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1644958433;d8100e34;
+X-HE-SMSGID: 1nK4pa-0007bZ-UA
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 05:21:42PM +0100, Nemanja Rakovic wrote:
-> This patch enables KCSAN for the 64-bit version. Updated rules
-> for the incompatible compilation units (vdso, boot/compressed).
 
-I've applied your first patch, please send a patch, which applies
-to mips-next.
 
-Thomas.
+On 15.02.22 21:42, Dmitry Torokhov wrote:
+> When we switch from emulated PS/2 to native (RMI4 or Elan) protocols, we
+> create SMBus companion devices that are attached to I2C/SMBus controllers.
+> However, when suspending and resuming, we also need to make sure that we
+> take into account the PS/2 device they are associated with, so that PS/2
+> device is suspended after the companion and resumed before it, otherwise
+> companions will not work properly. Before I2C devices were marked for
+> asynchronous suspend/resume, this ordering happened naturally, but now we
+> need to enforce it by establishing device links, with PS/2 devices being
+> suppliers and SMBus companions being consumers.
+> 
+> Fixes: 172d931910e1 ("i2c: enable async suspend/resume on i2c client devices")
+> Reported-and-tested-by: Hugh Dickins <hughd@google.com>
+> Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+If you respin or commit this patch, could you please add the link to the
+report, as explained in 'Documentation/process/submitting-patches.rst'
+and 'Documentation/process/5.Posting.rst':
+
+Link:
+https://lore.kernel.org/r/89456fcd-a113-4c82-4b10-a9bcaefac68f@google.com
+
+This would be helpful for me, as this is a regression tracked by
+regzbot, my Linux kernel regression tracking bot, which then is able to
+assign threads like this with the regression report and mark the
+regression as resolved once the fix lands in the appropriate tree. tia!
+
+Ciao, Thorsten
+
+#regzbot ^backmonitor:
+https://lore.kernel.org/r/89456fcd-a113-4c82-4b10-a9bcaefac68f@google.com
+
