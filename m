@@ -2,133 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F20ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA63C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241191AbiBOPqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:46:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60278 "EHLO
+        id S241014AbiBOPqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:46:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241231AbiBOPp6 (ORCPT
+        with ESMTP id S241171AbiBOPqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:45:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359E7D15C6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:42:59 -0800 (PST)
+        Tue, 15 Feb 2022 10:46:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905FDF11A4
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:43:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FEC56173E
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 15:42:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF950C340EB;
-        Tue, 15 Feb 2022 15:42:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E0C8B81AFB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 15:43:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2B52C340EB;
+        Tue, 15 Feb 2022 15:43:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939778;
-        bh=vzyFMhGsfn/rk38bV9aGlalnsputB6BGCOL+8B6o7Ag=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cNI7u7wCnN07cGh93W7Jd2myp7Re0Mh/JT2m2U4uaG4f9AeseBcC/QduH/JcqR04y
-         cP5NTTOKadVvlnJHKQICUaTDLLqurPFWI9LN+Lm27I6SM+jRQB/YfyBmEVNGETBSip
-         B8P2lD1yNsvJ1H0/skAMArzHE2BsIntxz39fGWxnxLUA3h79TO5ny3U4vfgQCotx1m
-         KsZPsbtJ7LGVFW56/a4/r/i/yUGNHH1Hdwl7X/pM0qLmwA5Ia6WbkVOBO6R+6FGLGY
-         EtagshxnP+Kt9dJlwccOjjLqEAdZu6+gaqTzJ3vor5es0Ap3N5RFxdg3ITxcSL5qkZ
-         ZugoJMetxYw/w==
-Date:   Tue, 15 Feb 2022 23:34:59 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Atish Patra <atishp@rivosinc.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        ryabinin.a.a@gmail.com, glider@google.com, andreyknvl@gmail.com,
-        dvyukov@google.com, alexandre.ghiti@canonical.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Subject: Re: [PATCH 0/3] unified way to use static key and optimize
- pgtable_l4_enabled
-Message-ID: <YgvIIw1CV4gxn2lS@xhacker>
-References: <20220125165036.987-1-jszhang@kernel.org>
- <mhng-41f2520d-7583-41b3-ae7a-95e74117676a@palmer-ri-x1c9>
+        s=k20201202; t=1644939791;
+        bh=SKGn7wND7KsEt36XShzXq7j0Folx5a1fiX2ekqpJ1GI=;
+        h=Date:From:To:cc:Subject:From;
+        b=fNOn8vALJVmXGzrsUX16C3s9cuKmdnX0wryuVtmQkiLH1ftCdRaHdgu22H+w9XMvK
+         0Mbyn1H9RHQQ0r91MwaVV7f30yl+XkCR/FAUufv9VZDr+daiQNlo5m7DmN4x5tvDth
+         0KEKd0160VQny9iNZkiF4gtaZ/ei6RVSeeZeUPeysacJQI1bptdzIgzCn5USOSJPvJ
+         8yZz364boDacSkjWahmjLbyTrVQ54ubVtZ/6U/TbAMhniGDX9eZjf2SnYSIjeZXz4o
+         r7qnOGi+WQq8EgHM2cARhgS8g/J7NryPHpYm0G0o4JNoDRbkxMULPi+zzgFXvhihDu
+         0zBy5sr4uK2YA==
+Date:   Tue, 15 Feb 2022 16:43:08 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sebastian Siewior <bigeasy@linutronix.de>
+cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm: fb-helper: Avoid nesting spinlock_t into
+ raw_spinlock_t
+Message-ID: <nycvar.YFH.7.76.2202151640200.11721@cbobk.fhfr.pm>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <mhng-41f2520d-7583-41b3-ae7a-95e74117676a@palmer-ri-x1c9>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 03:52:44PM -0800, Palmer Dabbelt wrote:
-> On Tue, 25 Jan 2022 08:50:33 PST (-0800), jszhang@kernel.org wrote:
-> > Currently, riscv has several features why may not be supported on all
-> > riscv platforms, for example, FPU, SV48 and so on. To support unified
-> > kernel Image style, we need to check whether the feature is suportted
-> > or not. If the check sits at hot code path, then performance will be
-> > impacted a lot. static key can be used to solve the issue. In the
-> > past FPU support has been converted to use static key mechanism. I
-> > believe we will have similar cases in the future. For example, the
-> > SV48 support can take advantage of static key[1].
-> > 
-> > patch1 introduces an unified mechanism to use static key for riscv cpu
-> > features.
-> > patch2 converts has_cpu() to use the mechanism.
-> > patch3 uses the mechanism to optimize pgtable_l4_enabled.
-> > 
-> > [1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/011164.html
-> > 
-> > Jisheng Zhang (3):
-> >   riscv: introduce unified static key mechanism for CPU features
-> >   riscv: replace has_fpu() with system_supports_fpu()
-> >   riscv: convert pgtable_l4_enabled to static key
-> 
-> I see some build failures from LKP, but I don't see a v2.  LMK if I missed
-> it.
+From: Jiri Kosina <jkosina@suse.cz>
 
-Hi Palmer,
+drm_fb_helper_damage() is acquiring spinlock_t (helper->damage_lock), 
+while it can be called from contexts where raw_spinlock_t is held (e.g. 
+console_owner lock obtained on vprintk_emit() codepath).
 
-I also saw the build failure due to RV32, fixing it is easy but I have
-some thoughts/questions here after reading Atish's "fraemework for RISC-V
-ISA extensions" series. 
+As the critical sections protected by damage_lock are super-tiny, let's 
+fix this by converting it to raw_spinlock_t in order not to violate 
+PREEMPT_RT-imposed lock nesting rules.
 
-Hi All,
+This fixes the splat below.
 
-I'm considering how to support cpu features or new ISA extensions.
-IMHO, we will need some static keys for ISA extenstions as well as
-the cpu features. for example:
+ =============================
+ [ BUG: Invalid wait context ]
+ 5.17.0-rc4-00002-gd567f5db412e #1 Not tainted
+ -----------------------------
+ swapper/0/0 is trying to lock:
+ ffff8c5687cc4158 (&helper->damage_lock){....}-{3:3}, at: drm_fb_helper_damage.isra.22+0x4a/0xf0
+ other info that might help us debug this:
+ context-{2:2}
+ 3 locks held by swapper/0/0:
+  #0: ffffffffad776520 (console_lock){+.+.}-{0:0}, at: vprintk_emit+0xb8/0x2a0
+  #1: ffffffffad696120 (console_owner){-...}-{0:0}, at: console_unlock+0x17f/0x550
+  #2: ffffffffad926a58 (printing_lock){....}-{3:3}, at: vt_console_print+0x7d/0x3e0
+ stack backtrace:
+ CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc4-00002-gd567f5db412e #1 bed1d5e19e0e7e8c9d97fd8afa1322f7f47a4f38
+ Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
+ Call Trace:
+  <IRQ>
+  dump_stack_lvl+0x58/0x71
+  __lock_acquire+0x165b/0x1780
+  ? secondary_startup_64_no_verify+0xd5/0xdb
+  lock_acquire+0x278/0x300
+  ? drm_fb_helper_damage.isra.22+0x4a/0xf0
+  ? save_trace+0x3e/0x340
+  ? __bfs+0x10f/0x240
+  _raw_spin_lock_irqsave+0x48/0x60
+  ? drm_fb_helper_damage.isra.22+0x4a/0xf0
+  drm_fb_helper_damage.isra.22+0x4a/0xf0
+  soft_cursor+0x194/0x240
+  bit_cursor+0x386/0x630
+  ? get_color+0x29/0x120
+  ? bit_putcs+0x4b0/0x4b0
+  ? console_unlock+0x17f/0x550
+  hide_cursor+0x2f/0x90
+  vt_console_print+0x3c5/0x3e0
+  ? console_unlock+0x17f/0x550
+  console_unlock+0x515/0x550
+  vprintk_emit+0x1c8/0x2a0
+  _printk+0x52/0x6e
+  ? sched_clock_tick+0x3d/0x60
+  collect_cpu_info_amd+0x93/0xd0
+  collect_cpu_info_local+0x23/0x30
+  flush_smp_call_function_queue+0x137/0x220
+  __sysvec_call_function_single+0x43/0x1c0
+  sysvec_call_function_single+0x43/0x80
+  </IRQ>
+  <TASK>
+  asm_sysvec_call_function_single+0x12/0x20
+ RIP: 0010:cpuidle_enter_state+0x111/0x4b0
+ Code: 7c ff 45 84 ff 74 17 9c 58 0f 1f 44 00 00 f6 c4 02 0f 85 71 03 00 00 31 ff e8 bb 21 86 ff e8 76 2f 8e ff fb 66 0f 1f 44 00 00 <45> 85 f6 0f 88 12 01 00 00 49 63 d6 4c 2b 24 24 48 8d 04 52 48 8d
+ RSP: 0018:ffffffffad603e48 EFLAGS: 00000206
+ RAX: 00000000000127c3 RBX: 0000000000000003 RCX: 0000000000000000
+ RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffffac32617a
+ RBP: ffff8c5687ba4400 R08: 0000000000000001 R09: 0000000000000001
+ R10: ffffffffad603e10 R11: 0000000000000000 R12: 00000000685eb4a0
+ R13: ffffffffad918f80 R14: 0000000000000003 R15: 0000000000000000
+  ? cpuidle_enter_state+0x10a/0x4b0
+  ? cpuidle_enter_state+0x10a/0x4b0
+  cpuidle_enter+0x29/0x40
+  do_idle+0x24d/0x2c0
+  cpu_startup_entry+0x19/0x20
+  start_kernel+0x9c2/0x9e9
+  secondary_startup_64_no_verify+0xd5/0xdb
+  </TASK>
 
-if (static_branch_likely(&has_isa_ext_foo))
-	do_something;
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+---
+ drivers/gpu/drm/drm_fb_helper.c | 14 +++++++-------
+ include/drm/drm_fb_helper.h     |  2 +-
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-So I have a big question here about CPU features VS. ISA extensions:
+diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+index ed43b987d306..7c4ab6e6f865 100644
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -436,11 +436,11 @@ static void drm_fb_helper_damage_work(struct work_struct *work)
+ 	unsigned long flags;
+ 	int ret;
+ 
+-	spin_lock_irqsave(&helper->damage_lock, flags);
++	raw_spin_lock_irqsave(&helper->damage_lock, flags);
+ 	clip_copy = *clip;
+ 	clip->x1 = clip->y1 = ~0;
+ 	clip->x2 = clip->y2 = 0;
+-	spin_unlock_irqrestore(&helper->damage_lock, flags);
++	raw_spin_unlock_irqrestore(&helper->damage_lock, flags);
+ 
+ 	/* Call damage handlers only if necessary */
+ 	if (!(clip_copy.x1 < clip_copy.x2 && clip_copy.y1 < clip_copy.y2))
+@@ -465,12 +465,12 @@ static void drm_fb_helper_damage_work(struct work_struct *work)
+ 	 * Restore damage clip rectangle on errors. The next run
+ 	 * of the damage worker will perform the update.
+ 	 */
+-	spin_lock_irqsave(&helper->damage_lock, flags);
++	raw_spin_lock_irqsave(&helper->damage_lock, flags);
+ 	clip->x1 = min_t(u32, clip->x1, clip_copy.x1);
+ 	clip->y1 = min_t(u32, clip->y1, clip_copy.y1);
+ 	clip->x2 = max_t(u32, clip->x2, clip_copy.x2);
+ 	clip->y2 = max_t(u32, clip->y2, clip_copy.y2);
+-	spin_unlock_irqrestore(&helper->damage_lock, flags);
++	raw_spin_unlock_irqrestore(&helper->damage_lock, flags);
+ }
+ 
+ /**
+@@ -486,7 +486,7 @@ void drm_fb_helper_prepare(struct drm_device *dev, struct drm_fb_helper *helper,
+ 			   const struct drm_fb_helper_funcs *funcs)
+ {
+ 	INIT_LIST_HEAD(&helper->kernel_fb_list);
+-	spin_lock_init(&helper->damage_lock);
++	raw_spin_lock_init(&helper->damage_lock);
+ 	INIT_WORK(&helper->resume_work, drm_fb_helper_resume_worker);
+ 	INIT_WORK(&helper->damage_work, drm_fb_helper_damage_work);
+ 	helper->damage_clip.x1 = helper->damage_clip.y1 = ~0;
+@@ -670,12 +670,12 @@ static void drm_fb_helper_damage(struct fb_info *info, u32 x, u32 y,
+ 	if (!drm_fbdev_use_shadow_fb(helper))
+ 		return;
+ 
+-	spin_lock_irqsave(&helper->damage_lock, flags);
++	raw_spin_lock_irqsave(&helper->damage_lock, flags);
+ 	clip->x1 = min_t(u32, clip->x1, x);
+ 	clip->y1 = min_t(u32, clip->y1, y);
+ 	clip->x2 = max_t(u32, clip->x2, x + width);
+ 	clip->y2 = max_t(u32, clip->y2, y + height);
+-	spin_unlock_irqrestore(&helper->damage_lock, flags);
++	raw_spin_unlock_irqrestore(&helper->damage_lock, flags);
+ 
+ 	schedule_work(&helper->damage_work);
+ }
+diff --git a/include/drm/drm_fb_helper.h b/include/drm/drm_fb_helper.h
+index 3af4624368d8..91178958896e 100644
+--- a/include/drm/drm_fb_helper.h
++++ b/include/drm/drm_fb_helper.h
+@@ -131,7 +131,7 @@ struct drm_fb_helper {
+ 	struct fb_info *fbdev;
+ 	u32 pseudo_palette[17];
+ 	struct drm_clip_rect damage_clip;
+-	spinlock_t damage_lock;
++	raw_spinlock_t damage_lock;
+ 	struct work_struct damage_work;
+ 	struct work_struct resume_work;
+ 
 
-1. Is CPU feature == ISA extension?
-If yes, then it seems we'd better rebase this series on the ISA
-extension series. If no, which is the super set? If CPU feature
-is the super set, then if one kind of future cpu feature is implemented
-via. the ISA extension, do we need to combine the cpu feature bitmap
-with the ISA extension bitmap? how?
+-- 
+Jiri Kosina
+SUSE Labs
 
-2. Is SV48 considered as riscv ISA extension?
-
-I will also comment in Atish's series.
-
-Thanks
-
-> 
-> > 
-> >  arch/riscv/Makefile                 |   3 +
-> >  arch/riscv/include/asm/cpufeature.h | 105 ++++++++++++++++++++++++++++
-> >  arch/riscv/include/asm/pgalloc.h    |   8 +--
-> >  arch/riscv/include/asm/pgtable-64.h |  21 +++---
-> >  arch/riscv/include/asm/pgtable.h    |   3 +-
-> >  arch/riscv/include/asm/switch_to.h  |   9 +--
-> >  arch/riscv/kernel/cpu.c             |   2 +-
-> >  arch/riscv/kernel/cpufeature.c      |  29 ++++++--
-> >  arch/riscv/kernel/process.c         |   2 +-
-> >  arch/riscv/kernel/signal.c          |   4 +-
-> >  arch/riscv/mm/init.c                |  23 +++---
-> >  arch/riscv/mm/kasan_init.c          |   6 +-
-> >  arch/riscv/tools/Makefile           |  22 ++++++
-> >  arch/riscv/tools/cpucaps            |   6 ++
-> >  arch/riscv/tools/gen-cpucaps.awk    |  40 +++++++++++
-> >  15 files changed, 234 insertions(+), 49 deletions(-)
-> >  create mode 100644 arch/riscv/include/asm/cpufeature.h
-> >  create mode 100644 arch/riscv/tools/Makefile
-> >  create mode 100644 arch/riscv/tools/cpucaps
-> >  create mode 100755 arch/riscv/tools/gen-cpucaps.awk
