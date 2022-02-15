@@ -2,79 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F75C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23491C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:41:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238790AbiBOOkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:40:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48826 "EHLO
+        id S238782AbiBOOl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:41:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238776AbiBOOk2 (ORCPT
+        with ESMTP id S233326AbiBOOlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:40:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6F610242B;
-        Tue, 15 Feb 2022 06:40:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 15 Feb 2022 09:41:25 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB872102429;
+        Tue, 15 Feb 2022 06:41:14 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D34CEB81A6B;
-        Tue, 15 Feb 2022 14:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 97BE9C340FE;
-        Tue, 15 Feb 2022 14:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644936011;
-        bh=BTyAeRKUCX4nKPYoAM+bIom35KvgaYtL0Oy8gSmCoDE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YejL76nfui5aLYADmVTo96nTaPeaEnTJ02HyrUARC4v5zor6etUqN0+K5WStyL5fE
-         3YooPk6lOcE8aRNvxIgvP893jhsYIBli59Lcnvx5PU1eazIjC63IywLGcuj/7uwIy7
-         2+1QhDI8a7OypWcHU2u3HocIEQKpIQ4dCuvaK9qcqmHvfBrVHH8Y9sSRdbYCoRHuje
-         snAEwJiGXKX2+VxznNVy2WhwEDeRaco8oca11+B8L3O0gQvBacpphbP8jPkKbAOAx6
-         etIhHrL6ZdS5IiQsnnjM04DNNyLFA1Ksc/mt/OXW1Jd68LoVeIEZHmvWX6d0w9rjxL
-         WfaVPfm5yosWg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 84E5EE6D447;
-        Tue, 15 Feb 2022 14:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 165F71EC0518;
+        Tue, 15 Feb 2022 15:41:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644936069;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=SHIy0JOracxSZUX44JRM2zOEiCF50L0BbqI7lPnq/lg=;
+        b=D+daksFOoyoSLR0f2z09XUHDSNPn8LQA3tsgm5xo8bZfaH0AXftJ1PbhtIB8uFRTlDgeN3
+        IhZrPaWjYY55BMCz3b9qcWUAeCmuhJ5xY1m5uq066+kwXprdzCQI0pJsdrNDTp0Rcll5OI
+        qAHnm6YoNPR0BXK0WMHqnRqjx57sXwA=
+Date:   Tue, 15 Feb 2022 15:41:10 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v10 21/45] x86/mm: Add support to validate memory when
+ changing C-bit
+Message-ID: <Ygu7hotAeHAFWn6Y@zn.tnic>
+References: <20220209181039.1262882-1-brijesh.singh@amd.com>
+ <20220209181039.1262882-22-brijesh.singh@amd.com>
+ <YgZ427v95xcdOKSC@zn.tnic>
+ <0242e383-5406-7504-ff3d-cf2e8dfaf8a3@amd.com>
+ <Ygj2Wx6jtNEEmbh9@zn.tnic>
+ <20220215124331.i4vgww733fv5owrx@box.shutemov.name>
+ <YguimA5Au4t2A4oj@zn.tnic>
+ <20220215131522.l3xytgmy4ufrgnlb@box.shutemov.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: hso: Use GFP_KERNEL instead of GFP_ATOMIC when possible
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164493601153.31968.17892021066503340871.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Feb 2022 14:40:11 +0000
-References: <93e4c78983de9a20b1f9009d79116591f20fd1c2.1644865733.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <93e4c78983de9a20b1f9009d79116591f20fd1c2.1644865733.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220215131522.l3xytgmy4ufrgnlb@box.shutemov.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Tue, Feb 15, 2022 at 04:15:22PM +0300, Kirill A. Shutemov wrote:
+> I have no problem with cc_vendor idea. It looks good.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Good.
 
-On Mon, 14 Feb 2022 20:09:06 +0100 you wrote:
-> hso_create_device() is only called from function that already use
-> GFP_KERNEL. And all the callers are called from the probe function.
-> 
-> So there is no need here to explicitly require a GFP_ATOMIC when
-> allocating memory.
-> 
-> Use GFP_KERNEL instead.
-> 
-> [...]
+> Regarding the masks, if we want to have common ground here we can add two
+> mask: cc_enc_mask and cc_dec_mask. And then
 
-Here is the summary with links:
-  - net: hso: Use GFP_KERNEL instead of GFP_ATOMIC when possible
-    https://git.kernel.org/netdev/net-next/c/25ce79db8042
+If we do two masks, then we can just as well leave the SME and TDX
+masks. The point of the whole exercise is to have simpler code and less
+ifdeffery.
 
-You are awesome, thank you!
+If you "hide" how the mask works on each vendor in the respective
+functions - and yes, cc_pgprot_dec/enc() reads better - then it doesn't
+matter how the mask is defined.
+
+Because you don't need two masks to encrypt/decrypt pages - you need a
+single mask but apply it differently.
+
+Thx.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Regards/Gruss,
+    Boris.
 
-
+https://people.kernel.org/tglx/notes-about-netiquette
