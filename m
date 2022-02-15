@@ -2,104 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B08C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D698FC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241872AbiBOQvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:51:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54232 "EHLO
+        id S241814AbiBOQvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:51:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241858AbiBOQvU (ORCPT
+        with ESMTP id S236536AbiBOQv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:51:20 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9876A106CA7;
-        Tue, 15 Feb 2022 08:51:09 -0800 (PST)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21FG1nTu001948;
-        Tue, 15 Feb 2022 17:50:58 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=cjdEShfKMKC+qYG/BmCue2eoWLD6Gukv/NZ/2okXZAg=;
- b=iivh1/QLECPKf9XmoBWR0evY7JlNLLGaPJWS4ODuuQupaBpm+KKt2cYOTzmSiIoWT6i7
- 4zLRFC8f4NmGTV7vDfbR3jzCyApAGeIRkWYrJIqMBzT9dwrD2Y31I1H1VSIM2r4bIAa6
- aafz2o95nHgHTD764JU1GgDdk1SNBz7CJmYj1ganlnPBCW9X0oiUOZHk5ADWgihcKz+Z
- vKa/9XX4VwwQDkydNMlyAYDTEYhjmwN9B0fLpK2wAllMVaHAYwwl9BpWqBi3t4fMR8MI
- b0saUhmzYoWP8Naeoya78tTx+odu1MRVrL4tVdY9Pc5Ic3OUFCktTVSt/Ttc1yuxFVM7 5Q== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e7pj7r56n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 17:50:58 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5A8BE10002A;
-        Tue, 15 Feb 2022 17:50:58 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5412B22F7D1;
-        Tue, 15 Feb 2022 17:50:58 +0100 (CET)
-Received: from [10.201.21.201] (10.75.127.51) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 15 Feb
- 2022 17:50:57 +0100
-Message-ID: <5c115097-b6a0-f41e-3b85-9e49d1a04e08@foss.st.com>
-Date:   Tue, 15 Feb 2022 17:50:57 +0100
+        Tue, 15 Feb 2022 11:51:28 -0500
+Received: from hs01.dk-develop.de (hs01.dk-develop.de [IPv6:2a02:c207:3002:6234::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251891074D4;
+        Tue, 15 Feb 2022 08:51:18 -0800 (PST)
+From:   Danilo Krummrich <danilokrummrich@dk-develop.de>
+To:     krzysztof.kozlowski@canonical.com, dmitry.torokhov@gmail.com,
+        robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linus.walleij@linaro.org
+Subject: dt-bindings: ps2-gpio: convert binding to json-schema
+Date:   Tue, 15 Feb 2022 17:51:11 +0100
+Message-Id: <20220215165113.52659-1-danilokrummrich@dk-develop.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 5/7] ARM: dts: sti: remove delta node from stih410.dtsi
-Content-Language: en-US
-To:     Alain Volmat <avolmat@me.com>, Rob Herring <robh+dt@kernel.org>
-CC:     Arnd Bergmann <arnd@arndb.de>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220211181614.683497-1-avolmat@me.com>
- <20220211181614.683497-6-avolmat@me.com>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20220211181614.683497-6-avolmat@me.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-15_04,2022-02-14_04,2021-12-02_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi ALain
+Changes since v1
+================
+  - binding as separate patch (driver patch will be sent outside the scope of
+    this patch series)
+  - fixes requested by Krzysztof
+  - fix warnings/errors reported by 'make dt_binding_check'
 
-On 2/11/22 19:16, Alain Volmat wrote:
-> The delta0 node within stih410.dtsi is identical to the
-> one already written within stih407-family.dtsi and included
-> within stih410.dtsi.
-> 
-> Signed-off-by: Alain Volmat <avolmat@me.com>
-> ---
->  arch/arm/boot/dts/stih410.dtsi | 10 ----------
->  1 file changed, 10 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/stih410.dtsi b/arch/arm/boot/dts/stih410.dtsi
-> index 6d847019c554..fe83d9a522bf 100644
-> --- a/arch/arm/boot/dts/stih410.dtsi
-> +++ b/arch/arm/boot/dts/stih410.dtsi
-> @@ -274,16 +274,6 @@ thermal@91a0000 {
->  			interrupts = <GIC_SPI 205 IRQ_TYPE_EDGE_RISING>;
->  		};
->  
-> -		delta0@0 {
-> -			compatible = "st,st-delta";
-> -			clock-names = "delta",
-> -				      "delta-st231",
-> -				      "delta-flash-promip";
-> -			clocks = <&clk_s_c0_flexgen CLK_VID_DMU>,
-> -				 <&clk_s_c0_flexgen CLK_ST231_DMU>,
-> -				 <&clk_s_c0_flexgen CLK_FLASH_PROMIP>;
-> -		};
-> -
->  		sti-cec@94a087c {
->  			compatible = "st,stih-cec";
->  			reg = <0x94a087c 0x64>;
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Thanks
-Patrice
+This series converts the ps2-gpio dt-binding to the json-schema.
+
+Additionally, it documents to flag the given gpios as open drain, since the
+PS/2 bus is open drain by definition.
+
+Danilo Krummrich (2):
+      dt-bindings: ps2-gpio: convert binding to json-schema
+      dt-bindings: ps2-gpio: document bus signals open drain
+
+ Documentation/devicetree/bindings/serio/ps2-gpio.txt  | 23 -----------------------
+ Documentation/devicetree/bindings/serio/ps2-gpio.yaml | 64 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 64 insertions(+), 23 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serio/ps2-gpio.txt
+ create mode 100644 Documentation/devicetree/bindings/serio/ps2-gpio.yaml
+
+
