@@ -2,101 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 242AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE576C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237053AbiBOLXJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:23:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41884 "EHLO
+        id S237062AbiBOLXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:23:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbiBOLXH (ORCPT
+        with ESMTP id S233238AbiBOLXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:23:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7053CAB44A
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:22:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644924173;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9XqhwGYN094qwt4YHsGwrAuGrVX5AKcgWAioi8UK100=;
-        b=QXUPQDKmvww6NYZUhDk3x78M7kd2YDCAchY6WGmmKsExnMYdTqutWoPlStvxIK5rbuXCLQ
-        bPCCkfCI3xVBAyDZzPDfFRrJwDEeQQ+Ridkz5gbk5yT6Lay/DfeSBTrhjja3bVzf/oBSKa
-        3g/gAusfS8PkVx1mY36Q01yGQrBaE1o=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-379-Yay1TOemNwKwDdAcopkodg-1; Tue, 15 Feb 2022 06:22:51 -0500
-X-MC-Unique: Yay1TOemNwKwDdAcopkodg-1
-Received: by mail-wr1-f71.google.com with SMTP id k20-20020adfc714000000b001e305cd1597so8210067wrg.19
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:22:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=9XqhwGYN094qwt4YHsGwrAuGrVX5AKcgWAioi8UK100=;
-        b=V7E6QrIX5l1nHXimvFlNmxaR6EHouErRYLGQUlEomPnRmzbWkNMSI7znZV2thUQQSg
-         2rcIhvFEbk9dURWTtZK0GM8bCZ+GjjVlJX4ab0D8nW4pJX92OHw3B2pCr/OwrSlBy3e6
-         b/Cjddw73fC4Du9GHd/ztrvjmgpAlAyZ2X/ZAjAfgx24O+JRBMV+JUxzJ7RHqSDe5Wat
-         ij7lXUM1aKbdMvC5e1yROL8GWm0IA9pOWRbFFPSQH+Dg5WwZgZIahZY3NJg+jYSiV4M+
-         s+I1YUppyvWigzx/8dXtHNQpRQzg5wciSZpkAWtvzGc6SAm9jyjHoYxhPCALKVd1icZQ
-         6VWQ==
-X-Gm-Message-State: AOAM532L5nwhqHILzfKndc4UISsVSzRleuINv0KKBEpcQfkbfjo9hbEG
-        0WCVxuesKjmpYX5AHrseKEiBNwUL8xpg2Txmf/FEnwEZXBGq6VdMgaAy4W3xL1e/ygjLVlXXG1R
-        2p9RBGYn61RvY0ZTS7XSk2zKn
-X-Received: by 2002:a05:600c:2251:: with SMTP id a17mr2747299wmm.88.1644924170082;
-        Tue, 15 Feb 2022 03:22:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwcIfVMCEHJLu5xgjU8cUK6l+eYU4b2sEheN2xCNVYgq6X6+sTtzgVQ5eUDpsPRNgauInnZdQ==
-X-Received: by 2002:a05:600c:2251:: with SMTP id a17mr2747284wmm.88.1644924169809;
-        Tue, 15 Feb 2022 03:22:49 -0800 (PST)
-Received: from ?IPV6:2003:cb:c70e:3700:9260:2fb2:742d:da3e? (p200300cbc70e370092602fb2742dda3e.dip0.t-ipconnect.de. [2003:cb:c70e:3700:9260:2fb2:742d:da3e])
-        by smtp.gmail.com with ESMTPSA id d14sm15871286wrv.50.2022.02.15.03.22.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 03:22:49 -0800 (PST)
-Message-ID: <2a881586-3f5e-c277-f373-a9014d631700@redhat.com>
-Date:   Tue, 15 Feb 2022 12:22:48 +0100
+        Tue, 15 Feb 2022 06:23:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32252108199;
+        Tue, 15 Feb 2022 03:23:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2F26614C4;
+        Tue, 15 Feb 2022 11:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60690C340EB;
+        Tue, 15 Feb 2022 11:23:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644924221;
+        bh=Up9ehlKx74egghlc0rB6/0cz+lxVqCHj3ODYTFsP8Us=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=upt4svaU5dIOhZX91oIKAkRPWYXkZB3CmdnRMdOLEQfr2y0cfduw0GPzNDH/vrOA4
+         YP7se29FEDVYKtTjMSbIY8FwEoGgviCeMG89monmth4UUljTX9mAlxwFcWXoL/h/fq
+         4KB/18MYOVflHmylw6tS4NiTgVDRWx6VCk+nxFLuJogOihcPXC7T+o5bukn2MzHd6z
+         TejCCtDrCvlAX5FLfUiqNBPKhUdASAgWGSYZ320pE83/byIdbpzzcYu8NOWU99Ky6T
+         QtJvqK7EkGKH31/hADj0nBkI5sbh2PsaFbzAq2jmglTCfg8i9J8CNbfsvQXWPfPcSg
+         1yK7m0LkVIMSw==
+Date:   Tue, 15 Feb 2022 16:53:36 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Olivier Dautricourt <olivier.dautricourt@orolia.com>,
+        Stefan Roese <sr@denx.de>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, dmaengine@vger.kernel.org
+Subject: Re: [PATCH] dmaengine: altera-msgdma: Remove useless DMA-32 fallback
+ configuration
+Message-ID: <YguNOAAqMo1G0exC@matsya>
+References: <01058ada3a0dea207212182ca7525060a204f1e1.1642232423.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v2] mm: clean up hwpoison page cache page in fault path
-Content-Language: en-US
-To:     Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org
-Cc:     kernel-team@fb.com, linux-mm@kvack.org,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>
-References: <20220212213740.423efcea@imladris.surriel.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220212213740.423efcea@imladris.surriel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <01058ada3a0dea207212182ca7525060a204f1e1.1642232423.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.02.22 03:37, Rik van Riel wrote:
-> Sometimes the page offlining code can leave behind a hwpoisoned clean
-> page cache page. This can lead to programs being killed over and over
-> and over again as they fault in the hwpoisoned page, get killed, and
-> then get re-spawned by whatever wanted to run them.
+On 15-01-22, 08:40, Christophe JAILLET wrote:
+> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+> dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
+> 
+> Simplify code and remove some dead code accordingly.
 
-Hi Rik,
-
-am I correct that you are only talking about soft offlining as triggered
-from mm/memory-failure.c, not page offlining as in memory offlining
-mm/memory_hotunplug.c ?
-
-Maybe you can clarify that in the patch description, it made me nervous
-for a second :)
+Applied, thanks
 
 -- 
-Thanks,
-
-David / dhildenb
-
+~Vinod
