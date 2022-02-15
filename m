@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58831C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240865AbiBOPir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:38:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42478 "EHLO
+        id S240862AbiBOPiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:38:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240730AbiBOPf2 (ORCPT
+        with ESMTP id S240714AbiBOPf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:35:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953D9A646F;
-        Tue, 15 Feb 2022 07:31:16 -0800 (PST)
+        Tue, 15 Feb 2022 10:35:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5BE0C12C7;
+        Tue, 15 Feb 2022 07:31:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E1E8B81AF5;
-        Tue, 15 Feb 2022 15:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7CC0C340F1;
-        Tue, 15 Feb 2022 15:31:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7282E615FD;
+        Tue, 15 Feb 2022 15:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2883C340F2;
+        Tue, 15 Feb 2022 15:31:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939074;
-        bh=HgmipJSMI7ZGNLTaEHr6h7H4MmItfNlszPBn/nQ6kxE=;
+        s=k20201202; t=1644939068;
+        bh=LLlU9Yz0qJd6M5GUEcjm4rSHGKVK6e1eS2D9+IWEWIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tKDuDOt2i+I+1SYkxYpOmcm243T4XSl6kdmoQm6NOL0p6EzFOUxbZSWHw1vxBRJMJ
-         iYBeazzbMsdvQ7NQp2tXmf7SwcRsL7kmofpi6tsq7G+8qDckUEXEyVX/jJbXIE5+Ql
-         7/4Std9JUwGEjNJj+X68rxJ9pGiN5SmhIrl7kl9k7afvoEf8RKIm0APz6BXwlX8/Sh
-         jP1diFo95QlIecVB6Ln3FTJx9mRuofCc/JCc/n5kX7rxd+icJwjJ7+WWuUPOymg9NE
-         DVw5ZZ5r6h2saOkhNOmgEORPGvwxBAPSy2jMvqlCKlmQ4ToAgIM1n/FgGjoRZL62R5
-         3mLG3zj7lLw4A==
+        b=tSW52LtcdnxtdwX+2+8Q/Ku/hsgId3rQxCoKQUn9LKzV2FcF2Peu20wfQlTHAddD2
+         8SwllK5Oc79/pI65y3OD3qGU5bo3yh0A43Uumol8xND0InrVJ7Xo/Bba8RQhWB4byL
+         6+Cjb/ETrbnG85vM0y8ztDeTig7QlPWG5c3FNzdABNkQj1ml28Wf0kVuPPnop6YdAH
+         RhZds3SPBoYVE/mUv2Z+Ac0VPs82ufBfQzuIizRYKCfbs0Lt+5ABkyXHkE/v45zA+M
+         z98hm59rSdx7wAoW2iellA2mKp2uWdp350w/AEK+ktVbTOjIvgA+vvN5jJUozJVf+3
+         kOVIyMGzQAPhA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Hewitt <christianshewitt@gmail.com>,
-        Mateusz Krzak <kszaquitto@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 05/11] arm64: dts: meson-gx: add ATF BL32 reserved-memory region
-Date:   Tue, 15 Feb 2022 10:30:58 -0500
-Message-Id: <20220215153104.581786-5-sashal@kernel.org>
+Cc:     Tommaso Merciai <tomm.merciai@gmail.com>,
+        Richard Leitner <richard.leitner@linux.dev>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, richard.leitner@skidata.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 02/11] usb: usb251xb: add boost-up property support
+Date:   Tue, 15 Feb 2022 10:30:55 -0500
+Message-Id: <20220215153104.581786-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215153104.581786-1-sashal@kernel.org>
 References: <20220215153104.581786-1-sashal@kernel.org>
@@ -55,41 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Tommaso Merciai <tomm.merciai@gmail.com>
 
-[ Upstream commit 76577c9137456febb05b0e17d244113196a98968 ]
+[ Upstream commit 5c2b9c61ae5d8ad0a196d33b66ce44543be22281 ]
 
-Add an additional reserved memory region for the BL32 trusted firmware
-present in many devices that boot from Amlogic vendor u-boot.
+Add support for boost-up register of usb251xb hub.
+boost-up property control USB electrical drive strength
+This register can be set:
 
-Suggested-by: Mateusz Krzak <kszaquitto@gmail.com>
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220126044954.19069-2-christianshewitt@gmail.com
+ - Normal mode -> 0x00
+ - Low         -> 0x01
+ - Medium      -> 0x10
+ - High        -> 0x11
+
+(Normal Default)
+
+References:
+ - http://www.mouser.com/catalog/specsheets/2514.pdf p29
+
+Reviewed-by: Richard Leitner <richard.leitner@linux.dev>
+Signed-off-by: Tommaso Merciai <tomm.merciai@gmail.com>
+Link: https://lore.kernel.org/r/20220128181713.96856-1-tomm.merciai@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-gx.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/usb/misc/usb251xb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-index b8dc4dbb391b6..4252119bfd901 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-@@ -41,6 +41,12 @@ secmon_reserved_alt: secmon@5000000 {
- 			no-map;
- 		};
+diff --git a/drivers/usb/misc/usb251xb.c b/drivers/usb/misc/usb251xb.c
+index 5f7734c729b1d..8444b92f9737f 100644
+--- a/drivers/usb/misc/usb251xb.c
++++ b/drivers/usb/misc/usb251xb.c
+@@ -510,6 +510,9 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
+ 	if (of_property_read_u16_array(np, "language-id", &hub->lang_id, 1))
+ 		hub->lang_id = USB251XB_DEF_LANGUAGE_ID;
  
-+		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
-+		secmon_reserved_bl32: secmon@5300000 {
-+			reg = <0x0 0x05300000 0x0 0x2000000>;
-+			no-map;
-+		};
++	if (of_property_read_u8(np, "boost-up", &hub->boost_up))
++		hub->boost_up = USB251XB_DEF_BOOST_UP;
 +
- 		linux,cma {
- 			compatible = "shared-dma-pool";
- 			reusable;
+ 	cproperty_char = of_get_property(np, "manufacturer", NULL);
+ 	strlcpy(str, cproperty_char ? : USB251XB_DEF_MANUFACTURER_STRING,
+ 		sizeof(str));
+@@ -543,7 +546,6 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
+ 	 * may be as soon as needed.
+ 	 */
+ 	hub->bat_charge_en = USB251XB_DEF_BATTERY_CHARGING_ENABLE;
+-	hub->boost_up = USB251XB_DEF_BOOST_UP;
+ 	hub->boost_57 = USB251XB_DEF_BOOST_57;
+ 	hub->boost_14 = USB251XB_DEF_BOOST_14;
+ 	hub->port_swap = USB251XB_DEF_PORT_SWAP;
 -- 
 2.34.1
 
