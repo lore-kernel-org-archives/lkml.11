@@ -2,92 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9F3C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8593C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243172AbiBOSmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:42:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45154 "EHLO
+        id S243173AbiBOSnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:43:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243155AbiBOSmw (ORCPT
+        with ESMTP id S243171AbiBOSm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:42:52 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6929327FEA;
-        Tue, 15 Feb 2022 10:42:42 -0800 (PST)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FH4N62029572;
-        Tue, 15 Feb 2022 18:42:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2021-07-09; bh=zXmbrA+nSO5dCXMa3+3nbbOi7Ym51eV5ADJO++TfFv0=;
- b=oqxhdoF2rIqYW/BJuSS/ErAWNzD765UjQwIZsoI1GRVfs8Q4rXVcbrU0FnnU2cLvawLF
- AYQae2Cd1+DskOtQ8w0jBO1dosO2XnVLEnsQC0jWQs51B0aIWTzltga+MqrU8TT6TYuE
- 6wZRUb+QiL0SiOtIHwASsKyJLCAD5FQ09A07Gzue+CMRKkVOs3wDPkZEg1hjEkmZf/0C
- Y4R6t4FzGXAUV4f/3cdB3op7Dw+UoIkXqGgD7iu/thJxqgEhn1U8mAAj1qbkrBKeemu+
- cBSwqrCWSrO7kIUkT7hFcBjN4Pf+m4/bIXwZOO2udmhOmdEx6mAWMMzdpbLPqSunLQcQ bw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e8570taav-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 18:42:18 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21FIfEKi150005;
-        Tue, 15 Feb 2022 18:42:17 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 3e620xg50s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 18:42:17 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21FIgHrN152289;
-        Tue, 15 Feb 2022 18:42:17 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
-        by userp3030.oracle.com with ESMTP id 3e620xg50h-1;
-        Tue, 15 Feb 2022 18:42:17 +0000
-From:   Sherry Yang <sherry.yang@oracle.com>
-To:     skhan@linuxfoundation.org, shuah@kernel.org, keescook@chromium.org,
-        luto@amacapital.net, wad@chromium.org, christian@brauner.io,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        usama.anjum@collabora.com, sherry.yang@oracle.com
-Subject: [PATCH v3] selftests/seccomp: Fix seccomp failure by adding missing headers
-Date:   Tue, 15 Feb 2022 10:42:15 -0800
-Message-Id: <20220215184215.40093-1-sherry.yang@oracle.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 15 Feb 2022 13:42:59 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DB927FEA
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:42:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644950566; x=1676486566;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Uq3mK2F4oBeJy49d6SR0mO9NdzovVt3JSrPgHEwNGYw=;
+  b=W5YTAaFfp7s1FpSHaJ9WNGYT3P2ugleLxF6xKi8I8zrdGd5Vj8hX7AOe
+   QxerCg3RQ3Vm37LVgzaFJBmG19y7NGIkqbZkPuemIep89kORBbrnHTTr3
+   8CougRYcS/lBM38SHVjwBzYrZ+A1+KSIw6qPaKTGtohR3UFgwFW1TrXWw
+   NT+atc1II32rMbbFet12Hq21a0o484tWISodtRPkYZYfVRrRpwdZZz2DL
+   wfAzkfk9tJxVfMIcmWtFzU0ZXZwQk/2A6dg91WQQOciZIXRZJ0MDbGe18
+   yOWXbed1HRZuRc3dF7VKzn4hnR9cPSkNylRa+72Fc+Kn+oLEARqOj+6y7
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="311167725"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="311167725"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 10:42:43 -0800
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="624957742"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.60])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 10:42:43 -0800
+Date:   Tue, 15 Feb 2022 10:42:42 -0800
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Jue Wang <juew@google.com>
+Cc:     Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [PATCH] x86/mce: Add workaround for SKX/CLX/CPX spurious machine
+ checks
+Message-ID: <Ygv0IncyBA3pXR7Q@agluck-desk3.sc.intel.com>
+References: <CAPcxDJ7nriZEJHF6dMPR7tQ+dGuueyRjw1NC+4CbjxiAT_S+ZA@mail.gmail.com>
+ <20220208150945.266978-1-juew@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: NohrFFT0X_beyLbk1JWdxuHwTzUHtHwb
-X-Proofpoint-GUID: NohrFFT0X_beyLbk1JWdxuHwTzUHtHwb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208150945.266978-1-juew@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-seccomp_bpf failed on tests 47 global.user_notification_filter_empty
-and 48 global.user_notification_filter_empty_threaded when it's
-tested on updated kernel but with old kernel headers. Because old
-kernel headers don't have definition of macro __NR_clone3 which is
-required for these two tests. Use KHDR_INCLUDES to correctly reach
-the installed headers.
+On Tue, Feb 08, 2022 at 07:09:45AM -0800, Jue Wang wrote:
+> +static bool quirk_skylake_repmov(void)
+> +{
+> +	u64 mcgstatus = mce_rdmsrl(MSR_IA32_MCG_STATUS);
+> +	u64 misc_enable = __rdmsr(MSR_IA32_MISC_ENABLE);
+> +
+> +	if ((mcgstatus & MCG_STATUS_LMCES) &&
+> +	    unlikely(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING)) {
+> +		u64 mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
+> +
 
-Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
-Tested-by: Sherry Yang <sherry.yang@oracle.com>
----
- tools/testing/selftests/seccomp/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Needs a comment that this big blob of logic is checking for a software
+recoverable data fetch error.
 
-diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
-index 0ebfe8b0e147..7eaed95ba4b3 100644
---- a/tools/testing/selftests/seccomp/Makefile
-+++ b/tools/testing/selftests/seccomp/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--CFLAGS += -Wl,-no-as-needed -Wall
-+CFLAGS += -Wl,-no-as-needed -Wall $(KHDR_INCLUDES)
- LDFLAGS += -lpthread
- 
- TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
--- 
-2.31.1
+> +		if ((mc1_status &
+> +		     (MCI_STATUS_VAL|MCI_STATUS_OVER|MCI_STATUS_UC|MCI_STATUS_EN|
+> +		      MCI_STATUS_ADDRV|MCI_STATUS_MISCV|MCI_STATUS_PCC|
+> +		      MCI_STATUS_AR|MCI_STATUS_S)) ==
+> +		    (MCI_STATUS_VAL|MCI_STATUS_UC|MCI_STATUS_EN|MCI_STATUS_ADDRV|
+> +		     MCI_STATUS_MISCV|MCI_STATUS_AR|MCI_STATUS_S)) {
+> +			msr_clear_bit(MSR_IA32_MISC_ENABLE,
+> +				      MSR_IA32_MISC_ENABLE_FAST_STRING_BIT);
+> +			mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
+> +			mce_wrmsrl(MSR_IA32_MCx_STATUS(1), 0);
+> +			pr_err_once("Errata detected, disable fast string copy instructions.\n");
+> +			return true;
+> +		}
+> +	}
+> +	return false;
+> +}
 
+Otherwise:
+
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+
+-Tony
