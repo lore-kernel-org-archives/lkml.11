@@ -2,65 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA481C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1835C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234413AbiBOGaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 01:30:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42462 "EHLO
+        id S234424AbiBOGaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 01:30:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232447AbiBOG36 (ORCPT
+        with ESMTP id S234416AbiBOGaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 01:29:58 -0500
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC64B11E3E9;
-        Mon, 14 Feb 2022 22:29:48 -0800 (PST)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 11DDB68AA6; Tue, 15 Feb 2022 07:29:43 +0100 (CET)
-Date:   Tue, 15 Feb 2022 07:29:42 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        will@kernel.org, guoren@kernel.org, bcain@codeaurora.org,
-        geert@linux-m68k.org, monstr@monstr.eu, tsbogend@alpha.franken.de,
-        nickhu@andestech.com, green.hu@gmail.com, dinguyen@kernel.org,
-        shorne@gmail.com, deller@gmx.de, mpe@ellerman.id.au,
-        peterz@infradead.org, mingo@redhat.com, mark.rutland@arm.com,
-        hca@linux.ibm.com, dalias@libc.org, davem@davemloft.net,
-        richard@nod.at, x86@kernel.org, jcmvbkbc@gmail.com,
-        ebiederm@xmission.com, akpm@linux-foundation.org, ardb@kernel.org,
-        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org
-Subject: Re: [PATCH 09/14] m68k: drop custom __access_ok()
-Message-ID: <20220215062942.GA12551@lst.de>
-References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-10-arnd@kernel.org> <Ygr11RGjj3C9uAUg@zeniv-ca.linux.org.uk>
+        Tue, 15 Feb 2022 01:30:16 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175F411EF05;
+        Mon, 14 Feb 2022 22:30:06 -0800 (PST)
+X-UUID: 61d3750791e7462cb037c38bacaae792-20220215
+X-UUID: 61d3750791e7462cb037c38bacaae792-20220215
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <chun-jie.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1471671154; Tue, 15 Feb 2022 14:30:02 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 15 Feb 2022 14:30:01 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 15 Feb
+ 2022 14:30:01 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 15 Feb 2022 14:30:01 +0800
+Message-ID: <b9efa24d2309743b785accc454f35b4b78c6eca9.camel@mediatek.com>
+Subject: Re: [PATCH v3 09/31] clk: mediatek: mux: Implement unregister API
+From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
+To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Tue, 15 Feb 2022 14:30:01 +0800
+In-Reply-To: <20220208124034.414635-10-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
+         <20220208124034.414635-10-wenst@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ygr11RGjj3C9uAUg@zeniv-ca.linux.org.uk>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 12:37:41AM +0000, Al Viro wrote:
-> Perhaps simply wrap that sucker into #ifdef CONFIG_CPU_HAS_ADDRESS_SPACES
-> (and trim the comment down to "coldfire and 68000 will pick generic
-> variant")?
+On Tue, 2022-02-08 at 20:40 +0800, Chen-Yu Tsai wrote:
+> The mux clk type within the MediaTek clk driver library only has a
+> register function, and no corresponding unregister function. This
+> means there is no way for its users to properly implement cleanup
+> and removal.
+> 
+> Add a matching unregister function for the mux type clk.
+> 
+> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+> Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
 
-I wonder if we should invert CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE,
-select the separate address space config for s390, sparc64, non-coldfire
-m68k and mips with EVA and then just have one single access_ok for
-overlapping address space (as added by Arnd) and non-overlapping ones
-(always return true).
+Reviewed-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+> ---
+>  drivers/clk/mediatek/clk-mux.c | 35
+> ++++++++++++++++++++++++++++++++++
+>  drivers/clk/mediatek/clk-mux.h |  3 +++
+>  2 files changed, 38 insertions(+)
+> 
+> diff --git a/drivers/clk/mediatek/clk-mux.c
+> b/drivers/clk/mediatek/clk-mux.c
+> index 89f23e111d91..6f0c22a699c3 100644
+> --- a/drivers/clk/mediatek/clk-mux.c
+> +++ b/drivers/clk/mediatek/clk-mux.c
+> @@ -164,6 +164,21 @@ static struct clk *mtk_clk_register_mux(const
+> struct mtk_mux *mux,
+>  	return clk;
+>  }
+>  
+> +static void mtk_clk_unregister_mux(struct clk *clk)
+> +{
+> +	struct mtk_clk_mux *mux;
+> +	struct clk_hw *hw;
+> +
+> +	hw = __clk_get_hw(clk);
+> +	if (!hw)
+> +		return;
+> +
+> +	mux = to_mtk_clk_mux(hw);
+> +
+> +	clk_unregister(clk);
+> +	kfree(mux);
+> +}
+> +
+>  int mtk_clk_register_muxes(const struct mtk_mux *muxes,
+>  			   int num, struct device_node *node,
+>  			   spinlock_t *lock,
+> @@ -198,4 +213,24 @@ int mtk_clk_register_muxes(const struct mtk_mux
+> *muxes,
+>  }
+>  EXPORT_SYMBOL_GPL(mtk_clk_register_muxes);
+>  
+> +void mtk_clk_unregister_muxes(const struct mtk_mux *muxes, int num,
+> +			      struct clk_onecell_data *clk_data)
+> +{
+> +	int i;
+> +
+> +	if (!clk_data)
+> +		return;
+> +
+> +	for (i = num; i > 0; i--) {
+> +		const struct mtk_mux *mux = &muxes[i - 1];
+> +
+> +		if (IS_ERR_OR_NULL(clk_data->clks[mux->id]))
+> +			continue;
+> +
+> +		mtk_clk_unregister_mux(clk_data->clks[mux->id]);
+> +		clk_data->clks[mux->id] = ERR_PTR(-ENOENT);
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(mtk_clk_unregister_muxes);
+> +
+>  MODULE_LICENSE("GPL");
+> diff --git a/drivers/clk/mediatek/clk-mux.h
+> b/drivers/clk/mediatek/clk-mux.h
+> index 27841d649118..cb2ac4f04c58 100644
+> --- a/drivers/clk/mediatek/clk-mux.h
+> +++ b/drivers/clk/mediatek/clk-mux.h
+> @@ -88,4 +88,7 @@ int mtk_clk_register_muxes(const struct mtk_mux
+> *muxes,
+>  			   spinlock_t *lock,
+>  			   struct clk_onecell_data *clk_data);
+>  
+> +void mtk_clk_unregister_muxes(const struct mtk_mux *muxes, int num,
+> +			      struct clk_onecell_data *clk_data);
+> +
+>  #endif /* __DRV_CLK_MTK_MUX_H */
+
