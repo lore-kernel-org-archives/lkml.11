@@ -2,93 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D6AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233335AbiBODqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 22:46:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60524 "EHLO
+        id S229824AbiBODwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 22:52:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiBODqT (ORCPT
+        with ESMTP id S229561AbiBODwA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 22:46:19 -0500
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BB9D108D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:46:10 -0800 (PST)
-Received: by mail-oo1-xc34.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so21757138ooi.2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:46:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=E7mQ1JQjty0+hvEvMH1YSSJmP3zKZt08lmyaYeMUrhE=;
-        b=T4xoyH3A8aBQPIXtWkhJL54jlEcQJlFYqyNylcRr0UpOPKR8IqXRxvg0IEl3hhHgfx
-         W7glceOz+VYg9Z72z1fZYPm9opGqKIJ+rzT4QR97gZ6UjbZpHH8BBuPqE4zNndAqcT5E
-         cMAm236AopNpVXAEG8DV1LiLakIsNd/GVHkfzCe05ObUdEXQf1GD0XxWukSHsviqZasz
-         ig9Maj+BDfnRiPnfeVXpSr6h/DrYhx2J9iKgEJSrcIDk9yL1ccrO3YP9OAJSFUpveE27
-         6xTP0Ivvw8vBkTJPGBSfQuLGdBCuoER+TQqdHEBzyPJZEfDYP5YSj958FED9gt15uU8t
-         6k9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=E7mQ1JQjty0+hvEvMH1YSSJmP3zKZt08lmyaYeMUrhE=;
-        b=Xoa4O2zxvkaQuclBRPmvJDJuw3wv7GzXQx3cu+SMErofXC7kVhYXZIdvUnxfLHRf7L
-         QmM9aVNIGWAEftV9VswxUf06+5ByH8mU+atRtWXYvsi0lJNuGWKmli12ajZJBK+N82bF
-         n3nyRw0UsPOryZA1kRs2CrVe38qVqQ6x3YIo8022JOX1aeMaqV5QeTW00VhjM5/RB0ik
-         RQwVvaDtngJBdPhXwPcwUiUiFfycqLHOnC6/XoCse9CWl1cDVJv3DJL7vnwSoyWu7hyZ
-         IncTlv4/5U8BdXw+IhuYOlXXqhSOtk93rxRzCuz4AxJBcJUVdZ4Y9DeMAvEXHw1iCk5Y
-         Xf5Q==
-X-Gm-Message-State: AOAM531rHjhVwkdKTA1kPvCkomlzoPjexOAMPt3zshS4URaQpWtzpMD/
-        Q7FDi4wHmYB3wQise+irk694BQ==
-X-Google-Smtp-Source: ABdhPJzK4cBqLupQVaT1yeNrzOAx4JARfbfUpqAWyiUORKpqaqJ1WLok6Bs/alGbxMG5mz+HM7HyeA==
-X-Received: by 2002:a05:6870:1215:: with SMTP id 21mr777067oan.166.1644896769566;
-        Mon, 14 Feb 2022 19:46:09 -0800 (PST)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id h2sm13251074ots.51.2022.02.14.19.46.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 19:46:08 -0800 (PST)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] soc: qcom: mdt_loader: Fix split-firmware condition
-Date:   Mon, 14 Feb 2022 19:48:19 -0800
-Message-Id: <20220215034819.1209367-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.33.1
+        Mon, 14 Feb 2022 22:52:00 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5D810783D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:51:50 -0800 (PST)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JyRvS04FXzccm8;
+        Tue, 15 Feb 2022 11:50:44 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 15 Feb
+ 2022 11:51:48 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <richard@nod.at>, <linux-mtd@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <libaokun1@huawei.com>, <yukuai3@huawei.com>,
+        Zhihao Cheng <chengzhihao1@huawei.com>
+Subject: [PATCH -next] ubifs: rename_whiteout: correct old_dir size computing
+Date:   Tue, 15 Feb 2022 12:07:36 +0800
+Message-ID: <20220215040736.2839939-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The updated condition checking if a segment can be found in the loaded
-firmware blob, or need to be loaded from a separate file, incorrectly
-classifies segments that ends at the end of the loaded blob. The result
-is that the mdt loader attempts to load the segment from a separate
-file.
+When renaming the whiteout file, the old whiteout file is not deleted.
+Therefore, we add the old dentry size to the old dir like XFS.
+Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
+in check_indes.
 
-Correct the conditional to use the loaded segment instead.
-
-Fixes: ea90330fa329 ("soc: qcom: mdt_loader: Extend check for split firmware")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
 ---
- drivers/soc/qcom/mdt_loader.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ubifs/dir.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/soc/qcom/mdt_loader.c b/drivers/soc/qcom/mdt_loader.c
-index f0b1d969567c..366db493579b 100644
---- a/drivers/soc/qcom/mdt_loader.c
-+++ b/drivers/soc/qcom/mdt_loader.c
-@@ -329,7 +329,7 @@ static int __qcom_mdt_load(struct device *dev, const struct firmware *fw,
- 		ptr = mem_region + offset;
+diff --git a/fs/ubifs/dir.c b/fs/ubifs/dir.c
+index ae082a0be2a3..86151889548e 100644
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1402,6 +1402,9 @@ static int do_rename(struct inode *old_dir, struct dentry *old_dentry,
+ 			iput(whiteout);
+ 			goto out_release;
+ 		}
++
++		/* Add the old_dentry size to the old_dir size. */
++		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
+ 	}
  
- 		if (phdr->p_filesz && phdr->p_offset < fw->size &&
--		    phdr->p_offset + phdr->p_filesz < fw->size) {
-+		    phdr->p_offset + phdr->p_filesz <= fw->size) {
- 			/* Firmware is large enough to be non-split */
- 			if (phdr->p_offset + phdr->p_filesz > fw->size) {
- 				dev_err(dev, "file %s segment %d would be truncated\n",
+ 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
 -- 
-2.33.1
+2.31.1
 
