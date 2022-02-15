@@ -2,417 +2,348 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48208C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF67C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236130AbiBOP35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:29:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46828 "EHLO
+        id S239861AbiBOPaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:30:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239939AbiBOP3d (ORCPT
+        with ESMTP id S240019AbiBOP3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:29:33 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC26BB560;
-        Tue, 15 Feb 2022 07:28:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644938901; x=1676474901;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CqN5X2iLznt65YzLlooZYAUtte4i0cWwOvSYcPDxBq4=;
-  b=PHcHMJqceK4cUex40tKQ0FlI9QZK6Cf5iNycrJ+bND1rCAVqRcuQqVJl
-   +rLGNUZQYcMNqwPIIACvesI1onPD0GWdOgXIr/LtHPEjv1FyrBjIcGEtd
-   OLAL+ME6pod1fbpVDNHwO3aiqtGFV/k0BdF+yURZHA30jc7m5ENWEw0gd
-   2YeQvc/EQIjQqZ6FMpm3OMJuBjramM4Mj8fQdTijQ61LLTIdCHkYXmgbo
-   bbEmKUSr5f7PEjSDwna6It/VHPPCGD9b6PIUboplwyD6/ewAiCbWjZ/Lw
-   7Ne03bpPvl48cxr9IJXyd2Pt5pHDmHyuCEfDchrAEGkjf1GrNL9lzu1G5
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250576906"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="250576906"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 07:27:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="624853745"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 15 Feb 2022 07:27:54 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id BC4451DD; Tue, 15 Feb 2022 17:28:09 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 4/4] pinctrl: icelake: Add Ice Lake-N PCH pin controller support
-Date:   Tue, 15 Feb 2022 17:28:00 +0200
-Message-Id: <20220215152800.21104-4-andriy.shevchenko@linux.intel.com>
+        Tue, 15 Feb 2022 10:29:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622B1A653E;
+        Tue, 15 Feb 2022 07:28:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C87E4614C2;
+        Tue, 15 Feb 2022 15:28:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E4F9C340F2;
+        Tue, 15 Feb 2022 15:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644938905;
+        bh=TmLejLW9mEBO5G5fDzZMrMFnVitxe+SOqkA4tEbNZvY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WdjmPIoQ2t7s7xHaCmYKmj64acODYwbQarriCGHsIWqANZoSRJwZ2FGmIHDnA2TlZ
+         6KnfKqRTZYyB/ItDuJLPD7ccWG4dkt4O5v+IbAV1va7PfPmIhsFFJNpMpnI43FgqMV
+         vPMutovglqMnH17gQ6KsDrIcocPrqvNaQYXr9E/2r0ZGWGQbz5RVAkftDC5F8Tmm/X
+         4knjacuv6BUv04422KRBKMyd6Gw5x+vkpRW5KtVZ1Whz6DY2jHckJigTDR7L0hyvi3
+         jxmPR6xKsUamMRj6cOeneVcp6hWaUdBXG1Mdtq/3Vdafk6zADspaRyI3GdIzA1UHS1
+         jMmkQdKWuY0Mg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Charlene Liu <Charlene.Liu@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Eric.Yang2@amd.com, nicholas.kazlauskas@amd.com,
+        Josip.Pavic@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 31/34] drm/amd/display: fix yellow carp wm clamping
+Date:   Tue, 15 Feb 2022 10:26:54 -0500
+Message-Id: <20220215152657.580200-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215152800.21104-1-andriy.shevchenko@linux.intel.com>
-References: <20220215152800.21104-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
+References: <20220215152657.580200-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds pinctrl/GPIO support for Intel Ice Lake-N PCH. The Ice Lake-N
-PCH GPIO is based on the same version of the Intel GPIO hardware than
-Intel Cannon Lake with different set of pins and ACPI ID.
+From: Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+[ Upstream commit 60fdf98a774eee244a4e00c34a9e7729b61d0f44 ]
+
+Fix clamping to match register field size
+
+Reviewed-by: Charlene Liu <Charlene.Liu@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Signed-off-by: Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/intel/pinctrl-icelake.c | 291 +++++++++++++++++++++++-
- 1 file changed, 283 insertions(+), 8 deletions(-)
+ .../drm/amd/display/dc/dcn31/dcn31_hubbub.c   | 61 ++++++++++---------
+ 1 file changed, 32 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/pinctrl/intel/pinctrl-icelake.c b/drivers/pinctrl/intel/pinctrl-icelake.c
-index 429b5a83acf0..27c248cc16f7 100644
---- a/drivers/pinctrl/intel/pinctrl-icelake.c
-+++ b/drivers/pinctrl/intel/pinctrl-icelake.c
-@@ -2,7 +2,7 @@
- /*
-  * Intel Ice Lake PCH pinctrl/GPIO driver
-  *
-- * Copyright (C) 2018, Intel Corporation
-+ * Copyright (C) 2018, 2022 Intel Corporation
-  * Authors: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-  *	    Mika Westerberg <mika.westerberg@linux.intel.com>
-  */
-@@ -19,7 +19,8 @@
- #define ICL_PADCFGLOCK	0x080
- #define ICL_HOSTSW_OWN	0x0b0
- #define ICL_GPI_IS	0x100
--#define ICL_GPI_IE	0x110
-+#define ICL_LP_GPI_IE	0x110
-+#define ICL_N_GPI_IE	0x120
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hubbub.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hubbub.c
+index 90c73a1cb9861..5e3bcaf12cac4 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hubbub.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hubbub.c
+@@ -138,8 +138,11 @@ static uint32_t convert_and_clamp(
+ 	ret_val = wm_ns * refclk_mhz;
+ 	ret_val /= 1000;
  
- #define ICL_GPP(r, s, e, g)				\
- 	{						\
-@@ -29,20 +30,26 @@
- 		.gpio_base = (g),			\
- 	}
+-	if (ret_val > clamp_value)
++	if (ret_val > clamp_value) {
++		/* clamping WMs is abnormal, unexpected and may lead to underflow*/
++		ASSERT(0);
+ 		ret_val = clamp_value;
++	}
  
--#define ICL_COMMUNITY(b, s, e, g)			\
-+#define ICL_COMMUNITY(b, s, e, ie, g)			\
- 	{						\
- 		.barno = (b),				\
- 		.padown_offset = ICL_PAD_OWN,		\
- 		.padcfglock_offset = ICL_PADCFGLOCK,	\
- 		.hostown_offset = ICL_HOSTSW_OWN,	\
- 		.is_offset = ICL_GPI_IS,		\
--		.ie_offset = ICL_GPI_IE,		\
-+		.ie_offset = (ie),			\
- 		.pin_base = (s),			\
- 		.npins = ((e) - (s) + 1),		\
- 		.gpps = (g),				\
- 		.ngpps = ARRAY_SIZE(g),			\
- 	}
+ 	return ret_val;
+ }
+@@ -159,7 +162,7 @@ static bool hubbub31_program_urgent_watermarks(
+ 	if (safe_to_lower || watermarks->a.urgent_ns > hubbub2->watermarks.a.urgent_ns) {
+ 		hubbub2->watermarks.a.urgent_ns = watermarks->a.urgent_ns;
+ 		prog_wm_value = convert_and_clamp(watermarks->a.urgent_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0x3fff);
+ 		REG_SET(DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_A, 0,
+ 				DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_A, prog_wm_value);
  
-+#define ICL_LP_COMMUNITY(b, s, e, g)			\
-+	ICL_COMMUNITY(b, s, e, ICL_LP_GPI_IE, g)
-+
-+#define ICL_N_COMMUNITY(b, s, e, g)			\
-+	ICL_COMMUNITY(b, s, e, ICL_N_GPI_IE, g)
-+
- /* Ice Lake-LP */
- static const struct pinctrl_pin_desc icllp_pins[] = {
- 	/* GPP_G */
-@@ -329,10 +336,10 @@ static const struct intel_padgroup icllp_community5_gpps[] = {
- };
+@@ -193,7 +196,7 @@ static bool hubbub31_program_urgent_watermarks(
+ 	if (safe_to_lower || watermarks->a.urgent_latency_ns > hubbub2->watermarks.a.urgent_latency_ns) {
+ 		hubbub2->watermarks.a.urgent_latency_ns = watermarks->a.urgent_latency_ns;
+ 		prog_wm_value = convert_and_clamp(watermarks->a.urgent_latency_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0x3fff);
+ 		REG_SET(DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_A, 0,
+ 				DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_A, prog_wm_value);
+ 	} else if (watermarks->a.urgent_latency_ns < hubbub2->watermarks.a.urgent_latency_ns)
+@@ -203,7 +206,7 @@ static bool hubbub31_program_urgent_watermarks(
+ 	if (safe_to_lower || watermarks->b.urgent_ns > hubbub2->watermarks.b.urgent_ns) {
+ 		hubbub2->watermarks.b.urgent_ns = watermarks->b.urgent_ns;
+ 		prog_wm_value = convert_and_clamp(watermarks->b.urgent_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0x3fff);
+ 		REG_SET(DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_B, 0,
+ 				DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_B, prog_wm_value);
  
- static const struct intel_community icllp_communities[] = {
--	ICL_COMMUNITY(0, 0, 58, icllp_community0_gpps),
--	ICL_COMMUNITY(1, 59, 152, icllp_community1_gpps),
--	ICL_COMMUNITY(2, 153, 215, icllp_community4_gpps),
--	ICL_COMMUNITY(3, 216, 240, icllp_community5_gpps),
-+	ICL_LP_COMMUNITY(0, 0, 58, icllp_community0_gpps),
-+	ICL_LP_COMMUNITY(1, 59, 152, icllp_community1_gpps),
-+	ICL_LP_COMMUNITY(2, 153, 215, icllp_community4_gpps),
-+	ICL_LP_COMMUNITY(3, 216, 240, icllp_community5_gpps),
- };
+@@ -237,7 +240,7 @@ static bool hubbub31_program_urgent_watermarks(
+ 	if (safe_to_lower || watermarks->b.urgent_latency_ns > hubbub2->watermarks.b.urgent_latency_ns) {
+ 		hubbub2->watermarks.b.urgent_latency_ns = watermarks->b.urgent_latency_ns;
+ 		prog_wm_value = convert_and_clamp(watermarks->b.urgent_latency_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0x3fff);
+ 		REG_SET(DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_B, 0,
+ 				DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_B, prog_wm_value);
+ 	} else if (watermarks->b.urgent_latency_ns < hubbub2->watermarks.b.urgent_latency_ns)
+@@ -247,7 +250,7 @@ static bool hubbub31_program_urgent_watermarks(
+ 	if (safe_to_lower || watermarks->c.urgent_ns > hubbub2->watermarks.c.urgent_ns) {
+ 		hubbub2->watermarks.c.urgent_ns = watermarks->c.urgent_ns;
+ 		prog_wm_value = convert_and_clamp(watermarks->c.urgent_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0x3fff);
+ 		REG_SET(DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_C, 0,
+ 				DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_C, prog_wm_value);
  
- static const unsigned int icllp_spi0_pins[] = { 22, 23, 24, 25, 26 };
-@@ -403,10 +410,278 @@ static const struct intel_pinctrl_soc_data icllp_soc_data = {
- 	.ncommunities = ARRAY_SIZE(icllp_communities),
- };
+@@ -281,7 +284,7 @@ static bool hubbub31_program_urgent_watermarks(
+ 	if (safe_to_lower || watermarks->c.urgent_latency_ns > hubbub2->watermarks.c.urgent_latency_ns) {
+ 		hubbub2->watermarks.c.urgent_latency_ns = watermarks->c.urgent_latency_ns;
+ 		prog_wm_value = convert_and_clamp(watermarks->c.urgent_latency_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0x3fff);
+ 		REG_SET(DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_C, 0,
+ 				DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_C, prog_wm_value);
+ 	} else if (watermarks->c.urgent_latency_ns < hubbub2->watermarks.c.urgent_latency_ns)
+@@ -291,7 +294,7 @@ static bool hubbub31_program_urgent_watermarks(
+ 	if (safe_to_lower || watermarks->d.urgent_ns > hubbub2->watermarks.d.urgent_ns) {
+ 		hubbub2->watermarks.d.urgent_ns = watermarks->d.urgent_ns;
+ 		prog_wm_value = convert_and_clamp(watermarks->d.urgent_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0x3fff);
+ 		REG_SET(DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_D, 0,
+ 				DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_D, prog_wm_value);
  
-+/* Ice Lake-N */
-+static const struct pinctrl_pin_desc icln_pins[] = {
-+	/* SPI */
-+	PINCTRL_PIN(0, "SPI0_IO_2"),
-+	PINCTRL_PIN(1, "SPI0_IO_3"),
-+	PINCTRL_PIN(2, "SPI0_MOSI_IO_0"),
-+	PINCTRL_PIN(3, "SPI0_MISO_IO_1"),
-+	PINCTRL_PIN(4, "SPI0_TPM_CSB"),
-+	PINCTRL_PIN(5, "SPI0_FLASH_0_CSB"),
-+	PINCTRL_PIN(6, "SPI0_FLASH_1_CSB"),
-+	PINCTRL_PIN(7, "SPI0_CLK"),
-+	PINCTRL_PIN(8, "SPI0_CLK_LOOPBK"),
-+	/* GPP_B */
-+	PINCTRL_PIN(9, "CORE_VID_0"),
-+	PINCTRL_PIN(10, "CORE_VID_1"),
-+	PINCTRL_PIN(11, "VRALERTB"),
-+	PINCTRL_PIN(12, "CPU_GP_2"),
-+	PINCTRL_PIN(13, "CPU_GP_3"),
-+	PINCTRL_PIN(14, "SRCCLKREQB_0"),
-+	PINCTRL_PIN(15, "SRCCLKREQB_1"),
-+	PINCTRL_PIN(16, "SRCCLKREQB_2"),
-+	PINCTRL_PIN(17, "SRCCLKREQB_3"),
-+	PINCTRL_PIN(18, "SRCCLKREQB_4"),
-+	PINCTRL_PIN(19, "SRCCLKREQB_5"),
-+	PINCTRL_PIN(20, "EXT_PWR_GATEB"),
-+	PINCTRL_PIN(21, "SLP_S0B"),
-+	PINCTRL_PIN(22, "PLTRSTB"),
-+	PINCTRL_PIN(23, "SPKR_GSPI0_CS1B"),
-+	PINCTRL_PIN(24, "GSPI0_CS0B"),
-+	PINCTRL_PIN(25, "GSPI0_CLK"),
-+	PINCTRL_PIN(26, "GSPI0_MISO_TBT_LSX3_A"),
-+	PINCTRL_PIN(27, "GSPI0_MOSI_TBT_LSX3_B"),
-+	PINCTRL_PIN(28, "GSPI1_CS0B"),
-+	PINCTRL_PIN(29, "GSPI1_CLK_NFC_CLK"),
-+	PINCTRL_PIN(30, "GSPI1_MISO_NFC_CLKREQ"),
-+	PINCTRL_PIN(31, "GSPI1_MOSI"),
-+	PINCTRL_PIN(32, "GSPI1_CS1B"),
-+	PINCTRL_PIN(33, "GSPI0_CLK_LOOPBK"),
-+	PINCTRL_PIN(34, "GSPI1_CLK_LOOPBK"),
-+	/* GPP_A */
-+	PINCTRL_PIN(35, "ESPI_IO_0"),
-+	PINCTRL_PIN(36, "ESPI_IO_1"),
-+	PINCTRL_PIN(37, "ESPI_IO_2"),
-+	PINCTRL_PIN(38, "ESPI_IO_3"),
-+	PINCTRL_PIN(39, "ESPI_CSB"),
-+	PINCTRL_PIN(40, "ESPI_CLK"),
-+	PINCTRL_PIN(41, "ESPI_RESETB"),
-+	PINCTRL_PIN(42, "SMBCLK"),
-+	PINCTRL_PIN(43, "SMBDATA"),
-+	PINCTRL_PIN(44, "SMBALERTB"),
-+	PINCTRL_PIN(45, "CPU_GP_0"),
-+	PINCTRL_PIN(46, "CPU_GP_1"),
-+	PINCTRL_PIN(47, "USB2_OCB_1"),
-+	PINCTRL_PIN(48, "USB2_OCB_2"),
-+	PINCTRL_PIN(49, "USB2_OCB_3"),
-+	PINCTRL_PIN(50, "DDSP_HPD_A_TIME_SYNC_0"),
-+	PINCTRL_PIN(51, "DDSP_HPD_B_TIME_SYNC_1"),
-+	PINCTRL_PIN(52, "DDSP_HPD_C"),
-+	PINCTRL_PIN(53, "USB2_OCB_0"),
-+	PINCTRL_PIN(54, "PCHHOTB"),
-+	PINCTRL_PIN(55, "ESPI_CLK_LOOPBK"),
-+	/* GPP_S */
-+	PINCTRL_PIN(56, "SNDW1_CLK"),
-+	PINCTRL_PIN(57, "SNDW1_DATA"),
-+	PINCTRL_PIN(58, "SNDW2_CLK"),
-+	PINCTRL_PIN(59, "SNDW2_DATA"),
-+	PINCTRL_PIN(60, "SNDW3_CLK_DMIC_CLK_1"),
-+	PINCTRL_PIN(61, "SNDW3_DATA_DMIC_DATA_1"),
-+	PINCTRL_PIN(62, "SNDW4_CLK_DMIC_CLK_0"),
-+	PINCTRL_PIN(63, "SNDW4_DATA_DMIC_DATA_0"),
-+	/* GPP_R */
-+	PINCTRL_PIN(64, "HDA_BCLK"),
-+	PINCTRL_PIN(65, "HDA_SYNC"),
-+	PINCTRL_PIN(66, "HDA_SDO"),
-+	PINCTRL_PIN(67, "HDA_SDI_0"),
-+	PINCTRL_PIN(68, "HDA_RSTB"),
-+	PINCTRL_PIN(69, "HDA_SDI_1_I2S1_RXD"),
-+	PINCTRL_PIN(70, "I2S1_SFRM"),
-+	PINCTRL_PIN(71, "I2S1_TXD"),
-+	/* GPP_H */
-+	PINCTRL_PIN(72, "GPPC_H_0"),
-+	PINCTRL_PIN(73, "CNV_RF_RESET_B"),
-+	PINCTRL_PIN(74, "MODEM_CLKREQ"),
-+	PINCTRL_PIN(75, "SX_EXIT_HOLDOFFB"),
-+	PINCTRL_PIN(76, "I2C2_SDA"),
-+	PINCTRL_PIN(77, "I2C2_SCL"),
-+	PINCTRL_PIN(78, "I2C3_SDA"),
-+	PINCTRL_PIN(79, "I2C3_SCL"),
-+	PINCTRL_PIN(80, "I2C4_SDA"),
-+	PINCTRL_PIN(81, "I2C4_SCL"),
-+	PINCTRL_PIN(82, "CPU_VCCIO_PWR_GATEB"),
-+	PINCTRL_PIN(83, "I2S2_SCLK"),
-+	PINCTRL_PIN(84, "CNV_RF_RESET_B"),
-+	PINCTRL_PIN(85, "MODEM_CLKREQ"),
-+	PINCTRL_PIN(86, "I2S2_RXD"),
-+	PINCTRL_PIN(87, "I2S1_SCLK"),
-+	PINCTRL_PIN(88, "GPPC_H_16"),
-+	PINCTRL_PIN(89, "GPPC_H_17"),
-+	PINCTRL_PIN(90, "GPPC_H_18"),
-+	PINCTRL_PIN(91, "GPPC_H_19"),
-+	PINCTRL_PIN(92, "GPPC_H_20"),
-+	PINCTRL_PIN(93, "GPPC_H_21"),
-+	PINCTRL_PIN(94, "GPPC_H_22"),
-+	PINCTRL_PIN(95, "GPPC_H_23"),
-+	/* GPP_D */
-+	PINCTRL_PIN(96, "SPI1_CSB_BK_0_SBK_0"),
-+	PINCTRL_PIN(97, "SPI1_CLK_BK_1_SBK_1"),
-+	PINCTRL_PIN(98, "SPI1_MISO_IO_1_BK_2_SBK_2"),
-+	PINCTRL_PIN(99, "SPI1_MOSI_IO_0_BK_3_SBK_3"),
-+	PINCTRL_PIN(100, "ISH_I2C0_SDA"),
-+	PINCTRL_PIN(101, "ISH_I2C0_SCL"),
-+	PINCTRL_PIN(102, "ISH_I2C1_SDA"),
-+	PINCTRL_PIN(103, "ISH_I2C1_SCL"),
-+	PINCTRL_PIN(104, "ISH_SPI_CSB_GSPI2_CS0B_TBT_LSX4_A"),
-+	PINCTRL_PIN(105, "ISH_SPI_CLK_GSPI2_CLK_TBT_LSX4_B"),
-+	PINCTRL_PIN(106, "ISH_SPI_MISO_GSPI2_MISO_TBT_LSX5_A"),
-+	PINCTRL_PIN(107, "ISH_SPI_MOSI_GSPI2_MOSI_TBT_LSX5_B"),
-+	PINCTRL_PIN(108, "ISH_UART0_RXD_I2C4B_SDA"),
-+	PINCTRL_PIN(109, "ISH_UART0_TXD_I2C4B_SCL"),
-+	PINCTRL_PIN(110, "ISH_UART0_RTSB_GSPI2_CS1B"),
-+	PINCTRL_PIN(111, "ISH_UART0_CTSB_CNV_WCEN"),
-+	PINCTRL_PIN(112, "SPI1_IO_2"),
-+	PINCTRL_PIN(113, "SPI1_IO_3"),
-+	PINCTRL_PIN(114, "I2S_MCLK"),
-+	PINCTRL_PIN(115, "CNV_MFUART2_RXD"),
-+	PINCTRL_PIN(116, "CNV_MFUART2_TXD"),
-+	PINCTRL_PIN(117, "CNV_PA_BLANKING"),
-+	PINCTRL_PIN(118, "I2C5_SDA_ISH_I2C2_SDA"),
-+	PINCTRL_PIN(119, "I2C5_SCL_ISH_I2C2_SCL"),
-+	PINCTRL_PIN(120, "GSPI2_CLK_LOOPBK"),
-+	PINCTRL_PIN(121, "SPI1_CLK_LOOPBK"),
-+	/* vGPIO */
-+	PINCTRL_PIN(122, "CNV_BTEN"),
-+	PINCTRL_PIN(123, "CNV_WCEN"),
-+	PINCTRL_PIN(124, "CNV_BT_HOST_WAKEB"),
-+	PINCTRL_PIN(125, "CNV_BT_IF_SELECT"),
-+	PINCTRL_PIN(126, "vCNV_BT_UART_TXD"),
-+	PINCTRL_PIN(127, "vCNV_BT_UART_RXD"),
-+	PINCTRL_PIN(128, "vCNV_BT_UART_CTS_B"),
-+	PINCTRL_PIN(129, "vCNV_BT_UART_RTS_B"),
-+	PINCTRL_PIN(130, "vCNV_MFUART1_TXD"),
-+	PINCTRL_PIN(131, "vCNV_MFUART1_RXD"),
-+	PINCTRL_PIN(132, "vCNV_MFUART1_CTS_B"),
-+	PINCTRL_PIN(133, "vCNV_MFUART1_RTS_B"),
-+	PINCTRL_PIN(134, "vUART0_TXD"),
-+	PINCTRL_PIN(135, "vUART0_RXD"),
-+	PINCTRL_PIN(136, "vUART0_CTS_B"),
-+	PINCTRL_PIN(137, "vUART0_RTS_B"),
-+	PINCTRL_PIN(138, "vISH_UART0_TXD"),
-+	PINCTRL_PIN(139, "vISH_UART0_RXD"),
-+	PINCTRL_PIN(140, "vISH_UART0_CTS_B"),
-+	PINCTRL_PIN(141, "vISH_UART0_RTS_B"),
-+	PINCTRL_PIN(142, "vCNV_BT_I2S_BCLK"),
-+	PINCTRL_PIN(143, "vCNV_BT_I2S_WS_SYNC"),
-+	PINCTRL_PIN(144, "vCNV_BT_I2S_SDO"),
-+	PINCTRL_PIN(145, "vCNV_BT_I2S_SDI"),
-+	PINCTRL_PIN(146, "vI2S2_SCLK"),
-+	PINCTRL_PIN(147, "vI2S2_SFRM"),
-+	PINCTRL_PIN(148, "vI2S2_TXD"),
-+	PINCTRL_PIN(149, "vI2S2_RXD"),
-+	PINCTRL_PIN(150, "vSD3_CD_B"),
-+	/* GPP_C */
-+	PINCTRL_PIN(151, "GPPC_C_0"),
-+	PINCTRL_PIN(152, "GPPC_C_1"),
-+	PINCTRL_PIN(153, "GPPC_C_2"),
-+	PINCTRL_PIN(154, "GPPC_C_3"),
-+	PINCTRL_PIN(155, "GPPC_C_4"),
-+	PINCTRL_PIN(156, "GPPC_C_5"),
-+	PINCTRL_PIN(157, "SUSWARNB_SUSPWRDNACK"),
-+	PINCTRL_PIN(158, "SUSACKB"),
-+	PINCTRL_PIN(159, "UART0_RXD"),
-+	PINCTRL_PIN(160, "UART0_TXD"),
-+	PINCTRL_PIN(161, "UART0_RTSB"),
-+	PINCTRL_PIN(162, "UART0_CTSB"),
-+	PINCTRL_PIN(163, "UART1_RXD_ISH_UART1_RXD"),
-+	PINCTRL_PIN(164, "UART1_TXD_ISH_UART1_TXD"),
-+	PINCTRL_PIN(165, "UART1_RTSB_ISH_UART1_RTSB"),
-+	PINCTRL_PIN(166, "UART1_CTSB_ISH_UART1_CTSB"),
-+	PINCTRL_PIN(167, "I2C0_SDA"),
-+	PINCTRL_PIN(168, "I2C0_SCL"),
-+	PINCTRL_PIN(169, "I2C1_SDA"),
-+	PINCTRL_PIN(170, "I2C1_SCL"),
-+	PINCTRL_PIN(171, "UART2_RXD_CNV_MFUART0_RXD"),
-+	PINCTRL_PIN(172, "UART2_TXD_CNV_MFUART0_TXD"),
-+	PINCTRL_PIN(173, "UART2_RTSB_CNV_MFUART0_RTS_B"),
-+	PINCTRL_PIN(174, "UART2_CTSB_CNV_MFUART0_CTS_B"),
-+	/* HVCMOS */
-+	PINCTRL_PIN(175, "L_BKLTEN"),
-+	PINCTRL_PIN(176, "L_BKLTCTL"),
-+	PINCTRL_PIN(177, "L_VDDEN"),
-+	PINCTRL_PIN(178, "SYS_PWROK"),
-+	PINCTRL_PIN(179, "SYS_RESETB"),
-+	PINCTRL_PIN(180, "MLK_RSTB"),
-+	/* GPP_E */
-+	PINCTRL_PIN(181, "ISH_GP_0_IMGCLKOUT_0"),
-+	PINCTRL_PIN(182, "ISH_GP_1"),
-+	PINCTRL_PIN(183, "IMGCLKOUT_1"),
-+	PINCTRL_PIN(184, "ISH_GP_2_SATA_DEVSLP_0"),
-+	PINCTRL_PIN(185, "IMGCLKOUT_2"),
-+	PINCTRL_PIN(186, "SATA_LEDB_SPI1_CS1B"),
-+	PINCTRL_PIN(187, "IMGCLKOUT_3"),
-+	PINCTRL_PIN(188, "ISH_GP_3_SATA_DEVSLP_1"),
-+	PINCTRL_PIN(189, "FIVR_DIGPB_0"),
-+	PINCTRL_PIN(190, "SML0CLK"),
-+	PINCTRL_PIN(191, "SML0DATA"),
-+	PINCTRL_PIN(192, "BSSB_LS3_RX"),
-+	PINCTRL_PIN(193, "BSSB_LS3_TX"),
-+	PINCTRL_PIN(194, "BSSB_LS0_RX"),
-+	PINCTRL_PIN(195, "BSSB_LS0_TX"),
-+	PINCTRL_PIN(196, "BSSB_LS1_RX"),
-+	PINCTRL_PIN(197, "BSSB_LS1_TX"),
-+	PINCTRL_PIN(198, "BSSB_LS2_RX"),
-+	PINCTRL_PIN(199, "BSSB_LS2_TX"),
-+	PINCTRL_PIN(200, "FIVR_DIGPB_1"),
-+	PINCTRL_PIN(201, "CNV_BRI_DT"),
-+	PINCTRL_PIN(202, "CNV_BRI_RSP"),
-+	PINCTRL_PIN(203, "CNV_RGI_DT"),
-+	PINCTRL_PIN(204, "CNV_RGI_RSP"),
-+	/* GPP_G */
-+	PINCTRL_PIN(205, "SD3_CMD"),
-+	PINCTRL_PIN(206, "SD3_D0"),
-+	PINCTRL_PIN(207, "SD3_D1"),
-+	PINCTRL_PIN(208, "SD3_D2"),
-+	PINCTRL_PIN(209, "SD3_D3"),
-+	PINCTRL_PIN(210, "SD3_CDB"),
-+	PINCTRL_PIN(211, "SD3_CLK"),
-+	PINCTRL_PIN(212, "SD3_WP"),
-+};
-+
-+static const struct intel_padgroup icln_community0_gpps[] = {
-+	ICL_GPP(0, 0, 8, INTEL_GPIO_BASE_NOMAP),	/* SPI */
-+	ICL_GPP(1, 9, 34, 32),				/* GPP_B */
-+	ICL_GPP(2, 35, 55, 64),				/* GPP_A */
-+	ICL_GPP(3, 56, 63, 96),				/* GPP_S */
-+	ICL_GPP(4, 64, 71, 128),			/* GPP_R */
-+};
-+
-+static const struct intel_padgroup icln_community1_gpps[] = {
-+	ICL_GPP(0, 72, 95, 160),			/* GPP_H */
-+	ICL_GPP(1, 96, 121, 192),			/* GPP_D */
-+	ICL_GPP(2, 122, 150, 224),			/* vGPIO */
-+	ICL_GPP(3, 151, 174, 256),			/* GPP_C */
-+};
-+
-+static const struct intel_padgroup icln_community4_gpps[] = {
-+	ICL_GPP(0, 175, 180, INTEL_GPIO_BASE_NOMAP),	/* HVCMOS */
-+	ICL_GPP(1, 181, 204, 288),			/* GPP_E */
-+};
-+
-+static const struct intel_padgroup icln_community5_gpps[] = {
-+	ICL_GPP(0, 205, 212, INTEL_GPIO_BASE_ZERO),	/* GPP_G */
-+};
-+
-+static const struct intel_community icln_communities[] = {
-+	ICL_N_COMMUNITY(0, 0, 71, icln_community0_gpps),
-+	ICL_N_COMMUNITY(1, 72, 174, icln_community1_gpps),
-+	ICL_N_COMMUNITY(2, 175, 204, icln_community4_gpps),
-+	ICL_N_COMMUNITY(3, 205, 212, icln_community5_gpps),
-+};
-+
-+static const struct intel_pinctrl_soc_data icln_soc_data = {
-+	.pins = icln_pins,
-+	.npins = ARRAY_SIZE(icln_pins),
-+	.communities = icln_communities,
-+	.ncommunities = ARRAY_SIZE(icln_communities),
-+};
-+
- static INTEL_PINCTRL_PM_OPS(icl_pinctrl_pm_ops);
- 
- static const struct acpi_device_id icl_pinctrl_acpi_match[] = {
- 	{ "INT3455", (kernel_ulong_t)&icllp_soc_data },
-+	{ "INT34C3", (kernel_ulong_t)&icln_soc_data },
- 	{ }
- };
- MODULE_DEVICE_TABLE(acpi, icl_pinctrl_acpi_match);
+@@ -325,7 +328,7 @@ static bool hubbub31_program_urgent_watermarks(
+ 	if (safe_to_lower || watermarks->d.urgent_latency_ns > hubbub2->watermarks.d.urgent_latency_ns) {
+ 		hubbub2->watermarks.d.urgent_latency_ns = watermarks->d.urgent_latency_ns;
+ 		prog_wm_value = convert_and_clamp(watermarks->d.urgent_latency_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0x3fff);
+ 		REG_SET(DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_D, 0,
+ 				DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_D, prog_wm_value);
+ 	} else if (watermarks->d.urgent_latency_ns < hubbub2->watermarks.d.urgent_latency_ns)
+@@ -351,7 +354,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->a.cstate_pstate.cstate_enter_plus_exit_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->a.cstate_pstate.cstate_enter_plus_exit_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_A, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_A, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_ENTER_EXIT_WATERMARK_A calculated =%d\n"
+@@ -367,7 +370,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->a.cstate_pstate.cstate_exit_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->a.cstate_pstate.cstate_exit_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_A, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_A, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_EXIT_WATERMARK_A calculated =%d\n"
+@@ -383,7 +386,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->a.cstate_pstate.cstate_enter_plus_exit_z8_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->a.cstate_pstate.cstate_enter_plus_exit_z8_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_A, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_A, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_ENTER_WATERMARK_Z8_A calculated =%d\n"
+@@ -399,7 +402,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->a.cstate_pstate.cstate_exit_z8_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->a.cstate_pstate.cstate_exit_z8_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_A, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_A, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_EXIT_WATERMARK_Z8_A calculated =%d\n"
+@@ -416,7 +419,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->b.cstate_pstate.cstate_enter_plus_exit_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->b.cstate_pstate.cstate_enter_plus_exit_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_B, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_B, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_ENTER_EXIT_WATERMARK_B calculated =%d\n"
+@@ -432,7 +435,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->b.cstate_pstate.cstate_exit_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->b.cstate_pstate.cstate_exit_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_B, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_B, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_EXIT_WATERMARK_B calculated =%d\n"
+@@ -448,7 +451,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->b.cstate_pstate.cstate_enter_plus_exit_z8_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->b.cstate_pstate.cstate_enter_plus_exit_z8_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_B, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_B, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_ENTER_WATERMARK_Z8_B calculated =%d\n"
+@@ -464,7 +467,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->b.cstate_pstate.cstate_exit_z8_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->b.cstate_pstate.cstate_exit_z8_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_B, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_B, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_EXIT_WATERMARK_Z8_B calculated =%d\n"
+@@ -481,7 +484,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->c.cstate_pstate.cstate_enter_plus_exit_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->c.cstate_pstate.cstate_enter_plus_exit_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_C, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_C, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_ENTER_EXIT_WATERMARK_C calculated =%d\n"
+@@ -497,7 +500,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->c.cstate_pstate.cstate_exit_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->c.cstate_pstate.cstate_exit_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_C, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_C, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_EXIT_WATERMARK_C calculated =%d\n"
+@@ -513,7 +516,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->c.cstate_pstate.cstate_enter_plus_exit_z8_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->c.cstate_pstate.cstate_enter_plus_exit_z8_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_C, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_C, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_ENTER_WATERMARK_Z8_C calculated =%d\n"
+@@ -529,7 +532,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->c.cstate_pstate.cstate_exit_z8_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->c.cstate_pstate.cstate_exit_z8_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_C, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_C, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_EXIT_WATERMARK_Z8_C calculated =%d\n"
+@@ -546,7 +549,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->d.cstate_pstate.cstate_enter_plus_exit_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->d.cstate_pstate.cstate_enter_plus_exit_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_D, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_D, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_ENTER_EXIT_WATERMARK_D calculated =%d\n"
+@@ -562,7 +565,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->d.cstate_pstate.cstate_exit_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->d.cstate_pstate.cstate_exit_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_D, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_D, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_EXIT_WATERMARK_D calculated =%d\n"
+@@ -578,7 +581,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->d.cstate_pstate.cstate_enter_plus_exit_z8_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->d.cstate_pstate.cstate_enter_plus_exit_z8_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_D, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_D, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_ENTER_WATERMARK_Z8_D calculated =%d\n"
+@@ -594,7 +597,7 @@ static bool hubbub31_program_stutter_watermarks(
+ 				watermarks->d.cstate_pstate.cstate_exit_z8_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->d.cstate_pstate.cstate_exit_z8_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_D, 0,
+ 				DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_D, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("SR_EXIT_WATERMARK_Z8_D calculated =%d\n"
+@@ -625,7 +628,7 @@ static bool hubbub31_program_pstate_watermarks(
+ 				watermarks->a.cstate_pstate.pstate_change_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->a.cstate_pstate.pstate_change_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_A, 0,
+ 				DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_A, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("DRAM_CLK_CHANGE_WATERMARK_A calculated =%d\n"
+@@ -642,7 +645,7 @@ static bool hubbub31_program_pstate_watermarks(
+ 				watermarks->b.cstate_pstate.pstate_change_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->b.cstate_pstate.pstate_change_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_B, 0,
+ 				DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_B, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("DRAM_CLK_CHANGE_WATERMARK_B calculated =%d\n"
+@@ -659,7 +662,7 @@ static bool hubbub31_program_pstate_watermarks(
+ 				watermarks->c.cstate_pstate.pstate_change_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->c.cstate_pstate.pstate_change_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_C, 0,
+ 				DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_C, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("DRAM_CLK_CHANGE_WATERMARK_C calculated =%d\n"
+@@ -676,7 +679,7 @@ static bool hubbub31_program_pstate_watermarks(
+ 				watermarks->d.cstate_pstate.pstate_change_ns;
+ 		prog_wm_value = convert_and_clamp(
+ 				watermarks->d.cstate_pstate.pstate_change_ns,
+-				refclk_mhz, 0x1fffff);
++				refclk_mhz, 0xffff);
+ 		REG_SET(DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_D, 0,
+ 				DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_D, prog_wm_value);
+ 		DC_LOG_BANDWIDTH_CALCS("DRAM_CLK_CHANGE_WATERMARK_D calculated =%d\n"
 -- 
 2.34.1
 
