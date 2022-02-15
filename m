@@ -2,228 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9C4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDBACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236156AbiBOJz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:55:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57680 "EHLO
+        id S236166AbiBOJ4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:56:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236116AbiBOJz4 (ORCPT
+        with ESMTP id S236128AbiBOJz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 04:55:56 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D65A10CF31
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:55:46 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id o9so21060657ljq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:55:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=46FfI5X1BSFeVo5mcmXLhOyINdGGM+w+Dd3G0ef81t4=;
-        b=e6FZRxnD6PTlzKm6mn+luAsr6Y5MkCucNkdmiztanZom9yc2MLgh01sVaFjfNEAZE+
-         vCFOZ77rna74dybPM7t6oFdNBkufZDayY2TP3eSmuf3J09xFPF2B1xsNQJ1QD/7y7LEg
-         zUUDe8ZkqXBYXayxWuJpoCULHvivnk5DoLxjTPRrXUIK8hfUS8XzZRRuxUtv3ddLCIU3
-         0Mh6uKDBvoj8pa93mzYBVEuMQg9SowGfNPWBV2siYnHyauS/6HKkfGy4quumjomPhsFI
-         1hUibRGezXE+z+VmahEROLOUkYc2eTFR0mIFX25T3MCKILxB7vHklIkGmm3rZvfp0Ge4
-         nYqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=46FfI5X1BSFeVo5mcmXLhOyINdGGM+w+Dd3G0ef81t4=;
-        b=dyNSoLtZAW1fa+YRxViJPcdA0xA+ByGfFvKYyh2hj+Vs4P0VnSLGNTmbq8dNXi9hsb
-         qxjm/GSJHds7HDKyGvtpoB+cwLJGpUIm4xis+Ughu9eJQsG6eMsiTg78SwOurlxNbMIX
-         isRKj371QuXf2ZfHk2DyBoKkt81A+HrB5qO61ESFRA8NE4b3cg6oKtP5D4l730sB7kGU
-         IA7FDZIHU8/ZGgYViUVRYqSle/o6BruiCKACyv6xwl9CJTHz/DLd4PktAlCUiy1iJO5z
-         rHhTr6EKJ8gdUFvz7iIv19pgA5CkoyIN/2kOsaKmRAGytTFl3amXiYgcCAYWMrnQdivt
-         wvTw==
-X-Gm-Message-State: AOAM5301VLx7DKQbwgYxlhdDrn+MFz/0zQC0chLXbanMEkcDZyDXf+e1
-        fjFJkHl5k80gEPBlN3+FWVcpOA==
-X-Google-Smtp-Source: ABdhPJxihYcxc+bZWzxnuYG8vahFYHta1BJMmIUgjpdI8oNvOaWe6hval1HLogwrMQB4SnTv/DBs2w==
-X-Received: by 2002:a05:651c:1792:: with SMTP id bn18mr1959525ljb.18.1644918944736;
-        Tue, 15 Feb 2022 01:55:44 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id q30sm738704ljc.134.2022.02.15.01.55.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 01:55:44 -0800 (PST)
-Message-ID: <9b0fbece-8618-6b48-0240-3bab45e54a77@linaro.org>
-Date:   Tue, 15 Feb 2022 12:55:43 +0300
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82ED10DA46;
+        Tue, 15 Feb 2022 01:55:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644918946; x=1676454946;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LBjk0RGRItnnfUS2rGh0O1oLABxwlG/YheagFyaRlhk=;
+  b=VD6QoH7/mtUFCYbEcayDLNLHSEK/YekLWGzfvhTI4sAOl+ZOi4j9GX7T
+   3xytuR3KGXfYYPumIP/XwuP0jxxZ8EhG6mcLyKgyfkogH/Oxg2iRzYWPj
+   U0PBqoxKAtw8w4EF8U9W0lzjRxRpx1qYzC/Sr14yEb8UWamLgyI8KRJsd
+   QQ8mbkiSfTzTradBZi8CUg4BTJQEFNQWpHiIH+H+KCmQg4SLRZTle8n6C
+   4UUwDQP9zMg1J+2ZIuINEAuvAY7kmEtL3K03BtOrevv3FO3xGVTewGo1C
+   HDRen+nPmdxjSlQWhEwPbuEqtHjeQrNMKiwgVkBeDxAPA08rwq4TrHOxM
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249147387"
+X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
+   d="scan'208";a="249147387"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 01:55:46 -0800
+X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
+   d="scan'208";a="544222329"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 01:55:44 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nJuXp-004s9E-Rz;
+        Tue, 15 Feb 2022 11:54:49 +0200
+Date:   Tue, 15 Feb 2022 11:54:49 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Qing Wang <wangqing@vivo.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: 8250: add missing pci_dev_put() before
+ return
+Message-ID: <Ygt4aUMVKM8ZcW/5@smile.fi.intel.com>
+References: <1644890454-65258-1-git-send-email-wangqing@vivo.com>
+ <67ace5d3-02b3-034d-969f-9a05bbdd8e30@kernel.org>
+ <621e2079-567c-6954-9744-c51748dd48dd@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2] arm64: dts: qcom: sm8450: add interconnect nodes
-Content-Language: en-GB
-To:     Vinod Koul <vkoul@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220203002936.3009402-1-vkoul@kernel.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220203002936.3009402-1-vkoul@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <621e2079-567c-6954-9744-c51748dd48dd@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/02/2022 03:29, Vinod Koul wrote:
-> And the various interconnect nodes found in SM8450 SoC and use it for
-> UFS controller.
-> 
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
-> ---
-> 
-> Changes in v2:
-> 	- Fix the mc_virt node
-> 	- Add clk_virt node
-> 	- Rebase to rc1
-> 
->   arch/arm64/boot/dts/qcom/sm8450.dtsi | 85 ++++++++++++++++++++++++++++
->   1 file changed, 85 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> index 10c25ad2d0c7..ccc67918c46a 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> @@ -8,6 +8,7 @@
->   #include <dt-bindings/clock/qcom,rpmh.h>
->   #include <dt-bindings/gpio/gpio.h>
->   #include <dt-bindings/power/qcom-rpmpd.h>
-> +#include <dt-bindings/interconnect/qcom,sm8450.h>
->   #include <dt-bindings/soc/qcom,rpmh-rsc.h>
->   
->   / {
-> @@ -250,6 +251,18 @@ scm: scm {
->   		};
->   	};
->   
-> +	clk_virt: interconnect@0 {
-> +		compatible = "qcom,sm8450-clk-virt";
-> +		#interconnect-cells = <2>;
-> +		qcom,bcm-voters = <&apps_bcm_voter>;
-> +	};
-> +
-> +	mc_virt: interconnect@1 {
-> +		compatible = "qcom,sm8450-mc-virt";
-> +		#interconnect-cells = <2>;
-> +		qcom,bcm-voters = <&apps_bcm_voter>;
-> +	};
-> +
->   	memory@a0000000 {
->   		device_type = "memory";
->   		/* We expect the bootloader to fill in the size */
-> @@ -620,6 +633,54 @@ i2c14: i2c@a98000 {
->   			};
->   		};
->   
-> +		config_noc: interconnect@1500000 {
-> +			compatible = "qcom,sm8450-config-noc";
-> +			reg = <0 0x01500000 0 0x1c000>;
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		system_noc: interconnect@1680000 {
-> +			compatible = "qcom,sm8450-system-noc";
-> +			reg = <0 0x01680000 0 0x1e200>;
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		pcie_noc: interconnect@16c0000 {
-> +			compatible = "qcom,sm8450-pcie-anoc";
-> +			reg = <0 0x016c0000 0 0xe280>;
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		aggre1_noc: interconnect@16e0000 {
-> +			compatible = "qcom,sm8450-aggre1-noc";
-> +			reg = <0 0x016e0000 0 0x1c080>;
-> +			#interconnect-cells = <2>;
-> +			clocks = <&gcc GCC_AGGRE_UFS_PHY_AXI_CLK>,
-> +				 <&gcc GCC_AGGRE_USB3_PRIM_AXI_CLK>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		aggre2_noc: interconnect@1700000 {
-> +			compatible = "qcom,sm8450-aggre2-noc";
-> +			reg = <0 0x01700000 0 0x31080>;
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +			clocks = <&gcc GCC_AGGRE_NOC_PCIE_0_AXI_CLK>,
-> +				 <&gcc GCC_AGGRE_NOC_PCIE_1_AXI_CLK>,
-> +				 <&gcc GCC_AGGRE_UFS_PHY_AXI_CLK>,
-> +				 <&rpmhcc RPMH_IPA_CLK>;
-> +		};
-> +
-> +		mmss_noc: interconnect@1740000 {
-> +			compatible = "qcom,sm8450-mmss-noc";
-> +			reg = <0 0x01740000 0 0x1f080>;
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
->   		tcsr_mutex: hwlock@1f40000 {
->   			compatible = "qcom,tcsr-mutex";
->   			reg = <0x0 0x01f40000 0x0 0x40000>;
-> @@ -988,6 +1049,13 @@ cpufreq_hw: cpufreq@17d91000 {
->   			#freq-domain-cells = <1>;
->   		};
->   
-> +		gem_noc: interconnect@19100000 {
-> +			compatible = "qcom,sm8450-gem-noc";
-> +			reg = <0 0x19100000 0 0xbb800>;
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
->   		ufs_mem_hc: ufshc@1d84000 {
->   			compatible = "qcom,sm8450-ufshc", "qcom,ufshc",
->   				     "jedec,ufs-2.0";
-> @@ -1004,6 +1072,9 @@ ufs_mem_hc: ufshc@1d84000 {
->   
->   			iommus = <&apps_smmu 0xe0 0x0>;
->   
-> +			interconnects = <&aggre1_noc MASTER_UFS_MEM &mc_virt SLAVE_EBI1>,
+On Tue, Feb 15, 2022 at 07:02:57AM +0100, Jiri Slaby wrote:
+> On 15. 02. 22, 6:55, Jiri Slaby wrote:
+> > On 15. 02. 22, 3:00, Qing Wang wrote:
+> > > From: Wang Qing <wangqing@vivo.com>
+> > > 
+> > > pci_get_slot() increases its reference count, the caller must
+> > > decrement the reference count by calling pci_dev_put()
 
-As you have #interconnect-cells = <2> for all the NoCs, this should be:
+Wang, thank you for the report!
 
-		interconnects = <&aggre1_noc MASTER_UFS_MEM 0 &mc_virt SLAVE_EBI1 0>,
+...
 
-> +					<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_UFS_MEM_CFG>;
-> +			interconnect-names = "ufs-ddr", "cpu-ufs";
->   			clock-names =
->   				"core_clk",
->   				"bus_aggr_clk",
-> @@ -1102,6 +1173,20 @@ usb_1_dwc3: usb@a600000 {
->   				phy-names = "usb2-phy", "usb3-phy";
->   			};
->   		};
-> +
-> +		nsp_noc: interconnect@320c0000 {
-> +			compatible = "qcom,sm8450-nsp-noc";
-> +			reg = <0 0x320c0000 0 0x10000>;
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		lpass_ag_noc: interconnect@3c40000 {
-> +			compatible = "qcom,sm8450-lpass-ag-noc";
-> +			reg = <0 0x3c40000 0 0x17200>;
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
->   	};
->   
->   	timer {
+> > What about the "return -ENODEV" few lines above?
+> 
+> On the top of that, the code stores the pointer to the dev:
+> param->dma_dev = &dma_dev->dev;
+> 
+> So we should likely put the device in ->exit(), not ->setup().
 
+I think I may fix all these and send a new version.
 
 -- 
-With best wishes
-Dmitry
+With Best Regards,
+Andy Shevchenko
+
+
