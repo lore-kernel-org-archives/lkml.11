@@ -2,118 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF94C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234274AbiBOF4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:56:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55754 "EHLO
+        id S234275AbiBOF4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:56:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234266AbiBOF4R (ORCPT
+        with ESMTP id S230182AbiBOF4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:56:17 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E0190263
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:56:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644904568; x=1676440568;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HK++skmHQQ6xOlUsDveMh97GDMHjP+WEFiJn9BQ2OZE=;
-  b=RvYHW2FOHhjy5cNjKmMnbI05La1qH7bq+1vYWh+r+UwDkBS+O1VRP0uD
-   5kp1dagW0tbZokUOxm6zY+2StRvJ23i5hElGik21sSENJVg9tN1XpxVe9
-   4CwjaF6xZ24nTjxEuppky+VaozYb9BdLSvBps1cp2favj9wW9zZ/mMf8W
-   vt3DRQbAg2fc0XdvkyOQmzW6NAfhXIyPDLsYyutzCOI64Xipx1DHBnuDh
-   oesRRwjpITeGvIwtKUqgLIvU/+rA9PwepJ9KTZu1ygzLu2sgbIp7oqb1a
-   OSgTe5v4SqyJIjOCU7eC33nGR4kzgQPU0FiNC38kP+PLvTzyl2waCfxKS
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="247850982"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="247850982"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 21:56:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="680852152"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2022 21:56:05 -0800
-Message-ID: <653f7bf3-07b3-e411-82e1-7b4892124ef7@linux.intel.com>
-Date:   Tue, 15 Feb 2022 13:54:47 +0800
+        Tue, 15 Feb 2022 00:56:39 -0500
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2064132C;
+        Mon, 14 Feb 2022 21:56:30 -0800 (PST)
+Received: by mail-qt1-x832.google.com with SMTP id l14so17611692qtp.7;
+        Mon, 14 Feb 2022 21:56:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uPUj/2D0fnRRHEGsxfFw4uPYjIMmB8m7B7g+xVLuCTs=;
+        b=e7EkjOF9JnmPm2zvwdTKMlYivOB6v4VFpWSOnTeskfEh9TmfPrj9ow39Zv8UTTKTDD
+         GCALVJO2THsTZ9IRY73lRRhUJettrYNXO6G+v6eI7xNrz6nwh2hfeArS1DWLdU54W3r1
+         XqSl0wO9nM2J38wWwIORRLsAWma/NjrwNvmXU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uPUj/2D0fnRRHEGsxfFw4uPYjIMmB8m7B7g+xVLuCTs=;
+        b=HcjgLb8AY/Ac1hwF5vbb+bjj0+y03s3EcStNpkJLJUwaoEEAyR29JhNv110l5/5KWe
+         7iZ7sqhoNAl4DyBuyLh3ekaEpTmh8ZUN9AmaJfsJxcgiMm74iwjN/LF63c/ciWC1kOEq
+         wbIGe9Z9GKImqGO9rMsUKBVfAhMD0oluYahZzoN4AF6pLW7gP7ikqD1UH684BfkLNB6n
+         GwkDam8jbXW07w9dhB/r+iQlDLKJmYRfcv7zCUHQZN+LOxJP/tx5Z17w7dPz2Fk8Vfcr
+         KlUmPZdgBoG7CjUWf2RmomnsfrLHKJGKpPILynY08JjZmgZYc20QfykPsmDcaymyuV4w
+         Tq0g==
+X-Gm-Message-State: AOAM5318075vXVHvyjESPXrxDpu+jZSxKD17z/JErlATvuC3epeeDUQ/
+        xzixCsMkIj75YfYebtduXoBXQHRBYR6GzJcTmfw=
+X-Google-Smtp-Source: ABdhPJxDiNItJktz4LNO+XrPyLIgW4R0iAfyKu+KkaTWOe+XGOJYyD101ljPiR6VxTVgla4El5GLg42q9jEpkrRZCeQ=
+X-Received: by 2002:ac8:7e91:: with SMTP id w17mr1635736qtj.678.1644904589150;
+ Mon, 14 Feb 2022 21:56:29 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 10/11] iommu/vt-d: Use xarray for global
- device_domain_info
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>
-References: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
- <20220214025704.3184654-11-baolu.lu@linux.intel.com>
- <20220214073820.GF17411@lst.de>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220214073820.GF17411@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220129115228.2257310-1-j.neuschaefer@gmx.net>
+ <CACRpkdYEigGHkoGfBg15tFXadgpXUAjDOnw7ePXhmvHJqPEJXw@mail.gmail.com>
+ <YfZkis8M81Ejpagq@latitude> <CACPK8XdFXRQf3MpPh3z=EMAKtnQSHL+iwwMCVYc5dP9DfQEN+Q@mail.gmail.com>
+ <YfpyjDBH83FE7r4o@latitude> <CAHp75Vdg8zFSHaTP_8jQua5QfRYbvZ4_rLdCtt3ks8YEibseTg@mail.gmail.com>
+ <YgdyjUbb4lnrVHmJ@latitude>
+In-Reply-To: <YgdyjUbb4lnrVHmJ@latitude>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Tue, 15 Feb 2022 05:56:17 +0000
+Message-ID: <CACPK8Xe-t8Qso_AX+q08OxrgmUPbEayhnHXH5xiLr7M6rDxjuw@mail.gmail.com>
+Subject: Re: [PATCH v5 0/9] Nuvoton WPCM450 pinctrl and GPIO driver
+To:     =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christoph,
+On Mon, 14 Feb 2022 at 12:05, Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.n=
+et> wrote:
+>
+> On Wed, Feb 02, 2022 at 02:10:44PM +0200, Andy Shevchenko wrote:
+> > On Wed, Feb 2, 2022 at 2:01 PM Jonathan Neusch=C3=A4fer
+> > <j.neuschaefer@gmx.net> wrote:
+> > > On Tue, Feb 01, 2022 at 11:42:11PM +0000, Joel Stanley wrote:
+> > > > On Tue, 1 Feb 2022 at 13:05, Jonathan Neusch=C3=A4fer <j.neuschaefe=
+r@gmx.net> wrote:
+> >
+> > ...
+> >
+> > > > I assume you're sending a v6 to fix some of the warnings?
+> > >
+> > > No, the warnings are fairly independent of this patchset, it's just t=
+hat
+> > > the adjacent pinctrl-npcm7xx driver started to be built by the bot, d=
+ue
+> > > to my Kconfig change. I'll fix them in a separate patchset.
+> >
+> > I guess you need to fix that first.
+> >
+> > Because now and then all CIs will complain to your patch and confuse pe=
+ople.
+>
+> FWIW, Linus has applied the npcm7xx fixes to for-next in the pinctrl tree=
+,
+> which means that they are not blocking this patchset anymore, AFAICS.
 
-On 2/14/22 3:38 PM, Christoph Hellwig wrote:
->>   
->>   const struct iommu_ops intel_iommu_ops;
->> @@ -903,7 +905,8 @@ static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn, u8 bus, u
->>   	struct dmar_domain *domain;
->>   	int offset, level;
->>   
->> -	info = dmar_search_domain_by_dev_info(iommu->segment, bus, devfn);
->> +	info = xa_load(&device_domain_array,
->> +		       devi_idx(iommu->segment, bus, devfn));
->>   	if (!info || !info->domain) {
->>   		pr_info("device [%02x:%02x.%d] not probed\n",
->>   			bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
->> @@ -1742,14 +1745,14 @@ static int iommu_init_domains(struct intel_iommu *iommu)
-> 
-> Don't we need a rcu critical section here?
-> 
->> -	list_for_each_entry_safe(info, tmp, &device_domain_list, global) {
->> +	rcu_read_lock();
->> +	xa_for_each(&device_domain_array, index, info) {
->>   		if (info->iommu != iommu)
->>   			continue;
->>   
->> @@ -1758,7 +1761,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
->>   
->>   		__dmar_remove_one_dev_info(info);
->>   	}
->> -	spin_unlock_irqrestore(&device_domain_lock, flags);
->> +	rcu_read_unlock();
-> 
-> __dmar_remove_one_dev_info asserts that device_domain_lock is held,
-> which these two hunks remove.
-> 
->>   	spin_lock_irqsave(&device_domain_lock, flags);
->>   	dev_iommu_priv_set(dev, NULL);
->> -	list_del(&info->global);
->> +	xa_erase(&device_domain_array,
->> +		 devi_idx(info->segment, info->bus, info->devfn));
->>   	spin_unlock_irqrestore(&device_domain_lock, flags);
->>   
->>   	kfree(info);
-> 
-> Do we need a kfree_rcu here to allow rcu based access?
+I've applied the device tree changes, and I will send a pull request
+for v5.18 with those.
 
-Thanks for your time and very appreciated for your comments. As replied
-to Jason, I will stop 10/11 and 11/11 for now. From the current usage
-scenario, the value of such refactoring is limited.
+I assume you want Linus to merge the pinctrl bindings and driver
+through his tree.
 
-Best regards,
-baolu
+Cheers,
+
+Joel
