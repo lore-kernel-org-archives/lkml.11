@@ -2,33 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 958A1C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B33C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234322AbiBOFbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:31:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57846 "EHLO
+        id S232364AbiBOFb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:31:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234067AbiBOFa1 (ORCPT
+        with ESMTP id S234103AbiBOFan (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:30:27 -0500
+        Tue, 15 Feb 2022 00:30:43 -0500
 Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50CB212865B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:30:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E000128648
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:30:20 -0800 (PST)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JyV6C24lSz4y4Z;
-        Tue, 15 Feb 2022 16:30:11 +1100 (AEDT)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JyV6H584Hz4y4k;
+        Tue, 15 Feb 2022 16:30:15 +1100 (AEDT)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     Corentin Labbe <clabbe@baylibre.com>, benh@kernel.crashing.org
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-In-Reply-To: <20220125135421.4081740-1-clabbe@baylibre.com>
-References: <20220125135421.4081740-1-clabbe@baylibre.com>
-Subject: Re: [PATCH] macintosh: macio_asic: remove useless cast for driver.name
-Message-Id: <164490279336.270256.12209297383271051040.b4-ty@ellerman.id.au>
-Date:   Tue, 15 Feb 2022 16:26:33 +1100
+To:     Michal Suchanek <msuchanek@suse.de>, linuxppc-dev@lists.ozlabs.org
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        "Christopher M. Riedl" <cmr@informatik.wtf>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "Gustavo L. F. Walbon" <gwalbon@linux.ibm.com>,
+        linux-kernel@vger.kernel.org,
+        Anthony Steinhauser <asteinhauser@google.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Diana Craciun <diana.craciun@nxp.com>
+In-Reply-To: <20191127220959.6208-1-msuchanek@suse.de>
+References: <20191127220959.6208-1-msuchanek@suse.de>
+Subject: Re: [PATCH] powerpc: add link stack flush mitigation status in debugfs.
+Message-Id: <164490278798.270256.16110004295651186693.b4-ty@ellerman.id.au>
+Date:   Tue, 15 Feb 2022 16:26:27 +1100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -36,14 +46,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 13:54:21 +0000, Corentin Labbe wrote:
-> pci_driver name is const char pointer, so the cast it not necessary.
+On Wed, 27 Nov 2019 23:09:59 +0100, Michal Suchanek wrote:
+> The link stack flush status is not visible in debugfs. It can be enabled
+> even when count cache flush is disabled. Add separate file for its
+> status.
 > 
 > 
 
 Applied to powerpc/next.
 
-[1/1] macintosh: macio_asic: remove useless cast for driver.name
-      https://git.kernel.org/powerpc/c/ccafe7c20b7de330d9091a114c9985305759f1ee
+[1/1] powerpc: add link stack flush mitigation status in debugfs.
+      https://git.kernel.org/powerpc/c/b2a6f6043577e09d51a4b5577fff9fc9f5b14b1c
 
 cheers
