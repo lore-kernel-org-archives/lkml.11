@@ -2,125 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F8BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 952BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235004AbiBOIxZ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 03:53:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34656 "EHLO
+        id S235041AbiBOIxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 03:53:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbiBOIxY (ORCPT
+        with ESMTP id S235021AbiBOIxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 03:53:24 -0500
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB31113AE0;
-        Tue, 15 Feb 2022 00:53:14 -0800 (PST)
-Received: by mail-vs1-f43.google.com with SMTP id g21so9113768vsp.6;
-        Tue, 15 Feb 2022 00:53:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Q1Y32bFnV0z6s8wKFyvVq+8Pc0+YZ2m9QE+RjlAqL5Q=;
-        b=ctnr9E90JBq/cYX3xON8GfHtqVU6nPm39DTEPo4rPLk8MdGpCFu4e8Iee7aF+Cj5XS
-         GpvKB7V3zaX6ml/EyMP6KgRmvdnQ8DMiAzrUdUx93gB84cQ7myqwWCCjp2OZkQsisXWJ
-         pr5Er6fyuN7zuS2Ho3olGRk0sDLtNaObZrsTLtdyG24sPDejMJ3XzdOvmPZuf/WQQS8I
-         wi1PZZs789xZa3p5M+eP9gv/MO0iWhkLtC5yP8WT+3n7bB4NOnw4f4B9PyQtP+MDZrep
-         grmx+Tt9xTZD1hU6uhyPkqJAXvxtBV1NY8p+chOFbWQaWzFY8u1A4pmKZN1uJft5AwzY
-         lclA==
-X-Gm-Message-State: AOAM530R6uer0Lyj31kZOD6R/mSAfTmjmaj7i5wyAwXQ1uYRslTjxc2v
-        wZ+xx64uXav2+MizhlfrxplCPbJVhSXbJn2R
-X-Google-Smtp-Source: ABdhPJyEmLquwoqosW7UUF/FbbEblNRNQP82tFipva5yMt6IUx49LpDA11heQ82vRy1PHRPOy+IBoA==
-X-Received: by 2002:a05:6102:38cc:: with SMTP id k12mr1020867vst.31.1644915193861;
-        Tue, 15 Feb 2022 00:53:13 -0800 (PST)
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com. [209.85.217.42])
-        by smtp.gmail.com with ESMTPSA id w2sm668793vkw.40.2022.02.15.00.53.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 00:53:13 -0800 (PST)
-Received: by mail-vs1-f42.google.com with SMTP id g20so9638470vsb.9;
-        Tue, 15 Feb 2022 00:53:13 -0800 (PST)
-X-Received: by 2002:a05:6102:440d:: with SMTP id df13mr971256vsb.5.1644915193078;
- Tue, 15 Feb 2022 00:53:13 -0800 (PST)
+        Tue, 15 Feb 2022 03:53:40 -0500
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CE5113D8C
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 00:53:30 -0800 (PST)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220215085328epoutp0105612ef2aca7bc692f4412f0b44050ba~T6aqjE4CX2353023530epoutp01s
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:53:28 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220215085328epoutp0105612ef2aca7bc692f4412f0b44050ba~T6aqjE4CX2353023530epoutp01s
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1644915208;
+        bh=H85IgPFE9fTPPDbGFiZgFdv1FtF9Ujk3H5hnSSrYgKU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NsxXsNvrivdyF8/U9AwhJNRrWCEbI/eYff9HFS9u9aCT4448VSBNJgzLC0RSX/mfd
+         aiLIbOsTScK/mpBN0rWW3gA32p8s7B3DZVcpxa6CL3l76hTo+kWMcTHZIVlGuc5nVL
+         YhODW+Y9YHjInPxxaosThLhwvUL9VwzBmcNnV20c=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220215085327epcas2p2627901099b833affea7d4770f122c9aa~T6aqLPSRg2599025990epcas2p2r;
+        Tue, 15 Feb 2022 08:53:27 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4JyZch6rFMz4x9Q8; Tue, 15 Feb
+        2022 08:53:24 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F6.6B.12141.8E96B026; Tue, 15 Feb 2022 17:52:56 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220215085322epcas2p2515f6d0dbfed3e9ff1e3902258533bb9~T6alon0Pt2599025990epcas2p2U;
+        Tue, 15 Feb 2022 08:53:22 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220215085322epsmtrp1c6f83aaa873665b85afc662632571b1f~T6aln4Lag0602306023epsmtrp1l;
+        Tue, 15 Feb 2022 08:53:22 +0000 (GMT)
+X-AuditID: b6c32a48-d73ff70000002f6d-d1-620b69e809db
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2D.42.08738.20A6B026; Tue, 15 Feb 2022 17:53:22 +0900 (KST)
+Received: from ubuntu (unknown [12.36.155.120]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220215085322epsmtip13f2e8dc52882f0c5a9e45edcf0f97b8e~T6alYvfcq2909929099epsmtip1b;
+        Tue, 15 Feb 2022 08:53:22 +0000 (GMT)
+Date:   Tue, 15 Feb 2022 17:51:08 +0900
+From:   Jung Daehwan <dh10.jung@samsung.com>
+To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
+Cc:     Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_ugoswami@quicinc.com
+Subject: Re: [PATCH v2] xhci: reduce xhci_handshake timeout in xhci_reset
+Message-ID: <20220215085108.GH144890@ubuntu>
 MIME-Version: 1.0
-References: <202202142203.4ofqbic9-lkp@intel.com> <20220214151905.00005a27@Huawei.com>
- <CAMuHMdWYHWVroOdqP6+tx_zj+63OG77EcizdnpGsmfto=6SeDw@mail.gmail.com>
-In-Reply-To: <CAMuHMdWYHWVroOdqP6+tx_zj+63OG77EcizdnpGsmfto=6SeDw@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 15 Feb 2022 09:53:01 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVNQ=Y9uSS=9GSgu35gHLfsdVTNgxyyu2U5XKqPZYZs3A@mail.gmail.com>
-Message-ID: <CAMuHMdVNQ=Y9uSS=9GSgu35gHLfsdVTNgxyyu2U5XKqPZYZs3A@mail.gmail.com>
-Subject: Re: drivers/iio/adc/xilinx-ams.c:1195:21: error: unused variable 'ams'
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Manish Narani <manish.narani@xilinx.com>,
-        linux-sh@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20220214135310.GC31021@hu-pkondeti-hyd.qualcomm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprIJsWRmVeSWpSXmKPExsWy7bCmhe6LTO4kg6ZFghbNi9ezWVzeNYfN
+        YtGyVmaL5k1TWC1ef2hisVh3Kd/i9I0bzA7sHov3vGTymHcy0GP/3DXsHhP31Hl83iQXwBqV
+        bZORmpiSWqSQmpecn5KZl26r5B0c7xxvamZgqGtoaWGupJCXmJtqq+TiE6DrlpkDdIOSQlli
+        TilQKCCxuFhJ386mKL+0JFUhI7+4xFYptSAlp8C8QK84Mbe4NC9dLy+1xMrQwMDIFKgwITtj
+        2cl+1oLX8hWvOqewNjDul+xi5OCQEDCROLdRo4uRi0NIYAejxO8lRxkhnE+MErtnz2WBcD4z
+        Snxa8Zeti5ETrOPPhqcsILaQwC5Gif/rqyDsJ4wSz48qgdgsAqoSDxq62EFsNgEtiXs/TjCD
+        bBMR0JX4uEMPZCazwFNGiSkvL4LVCAt4SnTsvsQKYvMK6Eh8PXMEyhaUODnzCdguTgEniZe/
+        3rKCzBEVUJF4dbAeZI6EwE92iVUPmpggbnORWPh2NtSdwhKvjm9hh7ClJF72t0HZxRK7PrUy
+        QTQ3MEo0PgA5DiRhLDHrWTsjiM0skCHx4F8jEySIlCWO3GKBCPNJdBz+yw4R5pXoaBOC6FSW
+        mH55AiuELSlx8PU5qIkeEs9W74UG1VkmiRdbrCcwys9C8tksJMsgbB2JBbs/sc0C2sAsIC2x
+        /B8HhKkpsX6X/gJG1lWMYqkFxbnpqcVGBSbwmE7Oz93ECE6bWh47GGe//aB3iJGJg/EQowQH
+        s5IIb9xZziQh3pTEyqrUovz4otKc1OJDjKbAaJrILCWanA9M3Hkl8YYmlgYmZmaG5kamBuZK
+        4rxeKRsShQTSE0tSs1NTC1KLYPqYODilGphCijVcrrt5BZmlhtUXK95m35xo7r+ozyHycOv+
+        t09SPsx0mPOVX8jSTMwlmDd7Re4kPa3tm0/InhCxkq4/vKPrLpe/y3rlZ0wdXsxLGsTfWL5N
+        rJ23I0i6dXLc/M1p61fFl/eZ8B+2Fduxd2HN9q0zUxmE/rJNtDRZMFFmMx//m2dSYqXcumWR
+        52pf99yyCdD5aM3QUcuieevesdQejqNXtrq9nCiRumxL7q372fHKf3+xxchY3TxbdOvKVs3G
+        +U2HmiwOfbjDl/455tL/zmCNmYe2nNWZ4Lv8UMnrr8+1k3P2L46Ze1Jnz68VeqHCL1dLlJ70
+        1vdQTJi4OP/Xp63Cm766TbJuXlNWvGlGzWUlluKMREMt5qLiRADeDyrJJAQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFLMWRmVeSWpSXmKPExsWy7bCSnC5TFneSwflDKhbNi9ezWVzeNYfN
+        YtGyVmaL5k1TWC1ef2hisVh3Kd/i9I0bzA7sHov3vGTymHcy0GP/3DXsHhP31Hl83iQXwBrF
+        ZZOSmpNZllqkb5fAlTFr/0uWgtWyFfsWfGJpYJwh3sXIySEhYCLxZ8NTli5GLg4hgR2MEs9f
+        T2KDSEhKLJ17gx3CFpa433KEFaLoEaPErbYlLCAJFgFViQcNXWBFbAJaEvd+nGDuYuTgEBHQ
+        lfi4Qw+knlngKaPEg2NXwYYKC3hKdOy+xApi8wroSHw9AzP0LJNE24SZLBAJQYmTM5+A2cxA
+        Q2/8e8kEMpRZQFpi+T8OkDCngJPEy19vWUHCogIqEq8O1k9gFJyFpHkWkuZZCM0LGJlXMUqm
+        FhTnpucWGxYY5aWW6xUn5haX5qXrJefnbmIEB7+W1g7GPas+6B1iZOJgPMQowcGsJMIbd5Yz
+        SYg3JbGyKrUoP76oNCe1+BCjNAeLkjjvha6T8UIC6YklqdmpqQWpRTBZJg5OqQamiOCEs3kn
+        294UvbmoVhtjk9LeV1Ds7eufYVd4/LvZOsei1xPsuf20Hp9xvzl9pfODnZdWrpyx7GPVmV8n
+        Di6crxd465r13sOrZN94TuLY8C5A7vPxP8++Fs0s17/D9KtAQHzT1WOsyXfVfaMF/hgkffKI
+        Nj83d8+C64caZ+f/F1nuvVDO2/GC5LX849teTynW3H9wjZW7T/Omx7ZM3af0ijRO1Zvd6Lm9
+        wMq81KoiP81vac5aru7QpjuSr04+lj66MJgl+94Rew+WbAF1c0Hnhals3Ad3VUx62LnttY9o
+        yV32qEUzLLbW+gRrSy2+8zZnssZR5xlrX+udfPqx95zKjfkP1iX/dXzCdUgrYc66s0osxRmJ
+        hlrMRcWJALtGB/vtAgAA
+X-CMS-MailID: 20220215085322epcas2p2515f6d0dbfed3e9ff1e3902258533bb9
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----_7s4r-glDYfHz5mV2FGmC11V_HCNsCeqJGxaGPxgMNZjUkbW=_ea294_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220214135321epcas2p19dc7b60c27304181a8863248103e7493
+References: <1644836663-29220-1-git-send-email-quic_pkondeti@quicinc.com>
+        <1644841216-1468-1-git-send-email-quic_pkondeti@quicinc.com>
+        <d82746d2-4096-1477-42dd-fd393e0ff827@linux.intel.com>
+        <CGME20220214135321epcas2p19dc7b60c27304181a8863248103e7493@epcas2p1.samsung.com>
+        <20220214135310.GC31021@hu-pkondeti-hyd.qualcomm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 9:33 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Mon, Feb 14, 2022 at 8:17 PM Jonathan Cameron
-> <Jonathan.Cameron@huawei.com> wrote:
-> > On Mon, 14 Feb 2022 22:47:14 +0800
-> > kernel test robot <lkp@intel.com> wrote:
-> >
-> > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> > > head:   754e0b0e35608ed5206d6a67a791563c631cec07
-> > > commit: d5c70627a79455154f5f636096abe6fe57510605 iio: adc: Add Xilinx AMS driver
-> > > date:   8 weeks ago
-> > > config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220214/202202142203.4ofqbic9-lkp@intel.com/config)
-> > > compiler: sh4-linux-gcc (GCC) 11.2.0
-> > > reproduce (this is a W=1 build):
-> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> > >         chmod +x ~/bin/make.cross
-> > >         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d5c70627a79455154f5f636096abe6fe57510605
-> > >         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> > >         git fetch --no-tags linus master
-> > >         git checkout d5c70627a79455154f5f636096abe6fe57510605
-> > >         # save the config file to linux build tree
-> > >         mkdir build_dir
-> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sh SHELL=/bin/bash drivers/iio/adc/ drivers/net/ethernet/freescale/
-> > >
-> > > If you fix the issue, kindly add following tag as appropriate
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> >
-> > I'm very tempted to say won't fix on this at least not in the IIO code.
-> >
-> > The issue I think is the stub for iounmap on sh with no MMU not using the argument because it's
->
-> Indeed.
->
-> > defined as a while loop rather than as an empty static inline function which is what we'd
-> > get it it wasn't defined at all (AFAICT).
->
-> We would get that only if <asm-generic/io.h> would be included...
->
-> > If anyone wants to take this on, my guess is drop
-> > https://elixir.bootlin.com/linux/latest/source/arch/sh/include/asm/io.h#L274
-> > and see if everything still works and the warning goes away.
->
-> Nope:
->
->     error: implicit declaration of function ‘iounmap’
->
-> > +CC linux-sh for inputs.
->
-> Thanks, I'll post a fix.
+------_7s4r-glDYfHz5mV2FGmC11V_HCNsCeqJGxaGPxgMNZjUkbW=_ea294_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
-https://lore.kernel.org/r/4ed0a7a0d3fa912a5b44c451884818f2c138ef42.1644914600.git.geert+renesas@glider.be/
+On Mon, Feb 14, 2022 at 07:23:10PM +0530, Pavan Kondeti wrote:
+> Hi Mathias,
+> 
+> On Mon, Feb 14, 2022 at 02:51:54PM +0200, Mathias Nyman wrote:
+> > On 14.2.2022 14.20, Pavankumar Kondeti wrote:
+> > > From: Daehwan Jung <dh10.jung@samsung.com>
+> > > 
+> > > xhci_reset() is called with interrupts disabled. Waiting 10 seconds for
+> > > controller reset and controller ready operations can be fatal to the
+> > > system when controller is timed out. Reduce the timeout to 1 second
+> > > and print a error message when the time out happens.
+> > > 
+> > > Fixes: 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
+> > 
+> > 
+> > The commit 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
+> > intentionally increased the timeout to 10 seconds as that host might take 9
+> > seconds to complete reset. This was done almost 10 years ago so I don't know
+> > if it really is an issue anymore.
+> > 
+> > Anyways, your patch might break Renesas 72021 instead of fixing it.
+> 
+> Unfortunately, yes :-( . We have this reduced timeout patch in our previous
+> commercialized products so thought this would be a good time to fix this
+> once for all. Since this patch has been 10 years long, not sure if any other
+> controllers also need 10 sec timeout. It would probably better
+> 
+> > 
+> > I agree that busylooping up to 10 seconds with interrupts disabled doesn't make sense.
+> > 
+> > Lets see if there is another solution for your case.
+> > 
+> > - Does a "guard interval" after writing the reset help?
+> >   For example Intel xHCI needs 1ms before touching xHC after writing the reset bit
+> 
+> I will ask this question to our hardware team. Setting that one quirk from
+> DWC3 host might require other changes like this [1].
+> > 
+> > - Is it the CNR bit or the RESET bit that fails? could be just stuck CNR bit? 
+> 
+> The RESET bit never gets cleared from USBCMD register.
+> 
+> >  
+> > - we only disable local interrupts when xhci_reset() is called from xhci_stop(),
+> >   and sometimes from xhci_shutdown() and xhci_resume() if some conditions are met.
+> >   Have you identified which one is the problematic case?
+> 
+> The crash reports I have seen are pointing to
+> 
+> usb_remove_hcd()->xhci_stop()->xhci_reset()
+> > 
+> >   I think we halt the host in the above case first, meaning there should be no
+> >   xHC interrupts when xhci_reset() is called. So if we could guarantee xhci interrupt
+> >   isn't handled on this cpu, maybe we could somehow enable local interrupt after 
+> >   halting the host?
+> > 
+> >   haven't really thought this true yet, but something like this could e investigated:
+> > 
+> >   spin_lock_irqsave()
+> >   xhci_halt()
+> >   < enable interrupts, magically turn spin_lock_irqsave() to just keeping spin lock>
+> >   xhci_reset()
+> >   spin_unlock()
+> 
+> This is a very good suggestion. However, disabling preemption for 10 seconds
+> is also bad even on non-RT kernels like mobiles are using. Most of the SoCs
+> will have a watchdog which makes sure that all CPUs are schedulable and flag
+> this condition. The most important thread in the system could have just woken
+> on this CPU and it can't run until we drop the spin lock.
+>  
 
-Gr{oetje,eeting}s,
+Hi,
 
-                        Geert
+I also think it doesn't make sense 10 secs timeout with irqs disabled.
+It could cause critical system problem as Pavan said. How about adding
+new quirk for different timeout value?
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Best Regards,
+Jung Daehwan
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> [1] https://protect2.fireeye.com/v1/url?k=31f83ce7-6e63042d-31f9b7a8-0cc47a31bee8-8c4a74e439cea40a&q=1&e=5359ff44-4a70-42b7-b593-e37b236454ca&u=https%3A%2F%2Flore.kernel.org%2Flinux-usb%2F20220209055352.GA22550%40hu-pkondeti-hyd.qualcomm.com%2F
+> 
+> Thanks,
+> Pavan
+> 
+
+
+------_7s4r-glDYfHz5mV2FGmC11V_HCNsCeqJGxaGPxgMNZjUkbW=_ea294_
+Content-Type: text/plain; charset="utf-8"
+
+
+------_7s4r-glDYfHz5mV2FGmC11V_HCNsCeqJGxaGPxgMNZjUkbW=_ea294_--
