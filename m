@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E66B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B14EBC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240001AbiBOP2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:28:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46778 "EHLO
+        id S240021AbiBOP2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:28:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235185AbiBOP2B (ORCPT
+        with ESMTP id S239972AbiBOP2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:28:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E79AC043;
-        Tue, 15 Feb 2022 07:27:37 -0800 (PST)
+        Tue, 15 Feb 2022 10:28:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2375AADFD3;
+        Tue, 15 Feb 2022 07:27:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5EB8B81AEF;
-        Tue, 15 Feb 2022 15:27:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F6C3C340ED;
-        Tue, 15 Feb 2022 15:27:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 495C5615EF;
+        Tue, 15 Feb 2022 15:27:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A80CEC340EB;
+        Tue, 15 Feb 2022 15:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938854;
-        bh=YPmrjZCA/qvxTOK2iFsBy8+N9NJ3GXDz4AwzbwadkqY=;
+        s=k20201202; t=1644938858;
+        bh=C5i4No6AY9uV92xDLWu7pa0iWfZa0pYvuHCfzS+rSfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CZaggYHJSS+NHaxbOmOczkL7IoACgTfBZmLAPT2OZIEbn7OJjqYK6PZ9CSqPeiwjO
-         uWodMsk2omxBKVy7ay5N3lgipXnRGg7MWtE6jRLr0MBxNdSa7ynLRg8V8OJWMPL9Jg
-         iGTv+ju1JVvwtbDfVVKVlqeoDWEIQzS5wl1lRfUgqYDfbIuvG/geDndQh7ZKDzC3DV
-         CZM7aPEcQmf8OR9cmV9J2YCZOgiL8vg+e/fc1rE7135K/8xmjgiBRPPoGw834lhl6a
-         uO3am0e2gpkcyumAnNTLv0YaIC41TwzYCdViUvqL2LtJak8V8ajEgjAFc2sRqIm+FS
-         4EsW323wnF0Xw==
+        b=s52gSvm8TeU/SHieG5vB42Nhjy1TMur2MCdubZoaAuqWQyv494MJCpLftFPTCRLnf
+         B2nsvXduZWu2X6N/H9axQxFu9n0CyuIWfCvllAPOGLUKbmsFdi+9OvJXmVeU7Gc6/K
+         cM75qam4MH5TZzGpkoLc0DI6W5YjWCLwO2RPwDBLmv5V8gQSmQf9E+7Px2MA70po+8
+         K4gYhVnSp+qujurGHcNFOWTCe1d+hwHxK3z3U39PZUOvQj+e7/JzOo7ASjHIYrltLw
+         6Zio3TfafdsOV6Bewi849zlMs8CMruwuVsbNvWugxmBR5G3HlEflI/mQDntN+wYM/W
+         tTxjU5rX8C/lA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mario Limonciello <mario.limonciello@amd.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        Pratik.Vishwakarma@amd.com, hdegoede@redhat.com,
-        alexander.deucher@amd.com, nakato@nakato.io,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 18/34] ACPI: PM: Revert "Only mark EC GPE for wakeup on Intel systems"
-Date:   Tue, 15 Feb 2022 10:26:41 -0500
-Message-Id: <20220215152657.580200-18-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        "Ewan D . Milne" <emilne@redhat.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 21/34] scsi: lpfc: Reduce log messages seen after firmware download
+Date:   Tue, 15 Feb 2022 10:26:44 -0500
+Message-Id: <20220215152657.580200-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
 References: <20220215152657.580200-1-sashal@kernel.org>
@@ -55,87 +54,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit d6ebb17ccc7b37872a32bc25b4a21f1e5af8c7e3 ]
+[ Upstream commit 5852ed2a6a39c862c8a3fdf646e1f4e01b91d710 ]
 
-Testing on various upcoming OEM systems shows commit 7b167c4cb48e ("ACPI:
-PM: Only mark EC GPE for wakeup on Intel systems") was short
-sighted and the symptoms were indicative of other problems. Some OEMs
-do have the dedicated GPIOs for the power button but also rely upon
-an interrupt to the EC SCI to let the lid work.
+Messages around firmware download were incorrectly tagged as being related
+to discovery trace events. Thus, firmware download status ended up dumping
+the trace log as well as the firmware update message. As there were a
+couple of log messages in this state, the trace log was dumped multiple
+times.
 
-The original commit showed spurious activity on Lenovo systems:
-     * On both Lenovo T14 and P14s the keyboard wakeup doesn't work, and
-       sometimes the power button event doesn't work.
+Resolve this by converting from trace events to SLI events.
 
-This was confirmed on my end at that time.
-
-However further development in the kernel showed that the issue was
-actually the IRQ for the GPIO controller was also shared with the EC SCI.
-This was actually fixed by commit 2d54067fcd23 ("pinctrl: amd: Fix
-wakeups when IRQ is shared with SCI").
-
-The original commit also showed problems with AC adapter:
-     * On HP 635 G7 detaching or attaching AC during suspend will cause
-       the system not to wakeup
-     * On Asus vivobook to prevent detaching AC causing resume problems
-     * On Lenovo 14ARE05 to prevent detaching AC causing resume problems
-     * On HP ENVY x360  to prevent detaching AC causing resume problems
-
-Detaching AC adapter causing problems appears to have been a problem
-because the EC SCI went off to notify the OS of the power adapter change
-but the SCI was ignored and there was no other way to wake up this system
-since GPIO controller wasn't properly enabled.  The wakeups were fixed by
-enabling the GPIO controller in commit acd47b9f28e5 ("pinctrl: amd: Handle
-wake-up interrupt").
-
-I've confirmed on a variety of OEM notebooks with the following test
-
- 1) echo 1 | sudo tee /sys/power/pm_debug_messages
- 2) sudo systemctl suspend
- 3) unplug AC adapter, make sure system is still asleep
- 4) wake system from lid (which is provided by ACPI SCI on some of them)
- 5) dmesg
-    a) see the EC GPE dispatched, timekeeping for X seconds (matching ~time
-       until AC adapter plug out)
-    b) see timekeeping for Y seconds until woke (matching ~time from AC
-       adapter until lid event)
- 6) Look at /sys/kernel/debug/amd_pmc/s0ix_stats
-    "Time (in us) in S0i3" = X + Y - firmware processing time
-
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/20220207180442.72836-1-jsmart2021@gmail.com
+Reviewed-by: Ewan D. Milne <emilne@redhat.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/x86/s2idle.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/scsi/lpfc/lpfc_init.c | 2 +-
+ drivers/scsi/lpfc/lpfc_sli.c  | 8 +++++++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index 1c48358b43ba3..e0185e841b2a3 100644
---- a/drivers/acpi/x86/s2idle.c
-+++ b/drivers/acpi/x86/s2idle.c
-@@ -424,15 +424,11 @@ static int lps0_device_attach(struct acpi_device *adev,
- 		mem_sleep_current = PM_SUSPEND_TO_IDLE;
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index 7628b0634c57a..ece50201d1724 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -2104,7 +2104,7 @@ lpfc_handle_eratt_s4(struct lpfc_hba *phba)
+ 		}
+ 		if (reg_err1 == SLIPORT_ERR1_REG_ERR_CODE_2 &&
+ 		    reg_err2 == SLIPORT_ERR2_REG_FW_RESTART) {
+-			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
++			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
+ 					"3143 Port Down: Firmware Update "
+ 					"Detected\n");
+ 			en_rn_msg = false;
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 513a78d08b1d5..f404e6bf813cc 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -13365,6 +13365,7 @@ lpfc_sli4_eratt_read(struct lpfc_hba *phba)
+ 	uint32_t uerr_sta_hi, uerr_sta_lo;
+ 	uint32_t if_type, portsmphr;
+ 	struct lpfc_register portstat_reg;
++	u32 logmask;
  
  	/*
--	 * Some Intel based LPS0 systems, like ASUS Zenbook UX430UNR/i7-8550U don't
--	 * use intel-hid or intel-vbtn but require the EC GPE to be enabled while
--	 * suspended for certain wakeup devices to work, so mark it as wakeup-capable.
--	 *
--	 * Only enable on !AMD as enabling this universally causes problems for a number
--	 * of AMD based systems.
-+	 * Some LPS0 systems, like ASUS Zenbook UX430UNR/i7-8550U, require the
-+	 * EC GPE to be enabled while suspended for certain wakeup devices to
-+	 * work, so mark it as wakeup-capable.
- 	 */
--	if (!acpi_s2idle_vendor_amd())
--		acpi_ec_mark_gpe_for_wake();
-+	acpi_ec_mark_gpe_for_wake();
- 
- 	return 0;
- }
+ 	 * For now, use the SLI4 device internal unrecoverable error
+@@ -13415,7 +13416,12 @@ lpfc_sli4_eratt_read(struct lpfc_hba *phba)
+ 				readl(phba->sli4_hba.u.if_type2.ERR1regaddr);
+ 			phba->work_status[1] =
+ 				readl(phba->sli4_hba.u.if_type2.ERR2regaddr);
+-			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
++			logmask = LOG_TRACE_EVENT;
++			if (phba->work_status[0] ==
++				SLIPORT_ERR1_REG_ERR_CODE_2 &&
++			    phba->work_status[1] == SLIPORT_ERR2_REG_FW_RESTART)
++				logmask = LOG_SLI;
++			lpfc_printf_log(phba, KERN_ERR, logmask,
+ 					"2885 Port Status Event: "
+ 					"port status reg 0x%x, "
+ 					"port smphr reg 0x%x, "
 -- 
 2.34.1
 
