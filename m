@@ -2,79 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3496C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:53:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E61C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:55:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234252AbiBOFxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:53:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49858 "EHLO
+        id S234260AbiBOFzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:55:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbiBOFxV (ORCPT
+        with ESMTP id S230415AbiBOFzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:53:21 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFCB764D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:53:12 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id p10so12483862pfo.12
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:53:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MZiYIqQHTdeoJ9lebDmPlM5Q1GrE+XQWQNH/BfT5U94=;
-        b=dGHJhJEtpRDhbHXpfGONB4RNX3MHZkVwiI5UWTvXOq/8hRL0jBHIgTLEKIA8mW9Avv
-         J6e+oayJMm1r8O6eQ3FoXmJ1lL8wcxMW4uUfOh+oiDiYZcvgMJ9ik+XUUX1QsHh4qFBI
-         VzfteXN/sxFNo9V1rCEOawnrc85LKd3vy2tys=
+        Tue, 15 Feb 2022 00:55:50 -0500
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC738F9BD;
+        Mon, 14 Feb 2022 21:55:41 -0800 (PST)
+Received: by mail-ej1-f41.google.com with SMTP id a8so41914453ejc.8;
+        Mon, 14 Feb 2022 21:55:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MZiYIqQHTdeoJ9lebDmPlM5Q1GrE+XQWQNH/BfT5U94=;
-        b=MqAzibveh+AeRpgquT0HISCFzQgwltJSW4kfm6eshbBmei7lmywJVT38x3L61pymmf
-         Mqz505tYrpxSq9w8kBOnd1bB+ovhiZD32fyl2C1GG5O5/Vt7LnqrRAlj5u0iYQsZ8YUb
-         U2F1TjdGSvsjo9HwELgG95NFUUoHGU37M2xrv34ww5+f+8u0Kzvi52mqR82IS0J1aTFD
-         biEyx8lWSUPPuCGJYWzoGEPZ5eSQo/x8lqDsP5nzyHRFDc/4K1Y6CWkrQGzBs9Ny0EEm
-         6lSg1FJ6A9XpH0rKD2dVipzzPZiisyyEnN1fkWuWU1dAtzNvED1oXF2DcT3C/UIIP6HR
-         g7JQ==
-X-Gm-Message-State: AOAM532HTQ359fKf+xDdauVe1CGjnDyLOhatokMxnYOW8EpLBPuLnJer
-        SwaNMT2vVHlGhIYOnho5XRmFROAeNYWvpw==
-X-Google-Smtp-Source: ABdhPJzUCMq3k2+JQQ+iO3SXA2DubFgIifTx3H6vwjB03C0Bu9SPYtt3oqvAwP8d71cg0700rLfgTQ==
-X-Received: by 2002:a63:914a:: with SMTP id l71mr2155987pge.581.1644904391827;
-        Mon, 14 Feb 2022 21:53:11 -0800 (PST)
-Received: from google.com ([2401:fa00:8f:203:c926:4ee:add9:bf67])
-        by smtp.gmail.com with ESMTPSA id m126sm155741pga.94.2022.02.14.21.53.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 21:53:11 -0800 (PST)
-Date:   Tue, 15 Feb 2022 14:53:07 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH printk v1 04/13] printk: get caller_id/timestamp after
- migration disable
-Message-ID: <Ygs/w55BU8ZBt4Me@google.com>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-5-john.ogness@linutronix.de>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gp8ebT5rOJ2rAFinWwNQFlP6FSvniebTOjl8cmXAgEY=;
+        b=EsphDjdXfTtnyNS4Txc3RCr02CfJNaPcTwSMUFPtvY9J0nwJ7WXfLF+/hpFFMfYbfS
+         btGk/CJg5Zdl5eYyToNZFgjJEL5LjvLAQePsXxWxQj6nb7+q7YOcj8Cov9w4aI9i+95n
+         3tmuMm5SwffXKz1i05mUJnPzvDpqWicvhxwQxJu1LkdRDVE+Yy02ObHlBeRXKfDuwrfR
+         KKKS0oI+4MA8R19Aq1F6XQT+mU75Wb4pI1jpYU8kjsjwLOcifs7eaaG/r37S+NfjTd7W
+         D2E6jr/5jyogTaBc/v9LgIzcHqRn0om/nC6RpIdqVjHF09c1U4tMp9Zm53uXHy75Pf7+
+         Asbg==
+X-Gm-Message-State: AOAM533WOMUYj/1n6j/aq6wymuzox7layOQmOn94qgd39CZ2tgzfwMcH
+        Gnv49v3NYgtrayhwDsBtSoEwfedzRws=
+X-Google-Smtp-Source: ABdhPJyrPL/Y79/an13ElJxSImi+bGwiinWqWkElWMGy55bQXJVKYjwB12opX7WttphtP3ne6+pdXA==
+X-Received: by 2002:a17:907:16a8:: with SMTP id hc40mr1617582ejc.739.1644904539831;
+        Mon, 14 Feb 2022 21:55:39 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id p16sm6035084ejn.54.2022.02.14.21.55.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 21:55:39 -0800 (PST)
+Message-ID: <67ace5d3-02b3-034d-969f-9a05bbdd8e30@kernel.org>
+Date:   Tue, 15 Feb 2022 06:55:38 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207194323.273637-5-john.ogness@linutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] tty: serial: 8250: add missing pci_dev_put() before
+ return
+Content-Language: en-US
+To:     Qing Wang <wangqing@vivo.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1644890454-65258-1-git-send-email-wangqing@vivo.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <1644890454-65258-1-git-send-email-wangqing@vivo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On (22/02/07 20:49), John Ogness wrote:
-> Currently the local CPU timestamp and caller_id for the record are
-> collected while migration is enabled. Since this information is
-> CPU-specific, it should be collected with migration disabled.
+On 15. 02. 22, 3:00, Qing Wang wrote:
+> From: Wang Qing <wangqing@vivo.com>
 > 
-> Migration is disabled immediately after collecting this information
-> anyway, so just move the information collection to after the
-> migration disabling.
+> pci_get_slot() increases its reference count, the caller must
+> decrement the reference count by calling pci_dev_put()
 > 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
+> ---
+>   drivers/tty/serial/8250/8250_lpss.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+> index d3bafec..57e462f
+> --- a/drivers/tty/serial/8250/8250_lpss.c
+> +++ b/drivers/tty/serial/8250/8250_lpss.c
+> @@ -149,6 +149,8 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+>   	/* Disable TX counter interrupts */
+>   	writel(BYT_TX_OVF_INT_MASK, port->membase + BYT_TX_OVF_INT);
+>   
+> +	pci_dev_put(dma_dev);
 
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+
+What about the "return -ENODEV" few lines above?
+
+>   	return 0;
+>   }
+>   
+
+
+-- 
+js
+suse labs
