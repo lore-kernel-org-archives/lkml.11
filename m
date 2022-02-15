@@ -2,100 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C49A3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbiBOOJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:09:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42136 "EHLO
+        id S237037AbiBOOLG convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:11:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232295AbiBOOJF (ORCPT
+        with ESMTP id S229896AbiBOOLF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:09:05 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB4E74635;
-        Tue, 15 Feb 2022 06:08:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644934135; x=1676470135;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=R65To4o9TE9cJawliYC3L2IrA50D6L/J7joHVO9YWBU=;
-  b=mdMYtWt9WI6lRPDNz2ouj43JXzlkA5rmikTqjjM4PvZiZnCAGOm2mBp+
-   ur4xOp4AJU3YH6JmVSh9683F/Scm/JkIcMPK2Ug1TGcSd4Svhbh6ismSA
-   ObxgYaLp4haJJP5iGZClcEzI57MBSNNnPQgzM93n4rNg4Zn2SP4ZDs78p
-   0+POyLcixwa11MdYyJByq6Srt+U7TcLjNONXmRdyQ8X6SRFX7LZc7Zv4U
-   bMWWPklOf1wIyJ9U5cBoEj7NJe1znxIk4X4jDbHrEUWVvqtid4VfhIAsH
-   tUZBS9wDonWGQdv8cok0t17PBv+JwbcFwSglQCSz5cYeMFFbAWUFy182g
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="311095043"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="311095043"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 06:08:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="502461353"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2022 06:08:51 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJyVe-0009jS-Tk; Tue, 15 Feb 2022 14:08:50 +0000
-Date:   Tue, 15 Feb 2022 22:07:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, sboyd@kernel.org,
-        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        abel.vesa@nxp.com
-Cc:     kbuild-all@lists.01.org, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH 3/4] clk: imx: support fracn gppll
-Message-ID: <202202152209.JA3vtPGE-lkp@intel.com>
-References: <20220215081835.790311-4-peng.fan@oss.nxp.com>
+        Tue, 15 Feb 2022 09:11:05 -0500
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE047D2AB;
+        Tue, 15 Feb 2022 06:10:55 -0800 (PST)
+Received: by mail-yb1-f181.google.com with SMTP id v186so56458626ybg.1;
+        Tue, 15 Feb 2022 06:10:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=xHfL1XY2GV6QdZjIkT4vEos4l6sqpCi5W/kB5ImUf2I=;
+        b=wnzmPXUvPcJ3683Ztz3p4zLPfMTTG/bb8eWY++hxELKDoT6zzqN0s2jirNyjljnSH1
+         XKcpCqCdVbf4FVZ7JO7uzipctkQniwFpkd1vWA0kBt2CrddXBnp+CeEIy1hnEfWYBCVY
+         Zxp8DfoRdSxJRf+FsKjSsXEcIccEgLqFNW1jGxOg4sX/RW8V2yRhjckkjDJDSWUDzbBD
+         wMjxtDS6ftC9yn/DiX/XM80hP16OwZsR7MfDklm1fepwNt8VNuxM6OOIY/1vvvDXkq+U
+         58A7ytNAB7DIBjyiU4DdpIHOBaj18TmBjoMMoMa5cCqmITtDVg/K5yxUnqcOviBjR6JC
+         lY5w==
+X-Gm-Message-State: AOAM533j8oAm+Xvy6xGBCW+G8WP6hK53dsK+QxPOCoqD0d51Ii0XA/yf
+        zD9EEF5osp0ozaGKyaysEwyoUBk6nQlB88BO7lo=
+X-Google-Smtp-Source: ABdhPJyzKs4yuHR0FjNoP2vBK2JooJ+jaKb9zNbBcgSMbloPOXlk3Ph/57kK0MjTlHGlf9VIII46DM2AyYGoEq0H1eg=
+X-Received: by 2002:a81:1f0b:: with SMTP id f11mr3887472ywf.149.1644934254475;
+ Tue, 15 Feb 2022 06:10:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220215081835.790311-4-peng.fan@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220121103938.2602637-1-amadeuszx.slawinski@linux.intel.com>
+ <59ef4cd5-5703-2356-c893-9858985f91e0@intel.com> <f6e5f716-f191-c126-cc81-cf872ad4e750@linux.intel.com>
+In-Reply-To: <f6e5f716-f191-c126-cc81-cf872ad4e750@linux.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 15 Feb 2022 15:10:43 +0100
+Message-ID: <CAJZ5v0jV5H9a66utA5Ch--X2iiV-MOSmX6CVL6s+veYpzOaezg@mail.gmail.com>
+Subject: Re: [PATCH] x86: Preserve ACPI memory area during hibernation
+To:     =?UTF-8?B?QW1hZGV1c3ogU8WCYXdpxYRza2k=?= 
+        <amadeuszx.slawinski@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Peng,
+On Tue, Feb 15, 2022 at 1:22 PM Amadeusz Sławiński
+<amadeuszx.slawinski@linux.intel.com> wrote:
+>
+> On 2/14/2022 8:34 PM, Rafael J. Wysocki wrote:
+> > On 1/21/2022 11:39 AM, Amadeusz Sławiński wrote:
+> >> When overriding NHLT ACPI-table tests show that on some platforms
+> >> there is problem that NHLT contains garbage after hibernation/resume
+> >> cycle.
+> >>
+> >> Problem stems from the fact that ACPI override performs early memory
+> >> allocation using memblock_phys_alloc_range() in
+> >> memblock_phys_alloc_range(). This memory block is later being marked as
+> >> ACPI memory block in arch_reserve_mem_area(). Later when memory areas
+> >> are considered for hibernation it is being marked as nosave in
+> >> e820__register_nosave_regions().
+> >>
+> >> Fix this by skipping ACPI memory area altogether when considering areas
+> >> to mark as nosave.
+> >
+> > This patch looks correct to me and I'm going to apply it as 5.18
+> > material unless there are any objections or concerns (in which case
+> > please let me know).
+> >
+> >
+>
+> Well, what do you know? I've checked with validation team to make sure
+> that it works as expected and while it causes no problem on almost all
+> platforms and fixes problem with NHLT ACPI-table override, there is this
+> one platform where it causes oops on hibernation which of course is gone
+> after reverting the patch.
+>
+>   ? set_direct_map_default_noflush+0x130/0x130
+>   ? memory_bm_test_bit+0x29/0x60
+>   saveable_page+0xce/0xf2
+>   count_data_pages+0x50/0x76
+>   hibernate_preallocate_memory+0x9c/0x377
+>   ? __mutex_lock_slowpath+0x20/0x20
+>   hibernation_snapshot+0x1cf/0x610
+>   snapshot_ioctl+0x3d2/0x690
+>   ? snapshot_release+0xd0/0xd0
+>   ? new_sync_write+0x36b/0x390
+>   __x64_sys_ioctl+0x6dc/0xe20
+>   ? vfs_fileattr_set+0x520/0x520
+>   ? _raw_read_unlock+0x2a/0x50
+>   ? __kasan_check_read+0x11/0x20
+>   ? vfs_write+0x131/0x3d0
+>   ? ksys_write+0x13b/0x170
+>   ? debug_smp_processor_id+0x17/0x20
+>   ? fpregs_assert_state_consistent+0x5f/0x70
+>   ? exit_to_user_mode_prepare+0x3e/0x170
+>   do_syscall_64+0x43/0x90
+>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+> Above trace points at functions using pfn, so I suspect there may be
+> need for some additional checks, but I will need to investigate.
+> I guess you can skip this patch for now, until I figure what exactly is
+> going on.
 
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on shawnguo/for-next]
-[also build test ERROR on robh/for-next clk/clk-next v5.17-rc4 next-20220215]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Peng-Fan-OSS/imx-add-i-MX93-clk-bindings-and-driver/20220215-162047
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git for-next
-config: nds32-randconfig-r001-20220214 (https://download.01.org/0day-ci/archive/20220215/202202152209.JA3vtPGE-lkp@intel.com/config)
-compiler: nds32le-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/37b42f1a06ef92797e800461d1f46e849fa63c91
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Peng-Fan-OSS/imx-add-i-MX93-clk-bindings-and-driver/20220215-162047
-        git checkout 37b42f1a06ef92797e800461d1f46e849fa63c91
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   nds32le-linux-ld: drivers/clk/imx/clk-fracn-gppll.o: in function `clk_fracn_gppll_recalc_rate':
-   clk-fracn-gppll.c:(.text+0x434): undefined reference to `__udivdi3'
->> nds32le-linux-ld: clk-fracn-gppll.c:(.text+0x438): undefined reference to `__udivdi3'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I'll do that, thanks!
