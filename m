@@ -2,130 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 718DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 802CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243341AbiBOTBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:01:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50864 "EHLO
+        id S243345AbiBOTEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:04:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbiBOTBU (ORCPT
+        with ESMTP id S231887AbiBOTEO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:01:20 -0500
-Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E53EBBB9;
-        Tue, 15 Feb 2022 11:01:10 -0800 (PST)
-Received: by mail-il1-f174.google.com with SMTP id o10so15611883ilh.0;
-        Tue, 15 Feb 2022 11:01:10 -0800 (PST)
+        Tue, 15 Feb 2022 14:04:14 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A6EF94ED
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:04:03 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id m185so25107294iof.10
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:04:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X9oIpTmWH153dZPbERckgwcW88amB5wLeggsaAJv2ZI=;
+        b=nQBCpjZ8lrNiWaxU4Wg2alyfbeoW6NWsW4O4lUAYOIf3kh4200lqryhrnZrd/i0dTg
+         Os4bogB5jd/j3L1NssRvTvI7jkV+eA8agcBWgmGTe/9nQdwQpTAKMKJOh/BEGUqxxhQR
+         LIPxM/gXNHIQgpzqCktJVYqGCILCSn5RwW+Vw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UBBmp4DgxbJ3nAuN//yjsP9FmwDmp49m+83tg2kI50Y=;
-        b=6KSrOYonYhJ96jW2hVv9ABGA6wGvjVAGSBDIWIkDZfVJeFFLNYTWrC+UKCD0awloRm
-         awRfE98zhFXgc1eY4XQpHrve1mkprkNcMZkbzpqnKjqlIfy6iR8sDj+nyDMefQXUyTcW
-         e/CxiaVzfI+wd6qgYLHqzVzvZhFXjby3+5kkLOrV2/KPZKtbiqLBCAnnaDpTEi6sPu7P
-         Ubr9frcZ7aaTPde3eoLV8qhtz+62gU01WcME2slB9ytmF/xClKBDmntdpO6VfIUymkBV
-         wFNH4UfUpqcpbUsqy3ZC4SG2BLpsAgT3oklL/arWGjdIVCxcNkAoIt/g4vqqH96cU7fp
-         tXsw==
-X-Gm-Message-State: AOAM533TF06t0Ob0aiGfgkHM4vJvPetYhvencW3rUU644hwHWRIy01+0
-        tP9DyUvNEDbHvuCMOQjqRA==
-X-Google-Smtp-Source: ABdhPJzr1JvD7wkz7BTuJejx6Q5hZPGEsJZTOE5TvygVd8PbAcJonZNUWrC4RHzDEmQr1FWxeEBVHA==
-X-Received: by 2002:a05:6e02:1687:: with SMTP id f7mr281589ila.143.1644951668921;
-        Tue, 15 Feb 2022 11:01:08 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id q18sm18818854ils.78.2022.02.15.11.01.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 11:01:08 -0800 (PST)
-Received: (nullmailer pid 3747771 invoked by uid 1000);
-        Tue, 15 Feb 2022 19:01:06 -0000
-Date:   Tue, 15 Feb 2022 13:01:06 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Mark Rutland <mark.rutland@arm.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 2/2] perf: Expand perf_branch_entry.type
-Message-ID: <Ygv4cmO/zb3qO48q@robh.at.kernel.org>
-References: <1643348653-24367-1-git-send-email-anshuman.khandual@arm.com>
- <1643348653-24367-3-git-send-email-anshuman.khandual@arm.com>
- <Yfpxv9+TP9rP72wL@FVFF77S0Q05N>
- <6168f881-92a4-54f8-929a-c2f40a36c112@arm.com>
- <Yf1N/EWjlQ/bEA0D@FVFF77S0Q05N>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X9oIpTmWH153dZPbERckgwcW88amB5wLeggsaAJv2ZI=;
+        b=DNLYVvM/rFESHedJAls7+kx3Gtx+poM+ILr61urCGUAHf/XSUNmCvSDkgQPE6xcRWK
+         y1uBPdBQwx8T15z5kangbuvXOrpJQvaLs3CiCAomc5VIddGVn6tdkv0xRKpH8dtwShlI
+         7QuHt+IiD3drju7uTkrih5rH673pb9twaHaabL8ZXOIQTfxZjQJEiEY1Pf+l8ePgg4tl
+         erSgScbM/aJpMxpVQZTjRpfdW/t5WIHetvHyqRIp7f/PNYlyNyUeQC+pUlGN8rU3GPvK
+         lSuAcXrnCufjsQ4xMeL/+NMvMRHbHNcOxNieq2AQsAxaI3Ffutzp366p4XVPRptyFWak
+         Ip9Q==
+X-Gm-Message-State: AOAM5326VsnjIFCp9KwYh4e6nT3p2ijD+20naeJd7oQL1o+BoOLw6XVc
+        RuveuANocAkxe5BR12dPrrnZ9l6IPNvERA==
+X-Google-Smtp-Source: ABdhPJyH3beCUTCtI0dFm2daXdXbFUp1IswgHfPY2eP2XwUqWkid1tU8zy2kVKWxAdXRWaQld/secA==
+X-Received: by 2002:a05:6638:164b:: with SMTP id a11mr205860jat.57.1644951842919;
+        Tue, 15 Feb 2022 11:04:02 -0800 (PST)
+Received: from mail-io1-f47.google.com (mail-io1-f47.google.com. [209.85.166.47])
+        by smtp.gmail.com with ESMTPSA id m5sm23998868iov.36.2022.02.15.11.04.02
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 11:04:02 -0800 (PST)
+Received: by mail-io1-f47.google.com with SMTP id r144so25074381iod.9
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:04:02 -0800 (PST)
+X-Received: by 2002:a05:6638:168d:: with SMTP id f13mr243041jat.44.1644951842244;
+ Tue, 15 Feb 2022 11:04:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yf1N/EWjlQ/bEA0D@FVFF77S0Q05N>
+References: <20220119204345.3769662-1-mka@chromium.org> <20220119124327.v20.5.Ie0d2c1214b767bb5551dd4cad38398bd40e4466f@changeid>
+ <YgJMkFAxjazkUDZd@kroah.com> <YgLCswtX/0THkzXT@google.com>
+ <CAD=FV=WMP8M5HTRNv9_scvrytbpE0iBdUack=XaHoypGNLJeVA@mail.gmail.com> <Ygv3FSDS/fq1oePy@kroah.com>
+In-Reply-To: <Ygv3FSDS/fq1oePy@kroah.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 15 Feb 2022 11:03:50 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=XpF=BMKxjkX6xciWP=q=3qQ_dCusBX8KJ4GjubuqN2nQ@mail.gmail.com>
+Message-ID: <CAD=FV=XpF=BMKxjkX6xciWP=q=3qQ_dCusBX8KJ4GjubuqN2nQ@mail.gmail.com>
+Subject: Re: [PATCH v20 5/5] arm64: dts: qcom: sc7180-trogdor: Add nodes for
+ onboard USB hub
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Peter Chen <peter.chen@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        Bastien Nocera <hadess@hadess.net>,
+        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 04:02:04PM +0000, Mark Rutland wrote:
-> On Fri, Feb 04, 2022 at 10:25:24AM +0530, Anshuman Khandual wrote:
-> > On 2/2/22 5:27 PM, Mark Rutland wrote:
-> > > On Fri, Jan 28, 2022 at 11:14:13AM +0530, Anshuman Khandual wrote:
-> > >> @@ -1370,8 +1376,8 @@ struct perf_branch_entry {
-> > >>  		in_tx:1,    /* in transaction */
-> > >>  		abort:1,    /* transaction abort */
-> > >>  		cycles:16,  /* cycle count to last branch */
-> > >> -		type:4,     /* branch type */
-> > >> -		reserved:40;
-> > >> +		type:6,     /* branch type */
-> > > 
-> > > As above, is this a safe-change ABI-wise?
-> > 
-> > If the bit fields here cannot be expanded without breaking ABI, then
-> > there is a fundamental problem. Only remaining option will be to add
-> > new fields (with new width value) which could accommodate these new
-> > required branch types.
-> 
-> Unfortunately, I think expanding this does break ABI, and is a fundamental
-> problem, as:
-> 
-> (a) Any new values in the expanded field will be truncated when read by old
->     userspace, and so those may be mis-reported. Maybe we're not too worried
->     about this case.
+Hi,
 
-'type' or specfically branch stack is not currently supported on arm64. 
-Do we expect an old userspace which this didn't work on to start working 
-with a new kernel?
+On Tue, Feb 15, 2022 at 10:55 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Feb 15, 2022 at 09:54:54AM -0800, Doug Anderson wrote:
+> > Hi,
+> >
+> > On Tue, Feb 8, 2022 at 11:21 AM Matthias Kaehlcke <mka@chromium.org> wrote:
+> > >
+> > > On Tue, Feb 08, 2022 at 11:57:20AM +0100, Greg Kroah-Hartman wrote:
+> > > > On Wed, Jan 19, 2022 at 12:43:45PM -0800, Matthias Kaehlcke wrote:
+> > > > > Add nodes for the onboard USB hub on trogdor devices. Remove the
+> > > > > 'always-on' property from the hub regulator, since the regulator
+> > > > > is now managed by the onboard_usb_hub driver.
+> > > > >
+> > > > > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > > > > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> > > > > Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> > > > > ---
+> > > >
+> > > > No DT maintainer approval yet?  :(
+> > >
+> > > Bjorn usually just picks DT changes into the QCOM tree when they are
+> > > ready, so I wouldn't interpret anything into the lack of an explicit
+> > > Ack.
+> >
+> > Right, so the expectation is that this patch wouldn't land through the
+> > USB tree but would instead land through the Qualcomm tree, probably a
+> > revision after the code lands in the USB tree to avoid dependency
+> > problems.
+>
+> But our tools pick up the whole series.  I can't just do "i will pick
+> patches 1-4 only" easily, and neither can any other maintainer.
+>
+> Why not just get their ack so that I know it can come through the USB
+> tree?  That's what normally happens for other changes like this where a
+> driver change is required first.
 
-Given at least some of the new types are arch specific, perhaps 
-the existing type field should get a new 'PERF_BR_ARCH_SPECIFIC' or 
-'PERF_BR_EXTENDED' value (or use PERF_BR_UNKNOWN?) which means read a 
-new 'arch_type' field.
+Huh. That's the first time I've heard that and I'm pretty used to
+patches in a series going through different trees, but it would be OK
+w/ me if Bjorn was willing to Ack this. Bjorn: what say you? I guess
+alternatively Matthias could send two series: one with the code and a
+later one with the dts.
 
-Another option is maybe some of these additional types just shouldn't be 
-exposed to userspace? For example, are branches to FIQ useful or leaking 
-any info about secure world? Debug mode branches also seem minimally 
-useful to me (though I'm no expert in how this is used).
-
-
-> (b) Depending on how the field is placed, existing values might get stored
->     differently. This could break any mismatched combination of
->     {old,new}-kernel and {old,new}-userspace.
-> 
->     In practice, I think this means that this is broken for BE, and happens to
->     work for LE, but I don't know how bitfields are defined for each
->     architecture, so there could be other brokenness.
-> 
-> Consider the test case below:
-
-[...]
-
-> ... where the low bits of the field have moved, and so this is broken even for
-> existing values!
-
-So that is a separate issue to be fixed and not directly related to the 
-size of 'type'. Looks like it needs similar '#if 
-defined(__LITTLE_ENDIAN_BITFIELD)' treatment as some of the other struct 
-bitfields. Though somehow BE PPC hasn't had issues?
-
-Rob
+-Doug
