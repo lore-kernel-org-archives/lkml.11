@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346A7C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF771C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239335AbiBOPhz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:37:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46230 "EHLO
+        id S240839AbiBOPiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:38:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240636AbiBOPf2 (ORCPT
+        with ESMTP id S240688AbiBOPf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:35:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E466C117C;
-        Tue, 15 Feb 2022 07:31:10 -0800 (PST)
+        Tue, 15 Feb 2022 10:35:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B421275D6;
+        Tue, 15 Feb 2022 07:30:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6478B8185B;
-        Tue, 15 Feb 2022 15:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A6A1C340EB;
-        Tue, 15 Feb 2022 15:31:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E598DB8185B;
+        Tue, 15 Feb 2022 15:30:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEFA0C340F2;
+        Tue, 15 Feb 2022 15:30:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939067;
-        bh=0qosWklo7YAkGYZCSZxwfWdSMTmaGodxjewobnnr6+A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NfgECoWSNSXVSFhw+lZys/CXlPtEbd9s4mkqEQiDsPy3BDWxjdjSQmmCsx5HZhf4S
-         0DEw+xsBqzSKoAhklxwOaDqB0+wS/J3hywT9OrZu1EVbPd6I5/BlRfArLVTi3/ZJiN
-         KwRA9bQd8tcIxUx5X8SqxJPd9twLF0nSg/zbUN2Fb0vnk1xcz9QTSA4p5Dl9OIm8kF
-         r88+M7xjesUjLzwB1OS8ZcF9nTaQ/lVm3LmIQcUkWIJ4H8tBs5fqYt01TVt3nae+nd
-         k346xhb269XTBKgA/DlzFznHZQrDaS70DI+XkPL161lP6OW5I4fmgFaWs5m7TDEUfB
-         6C3fz9G9v6iTw==
+        s=k20201202; t=1644939055;
+        bh=jl6J5B/Ooq64gp8K9/J7JdHTpm2F2YSPuQwYltenSYo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=io8hMW9EwVAgwai3jrKHQeKh+zKNTAGlCc/TjqcSofvGqiPo9VxCYhdttII87TEDm
+         CdF/wgK0WfHg1IZHjQiJ9OzwlcRpNoIZrtrv47IUwlXr67/kRUoe26SoXGHCNUU+bR
+         xTZqBxuT/NXyeSoPVoj17Ns+4zQHkyMgLydUXc+I0yCVOB/DnM+94YUtyTsZpd9vV1
+         87itwi8vqy7p5gcAi2fnyyqHyHAX9aLav4qDjUfp2XXBFLx32INlzurcAmspCx8Cfq
+         X2sYcGYmenfRzZl4T+QC5GEFNffRyjOoGg0IifLMCDf1t30cQ84ZieXItY3/o0yi+b
+         CHicas79lLK9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wan Jiabing <wanjiabing@vivo.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>, bcousson@baylibre.com,
-        paul@pwsan.com, linux@armlinux.org.uk, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 01/11] ARM: OMAP2+: hwmod: Add of_node_put() before break
-Date:   Tue, 15 Feb 2022 10:30:54 -0500
-Message-Id: <20220215153104.581786-1-sashal@kernel.org>
+Cc:     =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
+        <zboszor@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>, linux-ide@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 11/17] ata: libata-core: Disable TRIM on M88V29
+Date:   Tue, 15 Feb 2022 10:30:31 -0500
+Message-Id: <20220215153037.581579-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215153037.581579-1-sashal@kernel.org>
+References: <20220215153037.581579-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -51,40 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wan Jiabing <wanjiabing@vivo.com>
+From: Zoltán Böszörményi <zboszor@gmail.com>
 
-[ Upstream commit 80c469a0a03763f814715f3d12b6f3964c7423e8 ]
+[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
 
-Fix following coccicheck warning:
-./arch/arm/mach-omap2/omap_hwmod.c:753:1-23: WARNING: Function
-for_each_matching_node should have of_node_put() before break
+This device is a CF card, or possibly an SSD in CF form factor.
+It supports NCQ and high speed DMA.
 
-Early exits from for_each_matching_node should decrement the
-node reference counter.
+While it also advertises TRIM support, I/O errors are reported
+when the discard mount option fstrim is used. TRIM also fails
+when disabling NCQ and not just as an NCQ command.
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+TRIM must be disabled for this device.
+
+Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/omap_hwmod.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/ata/libata-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
-index a8269f0a87ced..47c55351df033 100644
---- a/arch/arm/mach-omap2/omap_hwmod.c
-+++ b/arch/arm/mach-omap2/omap_hwmod.c
-@@ -754,8 +754,10 @@ static int __init _init_clkctrl_providers(void)
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 92fb1f5b240e8..dca1590f295d0 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4595,6 +4595,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
  
- 	for_each_matching_node(np, ti_clkctrl_match_table) {
- 		ret = _setup_clkctrl_provider(np);
--		if (ret)
-+		if (ret) {
-+			of_node_put(np);
- 			break;
-+		}
- 	}
+ 	/* devices that don't properly handle TRIM commands */
+ 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
++	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
  
- 	return ret;
+ 	/*
+ 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
 -- 
 2.34.1
 
