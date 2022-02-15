@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87BCAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:36:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:36:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240571AbiBOPg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:36:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43746 "EHLO
+        id S240573AbiBOPge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:36:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240627AbiBOPeq (ORCPT
+        with ESMTP id S240689AbiBOPf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:34:46 -0500
+        Tue, 15 Feb 2022 10:35:27 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF94FC0857;
-        Tue, 15 Feb 2022 07:30:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268631275E2;
+        Tue, 15 Feb 2022 07:31:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 763C9B8185B;
-        Tue, 15 Feb 2022 15:30:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD97C340F2;
-        Tue, 15 Feb 2022 15:30:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D07B1B8185B;
+        Tue, 15 Feb 2022 15:31:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08EA4C340F1;
+        Tue, 15 Feb 2022 15:30:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939043;
-        bh=Pds4lWi9Q0Fs6QHw+9jNqs5hWYaOcitN9MmKN1nehOM=;
+        s=k20201202; t=1644939059;
+        bh=MIJPmwim3A/3JWC/apyrNa0p77Qn/Rdwy0Wfo9mLmZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oaC++Y963NOaTPrWN+/oOL7h8I6OLIt/yxtzLXkzbcq87r1uXJeroqdrMZR8h26vC
-         rkNs6cCRCIV4ZeSme+77XXF+Gt9EiGwM55+z6boP/vUv+89NoCyT/9HAup/elSn/kc
-         UAvwKZXV7KP6psxg3R/A+PKm5r6XmDAGzL5iPnwn0ZVJwWIjaM5XgO6UjYSjm5voMJ
-         Wo6LEjysN+7UAb/WMbo/qfHF3kdaU0+p5h6oyrl1CQF8tm4wBza3/xUjVlDd8SeGbS
-         4UxplBsAMdDLNuxzN9cPWGcVkeC2XgZ5DJT2nc33dq3q25jymaiDo9E+m0LijIgy4U
-         oBBcldXxSrwzw==
+        b=dNzKmdxj7x9kgiDfg0uRbJvAOrATQSCnAw2+Vj/ATY71eswbHEVEILK6ETvIq1BaE
+         oX99DHhDdGw2somS8KRVGCzJZYxzZWv3/pDUH3rm7zmv+oL5HkqzMcIwCaiLOC9PW3
+         7ETJ+yjb/qO/r5KplX7RVUE766ZOuW7bbYR5s8w8vQIcLxdzg0yf5qzmMN18BevB+p
+         w686TLOZf4R2XeO/YjxLWilvzN4deEJP8sOiMmXF1XSHxHM8hDRCAhmN/p3yicqcft
+         44CrUggs40l3/XgXwBIPODLRuXmH5r98AOAzq2r28vN4eLyZa0QJVRq8o9kBfm9yjh
+         I2Js8w98ugodg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tommaso Merciai <tomm.merciai@gmail.com>,
-        Richard Leitner <richard.leitner@linux.dev>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, richard.leitner@skidata.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 03/17] usb: usb251xb: add boost-up property support
-Date:   Tue, 15 Feb 2022 10:30:23 -0500
-Message-Id: <20220215153037.581579-3-sashal@kernel.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 14/17] NFSD: Fix offset type in I/O trace points
+Date:   Tue, 15 Feb 2022 10:30:34 -0500
+Message-Id: <20220215153037.581579-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215153037.581579-1-sashal@kernel.org>
 References: <20220215153037.581579-1-sashal@kernel.org>
@@ -53,55 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tommaso Merciai <tomm.merciai@gmail.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 5c2b9c61ae5d8ad0a196d33b66ce44543be22281 ]
+[ Upstream commit 6a4d333d540041d244b2fca29b8417bfde20af81 ]
 
-Add support for boost-up register of usb251xb hub.
-boost-up property control USB electrical drive strength
-This register can be set:
+NFSv3 and NFSv4 use u64 offset values on the wire. Record these values
+verbatim without the implicit type case to loff_t.
 
- - Normal mode -> 0x00
- - Low         -> 0x01
- - Medium      -> 0x10
- - High        -> 0x11
-
-(Normal Default)
-
-References:
- - http://www.mouser.com/catalog/specsheets/2514.pdf p29
-
-Reviewed-by: Richard Leitner <richard.leitner@linux.dev>
-Signed-off-by: Tommaso Merciai <tomm.merciai@gmail.com>
-Link: https://lore.kernel.org/r/20220128181713.96856-1-tomm.merciai@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/misc/usb251xb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/nfsd/trace.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/usb/misc/usb251xb.c b/drivers/usb/misc/usb251xb.c
-index 6ca9111d150a3..18d228b82e97f 100644
---- a/drivers/usb/misc/usb251xb.c
-+++ b/drivers/usb/misc/usb251xb.c
-@@ -539,6 +539,9 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
- 	if (of_property_read_u16_array(np, "language-id", &hub->lang_id, 1))
- 		hub->lang_id = USB251XB_DEF_LANGUAGE_ID;
+diff --git a/fs/nfsd/trace.h b/fs/nfsd/trace.h
+index b073bdc2e6e89..127db5351d016 100644
+--- a/fs/nfsd/trace.h
++++ b/fs/nfsd/trace.h
+@@ -53,14 +53,14 @@ TRACE_EVENT(nfsd_compound_status,
+ DECLARE_EVENT_CLASS(nfsd_io_class,
+ 	TP_PROTO(struct svc_rqst *rqstp,
+ 		 struct svc_fh	*fhp,
+-		 loff_t		offset,
+-		 unsigned long	len),
++		 u64		offset,
++		 u32		len),
+ 	TP_ARGS(rqstp, fhp, offset, len),
+ 	TP_STRUCT__entry(
+ 		__field(u32, xid)
+ 		__field(u32, fh_hash)
+-		__field(loff_t, offset)
+-		__field(unsigned long, len)
++		__field(u64, offset)
++		__field(u32, len)
+ 	),
+ 	TP_fast_assign(
+ 		__entry->xid = be32_to_cpu(rqstp->rq_xid);
+@@ -68,7 +68,7 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
+ 		__entry->offset = offset;
+ 		__entry->len = len;
+ 	),
+-	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%lld len=%lu",
++	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%llu len=%u",
+ 		  __entry->xid, __entry->fh_hash,
+ 		  __entry->offset, __entry->len)
+ )
+@@ -77,8 +77,8 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
+ DEFINE_EVENT(nfsd_io_class, nfsd_##name,	\
+ 	TP_PROTO(struct svc_rqst *rqstp,	\
+ 		 struct svc_fh	*fhp,		\
+-		 loff_t		offset,		\
+-		 unsigned long	len),		\
++		 u64		offset,		\
++		 u32		len),		\
+ 	TP_ARGS(rqstp, fhp, offset, len))
  
-+	if (of_property_read_u8(np, "boost-up", &hub->boost_up))
-+		hub->boost_up = USB251XB_DEF_BOOST_UP;
-+
- 	cproperty_char = of_get_property(np, "manufacturer", NULL);
- 	strlcpy(str, cproperty_char ? : USB251XB_DEF_MANUFACTURER_STRING,
- 		sizeof(str));
-@@ -580,7 +583,6 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
- 	 * may be as soon as needed.
- 	 */
- 	hub->bat_charge_en = USB251XB_DEF_BATTERY_CHARGING_ENABLE;
--	hub->boost_up = USB251XB_DEF_BOOST_UP;
- 	hub->boost_57 = USB251XB_DEF_BOOST_57;
- 	hub->boost_14 = USB251XB_DEF_BOOST_14;
- 	hub->port_map12 = USB251XB_DEF_PORT_MAP_12;
+ DEFINE_NFSD_IO_EVENT(read_start);
 -- 
 2.34.1
 
