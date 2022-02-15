@@ -2,158 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAAA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54022C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237488AbiBOMGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:06:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46418 "EHLO
+        id S237496AbiBOMJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:09:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237465AbiBOMGm (ORCPT
+        with ESMTP id S237465AbiBOMJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:06:42 -0500
+        Tue, 15 Feb 2022 07:09:32 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E624BFD8;
-        Tue, 15 Feb 2022 04:06:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABF1EF7AB;
+        Tue, 15 Feb 2022 04:09:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26B1CB81865;
-        Tue, 15 Feb 2022 12:06:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1AB2C340ED;
-        Tue, 15 Feb 2022 12:06:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA8B4B817B9;
+        Tue, 15 Feb 2022 12:09:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 660FEC340EB;
+        Tue, 15 Feb 2022 12:09:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644926788;
-        bh=Sv9IrvT5EE6VlBqnofRFBXi83PWWmXl7XCHCvVMjTJ0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TC0Q5IOz+/cfPgB6GZyxOj2vONGKWZOSW/Ih1uRBCYZR1Qmj609401JmPDeVKJZJ3
-         tUJ68Ul/5/LUNCQjg/FHvkmz1iyzTxYBvADGDT8JnTPNvxkhMnzDuLyBQngMdIKq8q
-         mDkmuHzn7rbo+0J65Jg4/Dxx6b9jos6tA481AdD3ayv2ZtrFvoNVg5yIBBpj2tyTux
-         NcTv+R2NBbZ+ZFzKMLd5xkWgPYDzi0dLU03inPV00eC7jyO+G1xVofCFGfU8gVF/dD
-         aYUugWTkbiPCi06+F1joVdES+3TFhBaR264LZSVO9guNuti4oNhuKlTrIO7kllJIK8
-         nArzNJO2zQbEg==
-Date:   Tue, 15 Feb 2022 17:36:24 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Zong Li <zong.li@sifive.com>
-Cc:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v5 3/3] dmaengine: sf-pdma: Get number of channel by
- device tree
-Message-ID: <YguXQJp/b/8SzjGX@matsya>
-References: <cover.1644215230.git.zong.li@sifive.com>
- <df6c8d1c701b33fa735dd072de3cb585dc60f2c9.1644215230.git.zong.li@sifive.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <df6c8d1c701b33fa735dd072de3cb585dc60f2c9.1644215230.git.zong.li@sifive.com>
+        s=k20201202; t=1644926960;
+        bh=Ftj69RG3gmLoAWhVy5oxY9cQIuIItMQXxWGvo4VYRwY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=URnL3MBbK940bv95M5l+cUkuNwiIaEtbjmNO0xLsFMa6aFUPMptzT/WupeZ/fm/FX
+         1IL6NuPMN0bnKDV7WnMdxceoolfMV8NmA8eaF6zAtXrmaFEDte5mxLDb2hI07tCG/C
+         H7ozX6A79BHaavhmEVyckzlLczIC2rWLhMfdqynkWCNyLx89V9jzgnYOJDhX8fmbzJ
+         QbN5gIk+E8EniS/MSksbwGceADlpSpZHxM+3kDULkWFF8kQWZv2gCBEGRTwUkF9G6t
+         9EWXrKS2LDsGTeY3qjxaOClt5PSsQ1Zeyn/EuQWtv4aqkr328BOU69urbzN+yj6QdJ
+         zSReuJ86//sgw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nJwdy-0082gW-FU; Tue, 15 Feb 2022 12:09:18 +0000
+Date:   Tue, 15 Feb 2022 12:09:18 +0000
+Message-ID: <87czjo49ht.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Sander Vanheule <sander@svanheule.net>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Birger Koblitz <mail@birger-koblitz.de>,
+        Bert Vermeulen <bert@biot.com>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 0/4] Per-parent domains for realtek-rtl IRQ driver
+In-Reply-To: <cover.1644864700.git.sander@svanheule.net>
+References: <cover.1644864700.git.sander@svanheule.net>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: sander@svanheule.net, robh+dt@kernel.org, devicetree@vger.kernel.org, tglx@linutronix.de, mail@birger-koblitz.de, bert@biot.com, john@phrozen.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07-02-22, 14:30, Zong Li wrote:
-> It currently assumes that there are always four channels, it would
-> cause the error if there is actually less than four channels. Change
-> that by getting number of channel from device tree.
+On Mon, 14 Feb 2022 18:56:57 +0000,
+Sander Vanheule <sander@svanheule.net> wrote:
 > 
-> For backwards-compatibility, it uses the default value (i.e. 4) when
-> there is no 'dma-channels' information in dts.
+> The original implementation for this interrupt controller/router used
+> an interrupt-map parser to determine which parent interrupts were
+> present. However, this controller is not transparent, so a list of
+> parent interrupts seems more appropriate, while also getting rid of the
+> assumed routing to parent interrupts.
 > 
-> Signed-off-by: Zong Li <zong.li@sifive.com>
-> ---
->  drivers/dma/sf-pdma/sf-pdma.c | 21 ++++++++++++++-------
->  drivers/dma/sf-pdma/sf-pdma.h |  8 ++------
->  2 files changed, 16 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
-> index f12606aeff87..2ae10b61dfa1 100644
-> --- a/drivers/dma/sf-pdma/sf-pdma.c
-> +++ b/drivers/dma/sf-pdma/sf-pdma.c
-> @@ -482,9 +482,7 @@ static void sf_pdma_setup_chans(struct sf_pdma *pdma)
->  static int sf_pdma_probe(struct platform_device *pdev)
->  {
->  	struct sf_pdma *pdma;
-> -	struct sf_pdma_chan *chan;
->  	struct resource *res;
-> -	int len, chans;
->  	int ret;
->  	const enum dma_slave_buswidth widths =
->  		DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
-> @@ -492,13 +490,21 @@ static int sf_pdma_probe(struct platform_device *pdev)
->  		DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
->  		DMA_SLAVE_BUSWIDTH_64_BYTES;
->  
-> -	chans = PDMA_NR_CH;
-> -	len = sizeof(*pdma) + sizeof(*chan) * chans;
-> -	pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
-> +	pdma = devm_kzalloc(&pdev->dev, sizeof(*pdma), GFP_KERNEL);
->  	if (!pdma)
->  		return -ENOMEM;
->  
-> -	pdma->n_chans = chans;
-> +	ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
-> +				   &pdma->n_chans);
-> +	if (ret) {
-> +		dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
+> Additionally, N real cascaded interrupts are implemented, instead of
+> handling all input interrupts with one cascaded interrupt. Otherwise it
+> is possible that the priority of the parent interrupts is not respected.
 
-This is useful for only debug i think, so dev_dbg perhaps
+My original question[1] still stands. An old kernel breaks with a new
+DT. I am not convinced that this is an acceptable outcome.
 
-> +		pdma->n_chans = PDMA_MAX_NR_CH;
-> +	}
-> +
-> +	if (pdma->n_chans > PDMA_MAX_NR_CH) {
-> +		dev_err(&pdev->dev, "the number of channels exceeds the maximum\n");
-> +		return -EINVAL;
-> +	}
->  
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	pdma->membase = devm_ioremap_resource(&pdev->dev, res);
-> @@ -556,7 +562,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
->  	struct sf_pdma_chan *ch;
->  	int i;
->  
-> -	for (i = 0; i < PDMA_NR_CH; i++) {
-> +	for (i = 0; i < pdma->n_chans; i++) {
->  		ch = &pdma->chans[i];
->  
->  		devm_free_irq(&pdev->dev, ch->txirq, ch);
-> @@ -574,6 +580,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
->  
->  static const struct of_device_id sf_pdma_dt_ids[] = {
->  	{ .compatible = "sifive,fu540-c000-pdma" },
-> +	{ .compatible = "sifive,pdma0" },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, sf_pdma_dt_ids);
-> diff --git a/drivers/dma/sf-pdma/sf-pdma.h b/drivers/dma/sf-pdma/sf-pdma.h
-> index 0c20167b097d..8127d792f639 100644
-> --- a/drivers/dma/sf-pdma/sf-pdma.h
-> +++ b/drivers/dma/sf-pdma/sf-pdma.h
-> @@ -22,11 +22,7 @@
->  #include "../dmaengine.h"
->  #include "../virt-dma.h"
->  
-> -#define PDMA_NR_CH					4
-> -
-> -#if (PDMA_NR_CH != 4)
-> -#error "Please define PDMA_NR_CH to 4"
-> -#endif
-> +#define PDMA_MAX_NR_CH					4
->  
->  #define PDMA_BASE_ADDR					0x3000000
->  #define PDMA_CHAN_OFFSET				0x1000
-> @@ -118,7 +114,7 @@ struct sf_pdma {
->  	void __iomem            *membase;
->  	void __iomem            *mappedbase;
->  	u32			n_chans;
-> -	struct sf_pdma_chan	chans[PDMA_NR_CH];
-> +	struct sf_pdma_chan	chans[PDMA_MAX_NR_CH];
+	M.
 
-why waste memory allocating max, we know number of channels in probe,
-why not allocate runtime?
+[1] https://lore.kernel.org/all/874k585efy.wl-maz@kernel.org
 
 -- 
-~Vinod
+Without deviation from the norm, progress is not possible.
