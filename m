@@ -2,112 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73784C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3496C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234248AbiBOFwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:52:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46726 "EHLO
+        id S234252AbiBOFxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:53:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234252AbiBOFw0 (ORCPT
+        with ESMTP id S230415AbiBOFxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:52:26 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDA9DFF5;
-        Mon, 14 Feb 2022 21:52:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644904336; x=1676440336;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=p/uMbZPPiZReXrMs+XWU+QXob/0etjYoC1lD26VUKfE=;
-  b=IQOzleTGZbkrvx3Dv1/7Wvps8usCvgcXGjxV2+WY7OqwoWQKqbnn20J/
-   nm+D2q8DpQz5LNnip8czwbkjTc8y4WzT/ktrI/4hzderZeQDKEntFgFaF
-   gEjMTJEGya84bgXuRsS0MLP0zXFPgb/4KSMOdJWBqUyTUEap902mnDmya
-   2bNARdlMQzA9LOEuQy1vYlZFOHr9sM+Vq+Nj06+1lhLKletQk3a5Uw/Xg
-   QqAjAlSGkdhx4lJaCgW/fW0U0Q5dfX2bxRcer+XiWw1EmLKChklmdiX22
-   +ijpIea0LedS/T2hbujpCRrds8O3wQQ+giGDisnCmjRib008ar67O0Gum
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230218526"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="230218526"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 21:52:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="528642306"
-Received: from npg-dpdk-haiyue-2.sh.intel.com ([10.67.118.240])
-  by orsmga007.jf.intel.com with ESMTP; 14 Feb 2022 21:52:12 -0800
-From:   Haiyue Wang <haiyue.wang@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Haiyue Wang <haiyue.wang@intel.com>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Bailey Forrest <bcf@google.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Tao Liu <xliutaox@google.com>,
-        John Fraker <jfraker@google.com>,
-        Yangchun Fu <yangchun@google.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v2] gve: enhance no queue page list detection
-Date:   Tue, 15 Feb 2022 13:17:49 +0800
-Message-Id: <20220215051751.260866-1-haiyue.wang@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214024134.223939-1-haiyue.wang@intel.com>
-References: <20220214024134.223939-1-haiyue.wang@intel.com>
+        Tue, 15 Feb 2022 00:53:21 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFCB764D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:53:12 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id p10so12483862pfo.12
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:53:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MZiYIqQHTdeoJ9lebDmPlM5Q1GrE+XQWQNH/BfT5U94=;
+        b=dGHJhJEtpRDhbHXpfGONB4RNX3MHZkVwiI5UWTvXOq/8hRL0jBHIgTLEKIA8mW9Avv
+         J6e+oayJMm1r8O6eQ3FoXmJ1lL8wcxMW4uUfOh+oiDiYZcvgMJ9ik+XUUX1QsHh4qFBI
+         VzfteXN/sxFNo9V1rCEOawnrc85LKd3vy2tys=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MZiYIqQHTdeoJ9lebDmPlM5Q1GrE+XQWQNH/BfT5U94=;
+        b=MqAzibveh+AeRpgquT0HISCFzQgwltJSW4kfm6eshbBmei7lmywJVT38x3L61pymmf
+         Mqz505tYrpxSq9w8kBOnd1bB+ovhiZD32fyl2C1GG5O5/Vt7LnqrRAlj5u0iYQsZ8YUb
+         U2F1TjdGSvsjo9HwELgG95NFUUoHGU37M2xrv34ww5+f+8u0Kzvi52mqR82IS0J1aTFD
+         biEyx8lWSUPPuCGJYWzoGEPZ5eSQo/x8lqDsP5nzyHRFDc/4K1Y6CWkrQGzBs9Ny0EEm
+         6lSg1FJ6A9XpH0rKD2dVipzzPZiisyyEnN1fkWuWU1dAtzNvED1oXF2DcT3C/UIIP6HR
+         g7JQ==
+X-Gm-Message-State: AOAM532HTQ359fKf+xDdauVe1CGjnDyLOhatokMxnYOW8EpLBPuLnJer
+        SwaNMT2vVHlGhIYOnho5XRmFROAeNYWvpw==
+X-Google-Smtp-Source: ABdhPJzUCMq3k2+JQQ+iO3SXA2DubFgIifTx3H6vwjB03C0Bu9SPYtt3oqvAwP8d71cg0700rLfgTQ==
+X-Received: by 2002:a63:914a:: with SMTP id l71mr2155987pge.581.1644904391827;
+        Mon, 14 Feb 2022 21:53:11 -0800 (PST)
+Received: from google.com ([2401:fa00:8f:203:c926:4ee:add9:bf67])
+        by smtp.gmail.com with ESMTPSA id m126sm155741pga.94.2022.02.14.21.53.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 21:53:11 -0800 (PST)
+Date:   Tue, 15 Feb 2022 14:53:07 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH printk v1 04/13] printk: get caller_id/timestamp after
+ migration disable
+Message-ID: <Ygs/w55BU8ZBt4Me@google.com>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-5-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207194323.273637-5-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit
-a5886ef4f4bf ("gve: Introduce per netdev `enum gve_queue_format`")
-introduces three queue format type, only GVE_GQI_QPL_FORMAT queue has
-page list. So it should use the queue page list number to detect the
-zero size queue page list. Correct the design logic.
+On (22/02/07 20:49), John Ogness wrote:
+> Currently the local CPU timestamp and caller_id for the record are
+> collected while migration is enabled. Since this information is
+> CPU-specific, it should be collected with migration disabled.
+> 
+> Migration is disabled immediately after collecting this information
+> anyway, so just move the information collection to after the
+> migration disabling.
+> 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-Using the 'queue_format == GVE_GQI_RDA_FORMAT' may lead to request zero
-sized memory allocation, like if the queue format is GVE_DQO_RDA_FORMAT.
-
-The kernel memory subsystem will return ZERO_SIZE_PTR, which is not NULL
-address, so the driver can run successfully. Also the code still checks
-the queue page list number firstly, then accesses the allocated memory,
-so zero number queue page list allocation will not lead to access fault.
-
-Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
----
- drivers/net/ethernet/google/gve/gve_main.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 54e51c8221b8..6cafee55efc3 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -857,8 +857,7 @@ static int gve_alloc_qpls(struct gve_priv *priv)
- 	int i, j;
- 	int err;
- 
--	/* Raw addressing means no QPLs */
--	if (priv->queue_format == GVE_GQI_RDA_FORMAT)
-+	if (num_qpls == 0)
- 		return 0;
- 
- 	priv->qpls = kvcalloc(num_qpls, sizeof(*priv->qpls), GFP_KERNEL);
-@@ -901,8 +900,7 @@ static void gve_free_qpls(struct gve_priv *priv)
- 	int num_qpls = gve_num_tx_qpls(priv) + gve_num_rx_qpls(priv);
- 	int i;
- 
--	/* Raw addressing means no QPLs */
--	if (priv->queue_format == GVE_GQI_RDA_FORMAT)
-+	if (num_qpls == 0)
- 		return;
- 
- 	kvfree(priv->qpl_cfg.qpl_id_map);
--- 
-2.35.1
-
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
