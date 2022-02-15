@@ -2,99 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE24C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238552AbiBOO4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:56:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41212 "EHLO
+        id S239386AbiBOO5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:57:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231856AbiBOO40 (ORCPT
+        with ESMTP id S235008AbiBOO5O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:56:26 -0500
-X-Greylist: delayed 378 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 06:56:16 PST
-Received: from mail-4327.protonmail.ch (mail-4327.protonmail.ch [185.70.43.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760339FE5;
-        Tue, 15 Feb 2022 06:56:16 -0800 (PST)
-Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        by mail-4321.protonmail.ch (Postfix) with ESMTPS id 4JykWy17Jvz4x6KM;
-        Tue, 15 Feb 2022 14:49:50 +0000 (UTC)
-Authentication-Results: mail-4321.protonmail.ch;
-        dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="BDvn1o1Z"
-Date:   Tue, 15 Feb 2022 14:49:00 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1644936545;
-        bh=BNi3yC/9jw1c/szfUfUGT5h9vUtlRUvDAK4sFcLdjmk=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:From:To:Cc:Date:
-         Subject:Reply-To:Feedback-ID:Message-ID;
-        b=BDvn1o1ZnCovptmLn11diWMUEAWct4RD312L8UhYymcv2YyALQ0+t4WLvihd2EiZC
-         tPc5WJekOp7nZTc3KwH24zmXXoHCubCivqzXXamMSRzo5TgUJkbYT+22j7Nu8u82Ai
-         Z99eglNVPxJLUMXHt20FU09SULmsFJkzUZZNMJXnqxMqGItr5a+HEju7xrB+xwjtHH
-         /ABhwuILabSjR0rBdRp/niEjUx8Ghyfouiy//TJCKQO2uoNzNSLWxqUpxdmehiglJ+
-         ASV2R5Klz+28noHpnpCsQBmCuQic75pIp8Y+1uWN5ADRY5i92MirLhvMCNoKobJ86+
-         f0ojLOvQR2VYg==
-To:     =?utf-8?Q?Philippe_Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH mips-fixes] MIPS: smp: fill in sibling and core maps earlier
-Message-ID: <5324be35-5c49-31c1-3f9a-267a5dae8c84@amsat.org>
+        Tue, 15 Feb 2022 09:57:14 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6801001;
+        Tue, 15 Feb 2022 06:57:00 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nJzGD-0005P7-Tf; Tue, 15 Feb 2022 15:56:57 +0100
+Message-ID: <5a68afe4-1e9e-c683-e06d-30afc2156f14@leemhuis.info>
+Date:   Tue, 15 Feb 2022 15:56:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
+ PCI-passed-through to Windows VM
+Content-Language: en-BS
+To:     Jim Turner <linuxkernel.foss@dmarc-none.turner.link>,
+        "Lazar, Lijo" <lijo.lazar@amd.com>
+Cc:     Alex Deucher <alexdeucher@gmail.com>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>
+References: <87ee57c8fu.fsf@turner.link>
+ <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
+ <87a6ftk9qy.fsf@dmarc-none.turner.link> <87zgnp96a4.fsf@turner.link>
+ <fc2b7593-db8f-091c-67a0-ae5ffce71700@leemhuis.info>
+ <CADnq5_Nr5-FR2zP1ViVsD_ZMiW=UHC1wO8_HEGm26K_EG2KDoA@mail.gmail.com>
+ <87czkk1pmt.fsf@dmarc-none.turner.link>
+ <BYAPR12MB46140BE09E37244AE129C01A975C9@BYAPR12MB4614.namprd12.prod.outlook.com>
+ <87sftfqwlx.fsf@dmarc-none.turner.link>
+ <BYAPR12MB4614E2CFEDDDEAABBAB986A0975E9@BYAPR12MB4614.namprd12.prod.outlook.com>
+ <87ee4wprsx.fsf@turner.link> <4b3ed7f6-d2b6-443c-970e-d963066ebfe3@amd.com>
+ <87pmo8r6ob.fsf@turner.link>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <87pmo8r6ob.fsf@turner.link>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1644937021;56b63272;
+X-HE-SMSGID: 1nJzGD-0005P7-Tf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220215144900.HgPShB3Qm8JBGGDhbvY5csF4uTmTe5213trVKH8JlZM@z>
 
-From: Philippe Mathieu-Daud=C3=A9 <f4bug@amsat.org>
-Date: Mon, 14 Feb 2022 20:00:12 +0100
+Top-posting for once, to make this easy accessible to everyone.
 
-> On 12/2/22 23:21, Alexander Lobakin wrote:
-> > After enabling CONFIG_SCHED_CORE (landed during 5.14 cycle),
-> > 2-core 2-thread-per-core interAptiv (CPS-driven) started emitting
-> > the following:
-> >
+Nothing happened here for two weeks now afaics. Was the discussion moved
+elsewhere or did it fall through the cracks?
 
---- 8< ---
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
-> >
-> > [    0.048433] CPU: 1, smt_mask: 0-1
-> >
-> > [0] https://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/comm=
-it/?id=3D76ce7cfe35ef
->
-> Isn't it worth Cc'ing stable@vger.kernel.org here?
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
 
-Probably. It doesn't have any Fixes tag (this is a fix, but the bug
-is caused not by a particular commit, rather by a combination of
-changes and code flows from the past), but it still can be
-backported, right.
-
-Thomas, should I queue a v2 with this tag added?
-
-Cc: stable@vger.kernel.org # 5.14+
-
-Or it can be picked up automatically?
-
->
-> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> > ---
-> >   arch/mips/kernel/smp.c | 6 +++---
-> >   1 file changed, 3 insertions(+), 3 deletions(-)
->
-> Reviewed-by: Philippe Mathieu-Daud=C3=A9 <f4bug@amsat.org>
-
-Thanks!
-
-Al
-
+On 30.01.22 01:25, Jim Turner wrote:
+> Hi Lijo,
+> 
+>> Specifically, I was looking for any events happening at these two
+>> places because of the patch-
+>>
+>> https://elixir.bootlin.com/linux/v5.16/source/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c#L411
+>>
+>> https://elixir.bootlin.com/linux/v5.16/source/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c#L653
+> 
+> I searched the logs generated with all drm debug messages enabled
+> (drm.debug=0x1ff) for "device_class", "ATCS", "atcs", "ATIF", and
+> "atif", for both f1688bd69ec4 and f9b7f3703ff9. Other than the few lines
+> mentioning ATIF from my previous email, there weren't any matches.
+> 
+> Since "device_class" didn't appear in the logs, we know that
+> `amdgpu_atif_handler` was not called for either version.
+> 
+> I also patched f9b7f3703ff9 to add the line
+> 
+>   DRM_DEBUG_DRIVER("Entered amdgpu_acpi_pcie_performance_request");
+> 
+> at the top (below the variable declarations) of
+> `amdgpu_acpi_pcie_performance_request`, and then tested again with all
+> drm debug messages enabled (0x1ff). That debug message didn't show up.
+> 
+> So, `amdgpu_acpi_pcie_performance_request` was not called either, at
+> least with f9b7f3703ff9. (I didn't try adding this patch to
+> f1688bd69ec4.)
+> 
+> Would anything else be helpful?
