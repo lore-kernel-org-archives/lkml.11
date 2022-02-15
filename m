@@ -2,187 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD2FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A49C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237752AbiBOMjI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:39:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46370 "EHLO
+        id S236355AbiBOMlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:41:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237738AbiBOMjE (ORCPT
+        with ESMTP id S229842AbiBOMli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:39:04 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7693AA00D;
-        Tue, 15 Feb 2022 04:38:54 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id q11-20020a17090a304b00b001b94d25eaecso2006804pjl.4;
-        Tue, 15 Feb 2022 04:38:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=fcgFQFToExQ7MQ863rinMsg9Fg6oxHInudZIpp3pjoY=;
-        b=nRpiHf6uGfgQfjqaITXSUvGRBHQBoCzkyeTvum5j9mZKITKTvln40K1xj8Zw6gO0Z9
-         TTeDO0fnlJ/Hu/fZ3KYf6Xi5NaGFvb812PH1lmuvQ6oF1KK8O9ZelwMuyIu1yJF9f75A
-         99Cw7shP2b8cSxffkLRNiWQoI27ivvhF3rzRx399UTGGLKt5G07n80jbrLLikH/dHxnM
-         /rO9jXwqrEI4MSaXTbJmN+IhiKcZpITFKTSEP4RWW1Vl0sb0F9MmWNVtgfAD+5nUm6si
-         Z7Qd/n8/rRIjIOM1UZ7f1+U/kDQ/JOa2YKUWDaUnP/5+/HGv3c7HJn78xfS2BYwvGbIV
-         ++qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=fcgFQFToExQ7MQ863rinMsg9Fg6oxHInudZIpp3pjoY=;
-        b=c2/HAeMIc9GGmzwFotvSFsGJbAY6TQ2z7tqK6Oy48kSDujs8AjFF3JgfPe5TvPUYf2
-         x/c+SBFe7vY2gCSD75dch+OM9o9t7uVZ0PW3V+tQsD3ThsKC/jy78N217lmA7stpRbMg
-         5wbL7AoG04EKZhmgqzo7/2qZpTF0PxEiybvleggBOCcYS4E0h+RMi4Oe8MpxE4yv5Ble
-         BDcFRSYC2JQj6iCJk97fgPVreEpoGVj4QYAsPcx0cERzE5vGwR/gHYvvhey/hrCrhyiX
-         0ePKLH3oMqJRkNQeHXDZQ1ZjF59ppKonPhsroLZH5JzVcqG6rMXl9hFrn8AaZVJVvWP1
-         ccBA==
-X-Gm-Message-State: AOAM5332rD820VCJM5sQ1itUR/jDFOmTlgtWIGW823A9Glg8i8JjNK/Q
-        d0egjRGv7RxImE1jY0Ncf28=
-X-Google-Smtp-Source: ABdhPJwBDo374IV/6LqnpBd1DZiovhvS9Oe159GhSXCjfuMYAEl/A6HYK0gs10sccEM4mLI1K8PROA==
-X-Received: by 2002:a17:90a:1a0f:: with SMTP id 15mr4100328pjk.164.1644928734348;
-        Tue, 15 Feb 2022 04:38:54 -0800 (PST)
-Received: from localhost.localdomain ([162.219.34.248])
-        by smtp.gmail.com with ESMTPSA id q8sm44017803pfl.143.2022.02.15.04.38.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 04:38:54 -0800 (PST)
-From:   "Wang Jianchao (Kuaishou)" <jianchao.wan9@gmail.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     hch@infradead.org, Josef Bacik <jbacik@fb.com>,
-        Tejun Heo <tj@kernel.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC V2 6/6] blk: remove unused interfaces of blk-rq-qos
-Date:   Tue, 15 Feb 2022 20:37:05 +0800
-Message-Id: <20220215123705.58968-7-jianchao.wan9@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220215123705.58968-1-jianchao.wan9@gmail.com>
-References: <20220215123705.58968-1-jianchao.wan9@gmail.com>
+        Tue, 15 Feb 2022 07:41:38 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0BAE09C;
+        Tue, 15 Feb 2022 04:41:26 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4Jyggn2R2Fz9sSQ;
+        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id epMSd0M7Bhjy; Tue, 15 Feb 2022 13:41:25 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jyggn1MCsz9sRw;
+        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1C8E78B788;
+        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id pr8hYevnppY4; Tue, 15 Feb 2022 13:41:25 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.174])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 650108B763;
+        Tue, 15 Feb 2022 13:41:24 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21FCfHY7080649
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 13:41:17 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21FCfHP2080648;
+        Tue, 15 Feb 2022 13:41:17 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>, Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH v4 11/13] lkdtm: Really write into kernel text in WRITE_KERN
+Date:   Tue, 15 Feb 2022 13:41:06 +0100
+Message-Id: <31e58eaffb5bc51c07d8d4891d1982100ade8cfc.1644928018.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1644928018.git.christophe.leroy@csgroup.eu>
+References: <cover.1644928018.git.christophe.leroy@csgroup.eu>
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1644928860; l=2328; s=20211009; h=from:subject:message-id; bh=ZctxL58TJetAA5+oFKdI1os7Sbl8JEWFwgZaaluEYa0=; b=Oke9y25FxwuppYh4MV7OOEQT4od24HIRzqfetvFnWGD1qdbWebu8c/DVazZEcPTRunJLJguZ1WeA r1YD2DOPBI4nGglA/4rBN2H3BkL7DAxrZQFFo6UVN27kQMumJh7K
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional changes here
+WRITE_KERN is supposed to overwrite some kernel text, namely
+do_overwritten() function.
 
-Signed-off-by: Wang Jianchao (Kuaishou) <jianchao.wan9@gmail.com>
+But at the time being it overwrites do_overwritten() function
+descriptor, not function text.
+
+Fix it by dereferencing the function descriptor to obtain
+function text pointer. Export dereference_function_descriptor()
+for when LKDTM is built as a module.
+
+And make do_overwritten() noinline so that it is really
+do_overwritten() which is called by lkdtm_WRITE_KERN().
+
+Acked-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- block/blk-mq-debugfs.c | 10 +-------
- block/blk-rq-qos.h     | 52 +-----------------------------------------
- 2 files changed, 2 insertions(+), 60 deletions(-)
+ drivers/misc/lkdtm/perms.c | 8 +++++---
+ kernel/extable.c           | 1 +
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
-index 70a3e4599d99..23336c879e0b 100644
---- a/block/blk-mq-debugfs.c
-+++ b/block/blk-mq-debugfs.c
-@@ -820,11 +820,6 @@ void blk_mq_debugfs_unregister_sched(struct request_queue *q)
- 	q->sched_debugfs_dir = NULL;
+diff --git a/drivers/misc/lkdtm/perms.c b/drivers/misc/lkdtm/perms.c
+index 60b3b2fe929d..035fcca441f0 100644
+--- a/drivers/misc/lkdtm/perms.c
++++ b/drivers/misc/lkdtm/perms.c
+@@ -10,6 +10,7 @@
+ #include <linux/mman.h>
+ #include <linux/uaccess.h>
+ #include <asm/cacheflush.h>
++#include <asm/sections.h>
+ 
+ /* Whether or not to fill the target memory area with do_nothing(). */
+ #define CODE_WRITE	true
+@@ -37,7 +38,7 @@ static noinline void do_nothing(void)
  }
  
--static const char *rq_qos_id_to_name(enum rq_qos_id id)
--{
--	return "unknown";
--}
--
- void blk_mq_debugfs_unregister_rqos(struct rq_qos *rqos)
+ /* Must immediately follow do_nothing for size calculuations to work out. */
+-static void do_overwritten(void)
++static noinline void do_overwritten(void)
  {
- 	debugfs_remove_recursive(rqos->debugfs_dir);
-@@ -834,9 +829,6 @@ void blk_mq_debugfs_unregister_rqos(struct rq_qos *rqos)
- void blk_mq_debugfs_register_rqos(struct rq_qos *rqos)
- {
- 	struct request_queue *q = rqos->q;
--	const char *dir_name;
--
--	dir_name = rqos->ops->name ? rqos->ops->name : rq_qos_id_to_name(rqos->id);
+ 	pr_info("do_overwritten wasn't overwritten!\n");
+ 	return;
+@@ -113,8 +114,9 @@ void lkdtm_WRITE_KERN(void)
+ 	size_t size;
+ 	volatile unsigned char *ptr;
  
- 	if (rqos->debugfs_dir || !rqos->ops->debugfs_attrs)
- 		return;
-@@ -845,7 +837,7 @@ void blk_mq_debugfs_register_rqos(struct rq_qos *rqos)
- 		q->rqos_debugfs_dir = debugfs_create_dir("rqos",
- 							 q->debugfs_dir);
+-	size = (unsigned long)do_overwritten - (unsigned long)do_nothing;
+-	ptr = (unsigned char *)do_overwritten;
++	size = (unsigned long)dereference_function_descriptor(do_overwritten) -
++	       (unsigned long)dereference_function_descriptor(do_nothing);
++	ptr = dereference_function_descriptor(do_overwritten);
  
--	rqos->debugfs_dir = debugfs_create_dir(dir_name,
-+	rqos->debugfs_dir = debugfs_create_dir(rqos->ops->name,
- 					       rqos->q->rqos_debugfs_dir);
- 
- 	debugfs_create_files(rqos->debugfs_dir, rqos, rqos->ops->debugfs_attrs);
-diff --git a/block/blk-rq-qos.h b/block/blk-rq-qos.h
-index ee396367a5b2..123b6b100355 100644
---- a/block/blk-rq-qos.h
-+++ b/block/blk-rq-qos.h
-@@ -13,10 +13,6 @@
- 
- struct blk_mq_debugfs_attr;
- 
--enum rq_qos_id {
--	RQ_QOS_UNUSED,
--};
--
- struct rq_wait {
- 	wait_queue_head_t wait;
- 	atomic_t inflight;
-@@ -28,7 +24,7 @@ struct rq_qos {
- 	bool dying;
- 	const struct rq_qos_ops *ops;
- 	struct request_queue *q;
--	enum rq_qos_id id;
-+	int id;
- 	struct rq_qos *next;
- #ifdef CONFIG_BLK_DEBUG_FS
- 	struct dentry *debugfs_dir;
-@@ -89,52 +85,6 @@ static inline void rq_wait_init(struct rq_wait *rq_wait)
- 	init_waitqueue_head(&rq_wait->wait);
+ 	pr_info("attempting bad %zu byte write at %px\n", size, ptr);
+ 	memcpy((void *)ptr, (unsigned char *)do_nothing, size);
+diff --git a/kernel/extable.c b/kernel/extable.c
+index 394c39b86e38..bda5e9761541 100644
+--- a/kernel/extable.c
++++ b/kernel/extable.c
+@@ -149,6 +149,7 @@ void *dereference_function_descriptor(void *ptr)
+ 		ptr = p;
+ 	return ptr;
  }
++EXPORT_SYMBOL_GPL(dereference_function_descriptor);
  
--static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
--{
--	/*
--	 * No IO can be in-flight when adding rqos, so freeze queue, which
--	 * is fine since we only support rq_qos for blk-mq queue.
--	 *
--	 * Reuse ->queue_lock for protecting against other concurrent
--	 * rq_qos adding/deleting
--	 */
--	blk_mq_freeze_queue(q);
--
--	spin_lock_irq(&q->queue_lock);
--	rqos->next = q->rq_qos;
--	q->rq_qos = rqos;
--	spin_unlock_irq(&q->queue_lock);
--
--	blk_mq_unfreeze_queue(q);
--
--	if (rqos->ops->debugfs_attrs)
--		blk_mq_debugfs_register_rqos(rqos);
--}
--
--static inline void rq_qos_del(struct request_queue *q, struct rq_qos *rqos)
--{
--	struct rq_qos **cur;
--
--	/*
--	 * See comment in rq_qos_add() about freezing queue & using
--	 * ->queue_lock.
--	 */
--	blk_mq_freeze_queue(q);
--
--	spin_lock_irq(&q->queue_lock);
--	for (cur = &q->rq_qos; *cur; cur = &(*cur)->next) {
--		if (*cur == rqos) {
--			*cur = rqos->next;
--			break;
--		}
--	}
--	spin_unlock_irq(&q->queue_lock);
--
--	blk_mq_unfreeze_queue(q);
--
--	blk_mq_debugfs_unregister_rqos(rqos);
--}
--
- int rq_qos_register(struct rq_qos_ops *ops);
- void rq_qos_unregister(struct rq_qos_ops *ops);
- void rq_qos_activate(struct request_queue *q,
+ void *dereference_kernel_function_descriptor(void *ptr)
+ {
 -- 
-2.17.1
+2.34.1
 
