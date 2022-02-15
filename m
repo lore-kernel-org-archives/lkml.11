@@ -2,144 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7763C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 557B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237104AbiBOLYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:24:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42358 "EHLO
+        id S236921AbiBOLYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:24:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237085AbiBOLYA (ORCPT
+        with ESMTP id S234692AbiBOLYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:24:00 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A3C10819F;
-        Tue, 15 Feb 2022 03:23:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644924230; x=1676460230;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=46LFxJCiFqOVmiEgnWu34/ezZcwww1Q9UDY5Wf4Fb8c=;
-  b=do2k2pGuXrFRIatNNhEcYReCuYXyvcsd+kJrrW/83hjB60lJMaIzpMyu
-   /UKO9h5eyubJ8oA70bzNuF7bMAGk/6Ct+/L0D7kvrPF1UdUfTUl314jSH
-   Iiausse4jkjtZ7f6B3lRdGRkfxSntW9YSuHLawVv7fMmYWR9BMl75wq5s
-   fBNTsz9dB8TonGBrSaDOtQQwHRT/FcviGsUfzqe6t8Sd0UnYFrxcH4+IY
-   C5fEwWg2QWCW7p8fqdRIhdISxGmtM8gzu1/UBcdZFATXTSiqAW9UzTiii
-   9pZv4q5QF3UDWa4xB1X3J8YEw3N7yOYNyBEb38IcBm5Ly3m9QxrIG6ajt
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249164819"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="249164819"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 03:23:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="502379528"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2022 03:23:46 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJvvt-0009at-W4; Tue, 15 Feb 2022 11:23:45 +0000
-Date:   Tue, 15 Feb 2022 19:23:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Zhen Ni <nizhen@uniontech.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, mcgrof@kernel.org,
-        keescook@chromium.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Zhen Ni <nizhen@uniontech.com>
-Subject: Re: [PATCH 3/8] sched: Move rt_period/runtime sysctls to rt.c
-Message-ID: <202202151705.Uez40mBM-lkp@intel.com>
-References: <20220215052214.5286-4-nizhen@uniontech.com>
+        Tue, 15 Feb 2022 06:24:31 -0500
+X-Greylist: delayed 8182 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 03:24:20 PST
+Received: from 9.mo548.mail-out.ovh.net (9.mo548.mail-out.ovh.net [46.105.48.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9EE1081BC
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:24:20 -0800 (PST)
+Received: from mxplan5.mail.ovh.net (unknown [10.108.4.11])
+        by mo548.mail-out.ovh.net (Postfix) with ESMTPS id 8335821EFF;
+        Tue, 15 Feb 2022 09:07:53 +0000 (UTC)
+Received: from kaod.org (37.59.142.98) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 15 Feb
+ 2022 10:07:52 +0100
+Authentication-Results: garm.ovh; auth=pass (GARM-98R002b27b64c4-57a5-44f9-a47c-4a83fe5690ca,
+                    2487B4E7026A90D95ED29794538901B35B4D209A) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <76c3f352-a0fc-f72f-e66e-594f9249cb8c@kaod.org>
+Date:   Tue, 15 Feb 2022 10:07:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220215052214.5286-4-nizhen@uniontech.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH 03/10] spi: spi-mem: Add driver for Aspeed SMC controllers
+Content-Language: en-US
+To:     Lukas Wunner <lukas@wunner.de>
+CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220214094231.3753686-1-clg@kaod.org>
+ <20220214094231.3753686-4-clg@kaod.org> <20220215062743.GA12431@wunner.de>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <20220215062743.GA12431@wunner.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.98]
+X-ClientProxiedBy: DAG6EX1.mxp5.local (172.16.2.51) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: 4e02782a-965d-4bc5-8fe7-6f59370c6abd
+X-Ovh-Tracer-Id: 7883832626687085383
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrjeefgdduvdejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepieegvdffkeegfeetuddttddtveduiefhgeduffekiedtkeekteekhfffleevleelnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrdelkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepmhigphhlrghnhedrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegtlhhgsehkrghougdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zhen,
+Hello Lukas,
 
-Thank you for the patch! Yet something to improve:
+On 2/15/22 07:27, Lukas Wunner wrote:
+> On Mon, Feb 14, 2022 at 10:42:24AM +0100, Cédric Le Goater wrote:
+>> +static int aspeed_spi_probe(struct platform_device *pdev)
+>> +{
+> [...]
+>> +	ctlr = spi_alloc_master(dev, sizeof(*aspi));
+>> +	if (!ctlr)
+>> +		return -ENOMEM;
+> 
+> Use devm_spi_alloc_master() and remove the "put_controller" error path
+> for simplicity.
+  
+yes.
 
-[auto build test ERROR on tip/sched/core]
-[also build test ERROR on linus/master kees/for-next/pstore v5.17-rc4]
-[cannot apply to next-20220214]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+>> +	ret = devm_spi_register_controller(dev, ctlr);
+> [...]
+>> +static int aspeed_spi_remove(struct platform_device *pdev)
+>> +{
+>> +	struct spi_controller *ctlr = platform_get_drvdata(pdev);
+>> +	struct aspeed_spi *aspi = spi_controller_get_devdata(ctlr);
+>> +
+>> +	aspeed_spi_enable(aspi, false);
+>> +	spi_unregister_controller(ctlr);
+>> +	clk_disable_unprepare(aspi->clk);
+>> +	return 0;
+>> +}
+> 
+> You need to move the call to spi_unregister_controller() *before*
+> the call to aspeed_spi_enable().  The controller must be fully
+> operational until spi_unregister_controller() returns.
+> 
+> You also need to replace the call to devm_spi_register_controller()
+> in aspeed_spi_probe() with spi_register_controller().
+> Otherwise you'll unregister the controller twice because you're
+> calling spi_unregister_controller() in aspeed_spi_remove().
 
-url:    https://github.com/0day-ci/linux/commits/Zhen-Ni/sched-Move-a-series-of-sysctls-starting-with-sys-kernel-sched_/20220215-132416
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 3624ba7b5e2acc02b01301ea5fd3534971eb9896
-config: hexagon-randconfig-r033-20220214 (https://download.01.org/0day-ci/archive/20220215/202202151705.Uez40mBM-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 37f422f4ac31c8b8041c6b62065263314282dab6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/f93266963b3b3629980fa3384a5e37fd13f4c350
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Zhen-Ni/sched-Move-a-series-of-sysctls-starting-with-sys-kernel-sched_/20220215-132416
-        git checkout f93266963b3b3629980fa3384a5e37fd13f4c350
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash kernel/rcu/
+ok. Understood. Done in v2.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks,
 
-All errors (new ones prefixed by >>):
+C.
 
-   kernel/rcu/rcutorture.c:380:16: warning: variable 'started' set but not used [-Wunused-but-set-variable]
-           unsigned long started;
-                         ^
-   kernel/rcu/rcutorture.c:381:16: warning: variable 'completed' set but not used [-Wunused-but-set-variable]
-           unsigned long completed;
-                         ^
-   kernel/rcu/rcutorture.c:384:21: warning: variable 'ts' set but not used [-Wunused-but-set-variable]
-           unsigned long long ts;
-                              ^
->> kernel/rcu/rcutorture.c:921:19: error: use of undeclared identifier 'sysctl_sched_rt_runtime'; did you mean 'sysctl_sched_rr_timeslice'?
-           old_rt_runtime = sysctl_sched_rt_runtime;
-                            ^~~~~~~~~~~~~~~~~~~~~~~
-                            sysctl_sched_rr_timeslice
-   include/linux/sched/sysctl.h:37:12: note: 'sysctl_sched_rr_timeslice' declared here
-   extern int sysctl_sched_rr_timeslice;
-              ^
-   kernel/rcu/rcutorture.c:922:2: error: use of undeclared identifier 'sysctl_sched_rt_runtime'
-           sysctl_sched_rt_runtime = -1;
-           ^
-   kernel/rcu/rcutorture.c:930:2: error: use of undeclared identifier 'sysctl_sched_rt_runtime'
-           sysctl_sched_rt_runtime = old_rt_runtime;
-           ^
-   kernel/rcu/rcutorture.c:1620:21: warning: variable 'ts' set but not used [-Wunused-but-set-variable]
-           unsigned long long ts;
-                              ^
-   4 warnings and 3 errors generated.
-
-
-vim +921 kernel/rcu/rcutorture.c
-
-450efca7182a516 Joel Fernandes (Google  2018-06-10  909) 
-450efca7182a516 Joel Fernandes (Google  2018-06-10  910) static void rcu_torture_disable_rt_throttle(void)
-450efca7182a516 Joel Fernandes (Google  2018-06-10  911) {
-450efca7182a516 Joel Fernandes (Google  2018-06-10  912) 	/*
-450efca7182a516 Joel Fernandes (Google  2018-06-10  913) 	 * Disable RT throttling so that rcutorture's boost threads don't get
-450efca7182a516 Joel Fernandes (Google  2018-06-10  914) 	 * throttled. Only possible if rcutorture is built-in otherwise the
-450efca7182a516 Joel Fernandes (Google  2018-06-10  915) 	 * user should manually do this by setting the sched_rt_period_us and
-450efca7182a516 Joel Fernandes (Google  2018-06-10  916) 	 * sched_rt_runtime sysctls.
-450efca7182a516 Joel Fernandes (Google  2018-06-10  917) 	 */
-450efca7182a516 Joel Fernandes (Google  2018-06-10  918) 	if (!IS_BUILTIN(CONFIG_RCU_TORTURE_TEST) || old_rt_runtime != -1)
-450efca7182a516 Joel Fernandes (Google  2018-06-10  919) 		return;
-450efca7182a516 Joel Fernandes (Google  2018-06-10  920) 
-450efca7182a516 Joel Fernandes (Google  2018-06-10 @921) 	old_rt_runtime = sysctl_sched_rt_runtime;
-450efca7182a516 Joel Fernandes (Google  2018-06-10  922) 	sysctl_sched_rt_runtime = -1;
-450efca7182a516 Joel Fernandes (Google  2018-06-10  923) }
-450efca7182a516 Joel Fernandes (Google  2018-06-10  924) 
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
