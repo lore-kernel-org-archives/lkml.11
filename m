@@ -2,256 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 305E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD171C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241753AbiBOQoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:44:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36026 "EHLO
+        id S240758AbiBOQpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:45:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241735AbiBOQok (ORCPT
+        with ESMTP id S239186AbiBOQpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:44:40 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2091.outbound.protection.outlook.com [40.107.92.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87B01019ED;
-        Tue, 15 Feb 2022 08:44:29 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KsvZGodxIY8xsf2SRUN+O3d7k/fUxC9kiwMWbJt0cPMawMp58xTFXN/Sw/AnFEsFCJVkqRRZPp20MOPNyG0t2gtphcyUK3xQn0FuWO5OgwuWYT3XT8VUfZKlBERLbqwbyEBKmlslT0oUnx+pPc6pfDRLXLuwyGW1inbzX8jjf0HxCYzP70731m9WPGvO+HhYZziP/gZMsBoclzl6MIyHt/cl/SWBGXJp9uRUYIHmNZ1K6rHI4yyN+cINaJOvhEbRr1xPmo+aKZ8NE+4hIt1C4g0RvGhJZXwqP+V935KhgMkGy4qcRWrjRmQgbPHHSf2MMvKlvmjUOSV+RLK3fwnGEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+5yq8lyK1N8WoThF+vo+GmWnEcjEiUyhr67vkJORm7w=;
- b=JKEoX7OpSl81BwgHaqrNLRqvTkEWVhIGe5jHYSzPo20vCGUUo4/u/O68muqornI+EqDBkQAEaMBMfEo77NkjtQ6v/EiVYXW3XF3xqV7ZwWYreZaLVJkiyNJ1US1stHHkZICjgC8o4eBgsnaLe89pLpyHUD5+EaFHNekAIwxslL5thPsup8buYW1t3zHJyZIvLN4jix+edja9ADmNRX6OGh8r6BTT0Rfy/6QBFSeR6PtHseKZ/V5RY57u7JeoW2zQ+qcpta6fDQSOl96GY4ThhJtxvcLa9WnQzSXVWCB/izgXaIfY1bUPqMFXFw3k1WAw8lQ5PlfR+L+1au+hQNI25w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
+        Tue, 15 Feb 2022 11:45:18 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854041019ED
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:45:07 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id u6so38040276lfc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:45:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+5yq8lyK1N8WoThF+vo+GmWnEcjEiUyhr67vkJORm7w=;
- b=Go4UUK3oZY1ytJK6R9aXmgVNtzrCwNwV6Kssct2CE66MaMVAWHrpFMvqtSFcD+EN24MvP8fJo9DCPOdLza/KiBifgrHvi1NDBLIo/91MjF5PI8w4n0ztFw942gUTZd9LwfN77UKhxp7hFrsks4N+izBhi60SejVuxuoibB8vSwo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from SA0PR01MB6329.prod.exchangelabs.com (2603:10b6:806:ee::12) by
- SJ0PR01MB6335.prod.exchangelabs.com (2603:10b6:a03:29f::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4995.14; Tue, 15 Feb 2022 16:44:26 +0000
-Received: from SA0PR01MB6329.prod.exchangelabs.com
- ([fe80::7cd6:6594:ce3c:6941]) by SA0PR01MB6329.prod.exchangelabs.com
- ([fe80::7cd6:6594:ce3c:6941%9]) with mapi id 15.20.4975.019; Tue, 15 Feb 2022
- 16:44:26 +0000
-Date:   Tue, 15 Feb 2022 08:44:23 -0800
-From:   Darren Hart <darren@os.amperecomputing.com>
-To:     Will Deacon <will@kernel.org>
-Cc:     "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Arm <linux-arm-kernel@lists.infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "D . Scott Phillips" <scott@os.amperecomputing.com>,
-        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] arm64: smp: Skip MC domain for SoCs without shared cache
-Message-ID: <YgvYZy5xv1g+u5wp@fedora>
-References: <8c4a69eca4d0591f30c112df59c5098c24923bd3.1644543449.git.darren@os.amperecomputing.com>
- <ec9be4eb7a0548178191edd51ddd309f@hisilicon.com>
- <20220215163858.GA8458@willie-the-truck>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220215163858.GA8458@willie-the-truck>
-X-ClientProxiedBy: CH2PR15CA0024.namprd15.prod.outlook.com
- (2603:10b6:610:51::34) To SA0PR01MB6329.prod.exchangelabs.com
- (2603:10b6:806:ee::12)
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4reGk+E2DQBcoIJcAVd0N9JCDFB30OHH1yKp7piXzTY=;
+        b=YcEfyIKEivRBnLwbo3YrAW9cTeW7ijaOtyPN8i6BjDXMvKggDqaKLA37c4tbuptYdf
+         jZXHEyccJI8+4HSkhMizKfr+Fw4K0n7bRkqO9skUVeWFbYW6YEzLdvE/JzqIR8ndG8bn
+         /Fgmean/WtywBt9pycit0qED0rspILZzXTzFiiH9+aPXuR1nvdgL1kY4Wf6kVDi4z+GY
+         YlM0Vy3hfHSg5KNtzfaww5tTuSNxNZPR2K7niOuK22Gat9TQwCJuf3siuWidvKM+gseR
+         HpFugKBhaJV6pDRFKegFHA79+fSgq6+u74gCir9dcUzmZLj1w9ymwWb5LOJ7Ypgzrd/b
+         GOAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4reGk+E2DQBcoIJcAVd0N9JCDFB30OHH1yKp7piXzTY=;
+        b=frdc/M9iputOQETVXQou4ilSmI6c3fpXbEKoEW2som9Rqbp9uf1Ke+YOyOO6Qbm3Z0
+         52zKFjQPufYxY3bvcmzkjVv60MbCluBNFKOvHEIzV4afR/TQt+NbChJpcpM2mHIYxWT1
+         bqyCGfl+RGLGS+5ndTKwW3f5lNBj5w3GOQ3VYt/mnXGO8IJ2IIRdJuKFX8zAF/fTTuPv
+         cz34XzgerjU6i+AySLyOQ/CU6zv+GKMpQUaqPmIeLGgo08vwOoPUR4wtXwZM+ZKdyiED
+         +4NfSNkoFbam3hn8aLFwG2OCjQ+uCHew5gJyM6tKcG6cdfB29ly3qAz0sh7g6RSmGoof
+         3xCQ==
+X-Gm-Message-State: AOAM5319jhR2aqeAw2zm+OrxvdgZ1GPYYKfBhjBB3KKXbrunK2W1ejqU
+        hGPtP2DlzQpmotsBaSXv31P3xnDI9M///oof/O8XAw==
+X-Google-Smtp-Source: ABdhPJxzYZsL0qxq//O7Dcs8406Ccopyz/H0z2PceH5VWjjBo+QppXvSefU/F2M2Hv6YFjEfneizaH5OJj/pTR3hvk8=
+X-Received: by 2002:a05:6512:acb:: with SMTP id n11mr666261lfu.428.1644943505712;
+ Tue, 15 Feb 2022 08:45:05 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 12d36ac0-b338-477f-76bd-08d9f0a26d4e
-X-MS-TrafficTypeDiagnostic: SJ0PR01MB6335:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR01MB633535FA81D98EC4DD0BA21DF7349@SJ0PR01MB6335.prod.exchangelabs.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fiwaE+WolsnJivced84XEpwFgmuxQ1+UYiCj/6LlJAqlo10LZ6OsTG+FLr0PoQpzKZbj4Nm4m/CFA8qDaSA1BDLeWu7M+4Ah6SF4PSl3OGh+5/TtOwPk2p0kJ632rCCpK0xpkRlFiGqVGK0X+HcEXOXs28XNb1X0mMyApVuKZ3YdeldwrtPeBt11ojcZqK9puFOrQmp038x5etdnbyMKOe9218p2xYoaU/BafVPwYlgiB2tNppm+b6tlUTHWzT/m7OOMmRmGhhqMrrQHcg63R+7EyAuk9+qPWQOsUu9+rQX7IzR42Sd6MPeFfiAxHqYqNZVrktq/eZDskcYzKlGvExllVB7tG48d26fLZ8jjZT0wy3pCB4OGuo25AeJTTcxByKHSYuFn5XSYejeyhlRAcupb9MGDELfg05eAILoBxGwoeV/arDVKKr9d6vEPhyvhEOOvH+zRD6oITLEyRoi7n8CNI8jHtWFvmMGD4Qh67c5VGg8G0KmGOR3RMM2xPkarkCfIgRgo6/LE/5j1l24YgiuYXOtImBb82BbqnZq12IYbCZGLKZHudbMBNeuVuPdHEFdSCnwCSCEsLAdbpY7M6Dq9bXgMw2nF3wP7V6W97w8eKvHFmWdFPapvZ+ZsRG0jpDBTD6z5Ow4LMGkm7GyG9SzeyigQDFk3JbZZIJ5xRk8//geuj1ufeuvx4y2XTUJlZdXz0GWHFJz0af2FKAaPf/p9iffPsNocGgcq3OPgcSQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA0PR01MB6329.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(6029001)(4636009)(7916004)(366004)(66476007)(5660300002)(8936002)(4326008)(8676002)(86362001)(66946007)(66556008)(38350700002)(38100700002)(6916009)(54906003)(316002)(6486002)(26005)(186003)(6666004)(508600001)(83380400001)(33716001)(6506007)(6512007)(53546011)(52116002)(9686003)(2906002)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2/X9tEdhgobsD11OspKpxCAnY7T1K2O/5XxDJyuMBMhlMJ10AlE1CMXouoeh?=
- =?us-ascii?Q?zlY5fZX7bFO2zqkiKVdwjqfrhBNkTSiMRslhJDc58F6HnMhrZjZ5Ns9a6XH6?=
- =?us-ascii?Q?g3S3uteO1TrCHDHN2cFyahLwPXlZ8cgaPc44wtRAxeaYfYBuy8l1uCEk352a?=
- =?us-ascii?Q?0+n7ONqIeEKQL+vy94nupXQYVqhFn5wj/leSnRUJtRmnrQH23QR4hmGEtv1k?=
- =?us-ascii?Q?URZGRkEItye9dwCYbCwieyZ9AgZtH2cYFjOlXpS+mtrRthDjUI4IDnx6SVqj?=
- =?us-ascii?Q?t8/MMGDzijUO56nDBVW38lFVrnB2BpCetNNfbktBOhV1dG3TJoqkv+Jqd0dp?=
- =?us-ascii?Q?Gv5upozCLKLjeus1EXFvwZiW++n4hdMy7fztxPm2450wQ4blrusPmjuHZPeK?=
- =?us-ascii?Q?ZdSDCNyVR+bMkXvMtkgA+wduOI0Jls7pYF9Ko+QTDZ6RJia/Qz4GOw/GbYFf?=
- =?us-ascii?Q?f0r09+m1hbR+4wuhVxN/ICxnTyqkeQFCBBEytTHlpCMQT7Cl//CSJtts1M7Z?=
- =?us-ascii?Q?Smv7HU4EIF4QhY4811DT5tAYzA4QUK5TStS0hZKc7Xld+43eZo9CBDWilh5C?=
- =?us-ascii?Q?HKrKocZog5MqMHmOT6OBKMqSJEGHGf/PCxaIUjb/W5m4g1zjk5Ow1uGMvFxt?=
- =?us-ascii?Q?0NtpIswoKTDRaH+g8fygdjYpmWDoTTOILrD9WM6GbmVVrsE+n4FJtavN5Q2o?=
- =?us-ascii?Q?VAlDo5dW5yv7b2QgI/tdSYIiqAerxOt3l4Ao3yljNMjeIADCDaau9qzU47aq?=
- =?us-ascii?Q?kOZSkMiuV1dJjl7ay3u1vaB62ZgFjoySocHrEr+G0zc/HnfKnLjNS8k6q/iD?=
- =?us-ascii?Q?Zy4QOSW+DakA76/Y5kJ9lDq0M91QqYFK7CeUFAOYkeubsWRei1h/npzMQczz?=
- =?us-ascii?Q?tGDKfGxg0id403FW2rXDjoM7SDNMp+VOWwIWsd4DTvuR0JYXYrOG2MJuiad/?=
- =?us-ascii?Q?zPs+/c3zDE0F4dfOGrZqblOJjGCkX8a7c/Gx3Ep/C8niml8YzB4pDxVZ6CQb?=
- =?us-ascii?Q?5kYnQOAgWRjMwtvodg7FYR3pQxOllFuQMzYIt0B8F0r9MXhO7eMQCV8zsK6I?=
- =?us-ascii?Q?ladZJlM9OU/uhKRcFOGVEb0F4ZQVPX6DBMmT/OvapI1sg1021i19wOh0NKA+?=
- =?us-ascii?Q?/aI+SSqwuQkmNeT2MytMTusmggB0Mh7tRHUcpyH3Fb8Ss/qhual79GGAchDe?=
- =?us-ascii?Q?nlLc5EwV8ETAvikvVk9L9b5Qki9bWS/U4t5xzbGitf9NSyqqzuaUw7bIwAW8?=
- =?us-ascii?Q?oqCF89joRqwONxUoLf8gz61inKl0lB93zhtflsfF1lYA334GPZCji0ZDpQxE?=
- =?us-ascii?Q?mB/i5iWgs/FAPyJx3wYJhSztunvHGeWy1/dfi42orkyAuRx4lZj6AAcxWEje?=
- =?us-ascii?Q?t341LlKOO7b4c8/pp8a+Qg+4k5ymB1vZr3eIEh7H+gZXj1bReKi8peujKQPv?=
- =?us-ascii?Q?T4mp2eeoZP4WvVojsRZ1ZTRUISx0VZTT0dgVtbYoFWBon+zwhYoF9UzJ0nr8?=
- =?us-ascii?Q?FHsgJAVEjWBLyUqYbEI+i6N1T0N9EQxkn/XtLoNN0wV4yqpwL/hzKA0MSTlE?=
- =?us-ascii?Q?Cjq4kNl+/LT+Qepothk+E4ukiFAylctKtYCrBJ0FBo+EEJNimhBgqhG12pO/?=
- =?us-ascii?Q?xHqC2ntOFatwry4Px0fNKo9uMSborSA796DMmQ8ldcr0cDBhmXCD6z3oTjdF?=
- =?us-ascii?Q?1lCeTKVLoB2gkXWhtVwZJzfeINa+nRe0CHUvI+bJMiBvAjkuM7lIW32i6TyO?=
- =?us-ascii?Q?4XDbxxp/gw=3D=3D?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12d36ac0-b338-477f-76bd-08d9f0a26d4e
-X-MS-Exchange-CrossTenant-AuthSource: SA0PR01MB6329.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 16:44:26.2143
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: a1Try+TXtFsMJzC7V7N8XQS54IR7kE+qjHygQGHte29xa2ppSHiQPUyJLpvgPyHVfmV1NOtDCmBkqpzRjnSJtWFH+ReHJlDi7IBaMGZ6h95hgxO9fiHrbgrpmMpoUHFy
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR01MB6335
+References: <20220214231852.3331430-1-jeremy.linton@arm.com>
+ <CAPv3WKczaLS8zKwTyEXTCD=YEVF5KcDGTr0uqM-7=MKahMQJYA@mail.gmail.com> <33a8e31c-c271-2e3a-36cf-caea5a7527dc@arm.com>
+In-Reply-To: <33a8e31c-c271-2e3a-36cf-caea5a7527dc@arm.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Tue, 15 Feb 2022 17:44:53 +0100
+Message-ID: <CAPv3WKftMRJ0KRXu5+t_Y8MYDd4u0C74QZfsjUjwo7bvonN89w@mail.gmail.com>
+Subject: Re: [BUG/PATCH v3] net: mvpp2: always set port pcs ops
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 04:38:59PM +0000, Will Decon wrote:
-> On Fri, Feb 11, 2022 at 03:20:51AM +0000, Song Bao Hua (Barry Song) wrote:
-> > 
-> > 
-> > > -----Original Message-----
-> > > From: Darren Hart [mailto:darren@os.amperecomputing.com]
-> > > Sent: Friday, February 11, 2022 2:43 PM
-> > > To: LKML <linux-kernel@vger.kernel.org>; Linux Arm
-> > > <linux-arm-kernel@lists.infradead.org>
-> > > Cc: Catalin Marinas <catalin.marinas@arm.com>; Will Deacon <will@kernel.org>;
-> > > Peter Zijlstra <peterz@infradead.org>; Vincent Guittot
-> > > <vincent.guittot@linaro.org>; Song Bao Hua (Barry Song)
-> > > <song.bao.hua@hisilicon.com>; Valentin Schneider
-> > > <valentin.schneider@arm.com>; D . Scott Phillips
-> > > <scott@os.amperecomputing.com>; Ilkka Koskinen
-> > > <ilkka@os.amperecomputing.com>; stable@vger.kernel.org
-> > > Subject: [PATCH] arm64: smp: Skip MC domain for SoCs without shared cache
-> > > 
-> > > SoCs such as the Ampere Altra define clusters but have no shared
-> > > processor-side cache. As of v5.16 with CONFIG_SCHED_CLUSTER and
-> > > CONFIG_SCHED_MC, build_sched_domain() will BUG() with:
-> > > 
-> > > BUG: arch topology borken
-> > >      the CLS domain not a subset of the MC domain
-> > > 
-> > > for each CPU (160 times for a 2 socket 80 core Altra system). The MC
-> > > level cpu mask is then extended to that of the CLS child, and is later
-> > > removed entirely as redundant.
-> > > 
-> > > This change detects when all cpu_coregroup_mask weights=1 and uses an
-> > > alternative sched_domain_topology equivalent to the default if
-> > > CONFIG_SCHED_MC were disabled.
-> > > 
-> > > The final resulting sched domain topology is unchanged with or without
-> > > CONFIG_SCHED_CLUSTER, and the BUG is avoided:
-> > > 
-> > > For CPU0:
-> > > 
-> > > With CLS:
-> > > CLS  [0-1]
-> > > DIE  [0-79]
-> > > NUMA [0-159]
-> > > 
-> > > Without CLS:
-> > > DIE  [0-79]
-> > > NUMA [0-159]
-> > > 
-> > > Cc: Catalin Marinas <catalin.marinas@arm.com>
-> > > Cc: Will Deacon <will@kernel.org>
-> > > Cc: Peter Zijlstra <peterz@infradead.org>
-> > > Cc: Vincent Guittot <vincent.guittot@linaro.org>
-> > > Cc: Barry Song <song.bao.hua@hisilicon.com>
-> > > Cc: Valentin Schneider <valentin.schneider@arm.com>
-> > > Cc: D. Scott Phillips <scott@os.amperecomputing.com>
-> > > Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
-> > > Cc: <stable@vger.kernel.org> # 5.16.x
-> > > Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
-> > 
-> > Hi Darrent,
-> > What kind of resources are clusters sharing on Ampere Altra?
-> > So on Altra, cpus are not sharing LLC? Each LLC is separate
-> > for each cpu?
-> > 
-> > > ---
-> > >  arch/arm64/kernel/smp.c | 32 ++++++++++++++++++++++++++++++++
-> > >  1 file changed, 32 insertions(+)
-> > > 
-> > > diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
-> > > index 27df5c1e6baa..0a78ac5c8830 100644
-> > > --- a/arch/arm64/kernel/smp.c
-> > > +++ b/arch/arm64/kernel/smp.c
-> > > @@ -715,9 +715,22 @@ void __init smp_init_cpus(void)
-> > >  	}
-> > >  }
-> > > 
-> > > +static struct sched_domain_topology_level arm64_no_mc_topology[] = {
-> > > +#ifdef CONFIG_SCHED_SMT
-> > > +	{ cpu_smt_mask, cpu_smt_flags, SD_INIT_NAME(SMT) },
-> > > +#endif
-> > > +
-> > > +#ifdef CONFIG_SCHED_CLUSTER
-> > > +	{ cpu_clustergroup_mask, cpu_cluster_flags, SD_INIT_NAME(CLS) },
-> > > +#endif
-> > > +	{ cpu_cpu_mask, SD_INIT_NAME(DIE) },
-> > > +	{ NULL, },
-> > > +};
-> > > +
-> > >  void __init smp_prepare_cpus(unsigned int max_cpus)
-> > >  {
-> > >  	const struct cpu_operations *ops;
-> > > +	bool use_no_mc_topology = true;
-> > >  	int err;
-> > >  	unsigned int cpu;
-> > >  	unsigned int this_cpu;
-> > > @@ -758,6 +771,25 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
-> > > 
-> > >  		set_cpu_present(cpu, true);
-> > >  		numa_store_cpu_info(cpu);
-> > > +
-> > > +		/*
-> > > +		 * Only use no_mc topology if all cpu_coregroup_mask weights=1
-> > > +		 */
-> > > +		if (cpumask_weight(cpu_coregroup_mask(cpu)) > 1)
-> > > +			use_no_mc_topology = false;
-> > 
-> > This seems to be wrong? If you have 5 cpus,
-> > Cpu0 has cpu_coregroup_mask(cpu)== 1, cpu1-4
-> > has cpu_coregroup_mask(cpu)== 4, for cpu0, you still
-> > need to remove MC, but for cpu1-4, you will need
-> > CLS and MC both?
-> 
-> What is the *current* behaviour on such a system?
-> 
+Hi,
 
-As I understand it, any system that uses the default topology which has
-a cpus_coregroup weight of 1 and a child (cluster, smt, ...) weight > 1
-will behave as described above by printing the following for each CPU
-matching this criteria:
+wt., 15 lut 2022 o 15:37 Jeremy Linton <jeremy.linton@arm.com> napisa=C5=82=
+(a):
+>
+> Hi,
+>
+> On 2/15/22 02:38, Marcin Wojtas wrote:
+> > Hi Jeremy,
+> >
+> >
+> > wt., 15 lut 2022 o 00:18 Jeremy Linton <jeremy.linton@arm.com> napisa=
+=C5=82(a):
+> >>
+> >> Booting a MACCHIATObin with 5.17, the system OOPs with
+> >> a null pointer deref when the network is started. This
+> >> is caused by the pcs->ops structure being null in
+> >> mcpp2_acpi_start() when it tries to call pcs_config().
+> >>
+> >> Hoisting the code which sets pcs_gmac.ops and pcs_xlg.ops,
+> >> assuring they are always set, fixes the problem.
+> >>
+> >> The OOPs looks like:
+> >> [   18.687760] Unable to handle kernel access to user memory outside u=
+access routines at virtual address 0000000000000010
+> >> [   18.698561] Mem abort info:
+> >> [   18.698564]   ESR =3D 0x96000004
+> >> [   18.698567]   EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+> >> [   18.709821]   SET =3D 0, FnV =3D 0
+> >> [   18.714292]   EA =3D 0, S1PTW =3D 0
+> >> [   18.718833]   FSC =3D 0x04: level 0 translation fault
+> >> [   18.725126] Data abort info:
+> >> [   18.729408]   ISV =3D 0, ISS =3D 0x00000004
+> >> [   18.734655]   CM =3D 0, WnR =3D 0
+> >> [   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=3D0000000111bb=
+f000
+> >> [   18.745409] [0000000000000010] pgd=3D0000000000000000, p4d=3D000000=
+0000000000
+> >> [   18.752235] Internal error: Oops: 96000004 [#1] SMP
+> >> [   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qr=
+tr sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_=
+gwdt phylink xhci_plat_hcd ahci_plam
+> >> [   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0=
+-0.rc3.89.fc36.aarch64 #1
+> >> [   18.781954] Hardware name: Marvell                         Armada 7=
+k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4=
+ 2019
+> >> [   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS B=
+TYPE=3D--)
+> >> [   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+> >> [   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
+> >> [   18.812197] sp : ffff80000b4732c0
+> >> [   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffcc=
+ab38ae57f8
+> >> [   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80=
+000b4735b8
+> >> [   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6e=
+eb07b6ab68
+> >> [   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 000000=
+0000000014
+> >> [   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000=
+006a30f9fa
+> >> [   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbb=
+fccfd0d3a2
+> >> [   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffcc=
+ab38ad0fb0
+> >> [   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 000000=
+0000000000
+> >> [   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80=
+000b4732f8
+> >> [   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6e=
+eb07b6ab68
+> >> [   18.887183] Call trace:
+> >> [   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+> >> [   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
+> >> [   18.898483]  __dev_open+0x128/0x1e4
+> >> [   18.901988]  __dev_change_flags+0x17c/0x1d0
+> >> [   18.906187]  dev_change_flags+0x30/0x70
+> >> [   18.910038]  do_setlink+0x278/0xa7c
+> >> [   18.913540]  __rtnl_newlink+0x44c/0x7d0
+> >> [   18.917391]  rtnl_newlink+0x5c/0x8c
+> >> [   18.920892]  rtnetlink_rcv_msg+0x254/0x314
+> >> [   18.925006]  netlink_rcv_skb+0x48/0x10c
+> >> [   18.928858]  rtnetlink_rcv+0x24/0x30
+> >> [   18.932449]  netlink_unicast+0x290/0x2f4
+> >> [   18.936386]  netlink_sendmsg+0x1d0/0x41c
+> >> [   18.940323]  sock_sendmsg+0x60/0x70
+> >> [   18.943825]  ____sys_sendmsg+0x248/0x260
+> >> [   18.947762]  ___sys_sendmsg+0x74/0xa0
+> >> [   18.951438]  __sys_sendmsg+0x64/0xcc
+> >> [   18.955027]  __arm64_sys_sendmsg+0x30/0x40
+> >> [   18.959140]  invoke_syscall+0x50/0x120
+> >> [   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
+> >> [   18.967629]  do_el0_svc+0x30/0x9c
+> >> [   18.970958]  el0_svc+0x28/0xb0
+> >> [   18.974025]  el0t_64_sync_handler+0x10c/0x140
+> >> [   18.978400]  el0t_64_sync+0x1a4/0x1a8
+> >> [   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
+> >> [   18.988196] ---[ end trace 0000000000000000 ]---
+> >>
+> >> Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
+> >> Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> >> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+> >> ---
+> >> v1->v2: Apply Russell's fix
+> >> v2->v3: Fix Russell's name
+> >>
+> >>   drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 +++---
+> >>   1 file changed, 3 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers=
+/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> >> index 7cdbf8b8bbf6..1a835b48791b 100644
+> >> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> >> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> >> @@ -6870,6 +6870,9 @@ static int mvpp2_port_probe(struct platform_devi=
+ce *pdev,
+> >>          dev->max_mtu =3D MVPP2_BM_JUMBO_PKT_SIZE;
+> >>          dev->dev.of_node =3D port_node;
+> >>
+> >> +       port->pcs_gmac.ops =3D &mvpp2_phylink_gmac_pcs_ops;
+> >> +       port->pcs_xlg.ops =3D &mvpp2_phylink_xlg_pcs_ops;
+> >> +
+> >>          if (!mvpp2_use_acpi_compat_mode(port_fwnode)) {
+> >>                  port->phylink_config.dev =3D &dev->dev;
+> >>                  port->phylink_config.type =3D PHYLINK_NETDEV;
+> >> @@ -6940,9 +6943,6 @@ static int mvpp2_port_probe(struct platform_devi=
+ce *pdev,
+> >>                                    port->phylink_config.supported_inte=
+rfaces);
+> >>                  }
+> >>
+> >> -               port->pcs_gmac.ops =3D &mvpp2_phylink_gmac_pcs_ops;
+> >> -               port->pcs_xlg.ops =3D &mvpp2_phylink_xlg_pcs_ops;
+> >> -
+> >>                  phylink =3D phylink_create(&port->phylink_config, por=
+t_fwnode,
+> >>                                           phy_mode, &mvpp2_phylink_ops=
+);
+> >>                  if (IS_ERR(phylink)) {
+> >> --
+> >> 2.34.1
+> >>
+> >
+> > I'd like to test the patch - what EDK2 version are you using?
+>
+> I don't have access to the machine at the moment (maybe in a couple days
+> again) but it was running a build from late 2019 IIRC. So, definitely
+> not a bleeding edge version for sure.
+>
 
-  BUG: arch topology borken
-        the [CLS,SMT,...] domain not a subset of the MC domain
+2019 is enough indicator that most likely there is no MDIO description
+in ACPI. Let me test the patch, thanks.
 
-And then extend the MC domain cpumask to match that of the child and continue
-on.
-
-That would still be the behavior for this type of system after this
-patch is applied.
-
-Thanks,
-
--- 
-Darren Hart
-Ampere Computing / OS and Kernel
+Best regards,
+Marcin
