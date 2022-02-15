@@ -2,121 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C83CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E38FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236424AbiBOOSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:18:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41576 "EHLO
+        id S238573AbiBOOSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:18:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235378AbiBOOSa (ORCPT
+        with ESMTP id S235378AbiBOOSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:18:30 -0500
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B53B109F
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:18:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1644934697;
-  x=1676470697;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ABQC/ZHMK1zK6Pl+rj02snzZsvn6jYTS+6l3WtOK+RM=;
-  b=jTAHNGmr5pvmnHEOmr1rbZsSzwkxdeckVZq9MIcOgcjAYgIX0MIbmZqc
-   c4znv59AZfVUfC1CeGGU7qfJX2GYa9VpjKV2IDAkKTbyogYhSG6sPJ7vx
-   Tn5bIPvl8/oD4keReiUkh07xK+drUV9rQgGZA7mutQHcbPOnBmofSzylb
-   AddrVC9q0JKTs3ASNegDm2BZzBnlxKpih9b0E1i53BeFe0lbASAElBzeI
-   GxLmcE1IKjhROMDa4d+y3keqRcBqkR12O0VOuAKkGLR02f5LAWZkrryd1
-   5iV8AFShH3+5to1oCA/lPvGZFSueh1FfZemm9QFtuZOk9GWEh5QvswY4F
-   Q==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] char: ttyprintk: register console
-Date:   Tue, 15 Feb 2022 15:17:49 +0100
-Message-ID: <20220215141750.92808-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 15 Feb 2022 09:18:35 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CC9B10A4
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:18:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644934705; x=1676470705;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=2TDzB3yc1DJv1eV3LSYJMenEIhdyiLvMYtVL3TmCuCI=;
+  b=gWoChOgYNERfIGixpDU9gcB1BGiiIUW7Fqu6mJYqTcJw+DW75FDtbV/l
+   1ToK4u+ppccvR/kLuJu0pryvmuuSyjNRauopPI/3M+CTwNnQnV21MvmEu
+   zqZ7rwhDEvWwOaBr3qK1I0NDdhMwd/O0T2YVkUTMfTfQxGyCLALphhuqH
+   NneWGdW/OsTFpqZvdmy2ik68vYIyHpKjknoPwlEuh1YxCMRtkulCJ7Gln
+   2Mm7EIMADfDOpFuoLYPH/jmWHnf1t/VFr2+vuSU2cwdtd+zIXeBszlzuX
+   PE6R5d7l6uAihgU8ojI3x/UbmBlJmRQQ1A85R1DZSMlZ1tp8CElzfSc3R
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249193231"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="249193231"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 06:18:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="539329743"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.92]) ([10.237.72.92])
+  by fmsmga007.fm.intel.com with ESMTP; 15 Feb 2022 06:18:13 -0800
+Message-ID: <e31c10a2-0985-af6d-e4cd-0e7ad95fdb31@intel.com>
+Date:   Tue, 15 Feb 2022 16:18:12 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH V2 0/2] perf/x86/intel/pt: Add support for event tracing
+ and TNT disabling
+Content-Language: en-US
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        H Peter Anvin <hpa@zytor.com>
+References: <20220126104815.2807416-1-adrian.hunter@intel.com>
+ <dc5342b7-97d4-23c0-a093-1ba2dfec5ee7@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <dc5342b7-97d4-23c0-a093-1ba2dfec5ee7@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register a console in the ttyprintk driver so that it can be selected
-for /dev/console with console=ttyprintk on the kernel command line,
-similar to other console drivers.
+On 08/02/2022 08:28, Adrian Hunter wrote:
+> On 26/01/2022 12:48, Adrian Hunter wrote:
+>> Hi
+>>
+>> As of Intel SDM (https://www.intel.com/sdm) version 076, there are 2 new
+>> Intel PT features called Event Trace and TNT-Disable.
+>>
+>> Event Trace exposes details about asynchronous events such as interrupts
+>> and VM-Entry/Exit.
+>>
+>> TNT-Disable disables TNT packets to reduce the tracing overhead, but with
+>> the result that exact control flow information is lost.
+>>
+>> Tools patches are being sent in a separate patch set, but can be found
+>> here:
+>>
+>> 	https://github.com/ahunter6/linux/tree/event-trace
+>>
+>>
+>> Changes in V2:
+>>
+>> 	Add my SOB
+> 
+> Ping
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
- drivers/char/Kconfig     |  3 ++-
- drivers/char/ttyprintk.c | 16 ++++++++++++++++
- 2 files changed, 18 insertions(+), 1 deletion(-)
+Any comments on these patches?
 
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 740811893c57..c553a8a50d03 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -18,7 +18,8 @@ config TTY_PRINTK
- 	  The feature is useful to inline user messages with kernel
- 	  messages.
- 	  In order to use this feature, you should output user messages
--	  to /dev/ttyprintk or redirect console to this TTY.
-+	  to /dev/ttyprintk or redirect console to this TTY, or boot
-+	  the kernel with console=ttyprintk.
- 
- 	  If unsure, say N.
- 
-diff --git a/drivers/char/ttyprintk.c b/drivers/char/ttyprintk.c
-index adf941c47506..ed45d04905c2 100644
---- a/drivers/char/ttyprintk.c
-+++ b/drivers/char/ttyprintk.c
-@@ -11,6 +11,7 @@
-  * of the boot process, for example.
-  */
- 
-+#include <linux/console.h>
- #include <linux/device.h>
- #include <linux/serial.h>
- #include <linux/tty.h>
-@@ -163,6 +164,18 @@ static const struct tty_port_operations tpk_port_ops = {
- 
- static struct tty_driver *ttyprintk_driver;
- 
-+static struct tty_driver *ttyprintk_console_device(struct console *c,
-+						   int *index)
-+{
-+	*index = 0;
-+	return ttyprintk_driver;
-+}
-+
-+static struct console ttyprintk_console = {
-+	.name = "ttyprintk",
-+	.device = ttyprintk_console_device,
-+};
-+
- static int __init ttyprintk_init(void)
- {
- 	int ret;
-@@ -195,6 +208,8 @@ static int __init ttyprintk_init(void)
- 		goto error;
- 	}
- 
-+	register_console(&ttyprintk_console);
-+
- 	return 0;
- 
- error:
-@@ -205,6 +220,7 @@ static int __init ttyprintk_init(void)
- 
- static void __exit ttyprintk_exit(void)
- {
-+	unregister_console(&ttyprintk_console);
- 	tty_unregister_driver(ttyprintk_driver);
- 	tty_driver_kref_put(ttyprintk_driver);
- 	tty_port_destroy(&tpk_port.port);
--- 
-2.34.1
+> 
+> 
+>>
+>>
+>> Alexander Shishkin (2):
+>>       perf/x86/intel/pt: Add a capability and config bit for event tracing
+>>       perf/x86/intel/pt: Add a capability and config bit for disabling TNTs
+>>
+>>  arch/x86/events/intel/pt.c       | 16 ++++++++++++++++
+>>  arch/x86/include/asm/intel_pt.h  |  2 ++
+>>  arch/x86/include/asm/msr-index.h |  2 ++
+>>  3 files changed, 20 insertions(+)
+>>
+>>
+>> Regards
+>> Adrian 
+>>
+> 
 
