@@ -2,136 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C89C8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 912B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233700AbiBOClK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 21:41:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43190 "EHLO
+        id S233712AbiBOClr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 21:41:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233696AbiBOClI (ORCPT
+        with ESMTP id S233696AbiBOCln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 21:41:08 -0500
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65B9120E90
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:40:59 -0800 (PST)
-Received: by mail-qv1-xf32.google.com with SMTP id d7so16450353qvk.2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:40:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=4LCswZrElV6Pmzb8YyUA7fug85GktLISWrDlYL4+cJU=;
-        b=RK8Rg5/4qjjIjh2MTmUdnU7ZE6Ocg/1c/4CORITP3/BkGS1yJqcNkG4BUYhF3CsYX7
-         XNdKA9GUjgoh2Xw/MQZrmTMn98R8uxZp/nDVs2vc6bQ3D2VZ9zBBrjuJZ1MYtsEK7OpY
-         ric3eQtbdsLIvZ3djy3yq/LSIvgsGyPLvO0Fo31gqGU8Q0uhhfMtJVKSzSm1GNxuhh2D
-         NcWiyqOB4fIBiqJ6eIWhcEj2nkTnwxVYrKT6TP00O81qEGGsHr3do/QRqhygbnlSg0zf
-         aopiU81m8kQKUrsRc6VhRrcX0ffKj4+M/8Z8aU/3XHNigrR3fv536/y/lnNuXm47bxK5
-         a0GA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=4LCswZrElV6Pmzb8YyUA7fug85GktLISWrDlYL4+cJU=;
-        b=jHwsXNQI0SqqsrQKeAgAdI+W+zJv/mJwPkYDEL5Pbo9ERIbwwMH9LijjNhaT+1/71S
-         F8dNd7/HSDea7269ziu4ZlWIHJWL0hMR70DugqetqANS5R9wrZwgNKePnQ14cHjXuzPx
-         Jx7/zaSzqNGmimrmeP4EcSDKcAfFhWDKGz0N5G/4gKsCokto81TE3AICTo/jjw/7NVwE
-         7I8nwsRUvXhVjP8jnAlcRy6ljezP6oqAo/zwtpgzZBxxLEl+za030vFAR2fTcTGzFg4W
-         Iuf972H7mIxyof2qx/PxguC930rYSWLapCwJrpfyA7OzpZ7usFd8bn/ba8ngafjE3/cL
-         kaYQ==
-X-Gm-Message-State: AOAM531ZuJDuWd+kKBTPt1Dvt6HToB1WKRXRuv8F+MpWp2O0l2VTgP71
-        HUvTY8lMdAxmFHe4Cvg3CGgz2g==
-X-Google-Smtp-Source: ABdhPJwoOBqHBajFmA50x9euRGxs5w57fNsAgoxQwuf0kGlCmHaynY42ZIqWK7LLuu2RSLh3vtEqlQ==
-X-Received: by 2002:a05:6214:627:: with SMTP id a7mr1412718qvx.91.1644892858736;
-        Mon, 14 Feb 2022 18:40:58 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id m9sm17437831qkn.81.2022.02.14.18.40.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 18:40:57 -0800 (PST)
-Date:   Mon, 14 Feb 2022 18:40:55 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Andrew Morton <akpm@linux-foundation.org>
-cc:     Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH v2 12/13] mm/thp: collapse_file() do
- try_to_unmap(TTU_BATCH_FLUSH)
-In-Reply-To: <55a49083-37f9-3766-1de9-9feea7428ac@google.com>
-Message-ID: <c390e7b-7648-b3e9-9ae1-87c9b9e95ed4@google.com>
-References: <55a49083-37f9-3766-1de9-9feea7428ac@google.com>
+        Mon, 14 Feb 2022 21:41:43 -0500
+Received: from sonic301-57.consmr.mail.ne1.yahoo.com (sonic301-57.consmr.mail.ne1.yahoo.com [66.163.184.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51D51B784
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:41:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aol.com; s=a2048; t=1644892893; bh=cwlZyrxzndX/rf1BmsU10DtvJE31JIYmldJr7uTBP2I=; h=Date:From:To:Cc:Subject:References:From:Subject:Reply-To; b=YKbJZci5fDWArSh+Kyn6jCb9yPAE3ndp76E+4i08lN5i+LwIq7wSC5DjhWTpAcJoCU1rBqpK4eDXoNg0LdBc6m1pOEM8b6oSBYuZIxxCZENrQwG0n2dLvWC5xiJRveT4jlLlV6V+ebgeEKb7M7rvDPC5ygWK9NsIGY5ud12WGr8MdZ7b818HyL1Ic6UuIhSjPhJ0yLREtqzuHsxUjGOWLrqcf2XyfdEmHS8L9Qd4VYzx0I4UtwDaUuYoh5wcNp+MOWojFFXY+KRdBkya8bmYn5svRw200cBbfVTG3y1nw0q4k70ShHkiqMy9ahg7aQ/Ql6d3EezNswspsFG7nviYug==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1644892893; bh=QVfgZHb4UfdjjPM9Lhmi8YMeaV5fSTbihIVIou1DOl8=; h=X-Sonic-MF:Date:From:To:Subject:From:Subject; b=H/h7K5eI5TY+6ANSrtqzI52MHoODOLwuwwXtCmrn8ORCOCj18R5ldF5T1zfBgqKa3Q4NWMrtfkUUTUjJYwHU19cMXe0mvIuGpxX5AYcYPuhi1yZ/I9RgZfJmzJ1t8lW//tSRss5xPfGPgJuf9ECTRrUL7pu3c9pe/9ysivX6B7wqq0U5gIjuoVfavTRQNpxl0Z3fdRPQGw6U4666XRUfXpIogAaqqDAkkYD7dGeKYi6hycZ/V0mGcb7mZCU40raAUMx2VuKFW41jgfHxF5Q4T4+9O3SxJF+WmJfrSyFb5OdykZB6cVTRkQMDf4alSgTg8Q21VAKfPV8pZ0LtJTINHQ==
+X-YMail-OSG: BTNaKOUVM1ndshD.f1HSeq7iFloCTdP1lhMBf.hImdjd145NsOJMtlN1sNLH0NF
+ VqGIteGfnoPXHEVi6bGUILzOUfEkJ_R1VWnjDbhDSBUxLZYyqdb3EBSk_PRVwFiTMQ5uoLMhvl9O
+ jmsKZUyvjJq0vB2GCK9MbtlUDs8FGvoHWP7fmDVfwu6kuleTiOnuN75GbMwoQjEYU1zcZGiKbq7j
+ ofIZnpYqf_BGsEV3u8JMQdscZuxRkFpn8A9xQphHM4hW1oD3WS0m1Ntahfh6ZZAbHcphcMLSLAhe
+ 8pKrMzU3QFynJfEJtyku_6vvtNv.dNp3D.z4VxaukpbczVuwCfdTi1qtJj9vM7oeSQzuzlHBjVmN
+ 3bQrRKh0Fa5XmNEVNagAG0mI5dy_iMl4mLthEhvzmOIsza4NKsQWZtWx83zdlwqNNbqoIaxtMfqb
+ Uku.Vnd2uVbKFJxqsUii4v6eKXQGeIsy52k2UyQMfDnjSdH5h6sQyGr25hFZqcOm6jXNAr.COGbm
+ VTUn5233tRp99dgOON6mwmsfBd60_KrZD8PikFQaEAvbNUO11i_aKT3krfdaA7ZCkoNE9pE588S3
+ uV9oV9pA.XGAMMdCtx3brMa110fGZ_Ur5hsMxWthY.U3LRiuo8uFn04B2k2WcTkm8l7TWUUG1VCo
+ 9UXRILn0O2A2BivLevMjqv347GE6P5rvi8KRWTRJ1819pueHD4jm7.GzggGZF_bvoFnp0dXSkCdh
+ zx9GP3xUKiSfdzvhieIs5vejH2vDUM0ytL3wVCvhuwPzWKNVJoWloHDeiImcsOEVWWvrZMK_QiBo
+ 1Uh999uQy286jyyqQziqr9EYzdr.6DhcrBd.ARfxV2C6hcSzD_dNr5PLjgWWUVNQaVTfbOhuB0p2
+ RLEFJOKhdltCmAzSFPa8IoclOD2X.doUTuRHtgxzkX_85G81mljCFiYuAh.9o3rEsq9xmSzY2ur0
+ s1I8cTjKHH82FYbz9rBJO84k3W9ZY58WAu8JoG_SBCyd7zDPKOkyWzFx4s1.gxBvCRVYpE4BuN9p
+ 0XEJZuOUeG86VIyYcYRni_09CuvVqoixSidCo1nmlyjLZdcrVyT6Np56yBWpB5NL9pKKuk_PQWy4
+ 7DaZ_fMOcR0dKcXYf3PSidsRzd2OSVmZyFR1b2X9c7dE9kdE.bMtOs9ZXP_Xdy_eDjoP9NgO7xdC
+ M5GEi0uMAvMS.ra8wEcfLT75AXAxfiIVq4CAbDYsHzBoxN33QdwQLm5eVyANvhMai4SQHkYtEDKv
+ AcJs26quJAcV3gnyDgnfv69NTGPGYp3k4yyafdD4.iS3hASW4v4D3Z7bveNIi8j9b273qeHvhyYM
+ 8A8I0MjwFWJRyi_kM3rceJRJYWv.nOQ38x4jySlKjhkySwCsmo91g3.C5lOtE0uzikUNPsLXbY4E
+ OFUTwN28T8sClbP4zhKqiboXPP7SJLPWH4Unne3nQQIQdEZRseetdoIMbt9uf4JjUPFVES76Nz8p
+ Xy2rfDfAx.JGJQm7eyBlkxYA40JLKq0ujLXUJ8aDFCrifT5iZPIn8FeTHurgwmz5_vbcXEMkpx17
+ Fs.zKgsApWic0IRDT3M0.hXl2CVPBZbYTFXI813DIcKh7zL8xRecGgtgZ3Jba33osMPt7g7V3aWG
+ j8jJiQAwlkSIIk_O9lxZczY1dxtFi9RK1cj4.UiuJMwj7UdSEsKubttmEcwn85QdstNTK.JqhEi6
+ FXCiWaZ53qVnp18i..xiynOqAd455CaUVmAc38nQpiVdOSwkqPCAdU14eMfWCPj1rYfRxpFIjcpo
+ 4mx0pWfnGVd23HusIqnGKLFLITiZYa_ZTL6tR.43MF2rlq4TKUDGH.Yj6qCnVedmy_gbqjbZd.V.
+ OAyfSN3kHT1mtTAwi3jq0YNvrNrlDm0J16RWYJ_WK1qK5Ytjx2m6RnAtecQEp_D2eXNGz.ebg1TM
+ RsGBkRNooOa9TyN5i.JQolQaETuQfWlxRJO8CXg1nCeWwveC9qtsY9cgYoKyukGN5QT9YO5KFHOB
+ BYxk2sloLgvB3TkzFGojrjANCZ4zPU95_NPnoDg57z259dp07tdVeQlc_TXxmXihiE3vfpekXQle
+ oFsTzIrd1ohUjjECK7hmVxHm4iEjNLd7qSeR5uDU2MoxKpGSTKEoT6_Miq7ua8ZET1whke_z53XJ
+ QWIqV6IFmVbWYIMbeQ7ldEmKFGRFOHLgNFFooTdGBRd9l4kSOWnXG5OwH9rejY6QVqu8rG5wf.Uk
+ U
+X-Sonic-MF: <marcelo.as@aol.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic301.consmr.mail.ne1.yahoo.com with HTTP; Tue, 15 Feb 2022 02:41:33 +0000
+Received: by kubenode514.mail-prod1.omega.bf1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID b7b91e8796b59d15c24591af310d5abf;
+          Tue, 15 Feb 2022 02:39:30 +0000 (UTC)
+Date:   Mon, 14 Feb 2022 23:39:26 -0300
+From:   Marcelo Aloisio da Silva <marcelo.as@aol.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: r8188eu: remove unconditional if statement
+Message-ID: <20220215023926.GA52339@snoopy>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+References: <20220215023926.GA52339.ref@snoopy>
+X-Mailer: WebService/1.1.19724 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-collapse_file() is using unmap_mapping_pages(1) on each small page found
-mapped, unlike others (reclaim, migration, splitting, memory-failure) who
-use try_to_unmap().  There are four advantages to try_to_unmap(): first,
-its TTU_IGNORE_MLOCK option now avoids leaving mlocked page in pagevec;
-second, its vma lookup uses i_mmap_lock_read() not i_mmap_lock_write();
-third, it breaks out early if page is not mapped everywhere it might be;
-fourth, its TTU_BATCH_FLUSH option can be used, as in page reclaim, to
-save up all the TLB flushing until all of the pages have been unmapped.
+Remove if condition that is always true. It is useless and
+makes the code less readable.
 
-Wild guess: perhaps it was originally written to use try_to_unmap(),
-but hit the VM_BUG_ON_PAGE(page_mapped) after unmapping, because without
-TTU_SYNC it may skip page table locks; but unmap_mapping_pages() never
-skips them, so fixed the issue.  I did once hit that VM_BUG_ON_PAGE()
-since making this change: we could pass TTU_SYNC here, but I think just
-delete the check - the race is very rare, this is an ordinary small page
-so we don't need to be so paranoid about mapcount surprises, and the
-page_ref_freeze() just below already handles the case adequately.
-
-Signed-off-by: Hugh Dickins <hughd@google.com>
+Signed-off-by: Marcelo Aloisio da Silva <marcelo.as@aol.com>
 ---
-v2: same as v1.
+ drivers/staging/r8188eu/core/rtw_ap.c | 124 +++++++++++++-------------
+ 1 file changed, 62 insertions(+), 62 deletions(-)
 
- mm/khugepaged.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index d5e387c58bde..e0883a33efd6 100644
---- a/mm/khugepaged.c
-+++ b/mm/khugepaged.c
-@@ -1829,13 +1829,12 @@ static void collapse_file(struct mm_struct *mm,
- 		}
+diff --git a/drivers/staging/r8188eu/core/rtw_ap.c b/drivers/staging/r8188eu/core/rtw_ap.c
+index 19d12dd9788e..5e22b1baf9a5 100644
+--- a/drivers/staging/r8188eu/core/rtw_ap.c
++++ b/drivers/staging/r8188eu/core/rtw_ap.c
+@@ -55,85 +55,85 @@ static void update_BCNTIM(struct adapter *padapter)
+ 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
+ 	struct wlan_bssid_ex *pnetwork_mlmeext = &pmlmeinfo->network;
+ 	unsigned char *pie = pnetwork_mlmeext->IEs;
++	u8 *p, *dst_ie, *premainder_ie = NULL;
++	u8 *pbackup_remainder_ie = NULL;
++	__le16 tim_bitmap_le;
++	uint offset, tmp_len, tim_ielen, tim_ie_offset, remainder_ielen;
  
- 		if (page_mapped(page))
--			unmap_mapping_pages(mapping, index, 1, false);
-+			try_to_unmap(page, TTU_IGNORE_MLOCK | TTU_BATCH_FLUSH);
+ 	/* update TIM IE */
+-	if (true) {
+-		u8 *p, *dst_ie, *premainder_ie = NULL;
+-		u8 *pbackup_remainder_ie = NULL;
+-		__le16 tim_bitmap_le;
+-		uint offset, tmp_len, tim_ielen, tim_ie_offset, remainder_ielen;
+-
+-		tim_bitmap_le = cpu_to_le16(pstapriv->tim_bitmap);
+-
+-		p = rtw_get_ie(pie + _FIXED_IE_LENGTH_, _TIM_IE_, &tim_ielen, pnetwork_mlmeext->IELength - _FIXED_IE_LENGTH_);
+-		if (p && tim_ielen > 0) {
+-			tim_ielen += 2;
+-			premainder_ie = p + tim_ielen;
+-			tim_ie_offset = (int)(p - pie);
+-			remainder_ielen = pnetwork_mlmeext->IELength - tim_ie_offset - tim_ielen;
+-			/* append TIM IE from dst_ie offset */
+-			dst_ie = p;
+-		} else {
+-			tim_ielen = 0;
  
- 		xas_lock_irq(&xas);
- 		xas_set(&xas, index);
+-			/* calculate head_len */
+-			offset = _FIXED_IE_LENGTH_;
+-			offset += pnetwork_mlmeext->Ssid.SsidLength + 2;
++	p = rtw_get_ie(pie + _FIXED_IE_LENGTH_, _TIM_IE_, &tim_ielen,
++		       pnetwork_mlmeext->IELength - _FIXED_IE_LENGTH_);
++	if (p && tim_ielen > 0) {
++		tim_ielen += 2;
++		premainder_ie = p + tim_ielen;
++		tim_ie_offset = (int)(p - pie);
++		remainder_ielen = pnetwork_mlmeext->IELength - tim_ie_offset - tim_ielen;
++		/* append TIM IE from dst_ie offset */
++		dst_ie = p;
++	} else {
++		tim_ielen = 0;
  
- 		VM_BUG_ON_PAGE(page != xas_load(&xas), page);
--		VM_BUG_ON_PAGE(page_mapped(page), page);
+-			/*  get supported rates len */
+-			p = rtw_get_ie(pie + _BEACON_IE_OFFSET_, _SUPPORTEDRATES_IE_, &tmp_len, (pnetwork_mlmeext->IELength - _BEACON_IE_OFFSET_));
+-			if (p)
+-				offset += tmp_len + 2;
++		/* calculate head_len */
++		offset = _FIXED_IE_LENGTH_;
++		offset += pnetwork_mlmeext->Ssid.SsidLength + 2;
  
- 		/*
- 		 * The page is expected to have page_count() == 3:
-@@ -1899,6 +1898,13 @@ static void collapse_file(struct mm_struct *mm,
- 	xas_unlock_irq(&xas);
- xa_unlocked:
+-			/* DS Parameter Set IE, len = 3 */
+-			offset += 3;
++		/*  get supported rates len */
++		p = rtw_get_ie(pie + _BEACON_IE_OFFSET_, _SUPPORTEDRATES_IE_,
++			       &tmp_len, (pnetwork_mlmeext->IELength - _BEACON_IE_OFFSET_));
++		if (p)
++			offset += tmp_len + 2;
  
-+	/*
-+	 * If collapse is successful, flush must be done now before copying.
-+	 * If collapse is unsuccessful, does flush actually need to be done?
-+	 * Do it anyway, to clear the state.
-+	 */
-+	try_to_unmap_flush();
+-			premainder_ie = pie + offset;
++		/* DS Parameter Set IE, len = 3 */
++		offset += 3;
+ 
+-			remainder_ielen = pnetwork_mlmeext->IELength - offset - tim_ielen;
++		premainder_ie = pie + offset;
+ 
+-			/* append TIM IE from offset */
+-			dst_ie = pie + offset;
+-		}
++		remainder_ielen = pnetwork_mlmeext->IELength - offset - tim_ielen;
+ 
+-		if (remainder_ielen > 0) {
+-			pbackup_remainder_ie = kmalloc(remainder_ielen, GFP_ATOMIC);
+-			if (pbackup_remainder_ie && premainder_ie)
+-				memcpy(pbackup_remainder_ie, premainder_ie, remainder_ielen);
+-		}
+-		*dst_ie++ = _TIM_IE_;
++		/* append TIM IE from offset */
++		dst_ie = pie + offset;
++	}
+ 
+-		if ((pstapriv->tim_bitmap & 0xff00) && (pstapriv->tim_bitmap & 0x00fc))
+-			tim_ielen = 5;
+-		else
+-			tim_ielen = 4;
++	if (remainder_ielen > 0) {
++		pbackup_remainder_ie = kmalloc(remainder_ielen, GFP_ATOMIC);
++		if (pbackup_remainder_ie && premainder_ie)
++			memcpy(pbackup_remainder_ie, premainder_ie, remainder_ielen);
++	}
++	*dst_ie++ = _TIM_IE_;
+ 
+-		*dst_ie++ = tim_ielen;
++	if ((pstapriv->tim_bitmap & 0xff00) && (pstapriv->tim_bitmap & 0x00fc))
++		tim_ielen = 5;
++	else
++		tim_ielen = 4;
+ 
+-		*dst_ie++ = 0;/* DTIM count */
+-		*dst_ie++ = 1;/* DTIM period */
++	*dst_ie++ = tim_ielen;
+ 
+-		if (pstapriv->tim_bitmap & BIT(0))/* for bc/mc frames */
+-			*dst_ie++ = BIT(0);/* bitmap ctrl */
+-		else
+-			*dst_ie++ = 0;
++	*dst_ie++ = 0;/* DTIM count */
++	*dst_ie++ = 1;/* DTIM period */
+ 
+-		if (tim_ielen == 4) {
+-			*dst_ie++ = *(u8 *)&tim_bitmap_le;
+-		} else if (tim_ielen == 5) {
+-			memcpy(dst_ie, &tim_bitmap_le, 2);
+-			dst_ie += 2;
+-		}
++	if (pstapriv->tim_bitmap & BIT(0))/* for bc/mc frames */
++		*dst_ie++ = BIT(0);/* bitmap ctrl */
++	else
++		*dst_ie++ = 0;
+ 
+-		/* copy remainder IE */
+-		if (pbackup_remainder_ie) {
+-			memcpy(dst_ie, pbackup_remainder_ie, remainder_ielen);
++	tim_bitmap_le = cpu_to_le16(pstapriv->tim_bitmap);
+ 
+-			kfree(pbackup_remainder_ie);
+-		}
+-		offset =  (uint)(dst_ie - pie);
+-		pnetwork_mlmeext->IELength = offset + remainder_ielen;
++	if (tim_ielen == 4) {
++		*dst_ie++ = *(u8 *)&tim_bitmap_le;
++	} else if (tim_ielen == 5) {
++		memcpy(dst_ie, &tim_bitmap_le, 2);
++		dst_ie += 2;
++	}
 +
- 	if (result == SCAN_SUCCEED) {
- 		struct page *page, *tmp;
++	/* copy remainder IE */
++	if (pbackup_remainder_ie) {
++		memcpy(dst_ie, pbackup_remainder_ie, remainder_ielen);
++
++		kfree(pbackup_remainder_ie);
+ 	}
++	offset =  (uint)(dst_ie - pie);
++	pnetwork_mlmeext->IELength = offset + remainder_ielen;
  
+ 	set_tx_beacon_cmd(padapter);
+ }
 -- 
-2.34.1
+2.25.1
 
