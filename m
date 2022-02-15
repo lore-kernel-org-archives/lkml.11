@@ -2,104 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B75C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 04:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 04:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233263AbiBOEaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 23:30:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53908 "EHLO
+        id S233880AbiBOEb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 23:31:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiBOEaQ (ORCPT
+        with ESMTP id S229591AbiBOEbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 23:30:16 -0500
-X-Greylist: delayed 578 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 20:30:05 PST
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309BF1EC75;
-        Mon, 14 Feb 2022 20:30:05 -0800 (PST)
-Received: from HP-EliteBook-840-G7.. (36-229-230-216.dynamic-ip.hinet.net [36.229.230.216])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 772903FD31;
-        Tue, 15 Feb 2022 04:20:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644898821;
-        bh=lB41lf9TNfhSYVpxAjUTvqN1ehxl7mfDBhak18dB/Wc=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=EQ8mYpOF87s7mXaOkRfoxwrGwhyTNOSIjKZZomfa8VBQ1aMNXzWSSxxL75lV9uxw9
-         oiu8PtTRQ6adXRL+SA0Mlf+WEcvTa2EMEhK/TIh1UrZ3lRzd2NiVtVT+g8fGn6jXBe
-         AEVx/62NJVgpbWh5LOx42kkWgISLplTsEmKivnLLnucxybcs26ayr41FH+btZqxU65
-         aXCgDTSTK+hkGvC13M8qg3rUfVsIGqL16hJoJ+uZWAAAXwA7hbckDxAJWGCDIj29Ce
-         gdYNtSJ78I5EkqaVI6HP4Vqya6OviX280ZyR5GOOBB82nqreUmRnNkVZSoC948ndQv
-         /kLOQ1QbCc2Fg==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org
-Cc:     andy.shevchenko@gmail.com,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iio: accel: adxl345: Add ACPI HID table
-Date:   Tue, 15 Feb 2022 12:20:11 +0800
-Message-Id: <20220215042011.2266897-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 14 Feb 2022 23:31:52 -0500
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4C01C135
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 20:31:43 -0800 (PST)
+Received: by mail-oo1-xc33.google.com with SMTP id p190-20020a4a2fc7000000b0031820de484aso21815196oop.9
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 20:31:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D7WsWCRqMLz25vENb3RcLmuP7khzK1rVK0lqIZnKd40=;
+        b=qErQvLRHn4lNi32tmw38jEAFNYywB5rAnIRozMJp3Wu3QmiUz3kavqhSmwRx+OyGdY
+         LtFC0T6uamzGnphHeZAlx2E1u/X08Qdv0rSQVmPBMCw/bxC7HPu1UmcuD1XhaM4JDvYX
+         I4bDSc2FY1CS/fmpYAxzwSHegdZOpTn3+JHe4HYhGhAAJvYYWrMeR1jB2KswbOlvhXRY
+         vcBCpFE2SKQZI0N3AJjoxA/7iO58Xne2M4Qub/qxrwYEplfa7J2L9DwvSjOrBF9h5Knq
+         N7E5+9wOTrS8FWn7D59QuP6De+aGmzBjM7fKCSdus9AG6+5zH9nefOBQushQwXNqnQi9
+         6HmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D7WsWCRqMLz25vENb3RcLmuP7khzK1rVK0lqIZnKd40=;
+        b=mZSN0V4j1S9YCCmIVfR84sJ9bsJeggRQ+UzLbSwcmERG1IRMfqQB0J9h6ZgWYMLcig
+         TweM9kiQ5u55ls39hVxG5OSDnH1FLwuqDkzCod/0JCIpAxmsbye6Xga1fb7SGFVMM0wX
+         7trmvY0qvLktGyaR9zJaM+EFzDn+FU/O81E02fU8DIiDgium/75Ms5+FXbg7Ps02sNRR
+         Rz9LTyH7lMZb+bz7n9VPVMdXmFt0y/Kiquon3J2UKMKT6B7M2w0Cb1wCROOQwPTwdLnA
+         TeRtt+u+Jppb5Qg4DGKFGdLijENJkRxUucDE5J6mZ0H7jC0GEoDLYA20/B6pA9Z0tO0f
+         X58Q==
+X-Gm-Message-State: AOAM530Zbhg6N6347aIIS8av44BvfhdLUHWN2q3nKJM8fDQlebPjQ77u
+        g7MpSgR2/m6rIh+CwcjpCWdVVw==
+X-Google-Smtp-Source: ABdhPJxYZ98hSXj39qS4Lid82RoCU1bJQMN1rQR1NrXEQZ6QwcOrw3ie1V58t9SRMlck6xKqEZOWcw==
+X-Received: by 2002:a05:6870:6296:: with SMTP id s22mr800654oan.338.1644899502683;
+        Mon, 14 Feb 2022 20:31:42 -0800 (PST)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id z4sm12926964otu.24.2022.02.14.20.31.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 20:31:42 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/2] drm/msm/dpu: Add INTF_5 interrupts
+Date:   Mon, 14 Feb 2022 20:33:52 -0800
+Message-Id: <20220215043353.1256754-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-x86 boards may use ACPI HID "ADS0345" for adxl345 device.
+SC8180x has the eDP controller wired up to INTF_5, so add the interrupt
+register block for this interface to the list.
 
-Analog replied:
-"ADS034X is not a valid PNP ID. ADS0345 would be.
-I'm not aware that this ID is already taken.
-Feel free to submit a mainline Linux input mailing list patch."
-
-So add an ACPI match table for that accordingly.
-
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
-v3:
- - Convert the driver from input to iio.
 
-v2:
- - Drop ACPI_PTR()
- - Drop redundant empty line and comma
- - Add info from vendor
+Changes since v1:
+- None
 
- drivers/iio/accel/adxl345_i2c.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c | 6 ++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.h | 1 +
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/iio/accel/adxl345_i2c.c b/drivers/iio/accel/adxl345_i2c.c
-index a431cba216e69..1d57050c775de 100644
---- a/drivers/iio/accel/adxl345_i2c.c
-+++ b/drivers/iio/accel/adxl345_i2c.c
-@@ -41,6 +41,7 @@ static int adxl345_i2c_probe(struct i2c_client *client,
- static const struct i2c_device_id adxl345_i2c_id[] = {
- 	{ "adxl345", ADXL345 },
- 	{ "adxl375", ADXL375 },
-+	{ "ADS0345:00", ADXL345 },
- 	{ }
- };
- 
-@@ -54,10 +55,17 @@ static const struct of_device_id adxl345_of_match[] = {
- 
- MODULE_DEVICE_TABLE(of, adxl345_of_match);
- 
-+static const struct acpi_device_id adxl345_acpi_match[] = {
-+	{ "ADS0345" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(acpi, adxl345_acpi_match);
-+
- static struct i2c_driver adxl345_i2c_driver = {
- 	.driver = {
- 		.name	= "adxl345_i2c",
- 		.of_match_table = adxl345_of_match,
-+		.acpi_match_table = adxl345_acpi_match,
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+index a77a5eaa78ad..dd2161e7bdb6 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+@@ -23,6 +23,7 @@
+ #define MDP_INTF_2_OFF			0x6B000
+ #define MDP_INTF_3_OFF			0x6B800
+ #define MDP_INTF_4_OFF			0x6C000
++#define MDP_INTF_5_OFF			0x6C800
+ #define MDP_AD4_0_OFF			0x7C000
+ #define MDP_AD4_1_OFF			0x7D000
+ #define MDP_AD4_INTR_EN_OFF		0x41c
+@@ -93,6 +94,11 @@ static const struct dpu_intr_reg dpu_intr_set[] = {
+ 		MDP_INTF_4_OFF+INTF_INTR_EN,
+ 		MDP_INTF_4_OFF+INTF_INTR_STATUS
  	},
- 	.probe		= adxl345_i2c_probe,
- 	.id_table	= adxl345_i2c_id,
++	{
++		MDP_INTF_5_OFF+INTF_INTR_CLEAR,
++		MDP_INTF_5_OFF+INTF_INTR_EN,
++		MDP_INTF_5_OFF+INTF_INTR_STATUS
++	},
+ 	{
+ 		MDP_AD4_0_OFF + MDP_AD4_INTR_CLEAR_OFF,
+ 		MDP_AD4_0_OFF + MDP_AD4_INTR_EN_OFF,
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.h
+index 1ab75cccd145..37379966d8ec 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.h
+@@ -22,6 +22,7 @@ enum dpu_hw_intr_reg {
+ 	MDP_INTF2_INTR,
+ 	MDP_INTF3_INTR,
+ 	MDP_INTF4_INTR,
++	MDP_INTF5_INTR,
+ 	MDP_AD4_0_INTR,
+ 	MDP_AD4_1_INTR,
+ 	MDP_INTF0_7xxx_INTR,
 -- 
-2.34.1
+2.33.1
 
