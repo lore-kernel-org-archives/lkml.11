@@ -2,180 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 150ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C00FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242315AbiBORNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:13:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39016 "EHLO
+        id S242327AbiBORNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:13:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235970AbiBORNH (ORCPT
+        with ESMTP id S235970AbiBORNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:13:07 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DE7119F7A;
-        Tue, 15 Feb 2022 09:12:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644945177; x=1676481177;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=NgaNvbLh/5PNCAekVCyte5+CqdZYMQ6Cb7Fvz6rUpBA=;
-  b=hGxfzI+qH+2nBbvtKpBoIipw7EvobynCdMjJu4lBuCpQVAHQsNr6G/qw
-   xVh4Hk592PGTai6CrUxcQMwhm139jnHDza+Kf6PDVDaRjJQIhh2O+EChh
-   0j3Lo0aEc3sQJskZnNF2h9X91kXDDrS6S/LnguIc0KwuNlcI9LABJAYMc
-   dfJlEGd5MR/3DbX/8mSukJ5vo5bh4NfnxcNlAns3TUOcej2EWeaCesEzt
-   TWt/TBQVSOxl6UrFF0QcGlfpQ7dzZur/lLzv4dDkbej97siycToV3bwVZ
-   NGYKebIyouQNWYB4W5Sqy98MHn3hEH2UzrF9D1PI0DdNyk5l22Rk8INVU
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="336830818"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="336830818"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:07:53 -0800
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="775934195"
-Received: from tngodup-mobl.amr.corp.intel.com (HELO [10.209.32.98]) ([10.209.32.98])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:07:50 -0800
-Message-ID: <56fc0ced-d8d2-146f-6ca8-b95bd7e0b4f5@intel.com>
-Date:   Tue, 15 Feb 2022 09:07:45 -0800
+        Tue, 15 Feb 2022 12:13:20 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E57119F59
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:13:10 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id n17so24683975iod.4
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:13:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OS2cyXoSspyXwzMzdQfxlaygJp0VzdjIQki92+JEQJE=;
+        b=F2C0H7NwLZq7SwwCNHKBEwU2PyifSnI7C1jhDRvWqIDcEeTOE130F7MWfIFwurDJmw
+         xB4yuM/usHuhGFDgAxxuhLuzJ6Z3PyC1ArcAKjXqkCM6euYp+Di87tMphcjgTnoB3ZC3
+         T1bLtRUa9qcjaQgkXPgp5veMMRSFtHqCgbMb/ETYgxQ73DJlMKhidTki9ymYru2JPwct
+         yMsZg6eW0U+707aGDCdRJYL67ZptyBLqQw0n29OPyjYVphre6vhta6VZDKy4xxEBER/e
+         VSsLMm/ZhNC5nBE3/m5DAj+tknNUmKJvFY4BBGmd86qqqsu4Z6ilDkfNr3b8iUaxfydu
+         QJFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OS2cyXoSspyXwzMzdQfxlaygJp0VzdjIQki92+JEQJE=;
+        b=2t/8E2H3Lw7LyoEX02AZKmb/EPb5XjGXeTpJt9bXf+jrX+aw2YI0Rj3Jd7qDMS0Xb6
+         RKuP12m/9gajjpfdcVNnLDHMXHL1Dbah8+fB8ZjmhIRRe8lth6Ajci1lQWwKshP0wAVF
+         U+mzzkquEIpyhzznEQ9Jh9zTNJp4mWPxEX0dGw7GE1F/A53tfOP+uuTOb1thpXk6cZW9
+         D4ImSh0szILn+hEYdZv2d9en89SNo6hK9urn4yPHSp+u7AwMepS8UT1VLf71j7tVhchJ
+         fSp/dcAG5QfO+OzCFmyLePDe3MvWb/PkmCcoD76m1/FclzYCUkeYJRI887KRg9JJkKza
+         pc0g==
+X-Gm-Message-State: AOAM532w5+ceSOnSGSHiLAFIS4HhoUm20E4TIYt9ZeN65oc70sxEaZbP
+        LkqC2hJAt+h009AI3NfNQz7+ylZKWzwgttk18fRFjg==
+X-Google-Smtp-Source: ABdhPJyW23kbU/WeCcDN5jeFQO3EIItRo03FlyJ5Rzffil9N0Cbr6zrxfkRty3e2IVs0PKaP9MNreER4dNODBBc1HOA=
+X-Received: by 2002:a6b:f904:: with SMTP id j4mr2960824iog.97.1644945189403;
+ Tue, 15 Feb 2022 09:13:09 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Brian Geffon <bgeffon@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Willis Kung <williskung@google.com>,
-        Guenter Roeck <groeck@google.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Lutomirski <luto@kernel.org>, stable@vger.kernel.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-References: <20220215153644.3654582-1-bgeffon@google.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH] x86/fpu: Correct pkru/xstate inconsistency
-In-Reply-To: <20220215153644.3654582-1-bgeffon@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220215153713.31395-1-jolsa@kernel.org>
+In-Reply-To: <20220215153713.31395-1-jolsa@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 15 Feb 2022 09:12:57 -0800
+Message-ID: <CAP-5=fVytzO7XexSPC7ymgJ01_QfAaK0Ys-0NQ73QzRM8xwgbA@mail.gmail.com>
+Subject: Re: [PATCH] libperf: Fix perf_cpu_map__for_each_cpu macro
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/15/22 07:36, Brian Geffon wrote:
-> There are two issues with PKRU handling prior to 5.13. 
+On Tue, Feb 15, 2022 at 7:37 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Tzvetomir Stoyanov reported an issue with using macro
+> perf_cpu_map__for_each_cpu using private perf_cpu object.
+>
+> The issue is caused by recent change that wrapped cpu in struct
+> perf_cpu to distinguish it from cpu indexes. We need to make
+> struct perf_cpu public.
+>
+> Adding simple test for using perf_cpu_map__for_each_cpu
+> macro.
+>
+> Fixes: 6d18804b963b ("perf cpumap: Give CPUs their own type")
+> Reported-by: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 
-Are you sure both of these issues were introduced by 0cecca9d03c?  I'm
-surprised that the get_xsave_addr() issue is not older.
+Acked-by: Ian Rogers <irogers@google.com>
 
-Should this be two patches?
+Thanks,
+Ian
 
-> The first is that when eagerly switching PKRU we check that current
-
-Don't forget to write in imperative mood.  No "we's", please.
-
-https://www.kernel.org/doc/html/latest/process/maintainer-tip.html
-
-This goes for changelogs and comments too.
-
-> is not a kernel thread as kernel threads will never use PKRU. It's
-> possible that this_cpu_read_stable() on current_task (ie.
-> get_current()) is returning an old cached value. By forcing the read
-> with this_cpu_read() the correct task is used. Without this it's
-> possible when switching from a kernel thread to a userspace thread
-> that we'll still observe the PF_KTHREAD flag and never restore the
-> PKRU. And as a result this issue only occurs when switching from a
-> kernel thread to a userspace thread, switching from a non kernel
-> thread works perfectly fine because all we consider in that situation
-> is the flags from some other non kernel task and the next fpu is
-> passed in to switch_fpu_finish().
-
-It makes *sense* that there would be a place in the context switch code
-where 'current' is wonky, but I never realized this.  This seems really
-fragile, but *also* trivially detectable.
-
-Is the PKRU code really the only code to use 'current' in a buggy way
-like this?
-
-> The second issue is when using write_pkru() we only write to the
-> xstate when the feature bit is set because get_xsave_addr() returns
-> NULL when the feature bit is not set. This is problematic as the CPU
-> is free to clear the feature bit when it observes the xstate in the
-> init state, this behavior seems to be documented a few places throughout
-> the kernel. If the bit was cleared then in write_pkru() we would happily
-> write to PKRU without ever updating the xstate, and the FPU restore on
-> return to userspace would load the old value agian.
-
-
-						^ again
-
-It's probably worth noting that the AMD init tracker is a lot more
-aggressive than Intel's.  On Intel, I think XRSTOR is the only way to
-get back to the init state.  You're obviously hitting this on AMD.
-
-It's also *very* unlikely that PKRU gets back to a value of 0.  I think
-we added a selftest for this case in later kernels.
-
-That helps explain why this bug hung around for so long.
-
-> diff --git a/arch/x86/include/asm/fpu/internal.h b/arch/x86/include/asm/fpu/internal.h
-> index 03b3de491b5e..540bda5bdd28 100644
-> --- a/arch/x86/include/asm/fpu/internal.h
-> +++ b/arch/x86/include/asm/fpu/internal.h
-> @@ -598,7 +598,7 @@ static inline void switch_fpu_finish(struct fpu *new_fpu)
->  	 * PKRU state is switched eagerly because it needs to be valid before we
->  	 * return to userland e.g. for a copy_to_user() operation.
->  	 */
-> -	if (!(current->flags & PF_KTHREAD)) {
-> +	if (!(this_cpu_read(current_task)->flags & PF_KTHREAD)) {
-
-This really deserves a specific comment.
-
->  		/*
->  		 * If the PKRU bit in xsave.header.xfeatures is not set,
->  		 * then the PKRU component was in init state, which means
-> diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-> index 9e71bf86d8d0..aa381b530de0 100644
-> --- a/arch/x86/include/asm/pgtable.h
-> +++ b/arch/x86/include/asm/pgtable.h
-> @@ -140,16 +140,22 @@ static inline void write_pkru(u32 pkru)
->  	if (!boot_cpu_has(X86_FEATURE_OSPKE))
->  		return;
->  
-> -	pk = get_xsave_addr(&current->thread.fpu.state.xsave, XFEATURE_PKRU);
+> ---
+>  tools/lib/perf/include/internal/cpumap.h |  6 +-----
+>  tools/lib/perf/include/perf/cpumap.h     |  5 +++++
+>  tools/lib/perf/libperf.map               |  1 +
+>  tools/lib/perf/tests/test-cpumap.c       | 11 +++++++++++
+>  4 files changed, 18 insertions(+), 5 deletions(-)
+>
+> diff --git a/tools/lib/perf/include/internal/cpumap.h b/tools/lib/perf/include/internal/cpumap.h
+> index 581f9ffb4237..1973a18c096b 100644
+> --- a/tools/lib/perf/include/internal/cpumap.h
+> +++ b/tools/lib/perf/include/internal/cpumap.h
+> @@ -3,11 +3,7 @@
+>  #define __LIBPERF_INTERNAL_CPUMAP_H
+>
+>  #include <linux/refcount.h>
 > -
->  	/*
->  	 * The PKRU value in xstate needs to be in sync with the value that is
->  	 * written to the CPU. The FPU restore on return to userland would
->  	 * otherwise load the previous value again.
->  	 */
->  	fpregs_lock();
-> -	if (pk)
-> -		pk->pkru = pkru;
-> +	/*
-> +	 * The CPU is free to clear the feature bit when the xstate is in the
-> +	 * init state. For this reason, we need to make sure the feature bit is
-> +	 * reset when we're explicitly writing to pkru. If we did not then we
-> +	 * would write to pkru and it would not be saved on a context switch.
-> +	 */
-> +	current->thread.fpu.state.xsave.header.xfeatures |= XFEATURE_MASK_PKRU;
-
-I don't think we need to describe how the init optimization works again.
- I'm also not sure it's worth mentioning context switches here.  It's a
-wider problem than that.  Maybe:
-
-	/*
-	 * All fpregs will be XRSTOR'd from this buffer before returning
-	 * to userspace.  Ensure that XRSTOR does not init PKRU and that
-	 * get_xsave_addr() will work.
-	 */
-
-> +	pk = get_xsave_addr(&current->thread.fpu.state.xsave, XFEATURE_PKRU);
-> +	BUG_ON(!pk);
-
-A BUG_ON() a line before a NULL pointer dereference doesn't tend to do
-much good.
-
-> +	pk->pkru = pkru;
->  	__write_pkru(pkru);
->  	fpregs_unlock();
+> -/** A wrapper around a CPU to avoid confusion with the perf_cpu_map's map's indices. */
+> -struct perf_cpu {
+> -       int cpu;
+> -};
+> +#include <perf/cpumap.h>
+>
+>  /**
+>   * A sized, reference counted, sorted array of integers representing CPU
+> diff --git a/tools/lib/perf/include/perf/cpumap.h b/tools/lib/perf/include/perf/cpumap.h
+> index 15b8faafd615..4a2edbdb5e2b 100644
+> --- a/tools/lib/perf/include/perf/cpumap.h
+> +++ b/tools/lib/perf/include/perf/cpumap.h
+> @@ -7,6 +7,11 @@
+>  #include <stdio.h>
+>  #include <stdbool.h>
+>
+> +/** A wrapper around a CPU to avoid confusion with the perf_cpu_map's map's indices. */
+> +struct perf_cpu {
+> +       int cpu;
+> +};
+> +
+>  LIBPERF_API struct perf_cpu_map *perf_cpu_map__dummy_new(void);
+>  LIBPERF_API struct perf_cpu_map *perf_cpu_map__default_new(void);
+>  LIBPERF_API struct perf_cpu_map *perf_cpu_map__new(const char *cpu_list);
+> diff --git a/tools/lib/perf/libperf.map b/tools/lib/perf/libperf.map
+> index 93696affda2e..6fa0d651576b 100644
+> --- a/tools/lib/perf/libperf.map
+> +++ b/tools/lib/perf/libperf.map
+> @@ -2,6 +2,7 @@ LIBPERF_0.0.1 {
+>         global:
+>                 libperf_init;
+>                 perf_cpu_map__dummy_new;
+> +               perf_cpu_map__default_new;
+>                 perf_cpu_map__get;
+>                 perf_cpu_map__put;
+>                 perf_cpu_map__new;
+> diff --git a/tools/lib/perf/tests/test-cpumap.c b/tools/lib/perf/tests/test-cpumap.c
+> index d39378eaf897..87b0510a556f 100644
+> --- a/tools/lib/perf/tests/test-cpumap.c
+> +++ b/tools/lib/perf/tests/test-cpumap.c
+> @@ -14,6 +14,8 @@ static int libperf_print(enum libperf_print_level level,
+>  int test_cpumap(int argc, char **argv)
+>  {
+>         struct perf_cpu_map *cpus;
+> +       struct perf_cpu cpu;
+> +       int idx;
+>
+>         __T_START;
+>
+> @@ -27,6 +29,15 @@ int test_cpumap(int argc, char **argv)
+>         perf_cpu_map__put(cpus);
+>         perf_cpu_map__put(cpus);
+>
+> +       cpus = perf_cpu_map__default_new();
+> +       if (!cpus)
+> +               return -1;
+> +
+> +       perf_cpu_map__for_each_cpu(cpu, idx, cpus)
+> +               __T("wrong cpu number", cpu.cpu != -1);
+> +
+> +       perf_cpu_map__put(cpus);
+> +
+>         __T_END;
+>         return tests_failed == 0 ? 0 : -1;
 >  }
-
+> --
+> 2.35.1
+>
