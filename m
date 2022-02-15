@@ -2,184 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF313C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D54FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236602AbiBOMmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:42:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51606 "EHLO
+        id S237806AbiBOMmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:42:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237814AbiBOMmI (ORCPT
+        with ESMTP id S237807AbiBOMmI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 07:42:08 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599EF14098;
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E300140D1;
         Tue, 15 Feb 2022 04:41:43 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Jyggs1Hf4z9sSM;
-        Tue, 15 Feb 2022 13:41:29 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id k82_Xi-BHsDE; Tue, 15 Feb 2022 13:41:29 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jyggn2w58z9sRw;
-        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 525278B763;
-        Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 4q9AZT4zcRCb; Tue, 15 Feb 2022 13:41:25 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.174])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7C9AE8B77C;
-        Tue, 15 Feb 2022 13:41:24 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21FCfHYB080637
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 13:41:17 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21FCfHdL080636;
-        Tue, 15 Feb 2022 13:41:17 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH v4 08/13] asm-generic: Define 'func_desc_t' to commonly describe function descriptors
-Date:   Tue, 15 Feb 2022 13:41:03 +0100
-Message-Id: <f1f91b142b3c1082bdc1586ce71c9bac1e75213c.1644928018.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1644928018.git.christophe.leroy@csgroup.eu>
-References: <cover.1644928018.git.christophe.leroy@csgroup.eu>
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jygg61fqbz67y8P;
+        Tue, 15 Feb 2022 20:40:50 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Feb 2022 13:41:41 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kpsingh@kernel.org>,
+        <revest@chromium.org>
+CC:     <linux-integrity@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v2 4/6] selftests/bpf: Add test for bpf_ima_file_hash()
+Date:   Tue, 15 Feb 2022 13:40:40 +0100
+Message-ID: <20220215124042.186506-5-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220215124042.186506-1-roberto.sassu@huawei.com>
+References: <20220215124042.186506-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1644928860; l=3528; s=20211009; h=from:subject:message-id; bh=f/Kz0vs7DzOIFvt0GMalWSxwhMlMtC2TwHZGNFAW5xk=; b=pjXGNgU4tJTpHtaKVo8K7qLnoS/WBn+e6Gl++nh7f3v0UMDFbRud25AzSQcY/w+ChnJQMG5svT/C IDhKL0suBodK3xIXENbiPQzeZ/hrkMGbkXNHt+ZhHeD6a9PcAk9l
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have three architectures using function descriptors, each with its
-own type and name.
+Modify the existing IMA test to call bpf_ima_file_hash() and update the
+expected result accordingly.
 
-Add a common typedef that can be used in generic code.
-
-Also add a stub typedef for architecture without function descriptors,
-to avoid a forest of #ifdefs.
-
-It replaces the similar 'func_desc_t' previously defined in
-arch/powerpc/kernel/module_64.c
-
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Acked-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- arch/ia64/include/asm/sections.h    | 3 +++
- arch/parisc/include/asm/sections.h  | 5 +++++
- arch/powerpc/include/asm/sections.h | 4 ++++
- arch/powerpc/kernel/module_64.c     | 8 --------
- include/asm-generic/sections.h      | 5 +++++
- 5 files changed, 17 insertions(+), 8 deletions(-)
+ .../selftests/bpf/prog_tests/test_ima.c       | 29 ++++++++++++++++---
+ tools/testing/selftests/bpf/progs/ima.c       | 10 +++++--
+ 2 files changed, 33 insertions(+), 6 deletions(-)
 
-diff --git a/arch/ia64/include/asm/sections.h b/arch/ia64/include/asm/sections.h
-index 2460d365a057..3abe0562b01a 100644
---- a/arch/ia64/include/asm/sections.h
-+++ b/arch/ia64/include/asm/sections.h
-@@ -9,6 +9,9 @@
+diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
+index 97d8a6f84f4a..62bf0e830453 100644
+--- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
++++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
+@@ -13,9 +13,10 @@
  
- #include <linux/elf.h>
- #include <linux/uaccess.h>
-+
-+typedef struct fdesc func_desc_t;
-+
- #include <asm-generic/sections.h>
+ #include "ima.skel.h"
  
- extern char __phys_per_cpu_start[];
-diff --git a/arch/parisc/include/asm/sections.h b/arch/parisc/include/asm/sections.h
-index c8092e4d94de..ace1d4047a0b 100644
---- a/arch/parisc/include/asm/sections.h
-+++ b/arch/parisc/include/asm/sections.h
-@@ -2,6 +2,11 @@
- #ifndef _PARISC_SECTIONS_H
- #define _PARISC_SECTIONS_H
- 
-+#ifdef CONFIG_HAVE_FUNCTION_DESCRIPTORS
-+#include <asm/elf.h>
-+typedef Elf64_Fdesc func_desc_t;
-+#endif
-+
- /* nothing to see, move along */
- #include <asm-generic/sections.h>
- 
-diff --git a/arch/powerpc/include/asm/sections.h b/arch/powerpc/include/asm/sections.h
-index 7728a7a146c3..fddfb3937868 100644
---- a/arch/powerpc/include/asm/sections.h
-+++ b/arch/powerpc/include/asm/sections.h
-@@ -6,6 +6,10 @@
- #include <linux/elf.h>
- #include <linux/uaccess.h>
- 
-+#ifdef CONFIG_HAVE_FUNCTION_DESCRIPTORS
-+typedef struct func_desc func_desc_t;
-+#endif
-+
- #include <asm-generic/sections.h>
- 
- extern char __head_end[];
-diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module_64.c
-index ff93ef4cb5a2..9abc0e783e36 100644
---- a/arch/powerpc/kernel/module_64.c
-+++ b/arch/powerpc/kernel/module_64.c
-@@ -32,11 +32,6 @@
- 
- #ifdef PPC64_ELF_ABI_v2
- 
--/* An address is simply the address of the function. */
--typedef struct {
--	unsigned long addr;
--} func_desc_t;
--
- static func_desc_t func_desc(unsigned long addr)
+-static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
++static int run_measured_process(const char *measured_dir, u32 *monitored_pid,
++				bool *use_ima_file_hash)
  {
- 	func_desc_t desc = {
-@@ -61,9 +56,6 @@ static unsigned int local_entry_offset(const Elf64_Sym *sym)
- }
- #else
+-	int child_pid, child_status;
++	int err, child_pid, child_status;
  
--/* An address is address of the OPD entry, which contains address of fn. */
--typedef struct func_desc func_desc_t;
--
- static func_desc_t func_desc(unsigned long addr)
- {
- 	return *(struct func_desc *)addr;
-diff --git a/include/asm-generic/sections.h b/include/asm-generic/sections.h
-index 3ef83e1aebee..bbf97502470c 100644
---- a/include/asm-generic/sections.h
-+++ b/include/asm-generic/sections.h
-@@ -63,6 +63,11 @@ extern __visible const void __nosave_begin, __nosave_end;
- #else
- #define dereference_function_descriptor(p) ((void *)(p))
- #define dereference_kernel_function_descriptor(p) ((void *)(p))
+ 	child_pid = fork();
+ 	if (child_pid == 0) {
+@@ -24,6 +25,21 @@ static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
+ 		       NULL);
+ 		exit(errno);
+ 
++	} else if (child_pid > 0) {
++		waitpid(child_pid, &child_status, 0);
++		err = WEXITSTATUS(child_status);
++		if (err)
++			return err;
++	}
 +
-+/* An address is simply the address of the function. */
-+typedef struct {
-+	unsigned long addr;
-+} func_desc_t;
- #endif
++	child_pid = fork();
++	if (child_pid == 0) {
++		*monitored_pid = getpid();
++		*use_ima_file_hash = true;
++		execlp("./ima_setup.sh", "./ima_setup.sh", "run", measured_dir,
++		       NULL);
++		exit(errno);
++
+ 	} else if (child_pid > 0) {
+ 		waitpid(child_pid, &child_status, 0);
+ 		return WEXITSTATUS(child_status);
+@@ -72,12 +88,17 @@ void test_test_ima(void)
+ 	if (CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno))
+ 		goto close_clean;
  
- static inline bool have_function_descriptors(void)
+-	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
++	err = run_measured_process(measured_dir, &skel->bss->monitored_pid,
++				   &skel->bss->use_ima_file_hash);
+ 	if (CHECK(err, "run_measured_process", "err = %d\n", err))
+ 		goto close_clean;
+ 
+ 	err = ring_buffer__consume(ringbuf);
+-	ASSERT_EQ(err, 1, "num_samples_or_err");
++	/*
++	 * 1 sample with use_ima_file_hash = false
++	 * 2 samples with use_ima_file_hash = true (./ima_setup.sh, /bin/true)
++	 */
++	ASSERT_EQ(err, 3, "num_samples_or_err");
+ 	ASSERT_NEQ(ima_hash_from_bpf, 0, "ima_hash");
+ 
+ close_clean:
+diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
+index 96060ff4ffc6..9bb63f96cfc0 100644
+--- a/tools/testing/selftests/bpf/progs/ima.c
++++ b/tools/testing/selftests/bpf/progs/ima.c
+@@ -18,6 +18,8 @@ struct {
+ 
+ char _license[] SEC("license") = "GPL";
+ 
++bool use_ima_file_hash;
++
+ SEC("lsm.s/bprm_committed_creds")
+ void BPF_PROG(ima, struct linux_binprm *bprm)
+ {
+@@ -28,8 +30,12 @@ void BPF_PROG(ima, struct linux_binprm *bprm)
+ 
+ 	pid = bpf_get_current_pid_tgid() >> 32;
+ 	if (pid == monitored_pid) {
+-		ret = bpf_ima_inode_hash(bprm->file->f_inode, &ima_hash,
+-					 sizeof(ima_hash));
++		if (!use_ima_file_hash)
++			ret = bpf_ima_inode_hash(bprm->file->f_inode, &ima_hash,
++						 sizeof(ima_hash));
++		else
++			ret = bpf_ima_file_hash(bprm->file, &ima_hash,
++						sizeof(ima_hash));
+ 		if (ret < 0 || ima_hash == 0)
+ 			return;
+ 
 -- 
-2.34.1
+2.32.0
 
