@@ -2,90 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4074C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C656C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239153AbiBOPom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:44:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43494 "EHLO
+        id S240875AbiBOPpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:45:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240315AbiBOPoS (ORCPT
+        with ESMTP id S240323AbiBOPov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:44:18 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AC6EA363;
-        Tue, 15 Feb 2022 07:38:31 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id p9so22202235ejd.6;
-        Tue, 15 Feb 2022 07:38:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4c4uLg+6xK62uK/uIKxvl/o7vQn8X9pm3rRoIxcYStc=;
-        b=hVRSoNqL5G26KGJupiMcqpIIJ6KdnEX2br5Ah4u+93CBcx13OUAYoHcTpp+gHXlTtZ
-         Pwp+IBPNf5Asgg2RQmCkRE7/lkz9CKKIaLCfpfYqMWpxk+zR7r6YGKl1jaQg8OpEj7ro
-         Hc9uS0htjha3XdJfKpvdXvF4M4P54Z+y1ymAPxsTq68GdiD/1R9Gf8IU2fc37Hm5fs0W
-         QUK7wqnbwk6FMrL/Slbkr85sGi0OIrcPgmxui55rTRdDso9F9WrOGZvrUeOZWw5d5OrF
-         NvA0iYYv4uRWI9SxzRheHl6iNMzJ2Dl2G3KVOvBA+ltg9yN7vbN1az2T7ZDOtglfYidf
-         6Y0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4c4uLg+6xK62uK/uIKxvl/o7vQn8X9pm3rRoIxcYStc=;
-        b=E7cQR337+T/dwSlios1cXy/HrOEu6K8t4vw2qKRnGY4rnrRt+7avOyfnFSxPLVJ2fN
-         NqJ/PLopN/Ag9Ai6CHYoPVK/ZpTByytLsCFoUf2XpjngEgpbOCurD+IuhNptnnRWNCJu
-         u/wJdCzK4D84dlgmRtxobmtbOuf5pRDcLu+L9x7qM0BTpnbp+quz/Np3b+3zfbHnTC9Z
-         uEeTLE9WP0CncfWfvIj0DjGNbUf3eGuNyErA1E70+KgKuJ3STB49yhHf9Dp/TAjBnEMf
-         a0M15DoXqlJIXjaGCLLbB12UH5f/3gY/j3pisTo1izpw1k7EM50IT1CGrwQq8FfBrQHz
-         K/1A==
-X-Gm-Message-State: AOAM5302nncZOJ+DicpCfQ6VEB5iAmjaKDS3FxdVZrI3MGrkak842EIz
-        Twk/vPhoI8PDAG/MR+4zVASmFqNpi4lQUW0VU1o=
-X-Google-Smtp-Source: ABdhPJxQGBopSj3C6s+jqyN0nrwN12siEVw8h8G+/ijRyT5ogzTJ7KsTO9W46tWw5cDOyfkQckGvDJf4RDiA7ZGISGM=
-X-Received: by 2002:a17:906:99c5:: with SMTP id s5mr3466341ejn.497.1644939510133;
- Tue, 15 Feb 2022 07:38:30 -0800 (PST)
+        Tue, 15 Feb 2022 10:44:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04374108BF1;
+        Tue, 15 Feb 2022 07:39:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FCF461719;
+        Tue, 15 Feb 2022 15:39:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DC15C340ED;
+        Tue, 15 Feb 2022 15:39:09 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fKlwMQmG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644939546;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MR8uETDJg9Xeaqk+LtV2lrW0K+3vcdxP9bkf45PeWiI=;
+        b=fKlwMQmGGl+XsuXaJRJANlEQmKW31rbgKKnwOwuHDVYuAgsiz75OzV6KyNYigUqakpATd+
+        lrKV0EL0geEgSp2Iq13ZZFv3iyCO+axNLOZtKL6VfJRlHJOthZNR0OUCsth1F82w/glyFa
+        VGZJ6UBhjWAcHfat12nc6HCCT987kgg=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 840e6152 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 15 Feb 2022 15:39:06 +0000 (UTC)
+Received: by mail-yb1-f171.google.com with SMTP id c6so57273205ybk.3;
+        Tue, 15 Feb 2022 07:39:05 -0800 (PST)
+X-Gm-Message-State: AOAM53206orcEkIrcBafJxYIYkg6F8QbOvOpOjloJcQjqERCVqQsFlvL
+        qUCJJc3dnR6GcGnJDiNlLvQI2yX7a1G5iKiBab4=
+X-Google-Smtp-Source: ABdhPJx6EkevGOE04tDjGHfHD2+6REo3QOFWHcWoX1VRu7eS0/CeK2AEid1T7UKuH9ZZD7sSfy+PGSjfiEvFPJW00fQ=
+X-Received: by 2002:a25:ba49:: with SMTP id z9mr4233199ybj.32.1644939544595;
+ Tue, 15 Feb 2022 07:39:04 -0800 (PST)
 MIME-Version: 1.0
-References: <20220209162607.1118325-1-maz@kernel.org> <CACRpkdYfrAexUhFV6e86QW+GSc3hM=38VNucKLhPppJ2ZdQ7fA@mail.gmail.com>
-In-Reply-To: <CACRpkdYfrAexUhFV6e86QW+GSc3hM=38VNucKLhPppJ2ZdQ7fA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 15 Feb 2022 17:37:01 +0200
-Message-ID: <CAHp75VdmKqViM5393w=frbX77te6X-VnMe5+VZwxY4PBw12Pdw@mail.gmail.com>
-Subject: Re: [PATCH 00/10] irqchip: Prevent drivers abusing irq_chip::name
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Marc Zyngier <maz@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Android Kernel Team <kernel-team@android.com>
+References: <CAHmME9rkTP7bJBDvnejQ6BGPu13qpHKbtnjt3h33NEaTnYLirg@mail.gmail.com>
+In-Reply-To: <CAHmME9rkTP7bJBDvnejQ6BGPu13qpHKbtnjt3h33NEaTnYLirg@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 15 Feb 2022 16:38:53 +0100
+X-Gmail-Original-Message-ID: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
+Message-ID: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
+Subject: ath9k should perhaps use hw_random api?
+To:     miaoqing@codeaurora.org, Jason Cooper <jason@lakedaemon.net>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 8:31 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Wed, Feb 9, 2022 at 5:26 PM Marc Zyngier <maz@kernel.org> wrote:
+Hi Ath9k Maintainers,
 
-...
+I'm emailing you because I've noticed that ath9k's rng.c is the *only*
+driver in the whole of the tree that calls
+add_hwgenerator_randomness() directly, rather than going through
+Herbert's hw_random API, as every single other hardware RNG does.
 
-> Since ... I am mostly
-> playing with a baby during the daytime
+I'm wondering if you'd consider converting your driver into something
+suitable for the hw_random API (in drivers/char/hw_random/), rather
+than adhoc rolling your own ath9k rng kthread. Is this something
+you're actively maintaining and would be interested in doing?
 
-A bit of a side topic, since I need to send a PR for fixes before my
-vacation starts tomorrow, should I Cc my PR to that Linus as well, so
-he can accept it?
-It will contain two one-liner ID patches to pin control Intel drivers
-and won't conflict with anything (as far as I am aware and know).
-
--- 
-With Best Regards,
-Andy Shevchenko
+Regards,
+Jason
