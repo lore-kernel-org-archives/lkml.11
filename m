@@ -2,142 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC06DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:11:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235522AbiBOJLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:11:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52564 "EHLO
+        id S235671AbiBOJLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:11:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbiBOJLL (ORCPT
+        with ESMTP id S229667AbiBOJLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:11:11 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811ED13DDB;
-        Tue, 15 Feb 2022 01:11:02 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 079911F433FC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644916261;
-        bh=tYSh/6XrWTeegQd7V8dnLWsujFi8WEje0R7EZEvEbzE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=BVVMirL2QvYO1R0vzvudtTGRUSR8n9khoyveEfNxG9dxkA6wW5OQNaqozVMRtONjJ
-         QgrdK7YfsM5XvB8vsbAI9duQTqAdymREGBHABXI5zW7q2sKlVTn0CSuMAUaHlVpBtc
-         sWZXuiLOIUvDCVaqaBUqN+wD1dcSwUbzFJtzlz0WgueyZlul3UmF4077teU4z8B35t
-         Zsy11yX5V3J0dkXVhgNOpGrItX6cz1ooV6aTWQxwSzSQLtF+0rnxeSxUCoggZX25UH
-         Mi5gXodwpJAolDY/tvM8H7dcFq/kXuBFpRl86ghxFpmlSbexqHN0gSCji024KBgn1E
-         cOkjL4QuQJYNg==
-Message-ID: <9bbc6f3c-7fe6-0f1d-e946-b751668949fb@collabora.com>
-Date:   Tue, 15 Feb 2022 10:10:57 +0100
+        Tue, 15 Feb 2022 04:11:14 -0500
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0645913DD4;
+        Tue, 15 Feb 2022 01:11:04 -0800 (PST)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id CA08436D; Tue, 15 Feb 2022 10:11:02 +0100 (CET)
+Date:   Tue, 15 Feb 2022 10:11:01 +0100
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Will Deacon <will@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 5/8] iommu/amd: Use iommu_attach/detach_device()
+Message-ID: <YgtuJQhY8SNlv9/6@8bytes.org>
+References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
+ <20220106022053.2406748-6-baolu.lu@linux.intel.com>
+ <20220106143345.GC2328285@nvidia.com>
+ <Ygo8iek2CwtPp2hj@8bytes.org>
+ <20220214131544.GX4160@nvidia.com>
+ <Ygpb6CxmTdUHiN50@8bytes.org>
+ <20220214140236.GC929467@nvidia.com>
+ <YgplyyjofwlM+1tc@8bytes.org>
+ <20220214150059.GE4160@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v22 5/7] soc: mediatek: SVS: add debug commands
-Content-Language: en-US
-To:     Roger Lu <roger.lu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Enric Balletbo Serra <eballetbo@gmail.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Nicolas Boichat <drinkcat@google.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Fan Chen <fan.chen@mediatek.com>,
-        HenryC Chen <HenryC.Chen@mediatek.com>,
-        Xiaoqing Liu <Xiaoqing.Liu@mediatek.com>,
-        Charles Yang <Charles.Yang@mediatek.com>,
-        Angus Lin <Angus.Lin@mediatek.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nishanth Menon <nm@ti.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Guenter Roeck <linux@roeck-us.net>
-References: <20220127033956.24585-1-roger.lu@mediatek.com>
- <20220127033956.24585-6-roger.lu@mediatek.com>
- <0846872b-03da-ee5d-6a9d-e6c9fa754191@collabora.com>
- <eb4a903b90020e8220768e9bb674b9de477006e3.camel@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <eb4a903b90020e8220768e9bb674b9de477006e3.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214150059.GE4160@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 15/02/22 10:08, Roger Lu ha scritto:
-> Hi AngeloGioacchino,
+On Mon, Feb 14, 2022 at 11:00:59AM -0400, Jason Gunthorpe wrote:
+> On Mon, Feb 14, 2022 at 03:23:07PM +0100, Joerg Roedel wrote:
 > 
-> Excuse me for the late reply.
+> > Device drivers calling into iommu_attach_device() is seldom a good
+> > idea.  In this case the sound device has some generic hardware
+> > interface so that an existing sound driver can be re-used. Making this
+> > driver call iommu-specific functions for some devices is something hard
+> > to justify.
+> 
+> Er, so this is transparent to the generic sound device? I guess
+> something fixed up the dma_api on that device to keep working?
 
-Hi Roger,
-no worries about that.
+Right, this is completly transparent to the sound device. The IOMMU code
+will not set dma_ops on the device because it uses a direct mapping and
+so the standard implementation will be used.
 
-> 
-> On Mon, 2022-01-31 at 12:11 +0100, AngeloGioacchino Del Regno wrote:
->> Il 27/01/22 04:39, Roger Lu ha scritto:
->>> The purpose of SVS is to help find the suitable voltages
->>> for DVFS. Therefore, if SVS bank voltages are concerned
->>> to be wrong, we can adjust SVS bank voltages by this patch.
->>>
->>> Signed-off-by: Roger Lu <roger.lu@mediatek.com>
->>
->>
->> Hello Roger,
->> I was thinking about what this patch is adding... and I have a few
->> considerations.
->>
->> It's nice to have a debugging mechanism to read the status and dump registers,
->> as
->> that's very helpful when doing heavy debugging of the IP... but adding the
->> possibility to write a voltage offset may be very dangerous: think about the
->> case
->> in which, either for misconfiguration, or for any other reason, the debugfs
->> entry
->> that allows writing voffset becomes user-writable, or a user writes an
->> impossibly
->> high voffset.
->> In case a very low (negative) voffset is entered, the platform would crash
->> (denial
->> of service); if a very high voffset is entered, hardware damage may occur.
->>
->> For this reason, there are two proposals:
->> 1. If you want to keep the debugfs voffset write, please constrain the
->> permissible
->>      voffset to an acceptable range that at least makes it unlikely to damage
->> the HW;
->>      Moreover, since voffset write is a feature that would be used in very
->> limited
->>      debugging cases, I think that this should be implemented over a build-time
->>      configuration barrier... something like CONFIG_MTK_SVS_DEBUG_ALLOW_WRITE,
->> or
->>      similar;
->> 2. Since it's very unlikely for someone to really play that much with a
->> voltage
->>      offset during runtime, and since this looks like something very machine
->> specific
->>      (perhaps addressing board-specific quirks?), I would suggest to add this
->> as a
->>      device-tree parameter instead, such as "mediatek,svs-voffset", as it is
->> indeed
->>      possible to specify both positive or negative values in DT.
->>
->> I would prefer proposal 2, as it looks generally cleaner and way less risky.
-> 
-> Thanks for raising the considerations and give these great suggestions for us to
-> think about. Since these voffset read/write commands are used seldomly, we
-> decide to remove them for better system security.
-> 
+> But, then, the requirement is that nobody is using the dma API when we
+> make this change?
 
-Thank you for this ack, very much appreciated.
-Eager to see v23!
+That is the tricky part. DMA-API keeps working after the change is made,
+because the new domain is also direct mapped. The new domain just has
+the ability to assign host page-tables to device PASIDs, so that DMA
+requests with a PASID TLP will be remapped.
+
+It was actually a requirement for this code that when it jumps in, the
+DMA-API mappings stay live. And the reason a direct mapping is used at
+all is that the page-table walker of the IOMMU is a two-dimensional
+walker, which will treat the addresses found in the host page-tables as
+IO-virtual an translates them through the underlying page-table. So to
+use host-pagetables the underlying mapping must be direct mapped.
 
 
->>
->> Regards,
->> Angelo
-> 
+> I don't think it matters how big/small the group is, only that when we
+> change the domain we know everything flowing through the domain is
+> still happy.
+
+Yes, that matters. The group size matters too for DMA-API performance.
+If two devices compete for the same lock in the allocator and/or the
+same cached magazines, things will slow down. That only matters for
+high-throughput devices, but still...
+
+Regards,
+
+	Joerg
 
