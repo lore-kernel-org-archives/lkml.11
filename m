@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6A6C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66DE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240564AbiBOPff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:35:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43804 "EHLO
+        id S237677AbiBOPfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:35:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240622AbiBOPep (ORCPT
+        with ESMTP id S240524AbiBOPfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:34:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7213AC084E;
-        Tue, 15 Feb 2022 07:30:43 -0800 (PST)
+        Tue, 15 Feb 2022 10:35:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25EABC086E;
+        Tue, 15 Feb 2022 07:30:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18F2EB81A9A;
-        Tue, 15 Feb 2022 15:30:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8FF8C340F1;
-        Tue, 15 Feb 2022 15:30:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A579061532;
+        Tue, 15 Feb 2022 15:30:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1B68C340F1;
+        Tue, 15 Feb 2022 15:30:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939041;
-        bh=gabu0dPFIjPq8dl7f+M37wwIEpMdISwwmTxGID7I7xw=;
+        s=k20201202; t=1644939050;
+        bh=ymV2XseOhFjRwS9+FDwFbtdim0AxXpdLshMresWy9zs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D09rC0mdWSCd0uYiYwZ5F6sLYl8oZ3y5kgaia+K2vwPlmcZTrlMD/lDbDcjFKiQ+k
-         g0bMi2OeawU2IP+65X62jWZKhX7syngYL+Ai6EpZ9kJvAHDfhW5daaG94ghTKNDhPH
-         R+RW/jmhiFrPVf38oXnDIA56Oa/4ok2KJOzuHk8uPuljgcpjWSf1HeqODBGGI0NlBm
-         EBK/KUR1j9BqxxNeA1nk1BbEH32io/4PokCMgyNVyPibbs20/s8b9VBTNALpt2EAFS
-         gUupqSzsSW+WxLQzDUcMKgt9uV7d6Xctr7XAP2ObBIPVGZY9tYZODHoBqJIT2GDT3e
-         l12mwxJRkUMew==
+        b=aPsZX/xiz2lgk2lUlgpRHRx15Ge9ep3x32G0ZzfCiuf608mmsj9LGWzSolOTrxnnm
+         J7KCj8wSDnSEQGd65eLTiGSRs36tjys4aGQgnhQu32ZUackRdjkK06O5FI6fVD1gqo
+         39SCHWcbAl7qkqzTCnoVsv5lHlbF/oYA6bLFv6uQyZ2L1ASripvKZrNz4PonVDu8PB
+         BrUNzx+sDuHlEHF/XPP3BxkAS5V+7h1csDMuIyyqKY/o6rOfh9z0C/J2Le5SRYkQ5f
+         yUE5YbGFjnW5PIx7B4xegtNSwuku2gebKdT1/G/6xEQWpGII0ZoFU7bYZ0bkQ/yIgc
+         akRLvG3Cvg5Zg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ye Guojin <ye.guojin@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 02/17] ARM: OMAP2+: adjust the location of put_device() call in omapdss_init_of
-Date:   Tue, 15 Feb 2022 10:30:22 -0500
-Message-Id: <20220215153037.581579-2-sashal@kernel.org>
+Cc:     Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 07/17] arm64: dts: meson-g12: add ATF BL32 reserved-memory region
+Date:   Tue, 15 Feb 2022 10:30:27 -0500
+Message-Id: <20220215153037.581579-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215153037.581579-1-sashal@kernel.org>
 References: <20220215153037.581579-1-sashal@kernel.org>
@@ -52,40 +54,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Guojin <ye.guojin@zte.com.cn>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-[ Upstream commit 34596ba380b03d181e24efd50e2f21045bde3696 ]
+[ Upstream commit 08982a1b3aa2611c9c711d24825c9002d28536f4 ]
 
-This was found by coccicheck:
-./arch/arm/mach-omap2/display.c, 272, 1-7, ERROR missing put_device;
-call of_find_device_by_node on line 258, but without a corresponding
-object release within this function.
+Add an additional reserved memory region for the BL32 trusted firmware
+present in many devices that boot from Amlogic vendor u-boot.
 
-Move the put_device() call before the if judgment.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-3-christianshewitt@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/display.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
-index 46012ca812f48..1bd64f6ba8cfe 100644
---- a/arch/arm/mach-omap2/display.c
-+++ b/arch/arm/mach-omap2/display.c
-@@ -263,9 +263,9 @@ static int __init omapdss_init_of(void)
- 	}
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 9533c85fb0a30..d2d255a988a81 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -76,6 +76,12 @@ secmon_reserved: secmon@5000000 {
+ 			no-map;
+ 		};
  
- 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
-+	put_device(&pdev->dev);
- 	if (r) {
- 		pr_err("Unable to populate DSS submodule devices\n");
--		put_device(&pdev->dev);
- 		return r;
- 	}
- 
++		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
++		secmon_reserved_bl32: secmon@5300000 {
++			reg = <0x0 0x05300000 0x0 0x2000000>;
++			no-map;
++		};
++
+ 		linux,cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
 -- 
 2.34.1
 
