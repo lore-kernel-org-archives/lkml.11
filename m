@@ -2,140 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 396B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244458AbiBOViY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 16:38:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36770 "EHLO
+        id S243424AbiBOVmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 16:42:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234203AbiBOViV (ORCPT
+        with ESMTP id S232789AbiBOVme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 16:38:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70886B93B2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:38:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644961089;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=lw6VFDNDin3+pbk+tx5AobUrmHH/xqmLZ9mW+ngKQHA=;
-        b=b8jTXvwtJ5+Ua986iowvGdhZcXDa2QIsPJhkWmYNm3waE1tHdVtuuqFEi2uKpbxZ1kf28z
-        YplXuX/b6YemvF9aVDbSv9Dwn1Clay3ERqXJ+fkXedNS8iILG4ZhTE86n1NEt8M8I1H5QG
-        F8mGmHqfiwZMf9BgqyPVy7hPZlY0wB8=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-150-LEVnjWfPML6oJJkjhWTWAQ-1; Tue, 15 Feb 2022 16:38:08 -0500
-X-MC-Unique: LEVnjWfPML6oJJkjhWTWAQ-1
-Received: by mail-oo1-f69.google.com with SMTP id b10-20020a4a340a000000b0031937d5a5efso90576ooa.15
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:38:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lw6VFDNDin3+pbk+tx5AobUrmHH/xqmLZ9mW+ngKQHA=;
-        b=Hj8pc28e4MIh9a+8MjN9aEXEYlY1L5Rcc4F57iDU7INlz+QvET8BP76O2ABzKrhLdd
-         vULLvDRG4P8ZALa5R2T+MaVoHbbBpqnB96M6XpelUkbsWumuprYbuEcIV6ne6rfpa3W+
-         /9r3XyevTdx+5uYspmp3ZzhqwHCDdQDfHD21HCWhBe5klZuLb5k6Bqhpd+kwFuLOKHSu
-         UoYxQG7AdDr0XpytBFy8oY+0GBqWPPlpTtl6zcBuOOlfK+FA/l6SQEvN+fVTZI9mwrFq
-         ++aioXxF0zP4GYEjdwN/ZaHojjXjgUx94gg4L+9cPA6QIvt2lnEV8F6dhOCrZU7857dW
-         5kgQ==
-X-Gm-Message-State: AOAM533VIYRD9xNz7GJjMC0L00q+uVNlOWKMiUJKd48qP6wNeO2sDM5p
-        TuwP9jABsACImlXgP3xs3CPpnLgnrDdkjhlpB6fnDueAeRMGvczJAJXPoUq2te51KNzBhBt1Z6z
-        JNOxrsQcGpTh7e2938I/Vq48u
-X-Received: by 2002:a05:6830:1493:: with SMTP id s19mr397256otq.85.1644961087405;
-        Tue, 15 Feb 2022 13:38:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxHMQprTXozHvAqtiU55fjLcSJcPyW6e11I36Ur5jnj6V1ImozP4x5z3TQW31gX7xF9l32RWg==
-X-Received: by 2002:a05:6830:1493:: with SMTP id s19mr397250otq.85.1644961087159;
-        Tue, 15 Feb 2022 13:38:07 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id u32sm10936990oiw.28.2022.02.15.13.38.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 13:38:06 -0800 (PST)
-From:   trix@redhat.com
-To:     joyce.ooi@intel.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: ethernet: altera: cleanup comments
-Date:   Tue, 15 Feb 2022 13:38:02 -0800
-Message-Id: <20220215213802.3043178-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Tue, 15 Feb 2022 16:42:34 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD5477A98;
+        Tue, 15 Feb 2022 13:42:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644961343; x=1676497343;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=6nOQyQn4qkItz0k8hfiai/vmAMIv8bluxSimBsP+gyI=;
+  b=ErR1zqYS5J44FTU31iPZWJE0u0sfmT1nU5JEZ9CdiGEiYNhMGQXaUN73
+   a4HIV3laGZ/KSvr4HfEP59M8GUr9N8In0MvgyTyZRbxrgz4RhdoUc/XVh
+   0U73vykeknXNxI68QTFSksnqbgEezYZDKGRwCm/WxMuy6dioZTrpuKCHt
+   rSG4tuqFMZg4c9CXv5yB2dTgVES/aD9Kn9wj9Sw5cb9TqEVmEmRNlEgHJ
+   yauJMA+m8rTCcz+COoN770FE8L79Qznk0j52n+tmOl7qmJW/r/gWvlna5
+   Z7YEE/QpRImgBy62Ps3wx3ssDR4bZfdrVARvjZJdHWhwtfSt2DjYxkE1r
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250200652"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="250200652"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 13:42:23 -0800
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="529080814"
+Received: from tngodup-mobl.amr.corp.intel.com (HELO [10.209.32.98]) ([10.209.32.98])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 13:42:23 -0800
+Message-ID: <066c9f4b-b0a3-9343-9db9-1c1c7303da6f@intel.com>
+Date:   Tue, 15 Feb 2022 13:42:19 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Brian Geffon <bgeffon@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Willis Kung <williskung@google.com>,
+        Guenter Roeck <groeck@google.com>,
+        Borislav Petkov <bp@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        "# v4 . 10+" <stable@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <543efc25-9b99-53cd-e305-d8b4d917b64b@intel.com>
+ <20220215192233.8717-1-bgeffon@google.com> <YgwCuGcg6adXAXIz@kroah.com>
+ <CADyq12wByWhsHNOnokrSwCDeEhPdyO6WNJNjpHE1ORgKwwwXgg@mail.gmail.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH stable 5.4,5.10] x86/fpu: Correct pkru/xstate
+ inconsistency
+In-Reply-To: <CADyq12wByWhsHNOnokrSwCDeEhPdyO6WNJNjpHE1ORgKwwwXgg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On 2/15/22 13:32, Brian Geffon wrote:
+>> How was this tested, and what do the maintainers of this subsystem
+>> think?  And will you be around to fix the bugs in this when they are
+>> found?
+> This has been trivial to reproduce, I've used a small repro which I've
+> put here: https://gist.github.com/bgaff/9f8cbfc8dd22e60f9492e4f0aff8f04f
+> , I also was able to reproduce this using the protection_keys self
+> tests on a 11th Gen Core i5-1135G7. 
 
-Replacements:
-queueing to queuing
-trasfer to transfer
-aditional to additional
-adaptor to adapter
-transactino to transaction
+I've got an i7-1165G7, but I'm not seeing any failures on a
+5.11 distro kernel.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/ethernet/altera/altera_sgdma.c    | 2 +-
- drivers/net/ethernet/altera/altera_tse_main.c | 8 ++++----
- 2 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/altera/altera_sgdma.c b/drivers/net/ethernet/altera/altera_sgdma.c
-index db97170da8c7..7f247ccbe6ba 100644
---- a/drivers/net/ethernet/altera/altera_sgdma.c
-+++ b/drivers/net/ethernet/altera/altera_sgdma.c
-@@ -513,7 +513,7 @@ static int sgdma_txbusy(struct altera_tse_private *priv)
- {
- 	int delay = 0;
- 
--	/* if DMA is busy, wait for current transactino to finish */
-+	/* if DMA is busy, wait for current transaction to finish */
- 	while ((csrrd32(priv->tx_dma_csr, sgdma_csroffs(status))
- 		& SGDMA_STSREG_BUSY) && (delay++ < 100))
- 		udelay(1);
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index 993b2fb42961..a3816264c35c 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -72,7 +72,7 @@ MODULE_PARM_DESC(dma_tx_num, "Number of descriptors in the TX list");
-  */
- #define ALTERA_RXDMABUFFER_SIZE	2048
- 
--/* Allow network stack to resume queueing packets after we've
-+/* Allow network stack to resume queuing packets after we've
-  * finished transmitting at least 1/4 of the packets in the queue.
-  */
- #define TSE_TX_THRESH(x)	(x->tx_ring_size / 4)
-@@ -390,7 +390,7 @@ static int tse_rx(struct altera_tse_private *priv, int limit)
- 				   "RCV pktstatus %08X pktlength %08X\n",
- 				   pktstatus, pktlength);
- 
--		/* DMA trasfer from TSE starts with 2 aditional bytes for
-+		/* DMA transfer from TSE starts with 2 additional bytes for
- 		 * IP payload alignment. Status returned by get_rx_status()
- 		 * contains DMA transfer length. Packet is 2 bytes shorter.
- 		 */
-@@ -1044,7 +1044,7 @@ static void altera_tse_set_mcfilterall(struct net_device *dev)
- 		csrwr32(1, priv->mac_dev, tse_csroffs(hash_table) + i * 4);
- }
- 
--/* Set or clear the multicast filter for this adaptor
-+/* Set or clear the multicast filter for this adapter
-  */
- static void tse_set_rx_mode_hashfilter(struct net_device *dev)
- {
-@@ -1064,7 +1064,7 @@ static void tse_set_rx_mode_hashfilter(struct net_device *dev)
- 	spin_unlock(&priv->mac_cfg_lock);
- }
- 
--/* Set or clear the multicast filter for this adaptor
-+/* Set or clear the multicast filter for this adapter
-  */
- static void tse_set_rx_mode(struct net_device *dev)
- {
--- 
-2.26.3
-
+How long does this take for you to reproduce?
