@@ -2,98 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E423C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2123CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243832AbiBOTtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:49:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37360 "EHLO
+        id S240547AbiBOTyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:54:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243805AbiBOTte (ORCPT
+        with ESMTP id S232024AbiBOTyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:49:34 -0500
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDC366AD3;
-        Tue, 15 Feb 2022 11:49:23 -0800 (PST)
-Received: by mail-io1-f52.google.com with SMTP id i62so25308454ioa.1;
-        Tue, 15 Feb 2022 11:49:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=OERlIHIb6ddcezTHhRkNJ0kzSHHK7RS652vYEofOceg=;
-        b=IWceMVm04uqMoNohzExRep+g4j2+xz5o4gXFsrTP9kbbXFxpzV+1w3qxrOdX/V77PD
-         xivjHcEMCDa49pWEGDgFvB1PBUVZI6cXLZaGPcdfed1lFun6v6S+Yl81gwxpEFSBqUYT
-         Q/QjWICUY9zFnPSX3J9Y/+VceJssmv12K5qPEhsaLzWLdJgdLxDo+nnEBEXlYh2+PPl0
-         PalskocXMHIGmg5Ut371R17xW0EQdEC726Wz42Wh4LYj3GAPXjoshDWabfli0zyjacZ7
-         r2SZ5/xrtrzic1Go90ttUErt+ENweuXcu55VWgLd0YezlzqsSmvcGF1DKt5+3SFgtNsp
-         f36g==
-X-Gm-Message-State: AOAM5339qEWcq39c+Nk/YZjYS2E5sWv45C6ObaaoUsxDSWZXtcVRU86J
-        uJ2463jV+wlf6/pS8lfwhkMW+C98PA==
-X-Google-Smtp-Source: ABdhPJyyTThxHQBY7Gwwd6kXiv65mjh+/XyPt67kwPmTGSVCZsScbFtMiRMoIHT3LxW+YnJZ3pKewg==
-X-Received: by 2002:a05:6638:40a8:: with SMTP id m40mr298313jam.213.1644954563186;
-        Tue, 15 Feb 2022 11:49:23 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id y3sm9439335iov.29.2022.02.15.11.49.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 11:49:22 -0800 (PST)
-Received: (nullmailer pid 3813675 invoked by uid 1000);
-        Tue, 15 Feb 2022 19:49:18 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Patrick Rudolph <patrick.rudolph@9elements.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Peter Rosin <peda@axentia.se>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-In-Reply-To: <20220214103116.68472-2-patrick.rudolph@9elements.com>
-References: <20220214103116.68472-1-patrick.rudolph@9elements.com> <20220214103116.68472-2-patrick.rudolph@9elements.com>
-Subject: Re: [v5 1/3] dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
-Date:   Tue, 15 Feb 2022 13:49:18 -0600
-Message-Id: <1644954558.103393.3813674.nullmailer@robh.at.kernel.org>
+        Tue, 15 Feb 2022 14:54:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C145027FFC;
+        Tue, 15 Feb 2022 11:53:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E33061839;
+        Tue, 15 Feb 2022 19:53:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD370C340F3;
+        Tue, 15 Feb 2022 19:53:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644954837;
+        bh=ybVzBbvmSOoVbs8OTAqgC9k7dcWxXzPNvdGTlxM4esw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=XiVUyL4al8GHXE+UgzwigR7X6pH993Bu63Z0W1Z517LncckN+4p91ba/TO5NWXQpp
+         U1vWjpJONv3koPrD/mTCQn2wG59ZnyoYcqC24otLIxisbduauF07K6jsfuKF7k5IPi
+         +Hw1LyLfz4KFU1iFNEABzel5jNUlcgSKiLZTXhgdUbVpBQhvQZook17Z26oC8x+I92
+         Kqw26/a9rxOHNFUPyA1v8xkCofJMAgh45s4p7T9SEsz5KknpGQn+JSam3udRoSF79D
+         JcwPKgnF+Gb7n0xG2o5q3ZdCK1XwGP234FVVLgPnpE7Dny5AEZWXqxbge/dQJ7fmyT
+         BLnrlNNGDqbSg==
+Received: by mail-ej1-f42.google.com with SMTP id p15so46563567ejc.7;
+        Tue, 15 Feb 2022 11:53:57 -0800 (PST)
+X-Gm-Message-State: AOAM530+dxLygZ4ehCRoNuOogzpeEtjW+AgB93hbxnfaAaz0QX8Ll7q6
+        tyQ0yJNan7+9sYdgABhHImWkLgCtEj9QWC+qiA==
+X-Google-Smtp-Source: ABdhPJzC9sVdAIFHy7S1BKRXKLnYS/B1vXl5yMVBOJv/Qip68D1M6dRfb08LeY0VUnzZG5cmUksF3YA2hW+Y4jYVYLc=
+X-Received: by 2002:a17:907:628c:: with SMTP id nd12mr586045ejc.82.1644954836019;
+ Tue, 15 Feb 2022 11:53:56 -0800 (PST)
+MIME-Version: 1.0
+References: <20220214174132.219303-1-david@redhat.com> <20220214174132.219303-2-david@redhat.com>
+In-Reply-To: <20220214174132.219303-2-david@redhat.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 15 Feb 2022 13:53:44 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKzL6xBXfuTv423EoWw=fYPnK_q5paqUSDWyyoNx1thRA@mail.gmail.com>
+Message-ID: <CAL_JsqKzL6xBXfuTv423EoWw=fYPnK_q5paqUSDWyyoNx1thRA@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] cma: factor out minimum alignment requirement
+To:     David Hildenbrand <david@redhat.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
+        Zi Yan <ziy@nvidia.com>, Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        devicetree@vger.kernel.org,
+        "open list:DRM DRIVER FOR QEMU'S CIRRUS DEVICE" 
+        <virtualization@lists.linux-foundation.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022 11:31:14 +0100, Patrick Rudolph wrote:
-> Update the pca954x bindings to add support for the Maxim MAX735x/MAX736x
-> chips. The functionality will be provided by the exisintg pca954x driver.
-> 
-> While on it make the interrupts support conditionally as not all of the
-> existing chips have interrupts.
-> 
-> For chips that are powered off by default add an optional regulator
-> called vdd-supply.
-> 
-> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+On Mon, Feb 14, 2022 at 11:42 AM David Hildenbrand <david@redhat.com> wrote:
+>
+> Let's factor out determining the minimum alignment requirement for CMA
+> and add a helpful comment.
+>
+> No functional change intended.
+>
+> Signed-off-by: David Hildenbrand <david@redhat.com>
 > ---
->  .../bindings/i2c/i2c-mux-pca954x.yaml         | 44 ++++++++++++++-----
->  1 file changed, 34 insertions(+), 10 deletions(-)
-> 
+>  arch/powerpc/include/asm/fadump-internal.h |  5 -----
+>  arch/powerpc/kernel/fadump.c               |  2 +-
+>  drivers/of/of_reserved_mem.c               |  9 +++------
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Acked-by: Rob Herring <robh@kernel.org>
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml: allOf:1:then:properties:interrupts: 'maxitems' is not one of ['$ref', 'additionalItems', 'additionalProperties', 'allOf', 'anyOf', 'const', 'contains', 'default', 'dependencies', 'dependentRequired', 'dependentSchemas', 'deprecated', 'description', 'else', 'enum', 'exclusiveMaximum', 'exclusiveMinimum', 'items', 'if', 'minItems', 'minimum', 'maxItems', 'maximum', 'multipleOf', 'not', 'oneOf', 'pattern', 'patternProperties', 'properties', 'required', 'then', 'type', 'typeSize', 'unevaluatedProperties', 'uniqueItems']
-	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml: ignoring, error in schema: allOf: 1: then: properties: interrupts
-Documentation/devicetree/bindings/i2c/i2c-mux.example.dt.yaml:0:0: /example-0/i2c/i2c-mux@70: failed to match any schema with compatible: ['nxp,pca9548']
-Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.example.dt.yaml:0:0: /example-0/i2c/i2c-mux@74: failed to match any schema with compatible: ['nxp,pca9548']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1592439
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+>  include/linux/cma.h                        |  9 +++++++++
+>  kernel/dma/contiguous.c                    |  4 +---
+>  mm/cma.c                                   | 20 +++++---------------
+>  6 files changed, 19 insertions(+), 30 deletions(-)
