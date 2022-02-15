@@ -2,85 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 848F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6972C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236118AbiBOJwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:52:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43828 "EHLO
+        id S235677AbiBOJzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:55:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiBOJwa (ORCPT
+        with ESMTP id S229445AbiBOJzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:52:30 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA89A10335B
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:52:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644918740; x=1676454740;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oe4YO6EvDJseL0z7C+Rpj3omkU3reoCERPtvQmTBO+k=;
-  b=GYtwXxDGqHvo3vebvThFnCLegIBaYzTJQXsY2uHSy6glimwB+SXAW5Sb
-   eYPVx3VryroF1bPnBg98lxejCQgP1ywgcziH3EV+eIcwlU9OFi2Me6nOH
-   dzQI5m180ZqOS8TqjUdwZFnrBDS1XcM6yXiHGO4t94wBRNY5u2N7JCr3r
-   0WoLpjRKMni7ynQutKziChCUnJieKd/VBgAbbrHeA/vIYRbxXQe7hx3GJ
-   iVBh3bPu0HIP1nswPQjsncE/4ZGW28nbYn6CsgRA6awm7AFa3tT/z3Y/M
-   s7F3zuP5g7BHTaFzMDp1gZsyoWMiilfUsnBnCp2daUofuAAYbQkLAdqy7
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249146354"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="249146354"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 01:52:07 -0800
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="635765473"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 01:52:05 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJuUI-004s5J-9I;
-        Tue, 15 Feb 2022 11:51:10 +0200
-Date:   Tue, 15 Feb 2022 11:51:10 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Joerg Roedel <jroedel@suse.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v2 1/1] iommu/vt-d: Move intel_iommu_ops to header file
-Message-ID: <Ygt3jibBVRyCn909@smile.fi.intel.com>
-References: <20220207141240.8253-1-andriy.shevchenko@linux.intel.com>
- <YgpY1IIBkFIxxjbm@8bytes.org>
- <30e45a7e-088d-7479-a284-68effadf3cbe@linux.intel.com>
+        Tue, 15 Feb 2022 04:55:12 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4555A10A7FB;
+        Tue, 15 Feb 2022 01:55:03 -0800 (PST)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21F7p9DB012049;
+        Tue, 15 Feb 2022 09:55:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=yLXpyIZemp4HaBhnwsA2gdOt8XJPHK0CTjP4FZW3qys=;
+ b=K6UUEPadL9L6PQMBpihilw1A1+O+79lawRDAArPtjjHI2kp4QtkvEtWRnbse4EsIXI8L
+ wjs1HYloPPEnjAu0iag/YXc3s22v7l7x3GOt1zOUs1jj+O6Ip9Ll+MgA4ozy/z6bNiM0
+ qU3A2QOZ7n+YMv7ditpbtePMjvWIQnjrdFgXyO/8aHHt2PEzBoazJI260Y6LLjCsBEBE
+ wlIlE5Z0Udl4ldKTdDtatTSvGVGDRXKro3P9MXmQc0jtFfHvqVk0bx+Tf09oW+COENbg
+ u0VeI5an3xSkYDu0bBEYaBw34IYUgfSTvFXEsuZffbIooq6c9RvE9QCQPQ5lQNhPR0zb Hg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8850jh1m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 09:55:02 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21F9nRcC028637;
+        Tue, 15 Feb 2022 09:55:01 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8850jh11-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 09:55:01 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21F9cMDH031585;
+        Tue, 15 Feb 2022 09:55:00 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e645jn9wq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 09:55:00 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21F9stfw41091396
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 09:54:56 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C9E544C044;
+        Tue, 15 Feb 2022 09:54:55 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5A59C4C040;
+        Tue, 15 Feb 2022 09:54:55 +0000 (GMT)
+Received: from [9.171.66.227] (unknown [9.171.66.227])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 15 Feb 2022 09:54:55 +0000 (GMT)
+Message-ID: <801aa4ea-ca26-7561-95f3-162b0f680929@linux.ibm.com>
+Date:   Tue, 15 Feb 2022 10:54:55 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <30e45a7e-088d-7479-a284-68effadf3cbe@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] selftests: kvm: Check whether SIDA memop fails for normal
+ guests
+Content-Language: en-US
+To:     Thomas Huth <thuth@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220215074824.188440-1-thuth@redhat.com>
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+In-Reply-To: <20220215074824.188440-1-thuth@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: viCYogg6dhuGJ0Dow6CRyD5yxFP8TSm2
+X-Proofpoint-ORIG-GUID: 6_EK_d2sRUK_MRmYvKJrBKiS4EtxccOA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-15_03,2022-02-14_04,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
+ bulkscore=0 impostorscore=0 priorityscore=1501 suspectscore=0
+ lowpriorityscore=0 phishscore=0 mlxscore=0 clxscore=1011 mlxlogscore=999
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202150055
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 09:31:37AM +0800, Lu Baolu wrote:
-> On 2/14/22 9:27 PM, Joerg Roedel wrote:
-> > On Mon, Feb 07, 2022 at 04:12:40PM +0200, Andy Shevchenko wrote:
-
-...
-
-> > > +extern const struct iommu_ops intel_iommu_ops;
-
-> > The intel_iommu_ops symbol is only used in drivers/iommu/intel, so I
-> > would prefer a header in that directory. But I leave that up to Baolu to
-> > decide.
+On 2/15/22 08:48, Thomas Huth wrote:
+> Commit 2c212e1baedc ("KVM: s390: Return error on SIDA memop on normal
+> guest") fixed the behavior of the SIDA memops for normal guests. It
+> would be nice to have a way to test whether the current kernel has
+> the fix applied or not. Thus add a check to the KVM selftests for
+> these two memops.
 > 
-> Agreed. I also have a plan to split them out into a internal header.
+> Signed-off-by: Thomas Huth <thuth@redhat.com>
+> ---
+>  tools/testing/selftests/kvm/s390x/memop.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+> index 9f49ead380ab..d19c3ffdea3f 100644
+> --- a/tools/testing/selftests/kvm/s390x/memop.c
+> +++ b/tools/testing/selftests/kvm/s390x/memop.c
+> @@ -160,6 +160,21 @@ int main(int argc, char *argv[])
+>  	run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
+>  	vcpu_run(vm, VCPU_ID);                  /* Run to sync new state */
+> 
+> +	/* Check that the SIDA calls are rejected for non-protected guests */
+> +	ksmo.gaddr = 0;
+> +	ksmo.flags = 0;
+> +	ksmo.size = 8;
+> +	ksmo.op = KVM_S390_MEMOP_SIDA_READ;
+> +	ksmo.buf = (uintptr_t)mem1;
+> +	ksmo.sida_offset = 0x1c0;
 
-The above change is hanging for more than a year, can we apply it and then
-you can do a split?
+What is the rational for that constant?
+Any would do, as long as size + offset < PAGE_SIZE, correct?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+> +	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+> +	TEST_ASSERT(rv == -1 && errno == EINVAL,
+> +		    "ioctl does not reject SIDA_READ in non-protected mode");
+> +	ksmo.op = KVM_S390_MEMOP_SIDA_WRITE;
+> +	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+> +	TEST_ASSERT(rv == -1 && errno == EINVAL,
+> +		    "ioctl does not reject SIDA_WRITE in non-protected mode");
+> +
+>  	kvm_vm_free(vm);
+> 
+>  	return 0;
 
