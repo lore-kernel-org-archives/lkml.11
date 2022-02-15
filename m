@@ -2,172 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7274DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC26C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241700AbiBOQjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:39:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47374 "EHLO
+        id S241715AbiBOQkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:40:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233621AbiBOQjR (ORCPT
+        with ESMTP id S239370AbiBOQkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:39:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB6DC336D;
-        Tue, 15 Feb 2022 08:39:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0555F60ACF;
-        Tue, 15 Feb 2022 16:39:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45011C340EB;
-        Tue, 15 Feb 2022 16:39:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644943145;
-        bh=V9kovIYtQQZPjm+yjWJXoF36Q5nY9s/7izEgPXb6ED0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H20AF5GpAoL0xHR3aw5y9HrMfQPcCLnqPRpm5ZgsnuWQnHD0/e/3t4HykhgISSXdI
-         XBPmf4Kc6YbG2y45fo6XP/43XSOAo2IaNBPCr+PDW3QFrk3UCQGPzKW4r1u8xtm6gm
-         pJmNxc28w0Ulw3yjO0GpfQweuD5Gj/tlk8QGMj0CpMAPB0gbmSds3rdU7M/3Ceh27W
-         qVDXyt7GQPbqpcS09WIiNAtZ3CcfV9jz3WijMroOKdl4Z0HA0j0kqX5o5p7IB03HoY
-         fm/q3Pzzit71kyrQgKTJXnWGQMyFB31qpgDJnJUNSEMYgBKqdxrzLy/bl+zBJt46xx
-         BZwAqoN836hLQ==
-Date:   Tue, 15 Feb 2022 16:38:59 +0000
-From:   Will Deacon <will@kernel.org>
-To:     "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-Cc:     Darren Hart <darren@os.amperecomputing.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Arm <linux-arm-kernel@lists.infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "D . Scott Phillips" <scott@os.amperecomputing.com>,
-        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] arm64: smp: Skip MC domain for SoCs without shared cache
-Message-ID: <20220215163858.GA8458@willie-the-truck>
-References: <8c4a69eca4d0591f30c112df59c5098c24923bd3.1644543449.git.darren@os.amperecomputing.com>
- <ec9be4eb7a0548178191edd51ddd309f@hisilicon.com>
+        Tue, 15 Feb 2022 11:40:17 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BABEFF91
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:40:07 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id v4so17857771pjh.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:40:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GjzGhBOh8jK25Hj15polj7Q2qGK/jzjkg+lJ5DCE9Bs=;
+        b=mDwJxlM9ua3Q2EgY+L5cfx6nvP4xPP+V5PVHN/8DFq6tukufpnQnRJFRhRH+X1Kg2g
+         7yYY6qmmd/2hMLGnJj75Yoww4EO20Uj5zU/pEhf5S8Bdr74ZZGkiRWnOlSGGQldMtnC2
+         v/cbHY8fGp1O7j7LN65MwzB40H7TV+ABMpVILP6pEhtkKCVIt0JQviHRDltnyeifZxLw
+         BEPuP5UFkVICiZKm/uv/71YmeDwxxKLbVFfNzkNgSe3ro8V+eHbWWL7dQvXY4KoB9wrc
+         hAiv0sAKz3QnPf/sZ0ZfmS1SMjQU4Gg/cIE+ByBPlcNvCO1sY7N1GxjQn2HRwjghj0Oh
+         HPAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GjzGhBOh8jK25Hj15polj7Q2qGK/jzjkg+lJ5DCE9Bs=;
+        b=XauxfMAUDOkvjJGVre0ILWvEcPsXDIZqEFVlR20jvbv1FsgR8iQ4oh1eVwrCArVjc+
+         66gykahdNqGA6OyQ5nIwwk6kBaAMZy4P1e2KdCT1s39VJ8Xe5pWBsHS/X1vgZodwha1Z
+         awbYyeegNwXSTsBSGVWH4+a/7lgSB0PJmLh+g7/0MzRHFCZygenREhLe7GS51gL0F7S3
+         IBFv2mbvUq48+y+2d4GCCgwX5cKUb39cV4NTo4MOHUn8glNCOl5s5PZF8rRma8DMyV+G
+         GSfOZSdq8Mi6Q9s2l2LZ5X6+ts7Om6Fpxs9KcyyAAjg6PhifXj0G45OSN6jLiODhNXQs
+         pyVQ==
+X-Gm-Message-State: AOAM530ldvV+83KGrtEi9lEHLZA02GxRggeEqc/cbpuMthaqG/YCXaPx
+        Ue7CxjCAG/mvNQmXJx6aDPirBSrQt2rJ5w==
+X-Google-Smtp-Source: ABdhPJzp3QQbBsaFv+7+b6FImzl1ZX+uzkVQdvAA7LZJnDAJM8bbYxLOXQYZ8csVnKZYU87zVSDD6g==
+X-Received: by 2002:a17:90b:4f42:b0:1b9:5a43:2278 with SMTP id pj2-20020a17090b4f4200b001b95a432278mr5313268pjb.158.1644943207065;
+        Tue, 15 Feb 2022 08:40:07 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id oj10sm18803477pjb.7.2022.02.15.08.40.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 08:40:06 -0800 (PST)
+Date:   Tue, 15 Feb 2022 16:40:03 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zeng Guang <guang.zeng@intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: Re: [PATCH 09/11] KVM: x86: Treat x2APIC's ICR as a 64-bit register,
+ not two 32-bit regs
+Message-ID: <YgvXY98ah4uIECee@google.com>
+References: <20220204214205.3306634-1-seanjc@google.com>
+ <20220204214205.3306634-10-seanjc@google.com>
+ <20220215032712.GB28478@gao-cwp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ec9be4eb7a0548178191edd51ddd309f@hisilicon.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220215032712.GB28478@gao-cwp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 03:20:51AM +0000, Song Bao Hua (Barry Song) wrote:
+On Tue, Feb 15, 2022, Chao Gao wrote:
+> > 	case APIC_SELF_IPI:
+> >-		if (apic_x2apic_mode(apic)) {
+> >-			kvm_lapic_reg_write(apic, APIC_ICR,
+> >-					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+> >-		} else
+> >+		if (apic_x2apic_mode(apic))
+> >+			kvm_x2apic_icr_write(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+> >+		else
 > 
+> The original code looks incorrect. Emulating writes to SELF_IPI by writes to
+> ICR has an unwanted side-effect: the value of ICR in vAPIC page gets changed.
 > 
-> > -----Original Message-----
-> > From: Darren Hart [mailto:darren@os.amperecomputing.com]
-> > Sent: Friday, February 11, 2022 2:43 PM
-> > To: LKML <linux-kernel@vger.kernel.org>; Linux Arm
-> > <linux-arm-kernel@lists.infradead.org>
-> > Cc: Catalin Marinas <catalin.marinas@arm.com>; Will Deacon <will@kernel.org>;
-> > Peter Zijlstra <peterz@infradead.org>; Vincent Guittot
-> > <vincent.guittot@linaro.org>; Song Bao Hua (Barry Song)
-> > <song.bao.hua@hisilicon.com>; Valentin Schneider
-> > <valentin.schneider@arm.com>; D . Scott Phillips
-> > <scott@os.amperecomputing.com>; Ilkka Koskinen
-> > <ilkka@os.amperecomputing.com>; stable@vger.kernel.org
-> > Subject: [PATCH] arm64: smp: Skip MC domain for SoCs without shared cache
-> > 
-> > SoCs such as the Ampere Altra define clusters but have no shared
-> > processor-side cache. As of v5.16 with CONFIG_SCHED_CLUSTER and
-> > CONFIG_SCHED_MC, build_sched_domain() will BUG() with:
-> > 
-> > BUG: arch topology borken
-> >      the CLS domain not a subset of the MC domain
-> > 
-> > for each CPU (160 times for a 2 socket 80 core Altra system). The MC
-> > level cpu mask is then extended to that of the CLS child, and is later
-> > removed entirely as redundant.
-> > 
-> > This change detects when all cpu_coregroup_mask weights=1 and uses an
-> > alternative sched_domain_topology equivalent to the default if
-> > CONFIG_SCHED_MC were disabled.
-> > 
-> > The final resulting sched domain topology is unchanged with or without
-> > CONFIG_SCHED_CLUSTER, and the BUG is avoided:
-> > 
-> > For CPU0:
-> > 
-> > With CLS:
-> > CLS  [0-1]
-> > DIE  [0-79]
-> > NUMA [0-159]
-> > 
-> > Without CLS:
-> > DIE  [0-79]
-> > NUMA [0-159]
-> > 
-> > Cc: Catalin Marinas <catalin.marinas@arm.com>
-> > Cc: Will Deacon <will@kernel.org>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Vincent Guittot <vincent.guittot@linaro.org>
-> > Cc: Barry Song <song.bao.hua@hisilicon.com>
-> > Cc: Valentin Schneider <valentin.schneider@arm.com>
-> > Cc: D. Scott Phillips <scott@os.amperecomputing.com>
-> > Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
-> > Cc: <stable@vger.kernel.org> # 5.16.x
-> > Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
-> 
-> Hi Darrent,
-> What kind of resources are clusters sharing on Ampere Altra?
-> So on Altra, cpus are not sharing LLC? Each LLC is separate
-> for each cpu?
-> 
-> > ---
-> >  arch/arm64/kernel/smp.c | 32 ++++++++++++++++++++++++++++++++
-> >  1 file changed, 32 insertions(+)
-> > 
-> > diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
-> > index 27df5c1e6baa..0a78ac5c8830 100644
-> > --- a/arch/arm64/kernel/smp.c
-> > +++ b/arch/arm64/kernel/smp.c
-> > @@ -715,9 +715,22 @@ void __init smp_init_cpus(void)
-> >  	}
-> >  }
-> > 
-> > +static struct sched_domain_topology_level arm64_no_mc_topology[] = {
-> > +#ifdef CONFIG_SCHED_SMT
-> > +	{ cpu_smt_mask, cpu_smt_flags, SD_INIT_NAME(SMT) },
-> > +#endif
-> > +
-> > +#ifdef CONFIG_SCHED_CLUSTER
-> > +	{ cpu_clustergroup_mask, cpu_cluster_flags, SD_INIT_NAME(CLS) },
-> > +#endif
-> > +	{ cpu_cpu_mask, SD_INIT_NAME(DIE) },
-> > +	{ NULL, },
-> > +};
-> > +
-> >  void __init smp_prepare_cpus(unsigned int max_cpus)
-> >  {
-> >  	const struct cpu_operations *ops;
-> > +	bool use_no_mc_topology = true;
-> >  	int err;
-> >  	unsigned int cpu;
-> >  	unsigned int this_cpu;
-> > @@ -758,6 +771,25 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
-> > 
-> >  		set_cpu_present(cpu, true);
-> >  		numa_store_cpu_info(cpu);
-> > +
-> > +		/*
-> > +		 * Only use no_mc topology if all cpu_coregroup_mask weights=1
-> > +		 */
-> > +		if (cpumask_weight(cpu_coregroup_mask(cpu)) > 1)
-> > +			use_no_mc_topology = false;
-> 
-> This seems to be wrong? If you have 5 cpus,
-> Cpu0 has cpu_coregroup_mask(cpu)== 1, cpu1-4
-> has cpu_coregroup_mask(cpu)== 4, for cpu0, you still
-> need to remove MC, but for cpu1-4, you will need
-> CLS and MC both?
+> It is better to use kvm_apic_send_ipi() directly.
 
-What is the *current* behaviour on such a system?
+Agreed, the SDM lists SELF_IPI as write-only, with no associated MMIO offset, so
+it should have no visible side effect in the vAPIC.  I'll add a patch to fix this.
 
-Will
+Thanks!
