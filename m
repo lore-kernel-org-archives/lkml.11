@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA92EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E06AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240378AbiBOPca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:32:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46752 "EHLO
+        id S234693AbiBOPcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:32:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240345AbiBOPbR (ORCPT
+        with ESMTP id S240393AbiBOPbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:31:17 -0500
+        Tue, 15 Feb 2022 10:31:20 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AE8C3C23;
-        Tue, 15 Feb 2022 07:29:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5719C6242;
+        Tue, 15 Feb 2022 07:29:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C10B0B81AF1;
-        Tue, 15 Feb 2022 15:29:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DD4AC340EB;
-        Tue, 15 Feb 2022 15:29:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21DDDB81AEC;
+        Tue, 15 Feb 2022 15:29:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CDF3C340EB;
+        Tue, 15 Feb 2022 15:29:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938948;
-        bh=SdNN4jzl4yvhBLhVKk+K87AN0l17ZYIZAN236uiFEDI=;
+        s=k20201202; t=1644938954;
+        bh=6suctJEObTMyjXIebBno+7Rimc7/9sHGbBTfa2mh2BM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dWlq7mBAo2uEvYvKSsGApn6J2S/Vl8X7lm7GxCO96E3uJoRX0piwNXGCqIvCBA/qt
-         b7Dt01EtSo9ieiy2RePDq5EPufZD4zG4WdtBiaXLAfMmhOfabk5gZoVwfrXUkox0iH
-         IZ8plQFfVO+gjm3+pXEcHeuQ39p7pOsr7YFc0PC+FeO9IGCosHS0n75+Le5BrUBFAe
-         iXkJu1h26NARjEfJQbhd04NBKNACMfPU2yRdmEtqLYyQkN/vflUWnYPo762UjQiUp+
-         IYiqLzQbXSTGbk22S7vw90ERq9lDvEO/Yk1i2O8N2G0c2XVCMpXiy+k2/B5br56YPY
-         ZWQ/iE7pGiScw==
+        b=GeSLQp5ewnvPArIImmCVanLz8N/IrXeDxEgc4IiErt8RUSXRv8bkFyTtnb4x3Ce/l
+         UEZtoV/lFdPwgP9+sfJhD+5h7Gb8QyVZ/WTc63MWjvANJcsywLJx5bIt1PZiDe2OAe
+         7lytB3D1Yh7RSYtMrsj0g2uY/bKwoJmEfNoDFMoRM1pFBKMonmYHyhWI3IDllKSoEA
+         zohp0dKGpDtKxgVizPbxnottZbtXl8JYF7CuioD2HYfPECm3Jxz2V/427JXVra1sml
+         Rmot4kYImHDmxlSfvnjeq7L8XU6qromjLc82v7wsxjQFWYh8NEj/McIQw9zbSzHQSs
+         qa/PY+E4h9qBg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        "Ewan D . Milne" <emilne@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 20/33] scsi: lpfc: Remove NVMe support if kernel has NVME_FC disabled
-Date:   Tue, 15 Feb 2022 10:28:18 -0500
-Message-Id: <20220215152831.580780-20-sashal@kernel.org>
+Cc:     Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Iwona Winiarska <iwona.winiarska@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        yangyingliang@huawei.com, chiawei_wang@aspeedtech.com,
+        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 23/33] soc: aspeed: lpc-ctrl: Block error printing on probe defer cases
+Date:   Tue, 15 Feb 2022 10:28:21 -0500
+Message-Id: <20220215152831.580780-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152831.580780-1-sashal@kernel.org>
 References: <20220215152831.580780-1-sashal@kernel.org>
@@ -54,73 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
 
-[ Upstream commit c80b27cfd93ba9f5161383f798414609e84729f3 ]
+[ Upstream commit 301a5d3ad2432d7829f59432ca0a93a6defbb9a1 ]
 
-The driver is initiating NVMe PRLIs to determine device NVMe support.  This
-should not be occurring if CONFIG_NVME_FC support is disabled.
+Add a checking code when it gets -EPROBE_DEFER while getting a clock
+resource. In this case, it doesn't need to print out an error message
+because the probing will be re-visited.
 
-Correct this by changing the default value for FC4 support. Currently it
-defaults to FCP and NVMe. With change, when NVME_FC support is not enabled
-in the kernel, the default value is just FCP.
-
-Link: https://lore.kernel.org/r/20220207180516.73052-1-jsmart2021@gmail.com
-Reviewed-by: Ewan D. Milne <emilne@redhat.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Reviewed-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Link: https://lore.kernel.org/r/20211104173709.222912-1-jae.hyun.yoo@intel.com
+Link: https://lore.kernel.org/r/20220201070118.196372-1-joel@jms.id.au'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc.h      | 13 ++++++++++---
- drivers/scsi/lpfc/lpfc_attr.c |  4 ++--
- 2 files changed, 12 insertions(+), 5 deletions(-)
+ drivers/soc/aspeed/aspeed-lpc-ctrl.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc.h b/drivers/scsi/lpfc/lpfc.h
-index 19fd9d263f47f..f66ba64080a31 100644
---- a/drivers/scsi/lpfc/lpfc.h
-+++ b/drivers/scsi/lpfc/lpfc.h
-@@ -1163,6 +1163,16 @@ struct lpfc_hba {
- 	uint32_t cfg_hostmem_hgp;
- 	uint32_t cfg_log_verbose;
- 	uint32_t cfg_enable_fc4_type;
-+#define LPFC_ENABLE_FCP  1
-+#define LPFC_ENABLE_NVME 2
-+#define LPFC_ENABLE_BOTH 3
-+#if (IS_ENABLED(CONFIG_NVME_FC))
-+#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
-+#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
-+#else
-+#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_FCP
-+#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_FCP
-+#endif
- 	uint32_t cfg_aer_support;
- 	uint32_t cfg_sriov_nr_virtfn;
- 	uint32_t cfg_request_firmware_upgrade;
-@@ -1184,9 +1194,6 @@ struct lpfc_hba {
- 	uint32_t cfg_ras_fwlog_func;
- 	uint32_t cfg_enable_bbcr;	/* Enable BB Credit Recovery */
- 	uint32_t cfg_enable_dpp;	/* Enable Direct Packet Push */
--#define LPFC_ENABLE_FCP  1
--#define LPFC_ENABLE_NVME 2
--#define LPFC_ENABLE_BOTH 3
- 	uint32_t cfg_enable_pbde;
- 	uint32_t cfg_enable_mi;
- 	struct nvmet_fc_target_port *targetport;
-diff --git a/drivers/scsi/lpfc/lpfc_attr.c b/drivers/scsi/lpfc/lpfc_attr.c
-index f20c4fe1fb8b9..632b9cdabd14e 100644
---- a/drivers/scsi/lpfc/lpfc_attr.c
-+++ b/drivers/scsi/lpfc/lpfc_attr.c
-@@ -3978,8 +3978,8 @@ LPFC_ATTR_R(nvmet_mrq_post,
-  *                    3 - register both FCP and NVME
-  * Supported values are [1,3]. Default value is 3
-  */
--LPFC_ATTR_R(enable_fc4_type, LPFC_ENABLE_BOTH,
--	    LPFC_ENABLE_FCP, LPFC_ENABLE_BOTH,
-+LPFC_ATTR_R(enable_fc4_type, LPFC_DEF_ENBL_FC4_TYPE,
-+	    LPFC_ENABLE_FCP, LPFC_MAX_ENBL_FC4_TYPE,
- 	    "Enable FC4 Protocol support - FCP / NVME");
+diff --git a/drivers/soc/aspeed/aspeed-lpc-ctrl.c b/drivers/soc/aspeed/aspeed-lpc-ctrl.c
+index 72771e018c42e..258894ed234b3 100644
+--- a/drivers/soc/aspeed/aspeed-lpc-ctrl.c
++++ b/drivers/soc/aspeed/aspeed-lpc-ctrl.c
+@@ -306,10 +306,9 @@ static int aspeed_lpc_ctrl_probe(struct platform_device *pdev)
+ 	}
  
- /*
+ 	lpc_ctrl->clk = devm_clk_get(dev, NULL);
+-	if (IS_ERR(lpc_ctrl->clk)) {
+-		dev_err(dev, "couldn't get clock\n");
+-		return PTR_ERR(lpc_ctrl->clk);
+-	}
++	if (IS_ERR(lpc_ctrl->clk))
++		return dev_err_probe(dev, PTR_ERR(lpc_ctrl->clk),
++				     "couldn't get clock\n");
+ 	rc = clk_prepare_enable(lpc_ctrl->clk);
+ 	if (rc) {
+ 		dev_err(dev, "couldn't enable clock\n");
 -- 
 2.34.1
 
