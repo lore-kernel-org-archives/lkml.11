@@ -2,152 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24095C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 994D2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243010AbiBOWBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 17:01:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56626 "EHLO
+        id S231760AbiBOWFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 17:05:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243036AbiBOWAs (ORCPT
+        with ESMTP id S235480AbiBOWFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 17:00:48 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9207679;
-        Tue, 15 Feb 2022 14:00:37 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id d23so156794lfv.13;
-        Tue, 15 Feb 2022 14:00:37 -0800 (PST)
+        Tue, 15 Feb 2022 17:05:32 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B156A1EEC0;
+        Tue, 15 Feb 2022 14:05:21 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id r76so210090pgr.10;
+        Tue, 15 Feb 2022 14:05:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:cc:references:to:in-reply-to:content-transfer-encoding;
-        bh=DVulEGE2JpmKCAwv+Z9nIfk2u5ZwvRtSEnvF0++tohE=;
-        b=eAbTUd8SWrkduWMDvYSL9PCIMvTyx1/PDNq+g34U5a6HTO/JfyDazuc/276Sm7ld7f
-         RQAUjz9KnJpaex/eozKDcsnVqqRwA5Fj5CSlNJHiQfzBkJVLCc7y3vw02lxihPY3TExU
-         lYcUYoYFkQWAG/XD2qnNsvTl5P4zqH6pcaasqRB1LojAt2IN4Q9BVX82FHrNStE8wYB4
-         mmhCvKeDI7YjVSy4dXfgCBsx8WWHAoaLNoouUIXdBuim6buHAqSq3/5veKqw8hxrEwEf
-         aYlaoKh86/GFDdT8ghhsvoX3tr735feUL8boUX68tZ9vbfpFMdKPrE/wFw8zC0NNEmPZ
-         ssKw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dDDOlmNFqQPUtIJmBHCY2QIaiUjiyb0ZsTU/D8n9slY=;
+        b=QgZm8HhxITQBrEAP5EACOx4w9cYA2N4hu6QUDNkbuZo9+lcrR6l/odPwCEmGQfaewk
+         vSqGM2hc3aTL0eYiYv9R3qDKAufy1qJ1Xuy5A6gs6HyhWfqxcYAPJR9+qunREaFBQzJV
+         DUC/UkAqhfhF+HHi4E0Asx4OjVhgm2LRtPBrkWMvQpKecjZQB5yFEOuEY/w1toEone79
+         bHKIfyI4PCf1m9WeTNweKwiD6pm3pPmYz+JKRtKk432Fxo1Mp1p7M72ZyvKeA0kaFAvA
+         HkgEzGFT7Mb+MAulIRyEBwDxyGO9vRm605HdXR9qvfuLPZkzQEf8H9kLvVJZGaiVzbPI
+         MYSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:cc:references:to:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=DVulEGE2JpmKCAwv+Z9nIfk2u5ZwvRtSEnvF0++tohE=;
-        b=wTomICDpoIwEpCbz/72bMDFaEmVWU7jQc/NuRAsg5bofzOt+vrWhjPQ2iKSRqFWatq
-         2nn/6InANIri5CuyLP57qbEDM9mNc+5oZNOvgWA5aUbfkk3r9wDjbUSkFFER2DeqtH/a
-         bADUAVck22cpEUHFrfulL2xsLu64LIqrFQ+00XUn0A7FBhLtpL22/xqTllsHNe4eEPm7
-         g1Fru5sO0wB860IhOJJiDRGaDBtpzxBNQqYE73Et7s+bciz4Ih7cIC4g6X8+IJ3dqZ+K
-         17whSiQLXyb07yrqfCubnrkgnA7Ks4PppPUCaKBYPiXtyTFtzwoLKHoc68JFMAcjRFuF
-         yOWA==
-X-Gm-Message-State: AOAM531oZB9VDs53ngcnjqCct//CiNbyr8ZzJgloNmrvVFVlHGjuR1ts
-        zMznJoIsXh+/1v7IepFIBTg=
-X-Google-Smtp-Source: ABdhPJyJtWqeT1e2wzvijosINOm/qc6wwzWUL/FDa9uqhHR32CJOoO1KF1UaVLhHtHEQQhQBEaQuLQ==
-X-Received: by 2002:a05:6512:96d:: with SMTP id v13mr790998lft.343.1644962435902;
-        Tue, 15 Feb 2022 14:00:35 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id k3sm66075lfo.10.2022.02.15.14.00.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 14:00:35 -0800 (PST)
-Message-ID: <635e8121-fca4-580c-6af5-d9317a2eee1b@gmail.com>
-Date:   Wed, 16 Feb 2022 01:00:33 +0300
+        bh=dDDOlmNFqQPUtIJmBHCY2QIaiUjiyb0ZsTU/D8n9slY=;
+        b=yfpxdKiSdJFLnY/Dh85R3yj/1uO2LWTgzwhFE4RT4sDU4HkJ4Ru+IAkGGZUStr4wLl
+         wQ3J3aEIeDgJCie5xjVusSlRIMrL1eYEuCdYG0HR45k/Ck0VmyBXHJCc1w29lWmREOWc
+         D+pnDwQ62cK4l9tnG1Lp3yJ53iQvWbpcxhrnGXSZJFYQ47ZTLodlbrOufn3kUA5zTCNd
+         NZraxjFIvRo2NNN7KH2ZRxv/MOX8tdyrqREvyONTlz9vh3wtRc2tAWjF9yrUImmlxjYs
+         nh5d0wwhD973ouy2ny5k9hQbqVFpJ7aiqz9wb4KfznVcEpIXotoxb+YB54SJJIEF98GJ
+         bWng==
+X-Gm-Message-State: AOAM5334/zmUifjKtDgLTEQC+mA+0EhTo1rlAmnC720Av8W3XQsmvbSU
+        vOsPp/XqC/f75WC/WNy4A7Q=
+X-Google-Smtp-Source: ABdhPJwB0RRWOvxCp5oHvgXK7rKlYnzKA4PrLyq5QSqNxsoeCrskDVoa+6PGjvACOoGKvY0wUsiNGA==
+X-Received: by 2002:a63:6cc1:: with SMTP id h184mr814216pgc.276.1644962721196;
+        Tue, 15 Feb 2022 14:05:21 -0800 (PST)
+Received: from jeffreyji1.c.googlers.com.com (180.145.227.35.bc.googleusercontent.com. [35.227.145.180])
+        by smtp.gmail.com with ESMTPSA id om2sm3630952pjb.39.2022.02.15.14.05.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 14:05:20 -0800 (PST)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+X-Google-Original-From: Jeffrey Ji <jeffreyji@google.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Brian Vazquez <brianvv@google.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        jeffreyji <jeffreyji@google.com>
+Subject: [PATCH v1 net-next] teaming: deliver link-local packets with the link they arrive on
+Date:   Tue, 15 Feb 2022 22:05:17 +0000
+Message-Id: <20220215220517.2498751-1-jeffreyji@google.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v6 00/21] Introduce power-off+restart call chain API
-Content-Language: en-US
-From:   Dmitry Osipenko <digetx@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-acpi@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-tegra@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Joshua Thompson <funaho@jurai.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Lee Jones <lee.jones@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>, alankao@andestech.com,
-        "K . C . Kuen-Chern Lin" <kclin@andestech.com>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-References: <20220130233718.21544-1-digetx@gmail.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-In-Reply-To: <20220130233718.21544-1-digetx@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-31.01.2022 02:36, Dmitry Osipenko пишет:
-> Problem
-> -------
-> 
-> SoC devices require power-off call chaining functionality from kernel.
-> We have a widely used restart chaining provided by restart notifier API,
-> but nothing for power-off.
-> 
-> Solution
-> --------
-> 
-> Introduce new API that provides both restart and power-off call chains.
-> 
-> Why combine restart with power-off? Because drivers often do both.
-> More practical to have API that provides both under the same roof.
-> 
-> The new API is designed with simplicity and extensibility in mind.
-> It's built upon the existing restart and reboot APIs. The simplicity
-> is in new helper functions that are convenient for drivers. The
-> extensibility is in the design that doesn't hardcode callback
-> arguments, making easy to add new parameters and remove old.
-> 
-> This is a third attempt to introduce the new API. First was made by
-> Guenter Roeck back in 2014, second was made by Thierry Reding in 2017.
-> In fact the work didn't stop and recently arm_pm_restart() was removed
-> from v5.14 kernel, which was a part of preparatory work started by
-> Guenter Roeck. I took into account experience and ideas from the
-> previous attempts, extended and polished them.
+From: jeffreyji <jeffreyji@google.com>
 
+skb is ignored if team port is disabled. We want the skb to be delivered
+if it's an LLDP packet.
 
-Rafael and all, do you see anything critical that needs to be improved
-in this v6?
+Issue is already fixed for bonding in commit
+b89f04c61efe3b7756434d693b9203cc0cce002e
 
-Will be great if you could take this patchset via the power tree if it
-looks okay, or give an ack.
+Signed-off-by: jeffreyji <jeffreyji@google.com>
+---
+ drivers/net/team/team.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index 8b2adc56b92a..24d66dfbb2e1 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -734,6 +734,12 @@ static rx_handler_result_t team_handle_frame(struct sk_buff **pskb)
+ 	port = team_port_get_rcu(skb->dev);
+ 	team = port->team;
+ 	if (!team_port_enabled(port)) {
++		if (is_link_local_ether_addr(eth_hdr(skb)->h_dest))
++			/*
++			 * link-local packets are mostly useful when stack
++			 * receives them with the link they arrive on.
++			 */
++			return RX_HANDLER_PASS;
+ 		/* allow exact match delivery for disabled ports */
+ 		res = RX_HANDLER_EXACT;
+ 	} else {
+-- 
+2.35.1.265.g69c8d7142f-goog
+
