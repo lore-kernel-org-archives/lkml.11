@@ -2,170 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B88C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E7DC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236180AbiBOKCA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:02:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37110 "EHLO
+        id S235565AbiBOKCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:02:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234411AbiBOKBr (ORCPT
+        with ESMTP id S234175AbiBOKCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:01:47 -0500
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F7A1168F7;
-        Tue, 15 Feb 2022 02:01:11 -0800 (PST)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B3FCA240012;
-        Tue, 15 Feb 2022 10:01:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644919269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nDkpAMsVWyC4vbiV4Jpk59MCtZ8jwmChy7R2m0dQNcY=;
-        b=UY+Xn3qSNrnrQgY1poqUomDjpsECubm9KK+hXagfT6L8LOJGb1MnDRx5qIsvozVpzbgxyC
-        LVQwm8sbVcGeju1jUJKUIiduI6ibeXmqpgCxu3HSv6MdQsO3bx5xdDqvV8ESQdYo6BQCPx
-        Zq37GNBy6guNvXiZ+37xUWiJD9kJqDVzil+Pb0i9cX049Fp5UzsdxUg+UkfbSo9/Zj2d4N
-        Fq1jV+Qd61FBQsQHIjleun4X9dsrQcR5DEPRAHJRCYM3xb3aA7HkNRp+4k0pzcokbjPnHa
-        feuh4b+7tfgO7ptP/UDIm+fufb27XGt6462XaC7pNpBldWz1U15AOvgj2VvzXg==
-Date:   Tue, 15 Feb 2022 11:01:04 +0100
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 27/66] media: sun6i-csi: Add media ops with link
- notify callback
-Message-ID: <Ygt54MQ/Nnaf4F0f@aptenodytes>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-28-paul.kocialkowski@bootlin.com>
- <YgqGGJJ0oVQgRoNy@paasikivi.fi.intel.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="VkCV1Ya8HCPjEJtx"
-Content-Disposition: inline
-In-Reply-To: <YgqGGJJ0oVQgRoNy@paasikivi.fi.intel.com>
+        Tue, 15 Feb 2022 05:02:36 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751A010F224;
+        Tue, 15 Feb 2022 02:02:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644919344; x=1676455344;
+  h=from:to:cc:subject:date:message-id;
+  bh=qPVqXVUN2mGaNrVex8TfRvlY1eCUOH8rfs+vVpRk03Q=;
+  b=Tzp0tX7tcwBQ8GnVZMJ/RaJWW0/saLX4+/xXNMIRc83q3V8Rxdqb5S2D
+   0I/JOA+0CQvi9AZQs+bkxgQxnmcyleqebxJofywP8szWcRvu5vtNmSbFA
+   ksBcCkzViNwYk2+RPx8gZB0Jg6EXz4iJDKwOU7huDH7l4LMGXOc/LMgaB
+   I=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 15 Feb 2022 02:02:24 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 15 Feb 2022 02:02:23 -0800
+X-QCInternal: smtphost
+Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 15 Feb 2022 15:32:21 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
+        id C735D466C; Tue, 15 Feb 2022 15:32:19 +0530 (+0530)
+From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     manivannan.sadhasivam@linaro.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+Subject: [PATCH v2 4/7] clk: qcom: Add A7 PLL support for SDX65
+Date:   Tue, 15 Feb 2022 15:32:18 +0530
+Message-Id: <1644919338-27393-1-git-send-email-quic_rohiagar@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add support for PLL found in Qualcomm SDX65 platforms which is used to
+provide clock to the Cortex A7 CPU via a mux. This PLL can provide high
+frequency clock to the CPU above 1GHz as compared to the other sources
+like GPLL0.
 
---VkCV1Ya8HCPjEJtx
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In this driver, the power domain is attached to the cpudev. This is
+required for CPUFreq functionality and there seems to be no better place
+to do other than this driver (no dedicated CPUFreq driver).
 
-Hi Sakari,
+Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+---
+ drivers/clk/qcom/Kconfig  | 6 +++---
+ drivers/clk/qcom/a7-pll.c | 1 +
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-On Mon 14 Feb 22, 18:40, Sakari Ailus wrote:
-> Hi Paul,
->=20
-> Thanks for the update.
->=20
-> On Sat, Feb 05, 2022 at 07:53:50PM +0100, Paul Kocialkowski wrote:
-> > In order to keep the power use count fields balanced when link changes
-> > happen between v4l2_pipeline_pm_get/set calls (in open/close),
-> > the link_notify media operation callback needs to be registered.
-> >=20
-> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > ---
-> >  drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >=20
-> > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drive=
-rs/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > index 6f04f86504bf..c8fe31cc38b5 100644
-> > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-> > @@ -23,6 +23,7 @@
-> >  #include <linux/sched.h>
-> >  #include <linux/sizes.h>
-> >  #include <linux/slab.h>
-> > +#include <media/v4l2-mc.h>
-> > =20
-> >  #include "sun6i_csi.h"
-> >  #include "sun6i_csi_reg.h"
-> > @@ -574,6 +575,12 @@ void sun6i_csi_set_stream(struct sun6i_csi_device =
-*csi_dev, bool enable)
-> >  			   CSI_CAP_CH0_VCAP_ON);
-> >  }
-> > =20
-> > +/* Media */
-> > +
-> > +static const struct media_device_ops sun6i_csi_media_ops =3D {
-> > +	.link_notify =3D v4l2_pipeline_link_notify,
->=20
-> Do you really need this?
->=20
-> Drivers should instead rely on runtime PM nowadays.
->=20
-> <URL:https://hverkuil.home.xs4all.nl/spec/driver-api/camera-sensor.html#p=
-ower-management>
+diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
+index 6cd0634..10d75d3 100644
+--- a/drivers/clk/qcom/Kconfig
++++ b/drivers/clk/qcom/Kconfig
+@@ -29,11 +29,11 @@ config QCOM_A53PLL
+ 	  devices.
+ 
+ config QCOM_A7PLL
+-	tristate "SDX55 A7 PLL"
++	tristate "A7 PLL driver for SDX55 and SDX65"
+ 	help
+-	  Support for the A7 PLL on SDX55 devices. It provides the CPU with
++	  Support for the A7 PLL on SDX55 and SDX65 devices. It provides the CPU with
+ 	  frequencies above 1GHz.
+-	  Say Y if you want to support higher CPU frequencies on SDX55
++	  Say Y if you want to support higher CPU frequencies on SDX55 and SDX65
+ 	  devices.
+ 
+ config QCOM_CLK_APCS_MSM8916
+diff --git a/drivers/clk/qcom/a7-pll.c b/drivers/clk/qcom/a7-pll.c
+index c4a53e5..adb2121 100644
+--- a/drivers/clk/qcom/a7-pll.c
++++ b/drivers/clk/qcom/a7-pll.c
+@@ -84,6 +84,7 @@ static int qcom_a7pll_probe(struct platform_device *pdev)
+ 
+ static const struct of_device_id qcom_a7pll_match_table[] = {
+ 	{ .compatible = "qcom,sdx55-a7pll" },
++	{ .compatible = "qcom,sdx65-a7pll" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, qcom_a7pll_match_table);
+-- 
+2.7.4
 
-See my remark on the patch adding support for runtime pm.
-
-My understanding is that the callback is required when v4l2_pipeline_pm_get=
-/set
-is used, to keep the use count balanced (as mentionned in this commit messa=
-ge):
-<https://hverkuil.home.xs4all.nl/spec/driver-api/v4l2-mc.html#c.v4l2_pipeli=
-ne_pm_get>
-
-Cheers,
-
-Paul
-
-> > +};
-> > +
-> >  /* V4L2 */
-> > =20
-> >  static int sun6i_csi_link_entity(struct sun6i_csi_device *csi_dev,
-> > @@ -683,6 +690,7 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_de=
-vice *csi_dev)
-> >  	snprintf(media_dev->bus_info, sizeof(media_dev->bus_info),
-> >  		 "platform:%s", dev_name(dev));
-> >  	media_dev->hw_revision =3D 0;
-> > +	media_dev->ops =3D &sun6i_csi_media_ops;
-> >  	media_dev->dev =3D dev;
-> > =20
-> >  	media_device_init(media_dev);
->=20
-> --=20
-> Kind regards,
->=20
-> Sakari Ailus
-
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
-
---VkCV1Ya8HCPjEJtx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmILeeAACgkQ3cLmz3+f
-v9FiRggAjzv6FQ/wjR9P00HIcbyQ1TZZ0UlHjWr8fLJ7U9GfXZfxtnoAGCVLCg6i
-xqOBPVyMllJ9vVYN1p5XIchdUjpcJr0KPG0pyzoCdmJG1+JXtHmvqCetTLEz7jP2
-K9xUAUQM/3Gx5O0nA15ErpTbxstJg+YiTQJUpG0pYPf4oDkvYdZSvkwrQ6AeNBb4
-wJt6HpENkhZhm1rrvl0ACWeXCponlUJzkWaVqDVDWvg3R2r3QmwmtfR2y1bLxIyl
-jyYgxgah37KURsxIGLAp5qrcPnl32U3XYuUl2axFq1sSxmtFs4gkgtgB7pBS/afE
-fAD1yLIVXAVSfF80YLV2pdPB0xpyXw==
-=q3wj
------END PGP SIGNATURE-----
-
---VkCV1Ya8HCPjEJtx--
