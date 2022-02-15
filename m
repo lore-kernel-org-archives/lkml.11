@@ -2,105 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B19CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A432C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234314AbiBOGOp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 01:14:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58068 "EHLO
+        id S234323AbiBOGPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 01:15:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232361AbiBOGOl (ORCPT
+        with ESMTP id S232361AbiBOGO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 01:14:41 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3707BF7450;
-        Mon, 14 Feb 2022 22:14:25 -0800 (PST)
-Received: from kwepemi500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JyW1P2nFcz8wgT;
-        Tue, 15 Feb 2022 14:11:05 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi500002.china.huawei.com (7.221.188.171) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Feb 2022 14:14:23 +0800
-Received: from [10.174.178.208] (10.174.178.208) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Feb 2022 14:14:22 +0800
-Subject: Re: [PATCH 5.10 000/116] 5.10.101-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, <torvalds@linux-foundation.org>,
-        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
-        <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
-References: <20220214092458.668376521@linuxfoundation.org>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <908bdee2-8ecb-5927-6c6c-ea224d77d01d@huawei.com>
-Date:   Tue, 15 Feb 2022 14:14:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Tue, 15 Feb 2022 01:14:59 -0500
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9B5F745F;
+        Mon, 14 Feb 2022 22:14:49 -0800 (PST)
+Received: by mail-ej1-f45.google.com with SMTP id lw4so11181779ejb.12;
+        Mon, 14 Feb 2022 22:14:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dmLGmi/jb0sxVvWxeOL0tvmCWKAWUGwcOpsWGkrfDD4=;
+        b=vEYcqR/WbLyVaIaxBOQMCwJ3B/shJjEoQoYJyInVyJJt8qOI0WVISK8BEOhgIc+I08
+         0pQCDSMrWOVPmgRG0nZlIQAdfUui+4ph1pw5jsCoD1DFQKurQ7oZCHsotMxQxwRMfkN8
+         CAJENVPcJHfbB7RnUOnfJfcnXZXduQ8fpYyKGBj/rFzQWicjnEuyNSQ8hVL01x5n7S4b
+         +6n7wDV22TelZm4caycnmmLQqB7DOJKwqGUaEf4quJweJwVl6Zu4lWRe3V7aTln2q/JY
+         SSQy/hgUJtDE0B5nc1nh1TjXhtrkuH101ym/GMBNo4r3WFHLauJxccORy8+DZRRtX8BZ
+         Zjxw==
+X-Gm-Message-State: AOAM530pEFamNSuh8yXNgc6xPttAhZWG2KqF62brmkZcHz+VHJ6yQpkT
+        XzTyKOBu7RR4VTRgqWArJOs=
+X-Google-Smtp-Source: ABdhPJyKYhLgz9cMjm/zKM9LTSN6EcKQmbtwOxntWyQ0i0XlaEcmgIzQMi1BNZ0JQ1KQPqkEhAq6GQ==
+X-Received: by 2002:a17:907:6d94:: with SMTP id sb20mr1739357ejc.375.1644905688362;
+        Mon, 14 Feb 2022 22:14:48 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id h6sm6727577edb.5.2022.02.14.22.14.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 22:14:47 -0800 (PST)
+Message-ID: <a9b2899a-bbd4-ec15-6fcc-b7765455ea13@kernel.org>
+Date:   Tue, 15 Feb 2022 07:14:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] tty: serial: add missing pci_dev_put() before return
 Content-Language: en-US
+To:     Qing Wang <wangqing@vivo.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1644890472-65306-1-git-send-email-wangqing@vivo.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <1644890472-65306-1-git-send-email-wangqing@vivo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.208]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/2/14 17:24, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.101 release.
-> There are 116 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 15. 02. 22, 3:01, Qing Wang wrote:
+> From: Wang Qing <wangqing@vivo.com>
 > 
-> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
-> Anything received after that time might be too late.
+> pci_get_slot() increases its reference count, the caller must
+> decrement the reference count by calling pci_dev_put()
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.101-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
+> ---
+>   drivers/tty/serial/pch_uart.c | 7 +++++--
+>   1 file changed, 5 insertions(+), 2 deletions(-)
 > 
-> thanks,
-> 
-> greg k-h
-> 
+> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+> index f0351e6..da5a276
+> --- a/drivers/tty/serial/pch_uart.c
+> +++ b/drivers/tty/serial/pch_uart.c
+> @@ -723,7 +723,7 @@ static void pch_request_dma(struct uart_port *port)
+>   	if (!chan) {
+>   		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Tx)\n",
+>   			__func__);
+> -		return;
+> +		goto out;
+>   	}
+>   	priv->chan_tx = chan;
+>   
+> @@ -739,13 +739,16 @@ static void pch_request_dma(struct uart_port *port)
+>   			__func__);
+>   		dma_release_channel(priv->chan_tx);
+>   		priv->chan_tx = NULL;
+> -		return;
+> +		goto out;
+>   	}
+>   
+>   	/* Get Consistent memory for DMA */
+>   	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
+>   				    &priv->rx_buf_dma, GFP_KERNEL);
+>   	priv->chan_rx = chan;
+> +
+> +out:
+> +	pci_dev_put(dma_dev);
 
-Tested on arm64 and x86 for 5.10.101-rc1,
+Again, dma_dev is stored to an internal structure and shouldn't be freed 
+now.
 
-Kernel repo:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-Branch: linux-5.10.y
-Version: 5.10.101-rc1
-Commit: 8d15f8eda4b30d50abb1c58be6a175f2ec07888c
-Compiler: gcc version 7.3.0 (GCC)
+>   }
+>   
+>   static void pch_dma_rx_complete(void *arg)
 
-arm64:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9014
-passed: 9014
-failed: 0
-timeout: 0
---------------------------------------------------------------------
 
-x86:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9014
-passed: 9014
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-Tested-by: Hulk Robot <hulkrobot@huawei.com>
+-- 
+js
+suse labs
