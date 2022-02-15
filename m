@@ -2,171 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02212C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39593C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239804AbiBOP10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:27:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45174 "EHLO
+        id S239813AbiBOP12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:27:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239769AbiBOP1W (ORCPT
+        with ESMTP id S239782AbiBOP1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 10:27:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6D9A418A;
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4F2A27BF;
         Tue, 15 Feb 2022 07:27:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BC68B81AEA;
-        Tue, 15 Feb 2022 15:27:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC8D0C340ED;
-        Tue, 15 Feb 2022 15:27:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938829;
-        bh=MdwLK2UIQOUxi6p575z+uN8iqZmVWfHrE1bzAHEJX8Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e0sVDvS7eN3qIhln93yhNj/P9yGU6QO1GMQIonPVATv21SCdM53wN57aS+1KtR7GD
-         aOFamKzHIzOPED9GQ/XWT+G/S05qw6SgCZmTAnIzngkfwAcqhaOxiv9Y1lpp67bLBP
-         TsXmQV7sFhSBlTl8SxitkuSNNRwgd50vASbs+l29EfILgIyvqffCZwkfzJVc2dQIfl
-         TPNRETBTiG0QIBqcpfOzSe8+eI/hP5gTcHqFdGDmFUAvriqQ75YmA1ii3Vfogs3pr4
-         gWsu0mrqUbeBARemw/NkbjhsvFmCnaJdK4mfi7Wj8muOtO/Ufm57tgDT+/f4jsNGQ8
-         JsXG7Etp6jkvw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, nsaenz@kernel.org,
-        gascoar@gmail.com, ojaswin98@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.16 04/34] staging: vc04_services: Fix RCU dereference check
-Date:   Tue, 15 Feb 2022 10:26:27 -0500
-Message-Id: <20220215152657.580200-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
-References: <20220215152657.580200-1-sashal@kernel.org>
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1826B200003;
+        Tue, 15 Feb 2022 15:27:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644938826;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5LJhd1IbwzyroPVu4UEQmQz5Ff3pKyv/BsY2bYsaH3I=;
+        b=Z9NZ3Kdb+Pd+PCL+BHoMeoa+LzEM9XcY9wbHH1lxXtMGLOHNgBpMZy2dQ2zZNMtYExIpoL
+        mW6Ma/o3+d+YO+MIBUZGiTrNyEX8swZYEJUJhVeJJF7K9yjDXdDLAxoC22L3u04cPa1qxF
+        82/KiPuYNZl1fDBrxHWSzIAoXReoBvDOuOcRkHT5SaTn8V590wykA8Jg4V2LToDoOnzB5s
+        Jh1vjPhAHu1AgDDjdMGO1fOiIgyLFfUlRXNeSScgWVWPMW3do9ZLA9rg6eHCxRYW+K2lNR
+        QOfTL5N8I8daxu4kIXPwF5BttrFSt3OKohmc9VGbspIAwbicTKvy6QhFBKME/A==
+Date:   Tue, 15 Feb 2022 16:27:05 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Sergiu Moga <sergiu.moga@microchip.com>
+Cc:     a.zummo@towertech.it, robh+dt@kernel.org,
+        nicolas.ferre@microchip.com, ludovic.desroches@microchip.com,
+        linux-rtc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: rtc: convert at91sam9 bindings to
+ json-schema
+Message-ID: <YgvGSVs4v8IK/nwr@piout.net>
+References: <20220215144649.14378-1-sergiu.moga@microchip.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220215144649.14378-1-sergiu.moga@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
+Hello,
 
-[ Upstream commit 0cea730cac824edf78ffd3302938ed5fe2b9d50d ]
+On 15/02/2022 16:46:49+0200, Sergiu Moga wrote:
+> Convert RTC binding for Atmel/Microchip SoCs to Device Tree Schema
+> format.
+> 
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+> ---
+>  .../bindings/rtc/atmel,at91sam9-rtc.txt       | 25 --------
+>  .../bindings/rtc/atmel,at91sam9-rtc.yaml      | 61 +++++++++++++++++++
+>  2 files changed, 61 insertions(+), 25 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
+>  create mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt b/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
+> deleted file mode 100644
+> index 3f0e2a5950eb..000000000000
+> --- a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
+> +++ /dev/null
+> @@ -1,25 +0,0 @@
+> -Atmel AT91SAM9260 Real Time Timer
+> -
+> -Required properties:
+> -- compatible: should be one of the following:
+> -	- "atmel,at91sam9260-rtt"
+> -	- "microchip,sam9x60-rtt", "atmel,at91sam9260-rtt"
+> -- reg: should encode the memory region of the RTT controller
+> -- interrupts: rtt alarm/event interrupt
+> -- clocks: should contain the 32 KHz slow clk that will drive the RTT block.
+> -- atmel,rtt-rtc-time-reg: should encode the GPBR register used to store
+> -	the time base when the RTT is used as an RTC.
+> -	The first cell should point to the GPBR node and the second one
+> -	encode the offset within the GPBR block (or in other words, the
+> -	GPBR register used to store the time base).
+> -
+> -
+> -Example:
+> -
+> -rtt@fffffd20 {
+> -	compatible = "atmel,at91sam9260-rtt";
+> -	reg = <0xfffffd20 0x10>;
+> -	interrupts = <1 4 7>;
+> -	clocks = <&clk32k>;
+> -	atmel,rtt-rtc-time-reg = <&gpbr 0x0>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml b/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+> new file mode 100644
+> index 000000000000..c78a8c1c9314
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+> @@ -0,0 +1,61 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/rtc/atmel,at91sam9-rtc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Atmel AT91 RTT Device Tree Bindings
+> +
+> +allOf:
+> +  - $ref: "rtc.yaml#"
+> +
+> +maintainers:
+> +  - Alexandre Belloni <alexandre.belloni@bootlin.com>
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - items:
+> +        - const: atmel,at91sam9260-rtt
+> +      - items:
+> +        - const: microchip,sam9x60-rtt
+> +        - const: atmel,at91sam9260-rtt
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  atmel,rtt-rtc-time-reg:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description: |
+> +      Should encode the GPBR register used to store the time base when the
+> +      RTT is used as an RTC. The first cell should point to the GPBR node
+> +      and the second one encodes the offset within the GPBR block (or in
+> +      other words, the GPBR register used to store the time base).
+> +    items:
+> +      maxItems: 1
+> +
 
-In service_callback path RCU dereferenced pointer struct vchiq_service
-need to be accessed inside rcu read-critical section.
+This is missing start-year which is supported by the driver
 
-Also userdata/user_service part of vchiq_service is accessed around
-different synchronization mechanism, getting an extra reference to a
-pointer keeps sematics simpler and avoids prolonged graceperiod.
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - atmel,rtt-rtc-time-reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    rtt@fffffd20 {
+> +        compatible = "atmel,at91sam9260-rtt";
+> +        reg = <0xfffffd20 0x10>;
+> +        interrupts = <1 4 7>;
+> +        clocks = <&clk32k>;
+> +        atmel,rtt-rtc-time-reg = <&gpbr 0x0>;
+> +    };
+> -- 
+> 2.25.1
+> 
 
-Accessing vchiq_service with rcu_read_[lock/unlock] fixes below issue.
-
-[   32.201659] =============================
-[   32.201664] WARNING: suspicious RCU usage
-[   32.201670] 5.15.11-rt24-v8+ #3 Not tainted
-[   32.201680] -----------------------------
-[   32.201685] drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.h:529 suspicious rcu_dereference_check() usage!
-[   32.201695]
-[   32.201695] other info that might help us debug this:
-[   32.201695]
-[   32.201700]
-[   32.201700] rcu_scheduler_active = 2, debug_locks = 1
-[   32.201708] no locks held by vchiq-slot/0/98.
-[   32.201715]
-[   32.201715] stack backtrace:
-[   32.201723] CPU: 1 PID: 98 Comm: vchiq-slot/0 Not tainted 5.15.11-rt24-v8+ #3
-[   32.201733] Hardware name: Raspberry Pi 4 Model B Rev 1.4 (DT)
-[   32.201739] Call trace:
-[   32.201742]  dump_backtrace+0x0/0x1b8
-[   32.201772]  show_stack+0x20/0x30
-[   32.201784]  dump_stack_lvl+0x8c/0xb8
-[   32.201799]  dump_stack+0x18/0x34
-[   32.201808]  lockdep_rcu_suspicious+0xe4/0xf8
-[   32.201817]  service_callback+0x124/0x400
-[   32.201830]  slot_handler_func+0xf60/0x1e20
-[   32.201839]  kthread+0x19c/0x1a8
-[   32.201849]  ret_from_fork+0x10/0x20
-
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
-Link: https://lore.kernel.org/r/20211231195406.5479-1-treasure4paddy@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../interface/vchiq_arm/vchiq_arm.c           | 20 +++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-index c650a32bcedff..b9505bb51f45c 100644
---- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-+++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-@@ -1058,15 +1058,27 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
- 
- 	DEBUG_TRACE(SERVICE_CALLBACK_LINE);
- 
-+	rcu_read_lock();
- 	service = handle_to_service(handle);
--	if (WARN_ON(!service))
-+	if (WARN_ON(!service)) {
-+		rcu_read_unlock();
- 		return VCHIQ_SUCCESS;
-+	}
- 
- 	user_service = (struct user_service *)service->base.userdata;
- 	instance = user_service->instance;
- 
--	if (!instance || instance->closing)
-+	if (!instance || instance->closing) {
-+		rcu_read_unlock();
- 		return VCHIQ_SUCCESS;
-+	}
-+
-+	/*
-+	 * As hopping around different synchronization mechanism,
-+	 * taking an extra reference results in simpler implementation.
-+	 */
-+	vchiq_service_get(service);
-+	rcu_read_unlock();
- 
- 	vchiq_log_trace(vchiq_arm_log_level,
- 			"%s - service %lx(%d,%p), reason %d, header %lx, instance %lx, bulk_userdata %lx",
-@@ -1097,6 +1109,7 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
- 							bulk_userdata);
- 				if (status != VCHIQ_SUCCESS) {
- 					DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-+					vchiq_service_put(service);
- 					return status;
- 				}
- 			}
-@@ -1105,10 +1118,12 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
- 			if (wait_for_completion_interruptible(&user_service->remove_event)) {
- 				vchiq_log_info(vchiq_arm_log_level, "%s interrupted", __func__);
- 				DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-+				vchiq_service_put(service);
- 				return VCHIQ_RETRY;
- 			} else if (instance->closing) {
- 				vchiq_log_info(vchiq_arm_log_level, "%s closing", __func__);
- 				DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-+				vchiq_service_put(service);
- 				return VCHIQ_ERROR;
- 			}
- 			DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-@@ -1137,6 +1152,7 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
- 		header = NULL;
- 	}
- 	DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-+	vchiq_service_put(service);
- 
- 	if (skip_completion)
- 		return VCHIQ_SUCCESS;
 -- 
-2.34.1
-
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
