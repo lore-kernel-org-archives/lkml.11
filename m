@@ -2,110 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD1AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2F4C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242369AbiBORPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:15:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40810 "EHLO
+        id S242376AbiBORP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:15:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242361AbiBORPP (ORCPT
+        with ESMTP id S242362AbiBORPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:15:15 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D554111ADDB
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:15:05 -0800 (PST)
+        Tue, 15 Feb 2022 12:15:24 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D63311ADEA;
+        Tue, 15 Feb 2022 09:15:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644945305; x=1676481305;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=wYSE1d1KywOXWozIw3qtjar4Hm4wpZeg71RZfiDgbYU=;
-  b=RGEXUDXgJueONHOG7YvUo6EonpSK2JgzL1X+32cq+3/scplEzUKwmQ3u
-   6M9Hs0vpTohM/qm5Wo8ROKt50OXUwsFj02N2UzPf5q6smxK/A679Cjx1m
-   74Q8S0Vw8SJFdYmL+QU5fdTCW/peX6NkL4WHjZohIcl5bIeWnoDbCz0Ik
-   OH1MN+s14ioa6MdvIluR4w/etZxf56IsuUIO5z/D9272B117wWGPt3nKe
-   8m+Vd6ZMRZFfTRI+85nU9H+WYHE2/8w6FoA15FppNm+psw8fQAsaf7q0S
-   tTUCMVTuE6Iiqb8kWf5wUNgrFbiSoLOcZnIvkikJMLX4R/j+ng7ii/ora
+  t=1644945312; x=1676481312;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0RT88KVIkpcIt49KegmwACI0CL9gcweN2MoVMiIbVRY=;
+  b=Ao0Y02dPb3pRuLZzfaEZnYMMkBBsWLxSaPYsbMLL0D9MpkzLQ39YaH+1
+   ZvXwnOefsgEeyS1M3HvdXVtf4F0I3vT4UGyVeek641LLxmM4IgGsBo2BC
+   3hubo6iaqCXuvDQzNiGkSFkxmLnLqcVaJPDzYOyGkwSkjEv77MLq0/1Nw
+   yURhrTO8z7y8SW0qtwpqkFkmDb5RFqJIFhfmCYzA28YXQDvbRJNS2LCa2
+   mwKIk1PPxuykw/80CqsEg6r9ELwU6jRMgegiWmxdXSBWduFgFOHLUHDHm
+   7tXHKockhkdhHTa/5UBJnuCb7141dH97E2dZxphT9wKef4MIaNlcXZqb2
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250141893"
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="274975411"
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="250141893"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:14:56 -0800
+   d="scan'208";a="274975411"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:12:41 -0800
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="544392412"
-Received: from ylian16-mobl1.ccr.corp.intel.com (HELO localhost) ([10.252.20.230])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:14:52 -0800
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Cc:     Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v1 1/1] drm/i915/selftests: Replace too verbose for-loop
- with simpler while
-In-Reply-To: <20220215163213.54917-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220215163213.54917-1-andriy.shevchenko@linux.intel.com>
-Date:   Tue, 15 Feb 2022 19:14:49 +0200
-Message-ID: <87o83859x2.fsf@intel.com>
+   d="scan'208";a="486258571"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:12:34 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nK1MY-0050PZ-TS;
+        Tue, 15 Feb 2022 19:11:38 +0200
+Date:   Tue, 15 Feb 2022 19:11:38 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tan Jui Nee <jui.nee.tan@intel.com>,
+        Kate Hsuan <hpa@redhat.com>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>,
+        Henning Schild <henning.schild@siemens.com>
+Subject: Re: [PATCH v4 5/8] mfd: lpc_ich: Add support for pinctrl in non-ACPI
+ system
+Message-ID: <YgveyspHVXCp2ul+@smile.fi.intel.com>
+References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
+ <20220131151346.45792-6-andriy.shevchenko@linux.intel.com>
+ <YgvaqBB8fNVWp1lN@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgvaqBB8fNVWp1lN@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> It's hard to parse for-loop which has some magic calculations inside.
-> Much cleaner to use while-loop directly.
+On Tue, Feb 15, 2022 at 04:54:00PM +0000, Lee Jones wrote:
+> On Mon, 31 Jan 2022, Andy Shevchenko wrote:
 
-I assume you're trying to prove a point following our recent
-for-vs-while loop discussion. I really can't think of any other reason
-you'd end up looking at this file or this loop.
+Thank you for the review, my answers below.
 
-With the change, the loop indeed becomes simpler, but it also runs one
-iteration further than the original. Whoops.
+...
 
-It's a selftest. The loop's been there for five years. What are we
-trying to achieve here? So we disagree on loops, fine. Perhaps this is
-not the best use of either of our time? Please just let the for loops in
-i915 be.
+> > +static struct resource apl_gpio_resources[APL_GPIO_NR_DEVICES][2] = {
+> > +	[APL_GPIO_NORTH] = {
+> > +		DEFINE_RES_MEM(APL_GPIO_NORTH_OFFSET, 0x1000),
+> 
+> Are these 0x1000's being over-written in lpc_ich_init_pinctrl()?
+> 
+> If so, why pre-initialise?
 
+You mean to pre-initialize the offsets, but leave the length to be added
+in the function? It can be done, but it feels inconsistent, since we would
+have offsets and lengths in different places for the same thingy. That said,
+I prefer current way for the sake of consistency.
 
-BR,
-Jani.
+> > +		DEFINE_RES_IRQ(APL_GPIO_IRQ),
+> > +	},
 
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/gpu/drm/i915/selftests/i915_syncmap.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/selftests/i915_syncmap.c b/drivers/gpu/drm/i915/selftests/i915_syncmap.c
-> index 47f4ae18a1ef..26981d1c3025 100644
-> --- a/drivers/gpu/drm/i915/selftests/i915_syncmap.c
-> +++ b/drivers/gpu/drm/i915/selftests/i915_syncmap.c
-> @@ -36,10 +36,10 @@ __sync_print(struct i915_syncmap *p,
->  	unsigned int i, X;
->  
->  	if (depth) {
-> -		unsigned int d;
-> +		unsigned int d = depth;
->  
-> -		for (d = 0; d < depth - 1; d++) {
-> -			if (last & BIT(depth - d - 1))
-> +		while (d--) {
-> +			if (last & BIT(d))
->  				len = scnprintf(buf, *sz, "|   ");
->  			else
->  				len = scnprintf(buf, *sz, "    ");
+...
+
+> > +/* The order must be in sync with apl_pinctrl_soc_data */
+> 
+> Why does the order matter if you've pre-enumerated them all?
+
+Indeed. I will drop the confusing comment in the next version.
 
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+With Best Regards,
+Andy Shevchenko
+
+
