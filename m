@@ -2,109 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8DE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4074C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236998AbiBOPnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:43:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43784 "EHLO
+        id S239153AbiBOPom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:44:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240475AbiBOPml (ORCPT
+        with ESMTP id S240315AbiBOPoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:42:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB42D2047;
-        Tue, 15 Feb 2022 07:37:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B965B81AF1;
-        Tue, 15 Feb 2022 15:37:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1349EC340EB;
-        Tue, 15 Feb 2022 15:37:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939455;
-        bh=BsBNZ9apjGJSc2g0ZwEBxAVFFQEqTe0vH5kNc5TqqNU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z6Iki+WPdLb9gpmywemitTCbjFKLwFXyTTkar9otLYCKmkVVJPLCuaNDalikiu+v1
-         TFg7/MiGeNkMeC5C+RikqLWr791Vcf3KgyznU/cTJXJwn4KkTeYH5QXgrrDOtIAhzR
-         HXFUOcqXeTgSTD2IXcbWEAHEL3htsLHJhtz/sS63033m1wmPOY/h6HTiaccbMIJUMt
-         3alZOADJ+zQEo5A/yY2sNEVbLpudzmSGh3At7PAJF7bpC5s4Inb1TFrMCDOxMrFBqZ
-         U+gGuiE1GqpSi3wnrtEQO//Mqi29tuq6Bz6N4JtqUeb0zS2jeX1gvVisnLyw0ihv+N
-         oDOxIMDwcMJGA==
-Date:   Tue, 15 Feb 2022 15:37:27 +0000
-From:   Will Deacon <will@kernel.org>
-To:     Valentin Schneider <valentin.schneider@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rt-users@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mike Galbraith <efault@gmx.de>
-Subject: Re: [PATCH v4] arm64: mm: Make arch_faults_on_old_pte() check for
- migratability
-Message-ID: <20220215153726.GA7944@willie-the-truck>
-References: <20220127192437.1192957-1-valentin.schneider@arm.com>
+        Tue, 15 Feb 2022 10:44:18 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AC6EA363;
+        Tue, 15 Feb 2022 07:38:31 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id p9so22202235ejd.6;
+        Tue, 15 Feb 2022 07:38:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4c4uLg+6xK62uK/uIKxvl/o7vQn8X9pm3rRoIxcYStc=;
+        b=hVRSoNqL5G26KGJupiMcqpIIJ6KdnEX2br5Ah4u+93CBcx13OUAYoHcTpp+gHXlTtZ
+         Pwp+IBPNf5Asgg2RQmCkRE7/lkz9CKKIaLCfpfYqMWpxk+zR7r6YGKl1jaQg8OpEj7ro
+         Hc9uS0htjha3XdJfKpvdXvF4M4P54Z+y1ymAPxsTq68GdiD/1R9Gf8IU2fc37Hm5fs0W
+         QUK7wqnbwk6FMrL/Slbkr85sGi0OIrcPgmxui55rTRdDso9F9WrOGZvrUeOZWw5d5OrF
+         NvA0iYYv4uRWI9SxzRheHl6iNMzJ2Dl2G3KVOvBA+ltg9yN7vbN1az2T7ZDOtglfYidf
+         6Y0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4c4uLg+6xK62uK/uIKxvl/o7vQn8X9pm3rRoIxcYStc=;
+        b=E7cQR337+T/dwSlios1cXy/HrOEu6K8t4vw2qKRnGY4rnrRt+7avOyfnFSxPLVJ2fN
+         NqJ/PLopN/Ag9Ai6CHYoPVK/ZpTByytLsCFoUf2XpjngEgpbOCurD+IuhNptnnRWNCJu
+         u/wJdCzK4D84dlgmRtxobmtbOuf5pRDcLu+L9x7qM0BTpnbp+quz/Np3b+3zfbHnTC9Z
+         uEeTLE9WP0CncfWfvIj0DjGNbUf3eGuNyErA1E70+KgKuJ3STB49yhHf9Dp/TAjBnEMf
+         a0M15DoXqlJIXjaGCLLbB12UH5f/3gY/j3pisTo1izpw1k7EM50IT1CGrwQq8FfBrQHz
+         K/1A==
+X-Gm-Message-State: AOAM5302nncZOJ+DicpCfQ6VEB5iAmjaKDS3FxdVZrI3MGrkak842EIz
+        Twk/vPhoI8PDAG/MR+4zVASmFqNpi4lQUW0VU1o=
+X-Google-Smtp-Source: ABdhPJxQGBopSj3C6s+jqyN0nrwN12siEVw8h8G+/ijRyT5ogzTJ7KsTO9W46tWw5cDOyfkQckGvDJf4RDiA7ZGISGM=
+X-Received: by 2002:a17:906:99c5:: with SMTP id s5mr3466341ejn.497.1644939510133;
+ Tue, 15 Feb 2022 07:38:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127192437.1192957-1-valentin.schneider@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220209162607.1118325-1-maz@kernel.org> <CACRpkdYfrAexUhFV6e86QW+GSc3hM=38VNucKLhPppJ2ZdQ7fA@mail.gmail.com>
+In-Reply-To: <CACRpkdYfrAexUhFV6e86QW+GSc3hM=38VNucKLhPppJ2ZdQ7fA@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 15 Feb 2022 17:37:01 +0200
+Message-ID: <CAHp75VdmKqViM5393w=frbX77te6X-VnMe5+VZwxY4PBw12Pdw@mail.gmail.com>
+Subject: Re: [PATCH 00/10] irqchip: Prevent drivers abusing irq_chip::name
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Marc Zyngier <maz@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 07:24:37PM +0000, Valentin Schneider wrote:
-> arch_faults_on_old_pte() relies on the calling context being
-> non-preemptible. CONFIG_PREEMPT_RT turns the PTE lock into a sleepable
-> spinlock, which doesn't disable preemption once acquired, triggering the
-> warning in arch_faults_on_old_pte().
-> 
-> It does however disable migration, ensuring the task remains on the same
-> CPU during the entirety of the critical section, making the read of
-> cpu_has_hw_af() safe and stable.
-> 
-> Make arch_faults_on_old_pte() check cant_migrate() instead of preemptible().
-> 
-> Suggested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-> Link: https://lore.kernel.org/r/20210811201354.1976839-5-valentin.schneider@arm.com
-> ---
-> v3 -> v4: Dropped migratable(), reuse cant_migrate() (Sebastian)
-> ---
->  arch/arm64/include/asm/pgtable.h | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-> index c4ba047a82d2..3caf6346ea95 100644
-> --- a/arch/arm64/include/asm/pgtable.h
-> +++ b/arch/arm64/include/asm/pgtable.h
-> @@ -1001,7 +1001,8 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
->   */
->  static inline bool arch_faults_on_old_pte(void)
->  {
-> -	WARN_ON(preemptible());
-> +	/* The register read below requires a stable CPU to make any sense */
-> +	cant_migrate();
+On Fri, Feb 11, 2022 at 8:31 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+> On Wed, Feb 9, 2022 at 5:26 PM Marc Zyngier <maz@kernel.org> wrote:
 
-FWIW: There's a patch in the multi-generational LRU series that drops this
-WARN_ON() entirely. I'm not sure if/when that lot will land, but just wanted
-to let you know.
+...
 
-Will
+> Since ... I am mostly
+> playing with a baby during the daytime
+
+A bit of a side topic, since I need to send a PR for fixes before my
+vacation starts tomorrow, should I Cc my PR to that Linus as well, so
+he can accept it?
+It will contain two one-liner ID patches to pin control Intel drivers
+and won't conflict with anything (as far as I am aware and know).
+
+-- 
+With Best Regards,
+Andy Shevchenko
