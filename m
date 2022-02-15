@@ -2,69 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD58C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F113C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237437AbiBOL5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:57:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46836 "EHLO
+        id S237450AbiBOMDj convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:03:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237428AbiBOL5K (ORCPT
+        with ESMTP id S237403AbiBOMDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:57:10 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4A329CB4
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:57:00 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id E04091F38A;
-        Tue, 15 Feb 2022 11:56:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644926218; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MZgKlMY4uvXGwrwReShkyj4jWBoQgKilIHEcmjEYb+c=;
-        b=VJ2BYD1iU4BIslhAimT8zMLw54559U2p1JkAJM4Qty6ekF2tqvBdFOYMRDVdwQmWQmKuU5
-        iqjSktBgpsvYb58ZsrRUFwIoxf8p6ynp0++XOQ5KCL0bNRM/AQYpJpDBJ5bRSASIYCf0fo
-        xr22fHNfQ+hwh/2ZgL4I1nTObT4JRCU=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9431EA3B83;
-        Tue, 15 Feb 2022 11:56:58 +0000 (UTC)
-Date:   Tue, 15 Feb 2022 12:56:55 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH printk v1 04/13] printk: get caller_id/timestamp after
- migration disable
-Message-ID: <YguVB7eV8mxkcIst@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-5-john.ogness@linutronix.de>
+        Tue, 15 Feb 2022 07:03:36 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A1ED0B5B;
+        Tue, 15 Feb 2022 04:03:24 -0800 (PST)
+Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jyfpt0tBJz67xgN;
+        Tue, 15 Feb 2022 20:02:30 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Feb 2022 13:03:21 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Tue, 15 Feb
+ 2022 12:03:21 +0000
+Date:   Tue, 15 Feb 2022 12:03:19 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+CC:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Christoph Hellwig <hch@lst.de>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        kernel test robot <lkp@intel.com>,
+        "Arnd Bergmann" <arnd@arndb.de>, <linux-sh@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] sh: Convert nommu io{re,un}map() to static inline
+ functions
+Message-ID: <20220215120319.00004feb@Huawei.com>
+In-Reply-To: <4ed0a7a0d3fa912a5b44c451884818f2c138ef42.1644914600.git.geert+renesas@glider.be>
+References: <4ed0a7a0d3fa912a5b44c451884818f2c138ef42.1644914600.git.geert+renesas@glider.be>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207194323.273637-5-john.ogness@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml701-chm.china.huawei.com (10.201.108.50) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-02-07 20:49:14, John Ogness wrote:
-> Currently the local CPU timestamp and caller_id for the record are
-> collected while migration is enabled. Since this information is
-> CPU-specific, it should be collected with migration disabled.
+On Tue, 15 Feb 2022 09:51:05 +0100
+Geert Uytterhoeven <geert+renesas@glider.be> wrote:
+
+> Recently, nommu iounmap() was converted from a static inline function to
+> a macro again, basically reverting commit 4580ba4ad2e6b8dd ("sh: Convert
+> iounmap() macros to inline functions").  With -Werror, this leads to
+> build failures like:
 > 
-> Migration is disabled immediately after collecting this information
-> anyway, so just move the information collection to after the
-> migration disabling.
+>     drivers/iio/adc/xilinx-ams.c: In function ‘ams_iounmap_ps’:
+>     drivers/iio/adc/xilinx-ams.c:1195:14: error: unused variable ‘ams’ [-Werror=unused-variable]
+>      1195 |  struct ams *ams = data;
+> 	  |              ^~~
 > 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> Fix this by replacing the macros for ioremap() and iounmap() by static
+> inline functions, based on <asm-generic/io.h>.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Fixes: 13f1fc870dd74713 ("sh: move the ioremap implementation out of line")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Great catch!
+Looks good.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Thanks for the quick response.
 
-Best Regards,
-Petr
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> ---
+> This is actually the third time this change was made, as Christoph
+> converted iounmap() to a macro before in commit 98c90e5ea34e98bd ("sh:
+> remove __iounmap"), reverting commit 733f0025f0fb43e3 ("sh: prevent
+> warnings when using iounmap").
+> 
+> Probably sh-nommu should include <asm-generic/io.h>, but that would
+> require a lot more changes.
+> ---
+>  arch/sh/include/asm/io.h | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/sh/include/asm/io.h b/arch/sh/include/asm/io.h
+> index cf9a3ec32406f856..fba90e670ed41d48 100644
+> --- a/arch/sh/include/asm/io.h
+> +++ b/arch/sh/include/asm/io.h
+> @@ -271,8 +271,12 @@ static inline void __iomem *ioremap_prot(phys_addr_t offset, unsigned long size,
+>  #endif /* CONFIG_HAVE_IOREMAP_PROT */
+>  
+>  #else /* CONFIG_MMU */
+> -#define iounmap(addr)		do { } while (0)
+> -#define ioremap(offset, size)	((void __iomem *)(unsigned long)(offset))
+> +static inline void __iomem *ioremap(phys_addr_t offset, size_t size)
+> +{
+> +	return (void __iomem *)(unsigned long)offset;
+> +}
+> +
+> +static inline void iounmap(volatile void __iomem *addr) { }
+>  #endif /* CONFIG_MMU */
+>  
+>  #define ioremap_uc	ioremap
+
