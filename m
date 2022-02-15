@@ -2,110 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F269FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71092C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242222AbiBOVGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 16:06:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46568 "EHLO
+        id S243234AbiBOVGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 16:06:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238507AbiBOVGR (ORCPT
+        with ESMTP id S238507AbiBOVGe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 16:06:17 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495DD2A721
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:06:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=uvMluQdN0GSPuEJBcDu2YtcMnFGhEbHkw4SETZERvO0=; b=Rt5N2dtwUV7yCxceA3dKBG7Jec
-        DN0oXg1X/475ee26Wl+i80jXWzL36PEZHfWtFuolqqKIAmfheMVxDPoaAdPrZIc7XRpqmyJJWIcfn
-        Tc5jGPiry2KXhNSK++FitBh3laLYzLUOq1JapJoodBvcjrJrs1xQpBrmXc8vlkso96NNzKlQ6NDOn
-        PdhT9FvvKCy+vJTylcgyFZ3YEGMYOWjhCkvcIPMbHsUCoxtXCGTNCzjmTrFjOBVGCVZwUiU8svxrl
-        Yp51OVSq4cQvGa8BRlbEbg8C4oJYGzALwc2ucGwqleaBJyBq4Mkx4VqAHi3fedOUaQbuNZPxSRR1R
-        QhMyXUUg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nK51D-00EB2o-Ti; Tue, 15 Feb 2022 21:05:52 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6B154987956; Tue, 15 Feb 2022 22:05:50 +0100 (CET)
-Date:   Tue, 15 Feb 2022 22:05:50 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        X86 ML <x86@kernel.org>, hjl.tools@gmail.com,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        andrew.cooper3@citrix.com, LKML <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev
-Subject: Re: [RFC][PATCH 6/6] objtool: Add IBT validation / fixups
-Message-ID: <20220215210550.GD23216@worktop.programming.kicks-ass.net>
-References: <6ebb0ab131c522f20c094294d49091fc@overdrivepizza.com>
- <202202081541.900F9E1B@keescook>
- <ad6c2633f39e39583bc5c5eaf7ccbe52@overdrivepizza.com>
- <202202082003.FA77867@keescook>
- <9ea50c51ee8db366430c9dc697a83923@overdrivepizza.com>
- <20220211133803.GV23216@worktop.programming.kicks-ass.net>
- <CABCJKuciRBnz4JxBDJC=+kuJn4pU2uBkWPBov7-VL2o2j0F4SA@mail.gmail.com>
- <20220214222550.GB23216@worktop.programming.kicks-ass.net>
- <CABCJKuf-wouSCh4u43GPQHPPgG=mqOGboSoHPQRfmgQSBkFrMg@mail.gmail.com>
- <202202151129.1A5C5FE42@keescook>
+        Tue, 15 Feb 2022 16:06:34 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CE52A721
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:06:22 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id i6so284341pfc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:06:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uYxiEMeJ9sW9vGfu4qaZIOlJKxZ530WArSP68U8WQTQ=;
+        b=I2gXDQT+rjYnRNkwYCBsw+ST8CnBlcsFJn+npMpE8yuxzOvb2+ijoEat9pnOv4GVK7
+         b3P4LlmnJAm5HJFNWnjFV45rJYa0cBAJrzDDRBuADdxTJ1RjfpcSnBYfLOIQ+UgHNx7b
+         PSiSN8Dnu8BnnN+rvSqSmD4NR3AeTfzgwSOX8ws98bDhAGKzEcx7nTbjgK5rFYcZEFiQ
+         ZKeztyQOlkHVEMzQQu8O8IBvMjUYdQCI4cnshW3B07gb/QvLzjXhsSSxh4zC7yehChhl
+         tsi48Q3OdZE87JBra0X/90WDgaMwC/qevyqAjB2QCMlWsA03Nc5DwstKjfW9rqglmab5
+         LaKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uYxiEMeJ9sW9vGfu4qaZIOlJKxZ530WArSP68U8WQTQ=;
+        b=yFXvo0g35znNb59EL8vUw2gPfqJspO0kQvRZbOyam0W/uQlR1I8Qp2haVUL06Ux9RL
+         dTyKBQSmL67zekezRtaPFx1EnFGsOsKOEko6eJO1TLzYwfRXe/z+VkIDKpP5+Akc2huX
+         uO3UIP6I/JrqK8jJurGD1PplqoPrrFNqx30ip/b0dkljszsxWqSCTDmCtpfSYsygDkhd
+         hpZfMdE6fmCIaYoxzzkjIMPaBafQrj7ZkZnEZmwUoN+/Bz9JwHyj172bPJzs7ZgLMBMa
+         9BiGtnpVmVj3cRxPRbBLS9n3sGFVj6VloD+afJD3vqnx+oWq7p2mjMN5sA/IcM12mXy/
+         0ozg==
+X-Gm-Message-State: AOAM530X88yJ/onelxCgfh6NuWrZC8Q8fGttzYZB9QhdZXofM+2r70Qc
+        plX7yqT78Fw4OIiJs1RIBvU=
+X-Google-Smtp-Source: ABdhPJxEhu/wcIXAOxBEHtUxWHv8XlI/se8vhaPwmgtfYL8Y4DcaxZAh6S3JeDDwqTvBwu4zsCgpbg==
+X-Received: by 2002:aa7:9387:: with SMTP id t7mr776994pfe.24.1644959182287;
+        Tue, 15 Feb 2022 13:06:22 -0800 (PST)
+Received: from google.com ([2620:15c:202:201:4e4a:b0ff:e926:40e2])
+        by smtp.gmail.com with ESMTPSA id q8sm45166893pfl.143.2022.02.15.13.06.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 13:06:21 -0800 (PST)
+Date:   Tue, 15 Feb 2022 13:06:19 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: kernel/module_decompress.c:264:36: error: 'module_kset'
+ undeclared; did you mean 'module_use'?
+Message-ID: <YgwVy598bcqbaHtb@google.com>
+References: <202202140027.K0xZn3T2-lkp@intel.com>
+ <b45a15ec-549d-25ba-f818-ed503ba991de@infradead.org>
+ <YgnEsbnHXiuanfY/@google.com>
+ <YgtX9OFbeNZdCZTp@bombadil.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202202151129.1A5C5FE42@keescook>
+In-Reply-To: <YgtX9OFbeNZdCZTp@bombadil.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 12:03:12PM -0800, Kees Cook wrote:
-> On Tue, Feb 15, 2022 at 08:56:03AM -0800, Sami Tolvanen wrote:
-> > On Mon, Feb 14, 2022 at 2:25 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> > > On Mon, Feb 14, 2022 at 01:38:18PM -0800, Sami Tolvanen wrote:
-> > > > I'm fine with adding a trap mode that's used by default, but having
-> > > > more helpful diagnostics when something fails is useful even in
-> > > > production systems in my experience. This change results in a vmlinux
-> > > > that's another 0.92% smaller.
-> > >
-> > > You can easily have the exception generate a nice warning, you can even
-> > > have it continue. You really don't need a call for that.
+On Mon, Feb 14, 2022 at 11:36:20PM -0800, Luis Chamberlain wrote:
+> On Sun, Feb 13, 2022 at 06:55:45PM -0800, Dmitry Torokhov wrote:
+> > On Sun, Feb 13, 2022 at 04:34:49PM -0800, Randy Dunlap wrote:
+> > > 
+> > > 
+> > > On 2/13/22 08:57, kernel test robot wrote:
+> > > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> > > > head:   b81b1829e7e39f6cebdf6e4d5484eacbceda8554
+> > > > commit: b1ae6dc41eaaa98bb75671e0f3665bfda248c3e7 module: add in-kernel support for decompressing
+> > > > date:   5 weeks ago
+> > > > config: sparc-randconfig-r005-20220213 (https://download.01.org/0day-ci/archive/20220214/202202140027.K0xZn3T2-lkp@intel.com/config)
+> > > > compiler: sparc-linux-gcc (GCC) 11.2.0
+> > > > reproduce (this is a W=1 build):
+> > > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> > > >         chmod +x ~/bin/make.cross
+> > > >         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b1ae6dc41eaaa98bb75671e0f3665bfda248c3e7
+> > > >         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+> > > >         git fetch --no-tags linus master
+> > > >         git checkout b1ae6dc41eaaa98bb75671e0f3665bfda248c3e7
+> > > >         # save the config file to linux build tree
+> > > >         mkdir build_dir
+> > > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash
+> > > 
+> > > FTR/FYI:
+> > > # CONFIG_SYSFS is not set
 > > 
-> > Sure, but wouldn't that require us to generate something like
-> > __bug_table, so we know where the CFI specific traps are?
+> > Ugh, why is this even a thing?
 > 
-> It also means the trap handler needs to do a bunch of instruction
-> decoding to find the address that was going to be jumped to, etc.
+> If the kconfig supports it we need to support it. If you think
+> we need to remove the option to be built-in we can take that
+> up separately. In the meantime it would be wonderful if you
+> can address this issue for Linus' tree.
 
-arch/x86/kernel/alternative.c:apply_retpolines() has all that, since we
-need to to know that to re-write the thunk-call.
+Yes, of course, I was just wondering why we still have option to disable
+sysfs. I guess some very purpose-built embedded systems might still
+function without it...
 
-> > > > In this case the function has two indirect calls and Clang seems to
-> > > > prefer to emit just one ud2.
-> > >
-> > > That will not allow you to recover from the exception. UD2 is not an
-> > > unconditional fail. It should have an out-going edge in this case too.
-> > 
-> > Yes, CFI failures are not recoverable in that code. In fact, LLVM
-> > assumes that the llvm.trap intrinsic (i.e. ud2) never returns, but I
-> > suppose we could just use an int3 instead. I assume that's sufficient
-> > to stop speculation?
-> 
-> Peter, is there a reason you want things in the specific order of:
-> 
-> cmp, je-to-call, trap, call
-> 
-> Isn't it more run-time efficient to have an out-of-line failure of
-> the form:
-> 
-> cmp, jne-to-trap, call, ...code..., trap, jmp-to-call
-> 
-> I thought the static label stuff allowed the "default out of line"
-> option, as far as pessimizing certain states, etc? The former is certainly
-> code-size smaller, though, yes, but doesn't it waste space in the cache
-> line for the unlikely case, etc?
-
-Mostly so that we can deduce the address of the trap from the retpoline
-site, also the above has a fairly high chance of using jcc.d32 which is
-actually larger than jcc.d8+ud2.
+-- 
+Dmitry
