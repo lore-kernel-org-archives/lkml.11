@@ -2,84 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A881C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F27C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240064AbiBOPa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:30:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47758 "EHLO
+        id S240186AbiBOPa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:30:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240102AbiBOP3u (ORCPT
+        with ESMTP id S240089AbiBOP3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 10:29:50 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7429BF52B;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E44BF521;
         Tue, 15 Feb 2022 07:28:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644938914; x=1676474914;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9CDhZJWW1q2vhq2fCgbv/Rf44s8ghp54BeJ5kvboSuc=;
-  b=Xkf9bTo/aMazx/d2L/BB9rn/04Yefef4Rk8V9wgDLh73Fh9+KjTQCmla
-   4AUqUB7GPhn3Ri9NmDePAb9Lbb0l8Q262mFpvVsfQ+FSuO2n22LXQXMct
-   yQxwhCvVoVedExdyGwNIVDW0m/sq2YVYltnFTT7ol2ZDjoFVEguoNaMcm
-   OmkuNw4C9agmDTjDbYYRPuvm4Q2A5n4uoveitBPi9zgtrcOZPtptDvCGC
-   tdnM80n+JeOhJD0w9UcFzeCW0pA8M5F+hs0wyzXYsNMPe6WhOktyi2Lnz
-   swD5LeNJgmUPwhuiET0TM+5zLHgKc6PRbwjNHNCcRg27DadzSZCGN9dvR
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250115603"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="250115603"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 07:27:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="587743696"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 15 Feb 2022 07:27:53 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 9754C107; Tue, 15 Feb 2022 17:28:09 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 1/4] pinctrl: tigerlake: Revert "Add Alder Lake-M ACPI ID"
-Date:   Tue, 15 Feb 2022 17:27:57 +0200
-Message-Id: <20220215152800.21104-1-andriy.shevchenko@linux.intel.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE250615E6;
+        Tue, 15 Feb 2022 15:28:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44F0C340EB;
+        Tue, 15 Feb 2022 15:28:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644938909;
+        bh=RzY8vR9pOqT3Q4SfGqSnnyOelhCAOz02hOIQHVh8MHA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fh6LgercNfw9nMTwNJfq4KrWYMq60LL/0koKHqW69Y8rAx0uY2h6icYaYI4RiJcJq
+         swnN6WHLidLqGhSMNw8amfOg76dFURnlDsUy1b3/DuCK8h5/IE6y95+2YbeFpbOmB8
+         PPMFtsVzifL96VEBpmHXlH7q3w+brs1aALi118ykHdN+NyxjyxxmfcFjaS1TVun0hy
+         FAo9BD+zrnML68mQjYJkfjqFjJ4bQZfK7SN+mJAH4sbYpHbX+naAytavnbRsyYkRQX
+         F+eCIcRK2ssPUAIkGJEgABetI7IaiuUJ1AGtrIlXHFJ6fv/jIXTw2QiD4GW7/X12Gu
+         dyMO0N0wKOIPg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jing Leng <jleng@ambarella.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-kbuild@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 34/34] kconfig: fix failing to generate auto.conf
+Date:   Tue, 15 Feb 2022 10:26:57 -0500
+Message-Id: <20220215152657.580200-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
+References: <20220215152657.580200-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It appears that last minute change moved ACPI ID of Alder Lake-M
-to the INTC1055, which is already in the driver.
+From: Jing Leng <jleng@ambarella.com>
 
-This ID on the other hand will be used elsewhere.
+[ Upstream commit 1b9e740a81f91ae338b29ed70455719804957b80 ]
 
-This reverts commit 258435a1c8187f559549e515d2f77fa0b57bcd27.
+When the KCONFIG_AUTOCONFIG is specified (e.g. export \
+KCONFIG_AUTOCONFIG=output/config/auto.conf), the directory of
+include/config/ will not be created, so kconfig can't create deps
+files in it and auto.conf can't be generated.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Jing Leng <jleng@ambarella.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/intel/pinctrl-tigerlake.c | 1 -
- 1 file changed, 1 deletion(-)
+ scripts/kconfig/confdata.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pinctrl/intel/pinctrl-tigerlake.c b/drivers/pinctrl/intel/pinctrl-tigerlake.c
-index 0bcd19597e4a..3ddaeffc0415 100644
---- a/drivers/pinctrl/intel/pinctrl-tigerlake.c
-+++ b/drivers/pinctrl/intel/pinctrl-tigerlake.c
-@@ -749,7 +749,6 @@ static const struct acpi_device_id tgl_pinctrl_acpi_match[] = {
- 	{ "INT34C5", (kernel_ulong_t)&tgllp_soc_data },
- 	{ "INT34C6", (kernel_ulong_t)&tglh_soc_data },
- 	{ "INTC1055", (kernel_ulong_t)&tgllp_soc_data },
--	{ "INTC1057", (kernel_ulong_t)&tgllp_soc_data },
- 	{ }
- };
- MODULE_DEVICE_TABLE(acpi, tgl_pinctrl_acpi_match);
+diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+index 42bc56ee238c8..8954e28a225cb 100644
+--- a/scripts/kconfig/confdata.c
++++ b/scripts/kconfig/confdata.c
+@@ -992,14 +992,19 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
+ 
+ static int conf_touch_deps(void)
+ {
+-	const char *name;
++	const char *name, *tmp;
+ 	struct symbol *sym;
+ 	int res, i;
+ 
+-	strcpy(depfile_path, "include/config/");
+-	depfile_prefix_len = strlen(depfile_path);
+-
+ 	name = conf_get_autoconfig_name();
++	tmp = strrchr(name, '/');
++	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
++	if (depfile_prefix_len + 1 > sizeof(depfile_path))
++		return -1;
++
++	strncpy(depfile_path, name, depfile_prefix_len);
++	depfile_path[depfile_prefix_len] = 0;
++
+ 	conf_read_simple(name, S_DEF_AUTO);
+ 	sym_calc_value(modules_sym);
+ 
 -- 
 2.34.1
 
