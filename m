@@ -2,176 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E79C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239453AbiBOOwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:52:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33200 "EHLO
+        id S239514AbiBOOwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:52:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239239AbiBOOvw (ORCPT
+        with ESMTP id S238708AbiBOOv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:51:52 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B0A104A59;
-        Tue, 15 Feb 2022 06:50:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644936635; x=1676472635;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Warxi8oODvNtldPlORcvEwIKu5YQQtPRxV9eIjZBPG0=;
-  b=O86cAGBjczuZ+icNmbvbmTbmw5a8WYyewFgUdhGU5N7vNGKTZxPE8dUV
-   0gQE2ueKcXCHKdqcHNTTul4pAF/qUANkTohXrz31/hFNIj8mrsHvAk2U+
-   f1xghrslK7v7EnDMbEqieoZibrtJ4gTqvbKMbXS5ibRKxjTF5ms7GfMG+
-   K0h4zI0xcervrNeR3SikEo4uS4TF2eVhAmXMBZ0+x5/OfAdaPvKC2tbe6
-   H6x65NZSCAC0+oRRu2tug4I/gAYSB1ykijP2lFh6X1PwEE+XL2m/7LE9H
-   tg1Xs9yR15icVJwcVXLKekZ5ZMzUs9xdRrRAvVk96Ms4seUPGefIpIyUV
-   w==;
-IronPort-SDR: +aRwZPFln39QE8nwEv4LFZnexjfzurE7rBnnykNE5y5h2bnAem8d0J/3yQo/igJF7bmN8spzUO
- byB7BvUNdNq91Gl3XHFq6a5zzlA8j3srpbcF2xMvc/GzDBIauc196yFW/UVY4dsAH7VAgqe3Tt
- I98Ft8tILfYYL84LpKIn5xAmvE3DcDc4WSGIfKWzcUB1JA6tWypFLVoADqnjMwtxJzTBtDHBTD
- NuyDk9R5gdjQ4f8HUGJUaus5TG0+bCTSiqsaWCObpXM00s9UCjkSXDmqRYBeTBoMF6UI7H9T+7
- GNZLkO6joYrydKF/m8Kjev1q
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="153664207"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Feb 2022 07:50:33 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 15 Feb 2022 07:50:32 -0700
-Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 15 Feb 2022 07:50:28 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-        <ludovic.desroches@microchip.com>
-CC:     <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH] dt-bindings: rtc: convert at91sam9 bindings to json-schema
-Date:   Tue, 15 Feb 2022 16:46:49 +0200
-Message-ID: <20220215144649.14378-1-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 15 Feb 2022 09:51:58 -0500
+Received: from outbound-smtp21.blacknight.com (outbound-smtp21.blacknight.com [81.17.249.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E91120
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:51:23 -0800 (PST)
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp21.blacknight.com (Postfix) with ESMTPS id AADE0CCB67
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 14:51:22 +0000 (GMT)
+Received: (qmail 13583 invoked from network); 15 Feb 2022 14:51:22 -0000
+Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.17.223])
+  by 81.17.254.9 with ESMTPA; 15 Feb 2022 14:51:22 -0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Aaron Lu <aaron.lu@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Subject: [PATCH 0/5] Follow-up on high-order PCP caching
+Date:   Tue, 15 Feb 2022 14:51:06 +0000
+Message-Id: <20220215145111.27082-1-mgorman@techsingularity.net>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert RTC binding for Atmel/Microchip SoCs to Device Tree Schema
-format.
+Commit 44042b449872 ("mm/page_alloc: allow high-order pages to be
+stored on the per-cpu lists") was primarily aimed at reducing the cost
+of SLUB cache refills of high-order pages in two ways. Firstly, zone
+lock acquisitions was reduced and secondly, there were fewer buddy list
+modifications. This is a follow-up series fixing some issues that became
+apparant after merging.
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
- .../bindings/rtc/atmel,at91sam9-rtc.txt       | 25 --------
- .../bindings/rtc/atmel,at91sam9-rtc.yaml      | 61 +++++++++++++++++++
- 2 files changed, 61 insertions(+), 25 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
- create mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+Patch 1 is a functional fix. It's harmless but inefficient.
 
-diff --git a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt b/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
-deleted file mode 100644
-index 3f0e2a5950eb..000000000000
---- a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
-+++ /dev/null
-@@ -1,25 +0,0 @@
--Atmel AT91SAM9260 Real Time Timer
--
--Required properties:
--- compatible: should be one of the following:
--	- "atmel,at91sam9260-rtt"
--	- "microchip,sam9x60-rtt", "atmel,at91sam9260-rtt"
--- reg: should encode the memory region of the RTT controller
--- interrupts: rtt alarm/event interrupt
--- clocks: should contain the 32 KHz slow clk that will drive the RTT block.
--- atmel,rtt-rtc-time-reg: should encode the GPBR register used to store
--	the time base when the RTT is used as an RTC.
--	The first cell should point to the GPBR node and the second one
--	encode the offset within the GPBR block (or in other words, the
--	GPBR register used to store the time base).
--
--
--Example:
--
--rtt@fffffd20 {
--	compatible = "atmel,at91sam9260-rtt";
--	reg = <0xfffffd20 0x10>;
--	interrupts = <1 4 7>;
--	clocks = <&clk32k>;
--	atmel,rtt-rtc-time-reg = <&gpbr 0x0>;
--};
-diff --git a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml b/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
-new file mode 100644
-index 000000000000..c78a8c1c9314
---- /dev/null
-+++ b/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
-@@ -0,0 +1,61 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/rtc/atmel,at91sam9-rtc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel AT91 RTT Device Tree Bindings
-+
-+allOf:
-+  - $ref: "rtc.yaml#"
-+
-+maintainers:
-+  - Alexandre Belloni <alexandre.belloni@bootlin.com>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+        - const: atmel,at91sam9260-rtt
-+      - items:
-+        - const: microchip,sam9x60-rtt
-+        - const: atmel,at91sam9260-rtt
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  atmel,rtt-rtc-time-reg:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    description: |
-+      Should encode the GPBR register used to store the time base when the
-+      RTT is used as an RTC. The first cell should point to the GPBR node
-+      and the second one encodes the offset within the GPBR block (or in
-+      other words, the GPBR register used to store the time base).
-+    items:
-+      maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - atmel,rtt-rtc-time-reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    rtt@fffffd20 {
-+        compatible = "atmel,at91sam9260-rtt";
-+        reg = <0xfffffd20 0x10>;
-+        interrupts = <1 4 7>;
-+        clocks = <&clk32k>;
-+        atmel,rtt-rtc-time-reg = <&gpbr 0x0>;
-+    };
+Patches 2-4 reduce the overhead of bulk freeing of PCP pages. While
+the overhead is small, it's cumulative and noticable when truncating
+large files. The changelog for patch 4 includes results of a microbench
+that deletes large sparse files with data in page cache. Sparse files
+were used to eliminate filesystem overhead.
+
+Patch 5 addresses issues with high-order PCP pages being stored on PCP
+lists for too long. Pages freed on a CPU potentially may not be quickly
+reused and in some cases this can increase cache miss rates.  Details are
+included in the changelog.
+
+ mm/page_alloc.c | 128 ++++++++++++++++++++++++------------------------
+ 1 file changed, 64 insertions(+), 64 deletions(-)
+
 -- 
-2.25.1
+2.31.1
 
