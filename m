@@ -2,110 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E65C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA98C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236948AbiBOLBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:01:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37816 "EHLO
+        id S236830AbiBOLFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:05:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236830AbiBOLB2 (ORCPT
+        with ESMTP id S234362AbiBOLFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:01:28 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A39F9F83;
-        Tue, 15 Feb 2022 03:01:19 -0800 (PST)
-Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:6d7b:ae43:289b:7e7c])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Tue, 15 Feb 2022 06:05:22 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61B21074F0;
+        Tue, 15 Feb 2022 03:05:11 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 79BB61F444FF;
-        Tue, 15 Feb 2022 11:01:17 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644922878;
-        bh=HT0GtBSTdWO+3cmZvtUx1T5UmoQIqfWc6rs9UqOp43k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hXbWKlN/yX78SrDsorfkisEL/5KOpc3MZyW0r4/gfXL7mnM6y0x72mTSnuFylBTzg
-         lo/wi5BTrK5ZwYf6HhuM2+/EOEvZVHnc7F941MMR+N977Ht+SIADoDYG9jPLwPUFS7
-         j+UjOkKN8mMewTJ9BxoHvR3j8Qs3YmJyUDo6sWgvUoOVxuwiUNO0eKloImne8fDFeW
-         Td0J6w2WmMaJkPzAKoEEYzHtFq2p9GL5qLafN8y3mfhLY51gGu0NLevll5rt1xs2Es
-         erIiIovqSi/9g4Bjaw2DdctyA/iwzXJdZ8dcLjExZm9zmKowEQZub0FhROu6yPomll
-         pkS9SugwLOtnw==
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, hverkuil-cisco@xs4all.nl,
-        jonas@kwiboo.se, nicolas@ndufresne.ca
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com, knaerzche@gmail.com, jc@kynesim.co.uk,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [RFC v2 8/8] media: uapi: Change data_bit_offset definition
-Date:   Tue, 15 Feb 2022 12:01:03 +0100
-Message-Id: <20220215110103.241297-9-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220215110103.241297-1-benjamin.gaignard@collabora.com>
-References: <20220215110103.241297-1-benjamin.gaignard@collabora.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JydXd6l0yz4xNq;
+        Tue, 15 Feb 2022 22:05:05 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1644923107;
+        bh=LoeNfqeXHZpw22Uq/3imGMD+iHu3vmdMmCYzm8O/0HE=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=SHn+0P0fQHdthvYLHYFnoJt36LFHdIy60E+1+cApL4Qd3fRJ74pBCS79bFEQcIupt
+         vwupGcmCdq48K88sDm5KgEcS5aHkfeTfrotLL9p1pU6yi3vVdwxxeiqjZCp3iOiDSo
+         m8DyTQZKgC9cdIptSy7lGlVKcCH1lijaQoTFOZkodTrsxQnjlMF1pA9meNMLieskBv
+         24pHnMbAznFtrmC0gnqmVbn7E0ilcKPVgV88T3HxI/wSrVWI6lxav60uqi2mVrDtTZ
+         L54uDc4vn4/B/kV9YAv1+nOlse4K36BMU/DPR6ElvtOmkUNDcKrk8529uvKFOoib/W
+         gDLYqvVXRIB2A==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Ingo Molnar <mingo@redhat.com>, Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+Subject: Re: [PATCH v2 09/13] powerpc/ftrace: Implement
+ CONFIG_DYNAMIC_FTRACE_WITH_ARGS
+In-Reply-To: <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
+References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
+ <5831f711a778fcd6eb51eb5898f1faae4378b35b.1640017960.git.christophe.leroy@csgroup.eu>
+ <1644852011.qg7ud9elo2.naveen@linux.ibm.com>
+ <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
+Date:   Tue, 15 Feb 2022 22:05:04 +1100
+Message-ID: <875ypgo0f3.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'F.7.3.6.1 General slice segment header syntax' section of HEVC
-specification describes that a slice header always end byte aligned,
-therefore we only need to provide the data offset in byte.
+Christophe Leroy <christophe.leroy@csgroup.eu> writes:
+> Le 14/02/2022 =C3=A0 16:25, Naveen N. Rao a =C3=A9crit=C2=A0:
+>> Christophe Leroy wrote:
+>>> Implement CONFIG_DYNAMIC_FTRACE_WITH_ARGS. It accelerates the call
+>>> of livepatching.
+>>>
+>>> Also note that powerpc being the last one to convert to
+>>> CONFIG_DYNAMIC_FTRACE_WITH_ARGS, it will now be possible to remove
+>>> klp_arch_set_pc() on all architectures.
+>>>
+>>> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+>>> ---
+>>> =C2=A0arch/powerpc/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 1 +
+>>> =C2=A0arch/powerpc/include/asm/ftrace.h=C2=A0=C2=A0=C2=A0 | 17 ++++++++=
++++++++++
+>>> =C2=A0arch/powerpc/include/asm/livepatch.h |=C2=A0 4 +---
+>>> =C2=A03 files changed, 19 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+>>> index cdac2115eb00..e2b1792b2aae 100644
+>>> --- a/arch/powerpc/Kconfig
+>>> +++ b/arch/powerpc/Kconfig
+>>> @@ -210,6 +210,7 @@ config PPC
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DEBUG_KMEMLEAK
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DEBUG_STACKOVERFLOW
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE
+>>> +=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE_WITH_ARGS=C2=A0=C2=A0=C2=
+=A0 if MPROFILE_KERNEL || PPC32
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE_WITH_REGS=C2=A0=C2=
+=A0=C2=A0 if MPROFILE_KERNEL || PPC32
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_EBPF_JIT
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_EFFICIENT_UNALIGNED_ACCESS=C2=A0=
+=C2=A0=C2=A0 if !(CPU_LITTLE_ENDIAN=20
+>>> && POWER7_CPU)
+>>> diff --git a/arch/powerpc/include/asm/ftrace.h=20
+>>> b/arch/powerpc/include/asm/ftrace.h
+>>> index b3f6184f77ea..45c3d6f11daa 100644
+>>> --- a/arch/powerpc/include/asm/ftrace.h
+>>> +++ b/arch/powerpc/include/asm/ftrace.h
+>>> @@ -22,6 +22,23 @@ static inline unsigned long=20
+>>> ftrace_call_adjust(unsigned long addr)
+>>> =C2=A0struct dyn_arch_ftrace {
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 struct module *mod;
+>>> =C2=A0};
+>>> +
+>>> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_ARGS
+>>> +struct ftrace_regs {
+>>> +=C2=A0=C2=A0=C2=A0 struct pt_regs regs;
+>>> +};
+>>> +
+>>> +static __always_inline struct pt_regs *arch_ftrace_get_regs(struct=20
+>>> ftrace_regs *fregs)
+>>> +{
+>>> +=C2=A0=C2=A0=C2=A0 return &fregs->regs;
+>>> +}
+>>=20
+>> I think this is wrong. We need to differentiate between ftrace_caller()=
+=20
+>> and ftrace_regs_caller() here, and only return pt_regs if coming in=20
+>> through ftrace_regs_caller() (i.e., FL_SAVE_REGS is set).
+>
+> Not sure I follow you.
+>
+> This is based on 5740a7c71ab6 ("s390/ftrace: add=20
+> HAVE_DYNAMIC_FTRACE_WITH_ARGS support")
+>
+> It's all the point of HAVE_DYNAMIC_FTRACE_WITH_ARGS, have the regs also=20
+> with ftrace_caller().
+>
+> Sure you only have the params, but that's the same on s390, so what did=20
+> I miss ?
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
----
- Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst | 4 ++--
- drivers/staging/media/sunxi/cedrus/cedrus_h265.c          | 2 +-
- include/uapi/linux/v4l2-controls.h                        | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+I already have this series in next, I can pull it out, but I'd rather
+not.
 
-diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-index 679595e94643..d5bdc2359b88 100644
---- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-@@ -2966,8 +2966,8 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
-     :widths:       1 1 2
- 
-     * - __u32
--      - ``data_bit_offset``
--      - Offset (in bits) to the video data in the current slice data.
-+      - ``data_byte_offset``
-+      - Offset (in byte) to the video data in the current slice data.
-     * - __u8
-       - ``nal_unit_type``
-       -
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-index db8c7475eeb8..81c4362ddbf4 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-@@ -402,7 +402,7 @@ static void cedrus_h265_setup(struct cedrus_ctx *ctx,
- 	/* Initialize bitstream access. */
- 	cedrus_write(dev, VE_DEC_H265_TRIGGER, VE_DEC_H265_TRIGGER_INIT_SWDEC);
- 
--	cedrus_h265_skip_bits(dev, slice_params->data_bit_offset);
-+	cedrus_h265_skip_bits(dev, slice_params->data_byte_offset * 8);
- 
- 	/* Bitstream parameters. */
- 
-diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
-index 700e6cce958c..6968b5888607 100644
---- a/include/uapi/linux/v4l2-controls.h
-+++ b/include/uapi/linux/v4l2-controls.h
-@@ -2458,7 +2458,7 @@ struct v4l2_hevc_pred_weight_table {
- #define V4L2_HEVC_SLICE_PARAMS_FLAG_DEPENDENT_SLICE_SEGMENT	(1ULL << 9)
- 
- struct v4l2_ctrl_hevc_slice_params {
--	__u32	data_bit_offset;
-+	__u32	data_byte_offset;
- 
- 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
- 	__u8	nal_unit_type;
--- 
-2.32.0
+I'll leave it in for now, hopefully you two can agree overnight my time
+whether this is a big problem or something we can fix with a fixup
+patch.
 
+>>> +static __always_inline void ftrace_instruction_pointer_set(struct=20
+>>> ftrace_regs *fregs,
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned long ip)
+>>> +{
+>>> +=C2=A0=C2=A0=C2=A0 regs_set_return_ip(&fregs->regs, ip);
+>>=20
+>> Should we use that helper here? regs_set_return_ip() also updates some=20
+>> other state related to taking interrupts and I don't think it makes=20
+>> sense for use with ftrace.
+>
+>
+> Today we have:
+>
+> 	static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned=20
+> long ip)
+> 	{
+> 		struct pt_regs *regs =3D ftrace_get_regs(fregs);
+>
+> 		regs_set_return_ip(regs, ip);
+> 	}
+>
+>
+> Which like x86 and s390 becomes:
+>
+> 	static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned=20
+> long ip)
+> 	{
+> 		ftrace_instruction_pointer_set(fregs, ip);
+> 	}
+>
+>
+>
+> That's the reason why I've been using regs_set_return_ip(). Do you think=
+=20
+> it was wrong to use regs_set_return_ip() in klp_arch_set_pc() ?
+>
+> That was added by 59dc5bfca0cb ("powerpc/64s: avoid reloading (H)SRR=20
+> registers if they are still valid")
+
+It's not wrong, but I think it's unnecessary. We need to use
+regs_set_return_ip() if we're changing the regs->ip of an interrupt
+frame, so that the interrupt return code will reload it.
+
+But AIUI in this case we're not doing that, we're changing the regs->ip
+of a pt_regs provided by ftrace, which shouldn't ever be an interrupt
+frame.
+
+So it's not a bug to use regs_set_return_ip(), but it is unncessary and
+means we'll reload the interrupt state unnecessarily on the next
+interrupt return.
+
+cheers
