@@ -2,150 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECE9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5132C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235531AbiBOMoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:44:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56230 "EHLO
+        id S237894AbiBOMoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:44:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237969AbiBOMnm (ORCPT
+        with ESMTP id S237950AbiBOMng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:43:42 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F97F20F46;
-        Tue, 15 Feb 2022 04:43:03 -0800 (PST)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JygcY3VYqz67Ybb;
-        Tue, 15 Feb 2022 20:38:37 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Feb 2022 13:43:01 +0100
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <kpsingh@kernel.org>,
-        <revest@chromium.org>
-CC:     <linux-integrity@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v2 6/6] selftests/bpf: Add test for bpf_lsm_kernel_read_file()
-Date:   Tue, 15 Feb 2022 13:40:42 +0100
-Message-ID: <20220215124042.186506-7-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220215124042.186506-1-roberto.sassu@huawei.com>
-References: <20220215124042.186506-1-roberto.sassu@huawei.com>
+        Tue, 15 Feb 2022 07:43:36 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CD41B78E;
+        Tue, 15 Feb 2022 04:42:42 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4Jygh21l7Tz9sSs;
+        Tue, 15 Feb 2022 13:41:38 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 1Qv4VFlf7NJM; Tue, 15 Feb 2022 13:41:38 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jyggp0jq5z9sSy;
+        Tue, 15 Feb 2022 13:41:26 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 078F38B763;
+        Tue, 15 Feb 2022 13:41:26 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id M6LRDoRwmE5a; Tue, 15 Feb 2022 13:41:25 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.174])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8CA808B781;
+        Tue, 15 Feb 2022 13:41:24 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21FCfGmr080621
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 13:41:16 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21FCfGGk080620;
+        Tue, 15 Feb 2022 13:41:16 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>, Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-mm@kvack.org,
+        Nicholas Piggin <npiggin@gmail.com>
+Subject: [PATCH v4 04/13] powerpc: Remove 'struct ppc64_opd_entry'
+Date:   Tue, 15 Feb 2022 13:40:59 +0100
+Message-Id: <c309ccee65ec2e3802df7a7fe761d0a298584809.1644928018.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1644928018.git.christophe.leroy@csgroup.eu>
+References: <cover.1644928018.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1644928860; l=1246; s=20211009; h=from:subject:message-id; bh=vx1idMeJkdOhlRkZvWHnC+mhHBjG4OZh535Q2FsolEA=; b=ovQ3V9ipcvhVy/DxCLHKvoDrDk5CubOQNQ3IRTv/C3FQ045y316Cko7N35eO9NVSdZ23kd79Fu+O Y/1D2lCLBbQOgr9Ou65SD7xGVKnb1qT/w/h+LCoX02QbvQDHZNSv
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Test the ability of bpf_lsm_kernel_read_file() to call the sleepable
-functions bpf_ima_inode_hash() or bpf_ima_file_hash() to obtain a
-measurement of a loaded IMA policy.
+'struct ppc64_opd_entry' doesn't belong to uapi/asm/elf.h
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+It was initially in module_64.c and commit 2d291e902791 ("Fix compile
+failure with non modular builds") moved it into asm/elf.h
+
+But it was by mistake added outside of __KERNEL__ section,
+therefore commit c3617f72036c ("UAPI: (Scripted) Disintegrate
+arch/powerpc/include/asm") moved it to uapi/asm/elf.h
+
+Now that it is not used anymore by the kernel, remove it.
+
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- tools/testing/selftests/bpf/ima_setup.sh      |  2 ++
- .../selftests/bpf/prog_tests/test_ima.c       |  3 +-
- tools/testing/selftests/bpf/progs/ima.c       | 28 ++++++++++++++++---
- 3 files changed, 28 insertions(+), 5 deletions(-)
+ arch/powerpc/include/uapi/asm/elf.h | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/ima_setup.sh b/tools/testing/selftests/bpf/ima_setup.sh
-index 8e62581113a3..82530f19f85a 100755
---- a/tools/testing/selftests/bpf/ima_setup.sh
-+++ b/tools/testing/selftests/bpf/ima_setup.sh
-@@ -51,6 +51,7 @@ setup()
+diff --git a/arch/powerpc/include/uapi/asm/elf.h b/arch/powerpc/include/uapi/asm/elf.h
+index 860c59291bfc..308857123a08 100644
+--- a/arch/powerpc/include/uapi/asm/elf.h
++++ b/arch/powerpc/include/uapi/asm/elf.h
+@@ -289,12 +289,4 @@ typedef elf_fpreg_t elf_vsrreghalf_t32[ELF_NVSRHALFREG];
+ /* Keep this the last entry.  */
+ #define R_PPC64_NUM		253
  
- 	ensure_mount_securityfs
- 	echo "measure func=BPRM_CHECK fsuuid=${mount_uuid}" > ${IMA_POLICY_FILE}
-+	echo "measure func=BPRM_CHECK fsuuid=${mount_uuid}" > ${mount_dir}/policy_test
- }
- 
- cleanup() {
-@@ -74,6 +75,7 @@ run()
- 	local mount_dir="${tmp_dir}/mnt"
- 	local copied_bin_path="${mount_dir}/$(basename ${TEST_BINARY})"
- 
-+	echo ${mount_dir}/policy_test > ${IMA_POLICY_FILE}
- 	exec "${copied_bin_path}"
- }
- 
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-index 62bf0e830453..c4a62d7b70df 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-@@ -97,8 +97,9 @@ void test_test_ima(void)
- 	/*
- 	 * 1 sample with use_ima_file_hash = false
- 	 * 2 samples with use_ima_file_hash = true (./ima_setup.sh, /bin/true)
-+	 * 1 sample with use_ima_file_hash = true (IMA policy)
- 	 */
--	ASSERT_EQ(err, 3, "num_samples_or_err");
-+	ASSERT_EQ(err, 4, "num_samples_or_err");
- 	ASSERT_NEQ(ima_hash_from_bpf, 0, "ima_hash");
- 
- close_clean:
-diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
-index 9bb63f96cfc0..9b4c03f30a1c 100644
---- a/tools/testing/selftests/bpf/progs/ima.c
-+++ b/tools/testing/selftests/bpf/progs/ima.c
-@@ -20,8 +20,7 @@ char _license[] SEC("license") = "GPL";
- 
- bool use_ima_file_hash;
- 
--SEC("lsm.s/bprm_committed_creds")
--void BPF_PROG(ima, struct linux_binprm *bprm)
-+static void ima_test_common(struct file *file)
- {
- 	u64 ima_hash = 0;
- 	u64 *sample;
-@@ -31,10 +30,10 @@ void BPF_PROG(ima, struct linux_binprm *bprm)
- 	pid = bpf_get_current_pid_tgid() >> 32;
- 	if (pid == monitored_pid) {
- 		if (!use_ima_file_hash)
--			ret = bpf_ima_inode_hash(bprm->file->f_inode, &ima_hash,
-+			ret = bpf_ima_inode_hash(file->f_inode, &ima_hash,
- 						 sizeof(ima_hash));
- 		else
--			ret = bpf_ima_file_hash(bprm->file, &ima_hash,
-+			ret = bpf_ima_file_hash(file, &ima_hash,
- 						sizeof(ima_hash));
- 		if (ret < 0 || ima_hash == 0)
- 			return;
-@@ -49,3 +48,24 @@ void BPF_PROG(ima, struct linux_binprm *bprm)
- 
- 	return;
- }
-+
-+SEC("lsm.s/bprm_committed_creds")
-+void BPF_PROG(ima, struct linux_binprm *bprm)
-+{
-+	ima_test_common(bprm->file);
-+}
-+
-+SEC("lsm.s/kernel_read_file")
-+int BPF_PROG(kernel_read_file, struct file *file, enum kernel_read_file_id id,
-+	     bool contents)
-+{
-+	if (!contents)
-+		return 0;
-+
-+	if (id != READING_POLICY)
-+		return 0;
-+
-+	ima_test_common(file);
-+
-+	return 0;
-+}
+-/* There's actually a third entry here, but it's unused */
+-struct ppc64_opd_entry
+-{
+-	unsigned long funcaddr;
+-	unsigned long r2;
+-};
+-
+-
+ #endif /* _UAPI_ASM_POWERPC_ELF_H */
 -- 
-2.32.0
+2.34.1
 
