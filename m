@@ -2,127 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D903C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73784C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234234AbiBOFwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:52:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45806 "EHLO
+        id S234248AbiBOFwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:52:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbiBOFwQ (ORCPT
+        with ESMTP id S234252AbiBOFw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:52:16 -0500
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7B87660;
-        Mon, 14 Feb 2022 21:52:06 -0800 (PST)
-Received: by mail-ed1-f44.google.com with SMTP id z22so4923802edd.1;
-        Mon, 14 Feb 2022 21:52:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/nwdQqGWMuoLKw2FCtFecdNjRci4zjN8KGSxzNh0v6c=;
-        b=T9ascm511ZeaXbw6JIc9vjxQ1tG9u0MyKMyb8GXPWTd2kZflSDXPw//IK/fQ2ODn4J
-         K9mt6k1kc+8TG3ck1PMls6/BWSuZ3+GCmeBpPd7tDQ+4eg5QdmqaaqcHl6qs9J0Cm/1e
-         FrxR+IianNGLQKyZELTz3hhMp9ZsSXxmXTjz4sAIfmUQdEm7Ss9c/niqMtdVfC2fxXuP
-         i0aRNt7oGIyIJI9w9+aKynX9lle1wmF6Hf8F6mE1KQGjyB9R862b7ali73p6O6TwcgI3
-         MLYjmg1BprPptT0S9b8AmZEdgrD1TfgiQBodgJHRvdfGsBUEhlr3b2gSmCLrAxdEQKoX
-         ujcw==
-X-Gm-Message-State: AOAM532QNTRmTVWG3jF+2ggDtExdSkUXrGcqZMpMOCMgmn0j0fw/NoDR
-        CXzFNBbx8/6D3UbgnQoAwow=
-X-Google-Smtp-Source: ABdhPJyojxvvk2j3yDGePKUIH/TBjPV7KtcMWADsM3HlHGLiWSq0cMw+Nou13oAjTw0kCCfQrroEZA==
-X-Received: by 2002:a05:6402:354d:: with SMTP id f13mr2230789edd.289.1644904325348;
-        Mon, 14 Feb 2022 21:52:05 -0800 (PST)
-Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id h27sm2982927ejb.13.2022.02.14.21.52.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 21:52:04 -0800 (PST)
-Message-ID: <91301fc3-e121-8f73-700b-323f7a9f4706@kernel.org>
-Date:   Tue, 15 Feb 2022 06:52:03 +0100
+        Tue, 15 Feb 2022 00:52:26 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDA9DFF5;
+        Mon, 14 Feb 2022 21:52:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644904336; x=1676440336;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=p/uMbZPPiZReXrMs+XWU+QXob/0etjYoC1lD26VUKfE=;
+  b=IQOzleTGZbkrvx3Dv1/7Wvps8usCvgcXGjxV2+WY7OqwoWQKqbnn20J/
+   nm+D2q8DpQz5LNnip8czwbkjTc8y4WzT/ktrI/4hzderZeQDKEntFgFaF
+   gEjMTJEGya84bgXuRsS0MLP0zXFPgb/4KSMOdJWBqUyTUEap902mnDmya
+   2bNARdlMQzA9LOEuQy1vYlZFOHr9sM+Vq+Nj06+1lhLKletQk3a5Uw/Xg
+   QqAjAlSGkdhx4lJaCgW/fW0U0Q5dfX2bxRcer+XiWw1EmLKChklmdiX22
+   +ijpIea0LedS/T2hbujpCRrds8O3wQQ+giGDisnCmjRib008ar67O0Gum
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230218526"
+X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
+   d="scan'208";a="230218526"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 21:52:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
+   d="scan'208";a="528642306"
+Received: from npg-dpdk-haiyue-2.sh.intel.com ([10.67.118.240])
+  by orsmga007.jf.intel.com with ESMTP; 14 Feb 2022 21:52:12 -0800
+From:   Haiyue Wang <haiyue.wang@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Haiyue Wang <haiyue.wang@intel.com>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Bailey Forrest <bcf@google.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Tao Liu <xliutaox@google.com>,
+        John Fraker <jfraker@google.com>,
+        Yangchun Fu <yangchun@google.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next v2] gve: enhance no queue page list detection
+Date:   Tue, 15 Feb 2022 13:17:49 +0800
+Message-Id: <20220215051751.260866-1-haiyue.wang@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214024134.223939-1-haiyue.wang@intel.com>
+References: <20220214024134.223939-1-haiyue.wang@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2] ath5k: use swap() to make code cleaner
-Content-Language: en-US
-To:     davidcomponentone@gmail.com
-Cc:     mickflemm@gmail.com, mcgrof@kernel.org, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <b6931732c22b074413e63151b93cfcf3f70fcaa5.1644891799.git.yang.guang5@zte.com.cn>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <b6931732c22b074413e63151b93cfcf3f70fcaa5.1644891799.git.yang.guang5@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15. 02. 22, 3:31, davidcomponentone@gmail.com wrote:
-> From: Yang Guang <yang.guang5@zte.com.cn>
-> 
-> Use the macro 'swap()' defined in 'include/linux/minmax.h' to avoid
-> opencoding it.
+The commit
+a5886ef4f4bf ("gve: Introduce per netdev `enum gve_queue_format`")
+introduces three queue format type, only GVE_GQI_QPL_FORMAT queue has
+page list. So it should use the queue page list number to detect the
+zero size queue page list. Correct the design logic.
 
-Ah, v2 already. Why do people tend to send versions of patches in an 
-hours interval? The comment from before few minutes on v1 still holds:
- > Why don't you include that file then?
+Using the 'queue_format == GVE_GQI_RDA_FORMAT' may lead to request zero
+sized memory allocation, like if the queue format is GVE_DQO_RDA_FORMAT.
 
-And also I commented on this very same patch sent on Nov 4 2021 (you did 
-it correctly on the first attempt back then) [1]:
- > Why not just use sort() instead of the double loop?
+The kernel memory subsystem will return ZERO_SIZE_PTR, which is not NULL
+address, so the driver can run successfully. Also the code still checks
+the queue page list number firstly, then accesses the allocated memory,
+so zero number queue page list allocation will not lead to access fault.
 
-So you even skip reviewers' comments. Not good.
+Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+---
+ drivers/net/ethernet/google/gve/gve_main.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-[1] 
-https://lore.kernel.org/all/0c3acbd4-6ab2-5cc5-6293-54e30093cce2@kernel.org/
-
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-
-The mailbox does not seem to exist:
-550 5.1.1 User unknown id=620B3CA9.000
-
-So it's pointless to put it here to bother everyone with undeliverable 
-e-mails.
-
-> Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-> Signed-off-by: David Yang <davidcomponentone@gmail.com>
-> ---
-> Changes from v1->v2:
-> - Fix the typo "sort" to "swap"
-> 
-> ---
->   drivers/net/wireless/ath/ath5k/phy.c | 5 +----
->   1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath5k/phy.c b/drivers/net/wireless/ath/ath5k/phy.c
-> index 00f9e347d414..08dc12611f8d 100644
-> --- a/drivers/net/wireless/ath/ath5k/phy.c
-> +++ b/drivers/net/wireless/ath/ath5k/phy.c
-> @@ -1562,16 +1562,13 @@ static s16
->   ath5k_hw_get_median_noise_floor(struct ath5k_hw *ah)
->   {
->   	s16 sort[ATH5K_NF_CAL_HIST_MAX];
-> -	s16 tmp;
->   	int i, j;
->   
->   	memcpy(sort, ah->ah_nfcal_hist.nfval, sizeof(sort));
->   	for (i = 0; i < ATH5K_NF_CAL_HIST_MAX - 1; i++) {
->   		for (j = 1; j < ATH5K_NF_CAL_HIST_MAX - i; j++) {
->   			if (sort[j] > sort[j - 1]) {
-> -				tmp = sort[j];
-> -				sort[j] = sort[j - 1];
-> -				sort[j - 1] = tmp;
-> +				swap(sort[j], sort[j - 1]);
->   			}
->   		}
->   	}
-
-Curly braces not needed now.
-
-regards,
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 54e51c8221b8..6cafee55efc3 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -857,8 +857,7 @@ static int gve_alloc_qpls(struct gve_priv *priv)
+ 	int i, j;
+ 	int err;
+ 
+-	/* Raw addressing means no QPLs */
+-	if (priv->queue_format == GVE_GQI_RDA_FORMAT)
++	if (num_qpls == 0)
+ 		return 0;
+ 
+ 	priv->qpls = kvcalloc(num_qpls, sizeof(*priv->qpls), GFP_KERNEL);
+@@ -901,8 +900,7 @@ static void gve_free_qpls(struct gve_priv *priv)
+ 	int num_qpls = gve_num_tx_qpls(priv) + gve_num_rx_qpls(priv);
+ 	int i;
+ 
+-	/* Raw addressing means no QPLs */
+-	if (priv->queue_format == GVE_GQI_RDA_FORMAT)
++	if (num_qpls == 0)
+ 		return;
+ 
+ 	kvfree(priv->qpl_cfg.qpl_id_map);
 -- 
-js
-suse labs
+2.35.1
+
