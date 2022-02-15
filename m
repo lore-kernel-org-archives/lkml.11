@@ -2,99 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B378CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC093C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237313AbiBOLpC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:45:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40352 "EHLO
+        id S237338AbiBOLpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:45:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237225AbiBOLpB (ORCPT
+        with ESMTP id S237225AbiBOLpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:45:01 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE3260048;
-        Tue, 15 Feb 2022 03:44:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644925491; x=1676461491;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qyAIjd2VQY1Poo9qKr5NLtKFqp4MeB5xc4hdxEJNHXM=;
-  b=RgXabcJaXfLwZBjEnPvAozvIGHVdVWA7zLnnjyQWihqGy7vAkfIkMHGl
-   K8tEziMEztppRyEnF/d+LLB0OyGEysDST32dI3kiYTmBXEYGQN/nztIcv
-   Oq61l+zdFnhMZjvu1K8kolh6BOLYxky7fuc2AjbrbS07aYPdrf5GUYhfb
-   vQL2zIEQOZzPlDeXpzI/MH/E8VDX+btShjLOLgNRsf6jQm5RyiL0R3iMA
-   VH9AwIhGnhtZyJ409O1YM6EuCcvNhMBJrego9mRPONDUddaT4rNiJB/Gz
-   NgPdKpPwe1zfHMSZI21lp0w/DfEP5Kz66YSfDwzpp5kMCWEl4bE358TV/
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="233876092"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="233876092"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 03:44:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="502391557"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2022 03:44:47 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJwGE-0009cR-T6; Tue, 15 Feb 2022 11:44:46 +0000
-Date:   Tue, 15 Feb 2022 19:44:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, sboyd@kernel.org,
-        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        abel.vesa@nxp.com
-Cc:     kbuild-all@lists.01.org, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH 3/4] clk: imx: support fracn gppll
-Message-ID: <202202151921.cC2AD29z-lkp@intel.com>
-References: <20220215081835.790311-4-peng.fan@oss.nxp.com>
+        Tue, 15 Feb 2022 06:45:08 -0500
+X-Greylist: delayed 1431 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 03:44:57 PST
+Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FCC60044;
+        Tue, 15 Feb 2022 03:44:57 -0800 (PST)
+Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.21])
+        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1nJvtI-0005EU-8w; Tue, 15 Feb 2022 11:21:04 +0000
+Message-ID: <bfb2b7f9-d2dc-590c-6cec-5923efa9ac80@codethink.co.uk>
+Date:   Tue, 15 Feb 2022 11:21:03 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220215081835.790311-4-peng.fan@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 1/2] PCI: fu740: fix finding GPIOs
+Content-Language: en-GB
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, bhelgaas@google.comv,
+        linux-pci@vger.kernel.org, paul.walmsley@sifive.com,
+        greentime.hu@sifive.com, david.abdurachmanov@gmail.com,
+        Rob Herring <robh@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+References: <20220214160556.GA9253@bhelgaas>
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+In-Reply-To: <20220214160556.GA9253@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Peng,
+On 14/02/2022 16:05, Bjorn Helgaas wrote:
+> [+cc Rob for possible DT/kernel match issue,
+> Lorenzo (native host bridge driver maintainer)]
+> 
+> s/fix finding/Fix finding/ (in subject)
+> Or even better, say something specific about the DT properties in
+> question, e.g., look for "reset" instead of "reset-gpios".
+> 
+> On Mon, Feb 14, 2022 at 08:21:43AM +0000, Ben Dooks wrote:
+>> The calls to devm_gpiod_get_optional() have the -gpios at the end of
+>> the name. This means the pcie driver is not finding the necessary
+>> reset or power GPOOs to allow the PCIe devices on the SiFive Unmatched
+>> boards.
+> 
+> s/pcie/PCIe/
+> s/GPOOs/GPIOs/
 
-Thank you for the patch! Yet something to improve:
+Will fix
 
-[auto build test ERROR on shawnguo/for-next]
-[also build test ERROR on robh/for-next clk/clk-next v5.17-rc4 next-20220214]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> "to allow the PCIe devices ...?"  Something is missing from this
+> sentence.  "To allow the devices <to do what>"?  Or maybe the driver
+> needs these GPIOs to power up the PCIe devices?
+> 
+> I guess the implication is that the code looks for "reset-gpios" and
+> "pwren-gpios", but the DT contains "reset" and "pwren"?
+> 
+> But both Documentation/devicetree/bindings/pci/sifive,fu740-pcie.yaml
+> and arch/riscv/boot/dts/sifive/fu740-c000.dtsi actually do contain
+> "reset-gpios" and "pwren-gpios".
 
-url:    https://github.com/0day-ci/linux/commits/Peng-Fan-OSS/imx-add-i-MX93-clk-bindings-and-driver/20220215-162047
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git for-next
-config: riscv-randconfig-r022-20220214 (https://download.01.org/0day-ci/archive/20220215/202202151921.cC2AD29z-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/37b42f1a06ef92797e800461d1f46e849fa63c91
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Peng-Fan-OSS/imx-add-i-MX93-clk-bindings-and-driver/20220215-162047
-        git checkout 37b42f1a06ef92797e800461d1f46e849fa63c91
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
+Yes, the issue is the gpio core code adds either "-gpio" or "-gpios"
+itself, thus the find code does not need this. The error messages and
+DT are correct. I'll reword the initial paragraph to note that which
+should also deal with the other comments:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The calls to devm_gpiod_get_optional() have the -gpios at the end of
+the name but the GPIO core code is already adding the suffix during
+the lookup. This means the PCIe driver is not finding the necessary
+reset or power lines to allow initialisation of the PCIe.
 
-All errors (new ones prefixed by >>):
 
-   riscv32-linux-ld: drivers/clk/imx/clk-fracn-gppll.o: in function `.L39':
->> clk-fracn-gppll.c:(.text+0x2b4): undefined reference to `__udivdi3'
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> If we *do* want to change the code, please change the error messages
+> to match.
+
+See above, it is just devm_gpiod_get_optional() parameters at fault.
+
+>> This has not been a noted bug as the PCIe probe from u-boot has been
+>> required to get the PCIe working due to other issues with the system
+>> setup. It could have been broken since the driver inclusion, and not
+>> been noticed as it is not necessary for the driver to funciton.
+> 
+> s/u-boot/U-Boot/
+> s/funciton/function/
+> 
+> Please add a line about what the connection between U-Boot and this
+> issue is, e.g., maybe U-Boot powers up the devices, so we wouldn't
+> notice the kernel's inability to do so?
+
+Does a reword to the following make better sense:
+
+This bug has not been noticed as if U-Boot has setup the GPIO lines
+for the hardware when it does the PCIe initialisation (either by
+booting from PCIe or user command to access PCIe) then the PCIe
+will work in Linux. The U-Boot as supplied by SiFive does not by
+default initialise any PCIe component.
+
+>> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+>> ---
+>>   drivers/pci/controller/dwc/pcie-fu740.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
+>> index 00cde9a248b5..842b7202b96e 100644
+>> --- a/drivers/pci/controller/dwc/pcie-fu740.c
+>> +++ b/drivers/pci/controller/dwc/pcie-fu740.c
+>> @@ -259,11 +259,11 @@ static int fu740_pcie_probe(struct platform_device *pdev)
+>>   		return PTR_ERR(afp->mgmt_base);
+>>   
+>>   	/* Fetch GPIOs */
+>> -	afp->reset = devm_gpiod_get_optional(dev, "reset-gpios", GPIOD_OUT_LOW);
+>> +	afp->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+>>   	if (IS_ERR(afp->reset))
+>>   		return dev_err_probe(dev, PTR_ERR(afp->reset), "unable to get reset-gpios\n");
+>>   
+>> -	afp->pwren = devm_gpiod_get_optional(dev, "pwren-gpios", GPIOD_OUT_LOW);
+>> +	afp->pwren = devm_gpiod_get_optional(dev, "pwren", GPIOD_OUT_LOW);
+>>   	if (IS_ERR(afp->pwren))
+>>   		return dev_err_probe(dev, PTR_ERR(afp->pwren), "unable to get pwren-gpios\n");
+>>   
+>> -- 
+>> 2.34.1
+>>
+> 
+
+
+-- 
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
+
+https://www.codethink.co.uk/privacy.html
