@@ -2,82 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C96F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237214AbiBOLiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:38:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49054 "EHLO
+        id S237225AbiBOLmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:42:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236631AbiBOLiA (ORCPT
+        with ESMTP id S230344AbiBOLml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:38:00 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19B314027
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:37:50 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 84FC3210F9;
-        Tue, 15 Feb 2022 11:37:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644925069; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Tue, 15 Feb 2022 06:42:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15910193CC
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:42:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644925350;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pw068fBCazlz3BwNkc7tJOJSYYz5n2wbrWj8hk+Qk0c=;
-        b=FIzh/mtXss78WLaVXZ0p+HyizHWcg1OAgoO6jXye2Vs5V8A097HKb1BZctnDXeX7Nf4yCM
-        /XwyoX/oLX6WDJsx7IB94As3hox/18NtQN2YE+uFhopBjerQCinyBRmkjVBeQ6imjJmwwa
-        VKEqNYnrhUm7zQabflbD5olbqc6kMqE=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5F57313C40;
-        Tue, 15 Feb 2022 11:37:49 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id UgY1Fo2QC2KnQwAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Tue, 15 Feb 2022 11:37:49 +0000
-Date:   Tue, 15 Feb 2022 12:37:48 +0100
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org, Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        Linux Containers <containers@lists.linux-foundation.org>
-Subject: Re: [PATCH 0/8] ucounts: RLIMIT_NPROC fixes
-Message-ID: <20220215113748.GI21589@blackbody.suse.cz>
-References: <20220207121800.5079-1-mkoutny@suse.com>
- <87o83e2mbu.fsf@email.froward.int.ebiederm.org>
- <f0d686aa-3fad-afac-d377-f5d63111704a@linuxfoundation.org>
+        bh=PjnbuWeKFhqOoYjM7TShoqpYbBMxPZgJhbxy0whFK08=;
+        b=F4CeQxhaYLYgzE/3n7k44wh1ep1wqa6hx4m0YQJub0Tr3nICNmSiHRVcMZHAlzP+0xqarU
+        fVY13jw7TvGST9hXTEU37hBypQwx6inIx9fZ8JRa9dwr6ImWFU+GwmZkoB4udmMPfy1uyG
+        IKFVshwzPl+fettXxi3MDwaeC1Glff4=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-586-PfqYmJ0POUaApCD2roxXJw-1; Tue, 15 Feb 2022 06:42:28 -0500
+X-MC-Unique: PfqYmJ0POUaApCD2roxXJw-1
+Received: by mail-wm1-f70.google.com with SMTP id k30-20020a05600c1c9e00b0037d1bee4847so1249808wms.9
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 03:42:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=PjnbuWeKFhqOoYjM7TShoqpYbBMxPZgJhbxy0whFK08=;
+        b=4EQGp6vLzwq0OCh3vZBJX/oW+chvbVrNXj67uirnoAFAJisALoqtT/m+qfbtZl1esz
+         EKzCmUs+pcwdug68zy+jppafvuGRRCToHB+aBDYZCdXsuWTZjZ1bbUxoPd82jp5mweWk
+         dSrieOajTjUvDxXbAKGcCD8gXO571h66qshuW0vlHyV52HQwQAYXZwUVjTbIBqlH0ngP
+         t8cZY14iTPptsh6p2x7E6PlWaSU24dm8PFeFOVKX9brLUybMdrmGxHNhwVS1UinZiSCC
+         MGtaBG7J0xNY4lNcVfCtX5elfRh5WK3ac6TR45WQMzkyk1VOpDkoKjBqDu8ArSPwOU9Z
+         MZDg==
+X-Gm-Message-State: AOAM533kjBcH32bdLdy6pwMkdM/E5ZzbTyA03AFhybO5dEuGS8Ogiyz4
+        4OCvg6Y5FNn30NQfiPV1min0z+HtWfCINOx6vmF2sJtMO719G4tEIVrjwJxAVFalhgiTE9RExTy
+        sgUTzd5lA1Lx3tHp7KMGHnAUw
+X-Received: by 2002:a7b:ca56:0:b0:37c:321e:9947 with SMTP id m22-20020a7bca56000000b0037c321e9947mr2752183wml.14.1644925347641;
+        Tue, 15 Feb 2022 03:42:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxoBwAwhuNEUS135wctuAV6IRl4SdvK7l5cFBUZJc6WBHpZGx/EhPB4rfRNzOYOBK5c9+C7kA==
+X-Received: by 2002:a7b:ca56:0:b0:37c:321e:9947 with SMTP id m22-20020a7bca56000000b0037c321e9947mr2752161wml.14.1644925347419;
+        Tue, 15 Feb 2022 03:42:27 -0800 (PST)
+Received: from ?IPV6:2003:cb:c70e:3700:9260:2fb2:742d:da3e? (p200300cbc70e370092602fb2742dda3e.dip0.t-ipconnect.de. [2003:cb:c70e:3700:9260:2fb2:742d:da3e])
+        by smtp.gmail.com with ESMTPSA id j10sm9472254wmq.20.2022.02.15.03.42.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 03:42:27 -0800 (PST)
+Message-ID: <e85b6271-5510-959b-efdc-7ba318f114bc@redhat.com>
+Date:   Tue, 15 Feb 2022 12:42:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f0d686aa-3fad-afac-d377-f5d63111704a@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Kameron Lutes <kalutes@google.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org,
+        kvm@vger.kernel.org
+Cc:     Suleiman Souhlal <suleiman@chromium.org>,
+        Charles William Dick <cwd@google.com>,
+        David Stevens <stevensd@chromium.org>
+References: <20220214195908.4070138-1-kalutes@google.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH] Virtio-balloon: add user space API for sizing
+In-Reply-To: <20220214195908.4070138-1-kalutes@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 11:22:13AM -0700, Shuah Khan <skhan@linuxfoundation.org> wrote:
-> Do we need updates to selftests - Michal's patch series included changes to
-> selftests/exec
+On 14.02.22 20:59, Kameron Lutes wrote:
+> This new linux API will allow user space applications to directly
+> control the size of the virtio-balloon. This is useful in
+> situations where the guest must quickly respond to drastically
+> increased memory pressure and cannot wait for the host to adjust
+> the balloon's size.
+> 
+> Under the current wording of the Virtio spec, guest driven
+> behavior such as this is permitted:
+> 
+> VIRTIO Version 1.1 Section 5.5.6
+> "The device is driven either by the receipt of a configuration
+> change notification, or by changing guest memory needs, such as
+> performing memory compaction or responding to out of memory
+> conditions."
 
-In my understanding the original rlimits-per-userns.c covers an invalid
-use case -- clone(0);setuid();unshare(CLONE_NEWUSER) -- where the
-created user_ns is owned by unprivileged user and the global
-RLIMIT_NPROC cannot be breached.
+Not quite. num_pages is determined by the hypervisor only and the guest
+is not expected to change it, and if it does, it's ignored.
 
-My patched variant retains this use-case (should fail) and adds
-clone(CLONE_NEWUSER);setuid() [1] variant which should be the valid
-use-case for per-user per-user-ns RLIMIT_NPROC.
+5.5.6 does not indicate at all that the guest may change it or that it
+would have any effect. num_pages is examined only, actual is updated by
+the driver.
 
-Michal
+5.5.6.1 documents what's allowed, e.g.,
 
-[1] In this situation theoretically equivalent to clone(0);unshare(CLONE_NEWUSER);setuid().
+  The driver SHOULD supply pages to the balloon when num_pages is
+  greater than the actual number of pages in the balloon.
+
+  The driver MAY use pages from the balloon when num_pages is less than
+  the actual number of pages in the balloon.
+
+and special handling for VIRTIO_BALLOON_F_DEFLATE_ON_OOM.
+
+Especially, we have
+
+  The driver MUST update actual after changing the number of pages in
+  the balloon.
+
+  The driver MAY update actual once after multiple inflate and deflate
+  operations.
+
+That's also why QEMU never syncs back the num_pages value from the guest
+when writing the config.
+
+
+Current spec does not allow for what you propose.
+
+
+> 
+> The intended use case for this API is one where the host
+> communicates a deflation limit to the guest. The guest may then
+> choose to respond to memory pressure by deflating its balloon down
+> to the guest's allowable limit.
+
+It would be good to have a full proposal and a proper spec update. I'd
+assume you'd want separate values for soft vs. hard num_values -- if
+that's what we really want.
+
+BUT
+
+There seems to be recent interest in handling memory pressure in a
+better way (although how to really detect "serious memory pressure" vs
+"ordinary reclaim" in Linux is still to be figured out). There is
+already a discussion going on how that could happen. Adding random user
+space toggles might not be the best idea. We might want a single
+mechanism to achieve that.
+
+https://lists.oasis-open.org/archives/virtio-comment/202201/msg00139.html
+
+-- 
+Thanks,
+
+David / dhildenb
 
