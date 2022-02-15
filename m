@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 677B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2265AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240849AbiBOPiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:38:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41670 "EHLO
+        id S236515AbiBOPiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:38:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240737AbiBOPf3 (ORCPT
+        with ESMTP id S240738AbiBOPf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Feb 2022 10:35:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C781FAA00D;
-        Tue, 15 Feb 2022 07:31:17 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BC7B7C5A;
+        Tue, 15 Feb 2022 07:31:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AB40B81AF7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A2B615EF;
+        Tue, 15 Feb 2022 15:31:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC694C340EB;
         Tue, 15 Feb 2022 15:31:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D6EDC340F2;
-        Tue, 15 Feb 2022 15:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939075;
-        bh=Nx8I+gibSos3xMV/GicdB2i4/EZI7310QJI1YsXKSUg=;
+        s=k20201202; t=1644939077;
+        bh=r+bNCJC5D6dgqgospRgsdedmZ0Hcm+1d/jSHPYZYSUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y7+8CgKcxw58jst/94v0ADWOPByTcrWQoDDYv2r6pelPB3ewW0toxiPlE+eNzx2r6
-         oGHshMXXNzLl4CNmhvy+jYYRDzwm3qEnAxl3f2Vt9fPtod7qFwyDbegJic57DAtbPO
-         AdBEv7HbbMRwFmGPabenytu95JO6TosJVA1ikPfHqWeAIZ79LEmvfe9yLhWc4iHCOh
-         z/bW2gTKhlo3rZn+ZTLpYWS16dUrJTV70Y5gy163W1IVLWqQGsznHgfqh3RM0Vpx/h
-         oimfg/lg1gKsXLdMW/4O+JJySqOH44PUBKOyhMwHvgy8Gcj4uT05rwXh8OWhpYBpBM
-         naDilNtLQ95fw==
+        b=cW33WECrKyTaOtQR/TkS7u4oVBPz3nm6z5cK7ianBk7s/TV9axAI7c9xngW+6UJLp
+         4d23BnGI6gLNApwPZQcHy7r9Ni6KrZt4mcQM02GvWDl0n0QgKiWNLtJ6FGMoDgMSmb
+         u3n/kQvaSlkjQJpgXxkCUmDuAMIXzsgmZbwPW3/nregypl9Z1gfFazlZpc9b/VRFFu
+         EOzcF3Auc9PgAoYMiPiSh2t91BOSdI8ZhK/L2/95ilT6gHwACIMt0sAQmUiar7Ry8S
+         0GpkrrhZHUxgYh1tGClB4ydSOwYdxt7+Xv2n7PlUSGRG/Pw5wbfOurCFXWsBqNN/3F
+         q+jMJEayVuCJw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Brenda Streiff <brenda.streiff@ni.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-kbuild@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/11] kconfig: let 'shell' return enough output for deep path names
-Date:   Tue, 15 Feb 2022 10:30:59 -0500
-Message-Id: <20220215153104.581786-6-sashal@kernel.org>
+Cc:     JaeSang Yoo <js.yoo.5b@gmail.com>, JaeSang Yoo <jsyoo5b@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
+Subject: [PATCH AUTOSEL 4.19 08/11] tracing: Fix tp_printk option related with tp_printk_stop_on_boot
+Date:   Tue, 15 Feb 2022 10:31:01 -0500
+Message-Id: <20220215153104.581786-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215153104.581786-1-sashal@kernel.org>
 References: <20220215153104.581786-1-sashal@kernel.org>
@@ -51,41 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brenda Streiff <brenda.streiff@ni.com>
+From: JaeSang Yoo <js.yoo.5b@gmail.com>
 
-[ Upstream commit 8a4c5b2a6d8ea079fa36034e8167de87ab6f8880 ]
+[ Upstream commit 3203ce39ac0b2a57a84382ec184c7d4a0bede175 ]
 
-The 'shell' built-in only returns the first 256 bytes of the command's
-output. In some cases, 'shell' is used to return a path; by bumping up
-the buffer size to 4096 this lets us capture up to PATH_MAX.
+The kernel parameter "tp_printk_stop_on_boot" starts with "tp_printk" which is
+the same as another kernel parameter "tp_printk". If "tp_printk" setup is
+called before the "tp_printk_stop_on_boot", it will override the latter
+and keep it from being set.
 
-The specific case where I ran into this was due to commit 1e860048c53e
-("gcc-plugins: simplify GCC plugin-dev capability test"). After this
-change, we now use `$(shell,$(CC) -print-file-name=plugin)` to return
-a path; if the gcc path is particularly long, then the path ends up
-truncated at the 256 byte mark, which makes the HAVE_GCC_PLUGINS
-depends test always fail.
+This is similar to other kernel parameter issues, such as:
+  Commit 745a600cf1a6 ("um: console: Ignore console= option")
+or init/do_mounts.c:45 (setup function of "ro" kernel param)
 
-Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Fix it by checking for a "_" right after the "tp_printk" and if that
+exists do not process the parameter.
+
+Link: https://lkml.kernel.org/r/20220208195421.969326-1-jsyoo5b@gmail.com
+
+Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
+[ Fixed up change log and added space after if condition ]
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/kconfig/preprocess.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/scripts/kconfig/preprocess.c b/scripts/kconfig/preprocess.c
-index 389814b02d06b..8c7e51a6273cc 100644
---- a/scripts/kconfig/preprocess.c
-+++ b/scripts/kconfig/preprocess.c
-@@ -138,7 +138,7 @@ static char *do_lineno(int argc, char *argv[])
- static char *do_shell(int argc, char *argv[])
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 17e337a22c239..19a6b088f1e72 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -232,6 +232,10 @@ __setup("trace_clock=", set_trace_boot_clock);
+ 
+ static int __init set_tracepoint_printk(char *str)
  {
- 	FILE *p;
--	char buf[256];
-+	char buf[4096];
- 	char *cmd;
- 	size_t nread;
- 	int i;
++	/* Ignore the "tp_printk_stop_on_boot" param */
++	if (*str == '_')
++		return 0;
++
+ 	if ((strcmp(str, "=0") != 0 && strcmp(str, "=off") != 0))
+ 		tracepoint_printk = 1;
+ 	return 1;
 -- 
 2.34.1
 
