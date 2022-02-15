@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1033C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC74C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240995AbiBOPf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:35:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43736 "EHLO
+        id S238576AbiBOPhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:37:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240678AbiBOPf0 (ORCPT
+        with ESMTP id S240720AbiBOPf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:35:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F25C1151;
-        Tue, 15 Feb 2022 07:30:57 -0800 (PST)
+        Tue, 15 Feb 2022 10:35:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B307C12FF;
+        Tue, 15 Feb 2022 07:31:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4EC1B81AEF;
-        Tue, 15 Feb 2022 15:30:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DE17C340ED;
-        Tue, 15 Feb 2022 15:30:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 387B2612D7;
+        Tue, 15 Feb 2022 15:31:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F732C340EB;
+        Tue, 15 Feb 2022 15:31:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939054;
-        bh=DzVLqvBpeGZOyQejrJmUmTgh2b9Y3K1cHnXWhJYz4e8=;
+        s=k20201202; t=1644939070;
+        bh=mkpPlGw8hV9sNXnauUZO4avIHLUkgLetqvwpAsmGNJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=At8t0ZUy0zojtQ8nvFFeunMz8fJHgEaJnpS84LFG9fc0Mdat3AHN4+EFTQpQ/6l6l
-         NEupbZX3HetLXoEL/y+5iNTGl6vazh8jVptSoyXeW4AKc4og+TS0JxqX99AlMeGWyH
-         1Opk0rdGbR2lDs/kLy/goGVg/XX7Zoe7jzRkS8HEiNtES8sHrAevSlzBJJgk/cHxIq
-         xyszg+LM6Cd81scJ+Si9rNUn1reP8jiN+hnrVh7sCbGRbyKF7+TDV9V+D94hcMpnPG
-         VKCPTlRNRTir+gPg2snkIsPh5trWK4LD/hgNv5vmKPB4m3y7d/NqgxA2Z+kzs9Appp
-         0I/TvkpQ6MQTw==
+        b=ehO/QHXSL+AeY0CZCTFVcgdhoyPosutynvSwIB7oiELtJVzYomBngu1ib/Dysazyu
+         NMcT5I6PoTsmFZp5ynlLHmkOkcRpgazI7727cvBRhUHVSfYrB1V9VhPEyf5xwKvENe
+         ZHqiOGaBjpvxg5Jz2pjJh7swlgzvBbbHeVI4R6aHSRyOtjQZnSb+xxJdzDsTb0ucjz
+         Hq/lkEi9wIcdTZZPok3Vf1fOvazG+KihcE/5oNtl6hNHBAqd5Zd72HMT65icoFnTW+
+         eoYPEfPMICy6yt/kxjIWr8AE06trqn6QR32RUIa8ssf1ToQ2T7bRUe3AiBlGqX5+/m
+         RyDg7bbtS+I9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        "Ewan D . Milne" <emilne@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 10/17] scsi: lpfc: Remove NVMe support if kernel has NVME_FC disabled
-Date:   Tue, 15 Feb 2022 10:30:30 -0500
-Message-Id: <20220215153037.581579-10-sashal@kernel.org>
+Cc:     Guo Ren <guoren@linux.alibaba.com>,
+        Anup Patel <anup@brainfault.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 03/11] irqchip/sifive-plic: Add missing thead,c900-plic match string
+Date:   Tue, 15 Feb 2022 10:30:56 -0500
+Message-Id: <20220215153104.581786-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215153037.581579-1-sashal@kernel.org>
-References: <20220215153037.581579-1-sashal@kernel.org>
+In-Reply-To: <20220215153104.581786-1-sashal@kernel.org>
+References: <20220215153104.581786-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,73 +56,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-[ Upstream commit c80b27cfd93ba9f5161383f798414609e84729f3 ]
+[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
 
-The driver is initiating NVMe PRLIs to determine device NVMe support.  This
-should not be occurring if CONFIG_NVME_FC support is disabled.
+The thead,c900-plic has been used in opensbi to distinguish
+PLIC [1]. Although PLICs have the same behaviors in Linux,
+they are different hardware with some custom initializing in
+firmware(opensbi).
 
-Correct this by changing the default value for FC4 support. Currently it
-defaults to FCP and NVMe. With change, when NVME_FC support is not enabled
-in the kernel, the default value is just FCP.
+Qute opensbi patch commit-msg by Samuel:
 
-Link: https://lore.kernel.org/r/20220207180516.73052-1-jsmart2021@gmail.com
-Reviewed-by: Ewan D. Milne <emilne@redhat.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  The T-HEAD PLIC implementation requires setting a delegation bit
+  to allow access from S-mode. Now that the T-HEAD PLIC has its own
+  compatible string, set this bit automatically from the PLIC driver,
+  instead of reaching into the PLIC's MMIO space from another driver.
+
+[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
+
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Cc: Anup Patel <anup@brainfault.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Samuel Holland <samuel@sholland.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc.h      | 13 ++++++++++---
- drivers/scsi/lpfc/lpfc_attr.c |  4 ++--
- 2 files changed, 12 insertions(+), 5 deletions(-)
+ drivers/irqchip/irq-sifive-plic.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc.h b/drivers/scsi/lpfc/lpfc.h
-index 0b69f4f713778..1bf7a4152b34b 100644
---- a/drivers/scsi/lpfc/lpfc.h
-+++ b/drivers/scsi/lpfc/lpfc.h
-@@ -870,6 +870,16 @@ struct lpfc_hba {
- 	uint32_t cfg_hostmem_hgp;
- 	uint32_t cfg_log_verbose;
- 	uint32_t cfg_enable_fc4_type;
-+#define LPFC_ENABLE_FCP  1
-+#define LPFC_ENABLE_NVME 2
-+#define LPFC_ENABLE_BOTH 3
-+#if (IS_ENABLED(CONFIG_NVME_FC))
-+#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
-+#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
-+#else
-+#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_FCP
-+#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_FCP
-+#endif
- 	uint32_t cfg_aer_support;
- 	uint32_t cfg_sriov_nr_virtfn;
- 	uint32_t cfg_request_firmware_upgrade;
-@@ -892,9 +902,6 @@ struct lpfc_hba {
- 	uint32_t cfg_ras_fwlog_func;
- 	uint32_t cfg_enable_bbcr;	/* Enable BB Credit Recovery */
- 	uint32_t cfg_enable_dpp;	/* Enable Direct Packet Push */
--#define LPFC_ENABLE_FCP  1
--#define LPFC_ENABLE_NVME 2
--#define LPFC_ENABLE_BOTH 3
- 	uint32_t cfg_enable_pbde;
- 	struct nvmet_fc_target_port *targetport;
- 	lpfc_vpd_t vpd;		/* vital product data */
-diff --git a/drivers/scsi/lpfc/lpfc_attr.c b/drivers/scsi/lpfc/lpfc_attr.c
-index 1c541a600149b..d034fe78bf93e 100644
---- a/drivers/scsi/lpfc/lpfc_attr.c
-+++ b/drivers/scsi/lpfc/lpfc_attr.c
-@@ -3839,8 +3839,8 @@ LPFC_ATTR_R(nvmet_mrq_post,
-  *                    3 - register both FCP and NVME
-  * Supported values are [1,3]. Default value is 3
-  */
--LPFC_ATTR_R(enable_fc4_type, LPFC_ENABLE_BOTH,
--	    LPFC_ENABLE_FCP, LPFC_ENABLE_BOTH,
-+LPFC_ATTR_R(enable_fc4_type, LPFC_DEF_ENBL_FC4_TYPE,
-+	    LPFC_ENABLE_FCP, LPFC_MAX_ENBL_FC4_TYPE,
- 	    "Enable FC4 Protocol support - FCP / NVME");
+diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+index 532e9d68c7042..767cdd3f773bb 100644
+--- a/drivers/irqchip/irq-sifive-plic.c
++++ b/drivers/irqchip/irq-sifive-plic.c
+@@ -258,3 +258,4 @@ static int __init plic_init(struct device_node *node,
  
- /*
+ IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
+ IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
++IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
 -- 
 2.34.1
 
