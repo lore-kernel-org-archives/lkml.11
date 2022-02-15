@@ -2,84 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B94C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75050C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243262AbiBOSrT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:47:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56258 "EHLO
+        id S243269AbiBOSrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:47:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243200AbiBOSqy (ORCPT
+        with ESMTP id S243240AbiBOSrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:46:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B7F2B26F
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:46:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 515AA61704
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 18:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53470C340EC;
-        Tue, 15 Feb 2022 18:46:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644950802;
-        bh=uGH7d6y/OHdOl0x2ve29e4TlqSB6UdInuFYiQWpPpCA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X6s0DqO5B0nteyv1plXpOpGu+XiGmasMs02/UBZJAyHpK72Nn6gusSGHV/G/PC+il
-         gSsB9B2AdtHfHtYaGNZCtFAqeN3Alx+58r10fzBjtxGSn3Fpgizr1dEGF7lkE7WohV
-         N9zHgAOpAgby4M1+tapxLjfvv6Z3x8ePvLHYmZ8xEsH7aiKZgLq7VTcj08+Z2NBX7d
-         OX8z4xiZk1oHRWOtkEX8Fop3p2bUpJhRPrfpS8yoFbr/6JTSfY6faWodgWjBI1br8+
-         XxlTe/IGFevkzeC41SH1wrx0hLrnHlGdrGNuqc8wJBoVgVq+SBzHlPR59hSsfYTqsu
-         oWuKpLoTCaT5g==
-From:   SeongJae Park <sj@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     xhao@linux.alibaba.com, rientjes@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH 7/8] mm/damon/dbgfs-test: Fix is_target_id() change
-Date:   Tue, 15 Feb 2022 18:46:02 +0000
-Message-Id: <20220215184603.1479-8-sj@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220215184603.1479-1-sj@kernel.org>
-References: <20220215184603.1479-1-sj@kernel.org>
+        Tue, 15 Feb 2022 13:47:13 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48023136A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:47:01 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: alyssa)
+        with ESMTPSA id C83521F44C43
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644950820;
+        bh=Jo+q2iQ2HhAa53Jyc9hotJ72iRGY8gVAx2ZkJDQVWGs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=O/3tC6A7Y2k4vIRMj3hfKSEHSGeZoMgX6+aVJ82NXCd+tB2+It8IgQtZJQcAjUvZp
+         tMZ5HVFsejX4SMoMyUII0+qa0pUH1S+U7I6dfqFR+uCSJ7Mfei4JZx8Lp5dnb7N1l2
+         c0FFJRW8s2M/9iAq+GjOAestYeZxGr4egQePe3M4kM3fYkWCMsBlSZuUX1cJqo0EZw
+         ynWyFjvHnj4jMbrHz1o/8bp2BFeZtETATMa/S+lzMe+zm4iHdfDryquVxjCD3SClkS
+         Q4+VV86gXKLI5Q7rz4fuBF6T/0OAw3yEwnrFebY186J7HSHvq/MYh2dmFC26KLAaJt
+         LzjHw7cZuHrsg==
+From:   Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+To:     linux-mediatek@lists.infradead.org
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Nick Fan <Nick.Fan@mediatek.com>,
+        Nicolas Boichat <drinkcat@chromium.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2] soc: mediatek: mtk-infracfg: Disable ACP on MT8192
+Date:   Tue, 15 Feb 2022 13:46:51 -0500
+Message-Id: <20220215184651.12168-1-alyssa.rosenzweig@collabora.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DAMON kunit tests for DAMON debugfs interface fails because it still
-assumes setting empty monitoring operations makes DAMON debugfs
-interface believe the target of the context don't have pid.  This commit
-fixes the kunit test fails by explicitly setting the context's
-monitoring operations with the operations for the physical address
-space, which let debugfs knows the target will not have pid.
+MT8192 contains an experimental Accelerator Coherency Port
+implementation, which does not work correctly but was unintentionally
+enabled by default. For correct operation of the GPU, we must set a
+chicken bit disabling ACP on MT8192.
 
-Signed-off-by: SeongJae Park <sj@kernel.org>
+Adapted from the following downstream change to the out-of-tree, legacy
+Mali GPU driver:
+
+https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2781271/5
+
+Note this change is required for both Panfrost and the legacy kernel
+driver.
+
+v2: Move the change from clk-mt8192.c to mtk-infracfg.c (Robin).
+Although it does not make sense to add this platform-specific hack to
+the GPU driver, it has nothing to do with clocks. We already have
+mtk-infracfg.c to manage other infracfg bits; the ACP disable should
+live there too.
+
+Co-developed-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Cc: Nick Fan <Nick.Fan@mediatek.com>
+Cc: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Chen-Yu Tsai <wenst@chromium.org>
+Cc: Stephen Boyd <sboyd@kernel.org>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- mm/damon/dbgfs-test.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/soc/mediatek/mtk-infracfg.c   | 19 +++++++++++++++++++
+ include/linux/soc/mediatek/infracfg.h |  3 +++
+ 2 files changed, 22 insertions(+)
 
-diff --git a/mm/damon/dbgfs-test.h b/mm/damon/dbgfs-test.h
-index 8f7f32595055..0bb0d532b159 100644
---- a/mm/damon/dbgfs-test.h
-+++ b/mm/damon/dbgfs-test.h
-@@ -74,7 +74,7 @@ static void damon_dbgfs_test_set_targets(struct kunit *test)
- 	char buf[64];
+diff --git a/drivers/soc/mediatek/mtk-infracfg.c b/drivers/soc/mediatek/mtk-infracfg.c
+index 0590b68e0d78..2acf19676af2 100644
+--- a/drivers/soc/mediatek/mtk-infracfg.c
++++ b/drivers/soc/mediatek/mtk-infracfg.c
+@@ -6,6 +6,7 @@
+ #include <linux/export.h>
+ #include <linux/jiffies.h>
+ #include <linux/regmap.h>
++#include <linux/mfd/syscon.h>
+ #include <linux/soc/mediatek/infracfg.h>
+ #include <asm/processor.h>
  
- 	/* Make DAMON consider target has no pid */
--	ctx->ops = (struct damon_operations){};
-+	damon_select_ops(ctx, DAMON_OPS_PADDR);
+@@ -72,3 +73,21 @@ int mtk_infracfg_clear_bus_protection(struct regmap *infracfg, u32 mask,
  
- 	dbgfs_set_targets(ctx, 0, NULL);
- 	sprint_target_ids(ctx, buf, 64);
-@@ -111,6 +111,8 @@ static void damon_dbgfs_test_set_init_regions(struct kunit *test)
- 	int i, rc;
- 	char buf[256];
- 
-+	damon_select_ops(ctx, DAMON_OPS_PADDR);
+ 	return ret;
+ }
 +
- 	dbgfs_set_targets(ctx, 3, NULL);
++static int __init mtk_infracfg_init(void)
++{
++	struct regmap *infracfg;
++
++	/*
++	 * MT8192 has an experimental path to route GPU traffic to the DSU's
++	 * Accelerator Coherency Port, which is inadvertently enabled by
++	 * default. It turns out not to work, so disable it to prevent spurious
++	 * GPU faults.
++	 */
++	infracfg = syscon_regmap_lookup_by_compatible("mediatek,mt8192-infracfg");
++	if (!IS_ERR(infracfg))
++		regmap_set_bits(infracfg, MT8192_INFRA_CTRL,
++				MT8192_INFRA_CTRL_DISABLE_MFG2ACP);
++	return 0;
++}
++postcore_initcall(mtk_infracfg_init);
+diff --git a/include/linux/soc/mediatek/infracfg.h b/include/linux/soc/mediatek/infracfg.h
+index d858e0bab7a2..fcbbd0dd5e55 100644
+--- a/include/linux/soc/mediatek/infracfg.h
++++ b/include/linux/soc/mediatek/infracfg.h
+@@ -229,6 +229,9 @@
+ #define INFRA_TOPAXI_PROTECTEN_SET		0x0260
+ #define INFRA_TOPAXI_PROTECTEN_CLR		0x0264
  
- 	/* Put valid inputs and check the results */
++#define MT8192_INFRA_CTRL			0x290
++#define MT8192_INFRA_CTRL_DISABLE_MFG2ACP	BIT(9)
++
+ #define REG_INFRA_MISC				0xf00
+ #define F_DDR_4GB_SUPPORT_EN			BIT(13)
+ 
 -- 
-2.17.1
+2.34.1
 
