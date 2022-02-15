@@ -2,81 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B60F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CABC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232447AbiBOAya (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 19:54:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53776 "EHLO
+        id S232850AbiBOAy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 19:54:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiBOAyX (ORCPT
+        with ESMTP id S231485AbiBOAy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 19:54:23 -0500
-X-Greylist: delayed 531 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 16:53:56 PST
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B29614147F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 16:53:56 -0800 (PST)
-Received: from pecola.lan (unknown [159.196.93.152])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id ED1BC2015A;
-        Tue, 15 Feb 2022 08:44:57 +0800 (AWST)
-Message-ID: <daabe69d3863caa62f7874a472edbf2bc892d99e.camel@codeconstruct.com.au>
-Subject: Re: [PATCH] mctp: fix use after free
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     trix@redhat.com, matt@codeconstruct.com.au, davem@davemloft.net,
-        kuba@kernel.org, nathan@kernel.org, ndesaulniers@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Date:   Tue, 15 Feb 2022 08:44:57 +0800
-In-Reply-To: <20220214175138.2902947-1-trix@redhat.com>
-References: <20220214175138.2902947-1-trix@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3-1 
+        Mon, 14 Feb 2022 19:54:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F14BC8F;
+        Mon, 14 Feb 2022 16:54:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AABB614F8;
+        Tue, 15 Feb 2022 00:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B0C0C340E9;
+        Tue, 15 Feb 2022 00:54:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644886478;
+        bh=HEiIZMjEKQ7AQOV3WTDf8XC3x+qJ7mJU59+gDlJbdVA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y4EhxNa1TpAWFPO5vL1e9pgKFCFscD5yp+z9OG5Xv++M9n6iazAFJitTQhXdQOz3q
+         ZOnyKymr5UmO0G5drdewoxRmOmE04JTs8pz2nmoFpRTTRsYoiTc0McSqL6NASmzopw
+         TJT8I8HjfC/H3jJZF9jo8hwmVlJAa9ln6keCvOpTg7mgCRyBraOxY8P8QqM95SyftB
+         zsukqEJ5jKKLRp6eBu3RE0ZgxYTlcF7ESmVa3MExJvUcCujk46SR1qu8W3SGbuGykk
+         K2HK1UkOlM7lE7VRYPcDf/rTmZf2RpEEEoIMizqoa4BEPx6sPq4r8oNMjPv1I7Qi3p
+         tRcQ5vdwaYwyQ==
+Date:   Mon, 14 Feb 2022 16:54:36 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, selinux@vger.kernel.org,
+        Xin Long <lucien.xin@gmail.com>,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        linux-sctp@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Prashanth Prahlad <pprahlad@redhat.com>
+Subject: Re: [PATCH net v3 2/2] security: implement sctp_assoc_established
+ hook in selinux
+Message-ID: <20220214165436.1f6a9987@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAHC9VhT90617FoqQJBCrDQ8gceVVA6a1h74h6T4ZOwNk6RVB3g@mail.gmail.com>
+References: <20220212175922.665442-1-omosnace@redhat.com>
+        <20220212175922.665442-3-omosnace@redhat.com>
+        <CAHC9VhT90617FoqQJBCrDQ8gceVVA6a1h74h6T4ZOwNk6RVB3g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tom,
+On Mon, 14 Feb 2022 17:14:04 -0500 Paul Moore wrote:
+> If I can get an ACK from one of the SCTP and/or netdev folks I'll
+> merge this into the selinux/next branch.
 
-> Clang static analysis reports this problem
-> route.c:425:4: warning: Use of memory after it is freed
->   trace_mctp_key_acquire(key);
->   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> When mctp_key_add() fails, key is freed but then is later
-> used in trace_mctp_key_acquire().  Add an else statement
-> to use the key only when mctp_key_add() is successful.
-
-Looks good to me, thanks for the fix.
-
-However, the Fixes tag will need an update; at the point of 
-4a992bbd3650 ("mctp: Implement message fragmentation"), there was no
-use of 'key' after the kfree() there.
-
-Instead, this is the hunk that introduced the trace event:
-
-  @@ -365,12 +368,16 @@
-                          if (rc)
-                                  kfree(key);
-   
-  +                       trace_mctp_key_acquire(key);
-  +
-                          /* we don't need to release key->lock on exit */
-                          key = NULL;
- 
-- which is from 4f9e1ba6de45. The unref() comes in later, but the
-initial uaf is caused by this change.
-
-So, I'd suggest this instead:
-
-Fixes: 4f9e1ba6de45 ("mctp: Add tracepoints for tag/key handling")
-
-(this just means we need the fix for 5.16+, rather than 5.15+).
-
-Also, can you share how you're doing the clang static analysis there?
-I'll get that included in my checks too.
-
-Cheers,
-
-
-Jeremy
+No objections here FWIW, I'd defer the official acking to the SCTP
+maintainers.
