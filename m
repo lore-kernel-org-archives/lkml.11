@@ -2,91 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F097C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 316FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:00:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237123AbiBOR62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:58:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50098 "EHLO
+        id S239034AbiBOSAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:00:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiBOR61 (ORCPT
+        with ESMTP id S231445AbiBOSAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:58:27 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC51CB90F
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:58:16 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 1F0061F37B;
-        Tue, 15 Feb 2022 17:58:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644947895; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PWnIgritZWDbPqJt4NsgSR71vtgK2UWzhthhnP5o4N8=;
-        b=ANXyuW7pa1fRxyk4Wi82kyjZCJBuqKX1zYvsPJuG/UniPdAKijCFcYg1yLlU+7XXtpIhMv
-        0CfdkivBt3YJc2YGKg4twu+MOatTDOXUrcl3jlvvw25cHxsarePAEQsuZz0UOWD5x7EPgY
-        rGuJDycszjodPi/gitL3YyXISA8J4vU=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id CC322A3B89;
-        Tue, 15 Feb 2022 17:58:14 +0000 (UTC)
-Date:   Tue, 15 Feb 2022 18:58:14 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc:     Andre Kalb <andre.kalb@sma.de>, john.ogness@linutronix.de,
-        linux-kernel@vger.kernel.org, rostedt@goodmis.org
-Subject: Re: [PATCH v2] printk: Set console_set_on_cmdline=1 when
- __add_preferred_console() is called with user_specified == true
-Message-ID: <YgvptpD/g4hj0bsp@alley>
-References: <YgKSbe9d3haHKMid@alley>
- <YgpXWQqjfJBISG1v@pc6682>
- <Ygsa7gfqlhZVWdDb@google.com>
+        Tue, 15 Feb 2022 13:00:19 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52E910613A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:00:09 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id l19so30348046pfu.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:00:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=11TTvYS0k6LfV7xNa4WvisJePciPnHEL/Fmk4Jio8z8=;
+        b=YVwlmBEkCqlHds72W2w+Ed9UWX2W0ynjWOpTRpsb9s5aVJwsy2f6rrbyAKW+J1Kp1C
+         KeBT2Io2ki5FzrhBGgcdXM/NKYi+KkaPKbJ+mfqBh4A5ygDXUhxw5OAi80283QibccE1
+         XhL2vQCq4WOt4NhC0nHObNEEhCpKVGMdUybN8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=11TTvYS0k6LfV7xNa4WvisJePciPnHEL/Fmk4Jio8z8=;
+        b=Dt5BdmaCogvfE4IybG3E1rKagekwa/xqlQXFDL1tm5s2nBjJXt+cSKX85qIegn7asj
+         Y42U8B85bghFELQ4RZNzsnxu6dc6yso2FDkti3sNv1TcE+fnNYx2vaEWlskyVsFreX3k
+         I7ASA2nCNLL5GIWZlUpjRCjo5JA0aaYXzPTyN7IO6IAWhPygS52Jb4d72yqCc/3yhWPh
+         8ERUDsxeJyEcxTphdTZYjWVJlEyEDx/EpvlUwPfDQQBNxZ3Dp+hAN9zykhbZJqERwFoo
+         dKZhkivTkCgLpr/zxbJ4x+fpkno06O4/dRIqD6rAsAhubtVhqhXBF2F0nSH6Hkqtt1B8
+         qmMw==
+X-Gm-Message-State: AOAM532wIyF9Hr0JeMWZdHJ9U1YjvT+cLgYwzEuv36wvwx/oWqjcTe8z
+        1evumrd8x24UO+Ky4m4L7EMHod2HJce1+w==
+X-Google-Smtp-Source: ABdhPJy3JRmFn/iphu76XVxUaX6+gSVIS4H6IQ6bjISgtiEZ6IGBoc91NDz5hqbDblnEuun2aGLZhA==
+X-Received: by 2002:aa7:8394:: with SMTP id u20mr5452913pfm.85.1644948008378;
+        Tue, 15 Feb 2022 10:00:08 -0800 (PST)
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com. [209.85.210.179])
+        by smtp.gmail.com with ESMTPSA id ip8sm7899190pjb.6.2022.02.15.10.00.08
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 10:00:08 -0800 (PST)
+Received: by mail-pf1-f179.google.com with SMTP id i21so34684536pfd.13
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:00:08 -0800 (PST)
+X-Received: by 2002:a05:6e02:1bed:: with SMTP id y13mr141154ilv.27.1644947705606;
+ Tue, 15 Feb 2022 09:55:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ygsa7gfqlhZVWdDb@google.com>
+References: <20220119204345.3769662-1-mka@chromium.org> <20220119124327.v20.5.Ie0d2c1214b767bb5551dd4cad38398bd40e4466f@changeid>
+ <YgJMkFAxjazkUDZd@kroah.com> <YgLCswtX/0THkzXT@google.com>
+In-Reply-To: <YgLCswtX/0THkzXT@google.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 15 Feb 2022 09:54:54 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=WMP8M5HTRNv9_scvrytbpE0iBdUack=XaHoypGNLJeVA@mail.gmail.com>
+Message-ID: <CAD=FV=WMP8M5HTRNv9_scvrytbpE0iBdUack=XaHoypGNLJeVA@mail.gmail.com>
+Subject: Re: [PATCH v20 5/5] arm64: dts: qcom: sc7180-trogdor: Add nodes for
+ onboard USB hub
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Peter Chen <peter.chen@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        Bastien Nocera <hadess@hadess.net>,
+        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-02-15 12:15:58, Sergey Senozhatsky wrote:
-> On (22/02/14 14:21), Andre Kalb wrote:
-> > +static void set_user_specified(struct console_cmdline *c, bool user_specified)
-> > +{
-> > +	if (!user_specified)
-> > +		return;
-> > +
-> > +	c->user_specified = true;
-> > +	console_set_on_cmdline = 1;
-> > +}
-> 
-> In original code we always set c->user_specified. Is it guaranteed that
-> ->user_specified is properly initialized to 0? Maybe can do something like:
+Hi,
 
-It is guaranteed. console_cmdline is a static array initialized with
-zeroes. The 2nd set_user_specified() call is done for a not-yet-used
-slot in the array, so it must be zero.
+On Tue, Feb 8, 2022 at 11:21 AM Matthias Kaehlcke <mka@chromium.org> wrote:
+>
+> On Tue, Feb 08, 2022 at 11:57:20AM +0100, Greg Kroah-Hartman wrote:
+> > On Wed, Jan 19, 2022 at 12:43:45PM -0800, Matthias Kaehlcke wrote:
+> > > Add nodes for the onboard USB hub on trogdor devices. Remove the
+> > > 'always-on' property from the hub regulator, since the regulator
+> > > is now managed by the onboard_usb_hub driver.
+> > >
+> > > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> > > Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> > > ---
+> >
+> > No DT maintainer approval yet?  :(
+>
+> Bjorn usually just picks DT changes into the QCOM tree when they are
+> ready, so I wouldn't interpret anything into the lack of an explicit
+> Ack.
 
+Right, so the expectation is that this patch wouldn't land through the
+USB tree but would instead land through the Qualcomm tree, probably a
+revision after the code lands in the USB tree to avoid dependency
+problems.
 
-> static void set_user_specified(struct console_cmdline *c, bool user_specified)
-> {
-> 	c->user_specified = user_specified;
-
-This will change the behavior for the 1st set_user_specified() call.
-It happens when the same console is added more times by device tree,
-SPCR, and/or command line. c->user_specified must stay "true" when
-at least one __add_preferred_console() call added it from the command line.
-
-> 	if (!user_specified)
-> 		return;
-> 
-> 	console_set_on_cmdline = 1;
-> }
-
-I agree that it is not obvious. It would make sense to add a comment
-into the code. I am going to propose something in a reply to the
-original post.
-
-Best Regards,
-Petr
+-Doug
