@@ -2,132 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 20:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C542C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 20:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244024AbiBOUJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 15:09:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42070 "EHLO
+        id S244020AbiBOUKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 15:10:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243992AbiBOUJJ (ORCPT
+        with ESMTP id S241321AbiBOUKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 15:09:09 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55F2B0C41;
-        Tue, 15 Feb 2022 12:08:58 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FJsadO014857;
-        Tue, 15 Feb 2022 20:08:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=CZO2vVfbTb0RbiaMRH3DHFFoOpbO0f4KMW0LM2NECLI=;
- b=oHf2pcsnXBfk3reeAPkZi0So1/lIhu7AWhDYN8eK1iTpyHZ4e5PVzlNJj74bcKKjZnxz
- xexiRwoCuuj0MsYlkN1bSyNEjC+0d9y/gfvW7YHD0hsqiC3RH3sWxTn7Nt9YAjSCWCDP
- cec4IT2DJ7GXwXzn+qKp3upiFbWPORrcsBtvZyC0HutqUTNZIUCA0i6pbrVEpKSE1w3a
- XYviHlFtgWAH6Q/21AFmW9HyiREM2f6bC0D8Wyze22zFPZRiDYMsk0OUD6FFPqpcYfyL
- OilFNaNYlAaKnGBY4L02DjP9U5qwCGoRJRkd+8T02n55uHQJODB952sYGXo/5KH2y/xo LA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8jre8bgb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 20:08:27 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21FK3cwE028627;
-        Tue, 15 Feb 2022 20:08:26 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8jre8bfp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 20:08:26 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21FK2VEW007429;
-        Tue, 15 Feb 2022 20:08:24 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3e64ha2gn2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 20:08:24 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21FK8LNN44958156
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 20:08:21 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6638211C04C;
-        Tue, 15 Feb 2022 20:08:21 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A1B5511C054;
-        Tue, 15 Feb 2022 20:08:18 +0000 (GMT)
-Received: from sig-9-65-88-149.ibm.com (unknown [9.65.88.149])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 15 Feb 2022 20:08:18 +0000 (GMT)
-Message-ID: <3e39412657a4b0839bcf38544d591959e89877b8.camel@linux.ibm.com>
-Subject: Re: [PATCH 4/4] module, KEYS: Make use of platform keyring for
- signature verification
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Michal Suchanek <msuchanek@suse.de>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Philipp Rudo <prudo@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        AKASHI Takahiro <takahiro.akashi@linaro.org>,
-        James Morse <james.morse@arm.com>,
-        Dave Young <dyoung@redhat.com>,
-        Kairui Song <kasong@redhat.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-modules@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        stable@kernel.org, Eric Snowberg <eric.snowberg@oracle.com>
-Date:   Tue, 15 Feb 2022 15:08:18 -0500
-In-Reply-To: <840433bc93a58d6dfc4d96c34c0c3b158a0e669d.1644953683.git.msuchanek@suse.de>
-References: <cover.1644953683.git.msuchanek@suse.de>
-         <840433bc93a58d6dfc4d96c34c0c3b158a0e669d.1644953683.git.msuchanek@suse.de>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 0GR9onIvF1UifqvAn0Td1dXMzNG0In9Z
-X-Proofpoint-ORIG-GUID: aoAH1LPXWXCnZNv3qt9jCU3grFgSYc55
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-15_06,2022-02-14_04,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 mlxscore=0 malwarescore=0 impostorscore=0
- priorityscore=1501 suspectscore=0 clxscore=1011 spamscore=0 phishscore=0
- adultscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202150113
+        Tue, 15 Feb 2022 15:10:30 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE835DB867;
+        Tue, 15 Feb 2022 12:10:18 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21FKA9IH071778;
+        Tue, 15 Feb 2022 14:10:09 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644955809;
+        bh=oRGfgk65UBNyDtOEXhs/elyUR2uWsKKCsKDcR1SgWNc=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=yRuKkDfob0k4EWbdO0JUvwzZPD7fQ0yAHvwGt6yOJOBy/92rFsP+3Brb0WbWAbU9g
+         X7t+NUc+L5l2e0KIgIxAOqU9oFlKlU+rDRS4TwjlxY3l4obk2LDs64au4QIpw1FTVV
+         P1kFfiTDIWPyKcQZ7TntlnZGTbedEn6IuDAS4u6o=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21FKA9PB114900
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 15 Feb 2022 14:10:09 -0600
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 15
+ Feb 2022 14:10:09 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 15 Feb 2022 14:10:09 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21FKA9sU114677;
+        Tue, 15 Feb 2022 14:10:09 -0600
+From:   Nishanth Menon <nm@ti.com>
+To:     Tero Kristo <kristo@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Marc Zyngier <maz@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
+        <stable@vger.kernel.org>
+Subject: [PATCH 2/5] arm64: dts: ti: k3-j721e: Fix gic-v3 compatible regs
+Date:   Tue, 15 Feb 2022 14:10:05 -0600
+Message-ID: <20220215201008.15235-3-nm@ti.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220215201008.15235-1-nm@ti.com>
+References: <20220215201008.15235-1-nm@ti.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Cc'ing Eric Snowberg]
+Though GIC ARE option is disabled for no GIC-v2 compatibility,
+Cortex-A72 is free to implement the CPU interface as long as it
+communicates with the GIC using the stream protocol. This requires
+that the SoC integration mark out the PERIPHBASE[1] as reserved area
+within the SoC. See longer discussion in [2] for further information.
 
-Hi Michal,
+Update the GIC register map to indicate offsets from PERIPHBASE based
+on [3]. Without doing this, systems like kvm will not function with
+gic-v2 emulation.
 
-On Tue, 2022-02-15 at 20:39 +0100, Michal Suchanek wrote:
-> Commit 278311e417be ("kexec, KEYS: Make use of platform keyring for signature verify")
-> adds support for use of platform keyring in kexec verification but
-> support for modules is missing.
-> 
-> Add support for verification of modules with keys from platform keyring
-> as well.
+[1] https://developer.arm.com/documentation/100095/0002/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
+[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
+[3] https://developer.arm.com/documentation/100095/0002/way1382452674438
 
-Permission for loading the pre-OS keys onto the "platform" keyring and
-using them is limited to verifying the kexec kernel image, nothing
-else.
+Fixes: 2d87061e70de ("arm64: dts: ti: Add Support for J721E SoC")
+Cc: stable@vger.kernel.org # 5.10+
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
+Testing: based on next-20220215
+j721e-sk: https://gist.github.com/nmenon/db3f29f2f241f1b5294c7e4054c3fbf1
 
-FYI, Eric Snowberg's initial patch set titled "[PATCH v10 0/8] Enroll
-kernel keys thru MOK" is queued in Jarkko's git repo to be usptreamed. 
-A subsequent patch set is expected.
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi | 5 ++++-
+ arch/arm64/boot/dts/ti/k3-j721e.dtsi      | 1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
+diff --git a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
+index 599861259a30..db0669985e42 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
+@@ -76,7 +76,10 @@ gic500: interrupt-controller@1800000 {
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01900000 0x00 0x100000>;	/* GICR */
++		      <0x00 0x01900000 0x00 0x100000>,	/* GICR */
++		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
++		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
++		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
+ 
+ 		/* vcpumntirq: virtual CPU interface maintenance interrupt */
+ 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/arch/arm64/boot/dts/ti/k3-j721e.dtsi b/arch/arm64/boot/dts/ti/k3-j721e.dtsi
+index 4a3872fce533..0e23886c9fd1 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721e.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721e.dtsi
+@@ -139,6 +139,7 @@ cbass_main: bus@100000 {
+ 			 <0x00 0x0e000000 0x00 0x0e000000 0x00 0x01800000>, /* PCIe Core*/
+ 			 <0x00 0x10000000 0x00 0x10000000 0x00 0x10000000>, /* PCIe DAT */
+ 			 <0x00 0x64800000 0x00 0x64800000 0x00 0x00800000>, /* C71 */
++			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
+ 			 <0x44 0x00000000 0x44 0x00000000 0x00 0x08000000>, /* PCIe2 DAT */
+ 			 <0x44 0x10000000 0x44 0x10000000 0x00 0x08000000>, /* PCIe3 DAT */
+ 			 <0x4d 0x80800000 0x4d 0x80800000 0x00 0x00800000>, /* C66_0 */
 -- 
-thanks,
-
-Mimi
-
-[1] Message-Id: <20211124044124.998170-11-eric.snowberg@oracle.com>
+2.31.1
 
