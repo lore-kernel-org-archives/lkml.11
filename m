@@ -2,189 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A59C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9405CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:07:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244277AbiBOVHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 16:07:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48290 "EHLO
+        id S244281AbiBOVHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 16:07:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244269AbiBOVHA (ORCPT
+        with ESMTP id S237465AbiBOVHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 16:07:00 -0500
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6F92BB31;
-        Tue, 15 Feb 2022 13:06:49 -0800 (PST)
-Received: by mail-il1-f176.google.com with SMTP id z18so15865233iln.2;
-        Tue, 15 Feb 2022 13:06:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=B1+ZJcMtyBX3FqM5G6Lma2k2jOm6NmZZ5jVlCb7Pess=;
-        b=vm4okpL9pAugoi/rMRbjTEvoVLhdNuLjIY3/q5UBjMOxtzL1dH2WmgJ4Htd16X5uvR
-         K4ENaNvccU+CGCvx+MliGqlEYd4NG7x52fuI4bqd5FJADl+nxNlIez1d3LeOBXETHRKs
-         mscqSbnsytiP0vn4Id529CAs/8ipLeiFDzFXYj3h4uo4CPayxFMhtgvklltzHWyPVDa2
-         BOUhv9Xeprsa5m6ZByG9Z6qp5/Xfi9/U4KDNY1u7haPk45toInxPIzUybGbwUQLbAT4n
-         P+12t0fKBPxC4idtDYyhdDLAxK22HxsiKE3gQMxxx0UXpVQT60tFHif8s9if6zi+8//Y
-         Ba5A==
-X-Gm-Message-State: AOAM532Waz8S64Y2M+EbEwpevIh9L64aY/5Gryggf2KCku3esu5URorr
-        7PzEvGdJneCteyCAv648JA==
-X-Google-Smtp-Source: ABdhPJx/uzMzNSMXMusiikoo4Gc24MlhELBj8Wua6sRn0ptpOYyIhLnne+CKrcXbcNur4Z/7s9dxng==
-X-Received: by 2002:a05:6e02:20c6:: with SMTP id 6mr569254ilq.242.1644959208389;
-        Tue, 15 Feb 2022 13:06:48 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id y29sm3877610iox.46.2022.02.15.13.06.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 13:06:47 -0800 (PST)
-Received: (nullmailer pid 3921594 invoked by uid 1000);
-        Tue, 15 Feb 2022 21:06:45 -0000
-Date:   Tue, 15 Feb 2022 15:06:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>
-Cc:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org,
-        Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Tue, 15 Feb 2022 16:07:36 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995A22FFE3;
+        Tue, 15 Feb 2022 13:07:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644959245; x=1676495245;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=L7n8zm9Mv7CaXAqF7R96N+XLVC5Z7D6HaUCIWDsaT9c=;
+  b=TWuvog1t8s5ueB0PqsAzEMXqwyKyYyAgmiFGYQ141yZsoaBoHMKBMJ29
+   zzuhVZ8UZHSw/YxCjNsNMPXSObD5XN2oWaGs2FoioRofmo7mLhgf/BCAb
+   B0LUgeIuaolXeMIzNmU4grcuOZEJV9PEO8lMQHWBoEQl+GkhJw4oygaaz
+   pLspu/kBqO8Kz/JzGAhE5umHP4OhdBYyYfYK6ruL7ptM2jFo90mSVXkjs
+   8BZi7RIJedYK3QmrZLCRuQgI99FeaBDJrRRog0v3JoN7XQTS+pUFzIOBU
+   /JQ22X3ACyAALqjjU7ruVH0yIFEG5bufr3/V5xRxwIHOB48/nzIjvZGoV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="275031597"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="275031597"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 13:07:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="681201331"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2022 13:07:06 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nK52Q-000A2J-5y; Tue, 15 Feb 2022 21:07:06 +0000
+Date:   Wed, 16 Feb 2022 05:06:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     kbuild-all@lists.01.org, linux-wireless@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/10] dt-bindings: spi: Add Aspeed SMC controllers
- device tree binding
-Message-ID: <YgwV5ZGCbrNhlk0s@robh.at.kernel.org>
-References: <20220214094231.3753686-1-clg@kaod.org>
- <20220214094231.3753686-3-clg@kaod.org>
+Subject: Re: [PATCH] mac80211: fix RCU usage in ieee80211_tx_h_select_key()
+Message-ID: <202202160406.p1c7XduC-lkp@intel.com>
+References: <nycvar.YFH.7.76.2202151643220.11721@cbobk.fhfr.pm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220214094231.3753686-3-clg@kaod.org>
+In-Reply-To: <nycvar.YFH.7.76.2202151643220.11721@cbobk.fhfr.pm>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:42:23AM +0100, Cédric Le Goater wrote:
-> The "interrupt" property is optional because it is only necessary for
-> controllers supporting DMAs (Not implemented yet in the new driver).
-> 
-> Cc: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
-> Signed-off-by: Cédric Le Goater <clg@kaod.org>
-> ---
->  .../bindings/spi/aspeed,ast2600-fmc.yaml      | 92 +++++++++++++++++++
->  1 file changed, 92 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml b/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
-> new file mode 100644
-> index 000000000000..ed71c4d86930
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
-> @@ -0,0 +1,92 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/spi/aspeed,ast2600-fmc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Aspeed SMC controllers bindings
-> +
-> +maintainers:
-> +  - Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
-> +  - Cédric Le Goater <clg@kaod.org>
-> +
-> +description: |
-> +  This binding describes the Aspeed Static Memory Controllers (FMC and
-> +  SPI) of the AST2400, AST2500 and AST2600 SOCs.
-> +
-> +allOf:
-> +  - $ref: "spi-controller.yaml#"
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - aspeed,ast2600-fmc
-> +      - aspeed,ast2600-spi
-> +      - aspeed,ast2500-fmc
-> +      - aspeed,ast2500-spi
-> +      - aspeed,ast2400-fmc
-> +      - aspeed,ast2400-spi
-> +
-> +  reg:
-> +    items:
-> +      - description: registers
-> +      - description: memory mapping
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +patternProperties:
-> +  "@[0-9a-f]+":
-> +    type: object
-> +
-> +    properties:
-> +      spi-rx-bus-width:
-> +        enum: [1, 2, 4]
-> +
-> +    required:
-> +      - reg
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/aspeed-scu-ic.h>
-> +    #include <dt-bindings/clock/ast2600-clock.h>
-> +
-> +    spi@1e620000 {
-> +        reg = < 0x1e620000 0xc4
-> +                0x20000000 0x10000000 >;
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        compatible = "aspeed,ast2600-fmc";
-> +        clocks = <&syscon ASPEED_CLK_AHB>;
-> +        status = "disabled";
+Hi Jiri,
 
-Why is your example disabled? Drop 'status'.
+I love your patch! Perhaps something to improve:
 
-> +        interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
-> +        flash@0 {
-> +                reg = < 0 >;
-> +                compatible = "jedec,spi-nor";
-> +                spi-max-frequency = <50000000>;
-> +                status = "disabled";
+[auto build test WARNING on wireless-next/main]
+[also build test WARNING on wireless/main jberg-mac80211-next/master jberg-mac80211/master v5.17-rc4 next-20220215]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Ditto.
+url:    https://github.com/0day-ci/linux/commits/Jiri-Kosina/mac80211-fix-RCU-usage-in-ieee80211_tx_h_select_key/20220215-234935
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git main
+config: i386-randconfig-s002-20220214 (https://download.01.org/0day-ci/archive/20220216/202202160406.p1c7XduC-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/cdfe17d7fc283e125686bdd9a6bbc6fd60909bd7
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Jiri-Kosina/mac80211-fix-RCU-usage-in-ieee80211_tx_h_select_key/20220215-234935
+        git checkout cdfe17d7fc283e125686bdd9a6bbc6fd60909bd7
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash net/mac80211/
 
-> +        };
-> +        flash@1 {
-> +                reg = < 1 >;
-> +                compatible = "jedec,spi-nor";
-> +                spi-max-frequency = <50000000>;
-> +                status = "disabled";
-> +        };
-> +        flash@2 {
-> +                reg = < 2 >;
-> +                compatible = "jedec,spi-nor";
-> +                spi-max-frequency = <50000000>;
-> +                status = "disabled";
-> +        };
-> +    };
-> -- 
-> 2.34.1
-> 
-> 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> net/mac80211/tx.c:652:29: sparse: sparse: incorrect type in assignment (different base types) @@     expected int ret @@     got restricted ieee80211_tx_result [usertype] @@
+   net/mac80211/tx.c:652:29: sparse:     expected int ret
+   net/mac80211/tx.c:652:29: sparse:     got restricted ieee80211_tx_result [usertype]
+   net/mac80211/tx.c:661:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected int ret @@     got restricted ieee80211_tx_result [usertype] @@
+   net/mac80211/tx.c:661:21: sparse:     expected int ret
+   net/mac80211/tx.c:661:21: sparse:     got restricted ieee80211_tx_result [usertype]
+   net/mac80211/tx.c:664:13: sparse: sparse: incorrect type in assignment (different base types) @@     expected int ret @@     got restricted ieee80211_tx_result [usertype] @@
+   net/mac80211/tx.c:664:13: sparse:     expected int ret
+   net/mac80211/tx.c:664:13: sparse:     got restricted ieee80211_tx_result [usertype]
+>> net/mac80211/tx.c:667:16: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted ieee80211_tx_result @@     got int ret @@
+   net/mac80211/tx.c:667:16: sparse:     expected restricted ieee80211_tx_result
+   net/mac80211/tx.c:667:16: sparse:     got int ret
+
+vim +652 net/mac80211/tx.c
+
+   579	
+   580	static ieee80211_tx_result debug_noinline
+   581	ieee80211_tx_h_select_key(struct ieee80211_tx_data *tx)
+   582	{
+   583		int ret;
+   584		struct ieee80211_key *key;
+   585		struct ieee80211_tx_info *info = IEEE80211_SKB_CB(tx->skb);
+   586		struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)tx->skb->data;
+   587	
+   588		if (unlikely(info->flags & IEEE80211_TX_INTFL_DONT_ENCRYPT)) {
+   589			tx->key = NULL;
+   590			return TX_CONTINUE;
+   591		}
+   592	
+   593		rcu_read_lock();
+   594	
+   595		if (tx->sta &&
+   596		    (key = rcu_dereference(tx->sta->ptk[tx->sta->ptk_idx])))
+   597			tx->key = key;
+   598		else if (ieee80211_is_group_privacy_action(tx->skb) &&
+   599			(key = rcu_dereference(tx->sdata->default_multicast_key)))
+   600			tx->key = key;
+   601		else if (ieee80211_is_mgmt(hdr->frame_control) &&
+   602			 is_multicast_ether_addr(hdr->addr1) &&
+   603			 ieee80211_is_robust_mgmt_frame(tx->skb) &&
+   604			 (key = rcu_dereference(tx->sdata->default_mgmt_key)))
+   605			tx->key = key;
+   606		else if (is_multicast_ether_addr(hdr->addr1) &&
+   607			 (key = rcu_dereference(tx->sdata->default_multicast_key)))
+   608			tx->key = key;
+   609		else if (!is_multicast_ether_addr(hdr->addr1) &&
+   610			 (key = rcu_dereference(tx->sdata->default_unicast_key)))
+   611			tx->key = key;
+   612		else
+   613			tx->key = NULL;
+   614	
+   615		if (tx->key) {
+   616			bool skip_hw = false;
+   617	
+   618			/* TODO: add threshold stuff again */
+   619	
+   620			switch (tx->key->conf.cipher) {
+   621			case WLAN_CIPHER_SUITE_WEP40:
+   622			case WLAN_CIPHER_SUITE_WEP104:
+   623			case WLAN_CIPHER_SUITE_TKIP:
+   624				if (!ieee80211_is_data_present(hdr->frame_control))
+   625					tx->key = NULL;
+   626				break;
+   627			case WLAN_CIPHER_SUITE_CCMP:
+   628			case WLAN_CIPHER_SUITE_CCMP_256:
+   629			case WLAN_CIPHER_SUITE_GCMP:
+   630			case WLAN_CIPHER_SUITE_GCMP_256:
+   631				if (!ieee80211_is_data_present(hdr->frame_control) &&
+   632				    !ieee80211_use_mfp(hdr->frame_control, tx->sta,
+   633						       tx->skb) &&
+   634				    !ieee80211_is_group_privacy_action(tx->skb))
+   635					tx->key = NULL;
+   636				else
+   637					skip_hw = (tx->key->conf.flags &
+   638						   IEEE80211_KEY_FLAG_SW_MGMT_TX) &&
+   639						ieee80211_is_mgmt(hdr->frame_control);
+   640				break;
+   641			case WLAN_CIPHER_SUITE_AES_CMAC:
+   642			case WLAN_CIPHER_SUITE_BIP_CMAC_256:
+   643			case WLAN_CIPHER_SUITE_BIP_GMAC_128:
+   644			case WLAN_CIPHER_SUITE_BIP_GMAC_256:
+   645				if (!ieee80211_is_mgmt(hdr->frame_control))
+   646					tx->key = NULL;
+   647				break;
+   648			}
+   649	
+   650			if (unlikely(tx->key && tx->key->flags & KEY_FLAG_TAINTED &&
+   651				     !ieee80211_is_deauth(hdr->frame_control))) {
+ > 652				ret = TX_DROP;
+   653				goto out;
+   654			}
+   655	
+   656			if (!skip_hw && tx->key &&
+   657			    tx->key->flags & KEY_FLAG_UPLOADED_TO_HARDWARE)
+   658				info->control.hw_key = &tx->key->conf;
+   659		} else if (ieee80211_is_data_present(hdr->frame_control) && tx->sta &&
+   660			   test_sta_flag(tx->sta, WLAN_STA_USES_ENCRYPTION)) {
+   661			ret = TX_DROP;
+   662			goto out;
+   663		}
+   664		ret = TX_CONTINUE;
+   665	out:
+   666		rcu_read_unlock();
+ > 667		return ret;
+   668	}
+   669	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
