@@ -2,96 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B20BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A42C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 22:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244678AbiBOW4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 17:56:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33386 "EHLO
+        id S244690AbiBOW4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 17:56:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235253AbiBOW4i (ORCPT
+        with ESMTP id S244682AbiBOW4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 17:56:38 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80F866AC9;
-        Tue, 15 Feb 2022 14:56:26 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id l73so366828pge.11;
-        Tue, 15 Feb 2022 14:56:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=F1oWoUo/Pz47AF3QhLhNS8GxP6K0OhjZso/PODj3rEA=;
-        b=oA2SdCzBou6WlDc+wFi3Ojp9YyUq1aopMs9fn0pc//eCouP73Vuva76ZdR0AFPlv2L
-         7vim92sLGeXAHMe0t1eg5veqSVy278GeaYBQGTXFZE8VLuOoulJc0SJ+vG/mzpuzH/Pn
-         YJdufdaHzj+OWAlb7iybv0WTnf1YyEBW6oM2Rs0EKKC/kbp1C4sETQzEBEz3SN9jd4+7
-         azZPmhH1fnnerX7/x/om93bjgg/iC9Qal7SXEI6XZR+W8C+XfFNcK60Pso8g2HJEO3ew
-         H/f7omVdO8Prix3AA8s7m8egOfSb8Ui2qp4i9H2qdz0T9ZnPJQC78mqMYKPOVYV6rGMg
-         KRmw==
+        Tue, 15 Feb 2022 17:56:47 -0500
+Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F642B91D0;
+        Tue, 15 Feb 2022 14:56:37 -0800 (PST)
+Received: by mail-il1-f173.google.com with SMTP id n5so140367ilk.12;
+        Tue, 15 Feb 2022 14:56:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=F1oWoUo/Pz47AF3QhLhNS8GxP6K0OhjZso/PODj3rEA=;
-        b=jTrHX5CPG+r5bKv6gdaab6jfbk+JItmviGyeOF8XuFC/KqdrJQ0TP0V9sQofJ6/sas
-         +lGAFVzyaxMKsjw/lW6F0GO2f3M9wVkB/GcioDM9/ntDMXqR5R+mSLg87UV/QV/bizXy
-         mPQSs6iH1nz8jP/d/OZYZaDrAw/YJlYaltdCxhpP//Dl8hXBmYF8muMnKYwC2qsKVfPk
-         DatXjBCay89kwISalPu0kr5EuJC3dQfJY99R0rt9ND7MUeayHdIzwmJQ8c8Dur2VZbjo
-         2eafJhBXEoQ1MlSiESXvDt5A0LXmoStMWj8goO23NxqmSQW+M1WA7ZcVnfn8oMqxAhcM
-         oeRw==
-X-Gm-Message-State: AOAM532V5m7VEWfzSd2VSr4emiCWIKbqZedYGVvEwkVHrz0ycs01CAiL
-        +JSA1+2wgc5bovGt7G46Ijyq8qEaHUg=
-X-Google-Smtp-Source: ABdhPJztLBgYoi3wDhawZyaMDvrM19OyxAZJVIsFMod4/uaHZPhoo2S5cmKc9TqXBYa8gRCeXmtEsg==
-X-Received: by 2002:a65:52cc:: with SMTP id z12mr933070pgp.532.1644965786057;
-        Tue, 15 Feb 2022 14:56:26 -0800 (PST)
-Received: from google.com ([2620:15c:202:201:4e4a:b0ff:e926:40e2])
-        by smtp.gmail.com with ESMTPSA id m25sm3697536pgv.4.2022.02.15.14.56.24
+        bh=JeNpWnsdEBSIAdgZ4rc+NttAZNtgh6UEy35+0pZJ0PU=;
+        b=NrNpCcJuvt+CFR9+N5GwoSE4wYDFH2IY6ShgRXdTA0+FG7PogHxTSKG0mOvply+aV6
+         3sscyrPcj2ufroN2h0p4bNts1EwMlgr9YUqtPcItgJT274tdhF7VXN+ZD9vkXdwYgXnU
+         oGOJSJF5rJbYdjeyT4wOJMmn3L+i4IX12N2waKt8fqS86YemGiHLVGwUwp4hDzoMCvlc
+         VwWE4R7YOvSH9PPTlAZ5Qw6oLc9AQT9xW2S5z+fIkklf+NCATR7fqEU5LKcdlgGYBz+r
+         vPw1CTE49rn2xx4R9UUq0RDRfjX52QSh4TaND5NMf4klf+xCiUjHKJH0QGWyJ7mbdzoF
+         gNtg==
+X-Gm-Message-State: AOAM531Z9KzAIiXDTKrd/fYSGpcy40iEkq0vuByu5GGCMNe5XVCbu2br
+        M25tBQML1VFP2zM0jeHKMQ==
+X-Google-Smtp-Source: ABdhPJznftkYIpt01opf8UkdBTHjoIG3wyj6NjXO8VkO1mlt3KReXJUUXOr75f1kf6TzdSSAHpT92Q==
+X-Received: by 2002:a92:bf08:0:b0:2be:fc43:14c4 with SMTP id z8-20020a92bf08000000b002befc4314c4mr8776ilh.80.1644965796667;
+        Tue, 15 Feb 2022 14:56:36 -0800 (PST)
+Received: from robh.at.kernel.org ([64.188.179.250])
+        by smtp.gmail.com with ESMTPSA id q2sm17616920ilt.33.2022.02.15.14.56.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 14:56:25 -0800 (PST)
-Date:   Tue, 15 Feb 2022 14:56:22 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Danilo Krummrich <danilokrummrich@dk-develop.de>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linus.walleij@linaro.org
-Subject: Re: ps2-gpio: use ktime for IRQ timekeeping
-Message-ID: <Ygwvls62iycw12z/@google.com>
-References: <20220215160208.34826-1-danilokrummrich@dk-develop.de>
+        Tue, 15 Feb 2022 14:56:36 -0800 (PST)
+Received: (nullmailer pid 4072247 invoked by uid 1000);
+        Tue, 15 Feb 2022 22:56:33 -0000
+Date:   Tue, 15 Feb 2022 16:56:33 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     sst@poczta.fm, linux-iio@vger.kernel.org, lars@metafoo.de,
+        jic23@kernel.org, robh+dt@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, andy.shevchenko@gmail.com
+Subject: Re: [PATCH v2 4/4] dt-bindings: iio: potentiometer: Add Maxim DS3502
+ in trivial-devices
+Message-ID: <YgwvoUTOmTi8/NsS@robh.at.kernel.org>
+References: <20220214033620.4059-1-jagathjog1996@gmail.com>
+ <20220214033620.4059-5-jagathjog1996@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220215160208.34826-1-danilokrummrich@dk-develop.de>
+In-Reply-To: <20220214033620.4059-5-jagathjog1996@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 05:02:04PM +0100, Danilo Krummrich wrote:
-> Changes since v1
-> ================
->   - add patch to refactor struct ps2_gpio_data for clear separation between
->     RX and TX
->   - make all variables for IRQ timekeeping per-port and initialize them in
->     ps2_gpio_open()
+On Mon, 14 Feb 2022 09:06:20 +0530, Jagath Jog J wrote:
+> Maxim DS3502 is a 7 bit nonvolatile digital potentiometer.
+> Add DS3502 binding into trivial-devices.yaml
 > 
-> This patch series implements the usage of ktime for IRQ timekeeping to
-> overcome:
+> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> (1) The resolution limitations of jiffies.
-> (2) Potential spurious IRQs generated by gpio controllers.
-> 
-> Besides that, based on the newly implemented timekeeping, it fixes a wrongly
-> suspected extra clock cycle for TX transfers and a race condition when
-> starting an immediate TX transfer based on data received from an RX transfer.
-> 
-> Danilo Krummrich (4):
->       input: ps2-gpio: refactor struct ps2_gpio_data
->       input: ps2-gpio: use ktime for IRQ timekeeping
->       input: ps2-gpio: remove tx timeout from ps2_gpio_irq_tx()
->       input: ps2-gpio: don't send rx data before the stop bit
-> 
->  drivers/input/serio/ps2-gpio.c | 180 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------------------------------
->  1 file changed, 116 insertions(+), 64 deletions(-)
 
-Applied the lot, thank you.
 
--- 
-Dmitry
+Please add Acked-by/Reviewed-by tags when posting new versions. However,
+there's no need to repost patches *only* to add the tags. The upstream
+maintainer will do that for acks received on the version they apply.
+
+If a tag was not added on purpose, please state why and what changed.
+
