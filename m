@@ -2,84 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C27C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B88C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236384AbiBOKBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:01:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37006 "EHLO
+        id S236180AbiBOKCA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:02:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236431AbiBOKBX (ORCPT
+        with ESMTP id S234411AbiBOKBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:01:23 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7282114FFD
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 02:01:03 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nJudB-0001tL-OP; Tue, 15 Feb 2022 11:00:21 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nJud9-009fx0-KQ; Tue, 15 Feb 2022 11:00:19 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Scott Branden <sbranden@broadcom.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tony Lindgren <tony@atomide.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH v4 8/8] arm64: dts: imx8mm-kontron: fix ethernet node name
-Date:   Tue, 15 Feb 2022 11:00:18 +0100
-Message-Id: <20220215100018.2306046-9-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220215100018.2306046-1-o.rempel@pengutronix.de>
-References: <20220215100018.2306046-1-o.rempel@pengutronix.de>
+        Tue, 15 Feb 2022 05:01:47 -0500
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F7A1168F7;
+        Tue, 15 Feb 2022 02:01:11 -0800 (PST)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B3FCA240012;
+        Tue, 15 Feb 2022 10:01:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644919269;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nDkpAMsVWyC4vbiV4Jpk59MCtZ8jwmChy7R2m0dQNcY=;
+        b=UY+Xn3qSNrnrQgY1poqUomDjpsECubm9KK+hXagfT6L8LOJGb1MnDRx5qIsvozVpzbgxyC
+        LVQwm8sbVcGeju1jUJKUIiduI6ibeXmqpgCxu3HSv6MdQsO3bx5xdDqvV8ESQdYo6BQCPx
+        Zq37GNBy6guNvXiZ+37xUWiJD9kJqDVzil+Pb0i9cX049Fp5UzsdxUg+UkfbSo9/Zj2d4N
+        Fq1jV+Qd61FBQsQHIjleun4X9dsrQcR5DEPRAHJRCYM3xb3aA7HkNRp+4k0pzcokbjPnHa
+        feuh4b+7tfgO7ptP/UDIm+fufb27XGt6462XaC7pNpBldWz1U15AOvgj2VvzXg==
+Date:   Tue, 15 Feb 2022 11:01:04 +0100
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 27/66] media: sun6i-csi: Add media ops with link
+ notify callback
+Message-ID: <Ygt54MQ/Nnaf4F0f@aptenodytes>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-28-paul.kocialkowski@bootlin.com>
+ <YgqGGJJ0oVQgRoNy@paasikivi.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="VkCV1Ya8HCPjEJtx"
+Content-Disposition: inline
+In-Reply-To: <YgqGGJJ0oVQgRoNy@paasikivi.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node name of Ethernet controller should be "ethernet" instead of
-"usbether" as required by Ethernet controller devicetree schema:
- Documentation/devicetree/bindings/net/ethernet-controller.yaml
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--VkCV1Ya8HCPjEJtx
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
-index d40caf14ac4a..23be1ec538ba 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
-@@ -182,7 +182,7 @@ usb1@1 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 
--		usbnet: usbether@1 {
-+		usbnet: ethernet@1 {
- 			compatible = "usb424,ec00";
- 			reg = <1>;
- 			local-mac-address = [ 00 00 00 00 00 00 ];
--- 
-2.30.2
+Hi Sakari,
 
+On Mon 14 Feb 22, 18:40, Sakari Ailus wrote:
+> Hi Paul,
+>=20
+> Thanks for the update.
+>=20
+> On Sat, Feb 05, 2022 at 07:53:50PM +0100, Paul Kocialkowski wrote:
+> > In order to keep the power use count fields balanced when link changes
+> > happen between v4l2_pipeline_pm_get/set calls (in open/close),
+> > the link_notify media operation callback needs to be registered.
+> >=20
+> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > ---
+> >  drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> >=20
+> > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drive=
+rs/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > index 6f04f86504bf..c8fe31cc38b5 100644
+> > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > @@ -23,6 +23,7 @@
+> >  #include <linux/sched.h>
+> >  #include <linux/sizes.h>
+> >  #include <linux/slab.h>
+> > +#include <media/v4l2-mc.h>
+> > =20
+> >  #include "sun6i_csi.h"
+> >  #include "sun6i_csi_reg.h"
+> > @@ -574,6 +575,12 @@ void sun6i_csi_set_stream(struct sun6i_csi_device =
+*csi_dev, bool enable)
+> >  			   CSI_CAP_CH0_VCAP_ON);
+> >  }
+> > =20
+> > +/* Media */
+> > +
+> > +static const struct media_device_ops sun6i_csi_media_ops =3D {
+> > +	.link_notify =3D v4l2_pipeline_link_notify,
+>=20
+> Do you really need this?
+>=20
+> Drivers should instead rely on runtime PM nowadays.
+>=20
+> <URL:https://hverkuil.home.xs4all.nl/spec/driver-api/camera-sensor.html#p=
+ower-management>
+
+See my remark on the patch adding support for runtime pm.
+
+My understanding is that the callback is required when v4l2_pipeline_pm_get=
+/set
+is used, to keep the use count balanced (as mentionned in this commit messa=
+ge):
+<https://hverkuil.home.xs4all.nl/spec/driver-api/v4l2-mc.html#c.v4l2_pipeli=
+ne_pm_get>
+
+Cheers,
+
+Paul
+
+> > +};
+> > +
+> >  /* V4L2 */
+> > =20
+> >  static int sun6i_csi_link_entity(struct sun6i_csi_device *csi_dev,
+> > @@ -683,6 +690,7 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_de=
+vice *csi_dev)
+> >  	snprintf(media_dev->bus_info, sizeof(media_dev->bus_info),
+> >  		 "platform:%s", dev_name(dev));
+> >  	media_dev->hw_revision =3D 0;
+> > +	media_dev->ops =3D &sun6i_csi_media_ops;
+> >  	media_dev->dev =3D dev;
+> > =20
+> >  	media_device_init(media_dev);
+>=20
+> --=20
+> Kind regards,
+>=20
+> Sakari Ailus
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--VkCV1Ya8HCPjEJtx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmILeeAACgkQ3cLmz3+f
+v9FiRggAjzv6FQ/wjR9P00HIcbyQ1TZZ0UlHjWr8fLJ7U9GfXZfxtnoAGCVLCg6i
+xqOBPVyMllJ9vVYN1p5XIchdUjpcJr0KPG0pyzoCdmJG1+JXtHmvqCetTLEz7jP2
+K9xUAUQM/3Gx5O0nA15ErpTbxstJg+YiTQJUpG0pYPf4oDkvYdZSvkwrQ6AeNBb4
+wJt6HpENkhZhm1rrvl0ACWeXCponlUJzkWaVqDVDWvg3R2r3QmwmtfR2y1bLxIyl
+jyYgxgah37KURsxIGLAp5qrcPnl32U3XYuUl2axFq1sSxmtFs4gkgtgB7pBS/afE
+fAD1yLIVXAVSfF80YLV2pdPB0xpyXw==
+=q3wj
+-----END PGP SIGNATURE-----
+
+--VkCV1Ya8HCPjEJtx--
