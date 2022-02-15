@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BE82C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD97C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229599AbiBPK1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:27:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49710 "EHLO
+        id S232892AbiBPK1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:27:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232837AbiBPK1D (ORCPT
+        with ESMTP id S232844AbiBPK1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 16 Feb 2022 05:27:03 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEABE1DE8B4;
-        Wed, 16 Feb 2022 02:26:51 -0800 (PST)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27909206995;
+        Wed, 16 Feb 2022 02:26:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645007211; x=1676543211;
+  t=1645007212; x=1676543212;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1ymbzXgybS9Kud6P+so4FG9rzv9+BB+wvBmn0MMJDDs=;
-  b=L/BjI/Nphx69eCSxQw3PJcIsQUVNzMrvJtAyVCwjZFz5cYwTnQb33JK2
-   jUvcKHyzbxjdjSGLQ1t4cupU8xa1mAaQvlshQMjr5L7/ACirH+2C33DYN
-   gQXTfX3CCTYO5D5lThfbUqO5V934h5ApWSCAABcTxe3zjuFGpiNeIPH9O
-   9FhSQaYWuEYLGjsyTRKRy/13dZW7CPqqL0pMG4oh6rqFN48VloQPY40Sp
-   HuUbmKH61R3+uV2csVPAG2//JjvCR8DcaL6s6bQTCexWxccIyzp8QAAY4
-   q+D2Pj6Y1zojDJbZeHVJDFteZBpB+ugoS5JWUdm6oNGux24UYXMaB+/9d
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="231201148"
+  bh=ua7eKMjMgbuMUSWoTvt/pD+pRNzX252qQBMst8H9K0Q=;
+  b=hobkwhKTofj16e8qfnLlf3GJudJUOVEfMqdky7qUwF+1lMXHeSEtw+P8
+   KJmU+/fM+mq8qhU53b3VxtwxxPrXCf5b0ycUyzX3xaDfrmN++DFc2UAqS
+   kPkJcbipHmty2CTCr/7+gRYccZxdm2jEx76uTPucREMQu2qHvEHQgi/+p
+   Nf4LTgV9URpLmuY0LcPkkJnNzScrr6kxHPdano1GDTAPP4hDkCm03s0w2
+   Ak4hh6Pq1F1kZHex7KONUKg+EskNBvl+uDlabO+h52d8GTEFSG3IZ+NMh
+   M1h/KZanzgZwZk3nNP9GZw8RDTKokN/RL5hD8NO7IugGaz2VfU0hW2XTZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250312473"
 X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="231201148"
+   d="scan'208";a="250312473"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 02:26:50 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 02:26:51 -0800
 X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="498708569"
+   d="scan'208";a="498708584"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 02:26:50 -0800
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yang Weijiang <weijiang.yang@intel.com>,
-        Zhang Yi Z <yi.z.zhang@linux.intel.com>
-Subject: [PATCH v9 02/17] KVM: x86: Refresh CPUID on writes to MSR_IA32_XSS
-Date:   Tue, 15 Feb 2022 16:25:29 -0500
-Message-Id: <20220215212544.51666-3-weijiang.yang@intel.com>
+Cc:     Like Xu <like.xu@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v9 05/17] perf/x86/lbr: Simplify the exposure check for the LBR_INFO registers
+Date:   Tue, 15 Feb 2022 16:25:32 -0500
+Message-Id: <20220215212544.51666-6-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220215212544.51666-1-weijiang.yang@intel.com>
 References: <20220215212544.51666-1-weijiang.yang@intel.com>
@@ -55,85 +58,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Updated CPUID.0xD.0x1, which reports the current required storage size
-of all features enabled via XCR0 | XSS, when the guest's XSS is modified.
+From: Like Xu <like.xu@linux.intel.com>
 
-Note, KVM does not yet support any XSS based features, i.e. supported_xss
-is guaranteed to be zero at this time.
+The x86_pmu.lbr_info is 0 unless explicitly initialized, so there's
+no point checking x86_pmu.intel_cap.lbr_format.
 
-Co-developed-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
-Signed-off-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 ---
- arch/x86/include/asm/kvm_host.h |  1 +
- arch/x86/kvm/cpuid.c            | 21 ++++++++++++++++++---
- arch/x86/kvm/x86.c              |  8 +++++---
- 3 files changed, 24 insertions(+), 6 deletions(-)
+ arch/x86/events/intel/lbr.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 6dcccb304775..9d59dfc27e5a 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -704,6 +704,7 @@ struct kvm_vcpu_arch {
+diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
+index 669c2be14784..4ab358ca7290 100644
+--- a/arch/x86/events/intel/lbr.c
++++ b/arch/x86/events/intel/lbr.c
+@@ -1874,12 +1874,10 @@ void __init intel_pmu_arch_lbr_init(void)
+  */
+ int x86_perf_get_lbr(struct x86_pmu_lbr *lbr)
+ {
+-	int lbr_fmt = x86_pmu.intel_cap.lbr_format;
+-
+ 	lbr->nr = x86_pmu.lbr_nr;
+ 	lbr->from = x86_pmu.lbr_from;
+ 	lbr->to = x86_pmu.lbr_to;
+-	lbr->info = (lbr_fmt == LBR_FORMAT_INFO) ? x86_pmu.lbr_info : 0;
++	lbr->info = x86_pmu.lbr_info;
  
- 	u64 xcr0;
- 	u64 guest_supported_xcr0;
-+	u64 guest_supported_xss;
- 
- 	struct kvm_pio_request pio;
- 	void *pio_data;
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 494d4d351859..8cd864411a1c 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -239,9 +239,24 @@ static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_e
- 		best->ebx = xstate_required_size(vcpu->arch.xcr0, false);
- 
- 	best = cpuid_entry2_find(entries, nent, 0xD, 1);
--	if (best && (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
--		     cpuid_entry_has(best, X86_FEATURE_XSAVEC)))
--		best->ebx = xstate_required_size(vcpu->arch.xcr0, true);
-+	if (best) {
-+		if (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
-+		    cpuid_entry_has(best, X86_FEATURE_XSAVEC))  {
-+			u64 xstate = vcpu->arch.xcr0 | vcpu->arch.ia32_xss;
-+
-+			best->ebx = xstate_required_size(xstate, true);
-+		}
-+
-+		if (!cpuid_entry_has(best, X86_FEATURE_XSAVES)) {
-+			best->ecx = 0;
-+			best->edx = 0;
-+		}
-+		vcpu->arch.guest_supported_xss =
-+			(((u64)best->edx << 32) | best->ecx) & supported_xss;
-+
-+	} else {
-+		vcpu->arch.guest_supported_xss = 0;
-+	}
- 
- 	best = __kvm_find_kvm_cpuid_features(vcpu, entries, nent);
- 	if (kvm_hlt_in_guest(vcpu->kvm) && best &&
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index b82934c13e30..8397e5bc4ed5 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3535,10 +3535,12 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		 * IA32_XSS[bit 8]. Guests have to use RDMSR/WRMSR rather than
- 		 * XSAVES/XRSTORS to save/restore PT MSRs.
- 		 */
--		if (data & ~supported_xss)
-+		if (data & ~vcpu->arch.guest_supported_xss)
- 			return 1;
--		vcpu->arch.ia32_xss = data;
--		kvm_update_cpuid_runtime(vcpu);
-+		if (vcpu->arch.ia32_xss != data) {
-+			vcpu->arch.ia32_xss = data;
-+			kvm_update_cpuid_runtime(vcpu);
-+		}
- 		break;
- 	case MSR_SMI_COUNT:
- 		if (!msr_info->host_initiated)
+ 	return 0;
+ }
 -- 
 2.27.0
 
