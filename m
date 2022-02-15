@@ -2,61 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 01:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C1EFC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 01:53:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbiBOBxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 20:53:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38772 "EHLO
+        id S233212AbiBOBxf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 20:53:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbiBOBxU (ORCPT
+        with ESMTP id S233207AbiBOBxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 20:53:20 -0500
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DDC1405FD;
-        Mon, 14 Feb 2022 17:53:11 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R581e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jnwang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V4VVSdE_1644889961;
-Received: from rsjc10526.et2sqa.tbsite.net(mailfrom:jnwang@linux.alibaba.com fp:SMTPD_---0V4VVSdE_1644889961)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 15 Feb 2022 09:53:08 +0800
-From:   James Wang <jnwang@linux.alibaba.com>
-To:     don.brace@microsemi.com, jejb@linux.vnet.ibm.com,
-        martin.petersen@oracle.com, esc.storagedev@microsemi.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bart Van Assche <bvanassche@acm.org>
-Subject: [PATCH v2] [hpsa] Fix the wrong chars in comment section
-Date:   Tue, 15 Feb 2022 09:52:41 +0800
-Message-Id: <1644889961-61470-1-git-send-email-jnwang@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <974edf4d-37fa-b25a-d0ac-33ac502381d8@acm.org>
-References: <974edf4d-37fa-b25a-d0ac-33ac502381d8@acm.org>
+        Mon, 14 Feb 2022 20:53:31 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EA5140740;
+        Mon, 14 Feb 2022 17:53:22 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id s24so19386385oic.6;
+        Mon, 14 Feb 2022 17:53:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ubqb2L9ofFczhZiHH2mV/rWxWC+WC5qrei4uNq+4VYA=;
+        b=fTYfuV080FyTcQBzEl80iXu3wOTMMUO2NUyX8Smv2su/d91IdGJAe7a5tGZdHnxErP
+         ZhbFZxIQWmWQvglv6BXCjPyj5kwqDKomfP5m6VTcbGI4AFrn9hMlFKPutQd0lkBDpaY/
+         fpSZo7YwWl2viZwG9G1zjeYTYLYtvT7Q2iWnq5ievz3ryo2cq1YfcUPB3ikBSU552iqQ
+         j2zYLhaRCf2vowNb+BiBuKveS4uAV5H3qHLXcSTmUojY3AIOzwmH7/GUlCGMHiyJl8Kp
+         zGUihO9CsJ1NCRAHncIR1H0DOhzPSMcVPGarKXJdIjXvyk2ve2bDAcQUSaMOCYvvONyc
+         ZNxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=ubqb2L9ofFczhZiHH2mV/rWxWC+WC5qrei4uNq+4VYA=;
+        b=1TRmfp+uQcY/0HxuEwv17p/D9WX6po8Zt5Gi/2qXH3PUGTATsVEegNF92iWd0ESdHS
+         yQgxffTO4UOxvV4cRz+qgFClBftZ/Vv/grGQWbFjvglyjjBRw47lVoZ1n7v1bguJ6DKH
+         UwUICUGd/E7qWPUr4+JFrgqW+2rg+hcIzH2tWhVxQ0rAQyQf/4PrwsocoqekczePEvuT
+         oGSkzCLD9PqZV4sKb5FvKTdSA9XbQ4h8Y/9lQDXS4H5ngsos074ZqHnbJgiMAD+N4g5C
+         wm3Pm2/KchRxzEdJZQ48UxhX+cNH/vjdB5TJxyzv19kKKPzXeZ3ZinzKG/QE/NzwJJ9z
+         19mA==
+X-Gm-Message-State: AOAM531U4Ns4C1e8jhnhF+DpstGp05TYOb7lzZ0KYCoXWJjvJlnlwOvh
+        nxwKDlGWpB4kCcz2T7+HM1U=
+X-Google-Smtp-Source: ABdhPJwLmIpXdy3eYgVjzDCV8fPiTmOh0uBKi38uqwBFKXCDnqIYA8Fxxlhotpms//RE9fDBf8xKFA==
+X-Received: by 2002:a05:6808:1302:: with SMTP id y2mr743120oiv.177.1644890002211;
+        Mon, 14 Feb 2022 17:53:22 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t2sm13397259ooo.24.2022.02.14.17.53.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 17:53:21 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 14 Feb 2022 17:53:20 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.16 000/203] 5.16.10-rc1 review
+Message-ID: <20220215015320.GG432640@roeck-us.net>
+References: <20220214092510.221474733@linuxfoundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These '+' should be redundant.
+On Mon, Feb 14, 2022 at 10:24:04AM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.10 release.
+> There are 203 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
+> Anything received after that time might be too late.
+> 
 
-Signed-off-by: James Wang <jnwang@linux.alibaba.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
----
- drivers/scsi/hpsa.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Build results:
+	total: 155 pass: 155 fail: 0
+Qemu test results:
+	total: 488 pass: 488 fail: 0
 
-diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index a47bcce..34cd6c8 100644
---- a/drivers/scsi/hpsa.c
-+++ b/drivers/scsi/hpsa.c
-@@ -7641,8 +7641,8 @@ static void hpsa_free_cfgtables(struct ctlr_info *h)
- }
- 
- /* Find and map CISS config table and transfer table
--+ * several items must be unmapped (freed) later
--+ * */
-+ * several items must be unmapped (freed) later
-+ */
- static int hpsa_find_cfgtables(struct ctlr_info *h)
- {
- 	u64 cfg_offset;
--- 
-1.8.3.1
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
+Guenter
