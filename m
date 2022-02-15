@@ -2,462 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF78FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB87C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242694AbiBORle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:41:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53444 "EHLO
+        id S242700AbiBORml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:42:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242618AbiBORl3 (ORCPT
+        with ESMTP id S242481AbiBORmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:41:29 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64DE4A3C4;
-        Tue, 15 Feb 2022 09:41:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644946878; x=1676482878;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4yiWFkfWSslO+frra9N96ukQwZe8gg2MbNGsiRbMA0o=;
-  b=afehDQpGwkM4VgnRdYaQZXmtVsJovnwPRvY+Dx7Am+OXR0GPGrqywZFE
-   xo5wLAUCTI0WR7g7DO+hkN8PBFIZUBH/ty7YjQgDHMs6DVfG/pB6N7GJK
-   wYYbDBKWFxmP+ssP+Yqnl4siuNAB9+jx8ocmjVvbpNeYfZzwm1ggzQc/C
-   8=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 15 Feb 2022 09:41:18 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:41:17 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 15 Feb 2022 09:41:17 -0800
-Received: from [10.110.63.253] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 15 Feb
- 2022 09:41:16 -0800
-Message-ID: <04237d77-bd5e-c0d9-5154-e6118a3af53d@quicinc.com>
-Date:   Tue, 15 Feb 2022 09:41:15 -0800
+        Tue, 15 Feb 2022 12:42:39 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6878B6CB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:42:29 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E522F405EC
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:42:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644946947;
+        bh=SiDXwW19FJN8pW9aFNLOMTMKt2M32hD/m+v/+010wfI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=aYs796KZF7Ua0SK9A8NX41zcogbAsg1G5VefBgGWu4c6D6/V1FkYxInjaDQBP4IhM
+         EoNtpyMsbrSncOTa4ElC6583iZvYDSZ43w9bM+7VuWrfIB6ZTIAzX5wBFONHum/aL1
+         kUKgnYy2m3eoIUfUdERdYLOcGzSB+PN4dobQJwuXrJLuXKITzTRTWxltqav0lHStnD
+         +seUe0gTvbJBFEKQaAj2g7+6V/zSoHN3wseIW0xpn4jsNvtB5zbbzF2iJ6+lab4Pcm
+         TEjErpghZpt8HWySOpkI2XP/cFWzb4hF7ccdjg4rXReX0h2ihYOGRFhYsh+lILrmw2
+         ++np5aBCpku6g==
+Received: by mail-ed1-f69.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so278456edb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:42:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SiDXwW19FJN8pW9aFNLOMTMKt2M32hD/m+v/+010wfI=;
+        b=s13kCTRvob6rQCd3o1H2kzVRgAC9ryJdjW0dMgmPr5Fug57s3AIxfSM/+cAmopdoHy
+         bPc+s8KfqDfj2w1Lqct37dLlgK9q6U1P42Kmfy5wRE+/s/Mo22wlTE7MXeCKv2P27IzJ
+         gpuKOTFyqqjuvtyhvmsGgVaEDUvn+RRWKho7v+vE2LV0qMwybJQ9JpqD8xJxBfaO9c0z
+         84SBDX1a/mndwh0bKlSGQXOH3NODXDsiu4Mu/poV9C/vX/jzFnjuoIVJWzRJrtKd63vH
+         1oj7KJXUwXXm60tNcMhHcPK/6c/EU1IPVs9IwSItqSHN9ttPpSKgSIIPZzQ4JxOkGMkX
+         P28Q==
+X-Gm-Message-State: AOAM530M3KeZNqPKKhAyofvvzUgCFjPpW9cSg4cqjzVO4j4nSQU0xz2d
+        TcUQZd+Jp0PAZNq9jTMK75386CH6hELo/ab2hc37oGknsXBWi+oJGHuUfrEUrlcMG39UiBHyl7K
+        tUeCezvlg6M/kSvDUYf+kIHBnG13cPwhnQ6YSIbelLg==
+X-Received: by 2002:a17:906:9750:: with SMTP id o16mr153932ejy.766.1644946947398;
+        Tue, 15 Feb 2022 09:42:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzLI/tC+CkdcaVGl9luIU4vkop2V0YQT2cTA8hb6YgaHTY7Nk9gE95CNESjuz9heDNDC0+BVg==
+X-Received: by 2002:a17:906:9750:: with SMTP id o16mr153918ejy.766.1644946947238;
+        Tue, 15 Feb 2022 09:42:27 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id q8sm240797edd.10.2022.02.15.09.42.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 09:42:26 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <snawrocki@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+        Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>
+Subject: [GIT PULL] pinctrl: samsung: pull for v5.18
+Date:   Tue, 15 Feb 2022 18:42:20 +0100
+Message-Id: <20220215174220.11054-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 2/2] drm/msm/dp: enable widebus feature for display
- port
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
-        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <quic_abhinavk@quicinc.com>,
-        <quic_aravindh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1644878346-28511-1-git-send-email-quic_khsieh@quicinc.com>
- <1644878346-28511-3-git-send-email-quic_khsieh@quicinc.com>
- <YgsqcTruwrvaGBxw@yoga>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <YgsqcTruwrvaGBxw@yoga>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Linus,
 
-On 2/14/2022 8:22 PM, Bjorn Andersson wrote:
-> On Mon 14 Feb 16:39 CST 2022, Kuogee Hsieh wrote:
->
->> Widebus feature will transmit two pixel data per pixel clock to interface.
->> This feature now is required to be enabled to easy migrant to higher
->> resolution applications in future. However since some legacy chipsets
->> does not support this feature, this feature is enabled base on chip's
->> hardware revision.
->>
->> changes in v2:
->> -- remove compression related code from timing
->> -- remove op_info from  struct msm_drm_private
->> -- remove unnecessary wide_bus_en variables
->> -- pass wide_bus_en into timing configuration by struct msm_dp
->>
->> Changes in v3:
->> -- split patch into 3 patches
->> -- enable widebus feature base on chip hardware revision
->>
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> Tested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
->
->> ---
->>   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c |  4 +++-
->>   drivers/gpu/drm/msm/dp/dp_catalog.c         | 36 +++++++++++++++++++++++++++--
->>   drivers/gpu/drm/msm/dp/dp_catalog.h         |  3 ++-
->>   drivers/gpu/drm/msm/dp/dp_ctrl.c            | 13 +++++++----
->>   drivers/gpu/drm/msm/dp/dp_ctrl.h            |  1 +
->>   drivers/gpu/drm/msm/dp/dp_display.c         | 30 ++++++++++++++++++++++++
->>   drivers/gpu/drm/msm/dp/dp_display.h         |  2 ++
->>   drivers/gpu/drm/msm/dp/dp_panel.c           |  4 ++--
->>   drivers/gpu/drm/msm/dp/dp_panel.h           |  2 +-
->>   drivers/gpu/drm/msm/msm_drv.h               |  6 +++++
->>   10 files changed, 90 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> index 0c22839..b2d23c2 100644
->> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> @@ -2167,8 +2167,10 @@ int dpu_encoder_setup(struct drm_device *dev, struct drm_encoder *enc,
->>   		timer_setup(&dpu_enc->vsync_event_timer,
->>   				dpu_encoder_vsync_event_handler,
->>   				0);
->> -	else if (disp_info->intf_type == DRM_MODE_ENCODER_TMDS)
->> +	else if (disp_info->intf_type == DRM_MODE_ENCODER_TMDS) {
->>   		dpu_enc->dp = priv->dp[disp_info->h_tile_instance[0]];
->> +		dpu_enc->wide_bus_en = msm_dp_wide_bus_enable(dpu_enc->dp);
->> +	}
->>   
->>   	INIT_DELAYED_WORK(&dpu_enc->delayed_off_work,
->>   			dpu_encoder_off_work);
->> diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
->> index 64f0b26..99d087e 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_catalog.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
->> @@ -483,6 +483,27 @@ int dp_catalog_ctrl_set_pattern_state_bit(struct dp_catalog *dp_catalog,
->>   }
->>   
->>   /**
->> + * dp_catalog_hw_revision() - retrieve DP hw revision
->> + *
->> + * @dp_catalog: DP catalog structure
->> + *
->> + * return: u32
-> Q: What's 2+2?
-> A: Integer
->
-> This should say:
->
-> Return: the controller hardware revision
->
->> + *
->> + * This function return the DP controller hw revision
-> That's what "Return:" in the kernel-doc is supposed to clarify...
->
-> https://docs.kernel.org/doc-guide/kernel-doc.html is good to read.
->
->> + *
->> + */
->> +u32 dp_catalog_hw_revision(struct dp_catalog *dp_catalog)
->> +{
->> +	u32 revision;
->> +	struct dp_catalog_private *catalog = container_of(dp_catalog,
->> +				struct dp_catalog_private, dp_catalog);
->> +
->> +	revision = dp_read_ahb(catalog, REG_DP_HW_VERSION);
-> There's no need for a local variable here, just:
->
-> 	return dp_read_ahb();
->
->> +
->> +	return revision;
->> +}
->> +
->> +/**
->>    * dp_catalog_ctrl_reset() - reset DP controller
->>    *
->>    * @dp_catalog: DP catalog structure
->> @@ -739,10 +760,11 @@ u32 dp_catalog_ctrl_read_phy_pattern(struct dp_catalog *dp_catalog)
->>   }
->>   
->>   /* panel related catalog functions */
->> -int dp_catalog_panel_timing_cfg(struct dp_catalog *dp_catalog)
->> +int dp_catalog_panel_timing_cfg(struct dp_catalog *dp_catalog, bool wide_bus_en)
->>   {
->>   	struct dp_catalog_private *catalog = container_of(dp_catalog,
->>   				struct dp_catalog_private, dp_catalog);
->> +	u32 reg;
->>   
->>   	dp_write_link(catalog, REG_DP_TOTAL_HOR_VER,
->>   				dp_catalog->total);
->> @@ -751,7 +773,17 @@ int dp_catalog_panel_timing_cfg(struct dp_catalog *dp_catalog)
->>   	dp_write_link(catalog, REG_DP_HSYNC_VSYNC_WIDTH_POLARITY,
->>   				dp_catalog->width_blanking);
->>   	dp_write_link(catalog, REG_DP_ACTIVE_HOR_VER, dp_catalog->dp_active);
->> -	dp_write_p0(catalog, MMSS_DP_INTF_CONFIG, 0);
->> +
->> +	reg = dp_read_p0(catalog, MMSS_DP_INTF_CONFIG);
->> +
->> +	if (wide_bus_en)
->> +		reg |= BIT(4);	/* DATABUS_WIDEN */
-> #define DATABUS_WIDEN BIT(4)
->
-> Would save you the need for writing that comment.
->
->> +	else
->> +		reg &= ~BIT(4);
->> +
->> +	DRM_DEBUG_DP("wide_bus_en=%d reg=%x\n", wide_bus_en, reg);
->> +
->> +	dp_write_p0(catalog, MMSS_DP_INTF_CONFIG, reg);
->>   	return 0;
->>   }
->>   
->> diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.h b/drivers/gpu/drm/msm/dp/dp_catalog.h
->> index 7dea101..a3a0129 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_catalog.h
->> +++ b/drivers/gpu/drm/msm/dp/dp_catalog.h
->> @@ -95,6 +95,7 @@ void dp_catalog_ctrl_config_misc(struct dp_catalog *dp_catalog, u32 cc, u32 tb);
->>   void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog, u32 rate,
->>   				u32 stream_rate_khz, bool fixed_nvid);
->>   int dp_catalog_ctrl_set_pattern_state_bit(struct dp_catalog *dp_catalog, u32 pattern);
->> +u32 dp_catalog_hw_revision(struct dp_catalog *dp_catalog);
->>   void dp_catalog_ctrl_reset(struct dp_catalog *dp_catalog);
->>   bool dp_catalog_ctrl_mainlink_ready(struct dp_catalog *dp_catalog);
->>   void dp_catalog_ctrl_enable_irq(struct dp_catalog *dp_catalog, bool enable);
->> @@ -115,7 +116,7 @@ void dp_catalog_ctrl_send_phy_pattern(struct dp_catalog *dp_catalog,
->>   u32 dp_catalog_ctrl_read_phy_pattern(struct dp_catalog *dp_catalog);
->>   
->>   /* DP Panel APIs */
->> -int dp_catalog_panel_timing_cfg(struct dp_catalog *dp_catalog);
->> +int dp_catalog_panel_timing_cfg(struct dp_catalog *dp_catalog, bool wide_bus_en);
->>   void dp_catalog_dump_regs(struct dp_catalog *dp_catalog);
->>   void dp_catalog_panel_tpg_enable(struct dp_catalog *dp_catalog,
->>   				struct drm_display_mode *drm_mode);
->> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> index 245e1b9..1c4cf9d 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> @@ -154,7 +154,7 @@ static void dp_ctrl_config_ctrl(struct dp_ctrl_private *ctrl)
->>   	dp_catalog_ctrl_config_ctrl(ctrl->catalog, config);
->>   }
->>   
->> -static void dp_ctrl_configure_source_params(struct dp_ctrl_private *ctrl)
->> +static void dp_ctrl_configure_source_params(struct dp_ctrl_private *ctrl, bool wide_bus_en)
->>   {
->>   	u32 cc, tb;
->>   
->> @@ -167,7 +167,7 @@ static void dp_ctrl_configure_source_params(struct dp_ctrl_private *ctrl)
->>   		ctrl->panel->dp_mode.bpp);
->>   	cc = dp_link_get_colorimetry_config(ctrl->link);
->>   	dp_catalog_ctrl_config_misc(ctrl->catalog, cc, tb);
->> -	dp_panel_timing_cfg(ctrl->panel);
->> +	dp_panel_timing_cfg(ctrl->panel, wide_bus_en);
->>   }
->>   
->>   /*
->> @@ -1796,6 +1796,7 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
->>   	int ret = 0;
->>   	bool mainlink_ready = false;
->>   	struct dp_ctrl_private *ctrl;
->> +	u32 pixel_rate_orig;
->>   
->>   	if (!dp_ctrl)
->>   		return -EINVAL;
->> @@ -1804,6 +1805,10 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
->>   
->>   	ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
->>   
->> +	pixel_rate_orig = ctrl->dp_ctrl.pixel_rate;
->> +	if (dp_ctrl->wide_bus_en)
->> +		ctrl->dp_ctrl.pixel_rate >>= 1;
->> +
->>   	DRM_DEBUG_DP("rate=%d, num_lanes=%d, pixel_rate=%d\n",
->>   		ctrl->link->link_params.rate,
->>   		ctrl->link->link_params.num_lanes, ctrl->dp_ctrl.pixel_rate);
->> @@ -1839,11 +1844,11 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
->>   	 */
->>   	reinit_completion(&ctrl->video_comp);
->>   
->> -	dp_ctrl_configure_source_params(ctrl);
->> +	dp_ctrl_configure_source_params(ctrl, dp_ctrl->wide_bus_en);
->>   
->>   	dp_catalog_ctrl_config_msa(ctrl->catalog,
->>   		ctrl->link->link_params.rate,
->> -		ctrl->dp_ctrl.pixel_rate, dp_ctrl_use_fixed_nvid(ctrl));
->> +		pixel_rate_orig, dp_ctrl_use_fixed_nvid(ctrl));
->>   
->>   	dp_ctrl_setup_tr_unit(ctrl);
->>   
->> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.h b/drivers/gpu/drm/msm/dp/dp_ctrl.h
->> index 2433edb..4dff44d 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.h
->> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.h
->> @@ -17,6 +17,7 @@ struct dp_ctrl {
->>   	bool orientation;
->>   	atomic_t aborted;
->>   	u32 pixel_rate;
->> +	bool wide_bus_en;
->>   };
->>   
->>   int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
->> index e89556ad..d45a3aa 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->> @@ -117,6 +117,8 @@ struct dp_display_private {
->>   	struct dp_event event_list[DP_EVENT_Q_MAX];
->>   	spinlock_t event_lock;
->>   
->> +	bool wide_bus_en;
->> +
->>   	struct dp_audio *audio;
->>   };
->>   
->> @@ -845,6 +847,8 @@ static int dp_display_enable(struct dp_display_private *dp, u32 data)
->>   		return 0;
->>   	}
->>   
->> +	dp->ctrl->wide_bus_en = dp->wide_bus_en;
->> +
->>   	rc = dp_ctrl_on_stream(dp->ctrl);
->>   	if (!rc)
->>   		dp_display->power_on = true;
->> @@ -979,6 +983,7 @@ int dp_display_get_modes(struct msm_dp *dp,
->>   		dp->connector, dp_mode);
->>   	if (dp_mode->drm_mode.clock)
->>   		dp->max_pclk_khz = dp_mode->drm_mode.clock;
->> +
->>   	return ret;
->>   }
->>   
->> @@ -1451,6 +1456,28 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display)
->>   	}
->>   }
->>   
->> +bool msm_dp_wide_bus_enable(struct msm_dp *dp_display)
->> +{
->> +	struct dp_display_private *dp;
->> +	u32 revision, major, minor;
->> +
->> +	dp = container_of(dp_display, struct dp_display_private, dp_display);
->> +
->> +	/* for the time being widebus only support on DP */
->> +	if (dp_display->connector_type  == DRM_MODE_CONNECTOR_DisplayPort) {
-> Is there a reason for not enabling widebus for eDP? (I'm perfectly fine
-> with doing us doing that separately at a later point, but I'm curious)
+Parts of this pull was shared with ARM SoC guys (tags/samsung-dt-pinctrl-5.18):
+https://lore.kernel.org/lkml/20220129115352.13274-1-krzysztof.kozlowski@canonical.com/
 
-yes, widebus can be enabled for eDP too.
+This pull request is on top of it, in a fast-forward way, no rebases.
 
-Just ask hardware engineer thsi question, they said widebus is 
-recommended to be enabled at both eDP and DP.
+You can pull this one alone, or tags/samsung-dt-pinctrl-5.18 +
+tags/samsung-pinctrl-5.18-2 together.
 
-I will enable it later.
+Best regards,
+Krzysztof
 
 
->
->> +		revision = dp_catalog_hw_revision(dp->catalog);
->> +		major = ((revision >> 28) & 0x0ff);
->> +		minor = ((revision >> 16) & 0x0fff);
->> +
->> +	DRM_DEBUG_DP("id=%d major=%d minor=%d\n", dp->id, major, minor);
-> The indentation of this line is wrong.
->
->> +
->> +		if (major >= 1 && minor >= 2)
->> +			return true;
->> +	}
->> +
->> +	return false;
->> +}
->> +
->>   void msm_dp_debugfs_init(struct msm_dp *dp_display, struct drm_minor *minor)
->>   {
->>   	struct dp_display_private *dp;
->> @@ -1505,6 +1532,9 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
->>   	dp_priv->panel->connector = dp_display->connector;
->>   
->>   	priv->connectors[priv->num_connectors++] = dp_display->connector;
->> +
->> +	dp_priv->wide_bus_en = msm_dp_wide_bus_enable(dp_display);
-> Not sure if I'm missing some patches, but my branch branch doesn't have
-> a dp_priv in this function.
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
-My fault, I uploaded patches for review at my working directory instead 
-of msm-next branch.
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
 
+are available in the Git repository at:
 
->
-> Regards,
-> Bjorn
->
->> +
->>   	return 0;
->>   }
->>   
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.h b/drivers/gpu/drm/msm/dp/dp_display.h
->> index 8e80e3b..d9cb9ee 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.h
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.h
->> @@ -23,6 +23,8 @@ struct msm_dp {
->>   
->>   	hdmi_codec_plugged_cb plugged_cb;
->>   
->> +	bool wide_bus_en;
->> +
->>   	u32 max_pclk_khz;
->>   
->>   	u32 max_dp_lanes;
->> diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
->> index 71db10c..71deb1e 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_panel.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_panel.c
->> @@ -353,7 +353,7 @@ void dp_panel_dump_regs(struct dp_panel *dp_panel)
->>   	dp_catalog_dump_regs(catalog);
->>   }
->>   
->> -int dp_panel_timing_cfg(struct dp_panel *dp_panel)
->> +int dp_panel_timing_cfg(struct dp_panel *dp_panel, bool wide_bus_en)
->>   {
->>   	u32 data, total_ver, total_hor;
->>   	struct dp_catalog *catalog;
->> @@ -404,7 +404,7 @@ int dp_panel_timing_cfg(struct dp_panel *dp_panel)
->>   
->>   	catalog->dp_active = data;
->>   
->> -	dp_catalog_panel_timing_cfg(catalog);
->> +	dp_catalog_panel_timing_cfg(catalog, wide_bus_en);
->>   	panel->panel_on = true;
->>   
->>   	return 0;
->> diff --git a/drivers/gpu/drm/msm/dp/dp_panel.h b/drivers/gpu/drm/msm/dp/dp_panel.h
->> index 9023e5b..5ec341a 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_panel.h
->> +++ b/drivers/gpu/drm/msm/dp/dp_panel.h
->> @@ -57,7 +57,7 @@ struct dp_panel {
->>   
->>   int dp_panel_init_panel_info(struct dp_panel *dp_panel);
->>   int dp_panel_deinit(struct dp_panel *dp_panel);
->> -int dp_panel_timing_cfg(struct dp_panel *dp_panel);
->> +int dp_panel_timing_cfg(struct dp_panel *dp_panel, bool wide_bus_en);
->>   void dp_panel_dump_regs(struct dp_panel *dp_panel);
->>   int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
->>   		struct drm_connector *connector);
->> diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
->> index 07f6c41..667f3a8 100644
->> --- a/drivers/gpu/drm/msm/msm_drv.h
->> +++ b/drivers/gpu/drm/msm/msm_drv.h
->> @@ -398,6 +398,7 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display);
->>   void msm_dp_snapshot(struct msm_disp_state *disp_state, struct msm_dp *dp_display);
->>   
->>   void msm_dp_debugfs_init(struct msm_dp *dp_display, struct drm_minor *minor);
->> +bool msm_dp_wide_bus_enable(struct msm_dp *dp_display);
->>   
->>   #else
->>   static inline int __init msm_dp_register(void)
->> @@ -448,6 +449,11 @@ static inline void msm_dp_debugfs_init(struct msm_dp *dp_display,
->>   {
->>   }
->>   
->> +bool msm_dp_wide_bus_enable(struct msm_dp *dp_display)
->> +{
->> +	return false;
->> +}
->> +
->>   #endif
->>   
->>   void __init msm_mdp_register(void);
->> -- 
->> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
->> a Linux Foundation Collaborative Project
->>
+  https://git.kernel.org/pub/scm/linux/kernel/git/pinctrl/samsung.git tags/samsung-pinctrl-5.18-2
+
+for you to fetch changes up to 3652dc070bad335d6feb31402bb4ab1ad58d5cb6:
+
+  pinctrl: samsung: improve wake irq info on console (2022-02-01 09:13:30 +0100)
+
+----------------------------------------------------------------
+Samsung pinctrl drivers changes for v5.18
+
+1. Fix OF reference leak in pinctrl driver probe error path.
+2. Correct list of handlers for Exynos850 ALIVE and CMGP pin banks.
+3. Accept devicetrees with GPIO pin bank definitions named with a
+   "-gpio-bank" suffix.  This is necessary for later Samsung pinctrl
+   bindings dtschema.
+4. Convert Samsung pinctrl bindings to dtschema.
+5. Add support for Exynos850 and ExynosAutov9 wake-up interrupts.
+6. Add support for Tesla FSD SoC.
+
+----------------------------------------------------------------
+Alim Akhtar (2):
+      dt-bindings: pinctrl: samsung: Add compatible for Tesla FSD SoC
+      pinctrl: samsung: add FSD SoC specific data
+
+Krzysztof Kozlowski (5):
+      pinctrl: samsung: drop pin banks references on error paths
+      pinctrl: samsung: accept GPIO bank nodes with a suffix
+      dt-bindings: pinctrl: samsung: convert to dtschema
+      dt-bindings: pinctrl: samsung: describe Exynos850 and ExynosAutov9 wake-ups
+      pinctrl: samsung: add support for Exynos850 and ExynosAutov9 wake-ups
+
+Martin Jücker (1):
+      pinctrl: samsung: improve wake irq info on console
+
+Sam Protsenko (1):
+      pinctrl: samsung: Remove EINT handler for Exynos850 ALIVE and CMGP gpios
+
+ .../pinctrl/samsung,pinctrl-gpio-bank.yaml         |  52 +++
+ .../bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml |  81 +++++
+ .../pinctrl/samsung,pinctrl-wakeup-interrupt.yaml  | 106 ++++++
+ .../bindings/pinctrl/samsung,pinctrl.yaml          | 393 +++++++++++++++++++++
+ .../bindings/pinctrl/samsung-pinctrl.txt           | 383 --------------------
+ MAINTAINERS                                        |   2 +-
+ drivers/pinctrl/samsung/pinctrl-exynos-arm64.c     |  73 +++-
+ drivers/pinctrl/samsung/pinctrl-exynos.c           |   7 +-
+ drivers/pinctrl/samsung/pinctrl-samsung.c          |  89 ++++-
+ drivers/pinctrl/samsung/pinctrl-samsung.h          |   1 +
+ 10 files changed, 781 insertions(+), 406 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-gpio-bank.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-wakeup-interrupt.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
+ delete mode 100644 Documentation/devicetree/bindings/pinctrl/samsung-pinctrl.txt
