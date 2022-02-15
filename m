@@ -2,129 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB46C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408F6C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243679AbiBOTbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:31:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33112 "EHLO
+        id S242355AbiBOTdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:33:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239926AbiBOTbL (ORCPT
+        with ESMTP id S233812AbiBOTdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:31:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C80C4AEF38
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:31:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644953461;
+        Tue, 15 Feb 2022 14:33:22 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130DBB7C72;
+        Tue, 15 Feb 2022 11:33:11 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644953589;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=qHGc3lWJg2pqSw0iyqKF1wYg1gMLVmr0OdHv1eJKGAo=;
-        b=RhQkU5MSUAA1pQkOudl5hnq6OHkYS1Bklf3TnvSF+fkPdrSr2jeTZTTlMRmuXua7qrEFdz
-        2trC3ZQ7vI8RC3sY4d+mO//jR3K1viyd/CFqIeSvks+e9MaAwdypIOHeDgjSoCLjR7fJy3
-        yeungXGrIZfojIWw/SRUittgExNhZA8=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-169-tSLjiC-GPfiQd76mJ5alag-1; Tue, 15 Feb 2022 14:30:59 -0500
-X-MC-Unique: tSLjiC-GPfiQd76mJ5alag-1
-Received: by mail-oi1-f199.google.com with SMTP id f3-20020aca3803000000b002cf47784c5bso65553oia.3
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:30:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qHGc3lWJg2pqSw0iyqKF1wYg1gMLVmr0OdHv1eJKGAo=;
-        b=aj/th8xm9Kc0VhFfs4fB9Rm91xEs6ViLJxX4b88R8URWudZaCdJaA1M6m6aZbzPZsX
-         W40HzteOSt+1lMpAbDCsHy5glDjpjcYtQPIpY+EtW991VmAIfDe++arP3ZQThmUIBSgi
-         2jbdBgbnLEYuWQcbrhVSN9TkOCQPQnyXxE5ZMmwjn+HyO4Nh8Tk6wVtF+a+TWpNn4rwH
-         CQCy+kgrnRwy2cOFOi8jA1SPc8HfTzJ90f9E8cOgKUGedq/ZmDVMxYg+MsF88XD3nl3f
-         ToR37NCmi4NqqDUQ6OZbCmrCqFvW0wlFWEn+I8bGS2G2JlsrWEsaqanCa1G3mLFA2jDh
-         iYoQ==
-X-Gm-Message-State: AOAM531/vm70+a3jGwNNYgEQ9f6PpfblcdL+igbiNDcqk4gMLAn3A1R1
-        EtYz1t011iax/jScMUXRycTTJnlljvvQjWGojZCnXSRKHwvPHQmMQ0u3/FrXIcROfmx9GS6nWX1
-        mELG9objRyIDWfLJGkdJKJLJK
-X-Received: by 2002:a9d:758e:: with SMTP id s14mr147335otk.32.1644953458928;
-        Tue, 15 Feb 2022 11:30:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw6/ssg3bB2LJ6vYV00tJ2Gl8yteMQjJzsxm6tUe7YxWgH9/pNjs8axhwokSjOUYEXKz4yv+w==
-X-Received: by 2002:a9d:758e:: with SMTP id s14mr147327otk.32.1644953458667;
-        Tue, 15 Feb 2022 11:30:58 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id f8sm6095715oou.19.2022.02.15.11.30.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 11:30:58 -0800 (PST)
-From:   trix@redhat.com
-To:     arnd@arndb.de, gregkh@linuxfoundation.org, michal.simek@xilinx.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] xilinx_hwicap: cleanup comments
-Date:   Tue, 15 Feb 2022 11:30:54 -0800
-Message-Id: <20220215193054.3032955-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6PgsBMBaD1VL/blQ9NGFYKVy9dzfRCvZ4SmB2o7/hv0=;
+        b=C3LVhzk8ug+ZT17S1HvaW+HMsdFerPa+zBeWUuRyzN32pFYEcihEuz8evEnCqtZravA1s7
+        MMNQT+e5oWjqZpC8QGpUKW0FYaNNbQMAnsCwNDpygvIX/CCEor4ZJ/Y0LYYWipNWTvbFi+
+        0E3pVP0SRbOqJGZEZvQ7nvUB1HjEPtxiYhKLXKRHSI4oKsX5LHYZMJE3BlTt6Sih1O6uMb
+        7WoU+QR8Ucwsa5b9oN73B9yyS0zJBNtTDN7YgTcyg2htWlacWz9ffG9ZsU875Xy1g/mAV7
+        GmNZC/BmfRZsTTS0GsItNoNbr0OZXEb/X/vVNq12daUUyzq8d6IfudbyoSti2A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644953589;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6PgsBMBaD1VL/blQ9NGFYKVy9dzfRCvZ4SmB2o7/hv0=;
+        b=r8YVCNMtnNMWlKQh6mpyzy8Lii7Hxnfat9/Yy8v7nrBFS8ZHA5jEZayKmaX1yiHQl0KEqQ
+        E9128Mys8LAY+JDw==
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: Re: [RFC V2 12/21] rv/reactor: Add the printk reactor
+In-Reply-To: <65172f14-bad6-37b1-d243-e91ca472d22e@kernel.org>
+References: <cover.1644830251.git.bristot@kernel.org>
+ <fad2d358d57dfffc084d482684ecc1d13b62b262.1644830251.git.bristot@kernel.org>
+ <10cf6003-6d2b-056b-11bb-3ae9c342a369@linuxfoundation.org>
+ <c1657d1c-0d2b-4aa3-c1ed-2ae6fdfcda86@kernel.org>
+ <87v8xg30qc.fsf@jogness.linutronix.de>
+ <45179cdb-2391-207a-2f7b-2dea828d1606@kernel.org>
+ <87r1842r1m.fsf@jogness.linutronix.de>
+ <65172f14-bad6-37b1-d243-e91ca472d22e@kernel.org>
+Date:   Tue, 15 Feb 2022 20:39:08 +0106
+Message-ID: <874k50hqmj.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On 2022-02-15, Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
+> I am aware of printk_deferred(), and every once and while I am Cc'ed
+> on patches suggesting changing printk() to printk_deferred(), but they
+> are not, let's say, welcome [1]... that is why I am not using it.
 
-Remove the second 'the'.
-Replacements:
-was to what
-intiate to initiate
+Yes. printk_deferred() is a workaround until we can get printk
+"PROVE_RAW_LOCK_NESTING clean". But currently there is real deadlock
+potential in the kernel with printk. For the most common cases, we use
+printk_deferred() to get around it. Once printk() is clean, we can
+replace all printk_deferred() call sites with printk().
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/char/xilinx_hwicap/fifo_icap.c     | 2 +-
- drivers/char/xilinx_hwicap/xilinx_hwicap.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+I haven't looked into the details of your runtime verification method,
+but I assume it digs deep into some interfaces. In that case, the
+deadlock potential of printk may be relatively high. (And indeed, you
+have seen some.) IMHO, before warning users not to use this reactor if
+locks XYZ are taken, it would be better just to use printk_deferred()
+and it will always log without causing problems to the system you are
+trying to verify.
 
-diff --git a/drivers/char/xilinx_hwicap/fifo_icap.c b/drivers/char/xilinx_hwicap/fifo_icap.c
-index 02225eb19cf6..619f3a30ec55 100644
---- a/drivers/char/xilinx_hwicap/fifo_icap.c
-+++ b/drivers/char/xilinx_hwicap/fifo_icap.c
-@@ -111,7 +111,7 @@ static inline u32 fifo_icap_fifo_read(struct hwicap_drvdata *drvdata)
- }
- 
- /**
-- * fifo_icap_set_read_size - Set the the size register.
-+ * fifo_icap_set_read_size - Set the size register.
-  * @drvdata: a pointer to the drvdata.
-  * @data: the size of the following read transaction, in words.
-  **/
-diff --git a/drivers/char/xilinx_hwicap/xilinx_hwicap.c b/drivers/char/xilinx_hwicap/xilinx_hwicap.c
-index 067396bedf22..74a4928aea1d 100644
---- a/drivers/char/xilinx_hwicap/xilinx_hwicap.c
-+++ b/drivers/char/xilinx_hwicap/xilinx_hwicap.c
-@@ -241,7 +241,7 @@ static int hwicap_command_desync(struct hwicap_drvdata *drvdata)
- 	buffer[index++] = XHI_NOOP_PACKET;
- 
- 	/*
--	 * Write the data to the FIFO and intiate the transfer of data present
-+	 * Write the data to the FIFO and initiate the transfer of data present
- 	 * in the FIFO to the ICAP device.
- 	 */
- 	return drvdata->config->set_configuration(drvdata,
-@@ -297,7 +297,7 @@ static int hwicap_get_configuration_register(struct hwicap_drvdata *drvdata,
- 	buffer[index++] = XHI_NOOP_PACKET;
- 
- 	/*
--	 * Write the data to the FIFO and intiate the transfer of data present
-+	 * Write the data to the FIFO and initiate the transfer of data present
- 	 * in the FIFO to the ICAP device.
- 	 */
- 	status = drvdata->config->set_configuration(drvdata,
-@@ -384,7 +384,7 @@ hwicap_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 		       drvdata->read_buffer + bytes_to_read,
- 		       4 - bytes_to_read);
- 	} else {
--		/* Get new data from the ICAP, and return was was requested. */
-+		/* Get new data from the ICAP, and return what was requested. */
- 		kbuf = (u32 *) get_zeroed_page(GFP_KERNEL);
- 		if (!kbuf) {
- 			status = -ENOMEM;
--- 
-2.26.3
+> I saw deadlocks in the past, and while testing the WIP monitor some
+> time ago, it seems it depends on the console type. If such restriction
+> does not exist anymore, I can remove that comment, it would be even
+> better!
 
+If you say it depended on the console type, then it was probably the
+framebuffer console that was at fault. The fbcon is a landmine for
+deadlocks, which is why PREEMPT_RT avoids fbcon printing from
+non-preemptible context. For mainline, the series is currently in
+review.
+
+Perhaps avoiding fbcon would be good enough for you to avoid deadlocks
+with this reactor using printk().
+
+John
+
+> [1]  https://lore.kernel.org/lkml/e68888438cec9a1da53aaa1647720ade638d6ad4.1600705105.git.bristot@redhat.com/
