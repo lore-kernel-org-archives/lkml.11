@@ -2,78 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72716C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE1EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:12:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242287AbiBORMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:12:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38660 "EHLO
+        id S242304AbiBORNA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:13:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiBORMO (ORCPT
+        with ESMTP id S235970AbiBORM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:12:14 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E06117C84;
-        Tue, 15 Feb 2022 09:12:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644945124; x=1676481124;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=d38tl0MQIETFrf/3nyTowNCgvGyOO+aSt3S40hbBUpg=;
-  b=etabFyLX9TMnTi7xMxjXMzsFfdAlNiwSX9ZocJ9fn+dLeskoPxlsORIT
-   lSEabio3JRWnFFY1yJhOF2obvn4QaggrwJiEumXrRpFIahqsBVHeLM4c9
-   zcqdnHkD/z61ujJhC5L+FDLr+ItTfZhTItToNc43mOI9675LAxZOJWfh8
-   Um3jVSpRLP4nT3KwAGd60KAKYHKhZlFAkfPlhYdGyVvzjcDTr75/mr5tW
-   hEN8DGnt9lezx7onx3Ia1w0PXqUYIjcxe3TmuErU0nLP7Cd9OlGafjmdV
-   vg+yQOW/LZ6oJksc137KTIZTXGPTAYUtFjTG15EOwd1tvA0bGJtXpEgld
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="311139123"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="311139123"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:10:05 -0800
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="775934874"
-Received: from tngodup-mobl.amr.corp.intel.com (HELO [10.209.32.98]) ([10.209.32.98])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:10:03 -0800
-Message-ID: <792d3b0c-0cb8-a407-2618-a53f40e501ca@intel.com>
-Date:   Tue, 15 Feb 2022 09:10:01 -0800
+        Tue, 15 Feb 2022 12:12:58 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCC2119F7A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:12:47 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id m22so16712687pfk.6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:12:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4Ih/L1veWypfxISiZ1TtaNISG3XBd4cm3yr2gMKyACg=;
+        b=dYK73zPbAkhTSeb39UbwOGm9YFUDPd0a8aCni9+sVsWlfMzYteao2bcTOyPQkFbN3U
+         pXGz6zgGiB4POoy9tgzE3oWFmqLGfVOrNd2qlzb/jaqHHXr/Nzt/d2PVMCYV0r+Zy6Np
+         5UiMqJVoXez3TblDAHwYreNkeZ+iPH7tE2we928Z2FHWSJSpMBUWNoneUGPLXXllUxi7
+         IY0X0pkOizpQPl8Rn24LIYVzylIjmHNVpDOEVJWw+EIat0xUVdrjzdBNsvfAIiATgC9n
+         BYW4C0pQ1+thWhCr6Yj8HCA56AdNcF89uRoujduB9a7HUT3sQi+vDsvfwSnGFG/Z1uL6
+         JcsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4Ih/L1veWypfxISiZ1TtaNISG3XBd4cm3yr2gMKyACg=;
+        b=v8i665UxmpTkHdqL/uckJmkmWBBmSUCup7FY5i6j9SHmaDkhBRKRwdlR0BVHxdXeNr
+         9fQPfNT20UlIUAIr64iAtEhzGior3Kf4KXsq0o6FnCsXWg5m9Z8hr8vH+agRZv/nH5FK
+         af9hZvAt1B7tcnXoIggpyI+7FZCw3RUKTPXLBWcY8Tn7Ah6rMGUuzAdBuontSjJRFkU6
+         VLVmB6488V+k7qY9REsphQOBHyqZKwcoI5xCmMLAEKidl9hTrNHvayeNhyBbEBV5X48Z
+         mD/0Q5/M2tQ4qIqbYDamWKvxYPJFuQ7fFM+xIFmWFXcf6AzE1Hb665ojBqxW8xxUTUV5
+         +HMQ==
+X-Gm-Message-State: AOAM532+ezOljchJ75mlvVN00zHL8jp5kco/6W4+JWyAvBsepHzxLgXh
+        JSNDe77+moatgcOvDA0EkpkLpg==
+X-Google-Smtp-Source: ABdhPJyrM4EBr7SfMl20JOUiLnT8F4bn4dyKiGiUdYjgLg/BHgdWuJxRFFxSOIi8z2ZefNOw/Bj8PA==
+X-Received: by 2002:aa7:87c7:: with SMTP id i7mr4902382pfo.83.1644945167236;
+        Tue, 15 Feb 2022 09:12:47 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id j14sm43340909pfj.218.2022.02.15.09.12.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 09:12:46 -0800 (PST)
+Date:   Tue, 15 Feb 2022 17:12:43 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v2 4/5] KVM: x86: make several APIC virtualization
+ callbacks optional
+Message-ID: <YgvfC7RGtxJkuOPA@google.com>
+References: <20220214131614.3050333-1-pbonzini@redhat.com>
+ <20220214131614.3050333-5-pbonzini@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] x86/fpu: Correct pkru/xstate inconsistency
-Content-Language: en-US
-To:     Brian Geffon <bgeffon@google.com>,
-        Guenter Roeck <groeck@google.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Willis Kung <williskung@google.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        "# v4 . 10+" <stable@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20220215153644.3654582-1-bgeffon@google.com>
- <CABXOdTe09SxzEpJE_BJO5=4NTjZt2a6zMviMzDH47X5MZao7WA@mail.gmail.com>
- <CADyq12x0CXu_0Cs4At8GVqxWW6tvDGKzhESQpvL8cztHLnBG2w@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <CADyq12x0CXu_0Cs4At8GVqxWW6tvDGKzhESQpvL8cztHLnBG2w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214131614.3050333-5-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/15/22 08:19, Brian Geffon wrote:
-> This only applies before 5.13, so 5.10.y and 5.4.y, the behavior
-> decoupled PKRU from xstate in a long series from Thomas Gleixner, but
-> the first commit where this would have been fixed in 5.13 would be:
+On Mon, Feb 14, 2022, Paolo Bonzini wrote:
+> SVM does not need most of them, and there's no need for vendors to
+> support APIC virtualization to be supported in KVM, so mark them as
+> optional and delete the implementation.
 > 
->   commit 954436989cc550dd91aab98363240c9c0a4b7e23
->   Author: Thomas Gleixner <tglx@linutronix.de>
->   Date:   Wed Jun 23 14:02:21 2021 +0200
+> For consistency, apicv_post_state_restore is also marked as optional
+> and called with static_call_cond, even though it is implemented for
+> both Intel APICv and AMD AVIC.
 > 
->     x86/fpu: Remove PKRU handling from switch_fpu_finish()
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
 
-Could you also describe why the >=5.13 fix for this isn't suitable for
-older kernels?
+Reviewed-by: Sean Christopherson <seanjc@google.com>
