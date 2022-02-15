@@ -2,119 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD79C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 02:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232394AbiBOCHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 21:07:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52014 "EHLO
+        id S232766AbiBOCJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 21:09:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230498AbiBOCHO (ORCPT
+        with ESMTP id S230498AbiBOCJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 21:07:14 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EB125DC
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:07:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644890825; x=1676426825;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=dZS7EKMhjasWG4hFq6KS48/STYMyzi5srwau0lAF/g0=;
-  b=HDNlmR1+Z+oeBQ76oopdVSqwnosQYhHmbJDQOX70lNnzqc22sDjMlakI
-   F7iojjavi24KYCY13fFIHZew9xV7fYpLsdIwhwWp6BojC+ndGbIkMAHoG
-   1vKX3P6M0S676q41uErvbTJO2SyDgHVxCFeNU5BO5RlikgkNquAdfx7ag
-   coEYT44hgONuoDT14Iq4kvh6CW7Z3Bp4Czv82fSstPxje/kEa4t+L0NJi
-   AklPjzYnxyPcNcaT6IFQzCy7akuC/GVUxSl2F74QMO6qNriuwS9DkT1GH
-   kOAJlm11r1DpqsaMVH1AB9GZraCF48v0s91f5rZsKIY15I3l6EYksdtQK
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250176826"
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="250176826"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 18:07:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="680795109"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2022 18:07:01 -0800
-Message-ID: <1d817995-f89b-a1de-6aff-9a2bfe91367f@linux.intel.com>
-Date:   Tue, 15 Feb 2022 10:05:42 +0800
+        Mon, 14 Feb 2022 21:09:12 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40CDBE1F0;
+        Mon, 14 Feb 2022 18:09:02 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JyPf345gTz4xmx;
+        Tue, 15 Feb 2022 13:08:59 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644890941;
+        bh=jNVBosbQbGGAchN+rgYcERAl9WqcOR3uLr69A+zy5Vw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LKfag+YMqlOwzH6TUmJnMzGQokV8tnqYLKfdQ/vhj85yeTJ8+IZOEwnIvtZWBDS+O
+         1ph+5DR1zdvoS59EOnWjyd35+cDC505I4kaT0snsvJDeNNneTAiPUbvRhT438rX8rM
+         MRIvtr2LmVeUC1dNF2iLOzfFDtIB2nnf9kXX8QmNzQe4cCY750xWZUcPQoWDqLLe1R
+         PI0/UeomabEDBjuGdlBi0/sn8CqOmYFpzPPtquV5MDuK9Os46krUIKZ6aOCdRLzgXr
+         oJHCs3NUU9xAm1DpZ8arAeuMprWgm9jDcmztjJMG5avr7OdelDcdVLkPkPWHEU33lz
+         y/TFSmgOVi1xQ==
+Date:   Tue, 15 Feb 2022 13:08:58 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Joseph CHAMG <josright123@gmail.com>,
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the spi tree
+Message-ID: <20220215130858.2b821de7@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/10] iommu cleanup and refactoring
-Content-Language: en-US
-To:     Joerg Roedel <joro@8bytes.org>
-References: <20220214015538.2828933-1-baolu.lu@linux.intel.com>
- <YgpjzNtQlOdq+1AB@8bytes.org>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <YgpjzNtQlOdq+1AB@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/gDr2hkWEpFU5xfCtpNz2eX1";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Joerg,
+--Sig_/gDr2hkWEpFU5xfCtpNz2eX1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On 2/14/22 10:14 PM, Joerg Roedel wrote:
-> On Mon, Feb 14, 2022 at 09:55:28AM +0800, Lu Baolu wrote:
->> v3:
->>   - Remove ops check when dev_iommu_ops() is used.
->>   - This version of series is available on github:
->>     https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-ops-v3
->>
->> Lu Baolu (10):
->>    iommu/vt-d: Remove guest pasid related callbacks
->>    iommu: Remove guest pasid related interfaces and definitions
->>    iommu/vt-d: Remove aux-domain related callbacks
->>    iommu: Remove aux-domain related interfaces and iommu_ops
->>    iommu: Remove apply_resv_region
->>    drm/nouveau/device: Get right pgsize_bitmap of iommu_domain
->>    iommu: Use right way to retrieve iommu_ops
->>    iommu: Remove unused argument in is_attach_deferred
->>    iommu: Use dev_iommu_ops() helper
->>    iommu: Split struct iommu_ops
-> 
-> Really cool, thanks for doing this, Baolu! I am currently running some
-> tests on this series to make sure there are no build breakages. And I
-> agree with Jason that:
-> 
-> 	iommu: Use right way to retrieve iommu_ops and
-> 	iommu: Use dev_iommu_ops() helper
-> 
-> can be combined into one patch. Splitting iommu_ops was something I have
-> been thinking about for some time, so thanks again for doing this.
+Hi all,
 
-You are welcome!
+After merging the spi tree, today's linux-next build (x86_64 allmodconfig)
+failed like this:
 
-Do you want me to send a new version with below changes:
+drivers/net/ethernet/davicom/dm9051.c:1253:19: error: initialization of 'vo=
+id (*)(struct spi_device *)' from incompatible pointer type 'int (*)(struct=
+ spi_device *)' [-Werror=3Dincompatible-pointer-types]
+ 1253 |         .remove =3D dm9051_drv_remove,
+      |                   ^~~~~~~~~~~~~~~~~
+drivers/net/ethernet/davicom/dm9051.c:1253:19: note: (near initialization f=
+or 'dm9051_driver.remove')
 
-- Remove WARN_ON() in dev_iommu_ops();
-- Merge above two patches.
+Caused by commit
 
-Or, you can change above yourself?
+  a0386bba7093 ("spi: make remove callback a void function")
 
-> 
-> Regards,
-> 
-> 	Joerg
+interacting with commit
 
-Best regards,
-baolu
+  2dc95a4d30ed ("net: Add dm9051 driver")
+
+from the net-next tree.
+
+I applied the following merge resolution and can carry it until the
+trees are merged.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Tue, 15 Feb 2022 13:05:41 +1100
+Subject: [PATCH] fix up for "pi: make remove callback a void function"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/net/ethernet/davicom/dm9051.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet/d=
+avicom/dm9051.c
+index cee3ff499fd4..d2513c97f83e 100644
+--- a/drivers/net/ethernet/davicom/dm9051.c
++++ b/drivers/net/ethernet/davicom/dm9051.c
+@@ -1223,15 +1223,13 @@ static int dm9051_probe(struct spi_device *spi)
+ 	return 0;
+ }
+=20
+-static int dm9051_drv_remove(struct spi_device *spi)
++static void dm9051_drv_remove(struct spi_device *spi)
+ {
+ 	struct device *dev =3D &spi->dev;
+ 	struct net_device *ndev =3D dev_get_drvdata(dev);
+ 	struct board_info *db =3D to_dm9051_board(ndev);
+=20
+ 	phy_disconnect(db->phydev);
+-
+-	return 0;
+ }
+=20
+ static const struct of_device_id dm9051_match_table[] =3D {
+--=20
+2.34.1
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/gDr2hkWEpFU5xfCtpNz2eX1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmILCzoACgkQAVBC80lX
+0Gw2+wf/RruQmrxu7OQjwDYcKbHPKocQg3GRROdxtfSyFo8zE7F7+FeQKocnF+HX
+TQt3yWTX/3DGQ2cLHE7l3UE9S+tG4dqpcPIf/Fs+RegEVXdmWUGX9L0++3w1Hw0C
+DD18gXGI4+mQ2cnliD1735iymQpKY/Y3lREaKeRvbm/CoGD2SQZR5pTNkxCc2Rf2
+Y1lAQbKKhNdSon/mUA7CW0mymNEt/4uRVd3/2ZEDDY1G6I7ifgxOtVUGM4sLXbsP
+6F9eB1gIUDfpqUK/Hjz1mGJLx14ACpVdI8tU6Wg8biTJwMBhhcSRkeWCdcE/FkHz
+Cz3C0iUFG0RAD1yyO0D76U/7UnknGg==
+=F5YH
+-----END PGP SIGNATURE-----
+
+--Sig_/gDr2hkWEpFU5xfCtpNz2eX1--
