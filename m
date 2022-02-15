@@ -2,157 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C35C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 23:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB40C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 23:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240760AbiBOXb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 18:31:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36760 "EHLO
+        id S244822AbiBOXcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 18:32:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiBOXby (ORCPT
+        with ESMTP id S231760AbiBOXce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 18:31:54 -0500
-X-Greylist: delayed 574 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 15:31:41 PST
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8559B65433;
-        Tue, 15 Feb 2022 15:31:40 -0800 (PST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1644967321; bh=oxkQ8fDff2RyUMjp4s/XquWC9mjWFRhyAC3CN7OibR0=;
-        h=From:To:Subject:In-Reply-To:References:Date:From;
-        b=BHhGm1ivKzDXxW39urxXsDcW9o58WBEd2ZtYXSLxYBzqTWqWg/o0qAcjzaBsESXCA
-         ORStYpUObPZCcUZQnn9becjxPhyYz50ZfF0IpmjyxxV0a3iq61jj8bSUMIMwKrIrfK
-         Zfe3GXZuihe4NZTcFvf1bplfqLMhebGQDqWpovo5X4Dx0MoL0KL4UbEkn4x2hcv0PG
-         BIB0Hy644SZUin9TgUF8p0HLDYki6ts+APQJ0diYsbAr9CPvoCM6TAyjdx182OtatO
-         htMO9mBpeiT8zNtYe8lHHSBE7bvn7GSWXMtt5hDdgLQRI83NuLPhviSslMfvGGGYKj
-         jzyWMuD+cGIkw==
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, miaoqing@codeaurora.org,
-        Jason Cooper <jason@lakedaemon.net>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] ath9k: use hw_random API instead of directly dumping
- into random.c
-In-Reply-To: <20220215162812.195716-1-Jason@zx2c4.com>
-References: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
- <20220215162812.195716-1-Jason@zx2c4.com>
-Date:   Wed, 16 Feb 2022 00:22:00 +0100
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87o8374sx3.fsf@toke.dk>
+        Tue, 15 Feb 2022 18:32:34 -0500
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E290066639;
+        Tue, 15 Feb 2022 15:32:23 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 86BE835F;
+        Tue, 15 Feb 2022 23:32:23 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 86BE835F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1644967943; bh=7DxpN4wzbn4CODMyzgxFFGlGqYFqY22/e9LTczIG2OU=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=TK7Q9BwRKshNVecx6N+fGxQUGPpzAzKMsPjmyXQdznW9W9hSUdz282IGXvSdnXJx+
+         3AILEsoCpm9x1dkVxbOb4a6/4BRj6UJ/I/WiM1AK0PvcRWaJrcLVKkBzpPCS2O8CxX
+         K0fwE4HiH0MFvPNF058/462Q2+Mfpk1yu+KIaiaeaIZpIE6JkEZpEXjwf2A1FLbEui
+         Jku8lZr6OD9am2oLSW/psVj2/3Gwg5BQdZ5hokQ5mq7rOJnyINA777TQS+vji8GLYD
+         Jj19Wtz/KFHgAQsfA62b1svcVgdd8anpml/IN1AY3Qg24gg+s9o2w4Vj3uSKfXPKOq
+         yWGKo1hzvckHw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Ethan Dye <mrtops03@gmail.com>
+Cc:     Ethan Dye <mrtops03@gmail.com>, Minchan Kim <minchan@kernel.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        linux-kernel@vger.kernel.org, drbd-dev@lists.linbit.com,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH] block/zram: Fix wording in optional feature docs
+In-Reply-To: <20220207235442.95090-1-mrtops03@gmail.com>
+References: <20220207235442.95090-1-mrtops03@gmail.com>
+Date:   Tue, 15 Feb 2022 16:32:23 -0700
+Message-ID: <874k4z7lko.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+Ethan Dye <mrtops03@gmail.com> writes:
 
-> Hardware random number generators are supposed to use the hw_random
-> framework. This commit turns ath9k's kthread-based design into a proper
-> hw_random driver.
+> This fixes some simple grammar errors in the documentation for zram,
+> specifically errors in the optional featue section of the zram
+> documentation.
 >
-> This compiles, but I have no hardware or other ability to determine
-> whether it works. I'll leave further development up to the ath9k
-> and hw_random maintainers.
->
-> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Signed-off-by: Ethan Dye <mrtops03@gmail.com>
 > ---
->  drivers/net/wireless/ath/ath9k/ath9k.h |  2 +-
->  drivers/net/wireless/ath/ath9k/rng.c   | 62 +++++++++-----------------
->  2 files changed, 23 insertions(+), 41 deletions(-)
->
-> diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h b/drivers/net/wireles=
-s/ath/ath9k/ath9k.h
-> index ef6f5ea06c1f..142f472903dc 100644
-> --- a/drivers/net/wireless/ath/ath9k/ath9k.h
-> +++ b/drivers/net/wireless/ath/ath9k/ath9k.h
-> @@ -1072,7 +1072,7 @@ struct ath_softc {
->=20=20
->  #ifdef CONFIG_ATH9K_HWRNG
->  	u32 rng_last;
-> -	struct task_struct *rng_task;
-> +	struct hwrng rng_ops;
->  #endif
->  };
->=20=20
-> diff --git a/drivers/net/wireless/ath/ath9k/rng.c b/drivers/net/wireless/=
-ath/ath9k/rng.c
-> index aae2bd3cac69..369b222908ba 100644
-> --- a/drivers/net/wireless/ath/ath9k/rng.c
-> +++ b/drivers/net/wireless/ath/ath9k/rng.c
-> @@ -22,9 +22,6 @@
->  #include "hw.h"
->  #include "ar9003_phy.h"
->=20=20
-> -#define ATH9K_RNG_BUF_SIZE	320
-> -#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
+>  Documentation/admin-guide/blockdev/zram.rst | 20 ++++++++++----------
+>  1 file changed, 10 insertions(+), 10 deletions(-)
 
-So this comment says "quality: 10/32" but below you're setting "quality"
-as 320. No idea what the units are supposed to be, but is this right?
+This document could use a lot more help than that, but this is a
+start...applied, thanks.
 
->  static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
->=20=20
->  static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_s=
-ize)
-
-This function takes buf as a *u32, and interprets buf_size as a number
-of u32s...
-
-> @@ -72,61 +69,46 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
->  	return delay;
->  }
->=20=20
-> -static int ath9k_rng_kthread(void *data)
-> +static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, bool=
- wait)
->  {
-> +	struct ath_softc *sc =3D container_of(rng, struct ath_softc, rng_ops);
->  	int bytes_read;
-> -	struct ath_softc *sc =3D data;
-> -	u32 *rng_buf;
-> -	u32 delay, fail_stats =3D 0;
-> -
-> -	rng_buf =3D kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL);
-> -	if (!rng_buf)
-> -		goto out;
-> -
-> -	while (!kthread_should_stop()) {
-> -		bytes_read =3D ath9k_rng_data_read(sc, rng_buf,
-> -						 ATH9K_RNG_BUF_SIZE);
-> -		if (unlikely(!bytes_read)) {
-> -			delay =3D ath9k_rng_delay_get(++fail_stats);
-> -			wait_event_interruptible_timeout(rng_queue,
-> -							 kthread_should_stop(),
-> -							 msecs_to_jiffies(delay));
-> -			continue;
-> -		}
-> -
-> -		fail_stats =3D 0;
-> -
-> -		/* sleep until entropy bits under write_wakeup_threshold */
-> -		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
-> -					   ATH9K_RNG_ENTROPY(bytes_read));
-> -	}
-> +	u32 fail_stats =3D 0;
->=20=20
-> -	kfree(rng_buf);
-> -out:
-> -	sc->rng_task =3D NULL;
-> +retry:
-> +	bytes_read =3D ath9k_rng_data_read(sc, buf, max);
-
-... but AFAICT here you're calling it with a buffer size from hw_random
-that's in bytes?
-
--Toke
+jon
