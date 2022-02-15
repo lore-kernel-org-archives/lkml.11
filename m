@@ -2,91 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 842BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72716C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242294AbiBORL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:11:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37706 "EHLO
+        id S242287AbiBORMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:12:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242287AbiBORLY (ORCPT
+        with ESMTP id S229945AbiBORMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:11:24 -0500
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AE311ADD9;
-        Tue, 15 Feb 2022 09:11:14 -0800 (PST)
-Received: by mail-yb1-f175.google.com with SMTP id 124so29963389ybn.11;
-        Tue, 15 Feb 2022 09:11:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SDMnKMXVJa929NolhryiFxFArnbuzBfDe+LVL1CiDA4=;
-        b=qkq+usKeOxl48IvR8xKHyJmiW0/RIiDOO/zUa4Ak23YjGWAKmeH2ErhM6HjZEzjTpM
-         C8i2uauPazpx5r199SudX14FNNM7ftF5Xubkrt1CPKk9tDEP2o5UK5LM9+7FEApHEgVV
-         v1hBxNZ7She1Q9DxSgcw5JtDiPCQCmPGaO0jbmCrzXrgc9kSWNhaiwkTq7gx9N01BXSn
-         4UjaKsIB0MXzIRb6ieaD15MDI/zAhDvYGfjxfmoDWLwbd8R7iII0pahAaPDxo3F+HqBH
-         aIbCK0trrq4Ce6qP03O+Yue/yITGEfCSDYx5uBZdeIK4M6/RICuWCLaRHcoeDcIPiEX0
-         CRBQ==
-X-Gm-Message-State: AOAM532hS7E4uAUytwekSnRDSr4Elr6shdYQtTpBudnVIPl8I62kUFun
-        WpUHpLjgskw8+iZ2I00IoF2GVpX1BEwVlmKRZiM=
-X-Google-Smtp-Source: ABdhPJwo53vGAohhtNHRmPcc5fLjmAhyMnRIp42CHlVQKf826ePo/bhOG0f9z4hWzUvi1WbJmxqPpIugfXk26cW3QjU=
-X-Received: by 2002:a25:3410:: with SMTP id b16mr4716036yba.78.1644945073814;
- Tue, 15 Feb 2022 09:11:13 -0800 (PST)
+        Tue, 15 Feb 2022 12:12:14 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E06117C84;
+        Tue, 15 Feb 2022 09:12:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644945124; x=1676481124;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=d38tl0MQIETFrf/3nyTowNCgvGyOO+aSt3S40hbBUpg=;
+  b=etabFyLX9TMnTi7xMxjXMzsFfdAlNiwSX9ZocJ9fn+dLeskoPxlsORIT
+   lSEabio3JRWnFFY1yJhOF2obvn4QaggrwJiEumXrRpFIahqsBVHeLM4c9
+   zcqdnHkD/z61ujJhC5L+FDLr+ItTfZhTItToNc43mOI9675LAxZOJWfh8
+   Um3jVSpRLP4nT3KwAGd60KAKYHKhZlFAkfPlhYdGyVvzjcDTr75/mr5tW
+   hEN8DGnt9lezx7onx3Ia1w0PXqUYIjcxe3TmuErU0nLP7Cd9OlGafjmdV
+   vg+yQOW/LZ6oJksc137KTIZTXGPTAYUtFjTG15EOwd1tvA0bGJtXpEgld
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="311139123"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="311139123"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:10:05 -0800
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="775934874"
+Received: from tngodup-mobl.amr.corp.intel.com (HELO [10.209.32.98]) ([10.209.32.98])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:10:03 -0800
+Message-ID: <792d3b0c-0cb8-a407-2618-a53f40e501ca@intel.com>
+Date:   Tue, 15 Feb 2022 09:10:01 -0800
 MIME-Version: 1.0
-References: <55f5c077-061c-7e53-b02d-53dde1dd654f@molgen.mpg.de> <CAPcyv4jSP4PTehMdkcpZfpDcz1HZ0ekjx+WztOiqpwGFU-1iBg@mail.gmail.com>
-In-Reply-To: <CAPcyv4jSP4PTehMdkcpZfpDcz1HZ0ekjx+WztOiqpwGFU-1iBg@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 15 Feb 2022 18:11:02 +0100
-Message-ID: <CAJZ5v0hv2P9_g0QAsY_guvYA_vSE-q4jz2902Df7r9KS=iRfMg@mail.gmail.com>
-Subject: Re: New warning: ACPI: CEDT not present
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, regressions@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] x86/fpu: Correct pkru/xstate inconsistency
+Content-Language: en-US
+To:     Brian Geffon <bgeffon@google.com>,
+        Guenter Roeck <groeck@google.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Willis Kung <williskung@google.com>,
+        Borislav Petkov <bp@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        "# v4 . 10+" <stable@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220215153644.3654582-1-bgeffon@google.com>
+ <CABXOdTe09SxzEpJE_BJO5=4NTjZt2a6zMviMzDH47X5MZao7WA@mail.gmail.com>
+ <CADyq12x0CXu_0Cs4At8GVqxWW6tvDGKzhESQpvL8cztHLnBG2w@mail.gmail.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <CADyq12x0CXu_0Cs4At8GVqxWW6tvDGKzhESQpvL8cztHLnBG2w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 5:22 PM Dan Williams <dan.j.williams@intel.com> wrote:
->
-> On Mon, Feb 14, 2022 at 11:52 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
-> >
-> > #regzbot introduced: 2d03e46a4bad20191d07b83ec1242d5f002577be
-> >
-> > Dear Dan,
-> >
-> >
-> > On the Dell Latitude E7250, Linux 5.17-rc3 logs the warning below
-> > (`dmesg --level=warn`):
-> >
-> >      ACPI: CEDT not present
-> >
-> > I think commit 2d03e46a4bad (ACPI: Add a context argument for table
-> > parsing handlers), part of Linux since 5.17-rc1, is the reason.
-> >
-> > If I understand it correctly, CEDT is not to be expected on older
-> > devices, so the warning is not justified. Can something be done about it?
->
-> Rafael,
->
-> I'm inclined to just delete the warning altogether, but special casing
-> is also an option. Any preference?
+On 2/15/22 08:19, Brian Geffon wrote:
+> This only applies before 5.13, so 5.10.y and 5.4.y, the behavior
+> decoupled PKRU from xstate in a long series from Thomas Gleixner, but
+> the first commit where this would have been fixed in 5.13 would be:
+> 
+>   commit 954436989cc550dd91aab98363240c9c0a4b7e23
+>   Author: Thomas Gleixner <tglx@linutronix.de>
+>   Date:   Wed Jun 23 14:02:21 2021 +0200
+> 
+>     x86/fpu: Remove PKRU handling from switch_fpu_finish()
 
-Change it into pr_debug()?
-
-> diff --git a/drivers/acpi/tables.c b/drivers/acpi/tables.c
-> index 0741a4933f62..fb2e4a216154 100644
-> --- a/drivers/acpi/tables.c
-> +++ b/drivers/acpi/tables.c
-> @@ -399,7 +399,7 @@ int __init_or_acpilib acpi_table_parse_entries_array(
->                 instance = acpi_apic_instance;
->
->         acpi_get_table(id, instance, &table_header);
-> -       if (!table_header) {
-> +       if (!table_header && strcmp(id, ACPI_SIG_CEDT) != 0) {
->                 pr_warn("%4.4s not present\n", id);
->                 return -ENODEV;
->         }
+Could you also describe why the >=5.13 fix for this isn't suitable for
+older kernels?
