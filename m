@@ -2,87 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32ABCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA39C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 03:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233779AbiBODQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 22:16:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36932 "EHLO
+        id S233781AbiBODQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 22:16:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiBODQM (ORCPT
+        with ESMTP id S229818AbiBODQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 22:16:12 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213F1ADFC0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:16:04 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id m22so13369393pfk.6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:16:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bluBykRIiSTJNZD8TCQxil1bSJJGDYpHiwCAoIqV6+o=;
-        b=KDTTrdDdUcvcCww9lKT48jqrXhbJgcRjCyzYnRiXDO+NaxBjNpuVNzHpaBAZ80Mt6p
-         ubcdptWRlYjTgDO3zv86HQEJdh0sB33/BM4JjV/2UTDtDeucdH9ruSszLvkgiMGHoLAd
-         ymQji2DiiP+mi/jU6XM9MRodeUVq2icLLGkfs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bluBykRIiSTJNZD8TCQxil1bSJJGDYpHiwCAoIqV6+o=;
-        b=27tg7Q6ElcAL+4qJeNVGpefh+KxlXH+S+xFrfCmxLuJThpIiJw2WZAzhcYDvaeYeg9
-         shMNQlgl/CpJfucWi5f1f8qnoGk4szkn1S+TDmzGSsqZJaFOJcWSkaxr57ZcWtHDvqn5
-         xMKkPkdkNszej4oZBiqSkYSHhKMgsSDuq3XQUclRRQbM3s1ZtEwBruIN9ghgiNYuGJ2k
-         cZ8JPDPTA9nVWCs5TSAbmm7z9/H1oGNe3tokB3ZjR+W2n+Wcn/BSWc3PF6Sh1QNLPaLL
-         1tEs0uTgtMexxn371gdTXAsk8Eq7ni2Habbi9boHNH3zcm75DAjqi5dyAud4HqiVC5vQ
-         uaRA==
-X-Gm-Message-State: AOAM533BcEPk9wVv7r9iKIOCE+YXousNZdYrltJVGaypqgHtu6bVvrEz
-        GrOZYsHgaW37kIIU6qaAw6PGQg==
-X-Google-Smtp-Source: ABdhPJx2/eiC2lvNFOg+YWokxgOc1KlCDz9e0huoC4ycR+2ezrz66lGuZNmu/iIHpYNjNIomPTlBxA==
-X-Received: by 2002:a63:1655:: with SMTP id 21mr1825737pgw.498.1644894963702;
-        Mon, 14 Feb 2022 19:16:03 -0800 (PST)
-Received: from google.com ([2401:fa00:8f:203:3a3d:6c6e:58a7:8903])
-        by smtp.gmail.com with ESMTPSA id o7sm569164pfw.114.2022.02.14.19.16.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 19:16:03 -0800 (PST)
-Date:   Tue, 15 Feb 2022 12:15:58 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Andre Kalb <andre.kalb@sma.de>
-Cc:     pmladek@suse.com, john.ogness@linutronix.de,
-        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org
-Subject: Re: [PATCH v2] printk: Set console_set_on_cmdline=1 when
- __add_preferred_console() is called with user_specified == true
-Message-ID: <Ygsa7gfqlhZVWdDb@google.com>
-References: <YgKSbe9d3haHKMid@alley>
- <YgpXWQqjfJBISG1v@pc6682>
+        Mon, 14 Feb 2022 22:16:29 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A161BAFF4A;
+        Mon, 14 Feb 2022 19:16:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644894980; x=1676430980;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ldCTfGNtUkwvgMlh56Aipx6IPRvEXwAZKbeUmQ5Pl0I=;
+  b=FbWcqBRyXUpvAUhVl3V8JMmrIePv4mdFzk8CPae7szWIC+fMj1+SxyE9
+   bBE0Uq/ZnI0SLijwBbZBCS0uV5PgYja7YTHU9Q+eQ3i/pTzlO7+/65vgA
+   V4xaSF7UwiCnCpxMueWCNSbb2ok2p0v9k2TeGMdFsRTjBbq4RHFpyF61t
+   2QavOonnLJZNO4D8Sh9uaG1zOzkKcT9i0sXrfPXS8M4CDeFp9jzU8Md3e
+   i5FzKFyq4kov7XQ2o8BmiIAovJGTlERwFSOxpyyk1mNFjzc5zS9ukzKDV
+   gRY/9RUFvi2GTzOQkDGJmngtKM9ZPvr5AofHM/g3iz95+Qz7R0KOfSpoG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="233785038"
+X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
+   d="scan'208";a="233785038"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 19:16:20 -0800
+X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
+   d="scan'208";a="485924034"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 19:16:17 -0800
+Date:   Tue, 15 Feb 2022 11:27:13 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zeng Guang <guang.zeng@intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: Re: [PATCH 09/11] KVM: x86: Treat x2APIC's ICR as a 64-bit register,
+ not two 32-bit regs
+Message-ID: <20220215032712.GB28478@gao-cwp>
+References: <20220204214205.3306634-1-seanjc@google.com>
+ <20220204214205.3306634-10-seanjc@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YgpXWQqjfJBISG1v@pc6682>
+In-Reply-To: <20220204214205.3306634-10-seanjc@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On (22/02/14 14:21), Andre Kalb wrote:
-> +static void set_user_specified(struct console_cmdline *c, bool user_specified)
-> +{
-> +	if (!user_specified)
-> +		return;
-> +
-> +	c->user_specified = true;
-> +	console_set_on_cmdline = 1;
-> +}
+> 	case APIC_SELF_IPI:
+>-		if (apic_x2apic_mode(apic)) {
+>-			kvm_lapic_reg_write(apic, APIC_ICR,
+>-					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+>-		} else
+>+		if (apic_x2apic_mode(apic))
+>+			kvm_x2apic_icr_write(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+>+		else
 
-In original code we always set c->user_specified. Is it guaranteed that
-->user_specified is properly initialized to 0? Maybe can do something like:
+The original code looks incorrect. Emulating writes to SELF_IPI by writes to
+ICR has an unwanted side-effect: the value of ICR in vAPIC page gets changed.
 
-static void set_user_specified(struct console_cmdline *c, bool user_specified)
-{
-	c->user_specified = user_specified;
-
-	if (!user_specified)
-		return;
-
-	console_set_on_cmdline = 1;
-}
+It is better to use kvm_apic_send_ipi() directly.
