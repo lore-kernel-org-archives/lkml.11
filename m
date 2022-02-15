@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D03C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 467F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240415AbiBOPct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:32:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46296 "EHLO
+        id S240428AbiBOPcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:32:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240245AbiBOPap (ORCPT
+        with ESMTP id S240360AbiBOPbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:30:45 -0500
+        Tue, 15 Feb 2022 10:31:18 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F15C1CB9;
-        Tue, 15 Feb 2022 07:29:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EE9C42A2;
+        Tue, 15 Feb 2022 07:29:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FAA2615F0;
-        Tue, 15 Feb 2022 15:29:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 550FCC340ED;
-        Tue, 15 Feb 2022 15:29:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDBE660AC8;
+        Tue, 15 Feb 2022 15:29:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80473C340ED;
+        Tue, 15 Feb 2022 15:29:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938941;
-        bh=qJwGXYo41BOzEX6oFtnAmcbygBymqUp/dIQMb+BAvlQ=;
+        s=k20201202; t=1644938951;
+        bh=myw3QrAMQ7VVVXV9oni2wkVFSEnyKFd6dj17fy2ABdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nahRJDDaW6kPRRFQtFZRYjIY1K+nkmLgmWRu7jbRVDPB44seuo9RjaxscF15R5tff
-         oQ19wh8eePWzkxFRpapxf/9aXWAyYxKHBQkvd8yfqcCTGoESpyICuVAaMWhFIvZ3B7
-         tbPYIRjg6Slu83lySHr9X1zz/a7ZPOPwabJ2EGjm2ru9ryqOI/KfwSDmQvnem1akw9
-         hGTHpuQ96ngyImKwJTL8uc+cculNBQqZNu/DaA0oPbvJj+gI+RDojSOdkOKZnCNzEM
-         sLKMD2scSXYZYijYKR3pE0OzShthzJpJ73I3U7kdke6rCsCwWpYEWWoJBIFgFgr0b2
-         LVv4MANFMkjuQ==
+        b=ekPf4vi5DpvHSkEsHzFf9VBiwt655MpcytLRf/6JolJWGZl/CNhj0o8OpsdG+X+wH
+         mYEeFV+UTq8jpiM9D/JFYfeLP/GMMuuYTcbqTDjaAsNNzcNssMg0aajgkH1uABmnaW
+         5KT0rO8mLW74QCDBs8vNRU3f77pQm70ibjoPItnNcDMJmzzHITgFKb7/56jhty0YzU
+         +s7j6Hf9i15Hr0kIUW6nEXecTxk0eHILLTwDxtTUFcfi0gV7Sg44E3D1QzmU4h+vXV
+         +5pg3+G07AdltpzvtfIgdee6VxRHC1JV+GQwY/0ipXeXPputapeL/1ODCGhJms8v1Q
+         /NF8rdyBm5DsA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Axel Rasmussen <axelrasmussen@google.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        nathan@kernel.org, ndesaulniers@google.com,
-        linux-kselftest@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 16/33] selftests: fixup build warnings in pidfd / clone3 tests
-Date:   Tue, 15 Feb 2022 10:28:14 -0500
-Message-Id: <20220215152831.580780-16-sashal@kernel.org>
+Cc:     =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
+        <zboszor@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>, linux-ide@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 22/33] ata: libata-core: Disable TRIM on M88V29
+Date:   Tue, 15 Feb 2022 10:28:20 -0500
+Message-Id: <20220215152831.580780-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152831.580780-1-sashal@kernel.org>
 References: <20220215152831.580780-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,103 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Axel Rasmussen <axelrasmussen@google.com>
+From: Zoltán Böszörményi <zboszor@gmail.com>
 
-[ Upstream commit e2aa5e650b07693477dff554053605976789fd68 ]
+[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
 
-These are some trivial fixups, which were needed to build the tests with
-clang and -Werror. The following issues are fixed:
+This device is a CF card, or possibly an SSD in CF form factor.
+It supports NCQ and high speed DMA.
 
-- Remove various unused variables.
-- In child_poll_leader_exit_test, clang isn't smart enough to realize
-  syscall(SYS_exit, 0) won't return, so it complains we never return
-  from a non-void function. Add an extra exit(0) to appease it.
-- In test_pidfd_poll_leader_exit, ret may be branched on despite being
-  uninitialized, if we have !use_waitpid. Initialize it to zero to get
-  the right behavior in that case.
+While it also advertises TRIM support, I/O errors are reported
+when the discard mount option fstrim is used. TRIM also fails
+when disabling NCQ and not just as an NCQ command.
 
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+TRIM must be disabled for this device.
+
+Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/clone3/clone3.c    | 2 --
- tools/testing/selftests/pidfd/pidfd_test.c | 6 +++---
- tools/testing/selftests/pidfd/pidfd_wait.c | 5 ++---
- 3 files changed, 5 insertions(+), 8 deletions(-)
+ drivers/ata/libata-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/clone3/clone3.c b/tools/testing/selftests/clone3/clone3.c
-index 076cf4325f783..cd4582129c7d6 100644
---- a/tools/testing/selftests/clone3/clone3.c
-+++ b/tools/testing/selftests/clone3/clone3.c
-@@ -126,8 +126,6 @@ static void test_clone3(uint64_t flags, size_t size, int expected,
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 4d848cfc406fe..24b67d78cb83d 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4014,6 +4014,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
  
- int main(int argc, char *argv[])
- {
--	pid_t pid;
--
- 	uid_t uid = getuid();
+ 	/* devices that don't properly handle TRIM commands */
+ 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
++	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
  
- 	ksft_print_header();
-diff --git a/tools/testing/selftests/pidfd/pidfd_test.c b/tools/testing/selftests/pidfd/pidfd_test.c
-index 529eb700ac26a..9a2d64901d591 100644
---- a/tools/testing/selftests/pidfd/pidfd_test.c
-+++ b/tools/testing/selftests/pidfd/pidfd_test.c
-@@ -441,7 +441,6 @@ static void test_pidfd_poll_exec(int use_waitpid)
- {
- 	int pid, pidfd = 0;
- 	int status, ret;
--	pthread_t t1;
- 	time_t prog_start = time(NULL);
- 	const char *test_name = "pidfd_poll check for premature notification on child thread exec";
- 
-@@ -500,13 +499,14 @@ static int child_poll_leader_exit_test(void *args)
- 	 */
- 	*child_exit_secs = time(NULL);
- 	syscall(SYS_exit, 0);
-+	/* Never reached, but appeases compiler thinking we should return. */
-+	exit(0);
- }
- 
- static void test_pidfd_poll_leader_exit(int use_waitpid)
- {
- 	int pid, pidfd = 0;
--	int status, ret;
--	time_t prog_start = time(NULL);
-+	int status, ret = 0;
- 	const char *test_name = "pidfd_poll check for premature notification on non-empty"
- 				"group leader exit";
- 
-diff --git a/tools/testing/selftests/pidfd/pidfd_wait.c b/tools/testing/selftests/pidfd/pidfd_wait.c
-index be2943f072f60..17999e082aa71 100644
---- a/tools/testing/selftests/pidfd/pidfd_wait.c
-+++ b/tools/testing/selftests/pidfd/pidfd_wait.c
-@@ -39,7 +39,7 @@ static int sys_waitid(int which, pid_t pid, siginfo_t *info, int options,
- 
- TEST(wait_simple)
- {
--	int pidfd = -1, status = 0;
-+	int pidfd = -1;
- 	pid_t parent_tid = -1;
- 	struct clone_args args = {
- 		.parent_tid = ptr_to_u64(&parent_tid),
-@@ -47,7 +47,6 @@ TEST(wait_simple)
- 		.flags = CLONE_PIDFD | CLONE_PARENT_SETTID,
- 		.exit_signal = SIGCHLD,
- 	};
--	int ret;
- 	pid_t pid;
- 	siginfo_t info = {
- 		.si_signo = 0,
-@@ -88,7 +87,7 @@ TEST(wait_simple)
- 
- TEST(wait_states)
- {
--	int pidfd = -1, status = 0;
-+	int pidfd = -1;
- 	pid_t parent_tid = -1;
- 	struct clone_args args = {
- 		.parent_tid = ptr_to_u64(&parent_tid),
+ 	/*
+ 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
 -- 
 2.34.1
 
