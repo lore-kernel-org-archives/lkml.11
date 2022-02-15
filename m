@@ -2,47 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F27C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240186AbiBOPa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:30:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49630 "EHLO
+        id S240089AbiBOPah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:30:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240089AbiBOP3u (ORCPT
+        with ESMTP id S240076AbiBOPaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:29:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E44BF521;
-        Tue, 15 Feb 2022 07:28:34 -0800 (PST)
+        Tue, 15 Feb 2022 10:30:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51A5B0C74;
+        Tue, 15 Feb 2022 07:28:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE250615E6;
-        Tue, 15 Feb 2022 15:28:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44F0C340EB;
-        Tue, 15 Feb 2022 15:28:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6292FB81AFA;
+        Tue, 15 Feb 2022 15:28:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0FF8C340EB;
+        Tue, 15 Feb 2022 15:28:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938909;
-        bh=RzY8vR9pOqT3Q4SfGqSnnyOelhCAOz02hOIQHVh8MHA=;
+        s=k20201202; t=1644938921;
+        bh=Z9AP8sHVGnKeExOiFmw9xaQ/eAc+E0fki+qkJR1RQuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fh6LgercNfw9nMTwNJfq4KrWYMq60LL/0koKHqW69Y8rAx0uY2h6icYaYI4RiJcJq
-         swnN6WHLidLqGhSMNw8amfOg76dFURnlDsUy1b3/DuCK8h5/IE6y95+2YbeFpbOmB8
-         PPMFtsVzifL96VEBpmHXlH7q3w+brs1aALi118ykHdN+NyxjyxxmfcFjaS1TVun0hy
-         FAo9BD+zrnML68mQjYJkfjqFjJ4bQZfK7SN+mJAH4sbYpHbX+naAytavnbRsyYkRQX
-         F+eCIcRK2ssPUAIkGJEgABetI7IaiuUJ1AGtrIlXHFJ6fv/jIXTw2QiD4GW7/X12Gu
-         dyMO0N0wKOIPg==
+        b=Lw6tfkGo6GSFHEaxB64U7kACjTZzL9A//zQvk9LN6I5vKJISzhumjlHudALbz5taa
+         0iv8CkGwWRtVMcwLhPpgk+Onq3GC/Un7bb0XU0kS4jh1DBvAjgRwNZN7qtj66qo2As
+         z65sdloJHBJVtiRtoGEE5Oo5ktBORXq5+9q5y6XsDB9Hcu3SUltNbnFamxUNpXs1rG
+         COdj5wiY2VjlhcW0U/GJGzY+6zU7AiFE5rNSZ/B2boLShIhsXPD4sfn8HJBhl3S5bq
+         BG1/Y6vMuJ5vSiPotjwxXnkxW15ZVw7v7hRjktzxgj5aOiXSX+QY6HrFBD6LQHt/XU
+         vKrLX8+KdHfsA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jing Leng <jleng@ambarella.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-kbuild@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 34/34] kconfig: fix failing to generate auto.conf
-Date:   Tue, 15 Feb 2022 10:26:57 -0500
-Message-Id: <20220215152657.580200-34-sashal@kernel.org>
+Cc:     Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, nsaenz@kernel.org,
+        gascoar@gmail.com, ojaswin98@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.15 04/33] staging: vc04_services: Fix RCU dereference check
+Date:   Tue, 15 Feb 2022 10:28:02 -0500
+Message-Id: <20220215152831.580780-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
-References: <20220215152657.580200-1-sashal@kernel.org>
+In-Reply-To: <20220215152831.580780-1-sashal@kernel.org>
+References: <20220215152831.580780-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,50 +56,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+From: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
 
-[ Upstream commit 1b9e740a81f91ae338b29ed70455719804957b80 ]
+[ Upstream commit 0cea730cac824edf78ffd3302938ed5fe2b9d50d ]
 
-When the KCONFIG_AUTOCONFIG is specified (e.g. export \
-KCONFIG_AUTOCONFIG=output/config/auto.conf), the directory of
-include/config/ will not be created, so kconfig can't create deps
-files in it and auto.conf can't be generated.
+In service_callback path RCU dereferenced pointer struct vchiq_service
+need to be accessed inside rcu read-critical section.
 
-Signed-off-by: Jing Leng <jleng@ambarella.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Also userdata/user_service part of vchiq_service is accessed around
+different synchronization mechanism, getting an extra reference to a
+pointer keeps sematics simpler and avoids prolonged graceperiod.
+
+Accessing vchiq_service with rcu_read_[lock/unlock] fixes below issue.
+
+[   32.201659] =============================
+[   32.201664] WARNING: suspicious RCU usage
+[   32.201670] 5.15.11-rt24-v8+ #3 Not tainted
+[   32.201680] -----------------------------
+[   32.201685] drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.h:529 suspicious rcu_dereference_check() usage!
+[   32.201695]
+[   32.201695] other info that might help us debug this:
+[   32.201695]
+[   32.201700]
+[   32.201700] rcu_scheduler_active = 2, debug_locks = 1
+[   32.201708] no locks held by vchiq-slot/0/98.
+[   32.201715]
+[   32.201715] stack backtrace:
+[   32.201723] CPU: 1 PID: 98 Comm: vchiq-slot/0 Not tainted 5.15.11-rt24-v8+ #3
+[   32.201733] Hardware name: Raspberry Pi 4 Model B Rev 1.4 (DT)
+[   32.201739] Call trace:
+[   32.201742]  dump_backtrace+0x0/0x1b8
+[   32.201772]  show_stack+0x20/0x30
+[   32.201784]  dump_stack_lvl+0x8c/0xb8
+[   32.201799]  dump_stack+0x18/0x34
+[   32.201808]  lockdep_rcu_suspicious+0xe4/0xf8
+[   32.201817]  service_callback+0x124/0x400
+[   32.201830]  slot_handler_func+0xf60/0x1e20
+[   32.201839]  kthread+0x19c/0x1a8
+[   32.201849]  ret_from_fork+0x10/0x20
+
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
+Link: https://lore.kernel.org/r/20211231195406.5479-1-treasure4paddy@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/kconfig/confdata.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ .../interface/vchiq_arm/vchiq_arm.c           | 20 +++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-index 42bc56ee238c8..8954e28a225cb 100644
---- a/scripts/kconfig/confdata.c
-+++ b/scripts/kconfig/confdata.c
-@@ -992,14 +992,19 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index 967f10b9582a8..ea9a53bdb4174 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -1033,15 +1033,27 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
  
- static int conf_touch_deps(void)
- {
--	const char *name;
-+	const char *name, *tmp;
- 	struct symbol *sym;
- 	int res, i;
+ 	DEBUG_TRACE(SERVICE_CALLBACK_LINE);
  
--	strcpy(depfile_path, "include/config/");
--	depfile_prefix_len = strlen(depfile_path);
--
- 	name = conf_get_autoconfig_name();
-+	tmp = strrchr(name, '/');
-+	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
-+	if (depfile_prefix_len + 1 > sizeof(depfile_path))
-+		return -1;
++	rcu_read_lock();
+ 	service = handle_to_service(handle);
+-	if (WARN_ON(!service))
++	if (WARN_ON(!service)) {
++		rcu_read_unlock();
+ 		return VCHIQ_SUCCESS;
++	}
+ 
+ 	user_service = (struct user_service *)service->base.userdata;
+ 	instance = user_service->instance;
+ 
+-	if (!instance || instance->closing)
++	if (!instance || instance->closing) {
++		rcu_read_unlock();
+ 		return VCHIQ_SUCCESS;
++	}
 +
-+	strncpy(depfile_path, name, depfile_prefix_len);
-+	depfile_path[depfile_prefix_len] = 0;
-+
- 	conf_read_simple(name, S_DEF_AUTO);
- 	sym_calc_value(modules_sym);
++	/*
++	 * As hopping around different synchronization mechanism,
++	 * taking an extra reference results in simpler implementation.
++	 */
++	vchiq_service_get(service);
++	rcu_read_unlock();
  
+ 	vchiq_log_trace(vchiq_arm_log_level,
+ 		"%s - service %lx(%d,%p), reason %d, header %lx, instance %lx, bulk_userdata %lx",
+@@ -1074,6 +1086,7 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
+ 					NULL, user_service, bulk_userdata);
+ 				if (status != VCHIQ_SUCCESS) {
+ 					DEBUG_TRACE(SERVICE_CALLBACK_LINE);
++					vchiq_service_put(service);
+ 					return status;
+ 				}
+ 			}
+@@ -1084,11 +1097,13 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
+ 				vchiq_log_info(vchiq_arm_log_level,
+ 					"%s interrupted", __func__);
+ 				DEBUG_TRACE(SERVICE_CALLBACK_LINE);
++				vchiq_service_put(service);
+ 				return VCHIQ_RETRY;
+ 			} else if (instance->closing) {
+ 				vchiq_log_info(vchiq_arm_log_level,
+ 					"%s closing", __func__);
+ 				DEBUG_TRACE(SERVICE_CALLBACK_LINE);
++				vchiq_service_put(service);
+ 				return VCHIQ_ERROR;
+ 			}
+ 			DEBUG_TRACE(SERVICE_CALLBACK_LINE);
+@@ -1117,6 +1132,7 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
+ 		header = NULL;
+ 	}
+ 	DEBUG_TRACE(SERVICE_CALLBACK_LINE);
++	vchiq_service_put(service);
+ 
+ 	if (skip_completion)
+ 		return VCHIQ_SUCCESS;
 -- 
 2.34.1
 
