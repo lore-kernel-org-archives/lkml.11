@@ -2,119 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9713CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 13:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 13:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238433AbiBONsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 08:48:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44624 "EHLO
+        id S235218AbiBONuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 08:50:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238424AbiBONsE (ORCPT
+        with ESMTP id S229710AbiBONuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 08:48:04 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624BFE026;
-        Tue, 15 Feb 2022 05:47:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644932874; x=1676468874;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sOvWmHCfNTGwnxKIrR6Zs268ld65whSnGZFHC7shh/M=;
-  b=JbYuFLgc9zNl3mM981Vsp85HF4nKzrk+uP/lzs5Aqff1gO8rtrcpEQAN
-   SrIXiIelVUbpHje6D2LHsoZc/2c9vNwIekeYiqjqZ/zfu3lfePbJZwMNu
-   JdIE/OKaJ/EAOY3QBXlsPoYZ8m0tzbobBFxJrOMLA+mi2jkU+BTa7sUKi
-   Y3/WXubh5qkbUcYX0todPqrJpNjhw2YdP52zbEfnhKHhhMIYwpOL8w8AZ
-   EruFZ/yuSflL1E6yqWjH3h7D9d64lJmHGie3KhgXExrvEJzOcJtbH1Mp+
-   bX5WjRbD+qQw38MluFGxVKRhJA9yjyzG9XqAMx/OLDMFprvX0jKvXKQZx
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="247949062"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="247949062"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 05:47:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="681038721"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2022 05:47:50 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJyBK-0009hq-7O; Tue, 15 Feb 2022 13:47:50 +0000
-Date:   Tue, 15 Feb 2022 21:46:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Satya Priya <quic_c_skakit@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Das Srinagesh <gurus@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, swboyd@chromium.org,
-        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
-        quic_jprakash@quicinc.com, Satya Priya <quic_c_skakit@quicinc.com>
-Subject: Re: [PATCH V6 3/6] mfd: pm8008: Add mfd cell struct to register LDOs
-Message-ID: <202202152150.MRo3NhGR-lkp@intel.com>
-References: <1644915231-7308-4-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 15 Feb 2022 08:50:18 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089BCE01B;
+        Tue, 15 Feb 2022 05:50:08 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id b11so12283697lfb.12;
+        Tue, 15 Feb 2022 05:50:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2kZ/IBmjcS9tZCWpYljYHJzrq23MizmdNHzM2IiJLCU=;
+        b=dgiSfuFN3ASYDMIZDgYLeoYeom9SjwBzyCFOQNOKznbr/a4ilWWlYJYZYbu/j4ZdEe
+         G1rkw84c8Lz0VwSIZiYYpnCSFNR+N/1CyGVc8OGOqMCTapaX0ede15R+iV45SSe5gnxH
+         MwkmeyEYhU2+XfNYO7kJlX2Avdc0fy3rysVaJzVMyLOVxKb6ThaebceWU+664+w6jZgB
+         M+AfffjDjZu58IICKKFto68ZZQ8ucymtzIHEB5kvSYWMtrEeLzxFFbxmsFsWIDF/y5i8
+         /XHChzYnDC9Z+t+WrAdPi4lLh4uQhdODOu6vZ9qBjRBBj2EQZE/0H1HicgLvUv9LYtma
+         QUDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2kZ/IBmjcS9tZCWpYljYHJzrq23MizmdNHzM2IiJLCU=;
+        b=vPkMvPwSeEMNF2/eijdMLBC3RuqD0VyC9P7EUqA84/sei+jWGpPLC35CyeSKv37S9Z
+         52IrrYtfHxgAbVpplw4ZIeu20wS1HyrdaoGCc7T4T0+wYxphgnb4nqaeyw22wJpOr+No
+         4LYI5GvYTDIhRXb40E+9NbOrh9qwSRKrEaibOQpfdrYscdPnyEjDIprwYrrDxcZ57sNe
+         j9yXqQy32O2aiIhhbFCzh9fb4Vbml1Y3NGt5aplC8stYmjZxi4QJllqeZaBK2tfPtBwu
+         Frvdyh6vnjTGFzR3W40tk8pee7yL41K/GSiGkbNsLVrucD7lfGKuk538MAmfx86UGGn2
+         heDA==
+X-Gm-Message-State: AOAM533MrAe9Ur3YldnpJm4c51kChaGq6sGO4NnG/pRdc/hyEACKWQej
+        2x0/iSSDLimTzKoA+YHX08Y=
+X-Google-Smtp-Source: ABdhPJzfACnGR5sOoGxWkg4794pAqyMrui1kHLYW8QkYqC9NtPLDvAa5aNmATPCzPoQn+F0pwnGR2w==
+X-Received: by 2002:a05:6512:eaa:: with SMTP id bi42mr3254062lfb.93.1644933006217;
+        Tue, 15 Feb 2022 05:50:06 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id o17sm4511757lfu.180.2022.02.15.05.50.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 05:50:05 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>, Tom Rini <trini@konsulko.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Ricardo Salveti <ricardo@foundries.io>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Jorge Ramirez-Ortiz <jorge@foundries.io>,
+        devicetree@vger.kernel.org, u-boot@lists.denx.de,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH] dt-bindings: nvmem: add U-Boot environment variables binding
+Date:   Tue, 15 Feb 2022 14:49:25 +0100
+Message-Id: <20220215134925.32691-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644915231-7308-4-git-send-email-quic_c_skakit@quicinc.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Satya,
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Thank you for the patch! Yet something to improve:
+U-Boot uses environment variables for storing device setup data on
+flash. That data usually needs to be accessed by a bootloader, kernel
+and often user-space.
 
-[auto build test ERROR on next-20220214]
-[also build test ERROR on v5.17-rc4]
-[cannot apply to robh/for-next broonie-regulator/for-next lee-mfd/for-mfd-next v5.17-rc4 v5.17-rc3 v5.17-rc2]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+This binding allows describing environment data location and its format
+clearly. In some/many cases it should be cleaner than hardcoding &
+duplicating that info in multiple places. Bootloader & kernel can share
+DTS and user-space can try reading it too or just have correct data
+exposed by a kernel.
 
-url:    https://github.com/0day-ci/linux/commits/Satya-Priya/Add-Qualcomm-Technologies-Inc-PM8008-regulator-driver/20220215-165525
-base:    259cbfc98c55ba3b6ef6e61fb7cfc3751dfded1e
-config: i386-randconfig-a005-20220214 (https://download.01.org/0day-ci/archive/20220215/202202152150.MRo3NhGR-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 37f422f4ac31c8b8041c6b62065263314282dab6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/12b686033a10eae2956b1c8436bfaa8c411baa92
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Satya-Priya/Add-Qualcomm-Technologies-Inc-PM8008-regulator-driver/20220215-165525
-        git checkout 12b686033a10eae2956b1c8436bfaa8c411baa92
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/mfd/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/mfd/qcom-pm8008.c:270:38: error: expected ';' after top level declarator
-   MODULE_DEVICE_TABLE(of, pm8008_match)
-                                        ^
-                                        ;
-   1 error generated.
-
-
-vim +270 drivers/mfd/qcom-pm8008.c
-
-   265	
-   266	static const struct of_device_id pm8008_match[] = {
-   267		{ .compatible = "qcom,pm8008", .data = (void *)PM8008_INFRA},
-   268		{ .compatible = "qcom,pm8008-regulators", .data = (void *)PM8008_REGULATORS},
-   269	};
- > 270	MODULE_DEVICE_TABLE(of, pm8008_match)
-   271	
-
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ .../devicetree/bindings/nvmem/u-boot,env.yaml | 58 +++++++++++++++++++
+ MAINTAINERS                                   |  5 ++
+ 2 files changed, 63 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+
+diff --git a/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml b/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+new file mode 100644
+index 000000000000..a2b3a9b88eb8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+@@ -0,0 +1,58 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/u-boot,env.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: U-Boot environment variables
++
++description: |
++  U-Boot uses environment variables to store device parameters and
++  configuration. They may be used for booting process, setup or keeping end user
++  info.
++
++  Data is stored on flash in a U-Boot specific format (header and NUL separated
++  key-value pairs).
++
++  This binding allows specifying data location and used format.
++
++maintainers:
++  - Rafał Miłecki <rafal@milecki.pl>
++
++allOf:
++  - $ref: nvmem.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - description: A standalone env data block
++        const: u-boot,env
++      - description: Two redundant blocks with active one flagged
++        const: u-boot,env-redundant-bool
++      - description: Two redundant blocks with active having higher counter
++        const: u-boot,env-redundant-count
++
++  reg:
++    maxItems: 1
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    partitions {
++        compatible = "fixed-partitions";
++        #address-cells = <1>;
++        #size-cells = <1>;
++
++        partition@0 {
++            label = "u-boot";
++            reg = <0x0 0x40000>;
++            read-only;
++        };
++
++        partition@40000 {
++            compatible = "u-boot,env";
++            label = "u-boot-env";
++            reg = <0x40000 0x10000>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d20344ab7900..2f07f1d2290a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19905,6 +19905,11 @@ W:	http://linuxtv.org
+ T:	git git://linuxtv.org/media_tree.git
+ F:	drivers/media/pci/tw686x/
+ 
++U-BOOT ENVIRONMENT VARIABLES
++M:	Rafał Miłecki <rafal@milecki.pl>
++S:	Maintained
++F:	Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
++
+ UACCE ACCELERATOR FRAMEWORK
+ M:	Zhangfei Gao <zhangfei.gao@linaro.org>
+ M:	Zhou Wang <wangzhou1@hisilicon.com>
+-- 
+2.34.1
+
