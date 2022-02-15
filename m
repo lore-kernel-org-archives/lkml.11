@@ -2,128 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 279BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B55C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241772AbiBOQtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:49:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48384 "EHLO
+        id S241778AbiBOQtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:49:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239641AbiBOQtA (ORCPT
+        with ESMTP id S241809AbiBOQtH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:49:00 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9951AC12F9;
-        Tue, 15 Feb 2022 08:48:50 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id o10so15304125ilh.0;
-        Tue, 15 Feb 2022 08:48:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xVNa8VSn91ahuDas6Q5c0c7M86VbUIOrBrr7Lsj6DYI=;
-        b=PJDVFdbVGvtaA9kJk1qSkNbj2TZJQK5Mesv4NIHxeYbJjjsrvieJhKSRKVXt6TY5qE
-         liHaAXttXZkNvNs1PuyLiH5sYg3h7nVrZTs/mbhPPbQIEu98CvEiHYU4MoLF7eZlXo02
-         OOV2CBDh3w0126BeK/5eIbxlEmvYr4Xs8bfZaVeS9IX/k9xlrXHL/i7XSE6lOB8CsFou
-         f+HwKwGMZLBvxkr1l+9WBL6JIebLLsTnOIXNVGoFQbxPgu3BI93LHZyoT61o3C4xQj+g
-         S4onaRA3VmSZqMXHYDDXcsGNiV/OW7jzV3v/escGendjwkt2o8Ko874lbpHrzRnToXht
-         Mytw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xVNa8VSn91ahuDas6Q5c0c7M86VbUIOrBrr7Lsj6DYI=;
-        b=jH+7fT2muAmEgfCkZ2zmlChMJc3M/aBDqzpB4Yg5vTW14R+hRR7JvIbww6N7M1sLZa
-         i8FLsuXwusM++e1aOmJUNEs9em+M4AFH+csnELKBQuyxnSmD7vt627As9L0BCj/IPn1l
-         kfrE8g+jEVe8VpLXLnqPINzH/naXtonD46nHMjo7Nfy6pSOCcN7y2qv/gBZWWwD5uRhF
-         EG6kGOkc6LeshjlSpi7KdRFuzxrIoTj0YoNw+ge6tNl9MNZw/WRpJ709uVrwCgYKEJpz
-         5NFDBqRSsN505EdLEWK+kdlANiE05z7Lcn1RXjzC1WSNggbXDoftwKJvZFh5/mck1fsP
-         ZM5Q==
-X-Gm-Message-State: AOAM5308nqnrM74sDjL4/TuQoahUp7f8mlM+zGzru6oXnZ1PDHIQS+0f
-        DGeg58XX72ZEctOQJOao8JH3xN4nrWXpbBhYSdzpfgsu9uShBqd4/Eo=
-X-Google-Smtp-Source: ABdhPJzymnqvOR8CKBiej0duKzd4TqeQtGYPKBaMhp/OB51xLEndFfIOeke7AoujuH13SWODXChgu1WA4elZudT6SiM=
-X-Received: by 2002:a05:6e02:1887:: with SMTP id o7mr3086428ilu.169.1644943729176;
- Tue, 15 Feb 2022 08:48:49 -0800 (PST)
+        Tue, 15 Feb 2022 11:49:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1CE101F0E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:48:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74D3D60F51
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 16:48:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5929C340EB;
+        Tue, 15 Feb 2022 16:48:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644943735;
+        bh=2ryad9yaGExISvwWmN9OK6ZZTJh9aiOukYGy/j7e0Ag=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FYKvINz3Yde08Cd0NdBqPg1qsmwkpAcULEGGvs1tihvkIS/7C0cWoGM2+6cOdnTk2
+         Rz1o9sQ+sm1kpz5+rhSyxq/LQ2ULRTtJHxp7XhqCzlIORFANviRIqBfqTJ+piOL6Cl
+         X9JGMt0lUxYXE0hdCjVU6dwgRcLM5XaBwo7CKA71lfeatTbx3mcuh5GN+dbptkpwDi
+         3JVjQsqb/XYu4t6XShKR2c3tUyPhF/B4a+/gCzv5UzrL91AQQUQzESyeTevjeZg7eE
+         7VRZ4sCadRTPCSnSFnc1ElcNh2J/qQlk0XY5Sal3mzzMbRClHCiAg77PqCSyldv1fS
+         2gppO/AgDaThg==
+Date:   Tue, 15 Feb 2022 16:48:51 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2] arm64/hugetlb: Define __hugetlb_valid_size()
+Message-ID: <20220215164851.GD8458@willie-the-truck>
+References: <1644491770-16108-1-git-send-email-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-References: <20220211001345.3429572-1-gch981213@gmail.com>
-In-Reply-To: <20220211001345.3429572-1-gch981213@gmail.com>
-From:   Chuanhong Guo <gch981213@gmail.com>
-Date:   Wed, 16 Feb 2022 00:48:38 +0800
-Message-ID: <CAJsYDVLyasPAmgxguqLznORC2SihKHRLrFFw5nHbepJvu0va3Q@mail.gmail.com>
-Subject: Re: [PATCH] MIPS: ralink: mt7621: do memory detection on KSEG1
-To:     linux-mips@vger.kernel.org
-Cc:     Rui Salvaterra <rsalvaterra@gmail.com>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644491770-16108-1-git-send-email-anshuman.khandual@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Hi!
-
-On Fri, Feb 11, 2022 at 8:14 AM Chuanhong Guo <gch981213@gmail.com> wrote:
->
-> It's reported that current memory detection code occasionally detects
-> larger memory under some bootloaders.
-> Current memory detection code tests whether address space wraps around
-> on KSEG0, which is unreliable because it's cached.
->
-> Rewrite memory size detection to perform the same test on KSEG1 instead.
-> While at it, this patch also does the following two things:
-> 1. use a fixed pattern instead of a random function pointer as the magic
->    value.
-> 2. add an additional memory write and a second comparison as part of the
->    test to prevent possible smaller memory detection result due to
->    leftover values in memory.
->
-> Fixes: 139c949f7f0a MIPS: ("ralink: mt7621: add memory detection support")
-
-I misplaced a bracket in this Fixes tag.
-
-> Reported-by: Rui Salvaterra <rsalvaterra@gmail.com>
-> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+On Thu, Feb 10, 2022 at 04:46:10PM +0530, Anshuman Khandual wrote:
+> arch_hugetlb_valid_size() can be just factored out to create another helper
+> to be used in arch_hugetlb_migration_supported() as well. This just defines
+> __hugetlb_valid_size() for that purpose.
+> 
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 > ---
->  arch/mips/ralink/mt7621.c | 36 +++++++++++++++++++++++-------------
->  1 file changed, 23 insertions(+), 13 deletions(-)
->
-> diff --git a/arch/mips/ralink/mt7621.c b/arch/mips/ralink/mt7621.c
-> index d6efffd4dd20..12c8808e0dea 100644
-> --- a/arch/mips/ralink/mt7621.c
-> +++ b/arch/mips/ralink/mt7621.c
-> @@ -22,7 +22,9 @@
->
->  #include "common.h"
->
-> -static void *detect_magic __initdata = detect_memory_region;
-> +#define MT7621_MEM_TEST_PATTERN         0xaa5555aa
-> +
-> +static u32 detect_magic __initdata;
->
->  int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
->  {
-> @@ -58,24 +60,32 @@ phys_addr_t mips_cpc_default_phys_base(void)
->         panic("Cannot detect cpc address");
+> This applies on v5.17-rc3
+> 
+> Changes in V2:
+> 
+> - s/arm64_hugetlb_valid_size/__hugetlb_valid_size per Catalin
+> - Restored back warning in arch_hugetlb_migration_supported() per Catalin
+> - Updated the commit message subject line as required
+> 
+> Changes in V1:
+> 
+> https://lore.kernel.org/all/1644197468-26755-1-git-send-email-anshuman.khandual@arm.com/
+> 
+>  arch/arm64/mm/hugetlbpage.c | 26 +++++++++++++-------------
+>  1 file changed, 13 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+> index ffb9c229610a..72ed07fe2c84 100644
+> --- a/arch/arm64/mm/hugetlbpage.c
+> +++ b/arch/arm64/mm/hugetlbpage.c
+> @@ -56,24 +56,19 @@ void __init arm64_hugetlb_cma_reserve(void)
 >  }
->
-> +static bool __init mt7621_addr_wraparound_test(phys_addr_t size)
-> +{
-> +       void *dm = (void *)KSEG1ADDR(&detect_magic);
-> +
-> +       if (CPHYSADDR(dm + size) >= MT7621_LOWMEM_MAX_SIZE)
-> +               return true;
-> +       __raw_writel(MT7621_MEM_TEST_PATTERN, dm);
-> +       if (__raw_readl(dm) != __raw_readl(dm + size))
-> +               return false;
-> +       __raw_writel(!MT7621_MEM_TEST_PATTERN, dm);
+>  #endif /* CONFIG_CMA */
+>  
+> +static bool __hugetlb_valid_size(unsigned long size);
 
-Someone on Github notified me that this second test pattern is incorrect.
-I actually mean to use ~MT7621_MEM_TEST_PATTERN here.
+Why not reorder the code to avoid this forward declaration?
 
-I'll send a v2 fixing both issues.
-
---
-Regards,
-Chuanhong Guo
+Will
