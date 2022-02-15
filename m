@@ -2,184 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 344BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238727AbiBOPZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:25:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42092 "EHLO
+        id S238299AbiBOP1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:27:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236753AbiBOPZy (ORCPT
+        with ESMTP id S230199AbiBOP1H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:25:54 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E57B8E19B
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:25:44 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id 124so28961401ybn.11
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:25:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=857+qV47ddm8WE8KTWXLHPQ7djLUydmVO+RXbwgQrfk=;
-        b=D/mNPmTVJktt/9sUx/SBEKcVTfsa+TjCn2lpj52UUTHad0PYCP5Y5GRCI5TsYp/Qb4
-         +3GRI9/4MzexhaYzhS1sAqdgGVT0f+0MRLF/NNyIfoc/F4Gny6uGGwGZX5yY/oC69zyU
-         q7sKT2+fhC81GUp9Tt55QBzS+BOkBsnQqsHYKpOfiPoQZ+Obe1Xgjr8O8vtBz+eAaMa4
-         y3o7yKo5gCKZxcglyuEHZlXGeK4UGpDYUtiyhWlGWOVamG4O4oaeCRkDm2Zcpr2kGGK7
-         l1pP12h2lndBiXfbkyBb2/wULR3aPBHDIuFoWjZGf3a7HZM2PbN3evJ5bxgQTp+mMTYf
-         QD7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=857+qV47ddm8WE8KTWXLHPQ7djLUydmVO+RXbwgQrfk=;
-        b=AG21oKsVkntItY9jFs3+cTVw8cgvf4pMzI48jMG6venYrj7S6f4ACu/YK+3g967KDY
-         9ai/obyhOCWM5ZU1uXmnnHS6M4vPg5Q9Z/ZydENZzeADx6KJwnf4XZ/Mbju/GX82u2L4
-         COCwdpyEOQUfjG0QoJACUcmVQs7rXte2MxvUvo5WLOCQLMMrlYYSBMrQw4DS3fM0TU1E
-         qtMRdjmULC9Yzc1UOm9F5vP0lIgJq93fLmuCaqSR1THqZV3nh5j6HU9AzhUN0zx9Boce
-         xdsQ+CSYXVw+R3JHdl8mHhwWyse37KDfwD+laQkaG7sEF3uYHkhAOZi49uowLh8zZMSV
-         6Qsw==
-X-Gm-Message-State: AOAM5313hEGlOPmlovnj4i6pzKRMocf9C9Shm4ojiPsUpVia3w2PL5Uc
-        5qR7dbYNrcH7mPn82Rx3+vwB03W5McxZIs9glCI2hQ==
-X-Google-Smtp-Source: ABdhPJxk7mrbL3RMym2ruQfovDQ1leVFG4JQH55yguTM8qjJSu1NPA/AjTgXDZUUTMFqhfKeqlX581mdgioFNv/nHJw=
-X-Received: by 2002:a81:ff05:: with SMTP id k5mr4176036ywn.474.1644938742804;
- Tue, 15 Feb 2022 07:25:42 -0800 (PST)
+        Tue, 15 Feb 2022 10:27:07 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B0375E73
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:26:58 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C614D1F392;
+        Tue, 15 Feb 2022 15:26:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644938816; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dlG8fKH5x541PzrRHKYThguxn3zd3UnEfYJY4nE7XYk=;
+        b=bf+Q4iMYliQm/gT4OrBDIJ10PYZSVK59IKkYfsu6gVBAoAAqHAcljn6ZqAHfJ0sn8fQUch
+        V1SloUKhcryUkiWBYCkCQet+mcIkeYDJLd9pwR60lOocM4tFP2Ey1vJUgCsR6DlbmxTDw4
+        pSVS+U1gNtNnDmhN+jbK1HGqEc5s/gI=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 891A9A3B88;
+        Tue, 15 Feb 2022 15:26:56 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 16:26:56 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH v3] printk: use atomic updates for klogd work
+Message-ID: <YgvGQO+RbPQ/PEEq@alley>
+References: <20220203112915.1350753-1-john.ogness@linutronix.de>
+ <YfzP50vDiJiaRVCr@google.com>
+ <87bkzj3t77.fsf@jogness.linutronix.de>
+ <YgUzm5POctivsjUg@alley>
+ <87leyhd4wc.fsf@jogness.linutronix.de>
+ <87iltld4ue.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-References: <20220215103639.11739-1-kerneljasonxing@gmail.com>
-In-Reply-To: <20220215103639.11739-1-kerneljasonxing@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 15 Feb 2022 07:25:31 -0800
-Message-ID: <CANn89iL8vOUOH9bZaiA-cKcms+PotuKCxv7LpVx3RF0dDDSnmg@mail.gmail.com>
-Subject: Re: [PATCH] net: do not set SOCK_RCVBUF_LOCK if sk_rcvbuf isn't reduced
-To:     Jason Xing <kerneljasonxing@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Wei Wang <weiwan@google.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>, Florian Westphal <fw@strlen.de>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jason Xing <xingwanli@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87iltld4ue.fsf@jogness.linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 2:37 AM <kerneljasonxing@gmail.com> wrote:
->
-> From: Jason Xing <xingwanli@kuaishou.com>
->
-> Normally, user doesn't care the logic behind the kernel if they're
-> trying to set receive buffer via setsockopt. However, if the new value
-> of the receive buffer is not smaller than the initial value which is
-> sysctl_tcp_rmem[1] implemented in tcp_rcv_space_adjust(), the server's
-> wscale will shrink and then lead to the bad bandwidth. I think it is
-> not appropriate.
+On Fri 2022-02-11 12:29:37, John Ogness wrote:
+> The per-cpu @printk_pending variable can be updated from
+> sleepable contexts, such as:
+> 
+>   get_random_bytes()
+>     warn_unseeded_randomness()
+>       printk_deferred()
+>         defer_console_output()
+> 
+> and can be updated from interrupt contexts, such as:
+> 
+>   handle_irq_event_percpu()
+>     __irq_wake_thread()
+>       wake_up_process()
+>         try_to_wake_up()
+>           select_task_rq()
+>             select_fallback_rq()
+>               printk_deferred()
+>                 defer_console_output()
+> 
+> and can be updated from NMI contexts, such as:
+> 
+>   vprintk()
+>     if (in_nmi()) defer_console_output()
+> 
+> Therefore the atomic variant of the updating functions must be used.
+> 
+> Replace __this_cpu_xchg() with this_cpu_xchg().
+> Replace __this_cpu_or() with this_cpu_or().
+> 
+> Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-Then do not use SO_RCVBUF ?
+The v3 patch is comitted in printk/linux.git, branch for.5.18.
 
-It is working as intended really.
+I have replaced v2 version with it.
 
->
-> Here are some numbers:
-> $ sysctl -a | grep rmem
-> net.core.rmem_default = 212992
-> net.core.rmem_max = 40880000
-> net.ipv4.tcp_rmem = 4096        425984  40880000
->
-> Case 1
-> on the server side
->     # iperf -s -p 5201
-> on the client side
->     # iperf -c [client ip] -p 5201
-> It turns out that the bandwidth is 9.34 Gbits/sec while the wscale of
-> server side is 10. It's good.
->
-> Case 2
-> on the server side
->     #iperf -s -p 5201 -w 425984
-> on the client side
->     # iperf -c [client ip] -p 5201
-> It turns out that the bandwidth is reduced to 2.73 Gbits/sec while the
-> wcale is 2, even though the receive buffer is not changed at all at the
-> very beginning.
-
-Great, you discovered auto tuning is working as intended.
-
->
-> Therefore, I added one condition where only user is trying to set a
-> smaller rx buffer. After this patch is applied, the bandwidth of case 2
-> is recovered to 9.34 Gbits/sec.
->
-> Fixes: e88c64f0a425 ("tcp: allow effective reduction of TCP's rcv-buffer via setsockopt")
-
-This commit has nothing to do with your patch or feature.
-
-> Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
-> ---
->  net/core/filter.c | 7 ++++---
->  net/core/sock.c   | 8 +++++---
->  2 files changed, 9 insertions(+), 6 deletions(-)
->
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 4603b7c..99f5d9c 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -4795,9 +4795,10 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
->                 case SO_RCVBUF:
->                         val = min_t(u32, val, sysctl_rmem_max);
->                         val = min_t(int, val, INT_MAX / 2);
-> -                       sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-> -                       WRITE_ONCE(sk->sk_rcvbuf,
-> -                                  max_t(int, val * 2, SOCK_MIN_RCVBUF));
-> +                       val = max_t(int, val * 2, SOCK_MIN_RCVBUF);
-> +                       if (val < sock_net(sk)->ipv4.sysctl_tcp_rmem[1])
-> +                               sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-> +                       WRITE_ONCE(sk->sk_rcvbuf, val);
->                         break;
->                 case SO_SNDBUF:
->                         val = min_t(u32, val, sysctl_wmem_max);
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 4ff806d..e5e9cb0 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -923,8 +923,6 @@ static void __sock_set_rcvbuf(struct sock *sk, int val)
->          * as a negative value.
->          */
->         val = min_t(int, val, INT_MAX / 2);
-> -       sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-> -
->         /* We double it on the way in to account for "struct sk_buff" etc.
->          * overhead.   Applications assume that the SO_RCVBUF setting they make
->          * will allow that much actual data to be received on that socket.
-> @@ -935,7 +933,11 @@ static void __sock_set_rcvbuf(struct sock *sk, int val)
->          * And after considering the possible alternatives, returning the value
->          * we actually used in getsockopt is the most desirable behavior.
->          */
-> -       WRITE_ONCE(sk->sk_rcvbuf, max_t(int, val * 2, SOCK_MIN_RCVBUF));
-> +       val = max_t(int, val * 2, SOCK_MIN_RCVBUF);
-> +       if (val < sock_net(sk)->ipv4.sysctl_tcp_rmem[1])
-> +               sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-> +
-> +       WRITE_ONCE(sk->sk_rcvbuf, val);
->  }
->
->  void sock_set_rcvbuf(struct sock *sk, int val)
-
-You are breaking applications that want to set sk->sk_rcvbuf  to a fixed value,
-to control memory usage on millions of active sockets in a host.
-
-I think that you want new functionality, with new SO_ socket options,
-targeting net-next tree (No spurious FIxes: tag)
-
-For instance letting an application set  or unset  SOCK_RCVBUF_LOCK
-would be more useful, and would not break applications.
+Best Regards,
+Petr
