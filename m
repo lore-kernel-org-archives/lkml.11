@@ -2,108 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D4AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 06:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234496AbiBOGeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 01:34:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46030 "EHLO
+        id S234511AbiBOGej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 01:34:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232850AbiBOGeV (ORCPT
+        with ESMTP id S234498AbiBOGeh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 01:34:21 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8ACAEF28;
-        Mon, 14 Feb 2022 22:34:11 -0800 (PST)
-X-UUID: 456a272f40624287b43056e2026d3c68-20220215
-X-UUID: 456a272f40624287b43056e2026d3c68-20220215
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 223375135; Tue, 15 Feb 2022 14:34:07 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 15 Feb 2022 14:34:06 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 15 Feb 2022 14:34:06 +0800
-Message-ID: <81e8440bea87ef2b03b04ca135da4df0fdaef2de.camel@mediatek.com>
-Subject: Re: [PATCH v3 14/31] clk: mediatek: pll: Clean up included headers
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Date:   Tue, 15 Feb 2022 14:34:06 +0800
-In-Reply-To: <20220208124034.414635-15-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
-         <20220208124034.414635-15-wenst@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 15 Feb 2022 01:34:37 -0500
+X-Greylist: delayed 403 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 22:34:28 PST
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF752AFF4D;
+        Mon, 14 Feb 2022 22:34:28 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 35C4530000E20;
+        Tue, 15 Feb 2022 07:27:43 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 282A6314429; Tue, 15 Feb 2022 07:27:43 +0100 (CET)
+Date:   Tue, 15 Feb 2022 07:27:43 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>
+Cc:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/10] spi: spi-mem: Add driver for Aspeed SMC controllers
+Message-ID: <20220215062743.GA12431@wunner.de>
+References: <20220214094231.3753686-1-clg@kaod.org>
+ <20220214094231.3753686-4-clg@kaod.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220214094231.3753686-4-clg@kaod.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-08 at 20:40 +0800, Chen-Yu Tsai wrote:
-> Some included headers aren't actually used anywhere, while other
-> headers
-> with the declaration of functions and structures aren't directly
-> included.
-> 
-> Get rid of the unused ones, and add the ones that should be included
-> directly.
-> 
-> Also, copy the MHZ macro from clk-mtk.h, and drop clk-mtk.h from the
-> included headers.
-> 
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-> Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
+On Mon, Feb 14, 2022 at 10:42:24AM +0100, Cédric Le Goater wrote:
+> +static int aspeed_spi_probe(struct platform_device *pdev)
+> +{
+[...]
+> +	ctlr = spi_alloc_master(dev, sizeof(*aspi));
+> +	if (!ctlr)
+> +		return -ENOMEM;
 
-Reviewed-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> ---
->  drivers/clk/mediatek/clk-pll.c | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/clk/mediatek/clk-pll.c
-> b/drivers/clk/mediatek/clk-pll.c
-> index b54e33b75d4e..8439d37e354d 100644
-> --- a/drivers/clk/mediatek/clk-pll.c
-> +++ b/drivers/clk/mediatek/clk-pll.c
-> @@ -4,17 +4,19 @@
->   * Author: James Liao <jamesjj.liao@mediatek.com>
->   */
->  
-> -#include <linux/of.h>
-> -#include <linux/of_address.h>
-> +#include <linux/clk-provider.h>
-> +#include <linux/container_of.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
->  #include <linux/io.h>
->  #include <linux/module.h>
-> +#include <linux/of_address.h>
->  #include <linux/slab.h>
-> -#include <linux/clkdev.h>
-> -#include <linux/delay.h>
->  
-> -#include "clk-mtk.h"
->  #include "clk-pll.h"
->  
-> +#define MHZ			(1000 * 1000)
+Use devm_spi_alloc_master() and remove the "put_controller" error path
+for simplicity.
+
+
+> +	ret = devm_spi_register_controller(dev, ctlr);
+[...]
+> +static int aspeed_spi_remove(struct platform_device *pdev)
+> +{
+> +	struct spi_controller *ctlr = platform_get_drvdata(pdev);
+> +	struct aspeed_spi *aspi = spi_controller_get_devdata(ctlr);
 > +
->  #define REG_CON0		0
->  #define REG_CON1		4
->  
+> +	aspeed_spi_enable(aspi, false);
+> +	spi_unregister_controller(ctlr);
+> +	clk_disable_unprepare(aspi->clk);
+> +	return 0;
+> +}
 
+You need to move the call to spi_unregister_controller() *before*
+the call to aspeed_spi_enable().  The controller must be fully
+operational until spi_unregister_controller() returns.
+
+You also need to replace the call to devm_spi_register_controller()
+in aspeed_spi_probe() with spi_register_controller().
+Otherwise you'll unregister the controller twice because you're
+calling spi_unregister_controller() in aspeed_spi_remove().
+
+Thanks,
+
+Lukas
