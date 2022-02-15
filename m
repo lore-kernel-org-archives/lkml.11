@@ -2,77 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EAFC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E423C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243823AbiBOTtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:49:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37348 "EHLO
+        id S243832AbiBOTtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:49:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243804AbiBOTtd (ORCPT
+        with ESMTP id S243805AbiBOTte (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:49:33 -0500
-Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0586660C;
-        Tue, 15 Feb 2022 11:49:22 -0800 (PST)
-Received: by mail-io1-f51.google.com with SMTP id r144so25235994iod.9;
-        Tue, 15 Feb 2022 11:49:22 -0800 (PST)
+        Tue, 15 Feb 2022 14:49:34 -0500
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDC366AD3;
+        Tue, 15 Feb 2022 11:49:23 -0800 (PST)
+Received: by mail-io1-f52.google.com with SMTP id i62so25308454ioa.1;
+        Tue, 15 Feb 2022 11:49:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=KXSZwObXwXhyqBUgs8Dj2mGzNepAgJtQoKeKbytKAUc=;
-        b=Niifu3b/FINdxzgfxxNqLLaqM4A/FSx28rBdR0SrY6tSoajgBZblHW1DpBC2sVFwGZ
-         IPefElNFsEjbg7Sb8pzr5C3bDzPcVmh6ccxifor2WhSFucXO6Pj5I7XGyNWiAFStLowj
-         /vlhGgq+XxhH5+1s5y7+dZxUjs78yntZsEQHpUHxx7z6vHycxnppT4LNIUALdwKt7MX0
-         RWxBykSlQLZ2aQ3c8bBCqyLlz4RuvHCfJ16yOpjaV+7Q6hu/4RGzbk2RCAV1gFDLCAss
-         3cJ94UoVQLgIjojWlRhESuW1tInU9rla4y5IQwF66kz/UPfocQDRWnvY/6KyDB/FK/tw
-         EWJw==
-X-Gm-Message-State: AOAM5324t6HQdjPzLyuDzaknX+gvUVFrNHBFdbqWwpjMW4xIMj65iFEW
-        fLF/IROadrBX6z5PnObT3g==
-X-Google-Smtp-Source: ABdhPJw4dH7aOt4PpzLwO7VCfIbho2N2cLTRW+nmzH1+8BgDGfbcmPlRXiw84CD6uvuop7GaxBvJ4Q==
-X-Received: by 2002:a05:6638:37a1:: with SMTP id w33mr301609jal.73.1644954560908;
-        Tue, 15 Feb 2022 11:49:20 -0800 (PST)
+        bh=OERlIHIb6ddcezTHhRkNJ0kzSHHK7RS652vYEofOceg=;
+        b=IWceMVm04uqMoNohzExRep+g4j2+xz5o4gXFsrTP9kbbXFxpzV+1w3qxrOdX/V77PD
+         xivjHcEMCDa49pWEGDgFvB1PBUVZI6cXLZaGPcdfed1lFun6v6S+Yl81gwxpEFSBqUYT
+         Q/QjWICUY9zFnPSX3J9Y/+VceJssmv12K5qPEhsaLzWLdJgdLxDo+nnEBEXlYh2+PPl0
+         PalskocXMHIGmg5Ut371R17xW0EQdEC726Wz42Wh4LYj3GAPXjoshDWabfli0zyjacZ7
+         r2SZ5/xrtrzic1Go90ttUErt+ENweuXcu55VWgLd0YezlzqsSmvcGF1DKt5+3SFgtNsp
+         f36g==
+X-Gm-Message-State: AOAM5339qEWcq39c+Nk/YZjYS2E5sWv45C6ObaaoUsxDSWZXtcVRU86J
+        uJ2463jV+wlf6/pS8lfwhkMW+C98PA==
+X-Google-Smtp-Source: ABdhPJyyTThxHQBY7Gwwd6kXiv65mjh+/XyPt67kwPmTGSVCZsScbFtMiRMoIHT3LxW+YnJZ3pKewg==
+X-Received: by 2002:a05:6638:40a8:: with SMTP id m40mr298313jam.213.1644954563186;
+        Tue, 15 Feb 2022 11:49:23 -0800 (PST)
 Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id h12sm6014113ild.44.2022.02.15.11.49.18
+        by smtp.gmail.com with ESMTPSA id y3sm9439335iov.29.2022.02.15.11.49.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 11:49:20 -0800 (PST)
-Received: (nullmailer pid 3813672 invoked by uid 1000);
+        Tue, 15 Feb 2022 11:49:22 -0800 (PST)
+Received: (nullmailer pid 3813675 invoked by uid 1000);
         Tue, 15 Feb 2022 19:49:18 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>
-Cc:     linux-aspeed@lists.ozlabs.org, Richard Weinberger <richard@nod.at>,
-        linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        linux-kernel@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220214094231.3753686-3-clg@kaod.org>
-References: <20220214094231.3753686-1-clg@kaod.org> <20220214094231.3753686-3-clg@kaod.org>
-Subject: Re: [PATCH 02/10] dt-bindings: spi: Add Aspeed SMC controllers device tree binding
+To:     Patrick Rudolph <patrick.rudolph@9elements.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-i2c@vger.kernel.org,
+        Peter Rosin <peda@axentia.se>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+In-Reply-To: <20220214103116.68472-2-patrick.rudolph@9elements.com>
+References: <20220214103116.68472-1-patrick.rudolph@9elements.com> <20220214103116.68472-2-patrick.rudolph@9elements.com>
+Subject: Re: [v5 1/3] dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
 Date:   Tue, 15 Feb 2022 13:49:18 -0600
-Message-Id: <1644954558.088844.3813671.nullmailer@robh.at.kernel.org>
+Message-Id: <1644954558.103393.3813674.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022 10:42:23 +0100, Cédric Le Goater wrote:
-> The "interrupt" property is optional because it is only necessary for
-> controllers supporting DMAs (Not implemented yet in the new driver).
+On Mon, 14 Feb 2022 11:31:14 +0100, Patrick Rudolph wrote:
+> Update the pca954x bindings to add support for the Maxim MAX735x/MAX736x
+> chips. The functionality will be provided by the exisintg pca954x driver.
 > 
-> Cc: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
-> Signed-off-by: Cédric Le Goater <clg@kaod.org>
+> While on it make the interrupts support conditionally as not all of the
+> existing chips have interrupts.
+> 
+> For chips that are powered off by default add an optional regulator
+> called vdd-supply.
+> 
+> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
 > ---
->  .../bindings/spi/aspeed,ast2600-fmc.yaml      | 92 +++++++++++++++++++
->  1 file changed, 92 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
+>  .../bindings/i2c/i2c-mux-pca954x.yaml         | 44 ++++++++++++++-----
+>  1 file changed, 34 insertions(+), 10 deletions(-)
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -81,14 +76,15 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.example.dt.yaml: example-0: spi@1e620000:reg:0: [509739008, 196, 536870912, 268435456] is too long
-	From schema: /usr/local/lib/python3.8/dist-packages/dtschema/schemas/reg.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.example.dt.yaml: spi@1e620000: reg: [[509739008, 196, 536870912, 268435456]] is too short
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml: allOf:1:then:properties:interrupts: 'maxitems' is not one of ['$ref', 'additionalItems', 'additionalProperties', 'allOf', 'anyOf', 'const', 'contains', 'default', 'dependencies', 'dependentRequired', 'dependentSchemas', 'deprecated', 'description', 'else', 'enum', 'exclusiveMaximum', 'exclusiveMinimum', 'items', 'if', 'minItems', 'minimum', 'maxItems', 'maximum', 'multipleOf', 'not', 'oneOf', 'pattern', 'patternProperties', 'properties', 'required', 'then', 'type', 'typeSize', 'unevaluatedProperties', 'uniqueItems']
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml: ignoring, error in schema: allOf: 1: then: properties: interrupts
+Documentation/devicetree/bindings/i2c/i2c-mux.example.dt.yaml:0:0: /example-0/i2c/i2c-mux@70: failed to match any schema with compatible: ['nxp,pca9548']
+Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.example.dt.yaml:0:0: /example-0/i2c/i2c-mux@74: failed to match any schema with compatible: ['nxp,pca9548']
 
 doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1592369
+See https://patchwork.ozlabs.org/patch/1592439
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
