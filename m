@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3616C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E637C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240980AbiBOPhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:37:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46566 "EHLO
+        id S235017AbiBOPhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:37:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240826AbiBOPfr (ORCPT
+        with ESMTP id S240887AbiBOPfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:35:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E2C220C9;
-        Tue, 15 Feb 2022 07:31:27 -0800 (PST)
+        Tue, 15 Feb 2022 10:35:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E7446650;
+        Tue, 15 Feb 2022 07:31:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2B3B6167C;
-        Tue, 15 Feb 2022 15:31:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 949AEC36AE2;
-        Tue, 15 Feb 2022 15:31:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 458E1B81AEA;
+        Tue, 15 Feb 2022 15:31:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1DDCC340F4;
+        Tue, 15 Feb 2022 15:31:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939086;
-        bh=4lO6JmZ9MvQL5yGg6vWszWkyE8N1+IVs3euL5JN/hjo=;
+        s=k20201202; t=1644939088;
+        bh=lSyjfXtPqQO6yz2qHh+3wtUT8EE8nz1LI470o25f28g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OQZkRNyf/7sia0Hc340zSVZUVj9yfGqamme0kmMdBtgP6f7pywUYjNvWwS/nKn4yg
-         R/3M250hYwZAKNPKVwOn0cE4jSAOhO6s+BDSDtnG1h2vwPpce331z6WWbBN+J0UPag
-         sKzxEFsrq0IUIpWUjEPBwj0nwtx6HQAESC8iT7PI7cgJtQaGsKiEkiPXcu39QeuQYO
-         Di9bQafBQm7fYhooIg2eInPoi0/3Uq0ytnCKb4s06nV2o7RIgsHqiNRffrlJdKR6dn
-         TDNWgJTIcjBIQIsWWGhkEik8jW1djStZ8fI33wnpeSl5daOhTdpWp7kUzeayzy+kXv
-         48G6pXb7HsAtg==
+        b=ij7xzSegnKeZsRl1+BsiLZHriLdVLIosG4IZg6x97EIn7LUrJ0UsJHni2Qz/YhEa6
+         6oiToqFLwbLkpiVhb9GBYFjeX/GkMYN8/es9uNpnfAR/SdileLaMZAqQ6QstCTFNDt
+         LK34dleFWjP3ZtKsBMImeRlTtDs5H8wu0l5WM+cGBBt5txy0XehCwacFW0d31bkj/+
+         8DyTOfFGVw3VZlfh4wfdixnfCy8lM5GqjTMhWTkTSXBHNxYjzAeBVRlB6N1cAjH/2q
+         bUU8pJwH4BTshsC8dlMcWHXU/6q9Gnuvros6gUguq9Sf/hNm5bNdxEyuTkWQsYM+5q
+         4E5qnwAeUWCNw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
-        <zboszor@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>, linux-ide@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 2/5] ata: libata-core: Disable TRIM on M88V29
-Date:   Tue, 15 Feb 2022 10:31:19 -0500
-Message-Id: <20220215153122.581930-2-sashal@kernel.org>
+Cc:     Slark Xiao <slark_xiao@163.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 4/5] net: usb: qmi_wwan: Add support for Dell DW5829e
+Date:   Tue, 15 Feb 2022 10:31:21 -0500
+Message-Id: <20220215153122.581930-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215153122.581930-1-sashal@kernel.org>
 References: <20220215153122.581930-1-sashal@kernel.org>
@@ -53,38 +54,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zoltán Böszörményi <zboszor@gmail.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
+[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
 
-This device is a CF card, or possibly an SSD in CF form factor.
-It supports NCQ and high speed DMA.
+Dell DW5829e same as DW5821e except the CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+Also, DW5829e includes normal and eSIM type.
+Please see below test evidence:
 
-While it also advertises TRIM support, I/O errors are reported
-when the discard mount option fstrim is used. TRIM also fails
-when disabling NCQ and not just as an NCQ command.
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-TRIM must be disabled for this device.
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/libata-core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/usb/qmi_wwan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index 8ec71243cdcca..791374199e227 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -4603,6 +4603,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
- 
- 	/* devices that don't properly handle TRIM commands */
- 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
-+	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
- 
- 	/*
- 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 928219ab09128..e8d57954596d2 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1347,6 +1347,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
 -- 
 2.34.1
 
