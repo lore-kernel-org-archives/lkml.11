@@ -2,153 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13543C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D845C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241562AbiBOQ1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:27:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35876 "EHLO
+        id S241122AbiBOQ27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:28:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241558AbiBOQ1n (ORCPT
+        with ESMTP id S231887AbiBOQ26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:27:43 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE1A6C920;
-        Tue, 15 Feb 2022 08:27:30 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FGDE1F001119;
-        Tue, 15 Feb 2022 16:27:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=yuJ33/IS3C8JmgqYKYRI7WGKiRlXun9JPd2/bJ+93WA=;
- b=sOclZRJgd7NDzOsSb2uU840Kwry0jw4kCuTeWrNB5Rja9fkxfT64FGzeYCwe0RhJ5AKS
- ySmme8nLWrCxoVaavRnmZAvyrkH8BIIZ6QPr1vpF2KN3t2zKCJSCI0Gv5pJI5AqlzSvK
- boUuO9Ep8Od6htYVlFtEPAyi8Na79tE1k3svbEFDZHhtDlp+u11ovagr5coTOOOlnZkf
- HUDthA4wkeZ81x3TRFhzVEs4yjLhgJF0QgDkkfD8e4z7cDUYVNenb4dEidard4jMOURK
- hBEEmRQqhJ70xhwsRbPSQ/f5cbVAL1H+0Ji493n4Rk2io31tvRP3NnOjyGJB2LhFMOGf xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8d9fvjff-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 16:27:07 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21FGDTLm009902;
-        Tue, 15 Feb 2022 16:27:06 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8d9fvje5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 16:27:06 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21FGC1EO007679;
-        Tue, 15 Feb 2022 16:27:03 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma05fra.de.ibm.com with ESMTP id 3e64h9qrkj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 16:27:03 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21FGR1Tv24510740
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 16:27:01 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 61D3EAE045;
-        Tue, 15 Feb 2022 16:27:01 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EB164AE053;
-        Tue, 15 Feb 2022 16:27:00 +0000 (GMT)
-Received: from localhost (unknown [9.43.98.51])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 15 Feb 2022 16:27:00 +0000 (GMT)
-Date:   Tue, 15 Feb 2022 21:56:59 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH v2 09/13] powerpc/ftrace: Implement
- CONFIG_DYNAMIC_FTRACE_WITH_ARGS
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Jiri Kosina <jikos@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Petr Mladek <pmladek@suse.com>
-References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
-        <5831f711a778fcd6eb51eb5898f1faae4378b35b.1640017960.git.christophe.leroy@csgroup.eu>
-        <1644852011.qg7ud9elo2.naveen@linux.ibm.com>
-        <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
-        <875ypgo0f3.fsf@mpe.ellerman.id.au>
-        <1644930705.g64na2kgvd.naveen@linux.ibm.com>
-        <20220215093849.556d5444@gandalf.local.home>
-In-Reply-To: <20220215093849.556d5444@gandalf.local.home>
+        Tue, 15 Feb 2022 11:28:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F677090D;
+        Tue, 15 Feb 2022 08:28:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC3776181D;
+        Tue, 15 Feb 2022 16:28:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B90BC340EB;
+        Tue, 15 Feb 2022 16:28:45 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Jbh1/sC3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644942523;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=o3Ex2y2ELI7nEV0J59rjOlWmWPabW9O5Loaxgl/Yv3E=;
+        b=Jbh1/sC3FCtx0yDMtWLi5jsXL/5ERvlGM1sDJ1QrgCv+1RqkqedRZ7ySMvfJZ8JbKS5xFk
+        BUxirU90d/HSwivk+QPU2dcYF240boXb9SZwBzjGhid0uSRf0WeHcKvDY5qCGEQ4uIpL/X
+        FpxxfEEnUaJvO2QcB1dsgvYPHjRK37M=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fd01509d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 15 Feb 2022 16:28:42 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     miaoqing@codeaurora.org, "Jason Cooper" <jason@lakedaemon.net>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "Kalle Valo" <kvalo@kernel.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH] ath9k: use hw_random API instead of directly dumping into random.c
+Date:   Tue, 15 Feb 2022 17:28:12 +0100
+Message-Id: <20220215162812.195716-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
+References: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1644942378.byz0qymic3.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: jrSZjNs8gbiYltKWnkGMOceFtwUtrkOd
-X-Proofpoint-GUID: BBeV6KJeqsMu-XQ3oul3qIPY_5o_K6oZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-15_04,2022-02-14_04,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- phishscore=0 bulkscore=0 priorityscore=1501 mlxscore=0 lowpriorityscore=0
- suspectscore=0 adultscore=0 impostorscore=0 clxscore=1011 mlxlogscore=782
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202150095
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Steven Rostedt wrote:
-> On Tue, 15 Feb 2022 19:06:48 +0530
-> "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
->=20
->> As I understand it, the reason ftrace_get_regs() was introduced was to=20
->> be able to only return the pt_regs, if _all_ registers were saved into=20
->> it, which we don't do when coming in through ftrace_caller(). See the=20
->> x86 implementation (commit 02a474ca266a47 ("ftrace/x86: Allow for=20
->> arguments to be passed in to ftrace_regs by default"), which returns=20
->> pt_regs conditionally.
->=20
-> I can give you the history of ftrace_caller and ftrace_regs_caller.
->=20
-> ftrace_caller saved just enough as was denoted for gcc mcount trampolines=
-.
-> The new fentry which happens at the start of the function, whereas mcount
-> happens after the stack frame is set up, may change the rules on some
-> architectures.
->=20
-> As for ftrace_regs_caller, that was created for kprobes. As the majority =
-of
-> kprobes were added at the start of the function, it made sense to hook in=
-to
-> ftrace as the ftrace trampoline call is much faster than taking a
-> breakpoint interrupt. But to keep compatibility with breakpoint
-> interrupts, we needed to fill in all the registers, and make it act just
-> like a breakpoint interrupt.
->=20
-> I've been wanting to record function parameters, and because the ftrace
-> trampoline must at a minimum save the function parameters before calling
-> the ftrace callbacks, all the information for those parameters were being
-> saved but were never exposed to the ftrace callbacks. I created the the
-> DYNAMIC_FTRACE_WITH_ARGS to expose them. I first just used pt_regs with
-> just the parameters filled in, but that was criticized as it could be
-> confusing where the non filled in pt_regs might be used and thinking they
-> are legitimate. So I created ftrace_regs that would give you just the
-> function arguments (if DYNAMIC_FTRACE_WITH_ARGS is defined), or it will
-> give you a full pt_regs, if the caller came from the ftrace_regs_caller. =
-If
-> not, it will give you a NULL pointer.
->=20
-> The first user to use the args was live kernel patching, as they only nee=
-d
-> that and the return pointer.
+Hardware random number generators are supposed to use the hw_random
+framework. This commit turns ath9k's kthread-based design into a proper
+hw_random driver.
 
-Thanks, that helps.
+This compiles, but I have no hardware or other ability to determine
+whether it works. I'll leave further development up to the ath9k
+and hw_random maintainers.
 
-- Naveen
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/net/wireless/ath/ath9k/ath9k.h |  2 +-
+ drivers/net/wireless/ath/ath9k/rng.c   | 62 +++++++++-----------------
+ 2 files changed, 23 insertions(+), 41 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h b/drivers/net/wireless/ath/ath9k/ath9k.h
+index ef6f5ea06c1f..142f472903dc 100644
+--- a/drivers/net/wireless/ath/ath9k/ath9k.h
++++ b/drivers/net/wireless/ath/ath9k/ath9k.h
+@@ -1072,7 +1072,7 @@ struct ath_softc {
+ 
+ #ifdef CONFIG_ATH9K_HWRNG
+ 	u32 rng_last;
+-	struct task_struct *rng_task;
++	struct hwrng rng_ops;
+ #endif
+ };
+ 
+diff --git a/drivers/net/wireless/ath/ath9k/rng.c b/drivers/net/wireless/ath/ath9k/rng.c
+index aae2bd3cac69..369b222908ba 100644
+--- a/drivers/net/wireless/ath/ath9k/rng.c
++++ b/drivers/net/wireless/ath/ath9k/rng.c
+@@ -22,9 +22,6 @@
+ #include "hw.h"
+ #include "ar9003_phy.h"
+ 
+-#define ATH9K_RNG_BUF_SIZE	320
+-#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
+-
+ static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
+ 
+ static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_size)
+@@ -72,61 +69,46 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
+ 	return delay;
+ }
+ 
+-static int ath9k_rng_kthread(void *data)
++static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
+ {
++	struct ath_softc *sc = container_of(rng, struct ath_softc, rng_ops);
+ 	int bytes_read;
+-	struct ath_softc *sc = data;
+-	u32 *rng_buf;
+-	u32 delay, fail_stats = 0;
+-
+-	rng_buf = kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL);
+-	if (!rng_buf)
+-		goto out;
+-
+-	while (!kthread_should_stop()) {
+-		bytes_read = ath9k_rng_data_read(sc, rng_buf,
+-						 ATH9K_RNG_BUF_SIZE);
+-		if (unlikely(!bytes_read)) {
+-			delay = ath9k_rng_delay_get(++fail_stats);
+-			wait_event_interruptible_timeout(rng_queue,
+-							 kthread_should_stop(),
+-							 msecs_to_jiffies(delay));
+-			continue;
+-		}
+-
+-		fail_stats = 0;
+-
+-		/* sleep until entropy bits under write_wakeup_threshold */
+-		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
+-					   ATH9K_RNG_ENTROPY(bytes_read));
+-	}
++	u32 fail_stats = 0;
+ 
+-	kfree(rng_buf);
+-out:
+-	sc->rng_task = NULL;
++retry:
++	bytes_read = ath9k_rng_data_read(sc, buf, max);
++	if (unlikely(!bytes_read) && wait) {
++		msleep(ath9k_rng_delay_get(++fail_stats));
++		goto retry;
++	}
+ 
+-	return 0;
++	return bytes_read;
+ }
+ 
+ void ath9k_rng_start(struct ath_softc *sc)
+ {
+ 	struct ath_hw *ah = sc->sc_ah;
++	int ret;
+ 
+-	if (sc->rng_task)
++	if (sc->rng_ops.read)
+ 		return;
+ 
+ 	if (!AR_SREV_9300_20_OR_LATER(ah))
+ 		return;
+ 
+-	sc->rng_task = kthread_run(ath9k_rng_kthread, sc, "ath9k-hwrng");
+-	if (IS_ERR(sc->rng_task))
+-		sc->rng_task = NULL;
++	sc->rng_ops.name = "ath9k";
++	sc->rng_ops.read = ath9k_rng_read;
++	sc->rng_ops.quality = 320;
++
++	ret = devm_hwrng_register(sc->dev, &sc->rng_ops);
++	if (ret)
++		sc->rng_ops.read = NULL;
+ }
+ 
+ void ath9k_rng_stop(struct ath_softc *sc)
+ {
+-	if (sc->rng_task) {
+-		kthread_stop(sc->rng_task);
+-		sc->rng_task = NULL;
++	if (sc->rng_ops.read) {
++		devm_hwrng_unregister(sc->dev, &sc->rng_ops);
++		sc->rng_ops.read = NULL;
+ 	}
+ }
+-- 
+2.35.0
 
