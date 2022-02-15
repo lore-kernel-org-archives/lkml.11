@@ -2,78 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE33C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E04EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234215AbiBOFse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:48:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36764 "EHLO
+        id S234219AbiBOFtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:49:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232633AbiBOFsb (ORCPT
+        with ESMTP id S231481AbiBOFtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:48:31 -0500
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7DB92A71A;
-        Mon, 14 Feb 2022 21:48:21 -0800 (PST)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 815B61A185A;
-        Tue, 15 Feb 2022 06:48:20 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 49CF91A22DA;
-        Tue, 15 Feb 2022 06:48:20 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id CA843183AD07;
-        Tue, 15 Feb 2022 13:48:18 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, shawnguo@kernel.org
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v3 2/2] PCI: imx6: Enable i.MX6QP PCIe power management support
-Date:   Tue, 15 Feb 2022 13:16:32 +0800
-Message-Id: <1644902192-12957-2-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644902192-12957-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1644902192-12957-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 15 Feb 2022 00:49:00 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904B83CA55;
+        Mon, 14 Feb 2022 21:48:50 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id o12so16438413qke.5;
+        Mon, 14 Feb 2022 21:48:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bieAi62cXnjDaF9+psLIoa3qnNdCxk47hpRhQbwd4wU=;
+        b=IcAfk0jc1uGalEZyNKcu/DnhhORNIOmxpzX7ZDMzgsIdfu1L91dKVfT0TFxsmYkPwd
+         mf2VfdVvDtCJNrcolCauEeoaH8aavJnzW19a3oD31qX0GpWYzKUBKgO2PyVgjY/95y4A
+         rLKsi0/g2XXR1Nh6Z/2VojL6qmfmS3iNzZw84=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bieAi62cXnjDaF9+psLIoa3qnNdCxk47hpRhQbwd4wU=;
+        b=yBF2uIwPX58nMD44SoUQbnAN5/N/V1RQEJ34sf6VyrNutHBu6+l6Yrd3v/Kxu4myRk
+         C9vGEQHxgX5l/88ILeoYPrGmOUWV2U8JTod9gIXfAVU3r4ahbB+tajViW9Et6GROe8xO
+         ZRjVe9RcZP3MyGfm40AVSsX2HDPJAlntGWqOIT3ndyZ0EmZ2ORoYCO13yLqkXbp3dgbi
+         RkSgR/GTI1zHwzpmyNERHC30+TQaHuSl2Q9Wa7PsNFtEJlE+DcTaex+AaO11ysQVVIZc
+         I3VddzHB9XZCDL3W9heFX0er3s0MI8SsJgCELBvEjdh9u/xueuE9TAvECD8s+vBEwW3P
+         rL+g==
+X-Gm-Message-State: AOAM531RutdDLMPD1x4GJvjUaiCYW6yXIjPfPP6AWP7uJdxWKekPv+6V
+        rgfu3+tZR+LGBXDNjUOJsQJO0Y3VR4IqYFWBp7eYcvJDcGI=
+X-Google-Smtp-Source: ABdhPJy0ddCs9WvjiZC4lM/FmWkHalSgAFzYH2nlatPRqwypfGD87kBmI2t4pz4vDpeqbPGkslg0MS8a2lVsbnJXbNs=
+X-Received: by 2002:a05:620a:44c7:: with SMTP id y7mr1245865qkp.347.1644904129664;
+ Mon, 14 Feb 2022 21:48:49 -0800 (PST)
+MIME-Version: 1.0
+References: <20220214042538.12132-1-potin.lai@quantatw.com> <20220214042538.12132-6-potin.lai@quantatw.com>
+In-Reply-To: <20220214042538.12132-6-potin.lai@quantatw.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Tue, 15 Feb 2022 05:48:37 +0000
+Message-ID: <CACPK8Xf5W4h=dcBg_Pe1zjXUK73h8YH1tfL4RvoxV3DVsCL90g@mail.gmail.com>
+Subject: Re: [PATCH v2 05/10] arch: arm: dts: bletchley: switch to spi-gpio
+ for spi2
+To:     Potin Lai <potin.lai@quantatw.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Andrew Jeffery <andrew@aj.id.au>,
+        Patrick Williams <patrick@stwcx.xyz>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i.MX6QP PCIe supports the reset logic, thus it can reset itself to the
-initialized state when exit from L2 or L3 states.
+On Mon, 14 Feb 2022 at 04:26, Potin Lai <potin.lai@quantatw.com> wrote:
+>
+> Switch to spi-gpio driver to avoid unstable signal issue with EVT HW
+>
+> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
+> ---
+>  arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
+> index b01f1e7adb81..3c54e4a892c9 100644
+> --- a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
+> +++ b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
+> @@ -227,8 +227,16 @@
+>
+>  &spi2 {
+>         status = "okay";
+> -       pinctrl-names = "default";
+> -       pinctrl-0 = <&pinctrl_spi2_default>;
+> +
+> +       compatible = "spi-gpio";
 
-Enable the i.MX6QP PCIe suspend/resume operations support.
+This is a bit strange. You're effectively rewriting the node with a new one.
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
----
- drivers/pci/controller/dwc/pci-imx6.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+It would make more sense to leave spi2 disabled (the default), and add
+a new node:
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 784801f2f9e6..62262483470a 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -995,6 +995,7 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
- 	/* Others poke directly at IOMUXC registers */
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX6SX:
-+	case IMX6QP:
- 		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
- 				IMX6SX_GPR12_PCIE_PM_TURN_OFF,
- 				IMX6SX_GPR12_PCIE_PM_TURN_OFF);
-@@ -1307,7 +1308,8 @@ static const struct imx6_pcie_drvdata drvdata[] = {
- 	[IMX6QP] = {
- 		.variant = IMX6QP,
- 		.flags = IMX6_PCIE_FLAG_IMX6_PHY |
--			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE,
-+			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE |
-+			 IMX6_PCIE_FLAG_SUPPORTS_SUSPEND,
- 		.dbi_length = 0x200,
- 	},
- 	[IMX7D] = {
--- 
-2.25.1
+ spi {
+   compatible = "spi-gpio";
+   #address-cells = <1>;
+   #size-cells = <0>;
+   gpio-sck = <&gpio0 ASPEED_GPIO(X, 3) GPIO_ACTIVE_HIGH>;
+   gpio-mosi = <&gpio0 ASPEED_GPIO(X, 4) GPIO_ACTIVE_HIGH>;
+   gpio-miso = <&gpio0 ASPEED_GPIO(X, 5) GPIO_ACTIVE_HIGH>;
+   num-chipselects = <1>;
+  cs-gpios = <&gpio0 ASPEED_GPIO(X, 0) GPIO_ACTIVE_LOW>;
 
+   flash@0 {
+       status = "okay";
+
+etc.
+
+Your new spi node doesn't need the pinctrl or clock properties.
+
+> +       #address-cells = <1>;
+> +       #size-cells = <0>;
+> +
+> +       gpio-sck = <&gpio0 ASPEED_GPIO(X, 3) GPIO_ACTIVE_HIGH>;
+> +       gpio-mosi = <&gpio0 ASPEED_GPIO(X, 4) GPIO_ACTIVE_HIGH>;
+> +       gpio-miso = <&gpio0 ASPEED_GPIO(X, 5) GPIO_ACTIVE_HIGH>;
+> +       num-chipselects = <1>;
+> +       cs-gpios = <&gpio0 ASPEED_GPIO(X, 0) GPIO_ACTIVE_LOW>;
+>
+>         flash@0 {
+>                 status = "okay";
+> --
+> 2.17.1
+>
