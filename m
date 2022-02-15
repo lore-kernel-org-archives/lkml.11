@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D162DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1033C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241040AbiBOPhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:37:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41098 "EHLO
+        id S240995AbiBOPf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:35:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240651AbiBOPf2 (ORCPT
+        with ESMTP id S240678AbiBOPf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:35:28 -0500
+        Tue, 15 Feb 2022 10:35:26 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58646C1C9D;
-        Tue, 15 Feb 2022 07:31:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F25C1151;
+        Tue, 15 Feb 2022 07:30:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADDA9B81A9A;
-        Tue, 15 Feb 2022 15:31:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F903C340F2;
-        Tue, 15 Feb 2022 15:31:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4EC1B81AEF;
+        Tue, 15 Feb 2022 15:30:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DE17C340ED;
+        Tue, 15 Feb 2022 15:30:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939072;
-        bh=OjeT7xbUg1MBVFOFUc1x+gta//Ub/1+0ZP9aLZZxhhc=;
+        s=k20201202; t=1644939054;
+        bh=DzVLqvBpeGZOyQejrJmUmTgh2b9Y3K1cHnXWhJYz4e8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BmtEPydHNyILagPR/KQaNExbyP6KVF77vYnApXBAYpy+QjqqEpKOWLpgOAbu2X2sy
-         Mbd4r7ETqSDAjZz9N4MM0oFLacv/OEw4JZMstoTu6P0jrKbFpBw1762XviV5HAmoKB
-         OAU12d1bC4Qp8MxQR5A5kyjE6So6i3/tQ9ZVBsFyPyyfnQ9mDEW7Va3zrv/Ecyyfsg
-         hSapRfSXH18u4Y2HWSt6lSdBRADjQSDPGYzKagB4lVYHnSAO59yQk7BQbYYtwyioxl
-         IN6h2KsczxK5LKZ7GB2z8NsDA6qgu2WRP4WBukaILLHU3g3GDTZPbe/89yhUVcALXt
-         DEYZ8tOzBKzAA==
+        b=At8t0ZUy0zojtQ8nvFFeunMz8fJHgEaJnpS84LFG9fc0Mdat3AHN4+EFTQpQ/6l6l
+         NEupbZX3HetLXoEL/y+5iNTGl6vazh8jVptSoyXeW4AKc4og+TS0JxqX99AlMeGWyH
+         1Opk0rdGbR2lDs/kLy/goGVg/XX7Zoe7jzRkS8HEiNtES8sHrAevSlzBJJgk/cHxIq
+         xyszg+LM6Cd81scJ+Si9rNUn1reP8jiN+hnrVh7sCbGRbyKF7+TDV9V+D94hcMpnPG
+         VKCPTlRNRTir+gPg2snkIsPh5trWK4LD/hgNv5vmKPB4m3y7d/NqgxA2Z+kzs9Appp
+         0I/TvkpQ6MQTw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Vivek Thrivikraman <vivek.thrivikraman@est.tech>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 04/11] netfilter: conntrack: don't refresh sctp entries in closed state
-Date:   Tue, 15 Feb 2022 10:30:57 -0500
-Message-Id: <20220215153104.581786-4-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        "Ewan D . Milne" <emilne@redhat.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 10/17] scsi: lpfc: Remove NVMe support if kernel has NVME_FC disabled
+Date:   Tue, 15 Feb 2022 10:30:30 -0500
+Message-Id: <20220215153037.581579-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215153104.581786-1-sashal@kernel.org>
-References: <20220215153104.581786-1-sashal@kernel.org>
+In-Reply-To: <20220215153037.581579-1-sashal@kernel.org>
+References: <20220215153037.581579-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,53 +54,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 77b337196a9d87f3d6bb9b07c0436ecafbffda1e ]
+[ Upstream commit c80b27cfd93ba9f5161383f798414609e84729f3 ]
 
-Vivek Thrivikraman reported:
- An SCTP server application which is accessed continuously by client
- application.
- When the session disconnects the client retries to establish a connection.
- After restart of SCTP server application the session is not established
- because of stale conntrack entry with connection state CLOSED as below.
+The driver is initiating NVMe PRLIs to determine device NVMe support.  This
+should not be occurring if CONFIG_NVME_FC support is disabled.
 
- (removing this entry manually established new connection):
+Correct this by changing the default value for FC4 support. Currently it
+defaults to FCP and NVMe. With change, when NVME_FC support is not enabled
+in the kernel, the default value is just FCP.
 
- sctp 9 CLOSED src=10.141.189.233 [..]  [ASSURED]
-
-Just skip timeout update of closed entries, we don't want them to
-stay around forever.
-
-Reported-and-tested-by: Vivek Thrivikraman <vivek.thrivikraman@est.tech>
-Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1579
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Link: https://lore.kernel.org/r/20220207180516.73052-1-jsmart2021@gmail.com
+Reviewed-by: Ewan D. Milne <emilne@redhat.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_proto_sctp.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/scsi/lpfc/lpfc.h      | 13 ++++++++++---
+ drivers/scsi/lpfc/lpfc_attr.c |  4 ++--
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
-index a937d4f75613f..8cb62805fd684 100644
---- a/net/netfilter/nf_conntrack_proto_sctp.c
-+++ b/net/netfilter/nf_conntrack_proto_sctp.c
-@@ -394,6 +394,15 @@ static int sctp_packet(struct nf_conn *ct,
- 			pr_debug("Setting vtag %x for dir %d\n",
- 				 ih->init_tag, !dir);
- 			ct->proto.sctp.vtag[!dir] = ih->init_tag;
-+
-+			/* don't renew timeout on init retransmit so
-+			 * port reuse by client or NAT middlebox cannot
-+			 * keep entry alive indefinitely (incl. nat info).
-+			 */
-+			if (new_state == SCTP_CONNTRACK_CLOSED &&
-+			    old_state == SCTP_CONNTRACK_CLOSED &&
-+			    nf_ct_is_confirmed(ct))
-+				ignore = true;
- 		}
+diff --git a/drivers/scsi/lpfc/lpfc.h b/drivers/scsi/lpfc/lpfc.h
+index 0b69f4f713778..1bf7a4152b34b 100644
+--- a/drivers/scsi/lpfc/lpfc.h
++++ b/drivers/scsi/lpfc/lpfc.h
+@@ -870,6 +870,16 @@ struct lpfc_hba {
+ 	uint32_t cfg_hostmem_hgp;
+ 	uint32_t cfg_log_verbose;
+ 	uint32_t cfg_enable_fc4_type;
++#define LPFC_ENABLE_FCP  1
++#define LPFC_ENABLE_NVME 2
++#define LPFC_ENABLE_BOTH 3
++#if (IS_ENABLED(CONFIG_NVME_FC))
++#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
++#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
++#else
++#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_FCP
++#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_FCP
++#endif
+ 	uint32_t cfg_aer_support;
+ 	uint32_t cfg_sriov_nr_virtfn;
+ 	uint32_t cfg_request_firmware_upgrade;
+@@ -892,9 +902,6 @@ struct lpfc_hba {
+ 	uint32_t cfg_ras_fwlog_func;
+ 	uint32_t cfg_enable_bbcr;	/* Enable BB Credit Recovery */
+ 	uint32_t cfg_enable_dpp;	/* Enable Direct Packet Push */
+-#define LPFC_ENABLE_FCP  1
+-#define LPFC_ENABLE_NVME 2
+-#define LPFC_ENABLE_BOTH 3
+ 	uint32_t cfg_enable_pbde;
+ 	struct nvmet_fc_target_port *targetport;
+ 	lpfc_vpd_t vpd;		/* vital product data */
+diff --git a/drivers/scsi/lpfc/lpfc_attr.c b/drivers/scsi/lpfc/lpfc_attr.c
+index 1c541a600149b..d034fe78bf93e 100644
+--- a/drivers/scsi/lpfc/lpfc_attr.c
++++ b/drivers/scsi/lpfc/lpfc_attr.c
+@@ -3839,8 +3839,8 @@ LPFC_ATTR_R(nvmet_mrq_post,
+  *                    3 - register both FCP and NVME
+  * Supported values are [1,3]. Default value is 3
+  */
+-LPFC_ATTR_R(enable_fc4_type, LPFC_ENABLE_BOTH,
+-	    LPFC_ENABLE_FCP, LPFC_ENABLE_BOTH,
++LPFC_ATTR_R(enable_fc4_type, LPFC_DEF_ENBL_FC4_TYPE,
++	    LPFC_ENABLE_FCP, LPFC_MAX_ENBL_FC4_TYPE,
+ 	    "Enable FC4 Protocol support - FCP / NVME");
  
- 		ct->proto.sctp.state = new_state;
+ /*
 -- 
 2.34.1
 
