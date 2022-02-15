@@ -2,271 +2,485 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FD8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241373AbiBOQB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:01:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56726 "EHLO
+        id S241204AbiBOQBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:01:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241320AbiBOQA4 (ORCPT
+        with ESMTP id S241323AbiBOQB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:00:56 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A6ECFB80
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:00:35 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id s10so19375975wrb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:00:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kynesim-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:references:in-reply-to
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=ev89lW43hp3qbktlsuNQsUosdM2OcOnj9zBVHNAOnL8=;
-        b=MzhjypX5VGUPPfW7ufDzJ8pOoKfavQjYoYSJYclgytqFqBZXKAxG/msV+MgbB55DP5
-         jYgdlvnq14freS8c1DXIVKTwo4g3MgEAMfJamOTRNvFOfeNTbM+HFp7pbT6Rg3MkaSsv
-         2W1i9eXP/Pqq5DdvtAIxaKRpeDKINU1a6ydfjrucTHbKhKNZs6Z3UBJs12sy8snQSROw
-         n+f2mC8o9/2bgRRyaVwia0sH4QP7EjM0R91QflOf1mCsWwroGs8zNw1amBlMvOIItEgh
-         q0070k1DGHqGBfi59rC1aLgL30M3xE7jnZLs+N+jscdMKK/83d5YG6WsZQxb0IH/70Wr
-         my3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:references
-         :in-reply-to:user-agent:mime-version:content-transfer-encoding;
-        bh=ev89lW43hp3qbktlsuNQsUosdM2OcOnj9zBVHNAOnL8=;
-        b=Pdtds2wWIsXBO5amFfSOFU40/Q/Cq5LwDD0b14WSxQGIP7tZ8Ud3dMQseG23aZ953m
-         vfUeTMSGe/BHwry3d1zmL06hU0bbLW/gCrHpzLJ8vSe0jBi5mS157yWtClSMAMwoVBNJ
-         O8CEkL3e8/ZmFmDy4K6pbEvtwcyCZQZXPtyeku0CFEnlsqHEO+4+jVuSja859CuGM4wR
-         top++7M5kUdVqvTuigeFhg84+AYY94cdbbpPAEGhdYCHvnIBPZNpZNlHT5O/sfql0jfV
-         OVqa5J6pD18qt4QV8YCmuWI2qVubZoMr4TKEb0Fa2xIxgy2xQPjGbulT66LTsIxsq/KL
-         Jn1A==
-X-Gm-Message-State: AOAM531DwxsBINV/ALIEwpzi56BXzPHjD/WIFeVxzpxRbZ31qZNGIBr9
-        dI5SQk9pUeJGAj3bvl8pC2EswQ==
-X-Google-Smtp-Source: ABdhPJyG0esH7uOaAhVJZcD69tfS19xit7vvGYjc7dcKtgtWanE0SsRjK2d4ZYNkwauxdqt+v2WpYw==
-X-Received: by 2002:a5d:6488:: with SMTP id o8mr3708827wri.24.1644940834309;
-        Tue, 15 Feb 2022 08:00:34 -0800 (PST)
-Received: from CTHALPA.outer.uphall.net (cpc1-cmbg20-2-0-cust759.5-4.cable.virginm.net. [86.21.218.248])
-        by smtp.gmail.com with ESMTPSA id l9sm15483830wrt.29.2022.02.15.08.00.33
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Tue, 15 Feb 2022 08:00:33 -0800 (PST)
-From:   John Cox <jc@kynesim.co.uk>
-To:     Nicolas Dufresne <nicolas@ndufresne.ca>
-Cc:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, hverkuil-cisco@xs4all.nl,
-        jonas@kwiboo.se, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com, knaerzche@gmail.com
-Subject: Re: [RFC v2 6/8] media: uapi: Remove bit_size field from v4l2_ctrl_hevc_slice_params
-Date:   Tue, 15 Feb 2022 16:00:33 +0000
-Message-ID: <48in0h5qq4ea87gcnmtkpsfqdk1r4tipid@4ax.com>
-References: <20220215110103.241297-1-benjamin.gaignard@collabora.com> <20220215110103.241297-7-benjamin.gaignard@collabora.com> <t2dn0hddgq22nt6a7sr6kl44irm3c2lj1j@4ax.com> <99062279-a3c4-96f7-4c4b-f39e7f812e68@collabora.com> <mqen0ht146rbtukbd47tbtbiqvsmfta8oa@4ax.com> <9a78eb88f8690d43d34d8140420dae3f5f043637.camel@ndufresne.ca>
-In-Reply-To: <9a78eb88f8690d43d34d8140420dae3f5f043637.camel@ndufresne.ca>
-User-Agent: ForteAgent/8.00.32.1272
+        Tue, 15 Feb 2022 11:01:29 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3F7CC53F
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 08:00:57 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id AF4B8210F2;
+        Tue, 15 Feb 2022 16:00:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644940856; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iQ7xvJZmH+PZ8vpmy+REEX8h833Un6VQf151PL8I2Wc=;
+        b=S06WJWY65cDbshAsrjwK4ogyrbWz9HV3vtcKPTlKNzlWyoLqCExbvlVDd0pLLEz42Z0VJg
+        7wZis7B0b9vzHSw/G5czIafl9q20evkz0ms804BYlQTCQxa81g0EZgfPaPE5vrUhoU0Zp2
+        T7syqazuL66CG+wL16cG9xrAMlQ7iAY=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id AE16EA3B85;
+        Tue, 15 Feb 2022 16:00:55 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 17:00:52 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, ccross@google.com,
+        sumit.semwal@linaro.org, dave.hansen@intel.com,
+        keescook@chromium.org, willy@infradead.org,
+        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
+        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
+        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
+        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com,
+        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+Subject: Re: [PATCH v3 1/1] mm: fix use-after-free when anon vma name is used
+ after vma is freed
+Message-ID: <YgvONKdZ2T0PB2/0@dhcp22.suse.cz>
+References: <20220211013032.623763-1-surenb@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211013032.623763-1-surenb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022 10:28:55 -0500, you wrote:
+On Thu 10-02-22 17:30:32, Suren Baghdasaryan wrote:
+[...]
+> +struct anon_vma_name *vma_anon_name_get(struct vm_area_struct *vma)
+> +{
+> +	if (!has_vma_anon_name(vma))
+> +		return NULL;
+> +
+> +	mmap_assert_locked(vma->vm_mm);
+> +
+> +	kref_get(&vma->anon_name->kref);
+> +	return vma->anon_name;
+> +}
+> +
+> +void vma_anon_name_put(struct anon_vma_name *anon_name)
+> +{
+> +	if (anon_name)
+> +		kref_put(&anon_name->kref, vma_anon_name_free);
+> +}
+> +
+>  void dup_vma_anon_name(struct vm_area_struct *orig_vma,
+>  		       struct vm_area_struct *new_vma)
+>  {
+> @@ -126,33 +146,34 @@ void free_vma_anon_name(struct vm_area_struct *vma)
+>  }
+>  
+>  /* mmap_lock should be write-locked */
+> -static int replace_vma_anon_name(struct vm_area_struct *vma, const char *name)
+> +static int replace_vma_anon_name(struct vm_area_struct *vma,
+> +				 struct anon_vma_name *anon_name)
+>  {
+> -	const char *anon_name;
+> +	const char *orig_name;
+>  
+> -	if (!name) {
+> +	if (!anon_name) {
+>  		free_vma_anon_name(vma);
+>  		return 0;
+>  	}
+>  
+> -	anon_name = vma_anon_name(vma);
+> -	if (anon_name) {
+> +	orig_name = vma_anon_name(vma);
+> +	if (orig_name) {
+>  		/* Same name, nothing to do here */
+> -		if (!strcmp(name, anon_name))
+> +		if (!strcmp(anon_name->name, orig_name))
+>  			return 0;
+>  
+>  		free_vma_anon_name(vma);
+>  	}
+> -	vma->anon_name = anon_vma_name_alloc(name);
+> -	if (!vma->anon_name)
+> -		return -ENOMEM;
+> +	kref_get(&anon_name->kref);
+> +	vma->anon_name = anon_name;
 
->Le mardi 15 f=C3=A9vrier 2022 =C3=A0 14:50 +0000, John Cox a =
-=C3=A9crit=C2=A0:
->> On Tue, 15 Feb 2022 15:35:12 +0100, you wrote:
->>=20
->> >=20
->> > Le 15/02/2022 =C3=A0 15:17, John Cox a =C3=A9crit=C2=A0:
->> > > Hi
->> > >=20
->> > > > The bit size of the slice could be deduced from the buffer =
-payload
->> > > > so remove bit_size field to avoid duplicated the information.
->> > > I think this is a bad idea. In the future we are (I hope) going to=
- want
->> > > to have an array (variable) of slice headers all referring to the =
-same
->> > > bit buffer.  When we do that we will need this field.
->> >=20
->> > I wonder if that could be considering like another decode mode and =
-so
->> > use an other control ?
->>=20
->> I, personally, would be in favour of making the slice header control a
->> variable array just as it is.  If userland can't cope with multiple
->> entries then just send them one at a time and the code looks exactly
->> like it does at the moment and if the driver can't then set max array
->> entries to 1.
->>=20
->> Having implemented this in rpi port of ffmpeg and the RPi V4L2 driver =
-I
->> can say with experience that the code and effort overhead is very low.
->>=20
->> Either way having a multiple slice header control in the UAPI is
->> important for efficiency.
->
->Just to clarify the idea, we would have a single slice controls, always =
-dynamic:
->
->1. For sliced based decoder
->
->The dynamic array slice control is implemented by the driver and its =
-size must
->be 1.
+I really have to say that this is still confusing and potentially error
+prone. I haven't really dived deeply in the early break out from strcmp
+because I find your mixing strings and their referenced pointers rather
+confusing in principle. I still do not see why you are avoiding a
+relatively straighforward pattern. 
 
-Yes
+All you need is a shared pointer for your string and share
+it as much as possible, no? Sharing means that you elevate the reference
+counter whenever you assign to a vma and unshare when you are replacing
+the shared pointer by a different one or when vma is freed. In other
+words something like the following (pls note I have only compile tested
+it and it very likely needs tweaks here and there I just wanted to point
+the idea):
 
->2. For frame based decoder that don't care for slices
->
->The dynamic array slice controls is not implement. Userland detects that=
- at
->runtime, similar to the VP9 compressed headers.
-
-If the driver parses all the slice header then that seems plausible
-
->3. For frame based decoders that needs slices (or driver that supports =
-offset
->and can gain performance with such mode)
->
->The dynamic array slice controls is implemented, and should contain all =
-the
->slices found in the OUTPUT buffer.
->
->So the reason for this bit_size (not sure why its bits though, perhaps =
-someone
->can educate me ?)
-
-RPi doesn't need bits and would be happy with bytes however
-slice_segment data isn't byte aligned at the end so its possible that
-there might be decoders out there that want an accurate length for that.
-
-> Would be to let the driver offset inside the the single
->OUTPUT/bitstream buffer in case this is not automatically found by the =
-driver
->(or that no start-code is needed). Is that last bit correct ? If so, =
-should we
->change it to an offset rather then a size ? Shall we allow using =
-offesets inside
->larger buffer (e.g. to avoid some memory copies) for the Sliced Base =
-cases ?
-
-I use (in the current structure) data_bit_offset to find the start of
-each slice's slice_segment_data within the OUTPUT buffer and bit_size to
-find the end.  RPi doesn't / can't parse the slice_header and so wants
-all of that.  Decoders that do parse the header might plausably want
-header offsets too and it would facilitate zero copy of the bit buffer.
-
-=20
->> Regards
->>=20
->> John Cox
->>=20
->> > > > Signed-off-by: Benjamin Gaignard =
-<benjamin.gaignard@collabora.com>
->> > > > ---
->> > > > .../userspace-api/media/v4l/ext-ctrls-codec.rst       |  3 ---
->> > > > drivers/staging/media/sunxi/cedrus/cedrus_h265.c      | 11 =
-++++-------
->> > > > include/uapi/linux/v4l2-controls.h                    |  3 +--
->> > > > 3 files changed, 5 insertions(+), 12 deletions(-)
->> > > >=20
->> > > > diff --git =
-a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst =
-b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->> > > > index 3296ac3b9fca..c3ae97657fa7 100644
->> > > > --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->> > > > +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->> > > > @@ -2965,9 +2965,6 @@ enum =
-v4l2_mpeg_video_hevc_size_of_length_field -
->> > > >      :stub-columns: 0
->> > > >      :widths:       1 1 2
->> > > >=20
->> > > > -    * - __u32
->> > > > -      - ``bit_size``
->> > > > -      - Size (in bits) of the current slice data.
->> > > >      * - __u32
->> > > >        - ``data_bit_offset``
->> > > >        - Offset (in bits) to the video data in the current slice=
- data.
->> > > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c =
-b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
->> > > > index 8ab2d9c6f048..db8c7475eeb8 100644
->> > > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
->> > > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
->> > > > @@ -312,8 +312,8 @@ static void cedrus_h265_setup(struct =
-cedrus_ctx *ctx,
->> > > > 	const struct v4l2_hevc_pred_weight_table *pred_weight_table;
->> > > > 	unsigned int width_in_ctb_luma, ctb_size_luma;
->> > > > 	unsigned int log2_max_luma_coding_block_size;
->> > > > +	size_t slice_bytes;
->> > > > 	dma_addr_t src_buf_addr;
->> > > > -	dma_addr_t src_buf_end_addr;
->> > > > 	u32 chroma_log2_weight_denom;
->> > > > 	u32 output_pic_list_index;
->> > > > 	u32 pic_order_cnt[2];
->> > > > @@ -370,8 +370,8 @@ static void cedrus_h265_setup(struct =
-cedrus_ctx *ctx,
->> > > >=20
->> > > > 	cedrus_write(dev, VE_DEC_H265_BITS_OFFSET, 0);
->> > > >=20
->> > > > -	reg =3D slice_params->bit_size;
->> > > > -	cedrus_write(dev, VE_DEC_H265_BITS_LEN, reg);
->> > > > +	slice_bytes =3D vb2_get_plane_payload(&run->src->vb2_buf, 0);
->> > > > +	cedrus_write(dev, VE_DEC_H265_BITS_LEN, slice_bytes);
->> > > I think one of these must be wrong. bit_size is in bits,
->> > > vb2_get_plane_payload is in bytes?
->> >=20
->> > You are right it should be vb2_get_plane_payload() * 8 to get the =
-size in bits.
->> >=20
->> > I will change that in v3.
->> >=20
->> > >=20
->> > > Regards
->> > >=20
->> > > John Cox
->> > >  =20
->> > > > 	/* Source beginning and end addresses. */
->> > > >=20
->> > > > @@ -384,10 +384,7 @@ static void cedrus_h265_setup(struct =
-cedrus_ctx *ctx,
->> > > >=20
->> > > > 	cedrus_write(dev, VE_DEC_H265_BITS_ADDR, reg);
->> > > >=20
->> > > > -	src_buf_end_addr =3D src_buf_addr +
->> > > > -			   DIV_ROUND_UP(slice_params->bit_size, 8);
->> > > > -
->> > > > -	reg =3D VE_DEC_H265_BITS_END_ADDR_BASE(src_buf_end_addr);
->> > > > +	reg =3D VE_DEC_H265_BITS_END_ADDR_BASE(src_buf_addr + =
-slice_bytes);
->> > > > 	cedrus_write(dev, VE_DEC_H265_BITS_END_ADDR, reg);
->> > > >=20
->> > > > 	/* Coding tree block address */
->> > > > diff --git a/include/uapi/linux/v4l2-controls.h =
-b/include/uapi/linux/v4l2-controls.h
->> > > > index b1a3dc05f02f..27f5d272dc43 100644
->> > > > --- a/include/uapi/linux/v4l2-controls.h
->> > > > +++ b/include/uapi/linux/v4l2-controls.h
->> > > > @@ -2457,7 +2457,6 @@ struct v4l2_hevc_pred_weight_table {
->> > > > #define V4L2_HEVC_SLICE_PARAMS_FLAG_DEPENDENT_SLICE_SEGMENT	=
-(1ULL << 9)
->> > > >=20
->> > > > struct v4l2_ctrl_hevc_slice_params {
->> > > > -	__u32	bit_size;
->> > > > 	__u32	data_bit_offset;
->> > > >=20
->> > > > 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
->> > > > @@ -2484,7 +2483,7 @@ struct v4l2_ctrl_hevc_slice_params {
->> > > > 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture timing SEI =
-message */
->> > > > 	__u8	pic_struct;
->> > > >=20
->> > > > -	__u8	reserved;
->> > > > +	__u8	reserved[5];
->> > > >=20
->> > > > 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: General slice segment =
-header */
->> > > > 	__u32	slice_segment_addr;
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 213cc569b192..689971696864 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2626,7 +2626,7 @@ static inline int vma_adjust(struct vm_area_struct *vma, unsigned long start,
+ extern struct vm_area_struct *vma_merge(struct mm_struct *,
+ 	struct vm_area_struct *prev, unsigned long addr, unsigned long end,
+ 	unsigned long vm_flags, struct anon_vma *, struct file *, pgoff_t,
+-	struct mempolicy *, struct vm_userfaultfd_ctx, const char *);
++	struct mempolicy *, struct vm_userfaultfd_ctx, struct anon_vma_name *);
+ extern struct anon_vma *find_mergeable_anon_vma(struct vm_area_struct *);
+ extern int __split_vma(struct mm_struct *, struct vm_area_struct *,
+ 	unsigned long addr, int new_below);
+@@ -3372,11 +3372,11 @@ static inline int seal_check_future_write(int seals, struct vm_area_struct *vma)
+ 
+ #ifdef CONFIG_ANON_VMA_NAME
+ int madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
+-			  unsigned long len_in, const char *name);
++			  unsigned long len_in, struct anon_vma_name *name);
+ #else
+ static inline int
+ madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
+-		      unsigned long len_in, const char *name) {
++		      unsigned long len_in, struct anon_vma_name *name) {
+ 	return 0;
+ }
+ #endif
+diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
+index b725839dfe71..cff619f762d0 100644
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -145,45 +145,48 @@ static __always_inline void del_page_from_lru_list(struct page *page,
+  */
+ extern const char *vma_anon_name(struct vm_area_struct *vma);
+ 
+-/*
+- * mmap_lock should be read-locked for orig_vma->vm_mm.
+- * mmap_lock should be write-locked for new_vma->vm_mm or new_vma should be
+- * isolated.
+- */
+-extern void dup_vma_anon_name(struct vm_area_struct *orig_vma,
+-			      struct vm_area_struct *new_vma);
++static inline void anon_vma_name_get(struct anon_vma_name *name)
++{
++	if (!name)
++		return;
+ 
+-/*
+- * mmap_lock should be write-locked or vma should have been isolated under
+- * write-locked mmap_lock protection.
+- */
+-extern void free_vma_anon_name(struct vm_area_struct *vma);
++	kref_get(&name->kref);
++}
+ 
+-/* mmap_lock should be read-locked */
+-static inline bool is_same_vma_anon_name(struct vm_area_struct *vma,
+-					 const char *name)
++void vma_anon_name_free(struct kref *kref);
++static inline void anon_vma_name_put(struct anon_vma_name *name)
+ {
+-	const char *vma_name = vma_anon_name(vma);
++	if (!name)
++		return;
+ 
+-	/* either both NULL, or pointers to same string */
+-	if (vma_name == name)
++	kref_put(&name->kref, vma_anon_name_free);
++}
++
++static inline bool anon_vma_name_eq(struct anon_vma_name *name1, struct anon_vma_name *name2)
++{
++	if (name1 == name2)
+ 		return true;
+ 
+-	return name && vma_name && !strcmp(name, vma_name);
++	return name1 && name2 && !strcmp(name1->name, name2->name);
++}
++
++static inline void free_vma_anon_name(struct vm_area_struct *vma)
++{
++	anon_vma_name_put(vma->anon_name);
+ }
++
+ #else /* CONFIG_ANON_VMA_NAME */
+ static inline const char *vma_anon_name(struct vm_area_struct *vma)
+ {
+ 	return NULL;
+ }
+-static inline void dup_vma_anon_name(struct vm_area_struct *orig_vma,
+-			      struct vm_area_struct *new_vma) {}
+-static inline void free_vma_anon_name(struct vm_area_struct *vma) {}
+-static inline bool is_same_vma_anon_name(struct vm_area_struct *vma,
+-					 const char *name)
++static inline bool anon_vma_name_eq(struct anon_vma_name *name1, struct anon_vma_name *name2)
+ {
+ 	return true;
+ }
++static inline void free_vma_anon_name(struct vm_area_struct *vma)
++{
++}
+ #endif  /* CONFIG_ANON_VMA_NAME */
+ 
+ static inline void init_tlb_flush_pending(struct mm_struct *mm)
+diff --git a/kernel/sys.c b/kernel/sys.c
+index ecc4cf019242..662a0c8b4ceb 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -2278,7 +2278,8 @@ static int prctl_set_vma(unsigned long opt, unsigned long addr,
+ {
+ 	struct mm_struct *mm = current->mm;
+ 	const char __user *uname;
+-	char *name, *pch;
++	char *uname, *pch;
++	struct anon_vma_name *vma_name = NULL;
+ 	int error;
+ 
+ 	switch (opt) {
+@@ -2296,15 +2297,17 @@ static int prctl_set_vma(unsigned long opt, unsigned long addr,
+ 					return -EINVAL;
+ 				}
+ 			}
+-		} else {
+-			/* Reset the name */
+-			name = NULL;
++
++			/* anon_vma has its own copy */
++			vma_name = anon_vma_name_alloc(name);
++			kfree(name);
++			if (!vma_name)
++				return PTR_ERR(vma_name);
+ 		}
+ 
+ 		mmap_write_lock(mm);
+-		error = madvise_set_anon_name(mm, addr, size, name);
++		error = madvise_set_anon_name(mm, addr, size, vma_name);
+ 		mmap_write_unlock(mm);
+-		kfree(name);
+ 		break;
+ 	default:
+ 		error = -EINVAL;
+diff --git a/mm/madvise.c b/mm/madvise.c
+index 5604064df464..f2f8065f67c1 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -65,7 +65,7 @@ static int madvise_need_mmap_write(int behavior)
+ }
+ 
+ #ifdef CONFIG_ANON_VMA_NAME
+-static struct anon_vma_name *anon_vma_name_alloc(const char *name)
++struct anon_vma_name *anon_vma_name_alloc(const char *name)
+ {
+ 	struct anon_vma_name *anon_name;
+ 	size_t count;
+@@ -81,7 +81,7 @@ static struct anon_vma_name *anon_vma_name_alloc(const char *name)
+ 	return anon_name;
+ }
+ 
+-static void vma_anon_name_free(struct kref *kref)
++void vma_anon_name_free(struct kref *kref)
+ {
+ 	struct anon_vma_name *anon_name =
+ 			container_of(kref, struct anon_vma_name, kref);
+@@ -103,54 +103,25 @@ const char *vma_anon_name(struct vm_area_struct *vma)
+ 	return vma->anon_name->name;
+ }
+ 
+-void dup_vma_anon_name(struct vm_area_struct *orig_vma,
+-		       struct vm_area_struct *new_vma)
+-{
+-	if (!has_vma_anon_name(orig_vma))
+-		return;
+-
+-	kref_get(&orig_vma->anon_name->kref);
+-	new_vma->anon_name = orig_vma->anon_name;
+-}
+-
+-void free_vma_anon_name(struct vm_area_struct *vma)
+-{
+-	struct anon_vma_name *anon_name;
+-
+-	if (!has_vma_anon_name(vma))
+-		return;
+-
+-	anon_name = vma->anon_name;
+-	vma->anon_name = NULL;
+-	kref_put(&anon_name->kref, vma_anon_name_free);
+-}
+-
+ /* mmap_lock should be write-locked */
+-static int replace_vma_anon_name(struct vm_area_struct *vma, const char *name)
++static int replace_vma_anon_name(struct vm_area_struct *vma, struct anon_vma_name *name)
+ {
+-	const char *anon_name;
+-
+ 	if (!name) {
+-		free_vma_anon_name(vma);
++		anon_vma_name_put(vma->anon_name);
++		vma->anon_name = NULL;
+ 		return 0;
+ 	}
+ 
+-	anon_name = vma_anon_name(vma);
+-	if (anon_name) {
+-		/* Same name, nothing to do here */
+-		if (!strcmp(name, anon_name))
+-			return 0;
+-
+-		free_vma_anon_name(vma);
+-	}
+-	vma->anon_name = anon_vma_name_alloc(name);
+-	if (!vma->anon_name)
+-		return -ENOMEM;
++	if (anon_vma_name_eq(vma->anon_name, name))
++		return 0;
+ 
++	anon_vma_name_put(vma->anon_name);
++	anon_vma_name_get(name);
++	vma->anon_name = name;
+ 	return 0;
+ }
+ #else /* CONFIG_ANON_VMA_NAME */
+-static int replace_vma_anon_name(struct vm_area_struct *vma, const char *name)
++static int replace_vma_anon_name(struct vm_area_struct *vma, struct anon_vma_name *name)
+ {
+ 	if (name)
+ 		return -EINVAL;
+@@ -165,13 +136,13 @@ static int replace_vma_anon_name(struct vm_area_struct *vma, const char *name)
+ static int madvise_update_vma(struct vm_area_struct *vma,
+ 			      struct vm_area_struct **prev, unsigned long start,
+ 			      unsigned long end, unsigned long new_flags,
+-			      const char *name)
++			      struct anon_vma_name *name)
+ {
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	int error;
+ 	pgoff_t pgoff;
+ 
+-	if (new_flags == vma->vm_flags && is_same_vma_anon_name(vma, name)) {
++	if (new_flags == vma->vm_flags && anon_vma_name_eq(vma->anon_name, name)) {
+ 		*prev = vma;
+ 		return 0;
+ 	}
+@@ -1041,7 +1012,7 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
+ 	}
+ 
+ 	error = madvise_update_vma(vma, prev, start, end, new_flags,
+-				   vma_anon_name(vma));
++				   vma->anon_name);
+ 
+ out:
+ 	/*
+@@ -1234,7 +1205,7 @@ static int madvise_vma_anon_name(struct vm_area_struct *vma,
+ 		return -EBADF;
+ 
+ 	error = madvise_update_vma(vma, prev, start, end, vma->vm_flags,
+-				   (const char *)name);
++				   (struct anon_vma_name *)name);
+ 
+ 	/*
+ 	 * madvise() returns EAGAIN if kernel resources, such as
+@@ -1246,7 +1217,7 @@ static int madvise_vma_anon_name(struct vm_area_struct *vma,
+ }
+ 
+ int madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
+-			  unsigned long len_in, const char *name)
++			  unsigned long len_in, struct anon_vma_name *name)
+ {
+ 	unsigned long end;
+ 	unsigned long len;
+diff --git a/mm/mlock.c b/mm/mlock.c
+index 8f584eddd305..e992755e8ffb 100644
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -512,7 +512,7 @@ static int mlock_fixup(struct vm_area_struct *vma, struct vm_area_struct **prev,
+ 	pgoff = vma->vm_pgoff + ((start - vma->vm_start) >> PAGE_SHIFT);
+ 	*prev = vma_merge(mm, *prev, start, end, newflags, vma->anon_vma,
+ 			  vma->vm_file, pgoff, vma_policy(vma),
+-			  vma->vm_userfaultfd_ctx, vma_anon_name(vma));
++			  vma->vm_userfaultfd_ctx, vma->anon_name);
+ 	if (*prev) {
+ 		vma = *prev;
+ 		goto success;
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 1e8fdb0b51ed..c3b2e73d9c9a 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1031,7 +1031,7 @@ int __vma_adjust(struct vm_area_struct *vma, unsigned long start,
+ static inline int is_mergeable_vma(struct vm_area_struct *vma,
+ 				struct file *file, unsigned long vm_flags,
+ 				struct vm_userfaultfd_ctx vm_userfaultfd_ctx,
+-				const char *anon_name)
++				struct anon_vma_name *anon_name)
+ {
+ 	/*
+ 	 * VM_SOFTDIRTY should not prevent from VMA merging, if we
+@@ -1049,7 +1049,7 @@ static inline int is_mergeable_vma(struct vm_area_struct *vma,
+ 		return 0;
+ 	if (!is_mergeable_vm_userfaultfd_ctx(vma, vm_userfaultfd_ctx))
+ 		return 0;
+-	if (!is_same_vma_anon_name(vma, anon_name))
++	if (!anon_vma_name_eq(vma->anon_name, anon_name))
+ 		return 0;
+ 	return 1;
+ }
+@@ -1084,7 +1084,7 @@ can_vma_merge_before(struct vm_area_struct *vma, unsigned long vm_flags,
+ 		     struct anon_vma *anon_vma, struct file *file,
+ 		     pgoff_t vm_pgoff,
+ 		     struct vm_userfaultfd_ctx vm_userfaultfd_ctx,
+-		     const char *anon_name)
++		     struct anon_vma_name *anon_name)
+ {
+ 	if (is_mergeable_vma(vma, file, vm_flags, vm_userfaultfd_ctx, anon_name) &&
+ 	    is_mergeable_anon_vma(anon_vma, vma->anon_vma, vma)) {
+@@ -1106,7 +1106,7 @@ can_vma_merge_after(struct vm_area_struct *vma, unsigned long vm_flags,
+ 		    struct anon_vma *anon_vma, struct file *file,
+ 		    pgoff_t vm_pgoff,
+ 		    struct vm_userfaultfd_ctx vm_userfaultfd_ctx,
+-		    const char *anon_name)
++		    struct anon_vma_name *anon_name)
+ {
+ 	if (is_mergeable_vma(vma, file, vm_flags, vm_userfaultfd_ctx, anon_name) &&
+ 	    is_mergeable_anon_vma(anon_vma, vma->anon_vma, vma)) {
+@@ -1167,7 +1167,7 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
+ 			struct anon_vma *anon_vma, struct file *file,
+ 			pgoff_t pgoff, struct mempolicy *policy,
+ 			struct vm_userfaultfd_ctx vm_userfaultfd_ctx,
+-			const char *anon_name)
++			struct anon_vma_name *anon_name)
+ {
+ 	pgoff_t pglen = (end - addr) >> PAGE_SHIFT;
+ 	struct vm_area_struct *area, *next;
+@@ -3255,7 +3255,7 @@ struct vm_area_struct *copy_vma(struct vm_area_struct **vmap,
+ 		return NULL;	/* should never get here */
+ 	new_vma = vma_merge(mm, prev, addr, addr + len, vma->vm_flags,
+ 			    vma->anon_vma, vma->vm_file, pgoff, vma_policy(vma),
+-			    vma->vm_userfaultfd_ctx, vma_anon_name(vma));
++			    vma->vm_userfaultfd_ctx, vma->anon_name);
+ 	if (new_vma) {
+ 		/*
+ 		 * Source vma may have been merged into new_vma
+diff --git a/mm/mprotect.c b/mm/mprotect.c
+index 0138dfcdb1d8..dae529d24fa3 100644
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -464,7 +464,7 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
+ 	pgoff = vma->vm_pgoff + ((start - vma->vm_start) >> PAGE_SHIFT);
+ 	*pprev = vma_merge(mm, *pprev, start, end, newflags,
+ 			   vma->anon_vma, vma->vm_file, pgoff, vma_policy(vma),
+-			   vma->vm_userfaultfd_ctx, vma_anon_name(vma));
++			   vma->vm_userfaultfd_ctx, vma->anon_name);
+ 	if (*pprev) {
+ 		vma = *pprev;
+ 		VM_WARN_ON((vma->vm_flags ^ newflags) & ~VM_SOFTDIRTY);
+-- 
+Michal Hocko
+SUSE Labs
