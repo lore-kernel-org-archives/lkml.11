@@ -2,103 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32651C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E75C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235907AbiBOJbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:31:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57624 "EHLO
+        id S235917AbiBOJck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:32:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233528AbiBOJbh (ORCPT
+        with ESMTP id S235916AbiBOJcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:31:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EBFE0D9;
-        Tue, 15 Feb 2022 01:31:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 15 Feb 2022 04:32:32 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F236AA007
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:32:22 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 2CE86210DC;
+        Tue, 15 Feb 2022 09:32:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644917541; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KYdGeFsANOtOABOCKg2n5btFGKH4PKRKWZczmP67Y4c=;
+        b=Fre+2KMos1Xt+rzKEa0yiIruHha9K585218YxzHlAprj3wPnd0UmAjNDO0DHnOvj8I85EA
+        8qWBQ1+65aI05croPjluXpbDyoll3bC7Hs4+mQpwSmwWUif6BvnvediTZJTFwLVB7+EflY
+        v+3muQf3MguEBQ5s+V4KTIjsqnksXqU=
+Received: from suse.cz (unknown [10.100.216.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4FA4B81859;
-        Tue, 15 Feb 2022 09:31:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B71C340EB;
-        Tue, 15 Feb 2022 09:31:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644917485;
-        bh=TPI92uxefldVIoKagHhk5wuLidJESnJZFC1B90zMuWY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZaahihxggrQCerRn9aiv1XD7sVfIQwMb2mOz4BKZZyhjtW4W8ZqGI9KbIrkGNIJZx
-         5fgnRGxjUv4c382sSBge8pLk96vHJtd+I+zsKe+aZm7lpjrM6m9pKss0OpSQpuQ5XS
-         iNjrrXyBVDg250b4Y4odsnb9AK6VAWHfAxUObMhLII3DNFjCJvn8B2Fsvs4LOZ6Hfp
-         mo4IZV1MC4xDN/W4q1P9C0JBlAhL238tJW7hfp+qKI8bAhX4UJh20mjQG0wcjQd8CQ
-         OQ29hCT7l33DqPaSw2hz84yxKUQ3mjcSkQybwc33Sl031tCnCSUwXRNnUTOwMjgkCh
-         DAHdrKernDOTA==
-Date:   Tue, 15 Feb 2022 10:31:22 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
-Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] i2c: pasemi: Drop I2C classes from platform driver
- variant
-Message-ID: <Ygty6m9vPFU0gy9B@kunai>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220204095914.5678-1-povik+lin@cutebit.org>
+        by relay2.suse.de (Postfix) with ESMTPS id 148E0A3B85;
+        Tue, 15 Feb 2022 09:32:21 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 10:32:20 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Alexander Potapenko <glider@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH printk v1 01/13] printk: rename cpulock functions
+Message-ID: <YgtzJPa7XJ5Ozdhf@alley>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-2-john.ogness@linutronix.de>
+ <YgZaMkUU5Ve2GV9D@alley>
+ <87fsopcvnj.fsf@jogness.linutronix.de>
+ <20220211155727.49ab86f5@gandalf.local.home>
+ <YgbPcAHgC1FLRXdR@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="P+tODekEoy3IYXxW"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204095914.5678-1-povik+lin@cutebit.org>
+In-Reply-To: <YgbPcAHgC1FLRXdR@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri 2022-02-11 22:04:48, Peter Zijlstra wrote:
+> On Fri, Feb 11, 2022 at 03:57:27PM -0500, Steven Rostedt wrote:
+> > On Fri, 11 Feb 2022 15:48:08 +0106
+> > John Ogness <john.ogness@linutronix.de> wrote:
+> > 
+> > > It is because (as in the example above), taking this "lock" does not
+> > > provide synchronization to data. It is only synchronizing between
+> > > CPUs. It was Steven's suggestion to call the thing a cpu_sync object and
+> > > nobody in the RT Track seemed to disagree.
+> > 
+> > I love causing trouble ;-)
+> > 
+> > Actually, it wasn't just my suggestion. IIRC, I believe Peter Zijlstra was
+> > against calling it a lock (Peter, you can use lore to see the context here).
+> 
+> All I remember is that it was in a room and I was late, I can't even
+> remember what City we were all in at the time. Was this Lisbon?
+> 
+> Anyway, as Steve said, it isn't really a strict exclusion thing, it only
+> avoids the most egregious inter-cpu interleaving. I'm down with
+> goldi-locks, something has to have that name :-)
 
---P+tODekEoy3IYXxW
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You troublemakers :-)
 
-On Fri, Feb 04, 2022 at 10:59:14AM +0100, Martin Povi=C5=A1er wrote:
-> Drop I2C device-probing classes from platform variant of the PASemi
-> controller as it is only used on platforms where I2C devices should
-> be instantiated in devicetree. (The I2C_CLASS_DEPRECATED flag is not
-> raised as up to this point no devices relied on the old behavior.)
->=20
-> Fixes: d88ae2932df0 ("i2c: pasemi: Add Apple platform driver")
-> Signed-off-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
+OK, I know, I am the troublemaker here.
 
-Applied to for-next, thanks!
-
-
---P+tODekEoy3IYXxW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmILcuYACgkQFA3kzBSg
-KbY6uA/+IQh924YyTwayMaj8qOEr+9HV1GNHRTIkiVe1EHYHSnzqaPI1P5kHFMBk
-gc6ua8ftK2AW1QFwRNY7iZth7CtMxQlu3+wWizAtSM6hHnO/DHW5prKEKcaVf2OP
-g40PWfMFU0y2Rfb+YlBJaLt5rKwihfc6jHrflAteWf/YoSwaYrSAH+gjYRZ4bHIJ
-4Gm7pljXhXL6gWRF2JT6OTsRr4qIDYwfupJYdWNiAbf+27OjPhJpD3YXwY7mxtOW
-AB/oMuAwmkyYrz+UlnTe3zSU56Hv2V1hfYzueRCboKYfdMYBj7C/rEfH9uzvMpy0
-Hlp+pV0uSHzkG5eGa8IMatOvDRR6u6zDD2H09nYfbL3SkmbM+OcN3MqsCg9F9NMU
-u9ozjnjD7NXyOkEeM2CAAjWVEiXnYz3V9xNGJqlbN0tj7DcZ62+L1OGQ3sELKen/
-HRE3je8ZevvH4jv1NU/+3/J3RaWua3EqljRpm9fIi27WeYWegjTg3PMPIhYmiCXI
-lfmA/IVcvHWViKhSAeWb5rGAY6JCvDNTLkTZnWg3IweP7G7ssBAJ4x3LSEUFCUv8
-+pFxK6tjD4aee/0u69zYrJ95aCC+9j/7eSStDWl1EVt3F21n1Jf7Uo63tJdIlm34
-lpvavpW3Fg1OcZ1dtU16E9DGIczfu+e9APuJkp5eB4TgzA18RRM=
-=ZV8g
------END PGP SIGNATURE-----
-
---P+tODekEoy3IYXxW--
+Best Regards,
+Petr
