@@ -2,173 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 07:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 556FAC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 07:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234668AbiBOHBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 02:01:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60246 "EHLO
+        id S234673AbiBOHB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 02:01:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbiBOHBB (ORCPT
+        with ESMTP id S230351AbiBOHBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 02:01:01 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444743EAAE
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:00:50 -0800 (PST)
-Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220215070048epoutp0144fd164efbe97553800c3cc0a0d34f0b~T44TT50aN0973809738epoutp01U
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:00:48 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220215070048epoutp0144fd164efbe97553800c3cc0a0d34f0b~T44TT50aN0973809738epoutp01U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1644908448;
-        bh=SRsg8T/OPnQjmJqo/heZLDC52o8CsKO+t4bo75zyF8s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gM/4USTgPJRS1gPeNrCloswHupOnAk+sqBfSGXGKxgHatDPZ1qvivq+HKnrCdCm7l
-         KcXq9ZVectcYc5RgG+ay7+XVJsluwAtcrKEJIr6NXu8QlJKpa0007uquGwIAv0nCaW
-         30xww0qxOV8S6lYMoGVWpew2QmyHPyK6eG417jkE=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20220215070047epcas2p4d07eca8aeb686d84644d297c0655cc4e~T44Sb0XDl2412424124epcas2p4X;
-        Tue, 15 Feb 2022 07:00:47 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.36.99]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4JyX6g5Tcbz4x9Pp; Tue, 15 Feb
-        2022 07:00:43 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        37.49.12141.18F4B026; Tue, 15 Feb 2022 16:00:17 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220215070040epcas2p1fcd565aafa659ef677b45d414fe65792~T44MP0Ncm3059430594epcas2p1S;
-        Tue, 15 Feb 2022 07:00:40 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220215070040epsmtrp1021b9f20207f005f621f131c4808002a~T44MPElEK0510805108epsmtrp1T;
-        Tue, 15 Feb 2022 07:00:40 +0000 (GMT)
-X-AuditID: b6c32a48-d5dff70000002f6d-50-620b4f81f95b
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        45.85.08738.89F4B026; Tue, 15 Feb 2022 16:00:40 +0900 (KST)
-Received: from ubuntu (unknown [12.36.155.120]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220215070040epsmtip12d42ee1053040720cc37ab306ebd86e6~T44MC656X2677026770epsmtip1j;
-        Tue, 15 Feb 2022 07:00:40 +0000 (GMT)
-Date:   Tue, 15 Feb 2022 15:58:26 +0900
-From:   Jung Daehwan <dh10.jung@samsung.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        quic_wcheng@quicinc.com, quic_jackp@quicinc.com,
-        Thinh.Nguyen@synopsys.com
-Subject: Re: [PATCH v2 1/2] usb: dwc3: Not set DWC3_EP_END_TRANSFER_PENDING
- in ep cmd fails
-Message-ID: <20220215065826.GD144890@ubuntu>
+        Tue, 15 Feb 2022 02:01:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B89767F;
+        Mon, 14 Feb 2022 23:01:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57A88B8175C;
+        Tue, 15 Feb 2022 07:01:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF0A5C340EC;
+        Tue, 15 Feb 2022 07:01:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644908501;
+        bh=wpzzdawXPScQHsJKBVOQr1uSYppSynJn4bs/yhbdSyA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sDmBWC3bBYfh7HeEsWgCqhfPOjCVWGl90AwNQquw/s37apawMvykr5dLCSbz5VT27
+         a5wp3rnQFH3/laPLOG74o03tMDNPPnSjnHPzjnFiNl3JfoADYuF4Ae3fNI0UhZkloP
+         Bj+1hg9P55uKX3tSh0BSWmUJrdwJHc5XuXmorEUI=
+Date:   Tue, 15 Feb 2022 08:01:33 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "T.J. Mercier" <tjmercier@google.com>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org
+Subject: Re: [RFC v2 6/6] android: binder: Add a buffer flag to relinquish
+ ownership of fds
+Message-ID: <YgtPzXUmSOVyplnm@kroah.com>
+References: <20220211161831.3493782-1-tjmercier@google.com>
+ <20220211161831.3493782-7-tjmercier@google.com>
+ <Ygdfe3XSvN8iFuUc@kroah.com>
+ <CABdmKX1eKZZ9809uxnzT_Bm+mdNuK2AObLRxyBpdDF3yE76Hrg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <Ygo9LZg8lxitTE8J@kroah.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprOJsWRmVeSWpSXmKPExsWy7bCmuW6jP3eSwcprlhbH2p6wWzQvXs9m
-        cXnXHDaLRctamS12/VvEZLFpdx+rxaoFB9gd2D02repk89g/dw27x8Q9dR5b9n9m9Pi8SS6A
-        NSrbJiM1MSW1SCE1Lzk/JTMv3VbJOzjeOd7UzMBQ19DSwlxJIS8xN9VWycUnQNctMwfoCiWF
-        ssScUqBQQGJxsZK+nU1RfmlJqkJGfnGJrVJqQUpOgXmBXnFibnFpXrpeXmqJlaGBgZEpUGFC
-        dkb/hMssBf8EKz7uncLSwNjM38XIySEhYCJxeetbpi5GLg4hgR2MEuduvWCBcD4xSqz5+IQR
-        wvnMKDFp03M2mJYrU16wQiR2MUocmfuRGcJ5wijxc/MFFpAqFgFViV9TOxhBbDYBLYl7P04w
-        g9giAsYS/WdnsYM0MIMsvLH9G1hCWCBW4sK2NrAVvAI6Emc+HYCyBSVOznwCNpRTQFPi3sm1
-        QM0cHKICKhKvDtZDXPSTXaL5jS+E7SJxb892JghbWOLV8S3sELaUxMv+Nii7WGLXp1awpyUE
-        GhglGh9AHCcBdNysZ+1gRzMLZEi0bf8PtktCQFniyC0WiDCfRMfhv1BhXomONiGITmWJ6Zcn
-        sELYkhIHX5+Dmugh8bt3ETR8vzFKTDl5nG0Co/wsJJ/NQrINwtaRWLD7E9ssoBXMAtISy/9x
-        QJiaEut36S9gZF3FKJZaUJybnlpsVGACj+3k/NxNjOAUquWxg3H22w96hxiZOBgPMUpwMCuJ
-        8Mad5UwS4k1JrKxKLcqPLyrNSS0+xGgKjKeJzFKiyfnAJJ5XEm9oYmlgYmZmaG5kamCuJM7r
-        lbIhUUggPbEkNTs1tSC1CKaPiYNTqoHp9LTieVHKtfPDuSTcOlZt1OcN/PdW9Urfk0WmT8UL
-        Uy5fvXMufEf0jZvZ904b7E/4ud6irWZH5T6R5q1852JOmETbCk69PTFG58gj1+3tJnV8wg+M
-        1nRycKef3Dn39PJpR6TLTc/XzHa5bsfZXh6S+lHF9KUXd923w7v39d8Uj8/7tPeSF1P2UtPt
-        mmIWXWHLClIaPDSrv+54Ja39+YCnzx9hY4/dR6Y+PT4n7rDYJb3M25tPCCw08jqY0aR9RUJT
-        S3EGW3C7eIaF1mrv7eKqx2evinf8n6dwV4optGf/zZvZXXqReprT3jUaRc+dyDWd7YhVaV/m
-        YgPNtJLN++/bHTB8YD6l2bDIwN1IcpsSS3FGoqEWc1FxIgCBb+DaKgQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrLLMWRmVeSWpSXmKPExsWy7bCSnO4Mf+4kg5bL2hbH2p6wWzQvXs9m
-        cXnXHDaLRctamS12/VvEZLFpdx+rxaoFB9gd2D02repk89g/dw27x8Q9dR5b9n9m9Pi8SS6A
-        NYrLJiU1J7MstUjfLoEro3nnSqaCffwVc/v/sjcw3uHpYuTkkBAwkbgy5QVrFyMXh5DADkaJ
-        3mv9zBAJSYmlc2+wQ9jCEvdbjkAVPWKU6HvQxgSSYBFQlfg1tYMRxGYT0JK49+MEWLOIgLFE
-        /9lZ7CANzCBT1y77ClYkLBArcWFbGxuIzSugI3Hm0wE2iKnfGCW2Pr3PCpEQlDg58wkLiM0M
-        NPXGv5dA2ziAbGmJ5f84QMKcApoS906uZQcJiwqoSLw6WD+BUXAWkuZZSJpnITQvYGRexSiZ
-        WlCcm55bbFhglJdarlecmFtcmpeul5yfu4kRHANaWjsY96z6oHeIkYmD8RCjBAezkghv3FnO
-        JCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8F7pOxgsJpCeWpGanphakFsFkmTg4pRqY9j3atrNR
-        VPLuxNSo8zllfnuO+O5e5yEl95xvzWX7N03z2Ta6uN3M/PGZRexao//Bd86ykuqtWuEBD7g1
-        Cg6H8E9X8F92sUlKw7RdRH3R++bijLUzeLYr8kb/ODHngvnn1a+uuV0T+3dw6Z9vcfLK+w74
-        8p68wv8gKF2tWvuyVpXA0v6fZV67IwM4U2v2Kn+Nmyh/65JYUGmfKMfMs+kv3136uOfas2n/
-        vuuFvFTLdwgTXKLTODGG//OxCde/pmQrs3R6rTrAdqhrwfOd09/qS3zgKZH8qjkjj/XvhqCt
-        ZnXBXFfb9//vd/g+1bx9q8HDEJPjf2bs7mANttR51Tnpe3bVnVWhZ4rbFhivkj/irsRSnJFo
-        qMVcVJwIACjI+qvwAgAA
-X-CMS-MailID: 20220215070040epcas2p1fcd565aafa659ef677b45d414fe65792
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----Jd1PkHJvbSWK3nTfpzLY69px07-gfkp_xqPU6voikj1qGUH4=_e8e52_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220214111149epcas2p1a1faeda037991885fd6f2f026fa44ec5
-References: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
-        <CGME20220214111149epcas2p1a1faeda037991885fd6f2f026fa44ec5@epcas2p1.samsung.com>
-        <1644836933-141376-2-git-send-email-dh10.jung@samsung.com>
-        <Ygo9LZg8lxitTE8J@kroah.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABdmKX1eKZZ9809uxnzT_Bm+mdNuK2AObLRxyBpdDF3yE76Hrg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------Jd1PkHJvbSWK3nTfpzLY69px07-gfkp_xqPU6voikj1qGUH4=_e8e52_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-
-On Mon, Feb 14, 2022 at 12:29:49PM +0100, Greg Kroah-Hartman wrote:
-> On Mon, Feb 14, 2022 at 08:08:52PM +0900, Daehwan Jung wrote:
-> > It always sets DWC3_EP_END_TRANSFER_PENDING in dwc3_stop_active_transfer
-> > even if dwc3_send_gadget_ep_cmd fails. It can cause some problems like
-> > skipping clear stall commmand or giveback from dequeue. We fix to set it
-> > only when ep cmd success. Additionally, We clear DWC3_EP_TRANSFER_STARTED
-> > for next trb to start transfer not update transfer.
+On Mon, Feb 14, 2022 at 02:25:47PM -0800, T.J. Mercier wrote:
+> On Fri, Feb 11, 2022 at 11:19 PM Greg Kroah-Hartman
+> > > --- a/include/uapi/linux/android/binder.h
+> > > +++ b/include/uapi/linux/android/binder.h
+> > > @@ -137,6 +137,7 @@ struct binder_buffer_object {
+> > >
+> > >  enum {
+> > >       BINDER_BUFFER_FLAG_HAS_PARENT = 0x01,
+> > > +     BINDER_BUFFER_FLAG_SENDER_NO_NEED = 0x02,
+> > >  };
+> > >
+> > >  /* struct binder_fd_array_object - object describing an array of fds in a buffer
+> > > --
+> > > 2.35.1.265.g69c8d7142f-goog
+> > >
+> >
+> > How does userspace know that binder supports this new flag?
 > 
-> So is this two different changes?
+> Sorry, I don't completely follow even after Todd's comment. Doesn't
+> the presence of BINDER_BUFFER_FLAG_SENDER_NO_NEED in the header do
+> this?
+
+There is no "header" when running a new kernel on an old userspace,
+right?  How about the other way around, old kernel, new userspace?
+
+> So wouldn't userspace need to be compiled against the wrong
+> kernel headers for there to be a problem? In that case the allocation
+> would still succeed, but there would be no charge transfer and
+> unfortunately no error code.
+
+No error code is not good.  People upgrade their kernels all the time,
+and do not do a "rebuild the world" when doing so.
+
+> > And where is the userspace test for this new feature?
 > 
-> > 
-> > Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
+> I tested this on a Pixel after modifying the gralloc implementation to
+> mark allocated buffers as not used by the sender. This required
+> setting the BINDER_BUFFER_FLAG_SENDER_NO_NEED in libhwbinder. That
+> code can be found here:
+> https://android-review.googlesource.com/c/platform/system/libhwbinder/+/1910752/1/Parcel.cpp
+> https://android-review.googlesource.com/c/platform/system/libhidl/+/1910611/
 > 
-> What commit id does this fix?
+> Then by inspecting gpu.memory.current files in sysfs I was able to see
+> the memory attributed to processes other than the graphics allocator
+> service. Before this change, several megabytes of memory were
+> attributed to the graphics allocator service but those buffers are
+> actually used by other processes like surfaceflinger, the camera, etc.
+> After the change, the gpu.memory.current amount for the graphics
+> allocator service was 0 and the charges showed up in the
+> gpu.memory.current files for those other processes like this:
 > 
-> thanks,
+> PID: 764 Process Name: zygote64
+> system 8192
+> system-uncached 23191552
 > 
-> greg k-h
+> PID: 529 Process Name: /system/bin/surfaceflinger
+> system-uncached 109535232
+> system 92196864
 > 
+> PID: 530 Process Name:
+> /vendor/bin/hw/android.hardware.graphics.allocator@4.0-service
+> system-uncached 0
+> system 0
+> sensor_direct_heap 0
+> 
+> PID: 806 Process Name:
+> /apex/com.google.pixel.camera.hal/bin/hw/android.hardware.camera.provider@2.7-service-google
+> system 1196032
+> 
+> PID: 4608 Process Name: com.google.android.GoogleCamera
+> system 2408448
+> system-uncached 38887424
+> sensor_direct_heap 0
+> 
+> PID: 32102 Process Name: com.google.android.googlequicksearchbox:search
+> system-uncached 91279360
+> system 20480
+> 
+> PID: 2758 Process Name: com.google.android.youtube
+> system-uncached 1662976
+> system 8192
+> 
+> PID: 2517 Process Name: com.google.android.apps.nexuslauncher
+> system-uncached 115662848
+> system 122880
+> 
+> PID: 2066 Process Name: com.android.systemui
+> system 86016
+> system-uncached 37957632
+> 
+> >  Isn't there a binder test framework somewhere?
+> 
+> Android has the Vendor Test Suite where automated tests could be added
+> for this. Is that what you're thinking of?
 
-Hi greg,
+tools/testing/selftests/ is a good start.  VTS is the worst-case as no
+one can really run that on their own, but it is better than nothing.
+Having no test at all for this is not ok.
 
-Below is commit id to fix.
+thanks,
 
-commit c58d8bfc77a2c7f6ff6339b58c9fca7ae6f57e70
-Author: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Date:   Wed Dec 18 18:14:44 2019 -0800
-
-    usb: dwc3: gadget: Check END_TRANSFER completion
-
-    While the END_TRANSFER command is sent but not completed, any request
-    dequeue during this time will cause the driver to issue the END_TRANSFER
-    command. The driver needs to submit the command only once to stop the
-    controller from processing further. The controller may take more time to
-    process the same command multiple times unnecessarily. Let's add a flag
-    DWC3_EP_END_TRANSFER_PENDING to check for this condition.
-
-    Fixes: 3aec99154db3 ("usb: dwc3: gadget: remove DWC3_EP_END_TRANSFER_PENDING")
-    Signed-off-by: Thinh Nguyen <thinhn@synopsys.com>
-    Signed-off-by: Felipe Balbi <balbi@kernel.org>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-Wesley may have run into same issue and I think it's better for us to discuss.
-
-https://protect2.fireeye.com/v1/url?k=9d423b69-fc3fd32e-9d43b026-74fe485fff30-77a099b52659410d&q=1&e=20b4d9f5-2599-4f57-8b6a-7c4ec167d228&u=https%3A%2F%2Flore.kernel.org%2Flinux-usb%2F20220203080017.27339-1-quic_wcheng%40quicinc.com%2F
-
-Best Regards,
-Jung Daehwan
-
-------Jd1PkHJvbSWK3nTfpzLY69px07-gfkp_xqPU6voikj1qGUH4=_e8e52_
-Content-Type: text/plain; charset="utf-8"
-
-
-------Jd1PkHJvbSWK3nTfpzLY69px07-gfkp_xqPU6voikj1qGUH4=_e8e52_--
+greg k-h
