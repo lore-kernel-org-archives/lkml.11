@@ -2,177 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB13C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 07:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC14C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 07:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234942AbiBOHsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 02:48:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37314 "EHLO
+        id S235004AbiBOHs5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 02:48:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234939AbiBOHsn (ORCPT
+        with ESMTP id S234752AbiBOHsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 02:48:43 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C454595A01
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:48:33 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 15 Feb 2022 02:48:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9B1797BBA
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:48:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644911314;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7mqaQERLi8FqjBn6o0qRtuyA3NkSe11glfd42h6C9JY=;
+        b=iES7z4jHtzyTCXbD/ps9hm/k5DIxNKN9J367svLJWVBDD14Dx28xP+yaIRaE5rLzeeXK0J
+        Pzpi5FPMuayaUSSO+MQn7S2FMtYCbO0s/cxRvN+EUn1/fSGXGA5sHKQ1GIdd+NsbcOSEoR
+        ZWCCfyxlror/a9hFAxcslkwaLllIWaE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-403-6Q_O5W5LNZK5CC9nkERWug-1; Tue, 15 Feb 2022 02:48:32 -0500
+X-MC-Unique: 6Q_O5W5LNZK5CC9nkERWug-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8ED92402E0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:48:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644911312;
-        bh=MYN3RCgVIgzhyrJn9l29HblDmb8bQllkRqZgA3loBrM=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=OyMWp2eWIkA7svj/uKHkOIzYR0imzPiubEX7kfJn2HwhF032YfSrxL3M7H++kS6KE
-         1fKGcgvgMX/nbVgPy6rddBPFc/xB/BdVYAzqbOQCroVxJEjqllCJ1ifwzGGXBhVNbI
-         VAEFT0wbFyH+HA+xEbTbJjfYtMMTNYp1YsxZjUBKRVL2VpNJUjLX9ZpuTRB7gZfYWG
-         g7eEF3gZCLzGIT6NAjsI7PStJYc4Qp/IbfHdA2gC7t6QRLhzrMSzMPE2jtSO4XrhFw
-         BC3B3cXjLnqSGzrK9tAei3SOCE1VwPFdmxLhPMvTypT/h7t8iXxPn85JqcyT0fDccP
-         XO/jeRjFF/Qxg==
-Received: by mail-ed1-f69.google.com with SMTP id cr7-20020a056402222700b0040f59dae606so11839866edb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 23:48:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MYN3RCgVIgzhyrJn9l29HblDmb8bQllkRqZgA3loBrM=;
-        b=fN7eifE02BFFi1SApH+vStIfZOtXD6I63VHLOzjYE4LV6u4KdhHEIgY/+TXp7zKBLI
-         Q9qr9LwaFW828FT9uL+n4vxoiJZSYX3a+TpUQgb88D4iIkLJGNS7qa4rQxLMkQeUdsuB
-         YzEj9dvBT85DmCU+EuXtY6y1MxnuGFBnhebX7l2FsWWtV5zAztW+1ybyiMLi8u7B1BkA
-         RgJPg3f3aF7cFJ3zdyo1P5fCLeqsNdJxwB7ta3MEI9CQHwqChzwhm1JgRfLOg+0G+YD8
-         hDUIZ5CXCQ2cutzdJ6q8AB5kzZMW57/tSLK1pWPiIAR6p+TU7Xhqam8co6VONxdj2fgd
-         rQvA==
-X-Gm-Message-State: AOAM533JEzreA0cDlrA4NLMHTEUXEXlQkBRATTmhJS565giQzSim89J7
-        fD3vVMC6d4FoEQBMcR/XS3GQvglDOps2T3Tu8JJfeb6Xf60hvpBxal1zgIxDznCMpUIDe04aS2J
-        dqaHDRSiNuFv3GK5l/WPsJ+rVr2qUrJyWvyvx6hXgoQ==
-X-Received: by 2002:a17:906:7812:: with SMTP id u18mr1938820ejm.335.1644911312263;
-        Mon, 14 Feb 2022 23:48:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy8Qr0UXe2cAqKTYU54w4XfZCmHZ0ib2s13fYUuPKisoR881wXAkKdPTQwkmTJxSv2ebyrCyg==
-X-Received: by 2002:a17:906:7812:: with SMTP id u18mr1938809ejm.335.1644911312097;
-        Mon, 14 Feb 2022 23:48:32 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id c29sm1188357ejj.149.2022.02.14.23.48.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 23:48:31 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Cc:     Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 2/3] regulator: dt-bindings: maxim,max14577: convert to dtschema
-Date:   Tue, 15 Feb 2022 08:47:58 +0100
-Message-Id: <20220215074759.29402-3-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220215074759.29402-1-krzysztof.kozlowski@canonical.com>
-References: <20220215074759.29402-1-krzysztof.kozlowski@canonical.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72A0A2F26;
+        Tue, 15 Feb 2022 07:48:31 +0000 (UTC)
+Received: from thuth.com (dhcp-192-183.str.redhat.com [10.33.192.183])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A10F362D7B;
+        Tue, 15 Feb 2022 07:48:26 +0000 (UTC)
+From:   Thomas Huth <thuth@redhat.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] selftests: kvm: Check whether SIDA memop fails for normal guests
+Date:   Tue, 15 Feb 2022 08:48:24 +0100
+Message-Id: <20220215074824.188440-1-thuth@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the regulator bindings of Maxim MAX14577/MAX77835 MUIC to DT
-schema format.  The existing bindings were defined in
-../bindings/mfd/max14577.txt.
+Commit 2c212e1baedc ("KVM: s390: Return error on SIDA memop on normal
+guest") fixed the behavior of the SIDA memops for normal guests. It
+would be nice to have a way to test whether the current kernel has
+the fix applied or not. Thus add a check to the KVM selftests for
+these two memops.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Thomas Huth <thuth@redhat.com>
 ---
- .../bindings/regulator/maxim,max14577.yaml    | 78 +++++++++++++++++++
- 1 file changed, 78 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max14577.yaml
+ tools/testing/selftests/kvm/s390x/memop.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/regulator/maxim,max14577.yaml b/Documentation/devicetree/bindings/regulator/maxim,max14577.yaml
-new file mode 100644
-index 000000000000..16f01886a601
---- /dev/null
-+++ b/Documentation/devicetree/bindings/regulator/maxim,max14577.yaml
-@@ -0,0 +1,78 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/maxim,max14577.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+index 9f49ead380ab..d19c3ffdea3f 100644
+--- a/tools/testing/selftests/kvm/s390x/memop.c
++++ b/tools/testing/selftests/kvm/s390x/memop.c
+@@ -160,6 +160,21 @@ int main(int argc, char *argv[])
+ 	run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
+ 	vcpu_run(vm, VCPU_ID);                  /* Run to sync new state */
+ 
++	/* Check that the SIDA calls are rejected for non-protected guests */
++	ksmo.gaddr = 0;
++	ksmo.flags = 0;
++	ksmo.size = 8;
++	ksmo.op = KVM_S390_MEMOP_SIDA_READ;
++	ksmo.buf = (uintptr_t)mem1;
++	ksmo.sida_offset = 0x1c0;
++	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	TEST_ASSERT(rv == -1 && errno == EINVAL,
++		    "ioctl does not reject SIDA_READ in non-protected mode");
++	ksmo.op = KVM_S390_MEMOP_SIDA_WRITE;
++	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	TEST_ASSERT(rv == -1 && errno == EINVAL,
++		    "ioctl does not reject SIDA_WRITE in non-protected mode");
 +
-+title: Maxim MAX14577/MAX77836 MicroUSB and Companion Power Management IC regulators
-+
-+maintainers:
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-+
-+description: |
-+  This is a part of device tree bindings for Maxim MAX14577/MAX77836 MicroUSB
-+  Integrated Circuit (MUIC).
-+
-+  See also Documentation/devicetree/bindings/mfd/maxim,max14577.yaml for
-+  additional information and example.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - maxim,max14577-regulator
-+      - maxim,max77836-regulator
-+
-+  CHARGER:
-+    type: object
-+    $ref: regulator.yaml#
-+    unevaluatedProperties: false
-+    description: |
-+      Current regulator.
-+
-+    properties:
-+      regulator-min-microvolt: false
-+      regulator-max-microvolt: false
-+
-+  SAFEOUT:
-+    type: object
-+    $ref: regulator.yaml#
-+    unevaluatedProperties: false
-+    description: |
-+      Safeout LDO regulator (fixed voltage).
-+
-+    properties:
-+      regulator-min-microamp: false
-+      regulator-max-microamp: false
-+      regulator-min-microvolt:
-+        const: 4900000
-+      regulator-max-microvolt:
-+        const: 4900000
-+
-+patternProperties:
-+  "^LDO[12]$":
-+    type: object
-+    $ref: regulator.yaml#
-+    unevaluatedProperties: false
-+    description: |
-+      Current regulator.
-+
-+    properties:
-+      regulator-min-microamp: false
-+      regulator-max-microamp: false
-+      regulator-min-microvolt:
-+        minimum: 800000
-+      regulator-max-microvolt:
-+        maximum: 3950000
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: maxim,max14577-regulator
-+    then:
-+      properties:
-+        LDO1: false
-+        LDO2: false
-+
-+additionalProperties: false
+ 	kvm_vm_free(vm);
+ 
+ 	return 0;
 -- 
-2.32.0
+2.27.0
 
