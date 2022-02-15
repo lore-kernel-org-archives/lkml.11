@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C695C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233059AbiBPK2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:28:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50700 "EHLO
+        id S229900AbiBPK2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:28:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232902AbiBPK1M (ORCPT
+        with ESMTP id S232878AbiBPK1H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 05:27:12 -0500
+        Wed, 16 Feb 2022 05:27:07 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C797212E22;
-        Wed, 16 Feb 2022 02:26:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290FE21289A;
+        Wed, 16 Feb 2022 02:26:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645007217; x=1676543217;
+  t=1645007215; x=1676543215;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tOG0HGFswSqrhB0EjQg7576eejc092m+g6ZKmtluB4I=;
-  b=nGhJIKJlfsEfmsZZFCk121fQdy8L4foDLaA+plhH5z2+i1p8fh7/mIlb
-   HfD+4zE9uCUZFdDbicg2kifwUa4v0m7i1Xm4nu9FY68JJ5zwY7IoHouWL
-   ECqcpGgd/ZBbpyt9NhjnuoyaM8LHFflJI6ttyiesqRet/zhS8zKBKwUNK
-   lniBUAXT8OtkK15LM3geZf+8ULczGIYhXV+qzfmaaJVYmS68uZv118YTZ
-   BF2hy+DvMiJ01qo7fZQKOC/ce2wBGFsmhGwAI38rUwZVzN4HSgL/lLimb
-   zC+31910dNGxpDwL6cMTy4e9uBPJvXUAOMSuu8lWhiaLGPYfL483QgVWo
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250312483"
+  bh=V0d+C3vc5G9JbEfQ78M7Sy5UGKqgtaF7SoqfhDcrxkU=;
+  b=QJTeJjbwxwvaWL6KR6P5fukf7GbAJeEjRnbuharu39CK5S4IaHUpuLmR
+   gyf2hFiXZA33W8qOYzo5+0BTBbn1BhSIf2gUA409u5qqrWn1CaQ6hZAv2
+   DgdZ3x/wZQt4Gpi1R6bAZAU6AMVxpQYMCQujq876Jx+Up83cGaiuFzZ0X
+   nRSPJy6WFkcKNc31435IBazItFO9+8a1puYhuQW0pAMTNnTtYFbY6d/7H
+   itxtp3eBmZg1PyPst05f1XBdlRjKPqTexClGoZ8+5/ZDmnj3CZupf5ILA
+   Kkuwh+h3VF24WIwP4K5fTle0Yu4bATcxMXGzp/VfyJZUPIKu12vjEDZ0E
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250312480"
 X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="250312483"
+   d="scan'208";a="250312480"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 02:26:51 -0800
 X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="498708646"
+   d="scan'208";a="498708624"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 02:26:51 -0800
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yang Weijiang <weijiang.yang@intel.com>,
-        Like Xu <like.xu@linux.intel.com>
-Subject: [PATCH v9 17/17] KVM: x86/cpuid: Advertise Arch LBR feature in CPUID
-Date:   Tue, 15 Feb 2022 16:25:44 -0500
-Message-Id: <20220215212544.51666-18-weijiang.yang@intel.com>
+Cc:     Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v9 14/17] KVM: x86/vmx: Clear Arch LBREn bit before inject #DB to guest
+Date:   Tue, 15 Feb 2022 16:25:41 -0500
+Message-Id: <20220215212544.51666-15-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220215212544.51666-1-weijiang.yang@intel.com>
 References: <20220215212544.51666-1-weijiang.yang@intel.com>
@@ -55,75 +54,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Arch LBR feature bit in CPU cap-mask to expose the feature.
-Only max LBR depth is supported for guest, and it's consistent
-with host Arch LBR settings.
+On a debug breakpoint event (#DB), IA32_LBR_CTL.LBREn is cleared.
+So need to clear the bit manually before inject #DB.
 
-Co-developed-by: Like Xu <like.xu@linux.intel.com>
-Signed-off-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 ---
- arch/x86/kvm/cpuid.c | 33 ++++++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/vmx.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 8cd864411a1c..285628887734 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -102,6 +102,16 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
- 		if (vaddr_bits != 48 && vaddr_bits != 57 && vaddr_bits != 0)
- 			return -EINVAL;
- 	}
-+	best = cpuid_entry2_find(entries, nent, 0x1c, 0);
-+	if (best) {
-+		unsigned int eax, ebx, ecx, edx;
-+
-+		/* Reject user-space CPUID if depth is different from host's.*/
-+		cpuid_count(0x1c, 0, &eax, &ebx, &ecx, &edx);
-+
-+		if ((best->eax & 0xff) != BIT(fls(eax & 0xff) - 1))
-+			return -EINVAL;
-+	}
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index d1eb1e149fea..e7969884d90e 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1617,6 +1617,27 @@ static void vmx_clear_hlt(struct kvm_vcpu *vcpu)
+ 		vmcs_write32(GUEST_ACTIVITY_STATE, GUEST_ACTIVITY_ACTIVE);
+ }
  
- 	/*
- 	 * Exposing dynamic xfeatures to the guest requires additional
-@@ -600,7 +610,7 @@ void kvm_set_cpu_caps(void)
- 		F(SPEC_CTRL_SSBD) | F(ARCH_CAPABILITIES) | F(INTEL_STIBP) |
- 		F(MD_CLEAR) | F(AVX512_VP2INTERSECT) | F(FSRM) |
- 		F(SERIALIZE) | F(TSXLDTRK) | F(AVX512_FP16) |
--		F(AMX_TILE) | F(AMX_INT8) | F(AMX_BF16)
-+		F(AMX_TILE) | F(AMX_INT8) | F(AMX_BF16) | F(ARCH_LBR)
- 	);
- 
- 	/* TSC_ADJUST and ARCH_CAPABILITIES are emulated in software. */
-@@ -1023,6 +1033,27 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 				goto out;
- 		}
- 		break;
-+	/* Architectural LBR */
-+	case 0x1c: {
-+		u32 lbr_depth_mask = entry->eax & 0xff;
++static void flip_arch_lbr_ctl(struct kvm_vcpu *vcpu, bool on)
++{
++	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
++	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
 +
-+		if (!lbr_depth_mask ||
-+		    !kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR)) {
-+			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
-+			break;
-+		}
-+		/*
-+		 * KVM only exposes the maximum supported depth, which is the
-+		 * fixed value used on the host side.
-+		 * KVM doesn't allow VMM userspace to adjust LBR depth because
-+		 * guest LBR emulation depends on the configuration of host LBR
-+		 * driver.
-+		 */
-+		lbr_depth_mask = BIT((fls(lbr_depth_mask) - 1));
-+		entry->eax &= ~0xff;
-+		entry->eax |= lbr_depth_mask;
-+		break;
++	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
++	    test_bit(INTEL_PMC_IDX_FIXED_VLBR, pmu->pmc_in_use) &&
++	    lbr_desc->event) {
++		u64 old = vmcs_read64(GUEST_IA32_LBR_CTL);
++		u64 new;
++
++		if (on)
++			new = old | ARCH_LBR_CTL_LBREN;
++		else
++			new = old & ~ARCH_LBR_CTL_LBREN;
++
++		if (old != new)
++			vmcs_write64(GUEST_IA32_LBR_CTL, new);
 +	}
- 	/* Intel AMX TILE */
- 	case 0x1d:
- 		if (!kvm_cpu_cap_has(X86_FEATURE_AMX_TILE)) {
++}
++
+ static void vmx_queue_exception(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+@@ -1652,6 +1673,9 @@ static void vmx_queue_exception(struct kvm_vcpu *vcpu)
+ 	vmcs_write32(VM_ENTRY_INTR_INFO_FIELD, intr_info);
+ 
+ 	vmx_clear_hlt(vcpu);
++
++	if (nr == DB_VECTOR)
++		flip_arch_lbr_ctl(vcpu, false);
+ }
+ 
+ static void vmx_setup_uret_msr(struct vcpu_vmx *vmx, unsigned int msr,
+@@ -4655,6 +4679,9 @@ static void vmx_inject_nmi(struct kvm_vcpu *vcpu)
+ 			INTR_TYPE_NMI_INTR | INTR_INFO_VALID_MASK | NMI_VECTOR);
+ 
+ 	vmx_clear_hlt(vcpu);
++
++	if (vcpu->arch.exception.nr == DB_VECTOR)
++		flip_arch_lbr_ctl(vcpu, false);
+ }
+ 
+ bool vmx_get_nmi_mask(struct kvm_vcpu *vcpu)
 -- 
 2.27.0
 
