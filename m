@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D4DC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237310AbiBOPds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:33:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48892 "EHLO
+        id S240609AbiBOPdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:33:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240407AbiBOPct (ORCPT
+        with ESMTP id S240339AbiBOPdG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:32:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EB9120F53;
-        Tue, 15 Feb 2022 07:30:07 -0800 (PST)
+        Tue, 15 Feb 2022 10:33:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBFA121525;
+        Tue, 15 Feb 2022 07:30:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E00FFB81AEF;
-        Tue, 15 Feb 2022 15:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C567EC36AF7;
-        Tue, 15 Feb 2022 15:30:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC60F6165E;
+        Tue, 15 Feb 2022 15:30:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD272C36AE2;
+        Tue, 15 Feb 2022 15:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939004;
-        bh=waFPJvuWO//wIV0Mj+SevwYETiVFGCJp6e+M+z0ioWw=;
+        s=k20201202; t=1644939008;
+        bh=0x6i4OlwnfiUrwgKFWTgJ7ebyVDAj1Ju/6rNnIfShrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mtvQNfz/FdGzlw4bZqAy2UzDz+9gv1ASfROiMVdARzTAcSP/5G3jBu2fmC921WTS1
-         2Oo3dTsZbJ5beCXguKQg/7H19FxwxEp3Xku2XOCTT/erNbJOqMPGit2qDkP6AKDpXd
-         Ve2nvmW5VoACTE3+hcZfQE1s3XVT0IwaXLXvUDLZQZLQFjfLQ/GCUqW/91JCsIL28q
-         LjDysfVojnDTFJMFA+mD1wHrnYn1EmuYrs/bJ6d5syCF5LE6/I+ifIanZxwpUdRqK0
-         zsUuMAIslqsmq5o3Jc4hcXupUMivMjJYIQqSgwxOMltDhLT81yzGdm2dpFfNeHwm3R
-         Ito9sHUujypKw==
+        b=P242+VE3sDprScoJo3744OuEKsFyJ/PPC/kRHzF8aHmhGmnIUYY5Zlm8Oddy+Tg+k
+         grYbEFuYMIM+2aXxCVAyHQ7ajlDuBpaG1UKTeZpO1AlYa0rktEcMA7eBkhus6D7WSm
+         2fwJ6mq6ORHh2AxvD7NYdVDob8AMAJ6cnguyJ3/kyYftAzW8G5xzuh0Z0MmX8rYT+7
+         TIjc0TJ1mr+73Xr/3N3IHe4Xb8oVu9RyFUc3gfy0nwToPRFpj5Oc54ca7sjeAeSjVK
+         QxsufOxKMJ+HiB62PhuE54WynLD13JZ8bVQCbSHGsv01kuHyfvM0dVfSSFdWbWYgbj
+         SyOP7ZtUpXCWQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tommaso Merciai <tomm.merciai@gmail.com>,
-        Richard Leitner <richard.leitner@linux.dev>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, richard.leitner@skidata.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 04/23] usb: usb251xb: add boost-up property support
-Date:   Tue, 15 Feb 2022 10:29:38 -0500
-Message-Id: <20220215152957.581303-4-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Vivek Thrivikraman <vivek.thrivikraman@est.tech>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        davem@davemloft.net, kuba@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 06/23] netfilter: conntrack: don't refresh sctp entries in closed state
+Date:   Tue, 15 Feb 2022 10:29:40 -0500
+Message-Id: <20220215152957.581303-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152957.581303-1-sashal@kernel.org>
 References: <20220215152957.581303-1-sashal@kernel.org>
@@ -53,55 +55,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tommaso Merciai <tomm.merciai@gmail.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 5c2b9c61ae5d8ad0a196d33b66ce44543be22281 ]
+[ Upstream commit 77b337196a9d87f3d6bb9b07c0436ecafbffda1e ]
 
-Add support for boost-up register of usb251xb hub.
-boost-up property control USB electrical drive strength
-This register can be set:
+Vivek Thrivikraman reported:
+ An SCTP server application which is accessed continuously by client
+ application.
+ When the session disconnects the client retries to establish a connection.
+ After restart of SCTP server application the session is not established
+ because of stale conntrack entry with connection state CLOSED as below.
 
- - Normal mode -> 0x00
- - Low         -> 0x01
- - Medium      -> 0x10
- - High        -> 0x11
+ (removing this entry manually established new connection):
 
-(Normal Default)
+ sctp 9 CLOSED src=10.141.189.233 [..]  [ASSURED]
 
-References:
- - http://www.mouser.com/catalog/specsheets/2514.pdf p29
+Just skip timeout update of closed entries, we don't want them to
+stay around forever.
 
-Reviewed-by: Richard Leitner <richard.leitner@linux.dev>
-Signed-off-by: Tommaso Merciai <tomm.merciai@gmail.com>
-Link: https://lore.kernel.org/r/20220128181713.96856-1-tomm.merciai@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-and-tested-by: Vivek Thrivikraman <vivek.thrivikraman@est.tech>
+Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1579
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/misc/usb251xb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/netfilter/nf_conntrack_proto_sctp.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/usb/misc/usb251xb.c b/drivers/usb/misc/usb251xb.c
-index 29fe5771c21bc..2f14690bc9ca8 100644
---- a/drivers/usb/misc/usb251xb.c
-+++ b/drivers/usb/misc/usb251xb.c
-@@ -543,6 +543,9 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
- 	if (of_property_read_u16_array(np, "language-id", &hub->lang_id, 1))
- 		hub->lang_id = USB251XB_DEF_LANGUAGE_ID;
- 
-+	if (of_property_read_u8(np, "boost-up", &hub->boost_up))
-+		hub->boost_up = USB251XB_DEF_BOOST_UP;
+diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
+index 810cca24b3990..7626f3e1c70a7 100644
+--- a/net/netfilter/nf_conntrack_proto_sctp.c
++++ b/net/netfilter/nf_conntrack_proto_sctp.c
+@@ -489,6 +489,15 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
+ 			pr_debug("Setting vtag %x for dir %d\n",
+ 				 ih->init_tag, !dir);
+ 			ct->proto.sctp.vtag[!dir] = ih->init_tag;
 +
- 	cproperty_char = of_get_property(np, "manufacturer", NULL);
- 	strlcpy(str, cproperty_char ? : USB251XB_DEF_MANUFACTURER_STRING,
- 		sizeof(str));
-@@ -584,7 +587,6 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
- 	 * may be as soon as needed.
- 	 */
- 	hub->bat_charge_en = USB251XB_DEF_BATTERY_CHARGING_ENABLE;
--	hub->boost_up = USB251XB_DEF_BOOST_UP;
- 	hub->boost_57 = USB251XB_DEF_BOOST_57;
- 	hub->boost_14 = USB251XB_DEF_BOOST_14;
- 	hub->port_map12 = USB251XB_DEF_PORT_MAP_12;
++			/* don't renew timeout on init retransmit so
++			 * port reuse by client or NAT middlebox cannot
++			 * keep entry alive indefinitely (incl. nat info).
++			 */
++			if (new_state == SCTP_CONNTRACK_CLOSED &&
++			    old_state == SCTP_CONNTRACK_CLOSED &&
++			    nf_ct_is_confirmed(ct))
++				ignore = true;
+ 		}
+ 
+ 		ct->proto.sctp.state = new_state;
 -- 
 2.34.1
 
