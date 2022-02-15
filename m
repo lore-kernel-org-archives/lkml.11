@@ -2,219 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD211C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3606DC3527A
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 19:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243580AbiBOTYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 14:24:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57670 "EHLO
+        id S243663AbiBOTZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 14:25:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbiBOTYF (ORCPT
+        with ESMTP id S230290AbiBOTY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 14:24:05 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACAB85656
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 11:23:55 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21FJNlHZ059882;
-        Tue, 15 Feb 2022 13:23:47 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644953027;
-        bh=rr1Zodq/FlvEdUsZUpJ8FeMZ8Ymp8twhy6LQt3KrRRQ=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=C2fE0fAyYyiJk4eDrOpc0WrARKLjIQqNIxzhAugHyKQPQ8MedUYNYQlTRQ8bMxdH4
-         tHyFJfX7WkR333grEmFdNUkvRDS1chycw3Xi/Yhr7T57cexcmjP6bNZ1zVRdQ4JpH3
-         rU2S0/TcY/40v+QdaWajZOxo1BMCreUc1HH/nUeg=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21FJNlLJ008985
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 15 Feb 2022 13:23:47 -0600
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 15
- Feb 2022 13:23:47 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 15 Feb 2022 13:23:47 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21FJNkoD109511;
-        Tue, 15 Feb 2022 13:23:46 -0600
-Date:   Wed, 16 Feb 2022 00:53:45 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     <Tudor.Ambarus@microchip.com>
-CC:     <michael@walle.cc>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <miquel.raynal@bootlin.com>,
-        <richard@nod.at>, <vigneshr@ti.com>
-Subject: Re: [PATCH v1 12/14] mtd: spi-nor: move all spansion specifics into
- spansion.c
-Message-ID: <20220215192345.3pv4soo3grjsr7op@ti.com>
-References: <20220202145853.4187726-1-michael@walle.cc>
- <20220202145853.4187726-13-michael@walle.cc>
- <ceef013d-a337-0059-6207-b30d2274d5cb@microchip.com>
+        Tue, 15 Feb 2022 14:24:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79308566E;
+        Tue, 15 Feb 2022 11:24:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 513F3617CB;
+        Tue, 15 Feb 2022 19:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8127AC340EB;
+        Tue, 15 Feb 2022 19:24:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644953086;
+        bh=kUCZYr9eynBGfoyFNpGztKhdR0TjeWfPR20goAdEojo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pgheRwOAKjRlXMfJul10RwEjs5CBKHR/i0QEhyIM79774uc0ovg3u5myvyhB8s/qu
+         xkZdoun6Ve/NuXn1+qZDB9F/trYlid+yq9euKiwm3PP7bJ4zoGvDfPTjgfeWCzsH6f
+         Z5GtGABFqXnkSAxbAOokUuetZQuukvg8GogLN1PAUilOeXNWgORbaiYjI/aeCr++5W
+         YWvZj7f6KVH+xfahOEVmZaopl52rdr1jj6eaQg39ut/UgM8cVQWsEKIq8K1eRZzAAa
+         TaPAe7uN1AmbZCmz+9XMV8T/S9ihvGxGOcJfBqdWD8uwk44Sq4S7ITZBKug7wSeC6N
+         S7tHpNRHJfaSA==
+Date:   Tue, 15 Feb 2022 13:32:21 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        linux-crypto@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, mpi3mr-linuxdrv.pdl@broadcom.com,
+        linux-staging@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org, sparmaintainer@unisys.com,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-ext4@vger.kernel.org, linux-acpi@vger.kernel.org,
+        devel@acpica.org, linux-arch@vger.kernel.org, linux-mm@kvack.org,
+        greybus-dev@lists.linaro.org, linux-i3c@lists.infradead.org,
+        linux-rdma@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] treewide: Replace zero-length arrays with
+ flexible-array members
+Message-ID: <20220215193221.GA884407@embeddedor>
+References: <20220215174743.GA878920@embeddedor>
+ <202202151016.C0471D6E@keescook>
+ <20220215192110.GA883653@embeddedor>
+ <Ygv8wY75hNqS7zO6@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ceef013d-a337-0059-6207-b30d2274d5cb@microchip.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <Ygv8wY75hNqS7zO6@unreal>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/02/22 03:32AM, Tudor.Ambarus@microchip.com wrote:
-> On 2/2/22 16:58, Michael Walle wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Tue, Feb 15, 2022 at 09:19:29PM +0200, Leon Romanovsky wrote:
+> On Tue, Feb 15, 2022 at 01:21:10PM -0600, Gustavo A. R. Silva wrote:
+> > On Tue, Feb 15, 2022 at 10:17:40AM -0800, Kees Cook wrote:
+> > > On Tue, Feb 15, 2022 at 11:47:43AM -0600, Gustavo A. R. Silva wrote:
+> > > 
+> > > These all look trivially correct to me. Only two didn't have the end of
+> > > the struct visible in the patch, and checking those showed them to be
+> > > trailing members as well, so:
+> > > 
+> > > Reviewed-by: Kees Cook <keescook@chromium.org>
 > > 
-> > The clear status register flags is only available on spansion flashes.
-> > Move all the functions around that into the spanion module.
-> > 
-> > Signed-off-by: Michael Walle <michael@walle.cc>
-> > ---
-> >  drivers/mtd/spi-nor/core.c     | 52 +------------------------
-> >  drivers/mtd/spi-nor/spansion.c | 70 ++++++++++++++++++++++++++++++++++
-> >  include/linux/mtd/spi-nor.h    |  1 -
-> >  3 files changed, 72 insertions(+), 51 deletions(-)
-> > 
-> > diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-> > index be65aaa954ca..5b00dfab77a6 100644
-> > --- a/drivers/mtd/spi-nor/core.c
-> > +++ b/drivers/mtd/spi-nor/core.c
-> > @@ -554,33 +554,6 @@ int spi_nor_write_ear(struct spi_nor *nor, u8 ear)
-> >         return ret;
-> >  }
-> > 
-> > -/**
-> > - * spi_nor_clear_sr() - Clear the Status Register.
-> > - * @nor:       pointer to 'struct spi_nor'.
-> > - */
-> > -static void spi_nor_clear_sr(struct spi_nor *nor)
-> > -{
-> > -       int ret;
-> > -
-> > -       if (nor->spimem) {
-> > -               struct spi_mem_op op =
-> > -                       SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLSR, 0),
-> > -                                  SPI_MEM_OP_NO_ADDR,
-> > -                                  SPI_MEM_OP_NO_DUMMY,
-> > -                                  SPI_MEM_OP_NO_DATA);
-> > -
-> > -               spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
-> > -
-> > -               ret = spi_mem_exec_op(nor->spimem, &op);
-> > -       } else {
-> > -               ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLSR,
-> > -                                                      NULL, 0);
-> > -       }
-> > -
-> > -       if (ret)
-> > -               dev_dbg(nor->dev, "error %d clearing SR\n", ret);
-> > -}
-> > -
-> >  /**
-> >   * spi_nor_sr_ready() - Query the Status Register to see if the flash is ready
-> >   * for new commands.
-> > @@ -590,33 +563,12 @@ static void spi_nor_clear_sr(struct spi_nor *nor)
-> >   */
-> >  int spi_nor_sr_ready(struct spi_nor *nor)
-> >  {
-> > -       int ret = spi_nor_read_sr(nor, nor->bouncebuf);
-> > +       int ret;
-> > 
-> > +       ret = spi_nor_read_sr(nor, nor->bouncebuf);
-> >         if (ret)
-> >                 return ret;
+> > I'll add this to my -next tree.
 > 
-> :) don't change style for no reason. What's wrong with the previous version?
+> I would like to ask you to send mlx5 patch separately to netdev. We are working
+> to delete that file completely and prefer to avoid from unnecessary merge conflicts.
 
-FWIW, I like the newer style better. But that should come in a separate 
-patch in either case.
+Oh OK. Sure thing; I will do so.
 
-> 
-> Anyway, with the reports fixed and no hidden style changes, it looks good to me.
-> 
-> > 
-> > -       if (nor->flags & SNOR_F_USE_CLSR &&
-> > -           nor->bouncebuf[0] & (SR_E_ERR | SR_P_ERR)) {
-> > -               if (nor->bouncebuf[0] & SR_E_ERR)
-> > -                       dev_err(nor->dev, "Erase Error occurred\n");
-> > -               else
-> > -                       dev_err(nor->dev, "Programming Error occurred\n");
-> > -
-> > -               spi_nor_clear_sr(nor);
-> > -
-> > -               /*
-> > -                * WEL bit remains set to one when an erase or page program
-> > -                * error occurs. Issue a Write Disable command to protect
-> > -                * against inadvertent writes that can possibly corrupt the
-> > -                * contents of the memory.
-> > -                */
-> > -               ret = spi_nor_write_disable(nor);
-> > -               if (ret)
-> > -                       return ret;
-> > -
-> > -               return -EIO;
-> > -       }
-> > -
-> >         return !(nor->bouncebuf[0] & SR_WIP);
-> >  }
-> > 
-> > diff --git a/drivers/mtd/spi-nor/spansion.c b/drivers/mtd/spi-nor/spansion.c
-> > index dedc2de90cb8..4756fb88eab2 100644
-> > --- a/drivers/mtd/spi-nor/spansion.c
-> > +++ b/drivers/mtd/spi-nor/spansion.c
-> > @@ -8,6 +8,7 @@
-> > 
-> >  #include "core.h"
-> > 
-> > +#define SPINOR_OP_CLSR         0x30    /* Clear status register 1 */
-> >  #define SPINOR_OP_RD_ANY_REG                   0x65    /* Read any register */
-> >  #define SPINOR_OP_WR_ANY_REG                   0x71    /* Write any register */
-> >  #define SPINOR_REG_CYPRESS_CFR2V               0x00800003
-> > @@ -294,6 +295,72 @@ static const struct flash_info spansion_parts[] = {
-> >         },
-> >  };
-> > 
-> > +/**
-> > + * spi_nor_clear_sr() - Clear the Status Register.
-> > + * @nor:       pointer to 'struct spi_nor'.
-> > + */
-> > +static void spi_nor_clear_sr(struct spi_nor *nor)
-> > +{
-> > +       int ret;
-> > +
-> > +       if (nor->spimem) {
-> > +               struct spi_mem_op op =
-> > +                       SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLSR, 0),
-> > +                                  SPI_MEM_OP_NO_ADDR,
-> > +                                  SPI_MEM_OP_NO_DUMMY,
-> > +                                  SPI_MEM_OP_NO_DATA);
-> > +
-> > +               spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
-> > +
-> > +               ret = spi_mem_exec_op(nor->spimem, &op);
-> > +       } else {
-> > +               ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLSR,
-> > +                                                      NULL, 0);
-> > +       }
-> > +
-> > +       if (ret)
-> > +               dev_dbg(nor->dev, "error %d clearing SR\n", ret);
-> > +}
-> > +
-> > +/**
-> > + * spi_nor_sr_ready_and_clear() - Query the Status Register to see if the flash
-> > + * is ready for new commands and clear it.
-> > + * @nor:       pointer to 'struct spi_nor'.
-> > + *
-> > + * Return: 1 if ready, 0 if not ready, -errno on errors.
-> > + */
-> > +int spi_nor_sr_ready_and_clear(struct spi_nor *nor)
-
-Make it static.
-
-[...]
-
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Thanks
+--
+Gustavo
