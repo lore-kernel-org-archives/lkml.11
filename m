@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62831C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B892C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 05:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233959AbiBOFXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:23:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52634 "EHLO
+        id S231497AbiBOFX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 00:23:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233974AbiBOFXK (ORCPT
+        with ESMTP id S234030AbiBOFXR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:23:10 -0500
+        Tue, 15 Feb 2022 00:23:17 -0500
 Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5121285BA
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:22:57 -0800 (PST)
-X-QQ-mid: bizesmtp5t1644902568tl16wf3x2
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B115128583
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:23:07 -0800 (PST)
+X-QQ-mid: bizesmtp5t1644902577ty7gqvw8a
 Received: from localhost.localdomain (unknown [58.240.82.166])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 15 Feb 2022 13:22:46 +0800 (CST)
+        id ; Tue, 15 Feb 2022 13:22:55 +0800 (CST)
 X-QQ-SSF: 0140000000200020C000000A0000000
-X-QQ-FEAT: Mzskoac49OiUs9T/oMCrmSgIQrk8Pow2Nf2ady4HgfpQFauSluksJw/vlLzGZ
-        S07guoIiqSBrkU4LJodMqNSdsP6yAgo3Rw7MvrzPPgJ+rY3GZOUSGdY8N32Q+4K/V3y5JZR
-        gEg/Eu+qH2jdyfMa9BQWov70XWvy7pQNKpYzJmLoP+JO9Hch5G054rHYadvXbFgAq/lj2E6
-        jRIpM1ZSCvVGgotPwIMsJcOxpDRjceGElYnnj27asZV1zh7KOcV84XBd5LmGvkdIdpCAB+x
-        4q6T7gwxnmnsEVShVhDNkFnBX/687a1K1Ycr/ZRC1JgnBMYTjPw9GsLmlfptQUZJk8OAk6+
-        57tNy6AKDEgZPxeL8s2DGmv11nqyaCjIk91c22NkJB07Wy5wlg=
+X-QQ-FEAT: XcJ1Se6WjemirswIwPMLJ8vy0PeFDGQGd9qjTlz3zVp2Zfp60c4vhXks92mE8
+        OUsf4zcLNTEB2kd/rLoEBgTQLcp6Q0EPRZRkpS5ywSFqNTUSL2Hoiril3TNXaO40zDDBQhg
+        EgJoDcD7QOY3iCFkpwpHFzZVh7sw+QYslm++1YADPGSHgsn2/9Cym6X3fZj+//7wvi6wpkM
+        ncEw134zXzKS8P74Kj9F2zdpkkWPlnOe0SrKJqrPS+Msba1n5wbhC1t45hMmSi6P/5eb9MP
+        UR/dLZVwxCLUWHcE/Ndb5jvsnhyyOQ7NyWPc8qnqoGAhRHCJoYXM5fBUuCmJCAJyxcpDmqY
+        bILaqd23XQi2S/OE30K1zrJoG99aVhIDBj1+7ScYCxzQrYZ8Dg=
 X-QQ-GoodBg: 1
 From:   Zhen Ni <nizhen@uniontech.com>
 To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
@@ -33,123 +33,118 @@ To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
         keescook@chromium.org
 Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         Zhen Ni <nizhen@uniontech.com>
-Subject: [PATCH 5/8] sched: Move rr_timeslice sysctls to rt.c
-Date:   Tue, 15 Feb 2022 13:22:11 +0800
-Message-Id: <20220215052214.5286-6-nizhen@uniontech.com>
+Subject: [PATCH 8/8] sched: Move energy_aware sysctls to topology.c
+Date:   Tue, 15 Feb 2022 13:22:14 +0800
+Message-Id: <20220215052214.5286-9-nizhen@uniontech.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220215052214.5286-1-nizhen@uniontech.com>
 References: <20220215052214.5286-1-nizhen@uniontech.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign1
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign7
 X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-move rr_timeslice sysctls to rt.c and use the new
+move energy_aware sysctls to topology.c and use the new
 register_sysctl_init() to register the sysctl interface.
 
 Signed-off-by: Zhen Ni <nizhen@uniontech.com>
 ---
- include/linux/sched/sysctl.h |  5 -----
- kernel/sched/rt.c            | 13 +++++++++++--
- kernel/sched/sched.h         |  1 +
- kernel/sysctl.c              |  7 -------
- 4 files changed, 12 insertions(+), 14 deletions(-)
+ include/linux/sched/sysctl.h |  6 ------
+ kernel/sched/topology.c      | 25 +++++++++++++++++++++++--
+ kernel/sysctl.c              | 11 -----------
+ 3 files changed, 23 insertions(+), 19 deletions(-)
 
 diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
-index 81187a8c625d..5515b54bfb57 100644
+index 053688eafd51..b6a4063e388d 100644
 --- a/include/linux/sched/sysctl.h
 +++ b/include/linux/sched/sysctl.h
-@@ -31,11 +31,6 @@ extern unsigned int sysctl_sched_uclamp_util_min_rt_default;
- extern unsigned int sysctl_sched_cfs_bandwidth_slice;
- #endif
- 
--extern int sysctl_sched_rr_timeslice;
--extern int sched_rr_timeslice;
--
--int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
--		size_t *lenp, loff_t *ppos);
- int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
- 		void *buffer, size_t *lenp, loff_t *ppos);
+@@ -24,10 +24,4 @@ enum sched_tunable_scaling {
  int sysctl_numa_balancing(struct ctl_table *table, int write, void *buffer,
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 1106828c4236..95e4d5f31caa 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -8,7 +8,7 @@
- #include "pelt.h"
- 
- int sched_rr_timeslice = RR_TIMESLICE;
--int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
-+static int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
- /* More than 4 hours if BW_SHIFT equals 20. */
- static const u64 max_rt_runtime = MAX_BW;
- 
-@@ -30,6 +30,8 @@ int sysctl_sched_rt_runtime = 950000;
- 
- static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
  		size_t *lenp, loff_t *ppos);
-+static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
-+		size_t *lenp, loff_t *ppos);
- #ifdef CONFIG_SYSCTL
- static struct ctl_table sched_rt_sysctls[] = {
- 	{
-@@ -46,6 +48,13 @@ static struct ctl_table sched_rt_sysctls[] = {
- 		.mode           = 0644,
- 		.proc_handler   = sched_rt_handler,
- 	},
-+	{
-+		.procname       = "sched_rr_timeslice_ms",
-+		.data           = &sysctl_sched_rr_timeslice,
-+		.maxlen         = sizeof(int),
-+		.mode           = 0644,
-+		.proc_handler   = sched_rr_handler,
-+	},
- 	{}
- };
  
-@@ -3008,7 +3017,7 @@ static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
- 	return ret;
+-#if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
+-extern unsigned int sysctl_sched_energy_aware;
+-int sched_energy_aware_handler(struct ctl_table *table, int write,
+-		void *buffer, size_t *lenp, loff_t *ppos);
+-#endif
+-
+ #endif /* _LINUX_SCHED_SYSCTL_H */
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index d201a7052a29..409e27af2034 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -207,7 +207,7 @@ sd_parent_degenerate(struct sched_domain *sd, struct sched_domain *parent)
+ 
+ #if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
+ DEFINE_STATIC_KEY_FALSE(sched_energy_present);
+-unsigned int sysctl_sched_energy_aware = 1;
++static unsigned int sysctl_sched_energy_aware = 1;
+ DEFINE_MUTEX(sched_energy_mutex);
+ bool sched_energy_update;
+ 
+@@ -221,7 +221,7 @@ void rebuild_sched_domains_energy(void)
  }
  
--int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
-+static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
- 		size_t *lenp, loff_t *ppos)
+ #ifdef CONFIG_PROC_SYSCTL
+-int sched_energy_aware_handler(struct ctl_table *table, int write,
++static int sched_energy_aware_handler(struct ctl_table *table, int write,
+ 		void *buffer, size_t *lenp, loff_t *ppos)
  {
- 	int ret;
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 385e74095434..2d3451e06c55 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -105,6 +105,7 @@ extern void call_trace_sched_update_nr_running(struct rq *rq, int count);
+ 	int ret, state;
+@@ -238,6 +238,27 @@ int sched_energy_aware_handler(struct ctl_table *table, int write,
  
- extern unsigned int sysctl_sched_rt_period;
- extern int sysctl_sched_rt_runtime;
-+extern int sched_rr_timeslice;
+ 	return ret;
+ }
++
++static struct ctl_table sched_energy_aware_sysctls[] = {
++	{
++		.procname       = "sched_energy_aware",
++		.data           = &sysctl_sched_energy_aware,
++		.maxlen         = sizeof(unsigned int),
++		.mode           = 0644,
++		.proc_handler   = sched_energy_aware_handler,
++		.extra1         = SYSCTL_ZERO,
++		.extra2         = SYSCTL_ONE,
++	},
++	{}
++};
++
++static int __init sched_energy_aware_sysctl_init(void)
++{
++	register_sysctl_init("kernel", sched_energy_aware_sysctls);
++	return 0;
++}
++
++late_initcall(sched_energy_aware_sysctl_init);
+ #endif
  
- /*
-  * Helpers for converting nanosecond timing to jiffy resolution
+ static void free_pd(struct perf_domain *pd)
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index f4434d22246b..cfcbd17005af 100644
+index 21b797906cc4..ee6701ea73ea 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1674,13 +1674,6 @@ static struct ctl_table kern_table[] = {
+@@ -1674,17 +1674,6 @@ static struct ctl_table kern_table[] = {
  		.extra2		= SYSCTL_ONE,
  	},
  #endif /* CONFIG_NUMA_BALANCING */
+-#if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
 -	{
--		.procname	= "sched_rr_timeslice_ms",
--		.data		= &sysctl_sched_rr_timeslice,
--		.maxlen		= sizeof(int),
+-		.procname	= "sched_energy_aware",
+-		.data		= &sysctl_sched_energy_aware,
+-		.maxlen		= sizeof(unsigned int),
 -		.mode		= 0644,
--		.proc_handler	= sched_rr_handler,
+-		.proc_handler	= sched_energy_aware_handler,
+-		.extra1		= SYSCTL_ZERO,
+-		.extra2		= SYSCTL_ONE,
 -	},
- #ifdef CONFIG_UCLAMP_TASK
+-#endif
+ #ifdef CONFIG_PROVE_LOCKING
  	{
- 		.procname	= "sched_util_clamp_min",
+ 		.procname	= "prove_locking",
 -- 
 2.20.1
 
