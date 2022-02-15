@@ -2,87 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D867CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA64C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238013AbiBOMzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:55:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37542 "EHLO
+        id S237990AbiBOM7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:59:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237992AbiBOMzT (ORCPT
+        with ESMTP id S236600AbiBOM7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:55:19 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612E0443E3;
-        Tue, 15 Feb 2022 04:55:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BC9ADCE1F1B;
-        Tue, 15 Feb 2022 12:55:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C49C0C340F2;
-        Tue, 15 Feb 2022 12:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644929705;
-        bh=p1tJVXNyyLVvsyyu/uQ3N9eU1Jya4h24+Tsf3iiMlAQ=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Ms8Zgq+/dXjmfQCkUbxTAtEKx/ileHFkTsIXxFSmde9KNDBXk/KBRJvtbG1TPgsuf
-         E1cUngzylxKYVMy+Toj/hUXgfQJh+eaeQsv0MBSZNXLanPHtIJLbO7WYkXw2sqcSCa
-         7OMJ1ua1dpnwoVbsFcwzFbIzrKC04EW8k2jerH6C9D7Aw7Hut1rDmonUhJESxRHb2f
-         8j79HT6Mr3hcEw3RYYyVPSj2oSjcyUU3qyz0mi+UihB4Fdx1zCY3Ov2xyo8C0C08A7
-         nXB2SSFOTjmKjspcSjEvLxsUyDp2q0bYiVaSy+hWgOSSUz5JZlQRugtIVKJAHVO9ei
-         IuTpq8k7TyDFw==
-From:   Mark Brown <broonie@kernel.org>
-To:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Li-hao Kuo <lhjeff911@gmail.com>
-Cc:     lh.kuo@sunplus.com, trix@redhat.com, nathan@kernel.org,
-        wells.lu@sunplus.com
-In-Reply-To: <7d91e6ce29f9a8df2c53a47b4b977664020e237a.1644805060.git.lhjeff911@gmail.com>
-References: <7d91e6ce29f9a8df2c53a47b4b977664020e237a.1644805060.git.lhjeff911@gmail.com>
-Subject: Re: [PATCH] spi: Fix warning for Clang build and simplify code
-Message-Id: <164492970350.14011.3679967978147631328.b4-ty@kernel.org>
-Date:   Tue, 15 Feb 2022 12:55:03 +0000
+        Tue, 15 Feb 2022 07:59:13 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542727F6F3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:59:03 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id j26so21137336wrb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:59:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=zCpn2JXq0VskflvQH2SSx8I9uTFbNRNFydiZKPnDvhI=;
+        b=lDOFr/XxJeC0Y/42M08O7MvgoGf2FhswQUQpb+D1iRzw+/MCqXjZyDN32KSXivqcP6
+         3FBgZILaDnjuOZgwIzIzZcObKk6UmZhc/Fa0tBVi7aLeWjLmh99S8enRwY8dE4VeOyBW
+         elAzCU/6enOMQFl15N1Tgg1v7JDAPXYbP1W1iS1YkcanoBEbu0hzkPdqblqU3FEkaPgt
+         AmbgkacxfeuhcI9Vg9u8r924SDfc0q7H8zX6+mBCu9aebjIKFPaCxnugvp1a63s04FEW
+         yC/Pe5igxodlc4AKf6Tas1Q8fPsPMxVUpYcjPziF7yDdtWqU7NREx5gUtBdizd1nRYxy
+         9XsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=zCpn2JXq0VskflvQH2SSx8I9uTFbNRNFydiZKPnDvhI=;
+        b=rS/dyYOJcCkB4yg6JsGgXEUPC0e8a2u8LGqFrFjaChMtdX5riMZGpTQuiZXc6DVNbY
+         JIwbgu5hYAPfKUPt/6YY1O4x8tY5GXPjmwVpkrV6TkyLJw8OHOVT+A/MgocoItJt3ol0
+         mFYYBb0nfcQf/jDSWyGB0RU5n8ciMSRQI4CYA7Nhna+RJLLoTIekmi7BOSW9YlmHBbUk
+         JsyBqLfOkORS4tBunTTHBW6gD0AC1zWk2haWlH6FAVGHJpVvD4MGirf8VGRTDK8FjTwR
+         EqhTzy3bA5Gi1ValJOhuWPQDEYfv9Pcb+sS4ZahNcYBOML1bE3q6tRvfkqnm2MMnbiT7
+         r5vQ==
+X-Gm-Message-State: AOAM5315ZkPGhDcN06QdFHAIBlOrKW5m/cU58gV4qsFBx9wJoGctDfe5
+        Q3PLeF8nZED1EMl8r4EfURg1pw==
+X-Google-Smtp-Source: ABdhPJzR05gOWEzqqC2fldn5T2nllYrHfwlb4CSV4AZs7n55qc988hVFpstMdBCmyRZ47NemCaA44w==
+X-Received: by 2002:adf:f803:: with SMTP id s3mr3237755wrp.660.1644929941843;
+        Tue, 15 Feb 2022 04:59:01 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id bg23sm20081554wmb.5.2022.02.15.04.59.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 04:59:01 -0800 (PST)
+Date:   Tue, 15 Feb 2022 12:58:59 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/15] dt-bindings: mfd: qcom,tcsr: Document msm8953
+ compatible
+Message-ID: <YgujkzAezfFBNRDP@google.com>
+References: <20220112194118.178026-1-luca@z3ntu.xyz>
+ <20220112194118.178026-4-luca@z3ntu.xyz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220112194118.178026-4-luca@z3ntu.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022 10:20:11 +0800, Li-hao Kuo wrote:
-> Clang build fails with
-> spi-sunplus-sp7021.c:405:2: error: variable 'ret' is used
->   uninitialized whenever switch default is taken
->         default:
+On Wed, 12 Jan 2022, Luca Weiss wrote:
+
+> Document the compatible for tcsr found in msm8953.
 > 
-> simplify code
-> 
-> [...]
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> ---
+>  Documentation/devicetree/bindings/mfd/qcom,tcsr.txt | 1 +
+>  1 file changed, 1 insertion(+)
 
-Applied to
+Doesn't seem to apply.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+Could you please rebase.
 
-Thanks!
+> diff --git a/Documentation/devicetree/bindings/mfd/qcom,tcsr.txt b/Documentation/devicetree/bindings/mfd/qcom,tcsr.txt
+> index c5f4f0ddfcc3..add61bcc3c74 100644
+> --- a/Documentation/devicetree/bindings/mfd/qcom,tcsr.txt
+> +++ b/Documentation/devicetree/bindings/mfd/qcom,tcsr.txt
+> @@ -10,6 +10,7 @@ Required properties:
+>  		"qcom,tcsr-ipq8064", "syscon" for IPQ8064
+>  		"qcom,tcsr-apq8064", "syscon" for APQ8064
+>  		"qcom,tcsr-msm8660", "syscon" for MSM8660
+> +		"qcom,tcsr-msm8953", "syscon" for MSM8953
+>  		"qcom,tcsr-msm8960", "syscon" for MSM8960
+>  		"qcom,tcsr-msm8974", "syscon" for MSM8974
+>  		"qcom,tcsr-apq8084", "syscon" for APQ8084
 
-[1/1] spi: Fix warning for Clang build and simplify code
-      commit: 5790597d7113faabb1714d3d1efa268e36eb4811
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
