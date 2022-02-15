@@ -2,151 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 203B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 10:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236099AbiBOKCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:02:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36458 "EHLO
+        id S235480AbiBOKDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:03:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231605AbiBOKCj (ORCPT
+        with ESMTP id S229863AbiBOKDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:02:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF89196;
-        Tue, 15 Feb 2022 02:02:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00CC16126D;
-        Tue, 15 Feb 2022 10:02:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58D8BC340F5;
-        Tue, 15 Feb 2022 10:02:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644919348;
-        bh=6OaJO5k8UStns9fCBustiYnW4Ue2uRRTBF363T6I8Z8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=k2alkJqCK4tThaquDhNMTCGzfSPJoQ/+kF6M31KhrupjfCY12mmaxZXQGDR3lVlkH
-         I3AKKVuIX4a/FRC22RpWas1peagK6eMoDIlyq/ClCx3eqN7pdZO4RnCoXP+Rla8Qps
-         u0DMrsVXgSMbwt/E4fMYfx0BtSveveP9mpXMJ3ArTH8wBnn2Y+sb+V+b2EIOmZT06Q
-         pqY4i7TzPYRkDpl6oeg7C5aWzjOIEZQJwAOn1lGP06V+D6ioRPTC25sJYFiILImHhL
-         qmhL3MzhySo3dCg7GZz660sn4LBcHXU/aI3EOc+V67irk32eHunmx+R8h5+ABBl4dy
-         P5O52Q7zn4hlg==
-Received: by mail-wm1-f43.google.com with SMTP id q198-20020a1ca7cf000000b0037bb52545c6so1084170wme.1;
-        Tue, 15 Feb 2022 02:02:28 -0800 (PST)
-X-Gm-Message-State: AOAM532qqzCeQzcec0sQIYk1ABbpPvp/JSvMDHclGOr0VoAwlTqsh8cU
-        gINZBJM5+GYCcBrV/wZSgZNPMlowy1jq3qxvuxU=
-X-Google-Smtp-Source: ABdhPJxXhF5oN8HK5+/UBfeNSuYxeBNAH3pN7Z2cMEK019oVoVAxn2dH7YUg+eieAXhNWJaJdsC0aGcEXS3C4UXMT34=
-X-Received: by 2002:a05:600c:2108:b0:34e:870:966e with SMTP id
- u8-20020a05600c210800b0034e0870966emr2332972wml.173.1644919346591; Tue, 15
- Feb 2022 02:02:26 -0800 (PST)
+        Tue, 15 Feb 2022 05:03:39 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF1024F;
+        Tue, 15 Feb 2022 02:03:29 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21F9RsuX032111;
+        Tue, 15 Feb 2022 10:03:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=mo53ye7ADXSil/1Dwypbuvn8sFLXAMAI+CaMqOgPWQ0=;
+ b=gYfBCRz2OD3qY4WgjYDc10tYkaNCc87voqsQ+Jp5Y/czktKqw05fCnsSWdw20dMTRAWG
+ sofEh6AqOd45Id+P2sko4ItNDgMwYHtOjAoJW2vT90vEKWhzGGGVkLpD9q/RD+/+//l/
+ BN+aoWmE9xK+y6wxwet+SSkBBJUw8CHTqXS0q5/Siuv8Y56NMhQ0GipFWvE12t8Ip6WA
+ ZLrILF52KhGyuddFgx91nmeSDDrCS0IIGSz11OcFqx7O5jfvPHv1fOnjRBJJ1uXU0CXn
+ jfvwc+xyWZXy7M257QssnCKnRf4nml/xEV0m+1x2ioFpasRFQ334e2Hcpv6oRBY5S0Dp Mg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e878uc0eq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 10:03:29 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21F8umw2019940;
+        Tue, 15 Feb 2022 10:03:28 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e878uc0ds-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 10:03:28 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21F9c3oZ013900;
+        Tue, 15 Feb 2022 10:03:25 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3e64h9m39f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 10:03:25 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21FA3MGA47513874
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 10:03:22 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D878A4C040;
+        Tue, 15 Feb 2022 10:03:21 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CDD3E4C046;
+        Tue, 15 Feb 2022 10:03:20 +0000 (GMT)
+Received: from [9.171.66.227] (unknown [9.171.66.227])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 15 Feb 2022 10:03:20 +0000 (GMT)
+Message-ID: <a9a4bb87-2189-8c0a-8a94-6c6069fec7f7@linux.ibm.com>
+Date:   Tue, 15 Feb 2022 11:03:20 +0100
 MIME-Version: 1.0
-References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-10-arnd@kernel.org>
- <Ygr11RGjj3C9uAUg@zeniv-ca.linux.org.uk> <20220215062942.GA12551@lst.de> <YgtSpk0boDjsyjFK@zeniv-ca.linux.org.uk>
-In-Reply-To: <YgtSpk0boDjsyjFK@zeniv-ca.linux.org.uk>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 15 Feb 2022 11:02:10 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0t-dnJXvXH0Mx5L-AeVQe1mYzRi0sQjYxzMQw-mVPv0Q@mail.gmail.com>
-Message-ID: <CAK8P3a0t-dnJXvXH0Mx5L-AeVQe1mYzRi0sQjYxzMQw-mVPv0Q@mail.gmail.com>
-Subject: Re: [PATCH 09/14] m68k: drop custom __access_ok()
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Brian Cain <bcain@codeaurora.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Rich Felker <dalias@libc.org>,
-        David Miller <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        "open list:SYNOPSYS ARC ARCHITECTURE" 
-        <linux-snps-arc@lists.infradead.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        linux-ia64@vger.kernel.org,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Openrisc <openrisc@lists.librecores.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] selftests: kvm: Check whether SIDA memop fails for normal
+ guests
+Content-Language: en-US
+To:     Thomas Huth <thuth@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220215074824.188440-1-thuth@redhat.com>
+ <801aa4ea-ca26-7561-95f3-162b0f680929@linux.ibm.com>
+ <c01824a7-9d15-1356-2530-04c6112ace65@redhat.com>
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+In-Reply-To: <c01824a7-9d15-1356-2530-04c6112ace65@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 3_h2FM2TnsFpSJ4vcjYx0lEUvyaSu5YI
+X-Proofpoint-ORIG-GUID: x4OX1t67bnfPeUqADZDAgT048wLZlut_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-15_03,2022-02-14_04,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 bulkscore=0 suspectscore=0 clxscore=1015
+ mlxlogscore=999 impostorscore=0 mlxscore=0 spamscore=0 phishscore=0
+ malwarescore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202150056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 8:13 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> On Tue, Feb 15, 2022 at 07:29:42AM +0100, Christoph Hellwig wrote:
-> > On Tue, Feb 15, 2022 at 12:37:41AM +0000, Al Viro wrote:
-> > > Perhaps simply wrap that sucker into #ifdef CONFIG_CPU_HAS_ADDRESS_SPACES
-> > > (and trim the comment down to "coldfire and 68000 will pick generic
-> > > variant")?
-> >
-> > I wonder if we should invert CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE,
-> > select the separate address space config for s390, sparc64, non-coldfire
-> > m68k and mips with EVA and then just have one single access_ok for
-> > overlapping address space (as added by Arnd) and non-overlapping ones
-> > (always return true).
->
-> parisc is also such...  How about
->
->         select ALTERNATE_SPACE_USERLAND
->
-> for that bunch?
+On 2/15/22 10:59, Thomas Huth wrote:
+> On 15/02/2022 10.54, Janis Schoetterl-Glausch wrote:
+>> On 2/15/22 08:48, Thomas Huth wrote:
+>>> Commit 2c212e1baedc ("KVM: s390: Return error on SIDA memop on normal
+>>> guest") fixed the behavior of the SIDA memops for normal guests. It
+>>> would be nice to have a way to test whether the current kernel has
+>>> the fix applied or not. Thus add a check to the KVM selftests for
+>>> these two memops.
+>>>
+>>> Signed-off-by: Thomas Huth <thuth@redhat.com>
+>>> ---
+>>>   tools/testing/selftests/kvm/s390x/memop.c | 15 +++++++++++++++
+>>>   1 file changed, 15 insertions(+)
+>>>
+>>> diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+>>> index 9f49ead380ab..d19c3ffdea3f 100644
+>>> --- a/tools/testing/selftests/kvm/s390x/memop.c
+>>> +++ b/tools/testing/selftests/kvm/s390x/memop.c
+>>> @@ -160,6 +160,21 @@ int main(int argc, char *argv[])
+>>>       run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
+>>>       vcpu_run(vm, VCPU_ID);                  /* Run to sync new state */
+>>>
+>>> +    /* Check that the SIDA calls are rejected for non-protected guests */
+>>> +    ksmo.gaddr = 0;
+>>> +    ksmo.flags = 0;
+>>> +    ksmo.size = 8;
+>>> +    ksmo.op = KVM_S390_MEMOP_SIDA_READ;
+>>> +    ksmo.buf = (uintptr_t)mem1;
+>>> +    ksmo.sida_offset = 0x1c0;
+>>
+>> What is the rational for that constant?
+>> Any would do, as long as size + offset < PAGE_SIZE, correct?
+> 
+> Right, it's rather a random value.
 
-Either of those works for me. My current version has this keyed off
-TASK_SIZE_MAX==ULONG_MAX, but a CONFIG_ symbol does
-look more descriptive.
+Ah, ok.
 
->  While we are at it, how many unusual access_ok() instances are
-> left after this series?  arm64, itanic, um, anything else?
+Reviewed-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+> 
+>  Thomas
+> 
 
-x86 adds a WARN_ON_IN_IRQ() check in there. This could be
-made generic, but it's not obvious what exactly the exceptions are
-that other architectures need. The arm64 tagged pointers could
-probably also get integrated into the generic version.
-
-> FWIW, sparc32 has a slightly unusual instance (see uaccess_32.h there); it's
-> obviously cheaper than generic and I wonder if the trick is legitimate (and
-> applicable elsewhere, perhaps)...
-
-Right, a few others have the same, but I wasn't convinced that this
-is actually safe for call possible cases: it's trivial to construct a caller
-that works on other architectures but not this one, if you pass a large
-enough size value and don't access the contents in sequence.
-
-Also, like the ((addr | (addr + size)) & MASK) check on some other
-architectures, it is less portable because it makes assumptions about
-the actual layout beyond a fixed address limit.
-
-        Arnd
