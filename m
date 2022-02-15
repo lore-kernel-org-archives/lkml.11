@@ -2,113 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB33C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243022AbiBOSX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:23:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38390 "EHLO
+        id S243028AbiBOSZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:25:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232405AbiBOSXX (ORCPT
+        with ESMTP id S235765AbiBOSZJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:23:23 -0500
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342DFC4E29;
-        Tue, 15 Feb 2022 10:23:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=4ea0lgdbQAVCZDxpFFT2YdXX5BI7YGO8Ht6ckrwZhHg=;
-        b=X63cxMFShB+1K/6yb0SV1pd0O+vzkwkregB6VG6YR+lXD/XkFpeIT+XRw6VNpW0NVaavwFFWLqXf9
-         4Ckk3tfS+E/lKjlHJxHlQX3FDmzShgw1JO1235CeI4VuRSCAS/N5uulpeKSkVnG0JhOOZYRDOBrdQA
-         UgznDdK3ctb9FeHys454IZMCJ45LihKAIxIKOe5O7rssq9P1D7H1IDSSzg2RMvr7SUsxvulNnMtVhl
-         3SU+CcwHpMLKltJz/scvfYOeHjFaL652mE61UQqAMJhd7e8jTJ6k52a50n8GtJpgW1G+RqmpY3HfW+
-         SIJnmW7Q+zyGvMH5iLtbgPDJBvK+Gpw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1403, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008659)], BW: [Enabled, t: (0.000022,0.000002)], RTDA: [Enabled, t: (0.064652), Hit: No, Details: v2.25.0; Id: 15.52k0kj.1frv9v0as.6jqg; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([178.70.66.234])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 15 Feb 2022 21:22:50 +0300
-Date:   Tue, 15 Feb 2022 21:05:02 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Moritz Fischer <mdf@kernel.org>
-Cc:     Conor Dooley <mail@conchuod.ie>, hao.wu@intel.com,
-        yilun.xu@intel.com, trix@redhat.com, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH v2] fpga: microsemi-spi: add Microsemi FPGA manager
-Message-ID: <20220215180502.gqcsz7rdxygiva3y@x260>
-References: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
- <20220215115853.26491-1-i.bornyakov@metrotek.ru>
- <d0890e09-5d4a-5cce-832d-26e64b74ac54@conchuod.ie>
- <YgvoXgqM65M97qib@epycbox.lan>
+        Tue, 15 Feb 2022 13:25:09 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD34119870;
+        Tue, 15 Feb 2022 10:24:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644949500; x=1676485500;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=iuYkqboV3atqieS19lPYTAixKUhHoKmGxrzjZT3zBLc=;
+  b=p554GAdYf/jujt47+dSY9Rx8ttRy2H8xhwhETHAr0agpat2kD2VeFWHC
+   6OV0iUsKtk4UVmfdEri1v1pbkczzDPab7bpvbBufNNp1azuE/9167XYTh
+   cB/H2dF+dxh1Ckw9CUF9XKiYIy0/BEqQxTcvDSjvgPBV8ls4dXiECWkm2
+   I=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 15 Feb 2022 10:24:59 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 10:24:59 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 15 Feb 2022 10:24:58 -0800
+Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 15 Feb 2022 10:24:53 -0800
+From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+To:     Peter Chen <peter.chen@kernel.org>,
+        Pawel Laszczak <pawell@cadence.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Subject: [PATCH 0/2] Refactor xhci quirks and plat private data 
+Date:   Tue, 15 Feb 2022 23:54:12 +0530
+Message-ID: <1644949454-814-1-git-send-email-quic_c_sanm@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgvoXgqM65M97qib@epycbox.lan>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Conor, Moritz
+This refactoring allows drivers like dwc3 host glue driver to
+specify thier xhci quirks.
 
-On Tue, Feb 15, 2022 at 09:52:30AM -0800, Moritz Fischer wrote:
-> Hi Conor, Ivan,
-> 
-> On Tue, Feb 15, 2022 at 05:37:04PM +0000, Conor Dooley wrote:
-> > Hey Ivan,
-> > Firstly thanks for the patch(es), stumbled across them today.
-> > As you may know Microsemi has been acquired by Microchip, so
-> > s/microsemi/microchip/ please. This would make the correct vendor
-> > prefix for compatible strings "microchip". While you've said this is
-> > for the PolarFire FPGA, there is prescendent for using "mpfs" for the
-> > PolarFire SoC FPGA in the kernel - so if you could change the uses of
-> > "polarfire" to "mpf" that'd be great.
-> 
-> I personally don't have a strong opinion on hte microchip vs microsemi
-> here. We have precedent with intel/altera.
-> 
+Pavankumar Kondeti (1):
+  usb: xhci: refactor quirks and plat private data
 
-Me neither, so I'll do what Conor asked.
+Sandeep Maheswaram (1):
+  usb: dwc: host: add xhci_plat_priv quirk XHCI_SKIP_PHY_INIT
 
-> > 
-> > The current item on my own todo list is the opposite side of this,
-> > reprogramming the FPGA via the system controller acting as a SPI
-> > master for PolarFire SoC.
-> > I will get back to you when I have a better idea of what (if any) code
-> > can be made generic between both modes. In the meantime, I will get
-> > together a setup to test SPI slave reprogramming of the PolarFire (SoC)
-> > 
-> > Thanks,
-> > Conor <conor.dooley@microchip.com>
-> 
-> Thanks for chiming in. Always nice to have vendors help out reviewing.
->
+ drivers/usb/cdns3/host.c        |  2 +-
+ drivers/usb/dwc3/host.c         | 15 +++++++++
+ drivers/usb/host/xhci-plat.c    |  3 +-
+ drivers/usb/host/xhci-plat.h    | 25 ---------------
+ drivers/usb/host/xhci-rcar.c    |  3 +-
+ drivers/usb/host/xhci.h         | 60 ++++--------------------------------
+ include/linux/usb/xhci-plat.h   | 24 +++++++++++++++
+ include/linux/usb/xhci-quirks.h | 67 +++++++++++++++++++++++++++++++++++++++++
+ 8 files changed, 117 insertions(+), 82 deletions(-)
+ delete mode 100644 drivers/usb/host/xhci-plat.h
+ create mode 100644 include/linux/usb/xhci-plat.h
+ create mode 100644 include/linux/usb/xhci-quirks.h
 
-Yeah, that's great, thanks in advance Conor.
-
-> > > Add support to the FPGA manager for programming Microsemi Polarfire
-> > > FPGAs over slave SPI interface.
-> > >
-> > > Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> > > ---
-> > > Changelog:
-> > >   v1 -> v2: fix printk formating
-> > >
-> > >  drivers/fpga/Kconfig         |   9 +
-> > >  drivers/fpga/Makefile        |   1 +
-> > >  drivers/fpga/microsemi-spi.c | 366 +++++++++++++++++++++++++++++++++++
-> > >  3 files changed, 376 insertions(+)
-> > >  create mode 100644 drivers/fpga/microsemi-spi.c
-> > >
-> > --<snip>--
-> 
-> I'll take a closer look once the bot's complaints are addressed.
-> 
-> Thanks,
-> Moritz
-
-Thanks in advance Moritz.
+-- 
+2.7.4
 
