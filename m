@@ -2,161 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5AA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEF5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240348AbiBOPnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:43:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39762 "EHLO
+        id S240783AbiBOPnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:43:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242237AbiBOPmR (ORCPT
+        with ESMTP id S241165AbiBOPlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:42:17 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAC5CEA00
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:37:14 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id b12-20020a056902030c00b0061d720e274aso41352913ybs.20
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:37:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=nh+sVpD80A6shLvILTn05Ew0Y8LiljouUPL3DGf7rDU=;
-        b=Za6kh7UUq6kFoRp3AnGRu+4Sa/Vqbhlt9NgYc6KoqFNbNkhpQnbVp8683+w52g1Bwr
-         6autASyVISW8izdNV6Qv9EKfqWfi+zwjgSaawXxCspjhEzSgye0e+VsOdfgW+23XXI19
-         TPo34hzsiKbwumJ2QWMnBx+mijIMIGXZ7Ilx4pZLCkbm5KigOwHMTYqqu7kgyFWFO2BB
-         9Bb7ALyTwGRpr5PvckbEPT8sg/xc+eERTmr1ZX/+VC+/DiqNNlud7eqmT/iyZsa0msSs
-         mieCHsanHE+xf3SbyryOai+Fvc82ebgt1iJ0RSmZgueeAxwm6skeTZ0fyezPz+1t7TtG
-         BQQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=nh+sVpD80A6shLvILTn05Ew0Y8LiljouUPL3DGf7rDU=;
-        b=zj1Y3oLxafdxO2ok7MZs1pCYkXytPexq6isPVn6OxXqCl+xwn0QVzjiJ54aqX9okLs
-         pv4HQzmT1ZBLuhdKtlFBi4CsHIL63MTN1NOKy3KFUVvYj3pGsNaSF4Cm1aDKPEOsYH9Q
-         1eMJKizz1U55hVdgfTzS7k6zIund68c84ZjM8zhhQCzN+9aXfjjuslMR2NIwPcpttt3y
-         1pHvxGEXMmJZy3GLJ8OaOgM7h5kWhhiP3yjR2bS/OT5MWzvyJ5apD+x/U3DB/oMYU0mA
-         tijKKL2uFTa55bwU0HZUdi6XCkLI3RTOuqpOO5Jl09puKTAJEW3ixD3oD+Ns26A68+Ox
-         GSVA==
-X-Gm-Message-State: AOAM532yYeSmOLz5sBpuL36ihqfXztB9P66+BAZbQJGvRAxO0Mjg8hxu
-        E5l8ZE6RVgSB0pz2sdANgzzaOWpxZIJF
-X-Google-Smtp-Source: ABdhPJwZphDpZK5w+SNtxL8aRxpQJ/Br4sTTzmcveEKO1iEOmvKB8/KvFavtIpdL/Yb2ywfIeTfilgCvojRw
-X-Received: from bg.sfo.corp.google.com ([2620:15c:11a:202:d51c:4157:9d6d:63e4])
- (user=bgeffon job=sendgmr) by 2002:a81:ee10:: with SMTP id
- l16mr4280164ywm.32.1644939433331; Tue, 15 Feb 2022 07:37:13 -0800 (PST)
-Date:   Tue, 15 Feb 2022 07:36:44 -0800
-Message-Id: <20220215153644.3654582-1-bgeffon@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH] x86/fpu: Correct pkru/xstate inconsistency
-From:   Brian Geffon <bgeffon@google.com>
-To:     Dave Hansen <dave.hansen@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Willis Kung <williskung@google.com>,
-        Guenter Roeck <groeck@google.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Lutomirski <luto@kernel.org>, stable@vger.kernel.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        Brian Geffon <bgeffon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 15 Feb 2022 10:41:01 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A3A13DE15;
+        Tue, 15 Feb 2022 07:34:31 -0800 (PST)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21FFXwV8039094;
+        Tue, 15 Feb 2022 09:33:58 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644939238;
+        bh=h/zYlGUEcc55g9uDoWcPM6icynXj9sCfC3wz2wPbMlI=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=HkQhHlHz4evf9qkhvc1KP9o7Ynwyec/ugo97uiN1mhCCOCqfCJVQammQpVOjTS+Pf
+         Be7nyf9Kk3bhynTxrb+JuvjvhIfXw54EG6SmrUFJn6aiJ+dprtX1veGYvMc5Kj4q9o
+         pV6eT63AzQbHDrzhP+yLG/FtdjSOfeXWLkcruMpU=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21FFXw47061286
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 15 Feb 2022 09:33:58 -0600
+Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 15
+ Feb 2022 09:33:58 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 15 Feb 2022 09:33:58 -0600
+Received: from [10.250.233.196] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21FFXqVL025861;
+        Tue, 15 Feb 2022 09:33:53 -0600
+Message-ID: <bf3ea909-e0a5-eeac-12e9-c8a809685f48@ti.com>
+Date:   Tue, 15 Feb 2022 21:03:52 +0530
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 05/17] mtd: spinand: Define ctrl_ops for non-page
+ read/write op templates
+Content-Language: en-US
+To:     Boris Brezillon <boris.brezillon@collabora.com>
+CC:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Mark Brown <broonie@kernel.org>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Daniel Palmer <daniel@0x0f.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <p.yadav@ti.com>
+References: <20220101074250.14443-1-a-nandan@ti.com>
+ <20220101074250.14443-6-a-nandan@ti.com>
+ <20220103110107.45594e78@collabora.com>
+From:   Apurva Nandan <a-nandan@ti.com>
+In-Reply-To: <20220103110107.45594e78@collabora.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two issues with PKRU handling prior to 5.13. The first is that
-when eagerly switching PKRU we check that current is not a kernel
-thread as kernel threads will never use PKRU. It's possible that
-this_cpu_read_stable() on current_task (ie. get_current()) is returning
-an old cached value. By forcing the read with this_cpu_read() the
-correct task is used. Without this it's possible when switching from
-a kernel thread to a userspace thread that we'll still observe the
-PF_KTHREAD flag and never restore the PKRU. And as a result this
-issue only occurs when switching from a kernel thread to a userspace
-thread, switching from a non kernel thread works perfectly fine because
-all we consider in that situation is the flags from some other non
-kernel task and the next fpu is passed in to switch_fpu_finish().
+Hi Boris,
 
-Without reloading the value finish_fpu_load() after being inlined into
-__switch_to() uses a stale value of current:
+On 03/01/22 15:31, Boris Brezillon wrote:
+> On Sat, 1 Jan 2022 13:12:38 +0530
+> Apurva Nandan <a-nandan@ti.com> wrote:
+>
+>> 'ctrl_ops' are op templates for non-page read/write operations,
+>> which are: reset, get_feature, set_feature, write_enable, block_erase,
+>> page_read and program_execute ops. The 'ctrl_ops' struct contains in it
+>> op templates for each of this op, as well as enum spinand_protocol
+>> denoting protocol of all these ops.
+>>
+>> We require these new op templates because of deviation in standard
+>> SPINAND ops by manufacturers and also due to changes when there is a
+>> change in SPI protocol/mode. This prevents the core from live-patching
+>> and vendor-specific adjustments in ops.
+>>
+>> Define 'ctrl_ops', add macros to initialize it and add it in
+>> spinand_device.
+>>
+>> Signed-off-by: Apurva Nandan <a-nandan@ti.com>
+>> ---
+>>   include/linux/mtd/spinand.h | 33 +++++++++++++++++++++++++++++++++
+>>   1 file changed, 33 insertions(+)
+>>
+>> diff --git a/include/linux/mtd/spinand.h b/include/linux/mtd/spinand.h
+>> index 439d8ce40e1d..e5df6220ec1e 100644
+>> --- a/include/linux/mtd/spinand.h
+>> +++ b/include/linux/mtd/spinand.h
+>> @@ -356,6 +356,35 @@ struct spinand_op_variants {
+>>   			sizeof(struct spi_mem_op),			\
+>>   	}
+>>   
+>> +struct spinand_ctrl_ops {
+>> +	const struct {
+>> +		struct spi_mem_op reset;
+>> +		struct spi_mem_op get_feature;
+>> +		struct spi_mem_op set_feature;
+>> +		struct spi_mem_op write_enable;
+>> +		struct spi_mem_op block_erase;
+>> +		struct spi_mem_op page_read;
+>> +		struct spi_mem_op program_execute;
+>> +	} ops;
+>> +	const enum spinand_protocol protocol;
+> Do you really need that protocol field?
+>
+>> +};
+>> +
+>> +#define SPINAND_CTRL_OPS(__protocol, __reset, __get_feature, __set_feature,	\
+>> +			 __write_enable, __block_erase, __page_read,		\
+>> +			 __program_execute)					\
+>> +	{									\
+>> +		.ops = {							\
+>> +			.reset = __reset,					\
+>> +			.get_feature = __get_feature,				\
+>> +			.set_feature = __set_feature,				\
+>> +			.write_enable = __write_enable,				\
+>> +			.block_erase = __block_erase,				\
+>> +			.page_read = __page_read,				\
+>> +			.program_execute = __program_execute,			\
+>> +		},								\
+>> +		.protocol = __protocol,						\
+>> +	}
+>> +
+>>   /**
+>>    * spinand_ecc_info - description of the on-die ECC implemented by a SPI NAND
+>>    *		      chip
+>> @@ -468,6 +497,8 @@ struct spinand_dirmap {
+>>    * @data_ops.read_cache: read cache op template
+>>    * @data_ops.write_cache: write cache op template
+>>    * @data_ops.update_cache: update cache op template
+>> + * @ctrl_ops: various SPI mem op templates for handling the flash device, i.e.
+>> + *	      non page-read/write ops.
+>>    * @select_target: select a specific target/die. Usually called before sending
+>>    *		   a command addressing a page or an eraseblock embedded in
+>>    *		   this die. Only required if your chip exposes several dies
+>> @@ -498,6 +529,8 @@ struct spinand_device {
+>>   		const struct spi_mem_op *update_cache;
+>>   	} data_ops;
+>>   
+>> +	const struct spinand_ctrl_ops *ctrl_ops;
+>> +
+> Okay, I had something slightly different in mind. First, I'd put all
+> templates in a struct:
+>
+> struct spinand_op_templates {
+> 	const struct spi_mem_op *read_cache;
+> 	const struct spi_mem_op *write_cache;
+> 	const struct spi_mem_op *update_cache;
+> 	const struct spi_mem_op *reset;
+> 	const struct spi_mem_op *get_feature;
+> 	const struct spi_mem_op *set_feature;
+> 	const struct spi_mem_op *write_enable;
+> 	const struct spi_mem_op *block_erase;
+> 	const struct spi_mem_op *page_load;
+> 	const struct spi_mem_op *program_execute;
+> };
+>
+> Then, at the spinand level, I'd define an array of templates:
+>
+> enum spinand_protocol {
+> 	SPINAND_1S_1S_1S,
+> 	SPINAND_2S_2S_2S,
+> 	SPINAND_4S_4S_4S,
+> 	SPINAND_8S_8S_8S,
+> 	SPINAND_8D_8D_8D,
+> 	SPINAND_NUM_PROTOCOLS,
+> };
+>
+> struct spinand_device {
+> 	...
+> 	enum spinand_protocol protocol;
+> 	const struct spinand_op_templates *op_templates[SPINAND_NUM_PROTOCOLS];
+> 	...
+> };
+>
+> This way, you can easily pick the right set of operations based
+> on the protocol/mode you're in:
+>
+> #define spinand_get_op_template(spinand, opname) \
+> 	((spinand)->op_templates[(spinand)->protocol]->opname)
+>
+> static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
+> {
+> 	struct spi_mem_op op = *spinand_get_op_template(spinand, get_feature);
+> 	int ret;
+>
+> 	...
+> }
 
-  ba1:   8b 35 00 00 00 00       mov    0x0(%rip),%esi
-  ba7:   f0 41 80 4d 01 40       lock orb $0x40,0x1(%r13)
-  bad:   e9 00 00 00 00          jmp    bb2 <__switch_to+0x1eb>
-  bb2:   41 f6 45 3e 20          testb  $0x20,0x3e(%r13)
-  bb7:   75 1c                   jne    bd5 <__switch_to+0x20e>
+I find a couple of issues with this  method,
 
-By using this_cpu_read() and avoiding the cached value the compiler does
-insert an additional load instruction and observes the correct value now:
+1. read_cache, write_cache, update_cache op templates don't fit well 
+with the other non-data ops, as
+these data ops are used to create a dirmap, and that can be done only 
+once at probe time. Hence, there
+is a different mechanism of selecting of data ops and non-data ops. 
+Hence, this division in the op templates
+struct as data_ops and ctrl_ops is required. Currently, the core only 
+supports using a single protocol for
+data ops, chosen at the time of probing.
 
-  ba1:   8b 35 00 00 00 00       mov    0x0(%rip),%esi
-  ba7:   f0 41 80 4d 01 40       lock orb $0x40,0x1(%r13)
-  bad:   e9 00 00 00 00          jmp    bb2 <__switch_to+0x1eb>
-  bb2:   65 48 8b 05 00 00 00    mov    %gs:0x0(%rip),%rax
-  bb9:   00
-  bba:   f6 40 3e 20             testb  $0x20,0x3e(%rax)
-  bbe:   75 1c                   jne    bdc <__switch_to+0x215>
+2. If we use this single op_templates struct, I can't think of any good 
+way to initialize these in the
+manufacturers driver (winbond.c), refer to 17th patch in this series. 
+Could you please suggest a macro
+implementation also for winbond.c with the suggested op_templates struct.
 
-The second issue is when using write_pkru() we only write to the
-xstate when the feature bit is set because get_xsave_addr() returns
-NULL when the feature bit is not set. This is problematic as the CPU
-is free to clear the feature bit when it observes the xstate in the
-init state, this behavior seems to be documented a few places throughout
-the kernel. If the bit was cleared then in write_pkru() we would happily
-write to PKRU without ever updating the xstate, and the FPU restore on
-return to userspace would load the old value agian.
-
-Fixes: 0cecca9d03c9 ("x86/fpu: Eager switch PKRU state")
-Signed-off-by: Brian Geffon <bgeffon@google.com>
-Signed-off-by: Willis Kung <williskung@google.com>
-Tested-by: Willis Kung <williskung@google.com>
----
- arch/x86/include/asm/fpu/internal.h |  2 +-
- arch/x86/include/asm/pgtable.h      | 14 ++++++++++----
- 2 files changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/arch/x86/include/asm/fpu/internal.h b/arch/x86/include/asm/fpu/internal.h
-index 03b3de491b5e..540bda5bdd28 100644
---- a/arch/x86/include/asm/fpu/internal.h
-+++ b/arch/x86/include/asm/fpu/internal.h
-@@ -598,7 +598,7 @@ static inline void switch_fpu_finish(struct fpu *new_fpu)
- 	 * PKRU state is switched eagerly because it needs to be valid before we
- 	 * return to userland e.g. for a copy_to_user() operation.
- 	 */
--	if (!(current->flags & PF_KTHREAD)) {
-+	if (!(this_cpu_read(current_task)->flags & PF_KTHREAD)) {
- 		/*
- 		 * If the PKRU bit in xsave.header.xfeatures is not set,
- 		 * then the PKRU component was in init state, which means
-diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-index 9e71bf86d8d0..aa381b530de0 100644
---- a/arch/x86/include/asm/pgtable.h
-+++ b/arch/x86/include/asm/pgtable.h
-@@ -140,16 +140,22 @@ static inline void write_pkru(u32 pkru)
- 	if (!boot_cpu_has(X86_FEATURE_OSPKE))
- 		return;
- 
--	pk = get_xsave_addr(&current->thread.fpu.state.xsave, XFEATURE_PKRU);
--
- 	/*
- 	 * The PKRU value in xstate needs to be in sync with the value that is
- 	 * written to the CPU. The FPU restore on return to userland would
- 	 * otherwise load the previous value again.
- 	 */
- 	fpregs_lock();
--	if (pk)
--		pk->pkru = pkru;
-+	/*
-+	 * The CPU is free to clear the feature bit when the xstate is in the
-+	 * init state. For this reason, we need to make sure the feature bit is
-+	 * reset when we're explicitly writing to pkru. If we did not then we
-+	 * would write to pkru and it would not be saved on a context switch.
-+	 */
-+	current->thread.fpu.state.xsave.header.xfeatures |= XFEATURE_MASK_PKRU;
-+	pk = get_xsave_addr(&current->thread.fpu.state.xsave, XFEATURE_PKRU);
-+	BUG_ON(!pk);
-+	pk->pkru = pkru;
- 	__write_pkru(pkru);
- 	fpregs_unlock();
- }
--- 
-2.35.1.265.g69c8d7142f-goog
+Thanks,
+Apurva Nandan
 
