@@ -2,123 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87640C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 12:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237505AbiBOMJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:09:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60734 "EHLO
+        id S237515AbiBOMJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 07:09:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237486AbiBOMJd (ORCPT
+        with ESMTP id S237502AbiBOMJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:09:33 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60D6EEF0B0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 04:09:22 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D0A9B1480;
-        Tue, 15 Feb 2022 04:09:21 -0800 (PST)
-Received: from [10.57.70.89] (unknown [10.57.70.89])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AFF733F718;
-        Tue, 15 Feb 2022 04:09:20 -0800 (PST)
-Message-ID: <f408da05-a825-c392-6484-3a665cc0dbd6@arm.com>
-Date:   Tue, 15 Feb 2022 12:09:16 +0000
+        Tue, 15 Feb 2022 07:09:49 -0500
+X-Greylist: delayed 48415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 04:09:38 PST
+Received: from hs01.dk-develop.de (hs01.dk-develop.de [173.249.23.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C29FF68C9;
+        Tue, 15 Feb 2022 04:09:37 -0800 (PST)
+Date:   Tue, 15 Feb 2022 13:09:33 +0100
+From:   Danilo Krummrich <danilokrummrich@dk-develop.de>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linus.walleij@linaro.org
+Subject: Re: [PATCH 1/3] input: ps2-gpio: use ktime for IRQ timekeeping
+Message-ID: <YguX/dDxtDMYUviz@pollux>
+References: <20220211212258.80345-1-danilokrummrich@dk-develop.de>
+ <20220211212258.80345-2-danilokrummrich@dk-develop.de>
+ <YgtEwMQMrp3uQinK@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] drm/panfrost: Dynamically allocate pm_domains
-Content-Language: en-GB
-To:     Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        dri-devel@lists.freedesktop.org
-Cc:     Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
-        Steven Price <steven.price@arm.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-References: <20220214203132.4722-1-alyssa.rosenzweig@collabora.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220214203132.4722-1-alyssa.rosenzweig@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgtEwMQMrp3uQinK@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-14 20:31, Alyssa Rosenzweig wrote:
-> MT8192 requires 5 power domains. Rather than bump MAX_PM_DOMAINS and
-> waste memory on every supported Panfrost chip, instead dynamically
-> allocate pm_domain_devs and pm_domain_links. This adds some flexibility;
-> it seems inevitable a new MediaTek device will require more than 5
-> domains.
-> 
-> On non-MediaTek devices, this saves a small amount of memory.
-> 
-> Suggested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-> ---
->   drivers/gpu/drm/panfrost/panfrost_device.c | 14 ++++++++++----
->   drivers/gpu/drm/panfrost/panfrost_device.h |  5 ++---
->   2 files changed, 12 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_device.c b/drivers/gpu/drm/panfrost/panfrost_device.c
-> index ee612303f076..661cdec320af 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_device.c
-> +++ b/drivers/gpu/drm/panfrost/panfrost_device.c
-> @@ -127,7 +127,10 @@ static void panfrost_pm_domain_fini(struct panfrost_device *pfdev)
->   {
->   	int i;
->   
-> -	for (i = 0; i < ARRAY_SIZE(pfdev->pm_domain_devs); i++) {
-> +	if (!pfdev->pm_domain_devs || !pfdev->pm_domain_links)
-> +		return;
-> +
-> +	for (i = 0; i < pfdev->comp->num_pm_domains; i++) {
->   		if (!pfdev->pm_domain_devs[i])
->   			break;
->   
-> @@ -161,9 +164,12 @@ static int panfrost_pm_domain_init(struct panfrost_device *pfdev)
->   		return -EINVAL;
->   	}
->   
-> -	if (WARN(num_domains > ARRAY_SIZE(pfdev->pm_domain_devs),
-> -			"Too many supplies in compatible structure.\n"))
-> -		return -EINVAL;
-> +	pfdev->pm_domain_devs = devm_kcalloc(pfdev->dev, num_domains,
-> +					     sizeof(*pfdev->pm_domain_devs),
-> +					     GFP_KERNEL);
-> +	pfdev->pm_domain_links = devm_kcalloc(pfdev->dev, num_domains,
-> +					      sizeof(*pfdev->pm_domain_links),
-> +					      GFP_KERNEL);
+Hi Dmitry,
 
-Since we're not really doing any detailed management of our device 
-links, could we get away with using AUTOREMOVE_CONSUMER instead of 
-STATELESS to avoid having to explicitly keep track of them ourselves?
+On Mon, Feb 14, 2022 at 10:14:24PM -0800, Dmitry Torokhov wrote:
+> Hi Danilo,
+> 
+> On Fri, Feb 11, 2022 at 10:22:56PM +0100, Danilo Krummrich wrote:
+> > @@ -128,20 +155,33 @@ static irqreturn_t ps2_gpio_irq_rx(struct ps2_gpio_data *drvdata)
+> >  	unsigned char byte, cnt;
+> >  	int data;
+> >  	int rxflags = 0;
+> > -	static unsigned long old_jiffies;
+> > +	static ktime_t t_last, t_now;
+> > +	s64 us_delta;
+> >  
+> >  	byte = drvdata->rx_byte;
+> >  	cnt = drvdata->rx_cnt;
+> >  
+> > -	if (old_jiffies == 0)
+> > -		old_jiffies = jiffies;
+> > +	t_now = ktime_get();
+> > +	if (t_last == 0)
+> 
+> Instead of checking this every time, do you think we could seed the
+> value in ps2_gpio_open() (and also make it per-port, not static)?
+Oops! Sure, I'll send a v2.
 
-Robin.
+I will also add another patch to refactor struct ps2_gpio_data to clearly
+separate rx and tx state data, otherwise it might start to become a bit messy.
+> 
+> Thanks.
+> 
+> -- 
+> Dmitry
 
->   
->   	for (i = 0; i < num_domains; i++) {
->   		pfdev->pm_domain_devs[i] =
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_device.h b/drivers/gpu/drm/panfrost/panfrost_device.h
-> index 8b25278f34c8..98e3039696f9 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_device.h
-> +++ b/drivers/gpu/drm/panfrost/panfrost_device.h
-> @@ -22,7 +22,6 @@ struct panfrost_job;
->   struct panfrost_perfcnt;
->   
->   #define NUM_JOB_SLOTS 3
-> -#define MAX_PM_DOMAINS 3
->   
->   struct panfrost_features {
->   	u16 id;
-> @@ -87,8 +86,8 @@ struct panfrost_device {
->   	struct regulator_bulk_data *regulators;
->   	struct reset_control *rstc;
->   	/* pm_domains for devices with more than one. */
-> -	struct device *pm_domain_devs[MAX_PM_DOMAINS];
-> -	struct device_link *pm_domain_links[MAX_PM_DOMAINS];
-> +	struct device **pm_domain_devs;
-> +	struct device_link **pm_domain_links;
->   	bool coherent;
->   
->   	struct panfrost_features features;
+- Danilo
