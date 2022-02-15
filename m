@@ -2,55 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C12EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A8C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 14:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238708AbiBOOjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 09:39:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47852 "EHLO
+        id S238737AbiBOOjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 09:39:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232373AbiBOOi6 (ORCPT
+        with ESMTP id S232373AbiBOOjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 09:38:58 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2938C102405
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 06:38:49 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EA9E71396;
-        Tue, 15 Feb 2022 06:38:48 -0800 (PST)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2970B3F718;
-        Tue, 15 Feb 2022 06:38:48 -0800 (PST)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Cristian Marussi <cristian.marussi@arm.com>,
-        Alyssa Ross <hi@alyssa.is>
-Subject: Re: [PATCH][REPOST] firmware: arm_scmi: Remove space in MODULE_ALIAS name
-Date:   Tue, 15 Feb 2022 14:38:36 +0000
-Message-Id: <164485073724.2376958.20415753652688371.b4-ty@arm.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220211102704.128354-1-sudeep.holla@arm.com>
-References: <20220211102704.128354-1-sudeep.holla@arm.com>
+        Tue, 15 Feb 2022 09:39:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E9E10240E;
+        Tue, 15 Feb 2022 06:38:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2E92B81A64;
+        Tue, 15 Feb 2022 14:38:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14DDAC340EB;
+        Tue, 15 Feb 2022 14:38:50 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 09:38:49 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Jiri Kosina <jikos@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Ingo Molnar <mingo@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Petr Mladek <pmladek@suse.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 09/13] powerpc/ftrace: Implement
+ CONFIG_DYNAMIC_FTRACE_WITH_ARGS
+Message-ID: <20220215093849.556d5444@gandalf.local.home>
+In-Reply-To: <1644930705.g64na2kgvd.naveen@linux.ibm.com>
+References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
+        <5831f711a778fcd6eb51eb5898f1faae4378b35b.1640017960.git.christophe.leroy@csgroup.eu>
+        <1644852011.qg7ud9elo2.naveen@linux.ibm.com>
+        <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
+        <875ypgo0f3.fsf@mpe.ellerman.id.au>
+        <1644930705.g64na2kgvd.naveen@linux.ibm.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 10:27:04 +0000, Sudeep Holla wrote:
-> From: Alyssa Ross <hi@alyssa.is>
-> 
-> modprobe can't handle spaces in aliases. Get rid of it to fix the issue.
-> 
+On Tue, 15 Feb 2022 19:06:48 +0530
+"Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
 
-Applied to sudeep.holla/linux (for-next/scmi/fixes), thanks!
+> As I understand it, the reason ftrace_get_regs() was introduced was to 
+> be able to only return the pt_regs, if _all_ registers were saved into 
+> it, which we don't do when coming in through ftrace_caller(). See the 
+> x86 implementation (commit 02a474ca266a47 ("ftrace/x86: Allow for 
+> arguments to be passed in to ftrace_regs by default"), which returns 
+> pt_regs conditionally.
 
-[1/1] firmware: arm_scmi: Remove space in MODULE_ALIAS name
-      https://git.kernel.org/sudeep.holla/c/1ba603f565
+I can give you the history of ftrace_caller and ftrace_regs_caller.
 
---
-Regards,
-Sudeep
+ftrace_caller saved just enough as was denoted for gcc mcount trampolines.
+The new fentry which happens at the start of the function, whereas mcount
+happens after the stack frame is set up, may change the rules on some
+architectures.
 
+As for ftrace_regs_caller, that was created for kprobes. As the majority of
+kprobes were added at the start of the function, it made sense to hook into
+ftrace as the ftrace trampoline call is much faster than taking a
+breakpoint interrupt. But to keep compatibility with breakpoint
+interrupts, we needed to fill in all the registers, and make it act just
+like a breakpoint interrupt.
+
+I've been wanting to record function parameters, and because the ftrace
+trampoline must at a minimum save the function parameters before calling
+the ftrace callbacks, all the information for those parameters were being
+saved but were never exposed to the ftrace callbacks. I created the the
+DYNAMIC_FTRACE_WITH_ARGS to expose them. I first just used pt_regs with
+just the parameters filled in, but that was criticized as it could be
+confusing where the non filled in pt_regs might be used and thinking they
+are legitimate. So I created ftrace_regs that would give you just the
+function arguments (if DYNAMIC_FTRACE_WITH_ARGS is defined), or it will
+give you a full pt_regs, if the caller came from the ftrace_regs_caller. If
+not, it will give you a NULL pointer.
+
+The first user to use the args was live kernel patching, as they only need
+that and the return pointer.
+
+-- Steve
