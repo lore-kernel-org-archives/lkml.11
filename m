@@ -2,84 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5ABDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B161C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 09:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236001AbiBOJlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:41:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33412 "EHLO
+        id S235819AbiBOJmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 04:42:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235992AbiBOJlg (ORCPT
+        with ESMTP id S236012AbiBOJmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:41:36 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890C92608;
-        Tue, 15 Feb 2022 01:41:25 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 399F71F424E2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644918083;
-        bh=yq8iJBJC4x3GV++oabST32A8rclogMDfHMgxC/dI6Yk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=bJPM+pbQ2xVrL8VVd8LmIbEPyp0Lpi/YQCkn68h72V1EcuKipsmZsB+E4h2GLgPnR
-         F1pnpIK5gYzRDOsVv8RUB8tC7BdroPQ0Hlro8BdXYxX4KjHnq3V06s+D51yp09xsCU
-         vXR4BUZKXCojHE8TUc+w2nXHJRE1ku174kHK6TMkBgONYMuZW0GF1z0AKBUNZzs7mg
-         NrlEMtfjzC2prSETr+0GKJtYOJ6tiPCk8tR+84W/nem1LRGuAILxr4V7L65ecbiaHE
-         mMLIhUi9o4X7hog9f5OWjIqQKZ7B5m06IHyZIFWA1Z9HME2mjt6Ilkpu0dPLQuyCe/
-         S2W2AEDvnf7Lg==
-Message-ID: <15a24b12-e296-9d4e-211f-55553ac8f7da@collabora.com>
-Date:   Tue, 15 Feb 2022 10:41:21 +0100
+        Tue, 15 Feb 2022 04:42:04 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795C263BE
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 01:41:45 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJuKh-0007uR-49; Tue, 15 Feb 2022 10:41:15 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJuKa-00Gixt-Lc; Tue, 15 Feb 2022 10:41:07 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJuKZ-003J7g-4B; Tue, 15 Feb 2022 10:41:07 +0100
+Date:   Tue, 15 Feb 2022 10:41:06 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-riscv@lists.infradead.org, Vignesh R <vigneshr@ti.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-rockchip@lists.infradead.org,
+        Rahul Tanwar <rtanwar@maxlinear.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Jeff LaBundy <jeff@labundy.com>, linux-sunxi@lists.linux.dev,
+        linux-pwm@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH v2 00/15] pwm: dt-bindings: Include generic pwm schema
+Message-ID: <20220215094106.k35pmoxt2nk44dsj@pengutronix.de>
+References: <20220214212154.8853-1-krzysztof.kozlowski@canonical.com>
+ <20220215074030.3nugwproxjh3lwhl@pengutronix.de>
+ <CA+Eumj42Hojp1m4deuWnqMOaaNaupTSkzPaNbL_0eyBL-aDi_g@mail.gmail.com>
+ <7df71f8d-cdc3-4b2e-cf0a-7112eff28142@canonical.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v4] media: mtk-vpu: Ensure alignment of 8 for DTCM buffer
-Content-Language: en-US
-To:     linux-media@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     Alexandre Courbot <acourbot@chromium.org>, kernel@collabora.com,
-        dafna3@gmail.com, tiffany.lin@mediatek.com,
-        andrew-ct.chen@mediatek.com, minghsiu.tsai@mediatek.com,
-        houlong.wei@mediatek.com, mchehab@kernel.org,
-        matthias.bgg@gmail.com, hverkuil@xs4all.nl
-References: <20210920170408.1561-1-dafna.hirschfeld@collabora.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20210920170408.1561-1-dafna.hirschfeld@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="oa7qtfm672zzictn"
+Content-Disposition: inline
+In-Reply-To: <7df71f8d-cdc3-4b2e-cf0a-7112eff28142@canonical.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 20/09/21 19:04, Dafna Hirschfeld ha scritto:
-> From: Alexandre Courbot <acourbot@chromium.org>
-> 
-> When running memcpy_toio:
-> memcpy_toio(send_obj->share_buf, buf, len);
-> it was found that errors appear if len is not a multiple of 8:
-> 
-> [58.350841] mtk-mdp 14001000.rdma: processing failed: -22
-> 
-> This patch ensures the copy of a multiple of 8 size by calling
-> round_up(len, 8) when copying
-> 
-> Fixes: e6599adfad30 ("media: mtk-vpu: avoid unaligned access to DTCM buffer.")
-> Signed-off-by: Alexandre Courbot <acourbot@chromium.org>
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-> Reviewed-by: Houlong Wei <houlong.wei@mediatek.com>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+--oa7qtfm672zzictn
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I acknowledge that this patch is getting very old and stale, but after some
-testing on MT8173, we were able to verify that it is essential for MediaTek MDP
-functionality, along with some other patches.
+On Tue, Feb 15, 2022 at 09:02:25AM +0100, Krzysztof Kozlowski wrote:
+> On 15/02/2022 08:59, Krzysztof Kozlowski wrote:
+> > On Tue, 15 Feb 2022 at 08:40, Uwe Kleine-K=F6nig
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> >>
+> >> Hello,
+> >>
+> >> [dropped Anson Huang and Yash Shah from Cc: which were not reachable f=
+or
+> >> my last mail]
+> >>
+> >> On Mon, Feb 14, 2022 at 10:21:39PM +0100, Krzysztof Kozlowski wrote:
+> >>> Hi,
+> >>>
+> >>> Changes since v1:
+> >>> 1. Add tags.
+> >>> 2. Adjust subject (Uwe).
+> >>
+> >> However you only took a part of my suggestion ...
+> >>
+> >>> Krzysztof Kozlowski (15):
+> >>>   dt-bindings: pwm: allwinner,sun4i-a10: Include generic pwm schema
+> >>>   dt-bindings: pwm: imx: Include generic pwm schema
+> >>>   dt-bindings: pwm: intel,lgm: Include generic pwm schema
+> >>>   dt-bindings: pwm: iqs620a: Include generic pwm schema
+> >>>   dt-bindings: pwm: mxs: Include generic pwm schema
+> >>>   dt-bindings: pwm: rockchip: Include generic pwm schema
+> >>>   dt-bindings: pwm: sifive: Include generic pwm schema
+> >>>   dt-bindings: pwm: renesas,pwm: Include generic pwm schema
+> >>>   dt-bindings: pwm: toshiba,visconti: Include generic pwm schema
+> >>>   dt-bindings: pwm: brcm,bcm7038: Do not require pwm-cells twice
+> >>>   dt-bindings: pwm: intel,keembay: Do not require pwm-cells twice
+> >>
+> >> ... The actual patch has a space after the comma, I like this variant
+> >> without comma better as this is a compatible string.
+> >=20
+> > I am confused. My patch does not have comma after space. Your reply
+> > had such in the subject, but not in the proposed new subject you wrote
+> > in msg, so I left it as is. Without comma. If you still see comma, it
+> > is something with your mail client.
+> >=20
+> > See:
+> > https://lore.kernel.org/linux-devicetree/20220214212154.8853-12-krzyszt=
+of.kozlowski@canonical.com/T/#u
+> >=20
+> > Also reply from Vijayakannan does not have comma:
+> > https://lore.kernel.org/linux-devicetree/20220214081605.161394-11-krzys=
+ztof.kozlowski@canonical.com/T/#m80af695f2c751341bc971114aefa00ccc929a3ec
 
-Without this one, it won't work.
+Strange: I have this mail four times in my mailboxes (via
+linux-arm-kernel, linux-pwm, kernel@pengutronix.de and directly). In the
+two latter the Subject line is broken in two:
 
-Keeping this in mind, I would propose to get this one picked before it gets
-completely stale and requiring a rewrite.
+	Subject: [PATCH v2 08/15] dt-bindings: pwm: renesas,
+	 pwm: Include generic pwm schema
 
-Cheers,
-Angelo
+So this is indeed a problem near my side.
+
+> Just one more clarification - you proposed also to remove "pwm:"
+> middle-prefix. Shall I remove it from every patch and use instead full
+> file name?
+
+I did that to save some vertical space in the Subject line. I don't feel
+strong here.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--oa7qtfm672zzictn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmILdS8ACgkQwfwUeK3K
+7Algegf/dBLzT9R46q44cuy81Jhbw+cPq5TJjsxMzatiOW6z9KMgzITY+3sdf4tR
+wPwWoOZRYJOlQVK2OsQIBh+fF6w6J2rW+ij4RW9FGM6nBkAE4mp4Ac4xqhCovwl6
+e6hv7eF8br7+c4hXNxTa43gX7KS5JorkySK+4v0qE+iNDy0+vD81laV3sILWFaPm
+e9PWjHuuKzHsWK2iVcoQlLCmbhFHcgBwSarOx8ytG9525zLDq0RwZG8mws1Udn18
+SILWaO0/zphzHlX0Fl3VbShlGLhZBHLHI0HdwAjSg8iyj4GhjTUZSxnwXKZw0G/k
+fa+SMHLCyStkxfK/oN1jkKah5Fl4TQ==
+=9Zp/
+-----END PGP SIGNATURE-----
+
+--oa7qtfm672zzictn--
