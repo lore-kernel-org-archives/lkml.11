@@ -2,205 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D564EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF45C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 17:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240685AbiBORvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:51:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55234 "EHLO
+        id S235792AbiBORwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:52:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiBORvg (ORCPT
+        with ESMTP id S235112AbiBORwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:51:36 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E9EBF9
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:51:25 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id f17so753432edd.2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 09:51:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rsKrphKAL3/1CC5z6jH9OwpoMXOTNr6E2gqOnqAmfTc=;
-        b=di68p0dyAx2HAO0bzn3kYS0zIYH26Jthhw3M6EEVlFzSZVY06lp2Cw+SdejpV20zJS
-         PvnrJ2eL7y6A8bcN8WOsFYxgRrmy8oZfQUE/wYBuIbr3Z/HwOKA63bEvyPxBIcvTa4YP
-         SkIO+0UzfHDguIb4nERzUc9E1FEv/9e0yhyKGdjqzTF7ohFgn98wGEvVT2Czjojm0WSg
-         GdN+fGLLUUfIcs36YXBgSEylQATagUod4GTQFyQGWb747fzfcAOZkEghOgTgC1XZCRVY
-         y0DQ1ua10TvjUvuHjghm/gurzjxiBnO0ewb/A+cV+buVK19BNy/xHCUr8lecHytOvclx
-         vJiA==
+        Tue, 15 Feb 2022 12:52:43 -0500
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1B5F11B7;
+        Tue, 15 Feb 2022 09:52:33 -0800 (PST)
+Received: by mail-pj1-f54.google.com with SMTP id y9so18020627pjf.1;
+        Tue, 15 Feb 2022 09:52:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rsKrphKAL3/1CC5z6jH9OwpoMXOTNr6E2gqOnqAmfTc=;
-        b=o0c182zL1psSa0zWBvisOXkPcHJoUgf3FlWpDaj4QSQ1Qic9VVr2B1+8flPB8I+xXO
-         nMXzjYQb5pqz8i/wRZ+oN5KyqWxUskf56oOyionrdxO25WFHRAq/yDKJMUQXv+Pjmzy4
-         GkAeyZlyLp6mGpxJlkwNI3GaVESYBN340VGXNmDXCXgDxn3or5cghxHB8Uowq2Vd5YPJ
-         mp4rxhyzT+7YlhCv2cQfIBvEAfoQ8nGVFo7GQaVNwPFW5tced4QhyFyU0Un9fZDSRT7r
-         FTbIDi1DgF0SLLDKy96a9RwV0x7lpP804+3Dl8KtxdhJWvBaX6OslQrVVU5XeAbbOi/1
-         htRQ==
-X-Gm-Message-State: AOAM533DEiUB1lt3VpR6PnciY8eRvyWRV6sGWamj59ej5r/b2aRreMm8
-        AQqMu6EthIHWgPYr8ctYPyQxY+0f9KZA8UfkC33jZyB2FA4=
-X-Google-Smtp-Source: ABdhPJxYWQtVg69hMTMN/KE/xcMVmWwMsszjl5iQESyEBZ4RK9a0p44BaheDzmUurwnoS53jfoYxATRKAREhX25m2wI=
-X-Received: by 2002:a05:6402:2993:: with SMTP id eq19mr37686edb.233.1644947483392;
- Tue, 15 Feb 2022 09:51:23 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EeWKQ0eSOfEOUNiOqe9rH7RJP4VfPyvNvd5R+f4N9f8=;
+        b=e/ZbU2zZBhhGYHW0wZt85Yw+ULHXEZCFDH6KF6ANlXiBMf7iXWK7Y/zfyl7+mx80Ii
+         i6n1IEwYkfY2JH41bBLkpU5HPHahFPSw9Hf5GXB007lMs+SfzI/QDvUrUvxgC31T14GL
+         32Gj6BYEU5Yau3HVHRXlTpCcCCMfTMSOIvIbMYG+XE/5M816GI/+yRLp3LuQkmnFbWFq
+         ySoEV/oQuJTN7QkXpNz8p7tUkeyDTKR19NZ8l6xnnbzDRaKo7V1w8SMh+sGZvGrnrukf
+         fbxfjzrIy77brOss/zrkJNkgMZdznf/TV7nHoxmmrUuwFJGiRGYhcb7Fn1qN/2W9oqNd
+         Kerw==
+X-Gm-Message-State: AOAM5337fCMWsNwx6XIOnZv/0k0R5RMBIieFZUDv7eZNNfVZxKImuvgS
+        Q5AV3S6ozZrGDAPT2e9gCtI=
+X-Google-Smtp-Source: ABdhPJxRHFGeXLqJk+vJ8VLtcFX9UvbUWSISEVKyixBZptY7v28xUppe6W7BEQeWSBccgHXJgDU07w==
+X-Received: by 2002:a17:903:228c:: with SMTP id b12mr162376plh.36.1644947552447;
+        Tue, 15 Feb 2022 09:52:32 -0800 (PST)
+Received: from localhost ([2601:647:5b00:ece0:aab:34ff:52ca:a7a5])
+        by smtp.gmail.com with ESMTPSA id kb12sm6870914pjb.20.2022.02.15.09.52.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 09:52:31 -0800 (PST)
+Date:   Tue, 15 Feb 2022 09:52:30 -0800
+From:   Moritz Fischer <mdf@kernel.org>
+To:     Conor Dooley <mail@conchuod.ie>
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, mdf@kernel.org,
+        hao.wu@intel.com, yilun.xu@intel.com, trix@redhat.com,
+        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
+        system@metrotek.ru
+Subject: Re: [PATCH v2] fpga: microsemi-spi: add Microsemi FPGA manager
+Message-ID: <YgvoXgqM65M97qib@epycbox.lan>
+References: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
+ <20220215115853.26491-1-i.bornyakov@metrotek.ru>
+ <d0890e09-5d4a-5cce-832d-26e64b74ac54@conchuod.ie>
 MIME-Version: 1.0
-References: <20220215153644.3654582-1-bgeffon@google.com> <56fc0ced-d8d2-146f-6ca8-b95bd7e0b4f5@intel.com>
-In-Reply-To: <56fc0ced-d8d2-146f-6ca8-b95bd7e0b4f5@intel.com>
-From:   Brian Geffon <bgeffon@google.com>
-Date:   Tue, 15 Feb 2022 12:50:47 -0500
-Message-ID: <CADyq12x2sd4hrfX9XeG7pCbJx8ZHGb9FZo=9G1BavkrAUX7r-g@mail.gmail.com>
-Subject: Re: [PATCH] x86/fpu: Correct pkru/xstate inconsistency
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Willis Kung <williskung@google.com>,
-        Guenter Roeck <groeck@google.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        "# v4 . 10+" <stable@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d0890e09-5d4a-5cce-832d-26e64b74ac54@conchuod.ie>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dave,
-Thank you for taking a look at this.
+Hi Conor, Ivan,
 
-On Tue, Feb 15, 2022 at 12:13 PM Dave Hansen <dave.hansen@intel.com> wrote:
->
-> On 2/15/22 07:36, Brian Geffon wrote:
-> > There are two issues with PKRU handling prior to 5.13.
->
-> Are you sure both of these issues were introduced by 0cecca9d03c?  I'm
-> surprised that the get_xsave_addr() issue is not older.
->
-> Should this be two patches?
+On Tue, Feb 15, 2022 at 05:37:04PM +0000, Conor Dooley wrote:
+> Hey Ivan,
+> Firstly thanks for the patch(es), stumbled across them today.
+> As you may know Microsemi has been acquired by Microchip, so
+> s/microsemi/microchip/ please. This would make the correct vendor
+> prefix for compatible strings "microchip". While you've said this is
+> for the PolarFire FPGA, there is prescendent for using "mpfs" for the
+> PolarFire SoC FPGA in the kernel - so if you could change the uses of
+> "polarfire" to "mpf" that'd be great.
 
-You're right, the get_xsave_addr() issue is much older than the eager
-reloading of PKRU. I'll split this out into two patches.
+I personally don't have a strong opinion on hte microchip vs microsemi
+here. We have precedent with intel/altera.
 
->
-> > The first is that when eagerly switching PKRU we check that current
->
-> Don't forget to write in imperative mood.  No "we's", please.
->
-> https://www.kernel.org/doc/html/latest/process/maintainer-tip.html
->
-> This goes for changelogs and comments too.
+> 
+> The current item on my own todo list is the opposite side of this,
+> reprogramming the FPGA via the system controller acting as a SPI
+> master for PolarFire SoC.
+> I will get back to you when I have a better idea of what (if any) code
+> can be made generic between both modes. In the meantime, I will get
+> together a setup to test SPI slave reprogramming of the PolarFire (SoC)
+> 
+> Thanks,
+> Conor <conor.dooley@microchip.com>
 
-This will be corrected in future patches.
-
->
-> > is not a kernel thread as kernel threads will never use PKRU. It's
-> > possible that this_cpu_read_stable() on current_task (ie.
-> > get_current()) is returning an old cached value. By forcing the read
-> > with this_cpu_read() the correct task is used. Without this it's
-> > possible when switching from a kernel thread to a userspace thread
-> > that we'll still observe the PF_KTHREAD flag and never restore the
-> > PKRU. And as a result this issue only occurs when switching from a
-> > kernel thread to a userspace thread, switching from a non kernel
-> > thread works perfectly fine because all we consider in that situation
-> > is the flags from some other non kernel task and the next fpu is
-> > passed in to switch_fpu_finish().
->
-> It makes *sense* that there would be a place in the context switch code
-> where 'current' is wonky, but I never realized this.  This seems really
-> fragile, but *also* trivially detectable.
->
-> Is the PKRU code really the only code to use 'current' in a buggy way
-> like this?
-
-Yes, because the remaining code in __switch_to() references the next
-task as next_p rather than current. Technically, it might be more
-correct to pass next_p to switch_fpu_finish(), what do you think? This
-may make sense since we're also passing the next fpu anyway.
-
->
-> > The second issue is when using write_pkru() we only write to the
-> > xstate when the feature bit is set because get_xsave_addr() returns
-> > NULL when the feature bit is not set. This is problematic as the CPU
-> > is free to clear the feature bit when it observes the xstate in the
-> > init state, this behavior seems to be documented a few places throughout
-> > the kernel. If the bit was cleared then in write_pkru() we would happily
-> > write to PKRU without ever updating the xstate, and the FPU restore on
-> > return to userspace would load the old value agian.
->
->
->                                                 ^ again
->
-> It's probably worth noting that the AMD init tracker is a lot more
-> aggressive than Intel's.  On Intel, I think XRSTOR is the only way to
-> get back to the init state.  You're obviously hitting this on AMD.
->
-> It's also *very* unlikely that PKRU gets back to a value of 0.  I think
-> we added a selftest for this case in later kernels.
->
-> That helps explain why this bug hung around for so long.
->
-> > diff --git a/arch/x86/include/asm/fpu/internal.h b/arch/x86/include/asm/fpu/internal.h
-> > index 03b3de491b5e..540bda5bdd28 100644
-> > --- a/arch/x86/include/asm/fpu/internal.h
-> > +++ b/arch/x86/include/asm/fpu/internal.h
-> > @@ -598,7 +598,7 @@ static inline void switch_fpu_finish(struct fpu *new_fpu)
-> >        * PKRU state is switched eagerly because it needs to be valid before we
-> >        * return to userland e.g. for a copy_to_user() operation.
-> >        */
-> > -     if (!(current->flags & PF_KTHREAD)) {
-> > +     if (!(this_cpu_read(current_task)->flags & PF_KTHREAD)) {
->
-> This really deserves a specific comment.
->
-> >               /*
-> >                * If the PKRU bit in xsave.header.xfeatures is not set,
-> >                * then the PKRU component was in init state, which means
-> > diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-> > index 9e71bf86d8d0..aa381b530de0 100644
-> > --- a/arch/x86/include/asm/pgtable.h
-> > +++ b/arch/x86/include/asm/pgtable.h
-> > @@ -140,16 +140,22 @@ static inline void write_pkru(u32 pkru)
-> >       if (!boot_cpu_has(X86_FEATURE_OSPKE))
-> >               return;
+Thanks for chiming in. Always nice to have vendors help out reviewing.
+> 
+> > Add support to the FPGA manager for programming Microsemi Polarfire
+> > FPGAs over slave SPI interface.
 > >
-> > -     pk = get_xsave_addr(&current->thread.fpu.state.xsave, XFEATURE_PKRU);
-> > -
-> >       /*
-> >        * The PKRU value in xstate needs to be in sync with the value that is
-> >        * written to the CPU. The FPU restore on return to userland would
-> >        * otherwise load the previous value again.
-> >        */
-> >       fpregs_lock();
-> > -     if (pk)
-> > -             pk->pkru = pkru;
-> > +     /*
-> > +      * The CPU is free to clear the feature bit when the xstate is in the
-> > +      * init state. For this reason, we need to make sure the feature bit is
-> > +      * reset when we're explicitly writing to pkru. If we did not then we
-> > +      * would write to pkru and it would not be saved on a context switch.
-> > +      */
-> > +     current->thread.fpu.state.xsave.header.xfeatures |= XFEATURE_MASK_PKRU;
->
-> I don't think we need to describe how the init optimization works again.
->  I'm also not sure it's worth mentioning context switches here.  It's a
-> wider problem than that.  Maybe:
->
->         /*
->          * All fpregs will be XRSTOR'd from this buffer before returning
->          * to userspace.  Ensure that XRSTOR does not init PKRU and that
->          * get_xsave_addr() will work.
->          */
->
-> > +     pk = get_xsave_addr(&current->thread.fpu.state.xsave, XFEATURE_PKRU);
-> > +     BUG_ON(!pk);
->
-> A BUG_ON() a line before a NULL pointer dereference doesn't tend to do
-> much good.
->
-> > +     pk->pkru = pkru;
-> >       __write_pkru(pkru);
-> >       fpregs_unlock();
-> >  }
->
+> > Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> > ---
+> > Changelog:
+> >   v1 -> v2: fix printk formating
+> >
+> >  drivers/fpga/Kconfig         |   9 +
+> >  drivers/fpga/Makefile        |   1 +
+> >  drivers/fpga/microsemi-spi.c | 366 +++++++++++++++++++++++++++++++++++
+> >  3 files changed, 376 insertions(+)
+> >  create mode 100644 drivers/fpga/microsemi-spi.c
+> >
+> --<snip>--
 
-Brian
+I'll take a closer look once the bot's complaints are addressed.
+
+Thanks,
+Moritz
