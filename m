@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3578C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D213EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240008AbiBOP3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:29:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46514 "EHLO
+        id S240056AbiBOP31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:29:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239861AbiBOP2d (ORCPT
+        with ESMTP id S240006AbiBOP2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:28:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C44B0E81;
-        Tue, 15 Feb 2022 07:27:48 -0800 (PST)
+        Tue, 15 Feb 2022 10:28:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF9FB7C75;
+        Tue, 15 Feb 2022 07:28:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7A1F615F6;
-        Tue, 15 Feb 2022 15:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5ADC36AE2;
-        Tue, 15 Feb 2022 15:27:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACFB3B81A9A;
+        Tue, 15 Feb 2022 15:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93EECC340EB;
+        Tue, 15 Feb 2022 15:27:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644938867;
-        bh=hHohSxgqCDRAYo2TzGlcEJxO0dJ5McJl7zKU55IAVrY=;
+        s=k20201202; t=1644938879;
+        bh=v3MER1/Z/1nChzKsMsoSuaIlZ25Q0/0JMr6nMx6ik68=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dPNdT/LPaA4fq+/UKc9DlGIIhKBwyMVSZVDD3do4Mn5uqiwludwzO9lR5aIW4lQZh
-         XbqIr6mlbQiL4JON/e+Ve61vY9q01u+Ceb5++ZYiA4aIanKXf8LZl2ipvZJNzmxj6q
-         K9/iCE+91paGuS5VsZLFsI+g4LyrVmM+tsJge/kWDtGuK82mBFN3TJqiQJBTZiPkIK
-         sq2uAk9r/lGoD6vO1waKPgMjZRJ89NLyuisG8wb3kmoS4k7FXXJBp/vasw2FAOjOke
-         5EFFUswSKzeSZG4WahCawypfjktZrT+GF4mqpAAYXPGvJwMUFgmnB/eLT8fQ8fqZ5N
-         pU1ZDZgzGAJ1A==
+        b=Ad8AncYL9+zafwoho6ck2pCGhZVQpgpqNkDcjwetYd93vVf1D8XL/9ZaQGVK+yVPJ
+         HynL0P5f07/5u7upKMAhZJnBhxGf1bXLs0O6Pm6KessJcfLW7OZXxGqd5pnNOIqZiu
+         ffjxiuAzTi6yYOS9I6y4LH8O15CJ1qYYzv2nr+hyXueaAFUo2zAOMegQpR7tLbyRwB
+         Wgk6rWt8nAJa9j+awKpyB26ocnyX3Xku14yscvERFCzrrG6zPm3C5niLjvtIUQcAv0
+         eCgHKInml4yGj4G9oH5XVYp3R2NQT81hLRsqIJxjHLoCOrG2vooVMP8ZeF4wXAr65P
+         zAr7f3CH3hDig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dan Aloni <dan.aloni@vastdata.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>,
-        trond.myklebust@hammerspace.com, anna@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, tom@talpey.com,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 24/34] xprtrdma: fix pointer derefs in error cases of rpcrdma_ep_create
-Date:   Tue, 15 Feb 2022 10:26:47 -0500
-Message-Id: <20220215152657.580200-24-sashal@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, sunpeng.li@amd.com,
+        Rodrigo.Siqueira@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        aaron.liu@amd.com, nicholas.kazlauskas@amd.com,
+        Xiaomeng.Hou@amd.com, aric.cyr@amd.com, isabbasso@riseup.net,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 28/34] display/amd: decrease message verbosity about watermarks table failure
+Date:   Tue, 15 Feb 2022 10:26:51 -0500
+Message-Id: <20220215152657.580200-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
 References: <20220215152657.580200-1-sashal@kernel.org>
@@ -55,50 +57,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Aloni <dan.aloni@vastdata.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit a9c10b5b3b67b3750a10c8b089b2e05f5e176e33 ]
+[ Upstream commit 03ad3093c7c069d6ab4403730009ebafeea9ee37 ]
 
-If there are failures then we must not leave the non-NULL pointers with
-the error value, otherwise `rpcrdma_ep_destroy` gets confused and tries
-free them, resulting in an Oops.
+A number of BIOS versions have a problem with the watermarks table not
+being configured properly.  This manifests as a very scary looking warning
+during resume from s0i3.  This should be harmless in most cases and is well
+understood, so decrease the assertion to a clearer warning about the problem.
 
-Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
-Acked-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtrdma/verbs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/xprtrdma/verbs.c b/net/sunrpc/xprtrdma/verbs.c
-index 3d3673ba9e1e5..2a2e1514ac79a 100644
---- a/net/sunrpc/xprtrdma/verbs.c
-+++ b/net/sunrpc/xprtrdma/verbs.c
-@@ -436,6 +436,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
- 					      IB_POLL_WORKQUEUE);
- 	if (IS_ERR(ep->re_attr.send_cq)) {
- 		rc = PTR_ERR(ep->re_attr.send_cq);
-+		ep->re_attr.send_cq = NULL;
- 		goto out_destroy;
- 	}
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c
+index 162ae71861247..21d2cbc3cbb20 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c
+@@ -120,7 +120,11 @@ int dcn31_smu_send_msg_with_param(
+ 	result = dcn31_smu_wait_for_response(clk_mgr, 10, 200000);
  
-@@ -444,6 +445,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
- 					      IB_POLL_WORKQUEUE);
- 	if (IS_ERR(ep->re_attr.recv_cq)) {
- 		rc = PTR_ERR(ep->re_attr.recv_cq);
-+		ep->re_attr.recv_cq = NULL;
- 		goto out_destroy;
+ 	if (result == VBIOSSMC_Result_Failed) {
+-		ASSERT(0);
++		if (msg_id == VBIOSSMC_MSG_TransferTableDram2Smu &&
++		    param == TABLE_WATERMARKS)
++			DC_LOG_WARNING("Watermarks table not configured properly by SMU");
++		else
++			ASSERT(0);
+ 		REG_WRITE(MP1_SMN_C2PMSG_91, VBIOSSMC_Result_OK);
+ 		return -1;
  	}
- 	ep->re_receive_count = 0;
-@@ -482,6 +484,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
- 	ep->re_pd = ib_alloc_pd(device, 0);
- 	if (IS_ERR(ep->re_pd)) {
- 		rc = PTR_ERR(ep->re_pd);
-+		ep->re_pd = NULL;
- 		goto out_destroy;
- 	}
- 
 -- 
 2.34.1
 
