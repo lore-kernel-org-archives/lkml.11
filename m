@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3616C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240949AbiBOPhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:37:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40394 "EHLO
+        id S240980AbiBOPhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:37:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240777AbiBOPfq (ORCPT
+        with ESMTP id S240826AbiBOPfr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:35:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B15B6248;
-        Tue, 15 Feb 2022 07:31:24 -0800 (PST)
+        Tue, 15 Feb 2022 10:35:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E2C220C9;
+        Tue, 15 Feb 2022 07:31:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0046AB81A9A;
-        Tue, 15 Feb 2022 15:31:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9904FC340ED;
-        Tue, 15 Feb 2022 15:31:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2B3B6167C;
+        Tue, 15 Feb 2022 15:31:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 949AEC36AE2;
+        Tue, 15 Feb 2022 15:31:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939081;
-        bh=yTiJO3VHqrsiJhsQfZjxSVQ8oAzI9Z62PZS/bkmbkrQ=;
+        s=k20201202; t=1644939086;
+        bh=4lO6JmZ9MvQL5yGg6vWszWkyE8N1+IVs3euL5JN/hjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pGITsjZ/fEj51IlTuBeDnbRltTwvn2/lFZI9dBCkgMjgs7iG7UzMKz6dwi43qSG1L
-         8sjXlxTH7WjVbuvNdM62a9LTu0xagVN4FDTrBLM62U4ZXFZ1n/Zms/2jvORf3hqyNF
-         6OtcJUGZbtTSZgJGuRr03eFbMjVGwOjD4bl0C9h7IGKyeK0U/7qk4uNqVy3+KMCaTm
-         5brr26WIk6yEqq7jEUY3Pz8VR8wN98k9hdxQE6wG5xJjlpl+eEEolkEq9rn9c72c2n
-         Fo9pxdNfZPEmyHaOHd5vDJG0I1UH7WMyZ83z1nmO8ZgfHX3mkSRcUwu/FR5I2ynRPh
-         rIZxdeCDhXYlA==
+        b=OQZkRNyf/7sia0Hc340zSVZUVj9yfGqamme0kmMdBtgP6f7pywUYjNvWwS/nKn4yg
+         R/3M250hYwZAKNPKVwOn0cE4jSAOhO6s+BDSDtnG1h2vwPpce331z6WWbBN+J0UPag
+         sKzxEFsrq0IUIpWUjEPBwj0nwtx6HQAESC8iT7PI7cgJtQaGsKiEkiPXcu39QeuQYO
+         Di9bQafBQm7fYhooIg2eInPoi0/3Uq0ytnCKb4s06nV2o7RIgsHqiNRffrlJdKR6dn
+         TDNWgJTIcjBIQIsWWGhkEik8jW1djStZ8fI33wnpeSl5daOhTdpWp7kUzeayzy+kXv
+         48G6pXb7HsAtg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc St-Amand <mstamand@ciena.com>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, claudiu.beznea@microchip.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/11] net: macb: Align the dma and coherent dma masks
-Date:   Tue, 15 Feb 2022 10:31:04 -0500
-Message-Id: <20220215153104.581786-11-sashal@kernel.org>
+Cc:     =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
+        <zboszor@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>, linux-ide@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 2/5] ata: libata-core: Disable TRIM on M88V29
+Date:   Tue, 15 Feb 2022 10:31:19 -0500
+Message-Id: <20220215153122.581930-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215153104.581786-1-sashal@kernel.org>
-References: <20220215153104.581786-1-sashal@kernel.org>
+In-Reply-To: <20220215153122.581930-1-sashal@kernel.org>
+References: <20220215153122.581930-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,49 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc St-Amand <mstamand@ciena.com>
+From: Zoltán Böszörményi <zboszor@gmail.com>
 
-[ Upstream commit 37f7860602b5b2d99fc7465f6407f403f5941988 ]
+[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
 
-Single page and coherent memory blocks can use different DMA masks
-when the macb accesses physical memory directly. The kernel is clever
-enough to allocate pages that fit into the requested address width.
+This device is a CF card, or possibly an SSD in CF form factor.
+It supports NCQ and high speed DMA.
 
-When using the ARM SMMU, the DMA mask must be the same for single
-pages and big coherent memory blocks. Otherwise the translation
-tables turn into one big mess.
+While it also advertises TRIM support, I/O errors are reported
+when the discard mount option fstrim is used. TRIM also fails
+when disabling NCQ and not just as an NCQ command.
 
-  [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
-  [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
-  [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
-  [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+TRIM must be disabled for this device.
 
-Since using the same DMA mask does not hurt direct 1:1 physical
-memory mappings, this commit always aligns DMA and coherent masks.
-
-Signed-off-by: Marc St-Amand <mstamand@ciena.com>
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Tested-by: Conor Dooley <conor.dooley@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/libata-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index d110aa616a957..f162ac7d74e59 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4073,7 +4073,7 @@ static int macb_probe(struct platform_device *pdev)
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 8ec71243cdcca..791374199e227 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4603,6 +4603,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
  
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
- 	if (GEM_BFEXT(DAW64, gem_readl(bp, DCFG6))) {
--		dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
-+		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(44));
- 		bp->hw_dma_cap |= HW_DMA_CAP_64B;
- 	}
- #endif
+ 	/* devices that don't properly handle TRIM commands */
+ 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
++	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
+ 
+ 	/*
+ 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
 -- 
 2.34.1
 
