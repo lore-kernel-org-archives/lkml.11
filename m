@@ -2,180 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7AE7C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F251C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238741AbiBOPUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:20:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53316 "EHLO
+        id S239034AbiBOPUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:20:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234307AbiBOPUV (ORCPT
+        with ESMTP id S238746AbiBOPUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:20:21 -0500
-X-Greylist: delayed 1689 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 07:20:11 PST
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6B4108772;
-        Tue, 15 Feb 2022 07:20:10 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4JykZR3vl3z9sSC;
-        Tue, 15 Feb 2022 15:51:59 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id IzdyMfHEghQL; Tue, 15 Feb 2022 15:51:59 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4JykZR2pRtz9sQv;
-        Tue, 15 Feb 2022 15:51:59 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4E19B8B778;
-        Tue, 15 Feb 2022 15:51:59 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id QWce0lNxMQK9; Tue, 15 Feb 2022 15:51:59 +0100 (CET)
-Received: from [192.168.6.174] (unknown [192.168.6.174])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7DA128B763;
-        Tue, 15 Feb 2022 15:51:58 +0100 (CET)
-Message-ID: <5c7b5334-6071-f131-a509-9a49ca3d628c@csgroup.eu>
-Date:   Tue, 15 Feb 2022 15:51:58 +0100
+        Tue, 15 Feb 2022 10:20:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF3A108BDC;
+        Tue, 15 Feb 2022 07:20:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 633D3B81AE2;
+        Tue, 15 Feb 2022 15:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B299DC340ED;
+        Tue, 15 Feb 2022 15:20:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644938417;
+        bh=cvvJ7Y1uOZsTSQ2EgEC3IyWSOPxIRWdyF+l3TLo73fA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=BXhMIXjvG0BZrIJ4AGpwnd1+8ps21YN90C6Bx7kEUxLMo/3m80ucK5R2bJrFaSirP
+         hI8uY5ws0E9o9oeS7ygCnZn6rdX20Z7ZkmnXG3d4Itv8GmCZs5x4WR3o9ZsiOD/0xK
+         pjCS+7Sc/J+zkjtJHi1ejsXElZXX22ywEpgJgjn/E/G7RBWtv5lenBDo0E9BqIJC1b
+         FoMjo02LYKKLmVYTRBDWVWEaSFKMJbpkAxHboipvvicoSmN7zmAnV/ynYX13emGxEm
+         PaWa7Ira/bSgUfxTAwWlSxlmJ7QjNPXpVyokVltb4aiYv544BfK1XAdNmBeVpa6Doj
+         1g0Yi++3vwe1g==
+Date:   Tue, 15 Feb 2022 09:20:14 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Ben Dooks <ben.dooks@codethink.co.uk>
+Cc:     linux-kernel@vger.kernel.org, bhelgaas@google.comv,
+        linux-pci@vger.kernel.org, paul.walmsley@sifive.com,
+        greentime.hu@sifive.com, david.abdurachmanov@gmail.com,
+        Rob Herring <robh@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH 1/2] PCI: fu740: fix finding GPIOs
+Message-ID: <20220215152014.GA108566@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 09/13] powerpc/ftrace: Implement
- CONFIG_DYNAMIC_FTRACE_WITH_ARGS
-Content-Language: fr-FR
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
-References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
- <5831f711a778fcd6eb51eb5898f1faae4378b35b.1640017960.git.christophe.leroy@csgroup.eu>
- <1644852011.qg7ud9elo2.naveen@linux.ibm.com>
- <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
- <875ypgo0f3.fsf@mpe.ellerman.id.au>
- <1644930705.g64na2kgvd.naveen@linux.ibm.com>
- <6dc50f09-4d14-afa2-d2a1-34b72b880edf@csgroup.eu>
-In-Reply-To: <6dc50f09-4d14-afa2-d2a1-34b72b880edf@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bfb2b7f9-d2dc-590c-6cec-5923efa9ac80@codethink.co.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ S390 people
+On Tue, Feb 15, 2022 at 11:21:03AM +0000, Ben Dooks wrote:
+> On 14/02/2022 16:05, Bjorn Helgaas wrote:
+> > [+cc Rob for possible DT/kernel match issue,
+> > Lorenzo (native host bridge driver maintainer)]
+> > 
+> > s/fix finding/Fix finding/ (in subject)
+> > Or even better, say something specific about the DT properties in
+> > question, e.g., look for "reset" instead of "reset-gpios".
+> > 
+> > On Mon, Feb 14, 2022 at 08:21:43AM +0000, Ben Dooks wrote:
+> > > The calls to devm_gpiod_get_optional() have the -gpios at the end of
+> > > the name. This means the pcie driver is not finding the necessary
+> > > reset or power GPOOs to allow the PCIe devices on the SiFive Unmatched
+> > > boards.
+> > 
+> > "to allow the PCIe devices ...?"  Something is missing from this
+> > sentence.  "To allow the devices <to do what>"?  Or maybe the driver
+> > needs these GPIOs to power up the PCIe devices?
+> > 
+> > I guess the implication is that the code looks for "reset-gpios" and
+> > "pwren-gpios", but the DT contains "reset" and "pwren"?
+> > 
+> > But both Documentation/devicetree/bindings/pci/sifive,fu740-pcie.yaml
+> > and arch/riscv/boot/dts/sifive/fu740-c000.dtsi actually do contain
+> > "reset-gpios" and "pwren-gpios".
+> 
+> Yes, the issue is the gpio core code adds either "-gpio" or "-gpios"
+> itself, thus the find code does not need this. The error messages and
+> DT are correct. I'll reword the initial paragraph to note that which
+> should also deal with the other comments:
+> 
+> The calls to devm_gpiod_get_optional() have the -gpios at the end of
+> the name but the GPIO core code is already adding the suffix during
+> the lookup. This means the PCIe driver is not finding the necessary
+> reset or power lines to allow initialisation of the PCIe.
 
-Le 15/02/2022 à 15:28, Christophe Leroy a écrit :
-> 
-> 
-> Le 15/02/2022 à 14:36, Naveen N. Rao a écrit :
->> Michael Ellerman wrote:
->>> Christophe Leroy <christophe.leroy@csgroup.eu> writes:
->>>> Le 14/02/2022 à 16:25, Naveen N. Rao a écrit :
->>>>> Christophe Leroy wrote:
->>>>>> Implement CONFIG_DYNAMIC_FTRACE_WITH_ARGS. It accelerates the call
->>>>>> of livepatching.
->>>>>>
->>>>>> Also note that powerpc being the last one to convert to
->>>>>> CONFIG_DYNAMIC_FTRACE_WITH_ARGS, it will now be possible to remove
->>>>>> klp_arch_set_pc() on all architectures.
->>>>>>
->>>>>> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
->>>>>> ---
->>>>>>  arch/powerpc/Kconfig                 |  1 +
->>>>>>  arch/powerpc/include/asm/ftrace.h    | 17 +++++++++++++++++
->>>>>>  arch/powerpc/include/asm/livepatch.h |  4 +---
->>>>>>  3 files changed, 19 insertions(+), 3 deletions(-)
->>>>>>
->>>>>> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
->>>>>> index cdac2115eb00..e2b1792b2aae 100644
->>>>>> --- a/arch/powerpc/Kconfig
->>>>>> +++ b/arch/powerpc/Kconfig
->>>>>> @@ -210,6 +210,7 @@ config PPC
->>>>>>      select HAVE_DEBUG_KMEMLEAK
->>>>>>      select HAVE_DEBUG_STACKOVERFLOW
->>>>>>      select HAVE_DYNAMIC_FTRACE
->>>>>> +    select HAVE_DYNAMIC_FTRACE_WITH_ARGS    if MPROFILE_KERNEL || 
->>>>>> PPC32
->>>>>>      select HAVE_DYNAMIC_FTRACE_WITH_REGS    if MPROFILE_KERNEL || 
->>>>>> PPC32
->>>>>>      select HAVE_EBPF_JIT
->>>>>>      select HAVE_EFFICIENT_UNALIGNED_ACCESS    if 
->>>>>> !(CPU_LITTLE_ENDIAN && POWER7_CPU)
->>>>>> diff --git a/arch/powerpc/include/asm/ftrace.h 
->>>>>> b/arch/powerpc/include/asm/ftrace.h
->>>>>> index b3f6184f77ea..45c3d6f11daa 100644
->>>>>> --- a/arch/powerpc/include/asm/ftrace.h
->>>>>> +++ b/arch/powerpc/include/asm/ftrace.h
->>>>>> @@ -22,6 +22,23 @@ static inline unsigned long 
->>>>>> ftrace_call_adjust(unsigned long addr)
->>>>>>  struct dyn_arch_ftrace {
->>>>>>      struct module *mod;
->>>>>>  };
->>>>>> +
->>>>>> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_ARGS
->>>>>> +struct ftrace_regs {
->>>>>> +    struct pt_regs regs;
->>>>>> +};
->>>>>> +
->>>>>> +static __always_inline struct pt_regs 
->>>>>> *arch_ftrace_get_regs(struct ftrace_regs *fregs)
->>>>>> +{
->>>>>> +    return &fregs->regs;
->>>>>> +}
->>>>>
->>>>> I think this is wrong. We need to differentiate between 
->>>>> ftrace_caller() and ftrace_regs_caller() here, and only return 
->>>>> pt_regs if coming in through ftrace_regs_caller() (i.e., 
->>>>> FL_SAVE_REGS is set).
->>>>
->>>> Not sure I follow you.
->>>>
->>>> This is based on 5740a7c71ab6 ("s390/ftrace: add 
->>>> HAVE_DYNAMIC_FTRACE_WITH_ARGS support")
->>>>
->>>> It's all the point of HAVE_DYNAMIC_FTRACE_WITH_ARGS, have the regs 
->>>> also with ftrace_caller().
->>>>
->>>> Sure you only have the params, but that's the same on s390, so what 
->>>> did I miss ?
->>
->> It looks like s390 is special since it apparently saves all registers 
->> even for ftrace_caller: 
->> https://lore.kernel.org/all/YbipdU5X4HNDWIni@osiris/
-> 
-> It is not what I understand from their code, see 
-> https://elixir.bootlin.com/linux/v5.17-rc3/source/arch/s390/kernel/mcount.S#L37 
-> 
-> 
-> They have a common macro called with argument 'allregs' which is set to 
-> 0 for ftrace_caller() and 1 for ftrace_regs_caller().
-> When allregs == 1, the macro seems to save more.
-> 
-> But ok, I can do like x86, but I need a trick to know whether 
-> FL_SAVE_REGS is set or not, like they do with fregs->regs.cs
-> Any idea what the condition can be for powerpc ?
-> 
+Ah, that makes things make a LOT more sense!  Please add something
+about "the '-gpios' suffix" for non-experts like me who don't know the
+inner workings of the GPIO core.
 
-Finally, it looks like this change is done  via commit 894979689d3a 
-("s390/ftrace: provide separate ftrace_caller/ftrace_regs_caller 
-implementations") four hours the same day after the implementation of 
-arch_ftrace_get_regs()
+The GPIO core seems slightly too helpful here -- we have to know about
+that detail to write error messages that make sense.
 
-They may have forgotten to change arch_ftrace_get_regs() which was added 
-in commit 5740a7c71ab6 ("s390/ftrace: add HAVE_DYNAMIC_FTRACE_WITH_ARGS 
-support") with the assumption that ftrace_caller and ftrace_regs_caller 
-where identical.
+> > If we *do* want to change the code, please change the error messages
+> > to match.
+> 
+> See above, it is just devm_gpiod_get_optional() parameters at fault.
+> 
+> > > This has not been a noted bug as the PCIe probe from u-boot has been
+> > > required to get the PCIe working due to other issues with the system
+> > > setup. It could have been broken since the driver inclusion, and not
+> > > been noticed as it is not necessary for the driver to funciton.
+> > 
+> > Please add a line about what the connection between U-Boot and this
+> > issue is, e.g., maybe U-Boot powers up the devices, so we wouldn't
+> > notice the kernel's inability to do so?
+> 
+> Does a reword to the following make better sense:
+> 
+> This bug has not been noticed as if U-Boot has setup the GPIO lines
+> for the hardware when it does the PCIe initialisation (either by
+> booting from PCIe or user command to access PCIe) then the PCIe
+> will work in Linux. The U-Boot as supplied by SiFive does not by
+> default initialise any PCIe component.
 
-Christophe
+Sounds good, thanks.
+
+Bjorn
