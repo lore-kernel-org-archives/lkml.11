@@ -2,138 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E155EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F02C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237233AbiBOLbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:31:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53406 "EHLO
+        id S237239AbiBOLb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:31:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237227AbiBOLbp (ORCPT
+        with ESMTP id S237218AbiBOLbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:31:45 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D4013CFB;
-        Tue, 15 Feb 2022 03:31:29 -0800 (PST)
-X-UUID: 39c9a947dafe4ffb826bdea49c2bf5e9-20220215
-X-UUID: 39c9a947dafe4ffb826bdea49c2bf5e9-20220215
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <irui.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1084979076; Tue, 15 Feb 2022 19:31:25 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 15 Feb 2022 19:31:24 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 15 Feb 2022 19:31:23 +0800
-Message-ID: <f2bce3870b3eacce0c9bcdf5a022e11371a9ace4.camel@mediatek.com>
-Subject: Re: [PATCH v2, 03/10] dt-bindings: media: mtk-vcodec: Adds encoder
- cores dt-bindings for mt8195
-From:   Irui Wang <irui.wang@mediatek.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     Hsin-Yi Wang <hsinyi@chromium.org>, <linux-media@vger.kernel.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        <linux-kernel@vger.kernel.org>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        Tomasz Figa <tfiga@google.com>, Yong Wu <yong.wu@mediatek.com>,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Date:   Tue, 15 Feb 2022 19:31:23 +0800
-In-Reply-To: <1642433742.919482.3923083.nullmailer@robh.at.kernel.org>
-References: <20220117120615.21687-1-irui.wang@mediatek.com>
-         <20220117120615.21687-4-irui.wang@mediatek.com>
-         <1642433742.919482.3923083.nullmailer@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 15 Feb 2022 06:31:44 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7575213E1A;
+        Tue, 15 Feb 2022 03:31:33 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so2491255pjl.2;
+        Tue, 15 Feb 2022 03:31:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nIVdMpYcOG2OAazxLh3VIajvOaTi60GKlKehBItfkck=;
+        b=bE93YG0qKCESluDpXBxMBbkJAW0D4o7MMKCbbdON7pGCQYlL2Bo2Fs0jPaS6uDxGWr
+         +t/PgD5JI+7kGhW7H0nbdYVM7oSd1EJfurBlTbO5Q7MFBLfRCggEEbTNpp8kZI11d9Av
+         cGd9LaI015RgClpD5sHf5Dk+i9jVa3Dj8ZGql4LQGM5ReaAvuQOekfngOzqRauvClPvC
+         mknbhN3MSArrzpdbgLFKA8sFrjAQFvvAlIE/TYCcumlg3Hca1UZ+nGVBk0i8jNzzhmr7
+         N7t2GW2gLakR0Zhbk3BXKxFODPsRftM0Rba4S0D73u4fsY/bbKL4xY0lOR7uocdJTDk2
+         Nwmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nIVdMpYcOG2OAazxLh3VIajvOaTi60GKlKehBItfkck=;
+        b=fwWDeup7IFQLzc8eU9JeRRiykXA2wv6OoLD+lc/wcqKOu23g4IKuFFQLfjgnpPmGnf
+         gMIMurOyUm51aBifuR7cRasUGfS3acb4t3zKUCuy7P4ogNTXIfoBn6uJmVC9OHuJo6i6
+         v24bMcO1ySW29wJi3fZDahcXWVLUJRQYUyCo9lY/XMc/nepxqKfDWIeYlfZzk53kH1PM
+         cnliWg/y0YpG1slYPh0Jumo9nyq8mULiTVa67+bu1fQzdPPh7YcSkK/LANahPPW2F8CV
+         FaPqjjEgbzy36HBsMo9mUIrWNJFt1dDXaCeq3bdjzMTE8y9sFFaMCA2vTPF/egfSRkkB
+         kKug==
+X-Gm-Message-State: AOAM533iUNSdD+7AGhcReuQ2eWDBtr/KGdOSTNKQ7yln9tqNS9VT6qhc
+        Ti4X17DFLoXkn4yWx0vSrow=
+X-Google-Smtp-Source: ABdhPJzQ758po3n7LRJDpYfx5y73Pwe1Ne36WKv4YAiJ+omP7a8w7ad7cTBzpTN8SZwd5PJUZJWT0A==
+X-Received: by 2002:a17:902:8d96:: with SMTP id v22mr3640805plo.77.1644924692974;
+        Tue, 15 Feb 2022 03:31:32 -0800 (PST)
+Received: from localhost.localdomain ([203.205.141.113])
+        by smtp.gmail.com with ESMTPSA id s11sm44515513pfu.58.2022.02.15.03.31.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 03:31:32 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org
+Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
+        mingo@redhat.com, yoshfuji@linux-ipv6.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        imagedong@tencent.com, talalahmad@google.com,
+        keescook@chromium.org, ilias.apalodimas@linaro.org, alobakin@pm.me,
+        memxor@gmail.com, atenart@kernel.org, bigeasy@linutronix.de,
+        pabeni@redhat.com, linyunsheng@huawei.com, arnd@arndb.de,
+        yajun.deng@linux.dev, roopa@nvidia.com, willemb@google.com,
+        vvs@virtuozzo.com, cong.wang@bytedance.com,
+        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
+Subject: [PATCH net-next 07/19] net: tcp: use tcp_drop_reason() for tcp_rcv_established()
+Date:   Tue, 15 Feb 2022 19:28:00 +0800
+Message-Id: <20220215112812.2093852-8-imagedong@tencent.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215112812.2093852-1-imagedong@tencent.com>
+References: <20220215112812.2093852-1-imagedong@tencent.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Rob,
+From: Menglong Dong <imagedong@tencent.com>
 
-Many thanks for your comments.
+Replace tcp_drop() used in tcp_rcv_established() with tcp_drop_reason().
+Following drop reasons are added:
 
-On Mon, 2022-01-17 at 09:35 -0600, Rob Herring wrote:
-> On Mon, 17 Jan 2022 20:06:08 +0800, Irui Wang wrote:
-> > Adds encoder cores dt-bindings for mt8195
-> > 
-> > Signed-off-by: Irui Wang <irui.wang@mediatek.com>
-> > ---
-> >  .../media/mediatek,vcodec-encoder-core.yaml   | 214
-> > ++++++++++++++++++
-> >  1 file changed, 214 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
-> > core.yaml
-> > 
-> 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m
-> dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
-> core.example.dts:20:18: fatal error: dt-bindings/memory/mt8195-
-> memory-port.h: No such file or directory
->    20 |         #include <dt-bindings/memory/mt8195-memory-port.h>
->       |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
-> make[1]: *** [scripts/Makefile.lib:373:
-> Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
-> core.example.dt.yaml] Error 1
-> make[1]: *** Waiting for unfinished jobs....
-> make: *** [Makefile:1413: dt_binding_check] Error 2
-> 
-> doc reference errors (make refcheckdocs):
-> 
-> See https://patchwork.ozlabs.org/patch/1580741
-> 
-> This check can fail if there are any dependencies. The base for a
-> patch
-> series is generally the most recent rc1.
-> 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up
-> to
-> date:
-> 
-> pip3 install dtschema --upgrade
-> 
-> Please check and re-submit.
+SKB_DROP_REASON_TCP_FLAGS
 
-This new encoder yaml includes mt8195 iommu and power&clock node, so it
-depends on patches:
-iommu:
-https://patchwork.kernel.org/project/linux-mediatek/list/?series=551641
-power:
-https://patchwork.kernel.org/project/linux-mediatek/list/?series=580579
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ include/linux/skbuff.h     | 1 +
+ include/trace/events/skb.h | 1 +
+ net/ipv4/tcp_input.c       | 9 +++++++--
+ 3 files changed, 9 insertions(+), 2 deletions(-)
 
-which are not accept yet. 
-
-But IOMMU and power already send new version series patches, I will
-rebase this series in next version.
-
-Thanks
-BRs
-> 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 9a4424ceb7cb..dcf9d8bd0079 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -357,6 +357,7 @@ enum skb_drop_reason {
+ 					 * backlog (see
+ 					 * LINUX_MIB_TCPBACKLOGDROP)
+ 					 */
++	SKB_DROP_REASON_TCP_FLAGS,	/* TCP flags invalid */
+ 	SKB_DROP_REASON_MAX,
+ };
+ 
+diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+index bfccd77e9071..d332e7313a61 100644
+--- a/include/trace/events/skb.h
++++ b/include/trace/events/skb.h
+@@ -32,6 +32,7 @@
+ 	   TCP_MD5UNEXPECTED)					\
+ 	EM(SKB_DROP_REASON_TCP_MD5FAILURE, TCP_MD5FAILURE)	\
+ 	EM(SKB_DROP_REASON_SOCKET_BACKLOG, SOCKET_BACKLOG)	\
++	EM(SKB_DROP_REASON_TCP_FLAGS, TCP_FLAGS)		\
+ 	EMe(SKB_DROP_REASON_MAX, MAX)
+ 
+ #undef EM
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index e3811afd1756..8cb0ea34aa49 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5790,6 +5790,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+  */
+ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ {
++	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	const struct tcphdr *th = (const struct tcphdr *)skb->data;
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	unsigned int len = skb->len;
+@@ -5878,6 +5879,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 				tp->rcv_rtt_last_tsecr = tp->rx_opt.rcv_tsecr;
+ 				return;
+ 			} else { /* Header too small */
++				reason = SKB_DROP_REASON_PKT_TOO_SMALL;
+ 				TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
+ 				goto discard;
+ 			}
+@@ -5933,8 +5935,10 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 	if (len < (th->doff << 2) || tcp_checksum_complete(skb))
+ 		goto csum_error;
+ 
+-	if (!th->ack && !th->rst && !th->syn)
++	if (!th->ack && !th->rst && !th->syn) {
++		reason = SKB_DROP_REASON_TCP_FLAGS;
+ 		goto discard;
++	}
+ 
+ 	/*
+ 	 *	Standard slow path.
+@@ -5960,12 +5964,13 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 	return;
+ 
+ csum_error:
++	reason = SKB_DROP_REASON_TCP_CSUM;
+ 	trace_tcp_bad_csum(skb);
+ 	TCP_INC_STATS(sock_net(sk), TCP_MIB_CSUMERRORS);
+ 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
+ 
+ discard:
+-	tcp_drop(sk, skb);
++	tcp_drop_reason(sk, skb, reason);
+ }
+ EXPORT_SYMBOL(tcp_rcv_established);
+ 
+-- 
+2.34.1
 
