@@ -2,116 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AECC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 18:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241539AbiBOSWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 13:22:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37922 "EHLO
+        id S243022AbiBOSX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 13:23:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234053AbiBOSWR (ORCPT
+        with ESMTP id S232405AbiBOSXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 13:22:17 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BC2C4E29
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:22:06 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id c188so24946195iof.6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 10:22:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=N8lffARva8AUjhNmcIem8/yhryRPGbgPr4I4vKv4iZU=;
-        b=xoqOuEmlurEBAh7hsyg3JdbuYdQBDxBQPCxuZ4GYuEkH08WiMo4Mnj5Q9gOffupNVs
-         C+XFSN4fQPBzBueTh5typDjXEZ1hqwlgP/CSApofsKYfoB+9pc4f0uA8pR5bBAGx7RUD
-         u9A+Unbkiu7+7T5zJj7vonzxIQELIm0xGxbzQMQfAySVSjszzCoTF4UfykYDvrqUtnx3
-         9vZ55DBn78FdwRuGKa4hwgCrkjZyHP0M1DUq2BiP+zwmE3mmRiuxZ8Ohtwcm596KVmzi
-         bc7kOj3lzQwb425MtvheHM2SfbCwYPPZis7aA/B7qOGp5XNjZvK0Q3B0sFtyXFZdpe2z
-         OFSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=N8lffARva8AUjhNmcIem8/yhryRPGbgPr4I4vKv4iZU=;
-        b=2ctjVA8hNDSbMDK8TMlVSS8InoJ3N/fiWtFqhUEcenlr4e7qJlXebpvqsgqY92kzn8
-         PuStQYzhS0MhSKfXLlqYR+i6prsjOJc7l7YHLUsFiZeG8lFRYlBG+4A3n820vHsv7ngJ
-         eIuV//5I2dtjUmvWF9bPfuVaYxmGz+YZn0ybma+D/bxWO34hpG0mgADcFdOSVCwpXm8U
-         HHBnqfwUZ0vORSahIdjMvGGnvcIbXOyUYpOSGqXJMOga2m67JZ1646ib188ZU7Dpx+vC
-         gNnMhKcxXxtFPa7Uhs7t4Cc/A1wUQBe4yZB6MOD+Ttg+mQVb0EjOxYZyHdxjfq+yzlQw
-         luxQ==
-X-Gm-Message-State: AOAM531I4Ns1Vs/NIS6sm0fy2BJCc9/0f1x4M1vGonxIf69lIWgaWQ49
-        bavW4MMiXkwFh7CwssR8EmH1SFpoMtJIWg==
-X-Google-Smtp-Source: ABdhPJxCNsT+FRKu3WkM4M10HW1yuVivlwF5YmW3Q74Xigt7ShW2zoGcGwH1pzGCzQ4byStd7q6+xg==
-X-Received: by 2002:a02:3f42:: with SMTP id c2mr104978jaf.161.1644949325774;
-        Tue, 15 Feb 2022 10:22:05 -0800 (PST)
-Received: from [192.168.1.30] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id q18sm18761446ils.78.2022.02.15.10.22.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 10:22:05 -0800 (PST)
-To:     heikki.krogerus@linux.intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Sven Peter <sven@svenpeter.dev>
-From:   Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH] tps6598x: clear int mask on probe failure
-Message-ID: <e6b80669-20f3-06e7-9ed5-8951a9c6db6f@kernel.dk>
-Date:   Tue, 15 Feb 2022 11:22:04 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 15 Feb 2022 13:23:23 -0500
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342DFC4E29;
+        Tue, 15 Feb 2022 10:23:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
+         references;
+        bh=4ea0lgdbQAVCZDxpFFT2YdXX5BI7YGO8Ht6ckrwZhHg=;
+        b=X63cxMFShB+1K/6yb0SV1pd0O+vzkwkregB6VG6YR+lXD/XkFpeIT+XRw6VNpW0NVaavwFFWLqXf9
+         4Ckk3tfS+E/lKjlHJxHlQX3FDmzShgw1JO1235CeI4VuRSCAS/N5uulpeKSkVnG0JhOOZYRDOBrdQA
+         UgznDdK3ctb9FeHys454IZMCJ45LihKAIxIKOe5O7rssq9P1D7H1IDSSzg2RMvr7SUsxvulNnMtVhl
+         3SU+CcwHpMLKltJz/scvfYOeHjFaL652mE61UQqAMJhd7e8jTJ6k52a50n8GtJpgW1G+RqmpY3HfW+
+         SIJnmW7Q+zyGvMH5iLtbgPDJBvK+Gpw==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1403, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008659)], BW: [Enabled, t: (0.000022,0.000002)], RTDA: [Enabled, t: (0.064652), Hit: No, Details: v2.25.0; Id: 15.52k0kj.1frv9v0as.6jqg; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from x260 ([178.70.66.234])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Tue, 15 Feb 2022 21:22:50 +0300
+Date:   Tue, 15 Feb 2022 21:05:02 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Moritz Fischer <mdf@kernel.org>
+Cc:     Conor Dooley <mail@conchuod.ie>, hao.wu@intel.com,
+        yilun.xu@intel.com, trix@redhat.com, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, system@metrotek.ru
+Subject: Re: [PATCH v2] fpga: microsemi-spi: add Microsemi FPGA manager
+Message-ID: <20220215180502.gqcsz7rdxygiva3y@x260>
+References: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
+ <20220215115853.26491-1-i.bornyakov@metrotek.ru>
+ <d0890e09-5d4a-5cce-832d-26e64b74ac54@conchuod.ie>
+ <YgvoXgqM65M97qib@epycbox.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgvoXgqM65M97qib@epycbox.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The interrupt mask is enabled before any potential failure points in
-the driver, which can leave a failure path where we exit with
-interrupts enabled but the device not live. This causes an infinite
-stream of interrupts on an Apple M1 Pro laptop on USB-C.
+Hello Conor, Moritz
 
-Add a failure label that's used post enabling interrupts, where we
-mask them again before returning an error.
+On Tue, Feb 15, 2022 at 09:52:30AM -0800, Moritz Fischer wrote:
+> Hi Conor, Ivan,
+> 
+> On Tue, Feb 15, 2022 at 05:37:04PM +0000, Conor Dooley wrote:
+> > Hey Ivan,
+> > Firstly thanks for the patch(es), stumbled across them today.
+> > As you may know Microsemi has been acquired by Microchip, so
+> > s/microsemi/microchip/ please. This would make the correct vendor
+> > prefix for compatible strings "microchip". While you've said this is
+> > for the PolarFire FPGA, there is prescendent for using "mpfs" for the
+> > PolarFire SoC FPGA in the kernel - so if you could change the uses of
+> > "polarfire" to "mpf" that'd be great.
+> 
+> I personally don't have a strong opinion on hte microchip vs microsemi
+> here. We have precedent with intel/altera.
+> 
 
-Suggested-by: Sven Peter <sven@svenpeter.dev>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
----
- drivers/usb/typec/tipd/core.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Me neither, so I'll do what Conor asked.
 
-diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
-index 6d27a5b5e3ca..7ffcda94d323 100644
---- a/drivers/usb/typec/tipd/core.c
-+++ b/drivers/usb/typec/tipd/core.c
-@@ -761,12 +761,12 @@ static int tps6598x_probe(struct i2c_client *client)
- 
- 	ret = tps6598x_read32(tps, TPS_REG_STATUS, &status);
- 	if (ret < 0)
--		return ret;
-+		goto err_clear_mask;
- 	trace_tps6598x_status(status);
- 
- 	ret = tps6598x_read32(tps, TPS_REG_SYSTEM_CONF, &conf);
- 	if (ret < 0)
--		return ret;
-+		goto err_clear_mask;
- 
- 	/*
- 	 * This fwnode has a "compatible" property, but is never populated as a
-@@ -855,7 +855,8 @@ static int tps6598x_probe(struct i2c_client *client)
- 	usb_role_switch_put(tps->role_sw);
- err_fwnode_put:
- 	fwnode_handle_put(fwnode);
--
-+err_clear_mask:
-+	tps6598x_write64(tps, TPS_REG_INT_MASK1, 0);
- 	return ret;
- }
- 
--- 
-2.34.1
+> > 
+> > The current item on my own todo list is the opposite side of this,
+> > reprogramming the FPGA via the system controller acting as a SPI
+> > master for PolarFire SoC.
+> > I will get back to you when I have a better idea of what (if any) code
+> > can be made generic between both modes. In the meantime, I will get
+> > together a setup to test SPI slave reprogramming of the PolarFire (SoC)
+> > 
+> > Thanks,
+> > Conor <conor.dooley@microchip.com>
+> 
+> Thanks for chiming in. Always nice to have vendors help out reviewing.
+>
 
--- 
-Jens Axboe
+Yeah, that's great, thanks in advance Conor.
+
+> > > Add support to the FPGA manager for programming Microsemi Polarfire
+> > > FPGAs over slave SPI interface.
+> > >
+> > > Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> > > ---
+> > > Changelog:
+> > >   v1 -> v2: fix printk formating
+> > >
+> > >  drivers/fpga/Kconfig         |   9 +
+> > >  drivers/fpga/Makefile        |   1 +
+> > >  drivers/fpga/microsemi-spi.c | 366 +++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 376 insertions(+)
+> > >  create mode 100644 drivers/fpga/microsemi-spi.c
+> > >
+> > --<snip>--
+> 
+> I'll take a closer look once the bot's complaints are addressed.
+> 
+> Thanks,
+> Moritz
+
+Thanks in advance Moritz.
 
