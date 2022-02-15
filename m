@@ -2,253 +2,286 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 20:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 20:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244073AbiBOUTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 15:19:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49176 "EHLO
+        id S244094AbiBOUUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 15:20:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234951AbiBOUTt (ORCPT
+        with ESMTP id S234951AbiBOUUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 15:19:49 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09D1EB15B;
-        Tue, 15 Feb 2022 12:19:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644956358;
-        bh=PiNVdwNEmCNAlW8NgWY6pxYxgjfrfE63FMf6CnZd0Zg=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=glb0VUITiMgPox/N6KwPCPsj1+IN3F+x5vWj/w4wsqENnkQAq6zEyQAG/2RnG3jn1
-         69R9F0MIKvonrR3vp7IoeGDjWb3cws8IbZlEZWjybeyNfLJOLz7Z94FGb3u/2muwBb
-         C1ltrWC5fcHXN/8o3RGxf8fvK/2cioSIilGi2CpA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [141.30.226.129] ([141.30.226.129]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MWih0-1nmmIo11lQ-00X6A4; Tue, 15
- Feb 2022 21:19:18 +0100
-Subject: Re: [PATCH 1/7] hwmon: (dell-smm) Allow for specifying fan control
- method as module parameter
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220215191113.16640-1-W_Armin@gmx.de>
- <20220215191113.16640-2-W_Armin@gmx.de>
- <20220215191941.azk5gpcn42ahcnna@pali>
- <a450a2b6-92d3-d2cd-db63-b578480ff385@gmx.de>
- <20220215194909.py62gbsfwe2qxq2i@pali>
-From:   Armin Wolf <W_Armin@gmx.de>
-Message-ID: <6c9a1f7a-004e-1991-abef-181cc117907e@gmx.de>
-Date:   Tue, 15 Feb 2022 21:19:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Tue, 15 Feb 2022 15:20:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B12EEBAC8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 12:20:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644956436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qNufTKnGyV9pErsxMYc32xdRyGR84cw9j02jlp0QMDs=;
+        b=FQzhwOK4UOi1vUwZ55Fod+32cSE8aqvtJrV/gdQPVof+RY0B9v2qVNpupDrUoy6qjcLpVX
+        mOC3diL2UsDuWUhmJGUCZg0tdaAz4Tz7FVhLu9jzJ45eISWxjvF4HOybxBOD/WGZ1UEV6V
+        f3yohOHTzjLDNxhs2Rtj/5UeIoP1/lY=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-628-5bNn_9k-Ogy9D3JWnaBaag-1; Tue, 15 Feb 2022 15:20:35 -0500
+X-MC-Unique: 5bNn_9k-Ogy9D3JWnaBaag-1
+Received: by mail-ej1-f71.google.com with SMTP id hq19-20020a1709073f1300b006cdd7712c2cso5170738ejc.11
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 12:20:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qNufTKnGyV9pErsxMYc32xdRyGR84cw9j02jlp0QMDs=;
+        b=uZfj2hlQu6HdYQ2xZK+pPAeuxOZ68Zn3JO+iwszTPSB5RNJ0YQgjLHBwn492xxBq6B
+         otqiVCaCH07Tg/i51tO9ZrBrsaZEY+Xg+sqQdRGh1+bfA2W6zwtPkIoCZTOf9NLXLBh3
+         NMMcQQ3pFEYCtBqeYvJyKnJJFR4a8U+G14uMIvdiNRqQrl2SLQPyIMT9IC6ichO6wznq
+         eJzOlKlUhhkOY6CjGplNPaKJTZgyjbSZHrT4blujy6/YdAziPyxwtWUkDIQsNfrD9kVa
+         lydamVsvV0LP802+nnJMxIdR13qsEV+aKyRbwr9shrPFl+gsNasjIkQA5bCfVfQJSVs4
+         dx8A==
+X-Gm-Message-State: AOAM5317tqcPl0xmMMsavP7woHFKs2fRLC9qAb2QKlbRV545OtnVZFJX
+        OYTqKAzZPYT31CRU3s7zHjdap8l07DLpqLoeTJJhYy6+3lEEqMDElbA/LhFutgUtpMucCMjnOgy
+        hD/n2Nuy9K/INweRP3bIs9eRT
+X-Received: by 2002:a05:6402:1288:: with SMTP id w8mr701937edv.134.1644956433810;
+        Tue, 15 Feb 2022 12:20:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyUmltGdecnVw0PAsop1cjpIUaVm7eClnbKSJJdNaf9GSBqvJdxIYiz9h5wjrYA9rACUZDJ+Q==
+X-Received: by 2002:a05:6402:1288:: with SMTP id w8mr701913edv.134.1644956433601;
+        Tue, 15 Feb 2022 12:20:33 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id r8sm383481edt.65.2022.02.15.12.20.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 12:20:33 -0800 (PST)
+Message-ID: <3b6b3888-be43-ccf2-d0fe-da9bc1c5719a@redhat.com>
+Date:   Tue, 15 Feb 2022 21:20:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <20220215194909.py62gbsfwe2qxq2i@pali>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [RFC 0/2] x86/PCI: Ignore EFI memmap MMIO entries
 Content-Language: en-US
-X-Provags-ID: V03:K1:V57B0LZCmJoU7AJG3LUVYc+2Q6m7ZkcJre0laygIPB4foV0aiip
- vSiVJRG2NRf2QQMBdWRk5Hexn862geZ8f2n0bUJPh/rYPiObylwe5RwgahaymwAaDl1KjAM
- 0YXZs5Wn0wRt+4hgeZ57d7iSrJqnXVnXeG41U3MlFjfoNowb+NkqUH5tRIawA+CkVWwjOND
- 74bGyS+ITR4qQgEVJRURg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hTlirKhA/0g=:/Guy996lq8AY4XwK1lPS6C
- bWldHjw6N8jMHuXekhyfPXcrQmdilsmPurhvY47owIeeiuWSItBmfhqkP0sL8xkztSxeo4XpF
- pwKu7txwoynjo4ur8wbpNndwsAi3zYswg14iba7ZqJdIFWsnU+iu4h88Knoknvudyjt0zeep2
- 9ostd/WqAYGUQzCcq0KbeXSm/nopL90zXr+eu98sYlIie/dtKoA3LRkRMAXAQUb2EuSgYVt3t
- yTN5/uYKY899uG179oUICKBcu7jSWsYmu0vNooNSsYrdWsAcomlzhccl6cmeNfvlmQlayYthB
- RyK4zGADJL7ywE6zlL0HT1FRdyrv/6aLx6ICJfaeq3m/v5VFQz2ku3ruXIWZRR/asUHov6im2
- XlHqyA9MhK2awviVvNpyQTy4baYqLbpKzsIQMKZaJ/pfGbZFvg8xSL4eXFkPdTmvAMyKrJKHi
- GpD31nrRnhXNzEoT4zhElcSLnWaVqUCtF3q5C3OP9jtOSBq/9IFhS2PXPGuzq4uY5ph5+Fvqj
- bRBCK7nHnD+zbUQMpA031QwhBo3vDPdek6CUXHSHTdpmgcMvui6HEXzIDXFLcc3qefaMEDhQ5
- A3UfgPz4TUBfLhEMNGnTkFLBOLj36vLK10iQ4Ws0gu0p/ZYXq5s3iZf5e1UvKQE+Da28o4zh5
- EXSnM/GsHPAR7j9gBxQCy1wy5WGhnB817zD6uUyY9vLQXfV2pOeDEJlRz5c3o9N1yiNpQEJFc
- hNHzaFix9cllmwV7JVXHgGAkbJ80XOlCI//upaefo02/jgE+0mX90+p6X4nM/TOhRAjyfn02i
- ViMjOuGmEgAL4enEVgbYHAiu4BpJLuAh4nMjL6HIEKaec7RrAJP0egNTa7BxoG2Y43LQC1TgO
- SxCVXIbpqqzfQiPT8Ct+hYb8CmC147JfbdzJFU1oM/eLOJ03LGpYovRsQkmF/nAl+0KFNYSiK
- c0MnePQj0fUgDqcgJ8jHZutuBvNXIWr8ISmJi6vDQbC4y/8p9fOAHkmyA3D6JmWcAtiaZotmj
- D4j18DoHQc2VTlwDqDBexhdwI+/j7hbfK8Ilry5lHgtxTWY5+zBZJdZHGvf0K8/TsNI83fySp
- cq9QQw7Uoummfc=
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220214151759.98267-1-hdegoede@redhat.com>
+ <05332ea8-2849-e567-1db3-3bdee97c2193@redhat.com>
+ <CAJZ5v0ieyKDzwPUZwfcznhABmM24fm3U7Pzea7tBoaCs9hKizw@mail.gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <CAJZ5v0ieyKDzwPUZwfcznhABmM24fm3U7Pzea7tBoaCs9hKizw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-Am 15.02.22 um 20:49 schrieb Pali Roh=C3=A1r:
-> On Tuesday 15 February 2022 20:44:20 Armin Wolf wrote:
->> Am 15.02.22 um 20:19 schrieb Pali Roh=C3=A1r:
->>> On Tuesday 15 February 2022 20:11:07 Armin Wolf wrote:
->>>> Right now, the only way to test if setting manual/auto fan control wo=
-rks
->>>> is to edit and recompile the module, which may be too cumbersome for
->>>> the average user.
->>> There is also another way suitable for testing purposes which do not
->>> requires any kernel patch. Call iopl(3) syscall which changes I/O
->>> privilege level to 3 and which allows to poke I/O registers.
+On 2/15/22 18:20, Rafael J. Wysocki wrote:
+> On Tue, Feb 15, 2022 at 5:12 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>>
+>> Hi All,
+>>
+>> On 2/14/22 16:17, Hans de Goede wrote:
+>>> Hi All,
 >>>
->> This is not possible under kernel lockdown/Secure Boot.
-> Under Secure Boot it should be still possible.
+>>> Here is a new attempt at fixing the issue where on some laptops
+>>> there are EFI memmap MMIO entries covering the entire PCI bridge
+>>> mem window, causing Linux to be unable to find free space to
+>>> assign to unassigned BARs.
+>>>
+>>> This is marked as RFC atm because I'm waiting for feedback from
+>>> testers.
+>>
+>> Unfortunately the troublesome 0xdfa00000-0xdfa0ffff region on
+>> the Lenovo X1 carbon gen 2 is marked as MMIO by the EFI memmap,
+>> so the approach from this series won't work.
+>>
+>> Interestingly enough this RFC series does seem to help to fix
+>> the suspend/resume on this x1c2, since for some reason merely
+>> splitting the original:
+>>
+>> BIOS-e820: [mem 0x00000000dceff000-0x00000000dfa0ffff] reserved
+>>
+>> range into:
+>>
+>> BIOS-e820: [mem 0x00000000dceff000-0x00000000df9fffff] reserved
+>> BIOS-e820: [mem 0x00000000dfa00000-0x00000000dfa0ffff] MMIO
+>>
+>> causes the PCI resource allocation code to pick slightly
+>> different resources avoiding the troublesome overlap, see:
+>> https://bugzilla.redhat.com/show_bug.cgi?id=2029207
+>> for logs.
+>>
+>> But I don't think we should rely in this, since from a
+>> arch_remove_reservations() pov the troublesome overlap area
+>> which is now marked as MMIO is fair game for PCI bars with
+>> the change to allow MMIO areas for PCI bars, so things seem
+>> to mostly work by sheer luck after this RFC series.
+>>
+>> So now I have yet another plan to fix this (see below) I'll get
+>> that tested and assuming it works post that as a proper patch.
+>>
+>> Regards,
+>>
+>> Hans
+>>
+>>
+>>
+>> diff --git a/arch/x86/include/asm/pci_x86.h b/arch/x86/include/asm/pci_x86.h
+>> index 490411dba438..573e1323f490 100644
+>> --- a/arch/x86/include/asm/pci_x86.h
+>> +++ b/arch/x86/include/asm/pci_x86.h
+>> @@ -64,6 +64,8 @@ void pcibios_scan_specific_bus(int busn);
+>>
+>>  /* pci-irq.c */
+>>
+>> +struct pci_dev;
+>> +
+>>  struct irq_info {
+>>         u8 bus, devfn;                  /* Bus, device and function */
+>>         struct {
+>> @@ -232,3 +234,9 @@ static inline void mmio_config_writel(void __iomem *pos, u32 val)
+>>  # define x86_default_pci_init_irq      NULL
+>>  # define x86_default_pci_fixup_irqs    NULL
+>>  #endif
+>> +
+>> +#if defined CONFIG_PCI && defined CONFIG_ACPI
+>> +extern bool pci_use_e820;
+>> +#else
+>> +#define pci_use_e820 true
+>> +#endif
+>> diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
+>> index 9b9fb7882c20..e8dc9bc327bd 100644
+>> --- a/arch/x86/kernel/resource.c
+>> +++ b/arch/x86/kernel/resource.c
+>> @@ -1,6 +1,7 @@
+>>  // SPDX-License-Identifier: GPL-2.0
+>>  #include <linux/ioport.h>
+>>  #include <asm/e820/api.h>
+>> +#include <asm/pci_x86.h>
+>>
+>>  static void resource_clip(struct resource *res, resource_size_t start,
+>>                           resource_size_t end)
+>> @@ -28,6 +29,9 @@ static void remove_e820_regions(struct resource *avail)
+>>         int i;
+>>         struct e820_entry *entry;
+>>
+>> +       if (!pci_use_e820)
+>> +               return;
+>> +
+>>         for (i = 0; i < e820_table->nr_entries; i++) {
+>>                 entry = &e820_table->entries[i];
+>>
+>> diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+>> index 052f1d78a562..7167934819b3 100644
+>> --- a/arch/x86/pci/acpi.c
+>> +++ b/arch/x86/pci/acpi.c
+>> @@ -1,4 +1,5 @@
+>>  // SPDX-License-Identifier: GPL-2.0
+>> +#include <linux/efi.h>
+>>  #include <linux/pci.h>
+>>  #include <linux/acpi.h>
+>>  #include <linux/init.h>
+>> @@ -21,6 +22,7 @@ struct pci_root_info {
+>>
+>>  static bool pci_use_crs = true;
+>>  static bool pci_ignore_seg;
+>> +bool pci_use_e820 = true;
+>>
+>>  static int __init set_use_crs(const struct dmi_system_id *id)
+>>  {
+>> @@ -291,6 +293,28 @@ static bool resource_is_pcicfg_ioport(struct resource *res)
+>>                 res->start == 0xCF8 && res->end == 0xCFF;
+>>  }
+>>
+>> +static bool resource_matches_efi_mmio_region(const struct resource *res)
+> 
+> I would call this resource_is_efi_mmio() FWIW.
 
-Afaik, access to iopl() and ioperm() is blocked in this mode too.
-This for example causes dell-bios-fan-control to fail when
-the machine is booted in Secure Boot mode.
+Ack, fixed in my local tree.
 
-> With kernel lockdown, no kernel testing/debugging at HW level is
-> acceptable due to security reasons, as it is against what kernel
-> lockdown should achieve.
->
-That is the reason i limited the number of selectable code pairs to
-two which are known to work on a wide range of machines.
-So users are unable to specify SMM commands, which are controlled by
-the driver. If this still is to much, then we may drop this patch.
+> 
+>> +{
+>> +       unsigned long long start, end;
+>> +       efi_memory_desc_t *md;
+>> +
+>> +       if (!efi_enabled(EFI_MEMMAP))
+>> +               return false;
+>> +
+>> +       for_each_efi_memory_desc(md) {
+>> +               if (md->type != EFI_MEMORY_MAPPED_IO)
+>> +                       continue;
+>> +
+>> +               start = md->phys_addr;
+>> +               end = start + (md->num_pages << EFI_PAGE_SHIFT) - 1;
+>> +
+>> +               if (res->start >= start && res->end <= end)
+>> +                       return true;
+>> +       }
+>> +
+>> +       return false;
+>> +}
+>> +
+>>  static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
+>>  {
+>>         struct acpi_device *device = ci->bridge;
+>> @@ -300,9 +324,16 @@ static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
+>>
+>>         status = acpi_pci_probe_root_resources(ci);
+>>         if (pci_use_crs) {
+>> -               resource_list_for_each_entry_safe(entry, tmp, &ci->resources)
+>> +               resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
+>>                         if (resource_is_pcicfg_ioport(entry->res))
+>>                                 resource_list_destroy_entry(entry);
+>> +                       if (resource_matches_efi_mmio_region(entry->res)) {
+> 
+> I would add a pci_use_e820 check to this.
 
->>>> Allow for specifying the desired fan mode control method when loading
->>>> the module, but taint the kernel if so since there is the possibility
->>>> for strange side effects on non-whitelisted models.
->>>> Also update docs and kernel-parameters.txt accordingly.
->>>>
->>>> Tested on a Dell Inspiron 3505.
->>>>
->>>> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
->>>> ---
->>>>    .../admin-guide/kernel-parameters.txt         |  3 +++
->>>>    Documentation/hwmon/dell-smm-hwmon.rst        | 21 ++++++++++-----=
--
->>>>    drivers/hwmon/dell-smm-hwmon.c                | 25 +++++++++++++--=
-----
->>>>    3 files changed, 35 insertions(+), 14 deletions(-)
->>>>
->>>> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Docume=
-ntation/admin-guide/kernel-parameters.txt
->>>> index d68053db21cc..4f1b6c2b7ed1 100644
->>>> --- a/Documentation/admin-guide/kernel-parameters.txt
->>>> +++ b/Documentation/admin-guide/kernel-parameters.txt
->>>> @@ -968,6 +968,9 @@
->>>>    	dell_smm_hwmon.fan_max=3D
->>>>    			[HW] Maximum configurable fan speed.
->>>>
->>>> +	dell_smm_hwmon.fan_mode_method=3D
->>>> +			[HW] Method to use for changing fan mode.
->>>> +
->>>>    	dfltcc=3D		[HW,S390]
->>>>    			Format: { on | off | def_only | inf_only | always }
->>>>    			on:       s390 zlib hardware support for compression on
->>>> diff --git a/Documentation/hwmon/dell-smm-hwmon.rst b/Documentation/h=
-wmon/dell-smm-hwmon.rst
->>>> index beec88491171..564d99cda869 100644
->>>> --- a/Documentation/hwmon/dell-smm-hwmon.rst
->>>> +++ b/Documentation/hwmon/dell-smm-hwmon.rst
->>>> @@ -67,13 +67,16 @@ for your hardware. It is possible that codes that=
- work for other
->>>>    laptops actually work for yours as well, or that you have to disco=
-ver
->>>>    new codes.
->>>>
->>>> -Check the list ``i8k_whitelist_fan_control`` in file
->>>> -``drivers/hwmon/dell-smm-hwmon.c`` in the kernel tree: as a first
->>>> -attempt you can try to add your machine and use an already-known cod=
-e
->>>> -pair. If, after recompiling the kernel, you see that ``pwm1_enable``
->>>> -is present and works (i.e., you can manually control the fan speed),
->>>> -then please submit your finding as a kernel patch, so that other use=
-rs
->>>> -can benefit from it. Please see
->>>> +As a first step, you can load the module with the module parameter
->>>> +``fan_mode_method`` set to 1 to test if your hardware works with
->>>> +an already know method for disabling automatic BIOS fan control.
->>>> +If ``pwm1_enable`` is now present and works (i.e., you can
->>>> +manually control the fan speed), then please submit your finding
->>>> +as a kernel patch, so that other users can benefit from it.
->>>> +Just add your model to the list ``i8k_whitelist_fan_control`` in
->>>> +file ``drivers/hwmon/dell-smm-hwmon.c`` in the kernel tree and use
->>>> +the already known code pair.
->>>> +Please read
->>>>    :ref:`Documentation/process/submitting-patches.rst <submittingpatc=
-hes>`
->>>>    for information on submitting patches.
->>>>
->>>> @@ -120,6 +123,10 @@ Module parameters
->>>>                       Maximum configurable fan speed. (default:
->>>>                       autodetect)
->>>>
->>>> +* fan_mode_method:uint
->>>> +                   Method to use for changing fan mode (default:
->>>> +                   from whitelist)
->>>> +
->>>>    Legacy ``/proc`` interface
->>>>    --------------------------
->>>>
->>>> diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-=
-hwmon.c
->>>> index 9949eeb79378..1c4cc516c8b2 100644
->>>> --- a/drivers/hwmon/dell-smm-hwmon.c
->>>> +++ b/drivers/hwmon/dell-smm-hwmon.c
->>>> @@ -111,6 +111,10 @@ static uint fan_max;
->>>>    module_param(fan_max, uint, 0);
->>>>    MODULE_PARM_DESC(fan_max, "Maximum configurable fan speed (default=
-: autodetect)");
->>>>
->>>> +static uint fan_mode_method;
->>>> +module_param_unsafe(fan_mode_method, uint, 0);
->>>> +MODULE_PARM_DESC(fan_mode_method, "Method to use for changing fan mo=
-de (default: from whitelist)");
->>> No, please really do not introduce another kernel parameter for this
->>> driver. There are already many and we do not need to extend this list.
+I'm not sure about that, this code path should run only once per bridge and if multiple
+bridges are affected then it would be good to have this info level message for all of
+them.
 
-Since there are two code pairs, i could not reuse the force param for that=
-.
-Since the newly added pair is unused, should i remove it and reuse the
-force param?
+OTOH I guess we only expect this to affect the main window for the root PCI bridge
+and then the windows for any bridges below that will also automatically fit within
+the same EFI memmap entry, resulting in what is more or less a false-positive
+logging of the message.
 
->>>> +
->>>>    struct smm_regs {
->>>>    	unsigned int eax;
->>>>    	unsigned int ebx;
->>>> @@ -677,7 +681,7 @@ static umode_t dell_smm_is_visible(const void *dr=
-vdata, enum hwmon_sensor_types
->>>>
->>>>    			break;
->>>>    		case hwmon_pwm_enable:
->>>> -			if (data->auto_fan)
->>>> +			if (data->auto_fan && data->manual_fan)
->>>>    				/*
->>>>    				 * There is no command for retrieve the current status
->>>>    				 * from BIOS, and userspace/firmware itself can change
->>>> @@ -1282,14 +1286,21 @@ static int __init dell_smm_probe(struct platf=
-orm_device *pdev)
->>>>    	data->i8k_fan_max =3D fan_max ? : I8K_FAN_HIGH;	/* Must not be 0 =
-*/
->>>>    	data->i8k_pwm_mult =3D DIV_ROUND_UP(255, data->i8k_fan_max);
->>>>
->>>> -	fan_control =3D dmi_first_match(i8k_whitelist_fan_control);
->>>> -	if (fan_control && fan_control->driver_data) {
->>>> -		const struct i8k_fan_control_data *control =3D fan_control->driver=
-_data;
->>>> +	/* value specified via module param overrides whitelist */
->>>> +	if (fan_mode_method > 0 && fan_mode_method <=3D ARRAY_SIZE(i8k_fan_=
-control_data)) {
->>>> +		data->manual_fan =3D i8k_fan_control_data[fan_mode_method - 1].man=
-ual_fan;
->>>> +		data->auto_fan =3D i8k_fan_control_data[fan_mode_method - 1].auto_=
-fan;
->>>> +	} else {
->>>> +		fan_control =3D dmi_first_match(i8k_whitelist_fan_control);
->>>> +		if (fan_control && fan_control->driver_data) {
->>>> +			const struct i8k_fan_control_data *control =3D fan_control->drive=
-r_data;
->>>>
->>>> -		data->manual_fan =3D control->manual_fan;
->>>> -		data->auto_fan =3D control->auto_fan;
->>>> -		dev_info(&pdev->dev, "enabling support for setting automatic/manua=
-l fan control\n");
->>>> +			data->manual_fan =3D control->manual_fan;
->>>> +			data->auto_fan =3D control->auto_fan;
->>>> +		}
->>>>    	}
->>>> +	if (data->manual_fan && data->auto_fan)
->>>> +		dev_info(&pdev->dev, "enabling support for setting automatic/manua=
-l fan control\n");
->>>>
->>>>    	if (!fan_mult) {
->>>>    		/*
->>>> --
->>>> 2.30.2
->>>>
+I've build a test-kernel for both the reporter of the original touchpad (i2c-controller
+PCI bar assignment) issue as well as the suspend/resume regression on the x1c2 reporter
+to test, which does not have your suggestion. I'll check the logs there and if there
+are indeed duplicate log messages I'll implement your suggestion.
+
+Regards,
+
+Hans
+
+
+
+> 
+>> +                               dev_info(&device->dev,
+>> +                                       "host bridge window %pR is marked by EFI as MMIO\n",
+>> +                                       entry->res);
+>> +                               pci_use_e820 = false;
+>> +                       }
+>> +               }
+>>                 return status;
+>>         }
+> 
+> Overall, it looks reasonable to me.
+> 
+
