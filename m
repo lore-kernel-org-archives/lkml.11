@@ -2,151 +2,366 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A710C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E522C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 11:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236611AbiBOLcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 06:32:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56264 "EHLO
+        id S237266AbiBOLcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:32:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237276AbiBOLcK (ORCPT
+        with ESMTP id S237220AbiBOLcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:32:10 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F631D0C9;
-        Tue, 15 Feb 2022 03:32:00 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id z16so12492106pfh.3;
-        Tue, 15 Feb 2022 03:32:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=X06QuFP/yl7TqcgHiQEothXnvH7lD4rIikeiUy/iGKA=;
-        b=At1Pl+hpDThg3GfUVuCCz5vj5bbLsK85uqz6To7gZrkAlwMzt7oT3dEqVjzOXXGOwg
-         wPZ8RurgieWHvvSBQDx+Rw1FkgBNuqUOUsX9YbI9C2nZMhZKVM341W1NAKx8C6/ZzlkA
-         d89qt4j9+Eo0Zjp3tbWN514m1OFq+GX4q7NvSCjdALh2a8Mv2sL8krj41AzVioegv0yo
-         3homwSbFh7MbWc9QZnFqZUKSQrUDeZ/NV45zEc9jsfex37Mybw/DjhUApq7+uZdh/zuc
-         11JnpsrWoqd2ca5XWAgTX0Ee5ybnklG3TK6q+OnJePhe8ynU0GqObMqubAwkvyaxc5l8
-         labw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=X06QuFP/yl7TqcgHiQEothXnvH7lD4rIikeiUy/iGKA=;
-        b=4zHWXL9DTFSS+uiOCejHzrFqwXD1cDN41F4+60fRQVvlserblo6cuTg6OkpX+APJQc
-         kdZnly5l/BfpDEB941/51nFMtL/76ImulKk1sUZjfQhUTfm2Jzw5tArMTWijIvsg4ewN
-         VWQsGDQRXany6d+3PNMHIg6mIw4v2V+jNVuSa9DP/VBnOU91dkmNMORFN7+cLdK8HIvc
-         wYLK/yyttzQKB0dsr8ko+wsVLBITYfvc+mWP4pXMX79rZtR5BlXbgHXpBq0YM0w4gEmH
-         bF/PFCqKqts0OkVKSOzLaJBmnl2Qwijim0cUujqDhfJyx8f3mezrwL5Vxl8vSdImDVRn
-         SF+g==
-X-Gm-Message-State: AOAM5337eqxh30Wd71DxyVQyPwPr4cyosRh1LsaZbmv825h9jBAjFNNS
-        kfjoRkYDXH/6UM0J6J43/Wo=
-X-Google-Smtp-Source: ABdhPJzCMqnT4ZZNKfLuu1n+m4J6Ch0EkyG5spcVLgiXXSpKKQ8Py2pk5vCbpLXk6SC+P0Ig5C+WYQ==
-X-Received: by 2002:a05:6a00:174d:: with SMTP id j13mr3501886pfc.58.1644924720397;
-        Tue, 15 Feb 2022 03:32:00 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.113])
-        by smtp.gmail.com with ESMTPSA id s11sm44515513pfu.58.2022.02.15.03.31.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 03:31:59 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org, kuba@kernel.org
-Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
-        mingo@redhat.com, yoshfuji@linux-ipv6.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        imagedong@tencent.com, talalahmad@google.com,
-        keescook@chromium.org, ilias.apalodimas@linaro.org, alobakin@pm.me,
-        memxor@gmail.com, atenart@kernel.org, bigeasy@linutronix.de,
-        pabeni@redhat.com, linyunsheng@huawei.com, arnd@arndb.de,
-        yajun.deng@linux.dev, roopa@nvidia.com, willemb@google.com,
-        vvs@virtuozzo.com, cong.wang@bytedance.com,
-        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
-Subject: [PATCH net-next 11/19] net: neigh: use kfree_skb_reason() for __neigh_event_send()
-Date:   Tue, 15 Feb 2022 19:28:04 +0800
-Message-Id: <20220215112812.2093852-12-imagedong@tencent.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215112812.2093852-1-imagedong@tencent.com>
-References: <20220215112812.2093852-1-imagedong@tencent.com>
+        Tue, 15 Feb 2022 06:32:06 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2519A1A390;
+        Tue, 15 Feb 2022 03:31:47 -0800 (PST)
+X-UUID: 8ffda993c6364c41a243f333761a5d93-20220215
+X-UUID: 8ffda993c6364c41a243f333761a5d93-20220215
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <irui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1880578445; Tue, 15 Feb 2022 19:31:42 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 15 Feb 2022 19:31:41 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 15 Feb 2022 19:31:40 +0800
+Message-ID: <421013a38c3bb4452fefe83ffdcb4cbdb4c1e0e6.camel@mediatek.com>
+Subject: Re: [PATCH v2, 03/10] dt-bindings: media: mtk-vcodec: Adds encoder
+ cores dt-bindings for mt8195
+From:   Irui Wang <irui.wang@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        "Tiffany Lin" <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>, Yong Wu <yong.wu@mediatek.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Maoguang Meng <maoguang.meng@mediatek.com>,
+        Longfei Wang <longfei.wang@mediatek.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 15 Feb 2022 19:31:40 +0800
+In-Reply-To: <YegV1SQ7V/F3GAFL@robh.at.kernel.org>
+References: <20220117120615.21687-1-irui.wang@mediatek.com>
+         <20220117120615.21687-4-irui.wang@mediatek.com>
+         <YegV1SQ7V/F3GAFL@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Dear Rob,
 
-Replace kfree_skb() used in __neigh_event_send() with
-kfree_skb_reason(). Following drop reasons are added:
+Many thanks for your review comments.
 
-SKB_DROP_REASON_NEIGH_FAILED
-SKB_DROP_REASON_NEIGH_QUEUEFULL
+On Wed, 2022-01-19 at 07:44 -0600, Rob Herring wrote:
+> On Mon, Jan 17, 2022 at 08:06:08PM +0800, Irui Wang wrote:
+> > Adds encoder cores dt-bindings for mt8195
+> > 
+> > Signed-off-by: Irui Wang <irui.wang@mediatek.com>
+> > ---
+> >  .../media/mediatek,vcodec-encoder-core.yaml   | 214
+> > ++++++++++++++++++
+> >  1 file changed, 214 insertions(+)
+> >  create mode 100644
+> > Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
+> > core.yaml
+> > 
+> > diff --git
+> > a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
+> > core.yaml
+> > b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-
+> > core.yaml
+> > new file mode 100644
+> > index 000000000000..d1e7bfa50bce
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-
+> > encoder-core.yaml
+> > @@ -0,0 +1,214 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +
+> > +%YAML 1.2
+> > +---
+> > +$id: "
+> > http://devicetree.org/schemas/media/mediatek,vcodec-encoder-core.yaml#
+> > "
+> > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> > +
+> > +title: Mediatek Video Encoder Accelerator With Multi Core
+> > +
+> > +maintainers:
+> > +  - Irui Wang <irui.wang@mediatek.com>
+> > +
+> > +description: |
+> > +  Mediatek Video Encode is the video encode hardware present in
+> > Mediatek
+> > +  SoCs which supports high resolution encoding functionalities.
+> > Required
+> > +  parent and child device node.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: mediatek,mt8195-vcodec-enc
+> > +
+> > +  mediatek,scp:
+> > +    $ref: /schemas/types.yaml#/definitions/phandle
+> > +    maxItems: 1
+> 
+> 'phandle' is already 1 item. Drop.
 
-The two reasons above should be the hot path that skb drops in neighbour
-layer.
+Do you mean delete "maxItems: 1"? we will delete in next version.
+>  
+> > +    description: |
+> > +      The node of system control processor (SCP), using
+> > +      the remoteproc & rpmsg framework.
+> > +
+> > +  iommus:
+> > +    minItems: 1
+> > +    maxItems: 32
+> > +    description: |
+> > +      List of the hardware port in respective IOMMU block for
+> > current Socs.
+> > +      Refer to bindings/iommu/mediatek,iommu.yaml.
+> > +
+> > +  dma-ranges:
+> > +    maxItems: 1
+> > +    description: |
+> > +      Describes the physical address space of IOMMU maps to
+> > memory.
+> > +
+> > +  "#address-cells":
+> > +    const: 1
+> > +
+> > +  "#size-cells":
+> > +    const: 1
+> > +
+> > +  ranges: true
+> > +
+> > +# Required child node:
+> > +patternProperties:
+> > +  "venc_core0@1a020000":
+> 
+> Address should generally not be defined in the node name schema:
+> 
+> '^venc-core0@'
+> 
+> Though I think you should also drop the '0' here. The unit-address
+> is 
+> enough to distinguish each instance. Then the schemas for each child 
+> node can be combined.
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- include/linux/skbuff.h     | 9 +++++++++
- include/trace/events/skb.h | 2 ++
- net/core/neighbour.c       | 4 ++--
- 3 files changed, 13 insertions(+), 2 deletions(-)
+Thanks, we will rename it in next version.
+> 
+> > +    type: object
+> > +
+> > +    properties:
+> > +      compatible:
+> > +        const: mediatek,mtk-venc-core0
+> 
+> Is the programming model for each core the same, but just different 
+> codecs implemented? I'd just add a property to indicate which codec
+> if 
+> that's not discoverable.
+> 
+Core-0 and Core-1 are two different encoder hardware, they have their
+own hardware, used irq/clock/power...So, we need add two model nodes, a
+"property" may not distinguish the two encoder hardware.
+> > +
+> > +      reg:
+> > +        maxItems: 1
+> > +
+> > +      iommus:
+> > +        minItems: 1
+> > +        maxItems: 32
+> > +        description: |
+> > +          List of the hardware port in respective IOMMU block for
+> > current Socs.
+> > +          Refer to bindings/iommu/mediatek,iommu.yaml.
+> > +
+> > +      interrupts:
+> > +        maxItems: 1
+> > +
+> > +      clocks:
+> > +        maxItems: 1
+> > +
+> > +      clock-names:
+> > +        items:
+> > +          - const: MT_CG_VENC0
+> 
+> The name is supposed to be local to the instance reflecting what the 
+> clock drives rather than a top-level or clock controller name.
+> Lowercase 
+> is also the norm. Given there's only 1 clock, I'd just drop the name.
+Thanks, we will rename it in next version, but we need parse clock info
+by "clock-names"(of_property_count_strings), so maybe we can't drop it.
+> 
+> > +
+> > +      assigned-clocks:
+> > +        maxItems: 1
+> > +
+> > +      assigned-clock-parents:
+> > +        maxItems: 1
+> 
+> These are always allowed and shouldn't be required.
+Do you mean we can not write this two properties here? we will try to
+delete them in next version.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index c7394b4790a0..136af29be256 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -387,6 +387,15 @@ enum skb_drop_reason {
- 					 * see the doc for disable_ipv6
- 					 * in ip-sysctl.rst for detail
- 					 */
-+	SKB_DROP_REASON_NEIGH_FAILED,	/* dropped as the state of
-+					 * neighbour is NUD_FAILED
-+					 */
-+	SKB_DROP_REASON_NEIGH_QUEUEFULL,	/* the skbs that waiting
-+						 * for sending on the queue
-+						 * of neigh->arp_queue is
-+						 * full, and the skbs on the
-+						 * tail will be dropped
-+						 */
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 47dedef7b6b8..dd06366ded4a 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -41,6 +41,8 @@
- 	EM(SKB_DROP_REASON_BPF_CGROUP_EGRESS,			\
- 	   BPF_CGROUP_EGRESS)					\
- 	EM(SKB_DROP_REASON_IPV6DSIABLED, IPV6DSIABLED)		\
-+	EM(SKB_DROP_REASON_NEIGH_FAILED, NEIGH_FAILED)		\
-+	EM(SKB_DROP_REASON_NEIGH_QUEUEFULL, NEIGH_QUEUEFULL)	\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
- 
- #undef EM
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index ec0bf737b076..c353834e8fa9 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1171,7 +1171,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
- 			neigh->updated = jiffies;
- 			write_unlock_bh(&neigh->lock);
- 
--			kfree_skb(skb);
-+			kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
- 			return 1;
- 		}
- 	} else if (neigh->nud_state & NUD_STALE) {
-@@ -1193,7 +1193,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
- 				if (!buff)
- 					break;
- 				neigh->arp_queue_len_bytes -= buff->truesize;
--				kfree_skb(buff);
-+				kfree_skb_reason(buff, SKB_DROP_REASON_NEIGH_QUEUEFULL);
- 				NEIGH_CACHE_STAT_INC(neigh->tbl, unres_discards);
- 			}
- 			skb_dst_force(skb);
--- 
-2.34.1
+Thanks
+BRs
+> 
+> > +
+> > +      power-domains:
+> > +        maxItems: 1
+> > +
+> > +    required:
+> > +      - compatible
+> > +      - reg
+> > +      - iommus
+> > +      - interrupts
+> > +      - clocks
+> > +      - clock-names
+> > +      - assigned-clocks
+> > +      - assigned-clock-parents
+> > +      - power-domains
+> > +
+> > +    additionalProperties: false
+> > +
+> > +  "venc_core1@1b020000":
+> > +    type: object
+> > +
+> > +    properties:
+> > +      compatible:
+> > +        const: mediatek,mtk-venc-core1
+> > +
+> > +      reg:
+> > +        maxItems: 1
+> > +
+> > +      iommus:
+> > +        minItems: 1
+> > +        maxItems: 32
+> > +        description: |
+> > +          List of the hardware port in respective IOMMU block for
+> > current Socs.
+> > +          Refer to bindings/iommu/mediatek,iommu.yaml.
+> > +
+> > +      interrupts:
+> > +        maxItems: 1
+> > +
+> > +      clocks:
+> > +        maxItems: 1
+> > +
+> > +      clock-names:
+> > +        items:
+> > +          - const: MT_CG_VENC1
+> > +
+> > +      assigned-clocks:
+> > +        maxItems: 1
+> > +
+> > +      assigned-clock-parents:
+> > +        maxItems: 1
+> > +
+> > +      power-domains:
+> > +        maxItems: 1
+> > +
+> > +    required:
+> > +      - compatible
+> > +      - reg
+> > +      - iommus
+> > +      - interrupts
+> > +      - clocks
+> > +      - clock-names
+> > +      - assigned-clocks
+> > +      - assigned-clock-parents
+> > +      - power-domains
+> > +
+> > +    additionalProperties: false
+> > +
+> > +required:
+> > +  - compatible
+> > +  - mediatek,scp
+> > +  - iommus
+> > +  - dma-ranges
+> > +  - ranges
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> > +    #include <dt-bindings/memory/mt8195-memory-port.h>
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    #include <dt-bindings/clock/mt8195-clk.h>
+> > +    #include <dt-bindings/power/mt8195-power.h>
+> > +
+> > +    venc {
+> > +        compatible = "mediatek,mt8195-vcodec-enc";
+> > +        mediatek,scp = <&scp>;
+> > +        iommus = <&iommu_vdo M4U_PORT_L19_VENC_RCPU>;
+> > +        dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
+> > +        #address-cells = <1>;
+> > +        #size-cells = <1>;
+> > +        ranges;
+> > +
+> > +        venc_core0@1a020000 {
+> > +            compatible = "mediatek,mtk-venc-core0";
+> > +            reg = <0x1a020000 0x10000>;
+> > +            iommus = <&iommu_vdo M4U_PORT_L19_VENC_RCPU>,
+> > +                     <&iommu_vdo M4U_PORT_L19_VENC_REC>,
+> > +                     <&iommu_vdo M4U_PORT_L19_VENC_BSDMA>,
+> > +                     <&iommu_vdo M4U_PORT_L19_VENC_SV_COMV>,
+> > +                     <&iommu_vdo M4U_PORT_L19_VENC_RD_COMV>,
+> > +                     <&iommu_vdo M4U_PORT_L19_VENC_CUR_LUMA>,
+> > +                     <&iommu_vdo M4U_PORT_L19_VENC_CUR_CHROMA>,
+> > +                     <&iommu_vdo M4U_PORT_L19_VENC_REF_LUMA>,
+> > +                     <&iommu_vdo M4U_PORT_L19_VENC_REF_CHROMA>;
+> > +            interrupts = <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH 0>;
+> > +            clocks = <&vencsys CLK_VENC_VENC>;
+> > +            clock-names = "MT_CG_VENC0";
+> > +            assigned-clocks = <&topckgen CLK_TOP_VENC>;
+> > +            assigned-clock-parents = <&topckgen
+> > CLK_TOP_UNIVPLL_D4>;
+> > +            power-domains = <&spm MT8195_POWER_DOMAIN_VENC>;
+> > +        };
+> > +
+> > +        venc_core1@1b020000 {
+> > +            compatible = "mediatek,mtk-venc-core1";
+> > +            reg = <0x1b020000 0x10000>;
+> > +            iommus = <&iommu_vpp M4U_PORT_L20_VENC_RCPU>,
+> > +                     <&iommu_vpp M4U_PORT_L20_VENC_REC>,
+> > +                     <&iommu_vpp M4U_PORT_L20_VENC_BSDMA>,
+> > +                     <&iommu_vpp M4U_PORT_L20_VENC_SV_COMV>,
+> > +                     <&iommu_vpp M4U_PORT_L20_VENC_RD_COMV>,
+> > +                     <&iommu_vpp M4U_PORT_L20_VENC_CUR_LUMA>,
+> > +                     <&iommu_vpp M4U_PORT_L20_VENC_CUR_CHROMA>,
+> > +                     <&iommu_vpp M4U_PORT_L20_VENC_REF_LUMA>,
+> > +                     <&iommu_vpp M4U_PORT_L20_VENC_REF_CHROMA>;
+> > +            interrupts = <GIC_SPI 346 IRQ_TYPE_LEVEL_HIGH 0>;
+> > +            clocks = <&vencsys_core1 CLK_VENC_CORE1_VENC>;
+> > +            clock-names = "MT_CG_VENC1";
+> > +            assigned-clocks = <&topckgen CLK_TOP_VENC>;
+> > +            assigned-clock-parents = <&topckgen
+> > CLK_TOP_UNIVPLL_D4>;
+> > +            power-domains = <&spm MT8195_POWER_DOMAIN_VENC_CORE1>;
+> > +        };
+> > +    };
+> > -- 
+> > 2.18.0
+> > 
+> > 
 
