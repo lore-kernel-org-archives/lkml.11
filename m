@@ -2,156 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 298A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 04:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B78B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 04:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233884AbiBOEEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 23:04:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38396 "EHLO
+        id S230347AbiBOEKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 23:10:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231873AbiBOEED (ORCPT
+        with ESMTP id S229947AbiBOEKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 23:04:03 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEA7F1AD4;
-        Mon, 14 Feb 2022 20:03:45 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: krisman)
-        with ESMTPSA id A6AEC1F43572
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644897824;
-        bh=VG0gC/LlBYOoQhn5utxIdgmPSt7IfHbptUv0GV7NTBo=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Ub6dmZitRz45cR9qIKXjTsVXU7KmUgK7H9oGw3VoIqMVy2lNgKyINSxJJ4Mxa9LeQ
-         OSnaNgDQeenPnKVsHAu7FJW2ksmbmmFKxFZ9DhHBEOytGwf5+mTHiU3/rYyeYKZgAI
-         353erPgVFDlsdFJrWkpczRGLtWgrEDwEWidKsuTfjbzacs2ubqbjvCv53HpQkQgTDO
-         sveWRuEs68cTQpVqRLx8QCaXWu0m6E77IzTClO5SoAIoZgIg7biB2Noa4C7YbpiD3/
-         +EhnyHcdKXZg/HDB7nczR4ihB2+cz0qN/2Cx4c4omJOGZErQyt9d55dDNGrym2WOmM
-         PBwrKU+TudUGg==
-From:   Gabriel Krisman Bertazi <krisman@collabora.com>
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sean Paul <sean@poorly.run>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Simon Ser <contact@emersion.fr>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>
-Subject: Re: [PATCH v8 1/3] gpu: drm: separate panel orientation property
- creating and value setting
-Organization: Collabora
-References: <20220208084234.1684930-1-hsinyi@chromium.org>
-        <87leydhqt3.fsf@collabora.com>
-        <CAJMQK-igpiYj-pkgG9amrQuVzf1Mc9BDDOwOdKLUbceKr=CHiQ@mail.gmail.com>
-Date:   Mon, 14 Feb 2022 23:03:39 -0500
-In-Reply-To: <CAJMQK-igpiYj-pkgG9amrQuVzf1Mc9BDDOwOdKLUbceKr=CHiQ@mail.gmail.com>
-        (Hsin-Yi Wang's message of "Tue, 15 Feb 2022 11:15:02 +0800")
-Message-ID: <87czjoixno.fsf@collabora.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 14 Feb 2022 23:10:17 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B5FAFF59;
+        Mon, 14 Feb 2022 20:10:08 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id l19so26956211pfu.2;
+        Mon, 14 Feb 2022 20:10:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sH4/2oJtfi5laET5tEMr+Y3iQdUpMaIDyoN80AX7CZk=;
+        b=TFB9JYwYT2dieEmGZmjGby6qN+n15NKEVhbbshPnmGbfZM5sMIGksQiob4rIqkMXAE
+         1iXaDhLW9Wp7Np+0a6OLl5f4+qly1AO+QCk5YulLk9bvoKG/7GsgG3redqZX/h/RopHQ
+         paopzfRbA74736juS6cvZhCxmrtnZ5jzuupmRIpyClljBpph+xqWclLfuHrQ5/Efqgr/
+         ZM6XmM8qcBSHiJbO2aKU0mYvzrq/vTWdyls/MayWpK/KPaEoPbsmrPeTsWJST/OzIkK5
+         NRpOilJd1ExVzxOtDipjk2uKuxopa/aySiPiYbgm/EGFhF4TuRIwPfX+XTWRk1GisvCM
+         an2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sH4/2oJtfi5laET5tEMr+Y3iQdUpMaIDyoN80AX7CZk=;
+        b=ft0QTSBn6MVz3BFm2kAS5Qw7O10PYfz9pZXEEcodv8K4qZWHTuYEppZfaCEHVs0gmw
+         5ji71J6G57cNEV4eIVEJbc/ClX5E5PH3MKx1ZQzyWlVFaxF4FsMr3vqJros4VaUUSumd
+         vXkHsA8Wpp9mhcuXZbWHDQSt5bAwrIQXNBJuFzNowS8kk3V2sT+LDT/OvPjCSimA4+ok
+         CCB02GuIWhz6r4Ujee34sB8PIRmX6cb214EwSzObqazoDYD+Oid+e5vVMvPShTtY36us
+         MjtSd7FTo/3hlvnudWDECLKn2Eb+xMfSCyNH5HcOWINd1fT0vIEBX2Cl+N3y9qVb5q0h
+         j5Hw==
+X-Gm-Message-State: AOAM533QIvtvCxjYg/bl76s8jhUV97N9Dzls6/kA4sTNtO7oEShSCepp
+        KiooI+UMl4/7+ODAJ3uye6ukuf3Y36M=
+X-Google-Smtp-Source: ABdhPJzBnrC5+k4E1LSF4Y/ZMXxUsvgq54z6F3pzi8xaU875WJtw9MKOdzTK1Ka9HrtVqhCxKHQjEg==
+X-Received: by 2002:aa7:88d1:: with SMTP id k17mr2053151pff.38.1644898207434;
+        Mon, 14 Feb 2022 20:10:07 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:ff52:228f:b44e:a40b])
+        by smtp.gmail.com with ESMTPSA id bm3sm871353pgb.88.2022.02.14.20.10.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 20:10:06 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        io-uring <io-uring@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH] io_uring: add a schedule point in io_add_buffers()
+Date:   Mon, 14 Feb 2022 20:10:03 -0800
+Message-Id: <20220215041003.2394784-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hsin-Yi Wang <hsinyi@chromium.org> writes:
+From: Eric Dumazet <edumazet@google.com>
 
-> On Tue, Feb 15, 2022 at 9:17 AM Gabriel Krisman Bertazi
-> <krisman@collabora.com> wrote:
->>
->> Hsin-Yi Wang <hsinyi@chromium.org> writes:
->>
->> > drm_dev_register() sets connector->registration_state to
->> > DRM_CONNECTOR_REGISTERED and dev->registered to true. If
->> > drm_connector_set_panel_orientation() is first called after
->> > drm_dev_register(), it will fail several checks and results in following
->> > warning.
->>
->> Hi,
->>
->> I stumbled upon this when investigating the same WARN_ON on amdgpu.
->> Thanks for the patch :)
->>
->> > diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
->> > index a50c82bc2b2fec..572ead7ac10690 100644
->> > --- a/drivers/gpu/drm/drm_connector.c
->> > +++ b/drivers/gpu/drm/drm_connector.c
->> > @@ -1252,7 +1252,7 @@ static const struct drm_prop_enum_list dp_colorspaces[] = {
->> >   *   INPUT_PROP_DIRECT) will still map 1:1 to the actual LCD panel
->> >   *   coordinates, so if userspace rotates the picture to adjust for
->> >   *   the orientation it must also apply the same transformation to the
->> > - *   touchscreen input coordinates. This property is initialized by calling
->> > + *   touchscreen input coordinates. This property value is set by calling
->> >   *   drm_connector_set_panel_orientation() or
->> >   *   drm_connector_set_panel_orientation_with_quirk()
->> >   *
->> > @@ -2341,8 +2341,8 @@ EXPORT_SYMBOL(drm_connector_set_vrr_capable_property);
->> >   * @connector: connector for which to set the panel-orientation property.
->> >   * @panel_orientation: drm_panel_orientation value to set
->> >   *
->> > - * This function sets the connector's panel_orientation and attaches
->> > - * a "panel orientation" property to the connector.
->> > + * This function sets the connector's panel_orientation value. If the property
->> > + * doesn't exist, it will try to create one.
->> >   *
->> >   * Calling this function on a connector where the panel_orientation has
->> >   * already been set is a no-op (e.g. the orientation has been overridden with
->> > @@ -2373,19 +2373,12 @@ int drm_connector_set_panel_orientation(
->> >       info->panel_orientation = panel_orientation;
->> >
->> >       prop = dev->mode_config.panel_orientation_property;
->> > -     if (!prop) {
->> > -             prop = drm_property_create_enum(dev, DRM_MODE_PROP_IMMUTABLE,
->> > -                             "panel orientation",
->> > -                             drm_panel_orientation_enum_list,
->> > -                             ARRAY_SIZE(drm_panel_orientation_enum_list));
->> > -             if (!prop)
->> > -                     return -ENOMEM;
->> > -
->> > -             dev->mode_config.panel_orientation_property = prop;
->> > -     }
->> > +     if (!prop &&
->> > +         drm_connector_init_panel_orientation_property(connector) < 0)
->> > +             return -ENOMEM;
->> >
->>
->> In the case where the property has not been created beforehand, you
->> forgot to reinitialize prop here, after calling
->> drm_connector_init_panel_orientation_property().  This means
-> hi Gabriel,
->
-> drm_connector_init_panel_orientation_property() will create prop if
-> it's null. If prop fails to be created there, it will return -ENOMEM.
+Looping ~65535 times doing kmalloc() calls can trigger soft lockups,
+especially with DEBUG features (like KASAN).
 
-Yes.  But *after the property is successfully created*, the prop variable is still
-NULL.  And then you call the following, using prop, which is still NULL:
+[  253.536212] watchdog: BUG: soft lockup - CPU#64 stuck for 26s! [b219417889:12575]
+[  253.544433] Modules linked in: vfat fat i2c_mux_pca954x i2c_mux spidev cdc_acm xhci_pci xhci_hcd sha3_generic gq(O)
+[  253.544451] CPU: 64 PID: 12575 Comm: b219417889 Tainted: G S         O      5.17.0-smp-DEV #801
+[  253.544457] RIP: 0010:kernel_text_address (./include/asm-generic/sections.h:192 ./include/linux/kallsyms.h:29 kernel/extable.c:67 kernel/extable.c:98)
+[  253.544464] Code: 0f 93 c0 48 c7 c1 e0 63 d7 a4 48 39 cb 0f 92 c1 20 c1 0f b6 c1 5b 5d c3 90 0f 1f 44 00 00 55 48 89 e5 41 57 41 56 53 48 89 fb <48> c7 c0 00 00 80 a0 41 be 01 00 00 00 48 39 c7 72 0c 48 c7 c0 40
+[  253.544468] RSP: 0018:ffff8882d8baf4c0 EFLAGS: 00000246
+[  253.544471] RAX: 1ffff1105b175e00 RBX: ffffffffa13ef09a RCX: 00000000a13ef001
+[  253.544474] RDX: ffffffffa13ef09a RSI: ffff8882d8baf558 RDI: ffffffffa13ef09a
+[  253.544476] RBP: ffff8882d8baf4d8 R08: ffff8882d8baf5e0 R09: 0000000000000004
+[  253.544479] R10: ffff8882d8baf5e8 R11: ffffffffa0d59a50 R12: ffff8882eab20380
+[  253.544481] R13: ffffffffa0d59a50 R14: dffffc0000000000 R15: 1ffff1105b175eb0
+[  253.544483] FS:  00000000016d3380(0000) GS:ffff88af48c00000(0000) knlGS:0000000000000000
+[  253.544486] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  253.544488] CR2: 00000000004af0f0 CR3: 00000002eabfa004 CR4: 00000000003706e0
+[  253.544491] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  253.544492] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  253.544494] Call Trace:
+[  253.544496]  <TASK>
+[  253.544498] ? io_queue_sqe (fs/io_uring.c:7143)
+[  253.544505] __kernel_text_address (kernel/extable.c:78)
+[  253.544508] unwind_get_return_address (arch/x86/kernel/unwind_frame.c:19)
+[  253.544514] arch_stack_walk (arch/x86/kernel/stacktrace.c:27)
+[  253.544517] ? io_queue_sqe (fs/io_uring.c:7143)
+[  253.544521] stack_trace_save (kernel/stacktrace.c:123)
+[  253.544527] ____kasan_kmalloc (mm/kasan/common.c:39 mm/kasan/common.c:45 mm/kasan/common.c:436 mm/kasan/common.c:515)
+[  253.544531] ? ____kasan_kmalloc (mm/kasan/common.c:39 mm/kasan/common.c:45 mm/kasan/common.c:436 mm/kasan/common.c:515)
+[  253.544533] ? __kasan_kmalloc (mm/kasan/common.c:524)
+[  253.544535] ? kmem_cache_alloc_trace (./include/linux/kasan.h:270 mm/slab.c:3567)
+[  253.544541] ? io_issue_sqe (fs/io_uring.c:4556 fs/io_uring.c:4589 fs/io_uring.c:6828)
+[  253.544544] ? __io_queue_sqe (fs/io_uring.c:?)
+[  253.544551] __kasan_kmalloc (mm/kasan/common.c:524)
+[  253.544553] kmem_cache_alloc_trace (./include/linux/kasan.h:270 mm/slab.c:3567)
+[  253.544556] ? io_issue_sqe (fs/io_uring.c:4556 fs/io_uring.c:4589 fs/io_uring.c:6828)
+[  253.544560] io_issue_sqe (fs/io_uring.c:4556 fs/io_uring.c:4589 fs/io_uring.c:6828)
+[  253.544564] ? __kasan_slab_alloc (mm/kasan/common.c:45 mm/kasan/common.c:436 mm/kasan/common.c:469)
+[  253.544567] ? __kasan_slab_alloc (mm/kasan/common.c:39 mm/kasan/common.c:45 mm/kasan/common.c:436 mm/kasan/common.c:469)
+[  253.544569] ? kmem_cache_alloc_bulk (mm/slab.h:732 mm/slab.c:3546)
+[  253.544573] ? __io_alloc_req_refill (fs/io_uring.c:2078)
+[  253.544578] ? io_submit_sqes (fs/io_uring.c:7441)
+[  253.544581] ? __se_sys_io_uring_enter (fs/io_uring.c:10154 fs/io_uring.c:10096)
+[  253.544584] ? __x64_sys_io_uring_enter (fs/io_uring.c:10096)
+[  253.544587] ? do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+[  253.544590] ? entry_SYSCALL_64_after_hwframe (??:?)
+[  253.544596] __io_queue_sqe (fs/io_uring.c:?)
+[  253.544600] io_queue_sqe (fs/io_uring.c:7143)
+[  253.544603] io_submit_sqe (fs/io_uring.c:?)
+[  253.544608] io_submit_sqes (fs/io_uring.c:?)
+[  253.544612] __se_sys_io_uring_enter (fs/io_uring.c:10154 fs/io_uring.c:10096)
+[  253.544616] __x64_sys_io_uring_enter (fs/io_uring.c:10096)
+[  253.544619] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+[  253.544623] entry_SYSCALL_64_after_hwframe (??:?)
 
->> > +     drm_object_property_set_value(&connector->base, prop,
->> > +                                   info->panel_orientation);
+Fixes: ddf0322db79c ("io_uring: add IORING_OP_PROVIDE_BUFFERS")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: Pavel Begunkov <asml.silence@gmail.com>
+Cc: io-uring <io-uring@vger.kernel.org>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ fs/io_uring.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-This will do property->dev right on the first line of code, and dereference the
-null prop pointer.
-
-You must do
-
-  prop = dev->mode_config.panel_orientation_property;
-
-again after drm_connector_init_panel_orientation_property successfully
-returns, or call drm_object_property_set_value using
-dev->mode_config.panel_orientation_property directly:
-
-  drm_object_property_set_value(&connector->base,
-			dev->mode_config.panel_orientation_property
-		        info->panel_orientation);
-
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 77b9c7e4793bf3332a0229ed74603d195b761756..b928928617a475af71fe2d42c63bc32099b42ada 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -4567,6 +4567,7 @@ static int io_add_buffers(struct io_provide_buf *pbuf, struct io_buffer **head)
+ 		} else {
+ 			list_add_tail(&buf->list, &(*head)->list);
+ 		}
++		cond_resched();
+ 	}
+ 
+ 	return i ? i : -ENOMEM;
 -- 
-Gabriel Krisman Bertazi
+2.35.1.265.g69c8d7142f-goog
+
