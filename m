@@ -2,136 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B50C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:10:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95CEDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235284AbiBOIKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 03:10:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52884 "EHLO
+        id S232659AbiBOINL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 03:13:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235237AbiBOIKd (ORCPT
+        with ESMTP id S230009AbiBOINK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 03:10:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4233B2DAA4;
-        Tue, 15 Feb 2022 00:10:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D36926163D;
-        Tue, 15 Feb 2022 08:10:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 456DFC340F3;
-        Tue, 15 Feb 2022 08:10:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644912623;
-        bh=SSSBFam0X7wa1ZiCw7Mbgc9666G5ScJGR2eDM1GsaRo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=GJaH8HwE/nyR+qQa8REdT0IBd6a1g1vdC7TjCVH+QKxG8exdyUSWaCsUK7KWHphPk
-         tvJwSqnUx64jqz1n54LIqFenzDmCCidLTJduU74Q5vlyWYX7j4DNZDwpt3yWI1yggy
-         uVAjNKpsQ/55wU4crkdhGYsBR6jczZb92p557GB19rCppp2hQm8idjgMHrieouMtUe
-         BGFgP4YI3u/k4JjEKZvMFZMxgpcGVMSueNUds/WuePg8tSzQQwECVHk/BraBvFWKRw
-         FVODNRMCkDbhgL/OgkzDyZhbXNvkdebH3pAU3g7SFEv2xKk93G1ExuOBsZgVpcgC1j
-         wml0zK2sDBkbQ==
-Received: by mail-wr1-f42.google.com with SMTP id j26so19818838wrb.7;
-        Tue, 15 Feb 2022 00:10:23 -0800 (PST)
-X-Gm-Message-State: AOAM5323GrMAxES1qHh4ny8dIkaSWNDv9LLzWZjuVZx1akQzEie3UvIi
-        0eL8ToDRVAezriIWJGL5KfcCQnwVN1bYa6YP9Tw=
-X-Google-Smtp-Source: ABdhPJykY+dvL+1GXmktnHDS2zXI387Vsr5YXEveY1d8rit1tT/hQTTS9CD1dDWxxX5ce3jmiS7RoOoUcfODSGZmbh0=
-X-Received: by 2002:a5d:58d1:: with SMTP id o17mr2237862wrf.407.1644912621613;
- Tue, 15 Feb 2022 00:10:21 -0800 (PST)
+        Tue, 15 Feb 2022 03:13:10 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A40E0E0
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 00:13:00 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nJsx3-0003M9-1W; Tue, 15 Feb 2022 09:12:45 +0100
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 908F233846;
+        Tue, 15 Feb 2022 08:12:43 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 09:12:40 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Scott Branden <sbranden@broadcom.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tony Lindgren <tony@atomide.com>, devicetree@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org, kernel@pengutronix.de,
+        linux-tegra@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 5/8] ARM: dts: exynos: fix ethernet node name for
+ different odroid boards
+Message-ID: <20220215081240.hhie4niqnc5tuka2@pengutronix.de>
+References: <20220215080937.2263111-1-o.rempel@pengutronix.de>
+ <20220215080937.2263111-5-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-15-arnd@kernel.org>
- <YgsYD2nW9GjWJtn5@zeniv-ca.linux.org.uk> <215c0ddc-54b1-bcb1-c5aa-bd17c6b100a8@gmx.de>
-In-Reply-To: <215c0ddc-54b1-bcb1-c5aa-bd17c6b100a8@gmx.de>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 15 Feb 2022 09:10:05 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1DPxgti+aRVUABQFZz-yT0KNU9QZpB9iGNCPkBHnv_xg@mail.gmail.com>
-Message-ID: <CAK8P3a1DPxgti+aRVUABQFZz-yT0KNU9QZpB9iGNCPkBHnv_xg@mail.gmail.com>
-Subject: Re: [PATCH 14/14] uaccess: drop set_fs leftovers
-To:     Helge Deller <deller@gmx.de>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Brian Cain <bcain@codeaurora.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Rich Felker <dalias@libc.org>,
-        David Miller <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        "open list:SYNOPSYS ARC ARCHITECTURE" 
-        <linux-snps-arc@lists.infradead.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        linux-ia64@vger.kernel.org,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Openrisc <openrisc@lists.librecores.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ruaa4qutvikg7brg"
+Content-Disposition: inline
+In-Reply-To: <20220215080937.2263111-5-o.rempel@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 8:46 AM Helge Deller <deller@gmx.de> wrote:
->
-> On 2/15/22 04:03, Al Viro wrote:
-> > On Mon, Feb 14, 2022 at 05:34:52PM +0100, Arnd Bergmann wrote:
-> >> diff --git a/arch/parisc/include/asm/futex.h b/arch/parisc/include/asm/futex.h
-> >> index b5835325d44b..2f4a1b1ef387 100644
-> >> --- a/arch/parisc/include/asm/futex.h
-> >> +++ b/arch/parisc/include/asm/futex.h
-> >> @@ -99,7 +99,7 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
-> >>      /* futex.c wants to do a cmpxchg_inatomic on kernel NULL, which is
-> >>       * our gateway page, and causes no end of trouble...
-> >>       */
-> >> -    if (uaccess_kernel() && !uaddr)
-> >> +    if (!uaddr)
-> >>              return -EFAULT;
-> >
-> >       Huh?  uaccess_kernel() is removed since it becomes always false now,
-> > so this looks odd.
-> >
-> >       AFAICS, the comment above that check refers to futex_detect_cmpxchg()
-> > -> cmpxchg_futex_value_locked() -> futex_atomic_cmpxchg_inatomic() call chain.
-> > Which had been gone since commit 3297481d688a (futex: Remove futex_cmpxchg
-> > detection).  The comment *and* the check should've been killed off back
-> > then.
-> >       Let's make sure to get both now...
->
-> Right. Arnd, can you drop this if() and the comment above it?
 
-Done.
+--ruaa4qutvikg7brg
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-       Arnd
+On 15.02.2022 09:09:34, Oleksij Rempel wrote:
+> The node name of Ethernet controller should be "ethernet" instead of
+> "usbether"
+>=20
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  arch/arm/boot/dts/exynos4412-odroidu3.dts       | 4 ++--
+>  arch/arm/boot/dts/exynos4412-odroidx.dts        | 8 ++++----
+>  arch/arm/boot/dts/exynos5410-odroidxu.dts       | 4 ++--
+>  arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts | 6 +++---
+>  arch/arm/boot/dts/exynos5422-odroidxu3.dts      | 6 +++---
+>  5 files changed, 14 insertions(+), 14 deletions(-)
+>=20
+> diff --git a/arch/arm/boot/dts/exynos4412-odroidu3.dts b/arch/arm/boot/dt=
+s/exynos4412-odroidu3.dts
+> index efaf7533e84f..36c369c42b77 100644
+> --- a/arch/arm/boot/dts/exynos4412-odroidu3.dts
+> +++ b/arch/arm/boot/dts/exynos4412-odroidu3.dts
+> @@ -119,8 +119,8 @@ &ehci {
+>  	phys =3D <&exynos_usbphy 2>, <&exynos_usbphy 3>;
+>  	phy-names =3D "hsic0", "hsic1";
+> =20
+> -	ethernet: usbether@2 {
+> -		compatible =3D "usb0424,9730";
+> +	ethernet: ethernet@2 {
+> +		compatible =3D "usb424,9730";
+
+The change of the compatible is not mentioned in the patch description.
+Is this intentional?
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--ruaa4qutvikg7brg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmILYHUACgkQrX5LkNig
+011yBQf/fenmunl2JTABeDMwlX/3g+MNPH3XDVUcmYfSGIjN/yUYavmljQFDoLrw
+JFsE8C8xbz8NmuVZ1/6ROJS2FDV48/AsVgVw8hAYLDIny6nSpbjGDBRKO9GD05Jb
+QysbLbwcuwnh8TSZqtLLh0kplaC7SRCVSvvA6vxdSNzc+cyNDgTrYOQ0tvxEXSmv
+Fh6kfuM8hKXWD0CgZrYGp4I/1UW2ojeSihGhf6F9lOgJ9cR5v+cR7/TfRviRGhqU
+TXVG2xqgdBtYN4FCR8dU+ZNLmEzz6Q77mGmYXr7JZicaXr6cgqYMxMIG7p0UoiF+
+M++Hxo4s8U/JkrvGcFGRuIZBnnjkGw==
+=hKqu
+-----END PGP SIGNATURE-----
+
+--ruaa4qutvikg7brg--
