@@ -2,318 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E662C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:28:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B39AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240057AbiBOP2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:28:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47098 "EHLO
+        id S238417AbiBOP26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:28:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239931AbiBOP2O (ORCPT
+        with ESMTP id S239982AbiBOP2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:28:14 -0500
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E330A8895
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 07:27:41 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1644938859;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Dd7SzABTkib4AM799BUOL90w6kNVBveLZbvtnSYlKo4=;
-        b=TyqFfmBROv3yov1tgSTviqz3K1YLxu0KgqlzMwoyzgZecvJFQdDfSkcDJT60dRiuwMK2vG
-        x+Aq0PcBTXNeg+nVy7uMH1UqQ77nU0g8uiJclHFJJpyQXNbIkAfO6zJdhTNcoMGGBEfudr
-        LuHmdw4sEqXK0cn3u6ACd/oTvmnOkkg=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH] kasan: test: support async (again) and asymm modes for HW_TAGS
-Date:   Tue, 15 Feb 2022 16:27:36 +0100
-Message-Id: <51ae4a56205a41953971113ab2c264c7e2e5d969.1644938763.git.andreyknvl@google.com>
+        Tue, 15 Feb 2022 10:28:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2298CA9729;
+        Tue, 15 Feb 2022 07:27:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3072615F2;
+        Tue, 15 Feb 2022 15:27:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87C3CC340EB;
+        Tue, 15 Feb 2022 15:27:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644938871;
+        bh=8kbzgWG3vxuxHmxWCGGZt/R8YXpIkmbbfND5axACxC4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h9k4sfI1WRlC/G1ow0rQ2gYV2UJvGLKU542GEj4yTDzowViYiJ6sShaTY6R5ksOSi
+         Gyc5JpC6HJjf75AKGxDpKe1vlVaTArjpiF6rpAOB9VJGug8hfP4KOPUolCZqgnMC9A
+         tyDoQenz2jdEslDecelzw4FkH5OstffLsy0fFKUsw4H1B7HCWePeUyfmxH6NDwPBnY
+         UipIrcVZjoVVM3/jMZa8BxZHT0GLeGv8nTqPp7WAlbJ2WakRA1yhgSdojWngcQIUpe
+         f+1OhVaDwAxtFdNJZNvgBkonxxUS9gmEPpltNIC2qtIydiPvwP6Q9kSCSVZvOM05xE
+         lMc7tHZSolXEg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 27/34] NFSD: Fix offset type in I/O trace points
+Date:   Tue, 15 Feb 2022 10:26:50 -0500
+Message-Id: <20220215152657.580200-27-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
+References: <20220215152657.580200-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-Async mode support has already been implemented in commit
-e80a76aa1a91 ("kasan, arm64: tests supports for HW_TAGS async mode")
-but then got accidentally broken in
-commit 99734b535d9b ("kasan: detect false-positives in tests").
+[ Upstream commit 6a4d333d540041d244b2fca29b8417bfde20af81 ]
 
-Restore the changes removed by the latter patch and adapt them for
-asymm mode: add a sync_fault flag to kunit_kasan_expectation that
-only get set if the MTE fault was synchronous, and reenable MTE
-on such faults in tests.
+NFSv3 and NFSv4 use u64 offset values on the wire. Record these values
+verbatim without the implicit type case to loff_t.
 
-Also rename kunit_kasan_expectation to kunit_kasan_status and move its
-definition to mm/kasan/kasan.h from include/linux/kasan.h, as this
-structure is only internally used by KASAN.
-
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/kasan.h |  5 -----
- lib/test_kasan.c      | 39 ++++++++++++++++++++++-----------------
- mm/kasan/hw_tags.c    | 18 +++++++++---------
- mm/kasan/kasan.h      | 14 ++++++++++++--
- mm/kasan/report.c     | 17 +++++++++--------
- 5 files changed, 52 insertions(+), 41 deletions(-)
+ fs/nfsd/trace.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/kasan.h b/include/linux/kasan.h
-index 4a45562d8893..d9c3f9e79d7d 100644
---- a/include/linux/kasan.h
-+++ b/include/linux/kasan.h
-@@ -18,11 +18,6 @@ struct task_struct;
- #include <linux/linkage.h>
- #include <asm/kasan.h>
+diff --git a/fs/nfsd/trace.h b/fs/nfsd/trace.h
+index f1e0d3c51bc23..e662494de3c75 100644
+--- a/fs/nfsd/trace.h
++++ b/fs/nfsd/trace.h
+@@ -320,14 +320,14 @@ TRACE_EVENT(nfsd_export_update,
+ DECLARE_EVENT_CLASS(nfsd_io_class,
+ 	TP_PROTO(struct svc_rqst *rqstp,
+ 		 struct svc_fh	*fhp,
+-		 loff_t		offset,
+-		 unsigned long	len),
++		 u64		offset,
++		 u32		len),
+ 	TP_ARGS(rqstp, fhp, offset, len),
+ 	TP_STRUCT__entry(
+ 		__field(u32, xid)
+ 		__field(u32, fh_hash)
+-		__field(loff_t, offset)
+-		__field(unsigned long, len)
++		__field(u64, offset)
++		__field(u32, len)
+ 	),
+ 	TP_fast_assign(
+ 		__entry->xid = be32_to_cpu(rqstp->rq_xid);
+@@ -335,7 +335,7 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
+ 		__entry->offset = offset;
+ 		__entry->len = len;
+ 	),
+-	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%lld len=%lu",
++	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%llu len=%u",
+ 		  __entry->xid, __entry->fh_hash,
+ 		  __entry->offset, __entry->len)
+ )
+@@ -344,8 +344,8 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
+ DEFINE_EVENT(nfsd_io_class, nfsd_##name,	\
+ 	TP_PROTO(struct svc_rqst *rqstp,	\
+ 		 struct svc_fh	*fhp,		\
+-		 loff_t		offset,		\
+-		 unsigned long	len),		\
++		 u64		offset,		\
++		 u32		len),		\
+ 	TP_ARGS(rqstp, fhp, offset, len))
  
--/* kasan_data struct is used in KUnit tests for KASAN expected failures */
--struct kunit_kasan_expectation {
--	bool report_found;
--};
--
- #endif
- 
- #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
-diff --git a/lib/test_kasan.c b/lib/test_kasan.c
-index 26a5c9007653..f90ed146ed23 100644
---- a/lib/test_kasan.c
-+++ b/lib/test_kasan.c
-@@ -36,7 +36,7 @@ void *kasan_ptr_result;
- int kasan_int_result;
- 
- static struct kunit_resource resource;
--static struct kunit_kasan_expectation fail_data;
-+static struct kunit_kasan_status test_status;
- static bool multishot;
- 
- /*
-@@ -53,58 +53,63 @@ static int kasan_test_init(struct kunit *test)
- 	}
- 
- 	multishot = kasan_save_enable_multi_shot();
--	fail_data.report_found = false;
-+	test_status.report_found = false;
-+	test_status.sync_fault = false;
- 	kunit_add_named_resource(test, NULL, NULL, &resource,
--					"kasan_data", &fail_data);
-+					"kasan_status", &test_status);
- 	return 0;
- }
- 
- static void kasan_test_exit(struct kunit *test)
- {
- 	kasan_restore_multi_shot(multishot);
--	KUNIT_EXPECT_FALSE(test, fail_data.report_found);
-+	KUNIT_EXPECT_FALSE(test, test_status.report_found);
- }
- 
- /**
-  * KUNIT_EXPECT_KASAN_FAIL() - check that the executed expression produces a
-  * KASAN report; causes a test failure otherwise. This relies on a KUnit
-- * resource named "kasan_data". Do not use this name for KUnit resources
-+ * resource named "kasan_status". Do not use this name for KUnit resources
-  * outside of KASAN tests.
-  *
-- * For hardware tag-based KASAN in sync mode, when a tag fault happens, tag
-+ * For hardware tag-based KASAN, when a synchronous tag fault happens, tag
-  * checking is auto-disabled. When this happens, this test handler reenables
-  * tag checking. As tag checking can be only disabled or enabled per CPU,
-  * this handler disables migration (preemption).
-  *
-- * Since the compiler doesn't see that the expression can change the fail_data
-+ * Since the compiler doesn't see that the expression can change the test_status
-  * fields, it can reorder or optimize away the accesses to those fields.
-  * Use READ/WRITE_ONCE() for the accesses and compiler barriers around the
-  * expression to prevent that.
-  *
-- * In between KUNIT_EXPECT_KASAN_FAIL checks, fail_data.report_found is kept as
-- * false. This allows detecting KASAN reports that happen outside of the checks
-- * by asserting !fail_data.report_found at the start of KUNIT_EXPECT_KASAN_FAIL
-- * and in kasan_test_exit.
-+ * In between KUNIT_EXPECT_KASAN_FAIL checks, test_status.report_found is kept
-+ * as false. This allows detecting KASAN reports that happen outside of the
-+ * checks by asserting !test_status.report_found at the start of
-+ * KUNIT_EXPECT_KASAN_FAIL and in kasan_test_exit.
-  */
- #define KUNIT_EXPECT_KASAN_FAIL(test, expression) do {			\
- 	if (IS_ENABLED(CONFIG_KASAN_HW_TAGS) &&				\
- 	    kasan_sync_fault_possible())				\
- 		migrate_disable();					\
--	KUNIT_EXPECT_FALSE(test, READ_ONCE(fail_data.report_found));	\
-+	KUNIT_EXPECT_FALSE(test, READ_ONCE(test_status.report_found));	\
- 	barrier();							\
- 	expression;							\
- 	barrier();							\
--	if (!READ_ONCE(fail_data.report_found)) {			\
-+	if (kasan_async_fault_possible())				\
-+		kasan_force_async_fault();				\
-+	if (!READ_ONCE(test_status.report_found)) {			\
- 		KUNIT_FAIL(test, KUNIT_SUBTEST_INDENT "KASAN failure "	\
- 				"expected in \"" #expression		\
- 				 "\", but none occurred");		\
- 	}								\
--	if (IS_ENABLED(CONFIG_KASAN_HW_TAGS)) {				\
--		if (READ_ONCE(fail_data.report_found))			\
--			kasan_enable_tagging_sync();			\
-+	if (IS_ENABLED(CONFIG_KASAN_HW_TAGS) &&				\
-+	    kasan_sync_fault_possible()) {				\
-+		if (READ_ONCE(test_status.report_found) &&		\
-+		    READ_ONCE(test_status.sync_fault))			\
-+			kasan_enable_tagging();				\
- 		migrate_enable();					\
- 	}								\
--	WRITE_ONCE(fail_data.report_found, false);			\
-+	WRITE_ONCE(test_status.report_found, false);			\
- } while (0)
- 
- #define KASAN_TEST_NEEDS_CONFIG_ON(test, config) do {			\
-diff --git a/mm/kasan/hw_tags.c b/mm/kasan/hw_tags.c
-index 7355cb534e4f..97c68c9de042 100644
---- a/mm/kasan/hw_tags.c
-+++ b/mm/kasan/hw_tags.c
-@@ -132,12 +132,7 @@ void kasan_init_hw_tags_cpu(void)
- 	 * Enable async or asymm modes only when explicitly requested
- 	 * through the command line.
- 	 */
--	if (kasan_arg_mode == KASAN_ARG_MODE_ASYNC)
--		hw_enable_tagging_async();
--	else if (kasan_arg_mode == KASAN_ARG_MODE_ASYMM)
--		hw_enable_tagging_asymm();
--	else
--		hw_enable_tagging_sync();
-+	kasan_enable_tagging();
- }
- 
- /* kasan_init_hw_tags() is called once on boot CPU. */
-@@ -226,11 +221,16 @@ void kasan_free_pages(struct page *page, unsigned int order)
- 
- #if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
- 
--void kasan_enable_tagging_sync(void)
-+void kasan_enable_tagging(void)
- {
--	hw_enable_tagging_sync();
-+	if (kasan_arg_mode == KASAN_ARG_MODE_ASYNC)
-+		hw_enable_tagging_async();
-+	else if (kasan_arg_mode == KASAN_ARG_MODE_ASYMM)
-+		hw_enable_tagging_asymm();
-+	else
-+		hw_enable_tagging_sync();
- }
--EXPORT_SYMBOL_GPL(kasan_enable_tagging_sync);
-+EXPORT_SYMBOL_GPL(kasan_enable_tagging);
- 
- void kasan_force_async_fault(void)
- {
-diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index c17fa8d26ffe..49d8df9cf2c6 100644
---- a/mm/kasan/kasan.h
-+++ b/mm/kasan/kasan.h
-@@ -7,6 +7,16 @@
- #include <linux/kfence.h>
- #include <linux/stackdepot.h>
- 
-+#ifdef CONFIG_KASAN_KUNIT_TEST
-+
-+/* Used in KUnit-compatible KASAN tests. */
-+struct kunit_kasan_status {
-+	bool report_found;
-+	bool sync_fault;
-+};
-+
-+#endif
-+
- #ifdef CONFIG_KASAN_HW_TAGS
- 
- #include <linux/static_key.h>
-@@ -340,12 +350,12 @@ static inline const void *arch_kasan_set_tag(const void *addr, u8 tag)
- 
- #if defined(CONFIG_KASAN_HW_TAGS) && IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
- 
--void kasan_enable_tagging_sync(void);
-+void kasan_enable_tagging(void);
- void kasan_force_async_fault(void);
- 
- #else /* CONFIG_KASAN_HW_TAGS || CONFIG_KASAN_KUNIT_TEST */
- 
--static inline void kasan_enable_tagging_sync(void) { }
-+static inline void kasan_enable_tagging(void) { }
- static inline void kasan_force_async_fault(void) { }
- 
- #endif /* CONFIG_KASAN_HW_TAGS || CONFIG_KASAN_KUNIT_TEST */
-diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 3ad9624dcc56..c5a8adc570c0 100644
---- a/mm/kasan/report.c
-+++ b/mm/kasan/report.c
-@@ -344,20 +344,21 @@ static bool report_enabled(void)
- }
- 
- #if IS_ENABLED(CONFIG_KUNIT)
--static void kasan_update_kunit_status(struct kunit *cur_test)
-+static void kasan_update_kunit_status(struct kunit *cur_test, bool sync)
- {
- 	struct kunit_resource *resource;
--	struct kunit_kasan_expectation *kasan_data;
-+	struct kunit_kasan_status *status;
- 
--	resource = kunit_find_named_resource(cur_test, "kasan_data");
-+	resource = kunit_find_named_resource(cur_test, "kasan_status");
- 
- 	if (!resource) {
- 		kunit_set_failure(cur_test);
- 		return;
- 	}
- 
--	kasan_data = (struct kunit_kasan_expectation *)resource->data;
--	WRITE_ONCE(kasan_data->report_found, true);
-+	status = (struct kunit_kasan_status *)resource->data;
-+	WRITE_ONCE(status->report_found, true);
-+	WRITE_ONCE(status->sync_fault, sync);
- 	kunit_put_resource(resource);
- }
- #endif /* IS_ENABLED(CONFIG_KUNIT) */
-@@ -371,7 +372,7 @@ void kasan_report_invalid_free(void *object, unsigned long ip)
- 
- #if IS_ENABLED(CONFIG_KUNIT)
- 	if (current->kunit_test)
--		kasan_update_kunit_status(current->kunit_test);
-+		kasan_update_kunit_status(current->kunit_test, true);
- #endif /* IS_ENABLED(CONFIG_KUNIT) */
- 
- 	start_report(&flags);
-@@ -391,7 +392,7 @@ void kasan_report_async(void)
- 
- #if IS_ENABLED(CONFIG_KUNIT)
- 	if (current->kunit_test)
--		kasan_update_kunit_status(current->kunit_test);
-+		kasan_update_kunit_status(current->kunit_test, false);
- #endif /* IS_ENABLED(CONFIG_KUNIT) */
- 
- 	start_report(&flags);
-@@ -413,7 +414,7 @@ static void __kasan_report(unsigned long addr, size_t size, bool is_write,
- 
- #if IS_ENABLED(CONFIG_KUNIT)
- 	if (current->kunit_test)
--		kasan_update_kunit_status(current->kunit_test);
-+		kasan_update_kunit_status(current->kunit_test, true);
- #endif /* IS_ENABLED(CONFIG_KUNIT) */
- 
- 	disable_trace_on_warning();
+ DEFINE_NFSD_IO_EVENT(read_start);
 -- 
-2.25.1
+2.34.1
 
