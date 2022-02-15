@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE60C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91950C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 08:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235203AbiBOIK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 03:10:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52516 "EHLO
+        id S234132AbiBOIKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 03:10:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235140AbiBOIKO (ORCPT
+        with ESMTP id S235216AbiBOIKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 03:10:14 -0500
+        Tue, 15 Feb 2022 03:10:31 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF38C2DAAC
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 00:10:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F272E096
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 00:10:11 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nJsu4-0002EK-5F; Tue, 15 Feb 2022 09:09:40 +0100
+        id 1nJsu4-0002EJ-5T; Tue, 15 Feb 2022 09:09:40 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nJsu2-009Ule-B4; Tue, 15 Feb 2022 09:09:38 +0100
+        id 1nJsu2-009UlU-9s; Tue, 15 Feb 2022 09:09:38 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -42,9 +42,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
         linux-tegra@vger.kernel.org
-Subject: [PATCH v3 7/8] ARM: dts: tegra20/30: fix ethernet node name for different tegra boards
-Date:   Tue, 15 Feb 2022 09:09:36 +0100
-Message-Id: <20220215080937.2263111-7-o.rempel@pengutronix.de>
+Subject: [PATCH v3 6/8] ARM: dts: omap3/4/5: fix ethernet node name for different OMAP boards
+Date:   Tue, 15 Feb 2022 09:09:35 +0100
+Message-Id: <20220215080937.2263111-6-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220215080937.2263111-1-o.rempel@pengutronix.de>
 References: <20220215080937.2263111-1-o.rempel@pengutronix.de>
@@ -59,54 +59,68 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 The node name of Ethernet controller should be "ethernet" instead of
-"asix" or "smsc"
+"usbether"
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/tegra20-colibri.dtsi | 2 +-
- arch/arm/boot/dts/tegra30-colibri.dtsi | 2 +-
- arch/arm/boot/dts/tegra30-ouya.dts     | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/omap3-beagle-xm.dts     | 2 +-
+ arch/arm/boot/dts/omap4-panda-common.dtsi | 2 +-
+ arch/arm/boot/dts/omap5-igep0050.dts      | 2 +-
+ arch/arm/boot/dts/omap5-uevm.dts          | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/tegra20-colibri.dtsi b/arch/arm/boot/dts/tegra20-colibri.dtsi
-index 1eefb9ee4ac8..8ebd8afc857d 100644
---- a/arch/arm/boot/dts/tegra20-colibri.dtsi
-+++ b/arch/arm/boot/dts/tegra20-colibri.dtsi
-@@ -691,7 +691,7 @@ usb@c5004000 {
+diff --git a/arch/arm/boot/dts/omap3-beagle-xm.dts b/arch/arm/boot/dts/omap3-beagle-xm.dts
+index a858ebfa1500..35eced6521ef 100644
+--- a/arch/arm/boot/dts/omap3-beagle-xm.dts
++++ b/arch/arm/boot/dts/omap3-beagle-xm.dts
+@@ -370,7 +370,7 @@ hub@2 {
  		#address-cells = <1>;
  		#size-cells = <0>;
  
--		asix@1 {
-+		ethernet@1 {
- 			compatible = "usbb95,772b";
+-		ethernet: usbether@1 {
++		ethernet: ethernet@1 {
+ 			compatible = "usb424,ec00";
  			reg = <1>;
- 			local-mac-address = [00 00 00 00 00 00];
-diff --git a/arch/arm/boot/dts/tegra30-colibri.dtsi b/arch/arm/boot/dts/tegra30-colibri.dtsi
-index be691a1c33a1..22231d450b1b 100644
---- a/arch/arm/boot/dts/tegra30-colibri.dtsi
-+++ b/arch/arm/boot/dts/tegra30-colibri.dtsi
-@@ -960,7 +960,7 @@ usb@7d004000 {
+ 		};
+diff --git a/arch/arm/boot/dts/omap4-panda-common.dtsi b/arch/arm/boot/dts/omap4-panda-common.dtsi
+index 609a8dea946b..518652a599bd 100644
+--- a/arch/arm/boot/dts/omap4-panda-common.dtsi
++++ b/arch/arm/boot/dts/omap4-panda-common.dtsi
+@@ -558,7 +558,7 @@ hub@1 {
  		#address-cells = <1>;
  		#size-cells = <0>;
  
--		asix@1 {
-+		ethernet@1 {
- 			compatible = "usbb95,772b";
+-		ethernet: usbether@1 {
++		ethernet: ethernet@1 {
+ 			compatible = "usb424,ec00";
  			reg = <1>;
- 			local-mac-address = [00 00 00 00 00 00];
-diff --git a/arch/arm/boot/dts/tegra30-ouya.dts b/arch/arm/boot/dts/tegra30-ouya.dts
-index a5cfbab5f565..e58dda4f9d2c 100644
---- a/arch/arm/boot/dts/tegra30-ouya.dts
-+++ b/arch/arm/boot/dts/tegra30-ouya.dts
-@@ -4553,7 +4553,7 @@ usb@7d004000 {
+ 		};
+diff --git a/arch/arm/boot/dts/omap5-igep0050.dts b/arch/arm/boot/dts/omap5-igep0050.dts
+index 76e499d89d24..3851120857d7 100644
+--- a/arch/arm/boot/dts/omap5-igep0050.dts
++++ b/arch/arm/boot/dts/omap5-igep0050.dts
+@@ -128,7 +128,7 @@ hub@2 {
  		#address-cells = <1>;
  		#size-cells = <0>;
  
--		smsc@2 { /* SMSC 10/100T Ethernet Controller */
-+		ethernet@2 { /* SMSC 10/100T Ethernet Controller */
- 			compatible = "usb424,9e00";
- 			reg = <2>;
- 			local-mac-address = [00 11 22 33 44 55];
+-		ethernet: usbether@3 {
++		ethernet: ethernet@3 {
+ 			compatible = "usb424,7500";
+ 			reg = <3>;
+ 		};
+diff --git a/arch/arm/boot/dts/omap5-uevm.dts b/arch/arm/boot/dts/omap5-uevm.dts
+index 51d5fcae5081..453da9f18a99 100644
+--- a/arch/arm/boot/dts/omap5-uevm.dts
++++ b/arch/arm/boot/dts/omap5-uevm.dts
+@@ -209,7 +209,7 @@ hub@2 {
+ 		#size-cells = <0>;
+ 	};
+ 
+-	ethernet: usbether@3 {
++	ethernet: ethernet@3 {
+ 		compatible = "usb424,9730";
+ 		reg = <3>;
+ 	};
 -- 
 2.30.2
 
