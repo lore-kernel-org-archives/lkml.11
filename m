@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA40C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D11CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 15:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240652AbiBOPfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:35:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46196 "EHLO
+        id S240667AbiBOPfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 10:35:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240528AbiBOPeE (ORCPT
+        with ESMTP id S234314AbiBOPeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:34:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A90125582;
-        Tue, 15 Feb 2022 07:30:34 -0800 (PST)
+        Tue, 15 Feb 2022 10:34:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8072AB12F4;
+        Tue, 15 Feb 2022 07:30:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B042B81AF2;
-        Tue, 15 Feb 2022 15:30:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A75D3C340ED;
-        Tue, 15 Feb 2022 15:30:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EED34615D9;
+        Tue, 15 Feb 2022 15:30:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F114C340F2;
+        Tue, 15 Feb 2022 15:30:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939032;
-        bh=nyj2we/GVux9ke5H4pfoxuTBNZ11sfeVyubRhdGHMT8=;
+        s=k20201202; t=1644939035;
+        bh=1DZitMsfscZqtj1V+5JG4H75SyoQCa4GwHKOPdzcUoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t8VHRaj8rQXRhWdlXRMoMmhctFItbjEa4BaJcPPlhPka//mHlNliUQYKrPPTHnQXX
-         ZDeLUkEIaAblaG2L3UiQJIpou4ul3+I5292b4WMo/LWdAJPMV4W3Q/0KVBEOnIxvHc
-         TofTMcl/ixTTjzQV07wbmnuu1Rp3PQ2Z6c3yCf7CDhnR/A5/PV3WTMMLccrtY2aZTp
-         5czJqbOEftO2WGzlV1Hyug56fgqulvS5ri+BKGkKMHICwIHlNug+gx6EkVaBhfTEQm
-         oidQFxL2fD7j7tbhgvY6q6M7sk+kAJBVU0YvQmWd3kfKBrwgMq87c6fYIGU9cpnIeM
-         udzREuZjYUA/Q==
+        b=maDEaz0+cbVicyz+fSChrQBbDcCRapvPuRBHC+ER8jR0oCaBBwcJYwmeml9fnDFCM
+         KBbx9l0T3XdFbMaka33ITlxcyHJia2VbXIXOZzm3fjKx5ZEub79dcmUwj/95pfQ8I8
+         ElkQ9BzYQeYgvDMnLZvSg9dJmoUDCvk+DJFgx+18BWuftZqItvLXc+TZDHcLUUxulo
+         r2QzJdaxH71OpTfiZt4cYttM4kgCzz4kJmFpGVVBIjShqpKm2+b8T9GZb2StpBQi8s
+         zvDhJbpyDhgmixXDyWfG6qjpW3yr6JDV95CGBJGEMwb01/vygEraB9I4zTBjvDEEJB
+         4Q7LAGQ6wvmEw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 20/23] NFSD: Fix offset type in I/O trace points
-Date:   Tue, 15 Feb 2022 10:29:54 -0500
-Message-Id: <20220215152957.581303-20-sashal@kernel.org>
+Cc:     Marc St-Amand <mstamand@ciena.com>,
+        Harini Katakam <harini.katakam@xilinx.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, claudiu.beznea@microchip.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 22/23] net: macb: Align the dma and coherent dma masks
+Date:   Tue, 15 Feb 2022 10:29:56 -0500
+Message-Id: <20220215152957.581303-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215152957.581303-1-sashal@kernel.org>
 References: <20220215152957.581303-1-sashal@kernel.org>
@@ -50,62 +55,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Marc St-Amand <mstamand@ciena.com>
 
-[ Upstream commit 6a4d333d540041d244b2fca29b8417bfde20af81 ]
+[ Upstream commit 37f7860602b5b2d99fc7465f6407f403f5941988 ]
 
-NFSv3 and NFSv4 use u64 offset values on the wire. Record these values
-verbatim without the implicit type case to loff_t.
+Single page and coherent memory blocks can use different DMA masks
+when the macb accesses physical memory directly. The kernel is clever
+enough to allocate pages that fit into the requested address width.
 
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+When using the ARM SMMU, the DMA mask must be the same for single
+pages and big coherent memory blocks. Otherwise the translation
+tables turn into one big mess.
+
+  [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+  [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+  [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+  [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+
+Since using the same DMA mask does not hurt direct 1:1 physical
+memory mappings, this commit always aligns DMA and coherent masks.
+
+Signed-off-by: Marc St-Amand <mstamand@ciena.com>
+Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Tested-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/trace.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfsd/trace.h b/fs/nfsd/trace.h
-index c8ca73d69ad04..a952f4a9b2a68 100644
---- a/fs/nfsd/trace.h
-+++ b/fs/nfsd/trace.h
-@@ -175,14 +175,14 @@ TRACE_EVENT(nfsd_export_update,
- DECLARE_EVENT_CLASS(nfsd_io_class,
- 	TP_PROTO(struct svc_rqst *rqstp,
- 		 struct svc_fh	*fhp,
--		 loff_t		offset,
--		 unsigned long	len),
-+		 u64		offset,
-+		 u32		len),
- 	TP_ARGS(rqstp, fhp, offset, len),
- 	TP_STRUCT__entry(
- 		__field(u32, xid)
- 		__field(u32, fh_hash)
--		__field(loff_t, offset)
--		__field(unsigned long, len)
-+		__field(u64, offset)
-+		__field(u32, len)
- 	),
- 	TP_fast_assign(
- 		__entry->xid = be32_to_cpu(rqstp->rq_xid);
-@@ -190,7 +190,7 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
- 		__entry->offset = offset;
- 		__entry->len = len;
- 	),
--	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%lld len=%lu",
-+	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%llu len=%u",
- 		  __entry->xid, __entry->fh_hash,
- 		  __entry->offset, __entry->len)
- )
-@@ -199,8 +199,8 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
- DEFINE_EVENT(nfsd_io_class, nfsd_##name,	\
- 	TP_PROTO(struct svc_rqst *rqstp,	\
- 		 struct svc_fh	*fhp,		\
--		 loff_t		offset,		\
--		 unsigned long	len),		\
-+		 u64		offset,		\
-+		 u32		len),		\
- 	TP_ARGS(rqstp, fhp, offset, len))
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 1e8bf6b9834bb..2af464ac250ac 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4534,7 +4534,7 @@ static int macb_probe(struct platform_device *pdev)
  
- DEFINE_NFSD_IO_EVENT(read_start);
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+ 	if (GEM_BFEXT(DAW64, gem_readl(bp, DCFG6))) {
+-		dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
++		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(44));
+ 		bp->hw_dma_cap |= HW_DMA_CAP_64B;
+ 	}
+ #endif
 -- 
 2.34.1
 
