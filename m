@@ -2,91 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32975C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA18C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 21:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243477AbiBOVtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 16:49:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46744 "EHLO
+        id S243629AbiBOVuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 16:50:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240529AbiBOVtd (ORCPT
+        with ESMTP id S235764AbiBOVuD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 16:49:33 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597B1D0079
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:49:22 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id p15so115607ejc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 13:49:22 -0800 (PST)
+        Tue, 15 Feb 2022 16:50:03 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122ECD5DEE;
+        Tue, 15 Feb 2022 13:49:53 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id p22so178498lfu.5;
+        Tue, 15 Feb 2022 13:49:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FBEgLM+wt/N2x1IHh68kag6ZJDXafwurcKEa4xbiiRA=;
-        b=dUtcnX+ydVohJxF8J4PuoFN32Pe8FmdtubeCsxRfg8qkWn4EMw9G9vnkVxUNaGUVkg
-         E9BgdA1lrPfISHBNOyCI8u0tCWhVKPIQ1qcgRaH2Pk3dxk+3Uc9Q1Bbgl3dZomps4wIY
-         H7897feys9nrxvVY8GbtBNNUBkjvNjrCZOqfEoexuQ4/d/DJZ1sxU6Zn+8gkCQClik0A
-         wIn0U5WZfF9CwPRA5yQ/dz0RzyXVdJ7FOp3vgSTul01tcryuOxCjJFQAwciR4JslB9G9
-         xtj++3faySz8JloNf8tPJ9Qne8vpG7R+G/P7Pq0sJpPazi+wgbKvarov+9KQ3Ee3vS/x
-         C1cw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nVOc+WtGt9M92xR6YqeYiWL9ZGefjURnpi4PPff1eNE=;
+        b=nIVz5kH3Ir2dOdYoW1eJf+OcDxjmaZlWEwoFVBedQngH9lCh96VtuYWLw9x0Vkjlwn
+         m/ZtTS6eNS+F/1LUHpvR+r5T/FvtKaifaFq2v+d1xXP16+KwfroIvfSDeBKA6FaAVxA+
+         johnyiXHxbbgIphI+QAHesBLja3CdtWHI7YIRwvQnhLvgJgskQtN9nFjlObZb2uAVg+Z
+         AT5HrSPYiJ8oJgxs01e2CBCtEeBLyVsl+QlEmaGT0YHa8SIQtYKI0OnCx8V4jfyYqCnr
+         r9bKXZG7m66iqpdGAVIUOsnKXPT+ycD/EkW/EsCv7cJ2mk2CHKHGA0Df7QQVk2kn5xps
+         UtPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FBEgLM+wt/N2x1IHh68kag6ZJDXafwurcKEa4xbiiRA=;
-        b=m/2Oeok+qLQFxwBWD726jTRsV9Ra8VJqmllUNuJTkVUiuh9LAm8wKmy+YdWm3WsDIm
-         C+chHOuzYNKja1nS4SXaSZgWogJQ8g/7A+VVNeHbcKOVj9xVCn6zd9JTtUClgR3KRP11
-         +LDPMIjqoFKC9y+f65bpQ++v2Ibo9IiMLOvGVhecreZJwKYvrQsIIXX3EOIl2mAP3Ex6
-         HXoB4O/bWO1XKRnM0lkthKMc9SFAPsSfwU0j6KlV8W+mN+/Iq1Lqc3N3ig/D8D/IFYRP
-         Oglm+HjYziOvqg9b+b/xuL/WE28Hz1bAXsDOzdQapTLQHT58l00VaIGTZszZm6veFyKD
-         tHPw==
-X-Gm-Message-State: AOAM531DUFF20Lf3r8tGOCxu14vpZ6ygFop/vi52n8xpOK/SO99VtlAE
-        yX+gL8zbe1OuFBGXB9I3f7z2YxPIwaHOuR/4sG8c6A==
-X-Google-Smtp-Source: ABdhPJxdQIHhEEivGAPujZ1vWMw46zjqTY9aKwpZWDECFJzPHpSiSqzoRatNCn8X77SyeKutNCcfytdvXXepJ8uF+Wo=
-X-Received: by 2002:a17:906:91c8:b0:6c5:76a6:688b with SMTP id
- b8-20020a17090691c800b006c576a6688bmr35287ejx.174.1644961760744; Tue, 15 Feb
- 2022 13:49:20 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nVOc+WtGt9M92xR6YqeYiWL9ZGefjURnpi4PPff1eNE=;
+        b=OnJVaKG3fdF4/Wz0AYtVUwyZzxjL3C8qj52v5JdTyuYVqgOLWwMmV5PUV8sHwZ3BF7
+         quBp5Gly4x7SkCF+kY5RQ34AyF8rz8gfocn2cAo0JERvxtnGC4/BZzDZdasM4rwhNBVs
+         5UNJkZ8FeavsQUBIFY+Xu5miASlvEXi1aLM2hVuwuclr+Nu9aPPlzKbqEtyvi0yI0MmS
+         qUhEdpAJhzn3f+E6/uOVXl5NNQT81tOnmstXjl8rVp/Qp2T2/cCFBPCNhUYwAGj7xl+T
+         pSzBjKPWEdQFOvsUMoVqQJZPSQ9lZvEbbp+IBDufC8aj4qHKJyTwpUjq6LZWgiNkysNN
+         tHDw==
+X-Gm-Message-State: AOAM530TUzgdxhUG5x34bedQUNYZ4z/G62OqZigDxTmpHUcB85Iau7w6
+        pYPjKVaP7FKcMb05wOxlZ4Y=
+X-Google-Smtp-Source: ABdhPJxAVLf4fs8AL+OfizHakAeVAC1vYUuYg498WhaVN9bvHWSKOyDreVBXJhKizCLoIctLHX4JEw==
+X-Received: by 2002:a05:6512:4d1:: with SMTP id w17mr796008lfq.391.1644961791454;
+        Tue, 15 Feb 2022 13:49:51 -0800 (PST)
+Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
+        by smtp.googlemail.com with ESMTPSA id t12sm4574312ljj.118.2022.02.15.13.49.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 13:49:51 -0800 (PST)
+Message-ID: <dd7d0ebd-7bd8-9f2e-e212-5b597ec729d5@gmail.com>
+Date:   Wed, 16 Feb 2022 00:49:50 +0300
 MIME-Version: 1.0
-References: <543efc25-9b99-53cd-e305-d8b4d917b64b@intel.com>
- <20220215192233.8717-1-bgeffon@google.com> <YgwCuGcg6adXAXIz@kroah.com>
- <CADyq12wByWhsHNOnokrSwCDeEhPdyO6WNJNjpHE1ORgKwwwXgg@mail.gmail.com> <066c9f4b-b0a3-9343-9db9-1c1c7303da6f@intel.com>
-In-Reply-To: <066c9f4b-b0a3-9343-9db9-1c1c7303da6f@intel.com>
-From:   Brian Geffon <bgeffon@google.com>
-Date:   Tue, 15 Feb 2022 16:48:44 -0500
-Message-ID: <CADyq12w=oLp4a5CV6nCyrpijDQTeji5reE+w_F4Ha=qCJEsBGQ@mail.gmail.com>
-Subject: Re: [PATCH stable 5.4,5.10] x86/fpu: Correct pkru/xstate inconsistency
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Willis Kung <williskung@google.com>,
-        Guenter Roeck <groeck@google.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        "# v4 . 10+" <stable@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] PM: domains: Prevent power off for parent unless child
+ is in deepest state
+Content-Language: en-US
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
+Cc:     Kevin Hilman <khilman@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        linux-kernel@vger.kernel.org
+References: <20220204101657.233723-1-ulf.hansson@linaro.org>
+From:   Dmitry Osipenko <digetx@gmail.com>
+In-Reply-To: <20220204101657.233723-1-ulf.hansson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 4:42 PM Dave Hansen <dave.hansen@intel.com> wrote:
->
-> On 2/15/22 13:32, Brian Geffon wrote:
-> >> How was this tested, and what do the maintainers of this subsystem
-> >> think?  And will you be around to fix the bugs in this when they are
-> >> found?
-> > This has been trivial to reproduce, I've used a small repro which I've
-> > put here: https://gist.github.com/bgaff/9f8cbfc8dd22e60f9492e4f0aff8f04f
-> > , I also was able to reproduce this using the protection_keys self
-> > tests on a 11th Gen Core i5-1135G7.
->
-> I've got an i7-1165G7, but I'm not seeing any failures on a
-> 5.11 distro kernel.
->
-> How long does this take for you to reproduce?
+04.02.2022 13:16, Ulf Hansson пишет:
+> A PM domain managed by genpd may support multiple idlestates. During
+> genpd_power_off() a genpd governor may be asked to select one of the
+> idlestates based upon the dev PM QoS constraints, for example.
+> 
+> However, there is a problem with the behaviour around this in genpd. More
+> precisely, a parent-domain is allowed to be powered off, no matter of what
+> idlestate that has been selected for the child-domain.
+> 
+> So far, we have not received any reports about errors from the current
+> behaviour. However, there is an STMicro platform that is being worked on,
+> which can't cope with this.
 
-It reproduces for me in just a few seconds. I'm not sure what could be
-different about my setup, I've tested on a vanilla 5.10 kernel and it
-reproduced the same way.
-
-Brian
+Could you please provide some technical info about why STMicro platform
+can't cope with that?
