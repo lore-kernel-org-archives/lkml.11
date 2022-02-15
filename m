@@ -2,164 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A55C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E48C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 16:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242045AbiBOQ5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:57:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48718 "EHLO
+        id S242032AbiBOQ5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:57:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240164AbiBOQ47 (ORCPT
+        with ESMTP id S240482AbiBOQ5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:56:59 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2077.outbound.protection.outlook.com [40.107.212.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A857D64D1;
-        Tue, 15 Feb 2022 08:56:49 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jvqf5oMHL8pcbmyemUy15VAb0NV2S718+XQcAWt56IMKvaM4VW/lYVo3jU+knBm1iyXAoG9DIUy6U4z3mHJahpztY/PgQ5GVsqtyUeNb++7iLv1Os5Do/HcBVurvjyTX9geJ+f9b7HeVQM2G3jhUotT38wE3djQpOMu7F5qzSy7ONk2g+rJH9gixyErE8VXYJSmKAVUmIs1l+6O1J+YY8/3P0MIaE9J8tABnIlNRhrlbLeOFYtyhjpkBZC5kDqC7zUi6HdfZtgD2DXQofmrqotDNFpjDSGzxd0m+QUsZtS3/3O50DRglzYv9SMH9cxN+VWrL6XXeuQQqjcvOcQuMPg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=son9GE6MNPo/omZeWV9C14oF3rNQ7vb3sPP1hI/9TbA=;
- b=Z8MFs055Kg7RFoJeO5SW8akn30iktuOjCsn47VNn3k0YHYQxpkaPNKO9k8GNOKi17ZLu3ZIhHET66nTp9CQSUp3BMo9CtzHLC6SfMmx25FJ9GndPOc3aHu1gP7ovZtDgT1TwmyEEkxpoNbE4RHKDN6BScRyVLT3oSs+6Dg/ueyseDMxKQFWa4+ad1JY3zXc59LtZeOUzl94MvWLdj811VIpzjh1Bvul0gNycsVpiCJ/+7RtCt0csxXthfIbrnOyLVVAQoQzoDSchO/jEaFMueu4lHgFXFUrhM+OQJrpR7SrY2pnxSCXFnfEyxrtAESQSg9k2cgfj7jmv+KQLRgkayw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=lists.linux-foundation.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=son9GE6MNPo/omZeWV9C14oF3rNQ7vb3sPP1hI/9TbA=;
- b=nurn70IUDOZRn0l2zr3yo/dPd9jmowbEwXvRIfnOJwxNTSTLvC5XTxkah8YQuyIZLanb2hspBaFqFp25qmwkafln61p/qkbttuEIXE+/Hvqc5zMNdt0zyiiyi++hjvw5j1BHgsv9QLyfTOHF9TCmlN/TSv57NeOYnGtnhLhallFvmjPsjCJIJkS6oxaMKDjROBST+42KBj8l5xVqlgmrR7sKVy5S7SIlT4553+ROSl2+vVm74PfJLXGnMkP8xiIN8cd0p85oWUpjK6/k/MC6zOsWPgY6Uurztq3eUrtEAnhu9LawPeL3nL3OWNSUwk07GeI5fPE1mkKQcpVVjGUWIw==
-Received: from BN0PR03CA0004.namprd03.prod.outlook.com (2603:10b6:408:e6::9)
- by SJ0PR12MB5422.namprd12.prod.outlook.com (2603:10b6:a03:3ac::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Tue, 15 Feb
- 2022 16:56:46 +0000
-Received: from BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e6:cafe::70) by BN0PR03CA0004.outlook.office365.com
- (2603:10b6:408:e6::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14 via Frontend
- Transport; Tue, 15 Feb 2022 16:56:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT026.mail.protection.outlook.com (10.13.177.51) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Tue, 15 Feb 2022 16:56:43 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 15 Feb
- 2022 16:56:43 +0000
-Received: from [172.27.13.89] (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 15 Feb 2022
- 08:56:35 -0800
-Message-ID: <8a3b1ec5-f43c-03ba-f51c-5d1ba809657e@nvidia.com>
-Date:   Tue, 15 Feb 2022 18:56:31 +0200
+        Tue, 15 Feb 2022 11:57:32 -0500
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A161106CAF;
+        Tue, 15 Feb 2022 08:57:22 -0800 (PST)
+Received: by mail-oo1-xc2d.google.com with SMTP id i10-20020a4aab0a000000b002fccf890d5fso23927123oon.5;
+        Tue, 15 Feb 2022 08:57:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=5d7WVUUfZAnPeTJZvnrGfhbC4/1fj7LtJSpw7xhtIaY=;
+        b=EWRB6XePt/v8KpbSsv6/xc/qmK7tm4os0aOnlYc8LQx8p3e6Yl1zvQoVSCO+QvnIVw
+         gjm2/kB85UN/wmCZx7IA4rgI4T7cEPgFlQw/XccC6788kNWMnlaFuJ+Xz8yHyvnhMzwz
+         N94GBKqPJz25G6syi6gKMRMw9Zko0gBD/Ql4LdS6naHdg/ujdhJEUQlW1CZwBnqiYvNI
+         rEBRe6tevbc/OwrufUZmVXPkc0ed4v+dpzitdbexzt3wJIP8cc8aQXJee4NmGwaOmTv3
+         YvLdg+cs6Qa/dZVgFF/Vn+Zqy7zM1NoXxbP5JXwXSlZeu9mFQUPA43g86KbMI76MvL+x
+         ShHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=5d7WVUUfZAnPeTJZvnrGfhbC4/1fj7LtJSpw7xhtIaY=;
+        b=ddzM2RhhHbVTtrgSLRGHBggEcuhCHhFCkzI2nrZu8MfYKHolawayHqiyLMgMeujpG8
+         gRMG4nmiKqB02jZyviHDppNnEdGtCKpMSncHhFuoJuAauxvs1I9vDxex8gQvmJ884lop
+         vVcgBLE6+sMJUZ5dyzAjy3Jp96dbxP6Epz17N5LgO8Ei/wmotp1f3unGcZ3XlEmrwrTK
+         pDvxf4Y5ZMZyPC5TdK2Apv36yCwEzLQUVrmJd33TnUNPnfh/3+Qg6C8tesnM5Vi0a0Eg
+         oHQsVjbcUjEJ3wPBeliyeFGxW0IJQVamyk2CJLzCMRHx0UmRxfjQS9IfBAVgEuAOdPZy
+         7Bxw==
+X-Gm-Message-State: AOAM530VPLZuLMap3nQIINj1joARvkDaaYh1Bo7NwbRisbBfdvACpmIL
+        UrIlbN4f2CcYz83CCGbyVpM=
+X-Google-Smtp-Source: ABdhPJz1IMJYE7Ar8+Qo06GAHwDrKQqOi7lZCysHqnpFMFJRwtB5IIxSckXafM8ST1fDXrqQbpECJQ==
+X-Received: by 2002:a05:6870:a603:: with SMTP id e3mr1792271oam.87.1644944240995;
+        Tue, 15 Feb 2022 08:57:20 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id o14sm14255468otk.77.2022.02.15.08.57.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 08:57:20 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <be9cc279-1d62-3d57-9347-6cfaffc00cb4@roeck-us.net>
+Date:   Tue, 15 Feb 2022 08:57:17 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH net v2] net: bridge: multicast: notify switchdev driver
- whenever MC processing gets disabled
 Content-Language: en-US
-To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Yotam Gigi <yotamg@mellanox.com>,
-        Nogah Frankel <nogahf@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-CC:     <taras.chornyi@plvision.eu>, <volodymyr.mytnyk@plvision.eu>,
-        <mickeyr@marvell.com>, <bridge@lists.linux-foundation.org>,
-        <vladimir.oltean@nxp.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220215165303.31908-1-oleksandr.mazur@plvision.eu>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <20220215165303.31908-1-oleksandr.mazur@plvision.eu>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 76925c7b-d4e1-446d-2e80-08d9f0a4254b
-X-MS-TrafficTypeDiagnostic: SJ0PR12MB5422:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR12MB5422914B8D7BA4F0E431015FDF349@SJ0PR12MB5422.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: o7TwWFZDRfWuYDMEqyVNL0kJoYeX4Qb0Ktm9R/nfSKGEMJj/gtKTsYusgeJXrxe+VsptBKZTBzKGVCxvYD5r74ur1p6gxVvVQxdjRqBFsMxHo5hEYNi3zEkjqBTCK6DYs0JEuewpvxZy6jKMbyaccWEskcEYK7+56PiimnxtRnhcC7Doh1Q5ZxR0dMksQvGmvfMkdLlZLd1efijpWPO+lqJp0NUyKChwlWhwe62qaIc/iKOsQvN3u84S+92JGojei5MyRaVSd4Z+CaKt3L+uxuKejtqsXRIb0/3Q1Wp+3bjckE5NUDHvx/pjUT3sw/79tQCEfxQJzxd7bAG51e9x3pSb20Uzz1ky59A6k36AA/vehjMQumwn1JJooxIYK5UpnpMd/p5T816wny62c8YOIBMTn/cj3JA9/FIf3YFBUyiMT+fNlN6vvJNocvS4kj6rfKicdYGQ84YrIZ5VQrBKGwE53hWq4zdSJKlDeOVdclbsyiEO4feVUOkmYzqSQgnBrBmjWg/33CDAddX4eux7fXhroi9f24a7N9A1qeDV21B4qsYcIw+bBMamvYR1y7ZrtAf7tCfcRzrvVGpJA8AR/L92dLs8DEehpV2Og7o24HIKLY0PMwtct8pLWLcScEWEXZRfpZWm0Ukyjtz28jzaX/nG9bH47Q5lpMxZ8lQNlKfKgAqHnDUWveiSThRbugiwkOIG4xFt2+UETb/n1gVhJT1Dg+UkPCosCTdHrFNDlPIjacYq1kDx9f879YDRpSAc
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:ErrorRetry;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(8676002)(426003)(70206006)(336012)(83380400001)(70586007)(2616005)(86362001)(53546011)(6666004)(31696002)(4326008)(508600001)(16526019)(26005)(82310400004)(16576012)(54906003)(110136005)(316002)(2906002)(186003)(356005)(31686004)(81166007)(40460700003)(7416002)(47076005)(5660300002)(8936002)(36756003)(36860700001)(36900700001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 16:56:43.8904
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76925c7b-d4e1-446d-2e80-08d9f0a4254b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5422
+To:     Krzysztof Adamski <krzysztof.adamski@nokia.com>
+Cc:     Alexander Sverdlin <alexander.sverdlin@nokia.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Matija Glavinic-Pecotic <matija.glavinic-pecotic.ext@nokia.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-efi@vger.kernel.org
+References: <YfP0osb45uJldtM9@localhost.localdomain>
+ <YfQTZTUNaeGi+8tG@FVFF77S0Q05N> <YfRorCpk0seVGI+5@localhost.localdomain>
+ <Yfk8hQB1eon7oeYU@FVFF77S0Q05N>
+ <79bcce92-abb2-4c3e-7193-d18e144da8a0@nokia.com>
+ <489b76f9-fbaf-dae0-c90d-c52ee0de92a4@roeck-us.net>
+ <YgvAO1UbZcbcj5na@localhost.localdomain>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2] arm64: move efi_reboot to restart handler
+In-Reply-To: <YgvAO1UbZcbcj5na@localhost.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/02/2022 18:53, Oleksandr Mazur wrote:
-> Whenever bridge driver hits the max capacity of MDBs, it disables
-> the MC processing (by setting corresponding bridge option), but never
-> notifies switchdev about such change (the notifiers are called only upon
-> explicit setting of this option, through the registered netlink interface).
+On 2/15/22 07:01, Krzysztof Adamski wrote:
+> Dnia Tue, Feb 15, 2022 at 06:30:26AM -0800, Guenter Roeck napisał(a):
+>> On 2/15/22 00:44, Alexander Sverdlin wrote:
+>>> Hello Mark, Ard,
+>>>
+>>> On 01/02/2022 14:58, Mark Rutland wrote:
+>>>>> You could argue that restart handlers were not created for that but they
+>>>>> suit this purpose ideally and it wouldn't make much sense (in my
+>>>>> opinion) to add yet another notifier chain that would run before reset
+>>>>> notifiers, for code that is not supposed to reset the whole system and
+>>>>> this is exacly what I would have to do if efi_reboot() is forced to be
+>>>>> called before all handlers.
+>>>>
+>>>> As above, I think that's just using the wrong interface, and the reboot
+>>>> notifier mechanism *already* exists, so I'm really confused here.
+>>>>
+>>>> Have I misunderstood what you're trying to achieve?
+>>>>
+>>>> Is there some problem with the reboot notifier mechanism that I am unaware of?
+>>>> e.g. do we bypass them in some case where you think they're needed?
+>>>>
+>>>> Are you simply unaware of reboot notifiers?
+>>>
+>>> Could you please check the simple case of pwrseq_emmc.c?
+>>>
+>>> While that's currently the only example of this kind upstream I can imagine
+>>> further use-cases, especially in storage area like above.
+>>>
+>>> Would you suggest it's illegal usage of register_restart_handler()?
+>>> Do we need to fix pwrseq_emmc.c by introducing new atomic notifier chain
+>>> which will be called before restart handlers, so that it works on
+>>> emergency_restart()?
+>>>
+>>
+>> Abuse isn't just about using an API for something it isn't originally intended
+>> for, abuse is also to intentionally _not_ use an API, as it is currently done
+>> by the EFI restart code for arm64. Also, keep in mind that the same argument
+>> (our restart handler _must_ be executed under all circumstances and does therefore
+>> not use the restart API) is likely going to be used again in the future. All
+>> it takes is for some other standard (or chip vendor, for that matter) to declare
+>> their restart handler mandatory if present.
 > 
-> This could lead to situation when Software MDB processing gets disabled,
-> but this event never gets offloaded to the underlying Hardware.
+> Wait, but it is up to us to decide if we want to follow such standard or
+> not. If we want to have code that is more flexible, nobody can refuse us
+> to do so, right? None of the standards says that we can't support
+> restart handlers in case of EFI on ARM64, it was decided by kernel
+> developers, not some vendors. We can change that.
 > 
-> Fix this by adding a notify message in such case.
-> 
-> Fixes: 147c1e9b902c ("switchdev: bridge: Offload multicast disabled")
-> 
-> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-> ---
-> V2:
->   - target 'net' tree;
->   - add missed 'Fixes' tag;
->   - remove mc_disabled retcode check, as well as WARN_ON in case of err;
-> ---
->  net/bridge/br_multicast.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-> index de2409889489..db4f2641d1cd 100644
-> --- a/net/bridge/br_multicast.c
-> +++ b/net/bridge/br_multicast.c
-> @@ -82,6 +82,9 @@ static void br_multicast_find_del_pg(struct net_bridge *br,
->  				     struct net_bridge_port_group *pg);
->  static void __br_multicast_stop(struct net_bridge_mcast *brmctx);
->  
-> +static int br_mc_disabled_update(struct net_device *dev, bool value,
-> +				 struct netlink_ext_ack *extack);
-> +
->  static struct net_bridge_port_group *
->  br_sg_port_find(struct net_bridge *br,
->  		struct net_bridge_port_group_sg_key *sg_p)
-> @@ -1156,6 +1159,7 @@ struct net_bridge_mdb_entry *br_multicast_new_group(struct net_bridge *br,
->  		return mp;
->  
->  	if (atomic_read(&br->mdb_hash_tbl.nelems) >= br->hash_max) {
-> +		br_mc_disabled_update(br->dev, false, NULL);
->  		br_opt_toggle(br, BROPT_MULTICAST_ENABLED, false);
->  		return ERR_PTR(-E2BIG);
->  	}
 
-nit: you don't have to leave empty new line between Fixes and Signed-off-by.
-Patch looks good to me.
+Of course it was decided by kernel developers. Point is that they use
+the EFI standard as argument for bypassing the API. What I am saying is
+that others can (and likely will, since the flood doors have been opened)
+do the same in the future, using the same line of arguments.
 
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+>> Given that, I'd suggest to cut your losses and try to find another
+>> solution for your problem. That may be to introduce yet another API,
+>> one that is called before the EFI restart handling but that is always
+>> called, unlike reboot notifiers, or simply stick with out-of-tree code.
+> 
+> Sure I could create yet another API like you suggest but in practice it
+> would be a copy of existing API as i would have to work exactly the
+> same - would be called at the same time in the same situations. The only
+> thing that would be different would be separate chain.
 
+Correct.
+
+> But if we want to prevent registering some custom code to be run before > efi_reboot(), that new API would have to be rejected as well, for the
+> same reason. So what is the point?
+> 
+
+Ah, yes, you are right. The emmc example does reset the emmc, after all,
+which one could use as argument that it "violates" the EFI mandate.
+Sorry, I guess you'll be stuck with out-of-tree code (and, realistically,
+so is everyone using emmc in an arm64 based system with an EFI restart
+handler which does not implement emmc reset). Actually, turns out that
+the emmc restart handling code is not reliable anyway, since for example
+x86 doesn't use/support the restart handler call chain, and neither
+do several other architectures.
+
+Interestingly, in this context, x86 isn't as inflexible as arm64 and does
+support other means to reset the system even in the presence of EFI
+(and actually seems to prefer ACPI reset over EFI reset unless I
+misunderstand the code).
+
+Other options for you might be to disable EFI restart handling in your
+system (assuming that is possible), or to implement the necessary code
+as part of the EFI restart handler, ie outside Linux, again if that is
+possible.
+
+Guenter
