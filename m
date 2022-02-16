@@ -2,121 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CF3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E35C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236655AbiBPQk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:40:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42272 "EHLO
+        id S236869AbiBPQlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:41:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236639AbiBPQkU (ORCPT
+        with ESMTP id S236527AbiBPQk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:40:20 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C44725DA68;
-        Wed, 16 Feb 2022 08:40:06 -0800 (PST)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21GGGPjU024471;
-        Wed, 16 Feb 2022 16:39:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=QFAT4gUY7ssHFMRKnYKL1cpcMiUM8TBsa2LK3fdhHW0=;
- b=CHsh3LQsQlw+AlPF9ZzINxswwd+y6vEDqWW8ApcopHUcmtHE96zS0EBj/kBQ6vgEgPJe
- 45LERF2kn+i9i5yxZ9qweO+h/r1W0PCZSAFzNROIADPRPa6PQFz6iilDQLc2HxYK8VOo
- 5+TUcnWvyHuciBZWBhNoU/Rfz0OtoFUB5qYy9kKB/oEG4lklVA/q6z+OVpaiWCFfM4+f
- YOlGeZvApqVEjyKl4u7n/44wulVS6MufE1ruR298tspmQc8CEaRJPB/XPRvjpXQLLSxW
- 43ClWHUdbHD9vwRUZMu4QpozHgDxqU+opANhFcmmhYNI+k1VvA5IgIu5X6k1Cz8fa7v+ RA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e94n48j4c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Feb 2022 16:39:48 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21GGH85m029532;
-        Wed, 16 Feb 2022 16:39:48 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e94n48j3q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Feb 2022 16:39:47 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21GGWu3o022678;
-        Wed, 16 Feb 2022 16:39:46 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma02fra.de.ibm.com with ESMTP id 3e64ha0y3b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Feb 2022 16:39:45 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21GGdgwK43385098
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 16 Feb 2022 16:39:42 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B9DA111C064;
-        Wed, 16 Feb 2022 16:39:42 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5B39011C052;
-        Wed, 16 Feb 2022 16:39:40 +0000 (GMT)
-Received: from sig-9-65-87-58.ibm.com (unknown [9.65.87.58])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 16 Feb 2022 16:39:40 +0000 (GMT)
-Message-ID: <bf435ffa5d176213acabb8c576c159d2cbd4d395.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 06/27] ima: Move arch_policy_entry into ima_namespace
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        Christian Brauner <brauner@kernel.org>
-Date:   Wed, 16 Feb 2022 11:39:39 -0500
-In-Reply-To: <20220201203735.164593-7-stefanb@linux.ibm.com>
-References: <20220201203735.164593-1-stefanb@linux.ibm.com>
-         <20220201203735.164593-7-stefanb@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: _kEptbkdhmHsaVrTiedogSKaxYCKIJe9
-X-Proofpoint-GUID: Pv9Dws_nJSQV-4Gm67F5Ftf7QF_YBqX_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-16_07,2022-02-16_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=986 suspectscore=0 phishscore=0 clxscore=1015 bulkscore=0
- lowpriorityscore=0 priorityscore=1501 impostorscore=0 spamscore=0
- adultscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202160097
+        Wed, 16 Feb 2022 11:40:56 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D0925DA45;
+        Wed, 16 Feb 2022 08:40:40 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21GGeJqZ026382;
+        Wed, 16 Feb 2022 10:40:19 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1645029619;
+        bh=w9bCP3/CICxOfqQKSa3r2RKaoS9MwRJ1oCJRygAlF78=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=B05ZVVVh7aHvqfLoHxGuUuXtPExuWiLbA0Ki4mhIhWm62XvcR0ncRD/EvI1YCW6Ew
+         RA1Az+ihbbxPxHKx1foH8IChjyptCeEt2abBnrcvoCS9nnmXd7mRsJ1AftnnSgq7gC
+         iDxEGqT5sunkA9WTdBldLpKKE2MOV1ZAyRQXXF+s=
+Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21GGeJcE045587
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 16 Feb 2022 10:40:19 -0600
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 16
+ Feb 2022 10:40:18 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 16 Feb 2022 10:40:18 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21GGeH7n110602;
+        Wed, 16 Feb 2022 10:40:17 -0600
+From:   Nishanth Menon <nm@ti.com>
+To:     Rob Herring <robh+dt@kernel.org>, <jan.kiszka@siemens.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>
+CC:     Nishanth Menon <nm@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: (subset) [PATCH v2 1/2] arm64: dts: ti: k3-am65: disable optional peripherals by default
+Date:   Wed, 16 Feb 2022 10:40:16 -0600
+Message-ID: <164502944352.22599.4383149138221913907.b4-ty@ti.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
+References: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote
+Hi Matthias Schiffer,
 
-Let's update the patch description providing a bit more background
-info:
-
-The archictecture specific policy rules, currently defined for EFI and
-powerpc, require the kexec kernel image and kernel modules to be
-validly signed and measured, based on the system's secure boot and/or
-trusted boot mode and the IMA_ARCH_POLICY Kconfig option being enabled.
-
-> Move the arch_policy_entry pointer into ima_namespace.
-
-Perhaps include something about namespaces being allowed or not allowed
-to kexec a new kernel or load kernel modules.
-
-thanks,
-
-Mimi
+On Thu, 3 Feb 2022 15:02:39 +0100, Matthias Schiffer wrote:
+> All peripherals that require pinmuxing or other configuration to work
+> should be disabled by default. Dependent DTS are adjusted accordingly.
 > 
-> When freeing the memory set the pointer to NULL.
+> The following nodes are now "disabled" according to dtx_diff and were not
+> overridden to "okay", as they define no pinctrl:
 > 
-> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> Acked-by: Christian Brauner <brauner@kernel.org>
-> Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+> k3-am654-base-board:
+> - mcu_i2c0
+> - mcu_spi0..2
+> - mcu_uart0
+> - cal
+> - main_i2c3
+> - ehrpwm0..5
+> - main_uart1..2
+> - main_spi1..4
+> 
+> [...]
+
+Patch 1 of the series, I have'nt pickedup given the argumentation we have had
+in the thread.. if we need a broader alignment, I am all for it, but lets
+start pushing from updating a process document as a discussion point.. I bet
+that should start triggering more debates.
+
+I have applied the following (patch #2) to branch ti-k3-dts-next on
+[1] with minor cosmetic (subject line capitalization, message format
+to 70 char) fixups..
+
+
+Thank you!
+
+[2/2] arm64: dts: ti: k3-am65*: remove #address-cells/#size-cells from flash nodes
+      commit: 292b0dd7cdc1b00a8acb199605ecf73bb253c5b5
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent up the chain during
+the next merge window (or sooner if it is a relevant bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+[1] git://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
+-- 
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
 
