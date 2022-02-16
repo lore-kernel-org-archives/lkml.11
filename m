@@ -2,117 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BC2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238041AbiBPTMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:12:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47006 "EHLO
+        id S238040AbiBPTNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:13:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238040AbiBPTM3 (ORCPT
+        with ESMTP id S232707AbiBPTNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:12:29 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95316A046
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:12:15 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id a23so1498437eju.3
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:12:15 -0800 (PST)
+        Wed, 16 Feb 2022 14:13:30 -0500
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3E52604CE;
+        Wed, 16 Feb 2022 11:13:18 -0800 (PST)
+Received: by mail-ot1-x32f.google.com with SMTP id l12-20020a0568302b0c00b005a4856ff4ceso2118507otv.13;
+        Wed, 16 Feb 2022 11:13:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MFZAXh0fPBQNBK2R2nIbUxsfdyleJj0WxyfRkLW2ksM=;
-        b=Uluo3RZ4Jb1a8toBJUYIYiZsZX8M8bZSJueR1LtDSK2/kjqFPZc2c843qGVD0412tE
-         SFliv6hazTgZT8N6TuzuCzJcyQvHI2dObibM/hIL7m+6gPVsOUzZllXCXv/NKfiUW3He
-         mdLeagIMwN9s9JKPFRvkLtupmK75oAPH2rWXU=
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=khjBXMu8Pmp2XyrKsmJgjMOcblNVmXnA/K3N7hZ/TF4=;
+        b=NT4yE1nf85Ho5AKu6IhOl+ZPxNcBEBuiH2t2b7S/4GsKrRGC+zvnGYPt/8QhHoVkEU
+         VoWxktblqusdrlOdHHlT4M9dob6Pu4psbX5l0cyY6NAquczVS4rBQ1iP5P/ca+0zKzTJ
+         Zvj4I7dcji+w5RkXwuf7KCr5TgTRQ8RDjIRE0TPVQTNPMUkjgaYLYVPh1WJW6fcgtUG1
+         S26N01UcLCaiQti9haVLDL1f0+f/wCsETRuFWXKOIQn/boc0nviJHFAtbvq+PRirNycV
+         /MoDFG8Dkt8GaBCEXPtUOdX7p7/wDBjou+Rv9yBSQxvwsYI+dh6ZlhJGJbAiLQq52OjU
+         HdvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MFZAXh0fPBQNBK2R2nIbUxsfdyleJj0WxyfRkLW2ksM=;
-        b=uoVBRizFxbzTtN6xEt5VdbdcOD6KFDY6kifPkLRu9KflZ67F43HMh0x5E9raagOJw4
-         RMN3372Lx68IEdvjtcbuKTvbSEoNDc5kxFqnjdQ8/rIZPRtosf1Y3LDxKSD3A+HctHCj
-         cLKuUP0x+njDq8cx7T3vk7d3vKsPpVKMeTs87cUTAkmU9MyiKyDGoKEwDJFVL+yNITvJ
-         4sZr8Ity+Ld4aqKLzQ48czYGxHV5fS8XBjrCgk/DrJ9ERXgA3uOKklVnaayulHcEBr3A
-         MsJ+51qJlHtJ6Rt67UUZKROosapP9tJvih8/FIxHMugdbmTxijsumIuT20Y8jLjQxjCy
-         incw==
-X-Gm-Message-State: AOAM530Yo3D2AN8Ox9D2fvIhoZNH1Wu2esyWcQlgtvWJUj3Bu1mA5+es
-        3ETfpvC7oaLLrR5rWAMsf+68hZUpOJATrF0G5xc=
-X-Google-Smtp-Source: ABdhPJxq9IzKaZipdbheGQ4Mo4iOx7R9uciFKGtTasJhRH3bVv3g6QV0/e1r5jr+oap56/mee5Jk6A==
-X-Received: by 2002:a17:906:9947:b0:6cf:e903:fb75 with SMTP id zm7-20020a170906994700b006cfe903fb75mr3362839ejb.400.1645038734067;
-        Wed, 16 Feb 2022 11:12:14 -0800 (PST)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
-        by smtp.gmail.com with ESMTPSA id j8sm2342038edw.40.2022.02.16.11.12.13
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=khjBXMu8Pmp2XyrKsmJgjMOcblNVmXnA/K3N7hZ/TF4=;
+        b=UQ45r7QZM2mFQTo+bl4pLa4gPhvVjXdSxXoNldhk3mEKP5eEEXFKqy2TIA1lRTtnXg
+         0qrEyEZOAQASj7Wl76rM/uMjomHBKbrRB/xgATNYERw97clKWGIvmbps4OWeMVe4x3C6
+         z+j2MF4GaSQpHlm/XAxRUU/M8sxfQcdbXTokRyu/GCQkQPi6RSG0HY5j6sgVugZi1e+R
+         iTKrrHId4Q98+9h1PpiJiMuIhG9WlyXteJhg1FtjdmShj1WRWYP7U4Ob6BrU7pveU5V3
+         30KoTFA+3bbH0nZJaWn9irRvlvC65I0LxJVOcAQzbsRsUAAqQVU5VTxKXjiurHaLEhpR
+         m1Rg==
+X-Gm-Message-State: AOAM530uppJNt9A5yqqW4tM7g5F40DIwvded7aqWAkXk5cTszjFjIg7w
+        qa+4urXVNmxyMezgn6mgYiE=
+X-Google-Smtp-Source: ABdhPJwU8/E4sWE9N418+UcGFq3Qcg5di4cFRmR62Yi0BpWdBLo59dvQt3RFgMeRj+7tGdk9qBWNhg==
+X-Received: by 2002:a9d:6288:0:b0:5ac:1ccf:ac2f with SMTP id x8-20020a9d6288000000b005ac1ccfac2fmr1383899otk.94.1645038797672;
+        Wed, 16 Feb 2022 11:13:17 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z4sm221486ooi.0.2022.02.16.11.13.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 11:12:13 -0800 (PST)
-Received: by mail-wr1-f41.google.com with SMTP id k1so5063450wrd.8
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:12:13 -0800 (PST)
-X-Received: by 2002:a05:651c:549:b0:243:d87d:4f5a with SMTP id
- q9-20020a05651c054900b00243d87d4f5amr3232911ljp.443.1645038284648; Wed, 16
- Feb 2022 11:04:44 -0800 (PST)
+        Wed, 16 Feb 2022 11:13:16 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <9e14486b-36c0-5869-a368-98b90b4dcd14@roeck-us.net>
+Date:   Wed, 16 Feb 2022 11:13:15 -0800
 MIME-Version: 1.0
-References: <20200917112538.GD8409@ziepe.ca> <CAHk-=wjtfjB3TqTFRzVmOrB9Mii6Yzc-=wKq0fu4ruDE6AsJgg@mail.gmail.com>
- <20200917193824.GL8409@ziepe.ca> <CAHk-=wiY_g+SSjncZi8sO=LrxXmMox0NO7K34-Fs653XVXheGg@mail.gmail.com>
- <20200918164032.GA5962@xz-x1> <20200918173240.GY8409@ziepe.ca>
- <20200918204048.GC5962@xz-x1> <0af8c77e-ff60-cada-7d22-c7cfcf859b19@nvidia.com>
- <20200919000153.GZ8409@ziepe.ca> <20200921083505.GA5862@quack2.suse.cz>
- <20200921120301.GD8409@ziepe.ca> <CAFCwf10eNmwq2wD71xjUhqkvv5+_pJMR1nPug2RqNDcFT4H86Q@mail.gmail.com>
-In-Reply-To: <CAFCwf10eNmwq2wD71xjUhqkvv5+_pJMR1nPug2RqNDcFT4H86Q@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 16 Feb 2022 11:04:28 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgLk5xWj8v6mQXaWL0zWAf2cis8EpPkQUuEZ7K3LxVQHQ@mail.gmail.com>
-Message-ID: <CAHk-=wgLk5xWj8v6mQXaWL0zWAf2cis8EpPkQUuEZ7K3LxVQHQ@mail.gmail.com>
-Subject: Re: [PATCH 1/4] mm: Trial do_wp_page() simplification
-To:     Oded Gabbay <oded.gabbay@gmail.com>,
-        David Hildenbrand <david@redhat.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Jan Kara <jack@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Maya B . Gokhale" <gokhale2@llnl.gov>,
-        Yang Shi <yang.shi@linux.alibaba.com>,
-        Marty Mcfadden <mcfadden8@llnl.gov>,
-        Kirill Shutemov <kirill@shutemov.name>,
-        Oleg Nesterov <oleg@redhat.com>, Jann Horn <jannh@google.com>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Xu <peterx@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4] hwmon: (asus-ec-sensors) merge setup functions
+Content-Language: en-US
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220216180822.GA3300192@roeck-us.net>
+ <CAB95QASWWMvSSuuwQU=TwZX-QcU=hRPCJVQ0E6Bh29sc4d66Ug@mail.gmail.com>
+ <7f3fc06f-cf4e-2dc6-e68a-917117fe8895@roeck-us.net>
+ <CAB95QARa=XQ0LEEqM0R6YvBDrK1GRn=R+jszagMuzBKdo3pBZw@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <CAB95QARa=XQ0LEEqM0R6YvBDrK1GRn=R+jszagMuzBKdo3pBZw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[ Added David Hildenbrand to the participants. David, see
+On 2/16/22 11:00, Eugene Shalygin wrote:
+> On Wed, 16 Feb 2022 at 19:49, Guenter Roeck <linux@roeck-us.net> wrote:
+> 
+>> * If your patch generates checkpatch errors, warnings, or check messages,
+>>     please refrain from explanations such as "I prefer that coding style".
+>>     Keep in mind that each unnecessary message helps hiding a real problem,
+>>     and a consistent coding style makes it easier for others to understand
+>>     and review the code.
+> 
+> Yes, of course. My question is what do I do with 6 other braces single
+> statement if's now?
+> 
 
-    https://bugzilla.kernel.org/show_bug.cgi?id=215616
+Nothing as part of this patch. My fault for not bringing this up earlier,
+but that is no reason to not clean up the code while touching it.
 
-  for details ]
+You _could_ submit a separate patch fixing everything reported by
+checkpatch, but that is up to you.
 
-On Wed, Feb 16, 2022 at 8:59 AM Oded Gabbay <oded.gabbay@gmail.com> wrote:
->
-> All the details are in the bug, but the bottom line is that somehow,
-> this patch causes corruption when the numa balancing feature is
-> enabled AND we don't use process affinity AND we use GUP to pin pages
-> so our accelerator can DMA to/from system memory.
-
-Hmm. I thought all the remaining issues were related to THP - and
-David Hildenbrand had a series to fix those up.
-
-The fact that it also shows up with numa balancing is a bit
-unfortunate, because I think that means that that patch series may not
-have caught that case.
-
-That said - what does "we use GUP to pin pages" mean? Does it actually
-use the pinning logic, or just regular old GUP?
-
-I'm assuming this is just the existing pin_user_pages_fast() (ie a
-proper pin) in drivers/misc/habanalabs/common/memory.c. But I wanted
-to confirm that it's not some other situation.
-
-                   Linus
+Thanks,
+Guenter
