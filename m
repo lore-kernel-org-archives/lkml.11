@@ -2,72 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5339AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbiBPHSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:18:17 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38236 "EHLO
+        id S229921AbiBPHTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:19:08 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiBPHSF (ORCPT
+        with ESMTP id S229875AbiBPHTC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:18:05 -0500
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640AFC7D5A;
-        Tue, 15 Feb 2022 23:17:49 -0800 (PST)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AC1561A02CD;
-        Wed, 16 Feb 2022 07:52:54 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 734931A02E9;
-        Wed, 16 Feb 2022 07:52:54 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 2AE45183F0C2;
-        Wed, 16 Feb 2022 14:52:53 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
-        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
-        festevam@gmail.com, francesco.dolcini@toradex.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v7 4/8] PCI: imx6: Disable iMX6QDL PCIe REF clock when disable PCIe clocks
-Date:   Wed, 16 Feb 2022 14:20:59 +0800
-Message-Id: <1644992463-14467-5-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644992463-14467-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1644992463-14467-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 16 Feb 2022 02:19:02 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3793DD007A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:18:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644995926; x=1676531926;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Rtxj1UDHxt0cG+aH0MjVGov4YzjQBNtjm2W/22eZowE=;
+  b=gMCjequZWMpq5/evJmRdimCoMAkaLWQto7rOWiKrhL5NL9JCs42czbJ6
+   XVIO9LcAOh9sn/8IsoTOFGdQceyM14cBhLf26DhcBjiN6Ekh/VRzkvVwI
+   1jF2kd8Kuch69LYPzB7pFAdpa0qlWNLpxmPEOalF+3n4SvOaiYVnLIGoU
+   nSbQurqnJpapJ8Doo2yVVu7ViEOQiVmHmjTeJX9XOHRjhWxqOzCxEXQ/S
+   kyuLcuF8pe2BB0SNbmJ+62DnOC+0OUqQY+QK5tmE84w7M5sz73ubkncRt
+   cB9xGXWkSsz9Mr5gMpAcJJJyfA1scDeHIG8rD7it7VtdcS8iMafMU8Use
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="230502234"
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="230502234"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 23:04:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="681387754"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2022 23:04:43 -0800
+Message-ID: <ae863355-3f44-5eae-4f35-90a62cb2d89f@linux.intel.com>
+Date:   Wed, 16 Feb 2022 15:03:23 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        David Woodhouse <dwmw2@infradead.org>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: Move intel_iommu_ops to header file
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20220207141240.8253-1-andriy.shevchenko@linux.intel.com>
+ <YgpY1IIBkFIxxjbm@8bytes.org>
+ <30e45a7e-088d-7479-a284-68effadf3cbe@linux.intel.com>
+ <Ygt3jibBVRyCn909@smile.fi.intel.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <Ygt3jibBVRyCn909@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When disable PCIe clocks, disable i.MX6QDL PCIe REF clock too.
+On 2/15/22 5:51 PM, Andy Shevchenko wrote:
+> On Tue, Feb 15, 2022 at 09:31:37AM +0800, Lu Baolu wrote:
+>> On 2/14/22 9:27 PM, Joerg Roedel wrote:
+>>> On Mon, Feb 07, 2022 at 04:12:40PM +0200, Andy Shevchenko wrote:
+> 
+> ...
+> 
+>>>> +extern const struct iommu_ops intel_iommu_ops;
+> 
+>>> The intel_iommu_ops symbol is only used in drivers/iommu/intel, so I
+>>> would prefer a header in that directory. But I leave that up to Baolu to
+>>> decide.
+>>
+>> Agreed. I also have a plan to split them out into a internal header.
+> 
+> The above change is hanging for more than a year, can we apply it and then
+> you can do a split?
+> 
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
----
- drivers/pci/controller/dwc/pci-imx6.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Yeah. This is my plan. The include/linux/intel-iommu.h also keeps other
+internal only helpers. It worth a separated cleanup patch.
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index e157f0bec37e..0aca762d88a3 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -540,6 +540,14 @@ static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
- 	clk_disable_unprepare(imx6_pcie->pcie_bus);
- 
- 	switch (imx6_pcie->drvdata->variant) {
-+	case IMX6Q:
-+	case IMX6QP:
-+		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR1,
-+				IMX6Q_GPR1_PCIE_REF_CLK_EN, 0);
-+		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR1,
-+				IMX6Q_GPR1_PCIE_TEST_PD,
-+				IMX6Q_GPR1_PCIE_TEST_PD);
-+		break;
- 	case IMX6SX:
- 		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
- 		break;
--- 
-2.25.1
-
+Best regards,
+baolu
