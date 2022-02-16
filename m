@@ -2,125 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D6BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235416AbiBPPMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:12:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52372 "EHLO
+        id S235429AbiBPPMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 10:12:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233655AbiBPPL7 (ORCPT
+        with ESMTP id S232938AbiBPPMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:11:59 -0500
-X-Greylist: delayed 477 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 07:11:46 PST
-Received: from smtp97.iad3b.emailsrvr.com (smtp97.iad3b.emailsrvr.com [146.20.161.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5268A2AE07;
-        Wed, 16 Feb 2022 07:11:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
-        s=20190130-41we5z8j; t=1645023828;
-        bh=F0I1g8Iodxs1TYYZfhyaZMhWxcIOGrZzwTJS2frSzlM=;
-        h=Date:Subject:To:From:From;
-        b=h++3Om8rBhbI8ndeetZ+++N3SJPManU2ui6H2e+ipO6IqZyH5SsxrEtxJnU3sD+/M
-         cKDVCemBkY5ikgP3+My0iLOXlGWxYiXgRwqndS/6A1InO65cPVXaYg0L3mGHm+137J
-         XR+/3p8aU9/knd8xVMad9t8ceGIR8c6jgdIVyNhI=
-X-Auth-ID: abbotti@mev.co.uk
-Received: by smtp5.relay.iad3b.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id B4D24400A5;
-        Wed, 16 Feb 2022 10:03:46 -0500 (EST)
-Message-ID: <c8328ab5-7ea2-b9ba-fa71-9f2348729ea8@mev.co.uk>
-Date:   Wed, 16 Feb 2022 15:03:45 +0000
+        Wed, 16 Feb 2022 10:12:35 -0500
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E5425E89;
+        Wed, 16 Feb 2022 07:12:23 -0800 (PST)
+Received: by mail-oo1-xc30.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so2784030oos.9;
+        Wed, 16 Feb 2022 07:12:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=8EagOatwpnloVBLpvuiKwC6cqbSfSGAyVDbY82VfmWY=;
+        b=jMVJG6jmB956M6R2glFKs7DuDGfAEIwnDxhZnoKiWbN8B5UtumCOqFPrqlRtMkD0hM
+         5ofS1qBPXRvdPdBL3uBDr5BHI0q31ncP7fr3ka1gzZecIcIS8o6f+xW5nma18gR7TIsV
+         FnCpn1czuwMDEIWDEL3+3/BxPIvWOpkG5KEgmodBzqlBT4zlsGUcB3lKIXE42VoGaDC7
+         uouj2+tF00W/LJ1eC/WXF12DJJ7WKQAnQmuiYR3QLdddl+BU+U3sm2Vm88+t8aSyYDpi
+         3obsm1gNbaS1NwK+rfUPV65680+TNuEsqWBOk6SfAF3qzkl2BPYx54gD52QKw1EKfP0I
+         Xd6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=8EagOatwpnloVBLpvuiKwC6cqbSfSGAyVDbY82VfmWY=;
+        b=NfEJ1Q8VVQ5LwC0uCDxbwZ0cfyzkOOv/0FdB4ovMkY32sA9d2GCfQv8FoujcVkO4qf
+         h33RDTt8Ewmh9ajfVzw+2jn8NkZg1CQ3SPBVWuNIqRPOaStM5CkaKoJK+NSzZHkmtBtt
+         xC7c136lvym52c2Fz8E/LmlehBN0XOjlcm3aZPX6TXCdQ5GhppcMU3IaqftgwD51/EbH
+         7+4V5HS1+VF9WL/a8oho6c/qKXfYGUQEDeNCqqvW0K4yg4uZKYc2OqTaqK1X984mUBOx
+         HuCg02aAOv6BtdjdNuE12lfUH6Du7EcnTVtPqGQY/QF6kBQZ9VqFh2T9V2ScvXD6jX2v
+         60gQ==
+X-Gm-Message-State: AOAM532dpQMCIEavnIMDoGcvsgDdLmHnExM2SWtAvVtpTQHeUrzbNEuc
+        whFJt4LJ8yfjLrJHpjMOWKk=
+X-Google-Smtp-Source: ABdhPJw48DZ1orM9cbn6ZFn7AiWfOVbGIy7a36NIzJQkXx0dVyF5qE8kcJHqasvZEJe8HaZY0eeQZw==
+X-Received: by 2002:a05:6870:41d4:b0:d1:2682:277c with SMTP id z20-20020a05687041d400b000d12682277cmr632495oac.206.1645024342369;
+        Wed, 16 Feb 2022 07:12:22 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id e11sm2245139oiw.3.2022.02.16.07.12.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 07:12:21 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <130a9cbe-ee0c-1908-1d62-0f3c674ca648@roeck-us.net>
+Date:   Wed, 16 Feb 2022 07:12:19 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] comedi: drivers: ni_routes: Use strcmp() instead of
- memcmp()
-Content-Language: en-GB
-To:     Kees Cook <keescook@chromium.org>
-Cc:     H Hartley Sweeten <hsweeten@visionengravers.com>,
-        "Spencer E . Olson" <olsonse@umich.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-References: <20220215171017.1247291-1-keescook@chromium.org>
-From:   Ian Abbott <abbotti@mev.co.uk>
-Organization: MEV Ltd.
-In-Reply-To: <20220215171017.1247291-1-keescook@chromium.org>
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Agathe Porte <agathe.porte@nokia.com>, linux-hwmon@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Adamski <krzysztof.adamski@nokia.com>
+References: <20220216070720.2131761-1-linux@roeck-us.net>
+ <20220216070720.2131761-2-linux@roeck-us.net>
+ <2f7780b8-ce67-6cd6-4097-d8113f557444@nokia.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v3 2/2] hwmon: Add driver for Texas Instruments TMP464 and
+ TMP468
+In-Reply-To: <2f7780b8-ce67-6cd6-4097-d8113f557444@nokia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Classification-ID: c69dd1e8-1590-4aa0-802d-b75f2af30825-1-1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/02/2022 17:10, Kees Cook wrote:
-> The family and device comparisons were using memcmp(), but this could
-> lead to Out-of-bounds reads when the length was larger than the
-> buffers being compared. Since these appear to always be NUL-terminated
-> strings, just use strcmp() instead.
+On 2/16/22 04:42, Agathe Porte wrote:
+> Hi Guenter,
 > 
-> This was found with Clang under LTO:
+> Le 16/02/2022 à 08:07, Guenter Roeck a écrit :
+>> Add support for Texas Instruments TMP464 and TMP468 temperature sensor
+>> ICs.
+>>
+>> TI's TMP464 is an I2C temperature sensor chip. This chip is
+>> similar to TI's TMP421 chip, but with 16bit-wide registers (instead
+>> of 8bit-wide registers). The chip has one local sensor and four
+>> remote sensors. TMP468 is similar to TMP464 but has one local and
+>> eight remote sensors.
+>>
+>> Originally-from: Agathe Porte <agathe.porte@nokia.com>
+>> Cc: Agathe Porte <agathe.porte@nokia.com>
+>> Cc: Krzysztof Adamski <krzysztof.adamski@nokia.com>
+>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>> ---
+>> v3:
+>> - Added support for TMP468
+>> - Added support for various limits, temperature hysteresis, alarm attributes,
+>>    and update interval
+>> - Use regmap instead of local caching
+>> - Use static chip configuration
+>> - Unlock check if needed when loading driver, and lock it when unloading it
+>>    - Call tmp464_init_client() before calling tmp464_probe_from_dt()
+>>      since the latter changes registers, which requires the chip to be
+>>      unlocked.
+>> - Restore configuration register when unloading driver
+>> - ti,n-factor is optional, so don't fail if the property is not present
+>>
+>> Notes:
+>> - Tested with real TMP468. Module tested for TMP464.
+>> - I was not able to test with a system supporting devicetree;
+>>    especially negative values for "ti,n-factor" need testing
+>>    (and I wonder if of_property_read_s8() would be needed to
+>>     support this properly).
 > 
-> [ 92.405851][    T1] kernel BUG at lib/string_helpers.c:980!
-> ...
-> [ 92.409141][ T1] RIP: 0010:fortify_panic (fbdev.c:?)
-> ...
-> [ 92.410056][ T1] ni_assign_device_routes (fbdev.c:?)
-> [ 92.410056][ T1] ? unittest_enter (fbdev.c:?)
-> [ 92.410056][ T1] ni_routes_unittest (ni_routes_test.c:?)
-> [ 92.410056][ T1] ? unittest_enter (fbdev.c:?)
-> [ 92.410056][ T1] __initstub__kmod_ni_routes_test__505_604_ni_routes_unittest6 (fbdev.c:?)
-> [ 92.410056][ T1] do_one_initcall (fbdev.c:?)
+> I just did the test on our system and both positive and negative value n-factor fails.
 > 
-> Cc: Ian Abbott <abbotti@mev.co.uk>
-> Cc: H Hartley Sweeten <hsweeten@visionengravers.com>
-> Cc: Spencer E. Olson <olsonse@umich.edu>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Link: https://lore.kernel.org/lkml/20220210072821.GD4074@xsang-OptiPlex-9020
-> Fixes: 4bb90c87abbe ("staging: comedi: add interface to ni routing table information")
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->   drivers/comedi/drivers/ni_routes.c | 6 ++----
->   1 file changed, 2 insertions(+), 4 deletions(-)
+> With the following overlay:
 > 
-> diff --git a/drivers/comedi/drivers/ni_routes.c b/drivers/comedi/drivers/ni_routes.c
-> index f24eeb464eba..295a3a9ee0c9 100644
-> --- a/drivers/comedi/drivers/ni_routes.c
-> +++ b/drivers/comedi/drivers/ni_routes.c
-> @@ -56,8 +56,7 @@ static const u8 *ni_find_route_values(const char *device_family)
->   	int i;
->   
->   	for (i = 0; ni_all_route_values[i]; ++i) {
-> -		if (memcmp(ni_all_route_values[i]->family, device_family,
-> -			   strnlen(device_family, 30)) == 0) {
-> +		if (!strcmp(ni_all_route_values[i]->family, device_family)) {
->   			rv = &ni_all_route_values[i]->register_values[0][0];
->   			break;
->   		}
-> @@ -75,8 +74,7 @@ ni_find_valid_routes(const char *board_name)
->   	int i;
->   
->   	for (i = 0; ni_device_routes_list[i]; ++i) {
-> -		if (memcmp(ni_device_routes_list[i]->device, board_name,
-> -			   strnlen(board_name, 30)) == 0) {
-> +		if (!strcmp(ni_device_routes_list[i]->device, board_name)) {
->   			dr = ni_device_routes_list[i];
->   			break;
->   		}
+> /dts-v1/;
+> /plugin/;
+> / {
+>          fragment@0 {
+>                  target-path = "/soc/.../i2c@4/tmp464@49";
+>                  __overlay__ {
+>                          #address-cells = <1>;
+>                          #size-cells = <0>;
+> 
+>                          channel@0 {
+>                                  reg = <0x0>;
+>                                  label = "local";
+>                                  ti,n-factor = /bits/ 8 <(-10)>;
+>                          };
+> 
+>                          channel@1 {
+>                                  reg = <0x1>;
+>                                  label = "ch1";
+>                          };
+> 
+>                          channel@2 {
+>                                  reg = <0x2>;
+>                                  label = "ch2";
+>                          };
+> 
+>                          channel@3 {
+>                                  reg = <0x3>;
+>                                  label = "ch3";
+>                          };
+> 
+>                          channel@4 {
+>                                  reg = <0x4>;
+>                                  label = "ch4";
+>                          };
+>                  };
+>          };
+> 
+> };
+> 
+> I get the following probing error:
+> 
+> [ 3580.557425] tmp464: probe of 16-0049 failed with error -75
+> 
 
-Looks good, thanks!  I'm not sure why the tests used memcmp() like that. 
-Indeed, all the strings are statically allocated and null-terminated.
+I think that may be caused by using of_property_read_s32() for reading
+an 8-bit property. Can you try and replace of_property_read_s32()
+with of_property_read_u8() and the variable it points to to s8 ?
 
-Reviewed-by: Ian Abbott <abbotti@mev.co.uk>
+	s8 val;
+	...
+	err = of_property_read_u8(child, "ti,n-factor", &val);
 
--- 
--=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
--=( registered in England & Wales.  Regd. number: 02862268.  )=-
--=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
--=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
+There is no of_property_read_s8(), so we can not use that,
+but maybe using of_property_read_u8() does the trick.
+
+Thanks,
+Guenter
+
+> With a positive n-factor in the overlay (<(10)> instead of <(-10)>), the driver *does not load either*, with the same error message.
+> 
+> Without any n-factor set, the v3 driver you proposed loads just fine with the DT.
+> 
+> Any idea of where this could come from? This was probably not working in my own implementation either.
+> 
+> PS: check your spam folder eventually for my mail asking delivery details of the TMP464 samples.
+> 
+> Bests,
+> 
+> Agathe.
+> 
+
