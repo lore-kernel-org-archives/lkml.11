@@ -2,181 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 603E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234073AbiBPN0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:26:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36450 "EHLO
+        id S234132AbiBPN2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:28:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233693AbiBPN0c (ORCPT
+        with ESMTP id S233693AbiBPN2A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:26:32 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CDC1B78C
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:26:17 -0800 (PST)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 545F03F1B6
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 13:26:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645017976;
-        bh=HnLv2sgPTFeJCaPDj49F4ixfOdgITRk3XaxRkpYlXz0=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=d+ytUNIq/+YlMjkBHdiOV8f4oLa5IC3GzB6jvG+C7TfcqFdyX0KOr+USFSxC9EfzW
-         gq4sf5GP+2Y9PEsc59qza/ErxG8NRKgmR8tyS5azhFwTtH329ZDBm2ITajzRbvduwY
-         djHyqSCQsWveL2va2wT/eOz4fRUQ919qHtZ2EAJMnfzUI3Wx3c6Q1V+f7+lSJTGT4Y
-         cV623To1sFST3A04oSdbBkd9Bl541P8v4XHGEujKDhUeevB7FXVse+VpePM30PDXFt
-         yGlxbJTMN8smPmt2kqJYtjVhq3t5quGgig62hqd/H4EX/8G0JdurlhhgrHXxiDxruR
-         SppoGEjyty4Fw==
-Received: by mail-ed1-f70.google.com with SMTP id l24-20020a056402231800b00410f19a3103so1560341eda.5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:26:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HnLv2sgPTFeJCaPDj49F4ixfOdgITRk3XaxRkpYlXz0=;
-        b=peWA4jqdZliCMKOAMQ5mBzf+ZvOaWA2ckOqIk535E36Hb1xfv+2qQ0w2JvaDkyEXzN
-         6Ypi/IZddy6godLV+b2KhfRph/m7P4P3FP5llRaZzbQazi5Q9G81h69dPDMI04+lMKZh
-         uofuGghuiqF8WhecovcnP3k1l4y9dgD3AUoS2GSOQc9OMiY8SPU2QODfyPn88Oa5ZBkg
-         GcwEKPcHscx0oOKW9wYtSNBestXie2tJbYOeLcJIahZDqazEVCGnlB3JFBjSi2b0zmaX
-         UQ46HHStbBHhAfQCkQi90OL2d/52DzE5amyozfkBRwPnnRDBni+uuujatP4ZAjHBbbLs
-         k9Lg==
-X-Gm-Message-State: AOAM533Vo6HQ2sP4vvoc+hl0zF09qP/WyTna/CPXWk5mE2J5oYX5lZcd
-        ccBs6y8SS3+F1QxNk2jBz5zUJu/yx2LvZE6Y4oUqHCC9nvMfCm7r1ecPNQ5l3QkpiKEVtOq5GvD
-        m1T82gkFgrUsOO0qLWBzra5bBybHzgfv0mur7+e967g==
-X-Received: by 2002:a17:906:1be1:b0:6ce:b0a8:17d with SMTP id t1-20020a1709061be100b006ceb0a8017dmr2212959ejg.413.1645017975940;
-        Wed, 16 Feb 2022 05:26:15 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwW6N5tK5VHWBe36Bj5vHHIMzDJlCB0AOnINLyfOUpi+aCPHYXEWQjcBrraceqmA2DJkZ7r6A==
-X-Received: by 2002:a17:906:1be1:b0:6ce:b0a8:17d with SMTP id t1-20020a1709061be100b006ceb0a8017dmr2212939ejg.413.1645017975741;
-        Wed, 16 Feb 2022 05:26:15 -0800 (PST)
-Received: from [192.168.0.110] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id qf12sm1085572ejc.54.2022.02.16.05.26.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 05:26:15 -0800 (PST)
-Message-ID: <79a47f67-bb66-bad4-b6bc-c6a8c0ef25dc@canonical.com>
-Date:   Wed, 16 Feb 2022 14:26:14 +0100
+        Wed, 16 Feb 2022 08:28:00 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8DA9AD9C;
+        Wed, 16 Feb 2022 05:27:47 -0800 (PST)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21GDBVuh017654;
+        Wed, 16 Feb 2022 13:27:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=pp1; bh=mRSsAAv1qAwMSzykjnfczfeoZXgX0Jf2TbNRCxVF9Uc=;
+ b=sriKSFpp5nLsg21MUdSk+raY/gt5P/cYyz3oLXy3aQ97RtZYY21Y46ojqfudPLd67Hdl
+ T6TPWcouUMtyDP+h7l/S9mlTqAe2WmTG3zdVwfoWsrxv8X4VSwljdU+nFv+ZUZsinKVA
+ RPmji7gyCs2vrurwp0EGN9uP3lKF9c514SlVAbWyXxKo+wrF9W+CX0R2QfgUuvytibv5
+ xibdOs+goM4K5JoYD7j/Eq3pnATrCc0akUCczZ3xyEnCPU9pKIQ1EZ0uVgR6zhKLQcoQ
+ usOdkgBh2MiH66BkZv1EoKO+j03DgBm49BPHVdxGfQhB+zhWIrFHbaCH+59BAhIS6bVH CQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e908qjh1u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 13:27:16 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21GDDqFG027694;
+        Wed, 16 Feb 2022 13:27:15 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e908qjh17-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 13:27:15 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21GDC9Du006745;
+        Wed, 16 Feb 2022 13:27:13 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma01fra.de.ibm.com with ESMTP id 3e64h9q865-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 13:27:13 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21GDRAb924903942
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 16 Feb 2022 13:27:10 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 16A3A11C054;
+        Wed, 16 Feb 2022 13:27:10 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9467B11C05B;
+        Wed, 16 Feb 2022 13:27:09 +0000 (GMT)
+Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Wed, 16 Feb 2022 13:27:09 +0000 (GMT)
+From:   Sven Schnelle <svens@linux.ibm.com>
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Ingo Molnar <mingo@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+Subject: Re: [PATCH v2 09/13] powerpc/ftrace: Implement
+ CONFIG_DYNAMIC_FTRACE_WITH_ARGS
+References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
+        <5831f711a778fcd6eb51eb5898f1faae4378b35b.1640017960.git.christophe.leroy@csgroup.eu>
+        <1644852011.qg7ud9elo2.naveen@linux.ibm.com>
+        <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
+        <875ypgo0f3.fsf@mpe.ellerman.id.au>
+        <1644930705.g64na2kgvd.naveen@linux.ibm.com>
+        <6dc50f09-4d14-afa2-d2a1-34b72b880edf@csgroup.eu>
+        <5c7b5334-6071-f131-a509-9a49ca3d628c@csgroup.eu>
+        <1644941712.lqdstzo09z.naveen@linux.ibm.com> <Ygz2Upu+5NiEAsDT@osiris>
+Date:   Wed, 16 Feb 2022 14:27:09 +0100
+In-Reply-To: <Ygz2Upu+5NiEAsDT@osiris> (Heiko Carstens's message of "Wed, 16
+        Feb 2022 14:04:18 +0100")
+Message-ID: <yt9dmtir3psi.fsf@linux.ibm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] dt-bindings: dma: Convert mtk-uart-apdma to DT schema
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, vkoul@kernel.org
-Cc:     robh+dt@kernel.org, sean.wang@mediatek.com, matthias.bgg@gmail.com,
-        long.cheng@mediatek.com, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220216114054.269656-1-angelogioacchino.delregno@collabora.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220216114054.269656-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 4P13vTTY8jUoKkrC9N3P8RbRIK8AStlA
+X-Proofpoint-ORIG-GUID: Rv68b89V4IpwCICup99AtZAzo4shCls4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-16_06,2022-02-16_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ clxscore=1011 impostorscore=0 lowpriorityscore=0 phishscore=0
+ suspectscore=0 mlxlogscore=764 priorityscore=1501 malwarescore=0
+ adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202160076
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/02/2022 12:40, AngeloGioacchino Del Regno wrote:
-> Convert the MediaTek UART APDMA Controller binding to DT schema.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  .../bindings/dma/mediatek,uart-dma.yaml       | 112 ++++++++++++++++++
->  .../bindings/dma/mtk-uart-apdma.txt           |  56 ---------
->  2 files changed, 112 insertions(+), 56 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
->  delete mode 100644 Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-> new file mode 100644
-> index 000000000000..4583c8f535b2
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-> @@ -0,0 +1,112 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/dma/mediatek,uart-dma.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MediaTek UART APDMA controller
-> +
-> +maintainers:
-> +  - Long Cheng <long.cheng@mediatek.com>
-> +
-> +description: |
-> +  The MediaTek UART APDMA controller provides DMA capabilities
-> +  for the UART peripheral bus.
-> +
-> +allOf:
-> +  - $ref: "dma-controller.yaml#"
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - mediatek,mt2712-uart-dma
-> +              - mediatek,mt8516-uart-dma
-> +          - const: mediatek,mt6577-uart-dma
-> +      - enum:
-> +          - mediatek,mt6577-uart-dma
-> +
-> +  reg:
-> +    minItems: 1
-> +    maxItems: 16
-> +
-> +  interrupts:
-> +    description: |
-> +      TX, RX interrupt lines for each UART APDMA channel
-> +    minItems: 1
+Heiko Carstens <hca@linux.ibm.com> writes:
 
-It would be useful to have an "if:" block constraining the interrupts
-(and reg array?), if the dma-requests is missing. If you need an
-example, see length of "max8997,pmic-buck1-dvs-voltage" array in
-relation to presence of max8997,pmic-buck1-uses-gpio-dvs.
-https://elixir.bootlin.com/linux/v5.17-rc2/source/Documentation/devicetree/bindings/regulator/maxim,max8997.yaml#L259
+> So, the in both variants s390 provides nearly identical data. The only
+> difference is that for FL_SAVE_REGS the program status word mask is
+> missing; therefore it is not possible to figure out the condition code
+> or if interrupts were enabled/disabled.
+>
+> Vasily, Sven, I think we have two options here:
+>
+> - don't provide sane psw mask contents at all and say (again) that
+>   ptregs contents are identical
+>
+> - provide (finally) a full psw mask contents using epsw, and indicate
+>   validity with a flags bit in pt_regs
+>
+> I would vote for the second option, even though epsw is slow. But this
+> is about the third or fourth time this came up in different
+> contexts. So I'd guess we should go for the slow but complete
+> solution. Opinions?
 
-The best would be to restrict number of interrupts to number of
-requests, but I think dtschema cannot express this.
-
-> +    maxItems: 32
-> +
-> +  clocks:
-> +    description: Must contain one entry for the APDMA main clock
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    const: apdma
-> +
-> +  "#dma-cells":
-> +    const: 1
-> +    description: |
-> +      The first cell specifies the UART APDMA channel number
-> +
-> +  dma-requests:
-> +    description: |
-> +      Number of virtual channels of the UART APDMA controller
-> +    maximum: 16
-> +
-> +  mediatek,dma-33bits:
-> +    type: boolean
-> +    description: Enable 33-bits UART APDMA support
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - "#dma-cells"
-
-No need for requiring dma-cells. It is coming from dma-common.yaml.
-
-> +
-
-Best regards,
-Krzysztof
+Given that this only affects ftrace_regs_caller, i would also vote for the
+second option.
