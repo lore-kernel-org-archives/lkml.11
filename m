@@ -2,99 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02590C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 02:00:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB4EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 02:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343500AbiBPCBD (ORCPT
+        id S1343498AbiBPCCq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 21:01:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47626 "EHLO
+        Tue, 15 Feb 2022 21:02:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245757AbiBPCA6 (ORCPT
+        with ESMTP id S245754AbiBPCCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 21:00:58 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97490FBA42;
-        Tue, 15 Feb 2022 18:00:47 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id q17so1372811edd.4;
-        Tue, 15 Feb 2022 18:00:47 -0800 (PST)
+        Tue, 15 Feb 2022 21:02:43 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1774B9F6F0
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 18:02:32 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id qk11so1222133ejb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 18:02:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sconlSkVQr84rv45aJ7gGXdI67TbSdkvanV4Zo/rcjc=;
-        b=hLZszkoPv+HNK6bt+me14aeW2OrbCDmi6YgRFKks65sbnzrkpb91K6m5v47kmrVn1+
-         BCm+PpfO8XPVgQu2vGltQ6ptoytIAOjRZ27ZkQXHNtV4rjhuXFoHptYxZk7BwoO54NCm
-         6k4CA9cdCN2svdGlYES5pL/awM5kmlvGLYpiM1CJ2hW9yk8M3udRN2p4jo9xhZoDAMQ2
-         mNcKyRFxfoYkGA2xYIICvx8Lhbs2HgWDFhgR4/bpaVITfcONhl9+h+g9woXRqcIIxNVs
-         dN/VO4ZP0LVuuVlZJfGFFAoJJvBmb548eJ4cuC6dj7ZhwoBaAHPzjEE6xSf/IAjkyFSg
-         E3Ag==
+        bh=oy1YM/HzNdw/9ZFVOisrJV7nT7HM/m+A2J2vkUwfDOQ=;
+        b=iDyrMrL5USelID7ncCPEtS8P1iJHrYtWzRHFXvfjcLZ5sKzz5wxlqfs1s+VKuXUM0H
+         bGgWxmr27jV9NoSeuAb37hoTBfjgUAEcN+piOHr3ZcSuFnR97cd0hhrJloCfcgTixOur
+         HfqfFdKk1epCuLop7JuIGXVestj+xatWHY7ISqaz/6N/em25cnifpHZ2wJJzylKYRyTu
+         cmgDwPQ03pVEoYZlthWznKxroxaO2hwI9DBAVajtQkJgG74Y8T96l69LJD2GcrrVjkER
+         +KLdZqB8AenqHTaxBfKy9OGWUvnl8lk/n6FHGTEFnsOg8XpW7ayjvQjoRYt2nckqjUjf
+         2gQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sconlSkVQr84rv45aJ7gGXdI67TbSdkvanV4Zo/rcjc=;
-        b=Kbl+P/A2whR/gueRExCWNrooLbLGjCzlYx5Lfv5ifik+Fxfz2JZZiOzG1AjPvEVeeS
-         4jF6zzpJ4zyFjZ3Zmpn9gCyV1jbKXAwEhDtx42D6RlJMV2l7hx3USyffJ1mKX2QaFo/Y
-         oHxCo9yrt1BbzORQsKDoArvSbpjeLYf9f//tQ9otMjBvr+jU7cp5WvVtuVt4i2L2qtiT
-         tBkTUAkuPEpgLWntokHr2DtLCFW2Bt0OCtWjBkP1HNB+SuQhXagzV5PrYQFGb0OXf0Qt
-         93+7P36PACoByXCQV7Pk/cO4Nsb2p9vR+tS9DC6iTWKf5tzNFvhYygco7bpREwhGpiDG
-         vNbQ==
-X-Gm-Message-State: AOAM532LbVAc+Aawj83qrfvlcSBd7luIVMI94x5KP2+Bn4pbEnUoheB7
-        11hfZoxh4MoixaTHx0SahkFstlbkHLP5z0NUq3E=
-X-Google-Smtp-Source: ABdhPJwyUho5csN/Qney7PVE0iId1O0lOc2NtN7/RpdmKciiVquz11cDbaMpq6sMoo0cOYsdD+kNlv6zhxD//ya0Fck=
-X-Received: by 2002:aa7:d7c8:0:b0:3f9:3b65:f2b3 with SMTP id
- e8-20020aa7d7c8000000b003f93b65f2b3mr603272eds.389.1644976846121; Tue, 15 Feb
- 2022 18:00:46 -0800 (PST)
+        bh=oy1YM/HzNdw/9ZFVOisrJV7nT7HM/m+A2J2vkUwfDOQ=;
+        b=MMHL+9afu68V3B+VSUIm2nLbMkq7PKnktVB3EVqt7YlRpK04vj9TXJf7kSuZyy1MW2
+         hMg3+7Nz9AfGNJn5SLILkVG/OmpaSN/8WQxZm2XW4zNTDZN8x4c+vDz+GPBOdqgW6SSM
+         S9vhPwlgqaqZwMYudCw46wLXwC9HkQqBFZXGGFuaTc8Zj0/v8stQj0Ozl8ZsUiDjc1yy
+         pW3nrq6E7oQf0snywFqnG7o6cZRW+MpvpszV2DCmn7Tj3V8FH1Qtdl43akAfCsFey0cg
+         /xtt24JO1eYE1oh9wEdBfW45ksfvFeF5eLhISWEFH1v6A8dUqqGQU38lTgauYFOuNopw
+         OYkQ==
+X-Gm-Message-State: AOAM533pjl0lxUM0UpdCs3S6lKFg6h7QQMGWn0q/CNTHLLPrYjw+eQwl
+        anBuRiVvLQcMmfuasm6Skx2A1qxgFUusR1A948WRKw==
+X-Google-Smtp-Source: ABdhPJyzj9PoOwCqscEDxQYrkHv3HVEzD3hy4Cgfik4tedxpf27fA2eNn7NTVcXO/NFhy7cKYusXyRRgUtlbqVzts2A=
+X-Received: by 2002:a17:906:c12:b0:6cd:795c:9803 with SMTP id
+ s18-20020a1709060c1200b006cd795c9803mr552433ejf.593.1644976950396; Tue, 15
+ Feb 2022 18:02:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20220215112812.2093852-1-imagedong@tencent.com>
- <20220215080452.2898495a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <71823500-3947-0b9a-d53f-5406feb244ac@kernel.org>
-In-Reply-To: <71823500-3947-0b9a-d53f-5406feb244ac@kernel.org>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Wed, 16 Feb 2022 09:55:34 +0800
-Message-ID: <CADxym3baA1j6soeS9frXd4Qi=7pG83jgdjJm5jj8MQ4oT16Lag@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/19] net: add skb drop reasons for TCP, IP, dev
- and neigh
-To:     David Ahern <dsahern@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>, ilias.apalodimas@linaro.org,
-        Alexander Lobakin <alobakin@pm.me>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        atenart@kernel.org, bigeasy@linutronix.de,
-        Paolo Abeni <pabeni@redhat.com>, linyunsheng@huawei.com,
-        arnd@arndb.de, yajun.deng@linux.dev,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Willem de Bruijn <willemb@google.com>, vvs@virtuozzo.com,
-        Cong Wang <cong.wang@bytedance.com>, luiz.von.dentz@intel.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        flyingpeng@tencent.com
+References: <543efc25-9b99-53cd-e305-d8b4d917b64b@intel.com>
+ <20220215192233.8717-1-bgeffon@google.com> <YgwCuGcg6adXAXIz@kroah.com>
+ <CADyq12wByWhsHNOnokrSwCDeEhPdyO6WNJNjpHE1ORgKwwwXgg@mail.gmail.com> <066c9f4b-b0a3-9343-9db9-1c1c7303da6f@intel.com>
+In-Reply-To: <066c9f4b-b0a3-9343-9db9-1c1c7303da6f@intel.com>
+From:   Brian Geffon <bgeffon@google.com>
+Date:   Tue, 15 Feb 2022 21:01:54 -0500
+Message-ID: <CADyq12yuzOPbv+jrdhf8unzsifVXGw31LbW+Sh2tZ3qG=xjGjg@mail.gmail.com>
+Subject: Re: [PATCH stable 5.4,5.10] x86/fpu: Correct pkru/xstate inconsistency
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Willis Kung <williskung@google.com>,
+        Guenter Roeck <groeck@google.com>,
+        Borislav Petkov <bp@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        "# v4 . 10+" <stable@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 12:09 AM David Ahern <dsahern@kernel.org> wrote:
+On Tue, Feb 15, 2022 at 4:42 PM Dave Hansen <dave.hansen@intel.com> wrote:
 >
-> On 2/15/22 9:04 AM, Jakub Kicinski wrote:
-> > There's no reason to send 19 patches at a time. Please try to send
-> > smaller series, that's are easier to review, under 10 patches
-> > preferably, certainly under 15.
+> On 2/15/22 13:32, Brian Geffon wrote:
+> >> How was this tested, and what do the maintainers of this subsystem
+> >> think?  And will you be around to fix the bugs in this when they are
+> >> found?
+> > This has been trivial to reproduce, I've used a small repro which I've
+> > put here: https://gist.github.com/bgaff/9f8cbfc8dd22e60f9492e4f0aff8f04f
+> > , I also was able to reproduce this using the protection_keys self
+> > tests on a 11th Gen Core i5-1135G7.
 >
-> +1. It takes time to review code paths and make sure the changes are
-> correct.
+> I've got an i7-1165G7, but I'm not seeing any failures on a
+> 5.11 distro kernel.
 >
-> Send the first 9 as set; those target the TCP stack and then wait for
-> them to be merged before sending more.
 
-Ok, I'll make the amount of patches at a proper level, thanks!
+Hi Dave,
+I suspect the reason you're not seeing it is toolchain related, I'm
+building with clang 14.0.0 and it produces the sequence of
+instructions which use the cached value. Let me know if there is
+anything I can do to help you investigate this further.
+
+Brian
