@@ -2,100 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C004C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 04:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAAF4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 04:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344467AbiBPEkr (ORCPT
+        id S1344482AbiBPEmU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 23:40:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38164 "EHLO
+        Tue, 15 Feb 2022 23:42:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344444AbiBPEkm (ORCPT
+        with ESMTP id S244332AbiBPEmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 23:40:42 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FA5F406B
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 20:40:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644986430; x=1676522430;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=f9nny1FjAVESb1bhZWB+zYKFO3ktt8MPMbm+cj2MSrA=;
-  b=kSRTr3ahalhDwqMBJ4c6dFu8inO+lwzs99c8jx0c5M/zBUaiQ5b5wAJP
-   EVUynJEihjPxGjpggDkUveOsg+EChnJ6G4yHWbNJLVA33G2lsSLdq5syb
-   WnJZeQqqELo9vYsCN3XLLjQ4P2ur7fOiGLi0+/HhfAhW6cXDQnICuOhpa
-   bblOTcPLg2GpnB+xgpofUs4fLWk+uV6qzMzRnaWGhbsUVK785OxAnPIjT
-   7AG877MemZ9BPNKZRS8kxOd2g7mzBBV21IaKREk9H2Iwdvx8CBgb8pvaN
-   3FqJyWx2h6xTxgXZ+TMljo+xSgAn8APsRofgSSX5FVK9gqHKFuHBxviwh
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="275101907"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="275101907"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 20:40:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="498189992"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 15 Feb 2022 20:40:24 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKC75-000APW-JR; Wed, 16 Feb 2022 04:40:23 +0000
-Date:   Wed, 16 Feb 2022 12:40:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nathan Huckleberry <nhuck@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Eric Biggers <ebiggers@google.com>
-Subject: [ebiggers:crypto-pending 7/7]
- arch/arm64/crypto/polyval-ce-glue.c:355:33: warning: unused variable
- 'polyval_cpu_feature'
-Message-ID: <202202161205.0mACsVya-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Tue, 15 Feb 2022 23:42:16 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84DF7C3341
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 20:42:01 -0800 (PST)
+Received: from unknown (HELO lgeamrelo02.lge.com) (156.147.1.126)
+        by 156.147.23.51 with ESMTP; 16 Feb 2022 13:11:56 +0900
+X-Original-SENDERIP: 156.147.1.126
+X-Original-MAILFROM: byungchul.park@lge.com
+Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
+        by 156.147.1.126 with ESMTP; 16 Feb 2022 13:11:56 +0900
+X-Original-SENDERIP: 10.177.244.38
+X-Original-MAILFROM: byungchul.park@lge.com
+From:   Byungchul Park <byungchul.park@lge.com>
+To:     tytso@mit.edu, adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, peterz@infradead.org,
+        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
+        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
+        chris@chris-wilson.co.uk, duyuyang@gmail.com,
+        johannes.berg@intel.com, tj@kernel.org, willy@infradead.org,
+        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
+        gregkh@linuxfoundation.org, kernel-team@lge.com,
+        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
+        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
+        ngupta@vflare.org, linux-block@vger.kernel.org, axboe@kernel.dk,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jlayton@kernel.org, dan.j.williams@intel.com,
+        hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com
+Subject: [REPORT] ext4 deadlock possibilities by DEPT
+Date:   Wed, 16 Feb 2022 13:11:51 +0900
+Message-Id: <1644984711-26423-1-git-send-email-byungchul.park@lge.com>
+X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git crypto-pending
-head:   67824d3cb5325de4264ad344174a7e4ea69e5303
-commit: 67824d3cb5325de4264ad344174a7e4ea69e5303 [7/7] crypto: arm64/polyval: Add PMULL accelerated implementation of POLYVAL
-config: arm64-randconfig-r033-20220216 (https://download.01.org/0day-ci/archive/20220216/202202161205.0mACsVya-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0e628a783b935c70c80815db6c061ec84f884af5)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git/commit/?id=67824d3cb5325de4264ad344174a7e4ea69e5303
-        git remote add ebiggers https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git
-        git fetch --no-tags ebiggers crypto-pending
-        git checkout 67824d3cb5325de4264ad344174a7e4ea69e5303
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/crypto/
+Hi Theodore, Andreas and ext4 folks,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I've been developing a tool for detecting deadlock possibilities by
+tracking wait/event rather than lock(?) acquisition order to try to
+cover all synchonization machanisms. It's done on v5.17-rc1 tag.
 
-All warnings (new ones prefixed by >>):
+https://github.com/lgebyungchulpark/linux-dept/commits/dept1.11_on_v5.17-rc1
 
->> arch/arm64/crypto/polyval-ce-glue.c:355:33: warning: unused variable 'polyval_cpu_feature' [-Wunused-const-variable]
-   static const struct cpu_feature polyval_cpu_feature[] = {
-                                   ^
-   1 warning generated.
+Benifit:
 
+	0. Works with all lock primitives.
+	1. Works with wait_for_completion()/complete().
+	2. Works with 'wait' on PG_locked.
+	3. Works with 'wait' on PG_writeback.
+	4. Works with swait/wakeup.
+	5. Works with waitqueue.
+	6. Multiple reports are allowed.
+	7. Deduplication control on multiple reports.
+	8. Withstand false positives thanks to 6.
+	9. Easy to tag any wait/event.
 
-vim +/polyval_cpu_feature +355 arch/arm64/crypto/polyval-ce-glue.c
+Future work:
 
-   354	
- > 355	static const struct cpu_feature polyval_cpu_feature[] = {
-   356		{ cpu_feature(PMULL) }, { }
-   357	};
-   358	MODULE_DEVICE_TABLE(cpu, polyval_cpu_feature);
-   359	
+	0. To make it more stable.
+	1. To separates Dept from Lockdep.
+	2. To improves performance in terms of time and space.
+	3. To use Dept as a dependency engine for Lockdep.
+	4. To add any missing tags of wait/event in the kernel.
+	5. To deduplicate stack trace.
+
+I've got several reports from the tool. Some of them look like false
+alarms caused by Lockdep's fake annotations added for better detection.
+However, some others look like real deadlock possibility. Because of my
+unfamiliarity of the domain, it's hard to confirm if it's a real one.
+I'd like to ask for your opinion on it and it'd be appreciated.
+
+How to interpret the report is:
+
+	1. E(event) in each context cannot be triggered because of the
+	   W(wait) that cannot be woken.
+	2. The stack trace helping find the problematic code is located
+	   in each conext's detail.
+
+Let me add the reports on this email thread.
 
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks,
+Byungchul
+
