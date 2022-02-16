@@ -2,229 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 00:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F05AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 00:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245133AbiBPAu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 19:50:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51950 "EHLO
+        id S245145AbiBPAu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 19:50:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243059AbiBPAuZ (ORCPT
+        with ESMTP id S245134AbiBPAu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 19:50:25 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 16:50:14 PST
-Received: from esa5.hc3370-68.iphmx.com (esa5.hc3370-68.iphmx.com [216.71.155.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD1DF94E9;
-        Tue, 15 Feb 2022 16:50:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=citrix.com; s=securemail; t=1644972614;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=ZsGJz/zqeFW0kApse61TcbMPkh/45bVmYyMkERKTPEE=;
-  b=ZSREe99zXiSGbMa6rY1bdO0wekpKiSTPGcPITjIvBvxlt07kmBqn97OI
-   NHsiKvwl6W+IoDGUihUNFJHaMwL/KbpRpHob3K1sBoVWlRTS0kgNy3bfJ
-   HVVHyQDkASTD2OQWCn7CQDT7Uq4Ezor50o+FFyOsZfFXYokF6DSNZpzTs
-   0=;
-Authentication-Results: esa5.hc3370-68.iphmx.com; dkim=pass (signature verified) header.i=@citrix.onmicrosoft.com
-IronPort-SDR: 8kkKpt5ZsLUJgbkyVuD3DJzzrw7aAfAqzd+2bRMS74gree4/ngESAkJI4EsDcjQiw16Muz7YA6
- nV59FkVNz/f1NXU5DED1kl5aUHKRoAnZtf+qr/SgQN49VzfO/ojTEuBRIJG/uac0sXN688Q2uw
- Wdx1hj1FN8ToK9xv0sF+jWTfhpWI35S4PSXgq8tv+h3eFV8m8M/GRrPquraPftvWlkUQ46QSTf
- NcUHbgeze5isqbBHfcSp2KkQXf7dfN6DroDepuw03VUcFdbb8UApqJN9uabt/IlzMMst+hzSDk
- LWomSzqm0m/ERSieARd7p7oD
-X-SBRS: 5.1
-X-MesageID: 63741857
-X-Ironport-Server: esa5.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.156.83
-X-Policy: $RELAYED
-IronPort-Data: A9a23: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
- CCyyhajjyiD6Rs=
-IronPort-HdrOrdr: A9a23:BvUWKKPORwb6esBcT2X155DYdb4zR+YMi2TDiHofdfUFSKClfp
- 6V8cjzjSWE9Qr4WBkb6LW90DHpewKTyXcH2/hsAV7EZnimhILIFvAs0WKG+VPd8kLFh5dgPM
- tbAstD4ZjLfCJHZKXBkUmF+rQbsaG6GcmT7I+0pRYMcegpUdAa0+4QMHfALqQcfngjOXNNLu
- v72iMxnUvGRZ14VLXYOlA1G8z44/HbnpPvZhALQzQ97hOVsD+u4LnmVzCFwxY3SVp0sPQf2F
- mAtza8yrSosvm9xBOZ/XTU9Y5qlNzozcYGLNCQi/ISNi7nhm+TFcZcsvy5zXUISdOUmREXee
- r30lEd1gNImirsl1SO0F/QMs/boW4TAjHZuASlaDDY0LPErXoBerR8bMRiA0bkAgMbzaFBOO
- gg5RPpi7NHSRzHhyjz/N7OSlVjkVe1u2MrlaoJg2VYSpZ2Us4akWUzxjIcLH47JlOw1GnnKp
- gbMOjMoPJNNV+KZXHQuWdihNSqQ3QoBx+DBkwPoNac3TRalG1wixJw/r1Sol4QsJYmD5VU7e
- XNNapl0LlIU88NdKp4QOMMW9G+BGDBSQ/FdGiSPVPkHqcaPG+lke+73JwloOWxPJAYxpo7n5
- rMFFteqG4pYkrrTdaD2ZVamyq9CVlVnQ6dvP22y6IJyIEUdYCbRhFrEmpe4PdIi89vd/HmZw
- ==
-X-IronPort-AV: E=Sophos;i="5.88,371,1635220800"; 
-   d="scan'208";a="63741857"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M7SE4XJZ9hs1Q/1VZ1IFNHIqs+pKEEyK7UnTTF324jkRDv0pMx7GKhR2u6w5RwmLsh6G2c1+iviRyoL2pGn4bVyAS65PWMSk1EuD/MTmULNQ7b11ESZjuH7GvvLbsROtxNncorMvKsUj56nrK+7txKQSwblCOomQtmZBz38Ztm91oR45dVYTJ/g6Z9a9JLoyJ4Ri6bqqKhF1iE005UzQtbOpCl0qDtFKbJO5Ns5UGptn9v2SWIj381eBzz9O8D35oS77HcF7naFfybKTNPuhZ5PKIvOpz/TSsVRlA/ls+Yd9SoZVoEMA50m03chzWu8zrJ2IhFoDtVkYPJ/fOIcBdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZsGJz/zqeFW0kApse61TcbMPkh/45bVmYyMkERKTPEE=;
- b=PAJyvH7Ymvhgg7dGp2MkH8QJHgU7m6X7HB2SPGrWW9ejwzuCciOzG9gvhfV4++sBxdG1ZczQ++fL8zH5T+XQ45x4GXxFbceSas/i0au5IRtD6wI0IUuj2ixqXx9khTvEqiLCzwcFwUsUeljJdRHS4p7M4KiXueLO+XPmauXJt1aNdgDYI3VSIqOSq2GhgOAxH/n15KKN6uY8PtS7fu2M4EO2BjOPyizvONmBCtl8+x1dFSMN1PVJu/FPmXd5cQx8wrDMjwIjjM5+ZMHmWL8RMPfNNPY/RbpekWLUnG3NFwnbWHiy+lGnFhH/MZBTqvaArAW5ddXsx0foq3pBYLJwrg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=citrix.com; dmarc=pass action=none header.from=citrix.com;
- dkim=pass header.d=citrix.com; arc=none
+        Tue, 15 Feb 2022 19:50:57 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0CBF9540
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 16:50:45 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id y129so1254168ybe.7
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 16:50:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=citrix.onmicrosoft.com; s=selector2-citrix-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZsGJz/zqeFW0kApse61TcbMPkh/45bVmYyMkERKTPEE=;
- b=owAh48HWG87bccfs2gK1LCw7dIJQW7WIvyTjP8NQ4g4kiOvsva8yj39zX/Uy0iR37TooEBcTmU/dCfgkHKh6fdAOhfelLBljnjCaZdQggY92UkKrnP/cImwqm9XqdhP3EeJcBE7rSicwAwi8QL3i9TsoxsgrUEd5cAXfU6hfbgI=
-From:   Andrew Cooper <Andrew.Cooper3@citrix.com>
-To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "antonio.gomez.iglesias@linux.intel.com" 
-        <antonio.gomez.iglesias@linux.intel.com>,
-        "neelima.krishnan@intel.com" <neelima.krishnan@intel.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
-Thread-Topic: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
-Thread-Index: AQHYIomkaZpoY39Ru0mq/0xDtsSYzayU7BOAgAAUwoCAAFWAAIAAApUA
-Date:   Wed, 16 Feb 2022 00:49:05 +0000
-Message-ID: <6724088f-c7cf-da92-e894-d8970f13bf1e@citrix.com>
-References: <5bd785a1d6ea0b572250add0c6617b4504bc24d1.1644440311.git.pawan.kumar.gupta@linux.intel.com>
- <YgqToxbGQluNHABF@zn.tnic>
- <20220214224121.ilhu23cfjdyhvahk@guptapa-mobl1.amr.corp.intel.com>
- <YgrltbToK8+tG2qK@zn.tnic>
- <20220215002014.mb7g4y3hfefmyozx@guptapa-mobl1.amr.corp.intel.com>
- <Ygt/QSTSMlUJnzFS@zn.tnic>
- <20220215121103.vhb2lpoygxn3xywy@guptapa-mobl1.amr.corp.intel.com>
- <YgvVcdpmFCCn20A7@zn.tnic>
- <20220215181931.wxfsn2a3npg7xmi2@guptapa-mobl1.amr.corp.intel.com>
- <YgwAHU7gCnik8Kv6@zn.tnic>
- <20220216003950.5jxecuf773g2kuwl@guptapa-mobl1.amr.corp.intel.com>
-In-Reply-To: <20220216003950.5jxecuf773g2kuwl@guptapa-mobl1.amr.corp.intel.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 07504cec-9414-4c67-18da-08d9f0e621f5
-x-ms-traffictypediagnostic: BN6PR03MB2964:EE_
-x-microsoft-antispam-prvs: <BN6PR03MB2964507D7023D870A8064524BA359@BN6PR03MB2964.namprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:913;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +DKkL1GoWtH6wXpPi2Hq8NzcPUA9S9tr879+13FZeh8dPpMQQQC98oLsQo87dtXoQ86ywpQSe1f2GMJcg1k+xUn5BjpiH1byFtwb9ffEHFRNfxYzD7PxS/6QXtYCt6XljH73b7u3aJEqEwy7L2I/pZgMnDYhK2cFnO17vGTgvWEheGyOlmCROkjrOY2N4PAgQVGRb4ZeZCPIyTJmCzDZQ/36tgS7GE/T8dC19cFgxayGrIu0Q72R6NuwjZFgnHErzxLTrg3sbFP6rSjDyJB+AI6aAhrvME4hQfRp+P+jCQyfL0C9Q0JkE8lqGNOmOytv7b8IJL3xhwefpl389PmUXeCReT4umKbB9Tc5+HgHKgPlZDUUX3Oe1VDPXndqdivKxhMOIN7WgaTv+qDErBO1NJnzMTujI9LGf3UIFPL/wdB87qGOjdc4DDO371rWcxZTX0OXPOt+GD0erZE2f4PIgkV21vaJLN+0t3FgWDEdSkVGjfN2hG/3+df4JkpAyXqgFEKT4A88DHzoMESJ9wUqb9wrzoNQptDEhzRbg5b/rKFDXydUetXl/zRReSRaanbAWA2Ft37NxdHs6GTU3WTnrY4n3GDc3q/5YMR/FjDsOvFhIQNyrYcOpOOeb2foqQHYNpDgXiTU0voo5ZhfY5CQqNfY7Xzxb9n08NhHyh6kS20lEp5lymmeWxa9ZO0KYBJqFVR8FIAf+rhHv6mEZrlIbg0cOLTuvFpf+gyVmKHPjCi4F9TptUcIO3W+RDPHDdoOqEUrSIT/nMZG2cK1QlnnY9ULyJJIWUL0EVX6q4AFRox1N2x88qxAv75H/rnhIKxZ+rAdw6giMy8qN02oJaM5/Xh/BuUzfdF6YVQ6DQi3nUo=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR03MB3623.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(316002)(53546011)(31696002)(64756008)(966005)(36756003)(66476007)(38070700005)(82960400001)(66446008)(8676002)(83380400001)(66556008)(4326008)(2906002)(86362001)(76116006)(122000001)(6506007)(6512007)(2616005)(508600001)(186003)(26005)(71200400001)(38100700002)(31686004)(7416002)(6486002)(91956017)(110136005)(54906003)(66946007)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?d2RHR1hxL3VjU3lVYUxURFp3TG5iLytGTUgwaXFKMkVBczZpcTg3NngwcElC?=
- =?utf-8?B?RnNTb01tM0ZmQWxzQnRob2VuSlVkaWtKalRVZHFHL3Ria1BVOFo0RUVSUUlY?=
- =?utf-8?B?YVBYVkh4ejdjM3hXeEE3YVF6QUN0Q24vbWJ2YkNZeVY0Mms1ODNtcTU3Zk1G?=
- =?utf-8?B?MVBwOGtSeUxTaGMyRFdjUkYyamtqcVI2Rk12TmZsRkFxTnQzeGRDWnJZem9o?=
- =?utf-8?B?MDJyNDNVSEhsNFFoRGk4elNrd0RIZmFKek1scmY4L2VQSEpiNlFjeTdYYk05?=
- =?utf-8?B?SDFGbVc4Mm1UWGErT1YrRzRqOWY5YmJNQW5SRmMrRmZIbGNvMVBzazZhd2Jm?=
- =?utf-8?B?QkZmeHZDcHV6T0hLeFFJUjFiaktLdGNTWklEMm1EQkQ3SmYvVTlxV1BGTmVi?=
- =?utf-8?B?ZU95Kzk4Y1d5dzRQTUMzNGRxNTBkOEUrMHVsREhuMWNMRkUwYktLOVFDVDEv?=
- =?utf-8?B?RHVxNkZJRHBiQTVTZHhWMEZiS3N0RmRmU0Uxak8vOHFOUnFxbit3cTc0V0VX?=
- =?utf-8?B?WTI3YXl5Rlc5TTBJdDR5ckhYYnRNOG1rYVp4aTJDZXFEOG5KSHBtc0RoZFBt?=
- =?utf-8?B?NmtCeXN6NDh5b2RZektqa0VkN2F5akVYQnZDKytvcWd0TzlVUFN4OCtNQ2xm?=
- =?utf-8?B?UDVpd1JnSUJVRzVNczV1Z1BzYTlyWUlLN3Vqb3RWaFc1K1hUcisxRk8zR3Fq?=
- =?utf-8?B?K3FVNkdtWkpTYlZBVXVTcHZtb0t0eS8vUk1zTlRHQStzdlgzbnFRLzB6cUdL?=
- =?utf-8?B?dG5yc1pDeWtJRWh2cUNUOWZvWGFlTHUwNDNNMG53bGNsV0VwSEppQ1Foa3ZI?=
- =?utf-8?B?dFRxM3gxZEFScWtzeldFNmFSWEJHZlZXeHE4dTdCWVNoZGdxbzBrL256eWJI?=
- =?utf-8?B?YVJpUU43dU5UV2FwQ1dRTDZCVmp2a3BnZkYwZTBpOFpKYWNndGx2VmZzVDZT?=
- =?utf-8?B?aUxiQks3QUJwbkNnUjMySDBHMzdyc21leElpRklaSE9zMzZPMFVleEx4cVZW?=
- =?utf-8?B?OUpJcEV6RHIrZTVKQ1h1bkhiUVpvMlF1STE4SXRIc0hsc1NnSmJRdGIvYUFk?=
- =?utf-8?B?VXlYeEtFMEJ4YUd6RjFXalBqSzhrN1A4a0xHd0tsS3l5b0djS0FmcmxmZG9o?=
- =?utf-8?B?WkZvYjViSVlkZm9JL2E5ZDFsc21uOUcvRUlMN25rakJCYVgvUXJUUnJCcXBH?=
- =?utf-8?B?SGpwcDY3bkF3azBQRTlzVWxLek1WODFSZktLNVQ3ZjNIRVBkODZOSHUwRlVs?=
- =?utf-8?B?ODI4Qy93L1ZWekc2Wlp5T0o2RGhpTHNlbFYzT3d1YUZFaVZ2RTE2SElsS0Rp?=
- =?utf-8?B?OUszWm9Oa0pHc3Zoc0NyNE5LZVZkSEliYlVoUnBnUGQ4b2pHT2xOak96cHp4?=
- =?utf-8?B?ZEYrYlFkZ0crL2FzSWpHaXZ0cHl0Z29uVFRHdDluWWt6cTVrZ1pIY0xXUnQ2?=
- =?utf-8?B?NVZBbGlzMnBiMnNaUTVkUDFNMkFGNndiVWhBbGFyNllXQWlUYzBYVW8yb0hE?=
- =?utf-8?B?VGNwSERHRTBRQ043eVgwZVpOOWVCN1RZdjFvcEFpTGtwOTRSU21zbEYrQnJy?=
- =?utf-8?B?N1l2TmwzUGZYMDBVVTgvZXJPZWJZVjNqRHl0ZXJXMDNQLy9zM0Q4bEo0MzVy?=
- =?utf-8?B?OVA4VmNaZDRreURsMm05VnBpVUNLb2NjWW1lYUpxQmdKdWtGek5ScE9vbDYr?=
- =?utf-8?B?MUlUUVF3aGdLbnV1ZDJpTm5LYUFBeUpFYjlnd0ZpbnNWVS91Q2hsKzc4Wmhn?=
- =?utf-8?B?NzFmdFY0OHZaZERrOGk3WTJlbENEU2F5YXNuTm51aUtzNnpxSVNqVmRrQjhJ?=
- =?utf-8?B?bmsybFBEbG93c3ZOUDZmWE1DUEVwZkRMS2M4aVdRZzRVRFlWdlo2MExOOTZ6?=
- =?utf-8?B?dnV3eW5weVE0Z2VOQ0hNaldLS3FzZGUzeG43VEd1WnF5dTlhcEUyRWpZM2lO?=
- =?utf-8?B?bEsrLzBmOEtmWXFoSGo3d3N6Z3VZd0c5V3NBdm5jSHZ5c2cwUDhOVEdHRnJm?=
- =?utf-8?B?SEZPM3JjMGRFVTVjRjRRc3hkTjlRaU1UTERMbG9GSlV4bnYyUTd0d0lSMUxZ?=
- =?utf-8?B?bjB5d2RWNDRtQ2F0QnBWMEk1aUpWdzc3SWo4MGtnY28vcnVwM3Y2aktRalQr?=
- =?utf-8?B?VEhUVFJGVyswYkhYcElMOFJTL09GWDNRdUVZajhqVmdPNy9KRHo4ZXEvSmU0?=
- =?utf-8?B?bGw3TXRyZWgzczJtT3JLelN4NFVZSWhFanFZWWI4UTN4U1kyTllkMDlTRDV6?=
- =?utf-8?B?ZHdwdG1uWEE4Ti9KdnFMWjlDN3JnPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FE937346612BBD4EAA211AF3C36CD1FD@namprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=18yu/FZC6YEfqqlag7jyriW5vrB8+cTbyqFvDzZCLG8=;
+        b=m5LQ24g7yrUGMPrnK27dqe7h8K7PMML+kc3AYdjuLbCttuSnZSjrFawQgnI8h8+h1l
+         QHs3tnwESiGMBTpQjgxnWPdVydoP9FV7bIXyTkN6uNw1Pzl53BKxnOwqjHf0jDfFwkyK
+         kLObIYhW7r6uO/+vuUqzoiBQF6D0T2vJp00PU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=18yu/FZC6YEfqqlag7jyriW5vrB8+cTbyqFvDzZCLG8=;
+        b=tCn2eOovMqEZtJN1fdGvrHAwIrr+kX/oTO3YYNRcgMoChwv2qFfjHtE58nAkfVZ+7Y
+         aG424lZbWQcmN6qIZdqStezg+n3n8I35My4RQmTnx7d9d9+Z4jveLz1vHCgd1f9HnPQU
+         GLhm169X/fkAbgFoSjz+F6HHfKng/L3SJ43GjJKXztEioF2YaWPxaMIP3xdUV4qs1mqS
+         FfK2y3wXTwGkJedxeXyS2NDWZBSPyuNVic0Wc7bfw3YmA5FDmkMH8osbTOuVMHBqw5X4
+         7y3OV2ToAA8smwNdTmmnEAjZ8YR7NnD21hyMPD/e8bCioa7rNLBv3P8ID3j1T5bRxJkA
+         nmug==
+X-Gm-Message-State: AOAM532n6mfQ1hzSNfjOPUzVg+2QcTdtv3TxSftQOq+eBSiKTG5RMjJ2
+        C8+q7qpgFogds+zzp4QjE5sU0TOypBi/0LqvgCV6
+X-Google-Smtp-Source: ABdhPJx67wiA2c7TRCt7KLNgmAukw1N2cuPI35FME1jEWpQi813t8VWMQWQ8NWmSSyx+WjEjM8rWelbT5PIMS9p4jHE=
+X-Received: by 2002:a25:9388:0:b0:61d:6ff8:6472 with SMTP id
+ a8-20020a259388000000b0061d6ff86472mr194270ybm.121.1644972644540; Tue, 15 Feb
+ 2022 16:50:44 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR03MB3623.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07504cec-9414-4c67-18da-08d9f0e621f5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2022 00:49:05.1553
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 335836de-42ef-43a2-b145-348c2ee9ca5b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RDiPGVxLxYClIDmhezy77sxFMm6ReRlDZCRnazylsKWFs+Avqk0TZgvnE0u1/juue8KGyvhmlbuv1b2IIbH/CpIuRXjarYg0DPzcGBPzmYk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR03MB2964
-X-OriginatorOrg: citrix.com
+References: <20220210054947.170134-1-apatel@ventanamicro.com> <20220210054947.170134-2-apatel@ventanamicro.com>
+In-Reply-To: <20220210054947.170134-2-apatel@ventanamicro.com>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Tue, 15 Feb 2022 16:50:33 -0800
+Message-ID: <CAOnJCUKyzY_DNWqm32so0MOBcii1QCfF4KTq35Y06erALNx8Ug@mail.gmail.com>
+Subject: Re: [PATCH v11 1/8] RISC-V: Enable CPU_IDLE drivers
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Sandeep Tripathy <milun.tripathy@gmail.com>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Liush <liush@allwinnertech.com>,
+        Anup Patel <anup@brainfault.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        kvm-riscv@lists.infradead.org, Guo Ren <guoren@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMTYvMDIvMjAyMiAwMDozOSwgUGF3YW4gR3VwdGEgd3JvdGU6DQo+IE9uIDE1LjAyLjIwMjIg
-MjA6MzMsIEJvcmlzbGF2IFBldGtvdiB3cm90ZToNCj4+IE9uIFR1ZSwgRmViIDE1LCAyMDIyIGF0
-IDEwOjE5OjMxQU0gLTA4MDAsIFBhd2FuIEd1cHRhIHdyb3RlOg0KPj4+IEkgYWRtaXQgaXQgaGFz
-IGdvdHRlbiBjb21wbGljYXRlZCB3aXRoIHNvIG1hbnkgYml0cyBhc3NvY2lhdGVkIHdpdGgNCj4+
-PiBUU1guDQo+Pg0KPj4gWWFoLCBhbmQgbG9va2EgaGVyZToNCj4+DQo+PiBodHRwczovL2dpdGh1
-Yi5jb20vYW5keWhocC94ZW4vY29tbWl0L2FkOWY3YzNiMmUwZGYzOGFkNmQ1NGY0NzY5ZDRkY2Nm
-NzY1ZmJjZWUNCj4+DQo+Pg0KPj4gSXQgc2VlbXMgaXQgaXNuJ3QgY29tcGxpY2F0ZWQgZW5vdWdo
-LiA7LVwNCj4+DQo+PiBBbmR5IGp1c3QgbWFkZSBtZSBhd2FyZSBvZiB0aGlzIHRoaW5nIHdoZXJl
-IHlvdSBndXlzIGhhdmUgYWRkZWQgYSBuZXcNCj4+IE1TUiBiaXQ6DQo+Pg0KPj4gTVNSX01DVV9P
-UFRfQ1RSTFsxXSB3aGljaCBpcyBjYWxsZWQgc29tZXRoaW5nIGxpa2UNCj4+IE1DVV9PUFRfQ1RS
-TF9SVE1fQUxMT1cgb3Igc28uDQo+DQo+IFJUTV9BTExPVyBiaXQgd2FzIGFkZGVkIHRvIE1TUl9N
-Q1VfT1BUX0NUUkwsIGJ1dCBpdHMgbm90IHNldCBieSBkZWZhdWx0LA0KPiBhbmQgaXQgaXMgKm5v
-dCogcmVjb21tZW5kZWQgdG8gYmUgdXNlZCBpbiBwcm9kdWN0aW9uIGRlcGxveW1lbnRzIFsxXToN
-Cj4NCj4gwqAgQWx0aG91Z2ggTVNSIDB4MTIyIChUU1hfQ1RSTCkgYW5kIE1TUiAweDEyMyAoSUEz
-Ml9NQ1VfT1BUX0NUUkwpIGNhbiBiZQ0KPiDCoCB1c2VkIHRvIHJlZW5hYmxlIEludGVsIFRTWCBm
-b3IgZGV2ZWxvcG1lbnQsIGRvaW5nIHNvIGlzIG5vdCByZWNvbW1lbmRlZA0KPiDCoCBmb3IgcHJv
-ZHVjdGlvbiBkZXBsb3ltZW50cy4gSW4gcGFydGljdWxhciwgYXBwbHlpbmcgTURfQ0xFQVIgZmxv
-d3MgZm9yDQo+IMKgIG1pdGlnYXRpb24gb2YgdGhlIEludGVsIFRTWCBBc3luY2hyb25vdXMgQWJv
-cnQgKFRBQSkgdHJhbnNpZW50DQo+IGV4ZWN1dGlvbg0KPiDCoCBhdHRhY2sgbWF5IG5vdCBiZSBl
-ZmZlY3RpdmUgb24gdGhlc2UgcHJvY2Vzc29ycyB3aGVuIEludGVsIFRTWCBpcw0KPiDCoCBlbmFi
-bGVkIHdpdGggdXBkYXRlZCBtaWNyb2NvZGUuIFRoZSBwcm9jZXNzb3JzIGNvbnRpbnVlIHRvIGJl
-IG1pdGlnYXRlZA0KPiDCoCBhZ2FpbnN0IFRBQSB3aGVuIEludGVsIFRTWCBpcyBkaXNhYmxlZC4N
-Cg0KVGhlIHB1cnBvc2Ugb2Ygc2V0dGluZyBSVE1fQUxMT1cgaXNuJ3QgdG8gZW5hYmxlIFRTWCBw
-ZXIgc2F5Lg0KDQpUaGUgcHVycG9zZSBpcyB0byBtYWtlIE1TUl9UU1hfQ1RSTC5SVE1fRElTQUJM
-RSBiZWhhdmVzIGNvbnNpc3RlbnRseSBvbg0KYWxsIGhhcmR3YXJlLCB3aGljaCByZWR1Y2VzIHRo
-ZSBjb21wbGV4aXR5IGFuZCBpbnZhc2l2ZW5lc3Mgb2YgZGVhbGluZw0Kd2l0aCB0aGlzIHNwZWNp
-YWwgY2FzZSwgYmVjYXVzZSB0aGUgVEFBIHdvcmthcm91bmQgd2lsbCBzdGlsbCB0dXJuIFRTWA0K
-b2ZmIGJ5IGRlZmF1bHQuDQoNClRoZSBjb25maWd1cmF0aW9uIHlvdSBkb24ndCB3YW50IHRvIGJl
-IHJ1bm5pbmcgd2l0aCBpcyBSVE1fQUxMT1cgJiYNCiFSVE1fRElTQUJMRSwgYmVjYXVzZSB0aGF0
-IGlzICJzdGlsbCB2dWxuZXJhYmxlIHRvIFRTWCBBc3luYyBBYm9ydCIuDQoNCn5BbmRyZXcNCg==
+On Wed, Feb 9, 2022 at 9:50 PM Anup Patel <apatel@ventanamicro.com> wrote:
+>
+> From: Anup Patel <anup.patel@wdc.com>
+>
+> We force select CPU_PM and provide asm/cpuidle.h so that we can
+> use CPU IDLE drivers for Linux RISC-V kernel.
+>
+> Signed-off-by: Anup Patel <anup.patel@wdc.com>
+> Signed-off-by: Anup Patel <apatel@vetanamicro.com>
+> Reviewed-by: Guo Ren <guoren@kernel.org>
+> ---
+>  arch/riscv/Kconfig                |  7 +++++++
+>  arch/riscv/configs/defconfig      |  1 +
+>  arch/riscv/configs/rv32_defconfig |  1 +
+>  arch/riscv/include/asm/cpuidle.h  | 24 ++++++++++++++++++++++++
+>  arch/riscv/kernel/process.c       |  3 ++-
+>  5 files changed, 35 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/riscv/include/asm/cpuidle.h
+>
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index 5adcbd9b5e88..76976d12b463 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -46,6 +46,7 @@ config RISCV
+>         select CLONE_BACKWARDS
+>         select CLINT_TIMER if !MMU
+>         select COMMON_CLK
+> +       select CPU_PM if CPU_IDLE
+>         select EDAC_SUPPORT
+>         select GENERIC_ARCH_TOPOLOGY if SMP
+>         select GENERIC_ATOMIC64 if !64BIT
+> @@ -547,4 +548,10 @@ source "kernel/power/Kconfig"
+>
+>  endmenu
+>
+> +menu "CPU Power Management"
+> +
+> +source "drivers/cpuidle/Kconfig"
+> +
+> +endmenu
+> +
+>  source "arch/riscv/kvm/Kconfig"
+> diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+> index f120fcc43d0a..a5e0482a4969 100644
+> --- a/arch/riscv/configs/defconfig
+> +++ b/arch/riscv/configs/defconfig
+> @@ -20,6 +20,7 @@ CONFIG_SOC_SIFIVE=y
+>  CONFIG_SOC_VIRT=y
+>  CONFIG_SMP=y
+>  CONFIG_HOTPLUG_CPU=y
+> +CONFIG_CPU_IDLE=y
+>  CONFIG_VIRTUALIZATION=y
+>  CONFIG_KVM=m
+>  CONFIG_JUMP_LABEL=y
+> diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
+> index 8b56a7f1eb06..d1b87db54d68 100644
+> --- a/arch/riscv/configs/rv32_defconfig
+> +++ b/arch/riscv/configs/rv32_defconfig
+> @@ -20,6 +20,7 @@ CONFIG_SOC_VIRT=y
+>  CONFIG_ARCH_RV32I=y
+>  CONFIG_SMP=y
+>  CONFIG_HOTPLUG_CPU=y
+> +CONFIG_CPU_IDLE=y
+>  CONFIG_VIRTUALIZATION=y
+>  CONFIG_KVM=m
+>  CONFIG_JUMP_LABEL=y
+> diff --git a/arch/riscv/include/asm/cpuidle.h b/arch/riscv/include/asm/cpuidle.h
+> new file mode 100644
+> index 000000000000..71fdc607d4bc
+> --- /dev/null
+> +++ b/arch/riscv/include/asm/cpuidle.h
+> @@ -0,0 +1,24 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2021 Allwinner Ltd
+> + * Copyright (C) 2021 Western Digital Corporation or its affiliates.
+> + */
+> +
+> +#ifndef _ASM_RISCV_CPUIDLE_H
+> +#define _ASM_RISCV_CPUIDLE_H
+> +
+> +#include <asm/barrier.h>
+> +#include <asm/processor.h>
+> +
+> +static inline void cpu_do_idle(void)
+> +{
+> +       /*
+> +        * Add mb() here to ensure that all
+> +        * IO/MEM accesses are completed prior
+> +        * to entering WFI.
+> +        */
+> +       mb();
+> +       wait_for_interrupt();
+> +}
+> +
+> +#endif
+> diff --git a/arch/riscv/kernel/process.c b/arch/riscv/kernel/process.c
+> index 03ac3aa611f5..504b496787aa 100644
+> --- a/arch/riscv/kernel/process.c
+> +++ b/arch/riscv/kernel/process.c
+> @@ -23,6 +23,7 @@
+>  #include <asm/string.h>
+>  #include <asm/switch_to.h>
+>  #include <asm/thread_info.h>
+> +#include <asm/cpuidle.h>
+>
+>  register unsigned long gp_in_global __asm__("gp");
+>
+> @@ -37,7 +38,7 @@ extern asmlinkage void ret_from_kernel_thread(void);
+>
+>  void arch_cpu_idle(void)
+>  {
+> -       wait_for_interrupt();
+> +       cpu_do_idle();
+>         raw_local_irq_enable();
+>  }
+>
+> --
+> 2.25.1
+>
+
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
+
+
+-- 
+Regards,
+Atish
