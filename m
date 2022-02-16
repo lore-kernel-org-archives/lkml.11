@@ -2,104 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCAC2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236159AbiBPQMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:12:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51448 "EHLO
+        id S236013AbiBPQNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:13:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236139AbiBPQL5 (ORCPT
+        with ESMTP id S234414AbiBPQNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:11:57 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309DA60041
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:11:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645027905; x=1676563905;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QiEFimDzeKGWwLXx9r2Bgeshi0IgC4yuwUNyNN4cbws=;
-  b=aasuoVh5IayuU8+Gq2ImQDSgEdbjtGQ3Pw3M3panBZNt0ax1L0IdM+DP
-   RPZJKLQcLSCgESWLogLfTetSK+ajMEd9WZKRXT2nwMcVRt56E4e5bjoXh
-   FbOScAwTh06J+nRTZoTLIZ5ixxdSrhtJW+FXcs/nBMECM+xb85hYJHM9u
-   2bUhmyVYPR8A0TXGlDUBpqr2BccB+jrptQamYvP+cuyQDbRZttaI6yirJ
-   q8Ze0URgS/bDchhqpBOXCgIKwNk5b7y4/1bPK3eM2GcjsGC+hURmo8FzY
-   Og/UhBTW4/rnLcHpCrgtkNT2lQU7D2RSWwihoRjKd/wtri791KBaFCX7x
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="231281805"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="231281805"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 08:11:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="571354112"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 16 Feb 2022 08:11:42 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKMu6-000Avw-Ah; Wed, 16 Feb 2022 16:11:42 +0000
-Date:   Thu, 17 Feb 2022 00:10:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vadim Pasternak <vadimp@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: [jpirko-mlxsw:jiri_devel_linecards 29/43]
- drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:898:23: error:
- initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka
- 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from
- incompatible pointer type 'void (*)(struct ml...
-Message-ID: <202202170026.mb9LyVVk-lkp@intel.com>
+        Wed, 16 Feb 2022 11:13:09 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE62E0AE9
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:12:55 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id f17so4786375edd.2
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:12:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JbPJ3n5RfOCMAbabRRWgoVSNDfOSeOFNd1MQ9EnXwM4=;
+        b=pC52/Sf3+x/HEtc4q5aCHZJ1FWX7NmmIZXZMex1YSTqhzRovMr5YCowtF7juLMEcck
+         ReYIzWkhCLkS3ECXeHHYgN0Y9ttiWbhnPOTAZGteOYHx86kC56CVi1hQTYJjpSd8/lri
+         /NYi3F6S4F2de5IWONPJi4HkO7MB/g2Kx5Zmmt9uIhArB28YmtUE+PKLyidKPFrIM3C4
+         DPAKTNdxHLNy2J9vDn7cGfiWpzyXWW997NEAKC4W8F7GuIl6p9DlxHyEX4xyTCX3YLRC
+         Ko32/ozfoMc/57SOqyVE9e+M47KiZau2Q/Cdo4Er/H0ekkoeWckWu87jj/qrO8vj5R3l
+         cpBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JbPJ3n5RfOCMAbabRRWgoVSNDfOSeOFNd1MQ9EnXwM4=;
+        b=oQKynu78CSR+YrPCYxLg0Rj2r0Z+Nj1m0eV2Rx7hfXuptQCqOqZhs22/+m8SbVlity
+         qe7w3Ogl3JHIHIU8Jko9lcX/1md9AmvHh8Cwn4FT3jxSc20k9bnpJcaXErfBJYHMeIXj
+         8Z7TsK3VF8sqwHAOM1LgF5WNY7DZG62A8CR9I/tlZsrQ8NWMVaWrEVEFIZdpJiqY/cBr
+         5X+4wy8yVQAKOfQjzlUUWRvWLeOk2tdRnmn+7syiP6GWW9Y8V92MPE3XBr4WqX/01bWJ
+         wh22BI/P3hJh/QDyB06o+zWAAsB4BnZVnXRfILYfB6IwoKsBLh2sosD4X3NyrG6YSIdF
+         PJpA==
+X-Gm-Message-State: AOAM5331sGzXuMU3HkitjDT6Ll8e+O/CsrnHTZmaWkmGNS5gJNFvqAsr
+        D64to56N5epyISJMyUtmxhdZzBkXzXWbwmx+g6Zelw==
+X-Google-Smtp-Source: ABdhPJy1a0u1XwoRZpKXxj1eL9juRcpeRxgjfgjoaYfDrYGvnCCZvt02pHQy1VA0jNtAteH0353up6Iuv2xxrq7kNBI=
+X-Received: by 2002:a05:6402:84b:b0:40f:73ea:c3c1 with SMTP id
+ b11-20020a056402084b00b0040f73eac3c1mr3684618edz.169.1645027973442; Wed, 16
+ Feb 2022 08:12:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220216062601.779690-1-ztong0001@gmail.com>
+In-Reply-To: <20220216062601.779690-1-ztong0001@gmail.com>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Wed, 16 Feb 2022 08:12:42 -0800
+Message-ID: <CABXOdTcZoGy3w_aVPju0DLr+Ab0C8XUsMs0+XsTW0QacR53iug@mail.gmail.com>
+Subject: Re: [PATCH] platform/chrome: cros_ec: honor acpi=off
+To:     Tong Zhang <ztong0001@gmail.com>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
-head:   5cb021512c3be7e03591497caeab474ecccfcd21
-commit: 0733fff985b276239955edfc5a42e929eced7437 [29/43] mlxsw: core_hwmon: Add interfaces for line card initialization and de-initialization
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220217/202202170026.mb9LyVVk-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/0733fff985b276239955edfc5a42e929eced7437
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
-        git checkout 0733fff985b276239955edfc5a42e929eced7437
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
+On Tue, Feb 15, 2022 at 10:26 PM Tong Zhang <ztong0001@gmail.com> wrote:
+>
+> when acpi=off is provided in bootarg, kernel crash with
+>
+>  BUG: kernel NULL pointer dereference, address: 0000000000000018
+>  RIP: 0010:acpi_ns_walk_namespace+0x57/0x280
+>   <TASK>
+>  ? acpi_get_devices+0x140/0x140
+>  cros_ec_lpc_init+0x25/0x100
+>
+> Driver should check if ACPI is disabled before calling acpi_get_devices(),
+> otherwise acpi_walk_namespace() will dereference null pointer since the
+> acpi_gbl_root_node is not initialized.
+> This is a common pattern and should be fixed in ACPI framework to prevent
+> such crash in the future, but since many drivers are already doing explicit
+> check(acpi_disable) we do the same thing here.
+>
+> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+> ---
+>  drivers/platform/chrome/cros_ec_lpc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
+> index d6306d2a096f..95412a55ed8d 100644
+> --- a/drivers/platform/chrome/cros_ec_lpc.c
+> +++ b/drivers/platform/chrome/cros_ec_lpc.c
+> @@ -550,6 +550,9 @@ static int __init cros_ec_lpc_init(void)
+>         int ret;
+>         acpi_status status;
+>
+> +       if (acpi_disable)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+acpi_disabled ?
 
-All errors (new ones prefixed by >>):
+One does wonder why anyone would disable ACPI on any of the supported
+systems, but in either case this is wrong. The driver should not abort
+if acpi is disabled but just not call acpi_get_devices().
 
->> drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:898:23: error: initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from incompatible pointer type 'void (*)(struct mlxsw_core *, u8,  const struct mlxsw_linecard *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  const struct mlxsw_linecard *, void *)'} [-Werror=incompatible-pointer-types]
-     898 |         .got_active = mlxsw_hwmon_got_active,
-         |                       ^~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:898:23: note: (near initialization for 'mlxsw_hwmon_event_ops.got_active')
-   drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:899:25: error: initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from incompatible pointer type 'void (*)(struct mlxsw_core *, u8,  const struct mlxsw_linecard *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  const struct mlxsw_linecard *, void *)'} [-Werror=incompatible-pointer-types]
-     899 |         .got_inactive = mlxsw_hwmon_got_inactive,
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:899:25: note: (near initialization for 'mlxsw_hwmon_event_ops.got_inactive')
-   cc1: some warnings being treated as errors
+Guenter
 
-
-vim +898 drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
-
-   896	
-   897	static struct mlxsw_linecards_event_ops mlxsw_hwmon_event_ops = {
- > 898		.got_active = mlxsw_hwmon_got_active,
-   899		.got_inactive = mlxsw_hwmon_got_inactive,
-   900	};
-   901	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +               return -ENODEV;
+> +
+>         status = acpi_get_devices(ACPI_DRV_NAME, cros_ec_lpc_parse_device,
+>                                   &cros_ec_lpc_acpi_device_found, NULL);
+>         if (ACPI_FAILURE(status))
+> --
+> 2.25.1
+>
