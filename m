@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE922C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232916AbiBPL4D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 06:56:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50482 "EHLO
+        id S232871AbiBPL4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 06:56:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232859AbiBPLzu (ORCPT
+        with ESMTP id S232850AbiBPLzt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 06:55:50 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04B326724C
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 03:55:38 -0800 (PST)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JzGWQ3CbjzZfh2;
-        Wed, 16 Feb 2022 19:51:14 +0800 (CST)
+        Wed, 16 Feb 2022 06:55:49 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E187226724A
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 03:55:37 -0800 (PST)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JzGZZ181wz9sgD;
+        Wed, 16 Feb 2022 19:53:58 +0800 (CST)
 Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Feb 2022 19:55:36 +0800
+ 15.1.2308.21; Wed, 16 Feb 2022 19:55:35 +0800
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
  dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -33,12 +33,10 @@ To:     <linuxppc-dev@lists.ozlabs.org>, <mpe@ellerman.id.au>,
 CC:     <akpm@linux-foundation.org>, <npiggin@gmail.com>,
         <christophe.leroy@csgroup.eu>, <songyuanzheng@huawei.com>,
         Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v4 2/2] powerpc: Fix virt_addr_valid() check
-Date:   Wed, 16 Feb 2022 20:11:08 +0800
-Message-ID: <20220216121109.157605-2-wangkefeng.wang@huawei.com>
+Subject: [PATCH v4 1/2] Revert "powerpc: Set max_mapnr correctly"
+Date:   Wed, 16 Feb 2022 20:11:07 +0800
+Message-ID: <20220216121109.157605-1-wangkefeng.wang@huawei.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220216121109.157605-1-wangkefeng.wang@huawei.com>
-References: <20220216121109.157605-1-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -50,66 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When run ethtool eth0 on PowerPC64, the BUG occurred,
+This reverts commit 602946ec2f90d5bd965857753880db29d2d9a1e9.
 
-  usercopy: Kernel memory exposure attempt detected from SLUB object not in SLUB page?! (offset 0, size 1048)!
-  kernel BUG at mm/usercopy.c:99
-  ...
-  usercopy_abort+0x64/0xa0 (unreliable)
-  __check_heap_object+0x168/0x190
-  __check_object_size+0x1a0/0x200
-  dev_ethtool+0x2494/0x2b20
-  dev_ioctl+0x5d0/0x770
-  sock_do_ioctl+0xf0/0x1d0
-  sock_ioctl+0x3ec/0x5a0
-  __se_sys_ioctl+0xf0/0x160
-  system_call_exception+0xfc/0x1f0
-  system_call_common+0xf8/0x200
+If CONFIG_HIGHMEM enabled, highmem will be disappeared with max_mapnr
+set to max_low_pfn, see mem_init(), 
 
-The code shows below,
+  for (pfn = highmem_mapnr; pfn < max_mapnr; ++pfn) {
+        ...
+	free_highmem_page();
+  }
 
-  data = vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN));
-  copy_to_user(useraddr, data, gstrings.len * ETH_GSTRING_LEN))
+Revert it and will fix virt_addr_valid() check in the next patch.
 
-The data is alloced by vmalloc(), virt_addr_valid(ptr) will return true
-on PowerPC64, which leads to the panic.
-
-As commit 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va
-and __pa addresses") does, make sure the virt addr above PAGE_OFFSET in
-the virt_addr_valid() for PowerPC64, also add upper limit check to make
-sure the virt is below high_memory.
-
-Meanwhile, for PowerPC32 PAGE_OFFSET is the virtual address of the start
-of lowmem, high_memory is the upper low virtual address, the check is
-suitable for PowerPC32, this will fix the issue mentioned in commit
-602946ec2f90 ("powerpc: Set max_mapnr correctly") too.
-
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+Fixes: 602946ec2f90 ("powerpc: Set max_mapnr correctly")
 Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
 v4:
-- add upper limit check
-v3:
-- update changelog and remove a redundant cast
- arch/powerpc/include/asm/page.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+- new patch
+ arch/powerpc/mm/mem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
-index 254687258f42..7a1ba27a7285 100644
---- a/arch/powerpc/include/asm/page.h
-+++ b/arch/powerpc/include/asm/page.h
-@@ -132,7 +132,11 @@ static inline bool pfn_valid(unsigned long pfn)
- #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
- #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
+diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
+index 8e301cd8925b..4d221d033804 100644
+--- a/arch/powerpc/mm/mem.c
++++ b/arch/powerpc/mm/mem.c
+@@ -255,7 +255,7 @@ void __init mem_init(void)
+ #endif
  
--#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
-+#define virt_addr_valid(vaddr)	({					\
-+	unsigned long _addr = (unsigned long)vaddr;			\
-+	_addr >= PAGE_OFFSET && _addr < (unsigned long)high_memory &&	\
-+	pfn_valid(virt_to_pfn(_addr));					\
-+})
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+-	set_max_mapnr(max_low_pfn);
++	set_max_mapnr(max_pfn);
  
- /*
-  * On Book-E parts we need __va to parse the device tree and we can't
+ 	kasan_late_init();
+ 
 -- 
 2.26.2
 
