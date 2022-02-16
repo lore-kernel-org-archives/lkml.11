@@ -2,953 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 677A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA419C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229686AbiBPHIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:08:47 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42244 "EHLO
+        id S229740AbiBPHNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:13:07 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiBPHIo (ORCPT
+        with ESMTP id S229599AbiBPHNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:08:44 -0500
-Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26382557A2;
-        Tue, 15 Feb 2022 23:08:16 -0800 (PST)
-Received: by mail-oo1-xc31.google.com with SMTP id o192-20020a4a2cc9000000b00300af40d795so1462135ooo.13;
-        Tue, 15 Feb 2022 23:08:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AEzli4abNeZGgC8Rfd//hwt4EvmKIIeqWGpaHW8Rs3g=;
-        b=EjZpfwalv6QzCQBvE7jJdSw3lTDglQbSfR8LOwSkNeXNnEzuRci0pbcYGW51jms3MI
-         OCc6FXxgNR2ubkPUCvKqB4SNIpWk+P9KF5gXzLxM1BNqdOPF3vN+dIWN6t2vrTluKvpK
-         w3472GPRgfNE5QS4VnaqvuxReZ95VaOJOeNtLRdGqZIm6r3MW+6onVbeFtuLxy3zD6TL
-         GjXDZZNkybAxYvI72nI368MrbEgdJs2vkHi+WPSpin1RSdJP5krS0Nz3FgV4FOtZ5LoU
-         Tgyw/DUYe7hGV0B0zINo8CQwRG760PXw0yP5uLXIUwGZL1I6u+sY+wQTpWjppM41WNIi
-         97+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=AEzli4abNeZGgC8Rfd//hwt4EvmKIIeqWGpaHW8Rs3g=;
-        b=3MMjJiKwDmvWQNHs6UQGzFPbyTbeLYyaNSqElkA3D3FqAwE5eNma3dvGeYzVr8Xk8U
-         csa/Eq/U4KSUtCVDOtpuNqVDctJI8Q9HXzZWP8n5KoWdlH6mVSeJJFQbG5ru1Ice53L1
-         qfG/QPcQdeOP6t+cVix3pxHoqfBxo+8pXPUdACE1drrvbAcwHYvQIBGTtm9lYhPDPreP
-         RLyY8wXK4nws6CRFPZh64+xMz798pO+I32oAw1e+GTs6obbiObVqaSoh/rbPYFKxL8xv
-         2yeoQWwz4zqLHspBAwgk/yrDAiDj3jPE4S0ESUnCZCF2zGO4doDUOtX4u1FUWUXiMtFB
-         4Alg==
-X-Gm-Message-State: AOAM531OKafx0CjdQs2xu0iSePlqQ7UOGks/vyqthqpNltOqOBXpt+CN
-        lTsTm0ryGrHPGEIcw3nuFmJjoVPwH/hnLQ==
-X-Google-Smtp-Source: ABdhPJwW362KxDbvw9f92Bm/3fpzNI5QqdZTusuVOuuq17mxA/Lsarj95163XTWX0r1CWBp+kYSGTw==
-X-Received: by 2002:a05:6870:c189:b0:ce:c0c9:651 with SMTP id h9-20020a056870c18900b000cec0c90651mr51738oad.163.1644995246878;
-        Tue, 15 Feb 2022 23:07:26 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id z17sm14427081otk.62.2022.02.15.23.07.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 23:07:26 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     linux-hwmon@vger.kernel.org
-Cc:     Agathe Porte <agathe.porte@nokia.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Adamski <krzysztof.adamski@nokia.com>
-Subject: [PATCH v3 2/2] hwmon: Add driver for Texas Instruments TMP464 and TMP468
-Date:   Tue, 15 Feb 2022 23:07:20 -0800
-Message-Id: <20220216070720.2131761-2-linux@roeck-us.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220216070720.2131761-1-linux@roeck-us.net>
-References: <20220216070720.2131761-1-linux@roeck-us.net>
+        Wed, 16 Feb 2022 02:13:06 -0500
+Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8967F6EA
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:12:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1644995565; x=1676531565;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=CGvzGEO6H0Vv782UdYzwFn2xFK4FwUxx8fKugTOPQL8=;
+  b=PZC984ceNUkSCMOt7/0yAysnpavCrO7XQqPAFolrnuKCqHdYLzMzqI2v
+   eHliSx88apDCyWxyqljEtOBS94QlEuONTjY02q6T/egdbkwGZJw+pF7kT
+   +HOI+i4/XEaUFrIjhbAj5DSz+XEY7k0keJnhYK/lW4EDCaSND3H42RlbC
+   vdLtFkmacj9Z2MgGos/Zrn/tUpJb9xFvWiGJm4I4d/0woWkb3sHEJj1TC
+   wBdnXGVAtagPvqQzQb905Iuq35eIxjP9C9yRrJJ2jtYbTtSNfjiLW40OA
+   o7vNnJvcuZp/ubwUd+mgN+3UtjyuS+Dgce8/Vhh20M3hBJp6d63RTnTcf
+   w==;
+X-IronPort-AV: E=Sophos;i="5.88,373,1635177600"; 
+   d="scan'208";a="304975258"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 16 Feb 2022 14:37:34 +0800
+IronPort-SDR: C3bx7ElOHDBadcxyBtd7dUrbzWZSlYG0DMVT5z0UcigFoe7pbqt2LLCn9l0rXfrO45dXo7wgOI
+ jALSuOMPDnJlAt+dpe6Zi1y+MsZSmacc7DJvCxhXpCO0B+CmXXTWvgOemHRldsYuMntcS+8sJB
+ 4mn+kAAAaXC2U/kTZjifDrWrTY2Q1wO15TOcouvcs75kNeVZlM6qTIMCBHUlw06MSdRbK5OIZl
+ P5AQiSFBgR2yipK9lJKK9MlTwiY4V0wCwRf7OxuAHP3DQ3CkqOUGdjTYp+TKWrFmaAiUQ4ooni
+ 7lqf5h8iEgcKeDE2XvDediFO
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 22:10:22 -0800
+IronPort-SDR: HMkOX3qRxD3CvEOXXsxVl2u+5TJoHk4hyuiPSJ/J24HWnKddtltOyGILy0QNPM0mDQ3dLaKy4f
+ 407pW23G794N0r/TtJuJjT6wE7gPSH376IdoAXoQI7Yma+93UtAAdNPBkUheAc2aBxrhx7i1KF
+ KOKTOb5dUTM1WJubuj5OYwt1uViQ9WVdIu1ZLSW2bg/9Hg047Wrehkd2VufX9uF9hJITS0cbhg
+ dKYhTiZQm/nvRoM+eeRq7NG0aOGi7O4A/uudbsGhdmuen/JPyPQa+ilv6gq7h6pAhODGLhV+Nh
+ 1+Q=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 22:37:35 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Jz7YT1Jczz1SVp6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:37:32 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1644993451; x=1647585452; bh=CGvzGEO6H0Vv782UdYzwFn2xFK4FwUxx8fK
+        ugTOPQL8=; b=LCiPWDmy/wDI9DZBJkajNtBqe8X5r+11fnaTaBf8Kbsbq2tUdhe
+        gETKJ9RgJ/Xbri5R05zB8BaD9Ft+ponZLq7aIs8vQsV1b1QFZamGODCpBAA/TokJ
+        cBqZEvXvZc7Pn7OC1JMxvH8KH+v+K1+/rrG2c9tM/8i8FZwQ9baooRAdmPx7qoq/
+        SFZO2XKB1UpA97RQm56x3IVR6ka22Nq8cWVTN7pqaurmVzcIWLykV1aDrS1//maB
+        9/3P6U/owNBDKC75Zj6g5pgEQHndXfeaY7GEPpO/qB/NRWDQSq0ioGuNUA2ABrtq
+        bUHvu3kOhVquB2kMomuqOfHejGOTqCFXofQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id etiNi6FwhUOs for <linux-kernel@vger.kernel.org>;
+        Tue, 15 Feb 2022 22:37:31 -0800 (PST)
+Received: from [10.225.163.73] (unknown [10.225.163.73])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Jz7YF53xcz1Rwrw;
+        Tue, 15 Feb 2022 22:37:21 -0800 (PST)
+Message-ID: <94b1cba2-0e78-bbc0-0321-8be70b2b3be2@opensource.wdc.com>
+Date:   Wed, 16 Feb 2022 15:37:20 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Report in ata_scsi_port_error_handler()
+Content-Language: en-US
+To:     Byungchul Park <byungchul.park@lge.com>, linux-ide@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, peterz@infradead.org,
+        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
+        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
+        chris@chris-wilson.co.uk, duyuyang@gmail.com,
+        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
+        willy@infradead.org, david@fromorbit.com, amir73il@gmail.com,
+        bfields@fieldses.org, gregkh@linuxfoundation.org,
+        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
+        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
+        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
+        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
+        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
+        linux-block@vger.kernel.org, axboe@kernel.dk,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jlayton@kernel.org, dan.j.williams@intel.com,
+        hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com
+References: <1644984747-26706-1-git-send-email-byungchul.park@lge.com>
+ <1644984964-28300-1-git-send-email-byungchul.park@lge.com>
+ <1644984964-28300-3-git-send-email-byungchul.park@lge.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <1644984964-28300-3-git-send-email-byungchul.park@lge.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for Texas Instruments TMP464 and TMP468 temperature sensor
-ICs.
+On 2/16/22 13:16, Byungchul Park wrote:
+> [    2.051040] ===================================================
+> [    2.051406] DEPT: Circular dependency has been detected.
+> [    2.051730] 5.17.0-rc1-00014-gcf3441bb2012 #2 Tainted: G        W        
+> [    2.051991] ---------------------------------------------------
+> [    2.051991] summary
+> [    2.051991] ---------------------------------------------------
+> [    2.051991] *** DEADLOCK ***
+> [    2.051991] 
+> [    2.051991] context A
+> [    2.051991]     [S] (unknown)(&(&ap->eh_wait_q)->dmap:0)
+> [    2.051991]     [W] __raw_spin_lock_irq(&host->lock:0)
+> [    2.051991]     [E] event(&(&ap->eh_wait_q)->dmap:0)
+> [    2.051991] 
+> [    2.051991] context B
+> [    2.051991]     [S] __raw_spin_lock_irqsave(&host->lock:0)
+> [    2.051991]     [W] wait(&(&ap->eh_wait_q)->dmap:0)
+> [    2.051991]     [E] spin_unlock(&host->lock:0)
 
-TI's TMP464 is an I2C temperature sensor chip. This chip is
-similar to TI's TMP421 chip, but with 16bit-wide registers (instead
-of 8bit-wide registers). The chip has one local sensor and four
-remote sensors. TMP468 is similar to TMP464 but has one local and
-eight remote sensors.
+Sleeping with a spinlock held would be triggering warnings already, so
+these reports seem bogus to me.
 
-Originally-from: Agathe Porte <agathe.porte@nokia.com>
-Cc: Agathe Porte <agathe.porte@nokia.com>
-Cc: Krzysztof Adamski <krzysztof.adamski@nokia.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v3:
-- Added support for TMP468
-- Added support for various limits, temperature hysteresis, alarm attributes,
-  and update interval
-- Use regmap instead of local caching
-- Use static chip configuration
-- Unlock check if needed when loading driver, and lock it when unloading it
-  - Call tmp464_init_client() before calling tmp464_probe_from_dt()
-    since the latter changes registers, which requires the chip to be
-    unlocked.
-- Restore configuration register when unloading driver
-- ti,n-factor is optional, so don't fail if the property is not present
+In any case, trying to make sense of these reports is not easy, to say
+the least. If you think there is really a bug, then please send a clear
+explanation of your findings rather than a raw tool output that did not
+go through human analysis.
 
-Notes:
-- Tested with real TMP468. Module tested for TMP464.
-- I was not able to test with a system supporting devicetree;
-  especially negative values for "ti,n-factor" need testing
-  (and I wonder if of_property_read_s8() would be needed to
-   support this properly).
+> [    2.051991] 
+> [    2.051991] [S]: start of the event context
+> [    2.051991] [W]: the wait blocked
+> [    2.051991] [E]: the event not reachable
+> [    2.051991] ---------------------------------------------------
+> [    2.051991] context A's detail
+> [    2.051991] ---------------------------------------------------
+> [    2.051991] context A
+> [    2.051991]     [S] (unknown)(&(&ap->eh_wait_q)->dmap:0)
+> [    2.051991]     [W] __raw_spin_lock_irq(&host->lock:0)
+> [    2.051991]     [E] event(&(&ap->eh_wait_q)->dmap:0)
+> [    2.051991] 
+> [    2.051991] [S] (unknown)(&(&ap->eh_wait_q)->dmap:0):
+> [    2.051991] (N/A)
+> [    2.051991] 
+> [    2.051991] [W] __raw_spin_lock_irq(&host->lock:0):
+> [    2.051991] [<ffffffff8178d355>] ata_sff_flush_pio_task+0x45/0xc0
+> [    2.051991] stacktrace:
+> [    2.051991]       _raw_spin_lock_irq+0x58/0x90
+> [    2.051991]       ata_sff_flush_pio_task+0x45/0xc0
+> [    2.051991]       ata_exec_internal_sg+0x422/0x690
+> [    2.051991]       ata_do_set_mode+0x5ee/0xac0
+> [    2.051991]       ata_set_mode+0xfc/0x110
+> [    2.051991]       ata_eh_recover+0x1061/0x1360
+> [    2.051991]       ata_do_eh+0x3f/0xa0
+> [    2.051991]       ata_scsi_port_error_handler+0x432/0x740
+> [    2.051991]       ata_scsi_error+0x94/0xc0
+> [    2.051991]       scsi_error_handler+0x8d/0x3a0
+> [    2.051991]       kthread+0xe3/0x110
+> [    2.051991]       ret_from_fork+0x22/0x30
+> [    2.051991] 
+> [    2.051991] [E] event(&(&ap->eh_wait_q)->dmap:0):
+> [    2.051991] [<ffffffff810baa53>] __wake_up_common+0x93/0x1a0
+> [    2.051991] stacktrace:
+> [    2.051991]       dept_event+0x12b/0x1f0
+> [    2.051991]       __wake_up_common+0xb0/0x1a0
+> [    2.051991]       __wake_up_common_lock+0x65/0x90
+> [    2.051991]       ata_scsi_port_error_handler+0x67a/0x740
+> [    2.051991]       ata_scsi_error+0x94/0xc0
+> [    2.051991]       scsi_error_handler+0x8d/0x3a0
+> [    2.051991]       kthread+0xe3/0x110
+> [    2.051991]       ret_from_fork+0x22/0x30
+> [    2.051991] ---------------------------------------------------
+> [    2.051991] context B's detail
+> [    2.051991] ---------------------------------------------------
+> [    2.051991] context B
+> [    2.051991]     [S] __raw_spin_lock_irqsave(&host->lock:0)
+> [    2.051991]     [W] wait(&(&ap->eh_wait_q)->dmap:0)
+> [    2.051991]     [E] spin_unlock(&host->lock:0)
+> [    2.051991] 
+> [    2.051991] [S] __raw_spin_lock_irqsave(&host->lock:0):
+> [    2.051991] [<ffffffff8178047c>] ata_port_wait_eh+0x6c/0xc0
+> [    2.051991] stacktrace:
+> [    2.051991]       _raw_spin_lock_irqsave+0x82/0xa0
+> [    2.051991]       ata_port_wait_eh+0x6c/0xc0
+> [    2.051991]       ata_port_probe+0x1f/0x30
+> [    2.051991]       async_port_probe+0x27/0x50
+> [    2.051991]       async_run_entry_fn+0x21/0xa0
+> [    2.051991]       process_one_work+0x317/0x640
+> [    2.051991]       worker_thread+0x44/0x410
+> [    2.051991]       kthread+0xe3/0x110
+> [    2.051991]       ret_from_fork+0x22/0x30
+> [    2.051991] 
+> [    2.051991] [W] wait(&(&ap->eh_wait_q)->dmap:0):
+> [    2.051991] [<ffffffff810bb017>] prepare_to_wait+0x47/0xd0
+> [    2.051991] stacktrace:
+> [    2.051991]       ata_port_wait_eh+0x52/0xc0
+> [    2.051991]       ata_port_probe+0x1f/0x30
+> [    2.051991]       async_port_probe+0x27/0x50
+> [    2.051991]       async_run_entry_fn+0x21/0xa0
+> [    2.051991]       process_one_work+0x317/0x640
+> [    2.051991]       worker_thread+0x44/0x410
+> [    2.051991]       kthread+0xe3/0x110
+> [    2.051991]       ret_from_fork+0x22/0x30
+> [    2.051991] 
+> [    2.051991] [E] spin_unlock(&host->lock:0):
+> [    2.051991] [<ffffffff8178046e>] ata_port_wait_eh+0x5e/0xc0
+> [    2.051991] stacktrace:
+> [    2.051991]       _raw_spin_unlock_irqrestore+0x35/0x80
+> [    2.051991]       ata_port_wait_eh+0x5e/0xc0
+> [    2.051991]       ata_port_probe+0x1f/0x30
+> [    2.051991]       async_port_probe+0x27/0x50
+> [    2.051991]       async_run_entry_fn+0x21/0xa0
+> [    2.051991]       process_one_work+0x317/0x640
+> [    2.051991]       worker_thread+0x44/0x410
+> [    2.051991]       kthread+0xe3/0x110
+> [    2.051991]       ret_from_fork+0x22/0x30
+> [    2.051991] ---------------------------------------------------
+> [    2.051991] information that might be helpful
+> [    2.051991] ---------------------------------------------------
+> [    2.051991] CPU: 1 PID: 53 Comm: scsi_eh_1 Tainted: G        W         5.17.0-rc1-00014-gcf3441bb2012 #2
+> [    2.051991] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Bochs 01/01/2011
+> [    2.051991] Call Trace:
+> [    2.051991]  <TASK>
+> [    2.051991]  dump_stack_lvl+0x44/0x57
+> [    2.051991]  print_circle+0x384/0x510
+> [    2.051991]  ? print_circle+0x510/0x510
+> [    2.051991]  cb_check_dl+0x58/0x60
+> [    2.051991]  bfs+0xdc/0x1b0
+> [    2.051991]  add_dep+0x94/0x120
+> [    2.051991]  do_event.isra.22+0x284/0x300
+> [    2.051991]  ? __wake_up_common+0x93/0x1a0
+> [    2.051991]  dept_event+0x12b/0x1f0
+> [    2.051991]  __wake_up_common+0xb0/0x1a0
+> [    2.051991]  __wake_up_common_lock+0x65/0x90
+> [    2.051991]  ata_scsi_port_error_handler+0x67a/0x740
+> [    2.051991]  ? trace_hardirqs_on+0x38/0xe0
+> [    2.051991]  ? scsi_eh_get_sense+0x150/0x150
+> [    2.051991]  ata_scsi_error+0x94/0xc0
+> [    2.051991]  scsi_error_handler+0x8d/0x3a0
+> [    2.051991]  ? _raw_spin_unlock_irqrestore+0x63/0x80
+> [    2.051991]  ? scsi_eh_get_sense+0x150/0x150
+> [    2.051991]  kthread+0xe3/0x110
+> [    2.051991]  ? kthread_complete_and_exit+0x20/0x20
+> [    2.051991]  ret_from_fork+0x22/0x30
+> [    2.051991]  </TASK>
 
- Documentation/hwmon/index.rst  |   1 +
- Documentation/hwmon/tmp464.rst |  73 ++++
- MAINTAINERS                    |   2 +
- drivers/hwmon/Kconfig          |  11 +
- drivers/hwmon/Makefile         |   1 +
- drivers/hwmon/tmp464.c         | 693 +++++++++++++++++++++++++++++++++
- 6 files changed, 781 insertions(+)
- create mode 100644 Documentation/hwmon/tmp464.rst
- create mode 100644 drivers/hwmon/tmp464.c
 
-diff --git a/Documentation/hwmon/index.rst b/Documentation/hwmon/index.rst
-index df20022c741f..37590db85e65 100644
---- a/Documentation/hwmon/index.rst
-+++ b/Documentation/hwmon/index.rst
-@@ -193,6 +193,7 @@ Hardware Monitoring Kernel Drivers
-    tmp108
-    tmp401
-    tmp421
-+   tmp464
-    tmp513
-    tps23861
-    tps40422
-diff --git a/Documentation/hwmon/tmp464.rst b/Documentation/hwmon/tmp464.rst
-new file mode 100644
-index 000000000000..7596e7623d06
---- /dev/null
-+++ b/Documentation/hwmon/tmp464.rst
-@@ -0,0 +1,73 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+Kernel driver tmp464
-+====================
-+
-+Supported chips:
-+
-+  * Texas Instruments TMP464
-+
-+    Prefix: 'tmp464'
-+
-+    Addresses scanned: I2C 0x48, 0x49, 0x4a and 0x4b
-+
-+    Datasheet: http://focus.ti.com/docs/prod/folders/print/tmp464.html
-+
-+  * Texas Instruments TMP468
-+
-+    Prefix: 'tmp468'
-+
-+    Addresses scanned: I2C 0x48, 0x49, 0x4a and 0x4b
-+
-+    Datasheet: http://focus.ti.com/docs/prod/folders/print/tmp468.html
-+
-+Authors:
-+
-+	Agathe Porte <agathe.porte@nokia.com>
-+	Guenter Roeck <linux@roeck-us.net>
-+
-+Description
-+-----------
-+
-+This driver implements support for Texas Instruments TMP464 and TMP468
-+temperature sensor chips. TMP464 provides one local and four remote
-+sensors. TMP468 provides one local and eight remote sensors.
-+Temperature is measured in degrees Celsius. The chips are wired over
-+I2C/SMBus and specified over a temperature range of -40 to +125 degrees
-+Celsius. Resolution for both the local and remote channels is 0.0625
-+degree C.
-+
-+The chips support only temperature measurements. The driver exports
-+temperature values, limits, and alarms via the following sysfs files:
-+
-+**temp[1-9]_input**
-+
-+**temp[1-9]_max**
-+
-+**temp[1-9]_max_hyst**
-+
-+**temp[1-9]_max_alarm**
-+
-+**temp[1-9]_crit**
-+
-+**temp[1-9]_crit_alarm**
-+
-+**temp[1-9]_crit_hyst**
-+
-+**temp[2-9]_offset**
-+
-+**temp[2-9]_fault**
-+
-+Each sensor can be individually disabled via Devicetree or from sysfs
-+via:
-+
-+**temp[1-9]_enable**
-+
-+If labels were specified in Devicetree, additional sysfs files will
-+be present:
-+
-+**temp[1-9]_label**
-+
-+The update interval is configurable with the following sysfs attribute.
-+
-+**update_interval**
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f51bc7c7e439..9b51bf5ca3b8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19495,6 +19495,8 @@ M:	Guenter Roeck <linux@roeck-us.net>
- L:	linux-hwmon@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
-+F:	Documentation/hwmon/tmp464.rst
-+F:	drivers/hwmon/tmp464.c
- 
- TMP513 HARDWARE MONITOR DRIVER
- M:	Eric Tremblay <etremblay@distech-controls.com>
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 8df25f1079ba..b84932fd0c13 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -1979,6 +1979,17 @@ config SENSORS_TMP421
- 	  This driver can also be built as a module. If so, the module
- 	  will be called tmp421.
- 
-+config SENSORS_TMP464
-+	tristate "Texas Instruments TMP464 and compatible"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	  If you say yes here you get support for Texas Instruments TMP464
-+	  and TMP468 temperature sensor chips.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called tmp464.
-+
- config SENSORS_TMP513
- 	tristate "Texas Instruments TMP513 and compatibles"
- 	depends on I2C
-diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
-index 185f946d698b..a1f2d6686227 100644
---- a/drivers/hwmon/Makefile
-+++ b/drivers/hwmon/Makefile
-@@ -194,6 +194,7 @@ obj-$(CONFIG_SENSORS_TMP103)	+= tmp103.o
- obj-$(CONFIG_SENSORS_TMP108)	+= tmp108.o
- obj-$(CONFIG_SENSORS_TMP401)	+= tmp401.o
- obj-$(CONFIG_SENSORS_TMP421)	+= tmp421.o
-+obj-$(CONFIG_SENSORS_TMP464)	+= tmp464.o
- obj-$(CONFIG_SENSORS_TMP513)	+= tmp513.o
- obj-$(CONFIG_SENSORS_VEXPRESS)	+= vexpress-hwmon.o
- obj-$(CONFIG_SENSORS_VIA_CPUTEMP)+= via-cputemp.o
-diff --git a/drivers/hwmon/tmp464.c b/drivers/hwmon/tmp464.c
-new file mode 100644
-index 000000000000..098c53c65393
---- /dev/null
-+++ b/drivers/hwmon/tmp464.c
-@@ -0,0 +1,693 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+/* Driver for the Texas Instruments TMP464 SMBus temperature sensor IC.
-+ * Supported models: TMP464, TMP468
-+
-+ * Copyright (C) 2022 Agathe Porte <agathe.porte@nokia.com>
-+ * Preliminary support by:
-+ * Lionel Pouliquen <lionel.lp.pouliquen@nokia.com>
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/hwmon.h>
-+#include <linux/i2c.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/of_device.h>
-+#include <linux/regmap.h>
-+#include <linux/slab.h>
-+
-+/* Addresses to scan */
-+static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4b, I2C_CLIENT_END };
-+
-+#define TMP464_NUM_CHANNELS		5	/* chan 0 is internal, 1-4 are remote */
-+#define TMP468_NUM_CHANNELS		9	/* chan 0 is internal, 1-8 are remote */
-+
-+#define MAX_CHANNELS			9
-+
-+#define TMP464_TEMP_REG(channel)	(channel)
-+#define TMP464_TEMP_OFFSET_REG(channel)	(0x40 + ((channel) - 1) * 8)
-+#define TMP464_N_FACTOR_REG(channel)	(0x41 + ((channel) - 1) * 8)
-+
-+static const u8 TMP464_THERM_LIMIT[MAX_CHANNELS] = {
-+	0x39, 0x42, 0x4A, 0x52, 0x5A, 0x62, 0x6a, 0x72, 0x7a };
-+static const u8 TMP464_THERM2_LIMIT[MAX_CHANNELS] = {
-+	0x3A, 0x43, 0x4B, 0x53, 0x5B, 0x63, 0x6b, 0x73, 0x7b };
-+
-+#define TMP464_THERM_STATUS_REG			0x21
-+#define TMP464_THERM2_STATUS_REG		0x22
-+#define TMP464_REMOTE_OPEN_REG			0x23
-+#define TMP464_CONFIG_REG			0x30
-+#define TMP464_TEMP_HYST_REG			0x38
-+#define TMP464_LOCK_REG				0xc4
-+
-+/* Identification */
-+#define TMP464_MANUFACTURER_ID_REG		0xFE
-+#define TMP464_DEVICE_ID_REG			0xFF
-+
-+/* Flags */
-+#define TMP464_CONFIG_SHUTDOWN			BIT(5)
-+#define TMP464_CONFIG_RANGE			0x04
-+#define TMP464_CONFIG_REG_REN(x)		(BIT(7 + (x)))
-+#define TMP464_CONFIG_REG_REN_MASK		GENMASK(15, 7)
-+#define TMP464_CONFIG_CONVERSION_RATE_B0	2
-+#define TMP464_CONFIG_CONVERSION_RATE_B2	4
-+#define TMP464_CONFIG_CONVERSION_RATE_MASK      GENMASK(TMP464_CONFIG_CONVERSION_RATE_B2, \
-+							TMP464_CONFIG_CONVERSION_RATE_B0)
-+
-+#define TMP464_UNLOCK_VAL			0xeb19
-+#define TMP464_LOCK_VAL				0x5ca6
-+#define TMP464_LOCKED				0x8000
-+
-+/* Manufacturer / Device ID's */
-+#define TMP464_MANUFACTURER_ID			0x5449
-+#define TMP464_DEVICE_ID			0x1468
-+#define TMP468_DEVICE_ID			0x0468
-+
-+static const struct i2c_device_id tmp464_id[] = {
-+	{ "tmp464", TMP464_NUM_CHANNELS },
-+	{ "tmp468", TMP468_NUM_CHANNELS },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, tmp464_id);
-+
-+static const struct of_device_id __maybe_unused tmp464_of_match[] = {
-+	{
-+		.compatible = "ti,tmp464",
-+		.data = (void *)TMP464_NUM_CHANNELS
-+	},
-+	{
-+		.compatible = "ti,tmp468",
-+		.data = (void *)TMP468_NUM_CHANNELS
-+	},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, tmp464_of_match);
-+
-+struct tmp464_channel {
-+	const char *label;
-+	bool enabled;
-+};
-+
-+struct tmp464_data {
-+	struct regmap *regmap;
-+	struct mutex update_lock;
-+	int channels;
-+	s16 config_orig;
-+	struct tmp464_channel channel[MAX_CHANNELS];
-+};
-+
-+static int temp_from_reg(s16 reg)
-+{
-+	return DIV_ROUND_CLOSEST((reg >> 3) * 625, 10);
-+}
-+
-+static s16 temp_to_limit_reg(long temp)
-+{
-+	return DIV_ROUND_CLOSEST(temp, 500) << 6;
-+}
-+
-+static s16 temp_to_offset_reg(long temp)
-+{
-+	return DIV_ROUND_CLOSEST(temp * 10, 625) << 3;
-+}
-+
-+static int tmp464_enable_channels(struct tmp464_data *data)
-+{
-+	struct regmap *regmap = data->regmap;
-+	u16 enable = 0;
-+	int i;
-+
-+	for (i = 0; i < data->channels; i++)
-+		if (data->channel[i].enabled)
-+			enable |= TMP464_CONFIG_REG_REN(i);
-+
-+	return regmap_update_bits(regmap, TMP464_CONFIG_REG, TMP464_CONFIG_REG_REN_MASK, enable);
-+}
-+
-+static int tmp464_chip_read(struct device *dev, u32 attr, int channel, long *val)
-+{
-+	struct tmp464_data *data = dev_get_drvdata(dev);
-+	struct regmap *regmap = data->regmap;
-+	unsigned int status;
-+	int err;
-+
-+	switch (attr) {
-+	case hwmon_chip_update_interval:
-+		err = regmap_read(regmap, TMP464_CONFIG_REG, &status);
-+		if (err)
-+			return err;
-+		status = (status & TMP464_CONFIG_CONVERSION_RATE_MASK) >>
-+					TMP464_CONFIG_CONVERSION_RATE_B0;
-+		*val = 125 << (7 - status);
-+		return 0;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int tmp464_temp_read(struct device *dev, u32 attr, int channel, long *val)
-+{
-+	struct tmp464_data *data = dev_get_drvdata(dev);
-+	struct regmap *regmap = data->regmap;
-+	unsigned int regval, regval2;
-+	int err = 0;
-+
-+	switch (attr) {
-+	case hwmon_temp_max_alarm:
-+		err = regmap_read(regmap, TMP464_THERM_STATUS_REG, &regval);
-+		if (err < 0)
-+			break;
-+		*val = !!(regval & BIT(channel + 7));
-+		break;
-+	case hwmon_temp_crit_alarm:
-+		err = regmap_read(regmap, TMP464_THERM2_STATUS_REG, &regval);
-+		if (err < 0)
-+			break;
-+		*val = !!(regval & BIT(channel + 7));
-+		break;
-+	case hwmon_temp_fault:
-+		err = regmap_read(regmap, TMP464_REMOTE_OPEN_REG, &regval);
-+		if (err < 0)
-+			break;
-+		*val = !!(regval & BIT(channel + 7));
-+		break;
-+	case hwmon_temp_max_hyst:
-+		mutex_lock(&data->update_lock);
-+		err = regmap_read(regmap, TMP464_THERM_LIMIT[channel], &regval);
-+		if (err < 0)
-+			goto unlock_max;
-+		err = regmap_read(regmap, TMP464_TEMP_HYST_REG, &regval2);
-+		if (err < 0)
-+			goto unlock_max;
-+		regval -= regval2;
-+		*val = temp_from_reg(regval);
-+unlock_max:
-+		mutex_unlock(&data->update_lock);
-+		break;
-+	case hwmon_temp_max:
-+		err = regmap_read(regmap, TMP464_THERM_LIMIT[channel], &regval);
-+		if (err < 0)
-+			break;
-+		*val = temp_from_reg(regval);
-+		break;
-+	case hwmon_temp_crit_hyst:
-+		mutex_lock(&data->update_lock);
-+		err = regmap_read(regmap, TMP464_THERM2_LIMIT[channel], &regval);
-+		if (err < 0)
-+			goto unlock_crit;
-+		err = regmap_read(regmap, TMP464_TEMP_HYST_REG, &regval2);
-+		if (err < 0)
-+			goto unlock_crit;
-+		regval -= regval2;
-+		*val = temp_from_reg(regval);
-+unlock_crit:
-+		mutex_unlock(&data->update_lock);
-+		break;
-+	case hwmon_temp_crit:
-+		err = regmap_read(regmap, TMP464_THERM2_LIMIT[channel], &regval);
-+		if (err < 0)
-+			break;
-+		*val = temp_from_reg(regval);
-+		break;
-+	case hwmon_temp_offset:
-+		err = regmap_read(regmap, TMP464_TEMP_OFFSET_REG(channel), &regval);
-+		if (err < 0)
-+			break;
-+		*val = temp_from_reg(regval);
-+		break;
-+	case hwmon_temp_input:
-+		if (!data->channel[channel].enabled)
-+			return -ENODATA;
-+		err = regmap_read(regmap, TMP464_TEMP_REG(channel), &regval);
-+		if (err < 0)
-+			break;
-+		*val = temp_from_reg(regval);
-+		break;
-+	case hwmon_temp_enable:
-+		*val = data->channel[channel].enabled;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return err;
-+}
-+
-+static int tmp464_read(struct device *dev, enum hwmon_sensor_types type,
-+		       u32 attr, int channel, long *val)
-+{
-+	switch (type) {
-+	case hwmon_chip:
-+		return tmp464_chip_read(dev, attr, channel, val);
-+	case hwmon_temp:
-+		return tmp464_temp_read(dev, attr, channel, val);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int tmp464_read_string(struct device *dev, enum hwmon_sensor_types type,
-+			      u32 attr, int channel, const char **str)
-+{
-+	struct tmp464_data *data = dev_get_drvdata(dev);
-+
-+	*str = data->channel[channel].label;
-+
-+	return 0;
-+}
-+
-+static int tmp464_set_convrate(struct regmap *regmap, long interval)
-+{
-+	int rate;
-+
-+	/*
-+	 * For valid rates, interval in milli-seconds can be calculated as
-+	 *      interval = 125 << (7 - rate);
-+	 * or
-+	 *      interval = (1 << (7 - rate)) * 125;
-+	 * The rate is therefore
-+	 *      rate = 7 - __fls(interval / 125);
-+	 * and the rounded rate is
-+	 *      rate = 7 - __fls(interval * 4 / (125 * 3));
-+	 * Use clamp_val() to avoid overflows, and to ensure valid input
-+	 * for __fls.
-+	 */
-+	interval = clamp_val(interval, 125, 16000);
-+	rate = 7 - __fls(interval * 4 / (125 * 3));
-+
-+	return regmap_update_bits(regmap, TMP464_CONFIG_REG,
-+				  TMP464_CONFIG_CONVERSION_RATE_MASK,
-+				  rate << TMP464_CONFIG_CONVERSION_RATE_B0);
-+}
-+
-+static int tmp464_chip_write(struct device *dev, u32 attr, int channel, long val)
-+{
-+	struct tmp464_data *data = dev_get_drvdata(dev);
-+
-+	switch (attr) {
-+	case hwmon_chip_update_interval:
-+		return tmp464_set_convrate(data->regmap, val);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int tmp464_temp_write(struct device *dev, u32 attr, int channel, long val)
-+{
-+	struct tmp464_data *data = dev_get_drvdata(dev);
-+	struct regmap *regmap = data->regmap;
-+	unsigned int regval;
-+	int err = 0;
-+
-+	switch (attr) {
-+	case hwmon_temp_max_hyst:
-+		mutex_lock(&data->update_lock);
-+		err = regmap_read(regmap, TMP464_THERM_LIMIT[0], &regval);
-+		if (err < 0)
-+			goto unlock;
-+		val = clamp_val(val, -256000, 256000);	/* prevent overflow/underflow */
-+		val = clamp_val(temp_from_reg(regval) - val, 0, 255000);
-+		err = regmap_write(regmap, TMP464_TEMP_HYST_REG,
-+				   DIV_ROUND_CLOSEST(val, 1000) << 7);
-+unlock:
-+		mutex_unlock(&data->update_lock);
-+		break;
-+	case hwmon_temp_max:
-+		val = temp_to_limit_reg(clamp_val(val, -255000, 255500));
-+		err = regmap_write(regmap, TMP464_THERM_LIMIT[channel], val);
-+		break;
-+	case hwmon_temp_crit:
-+		val = temp_to_limit_reg(clamp_val(val, -255000, 255500));
-+		err = regmap_write(regmap, TMP464_THERM2_LIMIT[channel], val);
-+		break;
-+	case hwmon_temp_offset:
-+		val = temp_to_offset_reg(clamp_val(val, -128000, 127937));
-+		err = regmap_write(regmap, TMP464_TEMP_OFFSET_REG(channel), val);
-+		break;
-+	case hwmon_temp_enable:
-+		mutex_lock(&data->update_lock);
-+		data->channel[channel].enabled = !!val;
-+		err = tmp464_enable_channels(data);
-+		mutex_unlock(&data->update_lock);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	return err;
-+}
-+
-+static int tmp464_write(struct device *dev, enum hwmon_sensor_types type,
-+			u32 attr, int channel, long val)
-+{
-+	switch (type) {
-+	case hwmon_chip:
-+		return tmp464_chip_write(dev, attr, channel, val);
-+	case hwmon_temp:
-+		return tmp464_temp_write(dev, attr, channel, val);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static umode_t tmp464_is_visible(const void *_data, enum hwmon_sensor_types type,
-+				 u32 attr, int channel)
-+{
-+	const struct tmp464_data *data = _data;
-+
-+	if (channel >= data->channels)
-+		return 0;
-+
-+	if (type == hwmon_chip) {
-+		if (attr == hwmon_chip_update_interval)
-+			return 0644;
-+		return 0;
-+	}
-+
-+	switch (attr) {
-+	case hwmon_temp_input:
-+	case hwmon_temp_max_alarm:
-+	case hwmon_temp_crit_alarm:
-+	case hwmon_temp_crit_hyst:
-+		return 0444;
-+	case hwmon_temp_enable:
-+	case hwmon_temp_max:
-+	case hwmon_temp_crit:
-+		return 0644;
-+	case hwmon_temp_max_hyst:
-+		if (!channel)
-+			return 0644;
-+		return 0444;
-+	case hwmon_temp_label:
-+		if (data->channel[channel].label)
-+			return 0444;
-+		return 0;
-+	case hwmon_temp_fault:
-+		if (channel)
-+			return 0444;
-+		return 0;
-+	case hwmon_temp_offset:
-+		if (channel)
-+			return 0644;
-+		return 0;
-+	default:
-+		return 0;
-+	}
-+}
-+
-+static void tmp464_restore_lock(void *regmap)
-+{
-+	regmap_write(regmap, TMP464_LOCK_REG, TMP464_LOCK_VAL);
-+}
-+
-+static void tmp464_restore_config(void *_data)
-+{
-+	struct tmp464_data *data = _data;
-+
-+	regmap_write(data->regmap, TMP464_CONFIG_REG, data->config_orig);
-+}
-+
-+static int tmp464_init_client(struct device *dev, struct tmp464_data *data)
-+{
-+	struct regmap *regmap = data->regmap;
-+	unsigned int regval;
-+	int err;
-+
-+	err = regmap_read(regmap, TMP464_LOCK_REG, &regval);
-+	if (err)
-+		return err;
-+	if (regval == TMP464_LOCKED) {
-+		/* Explicitly unlock chip if it is locked */
-+		err = regmap_write(regmap, TMP464_LOCK_REG, TMP464_UNLOCK_VAL);
-+		if (err)
-+			return err;
-+		/* and lock it again when unloading the driver */
-+		err = devm_add_action_or_reset(dev, tmp464_restore_lock, regmap);
-+		if (err)
-+			return err;
-+	}
-+
-+	err = regmap_read(regmap, TMP464_CONFIG_REG, &regval);
-+	if (err)
-+		return err;
-+	data->config_orig = regval;
-+	err = devm_add_action_or_reset(dev, tmp464_restore_config, data);
-+	if (err)
-+		return err;
-+
-+	/* Default to 500 ms update interval */
-+	err = regmap_update_bits(regmap, TMP464_CONFIG_REG,
-+				 TMP464_CONFIG_CONVERSION_RATE_MASK | TMP464_CONFIG_SHUTDOWN,
-+				 BIT(TMP464_CONFIG_CONVERSION_RATE_B0) |
-+				 BIT(TMP464_CONFIG_CONVERSION_RATE_B2));
-+	if (err)
-+		return err;
-+
-+	return tmp464_enable_channels(data);
-+}
-+
-+static int tmp464_detect(struct i2c_client *client,
-+			 struct i2c_board_info *info)
-+{
-+	struct i2c_adapter *adapter = client->adapter;
-+	char *name, *chip;
-+	int reg;
-+
-+	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_WORD_DATA))
-+		return -ENODEV;
-+
-+	reg = i2c_smbus_read_word_swapped(client, TMP464_MANUFACTURER_ID_REG);
-+	if (reg < 0)
-+		return reg;
-+	if (reg != TMP464_MANUFACTURER_ID)
-+		return -ENODEV;
-+
-+	/* Check for "always return zero" bits */
-+	reg = i2c_smbus_read_word_swapped(client, TMP464_THERM_STATUS_REG);
-+	if (reg < 0)
-+		return reg;
-+	if (reg & 0x1f)
-+		return -ENODEV;
-+	reg = i2c_smbus_read_word_swapped(client, TMP464_THERM2_STATUS_REG);
-+	if (reg < 0)
-+		return reg;
-+	if (reg & 0x1f)
-+		return -ENODEV;
-+
-+	reg = i2c_smbus_read_word_swapped(client, TMP464_DEVICE_ID_REG);
-+	if (reg < 0)
-+		return reg;
-+	switch (reg) {
-+	case TMP464_DEVICE_ID:
-+		name = "tmp464";
-+		chip = "TMP464";
-+		break;
-+	case TMP468_DEVICE_ID:
-+		name = "tmp468";
-+		chip = "TMP468";
-+		break;
-+	default:
-+		return -ENODEV;
-+	}
-+
-+	strscpy(info->type, name, I2C_NAME_SIZE);
-+	dev_info(&adapter->dev, "Detected TI %s chip at 0x%02x\n", chip, client->addr);
-+
-+	return 0;
-+}
-+
-+static int tmp464_probe_child_from_dt(struct device *dev,
-+				      struct device_node *child,
-+				      struct tmp464_data *data)
-+
-+{
-+	struct regmap *regmap = data->regmap;
-+	u32 channel;
-+	s32 val;
-+	int err;
-+
-+	err = of_property_read_u32(child, "reg", &channel);
-+	if (err) {
-+		dev_err(dev, "missing reg property of %pOFn\n", child);
-+		return err;
-+	}
-+
-+	if (channel >= data->channels) {
-+		dev_err(dev, "invalid reg %d of %pOFn\n", channel, child);
-+		return -EINVAL;
-+	}
-+
-+	of_property_read_string(child, "label", &data->channel[channel].label);
-+
-+	data->channel[channel].enabled = of_device_is_available(child);
-+
-+	err = of_property_read_s32(child, "ti,n-factor", &val);
-+	if (err && err != -EINVAL)
-+		return err;
-+	if (!err) {
-+		if (channel == 0) {
-+			dev_err(dev, "n-factor can't be set for internal channel\n");
-+			return -EINVAL;
-+		}
-+		if (val > 127 || val < -128) {
-+			dev_err(dev, "n-factor for channel %d invalid (%d)\n",
-+				channel, val);
-+			return -EINVAL;
-+		}
-+		err = regmap_write(regmap, TMP464_N_FACTOR_REG(channel), val);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int tmp464_probe_from_dt(struct device *dev, struct tmp464_data *data)
-+{
-+	const struct device_node *np = dev->of_node;
-+	struct device_node *child;
-+	int err;
-+
-+	for_each_child_of_node(np, child) {
-+		if (strcmp(child->name, "channel"))
-+			continue;
-+
-+		err = tmp464_probe_child_from_dt(dev, child, data);
-+		if (err) {
-+			of_node_put(child);
-+			return err;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct hwmon_ops tmp464_ops = {
-+	.is_visible = tmp464_is_visible,
-+	.read = tmp464_read,
-+	.read_string = tmp464_read_string,
-+	.write = tmp464_write,
-+};
-+
-+static const struct hwmon_channel_info *tmp464_info[] = {
-+	HWMON_CHANNEL_INFO(chip,
-+			   HWMON_C_UPDATE_INTERVAL),
-+	HWMON_CHANNEL_INFO(temp,
-+			   HWMON_T_INPUT | HWMON_T_MAX | HWMON_T_MAX_HYST | HWMON_T_CRIT |
-+			   HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM | HWMON_T_CRIT_ALARM,
-+			   HWMON_T_INPUT | HWMON_T_OFFSET | HWMON_T_MAX | HWMON_T_MAX_HYST |
-+			   HWMON_T_CRIT | HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_FAULT,
-+			   HWMON_T_INPUT | HWMON_T_OFFSET | HWMON_T_MAX | HWMON_T_MAX_HYST |
-+			   HWMON_T_CRIT | HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_FAULT,
-+			   HWMON_T_INPUT | HWMON_T_OFFSET | HWMON_T_MAX | HWMON_T_MAX_HYST |
-+			   HWMON_T_CRIT | HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_FAULT,
-+			   HWMON_T_INPUT | HWMON_T_OFFSET | HWMON_T_MAX | HWMON_T_MAX_HYST |
-+			   HWMON_T_CRIT | HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_FAULT,
-+			   HWMON_T_INPUT | HWMON_T_OFFSET | HWMON_T_MAX | HWMON_T_MAX_HYST |
-+			   HWMON_T_CRIT | HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_FAULT,
-+			   HWMON_T_INPUT | HWMON_T_OFFSET | HWMON_T_MAX | HWMON_T_MAX_HYST |
-+			   HWMON_T_CRIT | HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_FAULT,
-+			   HWMON_T_INPUT | HWMON_T_OFFSET | HWMON_T_MAX | HWMON_T_MAX_HYST |
-+			   HWMON_T_CRIT | HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_FAULT,
-+			   HWMON_T_INPUT | HWMON_T_OFFSET | HWMON_T_MAX | HWMON_T_MAX_HYST |
-+			   HWMON_T_CRIT | HWMON_T_CRIT_HYST | HWMON_T_MAX_ALARM |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_FAULT),
-+	NULL
-+};
-+
-+static const struct hwmon_chip_info tmp464_chip_info = {
-+	.ops = &tmp464_ops,
-+	.info = tmp464_info,
-+};
-+
-+/* regmap */
-+
-+static bool tmp464_is_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	return (reg < TMP464_TEMP_REG(TMP468_NUM_CHANNELS) ||
-+		reg == TMP464_THERM_STATUS_REG ||
-+		reg == TMP464_THERM2_STATUS_REG ||
-+		reg == TMP464_REMOTE_OPEN_REG);
-+}
-+
-+static const struct regmap_config tmp464_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 16,
-+	.max_register = TMP464_DEVICE_ID_REG,
-+	.volatile_reg = tmp464_is_volatile_reg,
-+	.val_format_endian = REGMAP_ENDIAN_BIG,
-+	.cache_type = REGCACHE_RBTREE,
-+	.use_single_read = true,
-+	.use_single_write = true,
-+};
-+
-+static int tmp464_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct device *hwmon_dev;
-+	struct tmp464_data *data;
-+	int i, err;
-+
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA)) {
-+		dev_err(&client->dev, "i2c functionality check failed\n");
-+		return -ENODEV;
-+	}
-+	data = devm_kzalloc(dev, sizeof(struct tmp464_data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	mutex_init(&data->update_lock);
-+
-+	if (dev->of_node)
-+		data->channels = (int)(unsigned long)of_device_get_match_data(&client->dev);
-+	else
-+		data->channels = i2c_match_id(tmp464_id, client)->driver_data;
-+
-+	data->regmap = devm_regmap_init_i2c(client, &tmp464_regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return PTR_ERR(data->regmap);
-+
-+	for (i = 0; i < data->channels; i++)
-+		data->channel[i].enabled = true;
-+
-+	err = tmp464_init_client(dev, data);
-+	if (err)
-+		return err;
-+
-+	if (dev->of_node) {
-+		err = tmp464_probe_from_dt(dev, data);
-+		if (err)
-+			return err;
-+	}
-+
-+	hwmon_dev = devm_hwmon_device_register_with_info(dev, client->name,
-+							 data, &tmp464_chip_info, NULL);
-+	return PTR_ERR_OR_ZERO(hwmon_dev);
-+}
-+
-+static struct i2c_driver tmp464_driver = {
-+	.class = I2C_CLASS_HWMON,
-+	.driver = {
-+		.name	= "tmp464",
-+		.of_match_table = of_match_ptr(tmp464_of_match),
-+	},
-+	.probe_new = tmp464_probe,
-+	.id_table = tmp464_id,
-+	.detect = tmp464_detect,
-+	.address_list = normal_i2c,
-+};
-+
-+module_i2c_driver(tmp464_driver);
-+
-+MODULE_AUTHOR("Agathe Porte <agathe.porte@nokia.com>");
-+MODULE_DESCRIPTION("Texas Instruments TMP464 temperature sensor driver");
-+MODULE_LICENSE("GPL");
 -- 
-2.35.1
-
+Damien Le Moal
+Western Digital Research
