@@ -2,85 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC50DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235236AbiBPOz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 09:55:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58756 "EHLO
+        id S235264AbiBPO6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 09:58:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232406AbiBPOzz (ORCPT
+        with ESMTP id S235236AbiBPO6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 09:55:55 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C761F6B8E
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:55:42 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id f17so4390322edd.2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:55:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iuYrqVGn1TXdwN+P98XHhqL2+XquzgdKMr559j4kzX0=;
-        b=m7KLBnpGSaAT+kElQbyWCpRqg8l5Xarj7SE9j9Q+Gl2zvdSTaYahgURCT8X5H2Ni2L
-         vKgECZZX8XD2Y+QnZUn27ISb3qicevOkHpXjolTw4zvDUEZ72k1XrDUvmMrxR54sLgeY
-         n13R9STJnkboF2nq0JYVV0CkTfuV7LwJVNvxNS5xWP5B6cH2rixzqtQf2Cdo2K3XlnwY
-         Y3/XG4x8s2oNS9/DZTMyIJntOp4KAtdJtIzNeA4e5c8HhqkwQdzAK+3eH3jMcrW9BiHV
-         j3lDpWbx9LLmAtuLKrS+VdGFzIfr2OJ8Hil2kSdMkWrSio4XnljeNfior5cdXBv/M9nm
-         55Sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iuYrqVGn1TXdwN+P98XHhqL2+XquzgdKMr559j4kzX0=;
-        b=VXLP6g8245iT3EoSJ93PGGwZB/yV6shU/Q/AcXnE6QtXbtFz/5UBk8vpDWqrLB48vN
-         wjPDgE6JoKkoY0AfOzVWTZy7G5ej8dg1rrHHoWPhJhA5NmmUkQ/XaJqPZxuvylMRAVWL
-         Ml7W0SB7LTdHu9wd9Apt9k5bjYuvHstxZyRFU8IAcSJn5yKPatRssE5Nn3SjJGx0ZMON
-         iWn02W/+nqgxclLYOcuD5Qygeq/iEEySyDId32YUkFG3GYq245VrFU19nETN6MqjBWBo
-         Or9Rs439ulAc+SH7JBE9e4sA95FzwoWGmBSDlqKQYgDoAXIgroC/sFJmPKP4pD+LEvLI
-         1blA==
-X-Gm-Message-State: AOAM531CWJ7LFqp4QRf+f0rKJpNKxn4tLqGyCFUelxBjxJDYJsq0C5Uu
-        zf8JMo+EnBgcEbytb+k9DpEBBNgBosfqS3AJgMt/gg==
-X-Google-Smtp-Source: ABdhPJzRulNtz/zoAWp3FH3AaM0DWDfR2fpgNtKv4EW2Sx9/HjO3bwTxfgHobgEyuXG7kSkT/MQf3yK3aZjoHeh44u4=
-X-Received: by 2002:a05:6402:5194:b0:409:97ec:3bdc with SMTP id
- q20-20020a056402519400b0040997ec3bdcmr3466054edd.314.1645023340859; Wed, 16
- Feb 2022 06:55:40 -0800 (PST)
+        Wed, 16 Feb 2022 09:58:15 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2859C66204;
+        Wed, 16 Feb 2022 06:58:02 -0800 (PST)
+Date:   Wed, 16 Feb 2022 14:57:59 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1645023480;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gKvTWrHCwjvcyRC9bhZTpUpXLRREYqwtipbQCdJ0zIc=;
+        b=1DvSjw+Y9j/rdwHOK9fzDcqgkisYeGJ+1mp48L4W5hJonTYbVUiYv0mjfbnm+7W94uWeUG
+        XNvzlT9jxbLJuLkIdPbHoydHtEapPC3NDQrM+gGujGQKRXdF4/Zp2nmkBHepF2i+AdTSaK
+        6Cr0Dkon3DvhYRI6YUjogS5OPAANrkfJffqSUEsfcUfQW6mnBtZDDDeDnCDd8xOliGwuk1
+        RGUiyU+ujE0q0k9eUQn/WonU2xiMJuChBg6T4Bvy4t1x6hIt4fda9ghuT2fbvWueN+Tp1j
+        prkrZNaWVkzjXyEeUcbwgcidTU/TY5kw1+2qaOtZTpl/OzerABMRU8rsBhyyfA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1645023480;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gKvTWrHCwjvcyRC9bhZTpUpXLRREYqwtipbQCdJ0zIc=;
+        b=N27luKwUGcBzff58fJEoyLESqV8m/76uoCdGy5ALd/TTu2Al9WKK5P8lwtQjnRCwyjYxK9
+        6vTRW2ir+U3PR/Bw==
+From:   "tip-bot2 for Alexander Shishkin" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] perf/x86/intel/pt: Add a capability and config bit
+ for event tracing
+Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220126104815.2807416-2-adrian.hunter@intel.com>
+References: <20220126104815.2807416-2-adrian.hunter@intel.com>
 MIME-Version: 1.0
-References: <20220212205048.43862-1-samuel@sholland.org>
-In-Reply-To: <20220212205048.43862-1-samuel@sholland.org>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 16 Feb 2022 15:55:30 +0100
-Message-ID: <CAMRc=Me8cmiJSu3dKDgzhKZchSYyC0KmnrLSDL0ckr_uASLv-g@mail.gmail.com>
-Subject: Re: [PATCH] gpio: rockchip: Reset int_bothedge when changing trigger
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Jianqun Xu <jay.xu@rock-chips.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Guillaume Savaton <guillaume@baierouge.fr>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <164502347917.16921.10455569552528508195.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 12, 2022 at 9:50 PM Samuel Holland <samuel@sholland.org> wrote:
->
-> With v2 hardware, an IRQ can be configured to trigger on both edges via
-> a bit in the int_bothedge register. Currently, the driver sets this bit
-> when changing the trigger type to IRQ_TYPE_EDGE_BOTH, but fails to reset
-> this bit if the trigger type is later changed to something else. This
-> causes spurious IRQs, and when using gpio-keys with wakeup-event-action
-> set to EV_ACT_(DE)ASSERTED, those IRQs translate into spurious wakeups.
->
-> Fixes: 3bcbd1a85b68 ("gpio/rockchip: support next version gpio controller")
-> Reported-by: Guillaume Savaton <guillaume@baierouge.fr>
-> Tested-by: Guillaume Savaton <guillaume@baierouge.fr>
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
+The following commit has been merged into the perf/core branch of tip:
 
-Queued for fixes, thanks!
+Commit-ID:     28c24ded649cf068ca518f2a3d78f5e7e06d41d8
+Gitweb:        https://git.kernel.org/tip/28c24ded649cf068ca518f2a3d78f5e7e06d41d8
+Author:        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+AuthorDate:    Wed, 26 Jan 2022 12:48:14 +02:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 15 Feb 2022 17:47:11 +01:00
 
-Bart
+perf/x86/intel/pt: Add a capability and config bit for event tracing
+
+As of Intel SDM (https://www.intel.com/sdm) version 076, there is a new
+Intel PT feature called Event Trace which is enabled config bit 31.
+
+Event Trace exposes details about asynchronous events such as interrupts
+and VM-Entry/Exit.
+
+Add a capability and config bit for Event Trace.
+
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+Link: https://lore.kernel.org/r/20220126104815.2807416-2-adrian.hunter@intel.com
+---
+ arch/x86/events/intel/pt.c       | 8 ++++++++
+ arch/x86/include/asm/intel_pt.h  | 1 +
+ arch/x86/include/asm/msr-index.h | 1 +
+ 3 files changed, 10 insertions(+)
+
+diff --git a/arch/x86/events/intel/pt.c b/arch/x86/events/intel/pt.c
+index f061dc2..f339c88 100644
+--- a/arch/x86/events/intel/pt.c
++++ b/arch/x86/events/intel/pt.c
+@@ -59,6 +59,7 @@ static struct pt_cap_desc {
+ 	PT_CAP(mtc,			0, CPUID_EBX, BIT(3)),
+ 	PT_CAP(ptwrite,			0, CPUID_EBX, BIT(4)),
+ 	PT_CAP(power_event_trace,	0, CPUID_EBX, BIT(5)),
++	PT_CAP(event_trace,		0, CPUID_EBX, BIT(7)),
+ 	PT_CAP(topa_output,		0, CPUID_ECX, BIT(0)),
+ 	PT_CAP(topa_multiple_entries,	0, CPUID_ECX, BIT(1)),
+ 	PT_CAP(single_range_output,	0, CPUID_ECX, BIT(2)),
+@@ -110,6 +111,7 @@ PMU_FORMAT_ATTR(tsc,		"config:10"	);
+ PMU_FORMAT_ATTR(noretcomp,	"config:11"	);
+ PMU_FORMAT_ATTR(ptw,		"config:12"	);
+ PMU_FORMAT_ATTR(branch,		"config:13"	);
++PMU_FORMAT_ATTR(event,		"config:31"	);
+ PMU_FORMAT_ATTR(mtc_period,	"config:14-17"	);
+ PMU_FORMAT_ATTR(cyc_thresh,	"config:19-22"	);
+ PMU_FORMAT_ATTR(psb_period,	"config:24-27"	);
+@@ -118,6 +120,7 @@ static struct attribute *pt_formats_attr[] = {
+ 	&format_attr_pt.attr,
+ 	&format_attr_cyc.attr,
+ 	&format_attr_pwr_evt.attr,
++	&format_attr_event.attr,
+ 	&format_attr_fup_on_ptw.attr,
+ 	&format_attr_mtc.attr,
+ 	&format_attr_tsc.attr,
+@@ -298,6 +301,7 @@ fail:
+ 			RTIT_CTL_CYC_PSB	| \
+ 			RTIT_CTL_MTC		| \
+ 			RTIT_CTL_PWR_EVT_EN	| \
++			RTIT_CTL_EVENT_EN	| \
+ 			RTIT_CTL_FUP_ON_PTW	| \
+ 			RTIT_CTL_PTW_EN)
+ 
+@@ -352,6 +356,10 @@ static bool pt_event_valid(struct perf_event *event)
+ 	    !intel_pt_validate_hw_cap(PT_CAP_power_event_trace))
+ 		return false;
+ 
++	if (config & RTIT_CTL_EVENT_EN &&
++	    !intel_pt_validate_hw_cap(PT_CAP_event_trace))
++		return false;
++
+ 	if (config & RTIT_CTL_PTW) {
+ 		if (!intel_pt_validate_hw_cap(PT_CAP_ptwrite))
+ 			return false;
+diff --git a/arch/x86/include/asm/intel_pt.h b/arch/x86/include/asm/intel_pt.h
+index ebe8d2e..d1ef9cb 100644
+--- a/arch/x86/include/asm/intel_pt.h
++++ b/arch/x86/include/asm/intel_pt.h
+@@ -13,6 +13,7 @@ enum pt_capabilities {
+ 	PT_CAP_mtc,
+ 	PT_CAP_ptwrite,
+ 	PT_CAP_power_event_trace,
++	PT_CAP_event_trace,
+ 	PT_CAP_topa_output,
+ 	PT_CAP_topa_multiple_entries,
+ 	PT_CAP_single_range_output,
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index 3faf0f9..79b392d 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -205,6 +205,7 @@
+ #define RTIT_CTL_DISRETC		BIT(11)
+ #define RTIT_CTL_PTW_EN			BIT(12)
+ #define RTIT_CTL_BRANCH_EN		BIT(13)
++#define RTIT_CTL_EVENT_EN		BIT(31)
+ #define RTIT_CTL_MTC_RANGE_OFFSET	14
+ #define RTIT_CTL_MTC_RANGE		(0x0full << RTIT_CTL_MTC_RANGE_OFFSET)
+ #define RTIT_CTL_CYC_THRESH_OFFSET	19
