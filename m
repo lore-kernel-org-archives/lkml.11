@@ -2,158 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6219BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiBPIjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 03:39:35 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37022 "EHLO
+        id S231556AbiBPIkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 03:40:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiBPIjd (ORCPT
+        with ESMTP id S229828AbiBPIkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 03:39:33 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CE810B201
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:39:21 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id s1so1307880iob.9
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:39:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zJXMODhdBkf6vc06+F5pCVIh6APP23M3j8CKu88q15Q=;
-        b=lbe3CEMY4Ub6K+wUXjtSitO/K59lr9Uwcr3f2MOly1/EFqOcdg9hh6zgANZJMnKb5t
-         V0kqoetuywmUQaekwAvi9m9/9QFqN0hdHOU7Mw7h0i2/HgZ+zm+dI9cCWkwJBQZiqbRL
-         e8DC14oGb66dR2Sg2M4m9CoXPiUV1p1EKAPNsHb9Qs9bVQOvzdV3p3Mn0AdMqDR7Qenm
-         NjBRQUispRluhY2+I9XNvnNZ+PLbtHB7Tk0H88qMXvQzksmcbKuCCLGsxnY3ocE0U72W
-         KOY35PYY2qMF/1MOnkfNHnz2hWVP5oy76EFp1eb3SVVS2dFP69GygTzMRJkQn7ACIm6m
-         drXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zJXMODhdBkf6vc06+F5pCVIh6APP23M3j8CKu88q15Q=;
-        b=QPap2JNT90oP5bQbNSYyr53b10vO9P1KhoFOr2QRr4RtWDK6F8/o7KtsRGYXPsISpa
-         zoV6DElii4SPbfa1y5QAr9Df9uHtI0d8q4jtDL3hoEHrfKvU+kr5rlQZc+mP3E4DYFKq
-         3jvzTm8AqWtSFhnMw0GfEo+fR12LGy11OIhhqHERyY3S+ytFXkAnNTYCGcmMP5itYWwN
-         Mric9NRTy6XRJmheCSW2rCUbYq/ZoZoAhUl9MAItWVTsAlsvgH6mZnxIng61LchEOIxq
-         j4VKKEKLwwn625IVIaBM574pH3Wvk8/h3n6o+NeXsWXsMIo8EaZibuSh19YKHz5dtoBt
-         nX5A==
-X-Gm-Message-State: AOAM531t3bVYLNob5mE0FWAtf+XO1I62+/QdanntGj25V7TK26o4eZGq
-        YwnomcGPYy0znJXocYZ2KJXne4FOJAHOPf9rdR8=
-X-Google-Smtp-Source: ABdhPJzsgi7vs4zYUQ1swAAlrRQXus7Yogb4FnBlstHft4Vp4wbVq460y3slrxK9XiJLK3Tu1TfnHv5zSql+Sm8rqrs=
-X-Received: by 2002:a02:a190:0:b0:314:ed7:c072 with SMTP id
- n16-20020a02a190000000b003140ed7c072mr1086474jah.130.1645000760419; Wed, 16
- Feb 2022 00:39:20 -0800 (PST)
+        Wed, 16 Feb 2022 03:40:02 -0500
+X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 00:39:50 PST
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C538120E8B;
+        Wed, 16 Feb 2022 00:39:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=YLqbvNAQ5McurwQxgQURUxYEK/101B81ffBYTWQOubQ=; b=eL7Hr/lkBZAvTbiBImym7WqBQv
+        fFtLWY1zFgcvz0Y28ZdTef3hq5UPUDbyOdU9owOcUlMeUyuZ3oyA98+tA7VtWzh/V83PJpmahWg5r
+        mvo8+O4dcwNzaE4UT8NttIU5Q9B24c2fgT7vTH888Bt6ebP3Ss7Na0xbwHiYPj0X9IyrjurNjA5eB
+        ZWjzedHDsBYGuHo0wwQOWbdJJooJ46j4RrmUOFAYciKhQ5IxMuRrv2wAplC9c/d+YFiFj0HwvJvHq
+        KNdq7ecLO91xqhxo3t7F2RmN2eLeyUJ6R9jJqyAbe7jDYAW+nOrk0ELj+fWkrABrJye0Ksa6W80gd
+        A3UB8CtA==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=[192.168.1.10])
+        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1nKEop-0001Qm-2c; Wed, 16 Feb 2022 09:33:43 +0200
+Message-ID: <f0eb82eb-dec6-0870-3896-0973758caebb@kapsi.fi>
+Date:   Wed, 16 Feb 2022 09:33:42 +0200
 MIME-Version: 1.0
-References: <20220111161937.56272-1-pankaj.gupta.linux@gmail.com>
- <20220111161937.56272-3-pankaj.gupta.linux@gmail.com> <CAPcyv4gM99M8Waw9uEZefvpK0BsTkjGznLxUOMcMkGpk6SuHyA@mail.gmail.com>
-In-Reply-To: <CAPcyv4gM99M8Waw9uEZefvpK0BsTkjGznLxUOMcMkGpk6SuHyA@mail.gmail.com>
-From:   Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date:   Wed, 16 Feb 2022 09:39:09 +0100
-Message-ID: <CAM9Jb+iYXn+Diq-vou+_hXdxXLR9rEXm6GOsd2tZpAg9zXn1Fw@mail.gmail.com>
-Subject: Re: [RFC v3 2/2] pmem: enable pmem_submit_bio for asynchronous flush
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Linux NVDIMM <nvdimm@lists.linux.dev>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        jmoyer <jmoyer@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Vishal L Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        Pankaj Gupta <pankaj.gupta@ionos.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v2 4/6] dt-bindings: Add HDA support for Tegra234
+Content-Language: en-US
+To:     Mohan Kumar <mkumard@nvidia.com>, broonie@kernel.org,
+        lgirdwood@gmail.com, robh+dt@kernel.org, thierry.reding@gmail.com,
+        tiwai@suse.com, jonathanh@nvidia.com, spujar@nvidia.com
+Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220210065057.13555-1-mkumard@nvidia.com>
+ <20220210065057.13555-5-mkumard@nvidia.com>
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+In-Reply-To: <20220210065057.13555-5-mkumard@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> >
-> > Return from "pmem_submit_bio" when asynchronous flush is
-> > still in progress in other context.
-> >
-> > Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-> > ---
-> >  drivers/nvdimm/pmem.c        | 15 ++++++++++++---
-> >  drivers/nvdimm/region_devs.c |  4 +++-
-> >  2 files changed, 15 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
-> > index fe7ece1534e1..f20e30277a68 100644
-> > --- a/drivers/nvdimm/pmem.c
-> > +++ b/drivers/nvdimm/pmem.c
-> > @@ -201,8 +201,12 @@ static void pmem_submit_bio(struct bio *bio)
-> >         struct pmem_device *pmem = bio->bi_bdev->bd_disk->private_data;
-> >         struct nd_region *nd_region = to_region(pmem);
-> >
-> > -       if (bio->bi_opf & REQ_PREFLUSH)
-> > +       if (bio->bi_opf & REQ_PREFLUSH) {
-> >                 ret = nvdimm_flush(nd_region, bio);
-> > +               /* asynchronous flush completes in other context */
->
-> I think a negative error code is a confusing way to capture the case
-> of "bio successfully coalesced to previously pending flush request.
-> Perhaps reserve negative codes for failure, 0 for synchronously
-> completed, and > 0 for coalesced flush request.
+On 2/10/22 08:50, Mohan Kumar wrote:
+> Add hda clocks, memory ,power and reset binding entries
+> for Tegra234.
+> 
+> Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
+> ---
+>   include/dt-bindings/clock/tegra234-clock.h     | 4 ++++
+>   include/dt-bindings/memory/tegra234-mc.h       | 6 ++++++
+>   include/dt-bindings/power/tegra234-powergate.h | 9 +++++++++
+>   include/dt-bindings/reset/tegra234-reset.h     | 2 ++
+>   4 files changed, 21 insertions(+)
+>   create mode 100644 include/dt-bindings/power/tegra234-powergate.h
+> 
+> diff --git a/include/dt-bindings/clock/tegra234-clock.h b/include/dt-bindings/clock/tegra234-clock.h
+> index 8d7e66e1b6ef..c014269b7245 100644
+> --- a/include/dt-bindings/clock/tegra234-clock.h
+> +++ b/include/dt-bindings/clock/tegra234-clock.h
+> @@ -30,5 +30,9 @@
+>   #define TEGRA234_CLK_PLLC4			237U
+>   /** @brief 32K input clock provided by PMIC */
+>   #define TEGRA234_CLK_CLK_32K			289U
+> +/** @brief CLK_RST_CONTROLLER_AZA2XBITCLK_OUT_SWITCH_DIVIDER switch divider output (aza_2xbitclk) */
+> +#define TEGRA234_CLK_AZA_2XBIT			457U
+> +/** @brief aza_2xbitclk / 2 (aza_bitclk) */
+> +#define TEGRA234_CLK_AZA_BIT			458U
+>   
+>   #endif
+> diff --git a/include/dt-bindings/memory/tegra234-mc.h b/include/dt-bindings/memory/tegra234-mc.h
+> index 2662f70c15c6..f538fc442cee 100644
+> --- a/include/dt-bindings/memory/tegra234-mc.h
+> +++ b/include/dt-bindings/memory/tegra234-mc.h
+> @@ -7,6 +7,8 @@
+>   #define TEGRA234_SID_INVALID		0x00
+>   #define TEGRA234_SID_PASSTHROUGH	0x7f
+>   
+> +/* NISO0 SMMU STREAM IDs */
+> +#define TEGRA234_SID_NISO0_HDA		0x03
 
-Yes. I implemented this way previously, will revert it to. Thanks!
+Please follow the existing convention in this file.
 
->
-> > +               if (ret == -EINPROGRESS)
-> > +                       return;
-> > +       }
-> >
-> >         do_acct = blk_queue_io_stat(bio->bi_bdev->bd_disk->queue);
-> >         if (do_acct)
-> > @@ -222,13 +226,18 @@ static void pmem_submit_bio(struct bio *bio)
-> >         if (do_acct)
-> >                 bio_end_io_acct(bio, start);
-> >
-> > -       if (bio->bi_opf & REQ_FUA)
-> > +       if (bio->bi_opf & REQ_FUA) {
-> >                 ret = nvdimm_flush(nd_region, bio);
-> > +               /* asynchronous flush completes in other context */
-> > +               if (ret == -EINPROGRESS)
-> > +                       return;
-> > +       }
-> >
-> >         if (ret)
-> >                 bio->bi_status = errno_to_blk_status(ret);
-> >
-> > -       bio_endio(bio);
-> > +       if (bio)
-> > +               bio_endio(bio);
-> >  }
-> >
-> >  static int pmem_rw_page(struct block_device *bdev, sector_t sector,
-> > diff --git a/drivers/nvdimm/region_devs.c b/drivers/nvdimm/region_devs.c
-> > index 9ccf3d608799..8512d2eaed4e 100644
-> > --- a/drivers/nvdimm/region_devs.c
-> > +++ b/drivers/nvdimm/region_devs.c
-> > @@ -1190,7 +1190,9 @@ int nvdimm_flush(struct nd_region *nd_region, struct bio *bio)
-> >         if (!nd_region->flush)
-> >                 rc = generic_nvdimm_flush(nd_region);
-> >         else {
-> > -               if (nd_region->flush(nd_region, bio))
-> > +               rc = nd_region->flush(nd_region, bio);
-> > +               /* ongoing flush in other context */
-> > +               if (rc && rc != -EINPROGRESS)
-> >                         rc = -EIO;
->
-> Why change this to -EIO vs just let the error code through untranslated?
+/* NISO0 stream IDs */
+#define TEGRA234_SID_HDA	0x03
 
-The reason was to be generic error code instead of returning host side
-return codes to guest?
+>   
+>   /* NISO1 stream IDs */
+>   #define TEGRA234_SID_SDMMC4	0x02
+> @@ -16,6 +18,10 @@
+>    * memory client IDs
+>    */
+>   
+> +/* High-definition audio (HDA) read clients */
+> +#define TEGRA234_MEMORY_CLIENT_HDAR 0x15
+> +/* High-definition audio (HDA) write clients */
+> +#define TEGRA234_MEMORY_CLIENT_HDAW 0x35
+>   /* sdmmcd memory read client */
+>   #define TEGRA234_MEMORY_CLIENT_SDMMCRAB 0x63
+>   /* sdmmcd memory write client */
+> diff --git a/include/dt-bindings/power/tegra234-powergate.h b/include/dt-bindings/power/tegra234-powergate.h
+> new file mode 100644
+> index 000000000000..3c5575a51296
+> --- /dev/null
+> +++ b/include/dt-bindings/power/tegra234-powergate.h
+> @@ -0,0 +1,9 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved. */
+> +
+> +#ifndef __ABI_MACH_T234_POWERGATE_T234_H_
+> +#define __ABI_MACH_T234_POWERGATE_T234_H_
+> +
+> +#define TEGRA234_POWER_DOMAIN_DISP	3U
+> +
+> +#endif
+> diff --git a/include/dt-bindings/reset/tegra234-reset.h b/include/dt-bindings/reset/tegra234-reset.h
+> index 50e13bced642..2ab61c69a3d9 100644
+> --- a/include/dt-bindings/reset/tegra234-reset.h
+> +++ b/include/dt-bindings/reset/tegra234-reset.h
+> @@ -10,6 +10,8 @@
+>    * @brief Identifiers for Resets controllable by firmware
+>    * @{
+>    */
+> +#define TEGRA234_RESET_HDA			20U
+> +#define TEGRA234_RESET_HDACODEC			21U
+>   #define TEGRA234_RESET_SDMMC4			85U
+>   #define TEGRA234_RESET_UARTA			100U
+>   
 
-Thanks!
-Pankaj
->
-> >         }
-> >
-> > --
-> > 2.25.1
-> >
-> >
