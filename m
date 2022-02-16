@@ -2,117 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF006C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 05:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B78C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 05:33:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344611AbiBPFck (ORCPT
+        id S1344613AbiBPFdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 00:32:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49116 "EHLO
+        Wed, 16 Feb 2022 00:33:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbiBPFcj (ORCPT
+        with ESMTP id S230002AbiBPFdb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 00:32:39 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1948E90277
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 21:32:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644989548; x=1676525548;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WDJpWv6XnPLS+5i/n3SB1QpVOz8ZYtnpJAD5DEwJhos=;
-  b=Wyn2p6Puzix1cis7pYKtds39EKIXCjCo8ulX2tWR5LIcWTtgpliN9s0f
-   ZM6YOc1kvD4mvzl+5tCoxGiPY1Uoe69s9pSW4ZR/O4GdiBzc05WSLpjaF
-   TMwG415NuE+ZQLHKPjHo5grpzDrruYLsx5bUM6/0RLfGPFUtyNft9GyMa
-   6YNHhFjU+n31DvtR3WrNMVMsixjXNWJwYgO29C2gAn6EiqgqxUoQa9QHj
-   7Kbzz6cONQ8WPbpQn7V0Jnt+nWf7YVvsnAUcWhHmbs37Zs1aIfJmLT4KJ
-   C3siXmXY+auVdQGii5wP7ULv7hGODPApJnVdzjw9hZTlvlOxZlyIRjaAr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="231154844"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="231154844"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 21:32:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="571131353"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 15 Feb 2022 21:32:26 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKCvR-000ATN-GF; Wed, 16 Feb 2022 05:32:25 +0000
-Date:   Wed, 16 Feb 2022 13:31:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yong Wu <yong.wu@mediatek.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [deller-fbdev:for-next 51/51]
- drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:42: error: use of undeclared
- identifier 'component_compare_dev'; did you mean 'component_master_del'?
-Message-ID: <202202161324.Jh1OfqAf-lkp@intel.com>
+        Wed, 16 Feb 2022 00:33:31 -0500
+Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7DF9DD71
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 21:33:18 -0800 (PST)
+X-QQ-mid: bizesmtp47t1644989585t4nrygss
+Received: from localhost.localdomain (unknown [123.114.60.34])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 16 Feb 2022 13:33:04 +0800 (CST)
+X-QQ-SSF: 01400000002000B0L000B00A0000000
+X-QQ-FEAT: uE/0zJO4PKhyiCZI8PSclB0vhfQ0ySIMiwHanVescs2Nt8Jexk1wVJm1RK8MP
+        W7KMd5giGhHNLpVTJLy8piHAU4dbOK0yyDOpOGiyxH0acaKrpEVW89Gfd2v9hSVwprNJ3ui
+        YjmlIXgj3AQ11XOmQMKD0yGACsFZQ1z5LrtPl3RWbWyG2GQ8rVRlbSaszQLRy4JlJ0n4P5p
+        sNaasX5qZPwNRyA3+bxx7bL4njFcBBnPKkn5IWAfpcNCVEf6rXZrRfBkQZYTzCsqYWQXXtF
+        JVU/7Zqz6SY03ZPLVjBJzyIxrIB1A1Zx0VvdFVEOW0JNFlQ+7XtJ5I/i9041nDJq5TvcNkW
+        av4AVkx1y9esNw0TRo=
+X-QQ-GoodBg: 2
+From:   zhaoxiao <zhaoxiao@uniontech.com>
+To:     dmitry.torokhov@gmail.com
+Cc:     krzysztof.kozlowski@canonical.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zhaoxiao <zhaoxiao@uniontech.com>
+Subject: [PATCH] input: max77693-haptic: Make use of the helper function dev_err_probe()
+Date:   Wed, 16 Feb 2022 13:33:02 +0800
+Message-Id: <20220216053302.20190-1-zhaoxiao@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign2
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git for-next
-head:   61038027aa13351c63b452a0d48c805bab1d2ce9
-commit: 61038027aa13351c63b452a0d48c805bab1d2ce9 [51/51] video: fbdev: omapfb: Make use of the helper component_compare_dev
-config: arm-randconfig-c002-20220216 (https://download.01.org/0day-ci/archive/20220216/202202161324.Jh1OfqAf-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0e628a783b935c70c80815db6c061ec84f884af5)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git/commit/?id=61038027aa13351c63b452a0d48c805bab1d2ce9
-        git remote add deller-fbdev git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git
-        git fetch --no-tags deller-fbdev for-next
-        git checkout 61038027aa13351c63b452a0d48c805bab1d2ce9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/video/fbdev/omap2/omapfb/dss/
+devm_pwm_get() can return -EPROBE_DEFER if the pwm regulator is not
+ready yet. Use dev_err_probe() for pwm regulator resources
+to indicate the deferral reason when waiting for the
+resource to come up.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:42: error: use of undeclared identifier 'component_compare_dev'; did you mean 'component_master_del'?
-           component_match_add(dev->parent, match, component_compare_dev, dev);
-                                                   ^~~~~~~~~~~~~~~~~~~~~
-                                                   component_master_del
-   include/linux/component.h:85:6: note: 'component_master_del' declared here
-   void component_master_del(struct device *,
-        ^
-   1 error generated.
-
-
-vim +1209 drivers/video/fbdev/omap2/omapfb/dss/dss.c
-
-  1195	
-  1196	static int dss_add_child_component(struct device *dev, void *data)
-  1197	{
-  1198		struct component_match **match = data;
-  1199	
-  1200		/*
-  1201		 * HACK
-  1202		 * We don't have a working driver for rfbi, so skip it here always.
-  1203		 * Otherwise dss will never get probed successfully, as it will wait
-  1204		 * for rfbi to get probed.
-  1205		 */
-  1206		if (strstr(dev_name(dev), "rfbi"))
-  1207			return 0;
-  1208	
-> 1209		component_match_add(dev->parent, match, component_compare_dev, dev);
-  1210	
-  1211		return 0;
-  1212	}
-  1213	
-
+Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/input/misc/max77693-haptic.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/input/misc/max77693-haptic.c b/drivers/input/misc/max77693-haptic.c
+index 4369d3c04d38..787ea6d0d64d 100644
+--- a/drivers/input/misc/max77693-haptic.c
++++ b/drivers/input/misc/max77693-haptic.c
+@@ -325,11 +325,9 @@ static int max77693_haptic_probe(struct platform_device *pdev)
+ 
+ 	/* Get pwm and regulatot for haptic device */
+ 	haptic->pwm_dev = devm_pwm_get(&pdev->dev, NULL);
+-	if (IS_ERR(haptic->pwm_dev)) {
+-		dev_err(&pdev->dev, "failed to get pwm device\n");
+-		return PTR_ERR(haptic->pwm_dev);
+-	}
+-
++	if (IS_ERR(haptic->pwm_dev))
++		return dev_err_probe(&pdev->dev, PTR_ERR(haptic->pwm_dev),
++				"failed to get pwm device\n");
+ 	/*
+ 	 * FIXME: pwm_apply_args() should be removed when switching to the
+ 	 * atomic PWM API.
+-- 
+2.20.1
+
+
+
