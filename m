@@ -2,85 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8962C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA307C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231636AbiBPUgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 15:36:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55534 "EHLO
+        id S232516AbiBPUgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 15:36:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232574AbiBPUfp (ORCPT
+        with ESMTP id S232547AbiBPUfo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 15:35:45 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B6B2AE729
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:35:32 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so3489323pjm.2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:35:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ZiuFSTUba1ATIIXLsTWrQztSTfw4EGm3xQIUgvLL4Mk=;
-        b=YXjfl7xGUMOFGqUfuV8g8dqmpsyREkxR2ZgdxcoP9kPzp2YmCd3cfWw9AYwPKinBnf
-         gcJwe5aFs2j51u2c3EReqPEpZ2SfOf7qXc4tnTxvI2sZZl4qjbFKLZZz/kztyyRitwg8
-         YzpybCwUVrhXH9Z5tsATr5UR9Cv23DeMtqssk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ZiuFSTUba1ATIIXLsTWrQztSTfw4EGm3xQIUgvLL4Mk=;
-        b=WPAfCZWrrp+2k5XLWPIQNv8go7tD9cajLSKCUxfJTeOOIRjcqgrK50J+Dsgzdz2uJj
-         hdCM5rHmmEztdqlfNEEobha3oJ69cCZFSNFAljIVsg1VUPCdEjVrzZvZzPH1U7DweAPE
-         0Y0o4t+8J6/Tp1VhOvdN+Xocp2kpY20u9HGQ3d0qYXD+jJgKWdY8miMQQVOz7PAbUrat
-         ZgniveX4JzARC63V+r9LXDhEc0/DikHVbX9dB+3GHRcDriQ6PJE/2u61i5cb7Vjwp/LK
-         g8f8yILHIj9g+v+3zYnxNMXhIrly6P/XLUWRv84cJP1BHDtlOaOnaGPnhFA1AlI7rMvv
-         gM5A==
-X-Gm-Message-State: AOAM531nhvL6mqxWxCNyQBcoTWSxjdYphkavpMRciykAQHPX357NWeWY
-        9MjQS6833c4JaRKYzYX190fSAczZMqM0Ng==
-X-Google-Smtp-Source: ABdhPJwwN7eFoWkSBD6A2li7xRKGQqNGXljyJPz1+jlWuOdkrFtGLad3asl8gm9epTBPDnceOx4M1A==
-X-Received: by 2002:a17:903:281:b0:14c:f3b3:209b with SMTP id j1-20020a170903028100b0014cf3b3209bmr4129964plr.87.1645043731720;
+        Wed, 16 Feb 2022 15:35:44 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6AE2AE2A3;
         Wed, 16 Feb 2022 12:35:31 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d15sm44055299pfu.127.2022.02.16.12.35.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 12:35:31 -0800 (PST)
-Date:   Wed, 16 Feb 2022 12:35:30 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] tw89: core.h: Replace zero-length array with
- flexible-array member
-Message-ID: <202202161235.0C91ED227@keescook>
-References: <20220216195047.GA904198@embeddedor>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=dOT/1aOyaiDsVJvJU3JA5EooJNZncoACyNyR31PUbGw=; b=gHB55gRMUKJvsWEOn23DNCXR0+
+        9dNBp4Q3bo8fg63YX3+Xk0+2ry3W7Q7+4pjbCCFfBdR463dYXX9JacOAA0GKvh9AhOvJ5426FuLox
+        /6O6pV+BpWpodsyl4Ypjv3AyWxrG5Z2Bf0gMIibP2HDBkh79Xj3BgtKcJK4YEYe9H1AcXHSHCpogo
+        waGKjsR9DUcQ8eEjXLKCUD0DKQ8P88iNlK5K/64bZ/3BZkjZWyBdUBVxyEs7Z2OE3fMK3LQlDpF8F
+        KMSfXwHLTrF0y5abn6XMg/vq1CX2uHzNKlOfT+fvxU5dRPP+yngH/QB9vmNQsURUDJmumISikp0Qq
+        3qTkJmpw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nKR1L-00F1Wz-DL; Wed, 16 Feb 2022 20:35:27 +0000
+Message-ID: <6da7a555-61e9-4a66-be18-1bcaa6cdbc53@infradead.org>
+Date:   Wed, 16 Feb 2022 12:35:21 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220216195047.GA904198@embeddedor>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] Docs: printk: add 'console=null|""' to
+ admin/kernel-parameters
+Content-Language: en-US
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+References: <20220215005615.11244-1-rdunlap@infradead.org>
+ <YgviYXNc6zo2V+35@alley>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <YgviYXNc6zo2V+35@alley>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 01:50:47PM -0600, Gustavo A. R. Silva wrote:
-> There is a regular need in the kernel to provide a way to declare
-> having a dynamically sized set of trailing elements in a structure.
-> Kernel code should always use “flexible array members”[1] for these
-> cases. The older style of one-element or zero-length arrays should
-> no longer be used[2].
-> 
-> [1] https://en.wikipedia.org/wiki/Flexible_array_member
-> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-> 
-> Link: https://github.com/KSPP/linux/issues/78
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Hi Petr,
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+On 2/15/22 09:26, Petr Mladek wrote:
+> On Mon 2022-02-14 16:56:15, Randy Dunlap wrote:
+>> Tell about 'console=null|""' and how to use it.
+>>
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Cc: Petr Mladek <pmladek@suse.com>
+>> Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+>> Cc: Steven Rostedt <rostedt@goodmis.org>
+>> Cc: John Ogness <john.ogness@linutronix.de>
+>> Cc: Jonathan Corbet <corbet@lwn.net>
+>> Cc: linux-doc@vger.kernel.org
+>> ---
+>>  Documentation/admin-guide/kernel-parameters.txt |    6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> --- linux-next-20220214.orig/Documentation/admin-guide/kernel-parameters.txt
+>> +++ linux-next-20220214/Documentation/admin-guide/kernel-parameters.txt
+>> @@ -724,6 +724,12 @@
+>>  		hvc<n>	Use the hypervisor console device <n>. This is for
+>>  			both Xen and PowerPC hypervisors.
+>>  
+>> +		{ null | "" }
+>> +			Use to disable console output, i.e., to have kernel
+>> +			console messages discarded.
+>> +			This must be the first (or only) console= string
+>> +			used on the kernel command line.
+> 
+> It must be the only console= parameter on the command line. Otherwise,
+> the other consoles get enabled as well.
+> 
+> It might make sense to detect this situation and print a warning or
+> so. Nobody has sent a patch for this so far.
+> 
+> But there is even bigger problem. The default console is also used
+> as stdin/stdout/stderr for the init process. It might fail when there
+> is no console driver associated with it.
+> 
+> The problem with stdin/stdout/stderr does not happen when
+> CONFIG_NULL_TTY is enabled and ttynull driver is available.
+> Unfortunately, it can't be enabled by default because it can
+> be used by mistake, see the commit a91bd6223ecd46addc71e
+> ("Revert "init/console: Use ttynull as a fallback when there
+> is no console").
+> 
+> And there is still a mystery that has not been explained yet,
+> see https://lore.kernel.org/r/a46e9a26-5b9f-f14c-26be-0b4d41fa7429@roeck-us.net
+> 
+> On the positive note. console=null mostly works. All the problems are
+> hard to reproduce.
+> 
+> 
+> Now, what to do with this patch. I would suggest two changes:
+> 
+> 1. Replace "must be the first (or only)" with "must be the only"
+> 
+> 2. Mention that it is suggested to enable CONFIG_NULL_TTY that
+>    will avoid problems with stdin/stdout/stderr of the init process.
+>    But it might cause the ttynull might be used even when a real
+>    console is configured. And that more details can be found
+>    in the commit a91bd6223ecd46addc71e ("Revert "init/console:
+>    Use ttynull as a fallback when there is no console").
+> 
+>    It might be enough to mention this in the commit message.
+
+Thanks for the history summary and suggestions.
+I'll send a v2...
 
 -- 
-Kees Cook
+~Randy
