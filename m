@@ -2,120 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F35C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC0DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238418AbiBPTzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:55:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37034 "EHLO
+        id S238423AbiBPT4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:56:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238397AbiBPTzb (ORCPT
+        with ESMTP id S238394AbiBPTzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:55:31 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677542B102F
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:55:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645041319; x=1676577319;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SvdmHFDYO8hwDG1iuRgcH+4moGS/UQknSxuGy9UmZT0=;
-  b=IkKDwMZIP/HzNVxN4k4fpdUTBfbWl1gHCLWGvJw88ayty8SkvAOGdDxm
-   +afPwaTMXUoeSap6OXiFj5wZBHy8hDQFnOnb3sYgfdRGv0rIeWpIrhTMe
-   eWgLgPJqxoDS3P9Yb/d8/f+VZCcu+2mhYBQEbUof0GssOqFrr+g2i5jZH
-   sPoKTtwnV/a/VdXzUD0yIQj/OguvrNUbENu8CRfmYX1FnQrVLDezWxkKA
-   UzgfSkz+e4MdtoOgZfTJAdWcN9BNabGpu9hIrBh1zVoiEcQJuXiGCDBRW
-   xQMbbPTSWWD4blTL3D904sWK1J4j/w4+bkR1+fXE13Nue4eV83VHTQIOC
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="250448210"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="250448210"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:55:19 -0800
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="545140325"
-Received: from sannilnx.jer.intel.com ([10.12.231.79])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:55:15 -0800
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v8 0/5] Add driver for GSC controller
-Date:   Wed, 16 Feb 2022 21:54:54 +0200
-Message-Id: <20220216195459.3918414-1-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 16 Feb 2022 14:55:33 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4232B102C;
+        Wed, 16 Feb 2022 11:55:20 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id y17so5771693edd.10;
+        Wed, 16 Feb 2022 11:55:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PD6yzCgOYpWVSwenJgOD3M2UZqs8pw6XfrocvAB3tzQ=;
+        b=LW13VbLkwTWAZedb390gkobGLU9vJgjeSnIV+ZGYVYe26PJNMm7yXL4LjCeRv2Lg5X
+         W1OVyibLduGH1TDCldY5uIkkMCuAFmSwwAGrATLjBGM0rkV4dNZCciBzlAs9FXJuKDzt
+         a42VB6GOtSAAKARxnXVWWoLUa8+9hyJ4JFq68f8CkQZi+HBNlOAEIHfuZ6a7AUBVDUaq
+         P+HFnmIABQejUZFNDj7/CgtECH8x/GOXxItG8tdmFPjy7F0qmfaoeiUOX331JgeRwjXN
+         9lp+7kiN29bFKciIhvtQ/UevMttvbRBSn3bk7zRUeEeoe89Oxzae9a0UaHgJyO+rKtUo
+         wEcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PD6yzCgOYpWVSwenJgOD3M2UZqs8pw6XfrocvAB3tzQ=;
+        b=4l7J42oZuI0yXP5FH8ZntNV5iREuq7ayVIzTaBD+hCupHrFo4UVg9r2CJENYc9KvJJ
+         XZb0V5bkeDvy/ikuytaLr3w6CqujXdRAiDJcxIjPQZAqxVc+Aw6T5ZAd4ePbptJKc2CK
+         a5DZqXRTtE8Y3w7vIEd+Ocim3x/sabMZiBlOh3QhRaX5lWN5IZ4EubAJu0pr91ST/HSB
+         vjq+erp64WHwN5W9zfcWfAgpKL5RH599lcY1mLTjFDaaooM9ZhX47WovhVtQQAEnAilS
+         /VOK/ianY/kfgRDZWZFO7XRyHOg4OJn7e5wA0FJ67MI6Agv8NFvwHUlxleHdGIZdePP3
+         D4Vg==
+X-Gm-Message-State: AOAM531+/OBec82zg1ImbkDIislYfBQYyo5VqlSMiK51V87l1uxHV0un
+        7qFvqTgcz+zQZcWQT6vrLr4=
+X-Google-Smtp-Source: ABdhPJwzX9rXztPm8dfsc3nzWcIwAAE+AuY4iJwnmgmrnaoHyGFSukZqgjH8Mhp/D9pIU+CXifMmyA==
+X-Received: by 2002:a05:6402:b62:b0:3e2:a75f:b949 with SMTP id cb2-20020a0564020b6200b003e2a75fb949mr4770157edb.62.1645041319061;
+        Wed, 16 Feb 2022 11:55:19 -0800 (PST)
+Received: from skbuf ([188.27.184.105])
+        by smtp.gmail.com with ESMTPSA id z5sm284783eja.20.2022.02.16.11.55.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 11:55:18 -0800 (PST)
+Date:   Wed, 16 Feb 2022 21:55:17 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Mans Rullgard <mans@mansr.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Juergen Borleis <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: lan9303: add VLAN IDs to master device
+Message-ID: <20220216195517.o6dk64gwoe4sizl6@skbuf>
+References: <20220216151111.6376-1-mans@mansr.com>
+ <202202170327.RiXqUeGc-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202202170327.RiXqUeGc-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GSC is a graphics system controller, it provides
-a chassis controller for graphics discrete cards.
+On Thu, Feb 17, 2022 at 03:33:39AM +0800, kernel test robot wrote:
+> >> drivers/net/dsa/lan9303-core.c:1095:2: error: implicit declaration of function 'vlan_vid_add' [-Werror,-Wimplicit-function-declaration]
+>            vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
+>            ^
+> >> drivers/net/dsa/lan9303-core.c:1111:2: error: implicit declaration of function 'vlan_vid_del' [-Werror,-Wimplicit-function-declaration]
+>            vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
+>            ^
 
-There are two MEI interfaces in GSC: HECI1 and HECI2.
+#include <linux/if_vlan.h>
 
-This series includes instantiation of the auxiliary devices for HECI2
-and mei-gsc auxiliary device driver that binds to the auxiliary device.
+drivers/net/dsa/Kconfig:
 
-In v2 the platform device was replaced by the auxiliary device.
-v3 is the rebase over drm-tip to make public CI running.
-In v4 the not needed debug prints and empty line were removed,
-      'select' were replaced by 'depends on' in MEI Kconfig,
-      the new include file now listed in the MAINTATINERS file. 
-V5, rebase and add Greg KH Reviewed-by
-V6, rebase and drop redundant assignments found by the kernel test robot.
-V7, add Greg KH Reviewed-by to the individual patches
-V8, address Tvrtko comments for i915
+config NET_DSA_SMSC_LAN9303
+	depends on VLAN_8021Q || VLAN_8021Q=n
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-Alexander Usyskin (2):
-  mei: gsc: setup char driver alive in spite of firmware handshake
-    failure
-  mei: gsc: retrieve the firmware version
-
-Tomas Winkler (3):
-  drm/i915/gsc: add gsc as a mei auxiliary device
-  mei: add support for graphics system controller (gsc) devices
-  mei: gsc: add runtime pm handlers
-
- MAINTAINERS                              |   1 +
- drivers/gpu/drm/i915/Kconfig             |   1 +
- drivers/gpu/drm/i915/Makefile            |   3 +
- drivers/gpu/drm/i915/gt/intel_gsc.c      | 199 ++++++++++++++++++
- drivers/gpu/drm/i915/gt/intel_gsc.h      |  37 ++++
- drivers/gpu/drm/i915/gt/intel_gt.c       |   3 +
- drivers/gpu/drm/i915/gt/intel_gt.h       |   5 +
- drivers/gpu/drm/i915/gt/intel_gt_irq.c   |  13 ++
- drivers/gpu/drm/i915/gt/intel_gt_regs.h  |   1 +
- drivers/gpu/drm/i915/gt/intel_gt_types.h |   2 +
- drivers/gpu/drm/i915/i915_drv.h          |   8 +
- drivers/gpu/drm/i915/i915_pci.c          |   3 +-
- drivers/gpu/drm/i915/i915_reg.h          |   2 +
- drivers/gpu/drm/i915/intel_device_info.h |   2 +
- drivers/misc/mei/Kconfig                 |  14 ++
- drivers/misc/mei/Makefile                |   3 +
- drivers/misc/mei/bus-fixup.c             |  25 +++
- drivers/misc/mei/gsc-me.c                | 252 +++++++++++++++++++++++
- drivers/misc/mei/hw-me.c                 |  29 ++-
- drivers/misc/mei/hw-me.h                 |   2 +
- include/linux/mei_aux.h                  |  19 ++
- 21 files changed, 621 insertions(+), 3 deletions(-)
- create mode 100644 drivers/gpu/drm/i915/gt/intel_gsc.c
- create mode 100644 drivers/gpu/drm/i915/gt/intel_gsc.h
- create mode 100644 drivers/misc/mei/gsc-me.c
- create mode 100644 include/linux/mei_aux.h
-
--- 
-2.32.0
-
+and maybe you can access using dp->cpu_dp in the next revision.
