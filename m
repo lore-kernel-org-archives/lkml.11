@@ -2,150 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:49:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 922FDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238316AbiBPTtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:49:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45514 "EHLO
+        id S238333AbiBPTtb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:49:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238313AbiBPTtV (ORCPT
+        with ESMTP id S238313AbiBPTtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:49:21 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74861202068
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:49:05 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1602A12FC;
-        Wed, 16 Feb 2022 11:49:05 -0800 (PST)
-Received: from [10.57.40.147] (unknown [10.57.40.147])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 342B73F70D;
-        Wed, 16 Feb 2022 11:49:03 -0800 (PST)
-Message-ID: <27b10c12-e3f2-6ac4-26b5-44625e61d7ae@arm.com>
-Date:   Wed, 16 Feb 2022 19:48:57 +0000
+        Wed, 16 Feb 2022 14:49:24 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3680202068;
+        Wed, 16 Feb 2022 11:49:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645040951; x=1676576951;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=uttn9/DySER6QLvzk9CdFYOB7YGwLWPHJwLCb82MXjs=;
+  b=GeplCpSTgNqI3KyGVX5tJ1AdWTpynDUArU4iE34ooMR4pQTQbEe1/q18
+   x6Y9+QjK0xsx3UBbaDErwX3vE6lOmrPjYCwzd2kSeW2n40cZFkq8aZo1A
+   fX8hSw9azQ8RzfO0P1ag+bQQT+A6RGM752kY1sebmJKXL5ozV5Y1ylh4o
+   4=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 16 Feb 2022 11:49:11 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:49:11 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 16 Feb 2022 11:49:10 -0800
+Received: from [10.111.168.21] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Wed, 16 Feb
+ 2022 11:49:08 -0800
+Message-ID: <a65a62ab-427f-3a5a-b633-2c457f797dab@quicinc.com>
+Date:   Wed, 16 Feb 2022 11:49:03 -0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] dma-contiguous: Prioritize restricted DMA pool over
- shared DMA pool
-Content-Language: en-GB
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     bcm-kernel-feedback-list@broadcom.com, jim2101024@gmail.com,
-        opendmb@gmail.com, robh@kernel.org, will@kernel.org,
-        tientzu@chromium.org, Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>
-References: <20220215224344.1779145-1-f.fainelli@gmail.com>
- <39ed2187-2345-297d-2dd3-0b0974ce8b31@arm.com>
- <50ae9c05-2ec4-09a8-965c-0d70ea74d879@gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <50ae9c05-2ec4-09a8-965c-0d70ea74d879@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [REPOST PATCH v4 04/13] drm/msm/disp/dpu1: Add support for DSC in
+ pingpong block
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
+CC:     <linux-arm-msm@vger.kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <freedreno@lists.freedesktop.org>
+References: <20220210103423.271016-1-vkoul@kernel.org>
+ <20220210103423.271016-5-vkoul@kernel.org>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <20220210103423.271016-5-vkoul@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-16 17:37, Florian Fainelli wrote:
-> On 2/16/22 3:13 AM, Robin Murphy wrote:
->> On 2022-02-15 22:43, Florian Fainelli wrote:
->>> Some platforms might define the same memory region to be suitable for
->>> used by a kernel supporting CONFIG_DMA_RESTRICTED_POOL while maintaining
->>> compatibility with older kernels that do not support that. This is
->>> achieved by declaring the node this way;
->>
->> Those platforms are doing something inexplicably wrong, then.
-> 
-> Matter of perspective I guess.
-> 
->>
->> "restricted-dma-pool" says that DMA for the device has to be bounced
->> through a dedicated pool because it can't be trusted with visibility of
->> regular OS memory. "reusable" tells the OS that it's safe to use the
->> pool as regular OS memory while it's idle. Do you see how those concepts
->> are fundamentally incompatible?
-> 
->  From the perspective of the software or firmware agent that is
-> responsible for setting up the appropriate protection on the reserved
-> memory, it does not matter what the compatible string is, the only
-> properties that matter are the base address, size, and possibly whether
-> 'no-map' is specified or not to set-up appropriate protection for the
-> various memory controller agents (CPU, PCIe, everything else).
-> 
-> Everything else is just information provided to the OS in order to
-> provide a different implementation keyed off the compatible string. So
-> with that in mind, you can imagine that before the introduction of
-> 'restricted-dma-pool' in 5.15, some platforms already had such a concept
-> of a reserved DMA region, that was backed by a device private CMA pool,
-> they would allocate memory from that region and would create their own
-> middle layer for bounce buffering if they liked to. This is obviously
-> not ideal on a number of levels starting from not being done at the
-> appropriate level but it was done.
-> 
-> Now that 'restricted-dma-pool' is supported, transitioning them over is
-> obviously better and updating the compatible string for those specific
-> regions to include the more descriptive 'restrictded-dma-pool' sounded
-> to me as an acceptable way to maintain forward/backward DTB
-> compatibility rather than doubly reserving these region one with the
-> "old" compatible and one with the "new" compatible, not that the system
-> is even capable of doing that anyway, so we would have had to
-> essentially make them adjacent.
-> 
-> And no, we are not bringing Linux version awareness to our boot loader
-> mangling the Device Tree blob, that's not happening, hence this patch.
 
-If the patch was adding a "brcm,insecure-dma-pool" compatible and 
-hooking it up, I'd be less bothered. As it is, I remain unconvinced that 
-describing two things that are not interchangeable with each other as 
-interchangeable with each other is in any way "better".
 
->> Linux is right to reject contradictory information rather than attempt
->> to guess at what might be safe or not.
+On 2/10/2022 2:34 AM, Vinod Koul wrote:
+> In SDM845, DSC can be enabled by writing to pingpong block registers, so
+> add support for DSC in hw_pp
 > 
-> The piece of contradictory information here specifically is the
-> 'reusable' boolean property, but as I explain the commit message
-> message, if you have a "properly formed" 'restricted-dma-pool' region
-> then it should not have that property in the first place, but even if it
-> does, it does not harm anything to have it.
+> Reviewed-by: Abhinav Kumar <abhinavk@codeaurora.org>
+
+For the sake of uniformity, please use
+
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> ---
+>   .../gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c   | 32 +++++++++++++++++++
+>   .../gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h   | 14 ++++++++
+>   2 files changed, 46 insertions(+)
 > 
->>
->> Furthermore, down at the practical level, a SWIOTLB pool is used for
->> bouncing streaming DMA API mappings, while a coherent/CMA pool is used
->> for coherent DMA API allocations; they are not functionally
->> interchangeable either. If a device depends on coherent allocations
->> rather than streaming DMA, it should still have a coherent pool even
->> under a physical memory protection scheme, and if it needs both
->> streaming DMA and coherent buffers then it can have both types of pool -
->> the bindings explicitly call that out. It's true that SWIOTLB pools can
->> act as an emergency fallback for small allocations for I/O-coherent
->> devices, but that's not really intended to be relied upon heavily.
->>
->> So no, I do not see anything wrong with the current handling of
->> nonsensical DTs here, sorry.
-> 
-> There is nothing wrong in the current code, but with changes that have
-> no adverse effect on "properly" constructed reserved memory entries we
-> can accept both types of reservation and maintain forward/backward
-> compatibility in our case. So why not?
-
-Would you be happy to give me blanket permission to point a gun at your 
-foot and pull the trigger at any point in the future, if right now I 
-show you an unloaded gun?
-
-Security and lazy shortcuts do not mix well. You are literally arguing 
-that mainline Linux should support a back-door ABI for illegal DT 
-properties which at worst has the potential to defeat a generic security 
-feature. The "restricted-dma-pool" binding explicitly says "When using 
-this, the no-map and reusable properties must not be set" (I should spin 
-up a patch enforcing that in the schema...). No matter how convinced you 
-are that no OS past present or future could possibly ever behave 
-differently from the particular downstream software stack you care 
-about, NAK to subverting the "restricted-dma-pool" compatible in any 
-way, sorry. I for one wish to have no part in the next 
-trendy-name-compromise down the line where a protected VM can be tricked 
-into exposing its page cache to a "DMA attack" by an untrusted 
-hypervisor because fixing Florian's bootloader is hard.
-
-Cheers,
-Robin.
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
+> index 55766c97c4c8..47c6ab6caf95 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
+> @@ -28,6 +28,9 @@
+>   #define PP_FBC_MODE                     0x034
+>   #define PP_FBC_BUDGET_CTL               0x038
+>   #define PP_FBC_LOSSY_MODE               0x03C
+> +#define PP_DSC_MODE                     0x0a0
+> +#define PP_DCE_DATA_IN_SWAP             0x0ac
+> +#define PP_DCE_DATA_OUT_SWAP            0x0c8
+>   
+>   #define PP_DITHER_EN			0x000
+>   #define PP_DITHER_BITDEPTH		0x004
+> @@ -245,6 +248,32 @@ static u32 dpu_hw_pp_get_line_count(struct dpu_hw_pingpong *pp)
+>   	return line;
+>   }
+>   
+> +static int dpu_hw_pp_dsc_enable(struct dpu_hw_pingpong *pp)
+> +{
+> +	struct dpu_hw_blk_reg_map *c = &pp->hw;
+> +
+> +	DPU_REG_WRITE(c, PP_DSC_MODE, 1);
+> +	return 0;
+> +}
+> +
+> +static void dpu_hw_pp_dsc_disable(struct dpu_hw_pingpong *pp)
+> +{
+> +	struct dpu_hw_blk_reg_map *c = &pp->hw;
+> +
+> +	DPU_REG_WRITE(c, PP_DSC_MODE, 0);
+> +}
+> +
+> +static int dpu_hw_pp_setup_dsc(struct dpu_hw_pingpong *pp)
+> +{
+> +	struct dpu_hw_blk_reg_map *pp_c = &pp->hw;
+> +	int data;
+> +
+> +	data = DPU_REG_READ(pp_c, PP_DCE_DATA_OUT_SWAP);
+> +	data |= BIT(18); /* endian flip */
+> +	DPU_REG_WRITE(pp_c, PP_DCE_DATA_OUT_SWAP, data);
+> +	return 0;
+> +}
+> +
+>   static void _setup_pingpong_ops(struct dpu_hw_pingpong *c,
+>   				unsigned long features)
+>   {
+> @@ -256,6 +285,9 @@ static void _setup_pingpong_ops(struct dpu_hw_pingpong *c,
+>   	c->ops.get_autorefresh = dpu_hw_pp_get_autorefresh_config;
+>   	c->ops.poll_timeout_wr_ptr = dpu_hw_pp_poll_timeout_wr_ptr;
+>   	c->ops.get_line_count = dpu_hw_pp_get_line_count;
+> +	c->ops.setup_dsc = dpu_hw_pp_setup_dsc;
+> +	c->ops.enable_dsc = dpu_hw_pp_dsc_enable;
+> +	c->ops.disable_dsc = dpu_hw_pp_dsc_disable;
+>   
+>   	if (test_bit(DPU_PINGPONG_DITHER, &features))
+>   		c->ops.setup_dither = dpu_hw_pp_setup_dither;
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
+> index 89d08a715c16..12758468d9ca 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
+> @@ -124,6 +124,20 @@ struct dpu_hw_pingpong_ops {
+>   	 */
+>   	void (*setup_dither)(struct dpu_hw_pingpong *pp,
+>   			struct dpu_hw_dither_cfg *cfg);
+> +	/**
+> +	 * Enable DSC
+> +	 */
+> +	int (*enable_dsc)(struct dpu_hw_pingpong *pp);
+> +
+> +	/**
+> +	 * Disable DSC
+> +	 */
+> +	void (*disable_dsc)(struct dpu_hw_pingpong *pp);
+> +
+> +	/**
+> +	 * Setup DSC
+> +	 */
+> +	int (*setup_dsc)(struct dpu_hw_pingpong *pp);
+>   };
+>   
+>   struct dpu_hw_merge_3d;
