@@ -2,201 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF33C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236137AbiBPQNw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:13:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59808 "EHLO
+        id S236195AbiBPQOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:14:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234566AbiBPQNs (ORCPT
+        with ESMTP id S236177AbiBPQNy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:13:48 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FE71767A0
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:13:34 -0800 (PST)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8E42B40812
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 16:13:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645028012;
-        bh=yU0JTVfqmMQPB5NQYcUc7rbuKfmUJoXTRDxBU8L652M=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=PGJq69UTsVr7Df6oYusmZeJj0MMeLnvvH9wAornooBuzycN4vIMff1Eo9YXyHSbrB
-         YIak/+pDcAHWTB405AgguBhrUxujPkz8OpfwadyDLbMgQgXRLxnZh1SWjCG5nRiYwm
-         wVEN0B9vE/9Z6VyPrCEbiCtPVuoG5S1YthfgQdID1YFf+kohrL1I5nC52Laixlo0Zo
-         JGQIvxR0PzUoZ/P7ZoT39exgwcpj3eYIusUGoi94NK4MKYoWa0Ak+6uqrIAM4WoSA4
-         RVJbyP1FX55EMfbfALiNJculhLr/3yGx8VIC+wZljn+GGxaOGyU3913AnN+LoBJDrs
-         rcp5T7RuiTYbg==
-Received: by mail-ed1-f70.google.com with SMTP id g5-20020a056402090500b0040f28e1da47so1862047edz.8
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:13:32 -0800 (PST)
+        Wed, 16 Feb 2022 11:13:54 -0500
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9325E1F6B91;
+        Wed, 16 Feb 2022 08:13:41 -0800 (PST)
+Received: by mail-qv1-f41.google.com with SMTP id p7so2766105qvk.11;
+        Wed, 16 Feb 2022 08:13:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=yU0JTVfqmMQPB5NQYcUc7rbuKfmUJoXTRDxBU8L652M=;
-        b=TGn7xi5uPG1P0Uzr68caEe641MiGytwGBbuHtM62xoTRKKXuy8Brykoz6HBcN/rMqQ
-         WkB7mbZ9MaKa+5Ve5fD9XMqt6czbRjmumtv0MbVnVkh8aE4ocifqVjQHQsyl7tfqH4jr
-         qnFXW6+8BfywYlSsN6BTGHEP8wQpDsRlF/7Ir3hvwwDB/+dZFgqk6DA8U4Ggtss4/alC
-         YyldYbOmEzS7CxxVdGpg3Hr3zvljRvEz26PFiHmyW7LxOqPIY5bn0PHgVaoodVtMckyd
-         /grFYpSt2/zWnBu9iDP6Jsy1prSuzk7Sx9gUpF7BSXZIOX0glFMhxyWMxfNuY5x+xbu7
-         L6Og==
-X-Gm-Message-State: AOAM531Mt4PLbv3hycJttDCgpx+dAAKIa8sy/aDr8HlF9o3Xmcl3OA8b
-        L5kfRpk4h6CJvILkNMYwOSy7nK5CO14XFk5rceHQVXQKsNymCOiBR4VZOsNfaLb/HptJnqW/3Cc
-        CJBTcOP2OrOKMoMxCBfUg/yxJhQu4qjGzJm67duHLcQ==
-X-Received: by 2002:a17:906:38d2:b0:6b7:9639:fd74 with SMTP id r18-20020a17090638d200b006b79639fd74mr2774315ejd.215.1645028011631;
-        Wed, 16 Feb 2022 08:13:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJymIuMoqXEhQgrqUOZ0+AFR5IMCCCY5eWHy1U9oQcUI27s9rO86CRpktTGFYrnx+rEft91rZw==
-X-Received: by 2002:a17:906:38d2:b0:6b7:9639:fd74 with SMTP id r18-20020a17090638d200b006b79639fd74mr2774299ejd.215.1645028011406;
-        Wed, 16 Feb 2022 08:13:31 -0800 (PST)
-Received: from [192.168.0.110] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id 18sm67785ejj.1.2022.02.16.08.13.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 08:13:30 -0800 (PST)
-Message-ID: <6c51427a-98e2-0bbe-8f4b-37a4d9cacec7@canonical.com>
-Date:   Wed, 16 Feb 2022 17:13:30 +0100
+        bh=azl/iLsb26myp3zpwyeRv5JZYujJh0LXxE2G7XtXIR8=;
+        b=ZlI6F6ExorJPmowwEofDsxizZXSD4b+rtVpSdBigUkE8c6NnxouQ222XUwPOjpUkms
+         b+hO+m0ixieNNJbrWhlZ0Acd0KICXpNjn5rNxLJwrMzIsHwAzMUmwvW9gW9D4Y4wH1vE
+         P1Ky6g20NDOPhfXQn/PXKHnttIBF9X8P+WfQP4i8OXb/taIo2SDxV0YnaV/vUiHZa3e9
+         4yk5A2t2+QIGQvLmcS9X5RqBS3eMfXvmRSuFZJQO9sav1IdC97W9FhExWi9RZ2rdMug9
+         crLS2JOFMhPLCUTw1gaSdLwInGIHSRTWdzO/Xy6jSYTK5I9J+/HsshsF4zvnank2nwEq
+         cU6A==
+X-Gm-Message-State: AOAM533+Ua4s1SNaDyTtuByUPkMI4CL3N453Z19qJKl0xCfkG9P/PZPv
+        JApBx6JF8/LGvSGHr2081h/XSWlmsTCdzg==
+X-Google-Smtp-Source: ABdhPJyGH0FygRPJsxuUBPWKFoFaQdmcFa2SP2guTbMOLt2/LvJ9Z/RVSzok6rD0gGaujjxNiwM3bQ==
+X-Received: by 2002:a05:622a:196:b0:2ce:c222:b601 with SMTP id s22-20020a05622a019600b002cec222b601mr2507862qtw.179.1645028020167;
+        Wed, 16 Feb 2022 08:13:40 -0800 (PST)
+Received: from localhost (fwdproxy-ash-024.fbsv.net. [2a03:2880:20ff:18::face:b00c])
+        by smtp.gmail.com with ESMTPSA id e9sm22957221qtx.37.2022.02.16.08.13.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 08:13:38 -0800 (PST)
+From:   David Vernet <void@manifault.com>
+To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
+        mbenes@suse.cz, joe.lawrence@redhat.com, corbet@lwn.net
+Cc:     void@manifault.com, kernel-team@fb.com
+Subject: [PATCH v3] livepatch: Skip livepatch tests if ftrace cannot be configured
+Date:   Wed, 16 Feb 2022 08:11:01 -0800
+Message-Id: <20220216161100.3243100-1-void@manifault.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] dt-bindings: dma: Convert mtk-uart-apdma to DT schema
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, vkoul@kernel.org
-Cc:     robh+dt@kernel.org, sean.wang@mediatek.com, matthias.bgg@gmail.com,
-        long.cheng@mediatek.com, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220216151309.289348-1-angelogioacchino.delregno@collabora.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220216151309.289348-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/02/2022 16:13, AngeloGioacchino Del Regno wrote:
-> Convert the MediaTek UART APDMA Controller binding to DT schema.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
-> v2: Fixed interrupt maxItems to 16, added interrupts/reg maxItems constraint
->     to 8 when the dma-requests property is not present
-> 
->  .../bindings/dma/mediatek,uart-dma.yaml       | 123 ++++++++++++++++++
->  .../bindings/dma/mtk-uart-apdma.txt           |  56 --------
->  2 files changed, 123 insertions(+), 56 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
->  delete mode 100644 Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-> new file mode 100644
-> index 000000000000..67dbb2fed74c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-> @@ -0,0 +1,123 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/dma/mediatek,uart-dma.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MediaTek UART APDMA controller
-> +
-> +maintainers:
-> +  - Long Cheng <long.cheng@mediatek.com>
-> +
-> +description: |
-> +  The MediaTek UART APDMA controller provides DMA capabilities
-> +  for the UART peripheral bus.
-> +
-> +allOf:
-> +  - $ref: "dma-controller.yaml#"
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - mediatek,mt2712-uart-dma
-> +              - mediatek,mt8516-uart-dma
-> +          - const: mediatek,mt6577-uart-dma
-> +      - enum:
-> +          - mediatek,mt6577-uart-dma
-> +
-> +  reg:
-> +    minItems: 1
-> +    maxItems: 16
-> +
-> +  interrupts:
-> +    description: |
-> +      TX, RX interrupt lines for each UART APDMA channel
-> +    minItems: 1
-> +    maxItems: 16
-> +
-> +  clocks:
-> +    description: Must contain one entry for the APDMA main clock
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    const: apdma
-> +
-> +  "#dma-cells":
-> +    const: 1
-> +    description: |
-> +      The first cell specifies the UART APDMA channel number
-> +
-> +  dma-requests:
-> +    description: |
-> +      Number of virtual channels of the UART APDMA controller
-> +    maximum: 16
-> +
-> +  mediatek,dma-33bits:
-> +    type: boolean
-> +    description: Enable 33-bits UART APDMA support
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +if:
-> +  not:
-> +    anyOf:
+livepatch has a set of selftests that are used to validate the behavior of
+the livepatching subsystem.  One of the testcases in the livepatch
+testsuite is test-ftrace.sh, which among other things, validates that
+livepatching gracefully fails when ftrace is disabled.  In the event that
+ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
+will fail later due to it unexpectedly successfully loading the
+test_klp_livepatch module.
 
-Thanks for the changes. This "anyOf" you can skip. It was needed in that
-example because multiple properties should trigger restriction of maxItems.
+While the livepatch selftests are careful to remove any of the livepatch
+test modules between testcases to avoid this situation, ftrace may still
+fail to be disabled if another trace is active on the system that was
+enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
+that use trampolines will cause this test to fail due to the trampoline
+being implemented with register_ftrace_direct().  The following is an
+example of such a trace:
 
-In your case it is sufficient:
-if:
+tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
+(call_direct_funcs+0x0/0x30)
+        direct-->bpf_trampoline_6442550536_0+0x0/0x1000
 
-  not:
+In order to make the test more resilient to system state that is out of its
+control, this patch updates set_ftrace_enabled() to detect sysctl failures,
+and skip the testrun when appropriate.
 
-    required:
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: David Vernet <void@manifault.com>
+---
+v3:
+  - Fixed a bug in v1 and v2 pointed out by Petr in
+    https://lore.kernel.org/all/20220209154934.5w5k5tqcqldbfjt3@dev0025.ash9.facebook.com/
+    wherein we'd incorrectly skip() in test-ftrace.sh when we expected to
+    fail to set sysctl due to ftrace being in-use by livepatch.
+  - Applied Petr's suggestions for the patch, which address the
+    aforementioned issue by adding a --fail flag to set_ftrace_enabled().
+    This allows callers to signal that they expect an invocation to fail.
+  - Updates the caller in test-ftrace.sh that expects the call to
+    set_ftrace_enabled() to fail, to pass this --fail flag.
+  - Slightly updates the commit summary to reflect that we only skip the
+    test "when appropriate" rather than if the call to sysctl fails.
 
-      - dma-requests
+v2:
+  - Fix typo in newly added comment (s/permament/permanent).
+  - Adjust the location of the added newline to be before the new comment
+    rather than that the end of the function.
+  - Make the failure-path check a bit less brittle by checking for the
+    exact expected string, rather than specifically for "Device or resource
+    busy".
 
-then:
-....
+ .../testing/selftests/livepatch/functions.sh  | 22 ++++++++++++++++---
+ .../selftests/livepatch/test-ftrace.sh        |  3 ++-
+ 2 files changed, 21 insertions(+), 4 deletions(-)
 
+diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+index 846c7ed71556..9230b869371d 100644
+--- a/tools/testing/selftests/livepatch/functions.sh
++++ b/tools/testing/selftests/livepatch/functions.sh
+@@ -75,9 +75,25 @@ function set_dynamic_debug() {
+ }
+ 
+ function set_ftrace_enabled() {
+-	result=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1 && \
+-		 sysctl kernel.ftrace_enabled 2>&1)
+-	echo "livepatch: $result" > /dev/kmsg
++	local can_fail=0
++	if [[ "$1" == "--fail" ]] ; then
++		can_fail=1
++		shift
++	fi
++
++	local err=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1)
++	local result=$(sysctl --values kernel.ftrace_enabled)
++
++	if [[ "$result" != "$1" ]] ; then
++		if [[ $can_fail -eq 1 ]] ; then
++			echo "livepatch: $err" > /dev/kmsg
++			return
++		fi
++
++		skip "failed to set kernel.ftrace_enabled = $1"
++	fi
++
++	echo "livepatch: kernel.ftrace_enabled = $result" > /dev/kmsg
+ }
+ 
+ function cleanup() {
+diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
+index 552e165512f4..825540a5194d 100755
+--- a/tools/testing/selftests/livepatch/test-ftrace.sh
++++ b/tools/testing/selftests/livepatch/test-ftrace.sh
+@@ -25,7 +25,8 @@ if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]]
+ 	die "livepatch kselftest(s) failed"
+ fi
+ 
+-set_ftrace_enabled 0
++# Check that ftrace could not get disabled when a livepatch is enabled
++set_ftrace_enabled --fail 0
+ if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
+ 	echo -e "FAIL\n\n"
+ 	die "livepatch kselftest(s) failed"
+-- 
+2.30.2
 
-Rest looks good.
-
-> +      - required:
-> +          - dma-requests
-> +then:
-> +  properties:
-> +    interrupts:
-> +      maxItems: 8
-
-
-Best regards,
-Krzysztof
