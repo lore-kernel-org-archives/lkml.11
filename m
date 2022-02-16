@@ -2,362 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FBEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 17:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 17:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237345AbiBPRs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 12:48:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34354 "EHLO
+        id S237348AbiBPRw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 12:52:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiBPRs4 (ORCPT
+        with ESMTP id S237266AbiBPRw4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 12:48:56 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95959254A55
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:48:38 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id g24so2351080qkl.3
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:48:38 -0800 (PST)
+        Wed, 16 Feb 2022 12:52:56 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5176E17C124
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:52:43 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id u16so4557393ljk.2
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:52:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=g3/V1tqyyw2qN2BN/SlEqeGIYSiVydb4ENC5TIRKR/c=;
-        b=ylLv/U6jeM1NwEfuKa+04x8d0W48Qzt2OhgVzz33y57HHA3tLlBlnCBlDEYTuB9Scz
-         E8+Rsd5EmXQgDau+DgalgvZWZks6EMZujR3vjKjZlyqTO+gsSmrYGSZh2V6W15+Vu+jw
-         BoCnkMiUAt23eQBNL/z3yERvU0ktxK+mSBLBTv4M3HyU0VOox9uyrxngjft53vWgQl+8
-         c3JuZHpDR3FdecRsZ+Lms/T6AIMwIslpX7eQC8c9SuimwJrSHHBorrQ4HSxeTtFYwjLk
-         9tCSRbxCxdEmTv6bjsbIGqNugs3MegfYklXf9yjDDIuIClhjKXwdJBB9HNPOsyyUgf+5
-         Q0bQ==
+        bh=BpmsRqZ38kgxy8qCzl8SSWs6AgylYRQgLC0As9lclAI=;
+        b=G8wSsxorPDom69zH2wRTt7GILRIWsWVDFZ8U+ljuoSys8hvmZCXPreQXjdQ36o7gvD
+         bPjp85S01eT748CHa0BBnk5Yb2hCf7JoKSPsszKNYGmeF6eA3r7o09DjY8CoPpyoxI3y
+         K7ZdAZDHQUUZt69sF7wZ4qFhMQspKoBPg1nJcWdrjb3ffLoq4Slgsk1S6dKMugSfgmIZ
+         Bli+8/75HBBHLQ7W5pDBDFDcjxRHXVkFLEvJzVWQ4vFcY5INVnlT2nhlluXDGXWBdXgB
+         cRhNDmNun6widb3SUJAFZ5i2IjunVSAaoCnQCJP9eix3L/SWcleMxU/WQgLU2SrKAHc1
+         7l6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=g3/V1tqyyw2qN2BN/SlEqeGIYSiVydb4ENC5TIRKR/c=;
-        b=c2ZKRbTUE7sr8J1TMdE01hzGy+vuqYPiBVS5+bBp3XVjPIb9mZh2D72zC3BFBurCyu
-         9YnGvMb1M5VWkAs5Slt0FSukCaOKhh0Pj3zCjWr+41rBQ8i58KTqfQiPbyJ1zb3yfguy
-         rqd9uqo65FttFKAT3EhTuaifX7zify5HWRTIQB9jFECF2qbuVK3YN3aM9Dl2zwBMA0ze
-         NDV3e1WqhvW+RQAVF7ecR48J7uNFRO/oxdxHlo1C59ZLFwV7Ghn/LNIfXBL84rrkNn1/
-         sP23uUOIvoKThcvG8RJB80y/nCvksb4hAxNVLO0SeYw1a8Mnfc5yh1/D5Dbvc50FKJgG
-         NODg==
-X-Gm-Message-State: AOAM531nPGbTDvLBRQJF193JQV0oR6LXLu8vZKMRg6KIjBF8FZp7dn/2
-        cifxYA5NHuYHni4U78mGf2uH6+3H6icU7Fo+FZCr1Q==
-X-Google-Smtp-Source: ABdhPJy9pR0q8RXQZy3r5LdSUhTsfFWmWwkbMopxN56obW7iT7DUuONLCCbb/LFn49oyME45PuYrZeAnuQQAs8GJqzk=
-X-Received: by 2002:a37:9146:0:b0:507:d59c:6059 with SMTP id
- t67-20020a379146000000b00507d59c6059mr1866395qkd.593.1645033717619; Wed, 16
- Feb 2022 09:48:37 -0800 (PST)
+        bh=BpmsRqZ38kgxy8qCzl8SSWs6AgylYRQgLC0As9lclAI=;
+        b=hMNBXmn0coC+poBSzs7M2ESvxO9iPMlbfU4jkVd2aje30nZvXsyZDbtp+WqyeJqpS6
+         Kro9O656j5nI/FzaAQzgh5XIIX0NlzJ7s217+t5E5kvbhKXfbw5YeLDlyhWOGHyBr8+7
+         CupnDgtCmH2l/DYILrrZ91wAE/0oZfnk0av6lMEvkvnxqI/rPdJTphrsw3KpB5Seaje8
+         GXYBqeKiFkOYDuwG81H/ayrv2i1YAMQknmDN6ntnYgqvFgJBT5Mw2JSDqbfg0IYL7g2n
+         TkreNGz+mQZf700/J2IXbcM0rbbEp8fl39Kn471aYcf988YJK6LiB6PTtwAC62vTuRp8
+         xzeg==
+X-Gm-Message-State: AOAM532MXPwQYKxV7kOf8Y2m82bvx/9dSs3uyOz/KV7tEcNcL10NOThn
+        Xx8gUIAMJJIvHJLpA2kSkyLGCrEZfmyfRy+7uqHbS7edtjuC8A==
+X-Google-Smtp-Source: ABdhPJyVv+t9vmIJQE/u00gjSUVpwpbz1F0JLyk14F2rUJqd6Atn9YD1zHJA/NbAbtK3k1nv9YXoXtqJJFAtfK1DVU8=
+X-Received: by 2002:a05:651c:986:b0:246:98f:9333 with SMTP id
+ b6-20020a05651c098600b00246098f9333mr2862454ljq.381.1645033961453; Wed, 16
+ Feb 2022 09:52:41 -0800 (PST)
 MIME-Version: 1.0
-References: <1645032840-17178-1-git-send-email-quic_khsieh@quicinc.com> <1645032840-17178-2-git-send-email-quic_khsieh@quicinc.com>
-In-Reply-To: <1645032840-17178-2-git-send-email-quic_khsieh@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 16 Feb 2022 20:48:26 +0300
-Message-ID: <CAA8EJprnUuO2yd4FcPtmfcMwAmZqR3GyFJ+Cz-KV8E4O6c8R6w@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] drm/msm/dpu: revise timing engine programming to
- support widebus feature
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, robdclark@gmail.com,
-        sean@poorly.run, swboyd@chromium.org, vkoul@kernel.org,
-        daniel@ffwll.ch, airlied@linux.ie, agross@kernel.org,
-        bjorn.andersson@linaro.org, quic_abhinavk@quicinc.com,
-        quic_aravindh@quicinc.com, quic_sbillaka@quicinc.com,
-        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <8c4a69eca4d0591f30c112df59c5098c24923bd3.1644543449.git.darren@os.amperecomputing.com>
+ <ec9be4eb7a0548178191edd51ddd309f@hisilicon.com> <20220215163858.GA8458@willie-the-truck>
+ <YgvYZy5xv1g+u5wp@fedora> <20220215164639.GC8458@willie-the-truck>
+ <CAKfTPtAFsL+uqQiGcuh+JJZB=rPrez0=kotq76CVRcBQhcPefg@mail.gmail.com>
+ <YgvjtsOZuxzbgBBl@fedora> <CAKfTPtCHrZCp1Uth4odyT721wE8zoNVY3Mh+DSyuTkqPafm0Hg@mail.gmail.com>
+ <YgwHhxy/uGafQsak@fedora> <CAKfTPtAR2+bY8QpyaCCJfezsVkB62n8XZjL9c5_mPO3iyDnp4w@mail.gmail.com>
+ <Yg0lULy5TmHKIHFv@fedora>
+In-Reply-To: <Yg0lULy5TmHKIHFv@fedora>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Wed, 16 Feb 2022 18:52:29 +0100
+Message-ID: <CAKfTPtB1Vt75ciX_V=8T3e5fgW-X7ybRk6VZvy4uXzjazjx9ZA@mail.gmail.com>
+Subject: Re: [PATCH] arm64: smp: Skip MC domain for SoCs without shared cache
+To:     Darren Hart <darren@os.amperecomputing.com>
+Cc:     Will Deacon <will@kernel.org>,
+        "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Arm <linux-arm-kernel@lists.infradead.org>,
+        Catalin Marinas <Catalin.Marinas@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Valentin Schneider <Valentin.Schneider@arm.com>,
+        "D . Scott Phillips" <scott@os.amperecomputing.com>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Feb 2022 at 20:34, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
+On Wed, 16 Feb 2022 at 17:24, Darren Hart <darren@os.amperecomputing.com> wrote:
 >
-> Widebus feature will transmit two pixel data per pixel clock to interface.
-> Timing engine provides driving force for this purpose. This patch base
-> on HPG (Hardware Programming Guide) to revise timing engine register
-> setting to accommodate both widebus and non widebus application. Also
-> horizontal width parameters need to be reduced by half since two pixel
-> data are clocked out per pixel clock when widebus feature enabled.
+> On Wed, Feb 16, 2022 at 09:30:49AM +0100, Vincent Guittot wrote:
+> > On Tue, 15 Feb 2022 at 21:05, Darren Hart <darren@os.amperecomputing.com> wrote:
+> > >
+> > > On Tue, Feb 15, 2022 at 07:19:45PM +0100, Vincent Guittot wrote:
+> > > > On Tue, 15 Feb 2022 at 18:32, Darren Hart <darren@os.amperecomputing.com> wrote:
+> > > > >
+> > > > > On Tue, Feb 15, 2022 at 06:09:08PM +0100, Vincent Guittot wrote:
+> > > > > > On Tue, 15 Feb 2022 at 17:46, Will Deacon <will@kernel.org> wrote:
+> > > > > > >
+> > > > > > > On Tue, Feb 15, 2022 at 08:44:23AM -0800, Darren Hart wrote:
+> > > > > > > > On Tue, Feb 15, 2022 at 04:38:59PM +0000, Will Decon wrote:
+> > > > > > > > > On Fri, Feb 11, 2022 at 03:20:51AM +0000, Song Bao Hua (Barry Song) wrote:
+> > > > > > > > > >
+> > > > > > > > > >
+> > > > > > > > > > > -----Original Message-----
+> > > > > > > > > > > From: Darren Hart [mailto:darren@os.amperecomputing.com]
+> > > > > > > > > > > Sent: Friday, February 11, 2022 2:43 PM
+> > > > > > > > > > > To: LKML <linux-kernel@vger.kernel.org>; Linux Arm
+> > > > > > > > > > > <linux-arm-kernel@lists.infradead.org>
+> > > > > > > > > > > Cc: Catalin Marinas <catalin.marinas@arm.com>; Will Deacon <will@kernel.org>;
+> > > > > > > > > > > Peter Zijlstra <peterz@infradead.org>; Vincent Guittot
+> > > > > > > > > > > <vincent.guittot@linaro.org>; Song Bao Hua (Barry Song)
+> > > > > > > > > > > <song.bao.hua@hisilicon.com>; Valentin Schneider
+> > > > > > > > > > > <valentin.schneider@arm.com>; D . Scott Phillips
+> > > > > > > > > > > <scott@os.amperecomputing.com>; Ilkka Koskinen
+> > > > > > > > > > > <ilkka@os.amperecomputing.com>; stable@vger.kernel.org
+> > > > > > > > > > > Subject: [PATCH] arm64: smp: Skip MC domain for SoCs without shared cache
+> > > > > > > > > > >
+> > > > > > > > > > > SoCs such as the Ampere Altra define clusters but have no shared
+> > > > > > > > > > > processor-side cache. As of v5.16 with CONFIG_SCHED_CLUSTER and
+> > > > > > > > > > > CONFIG_SCHED_MC, build_sched_domain() will BUG() with:
+> > > > > > > > > > >
+> > > > > > > > > > > BUG: arch topology borken
+> > > > > > > > > > >      the CLS domain not a subset of the MC domain
+> > > > > > > > > > >
+> > > > > > > > > > > for each CPU (160 times for a 2 socket 80 core Altra system). The MC
+> > > > > > > > > > > level cpu mask is then extended to that of the CLS child, and is later
+> > > > > > > > > > > removed entirely as redundant.
+> > > > > > > > > > >
+> > > > > > > > > > > This change detects when all cpu_coregroup_mask weights=1 and uses an
+> > > > > > > > > > > alternative sched_domain_topology equivalent to the default if
+> > > > > > > > > > > CONFIG_SCHED_MC were disabled.
+> > > > > > > > > > >
+> > > > > > > > > > > The final resulting sched domain topology is unchanged with or without
+> > > > > > > > > > > CONFIG_SCHED_CLUSTER, and the BUG is avoided:
+> > > > > > > > > > >
+> > > > > > > > > > > For CPU0:
+> > > > > > > > > > >
+> > > > > > > > > > > With CLS:
+> > > > > > > > > > > CLS  [0-1]
+> > > > > > > > > > > DIE  [0-79]
+> > > > > > > > > > > NUMA [0-159]
+> > > > > > > > > > >
+> > > > > > > > > > > Without CLS:
+> > > > > > > > > > > DIE  [0-79]
+> > > > > > > > > > > NUMA [0-159]
+> > > > > > > > > > >
+> > > > > > > > > > > Cc: Catalin Marinas <catalin.marinas@arm.com>
+> > > > > > > > > > > Cc: Will Deacon <will@kernel.org>
+> > > > > > > > > > > Cc: Peter Zijlstra <peterz@infradead.org>
+> > > > > > > > > > > Cc: Vincent Guittot <vincent.guittot@linaro.org>
+> > > > > > > > > > > Cc: Barry Song <song.bao.hua@hisilicon.com>
+> > > > > > > > > > > Cc: Valentin Schneider <valentin.schneider@arm.com>
+> > > > > > > > > > > Cc: D. Scott Phillips <scott@os.amperecomputing.com>
+> > > > > > > > > > > Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+> > > > > > > > > > > Cc: <stable@vger.kernel.org> # 5.16.x
+> > > > > > > > > > > Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+> > > > > > > > > >
+> > > > > > > > > > Hi Darrent,
+> > > > > > > > > > What kind of resources are clusters sharing on Ampere Altra?
+> > > > > > > > > > So on Altra, cpus are not sharing LLC? Each LLC is separate
+> > > > > > > > > > for each cpu?
+> > > > > > > > > >
+> > > > > > > > > > > ---
+> > > > > > > > > > >  arch/arm64/kernel/smp.c | 32 ++++++++++++++++++++++++++++++++
+> > > > > > > > > > >  1 file changed, 32 insertions(+)
+> > > > > > > > > > >
+> > > > > > > > > > > diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+> > > > > > > > > > > index 27df5c1e6baa..0a78ac5c8830 100644
+> > > > > > > > > > > --- a/arch/arm64/kernel/smp.c
+> > > > > > > > > > > +++ b/arch/arm64/kernel/smp.c
+> > > > > > > > > > > @@ -715,9 +715,22 @@ void __init smp_init_cpus(void)
+> > > > > > > > > > >         }
+> > > > > > > > > > >  }
+> > > > > > > > > > >
+> > > > > > > > > > > +static struct sched_domain_topology_level arm64_no_mc_topology[] = {
+> > > > > > > > > > > +#ifdef CONFIG_SCHED_SMT
+> > > > > > > > > > > +       { cpu_smt_mask, cpu_smt_flags, SD_INIT_NAME(SMT) },
+> > > > > > > > > > > +#endif
+> > > > > > > > > > > +
+> > > > > > > > > > > +#ifdef CONFIG_SCHED_CLUSTER
+> > > > > > > > > > > +       { cpu_clustergroup_mask, cpu_cluster_flags, SD_INIT_NAME(CLS) },
+> > > > > > > > > > > +#endif
+> > > > > > > > > > > +       { cpu_cpu_mask, SD_INIT_NAME(DIE) },
+> > > > > > > > > > > +       { NULL, },
+> > > > > > > > > > > +};
+> > > > > > > > > > > +
+> > > > > > > > > > >  void __init smp_prepare_cpus(unsigned int max_cpus)
+> > > > > > > > > > >  {
+> > > > > > > > > > >         const struct cpu_operations *ops;
+> > > > > > > > > > > +       bool use_no_mc_topology = true;
+> > > > > > > > > > >         int err;
+> > > > > > > > > > >         unsigned int cpu;
+> > > > > > > > > > >         unsigned int this_cpu;
+> > > > > > > > > > > @@ -758,6 +771,25 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
+> > > > > > > > > > >
+> > > > > > > > > > >                 set_cpu_present(cpu, true);
+> > > > > > > > > > >                 numa_store_cpu_info(cpu);
+> > > > > > > > > > > +
+> > > > > > > > > > > +               /*
+> > > > > > > > > > > +                * Only use no_mc topology if all cpu_coregroup_mask weights=1
+> > > > > > > > > > > +                */
+> > > > > > > > > > > +               if (cpumask_weight(cpu_coregroup_mask(cpu)) > 1)
+> > > > > > > > > > > +                       use_no_mc_topology = false;
+> > > > > > > > > >
+> > > > > > > > > > This seems to be wrong? If you have 5 cpus,
+> > > > > > > > > > Cpu0 has cpu_coregroup_mask(cpu)== 1, cpu1-4
+> > > > > > > > > > has cpu_coregroup_mask(cpu)== 4, for cpu0, you still
+> > > > > > > > > > need to remove MC, but for cpu1-4, you will need
+> > > > > > > > > > CLS and MC both?
+> > > > > > > > >
+> > > > > > > > > What is the *current* behaviour on such a system?
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > As I understand it, any system that uses the default topology which has
+> > > > > > > > a cpus_coregroup weight of 1 and a child (cluster, smt, ...) weight > 1
+> > > > > > > > will behave as described above by printing the following for each CPU
+> > > > > > > > matching this criteria:
+> > > > > > > >
+> > > > > > > >   BUG: arch topology borken
+> > > > > > > >         the [CLS,SMT,...] domain not a subset of the MC domain
+> > > > > > > >
+> > > > > > > > And then extend the MC domain cpumask to match that of the child and continue
+> > > > > > > > on.
+> > > > > > > >
+> > > > > > > > That would still be the behavior for this type of system after this
+> > > > > > > > patch is applied.
+> > > > > > >
+> > > > > > > That's what I thought, but in that case applying your patch is a net
+> > > > > > > improvement: systems either get current or better behaviour.
+> > > > > >
+> > > > > > CLUSTER level is normally defined as a intermediate group of the MC
+> > > > > > level and both levels have the scheduler flag SD_SHARE_PKG_RESOURCES
+> > > > > > flag
+> > > > > >
+> > > > > > In the case of Ampere altra, they consider that CPUA have a CLUSTER
+> > > > > > level which SD_SHARE_PKG_RESOURCES with another CPUB but the next and
+> > > > > > larger MC level then says that CPUA doesn't SD_SHARE_PKG_RESOURCES
+> > > > > > with CPUB which seems to be odd because the SD_SHARE_PKG_RESOURCES has
+> > > > > > not disappeared Looks like there is a mismatch in topology description
+> > > > >
+> > > > > Hi Vincent,
+> > > > >
+> > > > > Agree. Where do you think this mismatch exists?
+> > > >
+> > > > I think that the problem comes from that the default topology order is
+> > > > assumed to be :
+> > > > SMT
+> > > > CLUSTER shares pkg resources i.e. cache
+> > > > MC
+> > > > DIE
+> > > > NUMA
+> > > >
+> > > > but in your case, you want a topology order like :
+> > > > SMT
+> > > > MC
+> > > > CLUSTER shares SCU
+> > > > DIE
+> > > > NUMA
+> > >
+> > > Given the fairly loose definition of some of these domains and the
+> > > freedom to adjust flags with custom topologies, I think it's difficult
+> > > to say it needs to be this or that. As you point out, this stems from an
+> > > assumption in the default topology, so eliding the MC level within the
+> > > current set of abstractions for a very targeted topology still seems
+> > > reasonable to address the BUG in the very near term in a contained way.
+> >
+> > But if another SoC comes with a valid MC then a CLUSTER, this proposal
+> > will not work.
+> >
+> > Keep in mind that the MC level will be removed/degenerate when
+> > building because it is useless in your case so the scheduler topology
+> > will still be the same at the end but it will support more case. That
+> > why I think you should keep MC level
 >
-> Widebus can be enabled individually at DP. However at DSI, widebus have
-> to be enabled along with DSC to achieve pixel clock rate be scaled down
-> with same ratio as compression ratio when 10 bits per source component.
-> Therefore this patch add no supports of DSI related widebus and compression.
+> Hi Vincent,
 >
-> Changes in v2:
-> -- remove compression related code from timing
-> -- remove op_info from  struct msm_drm_private
-> -- remove unnecessary wide_bus_en variables
-> -- pass wide_bus_en into timing configuration by struct msm_dp
+> Thanks for reiterating, I don't think I quite understood what you were
+> suggesting before. Is the following in line with what you were thinking?
 >
-> Changes in v3:
-> -- split patch into 3 patches
+> I am testing a version of this patch which uses a topology like this instead:
 >
-> Changes in v4:
-> -- rework timing engine to not interfere with dsi/hdmi
-> -- cover both widebus and compression
+> MC
+> CLS
+> DIE
+> NUMA
 >
-> Changes in v5:
-> -- remove supports of DSI widebus and compression
+> (I tested without an SMT domain since the trigger is still MC weight==1, so
+> there is no valid topology that includes an SMT level under these conditions).
 >
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> ---
->  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c        | 10 ++++
->  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h        |  2 +
->  .../gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c   | 14 +++++
->  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c        | 63 ++++++++++++++++------
->  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h        |  2 +
->  5 files changed, 76 insertions(+), 15 deletions(-)
+> Which results in no BUG output and a final topology on Altra of:
 >
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> index 1e648db..2b2dbb7 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> @@ -208,6 +208,8 @@ struct dpu_encoder_virt {
+> CLS
+> DIE
+> NUMA
 >
->         u32 idle_timeout;
+> Which so far seems right (I still need to do some testing and review the sched
+> debug data).
 >
-> +       bool wide_bus_en;
-> +
->         struct msm_dp *dp;
->  };
->
-> @@ -217,6 +219,14 @@ static u32 dither_matrix[DITHER_MATRIX_SZ] = {
->         15, 7, 13, 5, 3, 11, 1, 9, 12, 4, 14, 6, 0, 8, 2, 10
->  };
->
-> +
-> +bool dpu_encoder_is_widebus_enabled(struct drm_encoder *drm_enc)
-> +{
-> +       struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
-> +
-> +       return dpu_enc->wide_bus_en;
-> +}
-> +
->  static void _dpu_encoder_setup_dither(struct dpu_hw_pingpong *hw_pp, unsigned bpc)
->  {
->         struct dpu_hw_dither_cfg dither_cfg = { 0 };
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-> index e241914..0d73550 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-> @@ -168,4 +168,6 @@ int dpu_encoder_get_linecount(struct drm_encoder *drm_enc);
->   */
->  int dpu_encoder_get_vsync_count(struct drm_encoder *drm_enc);
->
-> +bool dpu_encoder_is_widebus_enabled(struct drm_encoder *drm_enc);
-> +
->  #endif /* __DPU_ENCODER_H__ */
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c
-> index ddd9d89..04ac2dc 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c
-> @@ -110,6 +110,20 @@ static void drm_mode_to_intf_timing_params(
->                 timing->v_back_porch += timing->v_front_porch;
->                 timing->v_front_porch = 0;
->         }
-> +
-> +       timing->wide_bus_en = dpu_encoder_is_widebus_enabled(phys_enc->parent);
-> +
-> +       /*
-> +        * for DP, divide the horizonal parameters by 2 when
-> +        * widebus is enabled
-> +        */
-> +       if (phys_enc->hw_intf->cap->type == INTF_DP && timing->wide_bus_en) {
-> +               timing->width = timing->width >> 1;
-> +               timing->xres = timing->xres >> 1;
-> +               timing->h_back_porch = timing->h_back_porch >> 1;
-> +               timing->h_front_porch = timing->h_front_porch >> 1;
-> +               timing->hsync_pulse_width = timing->hsync_pulse_width >> 1;
-> +       }
->  }
->
->  static u32 get_horizontal_total(const struct intf_timing_params *timing)
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-> index 116e2b5..303bd03 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-> @@ -33,6 +33,7 @@
->  #define INTF_TP_COLOR1                  0x05C
->  #define INTF_CONFIG2                    0x060
->  #define INTF_DISPLAY_DATA_HCTL          0x064
-> +#define INTF_ACTIVE_DATA_HCTL           0x068
->  #define INTF_FRAME_LINE_COUNT_EN        0x0A8
->  #define INTF_FRAME_COUNT                0x0AC
->  #define   INTF_LINE_COUNT               0x0B0
-> @@ -60,6 +61,14 @@
->
->  #define   INTF_MUX                      0x25C
->
-> +#define INTF_CFG_ACTIVE_H_EN   BIT(29)
-> +#define INTF_CFG_ACTIVE_V_EN   BIT(30)
-> +
-> +#define INTF_CFG2_DATABUS_WIDEN        BIT(0)
-> +#define INTF_CFG2_DATA_HCTL_EN BIT(4)
-> +#define INTF_CFG2_DCE_DATA_COMPRESS    BIT(12)
-> +
-> +
->  static const struct dpu_intf_cfg *_intf_offset(enum dpu_intf intf,
->                 const struct dpu_mdss_cfg *m,
->                 void __iomem *addr,
-> @@ -90,15 +99,23 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
->         u32 hsync_period, vsync_period;
->         u32 display_v_start, display_v_end;
->         u32 hsync_start_x, hsync_end_x;
-> +       u32 hsync_data_start_x, hsync_data_end_x;
->         u32 active_h_start, active_h_end;
->         u32 active_v_start, active_v_end;
->         u32 active_hctl, display_hctl, hsync_ctl;
->         u32 polarity_ctl, den_polarity, hsync_polarity, vsync_polarity;
->         u32 panel_format;
-> -       u32 intf_cfg, intf_cfg2 = 0, display_data_hctl = 0;
-> +       u32 intf_cfg, intf_cfg2 = 0;
-> +       u32 display_data_hctl = 0, active_data_hctl = 0;
-> +       u32 data_width;
-> +       bool dp_intf = false;
->
->         /* read interface_cfg */
->         intf_cfg = DPU_REG_READ(c, INTF_CONFIG);
-> +
-> +       if (ctx->cap->type == INTF_EDP || ctx->cap->type == INTF_DP)
-> +               dp_intf = true;
-> +
->         hsync_period = p->hsync_pulse_width + p->h_back_porch + p->width +
->         p->h_front_porch;
->         vsync_period = p->vsync_pulse_width + p->v_back_porch + p->height +
-> @@ -112,7 +129,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
->         hsync_start_x = p->h_back_porch + p->hsync_pulse_width;
->         hsync_end_x = hsync_period - p->h_front_porch - 1;
->
-> -       if (p->width != p->xres) {
-> +       if (p->width != p->xres) { /* border fill added */
->                 active_h_start = hsync_start_x;
->                 active_h_end = active_h_start + p->xres - 1;
->         } else {
-> @@ -120,7 +137,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
->                 active_h_end = 0;
->         }
->
-> -       if (p->height != p->yres) {
-> +       if (p->height != p->yres) { /* border fill added */
->                 active_v_start = display_v_start;
->                 active_v_end = active_v_start + (p->yres * hsync_period) - 1;
->         } else {
-> @@ -130,27 +147,47 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
->
->         if (active_h_end) {
->                 active_hctl = (active_h_end << 16) | active_h_start;
-> -               intf_cfg |= BIT(29);    /* ACTIVE_H_ENABLE */
-> +               intf_cfg |= INTF_CFG_ACTIVE_H_EN;
->         } else {
->                 active_hctl = 0;
->         }
->
->         if (active_v_end)
-> -               intf_cfg |= BIT(30); /* ACTIVE_V_ENABLE */
-> +               intf_cfg |= INTF_CFG_ACTIVE_V_EN;
+> If we take this approach, I think to address your concern about other systems
+> with valid MCs, we would need a different trigger that MC weight == 1 to use
+> this alternate topology. Do you have a suggestion on what to trigger this on?
 
-Quoting v4:
-Such changes can go to a separate patch. You don't have to squash
-everything in a single patch. Quite the opposite. If each of the
-patches is atomic, it's easier to review and accept them.
+AFAICT, this CLUSTER level is only supported by ACPI. In
+parse_acpi_topology() you should be able to know if cluster level is
+above or below the level returned by acpi_find_last_cache_level() and
+set the correct topology table accordingly
 
 >
->         hsync_ctl = (hsync_period << 16) | p->hsync_pulse_width;
->         display_hctl = (hsync_end_x << 16) | hsync_start_x;
+> Thanks,
 >
-> -       if (ctx->cap->type == INTF_EDP || ctx->cap->type == INTF_DP) {
-> +       /*
-> +        * DATA_HCTL_EN controls data timing which can be different from
-> +        * video timing. It is recommended to enable it for all cases, except
-> +        * if compression is enabled in 1 pixel per clock mode
-> +        */
-> +       if (p->wide_bus_en)
-> +               intf_cfg2 |=  (INTF_CFG2_DATABUS_WIDEN | INTF_CFG2_DATA_HCTL_EN);
-> +
-> +       data_width = p->width;
-> +
-> +       hsync_data_start_x = hsync_start_x;
-> +       hsync_data_end_x =  hsync_start_x + data_width - 1;
-> +
-> +       display_data_hctl = (hsync_data_end_x << 16) | hsync_data_start_x;
-> +
-> +       if (dp_intf) {
-> +               /* DP timing adjustment */
-> +               display_v_start += p->hsync_pulse_width + p->h_back_porch;
-> +               display_v_end   -= p->h_front_porch;
-
-Quoting a question to v4:
-So, this changes the display_v_end. Is there a mistake currently (and
-so this change should be backported to stable kernels) or is it just
-unoptimal?
-
-> +
->                 active_h_start = hsync_start_x;
->                 active_h_end = active_h_start + p->xres - 1;
->                 active_v_start = display_v_start;
->                 active_v_end = active_v_start + (p->yres * hsync_period) - 1;
->
-> -               display_v_start += p->hsync_pulse_width + p->h_back_porch;
-> -
->                 active_hctl = (active_h_end << 16) | active_h_start;
->                 display_hctl = active_hctl;
-> +
-> +               intf_cfg |= INTF_CFG_ACTIVE_H_EN;
-> +               intf_cfg |= INTF_CFG_ACTIVE_V_EN;
->         }
->
->         den_polarity = 0;
-> @@ -180,13 +217,6 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
->                                 (COLOR_8BIT << 4) |
->                                 (0x21 << 8));
->
-> -       if (ctx->cap->features & BIT(DPU_DATA_HCTL_EN)) {
-
-Quoting a quesiton to v4:
-So, we are enabling it uncoditionally even for older platforms, which
-do not support this bit/register. I'm not a fan of writing to
-registers which are not supported by the hardware.
-
-Another:
-If you insist on always programming these registers, the
-DPU_DATA_HCTL_EN becomes useless and should be removed from the
-dpu_hw_catalog. As usual, in a separate patch.
-
-> -               intf_cfg2 |= BIT(4);
-> -               display_data_hctl = display_hctl;
-> -               DPU_REG_WRITE(c, INTF_CONFIG2, intf_cfg2);
-> -               DPU_REG_WRITE(c, INTF_DISPLAY_DATA_HCTL, display_data_hctl);
-> -       }
-> -
->         DPU_REG_WRITE(c, INTF_HSYNC_CTL, hsync_ctl);
->         DPU_REG_WRITE(c, INTF_VSYNC_PERIOD_F0, vsync_period * hsync_period);
->         DPU_REG_WRITE(c, INTF_VSYNC_PULSE_WIDTH_F0,
-> @@ -204,6 +234,9 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
->         DPU_REG_WRITE(c, INTF_FRAME_LINE_COUNT_EN, 0x3);
->         DPU_REG_WRITE(c, INTF_CONFIG, intf_cfg);
->         DPU_REG_WRITE(c, INTF_PANEL_FORMAT, panel_format);
-> +       DPU_REG_WRITE(c, INTF_CONFIG2, intf_cfg2);
-> +       DPU_REG_WRITE(c, INTF_DISPLAY_DATA_HCTL, display_data_hctl);
-> +       DPU_REG_WRITE(c, INTF_ACTIVE_DATA_HCTL, active_data_hctl);
->  }
->
->  static void dpu_hw_intf_enable_timing_engine(
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h
-> index 3568be8..e4a518a 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h
-> @@ -30,6 +30,8 @@ struct intf_timing_params {
->         u32 border_clr;
->         u32 underflow_clr;
->         u32 hsync_skew;
-> +
-> +       bool wide_bus_en;
->  };
->
->  struct intf_prog_fetch {
 > --
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-> a Linux Foundation Collaborative Project
->
-
-
--- 
-With best wishes
-Dmitry
+> Darren Hart
+> Ampere Computing / OS and Kernel
