@@ -2,341 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 688DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235102AbiBPOh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 09:37:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43474 "EHLO
+        id S235115AbiBPOiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 09:38:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233864AbiBPOhV (ORCPT
+        with ESMTP id S233864AbiBPOiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 09:37:21 -0500
-X-Greylist: delayed 325 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 06:37:08 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5655D2A64D1;
-        Wed, 16 Feb 2022 06:37:07 -0800 (PST)
-Received: from [192.168.100.1] ([82.142.13.146]) by mrelayeu.kundenserver.de
- (mreue010 [213.165.67.103]) with ESMTPSA (Nemesis) id
- 1M5Q2f-1nIyQR0pXx-001SW8; Wed, 16 Feb 2022 15:31:14 +0100
-Message-ID: <1a0f23f2-361a-25d1-b371-7a229758d248@vivier.eu>
-Date:   Wed, 16 Feb 2022 15:31:12 +0100
+        Wed, 16 Feb 2022 09:38:07 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8192A64D6
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:37:54 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 150431F37D;
+        Wed, 16 Feb 2022 14:37:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645022273; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Hzxw7hrW6dK7op0zINjolnPd3bCW2rJjoUiSMQH+CTk=;
+        b=TvYzXGmg7n17GwN8Ys+jLoQHubu+F6/aqB18rg+S6Hnk4Oj4SBiD4trr4k0W7I/B3JQ8aS
+        c5ApEWU6UmHLXFjTLg1aQXVkVdYvdrrYHadBSTBXmVpMThw2k70Y4qu9Tv4Bblu19M8M6+
+        uisCnEoGmQUnfZk8iniWj/U+KChjx6c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645022273;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Hzxw7hrW6dK7op0zINjolnPd3bCW2rJjoUiSMQH+CTk=;
+        b=n10LNqT7gvOOyLsB+Xx/BFainR8wLXRyzOA+tOnQxrdj/1HAptg3Qd+VINmQG/sj6LR6uo
+        blgA+z97B0HhJHDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E23F113B24;
+        Wed, 16 Feb 2022 14:37:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id N95zNUAMDWJEFwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 16 Feb 2022 14:37:52 +0000
+Message-ID: <5c4747b7-60b7-c7b4-3be6-4ecea92cf975@suse.cz>
+Date:   Wed, 16 Feb 2022 15:37:52 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v14 4/5] clocksource/drivers: Add a goldfish-timer
- clocksource
-Content-Language: fr
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-rtc@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-References: <20220130143333.552646-1-laurent@vivier.eu>
- <20220130143333.552646-5-laurent@vivier.eu>
-From:   Laurent Vivier <laurent@vivier.eu>
-In-Reply-To: <20220130143333.552646-5-laurent@vivier.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:7JSXb+0iPWC1kUoDSy+e0pd80DU2qFPw7Rc/A8oDGjFlcgAJFy7
- kzKNq77rh+TkVUg+/qKTeOBHMKjkYsr71BjVI+X3gh6a4lSIR7bhTvrqYqmzaVAMSKdWSYG
- h70Y55KueTU0qolvsRfHIRNDLzf/i5FzRt7afiex5KD5eD/ta2CggiXV2p9pYiyR0tFg1ka
- KF4yFXU7iM/ZdQEGvWFyg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:WJR0F7P8k/c=:q9M000AaJrC8fNch58wOhx
- 37ZHoUNZdFi85SbI88MtO0VUV5jL11t9f58PaUCQY6j1ApdpdnMH5Am/WhREb3jVV7iq5zKlb
- SLi/a+t/DDDIu3x4O6tJZiSkbCMlzMuL2LdN9E2Ui2SB/KfXj1qEHjdG+gVvni72tuBBDUJoY
- aEKdg/COPhEqTaNGT5u0cagI+BIIpy/f5P9Zl0EQubs0+GZrd4THWq12PQxQyk1vyn8Om4/r7
- 7SZPYwC2evKkukOBeaTZF6boJiNuqnhcc/RBJVUOi6iWA40dHduPv99Or1Ib9zCMKdueosv4L
- h07MW8+x6e/1PsMBQVYmGsVg+1ESRVqDSYZCVPIQNQEPo7ccwc8iDB/gCH8TRaNde1Ub43gvj
- DNhPJC9zshdhE8JnhlBX3jTaxnulVYU6Xm+TAkVS6jJUOR+WanZ8ZtLHXl+5HkJ1PwGsZ9hx0
- DLEOtyq2x4Ff80qOejCtaxEzzYAm8UbIgJZS9kJ1wAI+TI4ykffVytLLtUDBXHy7mpOez4HDc
- enMFvNq1tz5BpKbRNjkMvF62Dm2B+125+BfC8Py2KD37nYybpJGUxHRF5RCTWXkr7HK3MVJpE
- jxyYbGtRrMFbhsBIVgX1fCeis/l3p0LiDWER/rlQCoc8OkoccesxRWuFW7jxJFQzhUiGEuYc4
- OYdOON/AKsQ3wfwITajS5Cc/7KRPmARXnrlE/TCZdPzc7oHofgk74TcuPeyTPTKSo4uc=
+ Thunderbird/91.6.0
+Subject: Re: [PATCH 5/5] mm/page_alloc: Limit number of high-order pages on
+ PCP during bulk free
+Content-Language: en-US
+To:     Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Aaron Lu <aaron.lu@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+References: <20220215145111.27082-1-mgorman@techsingularity.net>
+ <20220215145111.27082-6-mgorman@techsingularity.net>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220215145111.27082-6-mgorman@techsingularity.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Daniel,
+On 2/15/22 15:51, Mel Gorman wrote:
+> When a PCP is mostly used for frees then high-order pages can exist on PCP
+> lists for some time. This is problematic when the allocation pattern is all
+> allocations from one CPU and all frees from another resulting in colder
+> pages being used. When bulk freeing pages, limit the number of high-order
+> pages that are stored on the PCP lists.
+> 
+> Netperf running on localhost exhibits this pattern and while it does
+> not matter for some machines, it does matter for others with smaller
+> caches where cache misses cause problems due to reduced page reuse.
+> Pages freed directly to the buddy list may be reused quickly while still
+> cache hot where as storing on the PCP lists may be cold by the time
+> free_pcppages_bulk() is called.
+> 
+> Using perf kmem:mm_page_alloc, the 5 most used page frames were
+> 
+> 5.17-rc3
+>   13041 pfn=0x111a30
+>   13081 pfn=0x5814d0
+>   13097 pfn=0x108258
+>   13121 pfn=0x689598
+>   13128 pfn=0x5814d8
+> 
+> 5.17-revert-highpcp
+>  192009 pfn=0x54c140
+>  195426 pfn=0x1081d0
+>  200908 pfn=0x61c808
+>  243515 pfn=0xa9dc20
+>  402523 pfn=0x222bb8
+> 
+> 5.17-full-series
+>  142693 pfn=0x346208
+>  162227 pfn=0x13bf08
+>  166413 pfn=0x2711e0
+>  166950 pfn=0x2702f8
+> 
+> The spread is wider as there is still time before pages freed to one
+> PCP get released with a tradeoff between fast reuse and reduced zone
+> lock acquisition.
+> 
+> From the machine used to gather the traces, the headline performance
+> was equivalent.
+> 
+> netperf-tcp
+>                             5.17.0-rc3             5.17.0-rc3             5.17.0-rc3
+>                                vanilla  mm-reverthighpcp-v1r1  mm-highpcplimit-v1r12
+> Hmean     64         839.93 (   0.00%)      840.77 (   0.10%)      835.34 *  -0.55%*
+> Hmean     128       1614.22 (   0.00%)     1622.07 *   0.49%*     1604.18 *  -0.62%*
+> Hmean     256       2952.00 (   0.00%)     2953.19 (   0.04%)     2959.46 (   0.25%)
+> Hmean     1024     10291.67 (   0.00%)    10239.17 (  -0.51%)    10287.05 (  -0.04%)
+> Hmean     2048     17335.08 (   0.00%)    17399.97 (   0.37%)    17125.73 *  -1.21%*
+> Hmean     3312     22628.15 (   0.00%)    22471.97 (  -0.69%)    22414.24 *  -0.95%*
+> Hmean     4096     25009.50 (   0.00%)    24752.83 *  -1.03%*    24620.03 *  -1.56%*
+> Hmean     8192     32745.01 (   0.00%)    31682.63 *  -3.24%*    32475.31 (  -0.82%)
+> Hmean     16384    39759.59 (   0.00%)    36805.78 *  -7.43%*    39291.42 (  -1.18%)
+> 
+> From a 1-socket skylake machine with a small CPU cache that suffers
+> more if cache misses are too high
+> 
+> netperf-tcp
+>                             5.17.0-rc3             5.17.0-rc3             5.17.0-rc3
+>                                vanilla    mm-reverthighpcp-v1     mm-highpcplimit-v1
+> Min       64         935.38 (   0.00%)      939.40 (   0.43%)      940.11 (   0.51%)
+> Min       128       1831.69 (   0.00%)     1856.15 (   1.34%)     1849.30 (   0.96%)
+> Min       256       3560.61 (   0.00%)     3659.25 (   2.77%)     3654.12 (   2.63%)
+> Min       1024     13165.24 (   0.00%)    13444.74 (   2.12%)    13281.71 (   0.88%)
+> Min       2048     22706.44 (   0.00%)    23219.67 (   2.26%)    23027.31 (   1.41%)
+> Min       3312     30960.26 (   0.00%)    31985.01 (   3.31%)    31484.40 (   1.69%)
+> Min       4096     35149.03 (   0.00%)    35997.44 (   2.41%)    35891.92 (   2.11%)
+> Min       8192     48064.73 (   0.00%)    49574.05 (   3.14%)    48928.89 (   1.80%)
+> Min       16384    58017.25 (   0.00%)    60352.93 (   4.03%)    60691.14 (   4.61%)
+> Hmean     64         938.95 (   0.00%)      941.50 *   0.27%*      940.47 (   0.16%)
+> Hmean     128       1843.10 (   0.00%)     1857.58 *   0.79%*     1855.83 *   0.69%*
+> Hmean     256       3573.07 (   0.00%)     3667.45 *   2.64%*     3662.08 *   2.49%*
+> Hmean     1024     13206.52 (   0.00%)    13487.80 *   2.13%*    13351.11 *   1.09%*
+> Hmean     2048     22870.23 (   0.00%)    23337.96 *   2.05%*    23149.68 *   1.22%*
+> Hmean     3312     31001.99 (   0.00%)    32206.50 *   3.89%*    31849.40 *   2.73%*
+> Hmean     4096     35364.59 (   0.00%)    36490.96 *   3.19%*    36112.91 *   2.12%*
+> Hmean     8192     48497.71 (   0.00%)    49954.05 *   3.00%*    49384.50 *   1.83%*
+> Hmean     16384    58410.86 (   0.00%)    60839.80 *   4.16%*    61362.12 *   5.05%*
+> 
+> Note that this was a machine that did not benefit from caching high-order
+> pages and performance is almost restored with the series applied. It's not
+> fully restored as cache misses are still higher. This is a trade-off
+> between optimising for a workload that does all allocs on one CPU and frees
+> on another or more general workloads that need high-order pages for SLUB
+> and benefit from avoiding zone->lock for every SLUB refill/drain.
+> 
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 
-as you reviewed the v12, could you review this version to see if I have addressed your comments?
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
-Thanks,
-Laurent
-
-Le 30/01/2022 à 15:33, Laurent Vivier a écrit :
-> Add a clocksource based on the goldfish-rtc device.
-> 
-> Move the timer register definition to <clocksource/timer-goldfish.h>
-> 
-> This kernel implementation is based on the QEMU upstream implementation:
-> 
->     https://git.qemu.org/?p=qemu.git;a=blob_plain;f=hw/rtc/goldfish_rtc.c
-> 
-> Details related to Goldfish devices can be found in:
-> 
->    https://android.googlesource.com/platform/external/qemu/+/master/docs/GOLDFISH-VIRTUAL-HARDWARE.TXT
-> 
-> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
 > ---
->   drivers/clocksource/Kconfig          |   7 ++
->   drivers/clocksource/Makefile         |   1 +
->   drivers/clocksource/timer-goldfish.c | 153 +++++++++++++++++++++++++++
->   drivers/rtc/rtc-goldfish.c           |  13 +--
->   include/clocksource/timer-goldfish.h |  31 ++++++
->   5 files changed, 193 insertions(+), 12 deletions(-)
->   create mode 100644 drivers/clocksource/timer-goldfish.c
->   create mode 100644 include/clocksource/timer-goldfish.h
+>  mm/page_alloc.c | 26 +++++++++++++++++++++-----
+>  1 file changed, 21 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-> index cfb8ea0df3b1..94f00374cebb 100644
-> --- a/drivers/clocksource/Kconfig
-> +++ b/drivers/clocksource/Kconfig
-> @@ -721,4 +721,11 @@ config MICROCHIP_PIT64B
->   	  modes and high resolution. It is used as a clocksource
->   	  and a clockevent.
->   
-> +config GOLDFISH_TIMER
-> +	bool "Clocksource using goldfish-rtc"
-> +	depends on M68K || COMPILE_TEST
-> +	depends on RTC_DRV_GOLDFISH
-> +	help
-> +	  Support for the timer/counter of goldfish-rtc
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 6881175b27df..cfb3cbad152c 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -3314,10 +3314,15 @@ static bool free_unref_page_prepare(struct page *page, unsigned long pfn,
+>  	return true;
+>  }
+>  
+> -static int nr_pcp_free(struct per_cpu_pages *pcp, int high, int batch)
+> +static int nr_pcp_free(struct per_cpu_pages *pcp, int high, int batch,
+> +		       bool free_high)
+>  {
+>  	int min_nr_free, max_nr_free;
+>  
+> +	/* Free everything if batch freeing high-order pages. */
+> +	if (unlikely(free_high))
+> +		return pcp->count;
 > +
->   endmenu
-> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-> index fa5f624eadb6..12f5d7e8cc2d 100644
-> --- a/drivers/clocksource/Makefile
-> +++ b/drivers/clocksource/Makefile
-> @@ -89,3 +89,4 @@ obj-$(CONFIG_GX6605S_TIMER)		+= timer-gx6605s.o
->   obj-$(CONFIG_HYPERV_TIMER)		+= hyperv_timer.o
->   obj-$(CONFIG_MICROCHIP_PIT64B)		+= timer-microchip-pit64b.o
->   obj-$(CONFIG_MSC313E_TIMER)		+= timer-msc313e.o
-> +obj-$(CONFIG_GOLDFISH_TIMER)		+= timer-goldfish.o
-> diff --git a/drivers/clocksource/timer-goldfish.c b/drivers/clocksource/timer-goldfish.c
-> new file mode 100644
-> index 000000000000..0512d5eabc82
-> --- /dev/null
-> +++ b/drivers/clocksource/timer-goldfish.c
-> @@ -0,0 +1,153 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <linux/interrupt.h>
-> +#include <linux/ioport.h>
-> +#include <linux/clocksource.h>
-> +#include <linux/clockchips.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/goldfish.h>
-> +#include <clocksource/timer-goldfish.h>
-> +
-> +struct goldfish_timer {
-> +	struct clocksource cs;
-> +	struct clock_event_device ced;
-> +	struct resource res;
-> +	void __iomem *base;
-> +};
-> +
-> +static struct goldfish_timer *ced_to_gf(struct clock_event_device *ced)
-> +{
-> +	return container_of(ced, struct goldfish_timer, ced);
-> +}
-> +
-> +static struct goldfish_timer *cs_to_gf(struct clocksource *cs)
-> +{
-> +	return container_of(cs, struct goldfish_timer, cs);
-> +}
-> +
-> +static u64 goldfish_timer_read(struct clocksource *cs)
-> +{
-> +	struct goldfish_timer *timerdrv = cs_to_gf(cs);
-> +	void __iomem *base = timerdrv->base;
-> +	u32 time_low, time_high;
-> +	u64 ticks;
+>  	/* Check for PCP disabled or boot pageset */
+>  	if (unlikely(high < batch))
+>  		return 1;
+> @@ -3338,11 +3343,12 @@ static int nr_pcp_free(struct per_cpu_pages *pcp, int high, int batch)
+>  	return batch;
+>  }
+>  
+> -static int nr_pcp_high(struct per_cpu_pages *pcp, struct zone *zone)
+> +static int nr_pcp_high(struct per_cpu_pages *pcp, struct zone *zone,
+> +		       bool free_high)
+>  {
+>  	int high = READ_ONCE(pcp->high);
+>  
+> -	if (unlikely(!high))
+> +	if (unlikely(!high || free_high))
+>  		return 0;
+>  
+>  	if (!test_bit(ZONE_RECLAIM_ACTIVE, &zone->flags))
+> @@ -3362,17 +3368,27 @@ static void free_unref_page_commit(struct page *page, unsigned long pfn,
+>  	struct per_cpu_pages *pcp;
+>  	int high;
+>  	int pindex;
+> +	bool free_high;
+>  
+>  	__count_vm_event(PGFREE);
+>  	pcp = this_cpu_ptr(zone->per_cpu_pageset);
+>  	pindex = order_to_pindex(migratetype, order);
+>  	list_add(&page->lru, &pcp->lists[pindex]);
+>  	pcp->count += 1 << order;
+> -	high = nr_pcp_high(pcp, zone);
 > +
 > +	/*
-> +	 * time_low: get low bits of current time and update time_high
-> +	 * time_high: get high bits of time at last time_low read
+> +	 * As high-order pages other than THP's stored on PCP can contribute
+> +	 * to fragmentation, limit the number stored when PCP is heavily
+> +	 * freeing without allocation. The remainder after bulk freeing
+> +	 * stops will be drained from vmstat refresh context.
 > +	 */
-> +	time_low = gf_ioread32(base + TIMER_TIME_LOW);
-> +	time_high = gf_ioread32(base + TIMER_TIME_HIGH);
+> +	free_high = (pcp->free_factor && order && order <= PAGE_ALLOC_COSTLY_ORDER);
 > +
-> +	ticks = ((u64)time_high << 32) | time_low;
-> +
-> +	return ticks;
-> +}
-> +
-> +static int goldfish_timer_set_oneshot(struct clock_event_device *evt)
-> +{
-> +	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-> +	void __iomem *base = timerdrv->base;
-> +
-> +	gf_iowrite32(0, base + TIMER_ALARM_HIGH);
-> +	gf_iowrite32(0, base + TIMER_ALARM_LOW);
-> +	gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
-> +
-> +	return 0;
-> +}
-> +
-> +static int goldfish_timer_shutdown(struct clock_event_device *evt)
-> +{
-> +	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-> +	void __iomem *base = timerdrv->base;
-> +
-> +	gf_iowrite32(0, base + TIMER_IRQ_ENABLED);
-> +
-> +	return 0;
-> +}
-> +
-> +static int goldfish_timer_next_event(unsigned long delta,
-> +				     struct clock_event_device *evt)
-> +{
-> +	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-> +	void __iomem *base = timerdrv->base;
-> +	u64 now;
-> +
-> +	now = goldfish_timer_read(&timerdrv->cs);
-> +
-> +	now += delta;
-> +
-> +	gf_iowrite32(upper_32_bits(now), base + TIMER_ALARM_HIGH);
-> +	gf_iowrite32(lower_32_bits(now), base + TIMER_ALARM_LOW);
-> +
-> +	return 0;
-> +}
-> +
-> +static irqreturn_t goldfish_timer_irq(int irq, void *dev_id)
-> +{
-> +	struct goldfish_timer *timerdrv = dev_id;
-> +	struct clock_event_device *evt = &timerdrv->ced;
-> +	void __iomem *base = timerdrv->base;
-> +
-> +	gf_iowrite32(1, base + TIMER_CLEAR_INTERRUPT);
-> +
-> +	evt->event_handler(evt);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +int __init goldfish_timer_init(int irq, void __iomem *base)
-> +{
-> +	struct goldfish_timer *timerdrv;
-> +	int ret;
-> +
-> +	timerdrv = kzalloc(sizeof(*timerdrv), GFP_KERNEL);
-> +	if (!timerdrv)
-> +		return -ENOMEM;
-> +
-> +	timerdrv->base = base;
-> +
-> +	timerdrv->ced = (struct clock_event_device){
-> +		.name			= "goldfish_timer",
-> +		.features		= CLOCK_EVT_FEAT_ONESHOT,
-> +		.set_state_shutdown	= goldfish_timer_shutdown,
-> +		.set_state_oneshot      = goldfish_timer_set_oneshot,
-> +		.set_next_event		= goldfish_timer_next_event,
-> +	};
-> +
-> +	timerdrv->res = (struct resource){
-> +		.name  = "goldfish_timer",
-> +		.start = (unsigned long)base,
-> +		.end   = (unsigned long)base + 0xfff,
-> +	};
-> +
-> +	ret = request_resource(&iomem_resource, &timerdrv->res);
-> +	if (ret) {
-> +		pr_err("Cannot allocate '%s' resource\n", timerdrv->res.name);
-> +		return ret;
-> +	}
-> +
-> +	timerdrv->cs = (struct clocksource){
-> +		.name		= "goldfish_timer",
-> +		.rating		= 400,
-> +		.read		= goldfish_timer_read,
-> +		.mask		= CLOCKSOURCE_MASK(64),
-> +		.flags		= 0,
-> +		.max_idle_ns	= LONG_MAX,
-> +	};
-> +
-> +	clocksource_register_hz(&timerdrv->cs, NSEC_PER_SEC);
-> +
-> +	ret = request_irq(irq, goldfish_timer_irq, IRQF_TIMER,
-> +			  "goldfish_timer", timerdrv);
-> +	if (ret) {
-> +		pr_err("Couldn't register goldfish-timer interrupt\n");
-> +		return ret;
-> +	}
-> +
-> +	clockevents_config_and_register(&timerdrv->ced, NSEC_PER_SEC,
-> +					1, 0xffffffff);
-> +
-> +	return 0;
-> +}
-> diff --git a/drivers/rtc/rtc-goldfish.c b/drivers/rtc/rtc-goldfish.c
-> index eb1929b0cbb6..59c0f38cc08d 100644
-> --- a/drivers/rtc/rtc-goldfish.c
-> +++ b/drivers/rtc/rtc-goldfish.c
-> @@ -11,18 +11,7 @@
->   #include <linux/platform_device.h>
->   #include <linux/rtc.h>
->   #include <linux/goldfish.h>
-> -
-> -#define TIMER_TIME_LOW		0x00	/* get low bits of current time  */
-> -					/*   and update TIMER_TIME_HIGH  */
-> -#define TIMER_TIME_HIGH	0x04	/* get high bits of time at last */
-> -					/*   TIMER_TIME_LOW read         */
-> -#define TIMER_ALARM_LOW	0x08	/* set low bits of alarm and     */
-> -					/*   activate it                 */
-> -#define TIMER_ALARM_HIGH	0x0c	/* set high bits of next alarm   */
-> -#define TIMER_IRQ_ENABLED	0x10
-> -#define TIMER_CLEAR_ALARM	0x14
-> -#define TIMER_ALARM_STATUS	0x18
-> -#define TIMER_CLEAR_INTERRUPT	0x1c
-> +#include <clocksource/timer-goldfish.h>
->   
->   struct goldfish_rtc {
->   	void __iomem *base;
-> diff --git a/include/clocksource/timer-goldfish.h b/include/clocksource/timer-goldfish.h
-> new file mode 100644
-> index 000000000000..d39097729b1d
-> --- /dev/null
-> +++ b/include/clocksource/timer-goldfish.h
-> @@ -0,0 +1,31 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * goldfish-timer clocksource
-> + * Registers definition for the goldfish-timer device
-> + */
-> +
-> +#ifndef _CLOCKSOURCE_TIMER_GOLDFISH_H
-> +#define _CLOCKSOURCE_TIMER_GOLDFISH_H
-> +
-> +/*
-> + * TIMER_TIME_LOW	 get low bits of current time and update TIMER_TIME_HIGH
-> + * TIMER_TIME_HIGH	 get high bits of time at last TIMER_TIME_LOW read
-> + * TIMER_ALARM_LOW	 set low bits of alarm and activate it
-> + * TIMER_ALARM_HIGH	 set high bits of next alarm
-> + * TIMER_IRQ_ENABLED	 enable alarm interrupt
-> + * TIMER_CLEAR_ALARM	 disarm an existin alarm
-> + * TIMER_ALARM_STATUS	 alarm status (running or not)
-> + * TIMER_CLEAR_INTERRUPT clear interrupt
-> + */
-> +#define TIMER_TIME_LOW		0x00
-> +#define TIMER_TIME_HIGH		0x04
-> +#define TIMER_ALARM_LOW		0x08
-> +#define TIMER_ALARM_HIGH	0x0c
-> +#define TIMER_IRQ_ENABLED	0x10
-> +#define TIMER_CLEAR_ALARM	0x14
-> +#define TIMER_ALARM_STATUS	0x18
-> +#define TIMER_CLEAR_INTERRUPT	0x1c
-> +
-> +extern int goldfish_timer_init(int irq, void __iomem *base);
-> +
-> +#endif /* _CLOCKSOURCE_TIMER_GOLDFISH_H */
+> +	high = nr_pcp_high(pcp, zone, free_high);
+>  	if (pcp->count >= high) {
+>  		int batch = READ_ONCE(pcp->batch);
+>  
+> -		free_pcppages_bulk(zone, nr_pcp_free(pcp, high, batch), pcp, pindex);
+> +		free_pcppages_bulk(zone, nr_pcp_free(pcp, high, batch, free_high), pcp, pindex);
+>  	}
+>  }
+>  
 
