@@ -2,174 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C135BC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D503C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:56:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245697AbiBPBxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:53:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53852 "EHLO
+        id S245724AbiBPB4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:56:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235171AbiBPBxU (ORCPT
+        with ESMTP id S243224AbiBPB42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:53:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0556C1DC;
-        Tue, 15 Feb 2022 17:53:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D49A3B81D90;
-        Wed, 16 Feb 2022 01:53:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A46C340EB;
-        Wed, 16 Feb 2022 01:53:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644976386;
-        bh=RpHh2XK3cscZmha2HhZmkS5MLrmpjSMVuJard6nBP7M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=H/HPajPvU7ri60s90Bh8iAi4awFW7WonTf3sq4g+UXfYvPpo7f4ORClQuRXwv8jsb
-         1R9/ooc2UiG2pkAaOBJZg+WWbQuQTJYka0oGvUc0bLJK4I+9kf/N+xi/M0Hke87ZUg
-         4Qannc73uStqzNqbff3G935vnuVPrxptKjbb0HNAArwmBlD5n7WXfHQ+eU2PpbPYmX
-         5BrAzB+tA7V/FqaS46GwiXu7GidNuXJaIA9LLCBuEmYMRZ3+7kIpYwD4qpY3HQYv6v
-         4bpOii1xnGjL51SdxBJ54Tm+gDCOj/kDkzPe1epKqiKS2QNs3NNVp+Ps+PbIbj1bCQ
-         LkmkCg7CLaclw==
-Date:   Tue, 15 Feb 2022 19:53:03 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Nirmal Patel <nirmal.patel@linux.intel.com>,
-        Jonathan Derrick <jonathan.derrick@linux.dev>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3] PCI: vmd: Honor ACPI _OSC on PCIe features
-Message-ID: <20220216015303.GA137820@bhelgaas>
+        Tue, 15 Feb 2022 20:56:28 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8656BFABD7;
+        Tue, 15 Feb 2022 17:56:16 -0800 (PST)
+X-UUID: 3078d079a04c464ea31133e843022fb0-20220216
+X-UUID: 3078d079a04c464ea31133e843022fb0-20220216
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 891655515; Wed, 16 Feb 2022 09:56:13 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 16 Feb 2022 09:56:12 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 09:56:12 +0800
+Message-ID: <3691cb945fdec02271d06cdb5fb8fac1350b49c8.camel@mediatek.com>
+Subject: Re: [v2,6/6] drm/mediatek: add display support for MT8186
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>
+CC:     <devicetree@vger.kernel.org>, <airlied@linux.ie>,
+        <jassisinghbrar@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <yongqiang.niu@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <fparent@baylibre.com>, <linux-mediatek@lists.infradead.org>,
+        <hsinyi@chromium.org>, <linux-arm-kernel@lists.infradead.org>
+Date:   Wed, 16 Feb 2022 09:56:12 +0800
+In-Reply-To: <20220215075953.3310-7-rex-bc.chen@mediatek.com>
+References: <20220215075953.3310-1-rex-bc.chen@mediatek.com>
+         <20220215075953.3310-7-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0i6+EMMGuKckhtTdt7TgC3LbofW7oS7B5=McSNjEh1yKA@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 06:09:15PM +0100, Rafael J. Wysocki wrote:
-> On Tue, Feb 15, 2022 at 4:09 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > On Mon, Feb 14, 2022 at 08:23:05AM +0800, Kai-Heng Feng wrote:
-> > > On Thu, Feb 10, 2022 at 5:36 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > On Tue, Dec 07, 2021 at 02:15:04PM +0100, Rafael J. Wysocki wrote:
-> > > > > On Tue, Dec 7, 2021 at 12:12 AM Keith Busch <kbusch@kernel.org> wrote:
-> > > > > > On Fri, Dec 03, 2021 at 11:15:41AM +0800, Kai-Heng Feng wrote:
-> > > > > > > When Samsung PCIe Gen4 NVMe is connected to Intel ADL VMD, the
-> > > > > > > combination causes AER message flood and drags the system performance
-> > > > > > > down.
-> > > > > > >
-> > > > > > > The issue doesn't happen when VMD mode is disabled in BIOS, since AER
-> > > > > > > isn't enabled by acpi_pci_root_create() . When VMD mode is enabled, AER
-> > > > > > > is enabled regardless of _OSC:
-> > > > > > > [    0.410076] acpi PNP0A08:00: _OSC: platform does not support [AER]
-> > > > > > > ...
-> > > > > > > [    1.486704] pcieport 10000:e0:06.0: AER: enabled with IRQ 146
-> > > > > > >
-> > > > > > > Since VMD is an aperture to regular PCIe root ports, honor ACPI _OSC to
-> > > > > > > disable PCIe features accordingly to resolve the issue.
-> > > > > >
-> > > > > > At least for some versions of this hardare, I recall ACPI is unaware of
-> > > > > > any devices in the VMD domain; the platform can not see past the VMD
-> > > > > > endpoint, so I throught the driver was supposed to always let the VMD
-> > > > > > domain use OS native support regardless of the parent's ACPI _OSC.
-> > > > >
-> > > > > This is orthogonal to whether or not ACPI is aware of the VMD domain
-> > > > > or the devices in it.
-> > > > >
-> > > > > If the platform firmware does not allow the OS to control specific
-> > > > > PCIe features at the physical host bridge level, that extends to the
-> > > > > VMD "bus", because it is just a way to expose a hidden part of the
-> > > > > PCIe hierarchy.
-> > > >
-> > > > I don't understand what's going on here.  Do we understand the AER
-> > > > message flood?  Are we just papering over it by disabling AER?
-> > >
-> > > To be more precise, AER is disabled by the platform vendor in BIOS to
-> > > paper over the issue.
-> > > The only viable solution for us is to follow their settings. We may
-> > > never know what really happens underneath.
-> > >
-> > > Disabling ASPM/AER/PME etc is a normal practice for ODMs unfortunately.
-> >
-> > OK.  So this patch actually has nothing in particular to do with AER.
-> > It's about making _OSC apply to *all* devices below a host bridge,
-> > even those below a VMD.
+Hi, Rex:
+
+On Tue, 2022-02-15 at 15:59 +0800, Rex-BC Chen wrote:
+> From: Yongqiang Niu <yongqiang.niu@mediatek.com>
 > 
-> Right.
+> - Add driver data for MT8186 in mtk_drm_drv.c.
+> - Add mtk-disp-ovl and mt-disp-ovl-2l support for MT8186.
 > 
-> > This is slightly ambiguous because while "_OSC applies to the entire
-> > hierarchy originated by a PCI Host Bridge" (PCI Firmware spec r3.3,
-> > sec 4.5.1), vmd.c creates a logical view where devices below the VMD
-> > are in a separate hierarchy with a separate domain.
+> Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_disp_ovl.c | 20 +++++++++++++
+>  drivers/gpu/drm/mediatek/mtk_drm_drv.c  | 39
+> +++++++++++++++++++++++++
+>  2 files changed, 59 insertions(+)
 > 
-> But from the HW perspective they still are in the same hierarchy below
-> the original host bridge.
+> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> index 2146299e5f52..5fa56c7b9f5f 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> @@ -456,6 +456,22 @@ static const struct mtk_disp_ovl_data
+> mt8183_ovl_2l_driver_data = {
+>  	.fmt_rgb565_is_0 = true,
+>  };
+>  
+> +static const struct mtk_disp_ovl_data mt8186_ovl_driver_data = {
+> +	.addr = DISP_REG_OVL_ADDR_MT8173,
+> +	.gmc_bits = 10,
+> +	.layer_nr = 4,
+> +	.fmt_rgb565_is_0 = true,
+> +	.smi_id_en = true,
+> +};
 
-I suppose in some sense it's the same hierarchy because the electrical
-connection all goes through a root port in the original host bridge,
-but it's a little muddy because according to [1], a VMD spawns a new
-hierarchy that can use an entirely new [bus 00-ff] space, and the
-hierarchy below VMD uses a new config access mechanism independent of
-ECAM or whatever the original host bridge uses.
 
-> > The interpretation that _OSC applies to devices below VMD should work,
-> > as long as it is possible for platform firmware to manage services
-> > (AER, pciehp, etc) for things below VMD without getting in the way of
-> > vmd.c.
-> 
-> vmd.c actually exposes things hidden by the firmware and the point of
-> the patch is to still let the firmware control them if it wants/needs
-> to IIUC.
+mt8186_ovl_driver_data is identical to  mt8192_ovl_driver_data, so drop
+this one and use mt8192_ovl_driver_data instead.
 
-My mental picture is that without vmd.c, Linux would enumerate the VMD
-RCiEP itself, but none of the devices below the VMD would be visible.
-With vmd.c, devices below the VMD RCiEP are visible.  Maybe this
-picture is incorrect or too simple?
+> +
+> +static const struct mtk_disp_ovl_data mt8186_ovl_2l_driver_data = {
+> +	.addr = DISP_REG_OVL_ADDR_MT8173,
+> +	.gmc_bits = 10,
+> +	.layer_nr = 2,
+> +	.fmt_rgb565_is_0 = true,
+> +	.smi_id_en = true,
+> +};
 
-Apparently there's a firmware toggle, but I don't know exactly what it
-does.  Maybe if the toggle is set to disable VMD, the VMD device looks
-like a regular Root Port and the devices below are enumerated
-normally even without any vmd.c?
+Ditto.
 
-> > But I think one implication of this is that we cannot support
-> > hot-added VMDs.  For example, firmware that wants to manage AER will
-> > use _OSC to retain AER control.  But if the firmware doesn't know how
-> > VMDs work, it will not be able to handle AER for devices below the
-> > VMD.
-> 
-> Well, the firmware needs to know how stuff works to hide it in the
-> first place ...
+Regards,
+CK
 
-[1] does also say that VMD is a Root Complex *Integrated* Endpoint,
-which could not be hotplugged.  But I don't see anything in the code
-that actually enforces or requires that, so I don't know what to make
-of it.
+> +
+>  static const struct mtk_disp_ovl_data mt8192_ovl_driver_data = {
+>  	.addr = DISP_REG_OVL_ADDR_MT8173,
+>  	.gmc_bits = 10,
+> @@ -479,8 +495,12 @@ static const struct of_device_id
+> mtk_disp_ovl_driver_dt_match[] = {
+>  	  .data = &mt8173_ovl_driver_data},
+>  	{ .compatible = "mediatek,mt8183-disp-ovl",
+>  	  .data = &mt8183_ovl_driver_data},
+> +	{ .compatible = "mediatek,mt8186-disp-ovl",
+> +	  .data = &mt8186_ovl_driver_data},
+>  	{ .compatible = "mediatek,mt8183-disp-ovl-2l",
+>  	  .data = &mt8183_ovl_2l_driver_data},
+> +	{ .compatible = "mediatek,mt8186-disp-ovl-2l",
+> +	  .data = &mt8186_ovl_2l_driver_data},
+>  	{ .compatible = "mediatek,mt8192-disp-ovl",
+>  	  .data = &mt8192_ovl_driver_data},
+>  	{ .compatible = "mediatek,mt8192-disp-ovl-2l",
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> index 6efb423ccc92..754b1be25d0d 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> @@ -158,6 +158,24 @@ static const enum mtk_ddp_comp_id
+> mt8183_mtk_ddp_ext[] = {
+>  	DDP_COMPONENT_DPI0,
+>  };
+>  
+> +static const enum mtk_ddp_comp_id mt8186_mtk_ddp_main[] = {
+> +	DDP_COMPONENT_OVL0,
+> +	DDP_COMPONENT_RDMA0,
+> +	DDP_COMPONENT_COLOR0,
+> +	DDP_COMPONENT_CCORR,
+> +	DDP_COMPONENT_AAL0,
+> +	DDP_COMPONENT_GAMMA,
+> +	DDP_COMPONENT_POSTMASK0,
+> +	DDP_COMPONENT_DITHER,
+> +	DDP_COMPONENT_DSI0,
+> +};
+> +
+> +static const enum mtk_ddp_comp_id mt8186_mtk_ddp_ext[] = {
+> +	DDP_COMPONENT_OVL_2L0,
+> +	DDP_COMPONENT_RDMA1,
+> +	DDP_COMPONENT_DPI0,
+> +};
+> +
+>  static const enum mtk_ddp_comp_id mt8192_mtk_ddp_main[] = {
+>  	DDP_COMPONENT_OVL0,
+>  	DDP_COMPONENT_OVL_2L0,
+> @@ -221,6 +239,13 @@ static const struct mtk_mmsys_driver_data
+> mt8183_mmsys_driver_data = {
+>  	.ext_len = ARRAY_SIZE(mt8183_mtk_ddp_ext),
+>  };
+>  
+> +static const struct mtk_mmsys_driver_data mt8186_mmsys_driver_data =
+> {
+> +	.main_path = mt8186_mtk_ddp_main,
+> +	.main_len = ARRAY_SIZE(mt8186_mtk_ddp_main),
+> +	.ext_path = mt8186_mtk_ddp_ext,
+> +	.ext_len = ARRAY_SIZE(mt8186_mtk_ddp_ext),
+> +};
+> +
+>  static const struct mtk_mmsys_driver_data mt8192_mmsys_driver_data =
+> {
+>  	.main_path = mt8192_mtk_ddp_main,
+>  	.main_len = ARRAY_SIZE(mt8192_mtk_ddp_main),
+> @@ -463,6 +488,8 @@ static const struct of_device_id
+> mtk_ddp_comp_dt_ids[] = {
+>  	  .data = (void *)MTK_DISP_MUTEX },
+>  	{ .compatible = "mediatek,mt8183-disp-mutex",
+>  	  .data = (void *)MTK_DISP_MUTEX },
+> +	{ .compatible = "mediatek,mt8186-disp-mutex",
+> +	  .data = (void *)MTK_DISP_MUTEX },
+>  	{ .compatible = "mediatek,mt8192-disp-mutex",
+>  	  .data = (void *)MTK_DISP_MUTEX },
+>  	{ .compatible = "mediatek,mt8173-disp-od",
+> @@ -475,14 +502,20 @@ static const struct of_device_id
+> mtk_ddp_comp_dt_ids[] = {
+>  	  .data = (void *)MTK_DISP_OVL },
+>  	{ .compatible = "mediatek,mt8183-disp-ovl",
+>  	  .data = (void *)MTK_DISP_OVL },
+> +	{ .compatible = "mediatek,mt8186-disp-ovl",
+> +	  .data = (void *)MTK_DISP_OVL },
+>  	{ .compatible = "mediatek,mt8192-disp-ovl",
+>  	  .data = (void *)MTK_DISP_OVL },
+>  	{ .compatible = "mediatek,mt8183-disp-ovl-2l",
+>  	  .data = (void *)MTK_DISP_OVL_2L },
+> +	{ .compatible = "mediatek,mt8186-disp-ovl-2l",
+> +	  .data = (void *)MTK_DISP_OVL_2L },
+>  	{ .compatible = "mediatek,mt8192-disp-ovl-2l",
+>  	  .data = (void *)MTK_DISP_OVL_2L },
+>  	{ .compatible = "mediatek,mt8192-disp-postmask",
+>  	  .data = (void *)MTK_DISP_POSTMASK },
+> +	{ .compatible = "mediatek,mt8186-disp-postmask",
+> +	  .data = (void *)MTK_DISP_POSTMASK},
+>  	{ .compatible = "mediatek,mt2701-disp-pwm",
+>  	  .data = (void *)MTK_DISP_BLS },
+>  	{ .compatible = "mediatek,mt8167-disp-pwm",
+> @@ -511,12 +544,16 @@ static const struct of_device_id
+> mtk_ddp_comp_dt_ids[] = {
+>  	  .data = (void *)MTK_DPI },
+>  	{ .compatible = "mediatek,mt8183-dpi",
+>  	  .data = (void *)MTK_DPI },
+> +	{ .compatible = "mediatek,mt8186-dpi",
+> +	  .data = (void *)MTK_DPI },
+>  	{ .compatible = "mediatek,mt2701-dsi",
+>  	  .data = (void *)MTK_DSI },
+>  	{ .compatible = "mediatek,mt8173-dsi",
+>  	  .data = (void *)MTK_DSI },
+>  	{ .compatible = "mediatek,mt8183-dsi",
+>  	  .data = (void *)MTK_DSI },
+> +	{ .compatible = "mediatek,mt8186-dsi",
+> +	  .data = (void *)MTK_DSI },
+>  	{ }
+>  };
+>  
+> @@ -533,6 +570,8 @@ static const struct of_device_id mtk_drm_of_ids[]
+> = {
+>  	  .data = &mt8173_mmsys_driver_data},
+>  	{ .compatible = "mediatek,mt8183-mmsys",
+>  	  .data = &mt8183_mmsys_driver_data},
+> +	{ .compatible = "mediatek,mt8186-mmsys",
+> +	  .data = &mt8186_mmsys_driver_data},
+>  	{ .compatible = "mediatek,mt8192-mmsys",
+>  	  .data = &mt8192_mmsys_driver_data},
+>  	{ }
 
-If it's possible to hot-add a VMD device, firmware wouldn't be
-involved in configuring it (assuming pciehp hotplug).  I assume the
-new VMD would look like an Endpoint, and if vmd.c is present, maybe it
-could construct a new hierarchy below that Endpoint?  In that case, we
-have to assume firmware doesn't know how to operate VMD, so even if
-firmware manages AER in general, it wouldn't be able to do it for
-things below the VMD.
-
-> > > > If an error occurs below a VMD, who notices and reports it?  If we
-> > > > disable native AER below VMD because of _OSC, as this patch does, I
-> > > > guess we're assuming the platform will handle AER events below VMD.
-> > > > Is that really true?  Does the platform know how to find AER log
-> > > > registers of devices below VMD?
-> > > >
-> > > > > The platform firmware does that through ACPI _OSC under the host
-> > > > > bridge device (not under the VMD device) which it is very well aware
-> > > > > of.
-
-[1] https://git.kernel.org/linus/185a383ada2e
