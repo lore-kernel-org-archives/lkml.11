@@ -2,120 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0FA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4ED8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235399AbiBPTih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:38:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34954 "EHLO
+        id S238062AbiBPTiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:38:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235008AbiBPTif (ORCPT
+        with ESMTP id S234415AbiBPTir (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:38:35 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0F1C1C8A
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:38:22 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id l67-20020a1c2546000000b00353951c3f62so2390334wml.5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:38:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AboYQV2RRhiS2OKfRcBDf/ccoxDOeEWOpFppYBuvgvk=;
-        b=ryR1LNxBvxTutflq6/ZAK/VSNEBUDY90SvMHGDbVxBNdR8XNrYjOnz6er4FgMSW+Ck
-         tTyUsoxgRelVS98PGMem3pCBZbqflM+Q02eMM6fYZrTzPlCmIZ2AImyhVk4lT1+oJ1nm
-         7DCM6yH3cX2c2DcifjzTmsNZ7kSVpYbQrC30Ei2HvLB/NvpAbSEfp4OrAYLaVhEtz7zm
-         bLhkFqMpfQg0OL2l0bYnpAvFxInuahOtgLENmWanXEv6MQDY9jpVgSgRxMS8wj/9Fekm
-         CoUQcgKuuDDwIBtdrOLm2MAtXGdgER0OwX5lg/7BQLpxvILm9gkkAyaSY3DE2zqQ23EP
-         sMRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AboYQV2RRhiS2OKfRcBDf/ccoxDOeEWOpFppYBuvgvk=;
-        b=tsRJFsbM4n5f98rks98xfseo6oMQ9R+6i72I90rY8VLK8b6Y3mlPfz88qzUALVVx8H
-         z9v5RzjXDA+RQT3piU1p2fPu/tvlIAF6z+5uZt81NZX0TLTuMoEv15Y1hx1S9bUzxAXn
-         6bYR4WcTFaPv8C1g+swzmJWv8OTVa6KE/+Yz+q+m+AnH7Dm6Ym42IWATzLPD6lALn6nY
-         x0NVqzU4CdSUvILMbu9C1xcfxnw42nzsMxh5Izb9UQrnootBbUYmL3xfDC/hKuEAXvjO
-         9vmLEMyh9graV/lSUR7gEJQFqCf45AO3Yf1Z5xYZWBB/BpTCtouprqKfxw7+HtXKkXvC
-         4xTA==
-X-Gm-Message-State: AOAM532NrjzRRrU4LB0137bbRdVdNHTzc+Rx+q56ohuFwLO1pKWF7Kqz
-        pifKOlUr6j7ZTXKdlev9S3s5DQ==
-X-Google-Smtp-Source: ABdhPJy0s8CbGeNQcCY6w7+9P457Aw/4bTVPptVdV2BwSq/JHweN4+iYBukfoCWnlvuC4Z5NybVEtg==
-X-Received: by 2002:a05:600c:384b:b0:37b:fda9:a5e2 with SMTP id s11-20020a05600c384b00b0037bfda9a5e2mr3051329wmr.62.1645040300881;
-        Wed, 16 Feb 2022 11:38:20 -0800 (PST)
-Received: from ?IPV6:2a01:e34:ed2f:f020:6165:d98a:b553:c3c1? ([2a01:e34:ed2f:f020:6165:d98a:b553:c3c1])
-        by smtp.googlemail.com with ESMTPSA id l9sm18850870wrt.29.2022.02.16.11.38.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 11:38:20 -0800 (PST)
-Message-ID: <c5889d73-7acb-a564-b091-44e71ba5ddb3@linaro.org>
-Date:   Wed, 16 Feb 2022 20:38:18 +0100
+        Wed, 16 Feb 2022 14:38:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D327C24BE;
+        Wed, 16 Feb 2022 11:38:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5614B81ED9;
+        Wed, 16 Feb 2022 19:38:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A69C004E1;
+        Wed, 16 Feb 2022 19:38:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645040312;
+        bh=YUNeMwnffWU/vzA+11lFMuMWe0+JjFTHVyeqME5xzxw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RvhRgyEjawXUAql0FqCTCcTpqR6GYBvsqNC9EZPqI5ZukTe3YMkyAiJ+1YKBf+Rlr
+         sxewfhO7AtNd8GwQy/RQGGJ/AXgX1LgrWMnZTpDKZCiIl4MoI0X8P3b4yUkf4X3JeP
+         l7bOM+By1/829q8HEUDp0joAEckiMlN1bSJeEtmm9DT0v1cg0aKN9haMO+KRTEXTKx
+         BIawC1huC6S2hOqZ/gswPro0qF/Bzg0858Vu6QjTMbuvQTz7D1gR8uQt+HV6mEdhmv
+         BV4TgmRvjAQDxRzfAaigAGsmsMmR8Yj0ESiy1ZrH3LP0qLNGtaqg4OazRGKQ9Qu6L7
+         d13KOv1rLre5w==
+Date:   Wed, 16 Feb 2022 13:46:09 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        linux-alpha@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        nouveau <nouveau@lists.freedesktop.org>,
+        coresight@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
+        "open list:TARGET SUBSYSTEM" <linux-scsi@vger.kernel.org>,
+        target-devel@vger.kernel.org, mpi3mr-linuxdrv.pdl@broadcom.com,
+        linux-staging@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org, sparmaintainer@unisys.com,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        Ext4 Developers List <linux-ext4@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        greybus-dev@lists.linaro.org, linux-i3c@lists.infradead.org,
+        linux-rdma@vger.kernel.org,
+        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
+        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
+        <alsa-devel@alsa-project.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, linux-perf-users@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] treewide: Replace zero-length arrays with
+ flexible-array members
+Message-ID: <20220216194609.GA903947@embeddedor>
+References: <20220215174743.GA878920@embeddedor>
+ <202202151016.C0471D6E@keescook>
+ <20220215192110.GA883653@embeddedor>
+ <Ygv8wY75hNqS7zO6@unreal>
+ <20220215193221.GA884407@embeddedor>
+ <CAJZ5v0jpAnQk+Hub6ue6t712RW+W0YBjb_gAcZZbUeuYMGv7mg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH 1/4] tools/lib/thermal: Add a thermal library
-Content-Language: en-US
-To:     srinivas pandruvada <srinivas.pandruvada@linux.intel.com>,
-        rafael@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <20220214210446.255780-1-daniel.lezcano@linaro.org>
- <0be77e01c0dc91e227fcb7219cf89d9497b4be39.camel@linux.intel.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <0be77e01c0dc91e227fcb7219cf89d9497b4be39.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0jpAnQk+Hub6ue6t712RW+W0YBjb_gAcZZbUeuYMGv7mg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Feb 16, 2022 at 08:05:47PM +0100, Rafael J. Wysocki wrote:
+> On Tue, Feb 15, 2022 at 8:24 PM Gustavo A. R. Silva
+> <gustavoars@kernel.org> wrote:
+> 
+> Can you also send the ACPI patch separately, please?
+> 
+> We would like to route it through the upstream ACPICA code base.
 
-Hi Srinivas,
-
-thanks for the review
-
-On 16/02/2022 17:40, srinivas pandruvada wrote:
-> On Mon, 2022-02-14 at 22:04 +0100, Daniel Lezcano wrote:
->> The thermal framework implements a netlink notification mechanism to
->> be used by the userspace to have a thermal configuration discovery,
->> trip point changes or violation, cooling device changes
->> notifications,
->> etc...
->>
->> This library provides a level of abstraction for the thermal netlink
->> notification allowing the userspace to connect to the notification
->> mechanism more easily. The library is callback oriented.
->>
-> Some minor comments.
-> May be better use some defines instead of returning "-1" for error
-> conditions.
-
-Do you suggest like an enum with different errors or just having -1 
-replaced by eg. THERMAL_ERROR ?
-
-
-[ ... ]
-
->> + * Low level netlink
->> + */
->> +extern int nl_subscribe_thermal(struct nl_sock *nl_sock, struct
->> nl_cb *nl_cb,
->> +                               const char *group);
->> +
-> To complete API, don't we need nl_unsubscribe which calls
-> nl_socket_drop_memberships()?
-Ah, yes. I'll add it.
+Yeah; no problem.
 
 Thanks
-
-
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+--
+Gustavo
