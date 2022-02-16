@@ -2,152 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA31C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232443AbiBPJtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 04:49:20 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37052 "EHLO
+        id S232453AbiBPJtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 04:49:36 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232421AbiBPJtT (ORCPT
+        with ESMTP id S232439AbiBPJtd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 04:49:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE4EF2B406E
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:49:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645004945;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=trYMhQgsw7O8qP2aA5tHFBOoRzKbhngS39UuP85axlI=;
-        b=AWOERnF+lk+S9qxCiNrcm0nwbaXY/NfT2G+8u+CNHqlq0G0SzvJHF9Sf+fFhyJkXO/ZHNT
-        SVMKPZP4s59uNWOcTkOh9zyQlnLKBXwwyyP76G4ZS33ygMHo4FjxtZ6yNBl74YGBORGTYB
-        t9/vSSl5kAX1dQH4ehrxt4EbKtbNlwk=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-418-ZLy2-bLmNyCcLR92Gyxfyg-1; Wed, 16 Feb 2022 04:49:04 -0500
-X-MC-Unique: ZLy2-bLmNyCcLR92Gyxfyg-1
-Received: by mail-pf1-f200.google.com with SMTP id i7-20020a626d07000000b004e07b61362bso1201948pfc.6
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:49:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=trYMhQgsw7O8qP2aA5tHFBOoRzKbhngS39UuP85axlI=;
-        b=B/ylR6eYYVuO85Da6W3EAVBHTjaW/bHFbs7MbysMGm3oKj0KPEmmV8YrHQqDv+URHc
-         5dVQvLC5oq12AfrNERo+CIvk88JO+wflQwk7tDleL7XOjjthELGPMNKmsN/y73x5HTVK
-         GTXK0ZpOLSVULYYYE44ERCPU0FHAondoBJkhLZMLC5DU5xuBLde88kwD0mJhx1tQSvcH
-         LCn7QutUvqWoj7xdRWav7pKriOje6J3tUVJNmKNPNCpts4JpNdn9Lh/cndW+Js4GrwlX
-         fkNIql1ul+OzsTJhCHffADuObuEj9UY+HqvAOwE4diSuwZu3mIx3nEKmrjcR46a0fkCo
-         T//Q==
-X-Gm-Message-State: AOAM531+p/JqO9TAIaM9inUYkLc45+7UqcCwn0ZrXv2o+Op9Ch1ugJbM
-        7UJSAvFkL5rLPzbefwj+1aY73AvUeG0s0ywN2x87FpBmqv0QhQ/yJo1L59ILigujDCMavRjXeNK
-        wss1zKV2pZvBitTJcGSTaS+TvwYvhtlB3pubcV0b+myoeLxz/b8iVAma+ogm6EC5ppeSB3slGyw
-        ==
-X-Received: by 2002:a17:903:228a:b0:14d:aa04:2278 with SMTP id b10-20020a170903228a00b0014daa042278mr1850399plh.58.1645004943551;
-        Wed, 16 Feb 2022 01:49:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwp9Rn/eyC2VMT306FaqLkb/8rUoQRaxAT2awvvDCzl/7i40J6BsqMQKml7qFHRkaY20DhzAA==
-X-Received: by 2002:a17:903:228a:b0:14d:aa04:2278 with SMTP id b10-20020a170903228a00b0014daa042278mr1850363plh.58.1645004943140;
-        Wed, 16 Feb 2022 01:49:03 -0800 (PST)
-Received: from localhost.localdomain ([64.64.123.81])
-        by smtp.gmail.com with ESMTPSA id qe7sm11567835pjb.25.2022.02.16.01.48.50
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 16 Feb 2022 01:49:02 -0800 (PST)
-From:   Peter Xu <peterx@redhat.com>
-To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Andrea Arcangeli <aarcange@redhat.com>, peterx@redhat.com,
-        John Hubbard <jhubbard@nvidia.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Hugh Dickins <hughd@google.com>
-Subject: [PATCH v4 2/4] mm: Rename zap_skip_check_mapping() to should_zap_page()
-Date:   Wed, 16 Feb 2022 17:48:08 +0800
-Message-Id: <20220216094810.60572-3-peterx@redhat.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220216094810.60572-1-peterx@redhat.com>
-References: <20220216094810.60572-1-peterx@redhat.com>
+        Wed, 16 Feb 2022 04:49:33 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757E92B407F;
+        Wed, 16 Feb 2022 01:49:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645004962; x=1676540962;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=uKghhw0qadARiSoT2bPkJ5Ehiwp0u8FH/4lGVqzF1DM=;
+  b=WqTlzXZsLQTVjwsWX5stkc0a5dNvk1s8ocKHN3Fa4rsqqVf0l9gG0noO
+   jJfmdhZe/vZsXmyhXHrH2uNfNzwVxoXpxTLGbKxbG4AF2awaluuUx8TKS
+   527VhF0lsq+AdwQbABT6z//CJcV2y1eM9XLxoKmbhifALQ/PUXkdwGV55
+   E=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 16 Feb 2022 01:49:22 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 01:49:20 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 16 Feb 2022 01:49:20 -0800
+Received: from [10.216.17.95] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Wed, 16 Feb
+ 2022 01:49:14 -0800
+Subject: Re: [PATCH V6 3/6] mfd: pm8008: Add mfd cell struct to register LDOs
+To:     Guru Das Srinagesh <quic_gurus@quicinc.com>
+CC:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>
+References: <1644915231-7308-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1644915231-7308-4-git-send-email-quic_c_skakit@quicinc.com>
+ <20220216025839.GA28938@hu-gurus-sd.qualcomm.com>
+From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
+Message-ID: <94770c93-5a42-1806-46d1-170332bcf954@quicinc.com>
+Date:   Wed, 16 Feb 2022 15:19:10 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220216025839.GA28938@hu-gurus-sd.qualcomm.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The previous name is against the natural way people think.  Invert the meaning
-and also the return value.  No functional change intended.
 
-Suggested-by: David Hildenbrand <david@redhat.com>
-Suggested-by: Hugh Dickins <hughd@google.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Signed-off-by: Peter Xu <peterx@redhat.com>
----
- mm/memory.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+On 2/16/2022 8:28 AM, Guru Das Srinagesh wrote:
+> On Tue, Feb 15, 2022 at 02:23:48PM +0530, Satya Priya wrote:
+>>   static const struct of_device_id pm8008_match[] = {
+>> -	{ .compatible = "qcom,pm8008", },
+>> -	{ },
+>> +	{ .compatible = "qcom,pm8008", .data = (void *)PM8008_INFRA},
+>> +	{ .compatible = "qcom,pm8008-regulators", .data = (void *)PM8008_REGULATORS},
+> Typo perhaps: Please set the last element of this array to the sentinel value NULL.
+>          {},
 
-diff --git a/mm/memory.c b/mm/memory.c
-index 4bfeaca7cbc7..14d8428ff4db 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -1326,20 +1326,19 @@ static inline bool should_zap_cows(struct zap_details *details)
- 
- /*
-  * We set details->zap_mapping when we want to unmap shared but keep private
-- * pages. Return true if skip zapping this page, false otherwise.
-+ * pages. Return true if we should zap this page, false otherwise.
-  */
--static inline bool
--zap_skip_check_mapping(struct zap_details *details, struct page *page)
-+static inline bool should_zap_page(struct zap_details *details, struct page *page)
- {
- 	/* If we can make a decision without *page.. */
- 	if (should_zap_cows(details))
--		return false;
-+		return true;
- 
- 	/* E.g. zero page */
- 	if (!page)
--		return false;
-+		return true;
- 
--	return details->zap_mapping != page_rmapping(page);
-+	return details->zap_mapping == page_rmapping(page);
- }
- 
- static unsigned long zap_pte_range(struct mmu_gather *tlb,
-@@ -1374,7 +1373,7 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 			struct page *page;
- 
- 			page = vm_normal_page(vma, addr, ptent);
--			if (unlikely(zap_skip_check_mapping(details, page)))
-+			if (unlikely(!should_zap_page(details, page)))
- 				continue;
- 			ptent = ptep_get_and_clear_full(mm, addr, pte,
- 							tlb->fullmm);
-@@ -1408,7 +1407,7 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 		    is_device_exclusive_entry(entry)) {
- 			struct page *page = pfn_swap_entry_to_page(entry);
- 
--			if (unlikely(zap_skip_check_mapping(details, page)))
-+			if (unlikely(!should_zap_page(details, page)))
- 				continue;
- 			pte_clear_not_present_full(mm, addr, pte, tlb->fullmm);
- 			rss[mm_counter(page)]--;
-@@ -1433,7 +1432,7 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 			struct page *page;
- 
- 			page = pfn_swap_entry_to_page(entry);
--			if (zap_skip_check_mapping(details, page))
-+			if (!should_zap_page(details, page))
- 				continue;
- 			rss[mm_counter(page)]--;
- 		} else if (is_hwpoison_entry(entry)) {
--- 
-2.32.0
+
+Yes, I'll correct this.
+
+
+>>   };
+>> +MODULE_DEVICE_TABLE(of, pm8008_match)
+> Missing a semicolon at the end.
+
+
+Yes, will add it.
+
+
+Thanks.
 
