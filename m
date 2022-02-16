@@ -2,215 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4494C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:08:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245440AbiBPBIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:08:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53872 "EHLO
+        id S245450AbiBPBIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:08:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245293AbiBPBHg (ORCPT
+        with ESMTP id S245363AbiBPBHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:07:36 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A207CF5410
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:07:25 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id i14so807539wrc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:07:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K5XUg70gZkpOGWFRM7BsYfw7k+GheIQvpvliR21ybWI=;
-        b=7n44dCmWW5IqB/PHOcYQFsqos7BWejhVCuPLcSY0MJ4uPUdDsIUHUCQ8AeqC5cJZUf
-         In+LKbE5RM1xhCZUqkrykRHRBNUbc9Tf8nNM3qFh2xlMWSvNyjOAgSZbZIXEZEuSh3hA
-         x9l+mLZG0q/y0VRVgFqiAoxRAqjMDzrtATPd1aqOb5WPZxzocGnF339JoOOhemvMZvMr
-         SHzxYY2FzpLfn2HVBpdUQLoOxviA4uoX6USzjkdxBHS/I1AFFFpQwTCVRREKAgMVOhnm
-         Mi80yZsHeLcAaGK4TzNoMUw8SSNplzNEkVOFqaMzwhsvSP+DDs9+UqGsCPi7CzkpW0YK
-         1ffg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K5XUg70gZkpOGWFRM7BsYfw7k+GheIQvpvliR21ybWI=;
-        b=ACgDlWX6HmKWY7ar8KRYs6lefmAe5qDu140+F1a/hfLIe4+T+me+doO9p2kKnxlMGL
-         OjT7iC74cGJuOxaUUNx8X7WcXCv7LBRgXTmgjJDJ+hk+dajOw7OXaY5BVamQNRRpvzsD
-         W/7/+yVIr3vRRLPbpX1xmXFirAjMCh41Wk7Pi9U8t2BgUxUMOMXFCknV2Hu7axbJ85qI
-         HYXExqfe2jRmNq4OGAeWCDIyYGT4epwjHbt2SZRUaMT2qVLz6fs9+4WIlP7clQ4CDdUi
-         8CGbKhTupB3PkQ4hI6c+l8AnmLE6EZhAbHJFKP0lSFqw3or2HsrMvFtJCtcy/uUKzPhC
-         xmgA==
-X-Gm-Message-State: AOAM532h3eQK5G5Eb41GvSUcAx5x0GBkdGHL+9+ga2+yz081hOxVcKqf
-        KYYfBbXnap8zHr7MMNwwh3kiww==
-X-Google-Smtp-Source: ABdhPJwiJo7m8gPqzERIDDALzJeTtjox7rMaUYQSzk6N3FeygfM04lQWQe1/zBzxKRzcsVSRADNyrg==
-X-Received: by 2002:a5d:64e3:0:b0:1e4:a380:bb6f with SMTP id g3-20020a5d64e3000000b001e4a380bb6fmr353729wri.463.1644973644149;
-        Tue, 15 Feb 2022 17:07:24 -0800 (PST)
-Received: from localhost.localdomain (3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.6.1.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:df16::3])
-        by smtp.gmail.com with ESMTPSA id m8sm10551185wms.4.2022.02.15.17.07.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 17:07:23 -0800 (PST)
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     gregkh@linuxfoundation.org
-Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
-        straube.linux@gmail.com, martin@kaiser.cx,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        paskripkin@gmail.com
-Subject: [PATCH v2 15/15] staging: r8188eu: correct long line warnings near prior DBG_88E calls
-Date:   Wed, 16 Feb 2022 01:07:09 +0000
-Message-Id: <20220216010709.791-16-phil@philpotter.co.uk>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220216010709.791-1-phil@philpotter.co.uk>
-References: <20220216010709.791-1-phil@philpotter.co.uk>
+        Tue, 15 Feb 2022 20:07:53 -0500
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10111.outbound.protection.outlook.com [40.107.1.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25710F542A;
+        Tue, 15 Feb 2022 17:07:38 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gYJo7SgfgTw76goHNw6jtjBWcDJyn/oVgnnjodO8n1L1oKrOIJVVRzn8/LbXFLTM0hRJhul1gEdwLKJv7R3/e/o5V/Q9P60YpJBFkEbjWfQRig1KBHHOJ9W0kz/cODJvKNvWZfqe5TW9FR7lcHFzm+uwUPm0zLBV+/dpJCze8vPKmVi5IJ+xaEbhtGlaf7W+SXqV1hHbRXY0Dcnu6LfANDFvtSdUrkSC76AovibQ4AU7JqN0DMrvnbku3XMjT17KZFfSmXCyIo75gL1OZX217T7/BN7Ajyts1xBfZOqdgVRpGzRABLUNOMgjeSQ8Iq4iI31rZdAMb0pdISHudcVJjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xhQkxPc0/QhFJFtLbDgmU6eGMnQHbA8nzp2ktaGpDJ8=;
+ b=ZJC5KHsT5g6Klbgbama0ZnFiAan04SWNOEUlM+/L8WQ+kT9aS2MrFa2Tz4eyqM586wpYYD0/zd3fwWON9RgIKXY6hasmjV/THQgpQAMZyeoqI71mhJUxcfUf0pdBfOXgKtCerj94WRfuDdw9B2skYt0/pZUU7erYIv1dgLnL9YrAm94KaDL/01cujG0WykoUdPawlP/HhqsaceaV/3AfI0ESlZKqOESqMuJZIIyprHYS2S5XkjgEfTKiL1VbS62IAPevNNB289icWzllPXp0HIiiVsrz3W9MOfTPIiFOCr947cEwY2t3HOF65G7A0+AXSa9CQU9jh9GXyF6T2reeVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xhQkxPc0/QhFJFtLbDgmU6eGMnQHbA8nzp2ktaGpDJ8=;
+ b=q/x9LKhi5PsqDDfvNuSqCKhvTaIEGnrPBxLuxdvJVxjYJ+lkIW0dCVPmrHb1EY87r4glssi2gfnx6wLDQtAjd6fDJtnqgqLVbB2hl9Y/0runqEl539RRU6LiCZti/+NLd7wqFAn7xEohfxishrIrw9biNVwvIGTdxQdxY1txBSQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:262::24)
+ by AM9P190MB1169.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:266::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Wed, 16 Feb
+ 2022 01:07:34 +0000
+Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ ([fe80::c93a:58e1:db16:e117]) by AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ ([fe80::c93a:58e1:db16:e117%5]) with mapi id 15.20.4995.014; Wed, 16 Feb 2022
+ 01:07:34 +0000
+From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
+To:     netdev@vger.kernel.org
+Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/3] net: marvell: prestera: add basic routes offloading
+Date:   Wed, 16 Feb 2022 03:05:54 +0200
+Message-Id: <20220216010557.11483-1-yevhen.orlov@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: FR3P281CA0078.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1f::19) To AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:262::24)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: faacfad8-df81-4b4f-9e9a-08d9f0e8b688
+X-MS-TrafficTypeDiagnostic: AM9P190MB1169:EE_
+X-Microsoft-Antispam-PRVS: <AM9P190MB11697848BAF54EEED212BAC593359@AM9P190MB1169.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BuXwQViuVQ64P1VK6cFqfXmvi0uws0Svpz5IFNvNl7wzcyVQSwizbZ1S+V4/MI2JJh2LK5pINnSg04sgZLEbwroUj6HXgPnHtGpRvnrdtc0hFC5Buy7ZJqmail4cFCXqgECr00/UbkcrVWvMQV88LOhewLFIjxBG+LkfCGWmKrhTfPhvTVpjUKTLHtAKIyRy6egMxFl8JpZbuEwi7QksdN3nLpaFvS6aOIu+Kk9A03+IgZwc1sm0Vmi2lVKih2TwH5Zgn+c4qAdrgPOde4z2G9VUar5kf7maTAaEHz10fwkSIa03hAadV0f+V4gzHVfcMWFYSe4WTKhloO8PVbF3C1CdG6MCYjxZE1jOPkDd5gG4OmhFZblX36qUqkT7SgbFQ5omUgWpXkMWMXhVcmB1o5rS4o6oC0RLM8BLlYV+pulxaKBPfE8XFniTz6qp3ghBHWsW3TnaKhhgsftisecwoi/8ARINvEu/Cbxvg+/mUz3UP4hM9A3Uw27LpsRHrhHMCP4Pc0JcxEVrLK+C/yp6pmOAC8KMfKpBneki/4TMihMDOiyxp9eSrrxzXnMQiLZ6ttKHo8oacIldU+NX1N6VcL22t9oZr7SagYdJKfBx+yzjl4HgZAv3Pvxf2XaGzu4o2IYrAkQ2GgxsWEBjsvSTIypDU551ve3xklGu2mcXDlALup6r8VMh09YhYjGndiTxG+q1/5We99IOVAlfLWSYUg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9P190MB1122.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(39830400003)(396003)(376002)(346002)(366004)(136003)(6666004)(5660300002)(44832011)(66574015)(36756003)(38350700002)(86362001)(52116002)(6506007)(8936002)(66556008)(66476007)(66946007)(38100700002)(8676002)(54906003)(6916009)(316002)(4326008)(6486002)(508600001)(2616005)(2906002)(83380400001)(186003)(26005)(6512007)(1076003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fFeiseH1nHO4o1GqEbGUXjlQPjc6iFi4HFXvBW7Z/zjsTXHFRIQe659sZM8F?=
+ =?us-ascii?Q?fYUTcOV6zBLJqPtbAjY3T8RmJjbfxof3gBbjkAUEQXDV/viiGiuA7T8Jqd34?=
+ =?us-ascii?Q?w1gyW7aJCqteaQpVb+qlCvQv3MBacDB2y2ZahLzmEhvkoJl5cmzMSHQ6rb4b?=
+ =?us-ascii?Q?IaA/nrCihj8GbaT//mokHkIHAIUikhX3VyZ0QYcCnAqXx/eYVmKpTm2SWoUN?=
+ =?us-ascii?Q?lf0ozsmZeVtr4P6FGvS6Gi5QDRG9YgC02FILbYjGsO+rPs9nCyuaPMRHPm6c?=
+ =?us-ascii?Q?fMvrQIicpkxUGS6h1rseB3t08O2skNWzqZQxQv9RGmFblMk/PKlfnK/8pP68?=
+ =?us-ascii?Q?XvQy/uzjoJK3b+w3Uib6Mczg8X31LZ91lsXobAEzHdzmJlAkgPcNVaTk1CsB?=
+ =?us-ascii?Q?P4C4mBO65dITIA5N/KUVd1KXnjhBLfLoLD0QuCUOpjMJEbjEz2wmTH6gZBEJ?=
+ =?us-ascii?Q?z+acUsP29ztw4BMcJ0TAK+QkDZUSI09cpvJwK4WCc5VeyH4nOW4egfUmX6M3?=
+ =?us-ascii?Q?Mnyy75FVi63Tg3v9pJXyBipVWHSkosqV5R9lUseCYqeeyMCYRGbQHPGdGj7y?=
+ =?us-ascii?Q?7ATQ1v/nBxTNQr7IkcH/yvsv6rk91yJV0/C5nhp+8As6oMPkgKkliWjZUN6P?=
+ =?us-ascii?Q?gUrdOAYIeCVH7NjBUBVDmVL7vMlmaFWUBDqM8e4PoEAsx972EVjbx35Jmarf?=
+ =?us-ascii?Q?9SvFVo9QLiXunbjiuypVrsbbC+lefzHUN/ecBjEVxZAMQ6M21u7VIk/NeYQb?=
+ =?us-ascii?Q?lsuTpQ34LQQ4wPUf/GToLwoSK+T3iFwSBK2ReVLqFWuKvPJo3+tfeRWwYtwA?=
+ =?us-ascii?Q?3hH9lyT7pmc4BaoVHvCuVorCDHy/v63MmqxSUteQ+MW8LqQTaJu0J9scQSgR?=
+ =?us-ascii?Q?Sf9qqckl00jq+4JLpC9XgzUKNOr5q//mM3IKBYDyAvTH5qaBasfDNYf8eW5+?=
+ =?us-ascii?Q?TqgDtOSsvmOcTPvofoydmjYK27TG4xSK5ZXCGD16m5ne2/b6f0UI/4UsXYKa?=
+ =?us-ascii?Q?0HMFNMVChxwayFo/p29f+EzCmhML8OW3QSwFtbCeJPqmgKiJEVRBpcKAhRAM?=
+ =?us-ascii?Q?paj/D+Af/1d926LEzFg+4oS+iJlcMO1idDXMlSibtYcavI5doNv/Yhv1THb2?=
+ =?us-ascii?Q?2pWE0V5QBkoAb9vE4Pvnm0Zqdk/EeFSHn8L7ZcyHdbEFVtqp4rfAwL/XyH5x?=
+ =?us-ascii?Q?emHOdqu+xaD/+8G4o/UGuxaVHqcX3ExanWGTlLArKGCs9q65vJmynDjHxheR?=
+ =?us-ascii?Q?tOiWImUZJuTgYkh7GGWWS48o0WAhAvOSKqR5JzYVWhRqkMSv+pekxOTW4Vv7?=
+ =?us-ascii?Q?faYMGb6Tap9nfwx8upoXcHXXwAEHNDXU944ojNv0+KUTzog4Udy/m2jehIgu?=
+ =?us-ascii?Q?i3vRtEdTCNbhMdx2v09PRb1T4ByTcR33UZ0NETo3bjAbOgQqIGI57mNm1EWG?=
+ =?us-ascii?Q?UxE+SwbZPxKE+4Ber4zkAtWmYt6g9xj+ynMRDes1m/hqoQsyxKHJ03EeF621?=
+ =?us-ascii?Q?3TBJDnBbKDy7+hT39RuqmIm7FPsxM1Seh3HESPD/KbA/7KhobA8gCP/D6AUj?=
+ =?us-ascii?Q?EtBv4Ej00kgTIiCHpmR6vAonKf1CV3DVD6bMT3D5iT90v2eoR60e7rMScYs9?=
+ =?us-ascii?Q?aI8cS3dNCSri+ZpevMxI9v06AlgAluyd0wSYqzUFlPH4Mxs9LlrWo3U75niL?=
+ =?us-ascii?Q?GWKCYA=3D=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: faacfad8-df81-4b4f-9e9a-08d9f0e8b688
+X-MS-Exchange-CrossTenant-AuthSource: AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 01:07:33.8390
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sv0nIemxaIrPL8IrfoVILNwh+D5AiUCzpWZZBbStqku7Za19ctcRykimzgoTam096fkWpIChHP5fwW9c1JbLvjWpJ4pg1Y8MYrNlI0YZhtY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1169
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Where it is possible (without out-of-patch-series-scope large scale
-refactoring), correct code to remove checkpatch warnings about lines
-that are too long, also correcting operator spacing where appropriate
-for these lines as well. These warnings occur mostly due to so many
-DBG_88E removals and parentheses tweaks etc. being adjacent to such
-long lines, which are therefore included in the resultant diff.
+Add support for blackhole and local routes for Marvell Prestera driver.
+Subscribe on fib notifications and handle add/del.
 
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
----
- drivers/staging/r8188eu/core/rtw_br_ext.c    | 12 +++++++++---
- drivers/staging/r8188eu/core/rtw_mlme_ext.c  |  3 ++-
- drivers/staging/r8188eu/core/rtw_p2p.c       | 15 ++++++++++++---
- drivers/staging/r8188eu/core/rtw_pwrctrl.c   |  3 ++-
- drivers/staging/r8188eu/core/rtw_wlan_util.c |  6 ++++--
- 5 files changed, 29 insertions(+), 10 deletions(-)
+Add features:
+ - Support route adding.
+   e.g.: "ip route add blackhole 7.7.1.1/24"
+   e.g.: "ip route add local 9.9.9.9 dev sw1p30"
+ - Support "rt_trap", "rt_offload", "rt_offload_failed" flags
+ - Handle case, when route in "local" table overlaps route in "main" table
+   example:
+	ip ro add blackhole 7.7.7.7
+	ip ro add local 7.7.7.7 dev sw1p30
+	# blackhole route will be deoffloaded. rt_offload flag disappeared
 
-diff --git a/drivers/staging/r8188eu/core/rtw_br_ext.c b/drivers/staging/r8188eu/core/rtw_br_ext.c
-index ddc3a2c8aaca..d68611ef22f8 100644
---- a/drivers/staging/r8188eu/core/rtw_br_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_br_ext.c
-@@ -382,7 +382,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 	if (protocol == ETH_P_IP) {
- 		struct iphdr *iph = (struct iphdr *)(skb->data + ETH_HLEN);
- 
--		if (((unsigned char *)(iph) + (iph->ihl<<2)) >= (skb->data + ETH_HLEN + skb->len))
-+		if (((unsigned char *)(iph) + (iph->ihl << 2)) >= (skb->data + ETH_HLEN + skb->len))
- 			return -1;
- 
- 		switch (method) {
-@@ -451,7 +451,11 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 						pOldTag = (struct pppoe_tag *)__nat25_find_pppoe_tag(ph, ntohs(PTT_RELAY_SID));
- 						if (pOldTag) { /*  if SID existed, copy old value and delete it */
- 							old_tag_len = ntohs(pOldTag->tag_len);
--							if (old_tag_len+TAG_HDR_LEN+MAGIC_CODE_LEN+RTL_RELAY_TAG_LEN > sizeof(tag_buf))
-+							if (old_tag_len +
-+							    TAG_HDR_LEN +
-+							    MAGIC_CODE_LEN +
-+							    RTL_RELAY_TAG_LEN >
-+							    sizeof(tag_buf))
- 								return -1;
- 
- 							memcpy(tag->tag_data+MAGIC_CODE_LEN+RTL_RELAY_TAG_LEN,
-@@ -476,7 +480,9 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 							return -1;
- 					} else { /*  not add relay tag */
- 						if (priv->pppoe_connection_in_progress &&
--								memcmp(skb->data+ETH_ALEN, priv->pppoe_addr, ETH_ALEN))
-+						    memcmp(skb->data + ETH_ALEN,
-+							   priv->pppoe_addr,
-+							   ETH_ALEN))
- 							return -2;
- 
- 						if (priv->pppoe_connection_in_progress == 0)
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index 2b6dbabe47c8..0d9351903ae5 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -3583,7 +3583,8 @@ static s32 rtw_action_public_decache(struct recv_frame *recv_frame, s32 token)
- 
- 	if (GetRetry(frame)) {
- 		if (token >= 0) {
--			if ((seq_ctrl == mlmeext->action_public_rxseq) && (token == mlmeext->action_public_dialog_token))
-+			if ((seq_ctrl == mlmeext->action_public_rxseq) &&
-+			    (token == mlmeext->action_public_dialog_token))
- 				return _FAIL;
- 		} else {
- 			if (seq_ctrl == mlmeext->action_public_rxseq)
-diff --git a/drivers/staging/r8188eu/core/rtw_p2p.c b/drivers/staging/r8188eu/core/rtw_p2p.c
-index 9467a5dcc990..48500fb82250 100644
---- a/drivers/staging/r8188eu/core/rtw_p2p.c
-+++ b/drivers/staging/r8188eu/core/rtw_p2p.c
-@@ -1154,7 +1154,8 @@ u8 process_p2p_group_negotation_req(struct wifidirect_info *pwdinfo, u8 *pframe,
- 						peer_operating_ch = operatingch_info[4];
- 
- 					if (rtw_p2p_is_channel_list_ok(peer_operating_ch,
--							       ch_list_inclusioned, ch_num_inclusioned))
-+								       ch_list_inclusioned,
-+								       ch_num_inclusioned))
- 						/**
- 						 *	Change our operating channel as peer's for compatibility.
- 						 */
-@@ -1270,7 +1271,11 @@ u8 process_p2p_group_negotation_resp(struct wifidirect_info *pwdinfo, u8 *pframe
- 			/*	Try to get the operation channel information */
- 
- 			attr_contentlen = 0;
--			if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_OPERATING_CH, operatingch_info, &attr_contentlen))
-+			if (rtw_get_p2p_attr_content(p2p_ie,
-+						     p2p_ielen,
-+						     P2P_ATTR_OPERATING_CH,
-+						     operatingch_info,
-+						     &attr_contentlen))
- 				pwdinfo->peer_operating_ch = operatingch_info[4];
- 
- 			/*	Try to get the channel list information */
-@@ -1377,7 +1382,11 @@ u8 process_p2p_group_negotation_confirm(struct wifidirect_info *pwdinfo, u8 *pfr
- 		}
- 
- 		attr_contentlen = 0;
--		if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_OPERATING_CH, operatingch_info, &attr_contentlen))
-+		if (rtw_get_p2p_attr_content(p2p_ie,
-+					     p2p_ielen,
-+					     P2P_ATTR_OPERATING_CH,
-+					     operatingch_info,
-+					     &attr_contentlen))
- 			pwdinfo->peer_operating_ch = operatingch_info[4];
- 
- 		/* Get the next P2P IE */
-diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-index c7c79cd9e213..b20436f75459 100644
---- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-+++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-@@ -171,7 +171,8 @@ static u8 PS_RDY_CHECK(struct adapter *padapter)
- 		return false;
- 	if (pwrpriv->bInSuspend)
- 		return false;
--	if (padapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X && !padapter->securitypriv.binstallGrpkey)
-+	if (padapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X &&
-+	    !padapter->securitypriv.binstallGrpkey)
- 		return false;
- 	return true;
- }
-diff --git a/drivers/staging/r8188eu/core/rtw_wlan_util.c b/drivers/staging/r8188eu/core/rtw_wlan_util.c
-index e8bf5672ff6c..33c0228204ad 100644
---- a/drivers/staging/r8188eu/core/rtw_wlan_util.c
-+++ b/drivers/staging/r8188eu/core/rtw_wlan_util.c
-@@ -926,7 +926,8 @@ int rtw_check_bcn_info(struct adapter  *Adapter, u8 *pframe, u32 packet_len)
- 
- 	if (memcmp(bssid->Ssid.Ssid, cur_network->network.Ssid.Ssid, 32) ||
- 	    bssid->Ssid.SsidLength != cur_network->network.Ssid.SsidLength) {
--		if (bssid->Ssid.Ssid[0] != '\0' && bssid->Ssid.SsidLength != 0) /* not hidden ssid */
-+		/* not hidden ssid */
-+		if (bssid->Ssid.Ssid[0] != '\0' && bssid->Ssid.SsidLength != 0)
- 			goto _mismatch;
- 	}
- 
-@@ -966,7 +967,8 @@ int rtw_check_bcn_info(struct adapter  *Adapter, u8 *pframe, u32 packet_len)
- 				rtw_parse_wpa2_ie(pbuf, wpa_ielen + 2, &group_cipher, &pairwise_cipher, &is_8021x);
- 		}
- 
--		if (pairwise_cipher != cur_network->BcnInfo.pairwise_cipher || group_cipher != cur_network->BcnInfo.group_cipher)
-+		if (pairwise_cipher != cur_network->BcnInfo.pairwise_cipher ||
-+		    group_cipher != cur_network->BcnInfo.group_cipher)
- 			goto _mismatch;
- 
- 		if (is_8021x != cur_network->BcnInfo.is_8021x)
+Limitations:
+ - Only "blackhole" and "local" routes supported. "nexthop" routes is TRAP
+   for now and will be implemented soon.
+ - Only "local" and "main" tables supported
+
+Co-developed-by: Taras Chornyi <tchornyi@marvell.com>
+Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
+Co-developed-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+
+Yevhen Orlov (3):
+  net: marvell: prestera: Add router LPM ABI
+  net: marvell: prestera: add hardware router objects accounting for lpm
+  net: marvell: prestera: handle fib notifications
+
+ .../net/ethernet/marvell/prestera/prestera.h  |   5 +
+ .../ethernet/marvell/prestera/prestera_hw.c   |  49 +++
+ .../ethernet/marvell/prestera/prestera_hw.h   |   6 +
+ .../ethernet/marvell/prestera/prestera_main.c |  11 +
+ .../marvell/prestera/prestera_router.c        | 412 ++++++++++++++++++
+ .../marvell/prestera/prestera_router_hw.c     | 132 +++++-
+ .../marvell/prestera/prestera_router_hw.h     |  44 ++
+ 7 files changed, 652 insertions(+), 7 deletions(-)
+
 -- 
-2.34.1
+2.17.1
 
