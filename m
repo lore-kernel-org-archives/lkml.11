@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C095DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 17:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E259C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 17:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237360AbiBPRxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 12:53:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47634 "EHLO
+        id S237367AbiBPRyT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 12:54:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237350AbiBPRxA (ORCPT
+        with ESMTP id S234039AbiBPRyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 12:53:00 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC53C17C124
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:52:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645033967; x=1676569967;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=c/MuB3Mup/CLGmN40NIuicGQzGSxEz7jP2XRVcgPy2U=;
-  b=GalMCzDWqeVBIJLiPszCKJTW9/Tjo3+t5DF9yGH7iN3s5bkpomBtUR9G
-   JAUzJN1hJh9IKvEewdOFTosBOujuephUi9O6jp0sMsBJ8EBW+b4gLNHOw
-   d9EpnyHrU3tl/Jpk316GJ5xokv3BzGAmOYwLXYFP9oMLJPZsYC8Vkdzxi
-   tdBPvEPR1XULX82onrCvmhPKZ49NW1BJKIId0BKctx8ylAEsiLdWJuqeB
-   Ut8Bhfzmv3H2hi3+kAviMJ0gwo2VQ5n37zCErRrW0JcsEm4LOLpgwpHPz
-   pdKwqoP10FL8sr8ntxRWLg0RU94JLLkMaiborHa/ZPo3iwL/dSkluvgoh
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="249515648"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="249515648"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 09:52:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="681612264"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 16 Feb 2022 09:52:46 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKOTt-000B0e-JI; Wed, 16 Feb 2022 17:52:45 +0000
-Date:   Thu, 17 Feb 2022 01:52:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vadim Pasternak <vadimp@nvidia.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>
-Subject: [jpirko-mlxsw:jiri_devel_linecards 27/43]
- drivers/net/ethernet/mellanox/mlxsw/core_env.c:1249:16: error: incompatible
- function pointer types initializing 'void (*)(struct mlxsw_core *, u8, void
- *, void *)' (aka 'void (*)(struct mlxsw_core *, unsigned char, void *, void
- *)') with an expression of ...
-Message-ID: <202202170101.p6TIUxNw-lkp@intel.com>
+        Wed, 16 Feb 2022 12:54:18 -0500
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170C222E2A1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:54:06 -0800 (PST)
+Received: by mail-oo1-xc32.google.com with SMTP id o192-20020a4a2cc9000000b00300af40d795so3313452ooo.13
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:54:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yDpB++dvNrcqAJlyBBM88E31rOeEBSpFbNBIclLTgXo=;
+        b=OnqQAVhnLzGUgqKcIt3PmSKH4G+af9kqvOLRvGa2O8NG9yKoKacECt/CJOVQgRPfSZ
+         OgWhpnhRHfbA4QYO7qfEqdMNK1nac2uRJoROPFgXTssmRUu4KlKxUBMmJ8ux02a15Kb/
+         3s4nR9rrJ0jcnYrYcCm0DMX5pqSYo1KpCmrOBY6I518zqhOrcKAdPhrTxFcFL4iSbG89
+         DUyWssVO+HPtMvu0fDtrBAOHLMVxEim3syc0lJ8/+4XSICS5B4wbJCSWo7C3g2982eQ3
+         zA5qkyw6EheZ3nF3tCej1rLsDDQdn1Dg9z7MBBxKMQEknIOo1r3SH1JrMV005O2ImPh5
+         vafw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yDpB++dvNrcqAJlyBBM88E31rOeEBSpFbNBIclLTgXo=;
+        b=e0SejiRXOm/B8NKdsPzgqvx1I3Vvg9bCxIVQifUfUU1n0YhpZSQc8ZCwNwRxW9ZZ/6
+         sxEyQzIXGSYHLUThBN0DYaEGM5sMHMZ1Ox6wHILhatvvT25oC4uoJu9wxk3dPK7QDAbl
+         MtvaZT0NyJg3mThJJWFFh4xpRgttCWLLEfmVmQqKdroxC239GOfBlWMf1m2fAbmtrvgQ
+         r9wSAno2e6Mua5ZmrxZWQiiSp6Jv56mp2vj3/0i1Fh3hCmV6yLcVoIHzXLaMGWunRBw2
+         lS4jE2DNOc2Hce2Nd/bSA440KAML47ZbL/c82esgYLNPLszWKPw1wvq4wILtDoqFMIxQ
+         JxaQ==
+X-Gm-Message-State: AOAM531/4K252jyBFypFlwzAE2mLLw1dT7JhO7RO+Qr0h4+XlMIghZw9
+        iLBDyOraO+Weik7YHdtqH8t5euQXx4xSfCZ/EoFq0A==
+X-Google-Smtp-Source: ABdhPJwrqVLrxMD0AyQI4+bdavEDRbKgWj+hnFhMd/6pObRAg+cMk9FvIr+VbFsiEmNSihEHsTTicPnR3OEC9FrRVCU=
+X-Received: by 2002:a05:6870:3046:b0:d3:58b:fbd1 with SMTP id
+ u6-20020a056870304600b000d3058bfbd1mr921086oau.129.1645034045122; Wed, 16 Feb
+ 2022 09:54:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220117085307.93030-1-likexu@tencent.com> <20220117085307.93030-3-likexu@tencent.com>
+ <20220202144308.GB20638@worktop.programming.kicks-ass.net>
+ <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
+ <2db2ebbe-e552-b974-fc77-870d958465ba@gmail.com> <YgPCm1WIt9dHuoEo@hirez.programming.kicks-ass.net>
+ <YgQrWHCNG/s4EWFf@google.com> <39b64c56-bc8d-272d-da92-5aa29e54cdaf@gmail.com>
+ <YgVHawnQWuSAk+C1@google.com> <810c3148-1791-de57-27c0-d1ac5ed35fb8@gmail.com>
+In-Reply-To: <810c3148-1791-de57-27c0-d1ac5ed35fb8@gmail.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Wed, 16 Feb 2022 09:53:53 -0800
+Message-ID: <CALMp9eTNhhHKoGrsiQT24UCUzY+TGKOkGPMDh7MZ5+YzSHjkhg@mail.gmail.com>
+Subject: Re: KVM: x86: Reconsider the current approach of vPMU
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
-head:   5cb021512c3be7e03591497caeab474ecccfcd21
-commit: 08ac493598146680137ed7a81dc108b837018125 [27/43] mlxsw: core: Add interfaces for line card initialization and de-initialization
-config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220217/202202170101.p6TIUxNw-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0e628a783b935c70c80815db6c061ec84f884af5)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/08ac493598146680137ed7a81dc108b837018125
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
-        git checkout 08ac493598146680137ed7a81dc108b837018125
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
+On Tue, Feb 15, 2022 at 7:33 PM Like Xu <like.xu.linux@gmail.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> AFAI, most cloud provider don't want to lose this flexibility as it leaves
+> hundreds of "profile KVM guests" cases with nowhere to land.
 
-All errors (new ones prefixed by >>):
+I can only speak for Google Cloud. We'd like to be able to profile
+host code with system-wide pinned counters on a periodic basis, but we
+would like to do so without breaking PMU virtualization in the guest
+(and that includes not only the guest counters that run in guest mode,
+but also the guest counters that have to run in both guest mode and
+host mode, such as reference cycles unhalted).
 
->> drivers/net/ethernet/mellanox/mlxsw/core_env.c:1249:16: error: incompatible function pointer types initializing 'void (*)(struct mlxsw_core *, u8, void *, void *)' (aka 'void (*)(struct mlxsw_core *, unsigned char, void *, void *)') with an expression of type 'void (struct mlxsw_core *, u8, const struct mlxsw_linecard *, void *)' (aka 'void (struct mlxsw_core *, unsigned char, const struct mlxsw_linecard *, void *)') [-Werror,-Wincompatible-function-pointer-types]
-           .got_active = mlxsw_env_got_active,
-                         ^~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/mellanox/mlxsw/core_env.c:1250:18: error: incompatible function pointer types initializing 'void (*)(struct mlxsw_core *, u8, void *, void *)' (aka 'void (*)(struct mlxsw_core *, unsigned char, void *, void *)') with an expression of type 'void (struct mlxsw_core *, u8, const struct mlxsw_linecard *, void *)' (aka 'void (struct mlxsw_core *, unsigned char, const struct mlxsw_linecard *, void *)') [-Werror,-Wincompatible-function-pointer-types]
-           .got_inactive = mlxsw_env_got_inactive,
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   2 errors generated.
+The one thing that is clear to me from these discussions is that the
+perf subsystem behavior needs to be more configurable than it is
+today.
 
-
-vim +1249 drivers/net/ethernet/mellanox/mlxsw/core_env.c
-
-  1247	
-  1248	static struct mlxsw_linecards_event_ops mlxsw_env_event_ops = {
-> 1249		.got_active = mlxsw_env_got_active,
-  1250		.got_inactive = mlxsw_env_got_inactive,
-  1251	};
-  1252	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+One possibility would be to separate priority from usage. Instead of
+having implicit priorities based on whether the event is system-wide
+pinned, system-wide multiplexed, thread pinned, or thread multiplexed,
+we could offer numeric priorities independent of the four usage modes.
+That should offer enough flexibility to satisfy everyone.
