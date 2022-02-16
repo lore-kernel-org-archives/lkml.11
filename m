@@ -2,125 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 212C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E45C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245598AbiBPBQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:16:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39920 "EHLO
+        id S245409AbiBPBTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:19:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245429AbiBPBQA (ORCPT
+        with ESMTP id S240360AbiBPBTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:16:00 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E0D5F5411
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:15:50 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id x11so754423pll.10
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:15:50 -0800 (PST)
+        Tue, 15 Feb 2022 20:19:34 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D59F65EF
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:19:21 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id x4so782648plb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:19:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0hwZ2F3aREhpJrlJ2d2Ygxmwwu5LB/WMxQx3SAucGcc=;
-        b=Kn1kq8Z6LR/PsKUAKmu2TgN0q8KMHpYWQ0TA59BvJ8YXgNv9+VQ6HyX8RCNhpl0HKF
-         tzKXer0c/VfAgtIdWOuaqJ9PDLt7uNxv183fEXL7piAF+9HILKHrpQGzcrUpaXnhG/0B
-         b9WG14crvUmfqNnOWjcOkmRxjzAo55kSsS9JdXzianc87UOkXPI8gUoLh+11HpAuGrYz
-         7IX5mR6/cHus1ppqJYk+nXObKvxE2Q1SAmcsvAcHl8XzTLlOcPAykr0lvclKdumwAFgJ
-         leMOJyYUdIRBTySDndNDULI/vhF64kb+pDSvx9NbwomaMxjHu5FmJt3FP2Vg2fbh7XMy
-         Jkow==
+        d=ozlabs-ru.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=n3HlZeesmoig6AzcEvE+vVMKK5hAX/6KVNpJ5JEyVT0=;
+        b=HErnWS27+ufQ8NMTJ7hAU5qJQcdOuUHum0wucqqZdIejgM4oVbYBv9dz7n+S+NgHgq
+         CtO+qahqEdmzfiHlS/+L5kONAoOcQPK34qrMjCSBSnx49jUEUjcTKMUvz34S8GXpgtDN
+         kSy/ZGxSksJWuYJrmv6TqoBU+iq2cpEZVDn+tl89zjItgRR5iEctXMiyMS1yILvLR9m8
+         jd+bmOOXRfU62lUA4RABx557Fy4+mx9gJj7tA+C/5T8asdWmskTsV8p6Xl5ZlKhz/06L
+         eRAX3Do2/AiPdqaFgKNmXaI3CXIe2qtvdc3MpACpVWFSBhucZGEaASa6D8aI7/03/FOX
+         Qvfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=0hwZ2F3aREhpJrlJ2d2Ygxmwwu5LB/WMxQx3SAucGcc=;
-        b=J0JBj6kieCBWpEfzC/LeCRBFVPLWoyxZidoaRElt8k1vp/gA195ROIp2zr1q6Q1+Og
-         MmfcjyVJcpGuvTGKLsfxzPrLfjaQBVG12MSQ7UmPDj/JHguEabk+p215CKRlo2hsR1pU
-         NsyC3qGIpqpZTw5u/TQ3ByFfn0v108hkQGr8EQLTnwbCfPNYXS2n68uMiFgmANv3AQ+H
-         P3yH5dez5cPFtPXYaA+A/bZYzLV6OPtfp7XbEwKREhN7zVDiyvkCNh6wsnireC+moM57
-         VjwOQznXNR6QNsU9cEjtaqWOcVRVQpgQjOEjCZifQZUyr/SqZmq8zTy0K4fPQ9E4uB3P
-         UFwA==
-X-Gm-Message-State: AOAM530DTp5zP/WEg+EotvnhSgjnNcxxExoRsPRsM0CKZbxyLijS57T9
-        jOZwIkcM1zepD4QR9xh4TNY=
-X-Google-Smtp-Source: ABdhPJzObOPULx4E0kcZ0vLa3iyJhoz+Xq3kxebJsb1C6cXwwaNrpNsO/2CfAyEGSfvbGjclvdffIQ==
-X-Received: by 2002:a17:90a:734c:b0:1b9:b1fa:db6a with SMTP id j12-20020a17090a734c00b001b9b1fadb6amr191487pjs.158.1644974149433;
-        Tue, 15 Feb 2022 17:15:49 -0800 (PST)
-Received: from localhost (c-73-25-156-94.hsd1.or.comcast.net. [73.25.156.94])
-        by smtp.gmail.com with ESMTPSA id ls14sm15760824pjb.0.2022.02.15.17.15.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 17:15:48 -0800 (PST)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     Gurchetan Singh <gurchetansingh@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Lingfeng Yang <lfy@google.com>,
-        virtualization@lists.linux-foundation.org (open list:VIRTIO GPU DRIVER),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] drm/virtio: Fix capset-id query size
-Date:   Tue, 15 Feb 2022 17:16:14 -0800
-Message-Id: <20220216011614.360451-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=n3HlZeesmoig6AzcEvE+vVMKK5hAX/6KVNpJ5JEyVT0=;
+        b=xX1OsGQhhzOxTZc16fAqmFrcT67A1qQxdRKZYvfORwlKPyPd7OU8GY8/ajAA4MUSFl
+         Xaixc1QQE9NmCPMTt4LMnxUkdle1K4VRJ+/E8Qq8z+tbFuYw8NfE7we80otOVO7S+nii
+         xINHzOlZAAkkHI9lmGELUwb2NPfI4Pm0w3TRbGYZuDURd87hNICWg9uQEZaTdITqRfow
+         PoYTjapo0DqJ6uWImgIO+RUhBaL/SRS3gBbbKBMpLb4XNV6SSJbDv/pq6Qsv0WOMJlO1
+         4PYmNM7sarTYn8xvK+a38iEK/MfBz46HjK+Xl6WhEKr3Pv9qV2IFdWWEJ/3lRQoLuNNt
+         4Pog==
+X-Gm-Message-State: AOAM532t31RDeUd3bH9rgVLm211tmX2HxvPE6EVTlCRmqKS4zpBOnZ54
+        2Hy5bKEotEK/SK7gKu842NwhuU7lwtshgA==
+X-Google-Smtp-Source: ABdhPJz//7pCe6QfbeIQekjYzgNrs+uHEYNqvhn8Lf50/8/fqgE551gMWzpa1CMDZA/VAoZVPMfivQ==
+X-Received: by 2002:a17:902:e846:b0:14f:4580:4f23 with SMTP id t6-20020a170902e84600b0014f45804f23mr185743plg.63.1644974361125;
+        Tue, 15 Feb 2022 17:19:21 -0800 (PST)
+Received: from [192.168.10.24] (203-7-124-83.dyn.iinet.net.au. [203.7.124.83])
+        by smtp.gmail.com with ESMTPSA id cu21sm17962188pjb.50.2022.02.15.17.19.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 17:19:20 -0800 (PST)
+Message-ID: <8b1d0d57-0bf7-8ca5-8b08-cd5a12f7666f@ozlabs.ru>
+Date:   Wed, 16 Feb 2022 12:19:14 +1100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:97.0) Gecko/20100101
+ Thunderbird/97.0
+Subject: Re: [RFC PATCH kernel] trace: Make FTRACE_MCOUNT_USE_RECORDMCOUNT
+ configurable
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Sami Tolvanen <samitolvanen@google.com>
+References: <20220211014313.1790140-1-aik@ozlabs.ru>
+ <20220211214722.4373ca83@rorschach.local.home>
+From:   Alexey Kardashevskiy <aik@ozlabs.ru>
+In-Reply-To: <20220211214722.4373ca83@rorschach.local.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
 
-The UABI was already defined for pointer to 64b value, and all the
-userspace users of this ioctl that I could find are already using a
-uint64_t (but zeroing it out to work around kernel only copying 32b).
-Unfortunately this ioctl doesn't have a length field, so out of paranoia
-I restricted the change to copy 64b to the single 64b param that can be
-queried.
 
-Fixes: 78aa20fa4381 ("drm/virtio: implement context init: advertise feature to userspace")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/virtio/virtgpu_ioctl.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+On 2/12/22 13:47, Steven Rostedt wrote:
+> On Fri, 11 Feb 2022 12:43:13 +1100
+> Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+> 
+>> For whatever reason LLVM does not allow LTO (Link Time Optimization) if
+>> FTRACE_MCOUNT_USE_RECORDMCOUNT is enabled.
+>>
+>> This allows disabling just this option instead of disabling all FTRACE
+>> options.
+> 
+> What FTRACE options are you talking about?
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-index 0f2f3f54dbf9..0158d27d5645 100644
---- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-@@ -269,7 +269,8 @@ static int virtio_gpu_getparam_ioctl(struct drm_device *dev, void *data,
- {
- 	struct virtio_gpu_device *vgdev = dev->dev_private;
- 	struct drm_virtgpu_getparam *param = data;
--	int value;
-+	int value, ret, sz = sizeof(int);
-+	uint64_t value64;
- 
- 	switch (param->param) {
- 	case VIRTGPU_PARAM_3D_FEATURES:
-@@ -291,13 +292,20 @@ static int virtio_gpu_getparam_ioctl(struct drm_device *dev, void *data,
- 		value = vgdev->has_context_init ? 1 : 0;
- 		break;
- 	case VIRTGPU_PARAM_SUPPORTED_CAPSET_IDs:
--		value = vgdev->capset_id_mask;
-+		value64 = vgdev->capset_id_mask;
-+		sz = sizeof(value64);
- 		break;
- 	default:
- 		return -EINVAL;
- 	}
--	if (copy_to_user(u64_to_user_ptr(param->value), &value, sizeof(int)))
--		return -EFAULT;
-+
-+	if (sz == sizeof(int)) {
-+		if (copy_to_user(u64_to_user_ptr(param->value), &value, sz))
-+			return -EFAULT;
-+	} else {
-+		if (copy_to_user(u64_to_user_ptr(param->value), &value64, sz))
-+			return -EFAULT;
-+	}
- 
- 	return 0;
- }
--- 
-2.34.1
+LTO_CLANG_THIN => HAS_LTO_CLANG => !FTRACE_MCOUNT_USE_RECORDMCOUNT =>
 
+FTRACE [=y] && !FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY [=n] && 
+!FTRACE_MCOUNT_USE_CC [=n] && !FTRACE_MCOUNT_USE_OBJTOOL [=n] && 
+FTRACE_MCOUNT_RECORD [=y]
+
+A bunch.
+
+
+> 
+>>
+>> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+>> ---
+>>
+>> Or disabling FTRACE is the right thing to do if HAS_LTO_CLANG=y?
+>>
+>> Came from arch/Kconfig:
+>>
+>> config HAS_LTO_CLANG
+>>          def_bool y
+>>          depends on CC_IS_CLANG && LD_IS_LLD && AS_IS_LLVM
+>>          depends on $(success,$(NM) --help | head -n 1 | grep -qi llvm)
+>>          depends on $(success,$(AR) --help | head -n 1 | grep -qi llvm)
+>>          depends on ARCH_SUPPORTS_LTO_CLANG
+>>          depends on !FTRACE_MCOUNT_USE_RECORDMCOUNT  <======
+>>          depends on !KASAN || KASAN_HW_TAGS
+>>          depends on !GCOV_KERNEL
+>>
+>>
+>> ---
+>>   kernel/trace/Kconfig | 3 ++-
+>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+>> index a5eb5e7fd624..87d82d2b0b0b 100644
+>> --- a/kernel/trace/Kconfig
+>> +++ b/kernel/trace/Kconfig
+>> @@ -704,7 +704,8 @@ config FTRACE_MCOUNT_USE_OBJTOOL
+>>   	depends on FTRACE_MCOUNT_RECORD
+>>   
+>>   config FTRACE_MCOUNT_USE_RECORDMCOUNT
+>> -	def_bool y
+>> +	bool "Enable FTRACE_MCOUNT_USE_RECORDMCOUNT"
+>> +	default y
+> 
+> I don't think this does what you think it does.
+
+Sounds like it.
+
+> This is not something that should be user selectable. What exactly are
+> you trying to accomplish here?
+
+I am trying to
+
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index b779603978e1..91c122224f83 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -153,6 +153,8 @@ config PPC
+         select ARCH_WANT_IRQS_OFF_ACTIVATE_MM
+         select ARCH_WANT_LD_ORPHAN_WARN
+         select ARCH_WEAK_RELEASE_ACQUIRE
++       select ARCH_SUPPORTS_LTO_CLANG          if PPC64
++       select ARCH_SUPPORTS_LTO_CLANG_THIN     if PPC64
+
+
+to get LTO working on powerpc64le with minimal change to 
+ppc64le_defconfig which has all these FTRACE_xxx enabled.
+
+
+> 
+> -- Steve
+> 
+> 
+>>   	depends on !FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY
+>>   	depends on !FTRACE_MCOUNT_USE_CC
+>>   	depends on !FTRACE_MCOUNT_USE_OBJTOOL
+> 
