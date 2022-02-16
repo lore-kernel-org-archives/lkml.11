@@ -2,90 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB5FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F660C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbiBPHqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:46:54 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46334 "EHLO
+        id S230415AbiBPHrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:47:07 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiBPHqv (ORCPT
+        with ESMTP id S229468AbiBPHrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:46:51 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42C863D7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:46:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644997599; x=1676533599;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ZbHq30c9suHqVxOsxPX/mZ0QzsgvzvZU/DMFUUxsqKY=;
-  b=Uzc4CMZ0YjJLpo1X9fnfMalbLubBbPs35pHrfpMzwElU7AYrqn5EeGmj
-   w/MuyhgMZ05xRIkdkMpv5u5BNS1H6ZXS661VV5O0YjKnU4lCuBZB3O8l3
-   rJnmpFZdwKCl0d+RvOzhXotY8pXkJI/q22VCSUs0dkYDKrgg6k3kgzKsX
-   tqum/mXwr5jbEX4AsopuiiYwWi/s8MlnUZyxsIq8cfLTEjNuGSgK3cwr3
-   PKEK++W24340iUocoHMyBUGJJ61FXg5rxiZVQbj3vsah7htHmgQzFZqmQ
-   4PylqSea99dWFBW7z9ZmXtfsQVhsLKI4ELbNt2muAVo5qDdYiTcncsQgk
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="275118727"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="275118727"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 23:03:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="704179198"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 15 Feb 2022 23:03:28 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKELY-000AY1-6B; Wed, 16 Feb 2022 07:03:28 +0000
-Date:   Wed, 16 Feb 2022 15:03:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: ERROR: start_text address is c000000000000600, should be
- c000000000000100
-Message-ID: <202202161525.m2QCBrwR-lkp@intel.com>
+        Wed, 16 Feb 2022 02:47:03 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24074B820A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:46:49 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id m17so2364979edc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:46:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=9elements.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Z9nt70mNjga/PSpxElizqUxSJsKrZQkqqk3JOgxpH+g=;
+        b=ZWixcys+zyjSIq1+vDsIAFoXAQXtnAVPOJkKWRHO4VZEAh023KWueyKV1p1tYLAAcA
+         PTUd67gvs9EtfI5pOj7CJ5RfEVHwtNTY8l6kJMh7VNaLi/IfmSGO9KCCUXLbK8OdE8V6
+         5wc/xYx3QSJ6cSSw8m3DtkpPwqzfFJEqAe1Ft7/eFRRPLKHCXdBAnsnI+CGGrIa/vU7P
+         8Z6Np3GUkWK8/QpF1gT665wm1ve8V1KuSsDGJwHp4jXGvonvaHgO+BLJjeIvYvQjE/Cs
+         jS25w2bujDROd8Rf4PyfaNj3s1a7tvCDx74LfIlj/0i4aWsAgouZGyUiKJRJIBVCSovZ
+         /KMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Z9nt70mNjga/PSpxElizqUxSJsKrZQkqqk3JOgxpH+g=;
+        b=HWBTL5Rp0Ilz4EQsbjheKD3HP9nigG//DIRpbTP8OJCQj45WMU357NP2kzVBnJtWVT
+         lbF6l+yi7GUykExIz05nHjhHozaqKxzNPp6kzkB2gusSdq1XywD6AQmZ6gBnwYb3oaTA
+         cPadqyvzeD74hYsBSKKfc1IJuJzA5axbSzgHLUcbD37xu9LvcHqEr6vxgAkJ3dadOo0E
+         nYpBc+QNf2/DlfEp0qjDSC2Xk55jOAvKtM2RQ1aVanBkXFYGi/OPhkl5r7S9MfQ6eMxx
+         b4akXA8bL6lF0otZJSde6gp3mIPe8Lxa+0kPw/fn4uu2tvXXvJRYxhv9CxRnRzckJ+we
+         9adg==
+X-Gm-Message-State: AOAM530CDxZcFqQN9+AcyHdacpl1DnI6jOHzgj/8nQewxrew/gsJIDz0
+        0s+8KYNGYBEoWv4wCzHAO1ZR7g==
+X-Google-Smtp-Source: ABdhPJwPAqmNeD8fX6SrwJ0It07c6erWWjbq18zDEEyiHb7ljjBrVvPEHd4smT+PMHvDND4tqukPsg==
+X-Received: by 2002:a05:6402:7cb:b0:410:dde2:5992 with SMTP id u11-20020a05640207cb00b00410dde25992mr1614297edy.323.1644997607647;
+        Tue, 15 Feb 2022 23:46:47 -0800 (PST)
+Received: from fedora.sec.9e.network (ip-088-153-139-166.um27.pools.vodafone-ip.de. [88.153.139.166])
+        by smtp.gmail.com with ESMTPSA id gq1sm11615202ejb.58.2022.02.15.23.46.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 23:46:47 -0800 (PST)
+From:   Patrick Rudolph <patrick.rudolph@9elements.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-i2c@vger.kernel.org
+Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v6 0/3] Add support for Maxim MAX735x/MAX736x variants
+Date:   Wed, 16 Feb 2022 08:46:09 +0100
+Message-Id: <20220216074613.235725-1-patrick.rudolph@9elements.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Randy,
+v6:
+- Fix typo in dt-bindings
 
-FYI, the error/warning still remains.
+v5:
+- Remove optional and make vdd-supply mandatory
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   c5d9ae265b105d9a67575fb67bd4650a6fc08e25
-commit: 47c258d71ebfc832a760a1dc6540cf3c33968023 powerpc/head_check: use stdout for error messages
-date:   6 months ago
-config: powerpc64-randconfig-c004-20220216 (https://download.01.org/0day-ci/archive/20220216/202202161525.m2QCBrwR-lkp@intel.com/config)
-compiler: powerpc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=47c258d71ebfc832a760a1dc6540cf3c33968023
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 47c258d71ebfc832a760a1dc6540cf3c33968023
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
+v4:
+- Add missing maxitems dt-bindings property
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+v3:
+- Merge dt-bindings into i2c-mux-pca954x.yaml
 
-All errors (new ones prefixed by >>):
+v2:
+- Move dt-bindings to separate file
+- Added support for MAX736x as they are very similar
+- Fixed an issue found by kernel test robot
+- Dropped max735x property and custom IRQ check
+- Added MAX7357 config register defines instead of magic values
+- Renamed vcc-supply to vdd-supply
 
->> ERROR: start_text address is c000000000000600, should be c000000000000100
-   ERROR: try to enable LD_HEAD_STUB_CATCH config option
-   ERROR: see comments in arch/powerpc/tools/head_check.sh
+Patrick Rudolph (3):
+  dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
+  i2c: muxes: pca954x: Add MAX735x/MAX736x support
+  i2c: muxes: pca954x: Add regulator support
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ .../bindings/i2c/i2c-mux-pca954x.yaml         |  44 ++++--
+ drivers/i2c/muxes/Kconfig                     |   4 +-
+ drivers/i2c/muxes/i2c-mux-pca954x.c           | 126 ++++++++++++++++--
+ 3 files changed, 153 insertions(+), 21 deletions(-)
+
+-- 
+2.34.1
+
