@@ -2,164 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95728C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 18:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3944C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 18:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237788AbiBPSoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 13:44:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35464 "EHLO
+        id S237796AbiBPSox (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 13:44:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233985AbiBPSoe (ORCPT
+        with ESMTP id S237801AbiBPSos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 13:44:34 -0500
-Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B082B222DD9
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:44:19 -0800 (PST)
-Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
-        by mx1.smtp.larsendata.com (Halon) with ESMTPS
-        id 7cf017e4-8f58-11ec-baa1-0050568c148b;
-        Wed, 16 Feb 2022 18:44:35 +0000 (UTC)
-Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sam@ravnborg.org)
-        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 3B79C194B3E;
-        Wed, 16 Feb 2022 19:44:17 +0100 (CET)
-Date:   Wed, 16 Feb 2022 19:44:13 +0100
-X-Report-Abuse-To: abuse@mxhotel.dk
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        linux@armlinux.org.uk, will@kernel.org, guoren@kernel.org,
-        bcain@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu,
-        tsbogend@alpha.franken.de, nickhu@andestech.com,
-        green.hu@gmail.com, dinguyen@kernel.org, shorne@gmail.com,
-        deller@gmx.de, mpe@ellerman.id.au, peterz@infradead.org,
-        mingo@redhat.com, mark.rutland@arm.com, hca@linux.ibm.com,
-        dalias@libc.org, davem@davemloft.net, richard@nod.at,
-        x86@kernel.org, jcmvbkbc@gmail.com, ebiederm@xmission.com,
-        akpm@linux-foundation.org, ardb@kernel.org,
-        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org
-Subject: Re: [PATCH v2 18/18] uaccess: drop maining CONFIG_SET_FS users
-Message-ID: <Yg1F/VT4vRX4aHEt@ravnborg.org>
-References: <20220216131332.1489939-1-arnd@kernel.org>
- <20220216131332.1489939-19-arnd@kernel.org>
+        Wed, 16 Feb 2022 13:44:48 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08358222DEF
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:44:31 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id i14so4943347wrc.10
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:44:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lszB3xceFjSIFmWwB8cITSlsQu8F9SaAJnYIVCoUsFc=;
+        b=sbVTqKGlf7xvO45FqWb50YfhQZItyXe2xKSD86hgNjh8yyr2JXznhNFPzd/swEwlHh
+         KMuOVe9I7Cb1kewjSd3cnJCUNB6vx/yKdw9OvffbnjnurEfm9scvTyoux4GvNtvLsy49
+         uc17nWybjxZKamcEKx/F+42OfvemWwa9angbKZcX7cZL5BfhyLY6Q6yylpifcoVPD/+1
+         GByHPcOaaKna6095XTbBFSWNDxb8pMa1awTKwrippYFrYWwLfAhy7sPMzxP+KQ30TUqs
+         mTfRtF7Pq+Z5cUNuMaL9baRs1CYnP0MdXCBAZdjAZDYRF6yWPorkZUEKWPGbx1VPLlOg
+         5T5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lszB3xceFjSIFmWwB8cITSlsQu8F9SaAJnYIVCoUsFc=;
+        b=O7DnoE8dntUrqiLx0Ag5JgQ6AXZGQFnY7GZXydORAs4Gv91YlxO6PvEGneM1+Arif2
+         KEFws2dcB3ApzVg/Ktif2IJKUiqwIVHmsklK6xxmByYwbVKah+QFnNc4NHk33i7y7+/j
+         Vl4fNIVvRKTf/YRtfOsH+A1REkakGs53gnrLfIcqU+yrXpHJYl5lzKXpdtGsyAxWqT8g
+         cJ1IJuXKYnLaZzBHXnnlZQJLYSoHEFSCt+G8kszrKunPR/YNDS5QindrQY/Bs97T9Kjo
+         bVjzabgvBi8r+XoQVb+f5QloBjRlbcxaKZFZ1A7CPKMIo7s3mCcxb59FIWQx0R5Z8HWE
+         IlNQ==
+X-Gm-Message-State: AOAM531ayu624/Bkx0jwmqSqmb8onTwMnRRcLVIiw5j4rYDN0Ow092kj
+        GdU/PO4kLtNc3yFc3qq0Ni7x+g==
+X-Google-Smtp-Source: ABdhPJyQBwxtunRVW/1pojsvJEgADGCFHehYC1r5tdHntm0Zk7lR/GS3+oFU+xnPDUm73wPyWePNFg==
+X-Received: by 2002:a5d:634b:0:b0:1e3:3226:8e27 with SMTP id b11-20020a5d634b000000b001e332268e27mr3260753wrw.428.1645037069455;
+        Wed, 16 Feb 2022 10:44:29 -0800 (PST)
+Received: from ?IPV6:2a01:e34:ed2f:f020:6165:d98a:b553:c3c1? ([2a01:e34:ed2f:f020:6165:d98a:b553:c3c1])
+        by smtp.googlemail.com with ESMTPSA id j10sm14282624wmq.20.2022.02.16.10.44.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 10:44:28 -0800 (PST)
+Message-ID: <c07b9fe7-5d28-c72a-a9d9-e612b07b0b75@linaro.org>
+Date:   Wed, 16 Feb 2022 19:44:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216131332.1489939-19-arnd@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5] drivers: thermal: clear all mitigation when thermal
+ zone is disabled
+Content-Language: en-US
+To:     Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1643307093-22501-1-git-send-email-quic_manafm@quicinc.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <1643307093-22501-1-git-send-email-quic_manafm@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+On 27/01/2022 19:11, Manaf Meethalavalappu Pallikunhi wrote:
+> Whenever a thermal zone is in trip violated state, there is a chance
+> that the same thermal zone mode can be disabled either via
+> thermal core API or via thermal zone sysfs. Once it is disabled,
+> the framework bails out any re-evaluation of thermal zone. It leads
+> to a case where if it is already in mitigation state, it will stay
+> the same state forever.
+> 
+> To avoid above mentioned issue, add support to bind/unbind
+> governor from thermal zone during thermal zone mode change request
+> and clear all existing throttling in governor unbind_from_tz()
+> callback.
 
-Fix spelling in $subject...
+Manaf,
 
-sparc/Kconfig b/arch/sparc/Kconfig
-> index 9f6f9bce5292..9276f321b3e3 100644
-> --- a/arch/sparc/Kconfig
-> +++ b/arch/sparc/Kconfig
-> @@ -46,7 +46,6 @@ config SPARC
->  	select LOCKDEP_SMALL if LOCKDEP
->  	select NEED_DMA_MAP_STATE
->  	select NEED_SG_DMA_LENGTH
-> -	select SET_FS
->  	select TRACE_IRQFLAGS_SUPPORT
->  
->  config SPARC32
-> @@ -101,6 +100,7 @@ config SPARC64
->  	select HAVE_SETUP_PER_CPU_AREA
->  	select NEED_PER_CPU_EMBED_FIRST_CHUNK
->  	select NEED_PER_CPU_PAGE_FIRST_CHUNK
-> +	select SET_FS
-This looks wrong - looks like some merge went wrong here.
+can you clarify when / why is needed to disable a thermal zone at runtime?
 
->  
->  config ARCH_PROC_KCORE_TEXT
->  	def_bool y
-> diff --git a/arch/sparc/include/asm/processor_32.h b/arch/sparc/include/asm/processor_32.h
-> index 647bf0ac7beb..b26c35336b51 100644
-> --- a/arch/sparc/include/asm/processor_32.h
-> +++ b/arch/sparc/include/asm/processor_32.h
-> @@ -32,10 +32,6 @@ struct fpq {
->  };
->  #endif
->  
-> -typedef struct {
-> -	int seg;
-> -} mm_segment_t;
-> -
->  /* The Sparc processor specific thread struct. */
->  struct thread_struct {
->  	struct pt_regs *kregs;
-> @@ -50,11 +46,9 @@ struct thread_struct {
->  	unsigned long   fsr;
->  	unsigned long   fpqdepth;
->  	struct fpq	fpqueue[16];
-> -	mm_segment_t current_ds;
->  };
->  
->  #define INIT_THREAD  { \
-> -	.current_ds = KERNEL_DS, \
->  	.kregs = (struct pt_regs *)(init_stack+THREAD_SIZE)-1 \
->  }
->  
-> diff --git a/arch/sparc/include/asm/uaccess_32.h b/arch/sparc/include/asm/uaccess_32.h
-> index 367747116260..9fd6c53644b6 100644
-> --- a/arch/sparc/include/asm/uaccess_32.h
-> +++ b/arch/sparc/include/asm/uaccess_32.h
-> @@ -12,19 +12,6 @@
->  #include <linux/string.h>
->  
->  #include <asm/processor.h>
-> -
-> -/* Sparc is not segmented, however we need to be able to fool access_ok()
-> - * when doing system calls from kernel mode legitimately.
-> - *
-> - * "For historical reasons, these macros are grossly misnamed." -Linus
-> - */
-> -
-> -#define KERNEL_DS   ((mm_segment_t) { 0 })
-> -#define USER_DS     ((mm_segment_t) { -1 })
-> -
-> -#define get_fs()	(current->thread.current_ds)
-> -#define set_fs(val)	((current->thread.current_ds) = (val))
-> -
->  #include <asm-generic/access_ok.h>
->  
->  /* Uh, these should become the main single-value transfer routines..
-> diff --git a/arch/sparc/kernel/process_32.c b/arch/sparc/kernel/process_32.c
-> index 2dc0bf9fe62e..88c0c14aaff0 100644
-> --- a/arch/sparc/kernel/process_32.c
-> +++ b/arch/sparc/kernel/process_32.c
-> @@ -300,7 +300,6 @@ int copy_thread(unsigned long clone_flags, unsigned long sp, unsigned long arg,
->  		extern int nwindows;
->  		unsigned long psr;
->  		memset(new_stack, 0, STACKFRAME_SZ + TRACEREG_SZ);
-> -		p->thread.current_ds = KERNEL_DS;
->  		ti->kpc = (((unsigned long) ret_from_kernel_thread) - 0x8);
->  		childregs->u_regs[UREG_G1] = sp; /* function */
->  		childregs->u_regs[UREG_G2] = arg;
-> @@ -311,7 +310,6 @@ int copy_thread(unsigned long clone_flags, unsigned long sp, unsigned long arg,
->  	}
->  	memcpy(new_stack, (char *)regs - STACKFRAME_SZ, STACKFRAME_SZ + TRACEREG_SZ);
->  	childregs->u_regs[UREG_FP] = sp;
-> -	p->thread.current_ds = USER_DS;
->  	ti->kpc = (((unsigned long) ret_from_fork) - 0x8);
->  	ti->kpsr = current->thread.fork_kpsr | PSR_PIL;
->  	ti->kwim = current->thread.fork_kwim;
 
-Other than the above the sparc32 changes looks fine, and with the Kconf
-stuff fixed:
-Acked-by: Sam Ravnborg <sam@ravnborg.org> # for sparc32 changes
+
+> Suggested-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Signed-off-by: Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
+> ---
+>   drivers/thermal/gov_power_allocator.c |  3 +++
+>   drivers/thermal/gov_step_wise.c       | 26 ++++++++++++++++++++++++++
+>   drivers/thermal/thermal_core.c        | 31 +++++++++++++++++++++++++++----
+>   3 files changed, 56 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/thermal/gov_power_allocator.c b/drivers/thermal/gov_power_allocator.c
+> index 13e3757..9ff0c5f 100644
+> --- a/drivers/thermal/gov_power_allocator.c
+> +++ b/drivers/thermal/gov_power_allocator.c
+> @@ -696,6 +696,9 @@ static void power_allocator_unbind(struct thermal_zone_device *tz)
+>   
+>   	dev_dbg(&tz->device, "Unbinding from thermal zone %d\n", tz->id);
+>   
+> +	tz->passive = 0;
+> +	allow_maximum_power(tz, true);
+> +
+>   	if (params->allocated_tzp) {
+>   		kfree(tz->tzp);
+>   		tz->tzp = NULL;
+> diff --git a/drivers/thermal/gov_step_wise.c b/drivers/thermal/gov_step_wise.c
+> index 12acb12..2d2186b 100644
+> --- a/drivers/thermal/gov_step_wise.c
+> +++ b/drivers/thermal/gov_step_wise.c
+> @@ -168,6 +168,31 @@ static void thermal_zone_trip_update(struct thermal_zone_device *tz, int trip)
+>   }
+>   
+>   /**
+> + * step_wise_unbind() - unbind the step_wise governor to a thermal zone
+> + * @tz:	thermal zone to unbind it to
+> + *
+> + * Clear all previous throttling and reset passive counter.
+> + *
+> + */
+> +static void step_wise_unbind(struct thermal_zone_device *tz)
+> +{
+> +	struct thermal_instance *instance;
+> +
+> +	dev_dbg(&tz->device, "Unbinding from thermal zone %d\n", tz->id);
+> +
+> +	mutex_lock(&tz->lock);
+> +	tz->passive = 0;
+> +	list_for_each_entry(instance, &tz->thermal_instances, tz_node) {
+> +		instance->initialized = false;
+> +		instance->target = THERMAL_NO_TARGET;
+> +		mutex_lock(&instance->cdev->lock);
+> +		__thermal_cdev_update(instance->cdev);
+> +		mutex_unlock(&instance->cdev->lock);
+> +	}
+> +	mutex_unlock(&tz->lock);
+> +}
+> +
+> +/**
+>    * step_wise_throttle - throttles devices associated with the given zone
+>    * @tz: thermal_zone_device
+>    * @trip: trip point index
+> @@ -196,6 +221,7 @@ static int step_wise_throttle(struct thermal_zone_device *tz, int trip)
+>   
+>   static struct thermal_governor thermal_gov_step_wise = {
+>   	.name		= "step_wise",
+> +	.unbind_from_tz	= step_wise_unbind,
+>   	.throttle	= step_wise_throttle,
+>   };
+>   THERMAL_GOVERNOR_DECLARE(thermal_gov_step_wise);
+> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+> index 82654dc..34726d3 100644
+> --- a/drivers/thermal/thermal_core.c
+> +++ b/drivers/thermal/thermal_core.c
+> @@ -274,6 +274,26 @@ static int __init thermal_register_governors(void)
+>   	return ret;
+>   }
+>   
+> +static void thermal_governor_attach(struct thermal_zone_device *tz)
+> +{
+> +	mutex_lock(&thermal_governor_lock);
+> +	if (tz->governor && tz->governor->bind_to_tz) {
+> +		if (tz->governor->bind_to_tz(tz))
+> +			dev_err(&tz->device,
+> +				"governor %s failed to bind to thermal zone %s\n",
+> +				tz->governor->name, tz->type);
+> +	}
+> +	mutex_unlock(&thermal_governor_lock);
+> +}
+> +
+> +static void thermal_governor_detach(struct thermal_zone_device *tz)
+> +{
+> +	mutex_lock(&thermal_governor_lock);
+> +	if (tz->governor && tz->governor->unbind_from_tz)
+> +		tz->governor->unbind_from_tz(tz);
+> +	mutex_unlock(&thermal_governor_lock);
+> +}
+> +
+>   /*
+>    * Zone update section: main control loop applied to each zone while monitoring
+>    *
+> @@ -449,12 +469,15 @@ static int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
+>   
+>   	mutex_unlock(&tz->lock);
+>   
+> -	thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+> -
+> -	if (mode == THERMAL_DEVICE_ENABLED)
+> +	if (mode == THERMAL_DEVICE_ENABLED) {
+> +		thermal_governor_attach(tz);
+> +		thermal_zone_device_init(tz);
+> +		thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+>   		thermal_notify_tz_enable(tz->id);
+> -	else
+> +	} else {
+> +		thermal_governor_detach(tz);
+>   		thermal_notify_tz_disable(tz->id);
+> +	}
+>   
+>   	return ret;
+>   }
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
