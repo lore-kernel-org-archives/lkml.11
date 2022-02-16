@@ -2,146 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8809C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235669AbiBPPmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:42:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47542 "EHLO
+        id S235641AbiBPPn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 10:43:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235612AbiBPPmi (ORCPT
+        with ESMTP id S235611AbiBPPnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:42:38 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2134.outbound.protection.outlook.com [40.107.92.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F492A2500;
-        Wed, 16 Feb 2022 07:42:25 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XAU4rSJdOLXB1kjBKmGS7zSEF3fjmz7LwYWhQ4T70TvjNYDfDg4T88jn6IngOPEXvYS2gHGaFzxOi1l9S5ZBN4aafYb92LwkH1NEu8jBypP3gRfs4ZIifY7hYEtLkth5GbSFy33K1G720KVgN5+5lBzW0xOtYoABS2a0jVwOb5h9ZxqgIKgZ20yxBhqohsqRFpgGVCNm7tzlLltIAgMvkLrUfIpNDShja8/k8sxXJ2UcRIQlUimhyUTv35DN09QxtQ+CIIsNhzfjHFp2VIfcaF6FManlNASeryAt0KpIy+hCgIKwvEbd/INBdfvHvqzU2pWVA4upwG9+PI2ej/GAMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mGi2Q5ITQwr+OGb8Z0RSvVJeYy454NBfKccsMDqx8Vk=;
- b=LqOCOsg5+OnNTSoYaSR/Zw3VfnxShoNTWCbWfxXOvDx/TdRDfRZoFAzYfzkR4BV+X8uIhheoKW/HPCjdkqM6STBWHF3Dd8GSWVhNTNpgQvRNz85Lj3IDXkSEKiwLbc1o8ogJ6AV3XhpG472ie8ZdqIFvhsNfJONp8ykz/eK18Nyu57qPhuw/QAKLWLtLYkQ5GVCfhJiMg8TI5KWzyHlybRbf9BMg3Sus98wmh/2Drvy9F9jEa+0sHYemmObKNmISDTqym4ASMf9rR/NLPATZCnuIhgLcOUSek1442p23Q2BndQ3zhr1bz6JZHJWQ6uc4lT4rJ0alzol3ExVhBUslMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mGi2Q5ITQwr+OGb8Z0RSvVJeYy454NBfKccsMDqx8Vk=;
- b=Phiri6onr48mJDctu8ba1CD3HdrGViBrbLB+zcP/oVPIEnbaw2OtVCx4DN6earAe2aODKsigcogEzgceoKFHbZVelbYoWuJ5SsKF0yLgQaXwQjAcDvF36fbhzv2Eta8hF9PADGZk+vMW+0FY3N782aT8Q5bd1asK8j7yyIJhcEo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by MWHPR10MB2016.namprd10.prod.outlook.com
- (2603:10b6:300:10e::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Wed, 16 Feb
- 2022 15:42:21 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::7c:dc80:7f24:67c5]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::7c:dc80:7f24:67c5%6]) with mapi id 15.20.4975.012; Wed, 16 Feb 2022
- 15:42:21 +0000
-Date:   Wed, 16 Feb 2022 07:42:02 -0800
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pinctrl: ocelot: fix duplicate debugfs entry
-Message-ID: <20220216154202.GB14638@MSI.localdomain>
-References: <20220216122727.1005041-1-michael@walle.cc>
+        Wed, 16 Feb 2022 10:43:25 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567F516FDC5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:43:12 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0F9C31F37D;
+        Wed, 16 Feb 2022 15:43:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645026191; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=y7fufCI37ElOCHc4jtLBskTpccS92f9EHiCptN23HoQ=;
+        b=qouWV1rSaMfJxxtb4PaKStLD8lpXkCIHfZFnBaZ8wnxR/+xjDMvW+6v+TI5s+gIaRxfS7h
+        LQpbadJN6VefN2A8DL3HihRRoY4az4a0uI2hZclpwO9Ob9ona5YVeKjkn/K174OmkBSWpq
+        AbTEnYtdZMqTv0j7fVxtynQgFhL1WRY=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B78CCA3B85;
+        Wed, 16 Feb 2022 15:43:10 +0000 (UTC)
+Date:   Wed, 16 Feb 2022 16:43:10 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH printk v1 06/13] printk: refactor and rework printing
+ logic
+Message-ID: <Yg0bjsObmb9Zp1YP@alley>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-7-john.ogness@linutronix.de>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220216122727.1005041-1-michael@walle.cc>
-X-ClientProxiedBy: MWHPR2001CA0012.namprd20.prod.outlook.com
- (2603:10b6:301:15::22) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fd910efc-c6fd-4963-4944-08d9f162ebc5
-X-MS-TrafficTypeDiagnostic: MWHPR10MB2016:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR10MB2016E957464F336BDD49D657A4359@MWHPR10MB2016.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wfjalGQVKlrYMlBwnluk0NguzLiHvWbMreqvAVGJPozYJb6xZ2W4BwPhXW42Idw6KZaQb6FPP1D8N6MqYcFyL1WYNXRtRSKnt+a/mdBCrPYaZ4PmRMaYDCMLWxGi6y9Y5u8bYRJRhL7emaU6M8MIy7jWYJNpJa6kguJ8KNF+NfkpZ6fG6uKgOLSZrsB1YRK+XGiGYPzHYKUhGTr64uK9TnccPGxC6mymYoBth/d2IOeGCeojFv1RgeVu/5dvq/EwTfAsyzu351oSfIU/p6SPQJYj+/3+TE0BJhK6KTtX2Wo9P9lhx+1Hswh9UZsGmuXUR+RD1+g+4KtIvYSdca4siN6SpprV/T3XdbkNG7X6H1SvIvqVhyPmwMluJy24JRrACI5JhGWLZgvkVJ/M+Rk6YdaykzMSAJ8Qm8YU10NtJbvvTD8kVip33wTSlTtZUEkeZquMNcsgtRslZyzD5ETXweE+ICTssKDLTYiVirkc+nhUNhwqMipctVjUPU5qJKhD+0ZBcgGDoKZfnEV6Pgp3HcxP8qYdXUaJ3GRNmciYppoOvQncdXVIZ2lKI6zSo7lq63SCV3q0fII730lKPIxUc+g+9ZsxItKsZmSfs5MhmoFKX2SblZeBQ8M/W9iWhdgfSAzQDhgT5PZLWyYow6EY2tkz1Zw0EO8VeZTgSAIWpf+y70EdAMK6o4rJ1xnNf9/14d2ZQC3F4TJ0v04sSyaGtQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(39830400003)(376002)(136003)(346002)(366004)(42606007)(6916009)(66476007)(5660300002)(8936002)(316002)(66556008)(44832011)(86362001)(66946007)(4326008)(8676002)(2906002)(6512007)(9686003)(186003)(26005)(6486002)(1076003)(508600001)(33656002)(38350700002)(38100700002)(6666004)(6506007)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3KJTwzBkOsCtYD/t4LiUcplPoTG3uTlhAQZW4bkbzoyOSpVONTd4tpHrNMLh?=
- =?us-ascii?Q?j80PDTs8lZYeA1tnyLs2QIwTNsnTiB7aplqQpEz1H0ipNZ3T7tK4h02sTLT+?=
- =?us-ascii?Q?YyQKHQgeTExOG6lofK/saHUrcyk+kS1vK0UOp/LMxbKIS6bCBMMawx0T4ufS?=
- =?us-ascii?Q?nK1tcW9JOzbGJRQ8elm9SG3SwLFEsVCVdYbuckoel5W9zXUTVi80AFq2Mw3D?=
- =?us-ascii?Q?rn77KfbYIuUZUFtgES9XpfBlyWcJu95YCB8l00kvSZj/Cc1VTRZZX+QkmxZR?=
- =?us-ascii?Q?KYB65HG6i9I6uWaKEgBCdlTrFzONQsclVfekQHLNT5Glq/094o6Cp5H5EYqj?=
- =?us-ascii?Q?se01hMKJCTQrCw4vrTNcJ9qj7UZVEEgUt5e+2Nmfctnnx4dq3csphjcOmqeV?=
- =?us-ascii?Q?qh5sA7n2vTe6dWMpM+bqgjC8Tqt7pHktrOxebx6O5hEFx6YRVxtGRP1u0kT0?=
- =?us-ascii?Q?SHopMe2huebijUVCv761RI03Di6nEFCbVjzbMVqm/zMCbphdL28FjzMPiwQN?=
- =?us-ascii?Q?zTyNioZQU7GGtZJPV6+i8g406eCzMBgpBpdccJfUn6vwNrghTEPyOnhS1OAN?=
- =?us-ascii?Q?X1cKl6cfh+YQ8tk18uuWfWkfi0nUbR+UGpmdYMre85wHxpSponV4sWLqLX8S?=
- =?us-ascii?Q?ikxa5ekzQy/OLQQSLtD20FtyIRDqz0U1L+6zaqVUS/Gor7CB8T3plZcufgXT?=
- =?us-ascii?Q?uIWhbw5u/CkRxYW5ZZklKW85dk/LhvM/yQm5+5mYML5PF0trXrmW59PvuJU7?=
- =?us-ascii?Q?wId8kkHTG0vpso57jRtqkt7br+dsrnwoi8U/HkRUw7JQx4ccl+e4kYnxPIU+?=
- =?us-ascii?Q?qA3LDwtXTPta85n/mU1Xq8LaZOsVeRWMSKX79FyHPFl5QDQxVtRFQM2yejCD?=
- =?us-ascii?Q?mPYhkNIFcCFwRe5f09stfVnp2CFU8i94bps7nf8ck3rHIkjkYP7iw9RTBnol?=
- =?us-ascii?Q?XxWKpfZz8LqD5fwErhcVYCgMIJEjOZ0g5HQ6+THYnA41GH22wW2fop4nWC99?=
- =?us-ascii?Q?Ic+i/C4Att496Tk3msJKOo6lIV4Kap9sA8NdJ5x7ENo1tSv/cVMjODNxdvju?=
- =?us-ascii?Q?uR5Tz/HnYUVvEf1VtAzAEYBozJIJSjjCoZyGCo1tSQ1FL348y1QUTaDsj/ue?=
- =?us-ascii?Q?xsA3vixoru3m+iiTrVkNeQIYTm31eeDT5+1jXnR7drcaC1vR12g5WIUGTS4P?=
- =?us-ascii?Q?bCkpYIvHczA30XPWEiPtZvR3398fRyXYfjpndje6ZBuXdq8ejHupRlPgBCFU?=
- =?us-ascii?Q?G/JP+C3i6lq3fGmvZT8w/vKQIvevLA9ARSar7+eHOIJDB2XPkipCKDuGgAnA?=
- =?us-ascii?Q?LtQ5wF5ZXHlikZ3kHdOUOXjNVa+ozP5BxQnYWGNhLO8+2DWLx/5FXks+afqk?=
- =?us-ascii?Q?STF8gDDz249s0w77+eoGomsAJEo1wEaPGlw/wI2inlLFofT8zww083ZWCZYb?=
- =?us-ascii?Q?jbE2rFUQH/uSNU0QqhzUWhI+rTa/hia2dg+ylXsgUxSX5z19sBYspEKIPsEc?=
- =?us-ascii?Q?wdmjDcjz63EjjyCHcfnkc8RBYn5E2I1bH8shj1qAYkRaz2B6WxHuhGlLCUPT?=
- =?us-ascii?Q?DspXLxuPrcAvF3M2bclirbef72vJhpL8HxdBDNnQY8oVZTMzigyhq5YfFtV4?=
- =?us-ascii?Q?FRYml1IH1nCoWMvxRAQPjh4vm7VZmYSkJvzL8CdGFCusZyQE6q1vhRFpnka1?=
- =?us-ascii?Q?XAwPSg=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd910efc-c6fd-4963-4944-08d9f162ebc5
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 15:42:21.6174
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Nr68OyhbUW6ed6SPFWrimkvFWXkL89MOjavhjAfifZdQV7fViq76iLHH6JZPJxHypC61VR27Oun3eb/f0XKtE743cR6I7398VYCY6nQfTek=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB2016
+In-Reply-To: <20220207194323.273637-7-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 01:27:27PM +0100, Michael Walle wrote:
-> This driver can have up to two regmaps. If the second one is registered
-> its debugfs entry will have the same name as the first one and the
-> following error will be printed:
+On Mon 2022-02-07 20:49:16, John Ogness wrote:
+> Refactor/rework printing logic in order to prepare for moving to threaded
+> console printing.
 > 
-> [    2.242568] debugfs: Directory 'e2004064.pinctrl' with parent 'regmap' already present!
+> - Move @console_seq into struct console so that the current "position" of
+>   each console can be tracked individually.
 > 
-> Give the second regmap a name to avoid this.
+> - Move @console_dropped into struct console so that the current drop count
+>   of each console can be tracked individually.
 > 
-> Fixes: 076d9e71bcf8 ("pinctrl: ocelot: convert pinctrl to regmap")
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  drivers/pinctrl/pinctrl-ocelot.c | 1 +
->  1 file changed, 1 insertion(+)
+> - Modify printing logic so that each console independently loads, prepares,
+>   prints, and delays its next record.
 > 
-> diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
-> index a859fbcb09af..35b213de1af8 100644
-> --- a/drivers/pinctrl/pinctrl-ocelot.c
-> +++ b/drivers/pinctrl/pinctrl-ocelot.c
-> @@ -1890,6 +1890,7 @@ static struct regmap *ocelot_pinctrl_create_pincfg(struct platform_device *pdev)
->  		.val_bits = 32,
->  		.reg_stride = 4,
->  		.max_register = 32,
-> +		.name = "pincfg",
->  	};
+> - Remove exclusive_console logic. Since console positions are handled
+>   independently, replaying past records occurs naturally.
+
+It would be great to say if it has any behavior change.
+
+There is one change caused by moving printk_delay(). I suggest to do
+it in a separate patch. See below for more details.
+
+Another change is that console replaying the log (former exclusive
+console) does not longer block other consoles. New messages appear
+on other consoles while the newly added console is still replaying.
+
+Otherwise it should not change the existing behavior.
+
+
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -2226,8 +2194,6 @@ asmlinkage int vprintk_emit(int facility, int level,
+>  		in_sched = true;
+>  	}
 >  
->  	base = devm_platform_ioremap_resource(pdev, 1);
-> -- 
-> 2.30.2
-> 
+> -	printk_delay(level);
+> -
+>  	printed_len = vprintk_store(facility, level, dev_info, fmt, args);
+>  
+>  	/* If called from the scheduler, we can not call up(). */
+> @@ -2560,31 +2524,167 @@ int is_console_locked(void)
+>  EXPORT_SYMBOL(is_console_locked);
+>  
+>  /*
+> - * Check if we have any console that is capable of printing while cpu is
+> - * booting or shutting down. Requires console_sem.
+> + * Check if the given console is currently capable and allowed to print
+> + * records.
+> + *
+> + * Requires the console_lock.
+>   */
+> -static int have_callable_console(void)
+> +static inline bool console_is_usable(struct console *con)
+>  {
+> -	struct console *con;
+> +	if (!(con->flags & CON_ENABLED))
+> +		return false;
+>  
+> -	for_each_console(con)
+> -		if ((con->flags & CON_ENABLED) &&
+> -				(con->flags & CON_ANYTIME))
+> -			return 1;
+> +	if (!con->write)
+> +		return false;
+>  
+> -	return 0;
+> +	/*
+> +	 * Console drivers may assume that per-cpu resources have been
+> +	 * allocated. So unless they're explicitly marked as being able to
+> +	 * cope (CON_ANYTIME) don't call them until per-cpu resources have
+> +	 * been allocated.
+> +	 */
+> +	if (!printk_percpu_data_ready() &&
+> +	    !(con->flags & CON_ANYTIME))
+> +		return false;
 
-Reviewed-by: Colin Foster <colin.foster@in-advantage.com>
+Just for record. I am not completely sure about this check. It is
+being discussed in the 3rd patch.
 
 
+> +
+> +	return true;
+> +}
+> +
+> +static void __console_unlock(void)
+> +{
+> +	console_locked = 0;
+> +	up_console_sem();
+> +}
+> +
+> +/*
+> + * Print one record for the given console. The record printed is whatever
+> + * record is the next available record for the given console.
+> + *
+> + * Requires the console_lock.
+> + *
+> + * Returns false if the given console has no next record to print, otherwise
+> + * true.
+> + *
+> + * @handover will be set to true if a printk waiter has taken over the
+> + * console_lock, in which case the caller is no longer holding the
+> + * console_lock. Otherwise it is set to false.
+> + */
+> +static bool console_emit_next_record(struct console *con, bool *handover)
+> +{
+> +	static char ext_text[CONSOLE_EXT_LOG_MAX];
+> +	static char text[CONSOLE_LOG_MAX];
+> +	struct printk_info info;
+> +	struct printk_record r;
+> +	unsigned long flags;
+> +	char *write_text;
+> +	size_t len;
+> +
+> +	prb_rec_init_rd(&r, &info, text, sizeof(text));
+> +
+> +	*handover = false;
+> +
+> +	if (!prb_read_valid(prb, con->seq, &r))
+> +		return false;
+> +
+> +	if (con->seq != r.info->seq) {
+> +		con->dropped += r.info->seq - con->seq;
+> +		con->seq = r.info->seq;
+> +	}
+> +
+> +	/* Skip record that has level above the console loglevel. */
+> +	if (suppress_message_printing(r.info->level)) {
+> +		con->seq++;
+> +		goto skip;
+> +	}
+> +
+> +	if (con->flags & CON_EXTENDED) {
+> +		write_text = &ext_text[0];
+> +		len = info_print_ext_header(ext_text, sizeof(ext_text), r.info);
+> +		len += msg_print_ext_body(ext_text + len, sizeof(ext_text) - len,
+> +					  &r.text_buf[0], r.info->text_len, &r.info->dev_info);
+> +	} else {
+> +		write_text = &text[0];
+> +		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
+> +	}
+> +
+> +	/*
+> +	 * While actively printing out messages, if another printk()
+> +	 * were to occur on another CPU, it may wait for this one to
+> +	 * finish. This task can not be preempted if there is a
+> +	 * waiter waiting to take over.
+> +	 *
+> +	 * Interrupts are disabled because the hand over to a waiter
+> +	 * must not be interrupted until the hand over is completed
+> +	 * (@console_waiter is cleared).
+> +	 */
+> +	printk_safe_enter_irqsave(flags);
+> +	console_lock_spinning_enable();
+> +
+> +	stop_critical_timings();	/* don't trace print latency */
+> +	call_console_driver(con, write_text, len);
+> +	start_critical_timings();
+> +
+> +	con->seq++;
+> +
+> +	*handover = console_lock_spinning_disable_and_check();
+> +	printk_safe_exit_irqrestore(flags);
+> +
+> +	printk_delay(r.info->level);
+
+This is the desired behavior when the messages are printed by
+kthreads. Though, it will delay the output more times when
+more consoles are registered and the messages are printed
+synchronously from console_unlock().
+
+It is probably not super important. The delay is used only
+for debugging and people probably adjust it by a personal
+taste.
+
+Anyway, we should not hide this behavior change in this hude patch.
+IMHO, it is perfectly fine to keep the delay in vprintk_emit() for
+now. We could move it into console_flush_all() and kthread loops
+in a separate patch later.
+
+> +skip:
+> +	return true;
+>  }
+>  
+>  /*
+> - * Can we actually use the console at this time on this cpu?
+> + * Print out all remaining records to all consoles.
+> + *
+> + * Requires the console_lock.
+> + *
+> + * Returns true if a console was available for flushing, otherwise false.
+>   *
+> - * Console drivers may assume that per-cpu resources have been allocated. So
+> - * unless they're explicitly marked as being able to cope (CON_ANYTIME) don't
+> - * call them until per-cpu resources have been allocated.
+> + * @next_seq is set to the highest sequence number of all of the consoles that
+> + * were flushed.
+> + *
+> + * @handover will be set to true if a printk waiter has taken over the
+> + * console_lock, in which case the caller is no longer holding the
+> + * console_lock. Otherwise it is set to false.
+>   */
+> -static inline int can_use_console(void)
+> +static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handover)
+>  {
+> -	return (printk_percpu_data_ready() || have_callable_console());
+> +	bool any_usable = false;
+> +	struct console *con;
+> +	bool any_progress;
+> +
+> +	*next_seq = 0;
+> +	*handover = false;
+> +
+> +	do {
+> +		any_progress = false;
+> +
+> +		for_each_console(con) {
+> +			bool progress;
+> +
+> +			if (!console_is_usable(con))
+> +				continue;
+> +			any_usable = true;
+> +
+> +			progress = console_emit_next_record(con, handover);
+> +			if (*handover)
+> +				return true;
+> +
+> +			/* Track the highest seq flushed. */
+> +			if (con->seq > *next_seq)
+> +				*next_seq = con->seq;
+> +
+> +			if (!progress)
+> +				continue;
+> +			any_progress = true;
+> +
+> +			if (do_cond_resched)
+> +				cond_resched();
+> +		}
+> +	} while (any_progress);
+> +
+> +	return any_usable;
+>  }
+>  
+>  /**
+
+I do not see any other problem. And I like this approach.
+
+console_flush_all() might be a bit complicated for people that see
+it for the first time. But console_unlock() complicated as well.
+From my POV, the new code looks better than the previous one.
+
+Best Regards,
+Petr
