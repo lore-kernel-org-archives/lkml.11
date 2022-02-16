@@ -2,83 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C684EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 732E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236046AbiBPQKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:10:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47026 "EHLO
+        id S236061AbiBPQKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:10:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233311AbiBPQKR (ORCPT
+        with ESMTP id S236045AbiBPQKS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:10:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5182AC907;
-        Wed, 16 Feb 2022 08:10:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89C0DB81F1E;
-        Wed, 16 Feb 2022 16:10:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43EE2C004E1;
-        Wed, 16 Feb 2022 16:10:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645027801;
-        bh=invbru5iq/kzOOAzKbrSzFKl2EUzGbaQH6b7feWk4vk=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=noPx9ICkSbUkC801iMzKN93IYwSvDIkNfy8I229A3Y4MyeOhCloj6+gA9PBu9aftX
-         Q8zXU6H6QxcbygcXg2lj9PFaiZcmw8b3cr0oICC3jBG8NdxUJrXrKy7MJyHqbZH8qg
-         mV7vv5M8LubeCZGzYTlWxfXhAbuscqu9GmhFf0yFB4LfaLCYwl59Adxo16mPhwzeid
-         by96RKj6gkAaSLslBJQMaoHJxFexGB4qUjvLriOAAPk1ThYJZXWiCOqGyb05uQ1bft
-         of9ENnzlWiKdMC3/+W3I8Y4BMX1hWZI+FvIS4MeaMaG0clPs4ZC+nGuh6eq4JTmZz2
-         KsLju+q+WOD7Q==
-Date:   Wed, 16 Feb 2022 17:09:58 +0100 (CET)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     =?ISO-8859-15?Q?Michael_H=FCbner?= <michaelh.95@t-online.de>
-cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] HID: Add support for open wheel and no attachment to
- T300
-In-Reply-To: <20220120074048.14764-1-michaelh.95@t-online.de>
-Message-ID: <nycvar.YFH.7.76.2202161709510.11721@cbobk.fhfr.pm>
-References: <20220120074048.14764-1-michaelh.95@t-online.de>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Wed, 16 Feb 2022 11:10:18 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF122AC907;
+        Wed, 16 Feb 2022 08:10:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645027806; x=1676563806;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=H9Eo2ff2mtGTaLBOP560+TItjLIJaqXZeafS5+0V7ys=;
+  b=QokGmiS+taWTSKV8Kocp3YSjl5p/qu1A/61sIxd0t2ZMA5y8sNFLlKHm
+   EQ0LqtOEwNvYa9HDUMiJN+F+yh+qio1UrRjkdpym1FWovBTytnq9DQtwT
+   UnPIglTUqHoPaQr3sSNJearUXM0j1IRtY/KO48VJhiAULd2Uk2VMO1mna
+   s=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 Feb 2022 08:10:06 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 08:10:02 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 16 Feb 2022 08:10:01 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 16 Feb 2022 08:09:55 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v7 0/7]  Add pin control support for lpass sc7280
+Date:   Wed, 16 Feb 2022 21:39:36 +0530
+Message-ID: <1645027783-15199-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 20 Jan 2022, Michael Hübner wrote:
+This patch series is to split lpass variant common pin control
+functions and SoC specific functions and to add lpass sc7280 pincontrol support.
+It also Adds dt-bindings for lpass sc7280 lpass lpi pincontrol.
 
-> Different add ons to the wheel base report different models. Having
-> no wheel mounted to the base and using the open wheel attachment is
-> added here.
-> 
-> Signed-off-by: Michael Hübner <michaelh.95@t-online.de>
-> ---
->  drivers/hid/hid-thrustmaster.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/hid/hid-thrustmaster.c b/drivers/hid/hid-thrustmaster.c
-> index 03b935ff02d5..a4e20f9e598b 100644
-> --- a/drivers/hid/hid-thrustmaster.c
-> +++ b/drivers/hid/hid-thrustmaster.c
-> @@ -64,7 +64,9 @@ struct tm_wheel_info {
->   */
->  static const struct tm_wheel_info tm_wheels_infos[] = {
->  	{0x0306, 0x0006, "Thrustmaster T150RS"},
-> +	{0x0200, 0x0005, "Thrustmaster T300RS (Missing Attachment)"},
->  	{0x0206, 0x0005, "Thrustmaster T300RS"},
-> +	{0x0209, 0x0005, "Thrustmaster T300RS (Open Wheel Attachment)"},
->  	{0x0204, 0x0005, "Thrustmaster T300 Ferrari Alcantara Edition"},
->  	{0x0002, 0x0002, "Thrustmaster T500RS"}
->  	//{0x0407, 0x0001, "Thrustmaster TMX"}
+Changes Since V6:
+    -- Update conditional clock voting to optional clock voting.
+    -- Update Kconfig depends on field with select.
+    -- Fix typo errors. 
+Changes Since V5:
+    -- Create new patch by updating macro name to lpi specific.
+    -- Create new patch by updating lpi pin group structure with core group_desc structure.
+    -- Fix typo errors.
+    -- Sort macros in the make file and configuration file.
+Changes Since V4:
+    -- Update commit message and description of the chip specific extraction patch.
+    -- Sort macros in kconfig and makefile.
+    -- Update optional clock voting to conditional clock voting.
+    -- Fix typo errors.
+    -- Move to quicinc domain email id's.
+Changes Since V3:
+    -- Update separate Kconfig fields for sm8250 and sc7280.
+    -- Update module license and description.
+    -- Move static variables to corresponding .c files from header file.
 
-Applied, thanks Michael.
+Changes Since V2:
+    -- Add new dt-bindings for sc7280 lpi driver.
+    -- Make clock voting change as separate patch.
+    -- Split existing pincontrol driver and make common functions 
+       as part of separate file.
+    -- Rename lpass pincontrol lpi dt-bindings to sm8250 specific dt-bindings
+		
+Changes Since V1:
+    -- Make lpi pinctrl variant data structure as constant
+    -- Add appropriate commit message
+    -- Change signedoff by sequence.
+
+Srinivasa Rao Mandadapu (7):
+  dt-bindings: pinctrl: qcom: Update lpass lpi file name to SoC specific
+  dt-bindings: pinctrl: qcom: Add sc7280 lpass lpi pinctrl bindings
+  pinctrl: qcom: Update macro name to LPI specific
+  pinctrl: qcom: Update lpi pin group structure
+  pinctrl: qcom: Extract chip specific LPASS LPI code
+  pinctrl: qcom: Add SC7280 lpass pin configuration
+  pinctrl: qcom: Update clock voting as optional
+
+Tested this on SM8250 MTP with WSA and WCD codecs.
+Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+
+ .../bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml   | 133 -----------
+ .../pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml     | 115 ++++++++++
+ .../pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml     | 133 +++++++++++
+ drivers/pinctrl/qcom/Kconfig                       |  16 ++
+ drivers/pinctrl/qcom/Makefile                      |   2 +
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.c           | 245 +--------------------
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.h           |  86 ++++++++
+ drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c    | 168 ++++++++++++++
+ drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c    | 166 ++++++++++++++
+ 9 files changed, 696 insertions(+), 368 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
 
 -- 
-Jiri Kosina
-SUSE Labs
+2.7.4
 
