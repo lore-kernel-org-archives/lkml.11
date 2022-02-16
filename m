@@ -2,257 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D28FC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56457C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235441AbiBPPNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:13:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59070 "EHLO
+        id S235452AbiBPPPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 10:15:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233779AbiBPPNc (ORCPT
+        with ESMTP id S231866AbiBPPPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:13:32 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C07822495C;
-        Wed, 16 Feb 2022 07:13:18 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 391461F4533A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645024396;
-        bh=ZdwDreTuYZ1OApOlrsy0Ywd+1miJltDsuK0Em6Pe28w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ciKEFCGia4x/X1pwF3ONQMHyF34tZMgVdNyrzojJU8RqlEmdet95xbeYObCPeMFo3
-         T4DmAzAYeMqDX9WNq/ivME0WwJNImP+aZOMGVmamaBlis13UG5yT9bsxIXTCPC2n1T
-         DJoA67AImYpncRvjLAltZjR1MnKJq0MK+NfPYUfCF5HLoQhko15Sl7Q6yycdaiNIsh
-         EXCIqu5+88aRa1sNfRn+YYqM6ju1fJjO6XCrzmV68tYZrlEhECBQLDPNcUELLVhnkY
-         ri6v/qD4pccDQ26Hc8EA2sJC14nK2SYnCqsAt0YNxfEHK1Q+4ZKQEgZNsIOvMKMJ31
-         ASzBBChotutCg==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     vkoul@kernel.org
-Cc:     krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        sean.wang@mediatek.com, matthias.bgg@gmail.com,
-        long.cheng@mediatek.com, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2] dt-bindings: dma: Convert mtk-uart-apdma to DT schema
-Date:   Wed, 16 Feb 2022 16:13:09 +0100
-Message-Id: <20220216151309.289348-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.33.1
+        Wed, 16 Feb 2022 10:15:35 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C521D11C0F;
+        Wed, 16 Feb 2022 07:15:22 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 5D49C218B0;
+        Wed, 16 Feb 2022 15:15:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645024521; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yBnvgUiufkd6hqXyIL1xCUzZ9EdBPJ7jQt3pk+22Jeo=;
+        b=aWHBGySjkoi4X4eJw6em22aIBrUvu9NxLgBGA1YPe5teGkVd+OZMbfz5mAR/H5p27cqtNr
+        eTyibmLvFW46B/0440TTtOsAILpkMgsqB/KGMtndC8IzoufDHI25QQen3Or6hJ/HuWla6K
+        Pa5Mx18v2FogkqbxvqZV2A45oG5hbUQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645024521;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yBnvgUiufkd6hqXyIL1xCUzZ9EdBPJ7jQt3pk+22Jeo=;
+        b=LP1Mp5P/8Rc3AyVBb8kXt+yBGl6ouToT79WXn4Nyw3u61X15U3AEuc87d4w0SeVJ1668cR
+        KD0RqNXhlm6bqmAA==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id EBB23A3B83;
+        Wed, 16 Feb 2022 15:15:20 +0000 (UTC)
+Date:   Wed, 16 Feb 2022 16:15:20 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+cc:     =?UTF-8?Q?F=C4=81ng-ru=C3=AC_S=C3=B2ng?= <maskray@google.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Borislav Petkov <bp@alien8.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
+ unique-symbol` is available
+In-Reply-To: <20220211183529.q7qi2qmlyuscxyto@treble>
+Message-ID: <alpine.LSU.2.21.2202161606430.1475@pobox.suse.cz>
+References: <20220209185752.1226407-1-alexandr.lobakin@intel.com> <20220209185752.1226407-3-alexandr.lobakin@intel.com> <20220211174130.xxgjoqr2vidotvyw@treble> <CAFP8O3KvZOZJqOR8HYp9xZGgnYf3D8q5kNijZKORs06L-Vit1g@mail.gmail.com>
+ <20220211183529.q7qi2qmlyuscxyto@treble>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; BOUNDARY="1678380546-2016212218-1645024395=:1475"
+Content-ID: <alpine.LSU.2.21.2202161614020.1475@pobox.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the MediaTek UART APDMA Controller binding to DT schema.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
-v2: Fixed interrupt maxItems to 16, added interrupts/reg maxItems constraint
-    to 8 when the dma-requests property is not present
+--1678380546-2016212218-1645024395=:1475
+Content-Type: text/plain; CHARSET=UTF-8
+Content-Transfer-Encoding: 8BIT
+Content-ID: <alpine.LSU.2.21.2202161614021.1475@pobox.suse.cz>
 
- .../bindings/dma/mediatek,uart-dma.yaml       | 123 ++++++++++++++++++
- .../bindings/dma/mtk-uart-apdma.txt           |  56 --------
- 2 files changed, 123 insertions(+), 56 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
- delete mode 100644 Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
+On Fri, 11 Feb 2022, Josh Poimboeuf wrote:
 
-diff --git a/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-new file mode 100644
-index 000000000000..67dbb2fed74c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-@@ -0,0 +1,123 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/dma/mediatek,uart-dma.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek UART APDMA controller
-+
-+maintainers:
-+  - Long Cheng <long.cheng@mediatek.com>
-+
-+description: |
-+  The MediaTek UART APDMA controller provides DMA capabilities
-+  for the UART peripheral bus.
-+
-+allOf:
-+  - $ref: "dma-controller.yaml#"
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - mediatek,mt2712-uart-dma
-+              - mediatek,mt8516-uart-dma
-+          - const: mediatek,mt6577-uart-dma
-+      - enum:
-+          - mediatek,mt6577-uart-dma
-+
-+  reg:
-+    minItems: 1
-+    maxItems: 16
-+
-+  interrupts:
-+    description: |
-+      TX, RX interrupt lines for each UART APDMA channel
-+    minItems: 1
-+    maxItems: 16
-+
-+  clocks:
-+    description: Must contain one entry for the APDMA main clock
-+    maxItems: 1
-+
-+  clock-names:
-+    const: apdma
-+
-+  "#dma-cells":
-+    const: 1
-+    description: |
-+      The first cell specifies the UART APDMA channel number
-+
-+  dma-requests:
-+    description: |
-+      Number of virtual channels of the UART APDMA controller
-+    maximum: 16
-+
-+  mediatek,dma-33bits:
-+    type: boolean
-+    description: Enable 33-bits UART APDMA support
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+if:
-+  not:
-+    anyOf:
-+      - required:
-+          - dma-requests
-+then:
-+  properties:
-+    interrupts:
-+      maxItems: 8
-+    reg:
-+      maxItems: 8
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/mt2712-clk.h>
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        apdma: dma-controller@11000400 {
-+            compatible = "mediatek,mt2712-uart-dma",
-+                         "mediatek,mt6577-uart-dma";
-+            reg = <0 0x11000400 0 0x80>,
-+                  <0 0x11000480 0 0x80>,
-+                  <0 0x11000500 0 0x80>,
-+                  <0 0x11000580 0 0x80>,
-+                  <0 0x11000600 0 0x80>,
-+                  <0 0x11000680 0 0x80>,
-+                  <0 0x11000700 0 0x80>,
-+                  <0 0x11000780 0 0x80>,
-+                  <0 0x11000800 0 0x80>,
-+                  <0 0x11000880 0 0x80>,
-+                  <0 0x11000900 0 0x80>,
-+                  <0 0x11000980 0 0x80>;
-+            interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 104 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 105 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 107 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 108 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 109 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 110 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 111 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 112 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 113 IRQ_TYPE_LEVEL_LOW>,
-+                         <GIC_SPI 114 IRQ_TYPE_LEVEL_LOW>;
-+            dma-requests = <12>;
-+            clocks = <&pericfg CLK_PERI_AP_DMA>;
-+            clock-names = "apdma";
-+            mediatek,dma-33bits;
-+            #dma-cells = <1>;
-+        };
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt b/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
-deleted file mode 100644
-index fef9c1eeb264..000000000000
---- a/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
-+++ /dev/null
-@@ -1,56 +0,0 @@
--* Mediatek UART APDMA Controller
--
--Required properties:
--- compatible should contain:
--  * "mediatek,mt2712-uart-dma" for MT2712 compatible APDMA
--  * "mediatek,mt6577-uart-dma" for MT6577 and all of the above
--  * "mediatek,mt8516-uart-dma", "mediatek,mt6577" for MT8516 SoC
--
--- reg: The base address of the APDMA register bank.
--
--- interrupts: A single interrupt specifier.
-- One interrupt per dma-requests, or 8 if no dma-requests property is present
--
--- dma-requests: The number of DMA channels
--
--- clocks : Must contain an entry for each entry in clock-names.
--  See ../clocks/clock-bindings.txt for details.
--- clock-names: The APDMA clock for register accesses
--
--- mediatek,dma-33bits: Present if the DMA requires support
--
--Examples:
--
--	apdma: dma-controller@11000400 {
--		compatible = "mediatek,mt2712-uart-dma",
--			     "mediatek,mt6577-uart-dma";
--		reg = <0 0x11000400 0 0x80>,
--		      <0 0x11000480 0 0x80>,
--		      <0 0x11000500 0 0x80>,
--		      <0 0x11000580 0 0x80>,
--		      <0 0x11000600 0 0x80>,
--		      <0 0x11000680 0 0x80>,
--		      <0 0x11000700 0 0x80>,
--		      <0 0x11000780 0 0x80>,
--		      <0 0x11000800 0 0x80>,
--		      <0 0x11000880 0 0x80>,
--		      <0 0x11000900 0 0x80>,
--		      <0 0x11000980 0 0x80>;
--		interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 104 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 105 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 107 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 108 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 109 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 110 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 111 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 112 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 113 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 114 IRQ_TYPE_LEVEL_LOW>;
--		dma-requests = <12>;
--		clocks = <&pericfg CLK_PERI_AP_DMA>;
--		clock-names = "apdma";
--		mediatek,dma-33bits;
--		#dma-cells = <1>;
--	};
--- 
-2.33.1
+> On Fri, Feb 11, 2022 at 10:05:02AM -0800, Fāng-ruì Sòng wrote:
+> > On Fri, Feb 11, 2022 at 9:41 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> > >
+> > > On Wed, Feb 09, 2022 at 07:57:39PM +0100, Alexander Lobakin wrote:
+> > > > Position-based search, which means that if there are several symbols
+> > > > with the same name, the user needs to additionally provide the
+> > > > "index" of a desired symbol, is fragile. For example, it breaks
+> > > > when two symbols with the same name are located in different
+> > > > sections.
+> > > >
+> > > > Since a while, LD has a flag `-z unique-symbol` which appends
+> > > > numeric suffixes to the functions with the same name (in symtab
+> > > > and strtab). It can be used to effectively prevent from having
+> > > > any ambiguity when referring to a symbol by its name.
+> > >
+> > > In the patch description can you also give the version of binutils (and
+> > > possibly other linkers) which have the flag?
+> > 
+> > GNU ld>=2.36 supports -z unique-symbol. ld.lld doesn't support -z unique-symbol.
+> > 
+> > I subscribe to llvm@lists.linux.dev and happen to notice this message
+> > (can't keep up with the changes...)
+> > I am a bit concerned with this option and replied last time on
+> > https://lore.kernel.org/r/20220105032456.hs3od326sdl4zjv4@google.com
+> > 
+> > My full reasoning is on
+> > https://maskray.me/blog/2020-11-15-explain-gnu-linker-options#z-unique-symbol
+> 
+> Ah, right.  Also discussed here:
+> 
+>   https://lore.kernel.org/all/20210123225928.z5hkmaw6qjs2gu5g@google.com/T/#u
+>   https://lore.kernel.org/all/20210125172124.awabevkpvq4poqxf@treble/
+> 
+> I'm not qualified to comment on LTO/PGO stability issues, but it doesn't
+> sound good.  And we want to support livepatch for LTO kernels.
 
+Hm, bear with me, because I am very likely missing something which is 
+clear to everyone else...
+
+Is the stability really a problem for the live patching (and I am talking 
+about the live patching only here. It may be a problem elsewhere, but I am 
+just trying to understand.)? I understand that two different kernel builds 
+could have a different name mapping between the original symbols and their 
+unique renames. Not nice. But we can prepare two different live patches 
+for these two different kernels. Something one would like to avoid if 
+possible, but it is not impossible. Am I missing something?
+ 
+> Also I realized that this flag would have a negative effect on
+> kpatch-build, as it currently does its analysis on .o files.  So it
+> would have to figure out how to properly detect function renames, to
+> avoid patching the wrong function for example.
+
+Yes, that is unfortunate. And not only for kpatch-build.
+
+> And if LLD doesn't plan to support the flag then it will be a headache
+> for livepatch (and the kernel in general) to deal with the divergent
+> configs.
+
+True.
+
+The position-based approach clearly shows its limits. I like <file+func> 
+approach based on kallsyms tracking, that you proposed elsewhere in the 
+thread, more.
+
+Miroslav
+--1678380546-2016212218-1645024395=:1475--
