@@ -2,128 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25374C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:56:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C69C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235803AbiBPP5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:57:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55226 "EHLO
+        id S235811AbiBPP5N convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 10:57:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234100AbiBPP5D (ORCPT
+        with ESMTP id S235773AbiBPP5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:57:03 -0500
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 632C11A1323;
-        Wed, 16 Feb 2022 07:56:44 -0800 (PST)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgAHz_CsHg1iQGxcDQ--.13121S2;
-        Wed, 16 Feb 2022 23:56:34 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     kuba@kernel.org, ajk@comnets.uni-bremen.de, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH V2] drivers: hamradio: 6pack: fix UAF bug caused by mod_timer()
-Date:   Wed, 16 Feb 2022 23:56:04 +0800
-Message-Id: <20220216155604.92827-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgAHz_CsHg1iQGxcDQ--.13121S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGw4rZw1fuw1xGFy3GryrCrg_yoW5GryrpF
-        Z8GryfJw48trZ8JrsrJa1kWr95uFsYyay8Crs3u3sI9FsxZr1j9F1UKFWvvF4UCrs3Aay7
-        AF1rJry7AF15A3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxF
-        aVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
-        CI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
-        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIDAVZdtYL+yAAFsN
+        Wed, 16 Feb 2022 10:57:04 -0500
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C431A1323
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:56:49 -0800 (PST)
+Received: from in01.mta.xmission.com ([166.70.13.51]:49644)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nKMfd-001nv3-J2; Wed, 16 Feb 2022 08:56:45 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37420 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nKMfc-002XrX-IJ; Wed, 16 Feb 2022 08:56:45 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     <linux-kernel@vger.kernel.org>
+Cc:     Alexey Gladkov <legion@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        Linux Containers <containers@lists.linux-foundation.org>,
+        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
+        <linux-api@vger.kernel.org>
+References: <20220207121800.5079-1-mkoutny@suse.com>
+        <87o83e2mbu.fsf@email.froward.int.ebiederm.org>
+Date:   Wed, 16 Feb 2022 09:56:37 -0600
+In-Reply-To: <87o83e2mbu.fsf@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Thu, 10 Feb 2022 20:01:25 -0600")
+Message-ID: <87ilteiz4a.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-XM-SPF: eid=1nKMfc-002XrX-IJ;;;mid=<87ilteiz4a.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1+/L9et1C/bHc4Ya5pJzRgmcgiNxBncn0I=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH v2 0/5] ucounts: RLIMIT_NPROC fixes
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although del_timer_sync() in sixpack_close() won't return if
-there is an active timer, we could use mod_timer() in
-sp_xmit_on_air() to wake up timer again by calling userspace
-syscall such as ax25_sendmsg(), ax25_connect() and ax25_ioctl().
-If sp_xmit_on_air() registered as a callback function in
-timer_setup() calls pty_write() to use tty resources that
-already released by tty_release(), the UAF bug will happen.
 
-One of the possible race conditions is shown below:
+Michal Koutný recently found some bugs in the enforcement of
+RLIMIT_NPROC in the recent ucount rlimit implementation.
 
-      (USE)                      |      (FREE)
-ax25_sendmsg()                   |
- ax25_queue_xmit()               |
-  ...                            |
-  sp_xmit()                      |
-   sp_encaps()                   | sixpack_close()
-    sp_xmit_on_air()             |  del_timer_sync(&sp->tx_t)
-     mod_timer(&sp->tx_t,...)    |  ...
-                                 |  unregister_netdev()
-                                 |  ...
-     (wait a while)              | tty_release()
-                                 |  tty_release_struct()
-                                 |   release_tty()
-    sp_xmit_on_air()             |    tty_kref_put(tty_struct) //FREE
-     pty_write(tty_struct) //USE |    ...
+I saw some additional bugs and some cleaner ways to fix the problem so
+instead of starting with his fixes these are my own.
 
-The corresponding fail log is shown below:
-===============================================================
-BUG: KASAN: use-after-free in __run_timers.part.0+0x170/0x470
-Write of size 8 at addr ffff88800a652ab8 by task swapper/2/0
-...
-Call Trace:
-  ...
-  queue_work_on+0x3f/0x50
-  pty_write+0xcd/0xe0pty_write+0xcd/0xe0
-  sp_xmit_on_air+0xb2/0x1f0
-  call_timer_fn+0x28/0x150
-  __run_timers.part.0+0x3c2/0x470
-  run_timer_softirq+0x3b/0x80
-  __do_softirq+0xf1/0x380
-  ...
+I have rewritten about half my fixes since the last time this was
+posted.  There is this notion (not entirely wrong) that the code should
+be consistent and make sense.  When I dug in I discovered that has not
+been the case for the last 20 years.  Fixing the long standing
+inconsistencies is something that seems to warrent wider vetting on
+linux-api.
 
-This patch reorders the del_timer_sync() after the unregister_netdev()
-to avoid UAF bugs. Because the unregister_netdev() is well synchronized,
-it flushs out any pending queues, waits the refcount of net_device
-decreases to zero and removes net_device from kernel. There is not any
-running routines after executing unregister_netdev(). Therefore, we could
-not arouse timer from userspace again.
+So with this set of patches I have developed a very conservative
+approach changing only what is necessary to fix the bugs that I can
+see clearly.  Cleanups and anything that is making the code more
+consistent can follow after we have the code working as it has
+historically.
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in V2:
-  - Make the commit message more clearer.
-  - Modify the patch code.
----
- drivers/net/hamradio/6pack.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Anyone who can please take a look and tell me if I am doing something silly.
 
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index b1fc153125d..45c3c4a1101 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -668,11 +668,11 @@ static void sixpack_close(struct tty_struct *tty)
- 	 */
- 	netif_stop_queue(sp->dev);
- 
-+	unregister_netdev(sp->dev);
-+
- 	del_timer_sync(&sp->tx_t);
- 	del_timer_sync(&sp->resync_t);
- 
--	unregister_netdev(sp->dev);
--
- 	/* Free all 6pack frame buffers after unreg. */
- 	kfree(sp->rbuff);
- 	kfree(sp->xbuff);
--- 
-2.17.1
+Eric W. Biederman (5):
+      rlimit: Fix RLIMIT_NPROC enforcement failure caused by capability calls in set_user
+      ucounts: Enforce RLIMIT_NPROC not RLIMIT_NPROC+1
+      ucounts: Base set_cred_ucounts changes on the real user
+      ucounts: Move RLIMIT_NPROC handling after set_user
+      ucounts: Handle wrapping in is_ucounts_overlimit
 
+ kernel/cred.c   |  9 ++-------
+ kernel/fork.c   | 10 +++++-----
+ kernel/sys.c    | 20 ++++++++++++++------
+ kernel/ucount.c |  3 ++-
+ 4 files changed, 23 insertions(+), 19 deletions(-)
+
+Eric
