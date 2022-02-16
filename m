@@ -2,117 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A922FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A209C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245554AbiBPBi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:38:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42184 "EHLO
+        id S245563AbiBPBjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:39:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245536AbiBPBiZ (ORCPT
+        with ESMTP id S238697AbiBPBjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:38:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E313220D3;
-        Tue, 15 Feb 2022 17:38:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEEE6B81D90;
-        Wed, 16 Feb 2022 01:38:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ADFFC340ED;
-        Wed, 16 Feb 2022 01:38:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644975491;
-        bh=An6Gzjiy9PJBIQlLMy16uDVBiMvq2VU/Zw/2B3HW4RI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=L8IHSnLxGXZTjON5iHPGIfxBlgRg4w88B26WdpWwClqWCPfzbiToTPhtaJXdBL+aI
-         4mDpieEpNDEHlTSZgQ3ycCOtxeStuZQ+ij7llEwle9MvOHJjPpsJTHBxDb5MOOoZLt
-         W5B4HrkjGqoql3fOoCtbIVz8xd27TH9bH1BzLpjZiaylOAvY9RQmJSg/Vls8vWO34u
-         Pxy8nGE86MfPMRQPWAHyAT5NuP3JhgV7sC3ZOtVxagrrt6DoetfV1XCsG5r+JhNMyF
-         2EBZtgQ4byhIj4nBI/m7GLKySdzbmSseZjs7EzHlOkGGNsSuLmdp5qXliP0b0dRtrT
-         XY5LDXeIDYPVw==
-Received: by mail-yb1-f181.google.com with SMTP id l125so1548946ybl.4;
-        Tue, 15 Feb 2022 17:38:11 -0800 (PST)
-X-Gm-Message-State: AOAM530ikHDzjaYWOYAUahnxyaNU0ELppBiwmrR+1/y++zItPXLWhEXK
-        hbqHxv+f8AFDVspO6tmLQ3cpHrTWeHK/z3tzGFE=
-X-Google-Smtp-Source: ABdhPJwG4XmD8gNIiQK5EY13nrv4sMK9GL27p7BaAX4IKT6t4ZKiqxEt+3aODNJP7jQrV6YWkHHpsXG5srKjVv7cme8=
-X-Received: by 2002:a0d:ebc3:0:b0:2d6:34f5:7d67 with SMTP id
- u186-20020a0debc3000000b002d634f57d67mr491346ywe.73.1644975490580; Tue, 15
- Feb 2022 17:38:10 -0800 (PST)
+        Tue, 15 Feb 2022 20:39:20 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF376237E2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:39:08 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id v4so1104519pjh.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:39:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4IkDugObOHw/CxlumnAa9V9g2g9OJVY9HrD6pEfE2lM=;
+        b=P61cP+b5/QdSjJQm9e3zgGhGrgdXFH3lfZfyCCnrtJvrS2+7Cgg/dK89cqyX5yiXdM
+         aRg6deIkdutkpSXDRfq1SNB/AVdg67oJTEfGuZzvMRJv/p9e6KRJLEXzcrjwLer7bRSl
+         5Hqbc6Y4GJ7wXys6sEIq6kO2AwpaP3Ih1QhqmQi2Ibob5FqsJtnc7XS9CJrZc/tNAlgN
+         jpKWExv6vcU/EcHtH4LDz+fQj1sM9wpY6DQprEJuyOb0+OgqwL842EHBvA+fLBpyfLcO
+         VgwsmOlwkj6aVXkg+59IM7suM4/u86uaKECJ+K6z9bKeydZ0ploCky1eRev1yrcrzvLq
+         wZTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4IkDugObOHw/CxlumnAa9V9g2g9OJVY9HrD6pEfE2lM=;
+        b=bWECYKNmU+tMCnSDDDGCAcLM7Qu4Po5eidXvU+Mb/GlpPZMjF1Mm9qCT+ynNvArv4Z
+         I7REIuwgltDzFpW8H4eewlUi73eTqmtlpPUfU7L9bbxyFNnTXwhdiYn5p4pUU5HsDp7s
+         apDCg+ky+SznzHUW1A3blwLGstspfkSiITdHpdNKNp3wZHOg4p6l4PmnEDokRDEK+Uov
+         GopJRostOTEUu6/AkPI+VwZuziDuLNAkc6gh2yDCCQ6A+Z199eIJLPuUp08f0R3mrFVc
+         UDAjq1Q5CNxyi4AyNGP5d3L4P0OG8fAfkVzmNcRNWF5gBG6K68b1oG6ITNOtVDRXSj0s
+         Tr3Q==
+X-Gm-Message-State: AOAM531eUqDyWYRhf18q2RkLJ/EeGKwk0++z/uf66wWPf8ZUVlpQL12m
+        1htEgp/9lmMb1FeXPm07NB7Qhg==
+X-Google-Smtp-Source: ABdhPJyVcEQPG2VDaGKPFncTObF/Wmp+3tHQlHV4luaY2AjnKJkKFGfI/nUrfIAuuNsLJkHuYb42pA==
+X-Received: by 2002:a17:90b:2390:b0:1b9:c392:ab8d with SMTP id mr16-20020a17090b239000b001b9c392ab8dmr293672pjb.30.1644975548318;
+        Tue, 15 Feb 2022 17:39:08 -0800 (PST)
+Received: from [10.76.15.169] ([61.120.150.76])
+        by smtp.gmail.com with ESMTPSA id j12sm35873328pfu.79.2022.02.15.17.39.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 17:39:07 -0800 (PST)
+Subject: PING: [PATCH v2 0/3] Introduce akcipher service for virtio-crypto
+To:     arei.gonglei@huawei.com
+Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        helei.sig11@bytedance.com, herbert@gondor.apana.org.au,
+        mst@redhat.com
+References: <20220211084108.1254218-1-pizhenwei@bytedance.com>
+From:   zhenwei pi <pizhenwei@bytedance.com>
+Message-ID: <cf1c6a2e-92a1-06f7-8f1b-be823c21ab5a@bytedance.com>
+Date:   Wed, 16 Feb 2022 09:36:17 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <00000000000073b3e805d7fed17e@google.com> <462fa505-25a8-fd3f-cc36-5860c6539664@iogearbox.net>
- <CAPhsuW6rPx3JqpPdQVdZN-YtZp1SbuW1j+SVNs48UVEYv68s1A@mail.gmail.com>
-In-Reply-To: <CAPhsuW6rPx3JqpPdQVdZN-YtZp1SbuW1j+SVNs48UVEYv68s1A@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 15 Feb 2022 17:37:59 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5JhG07TYKKHRbNVtepOLjZ2ekibePyyqCwuzhH0YoP7Q@mail.gmail.com>
-Message-ID: <CAPhsuW5JhG07TYKKHRbNVtepOLjZ2ekibePyyqCwuzhH0YoP7Q@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in bpf_jit_free
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     syzbot <syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220211084108.1254218-1-pizhenwei@bytedance.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:41 PM Song Liu <song@kernel.org> wrote:
->
-> On Mon, Feb 14, 2022 at 3:52 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >
-> > Song, ptal.
-> >
-> > On 2/14/22 7:45 PM, syzbot wrote:
-> > > Hello,
-> > >
-> > > syzbot found the following issue on:
-> > >
-> > > HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-> > > git tree:       bpf-next
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=10baced8700000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=2f649ec6d2eea1495a8f
+Hi, Lei
 
-How do I run the exact same syzkaller? I am doing something like
+Could you please review the V2 version?
 
-./bin/syz-manager -config qemu.cfg
+On 2/11/22 4:41 PM, zhenwei pi wrote:
+> v1 -> v2:
+> - Fix 1 compiling warning reported by kernel test robot <lkp@intel.com>
+> - Put "__le32 akcipher_algo;" instead of "__le32 reserve;" field of
+>     struct virtio_crypto_config directly without size change.
+> - Add padding in struct virtio_crypto_ecdsa_session_para to keep
+>     64-bit alignment.
+> - Remove irrelevant change by code format alignment.
+> 
+> - Also CC crypto gurus Herbert and linux-crypto@vger.kernel.org.
+> 
+> - Test with QEMU(patched by the v2 version), works fine.
+> 
+> v1:
+> - Introduce akcipher service, implement RSA algorithm, and a minor fix.
+> 
+> zhenwei pi (3):
+>    virtio_crypto: Introduce VIRTIO_CRYPTO_NOSPC
+>    virtio-crypto: introduce akcipher service
+>    virtio-crypto: implement RSA algorithm
+> 
+>   drivers/crypto/virtio/Makefile                |   1 +
+>   .../virtio/virtio_crypto_akcipher_algo.c      | 584 ++++++++++++++++++
+>   drivers/crypto/virtio/virtio_crypto_common.h  |   3 +
+>   drivers/crypto/virtio/virtio_crypto_core.c    |   6 +-
+>   drivers/crypto/virtio/virtio_crypto_mgr.c     |  11 +
+>   include/uapi/linux/virtio_crypto.h            |  82 ++-
+>   6 files changed, 685 insertions(+), 2 deletions(-)
+>   create mode 100644 drivers/crypto/virtio/virtio_crypto_akcipher_algo.c
+> 
 
-with the cfg file like:
-
-{
-        "target": "linux/amd64",
-        "http": ":56741",
-        "workdir": "workdir",
-        "kernel_obj": "linux",
-        "image": "./pkg/mgrconfig/testdata/stretch.img",
-        "syzkaller": ".",
-        "disable_syscalls": ["keyctl", "add_key", "request_key"],
-        "suppressions": ["some known bug"],
-        "procs": 8,
-        "type": "qemu",
-        "vm": {
-                "count": 16,
-                "cpu": 2,
-                "mem": 2048,
-                "kernel": "linux/arch/x86/boot/bzImage"
-        }
-}
-
-Is this correct? I am using stretch.img from syzkaller site, and the
-.config from
-the link above.
-
-Thanks,
-Song
+-- 
+zhenwei pi
