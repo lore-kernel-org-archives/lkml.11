@@ -2,120 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB12C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235889AbiBPQDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:03:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46478 "EHLO
+        id S235893AbiBPQDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:03:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233934AbiBPQDB (ORCPT
+        with ESMTP id S233934AbiBPQDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:03:01 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AAA1ED1F4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:02:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645027369; x=1676563369;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Go6SPGW0Dhq+tJy23R6dUPUDSfYPivomuuhjvNdQh5c=;
-  b=Uv0vmORc0YDRObansTT5UgQI0WqFZFHPGQvE1vsjX8hCZK+G05knt8r/
-   Xr8FYoUnIXrQOq/LR0U+9QtxxKWwbbWChuQYVOiEVj5z9H7euwBB5Y79O
-   2KLRWM6K9/uNrRy4qaa4NV9B0e7j/963YIL+IrD8qvKLpDV+uFqlgb/yg
-   goHETzqV8xJqk8Celh88qgMiDSzAyKpuj15cABHeac3JlGa61dUlF6zJl
-   G3WadJMAHKba8yLvbhFvP+9dmQJqak2qPHfVe+qbmrPCwoH2P7hODq0WB
-   seGBZIqFMbLvpR88+zZ0Ln7iAcqSI263VMJf0tuwpBsqSV61lkbIMzIvB
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="249483777"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="249483777"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 08:00:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="503088259"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 16 Feb 2022 08:00:42 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKMjR-000Av6-HK; Wed, 16 Feb 2022 16:00:41 +0000
-Date:   Thu, 17 Feb 2022 00:00:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: coreboot_table.c:undefined reference to `memremap'
-Message-ID: <202202162338.iHngg0KZ-lkp@intel.com>
+        Wed, 16 Feb 2022 11:03:45 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6D82A82F1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:03:31 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id z22so4724878edd.1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:03:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cVf2ord3tIBpCLVkNiS9lYcPjPngvv8JI3RlnFJb+Go=;
+        b=PE6RmbQHihPPqU838vHjMI2B6KANIAA60vsGXlioK2c14r9HRRCnAyIAFtZcPc5M5v
+         vHklsRGq8sBkmbnEEhewG5I4T5L58MIRA4wMr1VL0mB9B7b3IqCgZnjscGjYiy7Uyq1r
+         sXWDpeBxgy1QWWO5+N4JWEMAXvchDPUmLepsE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cVf2ord3tIBpCLVkNiS9lYcPjPngvv8JI3RlnFJb+Go=;
+        b=b/ckmU5Sg+NXgqHW3wANDYZI5jP16eg9ipbxfp5POc4pKnWvqACU3oJHI0D2AodHL4
+         OaIfmlxawtGBL3nYl8CrKEAZ7TS9eAllwszz68nPr0rU6vBXmNCdKmefd3XU+FlfiWaz
+         Uief9x2Z2VMolRi3s8Dst1rR1hV4QIrTvafFtdna24segZ07w8Uy+BNciO6VxgwEnn9y
+         iLxqqqCgmWy4GHlN0ZdWjoYZAu+rmh6QB3WHA+3M7IPSi8utqETP/a10vIHcwUsQSpN3
+         0ifkzKpt8a+I+T6zYQNNBs/svvB0cPFJwlyg5xmnWEB3iUcUTdRHe+U6hg2wubygGVlp
+         pdEw==
+X-Gm-Message-State: AOAM532pHPHQigmfT7wYZdCseXV7MGVDkkzZKifhh8D3qYvT1RikAdqC
+        IWaIZwhM++eEgfHoe+O/jH8EFg==
+X-Google-Smtp-Source: ABdhPJzE5vYsfrnjOM/Dn83mcfzSZE5qnr+QFMKaTFfPuxFyWZIJOO9b9Ae/w2RsYXFfrYc4ZZGxjg==
+X-Received: by 2002:aa7:cac8:0:b0:410:cc6c:6512 with SMTP id l8-20020aa7cac8000000b00410cc6c6512mr3722719edt.408.1645027410012;
+        Wed, 16 Feb 2022 08:03:30 -0800 (PST)
+Received: from capella.. ([193.89.194.60])
+        by smtp.gmail.com with ESMTPSA id j19sm48365ejm.111.2022.02.16.08.03.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 08:03:28 -0800 (PST)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Rasmussen <mir@bang-olufsen.dk>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: dsa: realtek: fix PHY register read corruption
+Date:   Wed, 16 Feb 2022 17:04:58 +0100
+Message-Id: <20220216160500.2341255-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.35.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-FYI, the error/warning still remains.
+These two patches fix the issue reported by Arınç where PHY register
+reads sometimes return garbage data.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   c5d9ae265b105d9a67575fb67bd4650a6fc08e25
-commit: 951cd3a0866d29cb9c01ebc1d9c17590e598226e firmware: include drivers/firmware/Kconfig unconditionally
-date:   4 months ago
-config: s390-randconfig-r023-20220216 (https://download.01.org/0day-ci/archive/20220216/202202162338.iHngg0KZ-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=951cd3a0866d29cb9c01ebc1d9c17590e598226e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 951cd3a0866d29cb9c01ebc1d9c17590e598226e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
+MAINTAINERS: Please can you help me with the targetting of these two
+patches? This bug is present ca. 5.16, when the SMI version of the
+rtl8365mb driver was introduced. But now in net-next we have the MDIO
+interface from Luiz, where the issue is also present. I am sending what
+I think is an ideal patch series, but should I split it up and send the
+SMI-related changes to net and the MDIO changes to net-next? If so, how
+would I go about splitting it while preventing merge conflicts and build
+errors?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+For now I am sending it to net-next so that the whole thing can be
+reviewed. If it's applied, I would gladly backport the fix to the stable
+tree for 5.16, but I am still confused about what to do for 5.17.
 
-All errors (new ones prefixed by >>):
+Thanks for your help.
 
-   s390-linux-ld: drivers/clk/clk-fixed-mmio.o: in function `fixed_mmio_clk_setup':
-   clk-fixed-mmio.c:(.text+0x96): undefined reference to `of_iomap'
-   s390-linux-ld: clk-fixed-mmio.c:(.text+0x118): undefined reference to `iounmap'
-   s390-linux-ld: drivers/dma/fsl-edma.o: in function `fsl_edma_probe':
-   fsl-edma.c:(.text+0x10ee): undefined reference to `devm_ioremap_resource'
-   s390-linux-ld: fsl-edma.c:(.text+0x181c): undefined reference to `devm_ioremap_resource'
-   s390-linux-ld: drivers/dma/idma64.o: in function `idma64_platform_probe':
-   idma64.c:(.text+0x38bc): undefined reference to `devm_ioremap_resource'
-   s390-linux-ld: drivers/dma/qcom/hidma.o: in function `hidma_probe':
-   hidma.c:(.text+0x28ec): undefined reference to `devm_ioremap_resource'
-   s390-linux-ld: hidma.c:(.text+0x2934): undefined reference to `devm_ioremap_resource'
-   s390-linux-ld: drivers/char/xillybus/xillybus_of.o: in function `xilly_drv_probe':
-   xillybus_of.c:(.text+0x2c0): undefined reference to `devm_platform_ioremap_resource'
-   s390-linux-ld: drivers/net/ethernet/altera/altera_tse_main.o: in function `request_and_map':
-   altera_tse_main.c:(.text+0x1b98): undefined reference to `devm_ioremap'
-   s390-linux-ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
->> coreboot_table.c:(.text+0x596): undefined reference to `memremap'
->> s390-linux-ld: coreboot_table.c:(.text+0x646): undefined reference to `memunmap'
->> s390-linux-ld: coreboot_table.c:(.text+0x692): undefined reference to `memremap'
-   s390-linux-ld: coreboot_table.c:(.text+0x6dc): undefined reference to `memunmap'
-   s390-linux-ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
->> memconsole-coreboot.c:(.text+0x2f6): undefined reference to `memremap'
->> s390-linux-ld: memconsole-coreboot.c:(.text+0x3ca): undefined reference to `devm_memremap'
->> s390-linux-ld: memconsole-coreboot.c:(.text+0x3da): undefined reference to `memunmap'
-   s390-linux-ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
-   vpd.c:(.text+0x812): undefined reference to `memunmap'
-   s390-linux-ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
-   vpd.c:(.text+0x986): undefined reference to `memremap'
-   s390-linux-ld: vpd.c:(.text+0xc04): undefined reference to `memunmap'
-   s390-linux-ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
-   vpd.c:(.text+0xe0c): undefined reference to `memremap'
-   s390-linux-ld: vpd.c:(.text+0xe32): undefined reference to `memunmap'
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Alvin Šipraga (2):
+  net: dsa: realtek: allow subdrivers to externally lock regmap
+  net: dsa: realtek: rtl8365mb: serialize indirect PHY register access
+
+ drivers/net/dsa/realtek/realtek-mdio.c | 46 +++++++++++++++++++++-
+ drivers/net/dsa/realtek/realtek-smi.c  | 48 +++++++++++++++++++++--
+ drivers/net/dsa/realtek/realtek.h      |  2 +
+ drivers/net/dsa/realtek/rtl8365mb.c    | 54 ++++++++++++++++----------
+ 4 files changed, 124 insertions(+), 26 deletions(-)
+
+-- 
+2.35.0
+
