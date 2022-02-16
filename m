@@ -2,194 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5494C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 12:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C84CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 12:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232982AbiBPMET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 07:04:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58336 "EHLO
+        id S233005AbiBPMGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 07:06:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231593AbiBPMEQ (ORCPT
+        with ESMTP id S232995AbiBPMGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 07:04:16 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BCB284236
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 04:04:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645013044; x=1676549044;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=nl8GK8mOI649s6l53KlxFSU4dpekbJIMHhJ7EE7RAqU=;
-  b=LgW0KIy4gS9gaJ28GpBKBu6TnpBphNMXpjk5EbipYTOzcJLAmIFS/hGR
-   ZAuLYw+NfH3oMR5HXsfa7C6WWkaRWfTQ8aK723Y1M4+59Bv6QfiE/kKgY
-   l6EC2/n+QdrKtpOIQ3hf7ddBxtpcTYlt3yL8xAUGfrsk+KRhW31tOOhBq
-   NIutjThu19A4hhjf0X8D9zdwHrzWQPMvFElLkwOfRe1WZr1ZAG3G/1Qsy
-   bd+le6RxuqbSu3xKkTALSxGdVbCTugVHTXKWALv943bi+Vtz3OiA9XSGq
-   BKokOHldz/cYZenhA/oBkXlv/0IsjtOrZhYd/3sQaHuJ/ROFcvc160iw+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="249420156"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="249420156"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 04:04:04 -0800
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="502995160"
-Received: from sphadnis-mobl1.amr.corp.intel.com (HELO [10.212.82.113]) ([10.212.82.113])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 04:04:01 -0800
-Message-ID: <7ed77377-1e6e-4329-1fda-87854f9bb938@linux.intel.com>
-Date:   Wed, 16 Feb 2022 12:03:59 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [Intel-gfx] [PATCH v7 1/5] drm/i915/gsc: add gsc as a mei
- auxiliary device
-Content-Language: en-US
-To:     "Usyskin, Alexander" <alexander.usyskin@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Winkler, Tomas" <tomas.winkler@intel.com>,
-        "Lubart, Vitaly" <vitaly.lubart@intel.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>
-References: <20220213103215.2440248-1-alexander.usyskin@intel.com>
- <20220213103215.2440248-2-alexander.usyskin@intel.com>
- <f88b7780-cf4f-d2f5-f2ba-cd3d7bf2a0d4@linux.intel.com>
- <MW3PR11MB465112EBAFF7BC9681EF2D03ED349@MW3PR11MB4651.namprd11.prod.outlook.com>
-From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Organization: Intel Corporation UK Plc
-In-Reply-To: <MW3PR11MB465112EBAFF7BC9681EF2D03ED349@MW3PR11MB4651.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 16 Feb 2022 07:06:15 -0500
+Received: from smtp.outgoing.loopia.se (smtp.outgoing.loopia.se [93.188.3.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9412944E3
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 04:06:02 -0800 (PST)
+Received: from s807.loopia.se (localhost [127.0.0.1])
+        by s807.loopia.se (Postfix) with ESMTP id 169042F189C0
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:56:03 +0100 (CET)
+Received: from s934.loopia.se (unknown [172.22.191.6])
+        by s807.loopia.se (Postfix) with ESMTP id 060453087ECF;
+        Wed, 16 Feb 2022 12:56:03 +0100 (CET)
+Received: from s472.loopia.se (unknown [172.22.191.6])
+        by s934.loopia.se (Postfix) with ESMTP id 019F07E96F0;
+        Wed, 16 Feb 2022 12:56:03 +0100 (CET)
+X-Virus-Scanned: amavisd-new at amavis.loopia.se
+Received: from s645.loopia.se ([172.22.191.6])
+        by s472.loopia.se (s472.loopia.se [172.22.190.12]) (amavisd-new, port 10024)
+        with LMTP id r4UxUMHdHAdu; Wed, 16 Feb 2022 12:56:02 +0100 (CET)
+X-Loopia-Auth: user
+X-Loopia-User: carl@hgsystem.se
+X-Loopia-Originating-IP: 94.234.42.160
+Received: from localhost.localdomain (unknown [94.234.42.160])
+        (Authenticated sender: carl@hgsystem.se)
+        by s645.loopia.se (Postfix) with ESMTPSA id B8C481576393;
+        Wed, 16 Feb 2022 12:56:01 +0100 (CET)
+From:   Erik Rosen <erik.rosen@metormote.com>
+To:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chu Lin <linchuyuan@google.com>,
+        Jason Ling <jasonling@google.com>
+Cc:     Erik Rosen <erik.rosen@metormote.com>
+Subject: [PATCH 1/1] hwmon: (pmbus) Try to match MFR_MODEL to pmbus device id
+Date:   Wed, 16 Feb 2022 12:55:37 +0100
+Message-Id: <20220216115537.44205-2-erik.rosen@metormote.com>
+X-Mailer: git-send-email 2.11.0 (Apple Git-81)
+In-Reply-To: <20220216115537.44205-1-erik.rosen@metormote.com>
+References: <20220216115537.44205-1-erik.rosen@metormote.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add a new device id to  read the MFR_MODEL command
+to try and match the model name to the device id name and
+predefine the functions supported by this specific converter.
+In this way one can avoid the auto-detection process
+altogether for the problematic models.
+If there is no match, the driver reverts to auto-detection.
 
+Signed-off-by: Erik Rosen <erik.rosen@metormote.com>
+---
+ drivers/hwmon/pmbus/pmbus.c | 57 +++++++++++++++++++++++++++++++------
+ 1 file changed, 49 insertions(+), 8 deletions(-)
 
-On 15/02/2022 15:22, Usyskin, Alexander wrote:
+diff --git a/drivers/hwmon/pmbus/pmbus.c b/drivers/hwmon/pmbus/pmbus.c
+index d0d386990af5..278b2a927ce0 100644
+--- a/drivers/hwmon/pmbus/pmbus.c
++++ b/drivers/hwmon/pmbus/pmbus.c
+@@ -18,9 +18,11 @@
+ struct pmbus_device_info {
+ 	int pages;
+ 	u32 flags;
++	u32 func[PMBUS_PAGES];
+ };
+ 
+ static const struct i2c_device_id pmbus_id[];
++static const struct pmbus_device_info pmbus_info_zero;
+ 
+ /*
+  * Find sensor groups and status registers on each page.
+@@ -156,13 +158,18 @@ static int pmbus_identify(struct i2c_client *client,
+ 	}
+ 
+ 	/* Try to find sensor groups  */
+-	pmbus_find_sensor_groups(client, info);
++	if (info->func[0] == 0)
++		pmbus_find_sensor_groups(client, info);
++
+ abort:
+ 	return ret;
+ }
+ 
+ static int pmbus_probe(struct i2c_client *client)
+ {
++	int ret, i;
++	u8 mfr_model[I2C_SMBUS_BLOCK_MAX + 1];
++	const struct i2c_device_id *device_id = NULL;
+ 	struct pmbus_driver_info *info;
+ 	struct pmbus_platform_data *pdata = NULL;
+ 	struct device *dev = &client->dev;
+@@ -173,6 +180,30 @@ static int pmbus_probe(struct i2c_client *client)
+ 		return -ENOMEM;
+ 
+ 	device_info = (struct pmbus_device_info *)i2c_match_id(pmbus_id, client)->driver_data;
++	if (!device_info) {
++		if (!i2c_check_functionality(client->adapter,
++					     I2C_FUNC_SMBUS_BLOCK_DATA))
++			return -ENODEV;
++
++		ret = i2c_smbus_read_block_data(client, PMBUS_MFR_MODEL, mfr_model);
++		if (ret < 0)
++			return ret;
++
++		for (device_id = pmbus_id; device_id->name[0]; device_id++) {
++			if (device_id->driver_data &&
++			    !strncasecmp(device_id->name, mfr_model, strlen(device_id->name)))
++				break;
++		}
++
++		if (device_id->name[0])
++			device_info = (struct pmbus_device_info *)device_id->driver_data;
++		else
++			device_info = (struct pmbus_device_info *)&pmbus_info_zero;
++
++		dev_info(dev, "Use pmbus device id: %s\n",
++			 device_id->name[0] ? device_id->name : "pmbus");
++	}
++
+ 	if (device_info->flags) {
+ 		pdata = devm_kzalloc(dev, sizeof(struct pmbus_platform_data),
+ 				     GFP_KERNEL);
+@@ -183,6 +214,8 @@ static int pmbus_probe(struct i2c_client *client)
+ 	}
+ 
+ 	info->pages = device_info->pages;
++	for (i = 0; i < info->pages; i++)
++		info->func[i] = device_info->func[i];
+ 	info->identify = pmbus_identify;
+ 	dev->platform_data = pdata;
+ 
+@@ -204,9 +237,16 @@ static const struct pmbus_device_info pmbus_info_one_skip = {
+ 	.flags = PMBUS_SKIP_STATUS_CHECK
+ };
+ 
+-static const struct pmbus_device_info pmbus_info_one_status = {
++static const struct pmbus_device_info pmbus_info_bmr458 = {
+ 	.pages = 1,
+-	.flags = PMBUS_READ_STATUS_AFTER_FAILED_CHECK
++	.flags = PMBUS_READ_STATUS_AFTER_FAILED_CHECK,
++	.func = {
++			PMBUS_HAVE_VIN | PMBUS_HAVE_STATUS_INPUT
++		      | PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT
++		      | PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT
++		      | PMBUS_HAVE_TEMP | PMBUS_HAVE_TEMP2
++		      | PMBUS_HAVE_STATUS_TEMP
++		}
+ };
+ 
+ /*
+@@ -214,15 +254,15 @@ static const struct pmbus_device_info pmbus_info_one_status = {
+  */
+ static const struct i2c_device_id pmbus_id[] = {
+ 	{"adp4000", (kernel_ulong_t)&pmbus_info_one},
+-	{"bmr310", (kernel_ulong_t)&pmbus_info_one_status},
++	{"bmr310", (kernel_ulong_t)&pmbus_info_bmr458},
+ 	{"bmr453", (kernel_ulong_t)&pmbus_info_one},
+ 	{"bmr454", (kernel_ulong_t)&pmbus_info_one},
+ 	{"bmr456", (kernel_ulong_t)&pmbus_info_one},
+ 	{"bmr457", (kernel_ulong_t)&pmbus_info_one},
+-	{"bmr458", (kernel_ulong_t)&pmbus_info_one_status},
+-	{"bmr480", (kernel_ulong_t)&pmbus_info_one_status},
+-	{"bmr490", (kernel_ulong_t)&pmbus_info_one_status},
+-	{"bmr491", (kernel_ulong_t)&pmbus_info_one_status},
++	{"bmr458", (kernel_ulong_t)&pmbus_info_bmr458},
++	{"bmr480", (kernel_ulong_t)&pmbus_info_bmr458},
++	{"bmr490", (kernel_ulong_t)&pmbus_info_bmr458},
++	{"bmr491", (kernel_ulong_t)&pmbus_info_bmr458},
+ 	{"bmr492", (kernel_ulong_t)&pmbus_info_one},
+ 	{"dps460", (kernel_ulong_t)&pmbus_info_one_skip},
+ 	{"dps650ab", (kernel_ulong_t)&pmbus_info_one_skip},
+@@ -235,6 +275,7 @@ static const struct i2c_device_id pmbus_id[] = {
+ 	{"pdt006", (kernel_ulong_t)&pmbus_info_one},
+ 	{"pdt012", (kernel_ulong_t)&pmbus_info_one},
+ 	{"pmbus", (kernel_ulong_t)&pmbus_info_zero},
++	{"pmbus_match_model", (kernel_ulong_t)0},
+ 	{"sgd009", (kernel_ulong_t)&pmbus_info_one_skip},
+ 	{"tps40400", (kernel_ulong_t)&pmbus_info_one},
+ 	{"tps544b20", (kernel_ulong_t)&pmbus_info_one},
+-- 
+2.20.1
 
->>> +{
->>> +	irq_set_chip_and_handler_name(irq, &gsc_irq_chip,
->>> +				      handle_simple_irq, "gsc_irq_handler");
->>> +
->>> +	return irq_set_chip_data(irq, dev_priv);
->>
->> I am not familiar with this interrupt scheme - does dev_priv get used at
->> all by handle_simple_irq, or anyone, after being set here?
-
-What about this? Is dev_priv required or you could pass in NULL just as 
-well?
-
->>
->>> +}
->>> +
->>> +struct intel_gsc_def {
->>> +	const char *name;
->>> +	const unsigned long bar;
->>
->> Unusual, why const out of curiosity? And is it "bar" or "base" would be
->> more accurate?
->>
-> Some leftover, thanks for spotting this!
-> It is a base of bar. I prefer bar name here. But not really matter.
-
-Is it?
-
-+	adev->bar.start = def->bar + pdev->resource[0].start;
-
-Looks like offset on top of BAR, no?
-
->>> +{
->>> +	struct pci_dev *pdev = to_pci_dev(dev_priv->drm.dev);
->>> +	struct mei_aux_device *adev;
->>> +	struct auxiliary_device *aux_dev;
->>> +	const struct intel_gsc_def *def;
->>> +	int ret;
->>> +
->>> +	intf->irq = -1;
->>> +	intf->id = intf_id;
->>> +
->>> +	if (intf_id == 0 && !HAS_HECI_PXP(dev_priv))
->>> +		return;
->>
->> Isn't inf_id == 0 always a bug with this patch, regardless of
->> HAS_HECI_PXP, since the support is incomplete in this patch? If so I'd
->> be more comfortable with a plain drm_WARN_ON_ONCE(intf_id == 0).
->>
-> There will be patches for other cards that have pxp as soon as this is reviewed.
-> It is better to have infra prepared for two heads.
-
-My point is things are half-prepared since you don't have the id 0 in 
-the array, regardless of the HAS_HECI_PXP. Yes it can't be true now, but 
-if you add a patch which enables it to be true, you have to modify the 
-array at the same time or risk a broken patch in the middle.
-
-I don't see the point of the condition making it sound like there are 
-two criteria to enter below, while in fact there is only one in current 
-code, and that it that it must not be entered because array is incomplete!
-
->>> +
->>> +	if (!HAS_HECI_GSC(gt->i915))
->>> +		return;
->>
->> Likewise?
->>
->>> +
->>> +	if (gt->gsc.intf[intf_id].irq <= 0) {
->>> +		DRM_ERROR_RATELIMITED("error handling GSC irq: irq not
->> set");
->>
->> Like this, but use logging functions which say which device please.
->>
-> drm_err_ratelimited fits here?
-
-AFAICT it would be a programming bug and not something that can happen 
-at runtime hence drm_warn_on_once sounds correct for both.
-
->>>    }
->>> @@ -182,6 +185,8 @@ void gen11_gt_irq_reset(struct intel_gt *gt)
->>>    	/* Disable RCS, BCS, VCS and VECS class engines. */
->>>    	intel_uncore_write(uncore, GEN11_RENDER_COPY_INTR_ENABLE,
->> 0);
->>>    	intel_uncore_write(uncore, GEN11_VCS_VECS_INTR_ENABLE,	  0);
->>> +	if (HAS_HECI_GSC(gt->i915))
->>> +		intel_uncore_write(uncore,
->> GEN11_GUNIT_CSME_INTR_ENABLE, 0);
->>>
->>>    	/* Restore masks irqs on RCS, BCS, VCS and VECS engines. */
->>>    	intel_uncore_write(uncore, GEN11_RCS0_RSVD_INTR_MASK,	~0);
->>> @@ -195,6 +200,8 @@ void gen11_gt_irq_reset(struct intel_gt *gt)
->>>    	intel_uncore_write(uncore, GEN11_VECS0_VECS1_INTR_MASK,
->> 	~0);
->>>    	if (HAS_ENGINE(gt, VECS2) || HAS_ENGINE(gt, VECS3))
->>>    		intel_uncore_write(uncore,
->> GEN12_VECS2_VECS3_INTR_MASK, ~0);
->>> +	if (HAS_HECI_GSC(gt->i915))
->>> +		intel_uncore_write(uncore,
->> GEN11_GUNIT_CSME_INTR_MASK, ~0);
->>>
->>>    	intel_uncore_write(uncore,
->> GEN11_GPM_WGBOXPERF_INTR_ENABLE, 0);
->>>    	intel_uncore_write(uncore,
->> GEN11_GPM_WGBOXPERF_INTR_MASK,  ~0);
->>> @@ -209,6 +216,7 @@ void gen11_gt_irq_postinstall(struct intel_gt *gt)
->>>    {
->>>    	struct intel_uncore *uncore = gt->uncore;
->>>    	u32 irqs = GT_RENDER_USER_INTERRUPT;
->>> +	const u32 gsc_mask = GSC_IRQ_INTF(0) | GSC_IRQ_INTF(1);
->>
->> Why enable the one which is not supported by the patch? No harm doing it?
->>
-> No harm and the next patch will be soon, this patch unfortunately is long overdue.
-
-Just feels a bit lazy. You are adding two feature test macros to 
-prepare, so why not use them.
-
-Regards,
-
-Tvrtko
