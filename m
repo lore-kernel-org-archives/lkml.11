@@ -2,102 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4ED8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85443C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238062AbiBPTiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:38:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35798 "EHLO
+        id S234536AbiBPTkP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:40:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234415AbiBPTir (ORCPT
+        with ESMTP id S232078AbiBPTkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:38:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D327C24BE;
-        Wed, 16 Feb 2022 11:38:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5614B81ED9;
-        Wed, 16 Feb 2022 19:38:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A69C004E1;
-        Wed, 16 Feb 2022 19:38:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645040312;
-        bh=YUNeMwnffWU/vzA+11lFMuMWe0+JjFTHVyeqME5xzxw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RvhRgyEjawXUAql0FqCTCcTpqR6GYBvsqNC9EZPqI5ZukTe3YMkyAiJ+1YKBf+Rlr
-         sxewfhO7AtNd8GwQy/RQGGJ/AXgX1LgrWMnZTpDKZCiIl4MoI0X8P3b4yUkf4X3JeP
-         l7bOM+By1/829q8HEUDp0joAEckiMlN1bSJeEtmm9DT0v1cg0aKN9haMO+KRTEXTKx
-         BIawC1huC6S2hOqZ/gswPro0qF/Bzg0858Vu6QjTMbuvQTz7D1gR8uQt+HV6mEdhmv
-         BV4TgmRvjAQDxRzfAaigAGsmsMmR8Yj0ESiy1ZrH3LP0qLNGtaqg4OazRGKQ9Qu6L7
-         d13KOv1rLre5w==
-Date:   Wed, 16 Feb 2022 13:46:09 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        linux-alpha@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        nouveau <nouveau@lists.freedesktop.org>,
-        coresight@lists.linaro.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
-        "open list:TARGET SUBSYSTEM" <linux-scsi@vger.kernel.org>,
-        target-devel@vger.kernel.org, mpi3mr-linuxdrv.pdl@broadcom.com,
-        linux-staging@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org, sparmaintainer@unisys.com,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        Ext4 Developers List <linux-ext4@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        greybus-dev@lists.linaro.org, linux-i3c@lists.infradead.org,
-        linux-rdma@vger.kernel.org,
-        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
-        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
-        <alsa-devel@alsa-project.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, linux-perf-users@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] treewide: Replace zero-length arrays with
- flexible-array members
-Message-ID: <20220216194609.GA903947@embeddedor>
-References: <20220215174743.GA878920@embeddedor>
- <202202151016.C0471D6E@keescook>
- <20220215192110.GA883653@embeddedor>
- <Ygv8wY75hNqS7zO6@unreal>
- <20220215193221.GA884407@embeddedor>
- <CAJZ5v0jpAnQk+Hub6ue6t712RW+W0YBjb_gAcZZbUeuYMGv7mg@mail.gmail.com>
+        Wed, 16 Feb 2022 14:40:12 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C422B0487
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:39:59 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id q17so5761325edd.4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:39:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ciKM8JCmOjTFWsSXmArs9c1a9jxN6MlNWKsQdAvB9wQ=;
+        b=S+Sj3p+F2dgiPbzCoR+LfRa53UtOXeFacCuEW1Mf2T3LAZQOHiwOq/wfozB3rRsSqp
+         6m6F0YJx/DExHK3yJTw89l8Pd7sxcn9PMPbCsGt0Ox3DmNKQkRvhTzpZDwlLeXof1rUL
+         5XWlIRBhJyKQu5JehUO7HjJMozFEjKnd9VuGE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ciKM8JCmOjTFWsSXmArs9c1a9jxN6MlNWKsQdAvB9wQ=;
+        b=SXGQKre0gnkO8pJnr+Iw5zW0iMLeU5rxqYZnNs+ItdN07ebR0AwUW0ODNEbQ7ohS7X
+         JxQ9TEcV0EXIEB8UAFMmQEDq54A5Oy7eAGi9iu5oyAhkZNST0dF3w1ePFbfpj6zE8YmV
+         PJWLmfttzbxBGcFa3ydwpIyE3JK0FpY77O0XzRX1/a2zqEcvIFnSG/w/c6diRb0ijU9a
+         lJdcCuu8yQzwwrlCSr8MYtDUPD4VW93xmPBVd5HZjKz3r3EIWWFYRDZ2+K+Qsep0QqzZ
+         mzRF/Al3HPnGAlelW24VHs0eJQ9tgSexRoT+6Aicc2oo9HPXNR6xXkvpmvHDZqiBnB4S
+         +FuQ==
+X-Gm-Message-State: AOAM5339n9txIV2cxmtwpFWLIt44CZXD3u64U7N8PZhRi8A3gyaOpZpG
+        YP0RZ/F44TqUjxeKudfP/b97ASo9cJnNrn+X
+X-Google-Smtp-Source: ABdhPJwJ57p08WzZ2c5imcZCjeBFX+pwG/xciQJt6QHy/16kXwsU7HQSJCdFMlYlZUj9zUTjkgXRBg==
+X-Received: by 2002:a05:6402:5242:b0:40f:6a4f:ff33 with SMTP id t2-20020a056402524200b0040f6a4fff33mr4779481edd.30.1645040397765;
+        Wed, 16 Feb 2022 11:39:57 -0800 (PST)
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
+        by smtp.gmail.com with ESMTPSA id l24sm2142698edv.88.2022.02.16.11.39.55
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 11:39:56 -0800 (PST)
+Received: by mail-wr1-f50.google.com with SMTP id e3so5250069wra.0
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:39:55 -0800 (PST)
+X-Received: by 2002:adf:e4c2:0:b0:1e3:3e5d:bd65 with SMTP id
+ v2-20020adfe4c2000000b001e33e5dbd65mr3549580wrm.422.1645040395241; Wed, 16
+ Feb 2022 11:39:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0jpAnQk+Hub6ue6t712RW+W0YBjb_gAcZZbUeuYMGv7mg@mail.gmail.com>
+References: <1644494255-6632-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1644494255-6632-2-git-send-email-quic_sbillaka@quicinc.com> <CAD=FV=UZwuYRMNOxX6_W_z1PC-UNqvN=Mdtskn=djPPMRE122w@mail.gmail.com>
+In-Reply-To: <CAD=FV=UZwuYRMNOxX6_W_z1PC-UNqvN=Mdtskn=djPPMRE122w@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 16 Feb 2022 11:39:43 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=UvTXLEuKbkVHeiP=djzFscGJxL5iP+cafGnvjMXhmFKA@mail.gmail.com>
+Message-ID: <CAD=FV=UvTXLEuKbkVHeiP=djzFscGJxL5iP+cafGnvjMXhmFKA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/5] dt-bindings: display: simple: Add sharp
+ LQ140M1JW46 panel
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, quic_kalyant@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
+        quic_mkrishn@quicinc.com, quic_vproddut@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 08:05:47PM +0100, Rafael J. Wysocki wrote:
-> On Tue, Feb 15, 2022 at 8:24 PM Gustavo A. R. Silva
-> <gustavoars@kernel.org> wrote:
-> 
-> Can you also send the ACPI patch separately, please?
-> 
-> We would like to route it through the upstream ACPICA code base.
+Hi,
 
-Yeah; no problem.
+On Wed, Feb 16, 2022 at 11:26 AM Doug Anderson <dianders@chromium.org> wrote:
+>
+> Hi,
+>
+> On Thu, Feb 10, 2022 at 3:58 AM Sankeerth Billakanti
+> <quic_sbillaka@quicinc.com> wrote:
+> >
+> > Add support for sharp LQ140M1JW46 display panel. It is a 14" eDP panel
+> > with 1920x1080 display resolution.
+> >
+> > Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> > Acked-by: Rob Herring <robh@kernel.org>
+> > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> > ---
+> >
+> > Changes in v4:
+> >   None
+> >
+> > Changes in v3:
+> >   None
+> >
+> >  Documentation/devicetree/bindings/display/panel/panel-simple.yaml | 2 ++
+> >  1 file changed, 2 insertions(+)
+>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-Thanks
---
-Gustavo
+...and pushed to drm-misc-next:
+
+122365cfe9de dt-bindings: display: simple: Add sharp LQ140M1JW46 panel
+
+So v5 shouldn't include this patch.
+
+-Doug
