@@ -2,129 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2153CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231669AbiBPIru (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 03:47:50 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53714 "EHLO
+        id S231660AbiBPIs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 03:48:29 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231660AbiBPIrs (ORCPT
+        with ESMTP id S231639AbiBPIs0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 03:47:48 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90C42701B0
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:47:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645001252; x=1676537252;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fpeEP05FMDbRzh01LBBr/Jl1CI6ElWiSZ65HQxu/idc=;
-  b=bncyC5qKI9gpcu2BlQVOUskLMhbidgpgq/4/m88PGYW08EMRwYbcEcvS
-   JRgV4OeDd+c7gauw+SEiaOZH/cKxXJOl43ZlVr2PD/qnlM92AL3uCud1A
-   k2Wc84UP/3mVuGXaT5EkF7kyt0huobveGVTwdmyeRxMpIxa4B3c7qvb9s
-   VUIe+724Umg0JLyagfSS6yDfWkQZQyPjxxQgp8Z7ImPHe40KIJOA47rNs
-   5IKdPNBMes7Of9h6yfU79ZpXKoQPXqJu926Q0oJ3O47kXqPxbtvYxTv0M
-   YFsySWrl7InX4SCESAo4D6uAIrbwKnljo8q0QXzC9qaPlZ63KY8PmIcNV
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250498469"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="250498469"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 00:47:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="604249867"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 16 Feb 2022 00:47:31 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKFyE-000Acr-Ew; Wed, 16 Feb 2022 08:47:30 +0000
-Date:   Wed, 16 Feb 2022 16:47:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning:
- 'strncpy' specified bound depends on the length of the source argument
-Message-ID: <202202161610.iSAoPT4T-lkp@intel.com>
+        Wed, 16 Feb 2022 03:48:26 -0500
+Received: from 9.mo552.mail-out.ovh.net (9.mo552.mail-out.ovh.net [87.98.180.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679A51A6A7F
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:48:13 -0800 (PST)
+Received: from mxplan5.mail.ovh.net (unknown [10.109.156.219])
+        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 3D56D24B44;
+        Wed, 16 Feb 2022 08:12:56 +0000 (UTC)
+Received: from kaod.org (37.59.142.96) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 16 Feb
+ 2022 09:12:54 +0100
+Authentication-Results: garm.ovh; auth=pass (GARM-96R0010590fb10-4626-4deb-8236-9a8be91dbf44,
+                    CB3E44AF90526EF3DA3218D7163352937EBBBEE5) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <d517d453-ddd5-8c9e-7b1f-56f5f83d2f1e@kaod.org>
+Date:   Wed, 16 Feb 2022 09:12:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 10/10] spi: aspeed: Activate new spi-mem driver
+Content-Language: en-US
+To:     Joel Stanley <joel@jms.id.au>
+CC:     <linux-spi@vger.kernel.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220214094231.3753686-1-clg@kaod.org>
+ <20220214094231.3753686-11-clg@kaod.org>
+ <CACPK8XdvczyZ1QHtFm7JJAC7AY+QmWSx0MarUwLjUyOtC9DnSQ@mail.gmail.com>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <CACPK8XdvczyZ1QHtFm7JJAC7AY+QmWSx0MarUwLjUyOtC9DnSQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.96]
+X-ClientProxiedBy: DAG3EX1.mxp5.local (172.16.2.21) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: 365dd3b7-2a44-4f14-8514-26cf6445fd31
+X-Ovh-Tracer-Id: 12828503540660800388
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrjeehgdduudegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepieegvdffkeegfeetuddttddtveduiefhgeduffekiedtkeekteekhfffleevleelnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrdelieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepmhigphhlrghnhedrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegtlhhgsehkrghougdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Huazhong,
+On 2/16/22 08:02, Joel Stanley wrote:
+> On Mon, 14 Feb 2022 at 09:43, Cédric Le Goater <clg@kaod.org> wrote:
+>>
+>> The previous driver using the MTD SPI NOR interface is kept in case we
+>> find some issues but we should remove it quickly once the new driver
+>> using the spi-mem interface has been sufficiently exposed.
+>>
+>> Signed-off-by: Cédric Le Goater <clg@kaod.org>
+> 
+> I suggest we drop the defconfig changes from both this patch and the
+> first. This way we'll always have the new driver being built, with
+> less churn.
+> 
+> If you strongly prefer the way you've done it then that's fine too.
 
-FYI, the error/warning still remains.
+I am fine with that, but, with only patch 1, the defconfig files would
+be referencing an non-existing CONFIG. Is that ok ?
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   c5d9ae265b105d9a67575fb67bd4650a6fc08e25
-commit: 77e9184869c9fb00a482357ea8eef3bd7ae3d45a net: hns3: refactor dump bd info of debugfs
-date:   9 months ago
-config: alpha-allmodconfig (https://download.01.org/0day-ci/archive/20220216/202202161610.iSAoPT4T-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=77e9184869c9fb00a482357ea8eef3bd7ae3d45a
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 77e9184869c9fb00a482357ea8eef3bd7ae3d45a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/fpga/ drivers/net/ethernet/hisilicon/hns3/
+Thanks,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c: In function 'hns3_dbg_fill_content.constprop':
->> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
-     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:125:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
-     125 |                         strncpy(pos, result[i], strlen(result[i]));
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In function 'hns3_dbg_fill_content',
-       inlined from 'hns3_dbg_tx_bd_info' at drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:432:2:
->> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
-     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In function 'hns3_dbg_fill_content',
-       inlined from 'hns3_dbg_rx_bd_info' at drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:358:2:
->> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
-     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C.
 
 
-vim +/strncpy +127 drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
 
-   114	
-   115	static void hns3_dbg_fill_content(char *content, u16 len,
-   116					  const struct hns3_dbg_item *items,
-   117					  const char **result, u16 size)
-   118	{
-   119		char *pos = content;
-   120		u16 i;
-   121	
-   122		memset(content, ' ', len);
-   123		for (i = 0; i < size; i++) {
-   124			if (result)
-   125				strncpy(pos, result[i], strlen(result[i]));
-   126			else
- > 127				strncpy(pos, items[i].name, strlen(items[i].name));
-   128	
-   129			pos += strlen(items[i].name) + items[i].interval;
-   130		}
-   131	
-   132		*pos++ = '\n';
-   133		*pos++ = '\0';
-   134	}
-   135	
+> 
+>> ---
+>>   arch/arm/configs/aspeed_g4_defconfig | 2 +-
+>>   arch/arm/configs/aspeed_g5_defconfig | 2 +-
+>>   arch/arm/configs/multi_v5_defconfig  | 2 +-
+>>   arch/arm/configs/multi_v7_defconfig  | 2 +-
+>>   4 files changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/arch/arm/configs/aspeed_g4_defconfig b/arch/arm/configs/aspeed_g4_defconfig
+>> index 964536444cd7..b4a1b2ed1a17 100644
+>> --- a/arch/arm/configs/aspeed_g4_defconfig
+>> +++ b/arch/arm/configs/aspeed_g4_defconfig
+>> @@ -64,7 +64,7 @@ CONFIG_MTD_BLOCK=y
+>>   CONFIG_MTD_PARTITIONED_MASTER=y
+>>   CONFIG_MTD_SPI_NOR=y
+>>   # CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is not set
+>> -CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
+>> +CONFIG_SPI_ASPEED_SMC=y
+>>   CONFIG_MTD_UBI=y
+>>   CONFIG_MTD_UBI_FASTMAP=y
+>>   CONFIG_MTD_UBI_BLOCK=y
+>> diff --git a/arch/arm/configs/aspeed_g5_defconfig b/arch/arm/configs/aspeed_g5_defconfig
+>> index e809236ca88b..ccc4240ee4b5 100644
+>> --- a/arch/arm/configs/aspeed_g5_defconfig
+>> +++ b/arch/arm/configs/aspeed_g5_defconfig
+>> @@ -103,7 +103,7 @@ CONFIG_MTD_BLOCK=y
+>>   CONFIG_MTD_PARTITIONED_MASTER=y
+>>   CONFIG_MTD_SPI_NOR=y
+>>   # CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is not set
+>> -CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
+>> +CONFIG_SPI_ASPEED_SMC=y
+>>   CONFIG_MTD_UBI=y
+>>   CONFIG_MTD_UBI_FASTMAP=y
+>>   CONFIG_MTD_UBI_BLOCK=y
+>> diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
+>> index 49083ef05fb0..80a3ae02d759 100644
+>> --- a/arch/arm/configs/multi_v5_defconfig
+>> +++ b/arch/arm/configs/multi_v5_defconfig
+>> @@ -103,7 +103,7 @@ CONFIG_MTD_RAW_NAND=y
+>>   CONFIG_MTD_NAND_ATMEL=y
+>>   CONFIG_MTD_NAND_ORION=y
+>>   CONFIG_MTD_SPI_NOR=y
+>> -CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
+>> +CONFIG_SPI_ASPEED_SMC=y
+>>   CONFIG_MTD_UBI=y
+>>   CONFIG_BLK_DEV_LOOP=y
+>>   CONFIG_ATMEL_SSC=m
+>> diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+>> index fc1b69256b64..33572998dbbe 100644
+>> --- a/arch/arm/configs/multi_v7_defconfig
+>> +++ b/arch/arm/configs/multi_v7_defconfig
+>> @@ -217,7 +217,7 @@ CONFIG_MTD_NAND_DAVINCI=y
+>>   CONFIG_MTD_NAND_STM32_FMC2=y
+>>   CONFIG_MTD_NAND_PL35X=y
+>>   CONFIG_MTD_SPI_NOR=y
+>> -CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=m
+>> +CONFIG_SPI_ASPEED_SMC=m
+>>   CONFIG_MTD_UBI=y
+>>   CONFIG_BLK_DEV_LOOP=y
+>>   CONFIG_BLK_DEV_RAM=y
+>> --
+>> 2.34.1
+>>
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
