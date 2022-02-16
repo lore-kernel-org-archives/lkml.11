@@ -2,125 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E44C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238386AbiBPTxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:53:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58552 "EHLO
+        id S238392AbiBPTzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:55:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234717AbiBPTxy (ORCPT
+        with ESMTP id S229690AbiBPTzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:53:54 -0500
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62062B0B0F;
-        Wed, 16 Feb 2022 11:53:41 -0800 (PST)
-Received: from g550jk.localnet (ip-213-127-118-180.ip.prioritytelecom.net [213.127.118.180])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id C8517C3E9E;
-        Wed, 16 Feb 2022 19:53:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1645041220; bh=W3gVUgcU/OTVyEAEJ6EdabcIZ9I2bCwWK8lOeD2BH9I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=iStu35P26Rt0zu05xfrVXPLGIcP6dlbY6qX9lYz9BhDj5lAi6ebbHleFI1C8wqrCk
-         7M/zvMM3AoUO/Ol432qonVTINCGzQGybQrvW+4UoReP/prbWcC4zQ/mB1rXDJwDZnr
-         ELMaEdsEEWI0w6TzC1aOeVe1McZ/FxgnbWqD3SY4=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     Pavel Machek <pavel@ucw.cz>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Satya Priya Kakitapalli <c_skakit@qti.qualcomm.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v12 2/2] leds: Add driver for Qualcomm LPG
-Date:   Wed, 16 Feb 2022 20:53:39 +0100
-Message-ID: <8036183.EvYhyI6sBW@g550jk>
-In-Reply-To: <20220216045620.1716537-2-bjorn.andersson@linaro.org>
-References: <20220216045620.1716537-1-bjorn.andersson@linaro.org> <20220216045620.1716537-2-bjorn.andersson@linaro.org>
+        Wed, 16 Feb 2022 14:55:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A712A2B102A;
+        Wed, 16 Feb 2022 11:55:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36733618EA;
+        Wed, 16 Feb 2022 19:55:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97472C004E1;
+        Wed, 16 Feb 2022 19:55:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645041308;
+        bh=Fj3UWxjV9XWJYiEhuSSxup1YiZMb8KRq8pwYLIGWps0=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=qKTvPz7iNaM2s/9mScgqoOQKapzR6Vz1ZJEilHsKjvOLbVpGvB/CMBb3DNbFbSLA7
+         64Qe4vFgYXt4OsU9sWOHQ4ZwfZxPBAJWKRwrKfdPcF9bh0hdTukjJdhzA2u1g7zNOx
+         zlsT1Aj/+LCJ+mFLypxRQyfDSIDRnhnInwJonSKAJ0j+nMykmjZjETxfPwUPOksEVu
+         CK2TS44ubCJNmuoMD4XKZwwF7yVRtkJU9Ze05r1cKpZuiZZ3Ul2buiaIKfLSpoCouC
+         Xivyspp3jwsXjy4dce+GU5Tk+day1NMhalpsINbRVuA+fNbxsjaYIMwEcJAh2dQp9t
+         RfIhdmEPQI0OA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 56C645C064D; Wed, 16 Feb 2022 11:55:08 -0800 (PST)
+Date:   Wed, 16 Feb 2022 11:55:08 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Axtens <dja@axtens.net>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <neeraju@codeaurora.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Theodore Y . Ts'o" <tytso@mit.edu>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sonymobile.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>
+Subject: Re: [PATCH 1/1] rcu: Introduce CONFIG_RCU_EXP_CPU_STALL_TIMEOUT
+Message-ID: <20220216195508.GM4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220216135209.3070-1-urezki@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216135209.3070-1-urezki@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+On Wed, Feb 16, 2022 at 02:52:09PM +0100, Uladzislau Rezki (Sony) wrote:
+> From: Uladzislau Rezki <uladzislau.rezki@sony.com>
+> 
+> Currently for both expedited and regular grace periods stall
+> warnings are emitted based on one timeout value that is defined
+> in seconds. The problem is that, a stall timeout in seconds for
+> expedited grace period is a way long.
+> 
+> The idea of expedited grace period is to force CPUs to report
+> their quiescent states as fast as possible. If in RCU read-side
+> critical section, it will request the next rcu_read_unlock() to
+> record the quiescent state. If not either it reports immediately
+> or set TIF_NEED_RESCHED to initiate the task switch.
+> 
+> Therefore introduce the CONFIG_RCU_EXP_CPU_STALL_TIMEOUT kernel
+> configuration that is set to 20 msec. It also can be changed in
+> run-time via: /sys/.../parameters/rcu_exp_cpu_stall_timeout.
+> 
+> Signed-off-by: Uladzislau Rezki <uladzislau.rezki@sony.com>
+> Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
 
-On Mittwoch, 16. Februar 2022 05:56:20 CET Bjorn Andersson wrote:
-> The Light Pulse Generator (LPG) is a PWM-block found in a wide range of
-> PMICs from Qualcomm. These PMICs typically comes with 1-8 LPG instances,
-> with their output being routed to various other components, such as
-> current sinks or GPIOs.
-> 
-> Each LPG instance can operate on fixed parameters or based on a shared
-> lookup-table, altering the duty cycle over time. This provides the means
-> for hardware assisted transitions of LED brightness.
-> 
-> A typical use case for the fixed parameter mode is to drive a PWM
-> backlight control signal, the driver therefor allows each LPG instance
-> to be exposed to the kernel either through the LED framework or the PWM
-> framework.
-> 
-> A typical use case for the LED configuration is to drive RGB LEDs in
-> smartphones etc, for which the driver supports multiple channels to be
-> ganged up to a MULTICOLOR LED. In this configuration the pattern
-> generators will be synchronized, to allow for multi-color patterns.
-> 
-> The idea of modelling this as a LED driver ontop of a PWM driver was
-> considered, but setting the properties related to patterns does not fit
-> in the PWM API. Similarly the idea of just duplicating the lower bits in
-> a PWM and LED driver separately was considered, but this would not allow
-> the PWM channels and LEDs to be configured on a per-board basis. The
-> driver implements the more complex LED interface, and provides a PWM
-> interface on the side of that, in the same driver.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Nice, thank you!
 
-Works great on pm8941 / msm8974-fairphone-fp2!
+I have queued this, with the usual wordsmithing.
 
-Tested-by: Luca Weiss <luca@z3ntu.xyz>
+I also changed the CONFIG_RCU_EXP_CPU_STALL_TIMEOUT kconfig option's
+default to be 20 milliseconds only no CONFIG_ANDROID=y kernel builds.  For
+one, rcutorture gets expedited stall warnings even at 200 milliseconds,
+and for another, larger systems often have longer-running readers.
+It might be a very good thing to decrease the non-Android default
+expedited stall warning timeout, but 20 milliseconds is not likely the
+place to start that effort.  Though it would be one way to find out
+when in the process large-system users started testing.  ;-)
 
-Regards
-Luca
+My guess is that this change will result in some breakage even on Android,
+and that adjustments will be needed.  Once that effort is complete,
+it would probably make sense to take another look at the non-Android
+default for CONFIG_RCU_EXP_CPU_STALL_TIMEOUT.
+
+							Thanx, Paul
 
 > ---
+>  Documentation/RCU/stallwarn.rst               | 18 +++++++++++++
+>  .../admin-guide/kernel-parameters.txt         |  6 +++++
+>  kernel/rcu/Kconfig.debug                      | 12 +++++++++
+>  kernel/rcu/rcu.h                              |  2 ++
+>  kernel/rcu/tree_exp.h                         |  4 +--
+>  kernel/rcu/tree_stall.h                       | 26 +++++++++++++++++++
+>  kernel/rcu/update.c                           |  2 ++
+>  7 files changed, 68 insertions(+), 2 deletions(-)
 > 
-> Changes since v11:
-> - Extended commit message to cover decision to put pwm_chip in the LED
-> driver - Added Documentation, in particular for the hw_pattern format
-> - Added a lock to synchronize requests from LED and PWM frameworks
-> - Turned out that the 9bit selector differs per channel in some PMICs, so
->   replaced bitmask in lpg_data with lookup based on QPNP SUBTYPE
-> - Fixed kerneldoc for the struct device pointer in struct lpg
-> - Rewrote conditional in lut_free() to make it easier to read
-> - Corrected and deduplicated max_period expression in lpg_calc_freq()
-> - Extended nom/dom to numerator/denominator in lpg_calc_freq()
-> - Replaced 1 << 9 with LPG_RESOLUTION in one more place in lpg_calc_freq()
-> - Use FIELD_PREP() in lpg_apply_freq() as masks was introduced for reading
-> the same in get_state()
-> - Cleaned up the pattern format, to allow specifying both low and high pause
-> with and without pingpong mode.
-> - Only update frequency and pwm_value if PWM channel is enabled in
-> lpg_pwm_apply - Make lpg_pwm_get_state() read the hardware state, in order
-> to pick up e.g. bootloader backlight configuration
-> - Use devm_bitmap_zalloc() to allocate the lut_bitmap
-> - Use dev_err_probe() in lpg_probe()
-> - Extended Kconfig help text to mention module name and satisfy checkpatch
+> diff --git a/Documentation/RCU/stallwarn.rst b/Documentation/RCU/stallwarn.rst
+> index 78404625bad2..b9ce89980779 100644
+> --- a/Documentation/RCU/stallwarn.rst
+> +++ b/Documentation/RCU/stallwarn.rst
+> @@ -162,6 +162,24 @@ CONFIG_RCU_CPU_STALL_TIMEOUT
+>  	Stall-warning messages may be enabled and disabled completely via
+>  	/sys/module/rcupdate/parameters/rcu_cpu_stall_suppress.
+>  
+> +CONFIG_RCU_EXP_CPU_STALL_TIMEOUT
+> +--------------------------------
+> +
+> +	Same as the CONFIG_RCU_CPU_STALL_TIMEOUT parameter but only for
+> +	the expedited grace period. This parameter defines the period of
+> +	time that RCU will wait from the beginning of an expedited grace
+> +	period until it issues an RCU CPU stall warning. This time period
+> +	is normally 20 milliseconds.
+> +
+> +	This configuration parameter may be changed at runtime via the
+> +	/sys/module/rcupdate/parameters/rcu_exp_cpu_stall_timeout, however
+> +	this parameter is checked only at the beginning of a cycle. If you
+> +	are in a current stall cycle, setting it to a new value will change
+> +	the timeout for the -next- stall.
+> +
+> +	Stall-warning messages may be enabled and disabled completely via
+> +	/sys/module/rcupdate/parameters/rcu_cpu_stall_suppress.
+> +
+>  RCU_STALL_DELAY_DELTA
+>  ---------------------
+>  
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 9ab6a4a5be06..9a32030f5d1e 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -4817,6 +4817,12 @@
+>  	rcupdate.rcu_cpu_stall_timeout= [KNL]
+>  			Set timeout for RCU CPU stall warning messages.
+>  
+> +	rcupdate.rcu_exp_cpu_stall_timeout= [KNL]
+> +			Set timeout for expedited RCU CPU stall warning messages.
+> +			The value is in milliseconds and a maximum allowed parameter
+> +			is 21000 milliseconds. Please note, a set value is adjusted
+> +			to an arch timer tick resolution.
+> +
+>  	rcupdate.rcu_expedited= [KNL]
+>  			Use expedited grace-period primitives, for
+>  			example, synchronize_rcu_expedited() instead
+> diff --git a/kernel/rcu/Kconfig.debug b/kernel/rcu/Kconfig.debug
+> index 4fd64999300f..e0f2c5edef44 100644
+> --- a/kernel/rcu/Kconfig.debug
+> +++ b/kernel/rcu/Kconfig.debug
+> @@ -91,6 +91,18 @@ config RCU_CPU_STALL_TIMEOUT
+>  	  RCU grace period persists, additional CPU stall warnings are
+>  	  printed at more widely spaced intervals.
+>  
+> +config RCU_EXP_CPU_STALL_TIMEOUT
+> +	int "Expedited RCU CPU stall timeout in milliseconds"
+> +	depends on RCU_STALL_COMMON
+> +	range 1 21000
+> +	default 20
+> +
+> +	help
+> +	  If a given expedited RCU grace period extends more than the
+> +	  specified number of milliseconds, a CPU stall warning is printed.
+> +	  If the RCU grace period persists, additional CPU stall warnings
+> +	  are printed at more widely spaced intervals.
+> +
+>  config RCU_TRACE
+>  	bool "Enable tracing for RCU"
+>  	depends on DEBUG_KERNEL
+> diff --git a/kernel/rcu/rcu.h b/kernel/rcu/rcu.h
+> index 819f9d979e61..f8ec1df4b91e 100644
+> --- a/kernel/rcu/rcu.h
+> +++ b/kernel/rcu/rcu.h
+> @@ -217,7 +217,9 @@ static inline bool rcu_stall_is_suppressed_at_boot(void)
+>  extern int rcu_cpu_stall_ftrace_dump;
+>  extern int rcu_cpu_stall_suppress;
+>  extern int rcu_cpu_stall_timeout;
+> +extern int rcu_exp_cpu_stall_timeout;
+>  int rcu_jiffies_till_stall_check(void);
+> +int rcu_exp_jiffies_till_stall_check(void);
+>  
+>  static inline bool rcu_stall_is_suppressed(void)
+>  {
+> diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+> index 404198808683..30f05fd080ca 100644
+> --- a/kernel/rcu/tree_exp.h
+> +++ b/kernel/rcu/tree_exp.h
+> @@ -496,7 +496,7 @@ static void synchronize_rcu_expedited_wait(void)
+>  	struct rcu_node *rnp_root = rcu_get_root();
+>  
+>  	trace_rcu_exp_grace_period(rcu_state.name, rcu_exp_gp_seq_endval(), TPS("startwait"));
+> -	jiffies_stall = rcu_jiffies_till_stall_check();
+> +	jiffies_stall = rcu_exp_jiffies_till_stall_check();
+>  	jiffies_start = jiffies;
+>  	if (tick_nohz_full_enabled() && rcu_inkernel_boot_has_ended()) {
+>  		if (synchronize_rcu_expedited_wait_once(1))
+> @@ -571,7 +571,7 @@ static void synchronize_rcu_expedited_wait(void)
+>  				dump_cpu_task(cpu);
+>  			}
+>  		}
+> -		jiffies_stall = 3 * rcu_jiffies_till_stall_check() + 3;
+> +		jiffies_stall = 3 * rcu_exp_jiffies_till_stall_check() + 3;
+>  	}
+>  }
+>  
+> diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
+> index 0c5d8516516a..84b812a3ab44 100644
+> --- a/kernel/rcu/tree_stall.h
+> +++ b/kernel/rcu/tree_stall.h
+> @@ -25,6 +25,32 @@ int sysctl_max_rcu_stall_to_panic __read_mostly;
+>  #define RCU_STALL_MIGHT_DIV		8
+>  #define RCU_STALL_MIGHT_MIN		(2 * HZ)
+>  
+> +int rcu_exp_jiffies_till_stall_check(void)
+> +{
+> +	int cpu_stall_timeout = READ_ONCE(rcu_exp_cpu_stall_timeout);
+> +	int exp_stall_delay_delta = 0;
+> +	int till_stall_check;
+> +
+> +	/*
+> +	 * Limit check must be consistent with the Kconfig limits for
+> +	 * CONFIG_RCU_EXP_CPU_STALL_TIMEOUT, so check the allowed range.
+> +	 * The minimum clamped value is "2UL", because at least one full
+> +	 * tick has to be guaranteed.
+> +	 */
+> +	till_stall_check = clamp(msecs_to_jiffies(cpu_stall_timeout), 2UL, 21UL * HZ);
+> +
+> +	if (jiffies_to_msecs(till_stall_check) != cpu_stall_timeout)
+> +		WRITE_ONCE(rcu_exp_cpu_stall_timeout, jiffies_to_msecs(till_stall_check));
+> +
+> +#ifdef CONFIG_PROVE_RCU
+> +	/* Add extra ~25% out of till_stall_check. */
+> +	exp_stall_delay_delta = ((till_stall_check * 25) / 100) + 1;
+> +#endif
+> +
+> +	return till_stall_check + exp_stall_delay_delta;
+> +}
+> +EXPORT_SYMBOL_GPL(rcu_exp_jiffies_till_stall_check);
+> +
+>  /* Limit-check stall timeouts specified at boottime and runtime. */
+>  int rcu_jiffies_till_stall_check(void)
+>  {
+> diff --git a/kernel/rcu/update.c b/kernel/rcu/update.c
+> index 180ff9c41fa8..fc7fef575606 100644
+> --- a/kernel/rcu/update.c
+> +++ b/kernel/rcu/update.c
+> @@ -506,6 +506,8 @@ EXPORT_SYMBOL_GPL(rcu_cpu_stall_suppress);
+>  module_param(rcu_cpu_stall_suppress, int, 0644);
+>  int rcu_cpu_stall_timeout __read_mostly = CONFIG_RCU_CPU_STALL_TIMEOUT;
+>  module_param(rcu_cpu_stall_timeout, int, 0644);
+> +int rcu_exp_cpu_stall_timeout __read_mostly = CONFIG_RCU_EXP_CPU_STALL_TIMEOUT;
+> +module_param(rcu_exp_cpu_stall_timeout, int, 0644);
+>  #endif /* #ifdef CONFIG_RCU_STALL_COMMON */
+>  
+>  // Suppress boot-time RCU CPU stall warnings and rcutorture writer stall
+> -- 
+> 2.30.2
 > 
->  Documentation/leds/leds-qcom-lpg.rst |   76 ++
->  drivers/leds/Kconfig                 |    3 +
->  drivers/leds/Makefile                |    3 +
->  drivers/leds/rgb/Kconfig             |   18 +
->  drivers/leds/rgb/Makefile            |    3 +
->  drivers/leds/rgb/leds-qcom-lpg.c     | 1401 ++++++++++++++++++++++++++
->  6 files changed, 1504 insertions(+)
->  create mode 100644 Documentation/leds/leds-qcom-lpg.rst
->  create mode 100644 drivers/leds/rgb/Kconfig
->  create mode 100644 drivers/leds/rgb/Makefile
->  create mode 100644 drivers/leds/rgb/leds-qcom-lpg.c
-
-
-
