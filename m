@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 04:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 04:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344312AbiBPERg (ORCPT
+        id S1344175AbiBPERn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 23:17:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48516 "EHLO
+        Tue, 15 Feb 2022 23:17:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243538AbiBPERP (ORCPT
+        with ESMTP id S232908AbiBPERN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 23:17:15 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D1301045BA
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 20:16:10 -0800 (PST)
+        Tue, 15 Feb 2022 23:17:13 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9C43104598
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 20:16:09 -0800 (PST)
 Received: from unknown (HELO lgemrelse7q.lge.com) (156.147.1.151)
-        by 156.147.23.51 with ESMTP; 16 Feb 2022 13:16:09 +0900
+        by 156.147.23.53 with ESMTP; 16 Feb 2022 13:16:08 +0900
 X-Original-SENDERIP: 156.147.1.151
 X-Original-MAILFROM: byungchul.park@lge.com
 Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.151 with ESMTP; 16 Feb 2022 13:16:09 +0900
+        by 156.147.1.151 with ESMTP; 16 Feb 2022 13:16:08 +0900
 X-Original-SENDERIP: 10.177.244.38
 X-Original-MAILFROM: byungchul.park@lge.com
 From:   Byungchul Park <byungchul.park@lge.com>
@@ -47,20 +47,19 @@ Cc:     torvalds@linux-foundation.org, mingo@redhat.com,
         dri-devel@lists.freedesktop.org, airlied@linux.ie,
         rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
         hamohammed.sa@gmail.com
-Subject: Report in ata_scsi_port_error_handler()
-Date:   Wed, 16 Feb 2022 13:16:04 +0900
-Message-Id: <1644984964-28300-3-git-send-email-byungchul.park@lge.com>
+Subject: Report 2 in ata_scsi_port_error_handler()
+Date:   Wed, 16 Feb 2022 13:16:02 +0900
+Message-Id: <1644984964-28300-1-git-send-email-byungchul.park@lge.com>
 X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1644984964-28300-1-git-send-email-byungchul.park@lge.com>
+In-Reply-To: <1644984747-26706-1-git-send-email-byungchul.park@lge.com>
 References: <1644984747-26706-1-git-send-email-byungchul.park@lge.com>
- <1644984964-28300-1-git-send-email-byungchul.park@lge.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[    2.051040] ===================================================
-[    2.051406] DEPT: Circular dependency has been detected.
-[    2.051730] 5.17.0-rc1-00014-gcf3441bb2012 #2 Tainted: G        W        
+[    2.051991] ===================================================
+[    2.051991] DEPT: Circular dependency has been detected.
+[    2.051991] 5.17.0-rc1-00014-gcf3441bb2012 #2 Tainted: G        W        
 [    2.051991] ---------------------------------------------------
 [    2.051991] summary
 [    2.051991] ---------------------------------------------------
@@ -68,13 +67,18 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 [    2.051991] 
 [    2.051991] context A
 [    2.051991]     [S] (unknown)(&(&ap->eh_wait_q)->dmap:0)
-[    2.051991]     [W] __raw_spin_lock_irq(&host->lock:0)
+[    2.051991]     [W] wait_for_completion_timeout(&wait:0)
 [    2.051991]     [E] event(&(&ap->eh_wait_q)->dmap:0)
 [    2.051991] 
 [    2.051991] context B
 [    2.051991]     [S] __raw_spin_lock_irqsave(&host->lock:0)
 [    2.051991]     [W] wait(&(&ap->eh_wait_q)->dmap:0)
 [    2.051991]     [E] spin_unlock(&host->lock:0)
+[    2.051991] 
+[    2.051991] context C
+[    2.051991]     [S] (unknown)(&wait:0)
+[    2.051991]     [W] __raw_spin_lock_irq(&host->lock:0)
+[    2.051991]     [E] complete(&wait:0)
 [    2.051991] 
 [    2.051991] [S]: start of the event context
 [    2.051991] [W]: the wait blocked
@@ -84,19 +88,22 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 [    2.051991] ---------------------------------------------------
 [    2.051991] context A
 [    2.051991]     [S] (unknown)(&(&ap->eh_wait_q)->dmap:0)
-[    2.051991]     [W] __raw_spin_lock_irq(&host->lock:0)
+[    2.051991]     [W] wait_for_completion_timeout(&wait:0)
 [    2.051991]     [E] event(&(&ap->eh_wait_q)->dmap:0)
 [    2.051991] 
 [    2.051991] [S] (unknown)(&(&ap->eh_wait_q)->dmap:0):
 [    2.051991] (N/A)
 [    2.051991] 
-[    2.051991] [W] __raw_spin_lock_irq(&host->lock:0):
-[    2.051991] [<ffffffff8178d355>] ata_sff_flush_pio_task+0x45/0xc0
+[    2.051991] [W] wait_for_completion_timeout(&wait:0):
+[    2.051991] [<ffffffff817763b1>] ata_exec_internal_sg+0x401/0x690
 [    2.051991] stacktrace:
-[    2.051991]       _raw_spin_lock_irq+0x58/0x90
-[    2.051991]       ata_sff_flush_pio_task+0x45/0xc0
-[    2.051991]       ata_exec_internal_sg+0x422/0x690
-[    2.051991]       ata_do_set_mode+0x5ee/0xac0
+[    2.051991]       wait_for_completion_timeout+0x40/0xf0
+[    2.051991]       ata_exec_internal_sg+0x401/0x690
+[    2.051991]       ata_exec_internal+0x4a/0x70
+[    2.051991]       ata_dev_read_id+0x2ce/0x540
+[    2.051991]       ata_dev_reread_id+0x33/0xc0
+[    2.051991]       ata_dev_revalidate+0x41/0x190
+[    2.051991]       ata_do_set_mode+0x61c/0xac0
 [    2.051991]       ata_set_mode+0xfc/0x110
 [    2.051991]       ata_eh_recover+0x1061/0x1360
 [    2.051991]       ata_do_eh+0x3f/0xa0
@@ -158,6 +165,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 [    2.051991]       ata_port_probe+0x1f/0x30
 [    2.051991]       async_port_probe+0x27/0x50
 [    2.051991]       async_run_entry_fn+0x21/0xa0
+[    2.051991]       process_one_work+0x317/0x640
+[    2.051991]       worker_thread+0x44/0x410
+[    2.051991]       kthread+0xe3/0x110
+[    2.051991]       ret_from_fork+0x22/0x30
+[    2.051991] ---------------------------------------------------
+[    2.051991] context C's detail
+[    2.051991] ---------------------------------------------------
+[    2.051991] context C
+[    2.051991]     [S] (unknown)(&wait:0)
+[    2.051991]     [W] __raw_spin_lock_irq(&host->lock:0)
+[    2.051991]     [E] complete(&wait:0)
+[    2.051991] 
+[    2.051991] [S] (unknown)(&wait:0):
+[    2.051991] (N/A)
+[    2.051991] 
+[    2.051991] [W] __raw_spin_lock_irq(&host->lock:0):
+[    2.051991] [<ffffffff8178c51b>] ata_sff_pio_task+0x1b/0x1b0
+[    2.051991] stacktrace:
+[    2.051991]       _raw_spin_lock_irq+0x58/0x90
+[    2.051991]       ata_sff_pio_task+0x1b/0x1b0
+[    2.051991]       process_one_work+0x317/0x640
+[    2.051991]       worker_thread+0x44/0x410
+[    2.051991]       kthread+0xe3/0x110
+[    2.051991]       ret_from_fork+0x22/0x30
+[    2.051991] 
+[    2.051991] [E] complete(&wait:0):
+[    2.051991] [<ffffffff81780569>] ata_do_link_abort+0x99/0xd0
+[    2.051991] stacktrace:
+[    2.051991]       complete+0x28/0x60
+[    2.051991]       ata_do_link_abort+0x99/0xd0
+[    2.051991]       ata_sff_hsm_move+0xfc/0xad0
+[    2.051991]       ata_sff_pio_task+0x177/0x1b0
 [    2.051991]       process_one_work+0x317/0x640
 [    2.051991]       worker_thread+0x44/0x410
 [    2.051991]       kthread+0xe3/0x110
