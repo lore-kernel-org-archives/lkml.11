@@ -2,146 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A842EC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E509FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiBPHIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:08:20 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38744 "EHLO
+        id S229617AbiBPHIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:08:36 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiBPHIG (ORCPT
+        with ESMTP id S229486AbiBPHI2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:08:06 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921FB256EC6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:07:42 -0800 (PST)
-X-UUID: f7482e9d5ff44fd1acd5f75adc50e8b2-20220216
-X-UUID: f7482e9d5ff44fd1acd5f75adc50e8b2-20220216
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1743981165; Wed, 16 Feb 2022 14:40:53 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 16 Feb 2022 14:40:52 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Feb
- 2022 14:40:52 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Feb 2022 14:40:50 +0800
-Message-ID: <553286c9a2fe458f994b334c968eb9899eed892d.camel@mediatek.com>
-Subject: Re: [deller-fbdev:for-next 51/51]
- drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:42: error: use of
- undeclared identifier 'component_compare_dev'; did you mean
- 'component_master_del'?
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Helge Deller <deller@gmx.de>
-CC:     <llvm@lists.linux.dev>, <kbuild-all@lists.01.org>,
-        <linux-kernel@vger.kernel.org>, kernel test robot <lkp@intel.com>
-Date:   Wed, 16 Feb 2022 14:40:49 +0800
-In-Reply-To: <202202161324.Jh1OfqAf-lkp@intel.com>
-References: <202202161324.Jh1OfqAf-lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 16 Feb 2022 02:08:28 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29022557B9;
+        Tue, 15 Feb 2022 23:08:00 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id r27so1535390oiw.4;
+        Tue, 15 Feb 2022 23:08:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LwN9EA5sx0wUNLuUzhVGQjuS5ktDIOUqd6XJ09IJOkE=;
+        b=gUF+e3qOBj161a7CB8jYZrJ20XMGIaDecFBxZ9aWE8fXVmDfBpi+5z5wCDBYytbzRA
+         8pIamArw2sdR/JazYE8ciQTRqA65R80IdwRGJJizE9RTGoAV2kXTqLTUdWyZe8eNFfqz
+         QEkt/JZBCnRqM3w2/q2SPHeG3GTBT2xX8DJUYjDQ6CGEzt/imNlqCNIjg80iTNT4SrLd
+         IiptsrGujqzJ4TWwuN9KQpgZ2RbEjzZNorzVIXDG2uWpawtG652XJNtDaAdk6HuefCKr
+         ggHLSvELDUiSTBAFyg69S13bIyZA1nXYzLHx79gXIV3Z8fmiJ1Rwse8yparpDHNd3Mkb
+         YBEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=LwN9EA5sx0wUNLuUzhVGQjuS5ktDIOUqd6XJ09IJOkE=;
+        b=kFhZZKYkWfIBphYk07+uU9wb9o2c+f9bV3Wl0N5Azbw17s2hz5kCN0HD+0Xwlfav/9
+         TNifWGyXeGD7mfzf3edriGd+iKVPpFzrPeAsl9pX6Hwy9rzbbiybNX1U2nFkC1kjYzM+
+         xyw1Hj+g/bO8Sc4kh2wPK4nqQcpOwWs3SarioqQmNuXHZriK7n86pYIirPj3CMqRvC86
+         mpYnbJWJ3Z6sYJTj2djHUb8LcJxcRW5c1YLPMDvIoIP41kHoeBzjHrFfG4KkWt1P++xB
+         Vv6/5TMWOK1hAl7Ey57Sw6oBkz8Z/G0S5/AOcO7xo/WyDWte/j4rJEc6dIbVBQzbiUan
+         xfSQ==
+X-Gm-Message-State: AOAM531YmlbuKhtZxdlOtuNNuiWiDSRp8MOeT2uJAfsw3yCfMNWh0AiN
+        R7J3XIJEmdp5ZtnJ4NEyCbgDrcQSWF5tKg==
+X-Google-Smtp-Source: ABdhPJwO1b0rsKESg2CQGVtlhqckt6rp3MvWtTgXr2VA2OimJzQBOoQIcbs+mcEyL8Z+74Dvr0SMYg==
+X-Received: by 2002:aca:c284:0:b0:2cb:3e5:79d with SMTP id s126-20020acac284000000b002cb03e5079dmr79808oif.89.1644995244826;
+        Tue, 15 Feb 2022 23:07:24 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id k17sm14675997otk.80.2022.02.15.23.07.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 23:07:23 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     linux-hwmon@vger.kernel.org
+Cc:     Agathe Porte <agathe.porte@nokia.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Adamski <krzysztof.adamski@nokia.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v3 1/2] dt-bindings: hwmon: add tmp464.yaml
+Date:   Tue, 15 Feb 2022 23:07:19 -0800
+Message-Id: <20220216070720.2131761-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Helge,
+From: Agathe Porte <agathe.porte@nokia.com>
 
-Thanks for apply this patch.
+Add basic description of the tmp464 driver DT bindings.
 
-Sorry that I didn't Cc you in cover-letter. It depend on [1/23].
+Signed-off-by: Agathe Porte <agathe.porte@nokia.com>
+Cc: Krzysztof Adamski <krzysztof.adamski@nokia.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+Note:
+  I had previously asked to add more detailed bindings, but concluded
+  that those should be provided in a generic temperature sensor schema.
+  I'll try to introduce such a schema separately.
 
-To avoid this build fail, Could you help revert this one?
+v3:
+- Addedd support for TMP468.
+- Changed number of channels from 0..3 (which was wrong anyway) to 0..8.
+- Changed value range for ti,n-factor to int8, with an example for
+  a negative value.
+- Added myself as driver maintainer.
 
-Thanks
+ .../devicetree/bindings/hwmon/ti,tmp464.yaml  | 109 ++++++++++++++++++
+ MAINTAINERS                                   |   7 ++
+ 2 files changed, 116 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
 
-On Wed, 2022-02-16 at 13:31 +0800, kernel test robot wrote:
-> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-
-> fbdev.git for-next
-> head:   61038027aa13351c63b452a0d48c805bab1d2ce9
-> commit: 61038027aa13351c63b452a0d48c805bab1d2ce9 [51/51] video:
-> fbdev: omapfb: Make use of the helper component_compare_dev
-> config: arm-randconfig-c002-20220216 (
-> https://download.01.org/0day-ci/archive/20220216/202202161324.Jh1OfqAf-lkp@intel.com/config
-> )
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project
-> 0e628a783b935c70c80815db6c061ec84f884af5)
-> reproduce (this is a W=1 build):
->         wget 
-> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
->  -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install arm cross compiling tool for clang build
->         # apt-get install binutils-arm-linux-gnueabi
->         # 
-> https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git/commit/?id=61038027aa13351c63b452a0d48c805bab1d2ce9
->         git remote add deller-fbdev
-> git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git
->         git fetch --no-tags deller-fbdev for-next
->         git checkout 61038027aa13351c63b452a0d48c805bab1d2ce9
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross
-> W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-> drivers/video/fbdev/omap2/omapfb/dss/
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> > > drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:42: error: use of
-> > > undeclared identifier 'component_compare_dev'; did you mean
-> > > 'component_master_del'?
-> 
->            component_match_add(dev->parent, match,
-> component_compare_dev, dev);
->                                                    ^~~~~~~~~~~~~~~~~~
-> ~~~
->                                                    component_master_d
-> el
->    include/linux/component.h:85:6: note: 'component_master_del'
-> declared here
->    void component_master_del(struct device *,
->         ^
->    1 error generated.
-> 
-> 
-> vim +1209 drivers/video/fbdev/omap2/omapfb/dss/dss.c
-> 
->   1195	
->   1196	static int dss_add_child_component(struct device *dev,
-> void *data)
->   1197	{
->   1198		struct component_match **match = data;
->   1199	
->   1200		/*
->   1201		 * HACK
->   1202		 * We don't have a working driver for rfbi, so
-> skip it here always.
->   1203		 * Otherwise dss will never get probed
-> successfully, as it will wait
->   1204		 * for rfbi to get probed.
->   1205		 */
->   1206		if (strstr(dev_name(dev), "rfbi"))
->   1207			return 0;
->   1208	
-> > 1209		component_match_add(dev->parent, match,
-> > component_compare_dev, dev);
-> 
->   1210	
->   1211		return 0;
->   1212	}
->   1213	
-> 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
+new file mode 100644
+index 000000000000..8ce4be729494
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
+@@ -0,0 +1,109 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/ti,tmp464.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TMP464 and TMP468 temperature sensors
++
++maintainers:
++  - Agathe Porte <agathe.porte@nokia.com>
++
++description: |
++  ±0.0625°C Remote and Local temperature sensor
++  https://www.ti.com/lit/ds/symlink/tmp464.pdf
++  https://www.ti.com/lit/ds/symlink/tmp468.pdf
++
++properties:
++  compatible:
++    enum:
++      - ti,tmp464
++      - ti,tmp468
++
++  reg:
++    maxItems: 1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++patternProperties:
++  "^channel@([0-8])$":
++    type: object
++    description: |
++      Represents channels of the device and their specific configuration.
++
++    properties:
++      reg:
++        description: |
++          The channel number. 0 is local channel, 1-8 are remote channels.
++        items:
++          minimum: 0
++          maximum: 8
++
++      label:
++        description: |
++          A descriptive name for this channel, like "ambient" or "psu".
++
++      ti,n-factor:
++        description: |
++          The value (two's complement) to be programmed in the channel specific N correction register.
++          For remote channels only.
++        $ref: /schemas/types.yaml#/definitions/int8
++        items:
++          minimum: -128
++          maximum: 127
++
++    required:
++      - reg
++
++    additionalProperties: false
++
++examples:
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      sensor@4b {
++        compatible = "ti,tmp464";
++        reg = <0x4b>;
++      };
++    };
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      sensor@4b {
++        compatible = "ti,tmp464";
++        reg = <0x4b>;
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        channel@0 {
++          reg = <0x0>;
++          ti,n-factor = /bits/ 8 <(-10)>;
++          label = "local";
++        };
++
++        channel@1 {
++          reg = <0x1>;
++          ti,n-factor = /bits/ 8 <0x0>;
++          label = "somelabel";
++        };
++
++        channel@2 {
++          reg = <0x2>;
++          status = "disabled";
++        };
++      };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fca970a46e77..f51bc7c7e439 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19489,6 +19489,13 @@ S:	Maintained
+ F:	Documentation/hwmon/tmp401.rst
+ F:	drivers/hwmon/tmp401.c
+ 
++TMP464 HARDWARE MONITOR DRIVER
++M:	Agathe Porte <agathe.porte@nokia.com>
++M:	Guenter Roeck <linux@roeck-us.net>
++L:	linux-hwmon@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
++
+ TMP513 HARDWARE MONITOR DRIVER
+ M:	Eric Tremblay <etremblay@distech-controls.com>
+ L:	linux-hwmon@vger.kernel.org
+-- 
+2.35.1
 
