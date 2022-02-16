@@ -2,104 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA8DC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06AD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236384AbiBPQXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:23:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37794 "EHLO
+        id S234553AbiBPQYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:24:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236358AbiBPQXv (ORCPT
+        with ESMTP id S233785AbiBPQYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:23:51 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE4521FC69
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:23:37 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id m14so4819065lfu.4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:23:37 -0800 (PST)
+        Wed, 16 Feb 2022 11:24:16 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5B722BDE5;
+        Wed, 16 Feb 2022 08:24:01 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id q7so4302367wrc.13;
+        Wed, 16 Feb 2022 08:24:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lzBX1lIAVYZwdECaRMhi8WBrfRP47BlcmzYMUdivK5U=;
-        b=keZIpHeTvTHtXJK9/pje+DNhUxw0b6g+PN/54W4qKYTwwl6ZJRBqCLk+Ha4D0P3YDk
-         keJ+8z+bB0sqMQSQ+0zNF7slV8OZcHf4s6wxH6qzHd5ASQOvrX3XUVvMB5dMNUJyXziA
-         8/qqX1s8UTd9azWkIx/zpio+3RTiTuBAiMGwosSvP/wcs5847OmkKHy14EwFN48ryB4E
-         64rDmMsiuaio/5wVmJJO7FDtXkrk0wMmgMQLSMJE6V5mTwghA43jQn2/N9MJmmr83Owl
-         k1WO7Sozach4DT+6Rqd7bja50HPUyDDTciIU1+cfATD2c66XAcqk/wl4ZwMA8SPq27OV
-         hQ+g==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LTt4zeXioXEAgxKFKddjzAm61xpJtbPPtey6Dl+FS3k=;
+        b=ey0ZisKjo0VUrCt+QgQ5aTTg3uYAEHOkAAyA4ZLtfJrcpAvN4jE/WWE5R+2FjGyTOh
+         5WB+dEERzKJ9PP1AB7VnD5GC7LUwmDT6tXCoebohWVYfgR3UrxeJWcX/kn0Ucbx4pr19
+         kdB159p78FAC3id+SKA+RsB5WKJAY1VzqiLonURGM0ueXop6+0oR3Z9OVwULTWieRMht
+         aKpeB7r43tAVDF0fd9ZupN2rCSy7y+c9lrv42nZqWNOou1cU1FlhRon2OcknfJCiFl3m
+         hwf+1m1UeiOibaVpHQzlyWQ9Xl6Sj0tltYg4NROJxTp8yYHo3KxrBNeq8XJyO5K9uQIh
+         tKvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lzBX1lIAVYZwdECaRMhi8WBrfRP47BlcmzYMUdivK5U=;
-        b=Jy86jQETSzsdvTM2X2FQmU6kzM5ALa9hzx1pDapMUZ+C+JKgKJnt9F6ofWyv1AcJRq
-         RwG99o8KkCBakxO4JPRYZXYJThC+Z7+8RnoxZyFePgCHKlUWHtu7aO+3yL4VfhgsWINE
-         Jbbd+C2dK323u7ksYLWSVlNxS8uivDYGoK4OK4k/Tb2zlp07cv5Igb0FOYSYm/CKEc1r
-         9pGrheeWYSFdGcbr6ZuJIqPnb6AqW4skmLahw58ejaXRESygpPnrPnBREI7yVsC/KGAN
-         5Wu5sE7dGt3CoEbuOOPJEV7auoF9XGe4g64vZW9QXeMjZWQahMUVeu8YXpMCCoG4yNmf
-         /BgA==
-X-Gm-Message-State: AOAM530pBuk7X5pLoRkd74YdWybkix+frElGFarFOeUdG9kJxl2nzzIz
-        k0qnXwfpGGyUKnPveXNVnO5/k1oUH70VNnWDPNpRaCTR6LA=
-X-Google-Smtp-Source: ABdhPJyUuQz4Diml1VJhvSdyugYzUWtSBf05c5HD9+nNLuAQ4WtatF+oZKRsz3jYwQcAMJd0SuaAXICsTz85sxLyZxc=
-X-Received: by 2002:a19:9144:0:b0:43b:86a4:1497 with SMTP id
- y4-20020a199144000000b0043b86a41497mr2576104lfj.254.1645028615997; Wed, 16
- Feb 2022 08:23:35 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LTt4zeXioXEAgxKFKddjzAm61xpJtbPPtey6Dl+FS3k=;
+        b=2kRHVtW/A67ugi+HuJ6HfaV7HYsZcrH4UFAslSzOjliWhsw4nAdzC/eaDPMj1haCzb
+         IP7N0BY0hDIHTdneni9yzE2KSP8cgVLo7sKzYwchZ9v/uTbZwPCwsg+Dm/CBlOaYk71v
+         +VaHMC7jxzGND/2Gjprk1kz/Gg83eK6k32CxujfW4LfoWvkBF88583fGCyZSpFsnpqpg
+         Y07zUHrndlpud+N5/z0KsoPbIvvegLEqUgNy4k+R3OV2oZh4h0YMq6YVzgf1EvRYThk2
+         zyZXSbdgcpQMSZkikhUDXWzlrC2BgWhhxeT+bHoN9uRu+p5+sQWD7oIPp+1GizOjchqo
+         H5Tw==
+X-Gm-Message-State: AOAM531woU6+Ma7ZC+MLDlF/sN7GoU3NQ0R8oXZKXDlCSRqOIg2FHnoD
+        bOh9BpI93JLit6TuJE5eGZo=
+X-Google-Smtp-Source: ABdhPJybP1sGjhuU7xFxJ/hdGk6c3ciueolCbzgSKOnfdRNTzSTOlyjrNfEHjVEgXBPH9+awuTPhkQ==
+X-Received: by 2002:a5d:4d0c:0:b0:1e3:364a:c95f with SMTP id z12-20020a5d4d0c000000b001e3364ac95fmr2979281wrt.115.1645028640578;
+        Wed, 16 Feb 2022 08:24:00 -0800 (PST)
+Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
+        by smtp.gmail.com with ESMTPSA id f25sm18305054wml.16.2022.02.16.08.23.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 08:24:00 -0800 (PST)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>, linux-sunxi@lists.linux.dev,
+        linux-gpio@vger.kernel.org, Samuel Holland <samuel@sholland.org>
+Cc:     linux-kernel@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] pinctrl: sunxi: Use unique lockdep classes for IRQs
+Date:   Wed, 16 Feb 2022 17:23:59 +0100
+Message-ID: <2091402.irdbgypaU6@kista>
+In-Reply-To: <20220216040037.22730-1-samuel@sholland.org>
+References: <20220216040037.22730-1-samuel@sholland.org>
 MIME-Version: 1.0
-References: <20220130210210.549877-1-daniel.lezcano@linaro.org> <20220130210210.549877-3-daniel.lezcano@linaro.org>
-In-Reply-To: <20220130210210.549877-3-daniel.lezcano@linaro.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 16 Feb 2022 17:22:59 +0100
-Message-ID: <CAPDyKFqV++g63Asax8TNSEgujxJ=uM9XG2_Advu34JidYBCGtg@mail.gmail.com>
-Subject: Re: [PATCH v1 3/7] powercap/dtpm: Fixup kfree for virtual node
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rjw@rjwysocki.net, heiko@sntech.de, lukasz.luba@arm.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 30 Jan 2022 at 22:02, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
->
-> When the node is virtual there is no release function associated which
-> can free the memory.
->
-> Free the memory when no 'ops' exists.
->
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> ---
->  drivers/powercap/dtpm.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/powercap/dtpm.c b/drivers/powercap/dtpm.c
-> index 0b0121c37a1b..7bddd25a6767 100644
-> --- a/drivers/powercap/dtpm.c
-> +++ b/drivers/powercap/dtpm.c
-> @@ -181,12 +181,12 @@ int dtpm_release_zone(struct powercap_zone *pcz)
->
->         if (dtpm->ops)
->                 dtpm->ops->release(dtpm);
-> +       else
-> +               kfree(dtpm);
->
+Hi Samuel,
 
-This doesn't look correct. Below you check dtpm against "root", which
-may be after its memory has been freed.
+Dne sreda, 16. februar 2022 ob 05:00:36 CET je Samuel Holland napisal(a):
+> This driver, like several others, uses a chained IRQ for each GPIO bank,
+> and forwards .irq_set_wake to the GPIO bank's upstream IRQ. As a result,
+> a call to irq_set_irq_wake() needs to lock both the upstream and
+> downstream irq_desc's. Lockdep considers this to be a possible deadlock
+> when the irq_desc's share lockdep classes, which they do by default:
+> 
+>  ============================================
+>  WARNING: possible recursive locking detected
+>  5.17.0-rc3-00394-gc849047c2473 #1 Not tainted
+>  --------------------------------------------
+>  init/307 is trying to acquire lock:
+>  c2dfe27c (&irq_desc_lock_class){-.-.}-{2:2}, at: 
+__irq_get_desc_lock+0x58/0xa0
+> 
+>  but task is already holding lock:
+>  c3c0ac7c (&irq_desc_lock_class){-.-.}-{2:2}, at: 
+__irq_get_desc_lock+0x58/0xa0
+> 
+>  other info that might help us debug this:
+>   Possible unsafe locking scenario:
+> 
+>         CPU0
+>         ----
+>    lock(&irq_desc_lock_class);
+>    lock(&irq_desc_lock_class);
+> 
+>   *** DEADLOCK ***
+> 
+>   May be due to missing lock nesting notation
+> 
+>  4 locks held by init/307:
+>   #0: c1f29f18 (system_transition_mutex){+.+.}-{3:3}, at: 
+__do_sys_reboot+0x90/0x23c
+>   #1: c20f7760 (&dev->mutex){....}-{3:3}, at: device_shutdown+0xf4/0x224
+>   #2: c2e804d8 (&dev->mutex){....}-{3:3}, at: device_shutdown+0x104/0x224
+>   #3: c3c0ac7c (&irq_desc_lock_class){-.-.}-{2:2}, at: 
+__irq_get_desc_lock+0x58/0xa0
+> 
+>  stack backtrace:
+>  CPU: 0 PID: 307 Comm: init Not tainted 5.17.0-rc3-00394-gc849047c2473 #1
+>  Hardware name: Allwinner sun8i Family
+>   unwind_backtrace from show_stack+0x10/0x14
+>   show_stack from dump_stack_lvl+0x68/0x90
+>   dump_stack_lvl from __lock_acquire+0x1680/0x31a0
+>   __lock_acquire from lock_acquire+0x148/0x3dc
+>   lock_acquire from _raw_spin_lock_irqsave+0x50/0x6c
+>   _raw_spin_lock_irqsave from __irq_get_desc_lock+0x58/0xa0
+>   __irq_get_desc_lock from irq_set_irq_wake+0x2c/0x19c
+>   irq_set_irq_wake from irq_set_irq_wake+0x13c/0x19c
+>     [tail call from sunxi_pinctrl_irq_set_wake]
+>   irq_set_irq_wake from gpio_keys_suspend+0x80/0x1a4
+>   gpio_keys_suspend from gpio_keys_shutdown+0x10/0x2c
+>   gpio_keys_shutdown from device_shutdown+0x180/0x224
+>   device_shutdown from __do_sys_reboot+0x134/0x23c
+>   __do_sys_reboot from ret_fast_syscall+0x0/0x1c
+> 
+> However, this can never deadlock because the upstream and downstream
+> IRQs are never the same (nor do they even involve the same irqchip).
+> 
+> Silence this erroneous lockdep splat by applying what appears to be the
+> usual fix of moving the GPIO IRQs to separate lockdep classes.
+> 
+> Fixes: a59c99d9eaf9 ("pinctrl: sunxi: Forward calls to irq_set_irq_wake")
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
 
-If the ->release() function should be responsible for freeing the
-dtpm, it needs to be called after the check below.
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
->         if (root == dtpm)
->                 root = NULL;
->
-> -       kfree(dtpm);
-> -
->         return 0;
->  }
->
+Best regards,
+Jernej
 
-Kind regards
-Uffe
+
