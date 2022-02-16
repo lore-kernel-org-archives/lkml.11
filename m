@@ -2,65 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C75BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA5EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245579AbiBPBpZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:45:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58448 "EHLO
+        id S245614AbiBPBpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:45:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244340AbiBPBpX (ORCPT
+        with ESMTP id S245581AbiBPBpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:45:23 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E6DF9FB4;
-        Tue, 15 Feb 2022 17:45:11 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V4akc2F_1644975908;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V4akc2F_1644975908)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 16 Feb 2022 09:45:09 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, josright123@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] net: Fix an ignored error return from dm9051_get_regs()
-Date:   Wed, 16 Feb 2022 09:45:07 +0800
-Message-Id: <20220216014507.109117-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Tue, 15 Feb 2022 20:45:36 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EBBFA203;
+        Tue, 15 Feb 2022 17:45:25 -0800 (PST)
+X-UUID: 7d6e79b21ed345c6877061cb766db82a-20220216
+X-UUID: 7d6e79b21ed345c6877061cb766db82a-20220216
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 229836840; Wed, 16 Feb 2022 09:45:21 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 16 Feb 2022 09:45:20 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 09:45:20 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <p.zabel@pengutronix.de>
+CC:     <runyang.chen@mediatek.com>, <linux-watchdog@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH 1/4] dt-bindings: watchdog: Add compatible for MediaTek MT8186
+Date:   Wed, 16 Feb 2022 09:45:02 +0800
+Message-ID: <20220216014505.28428-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220216014505.28428-1-rex-bc.chen@mediatek.com>
+References: <20220216014505.28428-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return from the call to dm9051_get_regs() is int, it can be
-a negative error code, however this is being assigned to an unsigned
-int variable 'ret', so making 'ret' an int.
+Add dt-binding documentation of watchdog for MediaTek MT8186 SoC.
 
-Eliminate the following coccicheck warning:
-./drivers/net/ethernet/davicom/dm9051.c:527:5-8: WARNING: Unsigned
-expression compared with zero: ret < 0
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 ---
- drivers/net/ethernet/davicom/dm9051.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet/davicom/dm9051.c
-index d2513c97f83e..8984363624eb 100644
---- a/drivers/net/ethernet/davicom/dm9051.c
-+++ b/drivers/net/ethernet/davicom/dm9051.c
-@@ -519,7 +519,7 @@ static int dm9051_map_init(struct spi_device *spi, struct board_info *db)
- static int dm9051_map_chipid(struct board_info *db)
- {
- 	struct device *dev = &db->spidev->dev;
--	unsigned int ret;
-+	int ret;
- 	unsigned short wid;
- 	u8 buff[6];
- 
+diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+index 0114871f887a..74db01e3658b 100644
+--- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
++++ b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+@@ -15,6 +15,7 @@ Required properties:
+ 	"mediatek,mt7629-wdt", "mediatek,mt6589-wdt": for MT7629
+ 	"mediatek,mt7986-wdt", "mediatek,mt6589-wdt": for MT7986
+ 	"mediatek,mt8183-wdt": for MT8183
++	"mediatek,mt8186-wdt", "mediatek,mt6589-wdt": for MT8186
+ 	"mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
+ 	"mediatek,mt8192-wdt": for MT8192
+ 	"mediatek,mt8195-wdt", "mediatek,mt6589-wdt": for MT8195
 -- 
-2.20.1.7.g153144c
+2.18.0
 
