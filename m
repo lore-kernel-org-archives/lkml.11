@@ -2,105 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 04:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C60CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 04:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344495AbiBPEnH (ORCPT
+        id S1344490AbiBPEvj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 23:43:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43754 "EHLO
+        Tue, 15 Feb 2022 23:51:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344489AbiBPEnE (ORCPT
+        with ESMTP id S1344437AbiBPEvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 23:43:04 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F447F4072
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 20:42:52 -0800 (PST)
-Received: from unknown (HELO lgeamrelo04.lge.com) (156.147.1.127)
-        by 156.147.23.51 with ESMTP; 16 Feb 2022 13:12:52 +0900
-X-Original-SENDERIP: 156.147.1.127
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.127 with ESMTP; 16 Feb 2022 13:12:52 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
-        willy@infradead.org, david@fromorbit.com, amir73il@gmail.com,
-        bfields@fieldses.org, gregkh@linuxfoundation.org,
-        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
-        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
-        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
-        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
-        linux-block@vger.kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jlayton@kernel.org, dan.j.williams@intel.com,
-        hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: [REPORT] net deadlock possibilities by DEPT
-Date:   Wed, 16 Feb 2022 13:12:47 +0900
-Message-Id: <1644984767-26886-1-git-send-email-byungchul.park@lge.com>
-X-Mailer: git-send-email 1.9.1
+        Tue, 15 Feb 2022 23:51:37 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05BF53A5C3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 20:51:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644987086; x=1676523086;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Ia+lAJFTNQLqFxL3FDU81fywrPyVaCCMbA8Z4rqRw4M=;
+  b=WZO148ZPVCoy5NBZCs3se3r79i0yYGUorl+yMvwomb6zozaikqhCUbOs
+   2CId7C32iyEbNWYF5C58kUYhzrQDr0tnVqXmHAzZ5DmLqRzK7/+m5GZhC
+   6nZunVt1Egt8Sefvwel9cB0BlF/dTIBCh0zvbz6d19deTcNB6W6ES/fvZ
+   91mWraAeIW+cKO6UGoN/YJF9ZsJnGB8S0LAwpbhaTF8qmvFrFTZgNqROK
+   GwWexdWaFDNZRqnDFJc8pIFJV7Vmmxk7aM1XOGv+UOauilW+2JtnXO0ti
+   eZsh0V4F/nzEH3Vw9ZpQ8FEryRFb/MHi+UZ5UDTy+TUhH+xmmHuD/nF/l
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="313797358"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="313797358"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 20:51:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="502849857"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2022 20:51:24 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKCHj-000AQ2-Nr; Wed, 16 Feb 2022 04:51:23 +0000
+Date:   Wed, 16 Feb 2022 12:50:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:axboe/linux-block/m1-test 340/382]
+ include/linux/soc/apple/rtkit.h:223:5: warning: no previous prototype for
+ 'apple_rtkit_poll'
+Message-ID: <202202161217.nOIv70qW-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David, Jakub and net folks,
+tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1-test
+head:   5adfbb595194191bad98c47447ddbee7d3b60b8f
+commit: 11c140423f34e589a6390d378267811426f82984 [340/382] soc: apple: rtkit: Add recv_message_early callback and apple_rtkit_poll
+config: openrisc-randconfig-r022-20220216 (https://download.01.org/0day-ci/archive/20220216/202202161217.nOIv70qW-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/11c140423f34e589a6390d378267811426f82984
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1-test
+        git checkout 11c140423f34e589a6390d378267811426f82984
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/nvme/host/
 
-I've been developing a tool for detecting deadlock possibilities by
-tracking wait/event rather than lock(?) acquisition order to try to
-cover all synchonization machanisms. It's done on v5.17-rc1 tag.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-https://github.com/lgebyungchulpark/linux-dept/commits/dept1.11_on_v5.17-rc1
+All warnings (new ones prefixed by >>):
 
-Benifit:
+   In file included from drivers/nvme/host/apple.c:32:
+>> include/linux/soc/apple/rtkit.h:223:5: warning: no previous prototype for 'apple_rtkit_poll' [-Wmissing-prototypes]
+     223 | int apple_rtkit_poll(struct apple_rtkit *rtk)
+         |     ^~~~~~~~~~~~~~~~
 
-	0. Works with all lock primitives.
-	1. Works with wait_for_completion()/complete().
-	2. Works with 'wait' on PG_locked.
-	3. Works with 'wait' on PG_writeback.
-	4. Works with swait/wakeup.
-	5. Works with waitqueue.
-	6. Multiple reports are allowed.
-	7. Deduplication control on multiple reports.
-	8. Withstand false positives thanks to 6.
-	9. Easy to tag any wait/event.
 
-Future work:
+vim +/apple_rtkit_poll +223 include/linux/soc/apple/rtkit.h
 
-	0. To make it more stable.
-	1. To separates Dept from Lockdep.
-	2. To improves performance in terms of time and space.
-	3. To use Dept as a dependency engine for Lockdep.
-	4. To add any missing tags of wait/event in the kernel.
-	5. To deduplicate stack trace.
-
-I've got several reports from the tool. Some of them look like false
-alarms caused by Lockdep's fake annotations added for better detection.
-However, some others look like real deadlock possibility. Because of my
-unfamiliarity of the domain, it's hard to confirm if it's a real one.
-I'd like to ask for your opinion on it and it'd be appreciated.
-
-How to interpret the report is:
-
-	1. E(event) in each context cannot be triggered because of the
-	   W(wait) that cannot be woken.
-	2. The stack trace helping find the problematic code is located
-	   in each conext's detail.
-
-Let me add the reports on this email thread.
+   222	
+ > 223	int apple_rtkit_poll(struct apple_rtkit *rtk)
+   224	{
+   225		return -ENODEV;
+   226	}
+   227	
 
 ---
-Thanks,
-Byungchul
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
