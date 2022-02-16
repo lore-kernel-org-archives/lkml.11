@@ -2,133 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27FEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229706AbiBPNRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:17:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34640 "EHLO
+        id S234013AbiBPNRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:17:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233890AbiBPNRJ (ORCPT
+        with ESMTP id S233864AbiBPNRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:17:09 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EEF66225;
-        Wed, 16 Feb 2022 05:16:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 64ADBCE26F6;
-        Wed, 16 Feb 2022 13:16:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5098AC340F3;
-        Wed, 16 Feb 2022 13:16:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645017403;
-        bh=FL3MwLnWcBo8JSN1gcn5jt3T6ZS9T2mg8wS4azHPBik=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y2Mjm03t4E3XFheH9yqQ6BGU3tXKnLCiOO/OwTUtf1lgBYcrWial86jpIz7PtRFIw
-         avWAsmqN07Ju1N9aZWFEK6djiU4xxVsrWrIldgYbLMAINPBCIE+Gm9knAbw2ZJ5YQU
-         0At6HGqJSzJ5Apl70hqpM+UJUgnBEg8NWGL9S7AWW9MhT9XDK6p1AAJUM3JogLfwD2
-         1lrWss7flCDtYrrnfWGqToUCjUhfOxjIFu9y4/66Sjvu+ZaCBq+vjebdXEQiJu+If4
-         gZzt/RXBM8sHm8w1g75IDg7GXTr01G1sdmyHMVFaBZouzSWgTlBFAfWq558NJn3p1E
-         Mzr/8UqWDZOoA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk
-Cc:     linux@armlinux.org.uk, will@kernel.org, guoren@kernel.org,
-        bcain@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu,
-        tsbogend@alpha.franken.de, nickhu@andestech.com,
-        green.hu@gmail.com, dinguyen@kernel.org, shorne@gmail.com,
-        deller@gmx.de, mpe@ellerman.id.au, peterz@infradead.org,
-        mingo@redhat.com, mark.rutland@arm.com, hca@linux.ibm.com,
-        dalias@libc.org, davem@davemloft.net, richard@nod.at,
-        x86@kernel.org, jcmvbkbc@gmail.com, ebiederm@xmission.com,
-        akpm@linux-foundation.org, ardb@kernel.org,
-        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org
-Subject: [PATCH v2 06/18] x86: use more conventional access_ok() definition
-Date:   Wed, 16 Feb 2022 14:13:20 +0100
-Message-Id: <20220216131332.1489939-7-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220216131332.1489939-1-arnd@kernel.org>
-References: <20220216131332.1489939-1-arnd@kernel.org>
+        Wed, 16 Feb 2022 08:17:18 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9709F6CA6E;
+        Wed, 16 Feb 2022 05:17:04 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: tonyk)
+        with ESMTPSA id 777D11F42185
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645017423;
+        bh=f4XXx+wOAjUOBGwOCR5FVHuFNf8F4WH2Bqh0nBJhIc8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cZ9IYtexXszwQRGRIjjP1zhAA8igG1syyugter36rQnLdh/GTL+6Q9qmrAESGJKiV
+         whrw97UvgT0ZZ54zNxN/KYhQZsx+KXYMCz6QAuIhTuTy2Ia8XUq9mi3nQPy4zmvgAd
+         KuhTOz1ODUVlqP9Mu4QcCbxN8d2l6Te7p0DQ+ULS7v1Jbtq/jgml+bC8zonbqYriHr
+         i1xdLol3TfwURbwjSUdGF3KdusUYqbSPdBuMKtI+czcMvlCBcNNy5YWG0umr6Dtnxs
+         BBec+1BRAClk0llxFrL4G4qNIU1pTVI57XieBP+X9U12lTWB5JzRp5PGG3TOG0221l
+         zuL2miV3JlFUQ==
+From:   =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>
+To:     Sanjay R Mehta <sanju.mehta@amd.com>,
+        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>
+Subject: [PATCH v3 0/3] spi: amd: Add support for new controller version
+Date:   Wed, 16 Feb 2022 10:16:35 -0300
+Message-Id: <20220216131638.65472-1-andrealmeid@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Hi Mark,
 
-The way that access_ok() is defined on x86 is slightly different from
-most other architectures, and a bit more complex.
+This v3 has a small change at 3/3 for making it work at COMPILE_TEST.
+Could you please replace the patch that you had applied on your tree?
+Thanks and sorry for the trouble.
 
-The generic version tends to result in the best output on all
-architectures, as it results in single comparison against a constant
-limit for calls with a known size.
+This series do some cleanup and add support for new controller version,
+AMDI0062.
 
-There are a few callers of __range_not_ok(), all of which use TASK_SIZE
-as the limit rather than TASK_SIZE_MAX, but I could not see any reason
-for picking this. Changing these to call __access_ok() instead uses the
-default limit, but keeps the behavior otherwise.
+Change from v2:
+- Keep ACPI_PTR() for ACPI dependent variable, making it suitable for
+compiling test.
 
-x86 is the only architecture with a WARN_ON_IN_IRQ() checking
-access_ok(), but it's probably best to leave that in place.
+Change from v1:
+- Replace `if (version == 2)` with a more extensible switch case.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/x86/include/asm/uaccess.h | 25 +++----------------------
- 1 file changed, 3 insertions(+), 22 deletions(-)
+André Almeida (3):
+  spi: amd: Use iopoll for busy waiting
+  spi: amd: Remove needless rom_addr variable
+  spi: amd: Add support for version AMDI0062
 
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 79c4869ccdd6..a59ba2578e64 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -16,33 +16,14 @@
-  * Test whether a block of memory is a valid user space address.
-  * Returns 0 if the range is valid, nonzero otherwise.
-  */
--static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size)
-+static inline bool __access_ok(void __user *ptr, unsigned long size)
- {
- 	unsigned long limit = TASK_SIZE_MAX;
-+	unsigned long addr = ptr;
- 
--	/*
--	 * If we have used "sizeof()" for the size,
--	 * we know it won't overflow the limit (but
--	 * it might overflow the 'addr', so it's
--	 * important to subtract the size from the
--	 * limit, not add it to the address).
--	 */
--	if (__builtin_constant_p(size))
--		return unlikely(addr > limit - size);
--
--	/* Arbitrary sizes? Be careful about overflow */
--	addr += size;
--	if (unlikely(addr < size))
--		return true;
--	return unlikely(addr > limit);
-+	return (size <= limit) && (addr <= (limit - size));
- }
- 
--#define __access_ok(addr, size)						\
--({									\
--	__chk_user_ptr(addr);						\
--	!__chk_range_not_ok((unsigned long __force)(addr), size);	\
--})
--
- #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
- static inline bool pagefault_disabled(void);
- # define WARN_ON_IN_IRQ()	\
+ drivers/spi/spi-amd.c | 87 +++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 71 insertions(+), 16 deletions(-)
+
 -- 
-2.29.2
+2.35.1
 
