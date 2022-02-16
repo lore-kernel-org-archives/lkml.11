@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234580AbiBPNbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:31:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42820 "EHLO
+        id S234424AbiBPNbM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:31:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234352AbiBPNan (ORCPT
+        with ESMTP id S234487AbiBPNau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:30:43 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDDB18338A
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:30:31 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id b11so3802598lfb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:30:31 -0800 (PST)
+        Wed, 16 Feb 2022 08:30:50 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C073A1728B2
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:30:33 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id p22so3866586lfu.5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:30:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=sO7CNG0sSQG2qIDEEmS29gE5qWYIsAYkV+SmsMaOSJ4=;
-        b=gOrriYj16c35aVCnfYWpRbk0Atd6fYsrMATkiD1ZUM2tcGyId/6rTmembEUOmPLJSt
-         gYijA3m/cbaLv75Kj/xyi/3f2Q7QHz96y0zSfBlh4uPonHh+xibUVzAMwPEL6+fhG2AH
-         ftAolTsPvTIDoCuNzUzo6W3B3+BAFCyL9ERaqw/WsOwOdlMHiDErnfbSL7oTtmDBmAyj
-         oJxh/5dbwEEgXqQuLGtCO3UwBt3jvfHB66SzfHwCPhIYrvatLaSrPCU5unZzssKxe80Y
-         NQjwDtsDSqD4ZMOprRF+nJtsB13dFQ54jUCWS+wUh2gHHgRoQb6NpjO8g1+v4MHrT9HX
-         4G8Q==
+        bh=9aG6JPCK/sc9cnjNg+7v1niwfwPA6zUyJ/dRYHoXrdI=;
+        b=GNtYHMmflkakwZq6i29RsDao3BrZgSdMt7dT6HQzznhCZixxEG4L5+AACLMCgtmOw+
+         BI9wm+/9nQOAtYxgsHh3DTWOQJ5lwf97Rv0atJp/dPjzFGbAs8yAbL/aQkJOONiwRgnh
+         6LyCkyyQ11vk8AHBIL9pavnlsyGIU6b9h7oq+TjxKi65VNRfv+dHMiZ3d+uQ4ftFomEM
+         hSGRuaZ3xnyUh5Hikuh0aUFit7zHWcH3XwzY1lcNN8sKT53oRFjpOPrsskfoyTB/Mv1E
+         4YmEhpNXHdHnaKmoJ51SuNhAxucOm8hoC9sl2zopI+sN1eRjGUDQC2V3byXyg9cHoLxo
+         +Ozw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=sO7CNG0sSQG2qIDEEmS29gE5qWYIsAYkV+SmsMaOSJ4=;
-        b=nN0n3T/QzjMYFnaaOM98t0Z5007rSe897Hd6/pu/iwZa2CnZA00ze0VhoC6kiaFwmR
-         Ruf2szZXvT6rvGQfpbAljXG3ZMZOBpp7V2SX4AJQWBL17nr9gUs1gh25kgPOcLpKSTl6
-         f814eOSpbD/JS/fgbdweGxVd6oLBS+U/n0NhHcT0tAfsIllXTEvrNlAA0yPbcn93nRR7
-         Sl4mmXHDffMLfdcRhBMtCqxc32MsgcDJyg0KAqALyYOeNxv/jD8X9UgkblWijbFP6df7
-         6nxMo4AVR+UgnIe9C5EtEjI1nvEVDO5lw9KrYNdTQAQMPSaSMmQujAwNTa1qek6LZZDp
-         EXOA==
-X-Gm-Message-State: AOAM531QcEhxTtYj+OCzCGWbrtDwEzaZk2ZtIL0sE0ZQ8Ia4S6Jvr3MA
-        cAIbk4oHwOa0fqdiHIgkwxYGUQ==
-X-Google-Smtp-Source: ABdhPJx2UytE2+3TxqwsBnenNFkHZlwOqXn+BLp+1SNYsWCd5bYpzcXqbQsl8/D/zA8Xk6OSWPsezA==
-X-Received: by 2002:a19:dc0f:0:b0:439:702c:d83b with SMTP id t15-20020a19dc0f000000b00439702cd83bmr1932630lfg.192.1645018229578;
-        Wed, 16 Feb 2022 05:30:29 -0800 (PST)
+        bh=9aG6JPCK/sc9cnjNg+7v1niwfwPA6zUyJ/dRYHoXrdI=;
+        b=Mn8NNOl6llmeRPvRj5YZFWnxxili3Fayzy+v8KJXlpXlDWdsqxAZAlhixpT3/dKHwv
+         xIYqLs1H3zQH+POZgqG0u6IExft0TkaFDDjep4p+gEkJfgKoGGXV+St3xEELPxW0gMkm
+         Z01jTLzJWAwgzWFgfATvFpARVXX8ZRR05HDfllUx2ac31rgaZu1ozYVQUxfD8qVruFDF
+         Djpewk+iHoHK7MhMbqQeNYMZ+BWykcYwHb4juiSlXMUBiovz+mPQ0MUMjlVukFrbia3t
+         xnE6nd+qN9uQYeGEhYRmvnM1OXdWud0hJn4O9Npy8Tx0LmOHha2GIG5RvEO/Yu1/ua2O
+         HCiA==
+X-Gm-Message-State: AOAM530wSWZNJ1Ecef2c6hHRJbqKn18YYQXRrUpUTTZWLz33/XV3uiFv
+        cLTa54UC9UiCdBcfT+lWC4NIHg==
+X-Google-Smtp-Source: ABdhPJyg+scehAihayVhY44Bgyvv+/FzyTQyajhhfVYNAwXSUcRrxMD/t+haHu8aNvmZhZ5P/vQH3w==
+X-Received: by 2002:a05:6512:3d94:b0:43e:af37:af96 with SMTP id k20-20020a0565123d9400b0043eaf37af96mr1973403lfv.469.1645018231909;
+        Wed, 16 Feb 2022 05:30:31 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id v6sm234780ljd.86.2022.02.16.05.30.28
+        by smtp.gmail.com with ESMTPSA id v6sm234780ljd.86.2022.02.16.05.30.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 05:30:28 -0800 (PST)
+        Wed, 16 Feb 2022 05:30:31 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -60,9 +60,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: [RFC net-next 6/9] net: dsa: Pass MST state changes to driver
-Date:   Wed, 16 Feb 2022 14:29:31 +0100
-Message-Id: <20220216132934.1775649-7-tobias@waldekranz.com>
+Subject: [RFC net-next 8/9] net: dsa: mv88e6xxx: Export STU as devlink region
+Date:   Wed, 16 Feb 2022 14:29:33 +0100
+Message-Id: <20220216132934.1775649-9-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220216132934.1775649-1-tobias@waldekranz.com>
 References: <20220216132934.1775649-1-tobias@waldekranz.com>
@@ -73,101 +73,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the usual trampoline functionality from the generic DSA layer down
-to the drivers for MST state changes.
+Export the raw STU data in a devlink region so that it can be
+inspected from userspace and compared to the current bridge
+configuration.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- include/net/dsa.h  |  2 ++
- net/dsa/dsa_priv.h |  2 ++
- net/dsa/port.c     | 30 ++++++++++++++++++++++++++++++
- net/dsa/slave.c    |  6 ++++++
- 4 files changed, 40 insertions(+)
+ drivers/net/dsa/mv88e6xxx/chip.h    |  1 +
+ drivers/net/dsa/mv88e6xxx/devlink.c | 94 +++++++++++++++++++++++++++++
+ 2 files changed, 95 insertions(+)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 2aabe7f0b176..f030afb68f46 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -882,6 +882,8 @@ struct dsa_switch_ops {
- 				     struct dsa_bridge bridge);
- 	void	(*port_stp_state_set)(struct dsa_switch *ds, int port,
- 				      u8 state);
-+	int	(*port_mst_state_set)(struct dsa_switch *ds, int port,
-+				      const struct switchdev_mst_state *state);
- 	void	(*port_fast_age)(struct dsa_switch *ds, int port);
- 	int	(*port_pre_bridge_flags)(struct dsa_switch *ds, int port,
- 					 struct switchdev_brport_flags flags,
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 43709c005461..96d09184de5d 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -185,6 +185,8 @@ static inline struct net_device *dsa_master_find_slave(struct net_device *dev,
- void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
- 			       const struct dsa_device_ops *tag_ops);
- int dsa_port_set_state(struct dsa_port *dp, u8 state, bool do_fast_age);
-+int dsa_port_set_mst_state(struct dsa_port *dp,
-+			   const struct switchdev_mst_state *state);
- int dsa_port_enable_rt(struct dsa_port *dp, struct phy_device *phy);
- int dsa_port_enable(struct dsa_port *dp, struct phy_device *phy);
- void dsa_port_disable_rt(struct dsa_port *dp);
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 4fb2bf2383d9..a34779658f17 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -108,6 +108,36 @@ int dsa_port_set_state(struct dsa_port *dp, u8 state, bool do_fast_age)
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index be654be69982..6d4daa24d3e5 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -287,6 +287,7 @@ enum mv88e6xxx_region_id {
+ 	MV88E6XXX_REGION_GLOBAL2,
+ 	MV88E6XXX_REGION_ATU,
+ 	MV88E6XXX_REGION_VTU,
++	MV88E6XXX_REGION_STU,
+ 	MV88E6XXX_REGION_PVT,
+ 
+ 	_MV88E6XXX_REGION_MAX,
+diff --git a/drivers/net/dsa/mv88e6xxx/devlink.c b/drivers/net/dsa/mv88e6xxx/devlink.c
+index 381068395c63..1266eabee086 100644
+--- a/drivers/net/dsa/mv88e6xxx/devlink.c
++++ b/drivers/net/dsa/mv88e6xxx/devlink.c
+@@ -503,6 +503,85 @@ static int mv88e6xxx_region_vtu_snapshot(struct devlink *dl,
  	return 0;
  }
  
-+int dsa_port_set_mst_state(struct dsa_port *dp,
-+			   const struct switchdev_mst_state *state)
++/**
++ * struct mv88e6xxx_devlink_stu_entry - Devlink STU entry
++ * @sid:   Global1/3:   SID, unknown filters and learning.
++ * @vid:   Global1/6:   Valid bit.
++ * @data:  Global1/7-9: Membership data and priority override.
++ * @resvd: Reserved. In case we forgot something.
++ *
++ * The STU entry format varies between chipset generations. Peridot
++ * and Amethyst packs the STU data into Global1/7-8. Older silicon
++ * spreads the information across all three VTU data registers -
++ * inheriting the layout of even older hardware that had no STU at
++ * all. Since this is a low-level debug interface, copy all data
++ * verbatim and defer parsing to the consumer.
++ */
++struct mv88e6xxx_devlink_stu_entry {
++	u16 sid;
++	u16 vid;
++	u16 data[3];
++	u16 resvd;
++};
++
++static int mv88e6xxx_region_stu_snapshot(struct devlink *dl,
++					 const struct devlink_region_ops *ops,
++					 struct netlink_ext_ack *extack,
++					 u8 **data)
 +{
-+	struct dsa_switch *ds = dp->ds;
-+	int err, port = dp->index;
++	struct mv88e6xxx_devlink_stu_entry *table, *entry;
++	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
++	struct mv88e6xxx_chip *chip = ds->priv;
++	struct mv88e6xxx_stu_entry stu;
++	int err;
 +
-+	if (!ds->ops->port_mst_state_set)
-+		return -EOPNOTSUPP;
++	table = kcalloc(mv88e6xxx_max_sid(chip) + 1,
++			sizeof(struct mv88e6xxx_devlink_stu_entry),
++			GFP_KERNEL);
++	if (!table)
++		return -ENOMEM;
 +
-+	err = ds->ops->port_mst_state_set(ds, port, state);
-+	if (err)
-+		return err;
++	entry = table;
++	stu.sid = mv88e6xxx_max_sid(chip);
++	stu.valid = false;
 +
-+	if (!dsa_port_can_configure_learning(dp) || dp->learning) {
-+		switch (state->state) {
-+		case BR_STATE_DISABLED:
-+		case BR_STATE_BLOCKING:
-+		case BR_STATE_LISTENING:
-+			/* Ideally we would only fast age entries
-+			 * belonging to VLANs controlled by this
-+			 * MST.
-+			 */
-+			dsa_port_fast_age(dp);
++	mv88e6xxx_reg_lock(chip);
++
++	do {
++		err = mv88e6xxx_g1_stu_getnext(chip, &stu);
++		if (err)
 +			break;
-+		}
++
++		if (!stu.valid)
++			break;
++
++		err = err ? : mv88e6xxx_g1_read(chip, MV88E6352_G1_VTU_SID,
++						&entry->sid);
++		err = err ? : mv88e6xxx_g1_read(chip, MV88E6XXX_G1_VTU_VID,
++						&entry->vid);
++		err = err ? : mv88e6xxx_g1_read(chip, MV88E6XXX_G1_VTU_DATA1,
++						&entry->data[0]);
++		err = err ? : mv88e6xxx_g1_read(chip, MV88E6XXX_G1_VTU_DATA2,
++						&entry->data[1]);
++		err = err ? : mv88e6xxx_g1_read(chip, MV88E6XXX_G1_VTU_DATA3,
++						&entry->data[2]);
++		if (err)
++			break;
++
++		entry++;
++	} while (stu.sid < mv88e6xxx_max_sid(chip));
++
++	mv88e6xxx_reg_unlock(chip);
++
++	if (err) {
++		kfree(table);
++		return err;
 +	}
 +
++	*data = (u8 *)table;
 +	return 0;
 +}
 +
- static void dsa_port_set_state_now(struct dsa_port *dp, u8 state,
- 				   bool do_fast_age)
- {
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 0a5e44105add..48075d697588 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -288,6 +288,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
+ static int mv88e6xxx_region_pvt_snapshot(struct devlink *dl,
+ 					 const struct devlink_region_ops *ops,
+ 					 struct netlink_ext_ack *extack,
+@@ -605,6 +684,12 @@ static struct devlink_region_ops mv88e6xxx_region_vtu_ops = {
+ 	.destructor = kfree,
+ };
  
- 		ret = dsa_port_set_state(dp, attr->u.stp_state, true);
- 		break;
-+	case SWITCHDEV_ATTR_ID_PORT_MST_STATE:
-+		if (!dsa_port_offloads_bridge_port(dp, attr->orig_dev))
-+			return -EOPNOTSUPP;
++static struct devlink_region_ops mv88e6xxx_region_stu_ops = {
++	.name = "stu",
++	.snapshot = mv88e6xxx_region_stu_snapshot,
++	.destructor = kfree,
++};
 +
-+		ret = dsa_port_set_mst_state(dp, &attr->u.mst_state);
-+		break;
- 	case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
- 		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
- 			return -EOPNOTSUPP;
+ static struct devlink_region_ops mv88e6xxx_region_pvt_ops = {
+ 	.name = "pvt",
+ 	.snapshot = mv88e6xxx_region_pvt_snapshot,
+@@ -640,6 +725,11 @@ static struct mv88e6xxx_region mv88e6xxx_regions[] = {
+ 		.ops = &mv88e6xxx_region_vtu_ops
+ 	  /* calculated at runtime */
+ 	},
++	[MV88E6XXX_REGION_STU] = {
++		.ops = &mv88e6xxx_region_stu_ops,
++		.cond = mv88e6xxx_has_stu,
++	  /* calculated at runtime */
++	},
+ 	[MV88E6XXX_REGION_PVT] = {
+ 		.ops = &mv88e6xxx_region_pvt_ops,
+ 		.size = MV88E6XXX_MAX_PVT_ENTRIES * sizeof(u16),
+@@ -706,6 +796,10 @@ int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds)
+ 			size = (mv88e6xxx_max_vid(chip) + 1) *
+ 				sizeof(struct mv88e6xxx_devlink_vtu_entry);
+ 			break;
++		case MV88E6XXX_REGION_STU:
++			size = (mv88e6xxx_max_sid(chip) + 1) *
++				sizeof(struct mv88e6xxx_devlink_stu_entry);
++			break;
+ 		}
+ 
+ 		region = dsa_devlink_region_create(ds, ops, 1, size);
 -- 
 2.25.1
 
