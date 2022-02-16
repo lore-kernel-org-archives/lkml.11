@@ -2,283 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5379DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 03:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D20A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 03:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344214AbiBPDVt (ORCPT
+        id S1344225AbiBPDV4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 22:21:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47824 "EHLO
+        Tue, 15 Feb 2022 22:21:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233625AbiBPDVr (ORCPT
+        with ESMTP id S233625AbiBPDVw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 22:21:47 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443DA13F66
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 19:21:35 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id c10so1018689pfv.8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 19:21:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vw8qsUjrvsewVRkefqUfPybP+5Z8VVwo22NfPcxFm0A=;
-        b=dgO7FhOY2JfQ2IuLfOG2+6uYTThsWgKj/hMrjHToVTKPrHe2y7HZPfgQon5t2nJupZ
-         xE/6oPFfV6H6vhhYCOlncyNL7KmQGjDkC0fK1cN3YOKHm0dC4BT4/WN6CmIIOMNERuHA
-         uMVsZRX/f02HrDzFwhUtgY/LAoFOjBHXHOpI3xbcwFnM3HgpTJj/ldRGYzC++aMpFIay
-         rwequSDABGFWuBzkdYLmFvdqk3kistFZ9YZce6p+KpDSUs/r5AMaOhO6NgRJNBLoXsJL
-         Q4wdnDkA9AJXGBNuFZSCvpC11uUZFWl7dwdCdZk2q5/xG+ErbjgqoFLTJkzOmivOCSr1
-         DwrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vw8qsUjrvsewVRkefqUfPybP+5Z8VVwo22NfPcxFm0A=;
-        b=ZHCJ7gHP1i/DewiTTL46bdAHMGPatsMDD7HAGALXrVnRUTWsb0hUcCw7hCEgLVP8cA
-         gdod6Eyjeq6Rnt6b1vyE5nK3yrirh25ZuRxOuLxJ2OHdTZwB1Ie/1fDuuiGpmvEa+NCX
-         MqKIXwkI+I70cJay/1qQ8digiFTxhv/zVzbylC99kuUvFdQABYVPFpqF1KssANXdxlDN
-         wVTsnyktNKC9yLSDB9FOWXN3qgBaQy+fdnzzyQ+/dBrmKACZiYJVT2WB2MNn3+3UMxnq
-         xGA0cLkevGjNxl0zI+IRbZzaYxGKBSxyP9BqBbmL0k8rrXW1l8P2CK3qVy1TA7a0BhEw
-         gKpg==
-X-Gm-Message-State: AOAM533qx6Le/LIlANNbphUsugNhY92VQgEzYhQaXlrRFVj37q2DL/oD
-        2pGozWo0vQa04K6fut9m0uEseYv9zXXv9Vmw505lCw==
-X-Google-Smtp-Source: ABdhPJyuuPzOEwmW+m5vEZBdWxTnv9HwCvggPR3Bu976gqtuMVGeBifHYjgGPdwjgVlUgB3HcMqCsBka29+qh7hOs/k=
-X-Received: by 2002:a63:f011:0:b0:36c:2da3:32bc with SMTP id
- k17-20020a63f011000000b0036c2da332bcmr661337pgh.40.1644981694745; Tue, 15 Feb
- 2022 19:21:34 -0800 (PST)
+        Tue, 15 Feb 2022 22:21:52 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB411400F;
+        Tue, 15 Feb 2022 19:21:35 -0800 (PST)
+X-UUID: 3686b0aa786b4a78a5e0ac1dd57d9d1a-20220216
+X-UUID: 3686b0aa786b4a78a5e0ac1dd57d9d1a-20220216
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <guodong.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1363640122; Wed, 16 Feb 2022 11:21:31 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 16 Feb 2022 11:21:30 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Feb
+ 2022 11:21:30 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 11:21:29 +0800
+From:   Guodong Liu <guodong.liu@mediatek.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@kernel.org>
+CC:     Sean Wang <sean.wang@mediatek.com>, <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Guodong Liu <guodong.liu@mediatek.com>
+Subject: [PATCH v5 0/3] pinctrl: mediatek: Support pinctrl driver on mt8186
+Date:   Wed, 16 Feb 2022 11:21:21 +0800
+Message-ID: <20220216032124.28067-1-guodong.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220111161937.56272-1-pankaj.gupta.linux@gmail.com> <20220111161937.56272-2-pankaj.gupta.linux@gmail.com>
-In-Reply-To: <20220111161937.56272-2-pankaj.gupta.linux@gmail.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 15 Feb 2022 19:21:23 -0800
-Message-ID: <CAPcyv4jrVJ_B0N_-vtqgXaOMovUgnSLCNj228nWMRhGAC5PDhA@mail.gmail.com>
-Subject: Re: [RFC v3 1/2] virtio-pmem: Async virtio-pmem flush
-To:     Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Cc:     Linux NVDIMM <nvdimm@lists.linux.dev>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        jmoyer <jmoyer@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Vishal L Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        Pankaj Gupta <pankaj.gupta@ionos.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 8:23 AM Pankaj Gupta
-<pankaj.gupta.linux@gmail.com> wrote:
->
-> Enable asynchronous flush for virtio pmem using work queue. Also,
-> coalesce the flush requests when a flush is already in process.
-> This functionality is copied from md/RAID code.
->
-> When a flush is already in process, new flush requests wait till
-> previous flush completes in another context (work queue). For all
-> the requests come between ongoing flush and new flush start time, only
-> single flush executes, thus adhers to flush coalscing logic. This is
+changes since v4:
+- update mt8186 pull up RSEL type define value
+- update mt8186 pull up RSEL type si unit value(ohm)
+- update macro definition name
+- update mt8186 bias resistance selectio register description
 
-s/adhers/adheres/
+changes since v3:
+- remove generic descriptions for common properties
+- remove quotes
+- drop "."
+- drop "-" on description
+- move partial "bias-pull-up" description info to the example
+- don't break the code into two lines, maximux 84 columns is fine
+- add the required fixes tag
 
-s/coalscing/coalescing/
+changes since v2:
+- update reg property
+- update reg-names property
+- sync rsel resistance selection property same as patch 3
+- repair constraints is not indented correctly for bias-pull-{up,down}
+- add "type: boolean" to the list of valid values. This corresponds to having bias-pull-{up,down} without any arguments.
+- add dual file license for file "mt8186-pinfunc.h"
+- add patch 3 to change "mediatek,rsel_resistance_in_si_unit" to "mediatek,rsel-resistance-in-si-unit"
 
-> important for maintaining the flush request order with request coalscing.
+changes since v1:
+- add default pinctrl config to consistent with other MTK pinctrl drivers
 
-s/coalscing/coalescing/
+Patch 1 add pinctrl file and binding document.
 
->
-> Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-> ---
->  drivers/nvdimm/nd_virtio.c   | 74 +++++++++++++++++++++++++++---------
->  drivers/nvdimm/virtio_pmem.c | 10 +++++
->  drivers/nvdimm/virtio_pmem.h | 16 ++++++++
->  3 files changed, 83 insertions(+), 17 deletions(-)
->
-> diff --git a/drivers/nvdimm/nd_virtio.c b/drivers/nvdimm/nd_virtio.c
-> index 10351d5b49fa..179ea7a73338 100644
-> --- a/drivers/nvdimm/nd_virtio.c
-> +++ b/drivers/nvdimm/nd_virtio.c
-> @@ -100,26 +100,66 @@ static int virtio_pmem_flush(struct nd_region *nd_region)
->  /* The asynchronous flush callback function */
->  int async_pmem_flush(struct nd_region *nd_region, struct bio *bio)
->  {
-> -       /*
-> -        * Create child bio for asynchronous flush and chain with
-> -        * parent bio. Otherwise directly call nd_region flush.
-> +       /* queue asynchronous flush and coalesce the flush requests */
-> +       struct virtio_device *vdev = nd_region->provider_data;
-> +       struct virtio_pmem *vpmem  = vdev->priv;
-> +       ktime_t req_start = ktime_get_boottime();
-> +       int ret = -EINPROGRESS;
-> +
-> +       spin_lock_irq(&vpmem->lock);
+Patch 2 add pinctrl chip driver on mt8186.
 
-Why a new lock and not continue to use ->pmem_lock?
+Patch 3 canonical rsel resistance selection property.
 
-Have you tested this with CONFIG_PROVE_LOCKING?
+Guodong Liu (3):
+  dt-bindings: pinctrl: mt8186: add pinctrl file and binding document
+  pinctrl: add pinctrl driver on mt8186
+  pinctrl: canonical rsel resistance selection property
 
-Along those lines do you have a selftest that can be added to the
-kernel as well so that 0day or other bots could offer early warnings
-on regressions?
+ .../bindings/pinctrl/pinctrl-mt8186.yaml      |  297 +++
+ drivers/pinctrl/mediatek/Kconfig              |    7 +
+ drivers/pinctrl/mediatek/Makefile             |    1 +
+ drivers/pinctrl/mediatek/pinctrl-mt8186.c     | 1271 ++++++++++
+ drivers/pinctrl/mediatek/pinctrl-mtk-mt8186.h | 2186 +++++++++++++++++
+ drivers/pinctrl/mediatek/pinctrl-paris.c      |    2 +-
+ include/dt-bindings/pinctrl/mt8186-pinfunc.h  | 1174 +++++++++
+ 7 files changed, 4937 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
+ create mode 100644 drivers/pinctrl/mediatek/pinctrl-mt8186.c
+ create mode 100644 drivers/pinctrl/mediatek/pinctrl-mtk-mt8186.h
+ create mode 100644 include/dt-bindings/pinctrl/mt8186-pinfunc.h
 
-> +       /* flush requests wait until ongoing flush completes,
-> +        * hence coalescing all the pending requests.
->          */
-> -       if (bio && bio->bi_iter.bi_sector != -1) {
-> -               struct bio *child = bio_alloc(GFP_ATOMIC, 0);
-> -
-> -               if (!child)
-> -                       return -ENOMEM;
-> -               bio_copy_dev(child, bio);
-> -               child->bi_opf = REQ_PREFLUSH;
-> -               child->bi_iter.bi_sector = -1;
-> -               bio_chain(child, bio);
-> -               submit_bio(child);
-> -               return 0;
-> +       wait_event_lock_irq(vpmem->sb_wait,
-> +                           !vpmem->flush_bio ||
-> +                           ktime_before(req_start, vpmem->prev_flush_start),
-> +                           vpmem->lock);
-> +       /* new request after previous flush is completed */
-> +       if (ktime_after(req_start, vpmem->prev_flush_start)) {
-> +               WARN_ON(vpmem->flush_bio);
-> +               vpmem->flush_bio = bio;
-> +               bio = NULL;
-> +       }
-> +       spin_unlock_irq(&vpmem->lock);
-> +
-> +       if (!bio)
-> +               queue_work(vpmem->pmem_wq, &vpmem->flush_work);
-> +       else {
-> +       /* flush completed in other context while we waited */
-> +               if (bio && (bio->bi_opf & REQ_PREFLUSH))
-> +                       bio->bi_opf &= ~REQ_PREFLUSH;
-> +               else if (bio && (bio->bi_opf & REQ_FUA))
-> +                       bio->bi_opf &= ~REQ_FUA;
-> +
-> +               ret = vpmem->prev_flush_err;
->         }
-> -       if (virtio_pmem_flush(nd_region))
-> -               return -EIO;
->
-> -       return 0;
-> +       return ret;
->  };
->  EXPORT_SYMBOL_GPL(async_pmem_flush);
-> +
-> +void submit_async_flush(struct work_struct *ws)
+-- 
+2.25.1
 
-This name is too generic to be exported from drivers/nvdimm/nd_virtio.c
-
-...it strikes me that there is little reason for nd_virtio and
-virtio_pmem to be separate modules. They are both enabled by the same
-Kconfig, so why not combine them into one module and drop the exports?
-
-> +{
-> +       struct virtio_pmem *vpmem = container_of(ws, struct virtio_pmem, flush_work);
-> +       struct bio *bio = vpmem->flush_bio;
-> +
-> +       vpmem->start_flush = ktime_get_boottime();
-> +       vpmem->prev_flush_err = virtio_pmem_flush(vpmem->nd_region);
-> +       vpmem->prev_flush_start = vpmem->start_flush;
-> +       vpmem->flush_bio = NULL;
-> +       wake_up(&vpmem->sb_wait);
-> +
-> +       if (vpmem->prev_flush_err)
-> +               bio->bi_status = errno_to_blk_status(-EIO);
-> +
-> +       /* Submit parent bio only for PREFLUSH */
-> +       if (bio && (bio->bi_opf & REQ_PREFLUSH)) {
-> +               bio->bi_opf &= ~REQ_PREFLUSH;
-> +               submit_bio(bio);
-> +       } else if (bio && (bio->bi_opf & REQ_FUA)) {
-> +               bio->bi_opf &= ~REQ_FUA;
-> +               bio_endio(bio);
-> +       }
-> +}
-> +EXPORT_SYMBOL_GPL(submit_async_flush);
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/nvdimm/virtio_pmem.c b/drivers/nvdimm/virtio_pmem.c
-> index 726c7354d465..75ed9b7ddea1 100644
-> --- a/drivers/nvdimm/virtio_pmem.c
-> +++ b/drivers/nvdimm/virtio_pmem.c
-> @@ -24,6 +24,7 @@ static int init_vq(struct virtio_pmem *vpmem)
->                 return PTR_ERR(vpmem->req_vq);
->
->         spin_lock_init(&vpmem->pmem_lock);
-> +       spin_lock_init(&vpmem->lock);
->         INIT_LIST_HEAD(&vpmem->req_list);
->
->         return 0;
-> @@ -57,7 +58,14 @@ static int virtio_pmem_probe(struct virtio_device *vdev)
->                 dev_err(&vdev->dev, "failed to initialize virtio pmem vq's\n");
->                 goto out_err;
->         }
-> +       vpmem->pmem_wq = alloc_workqueue("vpmem_wq", WQ_MEM_RECLAIM, 0);
-> +       if (!vpmem->pmem_wq) {
-> +               err = -ENOMEM;
-> +               goto out_err;
-> +       }
->
-> +       INIT_WORK(&vpmem->flush_work, submit_async_flush);
-> +       init_waitqueue_head(&vpmem->sb_wait);
->         virtio_cread_le(vpmem->vdev, struct virtio_pmem_config,
->                         start, &vpmem->start);
->         virtio_cread_le(vpmem->vdev, struct virtio_pmem_config,
-> @@ -90,10 +98,12 @@ static int virtio_pmem_probe(struct virtio_device *vdev)
->                 goto out_nd;
->         }
->         nd_region->provider_data = dev_to_virtio(nd_region->dev.parent->parent);
-> +       vpmem->nd_region = nd_region;
->         return 0;
->  out_nd:
->         nvdimm_bus_unregister(vpmem->nvdimm_bus);
->  out_vq:
-> +       destroy_workqueue(vpmem->pmem_wq);
->         vdev->config->del_vqs(vdev);
->  out_err:
->         return err;
-> diff --git a/drivers/nvdimm/virtio_pmem.h b/drivers/nvdimm/virtio_pmem.h
-> index 0dddefe594c4..495dc20e1cdb 100644
-> --- a/drivers/nvdimm/virtio_pmem.h
-> +++ b/drivers/nvdimm/virtio_pmem.h
-> @@ -35,9 +35,24 @@ struct virtio_pmem {
->         /* Virtio pmem request queue */
->         struct virtqueue *req_vq;
->
-> +       struct bio *flush_bio;
-> +       /* last_flush is when the last completed flush was started */
-> +       ktime_t prev_flush_start, start_flush;
-> +       int prev_flush_err;
-> +
-> +       /* work queue for deferred flush */
-> +       struct work_struct flush_work;
-> +       struct workqueue_struct *pmem_wq;
-> +
-> +       /* Synchronize flush wait queue data */
-> +       spinlock_t lock;
-> +       /* for waiting for previous flush to complete */
-> +       wait_queue_head_t sb_wait;
-> +
->         /* nvdimm bus registers virtio pmem device */
->         struct nvdimm_bus *nvdimm_bus;
->         struct nvdimm_bus_descriptor nd_desc;
-> +       struct nd_region *nd_region;
->
->         /* List to store deferred work if virtqueue is full */
->         struct list_head req_list;
-> @@ -52,4 +67,5 @@ struct virtio_pmem {
->
->  void virtio_pmem_host_ack(struct virtqueue *vq);
->  int async_pmem_flush(struct nd_region *nd_region, struct bio *bio);
-> +void submit_async_flush(struct work_struct *ws);
->  #endif
-> --
-> 2.25.1
->
->
