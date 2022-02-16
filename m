@@ -2,122 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74EC0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0359CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233674AbiBPNHE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:07:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49286 "EHLO
+        id S233688AbiBPNH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:07:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233634AbiBPNG5 (ORCPT
+        with ESMTP id S233564AbiBPNHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:06:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77D310FCA;
-        Wed, 16 Feb 2022 05:06:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 526246165D;
-        Wed, 16 Feb 2022 13:06:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5DFCC340FC;
-        Wed, 16 Feb 2022 13:06:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645016803;
-        bh=XpyXyO6XeLPMFwMT57AZNzNQgXnMBZ2Ni2r+dAXZ1s0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=m86IV6YQZzHRJuDux3taFbaRjn+w9RuI6vh4wtLv8qscNybLMG9S7+2rm1PNzrb20
-         Dd5S6VsCYA0xUl1vOFFn3tNcP5kMF/3okjlp1F0h2o1Xvta1epkmZYCJUZnDs3yLoA
-         VzYx4F/n1Ow3YwU1D9VL3p/ZapRwreq4wU2F2zdBEZVDPHlhJZ5UCirUITvqXKP03u
-         mjPPXaT5ZCAExBhxPZs+6x/NgZOCXftC+3jOhCw6lYUHk202K2WWgJTp7zViNeOTI3
-         d6qcX+NrilxdmbmnVfKB2lTecLHUYHmjxyqYH1gVkIK8Gk+2LbSYNZnzPmnsXhuwAQ
-         I1fP9Rg2mGbLg==
-Received: by mail-wm1-f43.google.com with SMTP id l123-20020a1c2581000000b0037b9d960079so3733479wml.0;
-        Wed, 16 Feb 2022 05:06:43 -0800 (PST)
-X-Gm-Message-State: AOAM533suSpGIPZFo6azCEQzN6a4sWKCfT6uZn8ZqdIqnaHa/7jtM2Qg
-        XgW6pdas+HRdBq2uY66T9weLH2VaAJuntcNtlvg=
-X-Google-Smtp-Source: ABdhPJz2fGQt4XBj3ZPZmmV0DF3C11Wmt7pFZ5Wv5cMpV0NQk32vVK4/Sp5p4cooe9t3m3i9Hn5C5g4DuBewCt15hb0=
-X-Received: by 2002:a1c:21c5:0:b0:37d:40d0:94c7 with SMTP id
- h188-20020a1c21c5000000b0037d40d094c7mr1551416wmh.1.1645016801710; Wed, 16
- Feb 2022 05:06:41 -0800 (PST)
+        Wed, 16 Feb 2022 08:07:23 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F03E016;
+        Wed, 16 Feb 2022 05:07:09 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: tonyk)
+        with ESMTPSA id 0E7FF1F40AE2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645016828;
+        bh=yrAn8vL3kOup+hs9ZweLwoFtSHWsggRpT/ckoMEaSno=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=IuvxH97K1TGXvozbseudBG1OIKYdfm6tSY80yTfWP3cKJuuBbglsSGMMOyRbP8qhv
+         XDXu6sCfZ6gDTJG8Dtc6dcmkwyt5T+l2a0tC+z3uxNzwkziccrib0iQVCNYGZ43f9o
+         1rShZrAOB5VIKvt6B8zj++xeo90iBo1ciPh9pHbyupneyF4fxBST7J0FAd+h69IJF3
+         uJVkLZwbQc5j6QTNcQf0p7+H2To1ydmgvBaJ8jzXMup+9qrPhMir6li0A7ZvdYhOAt
+         ZcWNVHhlGafV5n8StbHAH/YTo2RUv5QKwvhjYzkZzHZFNdZ4yqzuz7pPkL7TU0byyp
+         IbpbAb7FiMA9g==
+Message-ID: <284e2e05-9402-e480-7a69-3282b7e95b6f@collabora.com>
+Date:   Wed, 16 Feb 2022 10:07:02 -0300
 MIME-Version: 1.0
-References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-12-arnd@kernel.org>
- <YgqMLYJs0RMecMck@infradead.org>
-In-Reply-To: <YgqMLYJs0RMecMck@infradead.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 16 Feb 2022 14:06:25 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0PwjB+KE+j3_sknZuiuY-kUe_J76nYac-mx82dccA3Rw@mail.gmail.com>
-Message-ID: <CAK8P3a0PwjB+KE+j3_sknZuiuY-kUe_J76nYac-mx82dccA3Rw@mail.gmail.com>
-Subject: Re: [PATCH 11/14] sparc64: remove CONFIG_SET_FS support
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: linux-next: build failure after merge of the spi tree
+Content-Language: en-US
+From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Brian Cain <bcain@codeaurora.org>,
-        Helge Deller <deller@gmx.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        linux-csky@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SYNOPSYS ARC ARCHITECTURE" 
-        <linux-snps-arc@lists.infradead.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Openrisc <openrisc@lists.librecores.org>,
-        Greentime Hu <green.hu@gmail.com>,
-        Stafford Horne <shorne@gmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Nick Hu <nickhu@andestech.com>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Richard Weinberger <richard@nod.at>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220216161718.2c094b08@canb.auug.org.au>
+ <c041df98-fbea-bc76-75c0-42d549248dfd@collabora.com>
+In-Reply-To: <c041df98-fbea-bc76-75c0-42d549248dfd@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 6:06 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> >  void prom_world(int enter)
-> >  {
-> > -     if (!enter)
-> > -             set_fs(get_fs());
-> > -
-> >       __asm__ __volatile__("flushw");
-> >  }
->
-> The enter argument is now unused.
+Às 09:20 de 16/02/22, André Almeida escreveu:
+> Hi Stephen,
+> 
+> Às 02:17 de 16/02/22, Stephen Rothwell escreveu:
+>> Hi all,
+>>
+>> After merging the spi tree, today's linux-next build (powerpc
+>> allyesconfig) failed like this:
+>>
+>> drivers/spi/spi-amd.c:333:37: error: 'spi_acpi_match' undeclared here (not in a function)
+>>   333 |                 .acpi_match_table = spi_acpi_match,
+>>       |                                     ^~~~~~~~~~~~~~
+>>
+>> Caused by commit
+>>
+>>   209043554915 ("spi: amd: Add support for version AMDI0062")
+>>
+>> CONFIG_ACPI is not set for this build.
+>>
+>> I have reverted that commit for today.
+>>
+> 
+> Thanks for input. I'll send a new series with a patch to make this
+> driver depends on ACPI then. My patch touched this line, but this
+> variable was there before, so I think this build breakage is happening
+> for some time.
 
-Right, good point. I'll add a comment, but I think I will leave that
-as this seems
-too hard to change the callers in assembly code for this. If any
-sparc64 developer
-wants to clean that up, I'm happy to integrate the cleanup patch in my series.
+Actually, the following diff in my commit is the problem:
 
-         Arnd
+-		.acpi_match_table = ACPI_PTR(spi_acpi_match),
++		.acpi_match_table = spi_acpi_match,
+
+ACPI_PTR() make it as NULL if CONFIG_ACPI is not set, making the driver
+suitable for test compiling even without ACPI enabled. Mark, I'll send a
+v3 with this fixed.
