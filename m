@@ -2,119 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA905C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DECAC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234244AbiBPN2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:28:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40766 "EHLO
+        id S234286AbiBPN3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:29:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233815AbiBPN2w (ORCPT
+        with ESMTP id S231593AbiBPN26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:28:52 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133DE163D79
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:28:39 -0800 (PST)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A35B13F328
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 13:28:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645018118;
-        bh=uvLbH9+eJYb169S0u8GtDlmAGmS1dovfO9ippBhbjag=;
-        h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-         In-Reply-To:Content-Type;
-        b=VejuCDpk73LG2nSO+2rGaItSvInGFyiLk8/FjmKsNurHWHsrMRcYo8To5xh/A+jIE
-         IX2lYOOF/WyTAHohGvKbDMUv4htj9odDx9MzadfRubhRiIvBncc16EJPfPNZ6z9Ewt
-         uE5PwJEsjsw8gXqyQbhHb0ijBvATeW4T8wCLLmk+9bJ5fKLSrcHfdabHtb3jJCLA/O
-         UFHS2w0kiVbaAxmfd4Si8WjE3309eem459svAGdSCkcbXYZH1sO8guEO4NL//B1F4S
-         8IlZO+K5+AjcEl1oYZYsxrgTGO+CrjhsekL+jnoYffWo5BCxsB1drx+m6i4laEGH6Z
-         Iykgx6EuYnV2g==
-Received: by mail-ej1-f72.google.com with SMTP id d7-20020a1709061f4700b006bbf73a7becso828109ejk.17
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:28:38 -0800 (PST)
+        Wed, 16 Feb 2022 08:28:58 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399BA163D79
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:28:44 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id 132so2164254pga.5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:28:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=ZHriclNHcfARQz6gk+CKow6808MH12Lwf6CagzPJ1w4=;
+        b=S33hEt2BQqVZwAaMgLA3TC48JP7dGWC8DEtm950f/BsYz9JouJKrpFDIJFRlIh2REH
+         SYCjtdDGjxf95DrVarpNfYrRsLEVu14eOpD+EiN4Gt8YytXbmmFPuoICt9mDoAzHKDeR
+         Ot6M7gQuDlbfMNZVxApkzWiAjIzAG354CFIWlHNrhe/sbZDS+AKEqDZGOkGZR42WYdEN
+         M/mDcDHNYybR8Urc5J8oZs37i6wYlFmRjCfB9FtGjrlxjhvXdIYUWoWudFFizPx97OsI
+         bMhvghSPYSqKW/ZnB6xrA4qqZHf7BDkJiZUT/UP6W4jHFoitvdoZBob7l5zXDJmpnhHW
+         +Yjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=uvLbH9+eJYb169S0u8GtDlmAGmS1dovfO9ippBhbjag=;
-        b=6O/yNLTQ2aPc7GDVqCW2Yrq/6yS6HVs8vboh/+b2eOrLn02ruryyNZYEgr9PiQDWbC
-         KRxsBmPfFMnOFPmEqzHqZRthDUBGT8htE9ksBfVisJtsqtfYW21vu+ORDRo6Xyv5i4m4
-         JRxI6BN++3zNMhuQUFyXnvrsFAEAYd1lKOPerWCLhE+PrSbO22edbbMlAi/nhD8UcDDy
-         MVa/DmYo4e+5Pl3G7wROku1GddTCbljIjKc02eURUbOM8Bu6d56yv7qeF/VA0kvL/P1A
-         rTObmdUnJUPTZbK/x794spmOstSOK7nkSYTO7vSETC6W8h+Tfujgt0s+WOv/xVBmKIGU
-         3ddQ==
-X-Gm-Message-State: AOAM533Jxi4u+LSBCKpKdX7OE0Yc2PVnDYXMM2UVCLGM1FORTigKQm1f
-        CBvvx7uTFDndaqsD4iddkdd5xEG5uwCa3YMaDiqEYUk1PJa3dvSCBMvNlbFbvA7rGKyn04WSPin
-        bCG5D0zHS9dswkCE7CZxc+vgB2eCBJmdsQDyJUM1LxA==
-X-Received: by 2002:aa7:db94:0:b0:410:f0e8:c39e with SMTP id u20-20020aa7db94000000b00410f0e8c39emr3081987edt.14.1645018117956;
-        Wed, 16 Feb 2022 05:28:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyDjLnVqY6woKkNirfpbndg7T+yQE6xw/kqrdiC2tPwlz5D4kqZP8qH23TQVUGR9vke/u8BEQ==
-X-Received: by 2002:aa7:db94:0:b0:410:f0e8:c39e with SMTP id u20-20020aa7db94000000b00410f0e8c39emr3081967edt.14.1645018117815;
-        Wed, 16 Feb 2022 05:28:37 -0800 (PST)
-Received: from [192.168.0.110] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id s9sm1645056edj.48.2022.02.16.05.28.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 05:28:37 -0800 (PST)
-Message-ID: <9f90a0d0-20fe-d191-e6e9-23d794fb4efe@canonical.com>
-Date:   Wed, 16 Feb 2022 14:28:36 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] dt-bindings: dma: Convert mtk-uart-apdma to DT schema
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, vkoul@kernel.org
-Cc:     robh+dt@kernel.org, sean.wang@mediatek.com, matthias.bgg@gmail.com,
-        long.cheng@mediatek.com, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220216114054.269656-1-angelogioacchino.delregno@collabora.com>
- <79a47f67-bb66-bad4-b6bc-c6a8c0ef25dc@canonical.com>
-In-Reply-To: <79a47f67-bb66-bad4-b6bc-c6a8c0ef25dc@canonical.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ZHriclNHcfARQz6gk+CKow6808MH12Lwf6CagzPJ1w4=;
+        b=7my3aomoqJX1uldg4dinUe9gVPlOzYsEFqDWGdDO8dKaIXpx3+XU+nO2ETLeXWQtpn
+         AXemQEmqMUIVWseWvDcSClXb+pcVZFtinonc+H+R1VuU2EkWejQGYcdJw3023GsrIkzp
+         6yPj0Ic0w3tXsE2KYhje+Kj6Wwjwr2Cavy9gBwvz/sYj7SK+vfaBT52Sa2Nh3mefmYhm
+         EFQl2ai03GQIgpc0mNUbvVWwhKQ6XjP1PR3qJJgXGrCfNtgBVjWY6GxSqtQEbEq2sgQo
+         /PmLk4TvPb2wO0KPNX1hCvDZQj1GrHqXuecNStKK6VEPBstuZgp2RyCvDzXHIu7tGhkF
+         5WhQ==
+X-Gm-Message-State: AOAM5322yQRTFEir+cMkOf+42pSU9nlx1ztcJbXGIPGJ+FyRtJRc6eip
+        rsg1Y40sBNFSZI9dFU/jqHC52fUka+nJZw==
+X-Google-Smtp-Source: ABdhPJwt9lYtZUjk6IffBKsOdSQJFfowDAqL0A2WjhfYRVtb1TKU9CDq9yu7NN64OkGcK133Cy+bYw==
+X-Received: by 2002:a63:e817:0:b0:373:8abb:2c51 with SMTP id s23-20020a63e817000000b003738abb2c51mr215900pgh.185.1645018123746;
+        Wed, 16 Feb 2022 05:28:43 -0800 (PST)
+Received: from localhost.localdomain (80.251.214.228.16clouds.com. [80.251.214.228])
+        by smtp.gmail.com with ESMTPSA id c68sm5431002pga.1.2022.02.16.05.28.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 05:28:42 -0800 (PST)
+From:   Shawn Guo <shawn.guo@linaro.org>
+To:     Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
+Cc:     Maulik Shah <quic_mkshah@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH v5 0/3] Add Qualcomm MPM irqchip driver support
+Date:   Wed, 16 Feb 2022 21:28:27 +0800
+Message-Id: <20220216132830.32490-1-shawn.guo@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/02/2022 14:26, Krzysztof Kozlowski wrote:
-> On 16/02/2022 12:40, AngeloGioacchino Del Regno wrote:
->> Convert the MediaTek UART APDMA Controller binding to DT schema.
->>
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->> ---
->>  .../bindings/dma/mediatek,uart-dma.yaml       | 112 ++++++++++++++++++
->>  .../bindings/dma/mtk-uart-apdma.txt           |  56 ---------
->>  2 files changed, 112 insertions(+), 56 deletions(-)
->>  create mode 100644 Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
->>  delete mode 100644 Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
->>
->> diff --git a/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
->> new file mode 100644
->> index 000000000000..4583c8f535b2
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
->> @@ -0,0 +1,112 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/dma/mediatek,uart-dma.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: MediaTek UART APDMA controller
->> +
->> +maintainers:
->> +  - Long Cheng <long.cheng@mediatek.com>
+It starts from updating cpuidle-psci driver to send CPU_CLUSTER_PM_ENTER
+notification, and then adds DT binding and driver support for Qualcomm
+MPM (MSM Power Manager) interrupt controller.
 
-Is this still up-to-date? Emails bounce:
+Changes for v5:
+- Drop inline attributes and let compiler to decide
+- Use _irqsave/_irqrestore flavour for spin lock
+- Assignment on a single for irq_resolve_mapping() call
+- Add documentation to explain vMPM ownership transition
+- Move MPM pin map data into device tree and so use a generic compatible
+- Drop the code that counts CPUs in PM and use CPU_CLUSTER_PM_ENTER
+  notification instead
 
-  smtp; 550 Relaying mail to long.cheng@mediatek.com is not allowed
+Changes for v4:
+- Add the missing include of <linux/interrupt.h> to fix build errors
+  on arm architecture.
+- Leave IRQCHIP_PLATFORM_DRIVER infrastructural unchanged, and use
+  of_find_device_by_node() to get platform_device pointer.
 
+Changes for v3:
+- Support module build
+- Use relaxed accessors
+- Add barrier call to ensure MMIO write completes
+- Use d->chip_data to pass driver private data
+- Use raw spinlock
+- USe BIT() for bit shift
+- Create a single irq domain to cover both types of MPM pins
+- Call irq_resolve_mapping() to find out Linux irq number
+- Save the use of ternary conditional operator and use switch/case for
+  .irq_set_type call
+- Drop unnecessary .irq_disable hook
+- Align qcom_mpm_chip and qcom_mpm_ops members vertically
+- Use helper irq_domain_translate_twocell()
+- Move mailbox requesting forward in probe function
+- Improve the documentation on qcm2290_gic_pins[]
+- Use IRQCHIP_PLATFORM_DRIVER infrastructural
+- Use cpu_pm notifier instead of .suspend_late hook to write MPM for
+  sleep, so that MPM can be set up for both suspend and idle context.
+  The TIMER0/1 setup is currently omitted for idle use case though,
+  as I haven't been able to successfully test the idle context.
 
-Best regards,
-Krzysztof
+Shawn Guo (3):
+  cpuidle: psci: Call cpu_cluster_pm_enter() on the last CPU
+  dt-bindings: interrupt-controller: Add Qualcomm MPM support
+  irqchip: Add Qualcomm MPM controller driver
+
+ .../interrupt-controller/qcom,mpm.yaml        |  94 ++++
+ drivers/cpuidle/cpuidle-psci.c                |  13 +
+ drivers/irqchip/Kconfig                       |   8 +
+ drivers/irqchip/Makefile                      |   1 +
+ drivers/irqchip/qcom-mpm.c                    | 440 ++++++++++++++++++
+ 5 files changed, 556 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml
+ create mode 100644 drivers/irqchip/qcom-mpm.c
+
+-- 
+2.17.1
+
