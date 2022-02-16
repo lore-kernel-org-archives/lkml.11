@@ -2,141 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC77C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F70C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231933AbiBPGMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 01:12:44 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50206 "EHLO
+        id S231956AbiBPGMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 01:12:50 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231477AbiBPGMn (ORCPT
+        with ESMTP id S231477AbiBPGMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 01:12:43 -0500
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872B313549F;
-        Tue, 15 Feb 2022 22:12:20 -0800 (PST)
-Received: by mail-qv1-xf36.google.com with SMTP id f19so1261015qvb.6;
-        Tue, 15 Feb 2022 22:12:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LzmxRI7SnZuuXPRRqtAkUYN/DbqY0lbF3LJbpfBnCMU=;
-        b=bosRiRdIkuMYNqfxx8xzE9fy8vRIQbWF9y1rnmz5Pqh1XTGq0tv31moxEWOye0NP7x
-         mwsFEtNLguV5eNrNZXlpxqy7/HE3xT9pNJM9vK8OAFPk3yJ2qanS7N9RrCb4sOo2ibzf
-         jIsiyB66B0iVU2DXm8TA8o0XxozzWJy4QQ1MM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LzmxRI7SnZuuXPRRqtAkUYN/DbqY0lbF3LJbpfBnCMU=;
-        b=oaYEroAFjHy1uJMhgwRs7jqGnYxFJou7yOrBLWrO0Danr8Qc1i22aBLsXmjzmafJal
-         JyT/1D+v7q3vDJT/RB4nOmCffH7pmeNSDedtuNFvf1o+L/9SXviX2ISW6NcTZkuVWq3C
-         qYMQlLskwh1F1vrozV9bH/ThYtP28WhWrReSBPyzs6uojQNs345v44e4VatkdPFL28Rt
-         SS0v9QH8yP21JnI29qilXLG/5Ymz+2IdFjGBsvGRVQ8VUEOuQcmWCxZVp+TdyoHJRd2w
-         WHQaHGV0uv2B7MCWrYoFxRGanRGmEU9IqwL/XcuhaS87WUs9EBGL/M0XBQagX8wKfZZw
-         uu+A==
-X-Gm-Message-State: AOAM5333KS/nKLqsjQfSzEHMBlYoQkixJeBRRq9F+SwkQDQk+uD9FQI8
-        l/OfI1Yr9yX+WEXqyLTQhkrXJ2Mjsclc8k3PiVLY4M+S
-X-Google-Smtp-Source: ABdhPJyhlOM4Hk8zpR7uQ5NsfA5am+a9ZY9C4B3UxkU+DqgP8JkiKsfg26pm/eXaiUl9LGe0wWVfSx46TwX7mufsqw0=
-X-Received: by 2002:ad4:456e:0:b0:42c:b084:147f with SMTP id
- o14-20020ad4456e000000b0042cb084147fmr887416qvu.49.1644991939607; Tue, 15 Feb
- 2022 22:12:19 -0800 (PST)
+        Wed, 16 Feb 2022 01:12:46 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AC913197B
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:12:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644991949; x=1676527949;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=AZwoeDLTGFvcy8p8IRLuB0Jkc5gMcMQq1Sm4/d51HS4=;
+  b=aJ1zsHQLO2Ne/WC6ImkVfiJ6ndHBNbT3EO9Jw30PaKjxZ2w9QZm4vFp9
+   CNkyT5J9yb3phbz8TbWYstlwZ4AwjZ9o2oeDcRbXwdyyn9Fiw0prVjkoh
+   VOxbJaz0gRoOFpMbqMp/SqqI1Gjbdw3hzlJtgvR8rsi0zjAUvtXKCBMLi
+   HRomNeO6KMmw9a6g+4NftJkPLH4KbJAoNQ8BEaeEsb5SGq5Y4XLf725Jn
+   oOFmb1A0hVCypoChlAgq8ler8QXflALAQFFWZJGnIL4xlxwy1/xRIet7e
+   G8WUZfjPEP/QR581Gf9vBCy/1FkRo6Jk72769XjZrKaHyt2VXkHCxzg6e
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="230495812"
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="230495812"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 22:12:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="636347620"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 15 Feb 2022 22:12:27 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKDYA-000AV5-Sf; Wed, 16 Feb 2022 06:12:26 +0000
+Date:   Wed, 16 Feb 2022 14:12:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [ammarfaizi2-block:axboe/linux-block/m1-test 248/382]
+ apple.c:undefined reference to `apple_rtkit_is_crashed'
+Message-ID: <202202161415.O3r14xmk-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220215151022.7498-1-eajames@linux.ibm.com> <20220215151022.7498-4-eajames@linux.ibm.com>
-In-Reply-To: <20220215151022.7498-4-eajames@linux.ibm.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Wed, 16 Feb 2022 06:12:07 +0000
-Message-ID: <CACPK8XeTJU0E6LCmEMhvebXTh23+3PHfbCoHsn_0fH9d0=rDZg@mail.gmail.com>
-Subject: Re: [PATCH 3/4] hwmon: (occ) Add sysfs entries for additional
- extended status bits
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022 at 15:11, Eddie James <eajames@linux.ibm.com> wrote:
->
-> Add sysfs entries for DVFS due to a VRM Vdd over-temperature condition,
-> and add the GPU throttling condition bits (such that if bit 1 is set,
-> GPU1 is throttling).
->
-> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1-test
+head:   5adfbb595194191bad98c47447ddbee7d3b60b8f
+commit: 4af74948141263ed097ad48f8845871d16410b08 [248/382] WIP: nvme-apple: add initial Apple SoC NVMe driver
+config: arm64-randconfig-r016-20220216 (https://download.01.org/0day-ci/archive/20220216/202202161415.O3r14xmk-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/4af74948141263ed097ad48f8845871d16410b08
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1-test
+        git checkout 4af74948141263ed097ad48f8845871d16410b08
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Reviewed-by: Joel Stanley <joel@jms.id.au>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> ---
->  drivers/hwmon/occ/sysfs.c | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
->
-> diff --git a/drivers/hwmon/occ/sysfs.c b/drivers/hwmon/occ/sysfs.c
-> index 88f655887c95..b2f788a77746 100644
-> --- a/drivers/hwmon/occ/sysfs.c
-> +++ b/drivers/hwmon/occ/sysfs.c
-> @@ -19,6 +19,8 @@
->  #define OCC_EXT_STAT_DVFS_POWER                BIT(6)
->  #define OCC_EXT_STAT_MEM_THROTTLE      BIT(5)
->  #define OCC_EXT_STAT_QUICK_DROP                BIT(4)
-> +#define OCC_EXT_STAT_DVFS_VDD          BIT(3)
-> +#define OCC_EXT_STAT_GPU_THROTTLE      GENMASK(2, 0)
->
->  static ssize_t occ_sysfs_show(struct device *dev,
->                               struct device_attribute *attr, char *buf)
-> @@ -69,6 +71,12 @@ static ssize_t occ_sysfs_show(struct device *dev,
->         case 9:
->                 val = header->mode;
->                 break;
-> +       case 10:
-> +               val = !!(header->ext_status & OCC_EXT_STAT_DVFS_VDD);
-> +               break;
-> +       case 11:
-> +               val = header->ext_status & OCC_EXT_STAT_GPU_THROTTLE;
-> +               break;
->         default:
->                 return -EINVAL;
->         }
-> @@ -96,6 +104,8 @@ static SENSOR_DEVICE_ATTR(occ_state, 0444, occ_sysfs_show, NULL, 6);
->  static SENSOR_DEVICE_ATTR(occs_present, 0444, occ_sysfs_show, NULL, 7);
->  static SENSOR_DEVICE_ATTR(occ_ips_status, 0444, occ_sysfs_show, NULL, 8);
->  static SENSOR_DEVICE_ATTR(occ_mode, 0444, occ_sysfs_show, NULL, 9);
-> +static SENSOR_DEVICE_ATTR(occ_dvfs_vdd, 0444, occ_sysfs_show, NULL, 10);
-> +static SENSOR_DEVICE_ATTR(occ_gpu_throttle, 0444, occ_sysfs_show, NULL, 11);
->  static DEVICE_ATTR_RO(occ_error);
->
->  static struct attribute *occ_attributes[] = {
-> @@ -109,6 +119,8 @@ static struct attribute *occ_attributes[] = {
->         &sensor_dev_attr_occs_present.dev_attr.attr,
->         &sensor_dev_attr_occ_ips_status.dev_attr.attr,
->         &sensor_dev_attr_occ_mode.dev_attr.attr,
-> +       &sensor_dev_attr_occ_dvfs_vdd.dev_attr.attr,
-> +       &sensor_dev_attr_occ_gpu_throttle.dev_attr.attr,
->         &dev_attr_occ_error.attr,
->         NULL
->  };
-> @@ -166,6 +178,18 @@ void occ_sysfs_poll_done(struct occ *occ)
->                 sysfs_notify(&occ->bus_dev->kobj, NULL, name);
->         }
->
-> +       if ((header->ext_status & OCC_EXT_STAT_DVFS_VDD) !=
-> +           (occ->prev_ext_stat & OCC_EXT_STAT_DVFS_VDD)) {
-> +               name = sensor_dev_attr_occ_dvfs_vdd.dev_attr.attr.name;
-> +               sysfs_notify(&occ->bus_dev->kobj, NULL, name);
-> +       }
-> +
-> +       if ((header->ext_status & OCC_EXT_STAT_GPU_THROTTLE) !=
-> +           (occ->prev_ext_stat & OCC_EXT_STAT_GPU_THROTTLE)) {
-> +               name = sensor_dev_attr_occ_gpu_throttle.dev_attr.attr.name;
-> +               sysfs_notify(&occ->bus_dev->kobj, NULL, name);
-> +       }
-> +
->         if ((header->status & OCC_STAT_MASTER) &&
->             header->occs_present != occ->prev_occs_present) {
->                 name = sensor_dev_attr_occs_present.dev_attr.attr.name;
-> --
-> 2.27.0
->
+All errors (new ones prefixed by >>):
+
+   aarch64-linux-ld: Unexpected GOT/PLT entries detected!
+   aarch64-linux-ld: Unexpected run-time procedure linkages detected!
+   aarch64-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_disable.constprop.0':
+>> apple.c:(.text+0x7c0): undefined reference to `apple_rtkit_is_crashed'
+   aarch64-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_remove':
+>> apple.c:(.text+0xa8c): undefined reference to `apple_rtkit_is_running'
+>> aarch64-linux-ld: apple.c:(.text+0xab8): undefined reference to `apple_rtkit_shutdown'
+   aarch64-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_shutdown':
+   apple.c:(.text+0xb1c): undefined reference to `apple_rtkit_is_running'
+   aarch64-linux-ld: apple.c:(.text+0xb44): undefined reference to `apple_rtkit_shutdown'
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
