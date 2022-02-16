@@ -2,261 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1756AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238080AbiBPTUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:20:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45230 "EHLO
+        id S238081AbiBPTVA convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:21:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238082AbiBPTUr (ORCPT
+        with ESMTP id S238087AbiBPTUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:20:47 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB062AEDBB;
-        Wed, 16 Feb 2022 11:20:34 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id f17so5688190edd.2;
-        Wed, 16 Feb 2022 11:20:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=M+8Tl2Wwgk0qL1y4Dex6HcIjdaFmVFwMqjLOYWx1uws=;
-        b=YvPDucgDQQWnmKrU3MWGqJiVpgj3lL1gUbyJBk9YHmGvhxK6v+uQ8K06iXO3ZRw6d1
-         U9XIvXiH+8+QkH1vwqE3z0CI7H87n1qKzOAxlOcN6t/PBSQ5U5sW+gZFOmn5n2eRy0QN
-         6dyHazbPc63SUADnSEBGSk+dUxGnB9jM66g6OQay/HX4FzfpQIK8K4cWhiULjZnkeSUL
-         /ntw5j1wG8iZGjIAUzRywunOHRsV3lzWTRCcOvkivXhddoLFtoBPkd9MJML5B8fNNQGg
-         Y97acSJTODms+YSGZCJsogy9n49MNIPutZx/JQ2vqhOx6j/rkuKYX37HNnKKw9DAoOMQ
-         vvTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=M+8Tl2Wwgk0qL1y4Dex6HcIjdaFmVFwMqjLOYWx1uws=;
-        b=PqbQyJ08eMZM6V/28bjpniB5TrbUZhfvrkLX/xlNn4jQGH4hVFijnCeDbpaL/l3+Gb
-         Z5tZYdPd9BB4TZ1RnAIzoM3y7A8l2jVeGRlpPtGkkwuoR/+U7SxZK0ZFkB2shfqEUkT0
-         u6Ali6o4WZH56969a3YN2w2hDJFZlrUsurnbpTiAv46HQcGCIlMqQlWyceBSJZni0qVF
-         4o8HneHAf3vA/nu+CW3PYxyQ2oUoOeMb3VBrsUaSP/6GbPQxLIz8v/K2NuKUI15X59Gh
-         ycaU639XJMmw1QhKeXb9VnqBQu3hX0YWTFThrOpMEU/XeW7NmmFaH+6YGDudkTX6S5wk
-         BUYA==
-X-Gm-Message-State: AOAM530PdkdQImTIgqfieXZr3Xn3tdn9xmRlrWEiWTM71QFFWEZptbOT
-        Ju+7wNTXUldzoN1Xrz3ix5I=
-X-Google-Smtp-Source: ABdhPJzJECECpc2Rjygb36GJEVtLfDkWUQfWvyoeCmH2y4m0AMWeWEv1plFkNwpOwaKE+cVgluIkGQ==
-X-Received: by 2002:aa7:dd50:0:b0:40f:dd4a:9a9e with SMTP id o16-20020aa7dd50000000b0040fdd4a9a9emr4578546edw.369.1645039233218;
-        Wed, 16 Feb 2022 11:20:33 -0800 (PST)
-Received: from [192.168.178.40] (ipbcc1fa42.dynamic.kabel-deutschland.de. [188.193.250.66])
-        by smtp.gmail.com with ESMTPSA id t22sm1986272edv.105.2022.02.16.11.20.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 11:20:32 -0800 (PST)
-Message-ID: <939e59f2-d43b-7972-b554-2be2b734e6de@gmail.com>
-Date:   Wed, 16 Feb 2022 20:20:31 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V4] scsi: target: tcmu: Make cmd_ring_size changeable via
- configfs
-Content-Language: en-US
-To:     Guixin Liu <kanie@linux.alibaba.com>, martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xiaoguang.wang@linux.alibaba.com,
-        xlpang@linux.alibaba.com
-References: <1644978109-14885-1-git-send-email-kanie@linux.alibaba.com>
-From:   Bodo Stroesser <bostroesser@gmail.com>
-In-Reply-To: <1644978109-14885-1-git-send-email-kanie@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 16 Feb 2022 14:20:54 -0500
+X-Greylist: delayed 857 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 11:20:41 PST
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1963E2AF3C5;
+        Wed, 16 Feb 2022 11:20:40 -0800 (PST)
+Received: from [100.55.237.147] (unknown [106.121.183.245])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9CxvuACSw1iK0cCAA--.7848S3;
+        Thu, 17 Feb 2022 03:05:39 +0800 (CST)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+From:   Sui Jingfeng <suijingfeng@loongson.cn>
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH v8 2/3] MIPS: Loongson64: dts: update the display controller device node
+Date:   Thu, 17 Feb 2022 03:05:38 +0800
+Message-Id: <911122E5-27A8-4584-987D-A9F908351800@loongson.cn>
+References: <76e3d3f2-c457-2940-10ea-834f13e526cb@flygoat.com>
+Cc:     Sui Jingfeng <15330273260@189.cn>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>, Li Yi <liyi@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
+In-Reply-To: <76e3d3f2-c457-2940-10ea-834f13e526cb@flygoat.com>
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>
+X-Mailer: iPhone Mail (18D61)
+X-CM-TRANSID: AQAAf9CxvuACSw1iK0cCAA--.7848S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7uFy3Aw43tr18AF17Jw43Jrb_yoW8XF4kpw
+        13Ca4fKFsrJF9rG3Z3tF18Wr15ZFWrArnFgFsxtw17WF9xAa1jvr45KFs8XrW3ZFy8AFWj
+        v3yrKrW7KF1UCF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9j14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
+        628vn2kIc2xKxwCY02Avz4vE14v_WwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
+        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
+        67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
+        IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1l
+        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvf
+        C2KfnxnUUI43ZEXa7VUjjYLDUUUUU==
+X-CM-SenderInfo: xvxlyxpqjiv03j6o00pqjv00gofq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16.02.22 03:21, Guixin Liu wrote:
-> Make cmd_ring_size changeable similar to the way it is done for
-> max_data_area_mb, the reason is that our tcmu client will create
-> thousands of tcmu instances, and this will consume lots of mem with
-> default 8Mb cmd ring size for every backstore.
-> 
-> One can change the value by typing:
->      echo "cmd_ring_size_mb=N" > control
-> The "N" is a integer between 1 to 8, if set 1, the cmd ring can hold
-> about 6k cmds(tcmu_cmd_entry about 176 byte) at least.
-> 
-> The value is printed when doing:
->      cat info
-> In addition, a new readonly attribute 'cmd_ring_size_mb' returns the
-> value in read.
-> 
-> Reviewed-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-> Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
+Oh，sorry for that. This is what i am write for our downstream 4.19.190 kernel，I write it long time ago. It shouldn’t be included in this patch set. Please ignore that, I will remove it at next version.
 
-Thanks!
+I am sorry introduce “bug” again.
 
-Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
 
-> ---
->   drivers/target/target_core_user.c | 73 +++++++++++++++++++++++++++++++++------
->   1 file changed, 63 insertions(+), 10 deletions(-)
+发自我的iPhone
+
+> 在 2022年2月17日，上午2:44，Jiaxun Yang <jiaxun.yang@flygoat.com> 写道：
 > 
-> diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
-> index 7b2a89a..95d4ca5 100644
-> --- a/drivers/target/target_core_user.c
-> +++ b/drivers/target/target_core_user.c
-> @@ -61,10 +61,10 @@
->   #define TCMU_TIME_OUT (30 * MSEC_PER_SEC)
->   
->   /* For mailbox plus cmd ring, the size is fixed 8MB */
-> -#define MB_CMDR_SIZE (8 * 1024 * 1024)
-> +#define MB_CMDR_SIZE_DEF (8 * 1024 * 1024)
->   /* Offset of cmd ring is size of mailbox */
-> -#define CMDR_OFF sizeof(struct tcmu_mailbox)
-> -#define CMDR_SIZE (MB_CMDR_SIZE - CMDR_OFF)
-> +#define CMDR_OFF ((__u32)sizeof(struct tcmu_mailbox))
-> +#define CMDR_SIZE_DEF (MB_CMDR_SIZE_DEF - CMDR_OFF)
->   
->   /*
->    * For data area, the default block size is PAGE_SIZE and
-> @@ -1617,6 +1617,7 @@ static struct se_device *tcmu_alloc_device(struct se_hba *hba, const char *name)
->   
->   	udev->data_pages_per_blk = DATA_PAGES_PER_BLK_DEF;
->   	udev->max_blocks = DATA_AREA_PAGES_DEF / udev->data_pages_per_blk;
-> +	udev->cmdr_size = CMDR_SIZE_DEF;
->   	udev->data_area_mb = TCMU_PAGES_TO_MBS(DATA_AREA_PAGES_DEF);
->   
->   	mutex_init(&udev->cmdr_lock);
-> @@ -2189,7 +2190,7 @@ static int tcmu_configure_device(struct se_device *dev)
->   		goto err_bitmap_alloc;
->   	}
->   
-> -	mb = vzalloc(MB_CMDR_SIZE);
-> +	mb = vzalloc(udev->cmdr_size + CMDR_OFF);
->   	if (!mb) {
->   		ret = -ENOMEM;
->   		goto err_vzalloc;
-> @@ -2198,10 +2199,9 @@ static int tcmu_configure_device(struct se_device *dev)
->   	/* mailbox fits in first part of CMDR space */
->   	udev->mb_addr = mb;
->   	udev->cmdr = (void *)mb + CMDR_OFF;
-> -	udev->cmdr_size = CMDR_SIZE;
-> -	udev->data_off = MB_CMDR_SIZE;
-> +	udev->data_off = udev->cmdr_size + CMDR_OFF;
->   	data_size = TCMU_MBS_TO_PAGES(udev->data_area_mb) << PAGE_SHIFT;
-> -	udev->mmap_pages = (data_size + MB_CMDR_SIZE) >> PAGE_SHIFT;
-> +	udev->mmap_pages = (data_size + udev->cmdr_size + CMDR_OFF) >> PAGE_SHIFT;
->   	udev->data_blk_size = udev->data_pages_per_blk * PAGE_SIZE;
->   	udev->dbi_thresh = 0; /* Default in Idle state */
->   
-> @@ -2221,7 +2221,7 @@ static int tcmu_configure_device(struct se_device *dev)
->   
->   	info->mem[0].name = "tcm-user command & data buffer";
->   	info->mem[0].addr = (phys_addr_t)(uintptr_t)udev->mb_addr;
-> -	info->mem[0].size = data_size + MB_CMDR_SIZE;
-> +	info->mem[0].size = data_size + udev->cmdr_size + CMDR_OFF;
->   	info->mem[0].memtype = UIO_MEM_NONE;
->   
->   	info->irqcontrol = tcmu_irqcontrol;
-> @@ -2401,7 +2401,7 @@ static void tcmu_reset_ring(struct tcmu_dev *udev, u8 err_level)
->   enum {
->   	Opt_dev_config, Opt_dev_size, Opt_hw_block_size, Opt_hw_max_sectors,
->   	Opt_nl_reply_supported, Opt_max_data_area_mb, Opt_data_pages_per_blk,
-> -	Opt_err,
-> +	Opt_cmd_ring_size_mb, Opt_err,
->   };
->   
->   static match_table_t tokens = {
-> @@ -2412,6 +2412,7 @@ enum {
->   	{Opt_nl_reply_supported, "nl_reply_supported=%d"},
->   	{Opt_max_data_area_mb, "max_data_area_mb=%d"},
->   	{Opt_data_pages_per_blk, "data_pages_per_blk=%d"},
-> +	{Opt_cmd_ring_size_mb, "cmd_ring_size_mb=%d"},
->   	{Opt_err, NULL}
->   };
->   
-> @@ -2509,6 +2510,41 @@ static int tcmu_set_data_pages_per_blk(struct tcmu_dev *udev, substring_t *arg)
->   	return ret;
->   }
->   
-> +static int tcmu_set_cmd_ring_size(struct tcmu_dev *udev, substring_t *arg)
-> +{
-> +	int val, ret;
-> +
-> +	ret = match_int(arg, &val);
-> +	if (ret < 0) {
-> +		pr_err("match_int() failed for cmd_ring_size_mb=. Error %d.\n",
-> +		       ret);
-> +		return ret;
-> +	}
-> +
-> +	if (val <= 0) {
-> +		pr_err("Invalid cmd_ring_size_mb %d.\n", val);
-> +		return -EINVAL;
-> +	}
-> +
-> +	mutex_lock(&udev->cmdr_lock);
-> +	if (udev->data_bitmap) {
-> +		pr_err("Cannot set cmd_ring_size_mb after it has been enabled.\n");
-> +		ret = -EINVAL;
-> +		goto unlock;
-> +	}
-> +
-> +	udev->cmdr_size = (val << 20) - CMDR_OFF;
-> +	if (val > (MB_CMDR_SIZE_DEF >> 20)) {
-> +		pr_err("%d is too large. Adjusting cmd_ring_size_mb to global limit of %u\n",
-> +		       val, (MB_CMDR_SIZE_DEF >> 20));
-> +		udev->cmdr_size = CMDR_SIZE_DEF;
-> +	}
-> +
-> +unlock:
-> +	mutex_unlock(&udev->cmdr_lock);
-> +	return ret;
-> +}
-> +
->   static ssize_t tcmu_set_configfs_dev_params(struct se_device *dev,
->   		const char *page, ssize_t count)
->   {
-> @@ -2563,6 +2599,9 @@ static ssize_t tcmu_set_configfs_dev_params(struct se_device *dev,
->   		case Opt_data_pages_per_blk:
->   			ret = tcmu_set_data_pages_per_blk(udev, &args[0]);
->   			break;
-> +		case Opt_cmd_ring_size_mb:
-> +			ret = tcmu_set_cmd_ring_size(udev, &args[0]);
-> +			break;
->   		default:
->   			break;
->   		}
-> @@ -2584,7 +2623,9 @@ static ssize_t tcmu_show_configfs_dev_params(struct se_device *dev, char *b)
->   		     udev->dev_config[0] ? udev->dev_config : "NULL");
->   	bl += sprintf(b + bl, "Size: %llu ", udev->dev_size);
->   	bl += sprintf(b + bl, "MaxDataAreaMB: %u ", udev->data_area_mb);
-> -	bl += sprintf(b + bl, "DataPagesPerBlk: %u\n", udev->data_pages_per_blk);
-> +	bl += sprintf(b + bl, "DataPagesPerBlk: %u ", udev->data_pages_per_blk);
-> +	bl += sprintf(b + bl, "CmdRingSizeMB: %u\n",
-> +		      (udev->cmdr_size + CMDR_OFF) >> 20);
->   
->   	return bl;
->   }
-> @@ -2693,6 +2734,17 @@ static ssize_t tcmu_data_pages_per_blk_show(struct config_item *item,
->   }
->   CONFIGFS_ATTR_RO(tcmu_, data_pages_per_blk);
->   
-> +static ssize_t tcmu_cmd_ring_size_mb_show(struct config_item *item, char *page)
-> +{
-> +	struct se_dev_attrib *da = container_of(to_config_group(item),
-> +						struct se_dev_attrib, da_group);
-> +	struct tcmu_dev *udev = TCMU_DEV(da->da_dev);
-> +
-> +	return snprintf(page, PAGE_SIZE, "%u\n",
-> +			(udev->cmdr_size + CMDR_OFF) >> 20);
-> +}
-> +CONFIGFS_ATTR_RO(tcmu_, cmd_ring_size_mb);
-> +
->   static ssize_t tcmu_dev_config_show(struct config_item *item, char *page)
->   {
->   	struct se_dev_attrib *da = container_of(to_config_group(item),
-> @@ -3064,6 +3116,7 @@ static ssize_t tcmu_free_kept_buf_store(struct config_item *item, const char *pa
->   	&tcmu_attr_qfull_time_out,
->   	&tcmu_attr_max_data_area_mb,
->   	&tcmu_attr_data_pages_per_blk,
-> +	&tcmu_attr_cmd_ring_size_mb,
->   	&tcmu_attr_dev_config,
->   	&tcmu_attr_dev_size,
->   	&tcmu_attr_emulate_write_cache,
+> ﻿
+> 
+>> 在 2022/2/16 18:17, Sui Jingfeng 写道:
+>> From: suijingfeng <suijingfeng@loongson.cn>
+>> 
+>> The display controller is a pci device, its PCI vendor id is 0x0014
+>> its PCI device id is 0x7a06.
+>> 
+>> 1) In order to let the lsdc kms driver to know which chip the DC is
+>>    contained in, we add different compatible for different chip.
+>> 
+>> 2) Add display controller device node for ls2k1000 SoC
+>> 
+>> Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
+>> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+>> ---
+>>  .../loongson/loongson,display-controller.yaml | 114 ++++++++++++++++++
+>>  .../display/loongson/loongson-drm.txt         |  16 +++
+> ^ Is loongson-drm.txt intentional?
+> It seems irrelevant....
+> 
+> Thanks.
+>>  .../boot/dts/loongson/loongson64-2k1000.dtsi  |   8 ++
+>>  arch/mips/boot/dts/loongson/ls7a-pch.dtsi     |   7 +-
+>>  4 files changed, 140 insertions(+), 5 deletions(-)
+>>  create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+>>  create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson-drm.txt
+> [...]
+> - Jiaxun
+
