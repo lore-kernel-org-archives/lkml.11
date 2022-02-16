@@ -2,84 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67905C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 651B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238102AbiBPTkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:40:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42202 "EHLO
+        id S238122AbiBPTlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:41:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238113AbiBPTkl (ORCPT
+        with ESMTP id S231217AbiBPTlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:40:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52F128B636;
-        Wed, 16 Feb 2022 11:40:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FAE66185F;
-        Wed, 16 Feb 2022 19:40:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AC4C004E1;
-        Wed, 16 Feb 2022 19:40:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645040427;
-        bh=AujISKMm3XyoLDMIk3p5HcFU3+0xU5+dA8Sed0Hwfw4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=DpvHL5oep/tbOSM43uv3wRPdV5n/OJQ1B54+iJliGGdBY8yE/VMr6HdLqbb07ao0c
-         bdLaAtj6s4O5Yxc936mJ8AnfBV3ZXbCfsuto2JVwSO+lhuPTeNZrSh3OdChv+vzknM
-         nQDxWR9ZljvdQ0SGs8Oru2UUxZmJ0MtpavUPPTr7NIeOnIJCgLJ0KUWeLvy3XXeZyw
-         L4h2s+bEO239hNdhpjjniVbl3f+4gbfToAwaIx3Q/GutKHZULCrOYSxVncGnfvul3r
-         ECJtOkpiYUSxN+u8WRALtHetDwxfX0CJTOE5ZHxJBR+zemFB2mTNfKnbxTojURbeVg
-         9up2hYvs90PNQ==
-Date:   Wed, 16 Feb 2022 13:48:07 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] ath10k: Replace zero-length array with flexible-array
- member
-Message-ID: <20220216194807.GA904008@embeddedor>
+        Wed, 16 Feb 2022 14:41:00 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D7E2B048B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:40:47 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id h18so5725950edb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:40:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Qkw5lRjf3nabe8ZscLlo0xJJCuvMix/6SLYQZbaisbw=;
+        b=NiEcxFmqrBNp3AKMfYTqWtWbl4/TxXVVBB64QLSnBna2+TOy0BnFV3jwVfmVAzom5n
+         XivpXV1UjX4mTALjoyfPANAIQBWWFNZw/Mr2zGQJhxJs/qbtZFYKQVL8DvqEtDlOuqpz
+         3l+W6pzYjfOtSwaYpDJN3pkdu52qivLGD7+4iOtp4nBjyOqB9ILlDgo2VgFgwSpApY/L
+         WPa0rQFGNMT+vaBhYsGe/reLWvqR0DznZAyP2hTg0nfBaVKhLqyHdhQ/I78Ku6Ars9S3
+         lCZj4Ln2pBEkCxFFBRVr22t0q46RxOjkHRAuvr7MqD/6EEAlVT1JkJXvdCHhqWLXkrky
+         1e4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Qkw5lRjf3nabe8ZscLlo0xJJCuvMix/6SLYQZbaisbw=;
+        b=7oh1JoYrHX5sfO3of5aBXVazrQxixaLSMztRUdnNhd1N2iBhoB1G2fmzEJkGsHWpOk
+         h8PiqB/8+198VsZUbJ6Ul7j9lfSMIoekKRiBAhco6L8bGpjhgn/td9ur1Af+mofk9lvu
+         VYXYAMQFHXumMHwZIUpNTSIcC8aEFOGCa50jETO3ORNXcu9C/0K/igJiOJoidkUPixiZ
+         0V5cd0JPeK6b0n3PKrMCwl8SgOe/5H1l+1NGfY4v9dEENZwxtE+UE7CUfkSuCajWtmpt
+         CznQ7x31Dm/T9Nr1uJO3zqdw9eCaNEkbhjUTwonRTAD9A0j9+vdbPVV8v0NtOyO6H2YU
+         7J0Q==
+X-Gm-Message-State: AOAM5310tANPmfv5wn/4BC6PrirMLMR5CL39nPKfrAVZaFUCj6JRNfrY
+        s8mBOSLekEoiV1AO1akMRKqF3cfkvX0=
+X-Google-Smtp-Source: ABdhPJzSroogHTpd71ByMH/Z0a220F9XaYcVaZVAW+hYrmU3kuou/Ilv3IoLJMhPsJiZdTOFxxsP5Q==
+X-Received: by 2002:a05:6402:2065:b0:407:eb07:740 with SMTP id bd5-20020a056402206500b00407eb070740mr4615493edb.406.1645040446340;
+        Wed, 16 Feb 2022 11:40:46 -0800 (PST)
+Received: from localhost.localdomain (ip5f5abb8c.dynamic.kabel-deutschland.de. [95.90.187.140])
+        by smtp.gmail.com with ESMTPSA id z18sm276910ejl.78.2022.02.16.11.40.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 11:40:45 -0800 (PST)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH 0/3] staging: r8188eu: remove dead code
+Date:   Wed, 16 Feb 2022 20:40:35 +0100
+Message-Id: <20220216194038.6762-1-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a regular need in the kernel to provide a way to declare
-having a dynamically sized set of trailing elements in a structure.
-Kernel code should always use “flexible array members”[1] for these
-cases. The older style of one-element or zero-length arrays should
-no longer be used[2].
+This series removes an unused enum and some dead code related to a
+variable that is always zero.
 
-[1] https://en.wikipedia.org/wiki/Flexible_array_member
-[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+Tested on x86_64 with Inter-Tech DMG-02.
 
-Link: https://github.com/KSPP/linux/issues/78
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/wireless/ath/ath10k/swap.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Michael Straube (3):
+  staging: r8188eu: remove unused enum
+  staging: r8188eu: bCCKinCH14 is read-only
+  staging: r8188eu: rename CCKSwingTable_Ch1_Ch13
 
-diff --git a/drivers/net/wireless/ath/ath10k/swap.h b/drivers/net/wireless/ath/ath10k/swap.h
-index 25e0ad36ddb1..b4733b5ded34 100644
---- a/drivers/net/wireless/ath/ath10k/swap.h
-+++ b/drivers/net/wireless/ath/ath10k/swap.h
-@@ -17,7 +17,7 @@ struct ath10k_fw_file;
- struct ath10k_swap_code_seg_tlv {
- 	__le32 address;
- 	__le32 length;
--	u8 data[0];
-+	u8 data[];
- } __packed;
- 
- struct ath10k_swap_code_seg_tail {
+ drivers/staging/r8188eu/hal/HalPhyRf_8188e.c | 16 +++------
+ drivers/staging/r8188eu/hal/odm.c            | 38 +-------------------
+ drivers/staging/r8188eu/hal/usb_halinit.c    |  5 ---
+ drivers/staging/r8188eu/include/odm.h        |  4 +--
+ 4 files changed, 6 insertions(+), 57 deletions(-)
+
 -- 
-2.27.0
+2.35.1
 
