@@ -2,78 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E804C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD06C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237972AbiBPTCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:02:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36724 "EHLO
+        id S237983AbiBPTEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:04:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237717AbiBPTCP (ORCPT
+        with ESMTP id S237976AbiBPTD6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:02:15 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA9EAEF3C;
-        Wed, 16 Feb 2022 11:02:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=jPVgM3Czxex/BXYWE+oPiRHfRnmgAcQ1bxX494QSNQI=; b=VZTFzOZHB+bbnkwuiRUJFXwUGO
-        ZtLX8bRgW/vx23qrs8yzb5U/K/OISrMvF2q7T5OmFOF/J0RdH9vyhmI5lp8WogILrC+XSDyhlkfVb
-        VugzkMKPSsPJbLZ/JoXAMK+yAlf2VXrtTYpXUU6n/ffrkkBB7KAHW8NifL7twGhxrS9I=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nKPYY-006Fdf-3B; Wed, 16 Feb 2022 20:01:38 +0100
-Date:   Wed, 16 Feb 2022 20:01:38 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        "maintainer:BROADCOM IPROC GBIT ETHERNET DRIVER" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] Revert "net: ethernet: bgmac: Use
- devm_platform_ioremap_resource_byname"
-Message-ID: <Yg1KEsGU1SFE5GUW@lunn.ch>
-References: <20220216184634.2032460-1-f.fainelli@gmail.com>
+        Wed, 16 Feb 2022 14:03:58 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86F513CA09;
+        Wed, 16 Feb 2022 11:03:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645038225; x=1676574225;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fain4AjGeF3YbaPcoKuzSdMDXayLVEBSnhuXRjygehY=;
+  b=bBpjKT1l+tkJwaId3Qt+s6Tm97dDP0jYOzvPzFKLGxz1fB2FVgKW/OAo
+   mKymGrxJ5eFWNaUx1CrvmSEJsaStR8PnJ3blEdW8zPq+TYfpFXvq+Berh
+   37Ey15CQuLc5mS1hjXf3eQqqoTd/B4Cx+GJuet1BGYeXfWNuaGBOT4j+w
+   kmaKKBHNktJF5s6Gt7ZgpRz1+c3ECfuzrYs7X7UPn40XiPj8L4u45buhU
+   OkiywTYPl6w/GYnTN2jNTlrIJ8QLFNTLqRKIqcJF23WREokzBlDe7/ouG
+   +FrUX3v5JM5mVCeJDzZSJtdRZXR+tbO6w+vlQ0b/dVJD7gQFzRVlNbCYF
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="275283434"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="275283434"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:03:44 -0800
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="704432435"
+Received: from guptapa-mobl1.amr.corp.intel.com ([10.212.185.96])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:03:43 -0800
+Date:   Wed, 16 Feb 2022 11:03:42 -0800
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "antonio.gomez.iglesias@linux.intel.com" 
+        <antonio.gomez.iglesias@linux.intel.com>,
+        "neelima.krishnan@intel.com" <neelima.krishnan@intel.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
+Message-ID: <20220216190342.fzbwof5s3x64ln4u@guptapa-mobl1.amr.corp.intel.com>
+References: <Ygt/QSTSMlUJnzFS@zn.tnic>
+ <20220215121103.vhb2lpoygxn3xywy@guptapa-mobl1.amr.corp.intel.com>
+ <YgvVcdpmFCCn20A7@zn.tnic>
+ <20220215181931.wxfsn2a3npg7xmi2@guptapa-mobl1.amr.corp.intel.com>
+ <YgwAHU7gCnik8Kv6@zn.tnic>
+ <20220216003950.5jxecuf773g2kuwl@guptapa-mobl1.amr.corp.intel.com>
+ <6724088f-c7cf-da92-e894-d8970f13bf1e@citrix.com>
+ <20220216012841.vxlnugre2j4pczp7@guptapa-mobl1.amr.corp.intel.com>
+ <20220216060826.dwki2jk6kzft4f7c@guptapa-mobl1.amr.corp.intel.com>
+ <YgzSR7AdRRU3hCuB@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220216184634.2032460-1-f.fainelli@gmail.com>
+In-Reply-To: <YgzSR7AdRRU3hCuB@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 10:46:34AM -0800, Florian Fainelli wrote:
-> From: Jonas Gorski <jonas.gorski@gmail.com>
-> 
-> This reverts commit 3710e80952cf2dc48257ac9f145b117b5f74e0a5.
-> 
-> Since idm_base and nicpm_base are still optional resources not present
-> on all platforms, this breaks the driver for everything except Northstar
-> 2 (which has both).
-> 
-> The same change was already reverted once with 755f5738ff98 ("net:
-> broadcom: fix a mistake about ioremap resource").
-> 
-> So let's do it again.
-> 
-> -	bgmac->plat.idm_base = devm_platform_ioremap_resource_byname(pdev, "idm_base");
-> -	if (IS_ERR(bgmac->plat.idm_base))
-> -		return PTR_ERR(bgmac->plat.idm_base);
-> -	else
-> +	/* The idm_base resource is optional for some platforms */
+On 16.02.2022 11:30, Borislav Petkov wrote:
+>On Tue, Feb 15, 2022 at 10:08:26PM -0800, Pawan Gupta wrote:
+>> Alternatively, we can reset RTM_ALLOW,
+>
+>I'd vote for that. Considering how plagued TSX is, I'm sceptical anyone
+>would be interested in doing development with it so we can reset it for
+>now and allow enabling it later if there's an actual use case for it...
 
-I see you are adding a comment. Good idea. Lets see if the bot
-handlers are clever enough to actually read it, or just blindly do
-what the bot says to do, without actually trying to understand the
-code.
+Okay, I will add RTM_ALLOW reset logic in the next revision.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Thanks,
+Pawan
