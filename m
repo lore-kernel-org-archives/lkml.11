@@ -2,87 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C27AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8693C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235876AbiBPP7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:59:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38526 "EHLO
+        id S235357AbiBPQAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:00:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235841AbiBPP7a (ORCPT
+        with ESMTP id S231866AbiBPQA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:59:30 -0500
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012012A797F;
-        Wed, 16 Feb 2022 07:59:17 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:58066)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nKMi4-009INm-QR; Wed, 16 Feb 2022 08:59:16 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37452 helo=localhost.localdomain)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nKMi3-002YPH-F4; Wed, 16 Feb 2022 08:59:16 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        containers@lists.linux-foundation.org,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        linux-api@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>, stable@vger.kernel.org
-Date:   Wed, 16 Feb 2022 09:58:32 -0600
-Message-Id: <20220216155832.680775-5-ebiederm@xmission.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <87ilteiz4a.fsf_-_@email.froward.int.ebiederm.org>
-References: <87ilteiz4a.fsf_-_@email.froward.int.ebiederm.org>
+        Wed, 16 Feb 2022 11:00:28 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16AAD299240;
+        Wed, 16 Feb 2022 08:00:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645027216; x=1676563216;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=qGkinCfu/1zyVhrWnUST1dc7y792SgmwO1dBu64ajLQ=;
+  b=MPxXf1thg5iDqSQq3cdl+aK1r0GNFVq9JpCnou+tmmZpIQFhh0uqfFRH
+   ZgQ5vGBTZrWUXizohJz8mweHgfwK1zv2j9Venv/4Ypmlq5DZAPo4kkcNr
+   1gTpWd9Y81ofFD0E0TwFQjJuIjjh2Yizc49yJexPB2wCbUsQ0i8DErKlz
+   VVW/D6R5n0UtTU8bxPmpVBi/Uls+bNwQrsqFBAojBQglK/1ocfCOFp4uW
+   I7uFdSCFEf3YPrzydue46bikSPFUFkaw5ePZxfLJ9Q76wh7Zx5s/PWDIO
+   f44K9zyp0OinIVUB1d6TljD5Wvemc5MM4sTplR55vUd+EPSDvWqjFMnIo
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="250592553"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="250592553"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 07:56:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="571342420"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga001.jf.intel.com with ESMTP; 16 Feb 2022 07:56:38 -0800
+To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_ugoswami@quicinc.com, Jung Daehwan <dh10.jung@samsung.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>
+References: <1644836663-29220-1-git-send-email-quic_pkondeti@quicinc.com>
+ <1644841216-1468-1-git-send-email-quic_pkondeti@quicinc.com>
+ <d82746d2-4096-1477-42dd-fd393e0ff827@linux.intel.com>
+ <20220214135310.GC31021@hu-pkondeti-hyd.qualcomm.com>
+ <1b9e7641-2ae9-0f81-2ad9-18340d5e148f@linux.intel.com>
+ <20220215104920.GE31021@hu-pkondeti-hyd.qualcomm.com>
+ <20220215170718.GF31021@hu-pkondeti-hyd.qualcomm.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH v2] xhci: reduce xhci_handshake timeout in xhci_reset
+Message-ID: <70ebdb8c-1ea5-1a3e-046e-5e457f54726d@linux.intel.com>
+Date:   Wed, 16 Feb 2022 17:58:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220215170718.GF31021@hu-pkondeti-hyd.qualcomm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nKMi3-002YPH-F4;;;mid=<20220216155832.680775-5-ebiederm@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1/+Ki8jT8CUWv1olHpIGtHW6IqQTF2AmAU=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH v2 5/5] ucounts: Handle wrapping in is_ucounts_overlimit
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While examining is_ucounts_overlimit and reading the various messages
-I realized that is_ucounts_overlimit fails to deal with counts that
-may have wrapped.
+On 15.2.2022 19.07, Pavan Kondeti wrote:
+>>>>
+>>>> The crash reports I have seen are pointing to
+>>>>
+>>>> usb_remove_hcd()->xhci_stop()->xhci_reset()
+>>>
+>>> Ok, so xhci_stop() and xhci_shutdown() both may call xhci_reset() with interrupts
+>>> disabled and spinlock held. In both these cases we're not that interested in the
+>>> outcome of xhci_reset().
+>>>
+>>> But during probe we call xhci_reset() with interrupts enabled without spinlock,
+>>> and here we really care about it succeeding.
+>>> I'm also guessing reset could take a longer time during probe due to possible recent
+>>> BIOS handover, or firmware loading etc.
+>>>
+>>> So how about passing a timeout value to xhci_reset()?
+>>> Give it 10 seconds during probe, and 250ms in the other cases.
+>>>
+>>
+>> Thanks for this suggestion.
+>>
+>> This sounds better compared to the quirks approach. xhci_resume() also seems
+>> to be calling xhci_reset() in the hibernation path, I believe we should treat
+>> this like probe()/startup case and give larger timeout.
+>>
+> I will test the below patch as per Mathias suggestion.
+> 
+> Thanks,
+> Pavan
+> 
+> diff --git a/drivers/usb/host/xhci-hub.c b/drivers/usb/host/xhci-hub.c
+> index df3522d..031fe90 100644
+> --- a/drivers/usb/host/xhci-hub.c
+> +++ b/drivers/usb/host/xhci-hub.c
+> @@ -762,7 +762,7 @@ static int xhci_exit_test_mode(struct xhci_hcd *xhci)
+>  	}
+>  	pm_runtime_allow(xhci_to_hcd(xhci)->self.controller);
+>  	xhci->test_mode = 0;
+> -	return xhci_reset(xhci);
+> +	return xhci_reset(xhci, false);
 
-Being wrapped should be a transitory state for counts and they should
-never be wrapped for long, but it can happen so handle it.
+Maybe just pass the timeout value directly to xhci_reset().
+Looks like readl_poll_timeout_atomic() uses u64 for timeout_us,
+makes sense to use the same.
 
-Cc: stable@vger.kernel.org
-Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- kernel/ucount.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Sergey also pointed out xhci_handshake() incorrectly uses a signed integer for timeouts.
+This could be changed to u64 as well.
 
-diff --git a/kernel/ucount.c b/kernel/ucount.c
-index 65b597431c86..06ea04d44685 100644
---- a/kernel/ucount.c
-+++ b/kernel/ucount.c
-@@ -350,7 +350,8 @@ bool is_ucounts_overlimit(struct ucounts *ucounts, enum ucount_type type, unsign
- 	if (rlimit > LONG_MAX)
- 		max = LONG_MAX;
- 	for (iter = ucounts; iter; iter = iter->ns->ucounts) {
--		if (get_ucounts_value(iter, type) > max)
-+		long val = get_ucounts_value(iter, type);
-+		if (val < 0 || val > max)
- 			return true;
- 		max = READ_ONCE(iter->ns->ucount_max[type]);
- 	}
--- 
-2.29.2
+I'll write a patch that does all above
 
+-Mathias
