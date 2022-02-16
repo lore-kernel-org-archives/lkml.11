@@ -2,138 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E7EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD74C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234786AbiBPN7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:59:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49836 "EHLO
+        id S234797AbiBPOBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 09:01:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiBPN7F (ORCPT
+        with ESMTP id S233496AbiBPOBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:59:05 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88C420207A
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:58:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645019933; x=1676555933;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=qvAp7UjfatOV1YPeRCglhE3Ss3K/ZrGUqKHuMIDZNoM=;
-  b=R3gkvDXJByIOTHSpXN4MmK0mipeWvcM4LZwa8T0Jn72CxBEFR/g78/fs
-   Tx0obWe6TesQ4Avtd+kOLARBR1s/49cMZnwG/WsdjFt8nfeyGbVUflozx
-   SPy3Ngwl7JpsO6voySvRoJCHlmg4WrlAXKsH4LMzrs7pjf2TEIIB0t7xd
-   qG3v/rC4xpGCts6Qss0hc1ZB/RSi4km/QUJ2CCzfFHbqitAUp4bhLAXcv
-   aL4MNFrYiUOalbh3KkJBrNQdkPrlIDnHgKScWTVDvQH6Cprp1X1xspVec
-   lQiR2AMTTNFudIBL7vfSLATg5otMG06F/Nu1QdHvQhcCSA9HM0srokRFI
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="234144904"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="234144904"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 05:58:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="529471368"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 16 Feb 2022 05:58:39 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKKpK-000AqY-HK; Wed, 16 Feb 2022 13:58:38 +0000
-Date:   Wed, 16 Feb 2022 21:58:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [ls-zhu:shared_irq_v4 3/3] drivers/vdpa/ifcvf/ifcvf_main.c:94:6:
- warning: variable 'max_intr' set but not used
-Message-ID: <202202162136.H3NDPxQe-lkp@intel.com>
+        Wed, 16 Feb 2022 09:01:33 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E862220BC3;
+        Wed, 16 Feb 2022 06:01:20 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.31:52036.771379645
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id 5D5DA100249;
+        Wed, 16 Feb 2022 22:01:17 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-bwdqx with ESMTP id 548e00fac09a411c85fa6fb7ab0cae38 for krzk@kernel.org;
+        Wed, 16 Feb 2022 22:01:19 CST
+X-Transaction-ID: 548e00fac09a411c85fa6fb7ab0cae38
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <3e34a508-3969-80d9-4ef7-7cb358c0147d@189.cn>
+Date:   Wed, 16 Feb 2022 22:01:13 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6 2/3] dt-bindings: ls2k1000: add the display controller
+ device node
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dri-devel@lists.freedesktop.org
+References: <20220203082546.3099-1-15330273260@189.cn>
+ <20220203082546.3099-3-15330273260@189.cn>
+ <CAJKOXPfN+Ax8i_Mcax9LfbSG8VwM86YgUxuRUfSF_YEx4z0EaQ@mail.gmail.com>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <CAJKOXPfN+Ax8i_Mcax9LfbSG8VwM86YgUxuRUfSF_YEx4z0EaQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ls-zhu/linux shared_irq_v4
-head:   25e932e005734a4b8924e41bbedafa9dd394aead
-commit: 25e932e005734a4b8924e41bbedafa9dd394aead [3/3] vDPA/ifcvf: implement device MSIX vector allocator
-config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220216/202202162136.H3NDPxQe-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0e628a783b935c70c80815db6c061ec84f884af5)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ls-zhu/linux/commit/25e932e005734a4b8924e41bbedafa9dd394aead
-        git remote add ls-zhu https://github.com/ls-zhu/linux
-        git fetch --no-tags ls-zhu shared_irq_v4
-        git checkout 25e932e005734a4b8924e41bbedafa9dd394aead
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/vdpa/ifcvf/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 2022/2/3 16:50, Krzysztof Kozlowski wrote:
+> On Thu, 3 Feb 2022 at 09:26, Sui Jingfeng <15330273260@189.cn> wrote:
+>> From: suijingfeng <suijingfeng@loongson.cn>
+>>
+>> The display controller is a pci device, its vendor id is 0x0014
+>> its device id is 0x7a06.
+> The same as your patch 3 - these are not bindings.
+>
+> Best regards,
+> Krzysztof
 
-All warnings (new ones prefixed by >>):
+Yes, you are right. As there is no compatible string in my driver to match against the compatible
+in the dc@6,1 device node.
 
->> drivers/vdpa/ifcvf/ifcvf_main.c:94:6: warning: variable 'max_intr' set but not used [-Wunused-but-set-variable]
-           u16 max_intr;
-               ^
-   1 warning generated.
+I don't know how to write YAML document now, it seems no similar case can be reference?
 
-
-vim +/max_intr +94 drivers/vdpa/ifcvf/ifcvf_main.c
-
-    88	
-    89	static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
-    90	{
-    91		struct pci_dev *pdev = adapter->pdev;
-    92		struct ifcvf_hw *vf = &adapter->vf;
-    93		int vector, nvectors, i, ret, irq;
-  > 94		u16 max_intr;
-    95	
-    96		nvectors = ifcvf_alloc_vectors(adapter);
-    97		if (nvectors <=0)
-    98			return nvectors;
-    99	
-   100		max_intr = vf->nr_vring + 1;
-   101		snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
-   102			 pci_name(pdev));
-   103		vector = 0;
-   104		vf->config_irq = pci_irq_vector(pdev, vector);
-   105		ret = devm_request_irq(&pdev->dev, vf->config_irq,
-   106				       ifcvf_config_changed, 0,
-   107				       vf->config_msix_name, vf);
-   108		if (ret) {
-   109			IFCVF_ERR(pdev, "Failed to request config irq\n");
-   110			return ret;
-   111		}
-   112	
-   113		for (i = 0; i < vf->nr_vring; i++) {
-   114			snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
-   115				 pci_name(pdev), i);
-   116			vector = i + IFCVF_MSI_QUEUE_OFF;
-   117			irq = pci_irq_vector(pdev, vector);
-   118			ret = devm_request_irq(&pdev->dev, irq,
-   119					       ifcvf_intr_handler, 0,
-   120					       vf->vring[i].msix_name,
-   121					       &vf->vring[i]);
-   122			if (ret) {
-   123				IFCVF_ERR(pdev,
-   124					  "Failed to request irq for vq %d\n", i);
-   125				ifcvf_free_irq(adapter, i);
-   126	
-   127				return ret;
-   128			}
-   129	
-   130			vf->vring[i].irq = irq;
-   131		}
-   132	
-   133		return 0;
-   134	}
-   135	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
