@@ -2,95 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C69C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235811AbiBPP5N convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:57:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55276 "EHLO
+        id S235812AbiBPP5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 10:57:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235773AbiBPP5E (ORCPT
+        with ESMTP id S235775AbiBPP5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:57:04 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C431A1323
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:56:49 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:49644)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nKMfd-001nv3-J2; Wed, 16 Feb 2022 08:56:45 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37420 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nKMfc-002XrX-IJ; Wed, 16 Feb 2022 08:56:45 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     <linux-kernel@vger.kernel.org>
-Cc:     Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        Linux Containers <containers@lists.linux-foundation.org>,
-        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
-        <linux-api@vger.kernel.org>
-References: <20220207121800.5079-1-mkoutny@suse.com>
-        <87o83e2mbu.fsf@email.froward.int.ebiederm.org>
-Date:   Wed, 16 Feb 2022 09:56:37 -0600
-In-Reply-To: <87o83e2mbu.fsf@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Thu, 10 Feb 2022 20:01:25 -0600")
-Message-ID: <87ilteiz4a.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 16 Feb 2022 10:57:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C171C4559;
+        Wed, 16 Feb 2022 07:57:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CFFF61A36;
+        Wed, 16 Feb 2022 15:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD04CC004E1;
+        Wed, 16 Feb 2022 15:57:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645027050;
+        bh=F7BEhMtK4iDsUC93r2qBodSmV7qfHEB3vRaLBoZcFA0=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=saLzETKioEFbmf25qsCbYWzy/DIXPMLWEd80Heei8SOp2RgIVKKoJWzHQX6bAPtGt
+         o2hONnLufPnW9rGTHgL3xVDTEkNDRQXu0v3WIzWvpXipwLUWidAfZoe/9PxQ/SDRuG
+         YLhApu4OPpmujEqlDdMQLXxL8F9uymsBMH8Lj3nT122x9tfgJB9qIC3DAIKLBuKKaG
+         A8AWV1cuPEhqiqzlI5erRVBIqe2viS0PZW3pFjhdeKTrBjyQ4gb0rTsg6ERc78TdOH
+         L79oBx7CbeWE/CU1SiSc+O9d38rekVm6iET14acrkG5sPYSHXpbRy6376R3sDuZAB7
+         SwKIFzI2xa/0g==
+Date:   Wed, 16 Feb 2022 16:57:26 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Aditya Garg <gargaditya08@live.com>
+cc:     "alexhenrie24@gmail.com" <alexhenrie24@gmail.com>,
+        "benjamin.tissoires@redhat.com" <benjamin.tissoires@redhat.com>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "paul@mrarm.io" <paul@mrarm.io>, Aun-Ali Zaidi <admin@kodeit.net>,
+        Orlando Chamberlain <redecorating@protonmail.com>
+Subject: Re: [PATCH v3 3/3] HID: apple: Add fn mapping for MacBook Pros with
+ Touch Bar
+In-Reply-To: <B17D84D1-F91C-4CF0-A931-C19D0278E329@live.com>
+Message-ID: <nycvar.YFH.7.76.2202161656480.11721@cbobk.fhfr.pm>
+References: <67E7EA8B-CF21-4794-B7B4-96873EE70EF6@live.com> <1088ECFE-B356-4731-AC8A-09A4421DD7D1@live.com> <D0C26284-966C-4581-BE37-78A6B0B367BB@live.com> <9981348D-0D48-4613-A46E-03E9A1897E59@live.com> <B17D84D1-F91C-4CF0-A931-C19D0278E329@live.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1nKMfc-002XrX-IJ;;;mid=<87ilteiz4a.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+/L9et1C/bHc4Ya5pJzRgmcgiNxBncn0I=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH v2 0/5] ucounts: RLIMIT_NPROC fixes
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 3 Feb 2022, Aditya Garg wrote:
 
-Michal KoutnÃ½ recently found some bugs in the enforcement of
-RLIMIT_NPROC in the recent ucount rlimit implementation.
+> From: Aditya Garg <gargaditya08@live.com>
+> 
+> This patch adds the Fn mapping for keyboards on certain T2 Macs.
+> 
+> Signed-off-by: Aditya Garg <gargaditya08@live.com>
+> ---
+> v2 :- Use better approach to map fn keys
+> v3 :- Use BIT(10) for APPLE_BACKLIGHT_CTL since 0x0200 (BIT (9)) has been used.
+>  drivers/hid/hid-apple.c | 62 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+> 
+> diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+> index 658d79375..5448e5a66 100644
+> --- a/drivers/hid/hid-apple.c
+> +++ b/drivers/hid/hid-apple.c
+> @@ -142,6 +142,51 @@ static const struct apple_key_translation macbookair_fn_keys[] = {
+>  	{ }
+>  };
+>  
+> +static const struct apple_key_translation macbookpro_no_esc_fn_keys[] = {
+> +	{ KEY_BACKSPACE, KEY_DELETE },
+> +	{ KEY_ENTER,	KEY_INSERT },
+> +	{ KEY_GRAVE,	KEY_ESC },
+> +	{ KEY_1,	KEY_F1 },
+> +	{ KEY_2,	KEY_F2 },
+> +	{ KEY_3,	KEY_F3 },
+> +	{ KEY_4,	KEY_F4 },
+> +	{ KEY_5,	KEY_F5 },
+> +	{ KEY_6,	KEY_F6 },
+> +	{ KEY_7,	KEY_F7 },
+> +	{ KEY_8,	KEY_F8 },
+> +	{ KEY_9,	KEY_F9 },
+> +	{ KEY_0,	KEY_F10 },
+> +	{ KEY_MINUS,	KEY_F11 },
+> +	{ KEY_EQUAL,	KEY_F12 },
+> +	{ KEY_UP,	KEY_PAGEUP },
+> +	{ KEY_DOWN,	KEY_PAGEDOWN },
+> +	{ KEY_LEFT,	KEY_HOME },
+> +	{ KEY_RIGHT,	KEY_END },
+> +	{ }
+> +};
+> +
+> +static const struct apple_key_translation macbookpro_dedicated_esc_fn_keys[] = {
+> +	{ KEY_BACKSPACE, KEY_DELETE },
+> +	{ KEY_ENTER,	KEY_INSERT },
+> +	{ KEY_1,	KEY_F1 },
+> +	{ KEY_2,	KEY_F2 },
+> +	{ KEY_3,	KEY_F3 },
+> +	{ KEY_4,	KEY_F4 },
+> +	{ KEY_5,	KEY_F5 },
+> +	{ KEY_6,	KEY_F6 },
+> +	{ KEY_7,	KEY_F7 },
+> +	{ KEY_8,	KEY_F8 },
+> +	{ KEY_9,	KEY_F9 },
+> +	{ KEY_0,	KEY_F10 },
+> +	{ KEY_MINUS,	KEY_F11 },
+> +	{ KEY_EQUAL,	KEY_F12 },
+> +	{ KEY_UP,	KEY_PAGEUP },
+> +	{ KEY_DOWN,	KEY_PAGEDOWN },
+> +	{ KEY_LEFT,	KEY_HOME },
+> +	{ KEY_RIGHT,	KEY_END },
+> +	{ }
+> +};
+> +
+>  static const struct apple_key_translation apple_fn_keys[] = {
+>  	{ KEY_BACKSPACE, KEY_DELETE },
+>  	{ KEY_ENTER,	KEY_INSERT },
+> @@ -269,6 +314,17 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
+>  		    hid->product == USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021 ||
+>  		    hid->product == USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021)
+>  			table = apple2021_fn_keys;
+> +		else if (hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J132 ||
+> +			 hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680 ||
+> +			 hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J213)
+> +				table = macbookpro_no_esc_fn_keys;
+> +		else if (hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J214K ||
+> +			 hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J223 ||
+> +			 hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J152F)
+> +				table = macbookpro_dedicated_esc_fn_keys;
+> +		else if (hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J140K ||
+> +			 hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J230K)
+> +				table = apple_fn_keys;
+>  		else if (hid->product >= USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI &&
+>  				hid->product <= USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS)
+>  			table = macbookair_fn_keys;
+> @@ -480,6 +536,12 @@ static void apple_setup_input(struct input_dev *input)
+>  	set_bit(KEY_NUMLOCK, input->keybit);
+>  
+>  	/* Enable all needed keys */
+> +	for (trans = macbookpro_no_esc_fn_keys; trans->from; trans++)
+> +		set_bit(trans->to, input->keybit);
+> +
+> +	for (trans = macbookpro_dedicated_esc_fn_keys; trans->from; trans++)
+> +		set_bit(trans->to, input->keybit);
+> +
 
-I saw some additional bugs and some cleaner ways to fix the problem so
-instead of starting with his fixes these are my own.
+This needed to be rebased on top of earlier José's refactoring of the 
+mapping setup patches; I've done that and pushed the whole series to 
+for-5.18/apple
 
-I have rewritten about half my fixes since the last time this was
-posted.  There is this notion (not entirely wrong) that the code should
-be consistent and make sense.  When I dug in I discovered that has not
-been the case for the last 20 years.  Fixing the long standing
-inconsistencies is something that seems to warrent wider vetting on
-linux-api.
+Thanks,
 
-So with this set of patches I have developed a very conservative
-approach changing only what is necessary to fix the bugs that I can
-see clearly.  Cleanups and anything that is making the code more
-consistent can follow after we have the code working as it has
-historically.
+-- 
+Jiri Kosina
+SUSE Labs
 
-Anyone who can please take a look and tell me if I am doing something silly.
-
-Eric W. Biederman (5):
-      rlimit: Fix RLIMIT_NPROC enforcement failure caused by capability calls in set_user
-      ucounts: Enforce RLIMIT_NPROC not RLIMIT_NPROC+1
-      ucounts: Base set_cred_ucounts changes on the real user
-      ucounts: Move RLIMIT_NPROC handling after set_user
-      ucounts: Handle wrapping in is_ucounts_overlimit
-
- kernel/cred.c   |  9 ++-------
- kernel/fork.c   | 10 +++++-----
- kernel/sys.c    | 20 ++++++++++++++------
- kernel/ucount.c |  3 ++-
- 4 files changed, 23 insertions(+), 19 deletions(-)
-
-Eric
