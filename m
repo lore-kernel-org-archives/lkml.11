@@ -2,102 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4597C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C684EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236013AbiBPQJx convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:09:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45216 "EHLO
+        id S236046AbiBPQKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:10:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235210AbiBPQJw (ORCPT
+        with ESMTP id S233311AbiBPQKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:09:52 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09429BBE03
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:09:38 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nKMs3-0007Kl-OM; Wed, 16 Feb 2022 17:09:35 +0100
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nKMs2-00GzCC-S5; Wed, 16 Feb 2022 17:09:34 +0100
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nKMs0-001lH9-A3; Wed, 16 Feb 2022 17:09:32 +0100
-Message-ID: <89a08ce1cdb1cf0b4d46b916e7107eca0796ca9d.camel@pengutronix.de>
-Subject: Re: [PATCH] gpu: ipu-v3: Fix dev_dbg frequency output
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Mark Jonas <mark.jonas@de.bosch.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        tingquan.ruan@cn.bosch.com
-Date:   Wed, 16 Feb 2022 17:09:32 +0100
-In-Reply-To: <20220207151411.5009-1-mark.jonas@de.bosch.com>
-References: <20220207151411.5009-1-mark.jonas@de.bosch.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Wed, 16 Feb 2022 11:10:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5182AC907;
+        Wed, 16 Feb 2022 08:10:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89C0DB81F1E;
+        Wed, 16 Feb 2022 16:10:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43EE2C004E1;
+        Wed, 16 Feb 2022 16:10:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645027801;
+        bh=invbru5iq/kzOOAzKbrSzFKl2EUzGbaQH6b7feWk4vk=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=noPx9ICkSbUkC801iMzKN93IYwSvDIkNfy8I229A3Y4MyeOhCloj6+gA9PBu9aftX
+         Q8zXU6H6QxcbygcXg2lj9PFaiZcmw8b3cr0oICC3jBG8NdxUJrXrKy7MJyHqbZH8qg
+         mV7vv5M8LubeCZGzYTlWxfXhAbuscqu9GmhFf0yFB4LfaLCYwl59Adxo16mPhwzeid
+         by96RKj6gkAaSLslBJQMaoHJxFexGB4qUjvLriOAAPk1ThYJZXWiCOqGyb05uQ1bft
+         of9ENnzlWiKdMC3/+W3I8Y4BMX1hWZI+FvIS4MeaMaG0clPs4ZC+nGuh6eq4JTmZz2
+         KsLju+q+WOD7Q==
+Date:   Wed, 16 Feb 2022 17:09:58 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     =?ISO-8859-15?Q?Michael_H=FCbner?= <michaelh.95@t-online.de>
+cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] HID: Add support for open wheel and no attachment to
+ T300
+In-Reply-To: <20220120074048.14764-1-michaelh.95@t-online.de>
+Message-ID: <nycvar.YFH.7.76.2202161709510.11721@cbobk.fhfr.pm>
+References: <20220120074048.14764-1-michaelh.95@t-online.de>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark,
+On Thu, 20 Jan 2022, Michael Hübner wrote:
 
-On Mon, 2022-02-07 at 16:14 +0100, Mark Jonas wrote:
-> From: Leo Ruan <tingquan.ruan@cn.bosch.com>
+> Different add ons to the wheel base report different models. Having
+> no wheel mounted to the base and using the open wheel attachment is
+> added here.
 > 
-> This commit corrects the printing of the IPU clock error percentage if
-> it is between -0.1% to -0.9%. For example, if the pixel clock requested
-> is 27.2 MHz but only 27.0 MHz can be achieved the deviation is -0.8%.
-> But the fixed point math had a flaw and calculated error of 0.2%.
-> 
-> Before:
->   Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
->   IPU clock can give 27000000 with divider 10, error 0.2%
->   Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
-> 
-> After:
->   Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
->   IPU clock can give 27000000 with divider 10, error -0.8%
->   Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
-> 
-> Signed-off-by: Leo Ruan <tingquan.ruan@cn.bosch.com>
-> Signed-off-by: Mark Jonas <mark.jonas@de.bosch.com>
+> Signed-off-by: Michael Hübner <michaelh.95@t-online.de>
 > ---
->  drivers/gpu/ipu-v3/ipu-di.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>  drivers/hid/hid-thrustmaster.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/gpu/ipu-v3/ipu-di.c b/drivers/gpu/ipu-v3/ipu-di.c
-> index b4a31d506fcc..74eca68891ad 100644
-> --- a/drivers/gpu/ipu-v3/ipu-di.c
-> +++ b/drivers/gpu/ipu-v3/ipu-di.c
-> @@ -451,8 +451,9 @@ static void ipu_di_config_clock(struct ipu_di *di,
->  
->                 error = rate / (sig->mode.pixelclock / 1000);
->  
-> -               dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %d.%u%%\n",
-> -                       rate, div, (signed)(error - 1000) / 10, error % 10);
-> +               dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %c%d.%d%%\n",
-> +                       rate, div, error < 1000 ? '-' : '+',
-> +                       abs(error - 1000) / 10, abs(error - 1000) % 10);
->  
->                 /* Allow a 1% error */
->                 if (error < 1010 && error >= 990) {
+> diff --git a/drivers/hid/hid-thrustmaster.c b/drivers/hid/hid-thrustmaster.c
+> index 03b935ff02d5..a4e20f9e598b 100644
+> --- a/drivers/hid/hid-thrustmaster.c
+> +++ b/drivers/hid/hid-thrustmaster.c
+> @@ -64,7 +64,9 @@ struct tm_wheel_info {
+>   */
+>  static const struct tm_wheel_info tm_wheels_infos[] = {
+>  	{0x0306, 0x0006, "Thrustmaster T150RS"},
+> +	{0x0200, 0x0005, "Thrustmaster T300RS (Missing Attachment)"},
+>  	{0x0206, 0x0005, "Thrustmaster T300RS"},
+> +	{0x0209, 0x0005, "Thrustmaster T300RS (Open Wheel Attachment)"},
+>  	{0x0204, 0x0005, "Thrustmaster T300 Ferrari Alcantara Edition"},
+>  	{0x0002, 0x0002, "Thrustmaster T500RS"}
+>  	//{0x0407, 0x0001, "Thrustmaster TMX"}
 
-Rounding (always down) is still a bit unintuitive, but this certainly
-improves things.
+Applied, thanks Michael.
 
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+-- 
+Jiri Kosina
+SUSE Labs
 
-regards
-Philipp
