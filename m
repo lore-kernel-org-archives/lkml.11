@@ -2,184 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 057E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A842EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229451AbiBPHIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:08:07 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37334 "EHLO
+        id S229479AbiBPHIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:08:20 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiBPHHy (ORCPT
+        with ESMTP id S229717AbiBPHIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:07:54 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788631E5F0E;
-        Tue, 15 Feb 2022 23:07:11 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id ay7so1518286oib.8;
-        Tue, 15 Feb 2022 23:07:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HPnpyaqK8o0G+BDi3MOPV+BIITLVz5fggVzk9O3L6oE=;
-        b=XimW3gvAMYPUVjF2IfQeAZU5JtieMUXI4Mqg4RoDikjeO02qvlF09bWWSj55zjEco4
-         Dvhvaib85Rsx88hpMqfQ6o5oDVe1xRSc1E4ERx/nrJPlAHsYBcEzyGlfcm0fvNHIEWos
-         bj9Es0ztCnsDrOnEWYAr0PDuAcFUkYCIJCt88bC6e32UiWW6OYfjvMHEbIlEERAo1OeO
-         CvgNC9rP97nYVk3jAull0vPOXprFve6kY+Ehds3LwzHIQKFObmgdJo9NTQipUDl9CW3P
-         HGTPV3BBDyeL3hofNlN5TTtU6jrdz+eGGtEPjdYxof5sZCdZBAGbzXyCepaS1tzbBaXU
-         03KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HPnpyaqK8o0G+BDi3MOPV+BIITLVz5fggVzk9O3L6oE=;
-        b=YzOlwS6GtjvPq186VXq0BHIU8W0cBMgnalkYgcXEqj9VJlcsZCDxzGCA4Eitrn0sai
-         fwNF4K9DXCHnrY1HvIJXl3pZ66sGqvdknqCJwnwFUdZeQR0971gSmhnFUp3UsoRTJUjo
-         9ZYd8WTCzS49bHh13ZOURdz4bQm0gnhySCYxg9VnjTzi14DOh8E37/Sz6sk+m9309cyh
-         Ksv7xUGbwzat/3v2wLowivtmdZzbZ+/ib2o6KNblpVI1fNK8L+RpP5xHZXRkxAhmeVGz
-         ib3PuiQHFX8tO6kODNiHGomGbkBzqf5cq8CUtGeqQxBpNqjY/zJl9a96ahnvI2n/3YnY
-         obbQ==
-X-Gm-Message-State: AOAM533Z7idjSKXw7/un+11NKqBstuG/Z70roNQ0JQ19zhhEl1yLaYXa
-        9BpAOCOYY75fKDwsEYk1m97S6JjqIAiX5/JPL4K+Uy2UcqgQFxZSWG0=
-X-Google-Smtp-Source: ABdhPJxmpUZAuthv1WIbH+KxBizV5tsa9Wr1R8nwhrB/TW/VTxxhAjLlL1fAxQl9anD1fQs+TeyuwIeKCbCVagOpWsE=
-X-Received: by 2002:aca:1812:0:b0:2d4:426d:c9e0 with SMTP id
- h18-20020aca1812000000b002d4426dc9e0mr62879oih.129.1644994686459; Tue, 15 Feb
- 2022 22:58:06 -0800 (PST)
-MIME-Version: 1.0
-References: <20220216050320.3222-1-kerneljasonxing@gmail.com> <CANn89i+6Hc7q-a=zh_jcTn9_GM5xP6fzv2RcHY+tneqzE3UnHw@mail.gmail.com>
-In-Reply-To: <CANn89i+6Hc7q-a=zh_jcTn9_GM5xP6fzv2RcHY+tneqzE3UnHw@mail.gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Wed, 16 Feb 2022 14:57:30 +0800
-Message-ID: <CAL+tcoBnSDjHk_Xhd_ohQjpMu-Ns2Du4mWhUybrK6+VPXHoETQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next] net: introduce SO_RCVBUFAUTO to let the
- rcv_buf tune automatically
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Wei Wang <weiwan@google.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>, Florian Westphal <fw@strlen.de>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jason Xing <xingwanli@kuaishou.com>
+        Wed, 16 Feb 2022 02:08:06 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921FB256EC6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:07:42 -0800 (PST)
+X-UUID: f7482e9d5ff44fd1acd5f75adc50e8b2-20220216
+X-UUID: f7482e9d5ff44fd1acd5f75adc50e8b2-20220216
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1743981165; Wed, 16 Feb 2022 14:40:53 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 16 Feb 2022 14:40:52 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Feb
+ 2022 14:40:52 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 14:40:50 +0800
+Message-ID: <553286c9a2fe458f994b334c968eb9899eed892d.camel@mediatek.com>
+Subject: Re: [deller-fbdev:for-next 51/51]
+ drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:42: error: use of
+ undeclared identifier 'component_compare_dev'; did you mean
+ 'component_master_del'?
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Helge Deller <deller@gmx.de>
+CC:     <llvm@lists.linux.dev>, <kbuild-all@lists.01.org>,
+        <linux-kernel@vger.kernel.org>, kernel test robot <lkp@intel.com>
+Date:   Wed, 16 Feb 2022 14:40:49 +0800
+In-Reply-To: <202202161324.Jh1OfqAf-lkp@intel.com>
+References: <202202161324.Jh1OfqAf-lkp@intel.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 2:25 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Tue, Feb 15, 2022 at 9:03 PM <kerneljasonxing@gmail.com> wrote:
-> >
-> > From: Jason Xing <xingwanli@kuaishou.com>
-> >
-> > Normally, user doesn't care the logic behind the kernel if they're
-> > trying to set receive buffer via setsockopt. However, once the new
-> > value of the receive buffer is set even though it's not smaller than
-> > the initial value which is sysctl_tcp_rmem[1] implemented in
-> > tcp_rcv_space_adjust(),, the server's wscale will shrink and then
-> > lead to the bad bandwidth as intended.
->
-> Quite confusing changelog, honestly.
->
-> Users of SO_RCVBUF specifically told the kernel : I want to use _this_
-> buffer size, I do not want the kernel to decide for me.
->
-> Also, I think your changelog does not really explain that _if_ you set
-> SO_RCVBUF to a small value before
-> connect() or in general the 3WHS, the chosen wscale will be small, and
-> this won't allow future 10x increase
-> of the effective RWIN.
->
+Hi Helge,
 
-Yes, you hit the point really.
+Thanks for apply this patch.
 
->
-> >
-> > For now, introducing a new socket option to let the receive buffer
-> > grow automatically no matter what the new value is can solve
-> > the bad bandwidth issue meanwhile it's not breaking the application
-> > with SO_RCVBUF option set.
-> >
-> > Here are some numbers:
-> > $ sysctl -a | grep rmem
-> > net.core.rmem_default = 212992
-> > net.core.rmem_max = 40880000
-> > net.ipv4.tcp_rmem = 4096        425984  40880000
-> >
-> > Case 1
-> > on the server side
-> >     # iperf -s -p 5201
-> > on the client side
-> >     # iperf -c [client ip] -p 5201
-> > It turns out that the bandwidth is 9.34 Gbits/sec while the wscale of
-> > server side is 10. It's good.
-> >
-> > Case 2
-> > on the server side
-> >     #iperf -s -p 5201 -w 425984
-> > on the client side
-> >     # iperf -c [client ip] -p 5201
-> > It turns out that the bandwidth is reduced to 2.73 Gbits/sec while the
-> > wcale is 2, even though the receive buffer is not changed at all at the
-> > very beginning.
-> >
-> > After this patch is applied, the bandwidth of case 2 is recovered to
-> > 9.34 Gbits/sec as expected at the cost of consuming more memory per
-> > socket.
->
-> How does your patch allow wscale to increase after flow is established ?
->
-> I would remove from the changelog these experimental numbers that look
-> quite wrong,
-> maybe copy/pasted from your prior version.
->
+Sorry that I didn't Cc you in cover-letter. It depend on [1/23].
 
-My fault. I should have removed this part.
+To avoid this build fail, Could you help revert this one?
 
-> Instead I would describe why an application might want to clear the
-> 'receive buffer size is locked' socket attribute.
->
-> >
-> > Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
-> > --
-> > v2: suggested by Eric
-> > - introduce new socket option instead of breaking the logic in SO_RCVBUF
-> > - Adjust the title and description of this patch
-> > link: https://lore.kernel.org/lkml/CANn89iL8vOUOH9bZaiA-cKcms+PotuKCxv7LpVx3RF0dDDSnmg@mail.gmail.com/
-> > ---
-> >
->
-> I think adding another parallel SO_RCVBUF option is not good. It is
-> adding confusion (and net/core/filter.c has been unchanged)
+Thanks
 
-I'll change the filter.c altogether in the next submission.
+On Wed, 2022-02-16 at 13:31 +0800, kernel test robot wrote:
+> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-
+> fbdev.git for-next
+> head:   61038027aa13351c63b452a0d48c805bab1d2ce9
+> commit: 61038027aa13351c63b452a0d48c805bab1d2ce9 [51/51] video:
+> fbdev: omapfb: Make use of the helper component_compare_dev
+> config: arm-randconfig-c002-20220216 (
+> https://download.01.org/0day-ci/archive/20220216/202202161324.Jh1OfqAf-lkp@intel.com/config
+> )
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project
+> 0e628a783b935c70c80815db6c061ec84f884af5)
+> reproduce (this is a W=1 build):
+>         wget 
+> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
+>  -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install arm cross compiling tool for clang build
+>         # apt-get install binutils-arm-linux-gnueabi
+>         # 
+> https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git/commit/?id=61038027aa13351c63b452a0d48c805bab1d2ce9
+>         git remote add deller-fbdev
+> git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git
+>         git fetch --no-tags deller-fbdev for-next
+>         git checkout 61038027aa13351c63b452a0d48c805bab1d2ce9
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross
+> W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+> drivers/video/fbdev/omap2/omapfb/dss/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+> > > drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:42: error: use of
+> > > undeclared identifier 'component_compare_dev'; did you mean
+> > > 'component_master_del'?
+> 
+>            component_match_add(dev->parent, match,
+> component_compare_dev, dev);
+>                                                    ^~~~~~~~~~~~~~~~~~
+> ~~~
+>                                                    component_master_d
+> el
+>    include/linux/component.h:85:6: note: 'component_master_del'
+> declared here
+>    void component_master_del(struct device *,
+>         ^
+>    1 error generated.
+> 
+> 
+> vim +1209 drivers/video/fbdev/omap2/omapfb/dss/dss.c
+> 
+>   1195	
+>   1196	static int dss_add_child_component(struct device *dev,
+> void *data)
+>   1197	{
+>   1198		struct component_match **match = data;
+>   1199	
+>   1200		/*
+>   1201		 * HACK
+>   1202		 * We don't have a working driver for rfbi, so
+> skip it here always.
+>   1203		 * Otherwise dss will never get probed
+> successfully, as it will wait
+>   1204		 * for rfbi to get probed.
+>   1205		 */
+>   1206		if (strstr(dev_name(dev), "rfbi"))
+>   1207			return 0;
+>   1208	
+> > 1209		component_match_add(dev->parent, match,
+> > component_compare_dev, dev);
+> 
+>   1210	
+>   1211		return 0;
+>   1212	}
+>   1213	
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
->
-> Also we want CRIU to work correctly.
->
-> So if you have a SO_XXXX setsockopt() call, you also need to provide
-> getsockopt() implementation.
->
-> I would suggest an option to clear or set SOCK_RCVBUF_LOCK,  and
-> getsockopt() would return if the bit is currently set or not.
->
-> Something clearly describing the intent, like SO_RCVBUF_LOCK maybe.
-
-Just now, I found out that the latest kernel has merged a similar
-patch (commit 04190bf89) about three months ago.
-
-Is it still necessary to add another separate option to clear the
-SOCK_RCVBUF_LOCK explicitly?
-
-Thanks,
-Jason
