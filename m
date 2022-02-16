@@ -2,115 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 286ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiBPHQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:16:22 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56792 "EHLO
+        id S229799AbiBPHRN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:17:13 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:32830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiBPHQS (ORCPT
+        with ESMTP id S229765AbiBPHRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:16:18 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03212B0A68
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:16:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644995747;
-        bh=suHsgXH+UCaPUEi9/z5ugIGYdtAIwHSMAlsMljlrGoo=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=Fk8xN8WzP+iC0JHRacbgt3/YFUiTv2Ap6uW7L08ZhMwrRnhIbs68wGHvOjPpNrl7w
-         Vfm3oTEbqIjFpfKagn/LHr+O05+j0OKVoqypM2qopwkC7j+pkiDuu6fAcc9It3zW+c
-         mjGtVBpHMPGS125soe1BQjRPYSjjmkfbNWoi438s=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.128.232]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MZTqW-1noWzk3GcQ-00WYiF; Wed, 16
- Feb 2022 08:15:46 +0100
-Message-ID: <b6632459-92ec-8c79-6221-e0b3754b1f97@gmx.de>
-Date:   Wed, 16 Feb 2022 08:15:38 +0100
+        Wed, 16 Feb 2022 02:17:08 -0500
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD94C1141;
+        Tue, 15 Feb 2022 23:16:52 -0800 (PST)
+Received: by mail-vs1-xe30.google.com with SMTP id e6so1426670vsa.8;
+        Tue, 15 Feb 2022 23:16:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=q/fqjdbDD2fyY7moizdQvW5LN8SHN1B18vYdIVedr2w=;
+        b=lp4WomsRpPzMzCV/F2J6D885OSY301v5mrj611CFTqGbzXRTf+SOBP2PYLYgRC9yUa
+         WHIOS/IaZpxaWjwMyQNPP/9enFryKTvsQ0ZMikeEusLJA0mZ/LlWh7KlRi10hz8Z+RIL
+         GznNlJKDuCITsaNcZvzAxeMUIoGnrF4YfIXqanmI/2ZO19eRR7XLy89qEyHoFVhp/9Qg
+         SeJezPoz026JuHNhAkvI+OuDnyNA8WLJK/hPCBNkXcAM7M7psQ9IQHuCgkvgYToCgeiC
+         PehWZyz96DUuVYvnaIVQPDTjFoAX0pXwtgBSGevn4WmxIeP4hn0EfLocbzNVnKg3CkO1
+         qRVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=q/fqjdbDD2fyY7moizdQvW5LN8SHN1B18vYdIVedr2w=;
+        b=3R3/jcUkl6qwjTcCaC0HnwP//4iN74ndUsQWa/mKP6n8NGgT0m/7rQRTIMsAnQN/LF
+         fYmKTVodbJwZvXkwmfv6jixHrtZU8GCjNwi3v7cIpcXnEuijeFveGSz1uipnXPsJy790
+         HafaGGUnGwVkkaPvsn3M1EJXgW/0W6fgjl0/Ixhw53KMJ6wYRq/tgXggVsJAtPM4VRtO
+         fOp5lwMukvJzOWNPHRU/uGS5lDQQKbAE68iS1FOcsgCzeoTh/4Yjv3mVZInInsV5ytYh
+         iZS0Tnm7upUFNV4rz/jTdN+gY4ZBclprJ8K71zct/Kn4dUjEg3NrwcomoViLqRX8+xn3
+         CB1g==
+X-Gm-Message-State: AOAM532YG0jaAi49DDqbxAj8nPq5qUR7j9f/vLk/XZyqKmrbD2ZHYKSw
+        krNcdG/e0xsj08nMqB2LU4qfnFeH7hu98w1glkE=
+X-Google-Smtp-Source: ABdhPJwkuPRp9kDdAIfjm6S9WYhpNKDD1u0NOmPXCGk5CMYW9JB8JYSJ0QQwATAMp2BprXSLKzO08xHwljc4VfAujKc=
+X-Received: by 2002:a05:6102:74c:b0:31b:a815:a83b with SMTP id
+ v12-20020a056102074c00b0031ba815a83bmr480903vsg.17.1644995811769; Tue, 15 Feb
+ 2022 23:16:51 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [deller-fbdev:for-next 51/51]
- drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:49: error:
- 'component_compare_dev' undeclared; did you mean 'component_master_del'?
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>, Yong Wu <yong.wu@mediatek.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-References: <202202160743.MUYvzd9B-lkp@intel.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <202202160743.MUYvzd9B-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
+References: <1644949454-814-1-git-send-email-quic_c_sanm@quicinc.com> <1644949454-814-3-git-send-email-quic_c_sanm@quicinc.com>
+In-Reply-To: <1644949454-814-3-git-send-email-quic_c_sanm@quicinc.com>
+From:   Jun Li <lijun.kernel@gmail.com>
+Date:   Wed, 16 Feb 2022 15:16:40 +0800
+Message-ID: <CAKgpwJWEZ7275LihHqxg50cWNVNxUcGR8e7pM-V2bH=aodL7YA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] usb: dwc: host: add xhci_plat_priv quirk XHCI_SKIP_PHY_INIT
+To:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Cc:     Peter Chen <peter.chen@kernel.org>,
+        Pawel Laszczak <pawell@cadence.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, quic_pkondeti@quicinc.com,
+        quic_ppratap@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:xdie6Bbv34PAIA1OJ/AkOe0LxEk9/dtU4Q4k/KhjKQuchEkqz83
- M9saUWorgUnmmB2B47tR/QKjzsgv+jCyNO5Vpr8/eE7ASDvc/W0DPeYQ/Tr/Gu0luKItZCh
- e3KxUwlH0KS6IoOvXpbbRtTk0C/wDTudmKDJzFH1VHgeEjGCdKXxK7SUV1ZAF5X8U8ewrgy
- AKCKb2Get4XE0bYCoA8nQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:32wVd1S1KoQ=:GVw57s6Z5RH6wYdti6I31x
- m0Zj9oAHif/tJ8c36Y5oE2ZLtVeWqHiy/7t+uU+Yo+oOF/9k2uk3Z3KVHGJReLW2ycgQkRLKs
- vsVJVtVPQ4vyEHQlPIjQav+NqbzjgkAcQjsApIZA40mRkz56fYAY/zZbvohvQzB6prZD4R7Wa
- 1VTD77UYu65iAiXLHLIOOmkrCoGpT6vexIcavfVtgSHzMBMC9+gPlnB2zwEBsHl6vHi4EgwZd
- QLEmbwm/XWiTnHNiuSh1ns/ToK0Irv4rm5V/KHwRdp2sawh4cdN56KklDOdelHBd7IIg3Nb2Y
- ZIjC5LCu9FlJViuHdwHbj8BlfipnIoXW3Oud19pYs8bJ2+I95xZUjrSh/lTL4mzvZmsU21wB4
- tWUFwyan5VMKhSu1jWdc8lrbl+My1wR+QHZXKr2qU+SisBl7ruOxhTvnksov9gK4FHuYiUz6H
- e/wBOEcAAyRvouuz5gOfAkb40XLG/QpNVB1EavYW1j8vVRJJx5EhkRsog3NzkSsb6RC/vNBvu
- 30cKCGWVsZ5d0df4xt2jVuai5z2VrZ9Ff947uK22PehCpemFN1G/wN7F2BQrGjYXw0pqN2HQw
- 3jRdy1lgnljdCiOpqpCjd94X+t5yp7HMYcbiqjBlzgPPinL0r0Z/WtPcA2gUDNdPyoDWLQz0o
- nqtC7N2E6SU0c7TfEvVfwG09VldBv1wpQjhq94yf7EK2vgnswIYMdzkezKME3F4vD7j+rmoDb
- Td8u47P8m2TOlOjf5zCf1eg9eOVIpepg7v54+EyeZmr9r3Oak0CKTDPrheBKpYixxqDSNRosh
- vXQuV4y4vEI6YrCXlgz0NiHjeL9cGZqpum4j4DFilQ3B30WsrpOnl6eTmG1Ip0xHVT8qNqyyL
- Kms/h/JWzSuyMB5CQ5Zz3RZNMY5I6Y1f4fG9JmhMjXzUhbONXfHdKqT8Ya8iggDkAGwwAFqnC
- RbZ3KFjtv1vvqcRu5czRZqZBAyPlpOOI0UpCNlYwaMYVV9Kn7I712YDwfjGC+CFXqyyQrCzjQ
- A4yKNTh9ANSZPOTMBUsyO0hBLzHeG1qImJ8OtU2JE/IDMlzEJJtACSz4JVA5mF0PoNXv9sXMY
- 6p/BYDjatk/JAE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/16/22 00:49, kernel test robot wrote:
-> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev=
-.git for-next
-> head:   61038027aa13351c63b452a0d48c805bab1d2ce9
-> commit: 61038027aa13351c63b452a0d48c805bab1d2ce9 [51/51] video: fbdev: o=
-mapfb: Make use of the helper component_compare_dev
-> config: sh-allmodconfig (https://download.01.org/0day-ci/archive/2022021=
-6/202202160743.MUYvzd9B-lkp@intel.com/config)
-> compiler: sh4-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=3D1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sb=
-in/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-f=
-bdev.git/commit/?id=3D61038027aa13351c63b452a0d48c805bab1d2ce9
->         git remote add deller-fbdev git://git.kernel.org/pub/scm/linux/k=
-ernel/git/deller/linux-fbdev.git
->         git fetch --no-tags deller-fbdev for-next
->         git checkout 61038027aa13351c63b452a0d48c805bab1d2ce9
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-11.2.0 make.cr=
-oss O=3Dbuild_dir ARCH=3Dsh SHELL=3D/bin/bash drivers/video/fbdev/omap2/om=
-apfb/dss/
+Sandeep Maheswaram <quic_c_sanm@quicinc.com> =E4=BA=8E2022=E5=B9=B42=E6=9C=
+=8816=E6=97=A5=E5=91=A8=E4=B8=89 14:58=E5=86=99=E9=81=93=EF=BC=9A
 >
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
+> dwc3 manages PHY by own DRD driver, so skip the management by
+> HCD core.
+> During runtime suspend phy was not getting suspend because
+> runtime_usage value is 2.
 >
-> All errors (new ones prefixed by >>):
+> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> ---
+>  drivers/usb/dwc3/host.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
 >
->    drivers/video/fbdev/omap2/omapfb/dss/dss.c: In function 'dss_add_chil=
-d_component':
->>> drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:49: error: 'component_=
-compare_dev' undeclared (first use in this function); did you mean 'compon=
-ent_master_del'?
->     1209 |         component_match_add(dev->parent, match, component_com=
-pare_dev, dev);
->          |                                                 ^~~~~~~~~~~~~=
-~~~~~~~~
->          |                                                 component_mas=
-ter_del
->    drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:49: note: each undecl=
-ared identifier is reported only once for each function it appears in
+> diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+> index eda8719..4a035a8 100644
+> --- a/drivers/usb/dwc3/host.c
+> +++ b/drivers/usb/dwc3/host.c
+> @@ -13,6 +13,14 @@
+>  #include <linux/platform_device.h>
+>
+>  #include "core.h"
+> +#include <linux/usb/hcd.h>
+> +#include <linux/usb/xhci-plat.h>
+> +#include <linux/usb/xhci-quirks.h>
+> +
+> +
+> +static const struct xhci_plat_priv xhci_plat_dwc3_xhci =3D {
+> +       .quirks =3D XHCI_SKIP_PHY_INIT,
+> +};
 
-Fixed now. I've dropped that patch.
+It's better to create this xhci_plat_priv by each dwc3 glue layer,
+with that, we can use this priv to pass other flags and possibly
+override APIs by each glue driver which may not apply to all dwc3
+platforms.
 
-Helge
+thanks
+Li Jun
+>
+>  static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
+>                                         int irq, char *name)
+> @@ -122,6 +130,13 @@ int dwc3_host_init(struct dwc3 *dwc)
+>                 }
+>         }
+>
+> +       ret =3D platform_device_add_data(xhci, &xhci_plat_dwc3_xhci,
+> +                       sizeof(struct xhci_plat_priv));
+> +       if (ret) {
+> +               dev_err(dwc->dev, "failed to add data to xHCI\n");
+> +               goto err;
+> +       }
+> +
+>         ret =3D platform_device_add(xhci);
+>         if (ret) {
+>                 dev_err(dwc->dev, "failed to register xHCI device\n");
+> --
+> 2.7.4
+>
