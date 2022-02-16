@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55845C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbiBPLq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 06:46:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38462 "EHLO
+        id S232279AbiBPLqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 06:46:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiBPLqY (ORCPT
+        with ESMTP id S232267AbiBPLqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 06:46:24 -0500
+        Wed, 16 Feb 2022 06:46:47 -0500
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8176BBE15;
-        Wed, 16 Feb 2022 03:46:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B3566639;
+        Wed, 16 Feb 2022 03:46:33 -0800 (PST)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nKIl4-00076X-4g; Wed, 16 Feb 2022 12:46:06 +0100
+        id 1nKIlR-00076v-BR; Wed, 16 Feb 2022 12:46:29 +0100
 From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
 To:     linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>
 Cc:     Atish Patra <atishp@rivosinc.com>,
@@ -33,11 +33,11 @@ Cc:     Atish Patra <atishp@rivosinc.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v4 5/6] RISC-V: Do no continue isa string parsing without correct XLEN
-Date:   Wed, 16 Feb 2022 12:46:05 +0100
-Message-ID: <3202369.D2aLoNIhS8@diego>
-In-Reply-To: <20220216002911.1219593-6-atishp@rivosinc.com>
-References: <20220216002911.1219593-1-atishp@rivosinc.com> <20220216002911.1219593-6-atishp@rivosinc.com>
+Subject: Re: [PATCH v4 6/6] RISC-V: Improve /proc/cpuinfo output for ISA extensions
+Date:   Wed, 16 Feb 2022 12:46:28 +0100
+Message-ID: <3900089.7kk0a35UzI@diego>
+In-Reply-To: <20220216002911.1219593-7-atishp@rivosinc.com>
+References: <20220216002911.1219593-1-atishp@rivosinc.com> <20220216002911.1219593-7-atishp@rivosinc.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
@@ -45,57 +45,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, 16. Februar 2022, 01:29:10 CET schrieb Atish Patra:
-> The isa string should begin with either rv64 or rv32. Otherwise, it is
-> an incorrect isa string. Currently, the string parsing continues even if
-> it doesnot begin with current XLEN.
+Am Mittwoch, 16. Februar 2022, 01:29:11 CET schrieb Atish Patra:
+> Currently, the /proc/cpuinfo outputs the entire riscv,isa string which
+> is not ideal when we have multiple ISA extensions present in the ISA
+> string. Some of them may not be enabled in kernel as well.
 > 
-> Fix this by checking if it found "rv64" or "rv32" in the beginning.
+> Parse only the enabled ISA extension and print them in a separate row.
 > 
 > Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> ---
->  arch/riscv/kernel/cpufeature.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-> index 59c70c104256..cb9c9e0aab31 100644
-> --- a/arch/riscv/kernel/cpufeature.c
-> +++ b/arch/riscv/kernel/cpufeature.c
-> @@ -84,6 +84,7 @@ void __init riscv_fill_hwcap(void)
->  	for_each_of_cpu_node(node) {
->  		unsigned long this_hwcap = 0;
->  		DECLARE_BITMAP(this_isa, RISCV_ISA_EXT_MAX);
-> +		const char *temp;
->  
->  		if (riscv_of_processor_hartid(node) < 0)
->  			continue;
-> @@ -93,6 +94,7 @@ void __init riscv_fill_hwcap(void)
->  			continue;
->  		}
->  
-> +		temp = isa;
->  #if IS_ENABLED(CONFIG_32BIT)
->  		if (!strncmp(isa, "rv32", 4))
->  			isa += 4;
-> @@ -100,6 +102,9 @@ void __init riscv_fill_hwcap(void)
->  		if (!strncmp(isa, "rv64", 4))
->  			isa += 4;
->  #endif
-> +		/* The riscv,isa DT property must start with rv64 or rv32 */
-> +		if (temp == isa)
-> +			continue;
 
-hmm, should (and can) this create some warning about the ignored
-malformed ISA string?
-
-Otherwise
 Tested-by: Heiko Stuebner <heiko@sntech.de>
-
->  		bitmap_zero(this_isa, RISCV_ISA_EXT_MAX);
->  		for (; *isa; ++isa) {
->  			const char *ext = isa++;
-> 
-
-
 
 
