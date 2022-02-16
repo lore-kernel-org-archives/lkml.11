@@ -2,85 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD06C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A09EDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237983AbiBPTEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:04:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43322 "EHLO
+        id S237988AbiBPTF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:05:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237976AbiBPTD6 (ORCPT
+        with ESMTP id S235248AbiBPTFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:03:58 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86F513CA09;
-        Wed, 16 Feb 2022 11:03:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645038225; x=1676574225;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fain4AjGeF3YbaPcoKuzSdMDXayLVEBSnhuXRjygehY=;
-  b=bBpjKT1l+tkJwaId3Qt+s6Tm97dDP0jYOzvPzFKLGxz1fB2FVgKW/OAo
-   mKymGrxJ5eFWNaUx1CrvmSEJsaStR8PnJ3blEdW8zPq+TYfpFXvq+Berh
-   37Ey15CQuLc5mS1hjXf3eQqqoTd/B4Cx+GJuet1BGYeXfWNuaGBOT4j+w
-   kmaKKBHNktJF5s6Gt7ZgpRz1+c3ECfuzrYs7X7UPn40XiPj8L4u45buhU
-   OkiywTYPl6w/GYnTN2jNTlrIJ8QLFNTLqRKIqcJF23WREokzBlDe7/ouG
-   +FrUX3v5JM5mVCeJDzZSJtdRZXR+tbO6w+vlQ0b/dVJD7gQFzRVlNbCYF
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="275283434"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="275283434"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:03:44 -0800
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="704432435"
-Received: from guptapa-mobl1.amr.corp.intel.com ([10.212.185.96])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:03:43 -0800
-Date:   Wed, 16 Feb 2022 11:03:42 -0800
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "antonio.gomez.iglesias@linux.intel.com" 
-        <antonio.gomez.iglesias@linux.intel.com>,
-        "neelima.krishnan@intel.com" <neelima.krishnan@intel.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
-Message-ID: <20220216190342.fzbwof5s3x64ln4u@guptapa-mobl1.amr.corp.intel.com>
-References: <Ygt/QSTSMlUJnzFS@zn.tnic>
- <20220215121103.vhb2lpoygxn3xywy@guptapa-mobl1.amr.corp.intel.com>
- <YgvVcdpmFCCn20A7@zn.tnic>
- <20220215181931.wxfsn2a3npg7xmi2@guptapa-mobl1.amr.corp.intel.com>
- <YgwAHU7gCnik8Kv6@zn.tnic>
- <20220216003950.5jxecuf773g2kuwl@guptapa-mobl1.amr.corp.intel.com>
- <6724088f-c7cf-da92-e894-d8970f13bf1e@citrix.com>
- <20220216012841.vxlnugre2j4pczp7@guptapa-mobl1.amr.corp.intel.com>
- <20220216060826.dwki2jk6kzft4f7c@guptapa-mobl1.amr.corp.intel.com>
- <YgzSR7AdRRU3hCuB@zn.tnic>
+        Wed, 16 Feb 2022 14:05:25 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D452599FA
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:05:12 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id v25so1775488oiv.2
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:05:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=aVYmbgVTns/qU6vGaPJo+De8qlM44UBRmgs+fYad6dw=;
+        b=khs7wmXDMOrhKc1YljkX/CBjF85HvL3cBs9WN46wnqkX8Tzj8/AP3wK2Ju8tIvx5cC
+         5UGUG1f2Iw4PRGkDYPrkY1pb6Ter8qA2z1GMETDmcKh/a8HU19Z073Ja5Fmaem2ZHG0x
+         KWd4mnM6JlDnSlVcAbvWpU51IQxnK73BdonKo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=aVYmbgVTns/qU6vGaPJo+De8qlM44UBRmgs+fYad6dw=;
+        b=jxShoakK884Gak5o9OKvNmNfq2gSwrXj1LpbH37bNqjWBPxwtzP3yKRWnW82VeL7xN
+         klW+JMJIqGb94apk7p+5Iz70tpg/lmNcTKk4th40k8F4NxxmrFvGGGNu9hJLhOSSRlNt
+         hLhPD0W0MVmvHTnZ8xCYEF9BXGcMmqfBnEAcIS6tiVDWUOE5QhKsooV06JbGn5tTCRVR
+         d+RElEbt8wHPl7Bv/2o0o90+rPgRdKm/h13RbU67f1Ov0ZulfMrMWztn6vuV9npEfaKv
+         IlvVm+nxYLrCPNKvPHDWYxmyCY6PMlFCnkkG4m3Ooh39slHpdeuqTqaPa+DEIoc9OPd9
+         cj9Q==
+X-Gm-Message-State: AOAM531yAb+2xO0DXVkTGx+EZ2gS0cJZb2UW5MKf8Ic3vJSKG5I8fbqr
+        iUoBuxuB+93cUuYc4UBOPPyz0fpAlp4znO5korGF3A==
+X-Google-Smtp-Source: ABdhPJz6oTMx5SDP1atDaHjjBaVtHdu9B64jLra7yXRoRtTP6AwMJCHcJuOUO2BdKPClntlFTZ3K3BiQsE4HR4mzK2Y=
+X-Received: by 2002:a05:6808:30c:b0:2d4:655b:c8c4 with SMTP id
+ i12-20020a056808030c00b002d4655bc8c4mr794909oie.90.1645038312158; Wed, 16 Feb
+ 2022 11:05:12 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 16 Feb 2022 11:05:11 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YgzSR7AdRRU3hCuB@zn.tnic>
+In-Reply-To: <YgyNScQJNVjJpqEc@google.com>
+References: <20220211012510.1198155-1-swboyd@chromium.org> <20220211012510.1198155-2-swboyd@chromium.org>
+ <YgyNScQJNVjJpqEc@google.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 16 Feb 2022 11:05:11 -0800
+Message-ID: <CAE-0n51vdZ=PLXx5Hq+R+F7KwDRPBauN0XjvE_qFtNoHiRWU2w@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] Input: Extract ChromeOS vivaldi physmap show function
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     benjamin.tissoires@redhat.com, Jiri Kosina <jikos@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        "Sean O'Brien" <seobrien@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16.02.2022 11:30, Borislav Petkov wrote:
->On Tue, Feb 15, 2022 at 10:08:26PM -0800, Pawan Gupta wrote:
->> Alternatively, we can reset RTM_ALLOW,
+Quoting Dmitry Torokhov (2022-02-15 21:36:09)
+> On Thu, Feb 10, 2022 at 05:25:07PM -0800, Stephen Boyd wrote:
+> >  drivers/input/Kconfig                 |  7 +++++
+> >  drivers/input/Makefile                |  1 +
+> >  drivers/input/keyboard/Kconfig        |  2 ++
+> >  drivers/input/keyboard/atkbd.c        | 22 +++++----------
+> >  drivers/input/keyboard/cros_ec_keyb.c | 32 ++++++++--------------
+> >  drivers/input/vivaldi-keymap.c        | 39 +++++++++++++++++++++++++++
+> >  include/linux/input/vivaldi-keymap.h  | 28 +++++++++++++++++++
 >
->I'd vote for that. Considering how plagued TSX is, I'm sceptical anyone
->would be interested in doing development with it so we can reset it for
->now and allow enabling it later if there's an actual use case for it...
+> Since you called the config INPUT_VIVALDIFMAP I think we should call
+> these files vivaldi-fmap.(h|c) as well. They are not really keymaps.
 
-Okay, I will add RTM_ALLOW reset logic in the next revision.
-
-Thanks,
-Pawan
+Sure. I used 'f' for 'function'. It could also be INPUT_VIVALDI_PHYSMAP
+and vivaldi-physmap.(h|c) if that's more appropriate. I'll resend this
+with fmap and we can take it from there.
