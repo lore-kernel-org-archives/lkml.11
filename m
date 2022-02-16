@@ -2,170 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20507C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 05:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 627F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 05:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344690AbiBPFzf (ORCPT
+        id S1344646AbiBPF4t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 00:55:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56356 "EHLO
+        Wed, 16 Feb 2022 00:56:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234272AbiBPFzd (ORCPT
+        with ESMTP id S231495AbiBPF4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 00:55:33 -0500
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9AF9F4049
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 21:55:21 -0800 (PST)
-Received: from localhost.localdomain (36-229-230-216.dynamic-ip.hinet.net [36.229.230.216])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id E8A1340E38;
-        Wed, 16 Feb 2022 05:55:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644990915;
-        bh=PU5eTj/ytMNtCk92Lx1FCuQEXOf60kKz6t5NLgZnyoA=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=KDeGtw3iZzZ+JLQOk5mRXPFokOCssu5UQ7CXb6dfG1mUeUHPhBkO5EzIM0VSCaXdx
-         NvLRW/i15FkQKT3DX5n9M0/U6StZ8Cme1Wn7K/0JYPYNrrqilxXBqB6GKT1NE3GjZk
-         P9qMdUzQGh4/pleQKyQYtN3eRhfoYlQ2E8lJVkEwtOR+nZ3GefLqO7281DBD3OHUZK
-         39RytLWqhdtWWhQdzq0AhRHPXu4SU8nvspfwAp92kHfcw7mSvJ4rgX8P1NlafYM1GF
-         W9WjOtWkkTisLl9J9ej23FbzAksbtB27wlmXU1DU4peG5knZYoO6ydrIPsZxRQihXo
-         akoLDEiObWDzw==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     ulf.hansson@linaro.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Thomas Hebb <tommyhebb@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mmc: rtsx: Let MMC core handle runtime PM
-Date:   Wed, 16 Feb 2022 13:54:31 +0800
-Message-Id: <20220216055435.2335297-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 16 Feb 2022 00:56:46 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621F07D2BD
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 21:56:34 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id gj12-20020a17090b108c00b001b89b5f3dd4so3967616pjb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 21:56:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=GWCPHuvmykwKjsv2qEv0NYBKpjfSaiNe18aUeDcPqSY=;
+        b=qAmfOgdfUQ0U78IkwH/VzkPhNb8yOQUGV+Berr4Yg1DFnO3NpJJMTHqd/+6ThqD6Fg
+         rsBLyp5TGFLrZN6d5lxQ9VehP+3SCx/W4hZygKAjEO8f5M17BIz+GmVxgSoLPgYEY8X6
+         wv4qh11/2ywygdwUasTizKoL8Py/2wBNdVoIYaiJ9kRWKAtTyL+cn3l/YBCnM1zRN+pa
+         Ghk8/rv8ohz9DixVUcYTGBw5RHzkFAoTG1q9iMtals/6uxJdVGCyEcovGw9P/84KUU6A
+         Y8aSW99CZjrZIjJH0nlXPeM3FOdT0tantJOEXIZFc1hcV5+g/IJx4YHwtEWePqeZzNJJ
+         9WIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=GWCPHuvmykwKjsv2qEv0NYBKpjfSaiNe18aUeDcPqSY=;
+        b=o1oiSXxoepkYCGdT8BKBhvhCFYZLJFjS9727ebRHNucGZbgZ3up9uCd1j5Nu7jCzyf
+         MWVbuuxvDU3UYjBDhLKwYsmmROr3aHd6N68e1SP7MJttjHeM5rvzc9Kwb8c/atcriKEa
+         K/H7J45zwfsGlHj9YIAY9iNLPCXsdjzLu8UQ5C4WXt2NRncnWZLPYdqdcHUONbKTlI8C
+         gRM0H80vAiqNi2VBjhQZBsqdAG+Bsr4+eDQM0DiNiYxp5ynXqhUQySErvDvDrdHsM1EN
+         /3Dx+LSDNr+qIKGzXLq0F0YPlmQsyQDY2/3NGPfk8wxsGBvcIFTI7CIIE/J81XQAzwdS
+         goyw==
+X-Gm-Message-State: AOAM532GfGGVIKIcNyStgjoVrrsYCU9GLgdYqARSzH1R5hZ2MnKssP0Q
+        XltAllQZXfDN9D4MiOQ70Hw24A8C
+X-Google-Smtp-Source: ABdhPJxpjuyvYc8hvo4RI+jJ/xJwSLqOS553faFwpWdnxLj5jqPDujSMW3V6QEpIVpWWBCX0sEKqycO5
+X-Received: from juew-desktop.sea.corp.google.com ([2620:15c:100:202:1f68:9e47:9464:d991])
+ (user=juew job=sendgmr) by 2002:a17:902:c989:b0:14e:ff42:39b6 with SMTP id
+ g9-20020a170902c98900b0014eff4239b6mr1100305plc.74.1644990993818; Tue, 15 Feb
+ 2022 21:56:33 -0800 (PST)
+Date:   Tue, 15 Feb 2022 21:56:29 -0800
+In-Reply-To: <CAPcxDJ6bDctjErv4ggtBiJsmPJb2e-3ng12f+hMuJ7SLN-SXOg@mail.gmail.com>
+Message-Id: <20220216055629.1542654-1-juew@google.com>
+Mime-Version: 1.0
+References: <CAPcxDJ6bDctjErv4ggtBiJsmPJb2e-3ng12f+hMuJ7SLN-SXOg@mail.gmail.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH] x86/mce: work around an erratum on fast string copy instructions.
+From:   Jue Wang <juew@google.com>
+To:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, Jue Wang <juew@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since MMC core handles runtime PM reference counting, we can avoid doing
-redundant runtime PM work in the driver. That means the only thing
-commit 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM") misses is
-to always enable runtime PM, to let its parent driver enable ASPM in the
-runtime idle routine.
+The fast string copy instructions ("REP; MOVS*") could consume an
+uncorrectable memory error in the cache line _right after_ the
+desired region to copy and raise an MCE.
 
-Fixes: 7499b529d97f ("mmc: rtsx: Use pm_runtime_{get,put}() to handle runtime PM")
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Bit 0 of MSR_IA32_MISC_ENABLE can be cleared to disable fast string copy
+and will avoid such spurious machine checks. However, that is less
+preferable due to the permanent performance impact. Considering memory
+poison is rare, it's desirable to keep fast string copy enabled until
+an MCE is seen.
+
+Intel has confirmed the following:
+1. The CPU erratum of fast string copy only applies to Skylake,
+Cascade Lake and Cooper Lake generations.
+
+Directly return from the MCE handler:
+2. Will result in complete execution of the "REP; MOVS*" with no data
+loss or corruption.
+3. Will not result in another MCE firing on the next poisoned cache line
+due to "REP; MOVS*".
+4. Will resume execution from a correct point in code.
+5. Will result in the same instruction that triggered the MCE firing a
+second MCE immediately for any other software recoverable data fetch
+errors.
+6. Is not safe without disabling the fast string copy, as the next fast
+string copy of the same buffer on the same CPU would result in a PANIC
+MCE.
+
+This should mitigate the erratum completely with the only caveat that
+the fast string copy is disabled on the affected hyper thread thus
+performance degradation.
+
+This is still better than the OS crashes on MCEs raised on an
+irrelevant process due to "REP; MOVS*' accesses in a kernel context,
+e.g., copy_page.
+
+Tested:
+
+Injected errors on 1st cache line of 8 anonymous pages of process
+'proc1' and observed MCE consumption from 'proc2' with no panic
+(directly returned).
+
+Without the fix, the host panicked within a few minutes on a
+random 'proc2' process due to kernel access from copy_page.
+
+Signed-off-by: Jue Wang <juew@google.com>
 ---
- drivers/mmc/host/rtsx_pci_sdmmc.c | 18 ------------------
- 1 file changed, 18 deletions(-)
+ arch/x86/kernel/cpu/mce/core.c     | 56 ++++++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/mce/internal.h |  5 ++-
+ 2 files changed, 60 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/rtsx_pci_sdmmc.c b/drivers/mmc/host/rtsx_pci_sdmmc.c
-index 2a3f14afe9f83..265b3889f9d72 100644
---- a/drivers/mmc/host/rtsx_pci_sdmmc.c
-+++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
-@@ -823,7 +823,6 @@ static void sd_request(struct work_struct *work)
- 	}
- 
- 	mutex_lock(&pcr->pcr_mutex);
--	pm_runtime_get_sync(dev);
- 
- 	rtsx_pci_start_run(pcr);
- 
-@@ -860,8 +859,6 @@ static void sd_request(struct work_struct *work)
- 			data->bytes_xfered = data->blocks * data->blksz;
- 	}
- 
--	pm_runtime_mark_last_busy(dev);
--	pm_runtime_put_autosuspend(dev);
- 	mutex_unlock(&pcr->pcr_mutex);
- 
- finish:
-@@ -1093,7 +1090,6 @@ static void sdmmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
- 		return;
- 
- 	mutex_lock(&pcr->pcr_mutex);
--	pm_runtime_get_sync(dev);
- 
- 	rtsx_pci_start_run(pcr);
- 
-@@ -1127,8 +1123,6 @@ static void sdmmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
- 	rtsx_pci_switch_clock(pcr, ios->clock, host->ssc_depth,
- 			host->initial_mode, host->double_clk, host->vpclk);
- 
--	pm_runtime_mark_last_busy(dev);
--	pm_runtime_put_autosuspend(dev);
- 	mutex_unlock(&pcr->pcr_mutex);
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 5818b837fd4d..5c9d200ec4cd 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -834,6 +834,52 @@ static void quirk_sandybridge_ifu(int bank, struct mce *m, struct pt_regs *regs)
+ 	m->cs = regs->cs;
  }
  
-@@ -1144,7 +1138,6 @@ static int sdmmc_get_ro(struct mmc_host *mmc)
- 		return -ENOMEDIUM;
++/*
++ * Disable fast string copy and return from the MCE handler upon the first SRAR
++ * MCE on bank 1 due to a CPU erratum on Intel Skylake/Cascade Lake/Cooper Lake
++ * CPUs.
++ * The fast string copy instructions ("REP; MOVS*") could consume an
++ * uncorrectable memory error in the cache line _right after_ the desired region
++ * to copy and raise an MCE with RIP pointing to the instruction _after_ the
++ * "REP; MOVS*".
++ * This mitigation addresses the issue completely with the caveat of performance
++ * degradation on the CPU affected. This is still better than the OS crashes on
++ * MCEs raised on an irrelevant process due to "REP; MOVS*" accesses from a
++ * kernel context (e.g., copy_page).
++ *
++ * Returns true when fast string copy on CPU should be disabled.
++ */
++static noinstr bool quirk_skylake_repmov(void)
++{
++	u64 mcgstatus = mce_rdmsrl(MSR_IA32_MCG_STATUS);
++	u64 misc_enable = __rdmsr(MSR_IA32_MISC_ENABLE);
++
++	// Only applies the quirk to local machine checks, i.e., no broadcast
++	// sync is needed.
++	if ((mcgstatus & MCG_STATUS_LMCES) &&
++	    unlikely(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING)) {
++		u64 mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
++
++		// The blob of logic below is checking for a software
++		// recoverable data fetch error.
++		if ((mc1_status &
++		     (MCI_STATUS_VAL | MCI_STATUS_OVER | MCI_STATUS_UC | MCI_STATUS_EN |
++		      MCI_STATUS_ADDRV | MCI_STATUS_MISCV | MCI_STATUS_PCC |
++		      MCI_STATUS_AR | MCI_STATUS_S)) ==
++		     (MCI_STATUS_VAL |                   MCI_STATUS_UC | MCI_STATUS_EN |
++		      MCI_STATUS_ADDRV | MCI_STATUS_MISCV |
++		      MCI_STATUS_AR | MCI_STATUS_S)) {
++			msr_clear_bit(MSR_IA32_MISC_ENABLE,
++				      MSR_IA32_MISC_ENABLE_FAST_STRING_BIT);
++			mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
++			mce_wrmsrl(MSR_IA32_MCx_STATUS(1), 0);
++			pr_err_once("Errata detected, disable fast string copy instructions.\n");
++			return true;
++		}
++	}
++	return false;
++}
++
+ /*
+  * Do a quick check if any of the events requires a panic.
+  * This decides if we keep the events around or clear them.
+@@ -1403,6 +1449,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
+ 	else if (unlikely(!mca_cfg.initialized))
+ 		return unexpected_machine_check(regs);
  
- 	mutex_lock(&pcr->pcr_mutex);
--	pm_runtime_get_sync(dev);
++	if (mce_flags.skx_repmov_quirk && quirk_skylake_repmov())
++		return;
++
+ 	/*
+ 	 * Establish sequential order between the CPUs entering the machine
+ 	 * check handler.
+@@ -1858,6 +1907,13 @@ static int __mcheck_cpu_apply_quirks(struct cpuinfo_x86 *c)
  
- 	rtsx_pci_start_run(pcr);
+ 		if (c->x86 == 6 && c->x86_model == 45)
+ 			mce_flags.snb_ifu_quirk = 1;
++
++		/*
++		 * Skylake, Cascacde Lake and Cooper Lake require a quirk on
++		 * rep movs.
++		 */
++		if (c->x86 == 6 && c->x86_model == INTEL_FAM6_SKYLAKE_X)
++			mce_flags.skx_repmov_quirk = 1;
+ 	}
  
-@@ -1154,8 +1147,6 @@ static int sdmmc_get_ro(struct mmc_host *mmc)
- 	if (val & SD_WRITE_PROTECT)
- 		ro = 1;
+ 	if (c->x86_vendor == X86_VENDOR_ZHAOXIN) {
+diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
+index 52c633950b38..cec227c25138 100644
+--- a/arch/x86/kernel/cpu/mce/internal.h
++++ b/arch/x86/kernel/cpu/mce/internal.h
+@@ -170,7 +170,10 @@ struct mce_vendor_flags {
+ 	/* SandyBridge IFU quirk */
+ 	snb_ifu_quirk		: 1,
  
--	pm_runtime_mark_last_busy(dev);
--	pm_runtime_put_autosuspend(dev);
- 	mutex_unlock(&pcr->pcr_mutex);
+-	__reserved_0		: 57;
++	/* Skylake, Cascade Lake, Cooper Lake rep movs quirk */
++	skx_repmov_quirk		: 1,
++
++	__reserved_0		: 56;
+ };
  
- 	return ro;
-@@ -1173,7 +1164,6 @@ static int sdmmc_get_cd(struct mmc_host *mmc)
- 		return cd;
- 
- 	mutex_lock(&pcr->pcr_mutex);
--	pm_runtime_get_sync(dev);
- 
- 	rtsx_pci_start_run(pcr);
- 
-@@ -1183,8 +1173,6 @@ static int sdmmc_get_cd(struct mmc_host *mmc)
- 	if (val & SD_EXIST)
- 		cd = 1;
- 
--	pm_runtime_mark_last_busy(dev);
--	pm_runtime_put_autosuspend(dev);
- 	mutex_unlock(&pcr->pcr_mutex);
- 
- 	return cd;
-@@ -1282,7 +1270,6 @@ static int sdmmc_switch_voltage(struct mmc_host *mmc, struct mmc_ios *ios)
- 		return err;
- 
- 	mutex_lock(&pcr->pcr_mutex);
--	pm_runtime_get_sync(dev);
- 
- 	rtsx_pci_start_run(pcr);
- 
-@@ -1312,8 +1299,6 @@ static int sdmmc_switch_voltage(struct mmc_host *mmc, struct mmc_ios *ios)
- 	err = rtsx_pci_write_register(pcr, SD_BUS_STAT,
- 			SD_CLK_TOGGLE_EN | SD_CLK_FORCE_STOP, 0);
- 
--	pm_runtime_mark_last_busy(dev);
--	pm_runtime_put_autosuspend(dev);
- 	mutex_unlock(&pcr->pcr_mutex);
- 
- 	return err;
-@@ -1334,7 +1319,6 @@ static int sdmmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
- 		return err;
- 
- 	mutex_lock(&pcr->pcr_mutex);
--	pm_runtime_get_sync(dev);
- 
- 	rtsx_pci_start_run(pcr);
- 
-@@ -1367,8 +1351,6 @@ static int sdmmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
- 		err = sd_change_phase(host, DDR50_RX_PHASE(pcr), true);
- 
- out:
--	pm_runtime_mark_last_busy(dev);
--	pm_runtime_put_autosuspend(dev);
- 	mutex_unlock(&pcr->pcr_mutex);
- 
- 	return err;
+ extern struct mce_vendor_flags mce_flags;
 -- 
-2.34.1
+2.35.1.265.g69c8d7142f-goog
 
