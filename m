@@ -2,165 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2659C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 17:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF1EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 17:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237215AbiBPRii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 12:38:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53162 "EHLO
+        id S237235AbiBPRk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 12:40:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237201AbiBPRig (ORCPT
+        with ESMTP id S237223AbiBPRkZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 12:38:36 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B05A9A9AA
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:38:23 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id bu29so5315840lfb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:38:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CLGpzGzLWEEIPQa2RoBV1b48UAm//y/cN1v178XuBnY=;
-        b=YIKcsqMF3eKCVXPEAvcBo0+LNPTAgkAASeO6TNkeW/s+2ROdkA/A6HTyBI6TEk091E
-         B+exaNzlJPBcARjAcThzqD4S5H2FK9wus6v6wgaLIcKaG9xbSqNh5dr+JoMY/IeVZ6HC
-         26KBmcLh4TfDJEHR0OxdK2PearXUSrey6TC85sSCQM4kpIoBfcFgh5f7BJlHw0vEWk+s
-         cjX7wCAZPK2PEtYu3K4aHj66MVQsSX+im8nuXKCvlrMiart2SBR8er73ICykTrReN3/r
-         QEnKJtgYFY/mZbTIQCb6SI/3L5fSkEQPTmVqa4mH1IjhzaCsuObSUs93pQeBcOmqG2WH
-         ZY4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CLGpzGzLWEEIPQa2RoBV1b48UAm//y/cN1v178XuBnY=;
-        b=PfeF3WM0VG5G9BWV2lm0tcegxTOoJQBxoAau+ahpfzLGZ4DmSw9wzpSCBR6A3DKo7R
-         mtCrlMUy4sUzEeOQ69brRH+wgfCuR3wJJ/HyW7+s3bfhSr7HTVAEPyY4yks/42RaGakO
-         xEv8sVg4VSOvtsgbr9gxzmDpOjEDY9yN0FODYdp8xwaHEPS+Fkd6ppK0yTgmhjUJjBXx
-         9FonMlGjLzCTwTV0QbDJZSkeb2b9NG8B0A9ZIMQGJ6wF4xeDgjek7XYKECQXMA5fGsIE
-         a0YkNmdypTpNrFKLabpmUI/hLL2efCaz31RFF3bQRiqSf9RHuKcK7Uom8HG7HRnQdysY
-         fcAg==
-X-Gm-Message-State: AOAM531jdUwaDDHcGPgRMSYZz37Z0rDNFyBC5wHSaoti91dW/kh0kMwW
-        g/VeCeeY2GDbG9Qtb09xC/zjdVwYMPUk9O6gy0uUCA==
-X-Google-Smtp-Source: ABdhPJwNKe5xPv9L7nEZ8pEZrE0nqEvTSQOI9uOjdLNagMGSvQN6g9gDhIb98Z/Dr0yqyNhx35ovoN+c/L+RavqRqt4=
-X-Received: by 2002:a05:6512:965:b0:443:7340:9893 with SMTP id
- v5-20020a056512096500b0044373409893mr2792075lft.119.1645033101394; Wed, 16
- Feb 2022 09:38:21 -0800 (PST)
+        Wed, 16 Feb 2022 12:40:25 -0500
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0372B2AE05C;
+        Wed, 16 Feb 2022 09:40:11 -0800 (PST)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21G6UxbE014900;
+        Wed, 16 Feb 2022 11:14:15 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=Uh8AyLBAG4qIzsXNtiDc4oAV8d43DRpyK27/SmkxrXI=;
+ b=C4FEsU/SbZiEN/V7aec/JvBlpjAIru3LwG4yVGURFOzXtQJAnRpCohYRsW9GJhG8CHW3
+ kb59zC86EV44kf97PCU+0/6+CaR3WZu4l5lBl77JoYHEMEA5sSkFj3xzBdMGe4jsWRIB
+ 0gpPauDbWX69viYFia6ifoAi7auQCrxwxRm8Ztz68bTYDTAWmEAibiwsm/qy4rYaEx0f
+ 2QnXF4ytHDV/DA6kzqTlamotXaGZMBfrGEVxMncbBAWbV1A1ol1PK52X5zUn+vNnuL72
+ lKJt3bmmO6FLvNQPlAh1b2RRUJs3joKn0QeAHf4DFnk7elvA4MuybZBhp7PkxSxuHzaD Nw== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3e8nyd93rr-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 16 Feb 2022 11:14:15 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 16 Feb
+ 2022 17:14:13 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Wed, 16 Feb 2022 17:14:13 +0000
+Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.64.199])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 2B1E811DC;
+        Wed, 16 Feb 2022 17:14:13 +0000 (UTC)
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <kuninori.morimoto.gx@renesas.com>
+CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Subject: [PATCH 1/2] ASoC: dt-bindings: audio-graph-port: Add dai-tdm-slot-width-map
+Date:   Wed, 16 Feb 2022 17:14:07 +0000
+Message-ID: <20220216171408.265605-2-rf@opensource.cirrus.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220216171408.265605-1-rf@opensource.cirrus.com>
+References: <20220216171408.265605-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
-References: <20211222225350.1912249-1-vipinsh@google.com> <20220105180420.GC6464@blackbody.suse.cz>
- <CAHVum0e84nUcGtdPYQaJDQszKj-QVP5gM+nteBpSTaQ2sWYpmQ@mail.gmail.com>
- <Yeclbe3GNdCMLlHz@slm.duckdns.org> <7a0bc562-9f25-392d-5c05-9dbcd350d002@redhat.com>
- <YehY0z2vHYVZk52J@slm.duckdns.org> <20220120150502.GC27269@blackbody.suse.cz>
-In-Reply-To: <20220120150502.GC27269@blackbody.suse.cz>
-From:   Vipin Sharma <vipinsh@google.com>
-Date:   Wed, 16 Feb 2022 09:37:45 -0800
-Message-ID: <CAHVum0fOP-2XcUcG3PqW08DY7CmpDroG6Fcv9KoD1FqLmGpB8w@mail.gmail.com>
-Subject: Re: [PATCH v2] KVM: Move VM's worker kthreads back to the original
- cgroups before exiting.
-To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Tejun Heo <tj@kernel.org>, seanjc@google.com,
-        lizefan.x@bytedance.com, hannes@cmpxchg.org, dmatlack@google.com,
-        jiangshanlai@gmail.com, kvm@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: ipEvqLdick702ohdfgV-Ews6s1a_3PFl
+X-Proofpoint-ORIG-GUID: ipEvqLdick702ohdfgV-Ews6s1a_3PFl
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paolo, Michal
+Some audio hardware cannot support a fixed slot width or a slot width
+equal to the sample width in all cases. This is usually due either to
+limitations of the audio serial port or system clocking restrictions.
 
-Paolo:
-Will you accept a patch which uses real_parent in
-kvm_vm_worker_thread() as suggested by Sean, while I figure out the
-recommendation from Michal about making kthread_stop() wait on
-kernel_wait()?
-        cgroup_attach_task_all(current->real_parent, current)
+This property allows setting a mapping of sample widths and the
+corresponding tdm slot widths.
 
-Michal:
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+---
+ .../devicetree/bindings/sound/audio-graph-port.yaml        | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-On Thu, Jan 20, 2022 at 7:05 AM Michal Koutn=C3=BD <mkoutny@suse.com> wrote=
-:
->
-> On Wed, Jan 19, 2022 at 08:30:43AM -1000, Tejun Heo <tj@kernel.org> wrote=
-:
-> > It'd be nicer if we can make kthread_stop() waiting more regular but I
-> > couldn't find a good existing place and routing the usual parent
-> > signaling might be too complicated. Anyone has better ideas?
->
-> The regular way is pictured in Paolo's diagram already, the
-> exit_notify/do_signal_parent -> wait4 path.
->
-> Actually, I can see that there exists already kernel_wait() and is used
-> by a UMH wrapper kthread. kthreadd issues ignore_signals() so (besides
-> no well defined point of signalling a kthread) the signal notification
-> is moot and only waking up the waiter is relevant. So kthread_stop()
-> could wait via kernel_wait() based on pid (extracted from task_struct).
->
-> Have I missed an obstacle?
->
+diff --git a/Documentation/devicetree/bindings/sound/audio-graph-port.yaml b/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
+index 476dcb49ece6..420adad49382 100644
+--- a/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
++++ b/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
+@@ -71,4 +71,11 @@ patternProperties:
+         description: CPU to Codec rate channels.
+         $ref: /schemas/types.yaml#/definitions/uint32
+ 
++      dai-tdm-slot-width-map:
++        description: Mapping of sample widths to slot widths. For hardware that
++          cannot support a fixed slot width or a slot width equal to sample
++          width. An array containing one or more pairs of values. Each pair
++          of values is a sample_width and the corresponding slot_width.
++        $ref: /schemas/types.yaml#/definitions/uint32-array
++
+ additionalProperties: true
+-- 
+2.30.2
 
-I must admit I do not have a good understanding of kernel_wait() and
-kthread_stop() APIs. I tried making some changes in the kthread_stop()
-but I was not able to successfully use the API. I tested it by a
-writing a test module, where during the init I start a kthread which
-prints some message every few seconds and during the module exit I
-call kernel_stop(). This module worked as intended without the
-kernel_wait() changes in the kthread_stop() API.
-
-My changes were basically replacing wait_for_completion() with
-kernel_wait() call.
-
-@@ -645,8 +645,9 @@ int kthread_stop(struct task_struct *k)
-        set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
-        kthread_unpark(k);
-        wake_up_process(k);
--       wait_for_completion(&kthread->exited);
--       ret =3D k->exit_code;
-+       kernel_wait(k->pid, &ret);
-+//     kernel_wait(task_pid_vnr(k), &ret);
-+//     wait_for_completion(&kthread->exited);
-+//     ret =3D k->exit_code;
-        put_task_struct(k);
-
-I used few other combination where I put kernel_wait() call after
-put_task_struct(k) call.
-
-Every time during the module exit, kernel was crashing like:
-
-[  285.014612] RIP: 0010:0xffffffffc04ed074
-[  285.018537] RSP: 0018:ffff9ccdc8365ee8 EFLAGS: 00010246
-[  285.023761] RAX: 0000000000000000 RBX: 0000000000000012 RCX: 00000000000=
-00001
-[  285.030896] RDX: 0000000000000000 RSI: 0000000000000286 RDI: ffff9cce3f7=
-d9cc0
-[  285.038028] RBP: ffff9ccdc8365ef8 R08: 0000000000000000 R09: 00000000000=
-15504
-[  285.045160] R10: 000000000000004b R11: ffffffff8dd92880 R12: 00000000000=
-00012
-[  285.052293] R13: ffff9ccdc813db90 R14: ffff9ccdc7e66240 R15: ffffffffc04=
-ed000
-[  285.059425] FS:  0000000000000000(0000) GS:ffff9cce3f7c0000(0000)
-knlGS:0000000000000000
-[  285.067510] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  285.073258] CR2: ffffffffc04ed074 CR3: 000000c07f20e002 CR4: 00000000003=
-62ef0
-[  285.080390] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 00000000000=
-00000
-[  285.087522] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 00000000000=
-00400
-[  285.094656] Call Trace:
-[  285.097112]  kthread+0x148/0x1b0
-[  285.100343]  ? kthread_blkcg+0x30/0x30
-[  285.104096]  ret_from_fork+0x3a/0x60
-[  285.107671] Code:  Bad RIP value.
-[  285.107671] IP: 0xffffffffc04ecff4:
-
-Crash is not observed if I keep wait_for_completion(&kthread->exited)
-along with kernel_wait(), but I guess the kernel_wait() should be
-sufficient by itself if I figure out proper way to use it.
-
-Do you have any suggestions what might be the right way to use this API?
-
-Thanks
-Vipin
