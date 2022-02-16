@@ -2,129 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 493A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 18:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF122C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 18:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237833AbiBPSo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 13:44:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36686 "EHLO
+        id S235472AbiBPSqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 13:46:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237819AbiBPSov (ORCPT
+        with ESMTP id S229673AbiBPSqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 13:44:51 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1DC222DDF;
-        Wed, 16 Feb 2022 10:44:37 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id D0C8A580DEA;
-        Wed, 16 Feb 2022 13:44:34 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 16 Feb 2022 13:44:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=UtEJAftqPvQNvO
-        Clej1+Mse1oLVwQ9J15EJX/K1D8M8=; b=qn+nJoBEadhFokijMOvs8dp/xSXrDL
-        Ouq3uUnCeqyyr31cvilhnokrTmMQoYWgDdVeGCOqx4+eDGBSfEssIhgf5uS364nE
-        fAsvdLL20tdBOujUABUrYV7Rt8immg8/wTr0U4DgQPIG4WnczSgGQCXoXo79/IHY
-        np8W2ohmCH8qKmI83LGOT+jy62rvQik8n+bRMm5sxamgEtRUCOjQA0fMk0UmmPkn
-        WK+6cHruo+fama2NkBphGvR3Ob7PuNaMCUsGjnhXcXJTjKnpzhTYjzXfD9EIrAY5
-        +vcU84tdcTgld+8waKEWdaDYE2ojG6vdQPlV1GmcqueVvh8hFcLwPvbA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=UtEJAftqPvQNvOClej1+Mse1oLVwQ9J15EJX/K1D8
-        M8=; b=fYdyp7ZQB3WO+ba4hZ3UyqxxIbrIaYc+UwEkkFxTahCB/5qtog9kngDfo
-        0J9md1jPgpIXvTVDMh0/4fiuruBMr9GlkIgdzZBgnnsQ+dkvK+9PF8yXGbSn3O8t
-        q2/1Gh+eJPxSFScqf7phHiZmm9tskkQCc4TNhecXMbzdN42Zk6OfKVtYXigjBvUk
-        bHMtH9oVJDWLOQ0dmiN24DejDEfchF5tOfTCDAOKX1PbbFmMgtVlQFg+tdFg7Qjb
-        MrCZ7f3tkcFJ2jhD0Aug+Lo/0VYRYUXnVuKWeK80LCUEECtqWbHWt87LTtFNJfN3
-        okOkiyt3a7+GU8ijCEPZru13YpE/w==
-X-ME-Sender: <xms:EEYNYiEV39KMAdGPBQX_eK1uXGVB8BOUoLg_ZBbm-zgX3oYunFYO6Q>
-    <xme:EEYNYjXBWZbFRFceIL8Glf76OtMxPUAbnDJJdmju2cC7DfoXrcqhJBmxJnxJXS2Qy
-    z1xVoljJ1WPYEfReag>
-X-ME-Received: <xmr:EEYNYsI5CbLwmaTQnJpeRL4rulUP0T089uhjcMoZMPP0oqhxR-p2JzViHfgvtcc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeeigdduudeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepkfffgggfuffvfhfhjggtgfesthekredttdefjeenucfhrhhomheplfhirgig
-    uhhnucgjrghnghcuoehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhmqeenuc
-    ggtffrrghtthgvrhhnpeehieduvdevhfekjeeftddtkeeitefhudekvdeiueeulefgleei
-    jeeghedvkeduleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
-X-ME-Proxy: <xmx:EEYNYsFPjdfP60uQp6VNa4CSPkBmd3Bq7KKrkb84cwJZn3whHr685w>
-    <xmx:EEYNYoUfAt3IWJxvpXdHSYp5NqDHcpk744YBvAnU8YoU8lAtLY_tbw>
-    <xmx:EEYNYvOFu-e2Jl0r-7JRuqj9JHK3K3QojzGVJkD5csVdq9u-EVfjaw>
-    <xmx:EkYNYq1vKHtpVLUi9JW-_GQLU_K-f6D-6xhZlUFFMbLKDslNhO8Hkg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 16 Feb 2022 13:44:29 -0500 (EST)
-Message-ID: <76e3d3f2-c457-2940-10ea-834f13e526cb@flygoat.com>
-Date:   Wed, 16 Feb 2022 18:44:25 +0000
+        Wed, 16 Feb 2022 13:46:52 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5B170842;
+        Wed, 16 Feb 2022 10:46:39 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id h7-20020a17090a648700b001b927560c2bso3228756pjj.1;
+        Wed, 16 Feb 2022 10:46:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y4qUT6p/ojssA+s5XpkcSdKzl/eCfrm+8A6a9qlh8p8=;
+        b=WHYWNniFWxl0kfD4p9x4jmwixS7KtEgDunCFE59SLvehBCOGtwBHNvL7bMIBTytKF3
+         LLYl1gAkvf+1Y53/a0tPAEIsXACZ8zs+qcKJEhvyAVKTjMXPzegkcdsyyR8J5/ZyHLYQ
+         gd3WZWjrCmncARfP/rr9D1i9pHE3ForB5/p9J/lZnYpe74bh7JuQWSL+6RHE0qnPOz23
+         siyXlZSNKbBcsqVBy/v3Zr+tk224TXuLcD2kX/+scBOMQKTgMiuXjivdMWex6b9DaMum
+         tX2JcHq4ORV/vfSK30eCY+IojW5xbTD19Xhy1gy1f/qIpgnKsuxj4qjknTA9i55ORJfg
+         Hb0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y4qUT6p/ojssA+s5XpkcSdKzl/eCfrm+8A6a9qlh8p8=;
+        b=d/ea22yliVxoUb7hmDJLM3blQReL84U1YXPgyHw++VAwpz6xbfNDILGt/3c65UjzpI
+         6d/hB18l0imIQ2olabnlSZ7b9u2CfUh/FbW0D4PsExh2jaVlaEWvBm/zFmbxx7L3uU32
+         mS+o0iJO8xm3Wl89A2Sz85hPeGlOmtm4u6+f9W2SbWTUk0wfdWeHlQLBI67uEfSgdRwe
+         cQjFyBid7SgAx9FX1UB6X/K2ADwf4ClFt+re1upzyM74kb+TpjfeBItbkq01wdwkt9T8
+         y6pW++3Lm6BDVI8kAWI206Vsrj1gV+e7ISHbtf0KZlUpf1sflqVaE3FrxAHMpOuRyK/G
+         yqFQ==
+X-Gm-Message-State: AOAM530KfrJyglXpYYgVSNJLlXvGJOL6zqPZn45ENWDHgAuchMjhKFFt
+        +NrzLPEoqs7Iny5JtRVF40L8on/j588=
+X-Google-Smtp-Source: ABdhPJzJeoMXADEy6V4Sl+21gwzsWdV57QczvYO60VYh2SY4plUMbPFJhZVnl9mX6TXMiAXE1x4Qaw==
+X-Received: by 2002:a17:902:9007:b0:14f:3680:66d1 with SMTP id a7-20020a170902900700b0014f368066d1mr187990plp.91.1645037198106;
+        Wed, 16 Feb 2022 10:46:38 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id k3sm6051723pgt.29.2022.02.16.10.46.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 10:46:37 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, Jonas Gorski <jonas.gorski@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM IPROC GBIT
+        ETHERNET DRIVER), "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] Revert "net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname"
+Date:   Wed, 16 Feb 2022 10:46:34 -0800
+Message-Id: <20220216184634.2032460-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v8 2/3] MIPS: Loongson64: dts: update the display
- controller device node
-To:     Sui Jingfeng <15330273260@189.cn>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>, Li Yi <liyi@loongson.cn>,
-        suijingfeng <suijingfeng@loongson.cn>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-References: <20220216181712.1493400-1-15330273260@189.cn>
- <20220216181712.1493400-3-15330273260@189.cn>
-From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
-In-Reply-To: <20220216181712.1493400-3-15330273260@189.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jonas Gorski <jonas.gorski@gmail.com>
 
+This reverts commit 3710e80952cf2dc48257ac9f145b117b5f74e0a5.
 
-在 2022/2/16 18:17, Sui Jingfeng 写道:
-> From: suijingfeng <suijingfeng@loongson.cn>
->
-> The display controller is a pci device, its PCI vendor id is 0x0014
-> its PCI device id is 0x7a06.
->
-> 1) In order to let the lsdc kms driver to know which chip the DC is
->     contained in, we add different compatible for different chip.
->
-> 2) Add display controller device node for ls2k1000 SoC
->
-> Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
-> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
-> ---
->   .../loongson/loongson,display-controller.yaml | 114 ++++++++++++++++++
->   .../display/loongson/loongson-drm.txt         |  16 +++
-^ Is loongson-drm.txt intentional?
-It seems irrelevant....
+Since idm_base and nicpm_base are still optional resources not present
+on all platforms, this breaks the driver for everything except Northstar
+2 (which has both).
 
-Thanks.
->   .../boot/dts/loongson/loongson64-2k1000.dtsi  |   8 ++
->   arch/mips/boot/dts/loongson/ls7a-pch.dtsi     |   7 +-
->   4 files changed, 140 insertions(+), 5 deletions(-)
->   create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
->   create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson-drm.txt
-[...]
-- Jiaxun
+The same change was already reverted once with 755f5738ff98 ("net:
+broadcom: fix a mistake about ioremap resource").
+
+So let's do it again.
+
+Fixes: 3710e80952cf ("net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname")
+Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+[florian: Added comments to explain the resources are optional]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ .../net/ethernet/broadcom/bgmac-platform.c    | 23 +++++++++++++------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bgmac-platform.c b/drivers/net/ethernet/broadcom/bgmac-platform.c
+index c6412c523637..b4381cd41979 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-platform.c
++++ b/drivers/net/ethernet/broadcom/bgmac-platform.c
+@@ -172,6 +172,7 @@ static int bgmac_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct bgmac *bgmac;
++	struct resource *regs;
+ 	int ret;
+ 
+ 	bgmac = bgmac_alloc(&pdev->dev);
+@@ -208,15 +209,23 @@ static int bgmac_probe(struct platform_device *pdev)
+ 	if (IS_ERR(bgmac->plat.base))
+ 		return PTR_ERR(bgmac->plat.base);
+ 
+-	bgmac->plat.idm_base = devm_platform_ioremap_resource_byname(pdev, "idm_base");
+-	if (IS_ERR(bgmac->plat.idm_base))
+-		return PTR_ERR(bgmac->plat.idm_base);
+-	else
++	/* The idm_base resource is optional for some platforms */
++	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "idm_base");
++	if (regs) {
++		bgmac->plat.idm_base = devm_ioremap_resource(&pdev->dev, regs);
++		if (IS_ERR(bgmac->plat.idm_base))
++			return PTR_ERR(bgmac->plat.idm_base);
+ 		bgmac->feature_flags &= ~BGMAC_FEAT_IDM_MASK;
++	}
+ 
+-	bgmac->plat.nicpm_base = devm_platform_ioremap_resource_byname(pdev, "nicpm_base");
+-	if (IS_ERR(bgmac->plat.nicpm_base))
+-		return PTR_ERR(bgmac->plat.nicpm_base);
++	/* The nicpm_base resource is optional for some platforms */
++	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "nicpm_base");
++	if (regs) {
++		bgmac->plat.nicpm_base = devm_ioremap_resource(&pdev->dev,
++							       regs);
++		if (IS_ERR(bgmac->plat.nicpm_base))
++			return PTR_ERR(bgmac->plat.nicpm_base);
++	}
+ 
+ 	bgmac->read = platform_bgmac_read;
+ 	bgmac->write = platform_bgmac_write;
+-- 
+2.25.1
+
