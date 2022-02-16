@@ -2,84 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03591C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D58BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238274AbiBPTnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:43:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51604 "EHLO
+        id S235259AbiBPTne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:43:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238001AbiBPTnV (ORCPT
+        with ESMTP id S238269AbiBPTnY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:43:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18327D0071;
-        Wed, 16 Feb 2022 11:43:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F4FE618CC;
-        Wed, 16 Feb 2022 19:43:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37738C004E1;
-        Wed, 16 Feb 2022 19:43:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645040588;
-        bh=vBUFtqU9xaEDtrCpZcGQYn7RAcYm9CMccb0wG8HPStQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=VTm7D3reMVnfuFASVyzY0zFKU/nf8t85RH4Skpx+du3VJDUOqWvvfyHbcycWCsbmz
-         hJ5Pc/w1aMJAik97ztwwjONThijXMvjXs137HeomB8khtyoUwNrKrk5Hg0f+XTUAKE
-         07+RtAgTjj9dIYeNabfYczPOIpxM5qCLs9CRo0bcwuQVSUyfkZJiKmSuR66WS4RTzm
-         5r5V/eZHY3qMhIWzb+bnFxJol8AYVsmMiOBBRJRO0731EIs7VYM8g5CxHZpuCyXw22
-         ko1oVvUIXb9nbdNRI/MT882L37WDlYc76e4QOY3KBPJMoSSrNhYWOb8DZqhS0z0Yol
-         aGq+rizFU33DQ==
-Date:   Wed, 16 Feb 2022 13:50:47 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] tw89: core.h: Replace zero-length array with
- flexible-array member
-Message-ID: <20220216195047.GA904198@embeddedor>
+        Wed, 16 Feb 2022 14:43:24 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5BE10EC79;
+        Wed, 16 Feb 2022 11:43:11 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id s8so1108606oij.13;
+        Wed, 16 Feb 2022 11:43:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=YRJGbnQOnF/oKC/Tjrr2Q557LB8S7RqNy7bp3q/iBfg=;
+        b=KZ6CnaXRPn6Z7VhyaKnulEjmm28Zl2DvsraVGtQuJI3AiJcmDkG7M9TEOoZxeM+UZd
+         AeHUtuZRNLxskJusd62C2/6G5iUhUv0ZAEBKJO+7ZuAjM0VFPsD9gcK8q6gbEuaR8rQv
+         ucIKL3m0su2DSNYw7/UR0q/stpA1TZiCczQ/p235JuI7hEMCd/wITBjs+FOVOAkvcCJY
+         DQJSxVZvgZxh72UNFbIxoPvIzJUS7/sKWKaY637vYKdqfsnepdz1sjgyH2ZNuGWTouM3
+         C+8MK6VCblShpQo91FkPd5LKQN/mCkq69UEdDOo2Z1pbSfqwOBnidQKNyELANqIcTPOM
+         Hzfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition;
+        bh=YRJGbnQOnF/oKC/Tjrr2Q557LB8S7RqNy7bp3q/iBfg=;
+        b=LVdq2YnAyRlnUm9QLQ5IWEuVBBJIwOKCPW6/1E0VD7Nu+aNz6SBJHkhvTUA3VlRo6f
+         zBa8nK7++TH92LSDdJQxQWE/mdbmQvBteu30pvXzB/h7vsxPySlWUxpgzuV2obyUDb2o
+         PyXOmfBDu3AL/0rqXtGdPpJCs4P+wyXl4nfHmFWzcbfvxup0eEDgB2PoqusmGp+muNHr
+         rUcAhnLLvrIibjgU9agQ9Ti5prj5zupADj3JchBub/k0M0lQbLooXwhRqHDDsnfbUmSd
+         5iFAM+wjbNSGf3O/yxzQNhxcsi0avdY/NtcpcuLdrdjojcdoZhhe8FxycObDzvaRAY+Z
+         DziQ==
+X-Gm-Message-State: AOAM533zuJjNB0HUb5uJsxKLXRjZ100ELR1PZK7s4S/6qL32StNE9l49
+        shzHkWhYh2OGPUbsmAha8J4=
+X-Google-Smtp-Source: ABdhPJwt5sGVFldwt2GeJO9d8EV7kExjWNn6LfVm8qj6OcnflospbFuhYKK3OGjwHSOSZja70wiG6A==
+X-Received: by 2002:a05:6808:308d:b0:2c8:feb5:9cc7 with SMTP id bl13-20020a056808308d00b002c8feb59cc7mr1446934oib.139.1645040591100;
+        Wed, 16 Feb 2022 11:43:11 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id i26sm7669257oos.35.2022.02.16.11.43.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 11:43:10 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 16 Feb 2022 11:43:08 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] hwmon: (asus-ec-sensors) merge setup functions
+Message-ID: <20220216194308.GA3307305@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a regular need in the kernel to provide a way to declare
-having a dynamically sized set of trailing elements in a structure.
-Kernel code should always use “flexible array members”[1] for these
-cases. The older style of one-element or zero-length arrays should
-no longer be used[2].
+On Wed, Feb 16, 2022 at 08:19:58PM +0100, Eugene Shalygin wrote:
+> Merge configure_sensor_setup() into probe().
+> 
+> Changes:
+>  - v2: add local struct device *dev = &pdev->dev;
+>  - v3: initialize dev at declaration
+>  - v4: fix checkpatch warning
+>  - v5: fix formatting
+>  - v6: code style fixes
+> Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
 
-[1] https://en.wikipedia.org/wiki/Flexible_array_member
-[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+Applied to hwmon-next.
 
-Link: https://github.com/KSPP/linux/issues/78
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/wireless/realtek/rtw89/core.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/realtek/rtw89/core.h b/drivers/net/wireless/realtek/rtw89/core.h
-index 7c84556ec4ad..b15b529e19ed 100644
---- a/drivers/net/wireless/realtek/rtw89/core.h
-+++ b/drivers/net/wireless/realtek/rtw89/core.h
-@@ -2847,7 +2847,7 @@ struct rtw89_dev {
- 	int napi_budget_countdown;
- 
- 	/* HCI related data, keep last */
--	u8 priv[0] __aligned(sizeof(void *));
-+	u8 priv[] __aligned(sizeof(void *));
- };
- 
- static inline int rtw89_hci_tx_write(struct rtw89_dev *rtwdev,
--- 
-2.27.0
-
+Thanks,
+Guenter
