@@ -2,151 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A59C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3B8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbiBPLp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 06:45:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37718 "EHLO
+        id S232213AbiBPLqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 06:46:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232254AbiBPLpx (ORCPT
+        with ESMTP id S232176AbiBPLp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 06:45:53 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DA6238
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 03:45:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645011941; x=1676547941;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jkHKsbRrnER7Jh3gZVcV7yPW/87kIYtKfnj8ILxIspA=;
-  b=XDc7Ejb48QPN85qLA9HLVGzP5lUnhvXUbxU4m66OsrDGs326IF8vGg03
-   9RbBJS7ni1Y+9v0EH580CIdYQZerZNjVWjmdO3Xdp4QFsjPRiT4Z4AvyQ
-   tfMm+kawb2fAQMVLj112tQuC6tkEc9VxBvgH/2zO9oKFBBTRxxqtlS7kT
-   oNJQSRMnqi/LZdr8Ry7+Mm2U7UXbB25Yk7pRPeYYt+n0HYbDI9VFhOlLf
-   Xa2HImbiOQrsIxdshLg9sTxRGiDoLfGY3B/xdlgksgXIjv7N/l8P2qqcH
-   E60V+xGMi/SibqMjbchpPa6M4VSEa6QupuaIGj3UfycUwN2h1naUposIx
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="275166278"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="275166278"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 03:45:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="636450890"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 16 Feb 2022 03:45:37 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKIkZ-000Ald-9V; Wed, 16 Feb 2022 11:45:35 +0000
-Date:   Wed, 16 Feb 2022 19:44:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:axboe/linux-block/m1-test 364/382]
- drivers/cpufreq/apple-soc-cpufreq.c:53:19: error: implicit declaration of
- function 'readq_relaxed'; did you mean 'readl_relaxed'?
-Message-ID: <202202161958.nj2B98CG-lkp@intel.com>
+        Wed, 16 Feb 2022 06:45:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31FA5BBE15
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 03:45:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645011946;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WP90pIk7jEBwCs42OYImo884m3Sc20R1f26ph5uJrT8=;
+        b=JN67/N93b5tx/pBdpDZnU5JXONcgaENMKl/1nus0i6kr8CBGUpneSqchktvCIvy/frzRVK
+        jPxNkP6EmGpGNsveT+IboK70BVPr6kujT5VJWB4XxXmgfmg4ghzAswum4TVWEQxr9gzMGQ
+        uKfXORmX5eGtEsDARBb0CEM8ZMU04xk=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-173-0n8uunhDNJetlFEtI5iz8w-1; Wed, 16 Feb 2022 06:45:45 -0500
+X-MC-Unique: 0n8uunhDNJetlFEtI5iz8w-1
+Received: by mail-ed1-f70.google.com with SMTP id e10-20020a056402190a00b00410f20467abso1379363edz.14
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 03:45:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WP90pIk7jEBwCs42OYImo884m3Sc20R1f26ph5uJrT8=;
+        b=ytRMLNLyy/ewxvyQ/dPmFO9ecHd5kdxk6oxqYRLjh851ktMZfWiTe0vn1LbSxNR/qN
+         kdpFcDb8EiUwjVvrnApP2DM9u0XlfOG5P36tmMbL1WXebiXCvnPvEjiF4ZgxCGsSSm0/
+         UBl7+fWliRlwstp5fw3FUHiOYHvoqjATzjYGy3qgaLAAUjSChbJZCg2fgkj/YLG3zkcH
+         ztozu+gEe9ilBQyfRvssqP1eijYK9s01nF6R5yueZf6eEJDO/79QwknyOzYft88cdDu2
+         LNGAAhjIR2YosBbxEuS9Ktk4L4Kg3H4bV+gBy9Po2Gpb7WCvCKRvRQO5k54sbuV1nLGC
+         cvfQ==
+X-Gm-Message-State: AOAM530LnGmWFrbzWeYxeLZq/v2wLN4NFGVmfJRadg8lM+ze5V4qSQjD
+        GAt1iQ5vK1Jf/Tpk5w184zOgdWZ0lINNetu5LgTzUqxog1kuZhNnjFTBrTYGLxPMJtnLhE6ke65
+        8YJAzQySYkb1IfrGX4ptm2Pu+
+X-Received: by 2002:aa7:d8d8:0:b0:3f5:9041:2450 with SMTP id k24-20020aa7d8d8000000b003f590412450mr2610140eds.322.1645011943875;
+        Wed, 16 Feb 2022 03:45:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzkaJn52bD+L6Qtxp/FoVpy6ltuid1x9L0SwoLrXz5wehaYTP1E8b2cWzjlZw8g9RYGxeTLVg==
+X-Received: by 2002:aa7:d8d8:0:b0:3f5:9041:2450 with SMTP id k24-20020aa7d8d8000000b003f590412450mr2610107eds.322.1645011943624;
+        Wed, 16 Feb 2022 03:45:43 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id s1sm1467429edt.49.2022.02.16.03.45.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 03:45:42 -0800 (PST)
+Message-ID: <9b1d925c-1e6a-8a06-ada5-941adb5b349f@redhat.com>
+Date:   Wed, 16 Feb 2022 12:45:41 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 1/1] x86/kvm/fpu: Mask guest fpstate->xfeatures with
+ guest_supported_xcr0
+Content-Language: en-US
+To:     Leonardo Bras Soares Passos <leobras@redhat.com>
+Cc:     David Edmondson <david.edmondson@oracle.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Yang Zhong <yang.zhong@intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20220211060742.34083-1-leobras@redhat.com>
+ <5fd84e2f-8ebc-9a4c-64bf-8d6a2c146629@redhat.com>
+ <cunsfslpyvh.fsf@oracle.com>
+ <6bee793c-f7fc-2ede-0405-7a5d7968b175@redhat.com>
+ <CAJ6HWG6RB6NS8vx0vWdgRhO54B+NqHyBvpg7dRjd_78TRnJ9eg@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CAJ6HWG6RB6NS8vx0vWdgRhO54B+NqHyBvpg7dRjd_78TRnJ9eg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1-test
-head:   5adfbb595194191bad98c47447ddbee7d3b60b8f
-commit: d2b69a6992028350d06be95501463259969d22d2 [364/382] cpufreq: apple-soc: Add new driver to control Apple SoC CPU P-states
-config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220216/202202161958.nj2B98CG-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/d2b69a6992028350d06be95501463259969d22d2
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1-test
-        git checkout d2b69a6992028350d06be95501463259969d22d2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/
+On 2/16/22 08:48, Leonardo Bras Soares Passos wrote:
+> On Mon, Feb 14, 2022 at 6:56 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>> On top of this patch, we can even replace vcpu->arch.guest_supported_xcr0
+>> with vcpu->arch.guest_fpu.fpstate->user_xfeatures. Probably with local
+>> variables or wrapper functions though, so as to keep the code readable.
+> 
+> You mean another patch (#2) removing guest_supported_xcr0 field from
+> kvm_vcpu_arch ?
+> (and introducing something like kvm_guest_supported_xcr() ?)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes, introducing both kvm_guest_supported_xcr0() that just reads 
+user_xfeatures, and kvm_guest_supported_xfd() as below.
 
-All errors (new ones prefixed by >>):
+>> For example:
+>>
+>> static inline u64 kvm_guest_supported_xfd()
+>> {
+>>          u64 guest_supported_xcr0 = vcpu->arch.guest_fpu.fpstate->user_xfeatures;
+>>
+>>          return guest_supported_xcr0 & XFEATURE_MASK_USER_DYNAMIC;
+>> }
+> 
+> Not sure If I get the above.
+> Are you suggesting also removing fpstate->xfd and use a wrapper instead?
+> Or is the above just an example?
+> (s/xfd/xcr0/ & s/XFEATURE_MASK_USER_DYNAMIC/XFEATURE_MASK_USER_SUPPORTED/ )
 
-   drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_get_rate':
->> drivers/cpufreq/apple-soc-cpufreq.c:53:19: error: implicit declaration of function 'readq_relaxed'; did you mean 'readl_relaxed'? [-Werror=implicit-function-declaration]
-      53 |         u64 reg = readq_relaxed(priv->reg_base + APPLE_CLUSTER_PSTATE);
-         |                   ^~~~~~~~~~~~~
-         |                   readl_relaxed
-   In file included from drivers/cpufreq/apple-soc-cpufreq.c:20:
-   drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_set_target':
->> include/linux/iopoll.h:162:28: error: implicit declaration of function 'readq'; did you mean 'readl'? [-Werror=implicit-function-declaration]
-     162 |         readx_poll_timeout(readq, addr, val, cond, delay_us, timeout_us)
-         |                            ^~~~~
-   include/linux/iopoll.h:46:25: note: in definition of macro 'read_poll_timeout'
-      46 |                 (val) = op(args); \
-         |                         ^~
-   include/linux/iopoll.h:162:9: note: in expansion of macro 'readx_poll_timeout'
-     162 |         readx_poll_timeout(readq, addr, val, cond, delay_us, timeout_us)
-         |         ^~~~~~~~~~~~~~~~~~
-   drivers/cpufreq/apple-soc-cpufreq.c:71:13: note: in expansion of macro 'readq_poll_timeout'
-      71 |         if (readq_poll_timeout(priv->reg_base + APPLE_CLUSTER_PSTATE, reg,
-         |             ^~~~~~~~~~~~~~~~~~
->> drivers/cpufreq/apple-soc-cpufreq.c:82:9: error: implicit declaration of function 'writeq_relaxed'; did you mean 'writeb_relaxed'? [-Werror=implicit-function-declaration]
-      82 |         writeq_relaxed(reg, priv->reg_base + APPLE_CLUSTER_PSTATE);
-         |         ^~~~~~~~~~~~~~
-         |         writeb_relaxed
-   cc1: some warnings being treated as errors
+The above is an example of how even "indirect" uses as 
+guest_supported_xcr0 can be changed to a function.
 
+>> Also, already in this patch fpstate_realloc should do
+>>
+>>           newfps->user_xfeatures = curfps->user_xfeatures | xfeatures;
+>>
+>> only if !guest_fpu.  In other words, the user_xfeatures of the guest FPU
+>> should be controlled exclusively by KVM_SET_CPUID2.
+> 
+> Just to check, you suggest adding this on patch #2 ?
+> (I am failing to see how would that impact on #1)
 
-vim +53 drivers/cpufreq/apple-soc-cpufreq.c
+In patch 1.  Since KVM_SET_CPUID2 now changes newfps->user_xfeatures, it 
+should be the only place where it's changed, and arch_prctl() should not 
+change it anymore.
 
-    48	
-    49	static unsigned int apple_soc_cpufreq_get_rate(unsigned int cpu)
-    50	{
-    51		struct cpufreq_policy *policy = cpufreq_cpu_get_raw(cpu);
-    52		struct apple_cpu_priv *priv = policy->driver_data;
-  > 53		u64 reg = readq_relaxed(priv->reg_base + APPLE_CLUSTER_PSTATE);
-    54		unsigned int pstate = FIELD_GET(APPLE_CLUSTER_PSTATE_DESIRED1, reg);
-    55		unsigned int i;
-    56	
-    57		for (i = 0; policy->freq_table[i].frequency != CPUFREQ_TABLE_END; i++)
-    58			if (policy->freq_table[i].driver_data == pstate)
-    59				return policy->freq_table[i].frequency;
-    60	
-    61		dev_err(priv->cpu_dev, "could not find frequency for pstate %d\n", pstate);
-    62		return 0;
-    63	}
-    64	
-    65	static int apple_soc_cpufreq_set_target(struct cpufreq_policy *policy, unsigned int index)
-    66	{
-    67		struct apple_cpu_priv *priv = policy->driver_data;
-    68		unsigned int pstate = policy->freq_table[index].driver_data;
-    69		u64 reg;
-    70	
-    71		if (readq_poll_timeout(priv->reg_base + APPLE_CLUSTER_PSTATE, reg,
-    72				       !(reg & APPLE_CLUSTER_PSTATE_BUSY), 2,
-    73				       APPLE_CLUSTER_SWITCH_TIMEOUT)) {
-    74			return -EIO;
-    75		}
-    76	
-    77		reg &= ~(APPLE_CLUSTER_PSTATE_DESIRED1 | APPLE_CLUSTER_PSTATE_DESIRED2);
-    78		reg |= FIELD_PREP(APPLE_CLUSTER_PSTATE_DESIRED1, pstate);
-    79		reg |= FIELD_PREP(APPLE_CLUSTER_PSTATE_DESIRED2, pstate);
-    80		reg |= APPLE_CLUSTER_PSTATE_SET;
-    81	
-  > 82		writeq_relaxed(reg, priv->reg_base + APPLE_CLUSTER_PSTATE);
-    83	
-    84		return 0;
-    85	}
-    86	
+Paolo
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
