@@ -2,131 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 870C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236138AbiBPQLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:11:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50606 "EHLO
+        id S236159AbiBPQMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:12:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234846AbiBPQLq (ORCPT
+        with ESMTP id S236139AbiBPQL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:11:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F6AB1DA51
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:11:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645027892;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TWp8XfA6tyc//eVPa5BXVi9Z+b2Xu2vCpHljwlzLi0E=;
-        b=H9QynJK4i83pOcYnelDVUoJVDdAUETwjirjuU0ENWH5T+MPLvHAwq8Ma3LLAB2486BuXwh
-        8MduTXe9S5Pr5xcaWhjjuddXkHJbyX2RHR4uyXFwXFu6MKric8YacprGhjJn3LiCPcsjf2
-        PdhRGui7gUD9LhUCNfBPSoYZmd5dC5o=
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
- [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-418-LESS_FvgMwuQpKbKeXUW8w-1; Wed, 16 Feb 2022 11:11:31 -0500
-X-MC-Unique: LESS_FvgMwuQpKbKeXUW8w-1
-Received: by mail-ot1-f70.google.com with SMTP id s3-20020a9d58c3000000b005ad0c01d2dcso99199oth.12
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:11:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TWp8XfA6tyc//eVPa5BXVi9Z+b2Xu2vCpHljwlzLi0E=;
-        b=sFOWfIj5GXOaYanx0r/uPdt4YpzzeM3D5/6wgx3++Umlzjb09Hv2lz9snt4ymFokfy
-         XMSN6TkGFX36hb9uyg9CqGcehkLMiYhMXccg9rNsB4PFGG6Hmqbp057McylZs013NL5W
-         oNF1+NxAAyNbiSzNUm5om8U6Do2soS0bPDvAf9TtGnNo63LNQcI/f0KgAkDLEvsY+Eax
-         URf4zON/QhTHZnLOyMaMWzlxwVpGfH+XVW8NG3sfXLequJQvQCT7qMtfD9BeXIgA/Ky+
-         HuNgVj6ByNRNgBNjmYRF7KpVqzrX/k4oqVF6YJzk+2X8JXQKtwWLkz3Yv45fURCej6rK
-         wHlw==
-X-Gm-Message-State: AOAM533vyRRqGxe3B49TadWFuGQ7K3E7n4n7m96H2amFDG+6opi2jXV7
-        92curIt66/2UD2hGNd1ot6Ok+lJRrMIeCuIOIddtshYhQMvBHTPMNqeidYXihwUNVJ2MJGx5zSo
-        +YSuBS4yY5pXDLN7qjp4s4KW5
-X-Received: by 2002:a05:6808:19a5:b0:2cf:3047:e78f with SMTP id bj37-20020a05680819a500b002cf3047e78fmr1017619oib.43.1645027890110;
-        Wed, 16 Feb 2022 08:11:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxt+YgdfI5Fk0Xh7kX7VKIgYAe4XUjIZjnwAnXycbpxMk9pjuatlkjUMY0+5sKDhCNzHWL9NA==
-X-Received: by 2002:a05:6808:19a5:b0:2cf:3047:e78f with SMTP id bj37-20020a05680819a500b002cf3047e78fmr1017598oib.43.1645027889848;
-        Wed, 16 Feb 2022 08:11:29 -0800 (PST)
-Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
-        by smtp.gmail.com with ESMTPSA id bg30sm2235654oib.4.2022.02.16.08.11.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 08:11:29 -0800 (PST)
-Date:   Wed, 16 Feb 2022 17:11:22 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Seth Forshee <sforshee@digitalocean.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vsock: remove vsock from connected table when connect is
- interrupted by a signal
-Message-ID: <20220216161122.eacdfgljg2c6yeby@sgarzare-redhat>
-References: <20220216143222.1614690-1-sforshee@digitalocean.com>
+        Wed, 16 Feb 2022 11:11:57 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309DA60041
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:11:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645027905; x=1676563905;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=QiEFimDzeKGWwLXx9r2Bgeshi0IgC4yuwUNyNN4cbws=;
+  b=aasuoVh5IayuU8+Gq2ImQDSgEdbjtGQ3Pw3M3panBZNt0ax1L0IdM+DP
+   RPZJKLQcLSCgESWLogLfTetSK+ajMEd9WZKRXT2nwMcVRt56E4e5bjoXh
+   FbOScAwTh06J+nRTZoTLIZ5ixxdSrhtJW+FXcs/nBMECM+xb85hYJHM9u
+   2bUhmyVYPR8A0TXGlDUBpqr2BccB+jrptQamYvP+cuyQDbRZttaI6yirJ
+   q8Ze0URgS/bDchhqpBOXCgIKwNk5b7y4/1bPK3eM2GcjsGC+hURmo8FzY
+   Og/UhBTW4/rnLcHpCrgtkNT2lQU7D2RSWwihoRjKd/wtri791KBaFCX7x
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="231281805"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="231281805"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 08:11:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="571354112"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 16 Feb 2022 08:11:42 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKMu6-000Avw-Ah; Wed, 16 Feb 2022 16:11:42 +0000
+Date:   Thu, 17 Feb 2022 00:10:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vadim Pasternak <vadimp@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: [jpirko-mlxsw:jiri_devel_linecards 29/43]
+ drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:898:23: error:
+ initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka
+ 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from
+ incompatible pointer type 'void (*)(struct ml...
+Message-ID: <202202170026.mb9LyVVk-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220216143222.1614690-1-sforshee@digitalocean.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Seth,
+tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
+head:   5cb021512c3be7e03591497caeab474ecccfcd21
+commit: 0733fff985b276239955edfc5a42e929eced7437 [29/43] mlxsw: core_hwmon: Add interfaces for line card initialization and de-initialization
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220217/202202170026.mb9LyVVk-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jpirko/linux_mlxsw/commit/0733fff985b276239955edfc5a42e929eced7437
+        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
+        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
+        git checkout 0733fff985b276239955edfc5a42e929eced7437
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
 
-On Wed, Feb 16, 2022 at 08:32:22AM -0600, Seth Forshee wrote:
->vsock_connect() expects that the socket could already be in the
->TCP_ESTABLISHED state when the connecting task wakes up with a signal
->pending. If this happens the socket will be in the connected table, and
->it is not removed when the socket state is reset. In this situation it's
->common for the process to retry connect(), and if the connection is
->successful the socket will be added to the connected table a second
->time, corrupting the list.
->
->Prevent this by calling vsock_remove_connected() if a signal is received
->while waiting for a connection. This is harmless if the socket is not in
->the connected table, and if it is in the table then removing it will
->prevent list corruption from a double add.
->
->Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
->---
-> net/vmw_vsock/af_vsock.c | 1 +
-> 1 file changed, 1 insertion(+)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index 3235261f138d..38baeb189d4e 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1401,6 +1401,7 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
-> 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
-> 			sock->state = SS_UNCONNECTED;
-> 			vsock_transport_cancel_pkt(vsk);
->+			vsock_remove_connected(vsk);
-> 			goto out_wait;
-> 		} else if (timeout == 0) {
-> 			err = -ETIMEDOUT;
->-- 
->2.32.0
->
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks for this fix! The patch LGTM:
+All errors (new ones prefixed by >>):
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+>> drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:898:23: error: initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from incompatible pointer type 'void (*)(struct mlxsw_core *, u8,  const struct mlxsw_linecard *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  const struct mlxsw_linecard *, void *)'} [-Werror=incompatible-pointer-types]
+     898 |         .got_active = mlxsw_hwmon_got_active,
+         |                       ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:898:23: note: (near initialization for 'mlxsw_hwmon_event_ops.got_active')
+   drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:899:25: error: initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from incompatible pointer type 'void (*)(struct mlxsw_core *, u8,  const struct mlxsw_linecard *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  const struct mlxsw_linecard *, void *)'} [-Werror=incompatible-pointer-types]
+     899 |         .got_inactive = mlxsw_hwmon_got_inactive,
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c:899:25: note: (near initialization for 'mlxsw_hwmon_event_ops.got_inactive')
+   cc1: some warnings being treated as errors
 
 
-@Dave, @Jakub, since we need this also in stable branches, I was going 
-to suggest adding a Fixes tag, but I'm a little confused: the issue 
-seems to have always been there, so from commit d021c344051a ("VSOCK: 
-Introduce VM Sockets"), but to use vsock_remove_connected() as we are 
-using in this patch, we really need commit d5afa82c977e ("vsock: correct 
-removal of socket from the list").
+vim +898 drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
 
-Commit d5afa82c977e was introduces in v5.3 and it was backported in 
-v4.19 and v4.14, but not in v4.9.
-So if we want to backport this patch also for v4.9, I think we need 
-commit d5afa82c977e as well.
+   896	
+   897	static struct mlxsw_linecards_event_ops mlxsw_hwmon_event_ops = {
+ > 898		.got_active = mlxsw_hwmon_got_active,
+   899		.got_inactive = mlxsw_hwmon_got_inactive,
+   900	};
+   901	
 
-Thanks,
-Stefano
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
