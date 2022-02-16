@@ -2,132 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D226FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA8DC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236355AbiBPQXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:23:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37212 "EHLO
+        id S236384AbiBPQXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:23:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236354AbiBPQXo (ORCPT
+        with ESMTP id S236358AbiBPQXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:23:44 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D588021FC43
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:23:31 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id m7so2917953pjk.0
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:23:31 -0800 (PST)
+        Wed, 16 Feb 2022 11:23:51 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE4521FC69
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:23:37 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id m14so4819065lfu.4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:23:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=L0HINq0/oRgYesXUSAlumWGA0q6P8NqHQhhmtUR68N4=;
-        b=J9YwKXa69Vx93oiJ1A6rlmnGuFdnsxujdFBTp7p5n2AVfGclIZJedCzdp3JuNllZ5p
-         /4DwwtInokF0YaJpFjG8OP4VoaXb54xKiINkKTUf3s8lKp/It+QnvmSoKoX6hk37yxbP
-         20FWPOBPewVz6VIBvoDV0nV1jdNJYCrl1VTskEJko/ycBtHwRMwS3ssIUlbbPEKnd+fU
-         n8ksrm06t4LoVbQUj+bwgem0q8NM+siAqj7OIJx6NGoi37N1LcGxVogf7FK448AFAjpW
-         GV9NydPog9US56VH9Z092ZEsZuPf4nAxDvCl2YzJuNt+IDG9OCIl0WUf4o8rLdgOW/Qm
-         t6ig==
+        bh=lzBX1lIAVYZwdECaRMhi8WBrfRP47BlcmzYMUdivK5U=;
+        b=keZIpHeTvTHtXJK9/pje+DNhUxw0b6g+PN/54W4qKYTwwl6ZJRBqCLk+Ha4D0P3YDk
+         keJ+8z+bB0sqMQSQ+0zNF7slV8OZcHf4s6wxH6qzHd5ASQOvrX3XUVvMB5dMNUJyXziA
+         8/qqX1s8UTd9azWkIx/zpio+3RTiTuBAiMGwosSvP/wcs5847OmkKHy14EwFN48ryB4E
+         64rDmMsiuaio/5wVmJJO7FDtXkrk0wMmgMQLSMJE6V5mTwghA43jQn2/N9MJmmr83Owl
+         k1WO7Sozach4DT+6Rqd7bja50HPUyDDTciIU1+cfATD2c66XAcqk/wl4ZwMA8SPq27OV
+         hQ+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=L0HINq0/oRgYesXUSAlumWGA0q6P8NqHQhhmtUR68N4=;
-        b=TRbwNMt0ZNOwz//4FLaknOx4HDuJsUIyOO2P7UGI7PiPBfqxMVMwNlkOzjzBn7MUe7
-         a73Orpcs4VS/o1xluLaspJnQIrN4L58IHxiXkWTeWolCcQN5UQxd+N7tgcbFnXMOsV7N
-         WBVRyXkmQzcQS/kfZwSEXKX0Xhd4PEwcDZ57JPy0WID0QnV2m5aF8X9lv86+rIdEb3IG
-         OhDZAtyHDmBpEp4+r4koxIIUdmVLCsd7jSI69jQ4KFBNgFMjLWx3HEeMl94UPHU6Cvbg
-         UnMK2Bp4NvC+/vO4YBrwjMTgX38uLctlo+3nySVbHll3VT/bsoppucPRb6K0ppF0fFMC
-         R/iw==
-X-Gm-Message-State: AOAM531RKcHRxinfFfIWNiHVHJPDJHR1ZRXlRj2fdcy3eDoUWgw/mmGl
-        pf7NOxHc83LaK6wegvPzLztD7ewW4ZB9GVJQwK+deg==
-X-Google-Smtp-Source: ABdhPJxe/5E4aU9afUfIgArHENgQctMJhdSdorYTvJU7ovSC4TrhiVgmB6dk+evKsAK0xdx0h9QkI7DI7MpfI+ufsbE=
-X-Received: by 2002:a17:90a:d901:b0:1b8:a92c:34fe with SMTP id
- c1-20020a17090ad90100b001b8a92c34femr2642696pjv.8.1645028611229; Wed, 16 Feb
- 2022 08:23:31 -0800 (PST)
+        bh=lzBX1lIAVYZwdECaRMhi8WBrfRP47BlcmzYMUdivK5U=;
+        b=Jy86jQETSzsdvTM2X2FQmU6kzM5ALa9hzx1pDapMUZ+C+JKgKJnt9F6ofWyv1AcJRq
+         RwG99o8KkCBakxO4JPRYZXYJThC+Z7+8RnoxZyFePgCHKlUWHtu7aO+3yL4VfhgsWINE
+         Jbbd+C2dK323u7ksYLWSVlNxS8uivDYGoK4OK4k/Tb2zlp07cv5Igb0FOYSYm/CKEc1r
+         9pGrheeWYSFdGcbr6ZuJIqPnb6AqW4skmLahw58ejaXRESygpPnrPnBREI7yVsC/KGAN
+         5Wu5sE7dGt3CoEbuOOPJEV7auoF9XGe4g64vZW9QXeMjZWQahMUVeu8YXpMCCoG4yNmf
+         /BgA==
+X-Gm-Message-State: AOAM530pBuk7X5pLoRkd74YdWybkix+frElGFarFOeUdG9kJxl2nzzIz
+        k0qnXwfpGGyUKnPveXNVnO5/k1oUH70VNnWDPNpRaCTR6LA=
+X-Google-Smtp-Source: ABdhPJyUuQz4Diml1VJhvSdyugYzUWtSBf05c5HD9+nNLuAQ4WtatF+oZKRsz3jYwQcAMJd0SuaAXICsTz85sxLyZxc=
+X-Received: by 2002:a19:9144:0:b0:43b:86a4:1497 with SMTP id
+ y4-20020a199144000000b0043b86a41497mr2576104lfj.254.1645028615997; Wed, 16
+ Feb 2022 08:23:35 -0800 (PST)
 MIME-Version: 1.0
-References: <20220111161937.56272-1-pankaj.gupta.linux@gmail.com>
- <20220111161937.56272-2-pankaj.gupta.linux@gmail.com> <CAPcyv4jrVJ_B0N_-vtqgXaOMovUgnSLCNj228nWMRhGAC5PDhA@mail.gmail.com>
- <CAM9Jb+i0B2jZ0uCEDyiz8ujuMkioFgOA0r7Lz9wDK026Vq1Hxg@mail.gmail.com>
-In-Reply-To: <CAM9Jb+i0B2jZ0uCEDyiz8ujuMkioFgOA0r7Lz9wDK026Vq1Hxg@mail.gmail.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Wed, 16 Feb 2022 08:23:19 -0800
-Message-ID: <CAPcyv4gJGB8+acXKXbpEpMck_y=XBMR0B0c255MaSyLsH4+eZA@mail.gmail.com>
-Subject: Re: [RFC v3 1/2] virtio-pmem: Async virtio-pmem flush
-To:     Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Cc:     Linux NVDIMM <nvdimm@lists.linux.dev>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        jmoyer <jmoyer@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Vishal L Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        Pankaj Gupta <pankaj.gupta@ionos.com>
+References: <20220130210210.549877-1-daniel.lezcano@linaro.org> <20220130210210.549877-3-daniel.lezcano@linaro.org>
+In-Reply-To: <20220130210210.549877-3-daniel.lezcano@linaro.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 16 Feb 2022 17:22:59 +0100
+Message-ID: <CAPDyKFqV++g63Asax8TNSEgujxJ=uM9XG2_Advu34JidYBCGtg@mail.gmail.com>
+Subject: Re: [PATCH v1 3/7] powercap/dtpm: Fixup kfree for virtual node
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     rjw@rjwysocki.net, heiko@sntech.de, lukasz.luba@arm.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 12:47 AM Pankaj Gupta
-<pankaj.gupta.linux@gmail.com> wrote:
+On Sun, 30 Jan 2022 at 22:02, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
 >
-> > >
-> > > Enable asynchronous flush for virtio pmem using work queue. Also,
-> > > coalesce the flush requests when a flush is already in process.
-> > > This functionality is copied from md/RAID code.
-> > >
-> > > When a flush is already in process, new flush requests wait till
-> > > previous flush completes in another context (work queue). For all
-> > > the requests come between ongoing flush and new flush start time, only
-> > > single flush executes, thus adhers to flush coalscing logic. This is
-> >
-> > s/adhers/adheres/
-> >
-> > s/coalscing/coalescing/
-> >
-> > > important for maintaining the flush request order with request coalscing.
-> >
-> > s/coalscing/coalescing/
+> When the node is virtual there is no release function associated which
+> can free the memory.
 >
-> o.k. Sorry for the spelling mistakes.
+> Free the memory when no 'ops' exists.
 >
-> >
-> > >
-> > > Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-> > > ---
-> > >  drivers/nvdimm/nd_virtio.c   | 74 +++++++++++++++++++++++++++---------
-> > >  drivers/nvdimm/virtio_pmem.c | 10 +++++
-> > >  drivers/nvdimm/virtio_pmem.h | 16 ++++++++
-> > >  3 files changed, 83 insertions(+), 17 deletions(-)
-> > >
-> > > diff --git a/drivers/nvdimm/nd_virtio.c b/drivers/nvdimm/nd_virtio.c
-> > > index 10351d5b49fa..179ea7a73338 100644
-> > > --- a/drivers/nvdimm/nd_virtio.c
-> > > +++ b/drivers/nvdimm/nd_virtio.c
-> > > @@ -100,26 +100,66 @@ static int virtio_pmem_flush(struct nd_region *nd_region)
-> > >  /* The asynchronous flush callback function */
-> > >  int async_pmem_flush(struct nd_region *nd_region, struct bio *bio)
-> > >  {
-> > > -       /*
-> > > -        * Create child bio for asynchronous flush and chain with
-> > > -        * parent bio. Otherwise directly call nd_region flush.
-> > > +       /* queue asynchronous flush and coalesce the flush requests */
-> > > +       struct virtio_device *vdev = nd_region->provider_data;
-> > > +       struct virtio_pmem *vpmem  = vdev->priv;
-> > > +       ktime_t req_start = ktime_get_boottime();
-> > > +       int ret = -EINPROGRESS;
-> > > +
-> > > +       spin_lock_irq(&vpmem->lock);
-> >
-> > Why a new lock and not continue to use ->pmem_lock?
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> ---
+>  drivers/powercap/dtpm.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
-> This spinlock is to protect entry in 'wait_event_lock_irq'
-> and the Other spinlock is to protect virtio queue data.
+> diff --git a/drivers/powercap/dtpm.c b/drivers/powercap/dtpm.c
+> index 0b0121c37a1b..7bddd25a6767 100644
+> --- a/drivers/powercap/dtpm.c
+> +++ b/drivers/powercap/dtpm.c
+> @@ -181,12 +181,12 @@ int dtpm_release_zone(struct powercap_zone *pcz)
+>
+>         if (dtpm->ops)
+>                 dtpm->ops->release(dtpm);
+> +       else
+> +               kfree(dtpm);
+>
 
-Understood, but md shares the mddev->lock for both purposes, so I
-would ask that you either document what motivates the locking split,
-or just reuse the lock until a strong reason to split them arises.
+This doesn't look correct. Below you check dtpm against "root", which
+may be after its memory has been freed.
+
+If the ->release() function should be responsible for freeing the
+dtpm, it needs to be called after the check below.
+
+>         if (root == dtpm)
+>                 root = NULL;
+>
+> -       kfree(dtpm);
+> -
+>         return 0;
+>  }
+>
+
+Kind regards
+Uffe
