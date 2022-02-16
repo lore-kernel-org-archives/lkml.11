@@ -2,164 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F19C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F367BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235271AbiBPO6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 09:58:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36904 "EHLO
+        id S235277AbiBPO76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 09:59:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232406AbiBPO6P (ORCPT
+        with ESMTP id S232406AbiBPO7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 09:58:15 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FF96004F;
-        Wed, 16 Feb 2022 06:58:02 -0800 (PST)
-Date:   Wed, 16 Feb 2022 14:57:58 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645023479;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EKs0Hzo9s/Ylg3jYir/Ngp+UMB3ioXvWouE0YNl2mtw=;
-        b=H0JXCL5CKMdTxtgvqVGXDPbaIOza7gqedMzvW8PIzxdV8jyP3PlwVkngDxLg1p3yRcEpt5
-        Fd7AtJhBLTrxfwzRBllmJkmcSY9rxm649ETmZD/RqWvAigRADIud8HI667CveUkxYNLHWI
-        iZ3bGlFtJmpwQqaVd9dqF8JwoqpWGD7bWNtgB/evCwjuyF6G8ykeG/HJcl1GcBNMLLIQ/P
-        fgn+tWEmg+VfaEdp8zXtYZd4VRKtbPJq3OulB+mtz+0979mKehzkSX7uSmE0nVVgKmNT1D
-        ATnCz1wwJJ0PdJpkunLs/+TKuditoMiu0o4yAhLQ4HmXcJ6gmYHTMpZwbu+KXQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645023479;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EKs0Hzo9s/Ylg3jYir/Ngp+UMB3ioXvWouE0YNl2mtw=;
-        b=KhpW36DMpD9ZSF5T/ikpawAFOlI7cGDfBmni34y7FupHJI13rF1DbmYkUGHoj/27J1bt8G
-        8vAnOtt0ZmOQuVAA==
-From:   "tip-bot2 for Alexander Shishkin" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/x86/intel/pt: Add a capability and config bit
- for disabling TNTs
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220126104815.2807416-3-adrian.hunter@intel.com>
-References: <20220126104815.2807416-3-adrian.hunter@intel.com>
+        Wed, 16 Feb 2022 09:59:55 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23131CA710
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:59:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645023582; x=1676559582;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=6ywupRWlNjaUc9i0M28oV/XlRiEK0fEzU19gStShp18=;
+  b=lxpuAHxHKyhSsVoxhFMiXOvP3yJ5HfTGw0RaoQCldRUNgvqgZoAliJYx
+   VClPZ0HC7Esw7TPvkaexQHpQg2L0J7A98USWwjV+5XH7lYyT0HPnyPdVz
+   5ytnLWxwsf9ggn1RTaPKm7EtQSOkWpRLJEHvqA7r/t9Xh2epzOvZ0O6tF
+   zvjg8JM80j+Kyydpuygx5Av/wtgCuShVxfjenBlU/xHAvR0J1Im1sx+PY
+   iz2+O9OZ2gWp3t9bhvRyVtew5FZuKNGOviVltKIVjGoTJaG8HhiAvY6Ib
+   4EBvcE5K0vzTD5xjD+v1N/k1Pp5Ox0qZzkprT8cDRHPowyg/GJ+SerPB+
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="234156414"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="234156414"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 06:59:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="774076094"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 16 Feb 2022 06:59:40 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKLmN-000Asp-Mh; Wed, 16 Feb 2022 14:59:39 +0000
+Date:   Wed, 16 Feb 2022 22:59:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Oded Gabbay <ogabbay@habana.ai>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [ogabbay:numa_debug_5.17 4/4] mm/memory.c:3319:7: error: too many
+ arguments to function 'reuse_swap_page'
+Message-ID: <202202162225.nfqEMkRv-lkp@intel.com>
 MIME-Version: 1.0
-Message-ID: <164502347832.16921.5715898038732914778.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git numa_debug_5.17
+head:   fe86c77005a1cce384156fe165c7a6df42c6bc92
+commit: fe86c77005a1cce384156fe165c7a6df42c6bc92 [4/4] Revert "mm: do_wp_page() simplification"
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220216/202202162225.nfqEMkRv-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=fe86c77005a1cce384156fe165c7a6df42c6bc92
+        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
+        git fetch --no-tags ogabbay numa_debug_5.17
+        git checkout fe86c77005a1cce384156fe165c7a6df42c6bc92
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
 
-Commit-ID:     161a9a33702a2e65a4118dacb449505ac8ce3122
-Gitweb:        https://git.kernel.org/tip/161a9a33702a2e65a4118dacb449505ac8ce3122
-Author:        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-AuthorDate:    Wed, 26 Jan 2022 12:48:15 +02:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Feb 2022 17:47:11 +01:00
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-perf/x86/intel/pt: Add a capability and config bit for disabling TNTs
+All errors (new ones prefixed by >>):
 
-As of Intel SDM (https://www.intel.com/sdm) version 076, there is a new
-Intel PT feature called TNT-Disable which is enabled config bit 55.
+   mm/memory.c: In function 'do_wp_page':
+>> mm/memory.c:3319:7: error: too many arguments to function 'reuse_swap_page'
+    3319 |   if (reuse_swap_page(vmf->page, &total_map_swapcount)) {
+         |       ^~~~~~~~~~~~~~~
+   In file included from include/linux/mm_inline.h:7,
+                    from mm/memory.c:44:
+   include/linux/swap.h:517:13: note: declared here
+     517 | extern bool reuse_swap_page(struct page *);
+         |             ^~~~~~~~~~~~~~~
 
-TNT-Disable disables Taken-Not-Taken packets to reduce the tracing
-overhead, but with the result that exact control flow information is
-lost.
 
-Add a capability and config bit for TNT-Disable.
+vim +/reuse_swap_page +3319 mm/memory.c
 
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/20220126104815.2807416-3-adrian.hunter@intel.com
+  3232	
+  3233	/*
+  3234	 * This routine handles present pages, when users try to write
+  3235	 * to a shared page. It is done by copying the page to a new address
+  3236	 * and decrementing the shared-page counter for the old page.
+  3237	 *
+  3238	 * Note that this routine assumes that the protection checks have been
+  3239	 * done by the caller (the low-level page fault routine in most cases).
+  3240	 * Thus we can safely just mark it writable once we've done any necessary
+  3241	 * COW.
+  3242	 *
+  3243	 * We also mark the page dirty at this point even though the page will
+  3244	 * change only once the write actually happens. This avoids a few races,
+  3245	 * and potentially makes it more efficient.
+  3246	 *
+  3247	 * We enter with non-exclusive mmap_lock (to exclude vma changes,
+  3248	 * but allow concurrent faults), with pte both mapped and locked.
+  3249	 * We return with mmap_lock still held, but pte unmapped and unlocked.
+  3250	 */
+  3251	static vm_fault_t do_wp_page(struct vm_fault *vmf)
+  3252		__releases(vmf->ptl)
+  3253	{
+  3254		struct vm_area_struct *vma = vmf->vma;
+  3255	
+  3256		if (userfaultfd_pte_wp(vma, *vmf->pte)) {
+  3257			pte_unmap_unlock(vmf->pte, vmf->ptl);
+  3258			return handle_userfault(vmf, VM_UFFD_WP);
+  3259		}
+  3260	
+  3261		/*
+  3262		 * Userfaultfd write-protect can defer flushes. Ensure the TLB
+  3263		 * is flushed in this case before copying.
+  3264		 */
+  3265		if (unlikely(userfaultfd_wp(vmf->vma) &&
+  3266			     mm_tlb_flush_pending(vmf->vma->vm_mm)))
+  3267			flush_tlb_page(vmf->vma, vmf->address);
+  3268	
+  3269		vmf->page = vm_normal_page(vma, vmf->address, vmf->orig_pte);
+  3270		if (!vmf->page) {
+  3271			/*
+  3272			 * VM_MIXEDMAP !pfn_valid() case, or VM_SOFTDIRTY clear on a
+  3273			 * VM_PFNMAP VMA.
+  3274			 *
+  3275			 * We should not cow pages in a shared writeable mapping.
+  3276			 * Just mark the pages writable and/or call ops->pfn_mkwrite.
+  3277			 */
+  3278			if ((vma->vm_flags & (VM_WRITE|VM_SHARED)) ==
+  3279					     (VM_WRITE|VM_SHARED))
+  3280				return wp_pfn_shared(vmf);
+  3281	
+  3282			pte_unmap_unlock(vmf->pte, vmf->ptl);
+  3283			return wp_page_copy(vmf);
+  3284		}
+  3285	
+  3286		/*
+  3287		 * Take out anonymous pages first, anonymous shared vmas are
+  3288		 * not dirty accountable.
+  3289		 */
+  3290		if (PageAnon(vmf->page)) {
+  3291			int total_map_swapcount;
+  3292			if (PageKsm(vmf->page) && (PageSwapCache(vmf->page) ||
+  3293						   page_count(vmf->page) != 1))
+  3294				goto copy;
+  3295			if (!trylock_page(vmf->page)) {
+  3296				get_page(vmf->page);
+  3297				pte_unmap_unlock(vmf->pte, vmf->ptl);
+  3298				lock_page(vmf->page);
+  3299				vmf->pte = pte_offset_map_lock(vma->vm_mm, vmf->pmd,
+  3300						vmf->address, &vmf->ptl);
+  3301				if (!pte_same(*vmf->pte, vmf->orig_pte)) {
+  3302					update_mmu_tlb(vma, vmf->address, vmf->pte);
+  3303					unlock_page(vmf->page);
+  3304					pte_unmap_unlock(vmf->pte, vmf->ptl);
+  3305					put_page(vmf->page);
+  3306					return 0;
+  3307				}
+  3308				put_page(vmf->page);
+  3309			}
+  3310			if (PageKsm(vmf->page)) {
+  3311				bool reused = reuse_ksm_page(vmf->page, vmf->vma,
+  3312							     vmf->address);
+  3313				unlock_page(vmf->page);
+  3314				if (!reused)
+  3315					goto copy;
+  3316				wp_page_reuse(vmf);
+  3317				return VM_FAULT_WRITE;
+  3318			}
+> 3319			if (reuse_swap_page(vmf->page, &total_map_swapcount)) {
+  3320				if (total_map_swapcount == 1) {
+  3321					/*
+  3322					 * The page is all ours. Move it to
+  3323					 * our anon_vma so the rmap code will
+  3324					 * not search our parent or siblings.
+  3325					 * Protected against the rmap code by
+  3326					 * the page lock.
+  3327					 */
+  3328					page_move_anon_rmap(vmf->page, vma);
+  3329				}
+  3330				unlock_page(vmf->page);
+  3331				wp_page_reuse(vmf);
+  3332				return VM_FAULT_WRITE;
+  3333			}
+  3334			unlock_page(vmf->page);
+  3335		} else if (unlikely((vma->vm_flags & (VM_WRITE|VM_SHARED)) ==
+  3336						(VM_WRITE|VM_SHARED))) {
+  3337			return wp_page_shared(vmf);
+  3338		}
+  3339	copy:
+  3340		/*
+  3341		 * Ok, we need to copy. Oh, well..
+  3342		 */
+  3343		get_page(vmf->page);
+  3344	
+  3345		pte_unmap_unlock(vmf->pte, vmf->ptl);
+  3346		return wp_page_copy(vmf);
+  3347	}
+  3348	
+
 ---
- arch/x86/events/intel/pt.c       | 8 ++++++++
- arch/x86/include/asm/intel_pt.h  | 1 +
- arch/x86/include/asm/msr-index.h | 1 +
- 3 files changed, 10 insertions(+)
-
-diff --git a/arch/x86/events/intel/pt.c b/arch/x86/events/intel/pt.c
-index f339c88..aa66c0c 100644
---- a/arch/x86/events/intel/pt.c
-+++ b/arch/x86/events/intel/pt.c
-@@ -60,6 +60,7 @@ static struct pt_cap_desc {
- 	PT_CAP(ptwrite,			0, CPUID_EBX, BIT(4)),
- 	PT_CAP(power_event_trace,	0, CPUID_EBX, BIT(5)),
- 	PT_CAP(event_trace,		0, CPUID_EBX, BIT(7)),
-+	PT_CAP(tnt_disable,		0, CPUID_EBX, BIT(8)),
- 	PT_CAP(topa_output,		0, CPUID_ECX, BIT(0)),
- 	PT_CAP(topa_multiple_entries,	0, CPUID_ECX, BIT(1)),
- 	PT_CAP(single_range_output,	0, CPUID_ECX, BIT(2)),
-@@ -112,6 +113,7 @@ PMU_FORMAT_ATTR(noretcomp,	"config:11"	);
- PMU_FORMAT_ATTR(ptw,		"config:12"	);
- PMU_FORMAT_ATTR(branch,		"config:13"	);
- PMU_FORMAT_ATTR(event,		"config:31"	);
-+PMU_FORMAT_ATTR(notnt,		"config:55"	);
- PMU_FORMAT_ATTR(mtc_period,	"config:14-17"	);
- PMU_FORMAT_ATTR(cyc_thresh,	"config:19-22"	);
- PMU_FORMAT_ATTR(psb_period,	"config:24-27"	);
-@@ -121,6 +123,7 @@ static struct attribute *pt_formats_attr[] = {
- 	&format_attr_cyc.attr,
- 	&format_attr_pwr_evt.attr,
- 	&format_attr_event.attr,
-+	&format_attr_notnt.attr,
- 	&format_attr_fup_on_ptw.attr,
- 	&format_attr_mtc.attr,
- 	&format_attr_tsc.attr,
-@@ -302,6 +305,7 @@ fail:
- 			RTIT_CTL_MTC		| \
- 			RTIT_CTL_PWR_EVT_EN	| \
- 			RTIT_CTL_EVENT_EN	| \
-+			RTIT_CTL_NOTNT		| \
- 			RTIT_CTL_FUP_ON_PTW	| \
- 			RTIT_CTL_PTW_EN)
- 
-@@ -360,6 +364,10 @@ static bool pt_event_valid(struct perf_event *event)
- 	    !intel_pt_validate_hw_cap(PT_CAP_event_trace))
- 		return false;
- 
-+	if (config & RTIT_CTL_NOTNT &&
-+	    !intel_pt_validate_hw_cap(PT_CAP_tnt_disable))
-+		return false;
-+
- 	if (config & RTIT_CTL_PTW) {
- 		if (!intel_pt_validate_hw_cap(PT_CAP_ptwrite))
- 			return false;
-diff --git a/arch/x86/include/asm/intel_pt.h b/arch/x86/include/asm/intel_pt.h
-index d1ef9cb..c796e9b 100644
---- a/arch/x86/include/asm/intel_pt.h
-+++ b/arch/x86/include/asm/intel_pt.h
-@@ -14,6 +14,7 @@ enum pt_capabilities {
- 	PT_CAP_ptwrite,
- 	PT_CAP_power_event_trace,
- 	PT_CAP_event_trace,
-+	PT_CAP_tnt_disable,
- 	PT_CAP_topa_output,
- 	PT_CAP_topa_multiple_entries,
- 	PT_CAP_single_range_output,
-diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index 79b392d..efd34cf 100644
---- a/arch/x86/include/asm/msr-index.h
-+++ b/arch/x86/include/asm/msr-index.h
-@@ -206,6 +206,7 @@
- #define RTIT_CTL_PTW_EN			BIT(12)
- #define RTIT_CTL_BRANCH_EN		BIT(13)
- #define RTIT_CTL_EVENT_EN		BIT(31)
-+#define RTIT_CTL_NOTNT			BIT_ULL(55)
- #define RTIT_CTL_MTC_RANGE_OFFSET	14
- #define RTIT_CTL_MTC_RANGE		(0x0full << RTIT_CTL_MTC_RANGE_OFFSET)
- #define RTIT_CTL_CYC_THRESH_OFFSET	19
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
