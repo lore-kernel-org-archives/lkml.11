@@ -2,64 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F25E3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229634AbiBPKeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:34:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55116 "EHLO
+        id S229790AbiBPKgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:36:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiBPKd5 (ORCPT
+        with ESMTP id S229545AbiBPKgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 05:33:57 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8BB2B1644
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:33:45 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 687F81EC054C;
-        Wed, 16 Feb 2022 11:33:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1645007619;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=4O6P6Bd8YAaCuifrnqVgvcR1H2vua8DbkApbjkory2g=;
-        b=qLG0G+lrqyKebvs/LDjbNEU+/iV9y0rTf2MGK5IOEcztD5O0OjmQQU3qsMXGIjn2+wT6IU
-        IpfQwlkSzyGahTOqu/XVxhlUkTxHiquE0q1ARXrOz9QC/toVIpA2yjHFyfQW5GsB7wSU4h
-        jKu784k/Mew+rHQeOPYXXflze03mGJU=
-Date:   Wed, 16 Feb 2022 11:33:46 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Lendacky <Thomas.Lendacky@amd.com>, hughsient@gmail.com,
-        Martin Fernandez <martin.fernandez@eclypsium.com>,
-        linux-kernel@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>
-Subject: Re: [PATCH v4] x86/cpu: clear SME feature flag when not in use
-Message-ID: <YgzTCtlMq9+4IsZ4@zn.tnic>
-References: <20220216034446.2430634-1-mario.limonciello@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220216034446.2430634-1-mario.limonciello@amd.com>
+        Wed, 16 Feb 2022 05:36:01 -0500
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 653032B9A29;
+        Wed, 16 Feb 2022 02:35:49 -0800 (PST)
+Received: from smtpclient.apple (p4fefcd07.dip0.t-ipconnect.de [79.239.205.7])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 5B35FCEE66;
+        Wed, 16 Feb 2022 11:28:05 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH] net: bluetooth: assign len after null check
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <1644890516-65362-1-git-send-email-wangqing@vivo.com>
+Date:   Wed, 16 Feb 2022 11:28:05 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <0DCA7779-71F8-4176-92F8-86AF32D3828A@holtmann.org>
+References: <1644890516-65362-1-git-send-email-wangqing@vivo.com>
+To:     Qing Wang <wangqing@vivo.com>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 09:44:46PM -0600, Mario Limonciello wrote:
-> @@ -607,6 +609,9 @@ static void early_detect_mem_encrypt(struct cpuinfo_x86 *c)
->  		if (IS_ENABLED(CONFIG_X86_32))
->  			goto clear_all;
->  
-> +		if (!sme_me_mask)
-> +			setup_clear_cpu_cap(X86_FEATURE_SME);
+Hi Qing,
 
-Why not "goto clear_all;" ?
+> len should be assigned after a null check
+> 
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
+> ---
+> net/bluetooth/mgmt_util.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
 
--- 
-Regards/Gruss,
-    Boris.
+patch has been applied to bluetooth-next tree.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Regards
+
+Marcel
+
