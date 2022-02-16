@@ -2,83 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25966C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 05:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77254C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 05:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238100AbiBPFBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 00:01:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57736 "EHLO
+        id S242166AbiBPFCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 00:02:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbiBPFBj (ORCPT
+        with ESMTP id S238945AbiBPFCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 00:01:39 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEE1A1A9
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 21:01:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644987686; x=1676523686;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=i1jBEqV5rPtfWQlJDhdZ4S7M13/5/aSE4lRpY+/gb+I=;
-  b=iC65xFSYDgwSqwHrP518YIe0inbOhA0yvhn+no/T/o5zQADgJEg347u3
-   UGKm82GqMB0wG7UwAscKrDrs5RTW6qAzoyHJls07AK3ABupORxVzn+N28
-   ChVo+2sNbScbUrrkdZHeBlNv+UyQryMqXC0cOAhxkkWMjqSaiTsuMdeSj
-   OqPFFG93E/K6QWmfnZ92bzb0eLnOANigoMtD62h5uaSwxpQPPPWZNNm9F
-   xkD8ylUJCQwRzk38cvcKP0i7wbhdzf1ciMdfK2amOLGml1BY2K8JsUWlA
-   633+0Mx2v3CNUgaiPI3KIJnJjch1jRO5wPypkD0QEWDrHafHiKAHPMUOv
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="231151187"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="231151187"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 21:01:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="636327738"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 15 Feb 2022 21:01:24 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKCRQ-000AQi-8H; Wed, 16 Feb 2022 05:01:24 +0000
-Date:   Wed, 16 Feb 2022 13:00:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Subject: [ammarfaizi2-block:axboe/linux-block/m1-test 314/382]
- kernel/reboot.o: warning: objtool: sys_off_handler_power_off() falls through
- to next function register_power_off_handler()
-Message-ID: <202202161223.yfRXt35T-lkp@intel.com>
+        Wed, 16 Feb 2022 00:02:23 -0500
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B638B19C11;
+        Tue, 15 Feb 2022 21:02:10 -0800 (PST)
+Received: by mail-qk1-x734.google.com with SMTP id o25so803195qkj.7;
+        Tue, 15 Feb 2022 21:02:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tYPtY5u6D3N2oAx07Twnx1Q6uW+oBqsNGkla18NTHW4=;
+        b=MpCID14hiuBXc/bNPMaQ0Rcp+ls6qDgqKWHh97Z5zMzFMGaXiMikULLv20rqLswR2W
+         biN4XnMARqzymx9yW/pV7hUvW7Mm22bgA5LEiqhjSc28hsqbz+Hh0GN5tL7t/LHkc4OW
+         CH5jES8tubBrPzc4J3FskyOVee+0iryJjd3Xk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tYPtY5u6D3N2oAx07Twnx1Q6uW+oBqsNGkla18NTHW4=;
+        b=6sm7pMYEk6fCDsFPifRmOQepWSIRY7FQi8RGlOkM5rQoCyA5AYHL9s81+CMsDIiFJd
+         Oh2EluCd1OjlVrEArlW6vo4pJ1eO8qqo9lJv/7XM0hzZugpujnQaSXUwUSQLbUKPcxdy
+         XQvHug3998HgROfjPxp98HteuqKl0ODO84gPKwNU5hEUJztOnOL98eIYjgaL0qpPP4Ne
+         eTrPh4oGKUqvZa0gSNA702veyEIAG3NGn7ojX4adkRTRDiXalQtuHHlKjU52ZTHE6zR4
+         G+HK6oICljTv8V82ehwTc5r2yfJrwgC9hgl8T34km+g00Ep9k3lkpRcP0EUZfAPJ4Lb/
+         JWfQ==
+X-Gm-Message-State: AOAM5305lue5E4u4qTYlT2B8EPuWVwWbDMB1+V4pGFnCoOpanTaApcGu
+        7sWedXXy6uUjZMLXNzXopREz/ywu0FNNUdwJErg=
+X-Google-Smtp-Source: ABdhPJy/jdRpLYMO8gCka38ySD07dqPGr2tdWJbVBEk+9TLSpek5WfeeQ28NmoNTnGFNXYbGVV8BDtT84dSYF8JIUBE=
+X-Received: by 2002:a05:620a:1414:b0:47d:87ec:72b6 with SMTP id
+ d20-20020a05620a141400b0047d87ec72b6mr517115qkj.666.1644987729766; Tue, 15
+ Feb 2022 21:02:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220215163151.32252-1-potin.lai@quantatw.com>
+In-Reply-To: <20220215163151.32252-1-potin.lai@quantatw.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Wed, 16 Feb 2022 05:01:56 +0000
+Message-ID: <CACPK8Xfs34gw2_XGeduJ6D=-khN7RtMj3LY8hQ8B96fFxMuE8A@mail.gmail.com>
+Subject: Re: [PATCH v3 00/10] update Facebook Bletchley BMC
+To:     Potin Lai <potin.lai@quantatw.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Andrew Jeffery <andrew@aj.id.au>,
+        Patrick Williams <patrick@stwcx.xyz>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1-test
-head:   5adfbb595194191bad98c47447ddbee7d3b60b8f
-commit: d4c326600862cf161d7cd7dbc0bbf7f8cb01b500 [314/382] kernel: Add combined power-off+restart handler call chain API
-config: x86_64-randconfig-m001-20220214 (https://download.01.org/0day-ci/archive/20220216/202202161223.yfRXt35T-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/d4c326600862cf161d7cd7dbc0bbf7f8cb01b500
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1-test
-        git checkout d4c326600862cf161d7cd7dbc0bbf7f8cb01b500
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Tue, 15 Feb 2022 at 16:32, Potin Lai <potin.lai@quantatw.com> wrote:
+>
+> This patch series update Facebook Bletchley BMC devicetree base on EVT HW
+> schematioc design, and rebase SLED numbering to 1-based for OpenBMC
+> multi-host.
+>
+> - GPIO:
+>   - adding more gpio line names
+>   - include interrupt line in io expander for gpio interrupt monitoring
+>
+> - SPI flash:
+>   - adding dual flash BSM module support
+>   - switch to spi2-gpio on spi2 due to unstable signal issue
+>
+> - Hwmon Sensors:
+>   - adding INA230 sensors for monitoring
+>   - fix ADM1278 shunt-resistor
+>
+> - MDIO Bus: enable mido3 bus
+>
+> - RTC: switch to external battery-backed rtc
+>
+> - OpenBMC: 1-based SLED numbering
+>
+>
+> LINK: [v2] https://lore.kernel.org/all/20220214042538.12132-1-potin.lai@quantatw.com/
+> LINK: [v1] https://lore.kernel.org/all/20220211014347.24841-1-potin.lai@quantatw.com/
+>
+>
+> Changes v2 --> v3:
+> - update patch name prefix
+> - Disable spi2, and create a new node call spi2_gpio
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks, the patches look good.
 
-All warnings (new ones prefixed by >>):
+Reviewed-by: Joel Stanley <joel@jms.id.au>
 
->> kernel/reboot.o: warning: objtool: sys_off_handler_power_off() falls through to next function register_power_off_handler()
+and given the minor differences from v2, lets add Patrick's review:
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Reviewed-by: Patrick Williams <patrick@stwcx.xyz>
+
+I've applied these for submission in the v5.18 merge window, and to
+the openbmc tree.
+
+
+>
+> Changes v1 --> v2:
+> - update the details of new added gpio line names in commit message
+> - add battery-backed rtc information in comment and commit message
+>
+>
+> Potin Lai (10):
+>   ARM: dts: aspeed: bletchley: switch sled numbering to 1-based
+>   ARM: dts: aspeed: bletchley: separate leds into multiple groups
+>   ARM: dts: aspeed: bletchley: update gpio-line-names
+>   ARM: dts: aspeed: bletchley: update fmc configurations
+>   ARM: dts: aspeed: bletchley: switch to spi-gpio for spi2
+>   ARM: dts: aspeed: bletchley: add interrupt support for sled io
+>     expander
+>   ARM: dts: aspeed: bletchley: add shunt-resistor for ADM1278
+>   ARM: dts: aspeed: bletchley: add INA230 sensor on each sled
+>   ARM: dts: aspeed: bletchley: enable mdio3 bus
+>   ARM: dts: aspeed: bletchley: cleanup redundant nodes
+>
+>  .../dts/aspeed-bmc-facebook-bletchley.dts     | 320 +++++++++++-------
+>  1 file changed, 202 insertions(+), 118 deletions(-)
+>
+> --
+> 2.17.1
+>
