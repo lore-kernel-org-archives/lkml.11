@@ -2,62 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59558C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 12:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A68DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 12:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233331AbiBPMaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 07:30:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36442 "EHLO
+        id S231795AbiBPMbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 07:31:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233235AbiBPMaa (ORCPT
+        with ESMTP id S232657AbiBPMbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 07:30:30 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E3A2A414F
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 04:30:18 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Wed, 16 Feb 2022 07:31:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA522A4158
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 04:30:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JzHNS5lqJz4xv1;
-        Wed, 16 Feb 2022 23:30:16 +1100 (AEDT)
-From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-In-Reply-To: <cover.1630667612.git.christophe.leroy@csgroup.eu>
-References: <cover.1630667612.git.christophe.leroy@csgroup.eu>
-Subject: Re: [RFC PATCH v1 00/11] powerpc/machdep: Remove dust and convert to static calls
-Message-Id: <164501434429.521186.17328213393681621470.b4-ty@ellerman.id.au>
-Date:   Wed, 16 Feb 2022 23:25:44 +1100
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8A06B81ED1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:30:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45B0C004E1;
+        Wed, 16 Feb 2022 12:30:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645014653;
+        bh=J15CuNm3A0QK/OXN1iTasUMydcAQaIOZ7OaemvLX5Bc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ne94s/gsaPiCMbv5DQwUscJhiVuAcM/KmFdZZf6WtG3VUgRdF0JWrZMS2+jufdoba
+         Gn0uJDnN9cf1UQB2jtt1io5jbLaUpo3lNT+1DGI8uNyfhYxm4hMUV2OPsdeqgdht2q
+         QG78Q8qNsEZsmJYnlUsMGG0CJt4olmcHhrNuq5wn2Aa/BLY8GalzcQT0Yrc0I7A0F2
+         3NtN5OMOvO2u0AjsculrIq/1vcOkTEu4F4k+pjNl9MJ7irQv4EaBaW8j7itmxv6/xV
+         /Djp1cnzGQluElrD+90N7+aYS2naxP0untcneobp53drfoPXyrdx93OjPBojMPm94C
+         vjdXdGrbpUqvg==
+Date:   Wed, 16 Feb 2022 12:30:48 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2] arm64/hugetlb: Define __hugetlb_valid_size()
+Message-ID: <20220216123048.GA9949@willie-the-truck>
+References: <1644491770-16108-1-git-send-email-anshuman.khandual@arm.com>
+ <20220215164851.GD8458@willie-the-truck>
+ <e60802f2-dfb4-3824-9b85-7770c8fede96@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e60802f2-dfb4-3824-9b85-7770c8fede96@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Sep 2021 11:18:34 +0000 (UTC), Christophe Leroy wrote:
-> The purpose of this series is to convert machine dependent
-> functions in structure ppc_md into static calls.
+On Wed, Feb 16, 2022 at 05:09:12AM +0530, Anshuman Khandual wrote:
 > 
-> First part of the series remove some dust in and around machdep.h
 > 
-> Then some helpers are defined to abstract the access to ppc_md. structure.
+> On 2/15/22 10:18 PM, Will Deacon wrote:
+> > On Thu, Feb 10, 2022 at 04:46:10PM +0530, Anshuman Khandual wrote:
+> >> arch_hugetlb_valid_size() can be just factored out to create another helper
+> >> to be used in arch_hugetlb_migration_supported() as well. This just defines
+> >> __hugetlb_valid_size() for that purpose.
+> >>
+> >> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> >> Cc: Will Deacon <will@kernel.org>
+> >> Cc: linux-arm-kernel@lists.infradead.org
+> >> Cc: linux-kernel@vger.kernel.org
+> >> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> >> ---
+> >> This applies on v5.17-rc3
+> >>
+> >> Changes in V2:
+> >>
+> >> - s/arm64_hugetlb_valid_size/__hugetlb_valid_size per Catalin
+> >> - Restored back warning in arch_hugetlb_migration_supported() per Catalin
+> >> - Updated the commit message subject line as required
+> >>
+> >> Changes in V1:
+> >>
+> >> https://lore.kernel.org/all/1644197468-26755-1-git-send-email-anshuman.khandual@arm.com/
+> >>
+> >>  arch/arm64/mm/hugetlbpage.c | 26 +++++++++++++-------------
+> >>  1 file changed, 13 insertions(+), 13 deletions(-)
+> >>
+> >> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+> >> index ffb9c229610a..72ed07fe2c84 100644
+> >> --- a/arch/arm64/mm/hugetlbpage.c
+> >> +++ b/arch/arm64/mm/hugetlbpage.c
+> >> @@ -56,24 +56,19 @@ void __init arm64_hugetlb_cma_reserve(void)
+> >>  }
+> >>  #endif /* CONFIG_CMA */
+> >>  
+> >> +static bool __hugetlb_valid_size(unsigned long size);
+> > 
+> > Why not reorder the code to avoid this forward declaration?
 > 
-> [...]
+> That will create more code churn, which I tried to avoid.
 
-Patches 3, 5, 7 and 8 applied to powerpc/next.
+Isn't it just moving a handful of lines further up in the file? What's
+the problem with that?
 
-[03/11] powerpc/machdep: Remove CONFIG_PPC_HAS_FEATURE_CALLS
-        https://git.kernel.org/powerpc/c/d6a6c725a20467f52a41270bdaad9565c66f3b7a
-[05/11] powerpc/machdep: Move sys_ctrler_t definition into pmac.h
-        https://git.kernel.org/powerpc/c/e6d03ac156db84422519aa8628efc210d24bf889
-[07/11] powerpc/mpc86xx_hpcn: Remove obsolete statement
-        https://git.kernel.org/powerpc/c/fae65a9ac8fd2221dbf034019fa18d72b2b0c8e9
-[08/11] powerpc/corenet: Change criteria to set MPIC_ENABLE_COREINT
-        https://git.kernel.org/powerpc/c/66ada2907864cafa4578b92926cb8bc0a4bc8c9c
-
-cheers
+Will
