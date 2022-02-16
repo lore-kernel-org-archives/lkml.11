@@ -2,151 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10670C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B27C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229462AbiBPK3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:29:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32964 "EHLO
+        id S229554AbiBPK3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:29:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbiBPK25 (ORCPT
+        with ESMTP id S229617AbiBPK3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 05:28:57 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2863421F5C1
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:28:33 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id h18so3086482edb.7
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:28:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=h5LMjKcr6PyqZitTAY4fxVujQ96SMEzb1ukbNS+2yqQ=;
-        b=F8ZP+yWx3/Vgmx9io+r2UQbYy4b794FeDw8vT/9eSh+GVB9n4TBfBb6lKbxjKXySfZ
-         6cpWpoF+fHenSWzmay83Tryjq/DtAEW4dY/GA0/b1r5wqmIZLdTElVQg/8ZLwy4Bvpox
-         CjF0xb3TIlkmO4k/w1JRrOFg6KwPt1tDR1VzQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=h5LMjKcr6PyqZitTAY4fxVujQ96SMEzb1ukbNS+2yqQ=;
-        b=iChz1o2UwbDXR0ibTrhxYLE1D5Q8/YRtWbVTjUcVTvKTD6PNsBVvx1XTh1rvwvNoDn
-         Oi2tNXs9DZqPGFWlxIniZyKW8TZj9diQUjiHtMiKYlWJtdXQZV0n+WgFZ5iss+x9LGHu
-         L95IRQACeW4akZUSgeXA99Ce1jdughA4w5Kud4why/0Sc0tUlsSgdcywHWoRK8z9KW9T
-         1pGKNJb1jYmPe3oES4vr3uJLhRjXWTWFbot8jTPS3Oe5Rx9TN6Yzn9sOiLKGiAAqsmfw
-         A3S3UYPwvC9Ki2OGDVXbcjxlwMs2su2ujkWQnMFe443fu+2b38yfN3Eec1AfKrjO0y0R
-         BpZw==
-X-Gm-Message-State: AOAM5335+rWYkDalcjizlOmbqUZHYZyWMffM8/dBUJtbSCYdq93R9hG6
-        Jb3X3MCh2chbWt0KiRwNPj+Nrg==
-X-Google-Smtp-Source: ABdhPJy7Y6JBt5j2jM9BY2aJtfySo/GeQzuue2bA5X4BQ4sBhrOE0G8XQI6we7N0sLQWONlCLCFKcQ==
-X-Received: by 2002:aa7:daca:0:b0:410:d02a:1bf3 with SMTP id x10-20020aa7daca000000b00410d02a1bf3mr2173399eds.455.1645007306948;
-        Wed, 16 Feb 2022 02:28:26 -0800 (PST)
-Received: from miu.piliscsaba.redhat.com (catv-178-48-189-3.catv.fixed.vodafone.hu. [178.48.189.3])
-        by smtp.gmail.com with ESMTPSA id qo24sm3284400ejb.92.2022.02.16.02.28.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 02:28:25 -0800 (PST)
-Date:   Wed, 16 Feb 2022 11:28:18 +0100
-From:   Miklos Szeredi <miklos@szeredi.hu>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Xavier Roche <xavier.roche@algolia.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.vnet.ibm.com>
-Subject: Re: race between vfs_rename and do_linkat (mv and link)
-Message-ID: <YgzRwhavapo69CAn@miu.piliscsaba.redhat.com>
-References: <20220214210708.GA2167841@xavier-xps>
- <CAJfpegvVKWHhhXwOi9jDUOJi2BnYSDxZQrp1_RRrpVjjZ3Rs2w@mail.gmail.com>
- <YguspMvu6M6NJ1hL@zeniv-ca.linux.org.uk>
- <YgvPbljmJXsR7ESt@zeniv-ca.linux.org.uk>
- <YgvSB6CKAhF5IXFj@casper.infradead.org>
- <YgvS1XOJMn5CjQyw@zeniv-ca.linux.org.uk>
- <CAJfpegv03YpTPiDnLwbaewQX_KZws5nutays+vso2BVJ1v1+TA@mail.gmail.com>
+        Wed, 16 Feb 2022 05:29:17 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7229521920F
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:28:47 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D85CA1EC054C;
+        Wed, 16 Feb 2022 11:27:57 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645007278;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=1iASlCBOHtED7Z2DvFclCOCtXnoNRBqSBjzPZUr+6E0=;
+        b=OSo5jxyYxijPlRROdYxeqJ0U+fS9j9OW7//QfVD9JnWM34azp4YBysQBmRHEk9JPGLfUXj
+        +DgWSbhZpyKQmG+6GZiKy6q0avRK3tsQ0Gkm/drnuEXjaEvDElzPekpmezagYPTREwqPMA
+        1veONq9EZ+4IkqiN6xDeOByUfER0YOI=
+Date:   Wed, 16 Feb 2022 11:28:01 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     Jue Wang <juew@google.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [PATCH] x86/mce: Add workaround for SKX/CLX/CPX spurious machine
+ checks
+Message-ID: <YgzRsfWOmqkNiNI7@zn.tnic>
+References: <CAPcxDJ7nriZEJHF6dMPR7tQ+dGuueyRjw1NC+4CbjxiAT_S+ZA@mail.gmail.com>
+ <20220208150945.266978-1-juew@google.com>
+ <Ygwka++3eipjQzB2@zn.tnic>
+ <YgwnqTc8FGG3orcE@agluck-desk3.sc.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAJfpegv03YpTPiDnLwbaewQX_KZws5nutays+vso2BVJ1v1+TA@mail.gmail.com>
+In-Reply-To: <YgwnqTc8FGG3orcE@agluck-desk3.sc.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 10:28:20AM +0100, Miklos Szeredi wrote:
+On Tue, Feb 15, 2022 at 02:22:33PM -0800, Luck, Tony wrote:
+> This early in do_machine check we don't know whether this was from
+> a over enthusistic REP;MOVS fetch, or a "normal" machine check.
+> I don't think there is an easy way to tell the difference.
 
-> So this is a fairly special situation.  How about adding a new rwsem
-> (could possibly be global or per-fs)?
+That's what I am wondering: whether we can compare the buffers REP;
+MOVS was accessing and determine whether the access was out of bounds.
+Something ala _ASM_EXTABLE_ as it is done in arch/x86/lib/copy_mc_64.S,
+for example, which will land us in fixup_exception().
+
+Now there we'd need to know the range the thing was copying which should
+be in pt_regs and the address the MCE reported. If latter is not in the
+former range, we say ignore.
+
+There's even some blurb about "recovering from fast-string exceptions"
+over copy_mc_enhanced_fast_string...
+
+Hmmm?
+
+> The first check:
 > 
->  - acquired for read in lock_rename() before inode locks
->  - acquired for write in do_linkat before inode locks, but only on retry
+> 	if ((mcgstatus & MCG_STATUS_LMCES) 
+> 
+> is for "is this a local machine check"? So no broadcast sync
+> needed. But that needs a comment.
 
-Something like this:
+Yap.
 
-diff --git a/fs/namei.c b/fs/namei.c
-index 3f1829b3ab5b..dd6908cee49d 100644
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -122,6 +122,8 @@
-  * PATH_MAX includes the nul terminator --RR.
-  */
- 
-+static DECLARE_RWSEM(link_rwsem);
-+
- #define EMBEDDED_NAME_MAX	(PATH_MAX - offsetof(struct filename, iname))
- 
- struct filename *
-@@ -2961,6 +2963,8 @@ struct dentry *lock_rename(struct dentry *p1, struct dentry *p2)
- {
- 	struct dentry *p;
- 
-+	down_read(&link_rwsem);
-+
- 	if (p1 == p2) {
- 		inode_lock_nested(p1->d_inode, I_MUTEX_PARENT);
- 		return NULL;
-@@ -2995,6 +2999,8 @@ void unlock_rename(struct dentry *p1, struct dentry *p2)
- 		inode_unlock(p2->d_inode);
- 		mutex_unlock(&p1->d_sb->s_vfs_rename_mutex);
- 	}
-+
-+	up_read(&link_rwsem);
- }
- EXPORT_SYMBOL(unlock_rename);
- 
-@@ -4456,6 +4462,7 @@ int do_linkat(int olddfd, struct filename *old, int newdfd,
- 	struct path old_path, new_path;
- 	struct inode *delegated_inode = NULL;
- 	int how = 0;
-+	bool lock = false;
- 	int error;
- 
- 	if ((flags & ~(AT_SYMLINK_FOLLOW | AT_EMPTY_PATH)) != 0) {
-@@ -4474,10 +4481,13 @@ int do_linkat(int olddfd, struct filename *old, int newdfd,
- 
- 	if (flags & AT_SYMLINK_FOLLOW)
- 		how |= LOOKUP_FOLLOW;
-+retry_lock:
-+	if (lock)
-+		down_write(&link_rwsem);
- retry:
- 	error = filename_lookup(olddfd, old, how, &old_path, NULL);
- 	if (error)
--		goto out_putnames;
-+		goto out_unlock_link;
- 
- 	new_dentry = filename_create(newdfd, new, &new_path,
- 					(how & LOOKUP_REVAL));
-@@ -4511,8 +4521,16 @@ int do_linkat(int olddfd, struct filename *old, int newdfd,
- 		how |= LOOKUP_REVAL;
- 		goto retry;
- 	}
-+	if (!lock && error == -ENOENT) {
-+		path_put(&old_path);
-+		lock = true;
-+		goto retry_lock;
-+	}
- out_putpath:
- 	path_put(&old_path);
-+out_unlock_link:
-+	if (lock)
-+		up_write(&link_rwsem);
- out_putnames:
- 	putname(old);
- 	putname(new);
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
