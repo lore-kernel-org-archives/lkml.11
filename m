@@ -2,144 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 690DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF35C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:55:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbiBPKyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:54:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55648 "EHLO
+        id S231179AbiBPK4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:56:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230424AbiBPKyp (ORCPT
+        with ESMTP id S229729AbiBPK4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 05:54:45 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109E329E97E
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:54:33 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id d27so2775430wrc.6
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:54:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kynesim-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:references:in-reply-to
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=ClOLZY2s6erQ+u2yEpXcBXJSNoeGTddd6B8yRMY6wL4=;
-        b=eNEz6NhpTsFzWQBtRE9zwpW37SRHMx0YzNhudaEl0A8Z09+wrJ3160zP8mJD67kawa
-         0OfB7zz00GLJS6n7vdJFaK5d0u1kb5mc/+XwFkEmPktyNRXxcAOOyoVdSRY/fa9+dzP4
-         lBh4U4FGkicKmYQkFXAkZcmdew25LCRzweGPkPkkY+rIb7XV90ZUIlDk4yacOVYwtMhT
-         bGpudUzYg/kLEQxNpr3E+5ucBAmSHk0H4bCmqG1Gbhdn/XZzQAHd7HBCAaHJEtEhMpt7
-         lqlPPjIWU0rMTAEpShE2bpVzLCwdyX9UcwnbK4salLxhlF4jYnDb9O+IMEl458eJeOEK
-         UwGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:references
-         :in-reply-to:user-agent:mime-version:content-transfer-encoding;
-        bh=ClOLZY2s6erQ+u2yEpXcBXJSNoeGTddd6B8yRMY6wL4=;
-        b=C35y9W7Cloovd/gDUaQylZHTnPGK7sKGZ1gZNRYizWjs/ON1AiiCm4Mt4l0YOfcCbf
-         +7S4e1FkaYAbRhjKPk3sAjRRKXaQxvDbADzquHdRMi7IwKW6D9OR0/fHJS4o08U3Gbsp
-         cUHGU/isaTCiPTdMvBzXJ18S3Ewcks7eLBScYVaXHOeDhbS+YU20ekr1c+MzS4A9o+BR
-         lU6hVp5HC+noI8uDBE+aWH3NVHNmbG9YOISgkV4045MrnJpL1ezcv6sBzKo+JdiG1+dL
-         e377r8JVV7uwccPRr1Jt8uWlv9Nv1psjYbGivNi9Lg0VuhVXjf1CxMxSM40xWlxkGBq2
-         3xgQ==
-X-Gm-Message-State: AOAM530U0KyiAVQn6J9/AYMj1ALbiBG6vwyVgIvr5Xn8gjKDB1E/eSD9
-        cwNCIAlxqWEZ5+rMoMflRc/04w==
-X-Google-Smtp-Source: ABdhPJx8f0L6XdikIJB+SwJtluNj1SfqDSYDPy1RMa2dm+E0gOMPUn7l4cDxeXKEJZ0xSaU7vh1LFA==
-X-Received: by 2002:adf:f3cc:0:b0:1e7:4fd9:6fd3 with SMTP id g12-20020adff3cc000000b001e74fd96fd3mr1820954wrp.266.1645008871610;
-        Wed, 16 Feb 2022 02:54:31 -0800 (PST)
-Received: from CTHALPA.outer.uphall.net (cpc1-cmbg20-2-0-cust759.5-4.cable.virginm.net. [86.21.218.248])
-        by smtp.gmail.com with ESMTPSA id c18sm29982042wro.81.2022.02.16.02.54.30
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Wed, 16 Feb 2022 02:54:31 -0800 (PST)
-From:   John Cox <jc@kynesim.co.uk>
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, hverkuil-cisco@xs4all.nl,
-        jonas@kwiboo.se, nicolas@ndufresne.ca, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com, knaerzche@gmail.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: Re: [RFC v2 7/8] media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSET control
-Date:   Wed, 16 Feb 2022 10:54:29 +0000
-Message-ID: <a8lp0h15oaibdu1pqrkhsu8nh32v423tur@4ax.com>
-References: <20220215110103.241297-1-benjamin.gaignard@collabora.com> <20220215110103.241297-8-benjamin.gaignard@collabora.com>
-In-Reply-To: <20220215110103.241297-8-benjamin.gaignard@collabora.com>
-User-Agent: ForteAgent/8.00.32.1272
+        Wed, 16 Feb 2022 05:56:06 -0500
+X-Greylist: delayed 379 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 02:55:54 PST
+Received: from out203-205-221-190.mail.qq.com (out203-205-221-190.mail.qq.com [203.205.221.190])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A2427B4BA;
+        Wed, 16 Feb 2022 02:55:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1645008952;
+        bh=44irEAu7HYsUU1LrOfpuftcIOp/Z1agD6pE0pOXaBuE=;
+        h=From:To:Cc:Subject:Date;
+        b=vcUzR1Ten3yc6IgpOFoHjFatb84ZfI5cE02Bx0UafpXwEG266qJVXN2OzL6CgsJOl
+         IcSmt2ivRO6giAjgljEZMjJJdDp076fthx2rpArlmdmqfXzi/jbFvvQoYqX4nyZzsp
+         jsp+CzMsxOH9IBLp2Cji8cvxf+C3LjhXh8Dt+WBs=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrszb6.qq.com (NewEsmtp) with SMTP
+        id C10A88E3; Wed, 16 Feb 2022 18:48:16 +0800
+X-QQ-mid: xmsmtpt1645008496tfc9na2j0
+Message-ID: <tencent_A528B1FF77813031ABE6C6738453F084570A@qq.com>
+X-QQ-XMAILINFO: OUyBsK7uGFiXPLpZ43m0FLL7hKXWW5AYRr9ZwLPs81v+g9agswISwcWxa45TWO
+         BFGtzf8p/+bjwM5NYyyYIX/IVSy2bVNbtoz/x9D42X7+5wplwvS8h3fnZ5kWOwgFdjQM818oqR8M
+         CrbSigYd5RuIu8kJbePf/G7K4ZJttmDsmGG2qHw0dLFvX/mYPDDumiYolVil4+NcXJ5wDzHVUdGJ
+         gLkButoxAvqNlmco25JsPIFXoWfXAbFlx0iO2W6xWoXnWu/Y4cJLnJWKCOdtqHJ1wu8x8t7s6ULn
+         n551Ox88dydVYVBpnA6c7JdTGPc45YNJDhR4TsMo0ldorlhePXMXfa+97HBonX2ADPkzKuzQiTnw
+         xdnLPupSQUfWxaMZYzmbMvesSGhbU22JCDj8sZ9cfIBGIgt3ifwFJuRlOLj/92HsbUVx9/ZfwCN8
+         vF5Ko9cznd0JQNxClXGkvRDGOm6beo5VKKMBVvkvdlZMsguSuqYP0J+hxqz524ne03QFKmYHkxLT
+         N4fJCaygs1oXYHk/2+S1i9colcbJf+O1OOEo/MemPrmY05tguA7rgF4+EFjs5CrfWYcqvy6q9JSD
+         tvwyy16Cta9iGo+AZeuuvKX2SxdcYRx5CCfw+NkHiUfFimoTdikb2EN/iBh1IIIfclUpBor1rqWm
+         yJJE4LmvF1NNBdjkVmh4RC1csu0Ibk+IbKrTPkfXIzgtvr7yn8jBSIfQM3W3U9o1hLzg16j1EhzJ
+         NOihgGfK4nYSZv0rx8Xag3eCjzXfw6z+TKgytpc0DDfsHR8IOw+cXPjheXhbQV1h+id1/et4t5kj
+         kbfC8ldQPMn7n9XfTTF9Dr3uZV+vn8k41Q22QIZ5mDSxq/dsIryLfvjCyTr4OlRq9YjzM3pPVAje
+         vQudgLkXNmwZABcb2MEcw=
+From:   xkernel.wang@foxmail.com
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     michal.simek@xilinx.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] net: ll_temac: check the return value of devm_kmalloc()
+Date:   Wed, 16 Feb 2022 18:46:42 +0800
+X-OQ-MSGID: <20220216104642.285-1-xkernel.wang@foxmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022 12:01:02 +0100, you wrote:
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
->The number of 'entry point offset' could be very variable.
->Rather than use a large static array define a v4l2 dynamic array
->of integer control.
->The number of entry point offsets is reported by the elems field.
+devm_kmalloc() returns a pointer to allocated memory on success, NULL
+on failure. While lp->indirect_lock is allocated by devm_kmalloc()
+without proper check. It is better to check the value of it to
+prevent potential wrong memory access.
 
-If we are going to support multiple slice headers in a single control
-then we are going to need to know how to split these entries between
-them as I assume that the entry point offset entries for all slice
-headers would just be catenated here.  You could add extra elements here
-or generate a completely new control but I think it would be easier to
-reinstate the num_entry_point_offsets field in the slice_params
-structure (its a field that userpace has in its hand anyway so its no
-effort for it to fill in).  num_entry_point_offsets is a field that RPi
-wants (without needing the entry points themselves) so that would help
-me.
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Regards
-
-John Cox
-
->Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->---
->version 2:
->- Define a new CID for entry point offsets parameters
-> .../userspace-api/media/v4l/ext-ctrls-codec.rst          | 9 +++++++++
-> include/uapi/linux/v4l2-controls.h                       | 1 +
-> 2 files changed, 10 insertions(+)
->
->diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst =
-b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->index c3ae97657fa7..679595e94643 100644
->--- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->@@ -3101,6 +3101,15 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->=20
->     \normalsize
->=20
->+``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (integer)``
->+    Specifies the i-th entry point offset in bytes and is represented =
-by
->+    offset_len_minus1 plus 1 bits.
->+    This control is a dynamically sized array. The number of entry =
-point
->+    offsets is reported by the ``elems`` field.
->+    This bitstream parameter is defined according to :ref:`hevc`.
->+    They are described in section 7.4.7.1 "General slice segment header
->+    semantics" of the specification.
->+
-> ``V4L2_CID_STATELESS_HEVC_SCALING_MATRIX (struct)``
->     Specifies the HEVC scaling matrix parameters used for the scaling =
-process
->     for transform coefficients.
->diff --git a/include/uapi/linux/v4l2-controls.h =
-b/include/uapi/linux/v4l2-controls.h
->index 27f5d272dc43..700e6cce958c 100644
->--- a/include/uapi/linux/v4l2-controls.h
->+++ b/include/uapi/linux/v4l2-controls.h
->@@ -2314,6 +2314,7 @@ struct v4l2_ctrl_vp9_compressed_hdr {
-> #define V4L2_CID_STATELESS_HEVC_DECODE_PARAMS	=
-(V4L2_CID_CODEC_STATELESS_BASE + 404)
-> #define V4L2_CID_STATELESS_HEVC_DECODE_MODE	=
-(V4L2_CID_CODEC_STATELESS_BASE + 405)
-> #define V4L2_CID_STATELESS_HEVC_START_CODE	=
-(V4L2_CID_CODEC_STATELESS_BASE + 406)
->+#define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSET	=
-(V4L2_CID_CODEC_STATELESS_BASE + 407)
->=20
-> enum v4l2_stateless_hevc_decode_mode {
-> 	V4L2_STATELESS_HEVC_DECODE_MODE_SLICE_BASED,
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+index 463094c..7c5dd39 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -1427,6 +1427,11 @@ static int temac_probe(struct platform_device *pdev)
+ 		lp->indirect_lock = devm_kmalloc(&pdev->dev,
+ 						 sizeof(*lp->indirect_lock),
+ 						 GFP_KERNEL);
++		if (!lp->indirect_lock) {
++			dev_err(&pdev->dev,
++				"indirect register lock allocation failed\n");
++			return -ENOMEM;
++		}
+ 		spin_lock_init(lp->indirect_lock);
+ 	}
+ 
+-- 
