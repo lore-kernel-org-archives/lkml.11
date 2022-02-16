@@ -2,119 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF800C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6564C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231495AbiBPGG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 01:06:26 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52022 "EHLO
+        id S231208AbiBPGIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 01:08:46 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiBPGGW (ORCPT
+        with ESMTP id S229484AbiBPGIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 01:06:22 -0500
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA3B15B995
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:06:10 -0800 (PST)
-Received: by mail-oo1-xc2e.google.com with SMTP id d134-20020a4a528c000000b00319244f4b04so1348812oob.8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:06:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CDBQKjrOHx1jFqanGpjTZz0mkLi+B8rGvMm6ZK2mah0=;
-        b=ANYaNLWFCQkj69oiskZkSh6DjZmPGeiq9PrEgU2cP3v3dn1nkwLwYm7cx+4vS6oOKw
-         RwNzEIyq3NLxuuxq6/pXX241+VkGVJtb86AlOXZXiNaOF+o9MwFTZ3Ial6STIS1UiAA5
-         dhBgfFPAMgGgTKfxv7tknbGcdLXT5auCslnVM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CDBQKjrOHx1jFqanGpjTZz0mkLi+B8rGvMm6ZK2mah0=;
-        b=wgHhQk8R3gdDhW32y0vBYZSQ4nh+Oa62SQkZ5whSFdQ9rAZ9o5xSymWJCxNDWtoYZn
-         hnUNbtzTwc+kHCtIKG7/ffGLmgbcV4S+/2hhuKPAq1zPKatHzrFj+dN+FEcZlidyweb5
-         l7x3CiyokN4oSvCxN30uPp8BrKJASY1XHhaewywd2uEME6fkrlAZoFOdR2u6L0YbjNgC
-         +wCvPgK0W8254FgMTTsC+Rl7RH3bTrpZgcpNeGykL2hUEs7V6v2KRbynvz3wir5HcQY2
-         dCQisHu/8lGwpOZ5/VRzTFjt0BSf/Xzg5PQVrvb44gCa4lYKObBRKGaZ7vjPIywdcugV
-         PSLA==
-X-Gm-Message-State: AOAM5313vqIgaBUp47OEG0XSsMZGq54c07oFEEPP6xu5cDNjgyGU3gI7
-        GfvY5d8zHpn8CSgpuhvQqTpLqLB/h3CJjpPHkbE=
-X-Google-Smtp-Source: ABdhPJyvdoaa4OxoS2tNvxqo9C0KlIDVywMK0LzHhYsWui4twUzQvOt2jHQLeaE+zoG3OxNVw7TVBw==
-X-Received: by 2002:a05:6870:30e:b0:bf:9b7f:7c63 with SMTP id m14-20020a056870030e00b000bf9b7f7c63mr11622oaf.84.1644991569849;
-        Tue, 15 Feb 2022 22:06:09 -0800 (PST)
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com. [209.85.210.48])
-        by smtp.gmail.com with ESMTPSA id x12sm14646616otq.6.2022.02.15.22.06.09
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 22:06:09 -0800 (PST)
-Received: by mail-ot1-f48.google.com with SMTP id g6-20020a9d6486000000b005acf9a0b644so853269otl.12
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:06:09 -0800 (PST)
-X-Received: by 2002:a0d:c383:0:b0:2d0:f04e:7ada with SMTP id
- f125-20020a0dc383000000b002d0f04e7adamr1070020ywd.229.1644991156422; Tue, 15
- Feb 2022 21:59:16 -0800 (PST)
+        Wed, 16 Feb 2022 01:08:40 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F50166E2C;
+        Tue, 15 Feb 2022 22:08:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644991708; x=1676527708;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=17B1tG6qWPiba58hIphPz6b0Xse84huEgceNoiiY6q8=;
+  b=kg+h0J72NQzfoQFb4Z2lxUmVL2LuC2eTmyhAQV0hlnkXr3w8NuBJw8D4
+   e52HrJWsjFADQ9Wcj+CZrvLGfGAq6qy4qHLFgaWk8gcOWYvxIwVsBQUlQ
+   SRIiElxwdSWWQlQTEOOTdCGQWQxAYGSGYa/JN9BKjP3vGRQa/tCRsPcKe
+   Mjih9t2VGZqRMM8KOMU7e923QeEt9sAOr9K0hj17KksgsfX5V2R2YjUMe
+   q1aZO4UGLUIWRHtfa0+bfeAX2IL4cA8SakqffjLlEcoEdAnTfRsQMm8Y1
+   dWQmBT0ms8d54ZychM61O2c+DKvgUn32JcDbH07+PSlnzf9L5NjOeXr2G
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="311272240"
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="311272240"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 22:08:27 -0800
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="486704058"
+Received: from guptapa-mobl1.amr.corp.intel.com ([10.209.113.151])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 22:08:27 -0800
+Date:   Tue, 15 Feb 2022 22:08:26 -0800
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Andrew Cooper <Andrew.Cooper3@citrix.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "antonio.gomez.iglesias@linux.intel.com" 
+        <antonio.gomez.iglesias@linux.intel.com>,
+        "neelima.krishnan@intel.com" <neelima.krishnan@intel.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
+Message-ID: <20220216060826.dwki2jk6kzft4f7c@guptapa-mobl1.amr.corp.intel.com>
+References: <YgrltbToK8+tG2qK@zn.tnic>
+ <20220215002014.mb7g4y3hfefmyozx@guptapa-mobl1.amr.corp.intel.com>
+ <Ygt/QSTSMlUJnzFS@zn.tnic>
+ <20220215121103.vhb2lpoygxn3xywy@guptapa-mobl1.amr.corp.intel.com>
+ <YgvVcdpmFCCn20A7@zn.tnic>
+ <20220215181931.wxfsn2a3npg7xmi2@guptapa-mobl1.amr.corp.intel.com>
+ <YgwAHU7gCnik8Kv6@zn.tnic>
+ <20220216003950.5jxecuf773g2kuwl@guptapa-mobl1.amr.corp.intel.com>
+ <6724088f-c7cf-da92-e894-d8970f13bf1e@citrix.com>
+ <20220216012841.vxlnugre2j4pczp7@guptapa-mobl1.amr.corp.intel.com>
 MIME-Version: 1.0
-References: <20220125085634.17972-1-yong.wu@mediatek.com> <20220125085634.17972-9-yong.wu@mediatek.com>
- <ca47becf-adc9-f11e-5e59-03f203920344@collabora.com> <d9637b40196873f392ac9cebfe369106a6f0eee7.camel@mediatek.com>
-In-Reply-To: <d9637b40196873f392ac9cebfe369106a6f0eee7.camel@mediatek.com>
-From:   Tomasz Figa <tfiga@chromium.org>
-Date:   Wed, 16 Feb 2022 14:59:05 +0900
-X-Gmail-Original-Message-ID: <CAAFQd5Cqg2xPwtzcom_EZ1tw1tOBsND_i1YAQCO4kF=+eWePBQ@mail.gmail.com>
-Message-ID: <CAAFQd5Cqg2xPwtzcom_EZ1tw1tOBsND_i1YAQCO4kF=+eWePBQ@mail.gmail.com>
-Subject: Re: [PATCH v4 08/35] iommu/mediatek: Use kmalloc for protect buffer
-To:     Yong Wu <Yong.Wu@mediatek.com>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>, youlin.pei@mediatek.com,
-        anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
-        yen-chang.chen@mediatek.com, mingyuan.ma@mediatek.com,
-        yf.wang@mediatek.com, libo.kang@mediatek.com,
-        chengci.xu@mediatek.com, Joerg Roedel <joro@8bytes.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220216012841.vxlnugre2j4pczp7@guptapa-mobl1.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 2:55 PM Yong Wu <yong.wu@mediatek.com> wrote:
+On 15.02.2022 17:28, Pawan Gupta wrote:
+>On 16.02.2022 00:49, Andrew Cooper wrote:
+>>On 16/02/2022 00:39, Pawan Gupta wrote:
+>>>On 15.02.2022 20:33, Borislav Petkov wrote:
+>>>>On Tue, Feb 15, 2022 at 10:19:31AM -0800, Pawan Gupta wrote:
+>>>>>I admit it has gotten complicated with so many bits associated with
+>>>>>TSX.
+>>>>
+>>>>Yah, and looka here:
+>>>>
+>>>>https://github.com/andyhhp/xen/commit/ad9f7c3b2e0df38ad6d54f4769d4dccf765fbcee
+>>>>
+>>>>
+>>>>It seems it isn't complicated enough. ;-\
+>>>>
+>>>>Andy just made me aware of this thing where you guys have added a new
+>>>>MSR bit:
+>>>>
+>>>>MSR_MCU_OPT_CTRL[1] which is called something like
+>>>>MCU_OPT_CTRL_RTM_ALLOW or so.
+>>>
+>>>RTM_ALLOW bit was added to MSR_MCU_OPT_CTRL, but its not set by default,
+>>>and it is *not* recommended to be used in production deployments [1]:
+>>>
+>>>  Although MSR 0x122 (TSX_CTRL) and MSR 0x123 (IA32_MCU_OPT_CTRL) can be
+>>>  used to reenable Intel TSX for development, doing so is not recommended
+>>>  for production deployments. In particular, applying MD_CLEAR flows for
+>>>  mitigation of the Intel TSX Asynchronous Abort (TAA) transient
+>>>execution
+>>>  attack may not be effective on these processors when Intel TSX is
+>>>  enabled with updated microcode. The processors continue to be mitigated
+>>>  against TAA when Intel TSX is disabled.
+>>
+>>The purpose of setting RTM_ALLOW isn't to enable TSX per say.
+>>
+>>The purpose is to make MSR_TSX_CTRL.RTM_DISABLE behaves consistently on
+>>all hardware, which reduces the complexity and invasiveness of dealing
+>>with this special case, because the TAA workaround will still turn TSX
+>>off by default.
+>>
+>>The configuration you don't want to be running with is RTM_ALLOW &&
+>>!RTM_DISABLE, because that is "still vulnerable to TSX Async Abort".
 >
-> On Thu, 2022-01-27 at 12:08 +0100, AngeloGioacchino Del Regno wrote:
-> > Il 25/01/22 09:56, Yong Wu ha scritto:
-> > > No need zero for the protect buffer that is only accessed by the
-> > > IOMMU HW
-> > > translation fault happened.
-> > >
-> > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> >
-> > I would rather keep this a devm_kzalloc instead... the cost is very
-> > minimal and
-> > this will be handy when new hardware will be introduced, as it may
-> > require a bigger
-> > buffer: in that case, "older" platforms will use only part of it and
-> > we may get
-> > garbage data at the end.
+>I am not sure how a system can end up with RTM_ALLOW && !RTM_DISABLE? I
+>have no problem taking care of this case, I am just debating why we need
+>it.
 >
-> Currently this is to avoid zero 512 bytes for all the platforms.
->
-> Sorry, I don't understand why it is unnecessary when the new hardware
-> requires a bigger buffer. If the buffer becomes bigger, then clearing
-> it to 0 need more cost. then this patch is more helpful?
->
-> The content in this buffer is garbage, we won't care about or analyse
-> it.
+>One way to get to this state is BIOS sets RTM_ALLOW (dont know why?) and
+>linux cmdline has tsx=on.
 
-I think we should zero it for security reasons regardless of any other
-aspects. With this patch it's leaking kernel data to the hardware.
+If RTM_ALLOW is set for any reason, we can still deny tsx=on request.
+Below patch should do that (I haven't tested it yet).
 
-At the same time, we're talking here about something executed just 1
-time when the driver probes. I don't think the cost would really
-matter.
+Alternatively, we can reset RTM_ALLOW, which will set
+CPUID.RTM_ALWAYS_ABORT and may require re-enumeration of CPU features or
+otherwise setup_force_cpu_cap(X86_FEATURE_RTM_ALWAYS_ABORT) should also
+work.
 
-Best regards,
-Tomasz
+---
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index 3faf0f97edb1..2ef58bcfb1e4 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -131,6 +131,8 @@
+  /* SRBDS support */
+  #define MSR_IA32_MCU_OPT_CTRL		0x00000123
+  #define RNGDS_MITG_DIS			BIT(0)
++#define MCU_OPT_CTRL_RTM_ALLOW		BIT(1)
++#define MCU_OPT_CTRL_RTM_LOCKED		BIT(2)
+  
+  #define MSR_IA32_SYSENTER_CS		0x00000174
+  #define MSR_IA32_SYSENTER_ESP		0x00000175
+diff --git a/arch/x86/kernel/cpu/tsx.c b/arch/x86/kernel/cpu/tsx.c
+index 2835fa89fc6f..8ac085ac597f 100644
+--- a/arch/x86/kernel/cpu/tsx.c
++++ b/arch/x86/kernel/cpu/tsx.c
+@@ -142,6 +142,29 @@ void tsx_clear_cpuid(void)
+  	}
+  }
+  
++/*
++ * When the microcode released in Feb 2022 is applied, TSX will be disabled by
++ * default on some processors. MSR 0x122 (TSX_CTRL) and MSR 0x123
++ * (IA32_MCU_OPT_CTRL) can be used to re-enable TSX for development, doing so is
++ * not recommended for production deployments. In particular, applying MD_CLEAR
++ * flows for mitigation of the Intel TSX Asynchronous Abort (TAA) transient
++ * execution attack may not be effective on these processors when TSX is
++ * enabled with updated microcode.
++ *
++ * Detect if this unsafe TSX development mode is enabled.
++ */
++static bool tsx_is_unsafe(void)
++{
++	u64 mcu_opt_ctrl;
++
++	if (!boot_cpu_has(X86_FEATURE_SRBDS_CTRL))
++		return false;
++
++	rdmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_opt_ctrl);
++
++	return !!(mcu_opt_ctrl & MCU_OPT_CTRL_RTM_ALLOW);
++}
++
+  void __init tsx_init(void)
+  {
+  	char arg[5] = {};
+@@ -163,6 +186,13 @@ void __init tsx_init(void)
+  	if (!tsx_ctrl_is_supported()) {
+  		tsx_ctrl_state = TSX_CTRL_NOT_SUPPORTED;
+  		return;
++	} else if (tsx_is_unsafe()) {
++		/* Do not allow tsx=on, when TSX is unsafe to use */
++		tsx_ctrl_state = TSX_CTRL_DISABLE;
++		tsx_disable();
++		setup_clear_cpu_cap(X86_FEATURE_RTM);
++		setup_clear_cpu_cap(X86_FEATURE_HLE);
++		return;
+  	}
+  
+  	ret = cmdline_find_option(boot_command_line, "tsx", arg, sizeof(arg));
