@@ -2,83 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B27C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B176C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbiBPK3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:29:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33034 "EHLO
+        id S230467AbiBPK3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:29:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiBPK3R (ORCPT
+        with ESMTP id S232037AbiBPK3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 05:29:17 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7229521920F
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:28:47 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D85CA1EC054C;
-        Wed, 16 Feb 2022 11:27:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1645007278;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=1iASlCBOHtED7Z2DvFclCOCtXnoNRBqSBjzPZUr+6E0=;
-        b=OSo5jxyYxijPlRROdYxeqJ0U+fS9j9OW7//QfVD9JnWM34azp4YBysQBmRHEk9JPGLfUXj
-        +DgWSbhZpyKQmG+6GZiKy6q0avRK3tsQ0Gkm/drnuEXjaEvDElzPekpmezagYPTREwqPMA
-        1veONq9EZ+4IkqiN6xDeOByUfER0YOI=
-Date:   Wed, 16 Feb 2022 11:28:01 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Luck, Tony" <tony.luck@intel.com>
-Cc:     Jue Wang <juew@google.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [PATCH] x86/mce: Add workaround for SKX/CLX/CPX spurious machine
- checks
-Message-ID: <YgzRsfWOmqkNiNI7@zn.tnic>
-References: <CAPcxDJ7nriZEJHF6dMPR7tQ+dGuueyRjw1NC+4CbjxiAT_S+ZA@mail.gmail.com>
- <20220208150945.266978-1-juew@google.com>
- <Ygwka++3eipjQzB2@zn.tnic>
- <YgwnqTc8FGG3orcE@agluck-desk3.sc.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YgwnqTc8FGG3orcE@agluck-desk3.sc.intel.com>
+        Wed, 16 Feb 2022 05:29:23 -0500
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4A9B22219E;
+        Wed, 16 Feb 2022 02:29:03 -0800 (PST)
+Received: from smtpclient.apple (p4fefcd07.dip0.t-ipconnect.de [79.239.205.7])
+        by mail.holtmann.org (Postfix) with ESMTPSA id D047FCEE75;
+        Wed, 16 Feb 2022 11:28:57 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH] Bluetooth: make array bt_uuid_any static const
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220214215130.66993-1-colin.i.king@gmail.com>
+Date:   Wed, 16 Feb 2022 11:28:57 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <E7AEF7CE-CD73-4B64-A67D-8C141F124690@holtmann.org>
+References: <20220214215130.66993-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 02:22:33PM -0800, Luck, Tony wrote:
-> This early in do_machine check we don't know whether this was from
-> a over enthusistic REP;MOVS fetch, or a "normal" machine check.
-> I don't think there is an easy way to tell the difference.
+Hi Colin,
 
-That's what I am wondering: whether we can compare the buffers REP;
-MOVS was accessing and determine whether the access was out of bounds.
-Something ala _ASM_EXTABLE_ as it is done in arch/x86/lib/copy_mc_64.S,
-for example, which will land us in fixup_exception().
-
-Now there we'd need to know the range the thing was copying which should
-be in pt_regs and the address the MCE reported. If latter is not in the
-former range, we say ignore.
-
-There's even some blurb about "recovering from fast-string exceptions"
-over copy_mc_enhanced_fast_string...
-
-Hmmm?
-
-> The first check:
+> Don't populate the read-only array bt_uuid_any on the stack but
+> instead make it static const. Also makes the object code a little
+> smaller.
 > 
-> 	if ((mcgstatus & MCG_STATUS_LMCES) 
-> 
-> is for "is this a local machine check"? So no broadcast sync
-> needed. But that needs a comment.
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+> net/bluetooth/mgmt.c | 4 +++-
+> 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Yap.
+patch has been applied to bluetooth-next tree.
 
--- 
-Regards/Gruss,
-    Boris.
+Regards
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Marcel
+
