@@ -2,170 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230373AbiBPH5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:57:32 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33760 "EHLO
+        id S231243AbiBPH6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:58:38 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230264AbiBPH53 (ORCPT
+        with ESMTP id S229992AbiBPH6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:57:29 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A87462C5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:57:17 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id l125so3614558ybl.4
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:57:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oMtBLX0dxO/FEXDrSK4WwXrfvEvOmP/i+ozpjhDxh2o=;
-        b=EGr7uINoD4BR8i3qX/tomHNRruYcjc/QbsipOZJBMwQk2ZyhvOQqpMphIFGGGWNWd3
-         JuGaeHSzEymH3RXHvUYHLSTERTs3AOZYPXnaVJ7N/QHn/Lzy8Soxfsdbwy63HmyHvoGF
-         ibPohfBIFhqTBcVfC4PMPdPyf0zXr8PsqaP7A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oMtBLX0dxO/FEXDrSK4WwXrfvEvOmP/i+ozpjhDxh2o=;
-        b=rWEPJV5rjUkIumhETRs6qVqAR5D7bHqYdS9UCbY4ujZWmVGrqKTnDg5ufxTVVbP+b/
-         MqZAJx3RtAtD/z/4u/GnsBAoE9aSxIxqaUxgC/EJB58OewPvUfrehNiMddJw/qvSDlUE
-         Bn30PKhCLWpckj6K/AC4iUM3o26zdmytnB0cu6KjZTC3ZkfimZpBo00ZP/P4/scnBSPW
-         R+aHaP2HlsbZGGNvGJ1nygh8p6gPuicILzlgIN+7PvxhR7UUHfBWBcPz7A2bC3B1WDD7
-         Sur3F9K/dw8RCbKPHfsp92tOzvyN4aJ1RXNvqQXiBiRnWUDHcimkqETUhP9bSxXDE/sS
-         b+Wg==
-X-Gm-Message-State: AOAM533Gw2qoafu38DN/Z5ZxxI9oJtdoqwMcSwfmsPCAY8zU0wwY2v5v
-        fm3uV8oDyW2pPu9TzP+d5F8+DMph09bNTIU+cRou
-X-Google-Smtp-Source: ABdhPJxexRI1WA8BLHddNiaTLw6WNqMOfbfVIS1bSiAe/Miw7A1PF3HzHsObN1ZBqCdCL+fBicqD5iLDeOuq1uHkDM4=
-X-Received: by 2002:a5b:ec5:0:b0:615:4edf:4641 with SMTP id
- a5-20020a5b0ec5000000b006154edf4641mr1079024ybs.494.1644998236462; Tue, 15
- Feb 2022 23:57:16 -0800 (PST)
+        Wed, 16 Feb 2022 02:58:35 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2DED5DD9;
+        Tue, 15 Feb 2022 23:58:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YXSZvLdp2WpAvYAgpt65RWGqBzfUFzNyTw8axHgAK10=; b=o3pYssSMY/qnKmyqV5QbRt0DFQ
+        yb5+W59T5AHuXcl8hFjcKbcyFo8ZpPWILUCZWYzfgeRtNGYrMZ04btWArup73rBlL4neEiZJTRjPA
+        XKJ8KvPEt5Fz8U6l4/WAq1zjzAxzU+Vd5XPWtmzDw8Q2S3hhcd08aVvXaw9S/4tapcMk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nKEuC-006BMz-7p; Wed, 16 Feb 2022 08:39:16 +0100
+Date:   Wed, 16 Feb 2022 08:39:16 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, linux@armlinux.org.uk,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
+ firmware on a Dell hardware
+Message-ID: <YgyqJAokWhXvDPik@lunn.ch>
+References: <YelxMFOiqnfIVmyy@lunn.ch>
+ <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
+ <Yeqzhx3GbMzaIbj6@lunn.ch>
+ <CAAd53p5pF+SRfwGfJaBTPkH7+9Z6vhPHcuk-c=w8aPTzMBxPcg@mail.gmail.com>
+ <YerOIXi7afbH/3QJ@lunn.ch>
+ <3d7b1ff0-6776-6480-ed20-c9ad61b400f7@gmail.com>
+ <Yex0rZ0wRWQH/L4n@lunn.ch>
+ <CAAd53p6pfuYDor3vgm_bHFe_o7urNhv7W6=QGxVz6c=htt7wLg@mail.gmail.com>
+ <YgwMslde2OxOOp9d@lunn.ch>
+ <CAAd53p4QXHe7XTv5ntsdnC1Z9EpDfXQECKHDEsRA++SEQSdbYQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220210054947.170134-1-apatel@ventanamicro.com> <20220210054947.170134-5-apatel@ventanamicro.com>
-In-Reply-To: <20220210054947.170134-5-apatel@ventanamicro.com>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Tue, 15 Feb 2022 23:57:05 -0800
-Message-ID: <CAOnJCU+VpiMtkoKBTLn9kzNxdLaFmedhNX=K36O+42nTkfZ0-A@mail.gmail.com>
-Subject: Re: [PATCH v11 4/8] RISC-V: Add SBI HSM suspend related defines
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Sandeep Tripathy <milun.tripathy@gmail.com>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Liush <liush@allwinnertech.com>,
-        Anup Patel <anup@brainfault.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvm-riscv@lists.infradead.org, Guo Ren <guoren@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAd53p4QXHe7XTv5ntsdnC1Z9EpDfXQECKHDEsRA++SEQSdbYQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 9:50 PM Anup Patel <apatel@ventanamicro.com> wrote:
->
-> From: Anup Patel <anup.patel@wdc.com>
->
-> We add defines related to SBI HSM suspend call and also
-> update HSM states naming as-per latest SBI specification.
->
-> Signed-off-by: Anup Patel <anup.patel@wdc.com>
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> Reviewed-by: Guo Ren <guoren@kernel.org>
-> ---
->  arch/riscv/include/asm/sbi.h    | 27 ++++++++++++++++++++++-----
->  arch/riscv/kernel/cpu_ops_sbi.c |  2 +-
->  arch/riscv/kvm/vcpu_sbi_hsm.c   |  4 ++--
->  3 files changed, 25 insertions(+), 8 deletions(-)
->
-> diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.h
-> index d1c37479d828..06133b4f8e20 100644
-> --- a/arch/riscv/include/asm/sbi.h
-> +++ b/arch/riscv/include/asm/sbi.h
-> @@ -71,15 +71,32 @@ enum sbi_ext_hsm_fid {
->         SBI_EXT_HSM_HART_START = 0,
->         SBI_EXT_HSM_HART_STOP,
->         SBI_EXT_HSM_HART_STATUS,
-> +       SBI_EXT_HSM_HART_SUSPEND,
->  };
->
-> -enum sbi_hsm_hart_status {
-> -       SBI_HSM_HART_STATUS_STARTED = 0,
-> -       SBI_HSM_HART_STATUS_STOPPED,
-> -       SBI_HSM_HART_STATUS_START_PENDING,
-> -       SBI_HSM_HART_STATUS_STOP_PENDING,
-> +enum sbi_hsm_hart_state {
-> +       SBI_HSM_STATE_STARTED = 0,
-> +       SBI_HSM_STATE_STOPPED,
-> +       SBI_HSM_STATE_START_PENDING,
-> +       SBI_HSM_STATE_STOP_PENDING,
-> +       SBI_HSM_STATE_SUSPENDED,
-> +       SBI_HSM_STATE_SUSPEND_PENDING,
-> +       SBI_HSM_STATE_RESUME_PENDING,
->  };
->
-> +#define SBI_HSM_SUSP_BASE_MASK                 0x7fffffff
-> +#define SBI_HSM_SUSP_NON_RET_BIT               0x80000000
-> +#define SBI_HSM_SUSP_PLAT_BASE                 0x10000000
-> +
-> +#define SBI_HSM_SUSPEND_RET_DEFAULT            0x00000000
-> +#define SBI_HSM_SUSPEND_RET_PLATFORM           SBI_HSM_SUSP_PLAT_BASE
-> +#define SBI_HSM_SUSPEND_RET_LAST               SBI_HSM_SUSP_BASE_MASK
-> +#define SBI_HSM_SUSPEND_NON_RET_DEFAULT                SBI_HSM_SUSP_NON_RET_BIT
-> +#define SBI_HSM_SUSPEND_NON_RET_PLATFORM       (SBI_HSM_SUSP_NON_RET_BIT | \
-> +                                                SBI_HSM_SUSP_PLAT_BASE)
-> +#define SBI_HSM_SUSPEND_NON_RET_LAST           (SBI_HSM_SUSP_NON_RET_BIT | \
-> +                                                SBI_HSM_SUSP_BASE_MASK)
-> +
->  enum sbi_ext_srst_fid {
->         SBI_EXT_SRST_RESET = 0,
->  };
-> diff --git a/arch/riscv/kernel/cpu_ops_sbi.c b/arch/riscv/kernel/cpu_ops_sbi.c
-> index dae29cbfe550..2e16f6732cdf 100644
-> --- a/arch/riscv/kernel/cpu_ops_sbi.c
-> +++ b/arch/riscv/kernel/cpu_ops_sbi.c
-> @@ -111,7 +111,7 @@ static int sbi_cpu_is_stopped(unsigned int cpuid)
->
->         rc = sbi_hsm_hart_get_status(hartid);
->
-> -       if (rc == SBI_HSM_HART_STATUS_STOPPED)
-> +       if (rc == SBI_HSM_STATE_STOPPED)
->                 return 0;
->         return rc;
->  }
-> diff --git a/arch/riscv/kvm/vcpu_sbi_hsm.c b/arch/riscv/kvm/vcpu_sbi_hsm.c
-> index 2e383687fa48..1ac4b2e8e4ec 100644
-> --- a/arch/riscv/kvm/vcpu_sbi_hsm.c
-> +++ b/arch/riscv/kvm/vcpu_sbi_hsm.c
-> @@ -60,9 +60,9 @@ static int kvm_sbi_hsm_vcpu_get_status(struct kvm_vcpu *vcpu)
->         if (!target_vcpu)
->                 return -EINVAL;
->         if (!target_vcpu->arch.power_off)
-> -               return SBI_HSM_HART_STATUS_STARTED;
-> +               return SBI_HSM_STATE_STARTED;
->         else
-> -               return SBI_HSM_HART_STATUS_STOPPED;
-> +               return SBI_HSM_STATE_STOPPED;
->  }
->
->  static int kvm_sbi_ext_hsm_handler(struct kvm_vcpu *vcpu, struct kvm_run *run,
-> --
-> 2.25.1
->
+> > > This is an ACPI based platform and we are working on new firmware
+> > > property "use-firmware-led" to give driver a hint:
+> > > ...
+> > >     Scope (_SB.PC00.OTN0)
+> > >     {
+> > >         Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
+> > >         {
+> > >             ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301") /* Device
+> > > Properties for _DSD */,
+> > >             Package (0x01)
+> > >             {
+> > >                 Package (0x02)
+> > >                 {
+> > >                     "use-firmware-led",
+> > >                     One
+> > >                 }
+> > >             }
+> > >         })
+> > >     }
+> > > ...
+> > >
+> > > Because the property is under PCI device namespace, I am not sure how
+> > > to (cleanly) bring the property from the phylink side to phydev side.
+> > > Do you have any suggestion?
+> >
+> > I'm no ACPI expert, but i think
+> > Documentation/firmware-guide/acpi/dsd/phy.rst gives you the basis:
+> >
+> >     During the MDIO bus driver initialization, PHYs on this bus are probed
+> >     using the _ADR object as shown below and are registered on the MDIO bus.
+> >
+> >       Scope(\_SB.MDI0)
+> >       {
+> >         Device(PHY1) {
+> >           Name (_ADR, 0x1)
+> >         } // end of PHY1
+> >
+> >         Device(PHY2) {
+> >           Name (_ADR, 0x2)
+> >         } // end of PHY2
+> >       }
+> >
+> > These are the PHYs on the MDIO bus. I _think_ that next to the Name,
+> > you can add additional properties, like your "use-firmware-led". This
+> > would then be very similar to DT, which is in effect what ACPI is
+> > copying. So you need to update this document with your new property,
+> > making it clear that this property only applies to boot, not
+> > suspend/resume. And fwnode_mdiobus_register_phy() can look for the
+> > property and set a flag in the phydev structure indicating that ACPI
+> > is totally responsible for LEDs at boot time.
+> 
+> The problem here is there's no MDIO bus in ACPI namespace, namely no
+> "Scope(\_SB.MDI0)" on this platform.
 
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
+So add it. Basically, copy what DT does. I assume there is a node for
+the Ethernet device? And is the MDIO bus driver instantiated by the
+Ethernet device? So you can add the MDIO node as a sub node of the
+Ethernet device. When you register the MDIO bus using
+acpi_mdiobus_register() pass a pointer to this MDIO sub node.
 
--- 
-Regards,
-Atish
+     Andrew
