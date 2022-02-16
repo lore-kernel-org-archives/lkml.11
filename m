@@ -2,146 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B33C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6010BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231821AbiBPI64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 03:58:56 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38732 "EHLO
+        id S231492AbiBPI7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 03:59:10 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231666AbiBPI6y (ORCPT
+        with ESMTP id S231160AbiBPI7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 03:58:54 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B0D82ABD1F;
-        Wed, 16 Feb 2022 00:58:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645001922; x=1676537922;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=4y71aus8Ob7SpkYYykXhuO5i7j3UaPqtGgLoekb6pW8=;
-  b=FnKSofJjr8nx6/ik2wBUPfPdtszWqWhUMBl/WIGpvXgXEMIvSqosb5h5
-   y900Rb91wV6E5GW/sWjmgVIq4kEdeTtzGeRkFalq4pF3rbIgMDfXx8Xzv
-   FEihIu8OBwgKubSlK/U5IdAqo8eMJFV8dpU+kx6EwFH9Zwr1YXpfepCnF
-   8=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 Feb 2022 00:58:41 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 00:58:41 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 16 Feb 2022 00:58:41 -0800
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 16 Feb 2022 00:58:35 -0800
-Date:   Wed, 16 Feb 2022 14:28:31 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Jun Li <lijun.kernel@gmail.com>
-CC:     Pavan Kondeti <quic_pkondeti@quicinc.com>, Li Jun <jun.li@nxp.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
-        Peter Chen <peter.chen@kernel.org>,
-        Pawel Laszczak <pawell@cadence.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, <quic_ppratap@quicinc.com>
-Subject: Re: [PATCH 2/2] usb: dwc: host: add xhci_plat_priv quirk
- XHCI_SKIP_PHY_INIT
-Message-ID: <20220216085831.GA15957@hu-pkondeti-hyd.qualcomm.com>
-References: <1644949454-814-1-git-send-email-quic_c_sanm@quicinc.com>
- <1644949454-814-3-git-send-email-quic_c_sanm@quicinc.com>
- <CAKgpwJWEZ7275LihHqxg50cWNVNxUcGR8e7pM-V2bH=aodL7YA@mail.gmail.com>
- <20220216080028.GA13793@hu-pkondeti-hyd.qualcomm.com>
- <CAKgpwJVwTDd40ZR3tKOgVpRTNs1OjE5ssMM+Lj-Ak0CHPSAWQQ@mail.gmail.com>
+        Wed, 16 Feb 2022 03:59:09 -0500
+Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.50.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8E32AC906
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:58:58 -0800 (PST)
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id E58C6400ED3CB
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:58:57 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id KG9JnjMdbXvvJKG9JndyOv; Wed, 16 Feb 2022 02:58:57 -0600
+X-Authority-Reason: nr=8
+Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:46600 helo=[10.0.1.2])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nKG9I-001PYL-FP; Wed, 16 Feb 2022 02:58:56 -0600
+Message-ID: <05a593c4-0134-1449-7f30-305a0ffe1b49@kernel.org>
+Date:   Wed, 16 Feb 2022 09:58:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKgpwJVwTDd40ZR3tKOgVpRTNs1OjE5ssMM+Lj-Ak0CHPSAWQQ@mail.gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC V2 12/21] rv/reactor: Add the printk reactor
+Content-Language: en-US
+To:     John Ogness <john.ogness@linutronix.de>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+References: <cover.1644830251.git.bristot@kernel.org>
+ <fad2d358d57dfffc084d482684ecc1d13b62b262.1644830251.git.bristot@kernel.org>
+ <10cf6003-6d2b-056b-11bb-3ae9c342a369@linuxfoundation.org>
+ <c1657d1c-0d2b-4aa3-c1ed-2ae6fdfcda86@kernel.org>
+ <87v8xg30qc.fsf@jogness.linutronix.de>
+ <45179cdb-2391-207a-2f7b-2dea828d1606@kernel.org>
+ <87r1842r1m.fsf@jogness.linutronix.de>
+ <65172f14-bad6-37b1-d243-e91ca472d22e@kernel.org>
+ <874k50hqmj.fsf@jogness.linutronix.de>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <874k50hqmj.fsf@jogness.linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 95.232.30.176
+X-Source-L: No
+X-Exim-ID: 1nKG9I-001PYL-FP
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.1.2]) [95.232.30.176]:46600
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 2
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 04:49:32PM +0800, Jun Li wrote:
-> Pavan Kondeti <quic_pkondeti@quicinc.com> 于2022年2月16日周三 16:00写道：
-> >
-> > On Wed, Feb 16, 2022 at 03:16:40PM +0800, Jun Li wrote:
-> > > Sandeep Maheswaram <quic_c_sanm@quicinc.com> 于2022年2月16日周三 14:58写道：
-> > > >
-> > > > dwc3 manages PHY by own DRD driver, so skip the management by
-> > > > HCD core.
-> > > > During runtime suspend phy was not getting suspend because
-> > > > runtime_usage value is 2.
-> > > >
-> > > > Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> > > > ---
-> > > >  drivers/usb/dwc3/host.c | 15 +++++++++++++++
-> > > >  1 file changed, 15 insertions(+)
-> > > >
-> > > > diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
-> > > > index eda8719..4a035a8 100644
-> > > > --- a/drivers/usb/dwc3/host.c
-> > > > +++ b/drivers/usb/dwc3/host.c
-> > > > @@ -13,6 +13,14 @@
-> > > >  #include <linux/platform_device.h>
-> > > >
-> > > >  #include "core.h"
-> > > > +#include <linux/usb/hcd.h>
-> > > > +#include <linux/usb/xhci-plat.h>
-> > > > +#include <linux/usb/xhci-quirks.h>
-> > > > +
-> > > > +
-> > > > +static const struct xhci_plat_priv xhci_plat_dwc3_xhci = {
-> > > > +       .quirks = XHCI_SKIP_PHY_INIT,
-> > > > +};
-> > >
-> > > It's better to create this xhci_plat_priv by each dwc3 glue layer,
-> > > with that, we can use this priv to pass other flags and possibly
-> > > override APIs by each glue driver which may not apply to all dwc3
-> > > platforms.
-> > >
-> >
-> > Do you see a need for any glue driver to know about this xHC platform data?
+On 2/15/22 20:33, John Ogness wrote:
+>> I saw deadlocks in the past, and while testing the WIP monitor some
+>> time ago, it seems it depends on the console type. If such restriction
+>> does not exist anymore, I can remove that comment, it would be even
+>> better!
+> If you say it depended on the console type, then it was probably the
+> framebuffer console that was at fault. The fbcon is a landmine for
+> deadlocks, which is why PREEMPT_RT avoids fbcon printing from
+> non-preemptible context. For mainline, the series is currently in
+> review.
 > 
-> Yes. I have some xhci quirks which are specifix to NXP iMX platforms.
-> 
-> > AFAICT, glue driver has no direction connection with the dwc3 core. All
-> > the required data is coming from dT on ARM based boards. Adding a private
-> > interface between dwc3 core and glue for passing xhci platform data seems
-> > to be overkill. If there is a pressing need, why not?
-> 
-> And looking at xhci_plat_priv members
-> 
-> -struct xhci_plat_priv {
-> -       const char *firmware_name;
-> -       unsigned long long quirks;
-> -       int (*plat_setup)(struct usb_hcd *);
-> -       void (*plat_start)(struct usb_hcd *);
-> -       int (*init_quirk)(struct usb_hcd *);
-> -       int (*suspend_quirk)(struct usb_hcd *);
-> -       int (*resume_quirk)(struct usb_hcd *);
-> -};
-> 
-> Are we going to share the same all those quirks and APIs
-> implementation across all dwc3 platforms?
-> 
-Currently Yes. Thats why I am asking if there is a pressing need to
-make this more complex than it needs to be..
+> Perhaps avoiding fbcon would be good enough for you to avoid deadlocks
+> with this reactor using printk().
 
-Thanks,
-Pavan
+So, I will keep printk(), add a depends on *!* fbcon, and remove the comment.
+What do you think?
+
+-- Daniel
