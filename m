@@ -2,145 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49499C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 02:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 454AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 02:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343797AbiBPChH (ORCPT
+        id S1343801AbiBPCic (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 21:37:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42564 "EHLO
+        Tue, 15 Feb 2022 21:38:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343787AbiBPChF (ORCPT
+        with ESMTP id S233189AbiBPCib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 21:37:05 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACA1FD9;
-        Tue, 15 Feb 2022 18:36:54 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id z13so1407812edc.12;
-        Tue, 15 Feb 2022 18:36:53 -0800 (PST)
+        Tue, 15 Feb 2022 21:38:31 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71089F5412;
+        Tue, 15 Feb 2022 18:38:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oi37CwrmvQWu7kYLVP5Qk+0R9r5dukdFd1VytzpZS/k=;
-        b=EDSUeOStPRdTC6e5aVvR3crbzquCKKUUHq9bE/JBhRpM91KRMVWhwlS6PoIvLjB72y
-         QjSm3yKx8nywjkWrNcWqj9gA0rKDsD7PvCAMt9/3EY3WaGEjnuUE6EtSOYytso/LsFpi
-         LJMd1vbP7zV1D9gVnO2RiV3+saydmHnS9GrLpeHG8Xf9PRe0uhybuU1kiw47zGVrnvwH
-         N6E9dc1kAfpjsrKo/gdpDQlTGNVqXjJaN3eBnawmKfP+8eqWtIp1U4yGdAoGoEwSgCkv
-         6YzJis1GlGFGRgomPQXLEGd1zkUsno+wS88vhegX55R3P0g/d3uYQfZeUgPaEjG7z3IX
-         Mokg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oi37CwrmvQWu7kYLVP5Qk+0R9r5dukdFd1VytzpZS/k=;
-        b=bZefY+01iFnC7vR1NU9rBpMYYkBtYgMIrh/s8Fkkc61G4xIM4ToFlGIc37YCdVPbXh
-         x0HFFgXLFiLe2dghNudTCLN2E8xUVgxm2pbXTGHqDE2P48/6tP7kH4u5tSD0E7ZwSCwh
-         A+rLoGNWDgj71NiKCpfDpgfF3DCO9wEUqcuogsQLfFnDtXIOXqc+1n6+tKx9stujuY4Y
-         qL0IOD14NWHhgXHUH9X6NwH1WGdF31348/jkSBGlGXv8uhjlbPNZYAKjqsK5rUwUKdXc
-         NNWSoQfdte8n9u/079SwHSI40nTYouV60nSGavTYBktQBlCNEr5b9ts9QP6OH3ETeRa+
-         rk/g==
-X-Gm-Message-State: AOAM530RIeBbgbtB71ZuIe0l8IMD3YYxmkqxCPguCfrw5L+n9UBhBxAm
-        eRsIyj0h76hNHFdt8qP473jdgTY5qItyejX+Bq8=
-X-Google-Smtp-Source: ABdhPJyRK0CgWIKxOqLj+s3vIq/pIS4hN2pbnh5k1INrJtCXtsRgDOlnXAu9rp/1GcUUmkkbrGKn22Iv06SB4NDAns4=
-X-Received: by 2002:a05:6402:2801:b0:410:a592:a5d0 with SMTP id
- h1-20020a056402280100b00410a592a5d0mr713990ede.253.1644979012622; Tue, 15 Feb
- 2022 18:36:52 -0800 (PST)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644979100; x=1676515100;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FQ+uP+zkl5dcZCZu/CtemCgpgsFeZ2X8cIcyXL+RTDI=;
+  b=CLZmPQp8zTd8fa4Ru1W1C/twMNAA6o3Ms9Q/7ClxlpxjrgPl5GqTWgzl
+   05CiGLYluHMsZxGtKFIcTpWHGtf3aQGDxbg2K56HXSZoO78/R8+d5xEuc
+   nYGwWyMfTSY2I8PZATtWKcdTtHiS3SXKlKml/cXf2Ibwi9jFoYCvIfrjf
+   Y=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 15 Feb 2022 18:38:20 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:38:20 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 15 Feb 2022 18:38:19 -0800
+Received: from [10.111.168.21] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 15 Feb
+ 2022 18:38:17 -0800
+Message-ID: <51675806-641d-c57e-ada7-a044e37ad808@quicinc.com>
+Date:   Tue, 15 Feb 2022 18:38:15 -0800
 MIME-Version: 1.0
-References: <20220215112812.2093852-1-imagedong@tencent.com>
- <20220215112812.2093852-2-imagedong@tencent.com> <CANn89iLWOBy=X1CpY+gvukhQ-bb7hDWd5y+m46K7o5XR0Pbt_A@mail.gmail.com>
-In-Reply-To: <CANn89iLWOBy=X1CpY+gvukhQ-bb7hDWd5y+m46K7o5XR0Pbt_A@mail.gmail.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Wed, 16 Feb 2022 10:31:41 +0800
-Message-ID: <CADxym3Y+ova1uEouJHy0EmaouK0gWwjE7AAUDzr1+K1D2qGWBg@mail.gmail.com>
-Subject: Re: [PATCH net-next 01/19] net: tcp: introduce tcp_drop_reason()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        flyingpeng@tencent.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2 2/2] drm/msm/dpu: Add SC8180x to hw catalog
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        <linux-arm-msm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
+References: <20220215043353.1256754-1-bjorn.andersson@linaro.org>
+ <20220215043353.1256754-2-bjorn.andersson@linaro.org>
+ <be397e2e-05ab-5c18-8e2d-16c443f0a6d1@quicinc.com>
+ <Ygvisfhi0SY6XdAz@builder.lan>
+ <6a3ef247-b26b-d505-cd85-92fb277163dd@quicinc.com>
+ <YgxeCHi5AsYPTmeZ@builder.lan>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <YgxeCHi5AsYPTmeZ@builder.lan>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 1:34 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Tue, Feb 15, 2022 at 3:30 AM <menglong8.dong@gmail.com> wrote:
-> >
-> > From: Menglong Dong <imagedong@tencent.com>
-> >
-> > For TCP protocol, tcp_drop() is used to free the skb when it needs
-> > to be dropped. To make use of kfree_skb_reason() and collect drop
-> > reasons, introduce the function tcp_drop_reason().
-> >
-> > tcp_drop_reason() will finally call kfree_skb_reason() and pass the
-> > drop reason to 'kfree_skb' tracepoint.
-> >
-> > PS: __kfree_skb() was used in tcp_drop(), I'm not sure if it's ok
-> > to replace it with kfree_skb_reason().
-> >
-> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> > ---
-> >  net/ipv4/tcp_input.c | 13 +++++++++++--
-> >  1 file changed, 11 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index af94a6d22a9d..e3811afd1756 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -4684,10 +4684,19 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
-> >         return res;
-> >  }
-> >
-> > -static void tcp_drop(struct sock *sk, struct sk_buff *skb)
-> > +static void tcp_drop_reason(struct sock *sk, struct sk_buff *skb,
-> > +                           enum skb_drop_reason reason)
-> >  {
-> >         sk_drops_add(sk, skb);
-> > -       __kfree_skb(skb);
-> > +       /* why __kfree_skb() used here before, other than kfree_skb()?
-> > +        * confusing......
->
-> Do not add comments like that if you do not know the difference...
->
-> __kfree_skb() is used by TCP stack because it owns skb in receive
-> queues, and avoids touching skb->users
-> because it must be one already.
->
-> (We made sure not using skb_get() in TCP)
->
-> It seems fine to use kfree_skb() in tcp_drop(), it is hardly fast
-> path, and the added cost is pure noise.
 
-I understand why __kfree_skb() was used now, and it seems
-this commit is ok (with the comments removed of course). I'll
-keep it still.
 
-Thanks!
-Menglong Dong
+On 2/15/2022 6:14 PM, Bjorn Andersson wrote:
+> On Tue 15 Feb 11:42 CST 2022, Abhinav Kumar wrote:
+> 
+>>
+>>
+>> On 2/15/2022 9:28 AM, Bjorn Andersson wrote:
+>>> On Tue 15 Feb 11:14 CST 2022, Abhinav Kumar wrote:
+>>>
+>>>>
+>>>>
+>>>> On 2/14/2022 8:33 PM, Bjorn Andersson wrote:
+>>>>> From: Rob Clark <robdclark@chromium.org>
+>>>>>
+>>>>> Add SC8180x to the hardware catalog, for initial support for the
+>>>>> platform. Due to limitations in the DP driver only one of the four DP
+>>>>> interfaces is left enabled.
+>>>>>
+>>>>> The SC8180x platform supports the newly added DPU_INTF_WIDEBUS flag and
+>>>>> the Windows-on-Snapdragon bootloader leaves the widebus bit set, so this
+>>>>> is flagged appropriately to ensure widebus is disabled - for now.
+>>>>>
+>>>>> Signed-off-by: Rob Clark <robdclark@chromium.org>
+>>>>> [bjorn: Reworked intf and irq definitions]
+>>>>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+>>>>> ---
+>>>>>
+>>>>> Changes since v1:
+>>>>> - Dropped widebus flag
+>>>>>
+>>>>>     .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c    | 129 ++++++++++++++++++
+>>>>>     .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h    |   1 +
+>>>>>     drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |   1 +
+>>>>>     drivers/gpu/drm/msm/msm_drv.c                 |   1 +
+>>>>>     4 files changed, 132 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>>>>> index aa75991903a6..7ac0fe32df49 100644
+>>>>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>>>>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>>>>> @@ -90,6 +90,17 @@
+>>>>>     			 BIT(MDP_INTF3_INTR) | \
+>>>>>     			 BIT(MDP_INTF4_INTR))
+>>>>> +#define IRQ_SC8180X_MASK (BIT(MDP_SSPP_TOP0_INTR) | \
+>>>>> +			  BIT(MDP_SSPP_TOP0_INTR2) | \
+>>>>> +			  BIT(MDP_SSPP_TOP0_HIST_INTR) | \
+>>>>> +			  BIT(MDP_INTF0_INTR) | \
+>>>>> +			  BIT(MDP_INTF1_INTR) | \
+>>>>> +			  BIT(MDP_INTF2_INTR) | \
+>>>>> +			  BIT(MDP_INTF3_INTR) | \
+>>>>> +			  BIT(MDP_INTF4_INTR) | \
+>>>>> +			  BIT(MDP_INTF5_INTR) | \
+>>>>> +			  BIT(MDP_AD4_0_INTR) | \
+>>>>> +			  BIT(MDP_AD4_1_INTR))
+>>>>>     #define DEFAULT_PIXEL_RAM_SIZE		(50 * 1024)
+>>>>>     #define DEFAULT_DPU_LINE_WIDTH		2048
+>>>>> @@ -225,6 +236,22 @@ static const struct dpu_caps sm8150_dpu_caps = {
+>>>>>     	.max_vdeci_exp = MAX_VERT_DECIMATION,
+>>>>>     };
+>>>>> +static const struct dpu_caps sc8180x_dpu_caps = {
+>>>>> +	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
+>>>>> +	.max_mixer_blendstages = 0xb,
+>>>>> +	.qseed_type = DPU_SSPP_SCALER_QSEED3,
+>>>>> +	.smart_dma_rev = DPU_SSPP_SMART_DMA_V2, /* TODO: v2.5 */
+>>>>> +	.ubwc_version = DPU_HW_UBWC_VER_30,
+>>>>> +	.has_src_split = true,
+>>>>> +	.has_dim_layer = true,
+>>>>> +	.has_idle_pc = true,
+>>>>> +	.has_3d_merge = true,
+>>>>> +	.max_linewidth = 4096,
+>>>>> +	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
+>>>>> +	.max_hdeci_exp = MAX_HORZ_DECIMATION,
+>>>>> +	.max_vdeci_exp = MAX_VERT_DECIMATION,
+>>>>> +};
+>>>>> +
+>>>>>     static const struct dpu_caps sm8250_dpu_caps = {
+>>>>>     	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
+>>>>>     	.max_mixer_blendstages = 0xb,
+>>>>> @@ -293,6 +320,31 @@ static const struct dpu_mdp_cfg sc7180_mdp[] = {
+>>>>>     	},
+>>>>>     };
+>>>>> +static const struct dpu_mdp_cfg sc8180x_mdp[] = {
+>>>>> +	{
+>>>>> +	.name = "top_0", .id = MDP_TOP,
+>>>>> +	.base = 0x0, .len = 0x45C,
+>>>>> +	.features = 0,
+>>>>> +	.highest_bank_bit = 0x3,
+>>>>> +	.clk_ctrls[DPU_CLK_CTRL_VIG0] = {
+>>>>> +			.reg_off = 0x2AC, .bit_off = 0},
+>>>>> +	.clk_ctrls[DPU_CLK_CTRL_VIG1] = {
+>>>>> +			.reg_off = 0x2B4, .bit_off = 0},
+>>>>> +	.clk_ctrls[DPU_CLK_CTRL_VIG2] = {
+>>>>> +			.reg_off = 0x2BC, .bit_off = 0},
+>>>>> +	.clk_ctrls[DPU_CLK_CTRL_VIG3] = {
+>>>>> +			.reg_off = 0x2C4, .bit_off = 0},
+>>>>> +	.clk_ctrls[DPU_CLK_CTRL_DMA0] = {
+>>>>> +			.reg_off = 0x2AC, .bit_off = 8},
+>>>>> +	.clk_ctrls[DPU_CLK_CTRL_DMA1] = {
+>>>>> +			.reg_off = 0x2B4, .bit_off = 8},
+>>>>> +	.clk_ctrls[DPU_CLK_CTRL_CURSOR0] = {
+>>>>> +			.reg_off = 0x2BC, .bit_off = 8},
+>>>>> +	.clk_ctrls[DPU_CLK_CTRL_CURSOR1] = {
+>>>>> +			.reg_off = 0x2C4, .bit_off = 8},
+>>>>> +	},
+>>>>> +};
+>>>>> +
+>>>>>     static const struct dpu_mdp_cfg sm8250_mdp[] = {
+>>>>>     	{
+>>>>>     	.name = "top_0", .id = MDP_TOP,
+>>>>> @@ -861,6 +913,16 @@ static const struct dpu_intf_cfg sc7280_intf[] = {
+>>>>>     	INTF_BLK("intf_5", INTF_5, 0x39000, INTF_DP, MSM_DP_CONTROLLER_1, 24, INTF_SC7280_MASK, MDP_SSPP_TOP0_INTR, 22, 23),
+>>>>>     };
+>>>>> +static const struct dpu_intf_cfg sc8180x_intf[] = {
+>>>>> +	INTF_BLK("intf_0", INTF_0, 0x6A000, INTF_DP, MSM_DP_CONTROLLER_0, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 24, 25),
+>>>>> +	INTF_BLK("intf_1", INTF_1, 0x6A800, INTF_DSI, 0, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 26, 27),
+>>>>> +	INTF_BLK("intf_2", INTF_2, 0x6B000, INTF_DSI, 1, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 28, 29),
+>>>>> +	/* INTF_3 is for MST, wired to INTF_DP 0 and 1, use dummy index until this is supported */
+>>>>> +	INTF_BLK("intf_3", INTF_3, 0x6B800, INTF_DP, 999, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 30, 31),
+>>>>> +	INTF_BLK("intf_4", INTF_4, 0x6C000, INTF_DP, MSM_DP_CONTROLLER_1, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 20, 21),
+>>>>> +	INTF_BLK("intf_5", INTF_5, 0x6C800, INTF_DP, MSM_DP_CONTROLLER_2, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 22, 23),
+>>>>
+>>>> This is a continued discussion from
+>>>> https://patchwork.freedesktop.org/patch/474179/.
+>>>>
+>>>> Shouldnt INTF_5 be marked as INTF_eDP?
+>>>>
+>>>
+>>> Might be, I didn't even know we had an INTF_EDP define...
+>>>
+>>> Is there any reason to distinguish DP and EDP in the DPU?  I see sc7280
+>>> doesn't distinguish the DP and EDP interfaces.
+>>>
+>>> Regards,
+>>> Bjorn
+>>>
+>>
+>> Like I have mentioned in the other patch, I think we have enough confusion
+>> between eDP and DP with the common driver. Since DPU does have separate
+>> interfaces I think we should fix that.
+>>
+>> Regarding sc7280 using INTF_DP, I synced up with Sankeerth. He referred to
+>> your change
+>> https://patchwork.freedesktop.org/patch/457776/?series=92992&rev=5 as it was
+>> posted earlier and ended up using the same INTF_DP macro. So its turning out
+>> to be a cyclical error.
+>>
+> 
+> That made me take a second look at the HPG, and sure enough INTF_5 on
+> SC7280 is connected to a eDP/DP Combo PHY. We have the same setup in
+> SC8280XP.
+> 
+> In SC8180X, INTF_5 is documented as being connected to a eDP (only) PHY,
+> so perhaps it makes sense to do it there, but for the others its wrong.
+> 
+
+Here you are specifying the controller in the catalog. So independent of 
+the PHY thats being used, shouldnt this remain INTF_eDP?
+
+> Regards,
+> Bjorn
