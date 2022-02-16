@@ -2,109 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFF53C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 924B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229773AbiBPUCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 15:02:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58118 "EHLO
+        id S229820AbiBPUEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 15:04:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiBPUCB (ORCPT
+        with ESMTP id S229664AbiBPUEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 15:02:01 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE75EA741
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:01:47 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id u16so5053663ljk.2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:01:47 -0800 (PST)
+        Wed, 16 Feb 2022 15:04:54 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E22E2B165A
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:04:41 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id p15so2172535oip.3
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:04:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hW2pDFteIc4gQMKS0FzR4fHrP7ssO0bJIUo/j6LOQw4=;
-        b=YMh744M7SDKa0Wrw7hsPPJv/kOsDGzkF/tKe34isF3+hpPzwq4TF4fUASJ3Ykcm9YY
-         3V2dlBXE61N2W+UnD430bOwEuHuomHRbsvAlESi8v+1J9eL8yyd6RXYDhUjU2krZDFS2
-         v2TeUPyZhyWH0Pgiy7r0KT9eAqJxIVMnboK2Ezitk5Bd8f4Iujod0y2S3QEi62Pj16VZ
-         v+0D4GO4BD9VkhuPmq1ITiZzO1+QNMNNonLMwRWrw8ToyxB4nOFiCwFY5rcyP7JzjUml
-         W1N+6ZXDHtQ8fntAy1kAmzSR9dZwdmBdv0SlLiu9OkqnaHx4P5VFJQN9cpFhxM3IAQvr
-         xG8A==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=p2YTwFNc3ICXWv/s85vDqxZ1xSdkq0Hufu5d0bc0A8Y=;
+        b=ShDIiG7IqOeZlZJd+lOTHVz4sQnn4UTTgLdoXPvdbfFg4sB5Jx184dwnyM7TXIyDAC
+         WXTyRl2Xxk2ILmfzsohfmL/pHi3wV2l2fa4wIkrSe6j0+miNDN9LO5lwzt3HnFRi0P30
+         MHHVgwAHu6lpcWSmvOLlRsK2k3JhNNH7x3M2exo7YeoPGuGGQOONu3qlOrJosNgyfI9N
+         Tt6ZG9qwubzj9RSqE6JVmuK9p2DFwuGpHOLov4d3x6EfffdpiiQAlAQzbxrk64XPQCXd
+         Yx5ds9BwjkzP4sw33ZuEd4vXjvIDEb6dj5hI6bue5Deafp+sUmtTkX7a3W0p8FBrrEzV
+         yltQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hW2pDFteIc4gQMKS0FzR4fHrP7ssO0bJIUo/j6LOQw4=;
-        b=YrGV64XQPIAd7DxmuOYbogMPxkOhaUQpazXFRFWgOiXRIoMsU/0v+LtsP+/Dcj94TX
-         w62og3yQ1VjjN1IJzXd9U5MpAWj9dnCxo/GrXyRXj2R23CCXa7Br/giQZyPjdk9RH6Wa
-         hWkmTQ6fehRakX/1td29TgldWfrkWcFfMLrKmm4F8e1Cq1FCOZMiCws1UQ/eL11PoEJC
-         DyTlNJLKT5bY5WiYRpYig2PpSM4szYjFRCznRr5vztcYaC8Oey8HNp0seyc+xM2z/Yg4
-         YEyizA0VY3BpXptShYpms6QwkQfdVJx8VdbUNFgl+RpatBx/pG+c4tMK0Ma+G8fk3wlG
-         IgnQ==
-X-Gm-Message-State: AOAM531nwpOM9PN3WqvKD87hP1HUON/dje/PHC1AnuQOd234UQBjs9SI
-        ktQO6oMygKqIvWUXiTIF9UkCcMFdNOAxdr2Iann92g==
-X-Google-Smtp-Source: ABdhPJwEBo1EH1FqftO2DluuT2fzFZom+MP66NKbpaTW+1EXirX6GeDIxV2dmpPMLpj+B1br1BaMVkUfxEHGNxAp5ok=
-X-Received: by 2002:a2e:a886:0:b0:244:de6f:1bf6 with SMTP id
- m6-20020a2ea886000000b00244de6f1bf6mr3320011ljq.375.1645041705935; Wed, 16
- Feb 2022 12:01:45 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=p2YTwFNc3ICXWv/s85vDqxZ1xSdkq0Hufu5d0bc0A8Y=;
+        b=KoDiSMFSCAmV533ylUcWEyD6KHqc8pLMDhMMmFlvk8Rr9vNT8gp4K5gNNdJ6V+kev/
+         NSZDUtwf0YrszhYqe0gpoKT2kRkln7TlMzB2ftEhJ2pqwcBGDvPOW6JlSnruFDteXFz6
+         5wHlW32EkgHmYMS7yVMhDqX+oQNmN00AFzBcOUozKjvQaNix9UJx+n9xgyxRusvnilTR
+         Uykyjimz8T8U1/ZDARV25mS82XwoZ20QqudF0qiQKRRKdsW3UKgf7AQSBZaUd9L+QPc5
+         J6mUVg9jKuCLsnkqeTg2CRbLX+/jXQ4hmKj8xTvi8xNvju3nEhTQ67T73M7WvktVwzAo
+         WAfw==
+X-Gm-Message-State: AOAM530r4n3YMpafE9flQwE4NhXEX46jyCkKix9QFcow3ayhRWZie050
+        dfvw5kNd/v58gaUVIgXCzxQtEWZvowz2iQ==
+X-Google-Smtp-Source: ABdhPJyfFXY8f2acavlDqsG3T3QaNMqhHhohq4+eKFpTxvCuif/UZ/sHPs8HMl5vC/5Yf/qifBqBTg==
+X-Received: by 2002:aca:1a17:0:b0:2bc:a78c:7ba2 with SMTP id a23-20020aca1a17000000b002bca78c7ba2mr1414813oia.120.1645041880944;
+        Wed, 16 Feb 2022 12:04:40 -0800 (PST)
+Received: from yoga (rrcs-97-77-166-58.sw.biz.rr.com. [97.77.166.58])
+        by smtp.gmail.com with ESMTPSA id w7sm15506869oou.13.2022.02.16.12.04.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 12:04:40 -0800 (PST)
+Date:   Wed, 16 Feb 2022 14:04:37 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     kishon@ti.com, vigneshr@ti.com, s-anna@ti.com,
+        mathieu.poirier@linaro.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 1/2] remoteproc: Introduce sysfs_read_only flag
+Message-ID: <Yg1Y1dtT9CjZTxgW@yoga>
+References: <20220216081224.9956-1-p-mohan@ti.com>
+ <20220216081224.9956-2-p-mohan@ti.com>
 MIME-Version: 1.0
-References: <CAHmME9pO41uwYExSROc5X2+RE=a5tZfE=c=bAxVbhCHfa7=zSA@mail.gmail.com>
- <20220204155142.56419-1-Jason@zx2c4.com> <Yf1M3YGVq71oC9BM@linutronix.de>
-In-Reply-To: <Yf1M3YGVq71oC9BM@linutronix.de>
-From:   Jann Horn <jannh@google.com>
-Date:   Wed, 16 Feb 2022 21:01:19 +0100
-Message-ID: <CAG48ez1ucJikx_6GzK2XUfCGoTeL+R418riTn+ECj_ud5BSFow@mail.gmail.com>
-Subject: Re: [PATCH v3] random: remove batched entropy locking
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Waiman Long <longman@redhat.com>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Andy Lutomirski <luto@kernel.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216081224.9956-2-p-mohan@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 4, 2022 at 4:57 PM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
-> On 2022-02-04 16:51:42 [+0100], Jason A. Donenfeld wrote:
-> > index 455615ac169a..3e54b90a3ff8 100644
-> > --- a/drivers/char/random.c
-> > +++ b/drivers/char/random.c
-> > @@ -1759,41 +1762,54 @@ u64 get_random_u64(void)
-> >       unsigned long flags;
-> >       struct batched_entropy *batch;
-> >       static void *previous;
-> > +     int next_gen;
-> >
-> >       warn_unseeded_randomness(&previous);
-> >
-> > -     batch = raw_cpu_ptr(&batched_entropy_u64);
-> > -     spin_lock_irqsave(&batch->batch_lock, flags);
-> > -     if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
-> > +     batch = this_cpu_ptr(&batched_entropy_u64);
-> > +     local_lock_irqsave(&batch->lock, flags);
->
-> Does this compile and work? From the looks of it, this should be:
->
->         local_lock_irqsave(&batched_entropy_u64.lock, flags);
->         batch = this_cpu_ptr(&batched_entropy_u64);
->
-> and we could do s/this_cpu_ptr/raw_cpu_ptr/
+On Wed 16 Feb 02:12 CST 2022, Puranjay Mohan wrote:
 
-Why raw_cpu_ptr? include/linux/percpu-defs.h says about raw_*() operations:
+> The remoteproc framework provides sysfs interfaces for changing
+> the firmware name and for starting/stopping a remote processor
+> through the sysfs files 'state' and 'firmware'. The 'coredump'
+> file is used to set the coredump configuration. The 'recovery'
+> sysfs file can also be used similarly to control the error recovery
+> state machine of a remoteproc. These interfaces are currently
+> allowed irrespective of how the remoteprocs were booted (like
+> remoteproc self auto-boot, remoteproc client-driven boot etc).
+> These interfaces can adversely affect a remoteproc and its clients
+> especially when a remoteproc is being controlled by a remoteproc
+> client driver(s). Also, not all remoteproc drivers may want to
+> support the sysfs interfaces by default.
+> 
+> Add support to make the remoteproc sysfs files read only by
+> introducing a state flag 'sysfs_read_only' that the individual
+> remoteproc drivers can set based on their usage needs. The default
+> behavior is to allow the sysfs operations as before.
+> 
+> Implement attribute_group->is_visible() to make the sysfs
+> entries read only when 'sysfs_read_only' flag is set.
+> 
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+> ---
+> Changes in v4->v5:
+> Rename deny_sysfs_ops to sysfs_read_only.
+> Make coredump readonly with other files.
+> 
+> Changes in v3->v4:
+> Use mode = 0444 in rproc_is_visible() to make the sysfs entries
+> read-only when the deny_sysfs_ops flag is set.
+> ---
+>  drivers/remoteproc/remoteproc_sysfs.c | 19 ++++++++++++++++++-
+>  include/linux/remoteproc.h            |  2 ++
+>  2 files changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
+> index ea8b89f97d7b..abf0cd05d5e1 100644
+> --- a/drivers/remoteproc/remoteproc_sysfs.c
+> +++ b/drivers/remoteproc/remoteproc_sysfs.c
+> @@ -230,6 +230,22 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
+>  }
+>  static DEVICE_ATTR_RO(name);
+>  
+> +static umode_t rproc_is_visible(struct kobject *kobj, struct attribute *attr,
+> +				int n)
+> +{
+> +	struct device *dev = kobj_to_dev(kobj);
+> +	struct rproc *rproc = to_rproc(dev);
+> +	umode_t mode = attr->mode;
+> +
+> +	if (rproc->sysfs_read_only && (attr == &dev_attr_recovery.attr ||
+> +				       attr == &dev_attr_firmware.attr ||
+> +				       attr == &dev_attr_state.attr ||
+> +				       attr == &dev_attr_coredump.attr))
+> +		mode = 0444;
 
- * Operations for contexts where we do not want to do any checks for
- * preemptions.  Unless strictly necessary, always use [__]this_cpu_*()
- * instead.
+Change looks good now, but just to make sure, you actually care about
+the content of these files for the Wakup M3? Read-only vs hiding them...
 
-So when I see a raw_*() percpu thing, I read it as "it is expected
-that we can migrate after this point (or we're in some really weird
-context where the normal context check doesn't work)". Is that
-incorrect?
+regards,
+Bjorn
+
+> +
+> +	return mode;
+> +}
+> +
+>  static struct attribute *rproc_attrs[] = {
+>  	&dev_attr_coredump.attr,
+>  	&dev_attr_recovery.attr,
+> @@ -240,7 +256,8 @@ static struct attribute *rproc_attrs[] = {
+>  };
+>  
+>  static const struct attribute_group rproc_devgroup = {
+> -	.attrs = rproc_attrs
+> +	.attrs = rproc_attrs,
+> +	.is_visible = rproc_is_visible,
+>  };
+>  
+>  static const struct attribute_group *rproc_devgroups[] = {
+> diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
+> index e0600e1e5c17..93a1d0050fbc 100644
+> --- a/include/linux/remoteproc.h
+> +++ b/include/linux/remoteproc.h
+> @@ -523,6 +523,7 @@ struct rproc_dump_segment {
+>   * @table_sz: size of @cached_table
+>   * @has_iommu: flag to indicate if remote processor is behind an MMU
+>   * @auto_boot: flag to indicate if remote processor should be auto-started
+> + * @sysfs_read_only: flag to make remoteproc sysfs files read only
+>   * @dump_segments: list of segments in the firmware
+>   * @nb_vdev: number of vdev currently handled by rproc
+>   * @elf_class: firmware ELF class
+> @@ -562,6 +563,7 @@ struct rproc {
+>  	size_t table_sz;
+>  	bool has_iommu;
+>  	bool auto_boot;
+> +	bool sysfs_read_only;
+>  	struct list_head dump_segments;
+>  	int nb_vdev;
+>  	u8 elf_class;
+> -- 
+> 2.17.1
+> 
