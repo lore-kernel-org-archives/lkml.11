@@ -2,151 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F233FC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245506AbiBPBey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:34:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33088 "EHLO
+        id S245543AbiBPBiB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:38:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245497AbiBPBeu (ORCPT
+        with ESMTP id S241056AbiBPBh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:34:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EC73F70CE
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:34:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644975278;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=TxaBIMaSmpGvEpUN6pnfgExDYJwGH+sDt4Nge7L+SbE=;
-        b=RXFA4DKEAybAHrLPsmOEZ7wTfOpjVQxtLSl3Ww4vR5FXE45OaumCFfQJv79N9ySSry7Mi/
-        ILT2Wp8yUQCHN0oxcllXkwtRqygCScHgEYrgue7qMV07pSwXgOvVNEaQ09OcfuGN3/uahO
-        AKaH7/GmZV0kcFr3NimGeDq8kCDsans=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-8-Ffw9vDB2PD-WR-lmhMpCFA-1; Tue, 15 Feb 2022 20:34:37 -0500
-X-MC-Unique: Ffw9vDB2PD-WR-lmhMpCFA-1
-Received: by mail-oo1-f70.google.com with SMTP id t14-20020a4a96ce000000b00318605258dbso399217ooi.21
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:34:36 -0800 (PST)
+        Tue, 15 Feb 2022 20:37:59 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED79F19C29
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:37:46 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id m7so1131552pjk.0
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:37:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7vZVv1ogxeGB/tMAdmK5at+J4W8ez8n3jP7SjDQ5qgg=;
+        b=cMc473ICFpscrz6Kg2TEINUfuiiCr7n79NNtBniP8KGkOAF9b9J6ETkih1Hf2OjAaY
+         zra7/J1LRD1WVCT266kbSOhNePQTQlSfBQLJZxrHOBeKJGQTbkktK4afhTx62f9qaxUt
+         M3bS42hVoqOTo+uWBcluZdMV2jxZLwDujKeQj034WXVqpgt0IyZn1+CxFAH7VvntEie7
+         NERFRXNHElKR54xfwdMvbtorHfsJcITMYqzhJ/9/IL3SNbXXflV/aIJBKhjKQFEFApQ7
+         RGyj8lNGy2O9KfPT9ksA0Nr0Xxft2xo3mbl4FQaPh8pNq66yD3XEDCxjjKAu4dHCbhFh
+         ZxHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TxaBIMaSmpGvEpUN6pnfgExDYJwGH+sDt4Nge7L+SbE=;
-        b=BrqdQdwS6atKREc12WA6twOJR8xnCpHDqG4pn2KgMxs0IY+hKZ5cW0rlk6nQdaC4+G
-         1DC/XX5CWpCPpehCBzal4duO6b8cpElDxL4bRNfroEyaQukadvRmxkFYSh0AnFaBgGHc
-         ZM4Nc945WV1ShCcdphaXdfZ+Td6BPk/Xb5IZH+KjQNdNOwzwytq1Tjw71LbuoP78tgsB
-         cDTFYudSHBgoQ4DMYvF0j7JIMQi/pzfCNuXySBMJdoxC9b1FpfF2cDt+AX/lR7XMYt/O
-         eVSsLkDyC4aM5GYYFMbyDRZOOPwD7EEdm7yb6YCI0+dOsVFqttsjLGgzDs/wLzu4n/+D
-         5ayg==
-X-Gm-Message-State: AOAM531/6jhMkqVMpAjoP0Rh9QffPE165NaYpkvOLyGmvYeYuRSBufsc
-        SAwc6XmBSRdpK7hENFU5wey1KhARSz2aAPRBqzjlJC17OlNIuZqwPFP+Ycwb4tIUrCWC0YOCsYh
-        5OX7Iow1YtA6HG/Y+AVyFvbcb
-X-Received: by 2002:a05:6870:e749:b0:d3:4ada:380e with SMTP id t9-20020a056870e74900b000d34ada380emr244596oak.206.1644975276300;
-        Tue, 15 Feb 2022 17:34:36 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxIWFPq8WR/J0ftst2Qc1PQDGPtfYiYgOJVkBhQLwJvoEFneclhBD3/SN4zuCWYCBqLlE5zJw==
-X-Received: by 2002:a05:6870:e749:b0:d3:4ada:380e with SMTP id t9-20020a056870e74900b000d34ada380emr244588oak.206.1644975276058;
-        Tue, 15 Feb 2022 17:34:36 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id 100sm14574391oth.75.2022.02.15.17.34.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 17:34:35 -0800 (PST)
-From:   trix@redhat.com
-To:     ysato@users.sourceforge.jp, dalias@libc.org
-Cc:     linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] sh: cleanup comments
-Date:   Tue, 15 Feb 2022 17:34:24 -0800
-Message-Id: <20220216013424.3062140-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7vZVv1ogxeGB/tMAdmK5at+J4W8ez8n3jP7SjDQ5qgg=;
+        b=ML08dJkSvut3WcLlx0gpOIFXES8LDqex+qL66Cee1lSJ1tyBY9pyI4m/iVQ4pl/6Ov
+         tke66eCdzuOgRvFzOHMCHgB5mBEJ6u0niglahljwxI5H06OZXlqjK+xay+HtORIKzAq3
+         RUZSIj91HyB/UbZA2vZFq5ciDfvcH9qfl/8Kb7dHanBhchZi/KSb1wuKDQj4eMPjX8nU
+         ZjAY0RX8pO2c9ixfWcMaXA2XaKhhtCBtZvaE9EgVnB92FwR7qCpj48bzblEGU+I6/VEU
+         EaLjctjW/Tl8fVtGIzv0rilIYUpdOzlUSpl5SuL7xOYAglTvwalSIETtfUVywaAPcidC
+         qEAA==
+X-Gm-Message-State: AOAM531Llgo0V84P5k7fOC+yh+BqHSwjsefS4UIOK+C67FhTLbY6rx7w
+        6X1/xP1s6xia10a15DwieQhuKU2xH4wY+04oRSNAtA==
+X-Google-Smtp-Source: ABdhPJyfbGOj2LEZYcd2Uhpx0um1C9tckAPR54JZv8aduFLaOPEJOttLOkO5/aF3ENQOMFJJx594Yf87mhQv1RvvLQI=
+X-Received: by 2002:a17:90a:f28d:b0:1b9:975f:1a9f with SMTP id
+ fs13-20020a17090af28d00b001b9975f1a9fmr265331pjb.220.1644975466504; Tue, 15
+ Feb 2022 17:37:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220127124058.1172422-1-ruansy.fnst@fujitsu.com> <20220127124058.1172422-7-ruansy.fnst@fujitsu.com>
+In-Reply-To: <20220127124058.1172422-7-ruansy.fnst@fujitsu.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 15 Feb 2022 17:37:40 -0800
+Message-ID: <CAPcyv4iJnOYfdc41nNtteidMtvt0fLS5RxZkRfk4Y=9vx_pf4A@mail.gmail.com>
+Subject: Re: [PATCH v10 6/9] mm: move pgoff_address() to vma_pgoff_address()
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>, david <david@fromorbit.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jane Chu <jane.chu@oracle.com>, Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Thu, Jan 27, 2022 at 4:41 AM Shiyang Ruan <ruansy.fnst@fujitsu.com> wrote:
+>
+> Since it is not a DAX-specific function, move it into mm and rename it
+> to be a generic helper.
+>
+> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
 
-Replacements:
-SPDX--License-Identifier to SPDX-License-Identifier
-incase to in case
-Adaptor to Adapter
-overruning to overrunning
+Looks ok to me.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- arch/sh/drivers/dma/dma-sh.c           | 2 +-
- arch/sh/drivers/pci/fixups-dreamcast.c | 2 +-
- arch/sh/drivers/pci/pci-dreamcast.c    | 2 +-
- arch/sh/drivers/pci/pci-sh7751.c       | 2 +-
- arch/sh/drivers/platform_early.c       | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/arch/sh/drivers/dma/dma-sh.c b/arch/sh/drivers/dma/dma-sh.c
-index 96c626c2cd0a..38e2d62c330c 100644
---- a/arch/sh/drivers/dma/dma-sh.c
-+++ b/arch/sh/drivers/dma/dma-sh.c
-@@ -261,7 +261,7 @@ static inline int dmaor_reset(int no)
- {
- 	unsigned long dmaor = dmaor_read_reg(no);
- 
--	/* Try to clear the error flags first, incase they are set */
-+	/* Try to clear the error flags first, in case they are set */
- 	dmaor &= ~(DMAOR_NMIF | DMAOR_AE);
- 	dmaor_write_reg(no, dmaor);
- 
-diff --git a/arch/sh/drivers/pci/fixups-dreamcast.c b/arch/sh/drivers/pci/fixups-dreamcast.c
-index 41e4daee8f04..2e8a1e2233a3 100644
---- a/arch/sh/drivers/pci/fixups-dreamcast.c
-+++ b/arch/sh/drivers/pci/fixups-dreamcast.c
-@@ -9,7 +9,7 @@
-  *
-  * This file originally bore the message (with enclosed-$):
-  *	Id: pci.c,v 1.3 2003/05/04 19:29:46 lethal Exp
-- *	Dreamcast PCI: Supports SEGA Broadband Adaptor only.
-+ *	Dreamcast PCI: Supports SEGA Broadband Adapter only.
-  */
- 
- #include <linux/sched.h>
-diff --git a/arch/sh/drivers/pci/pci-dreamcast.c b/arch/sh/drivers/pci/pci-dreamcast.c
-index 4cff2a8107bf..c48ae4576d24 100644
---- a/arch/sh/drivers/pci/pci-dreamcast.c
-+++ b/arch/sh/drivers/pci/pci-dreamcast.c
-@@ -7,7 +7,7 @@
-  *
-  * This file originally bore the message (with enclosed-$):
-  *	Id: pci.c,v 1.3 2003/05/04 19:29:46 lethal Exp
-- *	Dreamcast PCI: Supports SEGA Broadband Adaptor only.
-+ *	Dreamcast PCI: Supports SEGA Broadband Adapter only.
-  */
- 
- #include <linux/sched.h>
-diff --git a/arch/sh/drivers/pci/pci-sh7751.c b/arch/sh/drivers/pci/pci-sh7751.c
-index 11ed21c2e9bb..0324ab2564d8 100644
---- a/arch/sh/drivers/pci/pci-sh7751.c
-+++ b/arch/sh/drivers/pci/pci-sh7751.c
-@@ -170,7 +170,7 @@ static int __init sh7751_pci_init(void)
- 	pci_fixup_pcic(chan);
- 
- 	/* SH7751 init done, set central function init complete */
--	/* use round robin mode to stop a device starving/overruning */
-+	/* use round robin mode to stop a device starving/overrunning */
- 	word = SH4_PCICR_PREFIX | SH4_PCICR_CFIN | SH4_PCICR_ARBM;
- 	pci_write_reg(chan, word, SH4_PCICR);
- 
-diff --git a/arch/sh/drivers/platform_early.c b/arch/sh/drivers/platform_early.c
-index 143747c45206..1c2a571a8ab8 100644
---- a/arch/sh/drivers/platform_early.c
-+++ b/arch/sh/drivers/platform_early.c
-@@ -1,4 +1,4 @@
--// SPDX--License-Identifier: GPL-2.0
-+// SPDX-License-Identifier: GPL-2.0
- 
- #include <asm/platform_early.h>
- #include <linux/mod_devicetable.h>
--- 
-2.26.3
-
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
