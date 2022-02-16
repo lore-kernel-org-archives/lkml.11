@@ -2,145 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BEBC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71DF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229784AbiBPGeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 01:34:03 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35846 "EHLO
+        id S229504AbiBPGp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 01:45:27 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiBPGeC (ORCPT
+        with ESMTP id S229379AbiBPGpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 01:34:02 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869611F3F17;
-        Tue, 15 Feb 2022 22:33:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644993222; x=1676529222;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=xhIOhZqbmXasqsL4PSTwgu2wa99Ybi4SJBWDqbME8bE=;
-  b=I1wTLM0qxsO/BxklghI8gVX5h6l3XbgRtsJ0N/wMlsTdCjHA/PFa4Z2m
-   39gMta86brLFdK4h01VjVAyY2hhtMjL8/0yqD6TnrtVA3ZyauaQRYv8Up
-   tt8TQaYYHH4rexpLXVd7bsEp8DtuLBi482DTFmuUCWvk9B36vQ7qiaBgc
-   RWWCMih41HO2wzR6VXL2mSrBmVsMi2ufcgxLrx424iDT18tRuVgrKTo+1
-   jQYddPyZtEtt+kdIWiJbN/H6wO93Rwud2p8/q8fdDh5SAJQdV/yXfRBOh
-   32ItmAyZO2uY4xBeP+p6yAAB48tDY4lmdsOgXlyA07BjV+VhKkMVTwDtb
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="249366366"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="249366366"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 22:29:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="681371490"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2022 22:29:29 -0800
-Message-ID: <69f26767-66d6-12df-1754-45ee1932d513@linux.intel.com>
-Date:   Wed, 16 Feb 2022 14:28:09 +0800
+        Wed, 16 Feb 2022 01:45:24 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD6425D265
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:45:03 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id y18so1250031plb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:45:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I31WZqXJ0s57cOlXZD8FT8G+iFz5eek0G4Woh5U+0sQ=;
+        b=QJv4wGhz8pW7njZZS5dYoNkCgBZNfRVVUnN+Tv7Cii975mOEmj/5fFj2/zzERDaGW8
+         S9lPYJAJdvStBpq3hrjdbTs9dmaT3hnlwMg3xH4W0BYbkoia0G5md0gn0txkh049kIlH
+         AM8x/LqxJ9hrt+oG+DvsJ6ARxwIjSeyJYDcgGzSafviVV8ppADehzm+2INH8U4ZEmHuO
+         dUM5XyEu+uzuC2dRkHC2QYNFpQ14mC3Tp6K9pXKIfm0wi8H6H13ne2rjaVKdPo4+i3YB
+         E/fcLRegHHsZHDpzq3CZRlq5ic7Y2d8jrr4dLoGaNUZg/gmhh30ZFe9JK6gCa5nmWaY6
+         FeRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I31WZqXJ0s57cOlXZD8FT8G+iFz5eek0G4Woh5U+0sQ=;
+        b=xhEJNFwUlteRSHU3NSZGT1RuR58rtCW214aqsQK341VjdC/ZoVQjHz9pIHV8/3r2EI
+         4hhss8L9LmLd8pl49wI2S52JUItMTEtwm6OcaBdXkGIGOk3O+XVf0hcHKWUIzS4z4KsU
+         bpqB/+9+s/C/AJ7EgrT/1UReQPc5wn65d2XRJiQX/4uAbU7nL2dDGrF4ma4cenFR2ELz
+         WmbHw0HTOLTC6JUbPQkmhLop84Bf9/e0eWrvesqivZEKxMbn4WbFfy2ovLNTtSEcMIa0
+         5xBBXaMgNWNUTjsuqBaVn+0HMrhZhnj/OM7BKPYiynz1TYu6iyxtjT+12RHoYkHA6F4G
+         iorA==
+X-Gm-Message-State: AOAM531DUPChVxB+wVznHSJ+ui3wJk/IlE1JkKAasxxTpdvyCYCXaD2h
+        bFKGCSeNYoRl8urFELR3UuxlvP16WBuFdwTcC8NyrojQr4M=
+X-Google-Smtp-Source: ABdhPJxdtLKjsFZlFSmqpL2ejNPDXl9omjbXxQeTNQwnZXEwhr8f66+fWiNwTpk3bxbzowNNdi32Q1fYQzbESdhZe0k=
+X-Received: by 2002:a17:903:249:b0:14d:950c:7437 with SMTP id
+ j9-20020a170903024900b0014d950c7437mr1481250plh.174.1644993637641; Tue, 15
+ Feb 2022 22:40:37 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Stuart Yoder <stuyoder@gmail.com>,
-        rafael@kernel.org, David Airlie <airlied@linux.ie>,
-        linux-pci@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        kvm@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        iommu@lists.linux-foundation.org,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v1 3/8] iommu: Extend iommu_at[de]tach_device() for
- multi-device groups
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-4-baolu.lu@linux.intel.com>
- <Ygo/eCRFnraY01WA@8bytes.org> <20220214130313.GV4160@nvidia.com>
- <Ygppub+Wjq6mQEAX@8bytes.org> <08e90a61-8491-acf1-ab0f-f93f97366d24@arm.com>
- <20220214154626.GF4160@nvidia.com> <YgtrJVI9wGMFdPWk@8bytes.org>
- <20220215134744.GO4160@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220215134744.GO4160@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220204093359.359059-1-jens.wiklander@linaro.org>
+In-Reply-To: <20220204093359.359059-1-jens.wiklander@linaro.org>
+From:   Jens Wiklander <jens.wiklander@linaro.org>
+Date:   Wed, 16 Feb 2022 07:40:26 +0100
+Message-ID: <CAHUa44Gm6mTq2mp8JzxL7_MDfJa0ApVbkaV6ZOMOaKMWti2fDg@mail.gmail.com>
+Subject: Re: [PATCH v4 00/10] tee: shared memory updates
+To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
+Cc:     Sumit Garg <sumit.garg@linaro.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
+        Rijo Thomas <Rijo-john.Thomas@amd.com>,
+        David Howells <dhowells@redhat.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/15/22 9:47 PM, Jason Gunthorpe via iommu wrote:
-> On Tue, Feb 15, 2022 at 09:58:13AM +0100, Joerg Roedel wrote:
->> On Mon, Feb 14, 2022 at 11:46:26AM -0400, Jason Gunthorpe wrote:
->>> On Mon, Feb 14, 2022 at 03:18:31PM +0000, Robin Murphy wrote:
->>>
->>>> Arguably, iommu_attach_device() could be renamed something like
->>>> iommu_attach_group_for_dev(), since that's effectively the semantic that all
->>>> the existing API users want anyway (even VFIO at the high level - the group
->>>> is the means for the user to assign their GPU/NIC/whatever device to their
->>>> process, not the end in itself). That's just a lot more churn.
->>>
->>> Right
->>
->> Okay, good point. I can live with an iommu_attach_group_for_dev()
->> interface, it is still better than making iommu_attach_device() silently
->> operate on whole groups.
-> 
-> I think this is what Lu's series currently does, it just doesn't do
-> the rename churn as Robin noted. Lu, why not add a note like Robin
-> explained to the kdoc so it is clear this api impacts the whole group?
+Hi all,
 
-I feel that the debate here is not about API name, but how should
-iommu_attach/detach_device() be implemented and used.
+On Fri, Feb 4, 2022 at 10:34 AM Jens Wiklander
+<jens.wiklander@linaro.org> wrote:
+>
+> Hi all,
+>
+> This patchset is a general cleanup of shared memory handling in the TEE
+> subsystem.
+>
+> Until now has the in-kernel tee clients used tee_shm_alloc() and
+> tee_shm_register() to share memory with secure world. These two function
+> exposes via a flags parameter a bit more of the internals of the TEE
+> subsystem than one would like. So in order to make things easier are those
+> two functions replaced by few functions which should provide better
+> abstraction.
+>
+> Two in-kernel tee clients are updated to use these new functions.
+>
+> The shared memory pool handling is simplified, an internal matter for the
+> two TEE drivers OP-TEE and AMDTEE.
+>
+> In the v3 review it was suggested [1] to break out "optee: add driver
+> private tee_context" and "optee: use driver internal tee_contex for some
+> rpc" into a separate patch to fix to allow those a faster path upstream as
+> they fix reported problems. So this patchset is now rebased on top of those
+> patches separated.
+>
+> This patchset is based on [2] and is also available at [3].
 
-It seems everyone agrees that for device assignment (where the I/O
-address is owned by the user-space application), the iommu_group-based
-APIs should always be used. Otherwise, the isolation and protection are
-not guaranteed.
+All patches are reviewed and there are no further comments so I'm
+picking up this now.
 
-For kernel DMA (where the I/O address space is owned by the kernel
-drivers), the device driver oriented interface should meet below
-expectations:
+Cheers,
+Jens
 
-  - the concept of iommu_group should be transparent to the device
-    drivers;
-  - but internally, iommu core only allows a single domain to attach to
-    a group.
-
-If the device driver uses default domain, the above expectations are
-naturally met. But when the driver wants to attach its own domain, the
-problem arises.
-
-This series tries to use the DMA ownership mechanism to solve this. The
-devices drivers explicitly declare that
-
-  - I know that the device I am driving shares the iommu_group with
-    others;
-  - Other device drivers with the same awareness can only be bound to the
-    devices in the shared group;
-  - We can sync with each other so that only a shared domain could be
-    attached to the devices in the group.
-
-Another proposal (as suggested by Joerg) is to introduce the concept of
-"sub-group". An iommu group could have one or multiple sub-groups with
-non-aliased devices sitting in different sub-groups and use different
-domains.
-
-Above are what I get so far. If there's any misunderstanding, please
-help to correct.
-
-Best regards,
-baolu
+>
+> Thanks,
+> Jens
+>
+> [1] https://lore.kernel.org/lkml/20220125162938.838382-1-jens.wiklander@linaro.org/T/#m9e38c5788b49ed3929276df69fe856b6cbe14dfb
+> [2] https://git.linaro.org/people/jens.wiklander/linux-tee.git/log/?h=fixes
+> [3] https://git.linaro.org/people/jens.wiklander/linux-tee.git/log/?h=tee_shm_v4
+>
+> v3->v4:
+> * Broke out "optee: add driver private tee_context" and "optee: use driver
+>   internal tee_contex for some rpc" into a separate patch as that fixes
+>   earlier reported issues and deserves a to go into v5.17 and stable
+>   trees.
+> * Rebased on the recent fixes for the OP-TEE driver on top of v5.17-rc2
+> * All patches are now reviewed by Sumit Garg + some small fixes from the
+>   last review
+>
+> v2->v3:
+> * Make tee_shm_alloc_user_buf() and tee_shm_register_user_buf() internal
+>   and don't export them to the drivers.
+> * Rename tee_shm_alloc_priv_kernel_buf() to tee_shm_alloc_priv_buf()
+> * Adressing comments on variable names and choice of types in "tee: replace
+>   tee_shm_register()"
+> * Adding detailed explaination on alignment in "tee: simplify shm pool handling"
+> * Added Sumits R-B on a few of the patches
+>
+> v1->v2:
+> * The commits three "tee: add tee_shm_alloc_kernel_buf()",
+>   "tpm_ftpm_tee: use tee_shm_alloc_kernel_buf()" and
+>   "firmware: tee_bnxt: use tee_shm_alloc_kernel_buf()" has been merged some
+>   time ago as part of another patchset.
+> * Another in-kernel tee client is updated with the commit
+>   "KEYS: trusted: tee: use tee_shm_register_kernel_buf()"
+> * tee_shm_alloc_anon_kernel_buf() is replaced with an easier to use function
+>   tee_shm_alloc_priv_kernel_buf() and tee_shm_free_anon_kernel_buf() has
+>   been dropped.
+> * A driver internal struct tee_context is used to when doing driver internal
+>   calls to secure world.
+> * Adds patches to replace tee_shm_register() in a similar way as how
+>   tee_shm_alloc() is replaced.
+> * A patch is added to clean up the TEE_SHM_* flags
+> * Fixed a warning reported by kernel test robot <lkp@intel.com>
+>
+> Jens Wiklander (10):
+>   hwrng: optee-rng: use tee_shm_alloc_kernel_buf()
+>   tee: remove unused tee_shm_pool_alloc_res_mem()
+>   tee: add tee_shm_alloc_user_buf()
+>   tee: simplify shm pool handling
+>   tee: replace tee_shm_alloc()
+>   optee: add optee_pool_op_free_helper()
+>   tee: add tee_shm_register_{user,kernel}_buf()
+>   KEYS: trusted: tee: use tee_shm_register_kernel_buf()
+>   tee: replace tee_shm_register()
+>   tee: refactor TEE_SHM_* flags
+>
+>  drivers/char/hw_random/optee-rng.c       |   6 +-
+>  drivers/tee/amdtee/shm_pool.c            |  55 ++--
+>  drivers/tee/optee/Kconfig                |   8 -
+>  drivers/tee/optee/call.c                 |   2 +-
+>  drivers/tee/optee/core.c                 |  21 +-
+>  drivers/tee/optee/device.c               |   5 +-
+>  drivers/tee/optee/ffa_abi.c              |  63 ++---
+>  drivers/tee/optee/optee_private.h        |   7 +-
+>  drivers/tee/optee/smc_abi.c              | 125 +++------
+>  drivers/tee/tee_core.c                   |   5 +-
+>  drivers/tee/tee_private.h                |  15 +-
+>  drivers/tee/tee_shm.c                    | 320 +++++++++++++++--------
+>  drivers/tee/tee_shm_pool.c               | 162 +++---------
+>  include/linux/tee_drv.h                  | 138 +++-------
+>  security/keys/trusted-keys/trusted_tee.c |  23 +-
+>  15 files changed, 388 insertions(+), 567 deletions(-)
+>
+> --
+> 2.31.1
+>
