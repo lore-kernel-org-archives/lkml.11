@@ -2,81 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC69C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305DDC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233162AbiBPTdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:33:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46534 "EHLO
+        id S233960AbiBPTeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:34:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232083AbiBPTdE (ORCPT
+        with ESMTP id S233203AbiBPTeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:33:04 -0500
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13BAE1F3F1A
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:32:52 -0800 (PST)
-Received: by mail-oo1-xc35.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so3717641ooi.2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:32:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=2WrcofDXNq4fQvSh+Kgl5hWSou8+2EddXrcFZuX0Coc=;
-        b=RQVD6Spf4AVQMUKOvOtdRaF6z6yGnhjSw8BOFMzXDxDLTsIV7N90lSsRuK7rkB89zP
-         nWfOiGR4LbcGTUwut8aVKi2UOfIKbHGA0/KjIHo602H/Yfh6a6jQwRADuwfaxyxeWTtW
-         H5l6f/e8+KGiQ8AvZ5yO3THM3fAuwp1xg9Vws=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=2WrcofDXNq4fQvSh+Kgl5hWSou8+2EddXrcFZuX0Coc=;
-        b=XzmWHJO6gEFd5bmBMMMJRaVclJVCKkrebMsBWdf3b2LMx2L4lSXbRLgiV6E23EOLC1
-         PNvCAAVHIGkC/ClNP6Zw948F+O6SFuGarnOFHtNvtGTO2B4ShDwCS+q09JBm1eoLf9ZE
-         M7A5yjQL5nCYYMNabXfgHffVLKHQp9KEYroyeJYWBtrDrQ6mkHTlVUGyCVRyN3LNzsQN
-         dq7BvmXFrH11GJwXPQhKxtsYbErmvmacV18AAwSCMqgUghRtz/QnD4MbMjZ6DuScElfh
-         1i3i0fLDJamoI1tGrwziRIey7yolDZrDm9oZOby0s310+3GJQU4mH6aSb6WQd8kDMzlH
-         aesg==
-X-Gm-Message-State: AOAM533px8IIbnusjqGcpDqulRk/knuMyO0PwQdef8VUZkmjb3NahIEw
-        3ytyYlSDgDcYlgHONs+B78/oS7ucPL3RWZcC/42R8Q==
-X-Google-Smtp-Source: ABdhPJx3zyPVZHUH69iPnA4f7fxjaXMj27nLEaHyAfo/3Oh4oEDYw/v72mxHVfbQirS6DyQb4puuq4DHvHwI5ooAV3c=
-X-Received: by 2002:a05:6870:5829:b0:c8:9f42:f919 with SMTP id
- r41-20020a056870582900b000c89f42f919mr1130229oap.54.1645039971470; Wed, 16
- Feb 2022 11:32:51 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 16 Feb 2022 11:32:50 -0800
+        Wed, 16 Feb 2022 14:34:04 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BEC1F464D;
+        Wed, 16 Feb 2022 11:33:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645040031; x=1676576031;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vdbKgdDHdZFkbCvwB5I4kA5Ddz4ZRh56woj0KUxGhj0=;
+  b=hkXPVTUKloqexR8PQHV1/f1mO/4wOO5Xo3HAKCzSQp6t/o1Zd+LpV2/9
+   o07Kx42cWei93bgqOxLgrCS8MkaqzZ7T8MgwTM8dMKtwIMunpO6/JfMaA
+   qs5YsGcgZ/beviocAlX6P/3TBkyDNtQLZscyOvwiCp3m3iM2jskj3wOg7
+   cNOeyprbSe1VQItqEfIwvFo92EM4AlSD2ILMf4v7DVhoXnuwK9sSX0urd
+   kWXwhj1ZCWI6e6pBRbf+uKM/vqBs2JbHpXBv59q+Nizhhh8VbFZJPvJgu
+   WwXjxtt9rANwLlWDTtH4eBxkm14KifdK+bw920L+BRyafObBqqFK4dcQC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="230669732"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="230669732"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:33:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="571437048"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 16 Feb 2022 11:33:48 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKQ3f-000B3n-D4; Wed, 16 Feb 2022 19:33:47 +0000
+Date:   Thu, 17 Feb 2022 03:33:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mans Rullgard <mans@mansr.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Juergen Borleis <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: lan9303: add VLAN IDs to master device
+Message-ID: <202202170327.RiXqUeGc-lkp@intel.com>
+References: <20220216151111.6376-1-mans@mansr.com>
 MIME-Version: 1.0
-In-Reply-To: <1643066274-25814-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1643066274-25814-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 16 Feb 2022 11:32:50 -0800
-Message-ID: <CAE-0n52uYJ-E2HZnwjJL5VfXnVjiSGJ5MnZG827i=3NP7QNm1g@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/msm/dp: always add fail-safe mode into connector
- mode list
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
-        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
-        dmitry.baryshkov@linaro.org, robdclark@gmail.com, sean@poorly.run,
-        vkoul@kernel.org
-Cc:     quic_abhinavk@quicinc.com, aravindh@codeaurora.org,
-        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216151111.6376-1-mans@mansr.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Kuogee Hsieh (2022-01-24 15:17:54)
-> Some of DP link compliant test expects to return fail-safe mode
-> if prefer detailed timing mode can not be supported by mainlink's
-> lane and rate after link training. Therefore add fail-safe mode
-> into connector mode list as backup mode. This patch fixes test
-> case 4.2.2.1.
->
-> Changes in v2:
-> -- add Fixes text string
->
-> Fixes: 4b85d405cfe9 ( "drm/msm/dp: reduce link rate if failed at link training 1")
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> ---
+Hi Mans,
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.17-rc4 next-20220216]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Mans-Rullgard/net-dsa-lan9303-add-VLAN-IDs-to-master-device/20220216-231201
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git c5d9ae265b105d9a67575fb67bd4650a6fc08e25
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220217/202202170327.RiXqUeGc-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0e628a783b935c70c80815db6c061ec84f884af5)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/960beb0e82f5d219a4f7e8bdcc49fb548a82a69d
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Mans-Rullgard/net-dsa-lan9303-add-VLAN-IDs-to-master-device/20220216-231201
+        git checkout 960beb0e82f5d219a4f7e8bdcc49fb548a82a69d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/dsa/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/net/dsa/lan9303-core.c:1095:2: error: implicit declaration of function 'vlan_vid_add' [-Werror,-Wimplicit-function-declaration]
+           vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
+           ^
+>> drivers/net/dsa/lan9303-core.c:1111:2: error: implicit declaration of function 'vlan_vid_del' [-Werror,-Wimplicit-function-declaration]
+           vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
+           ^
+   2 errors generated.
+
+
+vim +/vlan_vid_add +1095 drivers/net/dsa/lan9303-core.c
+
+  1082	
+  1083	static int lan9303_port_enable(struct dsa_switch *ds, int port,
+  1084				       struct phy_device *phy)
+  1085	{
+  1086		struct lan9303 *chip = ds->priv;
+  1087		struct dsa_port *cpu_dp;
+  1088	
+  1089		if (!dsa_is_user_port(ds, port))
+  1090			return 0;
+  1091	
+  1092		dsa_switch_for_each_cpu_port(cpu_dp, ds)
+  1093			break;
+  1094	
+> 1095		vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
+  1096	
+  1097		return lan9303_enable_processing_port(chip, port);
+  1098	}
+  1099	
+  1100	static void lan9303_port_disable(struct dsa_switch *ds, int port)
+  1101	{
+  1102		struct lan9303 *chip = ds->priv;
+  1103		struct dsa_port *cpu_dp;
+  1104	
+  1105		if (!dsa_is_user_port(ds, port))
+  1106			return;
+  1107	
+  1108		dsa_switch_for_each_cpu_port(cpu_dp, ds)
+  1109			break;
+  1110	
+> 1111		vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
+  1112	
+  1113		lan9303_disable_processing_port(chip, port);
+  1114		lan9303_phy_write(ds, chip->phy_addr_base + port, MII_BMCR, BMCR_PDOWN);
+  1115	}
+  1116	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
