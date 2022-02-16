@@ -2,453 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F99C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A5BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232493AbiBPKV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:21:28 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51266 "EHLO
+        id S232785AbiBPKXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:23:08 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232036AbiBPKV1 (ORCPT
+        with ESMTP id S232036AbiBPKXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 05:21:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCA0E240B1
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:21:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645006874;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sfjiT9hvH+PfPn+X9Vuuf3OiUTodgHii1kaq2hHxdic=;
-        b=ElrgBDY0HJcnzn6DCzTTW2AmQY/b2m0wBoQHdYFPMrKLrVp2hAy7W+Vxx5STdZci0QxTEN
-        +luQTd/kd2k4OHb2d4vfVVxhrYPKrH3SaPhA85J0LTjD1fyTR0qjFaXhoduLIAiKZzjHPh
-        +0/+nXGrpfixz4mb9pnB9flddWxRhjI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-582-j-WaJnkpMUCUO4yvrwpt2A-1; Wed, 16 Feb 2022 05:21:10 -0500
-X-MC-Unique: j-WaJnkpMUCUO4yvrwpt2A-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 16 Feb 2022 05:23:05 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999E2240B7
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:22:53 -0800 (PST)
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A0974814245;
-        Wed, 16 Feb 2022 10:21:06 +0000 (UTC)
-Received: from localhost (ovpn-13-16.pek2.redhat.com [10.72.13.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B68655E4B6;
-        Wed, 16 Feb 2022 10:21:00 +0000 (UTC)
-Date:   Wed, 16 Feb 2022 18:20:58 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v20 3/5] arm64: kdump: reimplement crashkernel=X
-Message-ID: <YgzQCqwmCOfzwzx/@MiWiFi-R3L-srv>
-References: <20220124084708.683-1-thunder.leizhen@huawei.com>
- <20220124084708.683-4-thunder.leizhen@huawei.com>
- <YgnSCxlr1O2ZZ1sO@MiWiFi-R3L-srv>
- <0e84548b-179a-1bad-8f49-963d66426e43@huawei.com>
- <f1614874-306d-482a-a652-d71a8bcbe3a9@huawei.com>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 42B3D3F4B4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:22:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645006972;
+        bh=wuR90S9txt4D8ZpyD8BmkEY7fqkqr+OEq1oue1rbm+I=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=jlDlR30gUFvjkTZRuzp22FEdktHu7JDXPFGWpvebE8RmmahgKWKBA6pEVtpoU8hKe
+         Qlu6hHrAONndzRhWYrIvPuL7CqXRInNzqCiJaVi9Q6993RLFZPEEBQ4l4olLXIFGs8
+         npS30TQbORJ8HMdt4T61zrmK/1OiXSgdudmufL7N1bEs98PMKqIMIFR3wQ3okZrXdo
+         5LejIchTK1HnQqd3DnKqOgXjQveIpBYEZr79pRNCVXn76qZHDehkJjLuc58HTCr0JU
+         rdeQJPJof8v17v8u5LbxRU0PkHVrLfkbBVMIvQ/g5DtjYL7Dq7KNerpCqcS+sk35+C
+         sbB3CP+DgESbg==
+Received: by mail-wm1-f71.google.com with SMTP id k36-20020a05600c1ca400b0037ddae32528so287318wms.6
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:22:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wuR90S9txt4D8ZpyD8BmkEY7fqkqr+OEq1oue1rbm+I=;
+        b=HCoHq/R1LBnjd0bMFMyuaFYAFRkFg1RkXeUx/q8Fn6kPSFsY1P2SFi81okywbbtqJo
+         7GLSUZMH1Yag4Y6qESTjsWMzb7L/+SSdh7rH8Wl7d9SVeWAxBUl/qFLuvkmMCZZrgj9q
+         Irol0oLcaPsneB6Jf8iPyiXuiCU5zmXK30m8gYl7j3V26dcBrQrPSorP8vnxQ3UqAJsO
+         ynnT8XldX6qIrujpRwxH5lj8Ciav8s34BbZDDGJA9fJYYJtRlS1J8GhaAnchIhQMfVXX
+         qxNY99SKBdNcVKfv3jy7F8nz/iMbrEYou2odQ4cWAD+4n4YdjseFU9M4RyDs9QTcvqED
+         wUCg==
+X-Gm-Message-State: AOAM531MA0R6uWnBHMBzYE6g2u1ZVj9RN4aLrk6KUEZKLSLjbVtdzq1c
+        ZDYn7txKN/b6pK0TU4wkgncMjo1+VH9wv88P2rJP9DKNjuLmTSjMVbgmqe9/55o3ll9ncsBRmW9
+        Dy6M2sOx222NgkuVH3wcm8uYcjebNDJf+H5HdCTGvBQ==
+X-Received: by 2002:a05:600c:2e47:b0:37d:62d7:24bb with SMTP id q7-20020a05600c2e4700b0037d62d724bbmr905760wmf.71.1645006971954;
+        Wed, 16 Feb 2022 02:22:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy0tm5zca8pzPPli4+p2IjYg6ZL4qjnL96rMvrKZhljZw4NnZGhrPPdbfPJHZ4Z1myjwiM05A==
+X-Received: by 2002:a05:600c:2e47:b0:37d:62d7:24bb with SMTP id q7-20020a05600c2e4700b0037d62d724bbmr905747wmf.71.1645006971809;
+        Wed, 16 Feb 2022 02:22:51 -0800 (PST)
+Received: from [192.168.0.110] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id r11sm26194194wrt.28.2022.02.16.02.22.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 02:22:51 -0800 (PST)
+Message-ID: <370739d4-2da6-b620-ec79-adf8d00c8c33@canonical.com>
+Date:   Wed, 16 Feb 2022 11:22:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f1614874-306d-482a-a652-d71a8bcbe3a9@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [v2,1/4] dt-bindings: pwm: Convert pwm-mtk-disp.txt to
+ mediatek,pwm-disp.yaml format
+Content-Language: en-US
+To:     xinlei.lee@mediatek.com, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
+        robh+dt@kernel.org, matthias.bgg@gmail.com, jitao.shi@mediatek.com
+Cc:     allen-kh.cheng@mediatek.com, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Xinlei Lee <xinlei.lee@mediatek.corp-partner.google.com>
+References: <1645003971-16908-1-git-send-email-xinlei.lee@mediatek.com>
+ <1645003971-16908-2-git-send-email-xinlei.lee@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <1645003971-16908-2-git-send-email-xinlei.lee@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/16/22 at 10:58am, Leizhen (ThunderTown) wrote:
+On 16/02/2022 10:32, xinlei.lee@mediatek.com wrote:
+> From: Xinlei Lee <xinlei.lee@mediatek.corp-partner.google.com>
 > 
+> Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format as suggested by maintainer
 > 
-> On 2022/2/14 15:53, Leizhen (ThunderTown) wrote:
-> > 
-> > 
-> > On 2022/2/14 11:52, Baoquan He wrote:
-> >> On 01/24/22 at 04:47pm, Zhen Lei wrote:
-> >> ......
-> >>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> >>> index 6c653a2c7cff052..a5d43feac0d7d96 100644
-> >>> --- a/arch/arm64/mm/init.c
-> >>> +++ b/arch/arm64/mm/init.c
-> >>> @@ -71,6 +71,30 @@ phys_addr_t arm64_dma_phys_limit __ro_after_init;
-> >>>  #define CRASH_ADDR_LOW_MAX	arm64_dma_phys_limit
-> >>>  #define CRASH_ADDR_HIGH_MAX	MEMBLOCK_ALLOC_ACCESSIBLE
-> >>>  
-> >>> +static int __init reserve_crashkernel_low(unsigned long long low_size)
-> >>> +{
-> >>> +	unsigned long long low_base;
-> >>> +
-> >>> +	/* passed with crashkernel=0,low ? */
-> >>> +	if (!low_size)
-> >>> +		return 0;
-> >>> +
-> >>> +	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
-> >>> +	if (!low_base) {
-> >>> +		pr_err("cannot allocate crashkernel low memory (size:0x%llx).\n", low_size);
-> >>> +		return -ENOMEM;
-> >>> +	}
-> >>> +
-> >>> +	pr_info("crashkernel low memory reserved: 0x%llx - 0x%llx (%lld MB)\n",
-> >>> +		low_base, low_base + low_size, low_size >> 20);
-> >>> +
-> >>> +	crashk_low_res.start = low_base;
-> >>> +	crashk_low_res.end   = low_base + low_size - 1;
-> >>> +	insert_resource(&iomem_resource, &crashk_low_res);
-> >>> +
-> >>> +	return 0;
-> >>> +}
-> >>> +
-> >>>  /*
-> >>>   * reserve_crashkernel() - reserves memory for crash kernel
-> >>
-> >> My another concern is the crashkernel=,low handling. In this patch, the
-> >> code related to low memory is obscure. Wondering if we should make them
-> >> explicit with a little redundant but very clear code flows. Saying this
-> >> because the code must be very clear to you and reviewers, it may be
-> >> harder for later code reader or anyone interested to understand.
-> >>
-> >> 1) crashkernel=X,high
-> >> 2) crashkernel=X,high crashkernel=Y,low
-> >> 3) crashkernel=X,high crashkernel=0,low
-> >> 4) crashkernel=X,high crashkernel='messy code',low
-> >> 5) crashkernel=X //fall back to high memory, low memory is required then.
-> >>
-> >> It could be me thinking about it too much. I made changes to your patch
-> >> with a tuning, not sure if it's OK to you. Otherwise, this patchset
-> > 
-> > I think it's good.
-> > 
-> >> works very well for all above test cases, it's ripe to be merged for
-> >> wider testing.
-> > 
-> > I will test it tomorrow. I've prepared a little more use cases than yours.
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.corp-partner.google.com>
+> ---
+>  .../bindings/pwm/mediatek,pwm-disp.yaml       | 71 +++++++++++++++++++
+>  .../devicetree/bindings/pwm/pwm-mtk-disp.txt  | 44 ------------
+>  2 files changed, 71 insertions(+), 44 deletions(-)
+>  create mode 100755 Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
 > 
-> After the following modifications, I have tested it and it works well. Passed
-> all the test cases I prepared.
-
-That's great.
-
-You might need to add 'crashkernel=xM, crashkernel=0,low',
-'crashkernel=xM, crashkernel='messy code',low' to your test cases.
-
-> 
-> > 
-> > 1) crashkernel=4G						//high=4G, low=256M
-> > 2) crashkernel=4G crashkernel=512M,high crashkernel=512M,low	//high=4G, low=256M, high and low are ignored
-> > 3) crashkernel=4G crashkernel=512M,high				//high=4G, low=256M, high is ignored
-> > 4) crashkernel=4G crashkernel=512M,low				//high=4G, low=256M, low is ignored
-> > 5) crashkernel=4G@0xe0000000					//high=0G, low=0M, cannot allocate, failed
-> > 6) crashkernel=512M						//high=0G, low=512M
-> > 7) crashkernel=128M						//high=0G, low=128M
-> > 8) crashkernel=512M@0xde000000		//512M@3552M		//high=0G, low=512M
-> > 9) crashkernel=4G,high						//high=4G, low=256M
-> > a) crashkernel=4G,high crashkernel=512M,low			//high=4G, low=512M
-> > b) crashkernel=512M,high crashkernel=128M,low			//high=512M, low=128M
-> > c) crashkernel=512M,low						//high=0G, low=0M, invalid
-> > 
-> > 
-> >>
-> >> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> >> index a5d43feac0d7..671862c56d7d 100644
-> >> --- a/arch/arm64/mm/init.c
-> >> +++ b/arch/arm64/mm/init.c
-> >> @@ -94,7 +94,8 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
-> >>  
-> >>  	return 0;
-> >>  }
-> >> -
-> >> +/*Words explaining why it's 256M*/
-> >> +#define DEFAULT_CRASH_KERNEL_LOW_SIZE SZ_256M
-> 
-> It's an empirical value.
-> 
-> 94fb9334182284e8e7e4bcb9125c25dc33af19d4 x86/crash: Allocate enough low memory when crashkernel=high
-> 
->     When the crash kernel is loaded above 4GiB in memory, the
->     first kernel allocates only 72MiB of low-memory for the DMA
->     requirements of the second kernel. On systems with many
->     devices this is not enough and causes device driver
->     initialization errors and failed crash dumps. Testing by
->     SUSE and Redhat has shown that 256MiB is a good default
->     value for now and the discussion has lead to this value as
->     well. So set this default value to 256MiB to make sure there
->     is enough memory available for DMA.
-
-Then, some words like below can be added. I am not confident it's good
-enought, hope someone else can help to polish it.
-
-/*
- * This is an empirical value in x86_64 and taken here directly. Please
- * refer to code comment in reserve_crashkernel_low() of x86_64 for more
- * details.
- */
-#define DEFAULT_CRASH_KERNEL_LOW_SIZE SZ_256M
-
-> 
-> 
-> >>  /*
-> >>   * reserve_crashkernel() - reserves memory for crash kernel
-> >>   *
-> >> @@ -105,10 +106,10 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
-> >>  static void __init reserve_crashkernel(void)
-> >>  {
-> >>  	unsigned long long crash_base, crash_size;
-> >> -	unsigned long long crash_low_size = SZ_256M;
-> >> +	unsigned long long crash_low_size;
-> >>  	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
-> >>  	int ret;
-> >> -	bool fixed_base;
-> >> +	bool fixed_base, high;
-> 
-> high = false;
-> 
-> >>  	char *cmdline = boot_command_line;
-> >>  
-> >>  	/* crashkernel=X[@offset] */
-> >> @@ -126,7 +127,10 @@ static void __init reserve_crashkernel(void)
-> >>  		ret = parse_crashkernel_low(cmdline, 0, &low_size, &crash_base);
-> >>  		if (!ret)
-> >>  			crash_low_size = low_size;
-> >> +		else
-> >> +			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
-> >>  
-> >> +		high = true;
-> >>  		crash_max = CRASH_ADDR_HIGH_MAX;
-> >>  	}
-> >>  
-> >> @@ -134,7 +138,7 @@ static void __init reserve_crashkernel(void)
-> >>  	crash_size = PAGE_ALIGN(crash_size);
-> >>  
-> >>  	/* User specifies base address explicitly. */
-> >> -	if (crash_base)
-> >> +	if (fixed_base)
-> >>  		crash_max = crash_base + crash_size;
-> >>  
-> >>  retry:
-> >> @@ -156,7 +160,10 @@ static void __init reserve_crashkernel(void)
-> >>  		return;
-> >>  	}
-> >>  
-> >> -	if (crash_base >= SZ_4G && reserve_crashkernel_low(crash_low_size)) {
-> >> +	if (crash_base >= SZ_4G && !high) 
-> >> +		crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
-> >> +
-> >> +	if (reserve_crashkernel_low(crash_low_size)) {
-> >>  		memblock_phys_free(crash_base, crash_size);
-> >>  		return;
-> >>  	}
-> 
-> -       if (crash_base >= SZ_4G && reserve_crashkernel_low(crash_low_size)) {
-> -               memblock_phys_free(crash_base, crash_size);
-> -               return;
-> +       if (crash_base >= SZ_4G) {
-> +               if (!high)
-> +                       crash_low_size = SZ_256M;
+> diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+> new file mode 100755
+> index 000000000000..edf2a2e9ea72
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+> @@ -0,0 +1,71 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pwm/mediatek,pwm-disp.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +               if (reserve_crashkernel_low(crash_low_size)) {
-> +                       memblock_phys_free(crash_base, crash_size);
-> +                       return;
-> +               }
->         }
-> 
-> Looks like changing 'high' to 'low' would be more accurate. Whether crashkernel=Y,low is specified.
+> +title: Mediatek PWM Controller Device Tree Bindings
 
-What I menat is like below, we even can add code comment to make it more
-clearer.
+This is a Display PWM, not a generic PWM.
 
-static void __init reserve_crashkernel(void)
-{
+> +
+> +maintainers:
+> +  - Jitao Shi <jitao.shi@mediatek.com>
+> +  - Xinlei Lee <xinlei.lee@mediatek.com>
+> +
 
-        /* crashkernel=X[@offset] */
-        ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
-                                &crash_size, &crash_base);
-        if (ret || !crash_size) {
-                unsigned long long low_size;
+My comment about pwm schema was ignored.
 
-                /* crashkernel=X,high */
-                ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
-                if (ret || !crash_size)
-                        return;
+Please include pwm.yaml.
 
-                /* crashkernel=X,low */
-                ret = parse_crashkernel_low(cmdline, 0, &low_size, &crash_base);
-		//case #1, crashkernel=yM,low is specified explicitly in cmdline
-                if (!ret)
-                        crash_low_size = low_size;
-		else //case #2, crashkernel=yM,low is not specified explicitly
-                        crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - mediatek,mt2701-disp-pwm
+> +      - mediatek,mt6595-disp-pwm
+> +      - mediatek,mt8173-disp-pwm
+> +      - mediatek,mt8183-disp-pwm
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  "#pwm-cells":
+> +    description:
+> +      Number of cells in a PWM specifier.
 
-		//high means crashkernel,high is specified explicitly
-		high = true;
-                crash_max = CRASH_ADDR_HIGH_MAX;
-        }
-
-        fixed_base = !!crash_base;
-        crash_size = PAGE_ALIGN(crash_size);
-
-        /* User specifies base address explicitly. */
-        if (crash_base)
-                crash_max = crash_base + crash_size;
-retry:
-        crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
-                                               crash_base, crash_max);
-        if (!crash_base) {
-                /*
-                 * Attempt to fully allocate low memory failed, fall back
-                 * to high memory, the minimum required low memory will be
-                 * reserved later.
-                 */
-                if (!fixed_base && (crash_max == CRASH_ADDR_LOW_MAX)) {
-                        crash_max = CRASH_ADDR_HIGH_MAX;
-                        goto retry;
-                }
-
-                pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
-                        crash_size);
-                return;
-        }
+Need a const. Description can be skipped, it's obvious.
 
 
-	//case #3: get crashkernel from high memory through fallback, let's set crashkernel,low too.
-        if (crash_base >= SZ_4G && !high)
-		crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;	
-
-        if (reserve_crashkernel_low(crash_low_size)) {
-                memblock_phys_free(crash_base, crash_size);
-                return;
-        }
-
-        pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
-                crash_base, crash_base + crash_size, crash_size >> 20);
-
-        /*
-         * The crashkernel memory will be removed from the kernel linear
-         * map. Inform kmemleak so that it won't try to access it.
-         */
-        kmemleak_ignore_phys(crash_base);
-        if (crashk_low_res.end)
-                kmemleak_ignore_phys(crashk_low_res.start);
-
-        crashk_res.start = crash_base;
-        crashk_res.end = crash_base + crash_size - 1;
-        insert_resource(&iomem_resource, &crashk_res);
-}
-
-
-> 
-> 
-> > 
-> > It feels like {} may need to be added here so that it is in branch "if (crash_base >= SZ_4G)".
-> > The case of "crashkernel=128M" will not fall back to high memory and does not need to reserve
-> > low memory again.
-> > 
-> >>
-> >>>   *
-> >>> @@ -81,29 +105,62 @@ phys_addr_t arm64_dma_phys_limit __ro_after_init;
-> >>>  static void __init reserve_crashkernel(void)
-> >>>  {
-> >>>  	unsigned long long crash_base, crash_size;
-> >>> +	unsigned long long crash_low_size = SZ_256M;
-> >>>  	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
-> >>>  	int ret;
-> >>> +	bool fixed_base;
-> >>> +	char *cmdline = boot_command_line;
-> >>>  
-> >>> -	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
-> >>> +	/* crashkernel=X[@offset] */
-> >>> +	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
-> >>>  				&crash_size, &crash_base);
-> >>> -	/* no crashkernel= or invalid value specified */
-> >>> -	if (ret || !crash_size)
-> >>> -		return;
-> >>> +	if (ret || !crash_size) {
-> >>> +		unsigned long long low_size;
-> >>>  
-> >>> +		/* crashkernel=X,high */
-> >>> +		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
-> >>> +		if (ret || !crash_size)
-> >>> +			return;
-> >>> +
-> >>> +		/* crashkernel=X,low */
-> >>> +		ret = parse_crashkernel_low(cmdline, 0, &low_size, &crash_base);
-> >>> +		if (!ret)
-> >>> +			crash_low_size = low_size;
-> >>> +
-> >>> +		crash_max = CRASH_ADDR_HIGH_MAX;
-> >>> +	}
-> >>> +
-> >>> +	fixed_base = !!crash_base;
-> >>>  	crash_size = PAGE_ALIGN(crash_size);
-> >>>  
-> >>>  	/* User specifies base address explicitly. */
-> >>>  	if (crash_base)
-> >>>  		crash_max = crash_base + crash_size;
-> >>>  
-> >>> +retry:
-> >>>  	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
-> >>>  					       crash_base, crash_max);
-> >>>  	if (!crash_base) {
-> >>> +		/*
-> >>> +		 * Attempt to fully allocate low memory failed, fall back
-> >>> +		 * to high memory, the minimum required low memory will be
-> >>> +		 * reserved later.
-> >>> +		 */
-> >>> +		if (!fixed_base && (crash_max == CRASH_ADDR_LOW_MAX)) {
-> >>> +			crash_max = CRASH_ADDR_HIGH_MAX;
-> >>> +			goto retry;
-> >>> +		}
-> >>> +
-> >>>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
-> >>>  			crash_size);
-> >>>  		return;
-> >>>  	}
-> >>>  
-> >>> +	if (crash_base >= SZ_4G && reserve_crashkernel_low(crash_low_size)) {
-> >>> +		memblock_phys_free(crash_base, crash_size);
-> >>> +		return;
-> >>> +	}
-> >>> +
-> >>>  	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
-> >>>  		crash_base, crash_base + crash_size, crash_size >> 20);
-> >>>  
-> >>> @@ -112,6 +169,9 @@ static void __init reserve_crashkernel(void)
-> >>>  	 * map. Inform kmemleak so that it won't try to access it.
-> >>>  	 */
-> >>>  	kmemleak_ignore_phys(crash_base);
-> >>> +	if (crashk_low_res.end)
-> >>> +		kmemleak_ignore_phys(crashk_low_res.start);
-> >>> +
-> >>>  	crashk_res.start = crash_base;
-> >>>  	crashk_res.end = crash_base + crash_size - 1;
-> >>>  	insert_resource(&iomem_resource, &crashk_res);
-> >>> -- 
-> >>> 2.25.1
-> >>>
-> >>
-> >> .
-> >>
-> > 
-> 
-> -- 
-> Regards,
->   Zhen Lei
-> 
-
+Best regards,
+Krzysztof
