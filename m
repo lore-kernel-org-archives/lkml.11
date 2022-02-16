@@ -2,102 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53007C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE15BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236342AbiBPQXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:23:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36264 "EHLO
+        id S236338AbiBPQXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:23:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236371AbiBPQXb (ORCPT
+        with ESMTP id S233829AbiBPQXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:23:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD2F215C29;
-        Wed, 16 Feb 2022 08:23:17 -0800 (PST)
+        Wed, 16 Feb 2022 11:23:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098EF21D084
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:23:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7423161B14;
-        Wed, 16 Feb 2022 16:23:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C76C004E1;
-        Wed, 16 Feb 2022 16:23:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8556B81F70
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 16:23:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50603C340EF
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 16:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645028596;
-        bh=t1UdN8Z5NqtdJPY4399H8c1RO6/wV57dnhQ5F04QgKk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WJvetdb/g2SSTwAcqcimw8jpt+oqnK0ca3HjrlPbdxGkYQQw1RO+ny2b1jYlb6FWm
-         VtPC0B5de/8LFOQcdosILfPSrBAcfAYQ9VpbiR9s72w2byQZDgOf5mPu59pZXr6r8K
-         VW637HBQFTC23qksoH5hZ6lmA/69KmNhkdlic2ZIm32giJ0WXVF7iYqbCYSkvx40j2
-         FLTVG8dhoiigcy7pEW1Qr7u7yc+EEZV6FgNp2gRHDfUL2Vs0RZYTeB9tRjrTIijc7f
-         OSAc78U/hMP7v02559bVLjzRI9XX1HtMOkOXREzZrAovhpEYbK/72kNPZfi5zKauda
-         Ly4vtiEp55jSw==
-Date:   Wed, 16 Feb 2022 16:23:12 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Yun Zhou <yun.zhou@windriver.com>
-Cc:     "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Xue, Ying" <Ying.Xue@windriver.com>
-Subject: Re: =?utf-8?B?5Zue5aSN?= =?utf-8?Q?=3A?= [PATCH] spi: disable
- chipselect after complete transfer
-Message-ID: <Yg0k8BH0itmczUDy@sirena.org.uk>
-References: <SN6PR11MB3008AF5619B0B026836FD7429F2F9@SN6PR11MB3008.namprd11.prod.outlook.com>
- <YgU1+cIlANAkJCAL@sirena.org.uk>
- <19c69765-8584-2e6b-25b8-7053a5afa5d4@windriver.com>
- <YgVH310gQ1sK6dlr@sirena.org.uk>
- <a5aa6dcf-e3dd-e8ff-edcb-edad96f8ddfe@windriver.com>
- <YgpOzw2rq+vAIPBU@sirena.org.uk>
- <8fd9c3ef-df64-b8ad-de6e-ef86806d53b5@windriver.com>
- <Ygpo9YT9PrQAAIH3@sirena.org.uk>
- <111c2102-5782-2740-65b0-47b0e5194ce9@windriver.com>
+        s=k20201202; t=1645028606;
+        bh=mXGykfBCZ5bn8SOX4YGF/cowTRTX6TYtyqZJOhZX0JA=;
+        h=From:To:Subject:Date:From;
+        b=lqosD+Gxij9gop8OeWq/NlwJgdInqEm8Z1DqISrs823fWUqZsmqI5ERi/askA3ilh
+         Qwe08gNKNfuWBu8CTB/DPPnD2I1ejwJTVoEBF6OwmpjZvMuVudUByS31idcw2iD1nl
+         PYcWN6bjzfonPOlZBs64E8xRiflkEPwgUPBljCez2KjYbDqZyr3/nZtTfuVDRnURFj
+         CXRmTopxFedBqoSnXg4eiE60vjSRZEYkFe50e5P6pPjvlZ/BVmOxzAF4n2QAzWBwdU
+         B5cCTWndi2NeUA8KF440w7Jb20GPKxqoaRFQDXiUDNJcKyklOiEy8rcQE3c5GXpxOC
+         l/K2ghl+u55QQ==
+From:   Seth Forshee <sforshee@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Subject: [PATCH] mailmap: update Seth Forshee's email address
+Date:   Wed, 16 Feb 2022 10:23:24 -0600
+Message-Id: <20220216162324.236059-1-sforshee@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="TTJc13uKD0gRs45s"
-Content-Disposition: inline
-In-Reply-To: <111c2102-5782-2740-65b0-47b0e5194ce9@windriver.com>
-X-Cookie: Fremen add life to spice!
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+seth.forshee@canonical.com is no longer valid, use sforshee@kernel.org
+instead.
 
---TTJc13uKD0gRs45s
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Seth Forshee <sforshee@kernel.org>
+---
+ .mailmap | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Wed, Feb 16, 2022 at 06:41:21PM +0800, Yun Zhou wrote:
-> On 2/14/22 10:36 PM, Mark Brown wrote:
+diff --git a/.mailmap b/.mailmap
+index 8cd44b0c6579..f44a40bd7e37 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -350,6 +350,7 @@ Sean Nyekjaer <sean@geanix.com> <sean.nyekjaer@prevas.dk>
+ Sebastian Reichel <sre@kernel.org> <sebastian.reichel@collabora.co.uk>
+ Sebastian Reichel <sre@kernel.org> <sre@debian.org>
+ Sedat Dilek <sedat.dilek@gmail.com> <sedat.dilek@credativ.de>
++Seth Forshee <sforshee@kernel.org> <seth.forshee@canonical.com>
+ Shiraz Hashim <shiraz.linux.kernel@gmail.com> <shiraz.hashim@st.com>
+ Shuah Khan <shuah@kernel.org> <shuahkhan@gmail.com>
+ Shuah Khan <shuah@kernel.org> <shuah.khan@hp.com>
+-- 
+2.32.0
 
-> > ever or that it'd be done this way if it were new but that doesn't mean
-> > we can just randomly change the interface and potentially disrupt users.
-> > Whatever else is going on the current behaviour is intentional.
-
-> Although the logic dealing with cs_change in spi_transfer_one_message() has
-> existed a long time and nobody reports issue on it, that doesn't mean it is
-> correct. I think the main reason is, cs_change is only used to change
-
-Please read and engage with what what I said above about not disrupting
-existing users by just randomly changing this, silently changing how the
-parameter operates will break any users that rely on the functionality
-which is not going to help anyone and to the extent there is an issue
-here it is only those users who would be affected in the first place.
-
-This is not a productive discussion, please stop unless you have
-concrete proposals that are considerate of existing users.
-
---TTJc13uKD0gRs45s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmINJO8ACgkQJNaLcl1U
-h9C1KAf+PJ+hjgmc8ax0LFniWvgGVMtRikK9+FQzoAMkwPRfaJdqvFwNZt9VjO8o
-xueUEqR/3e4n3P9QzW/kMKHlkX1ZBv0ShQ0uiInAmgo7lhr8a2xL/rMZOGOq2DPi
-mEQQU5xLK6Bx8dobTYkFcOuwT3yg88SySh2QOFxc1c7j4pTvqq1Z4v9OC3vYh64v
-xyLKszUFAxs7FiM3zDrZLjgoKfO53YvpbfNWmAWMe3Gn4pgjSzrjcl6GfkzX9bg9
-NrmdtJoVZyFtj+BHA/tqav93rbPC3dhls1dFlHOUqDdH8LmwC1sHzGvbOnsQx8fU
-zvE16QZMJiCKtQUUFrT5jNbo+bSshQ==
-=mY3I
------END PGP SIGNATURE-----
-
---TTJc13uKD0gRs45s--
