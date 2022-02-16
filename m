@@ -2,48 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB05C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234813AbiBPODk convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 09:03:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37150 "EHLO
+        id S234825AbiBPOEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 09:04:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbiBPODi (ORCPT
+        with ESMTP id S229879AbiBPOEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 09:03:38 -0500
-X-Greylist: delayed 1482 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 06:03:26 PST
-Received: from asmtp.www1.dk (asmtp.www1.dk [185.20.207.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E122C23C843
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:03:26 -0800 (PST)
-Received: from [172.23.0.5] (helo=smtp.mailcluster.dk)
-        by asmtp.www1.dk with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
-        (Exim 4.89 (FreeBSD))
-        (envelope-from <marilyne@mailfence.com>)
-        id 1nKKW3-00042r-4j
-        for linux-kernel@vger.kernel.org; Wed, 16 Feb 2022 14:38:43 +0100
-Received: from [105.235.71.171] (helo=[192.168.43.107])
-        by smtp.mailcluster.dk with esmtpa (Exim 4.80 (FreeBSD))
-        (envelope-from <marilyne@mailfence.com>)
-        id 1nKKQk-0003dm-UH
-        for linux-kernel@vger.kernel.org; Wed, 16 Feb 2022 14:33:15 +0100
-Content-Type: text/plain; charset="iso-8859-1"
+        Wed, 16 Feb 2022 09:04:08 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656572A39F3;
+        Wed, 16 Feb 2022 06:03:56 -0800 (PST)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JzKRC35LDzbkNY;
+        Wed, 16 Feb 2022 22:02:47 +0800 (CST)
+Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Feb 2022 22:03:54 +0800
+Received: from compute.huawei.com (10.175.112.70) by
+ dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Feb 2022 22:03:53 +0800
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+To:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jeff Garzik <jeff@garzik.org>
+CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] bonding: force carrier update when releasing slave
+Date:   Wed, 16 Feb 2022 22:18:08 +0800
+Message-ID: <1645021088-38370-1-git-send-email-zhangchangzhong@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Hi Good Day
-To:     linux-kernel@vger.kernel.org
-From:   "Marilyne N'Goran" <marilyne@mailfence.com>
-Date:   Wed, 16 Feb 2022 13:33:13 +0000
-Reply-To: mmarilynengoran@gmail.com
-X-Auth-ID: smtp.mailcluster.dk:chanto@chanto.dk
-Message-Id: <E1nKKW3-00042r-4j@asmtp.www1.dk>
-X-Auth-Id: 
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500006.china.huawei.com (7.185.36.76)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greetings,
+In __bond_release_one(), bond_set_carrier() is only called when bond
+device has no slave. Therefore, if we remove the up slave from a master
+with two slaves and keep the down slave, the master will remain up.
 
-I am Miss Marilyne N'Goran. Please can you help and assist me invest my inheritance in your country? and to help me to come over to your country and start a new life and continue my education. Please can you help me?.  When I hear from you I will give you every detail.  Best regards, Miss Marilyne
+Fix this by moving bond_set_carrier() out of if (!bond_has_slaves(bond))
+statement.
+
+Reproducer:
+$ insmod bonding.ko mode=0 miimon=100 max_bonds=2
+$ ifconfig bond0 up
+$ ifenslave bond0 eth0 eth1
+$ ifconfig eth0 down
+$ ifenslave -d bond0 eth1
+$ cat /proc/net/bonding/bond0
+
+Fixes: ff59c4563a8d ("[PATCH] bonding: support carrier state for master")
+Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+---
+ drivers/net/bonding/bond_main.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 238b56d..aebeb46 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2379,10 +2379,9 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 		bond_select_active_slave(bond);
+ 	}
+ 
+-	if (!bond_has_slaves(bond)) {
+-		bond_set_carrier(bond);
++	bond_set_carrier(bond);
++	if (!bond_has_slaves(bond))
+ 		eth_hw_addr_random(bond_dev);
+-	}
+ 
+ 	unblock_netpoll_tx();
+ 	synchronize_rcu();
+-- 
+2.9.5
+
