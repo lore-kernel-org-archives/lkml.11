@@ -2,123 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:10:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245359AbiBPBLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:11:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35978 "EHLO
+        id S245366AbiBPBLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:11:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245488AbiBPBK4 (ORCPT
+        with ESMTP id S245410AbiBPBLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:10:56 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0EEFA203
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:10:16 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id c6so1411228ybk.3
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:10:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kEAvnISlAgpQaUg6TOaHvEbXUrTyCqH15xyEbDSJWp0=;
-        b=ZUZR+o7NNuMwO1tDYO+QNJg+NoAX33xWhrua8Z8KDMfC2GLtSZdyUBrn9hqmZc011V
-         H9AOPKO1ShSUjtslz814QmDGdWyq4XsFxbPx9NTsbv9s9VZzqH4Rb7d+mDBITNARApIB
-         ztT+jp2GyBVb3rGGQap/Dk+L7wisatjFXx0T8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kEAvnISlAgpQaUg6TOaHvEbXUrTyCqH15xyEbDSJWp0=;
-        b=2iRWlLTsci7+WWENUG/tBXl4rU5fgYqlNRVZQq9wET+Gq4XECv/J3RlDX1kcDsZavz
-         faN8AnclH6gCQkmmseO6G26VqFHeRdfjT9I5n+vDJzKaLksi7dXrLfGMejKBa4yTvDHS
-         Y8Z6g7ghjqEpuHk7h2NKZFdT+xRph5HaUvqd6ZXKctej5zf2py/hIGPk13wk5iV1ww1B
-         ndWQCZMlmBVzF7PUodLrywmrd+zaB5JXhaHUWkNdJEA9Ea8e1GXk9gWRsgN11DMtVfy2
-         abqMdoZPGzgZF3vNRuLNFip3raGNKfARMeiEaYM6cUytXnygBrfBFvWaPHPPOQvSTEIZ
-         lO2g==
-X-Gm-Message-State: AOAM5331NJkM/T+huQdFu+z+2Mev8JfD/+09vwPfIBHGxFvscUfuJ3I8
-        dGqpsPd7Mj+REbm5k+RwKNSVL2hJBdPvlGr9j0qIrA==
-X-Google-Smtp-Source: ABdhPJyS++e5nIEG75PGyCAX0dVZV5d5K6bZd+I14kU4jBkU/7L3RVTaVSVHXVvfqzU4/OQusykc2yuGOrZm/jYCf0Y=
-X-Received: by 2002:a05:6902:108:b0:621:165e:5c1e with SMTP id
- o8-20020a056902010800b00621165e5c1emr307818ybh.204.1644973815876; Tue, 15 Feb
- 2022 17:10:15 -0800 (PST)
+        Tue, 15 Feb 2022 20:11:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9612BF5426;
+        Tue, 15 Feb 2022 17:11:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3512961741;
+        Wed, 16 Feb 2022 01:11:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13C56C340EB;
+        Wed, 16 Feb 2022 01:10:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644973859;
+        bh=IKAdFG1ScRZwrYF3lRBmxcqtvrVn4JWBCrJ3n+qCEio=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L54brTvCDIuxdADxI8jBpQ/9q82/BimAIDjlCe9rJp+li96pSPYjyZPJ2hcPzpRfn
+         /akbESPv5PLlI3x11bpCrORl0N1nvG7IrVLcmzTgc9ZZb/rvimGLwH/cM456pxaTz3
+         oNxXK0pxuwBYkKW9RBuz9b9hx7uTIw2qvzktakQN5zSNgAGg3UehspxnoYf1ztIBSJ
+         +0jo+NIGUq0xfOWWqc29lRgGjueyq3dplnv9Y0RFskNkyoIzP+mmwgi7+W2lR958gc
+         XD9g1/TRbdAq3UbTlWWsso6l4GzkHlV6VrTQtld1VgQQRaNDyHlfgK3CGiNIro+Hn9
+         7hrI76Wi6VBhA==
+Date:   Tue, 15 Feb 2022 19:18:37 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Chanwoo Choi <cw00.choi@samsung.com>
+Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] extcon: usbc-cros-ec: Use struct_size() helper in
+ kzalloc()
+Message-ID: <20220216011837.GA890303@embeddedor>
+References: <CGME20220125192140epcas1p27d09a1d2ceaed49dd7c410c0223c51d7@epcas1p2.samsung.com>
+ <20220125192634.GA70834@embeddedor>
+ <3136d3aa-4c01-33be-86de-1a2b3b6b6733@samsung.com>
 MIME-Version: 1.0
-References: <20220214053646.3088298-1-tzungbi@google.com> <20220214053646.3088298-5-tzungbi@google.com>
-In-Reply-To: <20220214053646.3088298-5-tzungbi@google.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Tue, 15 Feb 2022 17:10:04 -0800
-Message-ID: <CACeCKac+b1Rp6bZFALn=sbh8gkJbWeKTC=8bdzp+-90pgq=wSw@mail.gmail.com>
-Subject: Re: [PATCH 4/5] platform/chrome: cros_kbd_led_backlight: support OF match
-To:     Tzung-Bi Shih <tzungbi@google.com>
-Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
-        chrome-platform@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3136d3aa-4c01-33be-86de-1a2b3b6b6733@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 9:37 PM Tzung-Bi Shih <tzungbi@google.com> wrote:
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
-> ---
->  .../platform/chrome/cros_kbd_led_backlight.c    | 17 +++++++++++++++--
->  1 file changed, 15 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_kbd_led_backlight.c b/drivers/platform/chrome/cros_kbd_led_backlight.c
-> index 814f2b74c602..ba853e55d29a 100644
-> --- a/drivers/platform/chrome/cros_kbd_led_backlight.c
-> +++ b/drivers/platform/chrome/cros_kbd_led_backlight.c
-> @@ -10,6 +10,7 @@
->  #include <linux/kernel.h>
->  #include <linux/leds.h>
->  #include <linux/module.h>
-> +#include <linux/of_device.h>
->  #include <linux/platform_device.h>
->  #include <linux/slab.h>
->
-> @@ -128,8 +129,11 @@ static int keyboard_led_probe(struct platform_device *pdev)
->         int error;
->
->         drvdata = acpi_device_get_match_data(&pdev->dev);
-> -       if (!drvdata)
-> -               return -EINVAL;
-> +       if (!drvdata) {
-> +               drvdata = of_device_get_match_data(&pdev->dev);
-> +               if (!drvdata)
-> +                       return -EINVAL;
-> +       }
+On Wed, Feb 16, 2022 at 10:26:34AM +0900, Chanwoo Choi wrote:
+> On 1/26/22 4:26 AM, Gustavo A. R. Silva wrote:
+> 
+> Applied it. Thanks.
 
-I'm not familiar with this driver, so can't do a full review, but
-shouldn't device_get_match_data()
-from property.h [1] be able to handle both DT and ACPI cases?
+Great. :)
 
-[1]: https://elixir.bootlin.com/linux/v5.17-rc4/source/include/linux/property.h
-
->
->         if (drvdata->init) {
->                 error = drvdata->init(pdev);
-> @@ -161,10 +165,19 @@ static const struct acpi_device_id keyboard_led_acpi_match[] = {
->  };
->  MODULE_DEVICE_TABLE(acpi, keyboard_led_acpi_match);
->
-> +static const struct of_device_id keyboard_led_of_match[] = {
-> +       {
-> +               .compatible = "google,cros-kbd-led-backlight",
-> +       },
-> +       {}
-> +};
-> +MODULE_DEVICE_TABLE(of, keyboard_led_of_match);
-> +
->  static struct platform_driver keyboard_led_driver = {
->         .driver         = {
->                 .name   = "chromeos-keyboard-leds",
->                 .acpi_match_table = ACPI_PTR(keyboard_led_acpi_match),
-> +               .of_match_table = of_match_ptr(keyboard_led_of_match),
->         },
->         .probe          = keyboard_led_probe,
->  };
-> --
-> 2.35.1.265.g69c8d7142f-goog
->
->
+Thanks, Chanwoo.
+--
+Gustavo
