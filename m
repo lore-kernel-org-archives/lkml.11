@@ -2,245 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75BC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234856AbiBPOJB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 09:09:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55022 "EHLO
+        id S234866AbiBPOJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 09:09:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234846AbiBPOIy (ORCPT
+        with ESMTP id S234847AbiBPOIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 16 Feb 2022 09:08:54 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9311610EC5A
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:08:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645020521; x=1676556521;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Bk/EYp4Hlzkayd5lOiirjY2brB/ZvPzle7F/dJVy3Qw=;
-  b=ESilpi0al2oMCj1bjBtfCmBRXpKu9sJucSd3HAIu5zMgfOLIr6CE99p/
-   hltozvMBllvSh3c0lMBm1cHtANy57GhX+dZV9ZjMMYSMNadM9mh3HRfUF
-   dNRXLdR4vJuB+RM/cWsLbkQyIfh+Kj1aFqnmSI2RAE7T+1138A4V1QgrL
-   2Lf0ScWq4VIHFn0ZAAlfF8bT7BZHMNNHxyC+IWA+Yanbjf3VWO3dEJ3kr
-   xSrSonVOonsugp8E4T9zQ9ZFu5mbQuXp5uf+4MmC4eUAeKDCGjr/RoWKu
-   +nzML+ib9rbuNs9UQvJMdS0sodQisBP1jZlHWlw767eRXWR5eFsfZwQx4
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="248206670"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="248206670"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 06:08:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="487031921"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 16 Feb 2022 06:08:39 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKKz0-000Aqk-Lb; Wed, 16 Feb 2022 14:08:38 +0000
-Date:   Wed, 16 Feb 2022 22:08:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jpirko-mlxsw:jiri_devel_linecards 19/43]
- drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:129:79: error: passing
- argument 3 of 'devlink_linecard_device_create' from incompatible pointer
- type
-Message-ID: <202202162255.qkZEHFMQ-lkp@intel.com>
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F39F106617;
+        Wed, 16 Feb 2022 06:08:40 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id E6D66580D4C;
+        Wed, 16 Feb 2022 09:08:37 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Wed, 16 Feb 2022 09:08:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=+CTAbyp7J9OtBNbSg8NLHrnn3vzq7WAIhYg9am
+        QN21U=; b=FAa4L7fcMPJMQ1wSP5bI+j4RglQwzDWAcOxtFcItBOQ+HFmcoKgsal
+        31SvetJ7cmEIGqIhf5n+AkhTZxw5CjQsPpiRhC1za+t1FdUOcUE4ljolv/X2+bZp
+        8W6+rxSyWaI6bfvVa+RmVDtOkpjaQrCos/qX9EjlXVTgToAx2T7Ny7/a94yTWh2d
+        /auOGkz4DPB+QzEFwVdL2aouvyg8Jt3vqxyXlasHOnXX0XFW1vUigXqZr17PYxvF
+        PpP+63OYIrrLrNOtWjbLkHiJeXcTje46IQU/fmuQCC6dur6m0yOQD25jfJRBA8sw
+        UYoj6rp3qFn16gB3jCTGoh0IO7wruCWQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=+CTAbyp7J9OtBNbSg
+        8NLHrnn3vzq7WAIhYg9amQN21U=; b=KdhlXG12JmWiFuitWLL5rmUuME5pGaI5f
+        oVifjxRoT3GrdHshVgvm68/yKrXFzTVNi+XKGPqdmVmSSv8jkvqar4VDBky+k1s7
+        eVsIY2phPnCfTPlzBPzk/4taD7GH1BvjSlwblDDVZfxJrGYoP8j7/PRRwJzARJd7
+        7vlhq2UNwvwicFSLK5UhgmIozF0B/+Ygcis89jz63ppuu03Uu1/qGqGg9G2DrnvS
+        VQ/UTQCRAAfeJsOgYn658VetoT8LyeNRTaGvAzv7uHtHUMJFolL9ZRCZH9/VJ1ks
+        xz3+WWt53ilcs2SSmnvMN/aLgkdVNmDaFGF/AiCuw6VYhOZgfHWLw==
+X-ME-Sender: <xms:YgUNYi0RCgevubuW-PpbEIkEp_USMwlC05EZ5ej8XFDpsSs72WHtEA>
+    <xme:YgUNYlHaKS7vDDiV4Af8LEYE4K-DNOjDgB1EZDbXXqYo3_jjdfh1agUUxJsOZHMjg
+    qR_1AXUJew9SE0XeUw>
+X-ME-Received: <xmr:YgUNYq4SA7psVXv5M1fJqZy6suNHnt2eUgQU9YHrOVWQOu9a86vsbkdYR3m1yBUUpHmhDTtCRg-dWbRAdtUIPxf5TeyEJbzErrdBMao>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeeigdehlecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihimhgv
+    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
+    gvrhhnpeduvdduhfekkeehgffftefflefgffdtheffudffgeevteffheeuiedvvdejvdfg
+    veenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
+    igihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:YgUNYj20Ylc1h_PSRWLUQTeUo08HBzuL411IKxvo-XVjhekBPkphgg>
+    <xmx:YgUNYlFQdS1flJVOBTGHkQmCdX19iE6E8Qh63l9ZC4jNJMGvSDo_mw>
+    <xmx:YgUNYs-UropbZYh1yDUMeLbVmm-bUoT-5GNapKILHOo8ZHhsyUC2Zg>
+    <xmx:ZQUNYuJBOYnqqUZ9683Jfw1431nbEUB2s8YhFkJSo4_JjXicb-Y8ww>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 16 Feb 2022 09:08:33 -0500 (EST)
+Date:   Wed, 16 Feb 2022 15:08:31 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Sui Jingfeng <15330273260@189.cn>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
+ controller
+Message-ID: <20220216140831.gnevfwudj7635lj5@houat>
+References: <20220203082546.3099-1-15330273260@189.cn>
+ <20220203082546.3099-2-15330273260@189.cn>
+ <20220203085851.yqstkfgt4dz7rcnw@houat>
+ <11ac5696-29e3-fefa-31c0-b7b86c88bbdc@189.cn>
+ <20220209084908.kub4bs64rzhvpvon@houat>
+ <84bfb2fc-595c-3bae-e8a0-c19ccbcfcfd8@189.cn>
+ <20220209161624.42ijbnhanaaari46@houat>
+ <8b7bcb57-4450-ed67-bd5f-d8e8f2e74510@189.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5po5qlzkqgek6g72"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <8b7bcb57-4450-ed67-bd5f-d8e8f2e74510@189.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
-head:   5cb021512c3be7e03591497caeab474ecccfcd21
-commit: ddbc2cda5873d87ed1bf101a45620504bfc99a5a [19/43] devlink: allow driver to pass flash component name for line card device
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220216/202202162255.qkZEHFMQ-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/ddbc2cda5873d87ed1bf101a45620504bfc99a5a
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
-        git checkout ddbc2cda5873d87ed1bf101a45620504bfc99a5a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--5po5qlzkqgek6g72
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Note: the jpirko-mlxsw/jiri_devel_linecards HEAD 5cb021512c3be7e03591497caeab474ecccfcd21 builds fine.
-      It only hurts bisectability.
+On Sun, Feb 13, 2022 at 02:11:30AM +0800, Sui Jingfeng wrote:
+>=20
+> On 2022/2/10 00:16, Maxime Ripard wrote:
+> > On Wed, Feb 09, 2022 at 10:38:41PM +0800, Sui Jingfeng wrote:
+> > > On 2022/2/9 16:49, Maxime Ripard wrote:
+> > > > On Fri, Feb 04, 2022 at 12:04:19AM +0800, Sui Jingfeng wrote:
+> > > > > > > +/* Get the simple EDID data from the device tree
+> > > > > > > + * the length must be EDID_LENGTH, since it is simple.
+> > > > > > > + *
+> > > > > > > + * @np: device node contain edid data
+> > > > > > > + * @edid_data: where the edid data to store to
+> > > > > > > + */
+> > > > > > > +static bool lsdc_get_edid_from_dtb(struct device_node *np,
+> > > > > > > +				   unsigned char *edid_data)
+> > > > > > > +{
+> > > > > > > +	int length;
+> > > > > > > +	const void *prop;
+> > > > > > > +
+> > > > > > > +	if (np =3D=3D NULL)
+> > > > > > > +		return false;
+> > > > > > > +
+> > > > > > > +	prop =3D of_get_property(np, "edid", &length);
+> > > > > > > +	if (prop && (length =3D=3D EDID_LENGTH)) {
+> > > > > > > +		memcpy(edid_data, prop, EDID_LENGTH);
+> > > > > > > +		return true;
+> > > > > > > +	}
+> > > > > > > +
+> > > > > > > +	return false;
+> > > > > > > +}
+> > > > > > You don't have a device tree binding for that driver, this is s=
+omething
+> > > > > > that is required. And it's not clear to me why you'd want EDID =
+in the
+> > > > > > DTB?
+> > > > > 1) It is left to the end user of this driver.
+> > > > >=20
+> > > > > The downstream motherboard maker may use a dpi(XRGB888) or LVDS p=
+anel
+> > > > > which don't have DDC support either, doing this way allow them pu=
+t a
+> > > > > EDID property into the dc device node in the DTS. Then the entire=
+ system works.
+> > > > > Note those panel usually support only one display mode.
+> > > > I guess it depends on what we mean exactly by the user, but the DTB
+> > > > usually isn't under the (end) user control. And the drm.edid_firmwa=
+re is
+> > > > here already to address exactly this issue.
+> > > >=20
+> > > > On the other end, if the board has a static panel without any DDC l=
+ines,
+> > > > then just put the timings in the device tree, there's no need for an
+> > > > EDID blob.
+> > > Loongson have a long history of using PMON firmware, The PMON firmware
+> > > support flush the dtb into the the firmware before grub loading the k=
+ernel.
+> > > You press 'c' key, then the PMON will give you a shell. it is much li=
+ke a
+> > > UEFI shell. Suppose foo.dtb is what you want to pass to the vmlinuz.
+> > > Then type the follow single command can flush the dtb into the PMON f=
+irmware.
+> > >=20
+> > > |load_dtb /dev/fs/fat@usb0/foo.dtb|
+> > >=20
+> > > For our PMON firmware, it**is**  totally under developer/pc board mak=
+er's control.
+> > > You can flush whatever dtb every time you bootup until you satisfied.
+> > > It(the pmon firmware) is designed to let downstream motherboard maker=
+ and/or
+> > > customers to play easily.
+> > >=20
+> > > Support of reading EDID from the dtb is really a feature which downst=
+ream
+> > > motherboard maker or customer wanted. They sometimes using eDP also w=
+hose
+> > > resolution is not 1024x768. This is out of control for a graphic driv=
+er
+> > > developer like me.
+> > And, to reinstate, we already have a mechanism to set an EDID, and if it
+> > wasn't an option, the DT is not the place to store an EDID blob.
+>=20
+> I know, put edid blob in the dts maybe abuse, but i am not push dts
+> with edid blob either.
+>=20
+> It is left to other people, and the
+> ./arch/powerpc/boot/dts/ac14xx.dts=A0already have edid blob.
 
-All errors (new ones prefixed by >>):
+There's one example across the entire tree, and that's not either
+documented or used by any driver. I'm not sure it was really the point
+you were trying to make, but the only thing it proves from my point of
+view is that you don't need it.
 
-   drivers/net/ethernet/mellanox/mlxsw/core_linecards.c: In function 'mlxsw_linecard_device_attach':
->> drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:129:79: error: passing argument 3 of 'devlink_linecard_device_create' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     129 |                                                                 device_index, device);
-         |                                                                               ^~~~~~
-         |                                                                               |
-         |                                                                               struct mlxsw_linecard_device *
-   In file included from drivers/net/ethernet/mellanox/mlxsw/core.h:15,
-                    from drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:15:
-   include/net/devlink.h:1579:44: note: expected 'const char *' but argument is of type 'struct mlxsw_linecard_device *'
-    1579 |                                const char *flash_component, void *priv);
-         |                                ~~~~~~~~~~~~^~~~~~~~~~~~~~~
->> drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:128:34: error: too few arguments to function 'devlink_linecard_device_create'
-     128 |         device->devlink_device = devlink_linecard_device_create(linecard->devlink_linecard,
-         |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/net/ethernet/mellanox/mlxsw/core.h:15,
-                    from drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:15:
-   include/net/devlink.h:1577:1: note: declared here
-    1577 | devlink_linecard_device_create(struct devlink_linecard *linecard,
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+> > > And drm.edid_firmware have only a few limited resolution which is wea=
+k.
+> > You're wrong. There's no limitation, it's just as limited as your
+> > solution. You put the same thing, you get the same thing out of it. The
+> > only difference is where the data are coming from.
+>=20
+> It is extremely difficult to use, it have difficulty to specify which
+> firmware edid is for which connector. because we have a 1024x600 panel
+> and a 1920x1080 monitor.
+>=20
+> It require you to know the connector's name at first, it is not as
+> intuitive as my method. I am exhausted by it.
 
+Then you always have the option to implement DDC support, or get your
+firmware to patch the DT at boot time with the proper display timing
+node. Even more so if you have a single timing to provide.
 
-vim +/devlink_linecard_device_create +129 drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
+Maxime
 
-c075259346e402e Jiri Pirko 2022-02-04   14  
-c075259346e402e Jiri Pirko 2022-02-04  @15  #include "core.h"
-c075259346e402e Jiri Pirko 2022-02-04   16  
-c075259346e402e Jiri Pirko 2022-02-04   17  struct mlxsw_linecard_ini_file {
-c075259346e402e Jiri Pirko 2022-02-04   18  	__le16 size;
-c075259346e402e Jiri Pirko 2022-02-04   19  	union {
-c075259346e402e Jiri Pirko 2022-02-04   20  		u8 data[0];
-c075259346e402e Jiri Pirko 2022-02-04   21  		struct {
-c075259346e402e Jiri Pirko 2022-02-04   22  			__be16 hw_revision;
-c075259346e402e Jiri Pirko 2022-02-04   23  			__be16 ini_version;
-c075259346e402e Jiri Pirko 2022-02-04   24  			u8 __dontcare[3];
-c075259346e402e Jiri Pirko 2022-02-04   25  			u8 type;
-c075259346e402e Jiri Pirko 2022-02-04   26  			u8 name[20];
-c075259346e402e Jiri Pirko 2022-02-04   27  		} format;
-c075259346e402e Jiri Pirko 2022-02-04   28  	};
-c075259346e402e Jiri Pirko 2022-02-04   29  };
-c075259346e402e Jiri Pirko 2022-02-04   30  
-c075259346e402e Jiri Pirko 2022-02-04   31  struct mlxsw_linecard_types_info {
-c075259346e402e Jiri Pirko 2022-02-04   32  	struct mlxsw_linecard_ini_file **ini_files;
-c075259346e402e Jiri Pirko 2022-02-04   33  	unsigned int count;
-c075259346e402e Jiri Pirko 2022-02-04   34  	size_t data_size;
-c075259346e402e Jiri Pirko 2022-02-04   35  	char *data;
-c075259346e402e Jiri Pirko 2022-02-04   36  };
-c075259346e402e Jiri Pirko 2022-02-04   37  
-c075259346e402e Jiri Pirko 2022-02-04   38  #define MLXSW_LINECARD_STATUS_EVENT_TO (10 * MSEC_PER_SEC)
-c075259346e402e Jiri Pirko 2022-02-04   39  
-c075259346e402e Jiri Pirko 2022-02-04   40  static void
-c075259346e402e Jiri Pirko 2022-02-04   41  mlxsw_linecard_status_event_to_schedule(struct mlxsw_linecard *linecard,
-c075259346e402e Jiri Pirko 2022-02-04   42  					enum mlxsw_linecard_status_event_type status_event_type)
-c075259346e402e Jiri Pirko 2022-02-04   43  {
-c075259346e402e Jiri Pirko 2022-02-04   44  	cancel_delayed_work_sync(&linecard->status_event_to_dw);
-c075259346e402e Jiri Pirko 2022-02-04   45  	linecard->status_event_type_to = status_event_type;
-c075259346e402e Jiri Pirko 2022-02-04   46  	mlxsw_core_schedule_dw(&linecard->status_event_to_dw,
-c075259346e402e Jiri Pirko 2022-02-04   47  			       msecs_to_jiffies(MLXSW_LINECARD_STATUS_EVENT_TO));
-c075259346e402e Jiri Pirko 2022-02-04   48  }
-c075259346e402e Jiri Pirko 2022-02-04   49  
-c075259346e402e Jiri Pirko 2022-02-04   50  static void
-c075259346e402e Jiri Pirko 2022-02-04   51  mlxsw_linecard_status_event_done(struct mlxsw_linecard *linecard,
-c075259346e402e Jiri Pirko 2022-02-04   52  				 enum mlxsw_linecard_status_event_type status_event_type)
-c075259346e402e Jiri Pirko 2022-02-04   53  {
-c075259346e402e Jiri Pirko 2022-02-04   54  	if (linecard->status_event_type_to == status_event_type)
-c075259346e402e Jiri Pirko 2022-02-04   55  		cancel_delayed_work_sync(&linecard->status_event_to_dw);
-c075259346e402e Jiri Pirko 2022-02-04   56  }
-c075259346e402e Jiri Pirko 2022-02-04   57  
-c075259346e402e Jiri Pirko 2022-02-04   58  static const char *
-c075259346e402e Jiri Pirko 2022-02-04   59  mlxsw_linecard_types_lookup(struct mlxsw_linecards *linecards, u8 card_type)
-c075259346e402e Jiri Pirko 2022-02-04   60  {
-c075259346e402e Jiri Pirko 2022-02-04   61  	struct mlxsw_linecard_types_info *types_info;
-c075259346e402e Jiri Pirko 2022-02-04   62  	struct mlxsw_linecard_ini_file *ini_file;
-c075259346e402e Jiri Pirko 2022-02-04   63  	int i;
-c075259346e402e Jiri Pirko 2022-02-04   64  
-c075259346e402e Jiri Pirko 2022-02-04   65  	types_info = linecards->types_info;
-c075259346e402e Jiri Pirko 2022-02-04   66  	if (!types_info)
-c075259346e402e Jiri Pirko 2022-02-04   67  		return NULL;
-c075259346e402e Jiri Pirko 2022-02-04   68  	for (i = 0; i < types_info->count; i++) {
-c075259346e402e Jiri Pirko 2022-02-04   69  		ini_file = linecards->types_info->ini_files[i];
-c075259346e402e Jiri Pirko 2022-02-04   70  		if (ini_file->format.type == card_type)
-c075259346e402e Jiri Pirko 2022-02-04   71  			return ini_file->format.name;
-c075259346e402e Jiri Pirko 2022-02-04   72  	}
-c075259346e402e Jiri Pirko 2022-02-04   73  	return NULL;
-c075259346e402e Jiri Pirko 2022-02-04   74  }
-c075259346e402e Jiri Pirko 2022-02-04   75  
-c075259346e402e Jiri Pirko 2022-02-04   76  static const char *mlxsw_linecard_type_name(struct mlxsw_linecard *linecard)
-c075259346e402e Jiri Pirko 2022-02-04   77  {
-c075259346e402e Jiri Pirko 2022-02-04   78  	struct mlxsw_core *mlxsw_core = linecard->linecards->mlxsw_core;
-c075259346e402e Jiri Pirko 2022-02-04   79  	char mddq_pl[MLXSW_REG_MDDQ_LEN];
-c075259346e402e Jiri Pirko 2022-02-04   80  	int err;
-c075259346e402e Jiri Pirko 2022-02-04   81  
-c075259346e402e Jiri Pirko 2022-02-04   82  	mlxsw_reg_mddq_slot_name_pack(mddq_pl, linecard->slot_index);
-c075259346e402e Jiri Pirko 2022-02-04   83  	err = mlxsw_reg_query(mlxsw_core, MLXSW_REG(mddq), mddq_pl);
-c075259346e402e Jiri Pirko 2022-02-04   84  	if (err)
-c075259346e402e Jiri Pirko 2022-02-04   85  		return ERR_PTR(err);
-c075259346e402e Jiri Pirko 2022-02-04   86  	mlxsw_reg_mddq_slot_name_unpack(mddq_pl, linecard->name);
-c075259346e402e Jiri Pirko 2022-02-04   87  	return linecard->name;
-c075259346e402e Jiri Pirko 2022-02-04   88  }
-c075259346e402e Jiri Pirko 2022-02-04   89  
-8978a4235a849b8 Jiri Pirko 2021-06-10   90  struct mlxsw_linecard_device_info {
-8978a4235a849b8 Jiri Pirko 2021-06-10   91  	u16 fw_major;
-8978a4235a849b8 Jiri Pirko 2021-06-10   92  	u16 fw_minor;
-8978a4235a849b8 Jiri Pirko 2021-06-10   93  	u16 fw_sub_minor;
-8978a4235a849b8 Jiri Pirko 2021-06-10   94  };
-8978a4235a849b8 Jiri Pirko 2021-06-10   95  
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26   96  struct mlxsw_linecard_device {
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26   97  	struct list_head list;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26   98  	u8 index;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26   99  	struct mlxsw_linecard *linecard;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  100  	struct devlink_linecard_device *devlink_device;
-8978a4235a849b8 Jiri Pirko 2021-06-10  101  	struct mlxsw_linecard_device_info info;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  102  };
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  103  
-8978a4235a849b8 Jiri Pirko 2021-06-10  104  static struct mlxsw_linecard_device *
-8978a4235a849b8 Jiri Pirko 2021-06-10  105  mlxsw_linecard_device_lookup(struct mlxsw_linecard *linecard, u8 index)
-8978a4235a849b8 Jiri Pirko 2021-06-10  106  {
-8978a4235a849b8 Jiri Pirko 2021-06-10  107  	struct mlxsw_linecard_device *device;
-8978a4235a849b8 Jiri Pirko 2021-06-10  108  
-8978a4235a849b8 Jiri Pirko 2021-06-10  109  	list_for_each_entry(device, &linecard->device_list, list)
-8978a4235a849b8 Jiri Pirko 2021-06-10  110  		if (device->index == index)
-8978a4235a849b8 Jiri Pirko 2021-06-10  111  			return device;
-8978a4235a849b8 Jiri Pirko 2021-06-10  112  	return NULL;
-8978a4235a849b8 Jiri Pirko 2021-06-10  113  }
-8978a4235a849b8 Jiri Pirko 2021-06-10  114  
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  115  static int mlxsw_linecard_device_attach(struct mlxsw_core *mlxsw_core,
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  116  					struct mlxsw_linecard *linecard,
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  117  					u8 device_index, bool flash_owner)
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  118  {
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  119  	struct mlxsw_linecard_device *device;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  120  	int err;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  121  
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  122  	device = kzalloc(sizeof(*device), GFP_KERNEL);
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  123  	if (!device)
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  124  		return -ENOMEM;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  125  	device->index = device_index;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  126  	device->linecard = linecard;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  127  
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26 @128  	device->devlink_device = devlink_linecard_device_create(linecard->devlink_linecard,
-8978a4235a849b8 Jiri Pirko 2021-06-10 @129  								device_index, device);
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  130  	if (IS_ERR(device->devlink_device)) {
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  131  		err = PTR_ERR(device->devlink_device);
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  132  		goto err_devlink_linecard_device_attach;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  133  	}
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  134  
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  135  	list_add_tail(&device->list, &linecard->device_list);
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  136  	return 0;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  137  
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  138  err_devlink_linecard_device_attach:
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  139  	kfree(device);
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  140  	return err;
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  141  }
-d6c4ce1acc9e393 Jiri Pirko 2021-02-26  142  
+--5po5qlzkqgek6g72
+Content-Type: application/pgp-signature; name="signature.asc"
 
-:::::: The code at line 129 was first introduced by commit
-:::::: 8978a4235a849b8e4afae8b58287fe199459128d mlxsw: core_linecards: Expose device FW version over device info
+-----BEGIN PGP SIGNATURE-----
 
-:::::: TO: Jiri Pirko <jiri@nvidia.com>
-:::::: CC: Jiri Pirko <jiri@nvidia.com>
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYg0FXwAKCRDj7w1vZxhR
+xfmBAQCrXZ3zzbaw3jHLn6vYrzlJ3K3ueudXqrU+n5s+nh1g8wD+M2JQezLoWbiT
+5VUHgMDoAk2PZM6gdsOAgZM6nCofhA8=
+=yuvU
+-----END PGP SIGNATURE-----
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+--5po5qlzkqgek6g72--
