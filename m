@@ -2,108 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A209C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4760C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245563AbiBPBjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:39:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43404 "EHLO
+        id S245568AbiBPBjb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:39:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238697AbiBPBjU (ORCPT
+        with ESMTP id S238697AbiBPBjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:39:20 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF376237E2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:39:08 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id v4so1104519pjh.2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:39:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4IkDugObOHw/CxlumnAa9V9g2g9OJVY9HrD6pEfE2lM=;
-        b=P61cP+b5/QdSjJQm9e3zgGhGrgdXFH3lfZfyCCnrtJvrS2+7Cgg/dK89cqyX5yiXdM
-         aRg6deIkdutkpSXDRfq1SNB/AVdg67oJTEfGuZzvMRJv/p9e6KRJLEXzcrjwLer7bRSl
-         5Hqbc6Y4GJ7wXys6sEIq6kO2AwpaP3Ih1QhqmQi2Ibob5FqsJtnc7XS9CJrZc/tNAlgN
-         jpKWExv6vcU/EcHtH4LDz+fQj1sM9wpY6DQprEJuyOb0+OgqwL842EHBvA+fLBpyfLcO
-         VgwsmOlwkj6aVXkg+59IM7suM4/u86uaKECJ+K6z9bKeydZ0ploCky1eRev1yrcrzvLq
-         wZTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4IkDugObOHw/CxlumnAa9V9g2g9OJVY9HrD6pEfE2lM=;
-        b=bWECYKNmU+tMCnSDDDGCAcLM7Qu4Po5eidXvU+Mb/GlpPZMjF1Mm9qCT+ynNvArv4Z
-         I7REIuwgltDzFpW8H4eewlUi73eTqmtlpPUfU7L9bbxyFNnTXwhdiYn5p4pUU5HsDp7s
-         apDCg+ky+SznzHUW1A3blwLGstspfkSiITdHpdNKNp3wZHOg4p6l4PmnEDokRDEK+Uov
-         GopJRostOTEUu6/AkPI+VwZuziDuLNAkc6gh2yDCCQ6A+Z199eIJLPuUp08f0R3mrFVc
-         UDAjq1Q5CNxyi4AyNGP5d3L4P0OG8fAfkVzmNcRNWF5gBG6K68b1oG6ITNOtVDRXSj0s
-         Tr3Q==
-X-Gm-Message-State: AOAM531eUqDyWYRhf18q2RkLJ/EeGKwk0++z/uf66wWPf8ZUVlpQL12m
-        1htEgp/9lmMb1FeXPm07NB7Qhg==
-X-Google-Smtp-Source: ABdhPJyVcEQPG2VDaGKPFncTObF/Wmp+3tHQlHV4luaY2AjnKJkKFGfI/nUrfIAuuNsLJkHuYb42pA==
-X-Received: by 2002:a17:90b:2390:b0:1b9:c392:ab8d with SMTP id mr16-20020a17090b239000b001b9c392ab8dmr293672pjb.30.1644975548318;
-        Tue, 15 Feb 2022 17:39:08 -0800 (PST)
-Received: from [10.76.15.169] ([61.120.150.76])
-        by smtp.gmail.com with ESMTPSA id j12sm35873328pfu.79.2022.02.15.17.39.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 17:39:07 -0800 (PST)
-Subject: PING: [PATCH v2 0/3] Introduce akcipher service for virtio-crypto
-To:     arei.gonglei@huawei.com
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        helei.sig11@bytedance.com, herbert@gondor.apana.org.au,
-        mst@redhat.com
-References: <20220211084108.1254218-1-pizhenwei@bytedance.com>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-Message-ID: <cf1c6a2e-92a1-06f7-8f1b-be823c21ab5a@bytedance.com>
-Date:   Wed, 16 Feb 2022 09:36:17 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 15 Feb 2022 20:39:25 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5A4237E2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 17:39:10 -0800 (PST)
+X-UUID: 3b3de2ad74ae4a66ac4fdbfe0b7ac8b6-20220216
+X-UUID: 3b3de2ad74ae4a66ac4fdbfe0b7ac8b6-20220216
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 718383420; Wed, 16 Feb 2022 09:39:07 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 16 Feb 2022 09:39:06 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 09:39:05 +0800
+Message-ID: <d480bb5f699182694eaac0379908e10ca88ef41f.camel@mediatek.com>
+Subject: Re: [1/2] soc: mediatek: mmsys: add sw0_rst_offset in mmsys driver
+ data
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, <matthias.bgg@gmail.com>
+CC:     <chunkuang.hu@kernel.org>, <jitao.shi@mediatek.com>,
+        <xinlei.lee@mediatek.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 16 Feb 2022 09:39:05 +0800
+In-Reply-To: <da4b7285-1f2d-01a0-9a1d-1381b4772512@collabora.com>
+References: <20220215131952.27861-1-rex-bc.chen@mediatek.com>
+         <20220215131952.27861-2-rex-bc.chen@mediatek.com>
+         <da4b7285-1f2d-01a0-9a1d-1381b4772512@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-In-Reply-To: <20220211084108.1254218-1-pizhenwei@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Lei
+Hello Angelo,
 
-Could you please review the V2 version?
+Thanks for yor review.
+I add reply comment below:
 
-On 2/11/22 4:41 PM, zhenwei pi wrote:
-> v1 -> v2:
-> - Fix 1 compiling warning reported by kernel test robot <lkp@intel.com>
-> - Put "__le32 akcipher_algo;" instead of "__le32 reserve;" field of
->     struct virtio_crypto_config directly without size change.
-> - Add padding in struct virtio_crypto_ecdsa_session_para to keep
->     64-bit alignment.
-> - Remove irrelevant change by code format alignment.
+On Tue, 2022-02-15 at 14:54 +0100, AngeloGioacchino Del Regno wrote:
+> Il 15/02/22 14:19, Rex-BC Chen ha scritto:
+> > There are different software reset registers for difference MTK
+> > SoCs.
+> > Therefore, we add a new variable "sw0_rst_offset" to control it.
+> > 
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >   drivers/soc/mediatek/mt8183-mmsys.h | 2 ++
+> >   drivers/soc/mediatek/mtk-mmsys.c    | 6 ++++--
+> >   drivers/soc/mediatek/mtk-mmsys.h    | 3 +--
+> >   3 files changed, 7 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/soc/mediatek/mt8183-mmsys.h
+> > b/drivers/soc/mediatek/mt8183-mmsys.h
+> > index 9dee485807c9..0c021f4b76d2 100644
+> > --- a/drivers/soc/mediatek/mt8183-mmsys.h
+> > +++ b/drivers/soc/mediatek/mt8183-mmsys.h
+> > @@ -25,6 +25,8 @@
+> >   #define MT8183_RDMA0_SOUT_COLOR0		0x1
+> >   #define MT8183_RDMA1_SOUT_DSI0			0x1
+> >   
+> > +#define MT8183_MMSYS_SW0_RST_B			0x140
+> > +
+> >   static const struct mtk_mmsys_routes mmsys_mt8183_routing_table[]
+> > = {
+> >   	{
+> >   		DDP_COMPONENT_OVL0, DDP_COMPONENT_OVL_2L0,
+> > diff --git a/drivers/soc/mediatek/mtk-mmsys.c
+> > b/drivers/soc/mediatek/mtk-mmsys.c
+> > index 0da25069ffb3..cab62c3eac05 100644
+> > --- a/drivers/soc/mediatek/mtk-mmsys.c
+> > +++ b/drivers/soc/mediatek/mtk-mmsys.c
+> > @@ -49,12 +49,14 @@ static const struct mtk_mmsys_driver_data
+> > mt8173_mmsys_driver_data = {
+> >   	.clk_driver = "clk-mt8173-mm",
+> >   	.routes = mmsys_default_routing_table,
+> >   	.num_routes = ARRAY_SIZE(mmsys_default_routing_table),
+> > +	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
+> >   };
+> >   
+> >   static const struct mtk_mmsys_driver_data
+> > mt8183_mmsys_driver_data = {
+> >   	.clk_driver = "clk-mt8183-mm",
+> >   	.routes = mmsys_mt8183_routing_table,
+> >   	.num_routes = ARRAY_SIZE(mmsys_mt8183_routing_table),
+> > +	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
+> >   };
+> >   
+> >   static const struct mtk_mmsys_driver_data
+> > mt8186_mmsys_driver_data = {
+> > @@ -128,14 +130,14 @@ static int mtk_mmsys_reset_update(struct
+> > reset_controller_dev *rcdev, unsigned l
+> >   
+> >   	spin_lock_irqsave(&mmsys->lock, flags);
+> >   
+> > -	reg = readl_relaxed(mmsys->regs + MMSYS_SW0_RST_B);
+> > +	reg = readl_relaxed(mmsys->regs + mmsys->data->sw0_rst_offset);
+> >   
+> >   	if (assert)
+> >   		reg &= ~BIT(id);
+> >   	else
+> >   		reg |= BIT(id);
+> >   
+> > -	writel_relaxed(reg, mmsys->regs + MMSYS_SW0_RST_B);
+> > +	writel_relaxed(reg, mmsys->regs + mmsys->data->sw0_rst_offset);
+> >   
+> >   	spin_unlock_irqrestore(&mmsys->lock, flags);
+> >   
+> > diff --git a/drivers/soc/mediatek/mtk-mmsys.h
+> > b/drivers/soc/mediatek/mtk-mmsys.h
+> > index 8b0ed05117ea..83320019b4cf 100644
+> > --- a/drivers/soc/mediatek/mtk-mmsys.h
+> > +++ b/drivers/soc/mediatek/mtk-mmsys.h
+> > @@ -78,8 +78,6 @@
+> >   #define DSI_SEL_IN_RDMA				0x1
+> >   #define DSI_SEL_IN_MASK				0x1
+> >   
+> > -#define MMSYS_SW0_RST_B				0x140
+> > -
+> >   struct mtk_mmsys_routes {
+> >   	u32 from_comp;
+> >   	u32 to_comp;
+> > @@ -92,6 +90,7 @@ struct mtk_mmsys_driver_data {
+> >   	const char *clk_driver;
+> >   	const struct mtk_mmsys_routes *routes;
+> >   	const unsigned int num_routes;
+> > +	const unsigned int sw0_rst_offset;
 > 
-> - Also CC crypto gurus Herbert and linux-crypto@vger.kernel.org.
+> I don't think that this offset will ever be larger than 0xffff.
+> Can we use u16 here instead?
 > 
-> - Test with QEMU(patched by the v2 version), works fine.
+Yes, the value of offset is enough using u16.
+I will modify this in next version.
+
+BRs,
+Rex
+> >   };
+> >   
+> >   /*
 > 
-> v1:
-> - Introduce akcipher service, implement RSA algorithm, and a minor fix.
 > 
-> zhenwei pi (3):
->    virtio_crypto: Introduce VIRTIO_CRYPTO_NOSPC
->    virtio-crypto: introduce akcipher service
->    virtio-crypto: implement RSA algorithm
-> 
->   drivers/crypto/virtio/Makefile                |   1 +
->   .../virtio/virtio_crypto_akcipher_algo.c      | 584 ++++++++++++++++++
->   drivers/crypto/virtio/virtio_crypto_common.h  |   3 +
->   drivers/crypto/virtio/virtio_crypto_core.c    |   6 +-
->   drivers/crypto/virtio/virtio_crypto_mgr.c     |  11 +
->   include/uapi/linux/virtio_crypto.h            |  82 ++-
->   6 files changed, 685 insertions(+), 2 deletions(-)
->   create mode 100644 drivers/crypto/virtio/virtio_crypto_akcipher_algo.c
 > 
 
--- 
-zhenwei pi
