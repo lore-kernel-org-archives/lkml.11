@@ -2,79 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE7AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AFE3C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230424AbiBPI21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 03:28:27 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47496 "EHLO
+        id S229545AbiBPIbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 03:31:00 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiBPI2Y (ORCPT
+        with ESMTP id S229436AbiBPIa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 03:28:24 -0500
-X-Greylist: delayed 1080 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 00:28:10 PST
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A0022599C1;
-        Wed, 16 Feb 2022 00:28:09 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.141.241])
-        by APP-01 (Coremail) with SMTP id qwCowAC3_sYvrQxil5vlAA--.12501S2;
-        Wed, 16 Feb 2022 15:52:16 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     wintera@linux.ibm.com, wenjia@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        Wed, 16 Feb 2022 03:30:58 -0500
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8C221E31
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:30:46 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V4cXjy8_1645000243;
+Received: from localhost.localdomain(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0V4cXjy8_1645000243)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 16 Feb 2022 16:30:44 +0800
+From:   Xin Hao <xhao@linux.alibaba.com>
+To:     sj@kernel.org
+Cc:     xhao@linux.alibaba.com, rongwei.wang@linux.alibaba.com,
+        akpm@linux-foundation.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] s390/qeth: Remove redundant 'flush_workqueue()' calls
-Date:   Wed, 16 Feb 2022 07:51:55 +0000
-Message-Id: <20220216075155.940-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+Subject: [RFC PATCH V1 0/5] mm/damon: Add NUMA access statistics function support
+Date:   Wed, 16 Feb 2022 16:30:36 +0800
+Message-Id: <cover.1645024354.git.xhao@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowAC3_sYvrQxil5vlAA--.12501S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKF1rKw18ZryDWrWkJr15twb_yoWfCFc_K3
-        yxKrWIyr4DGr9I934FyFn5ZFyF9w1jg3WS9a9agrWrJ347G34Yqw1kZr4UW3y7X3yUGFy7
-        ZFy7X3WqvrnrCjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb28YjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
-        A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xSY4AK67AK6r4xMxAIw28I
-        cxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2
-        IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI
-        42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42
-        IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
-        87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07bY1v-UUUUU=
-X-Originating-IP: [124.16.141.241]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCwkTA1z4k0ao0gAAsZ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'destroy_workqueue()' already drains the queue before destroying it, so
-there is no need to flush it explicitly.
+On today's cloud computing service scenario, NUMA (non uniform memory access)
+architecture server has been applied on a large scale. Using Damon function,
+it can easily and lightweight identify hot and cold memory, but it can not
+display the situation of locale and remote NUMA memory access.
 
-Remove the redundant 'flush_workqueue()' calls.
+The purpose of these serie patches is to identify the situation of NUMA access
+in combination with DAMON, especially for remote NUMA access in hot memory.
+We hope to detect this situation in the data center and use page migration or
+multi backup page technology to optimize the behavior of memory access.
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
-Acked-by: Alexandra Winter <wintera@linux.ibm.com>
----
- drivers/s390/net/qeth_l3_main.c | 1 -
- 1 file changed, 1 deletion(-)
+So next, we will further improve Damon NUMA function:
+1. Support hugtlbfs NUMA access statistics.
+2. Add the DAMO tool to parse NUMA local & remote in "damon_region" support.
+3. For hot memory remote NUMA access, support page migration or multi backup page.
 
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index 9251ad276ee8..d2f422a9a4f7 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -1961,7 +1961,6 @@ static void qeth_l3_remove_device(struct ccwgroup_device *cgdev)
- 	if (card->dev->reg_state == NETREG_REGISTERED)
- 		unregister_netdev(card->dev);
- 
--	flush_workqueue(card->cmd_wq);
- 	destroy_workqueue(card->cmd_wq);
- 	qeth_l3_clear_ip_htable(card, 0);
- 	qeth_l3_clear_ipato_list(card);
--- 
-2.25.1
+About DAMON correctness of numa access statistics
+We wrote a test case, allocate about 1G memory, and use numa_alloc(), set 512M in
+NUMA node0 and 512M in NUMA node1, and The test case alternately accesses the 1G of memory.
 
+We used "perf record -e damon:damon_aggregated" and "perf script"
+cmd to obtain data, like this:
+kdamond.0  target_id=0 nr_regions=10 281473056325632-281473127964672:: 12 0 5243 5513
+kdamond.0  target_id=0 nr_regions=10 281473127964672-281473238028288: 8 1 5427  5399
+...
+kdamond.0   target_id=0 nr_regions=10 281473056325632-281473127964672: 9 3 7669 7632
+kdamond.0   target_id=0  nr_regions=10 281473127964672-281473238028288: 7 2 7913 7892
+
+And compared with numastat like this:
+Per-node process memory usage (in MBs) for PID 111676 (lt-numademo)
+                           Node 0          Node 1          Node 2
+                  --------------- --------------- ---------------
+Huge                         0.00            0.00            0.00
+Heap                         0.02            0.00            0.00
+Stack                        0.01            0.00            0.00
+Private                    565.24          564.00            0.00
+----------------  --------------- --------------- ---------------
+Total                      565.27          564.00            0.00
+This comparison can determine the accuracy of Damon NUMA memory access statistics.
+
+About the impact of DAMON NUMA access on Performance
+During the  benchmakr test, we found that the MBW benchmark memcpy test item
+will cause about 3% performance degradation, and there is no performance degradation
+in other benchmarks.
+So we added "numa_stat" switch in DAMON dbgfs interface, turn on this switch when NUMA access
+statistics is required.
+
+
+Xin Hao (5):
+  mm/damon: Add NUMA local and remote variables in 'damon_region'
+  mm/damon: Add 'damon_region' NUMA fault simulation support
+  mm/damon: Add 'damon_region' NUMA access statistics core
+    implementation
+  mm/damon/dbgfs: Add numa simulate switch
+  mm/damon/tracepoint: Add 'damon_region' NUMA access statistics support
+
+ include/linux/damon.h        | 25 ++++++++++
+ include/trace/events/damon.h |  9 +++-
+ mm/damon/core.c              | 94 +++++++++++++++++++++++++++++++++++-
+ mm/damon/dbgfs.c             | 70 ++++++++++++++++++++++++---
+ mm/damon/paddr.c             | 25 ++++++++--
+ mm/damon/prmtv-common.c      | 44 +++++++++++++++++
+ mm/damon/prmtv-common.h      |  3 ++
+ mm/damon/vaddr.c             | 45 ++++++++++-------
+ mm/huge_memory.c             |  5 ++
+ mm/memory.c                  |  5 ++
+ 10 files changed, 292 insertions(+), 33 deletions(-)
+
+--
+2.27.0
