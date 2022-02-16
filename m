@@ -2,118 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B33C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 05:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E657C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 05:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344684AbiBPFre (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 00:47:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36878 "EHLO
+        id S243906AbiBPFzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 00:55:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235893AbiBPFrc (ORCPT
+        with ESMTP id S234272AbiBPFzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 00:47:32 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AED3F1AF6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 21:47:21 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id bt13so2861070ybb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 21:47:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=elu8Ka2cZem2k4zQRGJEv65TLQWlji0lH04NXcgaWoI=;
-        b=LVuSa+60cggKNTvJ1zIakxD1VIAn5f/pbblK/YjQD5LI7TD31BHIqZ24c6BKqeGFCI
-         OaEmU2yh7N6fQW6FBGELn61X/aBcQctz+GZJlD44yKuQ8BpCCCk9taP4fVgo/fJyMHo+
-         exJd028Ht/JAdX4P236LDPuuUXUe1VYdLdI4Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=elu8Ka2cZem2k4zQRGJEv65TLQWlji0lH04NXcgaWoI=;
-        b=KZqUg80iElXq/6h09imNaCYhaCpFP1ICzFJ8ji3Z6/aLe3k097l7xas/3zaGnUJLfA
-         zvIRzf+pfqQXk6SRH/eFs+QvEepDr0CAoxB9ehD8iu2kk2tnTlw6sSBHCnPhZAFSSn6b
-         sadHEYFIxOnMr0PiWWsxaPWIwe/4LWup7LvXrQeX/bH4zowJ8nsFMIiGgAJDZWdWDT3H
-         S4vfYOXd1EmCo9Loh2a+litNF26og3jRJ5PQmD5nl6J2DoN7D7yT52TeeWps+umGQ35m
-         rnfFj0Mk09kRK6SBh/WDT1KvRQ/gSEIMlofhAsxK7C78wWacs7OmxCs8icELO6CO4Zkf
-         eV1w==
-X-Gm-Message-State: AOAM530hbNVws+1T9p6jhZDuqFkpUQgwlOP9In5mxg9MX8gk9xoYxBdB
-        cTvEX8AELQ8ZPnbxD/Li64sKy+Fr+b+uzfJw+UjjZQ==
-X-Google-Smtp-Source: ABdhPJwHGG5NOl9rUjmJ5FIROtsaZzXi5k/xwDtwVPIUKH4MttQH+YypSdaXae9uXC3An9ibKfa1nMBwNwSdBnnhYtI=
-X-Received: by 2002:a25:8b0a:0:b0:61a:4aab:3e78 with SMTP id
- i10-20020a258b0a000000b0061a4aab3e78mr880886ybl.619.1644990440308; Tue, 15
- Feb 2022 21:47:20 -0800 (PST)
-MIME-Version: 1.0
-References: <20220216043639.3839185-1-tzungbi@google.com> <20220216043639.3839185-4-tzungbi@google.com>
-In-Reply-To: <20220216043639.3839185-4-tzungbi@google.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Tue, 15 Feb 2022 21:47:09 -0800
-Message-ID: <CACeCKacKtJ50b2TuuhcVYPq0Fd0unVJdMuNDk1PLNK_r2JHZ+A@mail.gmail.com>
-Subject: Re: [PATCH v4 3/5] platform/chrome: cros_ec: initialize
- `wake_enabled` in cros_ec_register()
-To:     Tzung-Bi Shih <tzungbi@google.com>
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+        Wed, 16 Feb 2022 00:55:22 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA607C12FB;
+        Tue, 15 Feb 2022 21:55:06 -0800 (PST)
+X-UUID: c07bc4593c3b447483f06278c4671c7e-20220216
+X-UUID: c07bc4593c3b447483f06278c4671c7e-20220216
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 138608058; Wed, 16 Feb 2022 13:55:02 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 16 Feb 2022 13:55:01 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 13:54:59 +0800
+Message-ID: <d9637b40196873f392ac9cebfe369106a6f0eee7.camel@mediatek.com>
+Subject: Re: [PATCH v4 08/35] iommu/mediatek: Use kmalloc for protect buffer
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <youlin.pei@mediatek.com>,
+        <anan.sun@mediatek.com>, <xueqi.zhang@mediatek.com>,
+        <yen-chang.chen@mediatek.com>, <mingyuan.ma@mediatek.com>,
+        <yf.wang@mediatek.com>, <libo.kang@mediatek.com>,
+        <chengci.xu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+Date:   Wed, 16 Feb 2022 13:54:59 +0800
+In-Reply-To: <ca47becf-adc9-f11e-5e59-03f203920344@collabora.com>
+References: <20220125085634.17972-1-yong.wu@mediatek.com>
+         <20220125085634.17972-9-yong.wu@mediatek.com>
+         <ca47becf-adc9-f11e-5e59-03f203920344@collabora.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 8:37 PM Tzung-Bi Shih <tzungbi@google.com> wrote:
->
-> `wake_enabled` indicates cros_ec_resume() needs to call
-> disable_irq_wake() to undo enable_irq_wake() in cros_ec_suspend().
->
-> Initialize `wake_enabled` in cros_ec_register() and determine the flag
-> in cros_ec_suspend() instead of reset-after-used in cros_ec_resume().
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+On Thu, 2022-01-27 at 12:08 +0100, AngeloGioacchino Del Regno wrote:
+> Il 25/01/22 09:56, Yong Wu ha scritto:
+> > No need zero for the protect buffer that is only accessed by the
+> > IOMMU HW
+> > translation fault happened.
+> > 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> 
+> I would rather keep this a devm_kzalloc instead... the cost is very
+> minimal and
+> this will be handy when new hardware will be introduced, as it may
+> require a bigger
+> buffer: in that case, "older" platforms will use only part of it and
+> we may get
+> garbage data at the end.
 
-One minor thing to consider, but regardless:
+Currently this is to avoid zero 512 bytes for all the platforms.
 
-Reviewed-by: Prashant Malani <pmalani@chromium.org>
+Sorry, I don't understand why it is unnecessary when the new hardware
+requires a bigger buffer. If the buffer becomes bigger, then clearing
+it to 0 need more cost. then this patch is more helpful?
 
-> ---
-> Changes from v3:
-> (https://patchwork.kernel.org/project/chrome-platform/patch/20220209095703.517608-4-tzungbi@google.com/)
-> - Change the patch title.
-> - Simplify by initializing wake_enabled in cros_ec_register().
->
-> No changes from v2.
->
-> Changes from v1:
-> (https://lore.kernel.org/lkml/20220125101527.1812887-1-tzungbi@google.com/T/#u)
-> - Use imperative mood in commit message.
->
->  drivers/platform/chrome/cros_ec.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
-> index 25cd8df6e7b0..b6604a9ab315 100644
-> --- a/drivers/platform/chrome/cros_ec.c
-> +++ b/drivers/platform/chrome/cros_ec.c
-> @@ -191,6 +191,7 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
->         ec_dev->max_passthru = 0;
->         ec_dev->ec = NULL;
->         ec_dev->pd = NULL;
-> +       ec_dev->wake_enabled = false;
->
->         ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
->         if (!ec_dev->din)
-> @@ -383,10 +384,9 @@ int cros_ec_resume(struct cros_ec_device *ec_dev)
->                 dev_dbg(ec_dev->dev, "Error %d sending resume event to ec",
->                         ret);
->
-> -       if (ec_dev->wake_enabled) {
-> +       if (ec_dev->wake_enabled)
->                 disable_irq_wake(ec_dev->irq);
-> -               ec_dev->wake_enabled = 0;
-> -       }
-> +
+The content in this buffer is garbage, we won't care about or analyse
+it.
 
-Better to leave it as is, and ensure "wake_enabled" is cleared after resume?
-Will result in a smaller diff.
+> 
+> Regards,
+> Angelo
 
-I'll leave it up to you.
-
--Prashant
