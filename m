@@ -2,268 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA79EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07073C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiBPHU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:20:27 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52098 "EHLO
+        id S229981AbiBPHVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:21:20 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiBPHUU (ORCPT
+        with ESMTP id S229825AbiBPHVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:20:20 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AACE6D87;
-        Tue, 15 Feb 2022 23:20:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644996004; x=1676532004;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=E8zZRmeJ9OwBsBpP0tYM0smOGLQGbiEJVRVolFrNMWE=;
-  b=SHEtOXaT+LKc5oPZ5mwa7T1LJB23fnc2Q3ulTbHhhdI8v6bHMrtSidio
-   wj2PvlPXuAQDlIS/lWEN/aGsBhr2w9R7JUBHs9YGUW/ehIwgwBTKLn9CI
-   VElS+jjDKDujTfPJQqiuhAIxABKhJq/E3pis+a85mq2Tvnsr1QHTM2sKe
-   s=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 15 Feb 2022 23:20:04 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 23:20:01 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 15 Feb 2022 23:20:00 -0800
-Received: from [10.111.168.21] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 15 Feb
- 2022 23:19:58 -0800
-Message-ID: <fcf676d0-1e25-aeda-ce6f-f051d34e0bbe@quicinc.com>
-Date:   Tue, 15 Feb 2022 23:19:55 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [Freedreno] [PATCH v2 2/2] drm/msm/dpu: Add SC8180x to hw catalog
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, Rob Clark <robdclark@gmail.com>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>,
-        <freedreno@lists.freedesktop.org>
-References: <20220215043353.1256754-1-bjorn.andersson@linaro.org>
- <20220215043353.1256754-2-bjorn.andersson@linaro.org>
- <be397e2e-05ab-5c18-8e2d-16c443f0a6d1@quicinc.com>
- <Ygvisfhi0SY6XdAz@builder.lan>
- <6a3ef247-b26b-d505-cd85-92fb277163dd@quicinc.com>
- <YgxeCHi5AsYPTmeZ@builder.lan>
- <51675806-641d-c57e-ada7-a044e37ad808@quicinc.com> <YgyIPnc/sZLE0ABn@yoga>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <YgyIPnc/sZLE0ABn@yoga>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Wed, 16 Feb 2022 02:21:18 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BFB21E1A;
+        Tue, 15 Feb 2022 23:21:03 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 157BA201AF5;
+        Wed, 16 Feb 2022 07:52:58 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DB434201AF0;
+        Wed, 16 Feb 2022 07:52:57 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 976D4183AC8A;
+        Wed, 16 Feb 2022 14:52:56 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
+        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v7 7/8] PCI: imx6: Disable enabled clocks and regulators after link is down
+Date:   Wed, 16 Feb 2022 14:21:02 +0800
+Message-Id: <1644992463-14467-8-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644992463-14467-1-git-send-email-hongxing.zhu@nxp.com>
+References: <1644992463-14467-1-git-send-email-hongxing.zhu@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Since i.MX PCIe doesn't support the hot-plug, and to save power
+consumption as much as possible. Return error and disable the enabled
+clocks and regulators when link is down,.
 
+Add a new host_exit() callback for i.MX PCIe driver to disable the
+enabled clocks, regulators and so on in the error handling after
+host_init is finished.
 
-On 2/15/2022 9:14 PM, Bjorn Andersson wrote:
-> On Tue 15 Feb 20:38 CST 2022, Abhinav Kumar wrote:
-> 
->>
->>
->> On 2/15/2022 6:14 PM, Bjorn Andersson wrote:
->>> On Tue 15 Feb 11:42 CST 2022, Abhinav Kumar wrote:
->>>
->>>>
->>>>
->>>> On 2/15/2022 9:28 AM, Bjorn Andersson wrote:
->>>>> On Tue 15 Feb 11:14 CST 2022, Abhinav Kumar wrote:
->>>>>
->>>>>>
->>>>>>
->>>>>> On 2/14/2022 8:33 PM, Bjorn Andersson wrote:
->>>>>>> From: Rob Clark <robdclark@chromium.org>
->>>>>>>
->>>>>>> Add SC8180x to the hardware catalog, for initial support for the
->>>>>>> platform. Due to limitations in the DP driver only one of the four DP
->>>>>>> interfaces is left enabled.
->>>>>>>
->>>>>>> The SC8180x platform supports the newly added DPU_INTF_WIDEBUS flag and
->>>>>>> the Windows-on-Snapdragon bootloader leaves the widebus bit set, so this
->>>>>>> is flagged appropriately to ensure widebus is disabled - for now.
->>>>>>>
->>>>>>> Signed-off-by: Rob Clark <robdclark@chromium.org>
->>>>>>> [bjorn: Reworked intf and irq definitions]
->>>>>>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
->>>>>>> ---
->>>>>>>
->>>>>>> Changes since v1:
->>>>>>> - Dropped widebus flag
->>>>>>>
->>>>>>>      .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c    | 129 ++++++++++++++++++
->>>>>>>      .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h    |   1 +
->>>>>>>      drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |   1 +
->>>>>>>      drivers/gpu/drm/msm/msm_drv.c                 |   1 +
->>>>>>>      4 files changed, 132 insertions(+)
->>>>>>>
->>>>>>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>>>>>> index aa75991903a6..7ac0fe32df49 100644
->>>>>>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>>>>>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>>>>>> @@ -90,6 +90,17 @@
->>>>>>>      			 BIT(MDP_INTF3_INTR) | \
->>>>>>>      			 BIT(MDP_INTF4_INTR))
->>>>>>> +#define IRQ_SC8180X_MASK (BIT(MDP_SSPP_TOP0_INTR) | \
->>>>>>> +			  BIT(MDP_SSPP_TOP0_INTR2) | \
->>>>>>> +			  BIT(MDP_SSPP_TOP0_HIST_INTR) | \
->>>>>>> +			  BIT(MDP_INTF0_INTR) | \
->>>>>>> +			  BIT(MDP_INTF1_INTR) | \
->>>>>>> +			  BIT(MDP_INTF2_INTR) | \
->>>>>>> +			  BIT(MDP_INTF3_INTR) | \
->>>>>>> +			  BIT(MDP_INTF4_INTR) | \
->>>>>>> +			  BIT(MDP_INTF5_INTR) | \
->>>>>>> +			  BIT(MDP_AD4_0_INTR) | \
->>>>>>> +			  BIT(MDP_AD4_1_INTR))
->>>>>>>      #define DEFAULT_PIXEL_RAM_SIZE		(50 * 1024)
->>>>>>>      #define DEFAULT_DPU_LINE_WIDTH		2048
->>>>>>> @@ -225,6 +236,22 @@ static const struct dpu_caps sm8150_dpu_caps = {
->>>>>>>      	.max_vdeci_exp = MAX_VERT_DECIMATION,
->>>>>>>      };
->>>>>>> +static const struct dpu_caps sc8180x_dpu_caps = {
->>>>>>> +	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
->>>>>>> +	.max_mixer_blendstages = 0xb,
->>>>>>> +	.qseed_type = DPU_SSPP_SCALER_QSEED3,
->>>>>>> +	.smart_dma_rev = DPU_SSPP_SMART_DMA_V2, /* TODO: v2.5 */
->>>>>>> +	.ubwc_version = DPU_HW_UBWC_VER_30,
->>>>>>> +	.has_src_split = true,
->>>>>>> +	.has_dim_layer = true,
->>>>>>> +	.has_idle_pc = true,
->>>>>>> +	.has_3d_merge = true,
->>>>>>> +	.max_linewidth = 4096,
->>>>>>> +	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
->>>>>>> +	.max_hdeci_exp = MAX_HORZ_DECIMATION,
->>>>>>> +	.max_vdeci_exp = MAX_VERT_DECIMATION,
->>>>>>> +};
->>>>>>> +
->>>>>>>      static const struct dpu_caps sm8250_dpu_caps = {
->>>>>>>      	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
->>>>>>>      	.max_mixer_blendstages = 0xb,
->>>>>>> @@ -293,6 +320,31 @@ static const struct dpu_mdp_cfg sc7180_mdp[] = {
->>>>>>>      	},
->>>>>>>      };
->>>>>>> +static const struct dpu_mdp_cfg sc8180x_mdp[] = {
->>>>>>> +	{
->>>>>>> +	.name = "top_0", .id = MDP_TOP,
->>>>>>> +	.base = 0x0, .len = 0x45C,
->>>>>>> +	.features = 0,
->>>>>>> +	.highest_bank_bit = 0x3,
->>>>>>> +	.clk_ctrls[DPU_CLK_CTRL_VIG0] = {
->>>>>>> +			.reg_off = 0x2AC, .bit_off = 0},
->>>>>>> +	.clk_ctrls[DPU_CLK_CTRL_VIG1] = {
->>>>>>> +			.reg_off = 0x2B4, .bit_off = 0},
->>>>>>> +	.clk_ctrls[DPU_CLK_CTRL_VIG2] = {
->>>>>>> +			.reg_off = 0x2BC, .bit_off = 0},
->>>>>>> +	.clk_ctrls[DPU_CLK_CTRL_VIG3] = {
->>>>>>> +			.reg_off = 0x2C4, .bit_off = 0},
->>>>>>> +	.clk_ctrls[DPU_CLK_CTRL_DMA0] = {
->>>>>>> +			.reg_off = 0x2AC, .bit_off = 8},
->>>>>>> +	.clk_ctrls[DPU_CLK_CTRL_DMA1] = {
->>>>>>> +			.reg_off = 0x2B4, .bit_off = 8},
->>>>>>> +	.clk_ctrls[DPU_CLK_CTRL_CURSOR0] = {
->>>>>>> +			.reg_off = 0x2BC, .bit_off = 8},
->>>>>>> +	.clk_ctrls[DPU_CLK_CTRL_CURSOR1] = {
->>>>>>> +			.reg_off = 0x2C4, .bit_off = 8},
->>>>>>> +	},
->>>>>>> +};
->>>>>>> +
->>>>>>>      static const struct dpu_mdp_cfg sm8250_mdp[] = {
->>>>>>>      	{
->>>>>>>      	.name = "top_0", .id = MDP_TOP,
->>>>>>> @@ -861,6 +913,16 @@ static const struct dpu_intf_cfg sc7280_intf[] = {
->>>>>>>      	INTF_BLK("intf_5", INTF_5, 0x39000, INTF_DP, MSM_DP_CONTROLLER_1, 24, INTF_SC7280_MASK, MDP_SSPP_TOP0_INTR, 22, 23),
->>>>>>>      };
->>>>>>> +static const struct dpu_intf_cfg sc8180x_intf[] = {
->>>>>>> +	INTF_BLK("intf_0", INTF_0, 0x6A000, INTF_DP, MSM_DP_CONTROLLER_0, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 24, 25),
->>>>>>> +	INTF_BLK("intf_1", INTF_1, 0x6A800, INTF_DSI, 0, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 26, 27),
->>>>>>> +	INTF_BLK("intf_2", INTF_2, 0x6B000, INTF_DSI, 1, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 28, 29),
->>>>>>> +	/* INTF_3 is for MST, wired to INTF_DP 0 and 1, use dummy index until this is supported */
->>>>>>> +	INTF_BLK("intf_3", INTF_3, 0x6B800, INTF_DP, 999, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 30, 31),
->>>>>>> +	INTF_BLK("intf_4", INTF_4, 0x6C000, INTF_DP, MSM_DP_CONTROLLER_1, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 20, 21),
->>>>>>> +	INTF_BLK("intf_5", INTF_5, 0x6C800, INTF_DP, MSM_DP_CONTROLLER_2, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 22, 23),
->>>>>>
->>>>>> This is a continued discussion from
->>>>>> https://patchwork.freedesktop.org/patch/474179/.
->>>>>>
->>>>>> Shouldnt INTF_5 be marked as INTF_eDP?
->>>>>>
->>>>>
->>>>> Might be, I didn't even know we had an INTF_EDP define...
->>>>>
->>>>> Is there any reason to distinguish DP and EDP in the DPU?  I see sc7280
->>>>> doesn't distinguish the DP and EDP interfaces.
->>>>>
->>>>> Regards,
->>>>> Bjorn
->>>>>
->>>>
->>>> Like I have mentioned in the other patch, I think we have enough confusion
->>>> between eDP and DP with the common driver. Since DPU does have separate
->>>> interfaces I think we should fix that.
->>>>
->>>> Regarding sc7280 using INTF_DP, I synced up with Sankeerth. He referred to
->>>> your change
->>>> https://patchwork.freedesktop.org/patch/457776/?series=92992&rev=5 as it was
->>>> posted earlier and ended up using the same INTF_DP macro. So its turning out
->>>> to be a cyclical error.
->>>>
->>>
->>> That made me take a second look at the HPG, and sure enough INTF_5 on
->>> SC7280 is connected to a eDP/DP Combo PHY. We have the same setup in
->>> SC8280XP.
->>>
->>> In SC8180X, INTF_5 is documented as being connected to a eDP (only) PHY,
->>> so perhaps it makes sense to do it there, but for the others its wrong.
->>>
->>
->> Here you are specifying the controller in the catalog.
-> 
-> No, I'm specifying the type of the INTF. We then use the type of the
-> intf and the index to match that to a particular DP TX block.
-> 
->> So independent of the PHY thats being used, shouldnt this remain
->> INTF_eDP?
->>
-> 
-> I don't think it's going to help anyone to say that an interface
-> connected to a PHY that can be either DP or EDP, should be INTF_EDP.
-> 
-> People are going to make assumptions in the code such as INTF_EDP does
-> not have audio and then someone designs a board based on SC7280 with DP
-> output where they expect audio. Or assumptions about HPD, panel etc...
-> 
-> I'm not saying that we have all the details figured out on how that's
-> going to be controlled, but until there's a reason to distinguish
-> INTF_DP from INTF_EDP I think we should not make one up. And I don't see
-> that those differences should be hard coded in the DPU driver.
-> 
-> 
-> If it's confusing to people that DP might be driving an EDP output, then
-> perhaps we can just name it TMDS again? ;)
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+---
+ drivers/pci/controller/dwc/pci-imx6.c | 30 ++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
-If you prefer to have TMDS, then like I commented earlier we dont really 
-need this change https://patchwork.freedesktop.org/patch/474271/ :)
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 242d8ef73c1e..fe671e88ec93 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -848,7 +848,9 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+ 	/* Start LTSSM. */
+ 	imx6_pcie_ltssm_enable(dev);
+ 
+-	dw_pcie_wait_for_link(pci);
++	ret = dw_pcie_wait_for_link(pci);
++	if (ret)
++		goto err_reset_phy;
+ 
+ 	if (pci->link_gen == 2) {
+ 		/* Allow Gen2 mode after the link is up. */
+@@ -884,7 +886,9 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+ 		}
+ 
+ 		/* Make sure link training is finished as well! */
+-		dw_pcie_wait_for_link(pci);
++		ret = dw_pcie_wait_for_link(pci);
++		if (ret)
++			goto err_reset_phy;
+ 	} else {
+ 		dev_info(dev, "Link: Gen2 disabled\n");
+ 	}
+@@ -897,7 +901,6 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+ 	dev_dbg(dev, "PHY DEBUG_R0=0x%08x DEBUG_R1=0x%08x\n",
+ 		dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG0),
+ 		dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG1));
+-	imx6_pcie_reset_phy(imx6_pcie);
+ 	return ret;
+ }
+ 
+@@ -921,8 +924,29 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
+ 	return 0;
+ }
+ 
++static void imx6_pcie_host_exit(struct pcie_port *pp)
++{
++	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
++	struct device *dev = pci->dev;
++	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
++
++	imx6_pcie_reset_phy(imx6_pcie);
++	imx6_pcie_clk_disable(imx6_pcie);
++	switch (imx6_pcie->drvdata->variant) {
++	case IMX8MM:
++		if (phy_power_off(imx6_pcie->phy))
++			dev_err(dev, "unable to power off phy\n");
++		break;
++	default:
++		break;
++	}
++	if (imx6_pcie->vpcie)
++		regulator_disable(imx6_pcie->vpcie);
++}
++
+ static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
+ 	.host_init = imx6_pcie_host_init,
++	.host_exit = imx6_pcie_host_exit,
+ };
+ 
+ static const struct dw_pcie_ops dw_pcie_ops = {
+-- 
+2.25.1
 
-Whats the benefit of making that change? DRM_ENCODER_TMDS_* can be eDP 
-and DP . Then there is no confusion or guess work in the encoder.
-
-DRM_ENCODER_DSI - INTF_DSI
-DRM_ENCODER_VIRTUAL - INTF_WB
-DRM_ENCODER_TMDS - INTF_DP OR INTF_eDP ( doesnt matter )
-
-> 
-> Regards,
-> Bjorn
