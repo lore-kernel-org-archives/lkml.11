@@ -2,95 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D38C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92084C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:28:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234196AbiBPN2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:28:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40098 "EHLO
+        id S234222AbiBPN2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:28:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234152AbiBPN2G (ORCPT
+        with ESMTP id S230126AbiBPN2n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:28:06 -0500
-Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6F7151D3E;
-        Wed, 16 Feb 2022 05:27:54 -0800 (PST)
-Received: by mail-vs1-xe36.google.com with SMTP id p7so2451142vsg.2;
-        Wed, 16 Feb 2022 05:27:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W4NWQ4O/W36pB+bOALZ9wlT2YlOr6PG7OHv6tykJwH0=;
-        b=lAHHTLBXwuKLLUHWaLseZjIP5cTvJsu69Q9thecmcZ3q0ffGHTCcOfDZJgQ+BsaU7X
-         VJaGthSGbyLDnlUhzTNOirmBB5F7Qt2EEk+RrmOT7+T5WuR8cdDnJMknl0tWouNlGuVh
-         9mhATRhNi19QIAqUZHBI9t2YXVYTD5EUoVudmzAEgZdEoVQTZuF+8xlDPDcIFRRwOn8g
-         aUi/maLv8i6RYOy6i+1AX3tkKmgBfUDfKVKAYtOhjVYzCjYnN86wGxGPqUL7SqtqgDe1
-         SUnNRDnQa+P+Bx++qp0oDSbhsRilT2mpDr7NtF0lcnwKAsJa1C4D94jqqd9Cy1g/0u0G
-         Sy+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W4NWQ4O/W36pB+bOALZ9wlT2YlOr6PG7OHv6tykJwH0=;
-        b=V2sejGUzsw+owRORLV0RcJtv+W8tZmQP0luzIB7ny4catcJ5jZgLqKjNXO0zosbK8Z
-         K9hz4BZsoreztivnSTFi4YhG/x4c1v8caRdZnfqhVjsGDhWhAzmlCd6yyNrJBnIDbwkR
-         Imoty/50X/c4hwfA0K1O9H/kMDCFCOkpV9DE0dik+zrT34d6Y2NGlsf6KtyW+E6F+uPW
-         W6GF/AWvtnDxYgwOQmpdLhXuskmifoOEz29o+M0tO/nYXBSp7v9hFsIRKmR1d4QK9VGk
-         L566R+wTVlfyXGayKgf7PDWb5WS99xR2sxWPmB7kYoFr5AuO1ZSdiCDwTntwzCYPw+Sm
-         Q3Rw==
-X-Gm-Message-State: AOAM533xgAr5V0CWj2R4dQOnW2i3tVFTg4nRvA+kG13wwux6+KwMFHJj
-        qQytLTX6qLDlU+GCoyVOcQPzAZ2QFLAj8YMy6A==
-X-Google-Smtp-Source: ABdhPJzJi19YNpCvzYwvosnnahkfB/aXCpYLA6aGj448BMw2ojTugtbCg0yk1f4Aj5s3nazDJ7Aob0vZmEcsqQKZVb8=
-X-Received: by 2002:a05:6102:2912:b0:31a:5ab3:f44b with SMTP id
- cz18-20020a056102291200b0031a5ab3f44bmr1066907vsb.53.1645018073916; Wed, 16
- Feb 2022 05:27:53 -0800 (PST)
+        Wed, 16 Feb 2022 08:28:43 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB43151D3E;
+        Wed, 16 Feb 2022 05:28:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1645018096;
+        bh=HwNrev1x9N/bAHozCMnHh0/SWdmQxawrVLg0m+YakW0=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=RUtWJPgj02d9RdJYQ7YoSVHPNgdJKkbQLGxH/3959fWlRoxCzs+SEUv8MhF9EIuSd
+         UPOms99OagbeNHn9T2GREA/Kzg1CItzhmNQ9p1MZePz84ZabXDt6BIzIIZkLX4OEiL
+         umm0oSmyex5vNBSnWFCgn2yRL7eID38JcE3sRZpk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.128.232]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MlNtF-1nz7c511Rd-00lnUS; Wed, 16
+ Feb 2022 14:28:16 +0100
+Message-ID: <7c557d0c-6718-4e16-29c6-8b75c704b773@gmx.de>
+Date:   Wed, 16 Feb 2022 14:26:54 +0100
 MIME-Version: 1.0
-References: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
- <20220216113323.53332-1-Jason@zx2c4.com>
-In-Reply-To: <20220216113323.53332-1-Jason@zx2c4.com>
-From:   Rui Salvaterra <rsalvaterra@gmail.com>
-Date:   Wed, 16 Feb 2022 13:27:42 +0000
-Message-ID: <CALjTZvbS8OuDkAZ+3M9dwTzRd6Rd77dnd4nUdMhUA9BJgYWYEA@mail.gmail.com>
-Subject: Re: [PATCH v3] ath9k: use hw_random API instead of directly dumping
- into random.c
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     miaoqing@codeaurora.org,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 00/13] Fix LKDTM for PPC64/IA64/PARISC v4
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-mm@kvack.org
+References: <cover.1644928018.git.christophe.leroy@csgroup.eu>
+ <202202150807.D584917D34@keescook>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <202202150807.D584917D34@keescook>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:7WUZ8IdPRgrLzg2kYAsCubjhcGSsfWfnDerK+e6MsDTo0WVtSo1
+ Qo1CSZAO42swRuv6lToQn2mbsuQy/pB029PlMs3UDpE+ADYKs4fY8RkSq6zythe/H0UD0qp
+ PJiEhm1bu11UqjwgQDhFNERLa6KstnkZlTWu4pgSqsVGe95043DiptKYmRvLXMi+S5ig2G7
+ A9mnu9SU2Bsce/RvmK/YQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:HQlDLvllLB4=:zG9VjdQRhRW5zMKE35JAvQ
+ sTaBZEmtmI9M5ryeCAdLypOUp+VWPjwhleh58s4Bx0MfvSQfMtggCwUjcI0R8FJVGQcyqOZIs
+ gqHhsqvhwutFDRldf6md8zmmGtk6TwaVyquzZ1MCESW2SrE6zcGTymzFpltWz+Rdkdm1YFzoa
+ lhTa5F+9uqsO8bDVGoqGaDUIiyihY5hNJSxdBLYV4ERtbrvekgcL3XZjnnhPOTyNx8JQ28Yjp
+ 4fK2TTtL0ghtJ4mnEmXuu4xsl/+m2AaqMf5GyF2X+Gss44eGD/xxCgtYJBPRBw4FbPSnQiUXK
+ ESp0mlJlpOtqulWHrEWJSxblPFaZMQF80liBI30esPGycROuavhe7HL9FL0IPQjGywvwrnUQB
+ YK+pU/QiiMlEJYmZdHT4tV65PWHI4/4wFVfWyEHguIml8zPF+yrR4FQ2LPLOEElJj2ZXmP1Il
+ ptIbyziXpMsIbCltb1QduqrC2jpL8QzlTmh0AO3SaXvAkH12v5CYNAIjLx8CJ7BOOuQlzFA3b
+ 5EF70bAPJl1RszsfR54ncea2HR/kjLjsEjAAnlAyOPytQAbaWqQnzaoirFM9KCpaxCytx71Pk
+ 0Bb+Cvv81aE5/W0KggKYi9IITAtuxBRxtjjoHnTv0CuPXBKjqr8o7rKDbWNaeOBjVtsAXTBIE
+ nfQiRXLcflgKsnrIhrvnwElHTrj4HOnt39TJRk7y3MuTYdx++/uvDNrsBEi4Sm8QW0ZPUCWWC
+ 5d0WWIxb+B84bK4DfWOp7hVVSl/WYpgWqH5b4hU2WVpaBhs3zjSNoE03rlVfqj8Plm/0XcYMn
+ HKbc0j0eIXagEdOr/A8UnONn6xvHzDG6IlK86sNVMaW6miOMxkiqDf4AXt3RcD60mUBOpxWh6
+ hovUfJj4ODRTGQeG6EIMT9I2fWf/qBJtPssP+L6yma1zYEBPucaJAUDCNTf14W8tDovm0ErnO
+ U31rrGLF8j6wf/UYsXTNfyVbf6s0842T9tNF8uum82B211/ALU5kr2q7fOpyto8A6IZl1VN8I
+ U/XrzPQALxcWCHwdRPHpc7x1H1HZuNVH/zyWx8sChgHXxjHJl2Os5vV4IHwWbTE/HLT+foop1
+ IGBNEhLpIEk+tI=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi again, Jason,
+On 2/15/22 17:07, Kees Cook wrote:
+> On Tue, Feb 15, 2022 at 01:40:55PM +0100, Christophe Leroy wrote:
+>> PPC64/IA64/PARISC have function descriptors. LKDTM doesn't work
+>> on those three architectures because LKDTM messes up function
+>> descriptors with functions.
+>>
+>> This series does some cleanup in the three architectures and
+>> refactors function descriptors so that it can then easily use it
+>> in a generic way in LKDTM.
+>
+> Thanks for doing this! It looks good to me. :)
 
-On Wed, 16 Feb 2022 at 11:33, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+I endorse that.
+Thank you, Christophe!
 
-[snipped]
+Acked-by: Helge Deller <deller@gmx.de>
 
-> Changes v2->v3:
-> - Use msleep_interruptable like other hwrng drivers.
-> - Give up after 110 tries.
-> - Return -EIO after giving up like other hwrng drivers.
-> - Use for loop for style nits.
-> - Append serial number for driver in case of multiple cards.
+Helge
 
-[snipped]
+> -Kees
+>
+>>
+>> Changes in v4:
+>> - Added patch 1 which Fixes 'sparse' for powerpc64le after wrong report=
+ on previous series, refer https://github.com/ruscur/linux-ci/actions/runs=
+/1351427671
+>> - Exported dereference_function_descriptor() to modules
+>> - Addressed other received comments
+>> - Rebased on latest powerpc/next (5a72345e6a78120368fcc841b570331b6c5a5=
+0da)
+>>
+>> Changes in v3:
+>> - Addressed received comments
+>> - Swapped some of the powerpc patches to keep func_descr_t renamed as s=
+truct func_desc and remove 'struct ppc64_opd_entry'
+>> - Changed HAVE_FUNCTION_DESCRIPTORS macro to a config item CONFIG_HAVE_=
+FUNCTION_DESCRIPTORS
+>> - Dropped patch 11 ("Fix lkdtm_EXEC_RODATA()")
+>>
+>> Changes in v2:
+>> - Addressed received comments
+>> - Moved dereference_[kernel]_function_descriptor() out of line
+>> - Added patches to remove func_descr_t and func_desc_t in powerpc
+>> - Using func_desc_t instead of funct_descr_t
+>> - Renamed HAVE_DEREFERENCE_FUNCTION_DESCRIPTOR to HAVE_FUNCTION_DESCRIP=
+TORS
+>> - Added a new lkdtm test to check protection of function descriptors
+>>
+>> Christophe Leroy (13):
+>>   powerpc: Fix 'sparse' checking on PPC64le
+>>   powerpc: Move and rename func_descr_t
+>>   powerpc: Use 'struct func_desc' instead of 'struct ppc64_opd_entry'
+>>   powerpc: Remove 'struct ppc64_opd_entry'
+>>   powerpc: Prepare func_desc_t for refactorisation
+>>   ia64: Rename 'ip' to 'addr' in 'struct fdesc'
+>>   asm-generic: Define CONFIG_HAVE_FUNCTION_DESCRIPTORS
+>>   asm-generic: Define 'func_desc_t' to commonly describe function
+>>     descriptors
+>>   asm-generic: Refactor dereference_[kernel]_function_descriptor()
+>>   lkdtm: Force do_nothing() out of line
+>>   lkdtm: Really write into kernel text in WRITE_KERN
+>>   lkdtm: Fix execute_[user]_location()
+>>   lkdtm: Add a test for function descriptors protection
+>>
+>>  arch/Kconfig                             |  3 +
+>>  arch/ia64/Kconfig                        |  1 +
+>>  arch/ia64/include/asm/elf.h              |  2 +-
+>>  arch/ia64/include/asm/sections.h         | 24 +-------
+>>  arch/ia64/kernel/module.c                |  6 +-
+>>  arch/parisc/Kconfig                      |  1 +
+>>  arch/parisc/include/asm/sections.h       | 16 ++----
+>>  arch/parisc/kernel/process.c             | 21 -------
+>>  arch/powerpc/Kconfig                     |  1 +
+>>  arch/powerpc/Makefile                    |  2 +-
+>>  arch/powerpc/include/asm/code-patching.h |  2 +-
+>>  arch/powerpc/include/asm/elf.h           |  6 ++
+>>  arch/powerpc/include/asm/sections.h      | 29 ++--------
+>>  arch/powerpc/include/asm/types.h         |  6 --
+>>  arch/powerpc/include/uapi/asm/elf.h      |  8 ---
+>>  arch/powerpc/kernel/module_64.c          | 42 ++++++--------
+>>  arch/powerpc/kernel/ptrace/ptrace.c      |  6 ++
+>>  arch/powerpc/kernel/signal_64.c          |  8 +--
+>>  drivers/misc/lkdtm/core.c                |  1 +
+>>  drivers/misc/lkdtm/lkdtm.h               |  1 +
+>>  drivers/misc/lkdtm/perms.c               | 71 +++++++++++++++++++-----
+>>  include/asm-generic/sections.h           | 15 ++++-
+>>  include/linux/kallsyms.h                 |  2 +-
+>>  kernel/extable.c                         | 24 +++++++-
+>>  tools/testing/selftests/lkdtm/tests.txt  |  1 +
+>>  25 files changed, 155 insertions(+), 144 deletions(-)
+>>
+>> --
+>> 2.34.1
+>>
+>
 
-Everything working as expected here, so this patch (v3) is also
-
-Tested-by: Rui Salvaterra <rsalvaterra@gmail.com>
-
-Thanks,
-Rui
