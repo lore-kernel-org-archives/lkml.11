@@ -2,109 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C183C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF44EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236398AbiBPQZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:25:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45072 "EHLO
+        id S236407AbiBPQ0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:26:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236402AbiBPQZ0 (ORCPT
+        with ESMTP id S235376AbiBPQ0A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:25:26 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF79E243A1D
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:25:13 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id j7so4818289lfu.6
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:25:13 -0800 (PST)
+        Wed, 16 Feb 2022 11:26:00 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7560244669
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:25:48 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id q7so4311766wrc.13
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:25:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UxkPkHWlDqesAD2skkgcNqIUaCQWaLWrTDan3sZiobs=;
-        b=yNB4Xrmwgq9AxWLhkABN6H/1ik8qhjNOm9qkClxG5ePbnYtwsSAD1ublNujSl3VsKB
-         QBD84lzjKkPCzmR4KrRzn3tkI+g91Ni5on0VXTFr+ZOypw5pd2UmIdDV/TOZLrw74tfN
-         xDWQ3/hcZozZ+eyRSUZEeUX9twMoLLJyZD9gBKKAX34JumD4dhbeaHcgF+YdGsOpxZ/P
-         AaDFRYXeNMcGI9FKGggPOcCR05Y2OBk9ibCY1PjBipl2vjz1hFJm187OlDcPAcnHKRL3
-         Qrr8XBra+cmhnIsydeJkRc3e1Ffd/KgtINWuOw3Q3ZfgxC98xfg5/LFoA0lRuoXKTpKT
-         qRDA==
+        bh=edjWIVwhuFt91Pw8VH5r8zVVg9dmeIMhzSsEafLiRtA=;
+        b=Bz+Qqu4IXSx730AZVKjQ+tSbjx3K065dVk42DzZStFsMJeVzGf5QOHzZJF82rFTCem
+         TMjDINnIfN0nvwsGdW6tdDoeBadcySeK1ISjNOOk3n8IPOfYtjjwxEEjUfUFXx0lYy6E
+         AlZxswqxDiRH5x67iSgn5C3rpxvGjboRdkcw0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UxkPkHWlDqesAD2skkgcNqIUaCQWaLWrTDan3sZiobs=;
-        b=TW2HBK1GTfmlFgvpmIrvLa4o8typt61IzgR5LRmxGIjEEGVWIfrVprnyl1wi+f/Zl0
-         tQ2GQ80bUPPR0rFp7u6sitAMNd3gho7xNe8eET8XgbprA5kiXQeLDzCw1dsJ0xWKCHu4
-         R71Pyp9aQHQpHHU9imyfyW/KX8HXSy5EHNPBMEghwywKrCO86kbPMUc4IavobYkGoW1w
-         vAHA3ppKI3TnYM/9uHlF0DqooqQmF13WHM7JyB7dNor16VMhp+CiNFbg7HumM8r6/3ue
-         KAyZh2qNRcifrgQGBHUHNfavhmzZId8wz8vom+eMAARf3RSMduAwdOdoy57PISTCA0+f
-         w1vw==
-X-Gm-Message-State: AOAM533a8FNB0Pwerj8oD6osVzcpZpNcrrfviV1N0d+7chMN/M2gKF1Z
-        T+Fs/ZLGUIuGJf1dg5/rlQTv4tIrJjzqs/jqRdjVmg==
-X-Google-Smtp-Source: ABdhPJyX0TdEvg9uB3pvpmmXC+0k7bSy8+mzCwb9mlFCwRXTD7K7MxLD7Sfsg6YDdboBiKTGf156srUKE+eeLt2Cqt8=
-X-Received: by 2002:a05:6512:3d2a:b0:443:3198:cb95 with SMTP id
- d42-20020a0565123d2a00b004433198cb95mr2617794lfv.233.1645028712002; Wed, 16
- Feb 2022 08:25:12 -0800 (PST)
+        bh=edjWIVwhuFt91Pw8VH5r8zVVg9dmeIMhzSsEafLiRtA=;
+        b=kUY3llV++sEFDdjyJ8RlBlhcAZujP5be/anT6+vcdYkpfbA1++Av0H2jy5CPoipftk
+         uzFIJkqwQZzgsBUvdc3PLfpLEeCbCgqQZZR6Y+ZRXgqXeyo3Othk2Q0OQ3Wy1ONca92p
+         1j6vCrkK9YjVjCUIp7MeBdNX2Aqo/qtogbUkkQ/og9w9S/IOd0PGiEieZU1d1wI4Paed
+         f82XnB/U+uBki1MksN90vY8Koat5rrwvX9de6f9y1rvoZ6O9erKQA/+B5V8Z6nLr3RaP
+         vUqtCbEtAigb29hPPg8RNhGVtjzlcXdqBtIdWfCl27ohPvxsU7H2rtWveQ1fj18YMIeT
+         n7Xw==
+X-Gm-Message-State: AOAM533HgfWjTZCZe2UArhhxRYZXu/5j2b6JGKWxtxljVGU3jHsskfsO
+        ZBGMc4XAyAjHg6YhbJ0Z+yF6Z1rkrG3OlF/28vbrfg==
+X-Google-Smtp-Source: ABdhPJwIrmtqvQuYmhkiDOdoG0D0y+HSySX6VjTkn4+bYwYMgK5SG17ByKMMb8hoVS8664AKZTnZv55Ov4u3W8BRiK8=
+X-Received: by 2002:adf:ce8f:0:b0:1e4:bcd3:3aa6 with SMTP id
+ r15-20020adfce8f000000b001e4bcd33aa6mr2752349wrn.561.1645028747340; Wed, 16
+ Feb 2022 08:25:47 -0800 (PST)
 MIME-Version: 1.0
-References: <20220130210210.549877-1-daniel.lezcano@linaro.org> <20220130210210.549877-2-daniel.lezcano@linaro.org>
-In-Reply-To: <20220130210210.549877-2-daniel.lezcano@linaro.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 16 Feb 2022 17:24:35 +0100
-Message-ID: <CAPDyKFpLDEzv7V-jJ-9xVZ=XqEHDdtLFYQQm=Ld7e1h=GJ8a8A@mail.gmail.com>
-Subject: Re: [PATCH v1 2/7] powercap/dtpm_cpu: Reset per_cpu variable in the
- release function
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rjw@rjwysocki.net, heiko@sntech.de, lukasz.luba@arm.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
+References: <20220211012510.1198155-1-swboyd@chromium.org> <20220211012510.1198155-2-swboyd@chromium.org>
+ <CAOOzhkpDvR14-D9YcZzbAQdQkDmas_XUtV-CLBR7+a3AuxgstQ@mail.gmail.com> <CAE-0n52aueW5N+d2d6tjWtca31werhwk6-6yqDm-XibtTfJsTA@mail.gmail.com>
+In-Reply-To: <CAE-0n52aueW5N+d2d6tjWtca31werhwk6-6yqDm-XibtTfJsTA@mail.gmail.com>
+From:   "Sean O'Brien" <seobrien@chromium.org>
+Date:   Wed, 16 Feb 2022 11:25:36 -0500
+Message-ID: <CAOOzhkqhQdO3LvfqW+sizLW3eTFnmYiXMrYk3oAKa8ynjyLJhg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] Input: Extract ChromeOS vivaldi physmap show function
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     benjamin.tissoires@redhat.com,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-input@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 30 Jan 2022 at 22:02, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
->
-> The release function does not reset the per cpu variable when it is
-> called. That will prevent creation again as the variable will be
-> already from the previous creation.
->
-> Fix it by resetting them.
->
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+On Tue, Feb 15, 2022 at 9:09 PM Stephen Boyd <swboyd@chromium.org> wrote:
+> Thanks. Can you provide a Tested-by: tag with your name and email?
 
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-
-Kind regards
-Uffe
-
-
-> ---
->  drivers/powercap/dtpm_cpu.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
-> index eed5ad688d46..71f45d2f5a60 100644
-> --- a/drivers/powercap/dtpm_cpu.c
-> +++ b/drivers/powercap/dtpm_cpu.c
-> @@ -151,10 +151,17 @@ static int update_pd_power_uw(struct dtpm *dtpm)
->  static void pd_release(struct dtpm *dtpm)
->  {
->         struct dtpm_cpu *dtpm_cpu = to_dtpm_cpu(dtpm);
-> +       struct cpufreq_policy *policy;
->
->         if (freq_qos_request_active(&dtpm_cpu->qos_req))
->                 freq_qos_remove_request(&dtpm_cpu->qos_req);
->
-> +       policy = cpufreq_cpu_get(dtpm_cpu->cpu);
-> +       if (policy) {
-> +               for_each_cpu(dtpm_cpu->cpu, policy->related_cpus)
-> +                       per_cpu(dtpm_per_cpu, dtpm_cpu->cpu) = NULL;
-> +       }
-> +
->         kfree(dtpm_cpu);
->  }
->
-> --
-> 2.25.1
->
+Yes,
+    Tested-by: Sean O'Brien <seobrien@chromium.org>
