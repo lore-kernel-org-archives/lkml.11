@@ -2,69 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 249E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA8C0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232064AbiBPJPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 04:15:44 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34932 "EHLO
+        id S231982AbiBPJQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 04:16:44 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231949AbiBPJP3 (ORCPT
+        with ESMTP id S231949AbiBPJQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 04:15:29 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6482D21D0A2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:15:18 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JzByR1kmSz1FCXG;
-        Wed, 16 Feb 2022 17:10:55 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 16 Feb
- 2022 17:15:16 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH v2 8/8] mm/memory-failure.c: remove unnecessary PageTransTail check
-Date:   Wed, 16 Feb 2022 17:14:31 +0800
-Message-ID: <20220216091431.39406-9-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220216091431.39406-1-linmiaohe@huawei.com>
-References: <20220216091431.39406-1-linmiaohe@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+        Wed, 16 Feb 2022 04:16:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81FF2AFEAF;
+        Wed, 16 Feb 2022 01:16:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44F32B81D4D;
+        Wed, 16 Feb 2022 09:16:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEB4CC004E1;
+        Wed, 16 Feb 2022 09:16:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645002976;
+        bh=Gq4/KIrPQNMCp6QVo4bm+z+V/DrcH8BMrBUXscm3huc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aYaMJiE9EwJ0fUqnY4B23RJJf3a7Zt2GN5uR/HcS0TfcRgyr4wdBJEMaiF9cdXx2k
+         FfzEfwJq4YQK6MgtwfWN6GiqI55yQsIYz44hKmYy7ii7IUIX3Tdrk3hvv/Cgzid3/Z
+         I4dpdBn8HM2R0CYTVpPlE/IcD73A0YL5aFVtjuTgPshENqfo3+tB4KroyHPvGwFHi9
+         LFZYsEln391JnWCpLjF5rfUIVapa4r+lbp6a1kMuWgVhLI/Rm4GHT8SbKEcJyCytzl
+         VMyi0kExeJ3SbK60VL+vaJfJEW2jndXe/3mpNL1XFi3XfYHLs9Not5QMRiz+1q8NXK
+         jo82EzYtIR9nA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nKGQ2-008HUQ-UC; Wed, 16 Feb 2022 09:16:15 +0000
+Date:   Wed, 16 Feb 2022 09:16:14 +0000
+Message-ID: <87a6er41ep.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Nishanth Menon <nm@ti.com>
+Cc:     Tero Kristo <kristo@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 0/5] arm64: dts: ti: k3*: Fix gic-v3 compatible regs
+In-Reply-To: <20220215201008.15235-1-nm@ti.com>
+References: <20220215201008.15235-1-nm@ti.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: nm@ti.com, kristo@kernel.org, vigneshr@ti.com, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we reach here, we're guaranteed to have non-compound page as thp is
-already splited. Remove this unnecessary PageTransTail check.
+On Tue, 15 Feb 2022 20:10:03 +0000,
+Nishanth Menon <nm@ti.com> wrote:
+> 
+> Hi,
+> 
+> This series was triggered by the discussion in [1], and we realized we
+> need to cleanup the definitions in K3 SoC. Usage of kvm with gic-v2
+> compatibility is a bit niche usecase, but valid and possible with A53
+> and A72 even though the GIC500 instantiation is done with no backward
+> compatibility.
+> 
+> Nishanth Menon (5):
+>   arm64: dts: ti: k3-am65: Fix gic-v3 compatible regs
+>   arm64: dts: ti: k3-j721e: Fix gic-v3 compatible regs
+>   arm64: dts: ti: k3-j7200: Fix gic-v3 compatible regs
+>   arm64: dts: ti: k3-am64: Fix gic-v3 compatible regs
+>   arm64: dts: ti: k3-j721s2: Fix gic-v3 compatible regs
+> 
+>  arch/arm64/boot/dts/ti/k3-am64-main.dtsi   | 5 ++++-
+>  arch/arm64/boot/dts/ti/k3-am64.dtsi        | 1 +
+>  arch/arm64/boot/dts/ti/k3-am65-main.dtsi   | 5 ++++-
+>  arch/arm64/boot/dts/ti/k3-am65.dtsi        | 1 +
+>  arch/arm64/boot/dts/ti/k3-j7200-main.dtsi  | 5 ++++-
+>  arch/arm64/boot/dts/ti/k3-j7200.dtsi       | 1 +
+>  arch/arm64/boot/dts/ti/k3-j721e-main.dtsi  | 5 ++++-
+>  arch/arm64/boot/dts/ti/k3-j721e.dtsi       | 1 +
+>  arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi | 5 ++++-
+>  arch/arm64/boot/dts/ti/k3-j721s2.dtsi      | 1 +
+>  10 files changed, 25 insertions(+), 5 deletions(-)
+> 
+> [1] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
----
- mm/memory-failure.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+For the series:
 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 5d2e653a145d..6e7baa90214a 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1842,7 +1842,7 @@ int memory_failure(unsigned long pfn, int flags)
- 	 * page_lock. We need wait writeback completion for this page or it
- 	 * may trigger vfs BUG while evict inode.
- 	 */
--	if (!PageTransTail(p) && !PageLRU(p) && !PageWriteback(p))
-+	if (!PageLRU(p) && !PageWriteback(p))
- 		goto identify_page_state;
- 
- 	/*
+Acked-by: Marc Zyngier <maz@kernel.org>
+
+	M.
+
 -- 
-2.23.0
-
+Without deviation from the norm, progress is not possible.
