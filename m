@@ -2,140 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 135D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04937C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234856AbiBPOSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 09:18:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33044 "EHLO
+        id S234913AbiBPOTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 09:19:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234116AbiBPOSL (ORCPT
+        with ESMTP id S234116AbiBPOTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 09:18:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFDE1B4453
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:17:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55DBBB81EDA
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 14:17:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D259DC004E1;
-        Wed, 16 Feb 2022 14:17:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645021076;
-        bh=25WzSdKtFWUOysZRmxAVLJb+CZcoj//JQjD1ChtvlNM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JyFpMMkNVLu4oQG+tcrjlS2O0c2RGmmc4jAVRHRX5cJ49S+5KlwgUSg/lLw9i9VBR
-         HUZ19T20xf6Gz9tIkghUYrISocVbfAc6avwO0iW0IIn4woxVv4fpB7TgnBqQpg9Ql/
-         rN6ipK0H5Ho69WPqVD5vCUqiimT4J0ro7y2Q1TsXIeU41wgXMMuuBoS4bpc07BxAWU
-         s5YS8X4pctUsVoUtjTSNf1zk4HsIKuKq9AzpvPzsuyX4LJ/qmJqLZfVNpZO1iYhjUU
-         M8GhgX/WjCrk8RGG85ZrpIoEx5yTfznHJYwK0ImDp4VfYbmmPCFx8SFAnOZgj2YWZv
-         +FRa8oCRY6MZw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id B4732400FE; Wed, 16 Feb 2022 11:17:53 -0300 (-03)
-Date:   Wed, 16 Feb 2022 11:17:53 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Stephane Eranian <eranian@google.com>
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        kim.phillips@amd.com, acme@redhat.com, jolsa@redhat.com,
-        songliubraving@fb.com
-Subject: Re: [PATCH v6 11/12] perf tools: Improve error handling of AMD
- Branch Sampling
-Message-ID: <Yg0HkUzDlkD4nqNs@kernel.org>
-References: <20220208211637.2221872-1-eranian@google.com>
- <20220208211637.2221872-12-eranian@google.com>
+        Wed, 16 Feb 2022 09:19:53 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCF41B6506
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:19:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645021180; x=1676557180;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=I9b5584pasqFyUNl2GI+JwJAx5NhvBxbRBeYif4Iq0U=;
+  b=CwOz8dh8p+Hy42kiDoB0BTJNG0JySfKEA5S28g5hdsZzlyx5gtWDPTDI
+   RDkRcW81b7x88H/hhrKlHY1AEDQ+WKdLYMkCPq12UqDdmtFESHGQiVB+Z
+   78XKFdJbgjZJ7TB7nFCTyBYB//vzlhjxYr0fl/IHlCVM0Oh99VKSH144W
+   MTJpMxmCc54Icl12qoQMgH5HZMqCZDJkkF8GItxSLZQttFRpL6bg6gm+l
+   qmfm4kLF70t3/PbAwu0SL1sgqesZiEwu8l1cjgHj8T/nUYtiUaelnVIXM
+   U2RFs/G6ckTfJkYXu5JYPNdMqOLcQ34n8mOnaHpsKPW0BhRUvhMRAYvi7
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="231236669"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="231236669"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 06:19:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="774062379"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 16 Feb 2022 06:19:39 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKL9e-000ArI-Sv; Wed, 16 Feb 2022 14:19:38 +0000
+Date:   Wed, 16 Feb 2022 22:18:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vadim Pasternak <vadimp@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: [jpirko-mlxsw:jiri_devel_linecards 27/43]
+ drivers/net/ethernet/mellanox/mlxsw/core_env.c:1249:23: error:
+ initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka
+ 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from
+ incompatible pointer type 'void (*)(struct mlx...
+Message-ID: <202202162243.YGWLhWv3-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220208211637.2221872-12-eranian@google.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, Feb 08, 2022 at 01:16:36PM -0800, Stephane Eranian escreveu:
-> Improve the error message printed by perf when perf_event_open() fails on
-> AMD Zen3 when using the branch sampling feature. In the case of EINVAL, there
-> are two main reasons: frequency mode or period is smaller than the depth of
-> the branch sampling buffer (16). The patch checks the parameters of the call
-> and tries to print a relevant message to explain the error:
-> 
-> $ perf record -b -e cpu/branch-brs/ -c 10 ls
-> Error:
-> AMD Branch Sampling does not support sampling period smaller than what is reported in /sys/devices/cpu/caps/branches.
-> 
-> $ perf record -b -e cpu/branch-brs/ ls
-> Error:
-> AMD Branch Sampling does not support frequency mode sampling, must pass a fixed sampling period via -c option or cpu/branch-brs,period=xxxx/.
-> 
-> Signed-off-by: Stephane Eranian <eranian@google.com>
-> [Rebased on commit 9fe8895a27a84 ("perf env: Add perf_env__cpuid, perf_env__{nr_}pmu_mappings")]
-> Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-> ---
->  tools/perf/util/evsel.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> index d42f63a484df..7311e7b4d34d 100644
-> --- a/tools/perf/util/evsel.c
-> +++ b/tools/perf/util/evsel.c
-> @@ -2857,6 +2857,12 @@ static bool is_amd_ibs(struct evsel *evsel)
->  	return evsel->core.attr.precise_ip || !strncmp(evsel->pmu_name, "ibs", 3);
->  }
->  
-> +static bool is_amd_brs(struct evsel *evsel)
-> +{
-> +	return ((evsel->core.attr.config & 0xff) == 0xc4) &&
-> +	       (evsel->core.attr.sample_type & PERF_SAMPLE_BRANCH_STACK);
-> +}
-> +
+tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
+head:   5cb021512c3be7e03591497caeab474ecccfcd21
+commit: 08ac493598146680137ed7a81dc108b837018125 [27/43] mlxsw: core: Add interfaces for line card initialization and de-initialization
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220216/202202162243.YGWLhWv3-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jpirko/linux_mlxsw/commit/08ac493598146680137ed7a81dc108b837018125
+        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
+        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
+        git checkout 08ac493598146680137ed7a81dc108b837018125
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
 
-Well, this assumes we're on x86_64, right? Shouldn't we have some extra
-condition using perf_env routines to check we're on x86_64.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Did a quick check and powerpc also supports PERF_SAMPLE_BRANCH_STACK
+All errors (new ones prefixed by >>):
 
-⬢[acme@toolbox perf]$ find arch/ -name "*.c" | xargs grep PERF_SAMPLE_BRANCH_STACK
-arch/powerpc/perf/core-book3s.c:		if (event->attr.sample_type & PERF_SAMPLE_BRANCH_STACK) {
-arch/x86/events/intel/ds.c:	if (sample_type & PERF_SAMPLE_BRANCH_STACK) {
-arch/x86/events/intel/ds.c:					PERF_SAMPLE_BRANCH_STACK |
-arch/x86/events/intel/lbr.c: * in PERF_SAMPLE_BRANCH_STACK sample may vary.
-arch/x86/kvm/vmx/pmu_intel.c:	 * - set 'sample_type = PERF_SAMPLE_BRANCH_STACK' and
-arch/x86/kvm/vmx/pmu_intel.c:		.sample_type = PERF_SAMPLE_BRANCH_STACK,
-⬢[acme@toolbox perf]$
+>> drivers/net/ethernet/mellanox/mlxsw/core_env.c:1249:23: error: initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from incompatible pointer type 'void (*)(struct mlxsw_core *, u8,  const struct mlxsw_linecard *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  const struct mlxsw_linecard *, void *)'} [-Werror=incompatible-pointer-types]
+    1249 |         .got_active = mlxsw_env_got_active,
+         |                       ^~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/mellanox/mlxsw/core_env.c:1249:23: note: (near initialization for 'mlxsw_env_event_ops.got_active')
+   drivers/net/ethernet/mellanox/mlxsw/core_env.c:1250:25: error: initialization of 'void (*)(struct mlxsw_core *, u8,  void *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  void *, void *)'} from incompatible pointer type 'void (*)(struct mlxsw_core *, u8,  const struct mlxsw_linecard *, void *)' {aka 'void (*)(struct mlxsw_core *, unsigned char,  const struct mlxsw_linecard *, void *)'} [-Werror=incompatible-pointer-types]
+    1250 |         .got_inactive = mlxsw_env_got_inactive,
+         |                         ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/mellanox/mlxsw/core_env.c:1250:25: note: (near initialization for 'mlxsw_env_event_ops.got_inactive')
+   cc1: some warnings being treated as errors
 
-arch/powerpc/perf/core-book3s.c:
 
-                if (event->attr.sample_type & PERF_SAMPLE_BRANCH_STACK) {
-                        struct cpu_hw_events *cpuhw;
-                        cpuhw = this_cpu_ptr(&cpu_hw_events);
-                        power_pmu_bhrb_read(event, cpuhw);
-                        data.br_stack = &cpuhw->bhrb_stack;
-                }
+vim +1249 drivers/net/ethernet/mellanox/mlxsw/core_env.c
 
->  int evsel__open_strerror(struct evsel *evsel, struct target *target,
->  			 int err, char *msg, size_t size)
->  {
-> @@ -2971,6 +2977,14 @@ int evsel__open_strerror(struct evsel *evsel, struct target *target,
->  					return scnprintf(msg, size,
->  	"AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity");
->  			}
-> +			if (is_amd_brs(evsel)) {
-> +				if (evsel->core.attr.freq)
-> +					return scnprintf(msg, size,
-> +	"AMD Branch Sampling does not support frequency mode sampling, must pass a fixed sampling period via -c option or cpu/branch-brs,period=xxxx/.");
-> +				/* another reason is that the period is too small */
-> +				return scnprintf(msg, size,
-> +	"AMD Branch Sampling does not support sampling period smaller than what is reported in /sys/devices/cpu/caps/branches.");
-> +			}
->  		}
->  
->  		break;
-> -- 
-> 2.35.0.263.gb82422642f-goog
+  1247	
+  1248	static struct mlxsw_linecards_event_ops mlxsw_env_event_ops = {
+> 1249		.got_active = mlxsw_env_got_active,
+  1250		.got_inactive = mlxsw_env_got_inactive,
+  1251	};
+  1252	
 
--- 
-
-- Arnaldo
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
