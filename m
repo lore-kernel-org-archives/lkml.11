@@ -2,138 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B960AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235718AbiBPPuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:50:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42396 "EHLO
+        id S235727AbiBPPuh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 10:50:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235708AbiBPPuI (ORCPT
+        with ESMTP id S233811AbiBPPuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:50:08 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983BA2A797E
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:49:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645026596; x=1676562596;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JzUds6X1bUTyxpBXWbKEWASJPbimDwHMfh9ltPG6QzI=;
-  b=je7yJJxIfM2qnfsF8WYwnI/UiRUCfrGf3KDcjt/UJEX+6bueQ6md9j+b
-   rqXAszi1SZV24TZlubXsM8An6DegH1J/5suNqR1GJXvvwIfJ8y2ZQA8Ki
-   5VRkceZpkiTszb2aIarJgWcByrNb1ETud7B+j1mpXp95wQAc+i/NjKiqY
-   TSLFqr3zHRkL3VUpzauGn3+r1eD+BYRuhM10gzJnSmcmYOJPHPK2ayhCj
-   0o706TQ0o7LtPA/Gvc2daznqkCV7pwJqRH8q2+qwXrFvw8iYIEXTjx7ud
-   Zr5ufbDcH9FcTExs4P5DZfBA00xKCFQfdhqsDOdU83U/vPC5T+PsmJ1T1
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="249475825"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="249475825"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 07:36:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="704347320"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 16 Feb 2022 07:36:47 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 6C87037E; Wed, 16 Feb 2022 17:37:03 +0200 (EET)
-Date:   Wed, 16 Feb 2022 18:37:03 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>, tglx@linutronix.de,
-        mingo@redhat.com, luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 22/29] x86/tdx: Make pages shared in ioremap()
-Message-ID: <20220216153703.42wnvgxcvshgpkj2@black.fi.intel.com>
-References: <1d77e91c-e151-7846-6cd4-6264236ca5ae@intel.com>
- <YgFWpGQfA84Y0mW/@zn.tnic>
- <20220214220926.fjwlyieatwjhcpij@black.fi.intel.com>
- <f1dfc268-7b2f-9980-27ce-0b5bb1aea962@amd.com>
- <20220215154118.ldpvvk5seljntl44@black.fi.intel.com>
- <dd21e54a-a431-4d6f-47b7-ab1a3e8e0cc8@amd.com>
- <20220215162722.cvzik5r57spr2krz@black.fi.intel.com>
- <52e34ee2-e6a8-5b5c-41f9-5fcf21902a25@intel.com>
- <20220215173321.lwvfl6rxifrkcoit@black.fi.intel.com>
- <YgzKymHnbAUAVSMT@zn.tnic>
+        Wed, 16 Feb 2022 10:50:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7628B2A64E8;
+        Wed, 16 Feb 2022 07:50:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 321C1B81F39;
+        Wed, 16 Feb 2022 15:50:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3129C004E1;
+        Wed, 16 Feb 2022 15:50:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645026620;
+        bh=hY8Ocaeuw/PESJ3cesgcDqgDeuA6MCsn6usv7wvjd4g=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=uD6ZAIeOPLcnB25OVls2MBk5wsYGG9SoZA+cadA2ftVzFUlDHfaihOdXIjDJBzje3
+         ytJdryOS2/Z8EGQkWOD+0PyaP7absZdgH8SXP3qr1dVYRrlTSrhKSb0g/qlmv3ZexK
+         TvisfE5HfNDQwb2X4J4+NLKTgHTuG8K9p/hebltZo0tyX48HsH+vO1GwH8MWumvRnW
+         rlfuiatTnVYbI/zF6LEeF+98Qxo3q/KBqxxyxT2zeNuTihb7G3yLoocz5i8MTXle5a
+         +6jsoBPJdYzxR4vEyeF2sDLs7fTg/2HDnOUV6aRoIxVMDkdQaG9NRzIqRocJPl2rv7
+         4IT9DepLHeYNQ==
+Date:   Wed, 16 Feb 2022 16:50:17 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     =?ISO-8859-15?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] Magic Keyboard first generation and 2015 FN key
+ mapping
+In-Reply-To: <20220208183704.40101-1-jose.exposito89@gmail.com>
+Message-ID: <nycvar.YFH.7.76.2202161650050.11721@cbobk.fhfr.pm>
+References: <20220208183704.40101-1-jose.exposito89@gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgzKymHnbAUAVSMT@zn.tnic>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 10:58:34AM +0100, Borislav Petkov wrote:
-> On Tue, Feb 15, 2022 at 08:33:21PM +0300, Kirill A. Shutemov wrote:
-> > Like cc_mkencrypted()/cc_mkdecrypted()? I donno. Looks strange.
+On Tue, 8 Feb 2022, José Expósito wrote:
+
+> Hi everyone,
 > 
-> cc_mkenc/cc_mkdec probably.
+> This patchset adds the missing key mapping for the Magic Keyboard first
+> generation and the 2015 models.
+> 
+> Since the first generation model had numlock emulation in place, I
+> decided to fix the bug (described in the patch) and keep it in place
+> just because it has been there for so long that people might use it.
+> Having said that, there is no indication in the keyboard about which
+> keys can be used as numbers or how to enable/disable numlock.
+> I think that a patch removing APPLE_NUMLOCK_EMULATION might make sense,
+> but I didn't want to remove existing functionality without asking :)
+> 
+> Thanks a lot,
+> José Expósito
+> 
+> v2: Resolve conflicts
 
-Okay, what about this:
-
-	static u64 cc_mask;
-
-	pgprotval_t cc_mkenc(pgprotval_t protval)
-	{
-		if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-			return protval & ~cc_mask;
-		else
-			return protval | cc_mask;
-	}
-
-	pgprotval_t cc_mkdec(pgprotval_t protval)
-	{
-		if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-			return protval | cc_mask;
-		else
-			return protval & ~cc_mask;
-	}
-	EXPORT_SYMBOL_GPL(cc_mkdec);
-
-	__init void cc_init(void)
-	{
-		if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-			cc_mask = tdx_shared_mask();
-		else
-			cc_mask = sme_me_mask;
-	}
-
-I did not introduce explicit vendor variable but opted for
-X86_FEATURE_TDX_GUEST to check vendor. There's no X86_FEATURE counter part
-on AMD side presumably because it get used too early to be functional.
-
-TDX needs cc_platform_has() later and X86_FEATURE infrastructure is
-already functional there (and we can benefit from static branch).
-
-cc_init() got called from sme_enable() for AMD and from tdx_early_init()
-for TDX.
-
-I also reworked cc_platform_has() to use combination of
-X86_FEATURE_TDX_GUEST and cc_mask to route to right helper:
-
-	bool cc_platform_has(enum cc_attr attr)
-	{
-		if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-			return intel_cc_platform_has(attr);
-		else if (cc_mask)
-			return amd_cc_platform_has(attr);
-		else if (hv_is_isolation_supported())
-			return hyperv_cc_platform_has(attr);
-		else
-			return false;
-	}
-
-Any opinions?
+Queued in hid.git#for-5.18/apple. Thanks José,
 
 -- 
- Kirill A. Shutemov
+Jiri Kosina
+SUSE Labs
+
