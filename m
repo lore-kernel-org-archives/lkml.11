@@ -2,167 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67905C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237995AbiBPTkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:40:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41792 "EHLO
+        id S238102AbiBPTkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:40:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234415AbiBPTkP (ORCPT
+        with ESMTP id S238113AbiBPTkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:40:15 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D752D2B0489
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:40:02 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id lw4so1561881ejb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:40:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sHRPRD8GP9uQyILnjM88nA04r7VU/nm1fNnZS/rsGL4=;
-        b=UvST5o77fKwFHFG2pZIsRAincIR8FLK2tfWrGygYfVo3SU+XKj7dzDp5lwkqJZL8TN
-         iw3VY4v5foNzrztjCNaUqRZETXQVngX5qFMYWE3jFZp0vmi9R7d37BWQFuhOml2KgPwd
-         xhJQhODJakHrsWZelDfUgrLxyRGMJJ9iz5waI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sHRPRD8GP9uQyILnjM88nA04r7VU/nm1fNnZS/rsGL4=;
-        b=ggWVM+iFBYLuufsP3qRp9CS/RYNwFMU9700vt1s4FyVkeXH0nHdeSjBycNUF8M/OfV
-         HQUsjAtfVPEaGTs1vjhGoW8RKVgM6DMCkXMz0EW0t57r4YbdVcFcFKaA05JlLxOYi16s
-         0YN9cEK+ns35omyZbGppyoSPsdJGbWf2DBaQat/18Ace0CVC30ij2uj3lgf5oHlQFy6b
-         DMAMQhMWC1UahcWg15fPHL60L699knMRn9yFJquXHh2U9sp16w5o1HF+qQRprTBpA6W9
-         gnZALO0uVZ1GnFP0WEbuXdCFJb8WyLj/4Rvj72pdAz0sBIXmTelyVGu5o+yb5vSJADRJ
-         K7hQ==
-X-Gm-Message-State: AOAM533tOA5ZYZe/r0Gjs1UiSVXWmVXZS6FdyB4whMzMicYD9lpXwXP4
-        EETUoDxH1ire3u2Ia+6V9CjKSGm9oD8ATM1aegc=
-X-Google-Smtp-Source: ABdhPJwD8XKifxu7GMSx6KF8U79nolOnvlqK8qVbl5LWFTySsrz5opffXTHd8qHc+xjQ4VibIxrarA==
-X-Received: by 2002:a17:906:a0d6:b0:6b1:16d5:f77d with SMTP id bh22-20020a170906a0d600b006b116d5f77dmr3449463ejb.637.1645040401172;
-        Wed, 16 Feb 2022 11:40:01 -0800 (PST)
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
-        by smtp.gmail.com with ESMTPSA id f20sm270126ejj.91.2022.02.16.11.39.59
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 11:39:59 -0800 (PST)
-Received: by mail-wm1-f48.google.com with SMTP id w13so1330309wmi.2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:39:59 -0800 (PST)
-X-Received: by 2002:a7b:c938:0:b0:37b:fdaa:2749 with SMTP id
- h24-20020a7bc938000000b0037bfdaa2749mr3036535wml.88.1645040398608; Wed, 16
- Feb 2022 11:39:58 -0800 (PST)
+        Wed, 16 Feb 2022 14:40:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52F128B636;
+        Wed, 16 Feb 2022 11:40:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FAE66185F;
+        Wed, 16 Feb 2022 19:40:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AC4C004E1;
+        Wed, 16 Feb 2022 19:40:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645040427;
+        bh=AujISKMm3XyoLDMIk3p5HcFU3+0xU5+dA8Sed0Hwfw4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=DpvHL5oep/tbOSM43uv3wRPdV5n/OJQ1B54+iJliGGdBY8yE/VMr6HdLqbb07ao0c
+         bdLaAtj6s4O5Yxc936mJ8AnfBV3ZXbCfsuto2JVwSO+lhuPTeNZrSh3OdChv+vzknM
+         nQDxWR9ZljvdQ0SGs8Oru2UUxZmJ0MtpavUPPTr7NIeOnIJCgLJ0KUWeLvy3XXeZyw
+         L4h2s+bEO239hNdhpjjniVbl3f+4gbfToAwaIx3Q/GutKHZULCrOYSxVncGnfvul3r
+         ECJtOkpiYUSxN+u8WRALtHetDwxfX0CJTOE5ZHxJBR+zemFB2mTNfKnbxTojURbeVg
+         9up2hYvs90PNQ==
+Date:   Wed, 16 Feb 2022 13:48:07 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] ath10k: Replace zero-length array with flexible-array
+ member
+Message-ID: <20220216194807.GA904008@embeddedor>
 MIME-Version: 1.0
-References: <1644494255-6632-1-git-send-email-quic_sbillaka@quicinc.com>
- <1644494255-6632-5-git-send-email-quic_sbillaka@quicinc.com> <CAD=FV=V9vXbvuU5oK6maXKAfzEPzT2Fp5Vf3CUqpJvmM+wrjeg@mail.gmail.com>
-In-Reply-To: <CAD=FV=V9vXbvuU5oK6maXKAfzEPzT2Fp5Vf3CUqpJvmM+wrjeg@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 16 Feb 2022 11:39:46 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=WWjn+CPSes2y1U=9mKZG9gkj5ubBpJOLTJDwhs4gYbeA@mail.gmail.com>
-Message-ID: <CAD=FV=WWjn+CPSes2y1U=9mKZG9gkj5ubBpJOLTJDwhs4gYbeA@mail.gmail.com>
-Subject: Re: [PATCH v4 4/5] drm/panel-edp: Add eDP sharp panel support
-To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, quic_kalyant@quicinc.com,
-        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
-        quic_mkrishn@quicinc.com, quic_vproddut@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+There is a regular need in the kernel to provide a way to declare
+having a dynamically sized set of trailing elements in a structure.
+Kernel code should always use “flexible array members”[1] for these
+cases. The older style of one-element or zero-length arrays should
+no longer be used[2].
 
-On Wed, Feb 16, 2022 at 11:29 AM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Thu, Feb 10, 2022 at 3:58 AM Sankeerth Billakanti
-> <quic_sbillaka@quicinc.com> wrote:
-> >
-> > Add support for the 14" sharp,lq140m1jw46 eDP panel.
-> >
-> > Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-> > ---
-> > 00 ff ff ff ff ff ff 00 4d 10 23 15 00 00 00 00
-> > 35 1e 01 04 a5 1f 11 78 07 de 50 a3 54 4c 99 26
-> > 0f 50 54 00 00 00 01 01 01 01 01 01 01 01 01 01
-> > 01 01 01 01 01 01 5a 87 80 a0 70 38 4d 40 30 20
-> > 35 00 35 ae 10 00 00 18 65 38 80 a0 70 38 4d 40
-> > 30 20 35 00 35 ae 10 00 00 18 00 00 00 fd 00 30
-> > 90 a7 a7 23 01 00 00 00 00 00 00 00 00 00 00 fc
-> > 00 4c 51 31 34 30 4d 31 4a 57 34 39 0a 20 00 77
-> >
-> > ----------------
-> >
-> > Block 0, Base EDID:
-> >   EDID Structure Version & Revision: 1.4
-> >   Vendor & Product Identification:
-> >     Manufacturer: SHP
-> >     Model: 5411
-> >     Made in: week 53 of 2020
-> >   Basic Display Parameters & Features:
-> >     Digital display
-> >     Bits per primary color channel: 8
-> >     DisplayPort interface
-> >     Maximum image size: 31 cm x 17 cm
-> >     Gamma: 2.20
-> >     Supported color formats: RGB 4:4:4
-> >     Default (sRGB) color space is primary color space
-> >     First detailed timing includes the native pixel format and preferred refresh rate
-> >     Display is continuous frequency
-> >   Color Characteristics:
-> >     Red  : 0.6396, 0.3291
-> >     Green: 0.2998, 0.5996
-> >     Blue : 0.1494, 0.0595
-> >     White: 0.3125, 0.3281
-> >   Established Timings I & II: none
-> >   Standard Timings: none
-> >   Detailed Timing Descriptors:
-> >     DTD 1:  1920x1080  143.981 Hz  16:9   166.587 kHz  346.500 MHz (309 mm x 174 mm)
-> >                  Hfront   48 Hsync  32 Hback  80 Hpol N
-> >                  Vfront    3 Vsync   5 Vback  69 Vpol N
-> >     DTD 2:  1920x1080   59.990 Hz  16:9    69.409 kHz  144.370 MHz (309 mm x 174 mm)
-> >                  Hfront   48 Hsync  32 Hback  80 Hpol N
-> >                  Vfront    3 Vsync   5 Vback  69 Vpol N
-> >   Display Range Limits:
-> >     Monitor ranges (Bare Limits): 48-144 Hz V, 167-167 kHz H, max dotclock 350 MHz
-> >     Display Product Name: 'LQ140M1JW49'
-> > Checksum: 0x77
-> >
-> > Changes in v4:
-> >   -Add all modes from EDID
-> >   -Provide EDID blob
-> >
-> > Changes in v3:
-> >   None
-> >
-> >  drivers/gpu/drm/panel/panel-edp.c | 44 +++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 44 insertions(+)
->
-> We want to be moving to the generic edp-panel but even if we move to
-> edp-panel there's no harm in supporting things the old way, especially
-> as people are transitioning.
->
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
 
-...and pushed to drm-misc-next:
+Link: https://github.com/KSPP/linux/issues/78
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/wireless/ath/ath10k/swap.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-a874aba8bbc5 drm/panel-edp: Add eDP sharp panel support
+diff --git a/drivers/net/wireless/ath/ath10k/swap.h b/drivers/net/wireless/ath/ath10k/swap.h
+index 25e0ad36ddb1..b4733b5ded34 100644
+--- a/drivers/net/wireless/ath/ath10k/swap.h
++++ b/drivers/net/wireless/ath/ath10k/swap.h
+@@ -17,7 +17,7 @@ struct ath10k_fw_file;
+ struct ath10k_swap_code_seg_tlv {
+ 	__le32 address;
+ 	__le32 length;
+-	u8 data[0];
++	u8 data[];
+ } __packed;
+ 
+ struct ath10k_swap_code_seg_tail {
+-- 
+2.27.0
 
-So v5 shouldn't include this patch.
-
--Doug
