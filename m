@@ -2,97 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89AD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 12:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3763EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 12:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232946AbiBPMBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 07:01:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45552 "EHLO
+        id S232967AbiBPMCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 07:02:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232909AbiBPMBa (ORCPT
+        with ESMTP id S232909AbiBPMCP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 07:01:30 -0500
-X-Greylist: delayed 324 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 04:01:18 PST
-Received: from smtp.outgoing.loopia.se (smtp.outgoing.loopia.se [93.188.3.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A7C27019B
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 04:01:18 -0800 (PST)
-Received: from s807.loopia.se (localhost [127.0.0.1])
-        by s807.loopia.se (Postfix) with ESMTP id E31C32F09373
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:55:50 +0100 (CET)
-Received: from s934.loopia.se (unknown [172.22.191.5])
-        by s807.loopia.se (Postfix) with ESMTP id D2BB83087ED8;
-        Wed, 16 Feb 2022 12:55:50 +0100 (CET)
-Received: from s473.loopia.se (unknown [172.22.191.6])
-        by s934.loopia.se (Postfix) with ESMTP id CEB4F7DCE6A;
-        Wed, 16 Feb 2022 12:55:50 +0100 (CET)
-X-Virus-Scanned: amavisd-new at amavis.loopia.se
-Received: from s645.loopia.se ([172.22.191.6])
-        by s473.loopia.se (s473.loopia.se [172.22.190.13]) (amavisd-new, port 10024)
-        with LMTP id rQd6l0OMW_jy; Wed, 16 Feb 2022 12:55:50 +0100 (CET)
-X-Loopia-Auth: user
-X-Loopia-User: carl@hgsystem.se
-X-Loopia-Originating-IP: 94.234.42.160
-Received: from localhost.localdomain (unknown [94.234.42.160])
-        (Authenticated sender: carl@hgsystem.se)
-        by s645.loopia.se (Postfix) with ESMTPSA id 8B62F1577923;
-        Wed, 16 Feb 2022 12:55:49 +0100 (CET)
-From:   Erik Rosen <erik.rosen@metormote.com>
-To:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chu Lin <linchuyuan@google.com>,
-        Jason Ling <jasonling@google.com>
-Cc:     Erik Rosen <erik.rosen@metormote.com>
-Subject: [PATCH 0/1] hwmon: (pmbus) Try to match MFR_MODEL to pmbus device id
-Date:   Wed, 16 Feb 2022 12:55:36 +0100
-Message-Id: <20220216115537.44205-1-erik.rosen@metormote.com>
-X-Mailer: git-send-email 2.11.0 (Apple Git-81)
+        Wed, 16 Feb 2022 07:02:15 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829B8E7F43
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 04:02:03 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3AF0321763;
+        Wed, 16 Feb 2022 12:02:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645012922; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kr9dETkBJpugtcSkfZO+bjcmUGF0KSfTN/IBCGVngP4=;
+        b=nfePnksG+NG2Z0qM7wRUlAloNATUCtIQUk6znsvYEpA4hxSTZsw5bFcerWsG8u8cpTCe8d
+        EFqsssmkAnhb6wUyRkbLkp+4dkvBgCi/kpKbIgjVAoGKU4TP7pL3+kw+KhTuaT2uck89BN
+        RKLIIhI63NxuWfr0co0p9JtcCWR4e6o=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645012922;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kr9dETkBJpugtcSkfZO+bjcmUGF0KSfTN/IBCGVngP4=;
+        b=Dd1MZt1sZ8lHTN+X+ydf4DfYr812TeEkgjBiybL0cdX7B9OK5TtVvtm/FEqztwOeS8ZBwR
+        xp+n6JXhvcgHoZDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1A04513AF3;
+        Wed, 16 Feb 2022 12:02:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id H5ShBbrnDGJqQAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 16 Feb 2022 12:02:02 +0000
+Message-ID: <d6f991f6-ce07-853a-e87b-5eda97a35733@suse.cz>
+Date:   Wed, 16 Feb 2022 13:02:01 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Content-Language: en-US
+To:     Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Aaron Lu <aaron.lu@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+References: <20220215145111.27082-1-mgorman@techsingularity.net>
+ <20220215145111.27082-3-mgorman@techsingularity.net>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH 2/5] mm/page_alloc: Track range of active PCP lists during
+ bulk free
+In-Reply-To: <20220215145111.27082-3-mgorman@techsingularity.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The UCD3138 chip from TI used in a number of Flex pmbus converters
-(BMR310, BMR458, BMR480, BMR490 and BMR491) has a bug in the PMBus
-interface hardware that causes it to not respond properly after
-trying to read a register that does not exist
-(see the 'UCD3138 Integrated Power Controller Family Errata').
-This will mess up the pmbus driver's auto-detection process.
+On 2/15/22 15:51, Mel Gorman wrote:
+> free_pcppages_bulk() frees pages in a round-robin fashion. Originally,
+> this was dealing only with migratetypes but storing high-order pages
+> means that there can be many more empty lists that are uselessly
+> checked. Track the minimum and maximum active pindex to reduce the
+> search space.
+> 
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> ---
+>  mm/page_alloc.c | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 08de32cfd9bb..c5110fdeb115 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -1450,6 +1450,8 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+>  					struct per_cpu_pages *pcp)
+>  {
+>  	int pindex = 0;
+> +	int min_pindex = 0;
+> +	int max_pindex = NR_PCP_LISTS - 1;
+>  	int batch_free = 0;
+>  	int nr_freed = 0;
+>  	unsigned int order;
+> @@ -1478,10 +1480,17 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+>  			if (++pindex == NR_PCP_LISTS)
 
-To remedy this situation the current version of the driver
-supports a flag named PMBUS_READ_STATUS_AFTER_FAILED_CHECK.
-If this flag is set the driver will read the STATUS register
-after each failed register check with the assumption that this
-will reset the hardware interface to a known state.
+Hmm, so in the very first iteration at this point pindex is already 1. This
+looks odd even before the patch, as order 0 MIGRATE_UNMOVABLE list is only
+processed after all the higher orders?
 
-This strategy significantly improves the situation but does
-not completely resolve the issue. In rare cases this seems
-to be insufficient to reset the interface and the auto-detection
-still fails.
+>  				pindex = 0;
 
-In addition to this, to use this workaround one must explicitly
-instruct the driver to expect for instance a BMR490 module.
-Otherwise the driver will default to the generic behaviour.
+Also shouldn't this wrap-around check also use min_index/max_index instead
+of NR_PCP_LISTS and 0?
 
-We have a situation where the client wants to use the generic
-pmbus driver to monitor the temperature of the converter,
-but does not know a priori exactly what converter model is
-actually installed; only that it supports PMBus.
+>  			list = &pcp->lists[pindex];
+> -		} while (list_empty(list));
+> +			if (!list_empty(list))
+> +				break;
+> +
+> +			if (pindex == max_pindex)
+> +				max_pindex--;
+> +			if (pindex == min_pindex)
 
-To solve this problem, it is possible to use the MFR_MODEL
-command to try and match the model name to the device id name
-and predefine the functions supported by this specific converter.
-In this way one can avoid the auto-detection process
-altogether for the problematic models. If there is no match,
-the driver reverts to auto-detection.
+So with pindex 1 and min_pindex == 0 this will not trigger until
+(eventually) the first pindex wrap around, which seems suboptimal. But I can
+see the later patches change things substantially anyway so it may be moot...
 
-Erik Rosen (1):
-  Try to match MFR_MODEL to pmbus device id
-
- drivers/hwmon/pmbus/pmbus.c | 57 +++++++++++++++++++++++++++++++------
- 1 file changed, 49 insertions(+), 8 deletions(-)
-
-
-base-commit: df0cc57e057f18e44dac8e6c18aba47ab53202f9
--- 
-2.20.1
+> +				min_pindex++;
+> +		} while (1);
+>  
+>  		/* This is the only non-empty list. Free them all. */
+> -		if (batch_free == NR_PCP_LISTS)
+> +		if (batch_free >= max_pindex - min_pindex)
+>  			batch_free = count;
+>  
+>  		order = pindex_to_order(pindex);
 
