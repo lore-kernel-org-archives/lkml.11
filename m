@@ -2,145 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6219BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF24C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231556AbiBPIkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 03:40:05 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38226 "EHLO
+        id S231594AbiBPIkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 03:40:37 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229828AbiBPIkC (ORCPT
+        with ESMTP id S229455AbiBPIke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 03:40:02 -0500
-X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 00:39:50 PST
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C538120E8B;
-        Wed, 16 Feb 2022 00:39:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
-         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=YLqbvNAQ5McurwQxgQURUxYEK/101B81ffBYTWQOubQ=; b=eL7Hr/lkBZAvTbiBImym7WqBQv
-        fFtLWY1zFgcvz0Y28ZdTef3hq5UPUDbyOdU9owOcUlMeUyuZ3oyA98+tA7VtWzh/V83PJpmahWg5r
-        mvo8+O4dcwNzaE4UT8NttIU5Q9B24c2fgT7vTH888Bt6ebP3Ss7Na0xbwHiYPj0X9IyrjurNjA5eB
-        ZWjzedHDsBYGuHo0wwQOWbdJJooJ46j4RrmUOFAYciKhQ5IxMuRrv2wAplC9c/d+YFiFj0HwvJvHq
-        KNdq7ecLO91xqhxo3t7F2RmN2eLeyUJ6R9jJqyAbe7jDYAW+nOrk0ELj+fWkrABrJye0Ksa6W80gd
-        A3UB8CtA==;
-Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=[192.168.1.10])
-        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <cyndis@kapsi.fi>)
-        id 1nKEop-0001Qm-2c; Wed, 16 Feb 2022 09:33:43 +0200
-Message-ID: <f0eb82eb-dec6-0870-3896-0973758caebb@kapsi.fi>
-Date:   Wed, 16 Feb 2022 09:33:42 +0200
+        Wed, 16 Feb 2022 03:40:34 -0500
+Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768B31C8847;
+        Wed, 16 Feb 2022 00:40:22 -0800 (PST)
+Received: from host-79-2-93-196.business.telecomitalia.it ([79.2.93.196]:33352 helo=[192.168.101.73])
+        by hostingweb31.netsons.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1nKFrH-0005i7-NY; Wed, 16 Feb 2022 09:40:19 +0100
+Message-ID: <f412980a-4e41-54c7-f000-f826e015f6d2@lucaceresoli.net>
+Date:   Wed, 16 Feb 2022 09:40:18 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v2 4/6] dt-bindings: Add HDA support for Tegra234
+ Thunderbird/91.5.0
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+Subject: Re: [RFCv3 2/6] i2c: add I2C Address Translator (ATR) support
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Peter Rosin <peda@axentia.se>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+References: <20220206115939.3091265-1-luca@lucaceresoli.net>
+ <20220206115939.3091265-3-luca@lucaceresoli.net>
+ <CAHp75Vejw86kLUJfwXR_kUn+=UCaixbcy=epO8Foe=9S2LqXTQ@mail.gmail.com>
 Content-Language: en-US
-To:     Mohan Kumar <mkumard@nvidia.com>, broonie@kernel.org,
-        lgirdwood@gmail.com, robh+dt@kernel.org, thierry.reding@gmail.com,
-        tiwai@suse.com, jonathanh@nvidia.com, spujar@nvidia.com
-Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220210065057.13555-1-mkumard@nvidia.com>
- <20220210065057.13555-5-mkumard@nvidia.com>
-From:   Mikko Perttunen <cyndis@kapsi.fi>
-In-Reply-To: <20220210065057.13555-5-mkumard@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <CAHp75Vejw86kLUJfwXR_kUn+=UCaixbcy=epO8Foe=9S2LqXTQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 91.158.25.70
-X-SA-Exim-Mail-From: cyndis@kapsi.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/10/22 08:50, Mohan Kumar wrote:
-> Add hda clocks, memory ,power and reset binding entries
-> for Tegra234.
+Hi Andy,
+
+thank you for the _very_ detailed review and apologies for not having
+found the time to reply until now.
+
+I'm OK with most of your comments, so I'm not commenting on them for
+brevity. Below my comments on the remaining topics.
+
+On 08/02/22 12:16, Andy Shevchenko wrote:
+> On Mon, Feb 7, 2022 at 7:55 PM Luca Ceresoli <luca@lucaceresoli.net> wrote:
+>>
+>> An ATR is a device that looks similar to an i2c-mux: it has an I2C
+>> slave "upstream" port and N master "downstream" ports, and forwards
+>> transactions from upstream to the appropriate downstream port. But is
+>> is different in that the forwarded transaction has a different slave
+>> address. The address used on the upstream bus is called the "alias"
+>> and is (potentially) different from the physical slave address of the
+>> downstream chip.
+>>
+>> Add a helper file (just like i2c-mux.c for a mux or switch) to allow
+>> implementing ATR features in a device driver. The helper takes care or
+>> adapter creation/destruction and translates addresses at each transaction.
 > 
-> Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
-> ---
->   include/dt-bindings/clock/tegra234-clock.h     | 4 ++++
->   include/dt-bindings/memory/tegra234-mc.h       | 6 ++++++
->   include/dt-bindings/power/tegra234-powergate.h | 9 +++++++++
->   include/dt-bindings/reset/tegra234-reset.h     | 2 ++
->   4 files changed, 21 insertions(+)
->   create mode 100644 include/dt-bindings/power/tegra234-powergate.h
+> Why I2C mux driver can't be updated to support this feature?
+
+My first version did that. But it was very complex to shoehorn the ATR
+features in the i2c-mux code which already handles various [corner]
+cases. If memory serves, code reuse was limited to the trivial code:
+allocations, cleanups and the like.
+
+The root reason is that an atr and a mux have a similar electric
+topology, but they do very different things. An mux need to be commanded
+to switch from one downstream bus to another, an atr does not. An atr
+modifies the transaction, including the speed, a mux does not.
+
+>>  RFCv1 was implemented inside i2c-mux.c and added yet more complexity
+>>  there. RFCv2 creates a new file on its own, i2c-atr.c. Since many ATR
+>>  features are not in a MUX and vice versa, the overlapping is low. This was
+>>  almost a complete rewrite, but for the records here are the main
+>>  differences from the old implementation:
 > 
-> diff --git a/include/dt-bindings/clock/tegra234-clock.h b/include/dt-bindings/clock/tegra234-clock.h
-> index 8d7e66e1b6ef..c014269b7245 100644
-> --- a/include/dt-bindings/clock/tegra234-clock.h
-> +++ b/include/dt-bindings/clock/tegra234-clock.h
-> @@ -30,5 +30,9 @@
->   #define TEGRA234_CLK_PLLC4			237U
->   /** @brief 32K input clock provided by PMIC */
->   #define TEGRA234_CLK_CLK_32K			289U
-> +/** @brief CLK_RST_CONTROLLER_AZA2XBITCLK_OUT_SWITCH_DIVIDER switch divider output (aza_2xbitclk) */
-> +#define TEGRA234_CLK_AZA_2XBIT			457U
-> +/** @brief aza_2xbitclk / 2 (aza_bitclk) */
-> +#define TEGRA234_CLK_AZA_BIT			458U
->   
->   #endif
-> diff --git a/include/dt-bindings/memory/tegra234-mc.h b/include/dt-bindings/memory/tegra234-mc.h
-> index 2662f70c15c6..f538fc442cee 100644
-> --- a/include/dt-bindings/memory/tegra234-mc.h
-> +++ b/include/dt-bindings/memory/tegra234-mc.h
-> @@ -7,6 +7,8 @@
->   #define TEGRA234_SID_INVALID		0x00
->   #define TEGRA234_SID_PASSTHROUGH	0x7f
->   
-> +/* NISO0 SMMU STREAM IDs */
-> +#define TEGRA234_SID_NISO0_HDA		0x03
+> While this is from a code perspective, maybe i2c mux and this one can
+> still share some parts?
 
-Please follow the existing convention in this file.
+Possibly. I'd have to look into that in more detail.
+I must say having a separate file allowed me to be free to implement
+whatever is best for atr. With that done I would certainly make sense to
+check whether there are still enough commonalities to share code, maybe
+in a .c file with shared functions.
 
-/* NISO0 stream IDs */
-#define TEGRA234_SID_HDA	0x03
+>> +config I2C_ATR
+>> +       tristate "I2C Address Translator (ATR) support"
+>> +       help
+>> +         Enable support for I2C Address Translator (ATR) chips.
+>> +
+>> +         An ATR allows accessing multiple I2C busses from a single
+>> +         physical bus via address translation instead of bus selection as
+>> +         i2c-muxes do.
+> 
+> What would be the module name?
 
->   
->   /* NISO1 stream IDs */
->   #define TEGRA234_SID_SDMMC4	0x02
-> @@ -16,6 +18,10 @@
->    * memory client IDs
->    */
->   
-> +/* High-definition audio (HDA) read clients */
-> +#define TEGRA234_MEMORY_CLIENT_HDAR 0x15
-> +/* High-definition audio (HDA) write clients */
-> +#define TEGRA234_MEMORY_CLIENT_HDAW 0x35
->   /* sdmmcd memory read client */
->   #define TEGRA234_MEMORY_CLIENT_SDMMCRAB 0x63
->   /* sdmmcd memory write client */
-> diff --git a/include/dt-bindings/power/tegra234-powergate.h b/include/dt-bindings/power/tegra234-powergate.h
-> new file mode 100644
-> index 000000000000..3c5575a51296
-> --- /dev/null
-> +++ b/include/dt-bindings/power/tegra234-powergate.h
-> @@ -0,0 +1,9 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved. */
-> +
-> +#ifndef __ABI_MACH_T234_POWERGATE_T234_H_
-> +#define __ABI_MACH_T234_POWERGATE_T234_H_
-> +
-> +#define TEGRA234_POWER_DOMAIN_DISP	3U
-> +
-> +#endif
-> diff --git a/include/dt-bindings/reset/tegra234-reset.h b/include/dt-bindings/reset/tegra234-reset.h
-> index 50e13bced642..2ab61c69a3d9 100644
-> --- a/include/dt-bindings/reset/tegra234-reset.h
-> +++ b/include/dt-bindings/reset/tegra234-reset.h
-> @@ -10,6 +10,8 @@
->    * @brief Identifiers for Resets controllable by firmware
->    * @{
->    */
-> +#define TEGRA234_RESET_HDA			20U
-> +#define TEGRA234_RESET_HDACODEC			21U
->   #define TEGRA234_RESET_SDMMC4			85U
->   #define TEGRA234_RESET_UARTA			100U
->   
+Isn't the module name written in Kconfig files just to avoid checkpatch
+complain about "too few doc lines"? :) Oook, it's i2s-atr anyway.
 
+>> +/**
+> 
+> Is this a kernel doc formatted documentation?
+> Haven't you got a warning?
+
+Not from checkpatch, but I got one from the kernel test robot. Will fix.
+
+[...]
+
+>> + *
+>> + * An I2C Address Translator (ATR) is a device with an I2C slave parent
+>> + * ("upstream") port and N I2C master child ("downstream") ports, and
+>> + * forwards transactions from upstream to the appropriate downstream port
+>> + * with a modified slave address. The address used on the parent bus is
+>> + * called the "alias" and is (potentially) different from the physical
+>> + * slave address of the child bus. Address translation is done by the
+>> + * hardware.
+>> + *
+>> + * An ATR looks similar to an i2c-mux except:
+>> + * - the address on the parent and child busses can be different
+>> + * - there is normally no need to select the child port; the alias used on
+>> + *   the parent bus implies it
+>> + *
+>> + * The ATR functionality can be provided by a chip with many other
+>> + * features. This file provides a helper to implement an ATR within your
+>> + * driver.
+>> + *
+>> + * The ATR creates a new I2C "child" adapter on each child bus. Adding
+>> + * devices on the child bus ends up in invoking the driver code to select
+>> + * an available alias. Maintaining an appropriate pool of available aliases
+>> + * and picking one for each new device is up to the driver implementer. The
+>> + * ATR maintains an table of currently assigned alias and uses it to modify
+>> + * all I2C transactions directed to devices on the child buses.
+>> + *
+>> + * A typical example follows.
+>> + *
+>> + * Topology:
+>> + *
+>> + *                       Slave X @ 0x10
+>> + *               .-----.   |
+>> + *   .-----.     |     |---+---- B
+>> + *   | CPU |--A--| ATR |
+>> + *   `-----'     |     |---+---- C
+>> + *               `-----'   |
+>> + *                       Slave Y @ 0x10
+>> + *
+>> + * Alias table:
+>> + *
+>> + *   Client  Alias
+>> + *   -------------
+>> + *      X    0x20
+>> + *      Y    0x30
+>> + *
+>> + * Transaction:
+>> + *
+>> + *  - Slave X driver sends a transaction (on adapter B), slave address 0x10
+>> + *  - ATR driver rewrites messages with address 0x20, forwards to adapter A
+>> + *  - Physical I2C transaction on bus A, slave address 0x20
+>> + *  - ATR chip propagates transaction on bus B with address translated to 0x10
+>> + *  - Slave X chip replies on bus B
+>> + *  - ATR chip forwards reply on bus A
+>> + *  - ATR driver rewrites messages with address 0x10
+>> + *  - Slave X driver gets back the msgs[], with reply and address 0x10
+>> + *
+>> + * Usage:
+>> + *
+>> + *  1. In your driver (typically in the probe function) add an ATR by
+>> + *     calling i2c_atr_new() passing your attach/detach callbacks
+>> + *  2. When the attach callback is called pick an appropriate alias,
+>> + *     configure it in your chip and return the chosen alias in the
+>> + *     alias_id parameter
+>> + *  3. When the detach callback is called, deconfigure the alias from
+>> + *     your chip and put it back in the pool for later usage
+>> + *
+>> + * Originally based on i2c-mux.c
+>> + */
+> 
+> Shouldn't this comment be somewhere under Documentation/ ?
+
+Uhm, yes, I agree it's a good idea to move this entire comment there.
+
+>> +       if (dev->of_node) {
+> 
+> This check can be dropped, also please use device property and fwnode
+> APIs. No good of having OF-centric generic modules nowadays.
+
+Sure! This code was written in another decade and I didn't update it...
+As you noticed elsewhere it also honors the old, strict 80-chars per
+line limit in various places where it makes no sense anymore.
+
+>> +       WARN(sysfs_create_link(&chan->adap.dev.kobj, &dev->kobj, "atr_device"),
+>> +            "can't create symlink to atr device\n");
+>> +       snprintf(symlink_name, sizeof(symlink_name), "channel-%u", chan_id);
+>> +       WARN(sysfs_create_link(&dev->kobj, &chan->adap.dev.kobj, symlink_name),
+>> +            "can't create symlink for channel %u\n", chan_id);
+> 
+> Doesn't sysfs already has a warning when it's really needed?
+
+I have to check that. I usually don't add unnecessary log messages.
+
+[...]
+
+>> +#include <linux/i2c.h>
+>> +#include <linux/mutex.h>
+> 
+> Missed types.h
+> 
+> Missed struct device;
+
+Not sure I got your point here. This file has some 'struct device *',
+which do not need a declaration, and has zero non-pointer uses of
+'struct device'.
+
+-- 
+Luca
