@@ -2,160 +2,376 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E52FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 263FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232400AbiBPJoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 04:44:03 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33104 "EHLO
+        id S232376AbiBPJqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 04:46:45 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232284AbiBPJoC (ORCPT
+        with ESMTP id S231666AbiBPJql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 04:44:02 -0500
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id C9A902A4A04;
-        Wed, 16 Feb 2022 01:43:39 -0800 (PST)
-Received: from jleng.ambarella.net (unknown [180.169.129.130])
-        by mail-app2 (Coremail) with SMTP id by_KCgAX_nApxwxi+HTtAQ--.38282S2;
-        Wed, 16 Feb 2022 17:43:11 +0800 (CST)
-From:   3090101217@zju.edu.cn
-To:     balbi@kernel.org, gregkh@linuxfoundation.org,
-        ruslan.bilovol@gmail.com, pavel.hofman@ivitera.com
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jing Leng <jleng@ambarella.com>
-Subject: [PATCH] usb: gadget: f_uac1: add set requests support
-Date:   Wed, 16 Feb 2022 17:43:01 +0800
-Message-Id: <20220216094301.2448-1-3090101217@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgAX_nApxwxi+HTtAQ--.38282S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxWr4UKF4kKry5Zw1fKF13XFb_yoW5trWrpF
-        4UCayayrs8J34qqr1xJr4rZFW3C3yxA39xKryDt343Wrn3Jwn0yF4jyF9a9FW3Aas5Cr4x
-        XF4Ygr1ruw1j9rDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBSb7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2vYz4IE4I80cI0F6IAv
-        xc0EwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ew
-        Av7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY
-        6r1j6r4UM4x0Y48IcxkI7VAKI48JM4kE6xkIj40Ew7xC0wCY02Avz4vE14v_GFWl42xK82
-        IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC2
-        0s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMI
-        IF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF
-        0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87
-        Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUxBHqUUUUU
-X-CM-SenderInfo: qtqziiyqrsilo62m3hxhgxhubq/1tbiAwIDBVNG3Fih1gACsj
+        Wed, 16 Feb 2022 04:46:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D68E54
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:46:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 749E26186E
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:46:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A234C004E1;
+        Wed, 16 Feb 2022 09:46:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645004786;
+        bh=vPERn9P5QCu5qlIMT1djZ+zjTb/gOAAuL52Bf7nKptc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Tj9yirq4PQx0usLm9nXzfABnze0OHcmclH8k36+YHwYy2j3YZuaHtJSP0LbXpcvJa
+         DQRW06Ld327c2haCWAczEafDWgKcVbhLvWhQI+bJFCZa0A5QU2aX3PQCT/l1YzQPLl
+         qUcAfY1M+WdhnH8t9IQL1vWiHZQdsvSYudZIVJAqhxSOKDQKcaZ3yx6vDkOmOOcUGw
+         cNVOCk3n24NHgHVRjFe9YZZO3CsPv7ggiUvL1jfdChmPEl0+rDqh3E48gX+d4KR2ol
+         j5hghQnqOCxtX996pHSWALb6LXhpi4kv7OnLQKqTD0mNTuB6LBcX6Sa1vV1qvrfaYG
+         7HyoU2g6HqW8g==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id EA705400FE; Wed, 16 Feb 2022 06:46:23 -0300 (-03)
+Date:   Wed, 16 Feb 2022 06:46:23 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/25] perf intel-pt: Add support for Event Trace and TNT
+ disable
+Message-ID: <YgzH70YcuyN1J0KT@kernel.org>
+References: <20220124084201.2699795-1-adrian.hunter@intel.com>
+ <Ygu4VgqvrEyWgMqu@kernel.org>
+ <YgwBim6kCoOGz3rw@kernel.org>
+ <b1bdaafe-aac0-f3d9-dd90-72790be9e408@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b1bdaafe-aac0-f3d9-dd90-72790be9e408@intel.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+Em Wed, Feb 16, 2022 at 08:12:08AM +0200, Adrian Hunter escreveu:
+> On 15/02/2022 21:39, Arnaldo Carvalho de Melo wrote:
+> > Em Tue, Feb 15, 2022 at 11:27:34AM -0300, Arnaldo Carvalho de Melo escreveu:
+> >> Em Mon, Jan 24, 2022 at 10:41:36AM +0200, Adrian Hunter escreveu:
+> >>> Hi
+> >>>
+> >>> Brief documentation is in the last patch with more technical details in
+> >>> Intel SDM (https://www.intel.com/sdm) version 076.
+> >>>
+> >>> The patches touch mostly Intel PT and auxtrace code, with a few supporting
+> >>> changes to perf script.
+> >>>
+> >>> I am not aware of any hardware that has the new capabilities yet.
+> >>>
+> >>> Patches can also be found here:
+> >>>
+> >>> 	https://github.com/ahunter6/linux/tree/event-trace
+> >>>
+> >>
+> >> Thanks, applied.
+> > 
+> > So there were some problems in some compilers:
+> > 
+> > [perfbuilder@five ~]$ grep FAIL dm.log/summary
+> >    1    51.67 almalinux:8                   : FAIL clang version 12.0.1 (Red Hat 12.0.1-4.module_el8.5.0+1025+93159d6c)
+> >    2    28.48 alpine:3.4                    : FAIL clang version 3.8.0 (tags/RELEASE_380/final)
+> >    3    28.89 alpine:3.5                    : FAIL clang version 3.8.1 (tags/RELEASE_381/final)
+> >    4    30.20 alpine:3.6                    : FAIL clang version 4.0.0 (tags/RELEASE_400/final)
+> >    5    31.39 alpine:3.7                    : FAIL gcc version 6.4.0 (Alpine 6.4.0)
+> >    6    31.59 alpine:3.8                    : FAIL gcc version 6.4.0 (Alpine 6.4.0)
+> >    7    32.90 alpine:3.9                    : FAIL gcc version 8.3.0 (Alpine 8.3.0)
+> >    8    38.92 alpine:3.10                   : FAIL gcc version 8.3.0 (Alpine 8.3.0)
+> >    9    43.02 alpine:3.11                   : FAIL gcc version 9.3.0 (Alpine 9.3.0)
+> >   10    55.58 alpine:3.12                   : FAIL gcc version 9.3.0 (Alpine 9.3.0)
+> >   11    59.70 alpine:3.13                   : FAIL gcc version 10.2.1 20201203 (Alpine 10.2.1_pre1)
+> >   12    56.18 alpine:3.14                   : FAIL gcc version 10.3.1 20210424 (Alpine 10.3.1_git20210424)
+> >   13    55.98 alpine:3.15                   : FAIL gcc version 10.3.1 20211027 (Alpine 10.3.1_git20211027)
+> >   14    57.38 alpine:edge                   : FAIL gcc version 11.2.1 20211128 (Alpine 11.2.1_git20211128)
+> >   15    26.99 alt:p8                        : FAIL clang version 3.8.0 (tags/RELEASE_380/final)
+> >   16    44.66 alt:p9                        : FAIL clang version 10.0.0
+> >   17    44.95 alt:p10                       : FAIL clang version 11.0.1
+> >   18    44.74 alt:sisyphus                  : FAIL gcc version 11.2.1 20211202 (ALT Sisyphus 11.2.1-alt2) (GCC)
+> >   19    27.89 amazonlinux:1                 : FAIL clang version 3.6.2 (tags/RELEASE_362/final)
+> >   20    45.55 amazonlinux:2                 : FAIL clang version 11.1.0 (Amazon Linux 2 11.1.0-1.amzn2.0.2)
+> >   21    35.92 archlinux:base                : FAIL clang version 13.0.0
+> >   22    37.83 centos:8                      : FAIL clang version 11.0.1 (Red Hat 11.0.1-1.module_el8.4.0+966+2995ef20)
+> >   23    51.37 centos:stream                 : FAIL clang version 12.0.1 (Red Hat 12.0.1-2.module_el8.6.0+937+1cafe22c)
+> >   25    30.89 debian:9                      : FAIL clang version 3.8.1-24 (tags/RELEASE_381/final)
+> >   26    29.59 debian:10                     : FAIL clang version 7.0.1-8+deb10u2 (tags/RELEASE_701/final)
+> >   27    41.13 debian:11                     : FAIL gcc version 10.2.1 20210110 (Debian 10.2.1-6)
+> >   28    47.06 debian:experimental           : FAIL gcc version 11.2.0 (Debian 11.2.0-14)
+> >   34    29.28 fedora:23                     : FAIL clang version 3.7.0 (tags/RELEASE_370/final)
+> >   35    38.12 fedora:24                     : FAIL clang version 3.8.1 (tags/RELEASE_381/final)
+> >   37    33.10 fedora:25                     : FAIL clang version 3.9.1 (tags/RELEASE_391/final)
+> >   38    40.72 fedora:26                     : FAIL clang version 4.0.1 (tags/RELEASE_401/final)
+> >   39    35.32 fedora:27                     : FAIL clang version 5.0.2 (tags/RELEASE_502/final)
+> >   40    38.51 fedora:28                     : FAIL clang version 6.0.1 (tags/RELEASE_601/final)
+> >   41    40.61 fedora:29                     : FAIL clang version 7.0.1 (Fedora 7.0.1-6.fc29)
+> >   42    41.63 fedora:30                     : FAIL clang version 8.0.0 (Fedora 8.0.0-3.fc30)
+> >   43    35.51 fedora:31                     : FAIL clang version 9.0.1 (Fedora 9.0.1-4.fc31)
+> >   44    45.26 fedora:32                     : FAIL clang version 10.0.1 (Fedora 10.0.1-3.fc32)
+> >   45    44.66 fedora:33                     : FAIL clang version 11.0.0 (Fedora 11.0.0-3.fc33)
+> >   46    46.36 fedora:34                     : FAIL clang version 12.0.1 (Fedora 12.0.1-1.fc34)
+> >   49    49.97 fedora:35                     : FAIL clang version 13.0.0 (Fedora 13.0.0-3.fc35)
+> >   50     6.78 fedora:rawhide                : FAIL gcc version 12.0.1 20220205 (Red Hat 12.0.1-0) (GCC)
+> >   51    44.84 gentoo-stage3:latest          : FAIL clang version 13.0.0
+> >   52    32.99 mageia:6                      : FAIL clang version 3.9.1 (tags/RELEASE_391/final)
+> >   53    39.01 mageia:7                      : FAIL clang version 8.0.0 (Mageia 8.0.0-1.mga7)
+> >   54    47.66 manjaro:base                  : FAIL clang version 13.0.0
+> >   55     6.49 openmandriva:cooker           : FAIL gcc version 11.2.0 20210728 (OpenMandriva) (GCC)
+> >   56    46.54 opensuse:15.0                 : FAIL clang version 5.0.1 (tags/RELEASE_501/final 312548)
+> >   57    48.74 opensuse:15.1                 : FAIL clang version 7.0.1 (tags/RELEASE_701/final 349238)
+> >   58    54.96 opensuse:15.2                 : FAIL clang version 9.0.1
+> >   59    67.79 opensuse:15.3                 : FAIL clang version 11.0.1
+> >   60    67.69 opensuse:15.4                 : FAIL clang version 11.0.1
+> >   61    75.25 opensuse:tumbleweed           : FAIL clang version 13.0.0
+> >   62    50.15 oraclelinux:8                 : FAIL clang version 12.0.1 (Red Hat 12.0.1-4.0.1.module+el8.5.0+20428+2b4ecd47)
+> >   63    56.68 rockylinux:8                  : FAIL clang version 12.0.1 (Red Hat 12.0.1-4.module+el8.5.0+715+58f51d49)
+> >   64    38.11 ubuntu:16.04                  : FAIL clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)
+> >   71    38.11 ubuntu:18.04                  : FAIL clang version 6.0.0-1ubuntu2 (tags/RELEASE_600/final)
+> >   82    41.43 ubuntu:20.04                  : FAIL clang version 10.0.0-4ubuntu1
+> >   84    30.21 ubuntu:20.10                  : FAIL gcc version 10.3.0 (Ubuntu 10.3.0-1ubuntu1~20.10)
+> >   85    39.23 ubuntu:21.04                  : FAIL gcc version 10.3.0 (Ubuntu 10.3.0-1ubuntu1)
+> >   86     1.07 ubuntu:21.04-x-mips64         : FAIL gcc version 10.3.0 (Ubuntu 10.3.0-1ubuntu1)
+> >   87    40.23 ubuntu:21.10                  : FAIL gcc version 11.2.0 (Ubuntu 11.2.0-7ubuntu2)
+> >   88    52.77 ubuntu:22.04                  : FAIL gcc version 11.2.0 (Ubuntu 11.2.0-14ubuntu1)
+> > [perfbuilder@five ~]$
+> > 
+> > :-)
+> > 
+> > Sometimes its clang, sometimes its gcc, but mostly is this:
+> > 
+> > [perfbuilder@five ~]$ tail -25 dm.log/ubuntu\:22.04
+> >   LD      /tmp/build/perf/util/arm-spe-decoder/perf-in.o
+> >   CC      /tmp/build/perf/util/clockid.o
+> >   CC      /tmp/build/perf/util/list_sort.o
+> >   CC      /tmp/build/perf/util/bpf-loader.o
+> > util/intel-pt.c:2213:31: error: field 'cfe' with variable sized type 'struct perf_synth_intel_evt' not at the end of a struct or class is a GNU extension [-Werror,-Wgnu-variable-sized-type-not-at-end]
+> >                 struct perf_synth_intel_evt cfe;
+> >                                             ^
+> >   CC      /tmp/build/perf/util/bpf_map.o
+> >   CC      /tmp/build/perf/util/bpf-prologue.o
+> >   CC      /tmp/build/perf/util/symbol-elf.o
+> > 1 error generated.
+> >   CC      /tmp/build/perf/util/probe-file.o
+> > make[4]: *** [/git/perf-5.17.0-rc3/tools/build/Makefile.build:97: /tmp/build/perf/util/intel-pt.o] Error 1
+> > make[4]: *** Waiting for unfinished jobs....
+> >   LD      /tmp/build/perf/libbpf/staticobjs/libbpf-in.o
+> >   LINK    /tmp/build/perf/libbpf/libbpf.a
+> >   LD      /tmp/build/perf/util/scripting-engines/perf-in.o
+> >   LD      /tmp/build/perf/util/intel-pt-decoder/perf-in.o
+> > make[3]: *** [/git/perf-5.17.0-rc3/tools/build/Makefile.build:139: util] Error 2
+> > make[2]: *** [Makefile.perf:665: /tmp/build/perf/perf-in.o] Error 2
+> > make[2]: *** Waiting for unfinished jobs....
+> > make[1]: *** [Makefile.perf:240: sub-make] Error 2
+> > make: *** [Makefile:70: all] Error 2
+> > make: Leaving directory '/git/perf-5.17.0-rc3/tools/perf'
+> > + exit 1
+> > [perfbuilder@five ~]$[perfbuilder@five ~]$ tail -25 dm.log/ubuntu\:22.04
+> >   LD      /tmp/build/perf/util/arm-spe-decoder/perf-in.o
+> >   CC      /tmp/build/perf/util/clockid.o
+> >   CC      /tmp/build/perf/util/list_sort.o
+> >   CC      /tmp/build/perf/util/bpf-loader.o
+> > util/intel-pt.c:2213:31: error: field 'cfe' with variable sized type 'struct perf_synth_intel_evt' not at the end of a struct or class is a GNU extension [-Werror,-Wgnu-variable-sized-type-not-at-end]
+> >                 struct perf_synth_intel_evt cfe;
+> >                                             ^
+> >   CC      /tmp/build/perf/util/bpf_map.o
+> >   CC      /tmp/build/perf/util/bpf-prologue.o
+> >   CC      /tmp/build/perf/util/symbol-elf.o
+> > 1 error generated.
+> >   CC      /tmp/build/perf/util/probe-file.o
+> > make[4]: *** [/git/perf-5.17.0-rc3/tools/build/Makefile.build:97: /tmp/build/perf/util/intel-pt.o] Error 1
+> > make[4]: *** Waiting for unfinished jobs....
+> >   LD      /tmp/build/perf/libbpf/staticobjs/libbpf-in.o
+> >   LINK    /tmp/build/perf/libbpf/libbpf.a
+> >   LD      /tmp/build/perf/util/scripting-engines/perf-in.o
+> >   LD      /tmp/build/perf/util/intel-pt-decoder/perf-in.o
+> > make[3]: *** [/git/perf-5.17.0-rc3/tools/build/Makefile.build:139: util] Error 2
+> > make[2]: *** [Makefile.perf:665: /tmp/build/perf/perf-in.o] Error 2
+> > make[2]: *** Waiting for unfinished jobs....
+> > make[1]: *** [Makefile.perf:240: sub-make] Error 2
+> > make: *** [Makefile:70: all] Error 2
+> > make: Leaving directory '/git/perf-5.17.0-rc3/tools/perf'
+> > + exit 1
+> > [perfbuilder@five ~]$
+> > 
+> > I'm trying to fix this now, lets see...
+> 
+> What about this?
+> 
+> diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
+> index 320cbcd5b902..73a414643010 100644
+> --- a/tools/perf/util/event.h
+> +++ b/tools/perf/util/event.h
+> @@ -295,6 +295,12 @@ struct perf_synth_intel_evd {
+>  	u64	payload;
+>  };
+>  
+> +/*
+> + * Maximum number of event trace data in one go, assuming at most 1 per type
+> + * and 6-bits of type in the EVD packet.
+> + */
+> +#define INTEL_PT_MAX_EVDS 64
+> +
 
-Currently the f_uac1 driver only supports UAC_SET_CUR request.
+I ended up making it:
 
-But when uac1 device is plugged to Ubuntu 20.04 PC, at the stage
-of setup, the PC will send UAC_SET_RES request, If the device
-doesn't respond to the request, the PC will abort the setup process
-and uac1 device can't be recognized on Ubuntu 20.04 PC.
+  struct perf_synth_intel_evd evd[0];
 
-So f_uac1 driver should handle other set requests.
+And that made all compilers happy, but since there is an effort to
+remove this in the kernel sources, I'll apply your patch on top of
+everything, as I already pushed it out to my kernel.org perf/core
+branch.
 
-Signed-off-by: Jing Leng <jleng@ambarella.com>
----
- drivers/usb/gadget/function/f_uac1.c | 44 +++++++++++++++++++++++-----
- 1 file changed, 36 insertions(+), 8 deletions(-)
+Thanks!
 
-diff --git a/drivers/usb/gadget/function/f_uac1.c b/drivers/usb/gadget/function/f_uac1.c
-index 03f50643fbba..c9d8ec4fdf22 100644
---- a/drivers/usb/gadget/function/f_uac1.c
-+++ b/drivers/usb/gadget/function/f_uac1.c
-@@ -589,7 +589,7 @@ in_rq_res(struct usb_function *fn, const struct usb_ctrlrequest *cr)
- }
- 
- static void
--out_rq_cur_complete(struct usb_ep *ep, struct usb_request *req)
-+out_rq_complete(struct usb_ep *ep, struct usb_request *req)
- {
- 	struct g_audio *audio = req->context;
- 	struct usb_composite_dev *cdev = audio->func.config->cdev;
-@@ -614,9 +614,11 @@ out_rq_cur_complete(struct usb_ep *ep, struct usb_request *req)
- 			is_playback = 1;
- 
- 		if (control_selector == UAC_FU_MUTE) {
--			u8 mute = *(u8 *)req->buf;
-+			if (cr->bRequest == UAC_SET_CUR) {
-+				u8 mute = *(u8 *)req->buf;
- 
--			u_audio_set_mute(audio, is_playback, mute);
-+				u_audio_set_mute(audio, is_playback, mute);
-+			}
- 
- 			return;
- 		} else if (control_selector == UAC_FU_VOLUME) {
-@@ -624,7 +626,34 @@ out_rq_cur_complete(struct usb_ep *ep, struct usb_request *req)
- 			s16 volume;
- 
- 			volume = le16_to_cpu(*c);
--			u_audio_set_volume(audio, is_playback, volume);
-+
-+			switch (cr->bRequest) {
-+			case UAC_SET_CUR:
-+				u_audio_set_volume(audio, is_playback, volume);
-+				break;
-+			case UAC_SET_MIN:
-+				if (is_playback)
-+					opts->p_volume_min = volume;
-+				else
-+					opts->c_volume_min = volume;
-+				break;
-+			case UAC_SET_MAX:
-+				if (is_playback)
-+					opts->p_volume_max = volume;
-+				else
-+					opts->c_volume_max = volume;
-+				break;
-+			case UAC_SET_RES:
-+				if (is_playback)
-+					opts->p_volume_res = volume;
-+				else
-+					opts->c_volume_res = volume;
-+				break;
-+			case UAC_SET_MEM:
-+				break;
-+			default:
-+				break;
-+			}
- 
- 			return;
- 		} else {
-@@ -643,7 +672,7 @@ out_rq_cur_complete(struct usb_ep *ep, struct usb_request *req)
- }
- 
- static int
--out_rq_cur(struct usb_function *fn, const struct usb_ctrlrequest *cr)
-+ac_rq_out(struct usb_function *fn, const struct usb_ctrlrequest *cr)
- {
- 	struct usb_request *req = fn->config->cdev->req;
- 	struct g_audio *audio = func_to_g_audio(fn);
-@@ -659,7 +688,7 @@ out_rq_cur(struct usb_function *fn, const struct usb_ctrlrequest *cr)
- 			(FUOUT_EN(opts) && (entity_id == USB_OUT_FU_ID))) {
- 		memcpy(&uac1->setup_cr, cr, sizeof(*cr));
- 		req->context = audio;
--		req->complete = out_rq_cur_complete;
-+		req->complete = out_rq_complete;
- 
- 		return w_length;
- 	} else {
-@@ -789,8 +818,7 @@ f_audio_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
- 		value = audio_get_endpoint_req(f, ctrl);
- 		break;
- 	case USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE:
--		if (ctrl->bRequest == UAC_SET_CUR)
--			value = out_rq_cur(f, ctrl);
-+		value = ac_rq_out(f, ctrl);
- 		break;
- 	case USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE:
- 		value = ac_rq_in(f, ctrl);
+- Arnaldo
+
+>  /* Intel PT Event Trace */
+>  struct perf_synth_intel_evt {
+>  	u32 padding;
+> @@ -308,7 +314,7 @@ struct perf_synth_intel_evt {
+>  		};
+>  		u32	cfe;
+>  	};
+> -	struct perf_synth_intel_evd evd[];
+> +	struct perf_synth_intel_evd evd[INTEL_PT_MAX_EVDS];
+>  };
+>  
+>  struct perf_synth_intel_iflag_chg {
+> diff --git a/tools/perf/util/intel-pt-decoder/intel-pt-decoder.c b/tools/perf/util/intel-pt-decoder/intel-pt-decoder.c
+> index e1d8f7504cbe..44822d041199 100644
+> --- a/tools/perf/util/intel-pt-decoder/intel-pt-decoder.c
+> +++ b/tools/perf/util/intel-pt-decoder/intel-pt-decoder.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/zalloc.h>
+>  
+>  #include "../auxtrace.h"
+> +#include "../event.h"
+>  
+>  #include "intel-pt-insn-decoder.h"
+>  #include "intel-pt-pkt-decoder.h"
+> diff --git a/tools/perf/util/intel-pt-decoder/intel-pt-decoder.h b/tools/perf/util/intel-pt-decoder/intel-pt-decoder.h
+> index efb2cb3ae0ca..fec832a7cf75 100644
+> --- a/tools/perf/util/intel-pt-decoder/intel-pt-decoder.h
+> +++ b/tools/perf/util/intel-pt-decoder/intel-pt-decoder.h
+> @@ -212,12 +212,6 @@ struct intel_pt_vmcs_info {
+>  	bool error_printed;
+>  };
+>  
+> -/*
+> - * Maximum number of event trace data in one go, assuming at most 1 per type
+> - * and 6-bits of type in the EVD packet.
+> - */
+> -#define INTEL_PT_MAX_EVDS 64
+> -
+>  /* Event trace data from EVD packet */
+>  struct intel_pt_evd {
+>  	int type;
+> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
+> index 6fa76b584537..a00ca10f11a6 100644
+> --- a/tools/perf/util/intel-pt.c
+> +++ b/tools/perf/util/intel-pt.c
+> @@ -2211,10 +2211,7 @@ static int intel_pt_synth_events_sample(struct intel_pt_queue *ptq)
+>  	struct intel_pt *pt = ptq->pt;
+>  	union perf_event *event = ptq->event_buf;
+>  	struct perf_sample sample = { .ip = 0, };
+> -	struct {
+> -		struct perf_synth_intel_evt cfe;
+> -		struct perf_synth_intel_evd evd[INTEL_PT_MAX_EVDS];
+> -	} raw;
+> +	struct perf_synth_intel_evt raw;
+>  	int i;
+>  
+>  	if (intel_pt_skip_event(pt))
+> @@ -2225,11 +2222,11 @@ static int intel_pt_synth_events_sample(struct intel_pt_queue *ptq)
+>  	sample.id        = ptq->pt->evt_id;
+>  	sample.stream_id = ptq->pt->evt_id;
+>  
+> -	raw.cfe.type     = ptq->state->cfe_type;
+> -	raw.cfe.reserved = 0;
+> -	raw.cfe.ip       = !!(ptq->state->flags & INTEL_PT_FUP_IP);
+> -	raw.cfe.vector   = ptq->state->cfe_vector;
+> -	raw.cfe.evd_cnt  = ptq->state->evd_cnt;
+> +	raw.type     = ptq->state->cfe_type;
+> +	raw.reserved = 0;
+> +	raw.ip       = !!(ptq->state->flags & INTEL_PT_FUP_IP);
+> +	raw.vector   = ptq->state->cfe_vector;
+> +	raw.evd_cnt  = ptq->state->evd_cnt;
+>  
+>  	for (i = 0; i < ptq->state->evd_cnt; i++) {
+>  		raw.evd[i].et       = 0;
+> 
+> 
+> 
+> > 
+> > - Arnaldo
+> > 
+> > 
+> >>  
+> >>> Adrian Hunter (25):
+> >>>       perf intel-pt: pkt-decoder-test: Fix scope of test_data
+> >>>       perf intel-pt: pkt-decoder: Remove misplaced linebreak
+> >>>       perf intel-pt: pkt-decoder: Add CFE and EVD packets
+> >>>       perf intel-pt: pkt-decoder: Add MODE.Exec IFLAG bit
+> >>>       perf intel-pt: decoder: Add config bit definitions
+> >>>       perf intel-pt: decoder: Factor out clearing of FUP event variables
+> >>>       perf intel-pt: decoder: Add CFE and EVD processing
+> >>>       perf intel-pt: decoder: Add MODE.Exec IFLAG processing
+> >>>       perf tools: Define Intel PT CFE / EVD event
+> >>>       perf tools: Define Intel PT iflag synthesized event
+> >>>       perf tools: Define new D and t flags
+> >>>       perf auxtrace: Add itrace option "I"
+> >>>       perf intel-pt: Record Event Trace capability flag
+> >>>       perf intel-pt: Synthesize CFE / EVD event
+> >>>       perf intel-pt: Synthesize iflag event
+> >>>       perf intel-pt: Synthesize new D and t flags
+> >>>       perf intel-pt: Force 'quick' mode when TNT is disabled
+> >>>       perf script: Display Intel PT CFE / EVD synthesized event
+> >>>       perf script: Display Intel PT iflag synthesized event
+> >>>       perf script: Display new D and t flags
+> >>>       perf scripts python: intel-pt-events.py: Add Event Trace
+> >>>       perf scripting python: Add all sample flags to DB export
+> >>>       perf scripts python: export-to-sqlite.py: Export all sample flags
+> >>>       perf scripts python: export-to-postgresql.py: Export all sample flags
+> >>>       perf intel-pt: Add documentation for Event Trace and TNT disable
+> >>>
+> >>>  tools/perf/Documentation/itrace.txt                |   2 +
+> >>>  tools/perf/Documentation/perf-intel-pt.txt         | 104 ++++++++-
+> >>>  tools/perf/Documentation/perf-script.txt           |  13 +-
+> >>>  .../arch/x86/tests/intel-pt-pkt-decoder-test.c     |  17 +-
+> >>>  tools/perf/arch/x86/util/intel-pt.c                |   7 +
+> >>>  tools/perf/builtin-script.c                        |  78 ++++++-
+> >>>  tools/perf/scripts/python/export-to-postgresql.py  |  17 +-
+> >>>  tools/perf/scripts/python/export-to-sqlite.py      |  19 +-
+> >>>  tools/perf/scripts/python/intel-pt-events.py       |  55 ++++-
+> >>>  tools/perf/util/auxtrace.c                         |   4 +
+> >>>  tools/perf/util/auxtrace.h                         |   4 +
+> >>>  tools/perf/util/event.h                            |  45 +++-
+> >>>  .../perf/util/intel-pt-decoder/intel-pt-decoder.c  | 245 +++++++++++++++++++--
+> >>>  .../perf/util/intel-pt-decoder/intel-pt-decoder.h  |  21 ++
+> >>>  .../util/intel-pt-decoder/intel-pt-pkt-decoder.c   |  47 +++-
+> >>>  .../util/intel-pt-decoder/intel-pt-pkt-decoder.h   |   3 +
+> >>>  tools/perf/util/intel-pt.c                         | 164 +++++++++++++-
+> >>>  .../util/scripting-engines/trace-event-python.c    |   3 +-
+> >>>  18 files changed, 779 insertions(+), 69 deletions(-)
+> >>>
+> >>>
+> >>> Regards
+> >>> Adrian
+> >>
+> >> -- 
+> >>
+> >> - Arnaldo
+> > 
+
 -- 
-2.17.1
 
+- Arnaldo
