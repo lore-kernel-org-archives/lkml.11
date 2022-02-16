@@ -2,166 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF77C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52924C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:19:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232533AbiBPNTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:19:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34642 "EHLO
+        id S234178AbiBPNTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:19:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234133AbiBPNSt (ORCPT
+        with ESMTP id S234052AbiBPNSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:18:49 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646EC2AC925
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:18:17 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id l12-20020a7bc34c000000b003467c58cbdfso3730667wmj.2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 05:18:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=algolia.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PlNi9ciElPwEs1LJoEB8xZkE+EnHB0mIZHsYC5NhAsY=;
-        b=w0jBpzaR5vaPbYOcj2spBHJfOMj3nwWNKsycXYvill3tWXFQ4LXr+vaDsKxJLBa9Ev
-         MdZYWVsdfvgjdAXBoJdyOPeH0kafRB9UvrpwMIucZ4/rjHH/BVKe4kuVFw8Pf8OFEJLo
-         P5EU0NQTIwXw7KDM4xH/9O9Uxes+q5KPbRKtg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PlNi9ciElPwEs1LJoEB8xZkE+EnHB0mIZHsYC5NhAsY=;
-        b=hnOFMSxwBB2QbL/58EhMfngJWe8t2P5uF24vgFN7IrimxN9+ZCBF7YVIGrQ0GNGkr5
-         VM8NbM4cits5Sa+Zf+KFCBTnRRnF/AYPTHBQupkfzXkRR2SYnT4iTO9gicgfZ6qPzfZ1
-         k6Uwz5GNnjTpW3CVufkISdGqmwinhIbfuqV3tevEdsz4HN8VFLFZaSh8ZgIrNk4oRaTL
-         AQ5/NpjLTgLUCzzFSnvD+pRmqNEEQdfyQGsHFf1peELmkECt3jmeYw/BEjglY2wHmfjI
-         6ITJnxeIuB+AByEEB1tBBnlM0FEYfN1ZBEmqIuRlVL/ohrSNRqizjWmH0cGIY8Lh239q
-         W2hQ==
-X-Gm-Message-State: AOAM530AjU9d+xNPwhCdnyq4eIXh0rRnIB/EXAhHH21ELjt2soeTI6X2
-        fdgXsJTlj1zoZkuLrfwwprabgSuqSBJARecw
-X-Google-Smtp-Source: ABdhPJy0vRrYV6duj8pGGxIELNPUfCUwW0eEI7uQbDouSdpL6nweY9x4I6bCFDU/V85DPITDc0BgTw==
-X-Received: by 2002:a05:600c:20c7:b0:37b:b739:8177 with SMTP id y7-20020a05600c20c700b0037bb7398177mr1605527wmm.121.1645017495859;
-        Wed, 16 Feb 2022 05:18:15 -0800 (PST)
-Received: from xavier-xps ([2a01:e0a:830:d971:752e:e19b:a691:2171])
-        by smtp.gmail.com with ESMTPSA id x7sm28339793wro.21.2022.02.16.05.18.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 05:18:15 -0800 (PST)
-Date:   Wed, 16 Feb 2022 14:18:14 +0100
-From:   Xavier Roche <xavier.roche@algolia.com>
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.vnet.ibm.com>
-Subject: Re: race between vfs_rename and do_linkat (mv and link)
-Message-ID: <20220216131814.GA2463301@xavier-xps>
-References: <20220214210708.GA2167841@xavier-xps>
- <CAJfpegvVKWHhhXwOi9jDUOJi2BnYSDxZQrp1_RRrpVjjZ3Rs2w@mail.gmail.com>
- <YguspMvu6M6NJ1hL@zeniv-ca.linux.org.uk>
- <YgvPbljmJXsR7ESt@zeniv-ca.linux.org.uk>
- <YgvSB6CKAhF5IXFj@casper.infradead.org>
- <YgvS1XOJMn5CjQyw@zeniv-ca.linux.org.uk>
- <CAJfpegv03YpTPiDnLwbaewQX_KZws5nutays+vso2BVJ1v1+TA@mail.gmail.com>
- <YgzRwhavapo69CAn@miu.piliscsaba.redhat.com>
+        Wed, 16 Feb 2022 08:18:46 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24162AB520;
+        Wed, 16 Feb 2022 05:18:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 60152CE26F2;
+        Wed, 16 Feb 2022 13:18:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12440C340F0;
+        Wed, 16 Feb 2022 13:17:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645017484;
+        bh=VX4KkQyuIR3tQGDR6prM8ou6pbxkhf/vAdqGON90Cm0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CHCgfRQJGdosNV1evKFnaA5ei4xJAQnutJJPhJDJedQb8ubdZ/7Y4gbjZfBoHlpfu
+         02zUcTsVmwftwP3VFFw8cf1xplYfxud05Hq90fcOl+6pChvWJp2VuJGg6f1dhDmeKP
+         2Ku7d6y9bCG/B7QQIkLEQll/VqhOb3oxvRxpjL7bHiIP7fh7rr3NkfNXH+hMaXbIfa
+         qHFBF3xOTCoSqLhRyub3LajzF4xQe4lV+XRk2zeVmUEYrZWjONVkWPfTimkvr5qUGC
+         VogArIAmhrmBKTIWZOEA4fZwuT8tCTP8ztaTT853tTOy2yqxBDNJ8/RxehDqdkvFhY
+         Yb158iS57sWQQ==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
+        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk
+Cc:     linux@armlinux.org.uk, will@kernel.org, guoren@kernel.org,
+        bcain@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu,
+        tsbogend@alpha.franken.de, nickhu@andestech.com,
+        green.hu@gmail.com, dinguyen@kernel.org, shorne@gmail.com,
+        deller@gmx.de, mpe@ellerman.id.au, peterz@infradead.org,
+        mingo@redhat.com, mark.rutland@arm.com, hca@linux.ibm.com,
+        dalias@libc.org, davem@davemloft.net, richard@nod.at,
+        x86@kernel.org, jcmvbkbc@gmail.com, ebiederm@xmission.com,
+        akpm@linux-foundation.org, ardb@kernel.org,
+        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org
+Subject: [PATCH v2 14/18] lib/test_lockup: fix kernel pointer check for separate address spaces
+Date:   Wed, 16 Feb 2022 14:13:28 +0100
+Message-Id: <20220216131332.1489939-15-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220216131332.1489939-1-arnd@kernel.org>
+References: <20220216131332.1489939-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgzRwhavapo69CAn@miu.piliscsaba.redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 11:28:18AM +0100, Miklos Szeredi wrote:
-> Something like this:
-> diff --git a/fs/namei.c b/fs/namei.c
-> index 3f1829b3ab5b..dd6908cee49d 100644
+From: Arnd Bergmann <arnd@arndb.de>
 
-Tested-by: Xavier Roche <xavier.roche@algolia.com>
+test_kernel_ptr() uses access_ok() to figure out if a given address
+points to user space instead of kernel space. However on architectures
+that set CONFIG_ALTERNATE_USER_ADDRESS_SPACE, a pointer can be valid
+for both, and the check always fails because access_ok() returns true.
 
-I confirm this completely fixes at least the specific race. Tested on a
-unpatched and then patched 5.16.5, with the trivial bash test, and then
-with a C++ torture test.
+Make the check for user space pointers conditional on the type of
+address space layout.
 
-Before:
--------
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ lib/test_lockup.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-$ time ./linkbug
-Failed after 4 with No such file or directory
+diff --git a/lib/test_lockup.c b/lib/test_lockup.c
+index 6a0f329a794a..c3fd87d6c2dd 100644
+--- a/lib/test_lockup.c
++++ b/lib/test_lockup.c
+@@ -417,9 +417,14 @@ static bool test_kernel_ptr(unsigned long addr, int size)
+ 		return false;
+ 
+ 	/* should be at least readable kernel address */
+-	if (access_ok((void __user *)ptr, 1) ||
+-	    access_ok((void __user *)ptr + size - 1, 1) ||
+-	    get_kernel_nofault(buf, ptr) ||
++	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
++	    (access_ok((void __user *)ptr, 1) ||
++	     access_ok((void __user *)ptr + size - 1, 1))) {
++		pr_err("user space ptr invalid in kernel: %#lx\n", addr);
++		return true;
++	}
++
++	if (get_kernel_nofault(buf, ptr) ||
+ 	    get_kernel_nofault(buf, ptr + size - 1)) {
+ 		pr_err("invalid kernel ptr: %#lx\n", addr);
+ 		return true;
+-- 
+2.29.2
 
-real	0m0,004s
-user	0m0,000s
-sys	0m0,004s
-
-After:
-------
-
-(no error after ten minutes of running the program)
-
-Torture test program:
----------------------
-
-/* Linux rename vs. linkat race condition.
- * Rationale: both (1) moving a file to a target and (2) linking the target to a file in parallel leads to a race
- * on Linux kernel.
- * Sample file courtesy of Xavier Grand at Algolia
- * g++ -pthread linkbug.c -o linkbug
- */
-
-#include <thread>
-#include <unistd.h>
-#include <assert.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <iostream>
-#include <string.h>
-
-static const char* producedDir = "/tmp";
-static const char* producedFile = "/tmp/file.txt";
-static const char* producedTmpFile = "/tmp/file.txt.tmp";
-static const char* producedThreadDir = "/tmp/tmp";
-static const char* producedThreadFile = "/tmp/file.txt.tmp.2";
-
-bool createFile(const char* path)
-{
-    const int fdOut = open(path,
-                           O_WRONLY | O_CREAT | O_TRUNC | O_EXCL | O_CLOEXEC,
-                           S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-    assert(fdOut != -1);
-    assert(write(fdOut, "Foo", 4) == 4);
-    assert(close(fdOut) == 0);
-    return true;
-}
-
-void func()
-{
-    int nbSuccess = 0;
-    // Loop producedThread a hardlink of the file
-    while (true) {
-        if (link(producedFile, producedThreadFile) != 0) {
-            std::cout << "Failed after " << nbSuccess << " with " << strerror(errno) << std::endl;
-            exit(EXIT_FAILURE);
-        } else {
-            nbSuccess++;
-        }
-        assert(unlink(producedThreadFile) == 0);
-    }
-}
-
-int main()
-{
-    // Setup env
-    unlink(producedTmpFile);
-    unlink(producedFile);
-    unlink(producedThreadFile);
-    createFile(producedFile);
-    mkdir(producedThreadDir, 0777);
-
-    // Async thread doing a hardlink and moving it
-    std::thread t(func);
-    // Loop creating a .tmp and moving it
-    while (true) {
-        assert(createFile(producedTmpFile));
-        assert(rename(producedTmpFile, producedFile) == 0);
-    }
-    return 0;
-}
