@@ -2,205 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F643C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3296C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231934AbiBPJM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 04:12:27 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46816 "EHLO
+        id S231927AbiBPJNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 04:13:13 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231202AbiBPJMY (ORCPT
+        with ESMTP id S231152AbiBPJNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 04:12:24 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70114.outbound.protection.outlook.com [40.107.7.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A420A2DAA6;
-        Wed, 16 Feb 2022 01:12:11 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jJc9v7h1jugrbCnrm57agS4lFeo3tbGkvXzdbkZh5R6vDCkUzmupJi+HBuzrz4m2VNsinOfIUxgdDjAsa7QzsaTsVUnpBS97dBC/ab25Kg6wa/PUMqtH8ZC1Pfi6SkJHH+8lM681QFdrJYWKbW9AXUS0JVFKk1UFtkm5PnGu3jPlzexK6NGIZT76TYECFUcyLwl5Tef362gDkv3om4fIY4yeQu1xaWk7iO6Y1WbTgJJxrunRGIgOuZKu/BpIpTZCVcYf+puFJYlrH2G396FgiLfXjaPGcFDIGOpHRqWQLnevU7/TlpjyMSTiAXNsCl0BzYu8lEat9tZc39nleyWiuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZBBrIARNwROdZr29RMGq8yRCx2v19kWFIsPhN293FxE=;
- b=HNaKn2pAfgKWxg9PPC3rTeL2nDrUxeUmgVgafv+bXpUAezDSspUz8VXoO76wbOlBp5ENwLv8GwP/VJiR58LQe3A9/AQBwNDhf0i6ydw5dpyoktT/aVJDW3UMscYXu1LGG2M8Jj42q6UnVfvz2IknhKCc1S6Sf/hL0Zbw4S55Q6tCMf7HxmcSEd2oTFkaKpyUiAWU0Z2cUdvLiUQGcDzjpSBYJyLVkMkTvxVJ1cvseTqcMDXIpiKb8EzGvnxIs3x9IOKh/KQIOAAdKDnUcRXs02tAQI7u1xxGIzX9omnnLv4XqtxZzOIO/9lBNLAHFYftV4XDv+pgrrui7B9kSxdMOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZBBrIARNwROdZr29RMGq8yRCx2v19kWFIsPhN293FxE=;
- b=i/PTKZsV8VbDLOAqOurbO6/CDvknIiRgMG90ws+ho8fI6rkx73SLzu+/KcW2QhP9CnhK+8eLiATeWXMGbdxvW0pZOfM2eB5xRASW9MU7rPrkfGaAntNGTiHmaO1t6iUXSzT0hr30wEyoWas3rXDEYOkFuIusBCmAc8FsrSf3LO0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nokia.com;
-Received: from AS8PR07MB8104.eurprd07.prod.outlook.com (2603:10a6:20b:373::6)
- by AM8PR07MB7393.eurprd07.prod.outlook.com (2603:10a6:20b:246::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.6; Wed, 16 Feb
- 2022 09:12:08 +0000
-Received: from AS8PR07MB8104.eurprd07.prod.outlook.com
- ([fe80::903c:34b9:dbbf:c1b1]) by AS8PR07MB8104.eurprd07.prod.outlook.com
- ([fe80::903c:34b9:dbbf:c1b1%6]) with mapi id 15.20.4995.006; Wed, 16 Feb 2022
- 09:12:08 +0000
-Date:   Wed, 16 Feb 2022 10:11:59 +0100
-From:   Krzysztof Adamski <krzysztof.adamski@nokia.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Matija Glavinic-Pecotic <matija.glavinic-pecotic.ext@nokia.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-efi <linux-efi@vger.kernel.org>
-Subject: Re: [PATCH v2] arm64: move efi_reboot to restart handler
-Message-ID: <Ygy/30uTImHrKT6p@localhost.localdomain>
-References: <YfP0osb45uJldtM9@localhost.localdomain>
- <YfQTZTUNaeGi+8tG@FVFF77S0Q05N>
- <YfRorCpk0seVGI+5@localhost.localdomain>
- <Yfk8hQB1eon7oeYU@FVFF77S0Q05N>
- <79bcce92-abb2-4c3e-7193-d18e144da8a0@nokia.com>
- <489b76f9-fbaf-dae0-c90d-c52ee0de92a4@roeck-us.net>
- <YgvAO1UbZcbcj5na@localhost.localdomain>
- <be9cc279-1d62-3d57-9347-6cfaffc00cb4@roeck-us.net>
- <CAMj1kXGQhKuwdATd=SrhBFXZkKMHiFWsrq7m+AY-hFLM3Ltcyg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMj1kXGQhKuwdATd=SrhBFXZkKMHiFWsrq7m+AY-hFLM3Ltcyg@mail.gmail.com>
-X-ClientProxiedBy: HE1PR0202CA0028.eurprd02.prod.outlook.com
- (2603:10a6:3:e4::14) To AS8PR07MB8104.eurprd07.prod.outlook.com
- (2603:10a6:20b:373::6)
+        Wed, 16 Feb 2022 04:13:09 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8F01EEF2
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:12:54 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id c6so4112237ybk.3
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:12:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FAATwtUo+tcRU4ypGqZNcgc4PswNwsO76knsZ3DsUT0=;
+        b=masBcKTzXJW8jGb1hRyXvUqhC4QxlixbN2fFjdHvjfdSxAOp4qDogAi9MQW4t1G1gw
+         2P0rzjowFHh1GDBRaHcVyEeoeU1TSBOyKzj00pZSK1QtP4TYtIwZF7jEWhQl1cUdz6AM
+         zaptp41NSoc3Eoqeyv3C0cgNM/L2gbsVdR2nvDGo5iLrJZ2yXoiW8JITosED1yRQGrd4
+         vxYvLQjEnbKqTga70EhF2s8g1k1pe0ow0pi2+fjFQsn6vBFYXHaWdeJUowJA1yLxA23L
+         yjWa11EjbXPffBypYto85zI44BDxquwatoSP0bREkOrmKSSVqKiCtxT6P1u8zU7RiinN
+         BT0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FAATwtUo+tcRU4ypGqZNcgc4PswNwsO76knsZ3DsUT0=;
+        b=zP2Xt0DZ1kpJF9gzajm8Jl6Mq+6sCzFUs0r5gwViMuDjrmYf48Y6LTiTpyVreodUHA
+         0cwYUuRRHNFB7z0z7aMf6PMg3iRSG4f9c4YbaAXposb0Ocjktkws7EW84LUgpsOQ0RvE
+         E5Q+Efd8P+h7hkBYQp4+hStzEal6AZQar6WjH66f/laUIhJ04XkQ0yBzbocb7h2Gkm0t
+         O+Vafudmo/epsnBX1SkZA6EBIaJjo3b5oS5IqnPMqAEKiJjgZmOJj3ykg9orCc5XgTU6
+         cR+25I7Zr9DAUE62WO9+Wcc8t/dKjrN5xETfy+/4030wYEKhs+KKoECOmKp8Hjperk4X
+         uZvA==
+X-Gm-Message-State: AOAM5323/b9ZNUy3yNS1ed+a8970G1zhf2hNWIYL3kncTdYNFDHw9tHA
+        V8wwnXhhhp/BqxPxtn+SibHsyVgEOvTW8+Zs+Ts=
+X-Google-Smtp-Source: ABdhPJyEs3B71tLo0LBZx6EVsSJkTMYURLRnFZMfUey7UVslKnLuqSwDMDssqHoPwahAvUymxFLTgPL/T9U+U1EHqRQ=
+X-Received: by 2002:a25:bd14:0:b0:61d:87ce:8b6c with SMTP id
+ f20-20020a25bd14000000b0061d87ce8b6cmr1264452ybk.690.1645002773725; Wed, 16
+ Feb 2022 01:12:53 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 15bf4e8a-3b89-40c4-4933-08d9f12c682f
-X-MS-TrafficTypeDiagnostic: AM8PR07MB7393:EE_
-X-Microsoft-Antispam-PRVS: <AM8PR07MB73938F4BB7574B864E91BE8BEF359@AM8PR07MB7393.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K1Xf/z64gFZXb7Smufd57ZjYsj7UWep1n/szPYbiqxMmncC0Ws01Oiq/0U48RlFBElV/YVU8SEJgLq+ZcZjfkYEYqswuK5Qb3nCyxYVEjVy3UFFKZ+3GqcoElwdZf0MITnWWhEIpfZbnC95X72lAg/a0dQpKF2zqbCdU2ZlPybCbmzHdOp7/4SoMVhuAq2K4gVGIrNpiIr1Uj4pic2f+raLRm3UoKJ6zxgxOlfsTmS1UVz1g9AiAVe5K8lj4emkKuebVTfHZ99n5ZXs9u1Wv2NVLMWUkHS7lCM3UI+hykmTN9wsBCKAcDhyvMoplFHmVMK1FtnhgJueUcqKphRGaGrrBC9SHrl5svXHA4by1SxMKxTnd7AfVtxnWJwF9SobImAdmCg7aygZWPsy5CtU22ZdV5xW9XJMQ7AH0ontkgRBne8M03RPbxpDAYEmnm6LR3AJ7zgTH58LcZuU/M7wKz9Qz57VakksPz/sekPeO8rrxHk1sN2CJZQGA88r06A0NYCM7RZhf4/6+dd0JTU8dAKdkjBktkUjzDtuqH0R4ZIoq4y2zvcgY1qkdwx1IHKD/B9owI1SGf8yT8qh0iPzH1dKl1FllVS6guKPfojy669r81jYOkWhIPBnikqJ8dDBplceYwZXuDqE8WZBJNUDov/iDQYG60Arv7jp1fXL706J1X4ozaMaycSTfnw4GTCew8SkiaAcH0twck+iw0IA+2LcJAsWuC86mNZ2Xnii8c2mFKq+U/Dv5vHGCOVqA8xR0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR07MB8104.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(7416002)(44832011)(8936002)(508600001)(9686003)(52116002)(66476007)(66556008)(4326008)(6512007)(8676002)(2906002)(66946007)(186003)(5660300002)(83380400001)(6486002)(316002)(6506007)(6666004)(82960400001)(86362001)(54906003)(6916009)(38100700002)(38350700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R1hSVzdiek5kcGN0TG85WEluU0F4QVZtcFh6aGN6RXErMkZyeEQ1TVhYRG5S?=
- =?utf-8?B?S3VWRTdhNkNrbzdMbVB6RUtobzZPV3ZYaEZHd2RwZkY1QnVKRlF4RFpPQWZ4?=
- =?utf-8?B?SmNZRHRuVzYrYnRHV3hKV0poSTZKZkhlUlN5ZHluUm9HTk9TRzR1SVlHTFVD?=
- =?utf-8?B?bE5CQ3RBemdFTUcvM2lDRFdOWTdPU0kzODNMQ2crR1FCcmcvTTNnMEJCOFF2?=
- =?utf-8?B?ZW1JOFg1VDR1Q1c5NEg0Q3d0WTVlOXg5SWlqY1c2S2VGNXZyanhIQzBJQ2Nj?=
- =?utf-8?B?Zy9IM1hNVXplTTlzRG45NU5rYVBhQVZkakM4ejc2dERYNkVxK1A2am9uRUdr?=
- =?utf-8?B?akY0S0FQU2s5eVFPWkhjWStEWjBGdVdEeWQybHU4Q2VJVFFlRDZXL0lFVmhW?=
- =?utf-8?B?WjFGaHNmalRNVjB6cEtQNC9kejJtWm5KUlNPSk9NU3p0eHF6Q2JoV3daUnZW?=
- =?utf-8?B?MTN0ZGg0Z1NFalVER3VVUnF0aHViUVNZYzdBc2IrL0J2QUErRmtkVzVPTHRE?=
- =?utf-8?B?Q1pkQWQ0Rzg5djBXOC9HS29YMDg4WFM0akdUUmZ5NW01dGtuQ3lBSkN6RURq?=
- =?utf-8?B?OHRjVGs4d0J5cHFUVWlBTUZacXk0S29JYmg2ZHBWRVk3MWhWN2VvODhrVUgr?=
- =?utf-8?B?NCtYcEVKUFBBc3B1UVphQUtzeGptbnhMU2tTUGRzYkR1UFFaMUdkbzJuWXVr?=
- =?utf-8?B?c20zVWtGSHJqVDRud3I5d0l2YVNNcks2dWM0dU5qNk50UVErWExRVTRGTXRG?=
- =?utf-8?B?ZDFDMXNvcnR0djZpWm01dXBaWk54RHJUN0ZndGl3ZXFsOVUzR0RaY09EdTF2?=
- =?utf-8?B?R1NyVnBaZ0NENlN0c1Q4YlprUEtZT0dGUUJ3aVoyOFJQNU5MRU5UOFlNeTUr?=
- =?utf-8?B?dm9IWXhubzZCR1dQZXIzZHZBUElFVVVkUTREb01IVnNBWXg5SG0xckNzM3lO?=
- =?utf-8?B?S2s0YzVveHlnR2duU0VuQ0lQODlDNDRNY2dYclRzSHR6WmltY01QREdEMWVo?=
- =?utf-8?B?THRWdHlXeHJUbnZMaG5DbEx0cm4wNitmamhTcjZmMXZTU1p4OHNCeENaNkkv?=
- =?utf-8?B?bGFuRTdaRGNsRFpiZWFvK05TVGxSVEtCSzZTS0JkRnZiSlY2VTh6Yklhc3l1?=
- =?utf-8?B?Rit0dmNVTlRibXlWUythVGs0TFNLQVlEWlpCMy9VL3JkcitaMFRSTC9SbXcw?=
- =?utf-8?B?OEsxSWNTSDI5TjQrQVlYZDE3cVk5NzE3VFFONU11NmVpYjFDOEdpcS9UY1dZ?=
- =?utf-8?B?dWUvR3hoNFYxSlN6WjNvdWFJcWhQb0ZsaFNiVjJkOTJqK2d1UjZPc1NrNXUy?=
- =?utf-8?B?NG1MeUJsSmZ0eWNiSXlCREM1SHBpcW9JTnhGTkJMbnN2U1VMN1BnTk5mUTdJ?=
- =?utf-8?B?bUJXWVlmbUNXUW1DNi9XenIyUUdRZlp6eWsvS041UU4rODhWanl3UHhXSXlT?=
- =?utf-8?B?MDZ6TlJwODhWclFiQ1ZZZnE0TW9NalYzOEZ3VHNTMjlvekFCTUMxZm9iaDZ0?=
- =?utf-8?B?SG9hcE1uZ1BBSEtnK0ZHUHlJcldvRG9vYXk0RDBJWjB4cTk4aDJKWTZhM2F1?=
- =?utf-8?B?YVc5dVZ0V1dtK0xTZnpGaHJDYmFMSElFRFNPL05vK0hqQ3hBMUx5aW1Lb1lx?=
- =?utf-8?B?WE8rWWdYZk1vT3BjYWF5YW10MmcvKzdRd1NpOW1nVWYzZ2FPNkx2eVlGTmJ6?=
- =?utf-8?B?Sjc5Tm5WYXhpTWhZcmFGME5CWExpOGl6VUtyaGhhZTJYajF0THNFL2o5RGQy?=
- =?utf-8?B?dXhCUkNaV0FrUkIzdWtkWUtJTUtUWks5c2dFdHk3cTVVamVkVDl6d1ZHRDRn?=
- =?utf-8?B?eENQRkNLNDhjdG1uSUZsMkdKdUx4UnBaeGo3YSt5WCtnSzlRZ3lEVEpJYlZz?=
- =?utf-8?B?NTJPZ3I4S3E4SlVNQ2FnRlMxbXJGdTdWWmlPRVdnUnd0REc4T2lLcmx5TFlU?=
- =?utf-8?B?TzhiNlcxUzhwOFpFVzRxaU5WVlorM05KcHprdE4xa1NaNFRPbS9BSWNkMVJT?=
- =?utf-8?B?YmI4NUpLeTg2NzU4eTFMNWZyVGI0T2Z6Q3RiNmFLOTJaaGhXdTJLWjN2a1gy?=
- =?utf-8?B?bnBDL21yMjRING40emx3UHdUNnp3bllsdnVoQmVyWm5sVzJOVDhIRk1keGdB?=
- =?utf-8?B?Yzd0STY2U2RZbFJNN2VXYm55NGFUT25CSmRwdTZCc1IwL09WWjhPUGNreHY4?=
- =?utf-8?B?N1FYUnJiYWtJWEgyK1BzUENVMGllcEdxZURKUzJkWUxmZ2JpYURTbm1kTVNL?=
- =?utf-8?B?WHNpSzluSk90azdjQ1p6RTV2cldRPT0=?=
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15bf4e8a-3b89-40c4-4933-08d9f12c682f
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR07MB8104.eurprd07.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 09:12:08.3106
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QnPRu8Kz2Ll2M4pqjuDk1nTz7TaQEXDzfeXq0JesLrIH6B4K5DjKZj0+mDjoyMcZhYwXQWmZXn+R+1biYWO/pHHEMzBjh6DhOYxS0u/bn44=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR07MB7393
+References: <20220126080947.4529-1-yangyicong@hisilicon.com>
+ <20220126080947.4529-3-yangyicong@hisilicon.com> <YfK9DSMFabjYm/MV@BLR-5CG11610CF.amd.com>
+ <CAGsJ_4xL3tynB9P=rKMoX2otW4bMMU5Z-P9zSudMV3+fr2hpXw@mail.gmail.com>
+ <20220128071337.GC618915@linux.vnet.ibm.com> <CAGsJ_4yoUONACY-j+9XxSNC0VgmdyRdHC=z87dWvZvVSASzXRQ@mail.gmail.com>
+ <20220201093859.GE618915@linux.vnet.ibm.com> <CAGsJ_4z8cer7Y5si+J_=awQetFJZMVeaQ+RDSXQz9EGOPTGMQg@mail.gmail.com>
+ <20220204073317.GG618915@linux.vnet.ibm.com> <CAGsJ_4xjgy3D0VzbTdmJihJ+nut_NeTEb4krh8jup4rbvTY_ww@mail.gmail.com>
+ <YgE3TrBrB0psljDk@BLR-5CG11610CF.amd.com> <CAGsJ_4xg6heV-0yqvcwNNEyOcrfwv3uN45YfR1Jcawys0ROrow@mail.gmail.com>
+In-Reply-To: <CAGsJ_4xg6heV-0yqvcwNNEyOcrfwv3uN45YfR1Jcawys0ROrow@mail.gmail.com>
+From:   Barry Song <21cnbao@gmail.com>
+Date:   Wed, 16 Feb 2022 22:12:42 +1300
+Message-ID: <CAGsJ_4z-YxcPytzmGViRzEueL1F7HEE4OEuezvDg6TvEs1HJEA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] sched/fair: Scan cluster before scanning LLC in
+ wake-up path
+To:     "Gautham R. Shenoy" <gautham.shenoy@amd.com>
+Cc:     Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        prime.zeng@huawei.com,
+        Jonathan Cameron <jonathan.cameron@huawei.com>,
+        ego@linux.vnet.ibm.com, Linuxarm <linuxarm@huawei.com>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Guodong Xu <guodong.xu@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dnia Tue, Feb 15, 2022 at 06:03:30PM +0100, Ard Biesheuvel napisał(a):
->> > But if we want to prevent registering some custom code to be run before > efi_reboot(), that new API would have to be rejected as well, for the
->> > same reason. So what is the point?
->> >
->>
->> Ah, yes, you are right. The emmc example does reset the emmc, after all,
->> which one could use as argument that it "violates" the EFI mandate.
->> Sorry, I guess you'll be stuck with out-of-tree code (and, realistically,
->> so is everyone using emmc in an arm64 based system with an EFI restart
->> handler which does not implement emmc reset). Actually, turns out that
->> the emmc restart handling code is not reliable anyway, since for example
->> x86 doesn't use/support the restart handler call chain, and neither
->> do several other architectures.
->>
+On Tue, Feb 8, 2022 at 6:42 PM Barry Song <21cnbao@gmail.com> wrote:
 >
->Rich firmware like EFI and ACPI implies that the firmware knows how to
->manage the hardware.
+> On Tue, Feb 8, 2022 at 4:14 AM Gautham R. Shenoy <gautham.shenoy@amd.com> wrote:
+> >
+> >
+> > On Fri, Feb 04, 2022 at 11:28:25PM +1300, Barry Song wrote:
+> >
+> > > > We already figured out that there are no idle CPUs in this cluster. So dont
+> > > > we gain performance by picking a idle CPU/core in the neighbouring cluster.
+> > > > If there are no idle CPU/core in the neighbouring cluster, then it does make
+> > > > sense to fallback on the current cluster.
+> > >
+> > > What you suggested is exactly the approach we have tried at the first beginning
+> > > during debugging. but we didn't gain performance according to benchmark, we
+> > > were actually losing. that is why we added this line to stop ping-pong:
+> > >          /* Don't ping-pong tasks in and out cluster frequently */
+> > >          if (cpus_share_resources(target, prev_cpu))
+> > >             return target;
+> > >
+> > > If we delete this, we are seeing a big loss of tbench while system
+> > > load is medium
+> > > and above.
+> >
+> > Thanks for clarifying this Barry. Indeed, if the workload is sensitive
+> > to data ping-ponging across L2 clusters, this heuristic makes sense. I
+> > was thinking of workloads that require lower tail latency, in which
+> > case exploring the larger LLC would have made more sense, assuming
+> > that the larger LLC has an idle core/CPU.
+> >
+> > In the absence of any hints from the workload, like something that
+> > Peter had previous suggested
+> > (https://lore.kernel.org/lkml/YVwnsrZWrnWHaoqN@hirez.programming.kicks-ass.net/),
+> > optimizing for cache-access seems to be the right thing to do.
 >
-
-In an ideal world, probably yes. When I move there, I will probably have
-less concerns :)
-
+> Thanks, gautham.
 >
->> Other options for you might be to disable EFI restart handling in your
->> system (assuming that is possible), or to implement the necessary code
->> as part of the EFI restart handler, ie outside Linux, again if that is
->> possible.
->>
+> Yep. Peter mentioned some hints like SCHED_BATCH and SCHED_IDLE.
+> To me, the case we are discussing seems to be more complicated than
+> applying some scheduling policy on separate tasks by SCHED_BATCH
+> or IDLE.
 >
->Either implement EFI reset properly, or not at all. Adding code to the
->OS that forces it to reason about whether or not EFI reset can be
->called safely simply means that the EFI implementation is broken and
->should probably be avoided entirely.
+> For example, in case we have a process, and this process has 20 threads.
+> thread0-9 might care about cache-coherence latency and want to avoid
+> ping-ponging, and thread10-thread19 might want to have tail-latency
+> as small as possible. So we need some way to tell kernel, "hey, bro, please
+> try to keep thread0-9 still as ping-ponging will hurt them while trying your
+> best to find idle cpu in a wider range for thread10-19". But it seems
+> SCHED_XXX as a scheduler policy hint can't tell kernel how to organize tasks
+> into groups, and is also incapable of telling kernel different groups have
+> different needs.
+>
+> So it seems we want some special cgroups to organize tasks and we can apply
+> some special hints on each different group. for example, putting thread0-9
+> in a cgroup and thread10-19 in another, then:
+> 1. apply "COMMUNCATION-SENSITVE" on the 1st group
+> 2. apply "TAIL-LATENCY-SENTIVE" on the 2nd one.
+> I am not quite sure how to do this and if this can find its way into
+> the mainline.
+>
+> On the other hand, for this particular patch, the most controversial
+> part is those
+> two lines to avoid ping-ponging, and I am seeing dropping this can hurt workload
+> like tbench only when system load is high, so I wonder if the approach[1] from
+> Chen Yu and Tim can somehow resolve the problem alternatively, thus we can
+> avoid the controversial part.
+> since their patch can also shrink the scanning range while llc load is high.
+>
+> [1] https://lore.kernel.org/lkml/20220207034013.599214-1-yu.c.chen@intel.com/
 
-That is black-and-white thinking. There are shades of gray, too :)
+Yicong's testing shows the patch from Chen Yu and Tim can somehow resolve the
+problem and make sure there is no performance regression for tbench
+while load is
+high after we remove the code to avoid ping-pong:
 
-Imagine this sitation - you have a SoC and the vendor delivers this SoC
-together with support and code for that SoC. You use it to build some
-platform around that SoC but that platform is much more complicated than
-the basic one. It is custom and specific to your needs. The vendor
-provided firmware, together with the EFI implementation can handle
-reseting the SoC without problems but you also have some additional
-parts in your platform you would like to handle. Why, in such a case, I
-should not use the existing EFI implementation and just build on top of
-that? Avoiding using it entirely does not seem reasonable to me. It
-might also not be possible as you might not know all the details to
-reimplement it.
+5.17-rc1: vanilla
+rc1 + chenyu: vanilla + chenyu's LLC overload patch
+rc1+chenyu+cls: vanilla + chenyu's  patch + my this patchset
+rc1+chenyu+cls-pingpong: vanilla + chenyu's patch + my this patchset -
+the code avoiding ping-pong
+rc1+cls: vanilla + my this patchset
 
-On PC/Server world, that approach might be feasible - the vendor knows
-the usecase for their product well enough to support all the cases. But
-ARM64 is being often used for other, so called "embedded", usecases.
-People working in "embedded" often have unique needs and I do understand
-that mainline kernel cannot support all of them. But when supporting
-them is easy and does not require some ugly hacks to be added, why not?
+tbench running on numa 0 &1:
+                            5.17-rc1          rc1 + chenyu
+rc1+chenyu+cls     rc1+chenyu+cls-pingpong  rc1+cls
+Hmean     1        320.01 (   0.00%)      318.03 *  -0.62%*
+357.15 *  11.61%*      375.43 *  17.32%*      378.44 *  18.26%*
+Hmean     2        643.85 (   0.00%)      637.74 *  -0.95%*
+714.36 *  10.95%*      745.82 *  15.84%*      752.52 *  16.88%*
+Hmean     4       1287.36 (   0.00%)     1285.20 *  -0.17%*
+1431.35 *  11.18%*     1481.71 *  15.10%*     1505.62 *  16.95%*
+Hmean     8       2564.60 (   0.00%)     2551.02 *  -0.53%*
+2812.74 *   9.68%*     2921.51 *  13.92%*     2955.29 *  15.23%*
+Hmean     16      5195.69 (   0.00%)     5163.39 *  -0.62%*
+5583.28 *   7.46%*     5726.08 *  10.21%*     5814.74 *  11.91%*
+Hmean     32      9769.16 (   0.00%)     9815.63 *   0.48%*
+10518.35 *   7.67%*    10852.89 *  11.09%*    10872.63 *  11.30%*
+Hmean     64     15952.50 (   0.00%)    15780.41 *  -1.08%*
+10608.36 * -33.50%*    17503.42 *   9.72%*    17281.98 *   8.33%*
+Hmean     128    13113.77 (   0.00%)    12000.12 *  -8.49%*
+13095.50 *  -0.14%*    13991.90 *   6.70%*    13895.20 *   5.96%*
+Hmean     256    10997.59 (   0.00%)    12229.20 *  11.20%*
+11902.60 *   8.23%*    12214.29 *  11.06%*    11244.69 *   2.25%*
+Hmean     512    14623.60 (   0.00%)    15863.25 *   8.48%*
+14103.38 *  -3.56%*    16422.56 *  12.30%*    15526.25 *   6.17%*
 
-For years we were implementing ways to overcome limitations in
-hardware and vendor software implementations. restart_handler mechanism
-is quite pretty example of that, one which isn't really hacky, does not
-introduce maintainabity problems if widely used. Why not support it on
-ARM64 as well? Only because in ideal world it wouldn't be needed? :)
+tbench running on numa 0 only:
 
-I understand it should not be needed in EFI world and there are
-approaches that could be used instead of that one, but they all seem
-like taking a sledgehammer to crack a nut.
+                            5.17-rc1          rc1 + chenyu
+rc1+chenyu+cls     rc1+chenyu+cls-pingpong   rc1+cls
+Hmean     1        324.73 (   0.00%)      330.96 *   1.92%*
+358.97 *  10.54%*      376.05 *  15.80%*      378.01 *  16.41%*
+Hmean     2        645.36 (   0.00%)      643.13 *  -0.35%*
+710.78 *  10.14%*      744.34 *  15.34%*      754.63 *  16.93%*
+Hmean     4       1302.09 (   0.00%)     1297.11 *  -0.38%*
+1425.22 *   9.46%*     1484.92 *  14.04%*     1507.54 *  15.78%*
+Hmean     8       2612.03 (   0.00%)     2623.60 *   0.44%*
+2843.15 *   8.85%*     2937.81 *  12.47%*     2982.57 *  14.19%*
+Hmean     16      5307.12 (   0.00%)     5304.14 *  -0.06%*
+5610.46 *   5.72%*     5763.24 *   8.59%*     5886.66 *  10.92%*
+Hmean     32      9354.22 (   0.00%)     9738.21 *   4.11%*
+9360.21 *   0.06%*     9699.05 *   3.69%*     9908.13 *   5.92%*
+Hmean     64      7240.35 (   0.00%)     7210.75 *  -0.41%*
+6992.70 *  -3.42%*     7321.52 *   1.12%*     7278.78 *   0.53%*
+Hmean     128     6186.40 (   0.00%)     6314.89 *   2.08%*
+6166.44 *  -0.32%*     6279.85 *   1.51%*     6187.85 (   0.02%)
+Hmean     256     9231.40 (   0.00%)     9469.26 *   2.58%*
+9134.42 *  -1.05%*     9322.88 *   0.99%*     9448.61 *   2.35%*
+Hmean     512     8907.13 (   0.00%)     9130.46 *   2.51%*
+9023.87 *   1.31%*     9276.19 *   4.14%*     9397.22 *   5.50%*
 
-Krzysztof
+as you can see rc1+chenyu+cls-pingpong still shows similar improvement
+like rc1+cls, in some
+cases(256, 512 threads on numa0&1), it is even much better.
+
+Thanks
+Barry
