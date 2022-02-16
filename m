@@ -2,56 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F25E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56345C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiBPKgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:36:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33728 "EHLO
+        id S229944AbiBPKgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:36:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiBPKgB (ORCPT
+        with ESMTP id S229806AbiBPKgQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 05:36:01 -0500
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 653032B9A29;
-        Wed, 16 Feb 2022 02:35:49 -0800 (PST)
-Received: from smtpclient.apple (p4fefcd07.dip0.t-ipconnect.de [79.239.205.7])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 5B35FCEE66;
-        Wed, 16 Feb 2022 11:28:05 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
-Subject: Re: [PATCH] net: bluetooth: assign len after null check
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <1644890516-65362-1-git-send-email-wangqing@vivo.com>
-Date:   Wed, 16 Feb 2022 11:28:05 +0100
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <0DCA7779-71F8-4176-92F8-86AF32D3828A@holtmann.org>
-References: <1644890516-65362-1-git-send-email-wangqing@vivo.com>
-To:     Qing Wang <wangqing@vivo.com>
-X-Mailer: Apple Mail (2.3693.60.0.1.1)
+        Wed, 16 Feb 2022 05:36:16 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8122B9A3E
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:36:03 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id p22so3000780lfu.5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 02:36:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DPYWkKQW0nFWmY1xKFD4WRaxOqq/BeFHyxszPN5EPVU=;
+        b=sUG7rjTRD6NrI48dGWwKOWJyGgjS5g2H1DjFZUQiMmRJj/ir9Wv7S+f3pcYhwB3G21
+         jgW2ghTrDeTyWExposS8pU9olgt0OSFSsKqTWvFBrZtYeR1hzrMRB/QHZbRFsmF8Z2S0
+         H/h0PiEEIFA7GmMAI2JMN3sa/fyLmEXYE57MT9xMELnMPIGAArOM53KTMVRbp5J3baMB
+         isLqyWoSSBY1G4sXiIcXWs7lxW91pyd5h21jcWCoFLVEL0Fbk7le1PLdPy5uxaXftMdu
+         5wLQBv6dJWYyW7H1/lavO2wyNL8O5n34jBSkfOXmCyy+T54Vr7Az+AHoRojt+05MRAOP
+         vMsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DPYWkKQW0nFWmY1xKFD4WRaxOqq/BeFHyxszPN5EPVU=;
+        b=zhYLKPJOwpcrrXScTgN2m7C3LBvEHEVca/i7S4cJH9emTrypJFPkFJmOnLoGuIg0hj
+         ELC25APyfvJPjHBwtZ/16/T0kVVKqJq0Unj79pFVre+hFGdxcQzbForyb2gXOfe4G6Ft
+         DN4hrmfCzkIAiplRh9puv7zHMaf88QalCcCrJ3AkDB3VFaQMvdRfzXzqnhnuOb91YxUq
+         3quS/JA9KbFa+0bTF6kSnhtFPG+sarqbovuZWK4KnOmdbSyLioz2/P8uKVCfWch8Wfh8
+         DBP+Zb7kxepgxua82I0lHIgoYa58+t65XmBRlUFiFoG9UIwgmc1up2jMKqYeTjl92Jli
+         L+bg==
+X-Gm-Message-State: AOAM532m08GSyZ6J1wQRuliMaJ1yrWmzRbJEf6aJfmG9cGro2nmZ1beb
+        zzlJLBDmGg/m2N+1nlYYKC1b6RjafMwUDuGhwB5nEg==
+X-Google-Smtp-Source: ABdhPJz9lTvKXYqNUYEUwJcowusuOCgV3hil3k2PW920Mo0Cq3dd/tLhknO2IA4VJElhIgGQWuFNWTFzEa2t3lXDQAk=
+X-Received: by 2002:a05:6512:388d:b0:443:6066:2c8d with SMTP id
+ n13-20020a056512388d00b0044360662c8dmr1552732lft.184.1645007762118; Wed, 16
+ Feb 2022 02:36:02 -0800 (PST)
+MIME-Version: 1.0
+References: <20220216093112.92469-1-Jerome.Pouiller@silabs.com>
+In-Reply-To: <20220216093112.92469-1-Jerome.Pouiller@silabs.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 16 Feb 2022 11:35:25 +0100
+Message-ID: <CAPDyKFreMJigpAgE95EgkStNrE+r+_k9iRuTXsFk6t9d66e0TQ@mail.gmail.com>
+Subject: Re: [PATCH 0/2] staging: wfx: apply SDIO suggestions
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-mmc@vger.kernel.org,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qing,
+On Wed, 16 Feb 2022 at 10:31, Jerome Pouiller
+<Jerome.Pouiller@silabs.com> wrote:
+>
+> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>
+> Hi Ulf, Greg,
+>
+> The second patch of this series touch to the staging tree and to the MMC
+> framework. I don't know what is the rule for these cases, but I think it
+> makes more sense to carry this patch with the staging tree.
 
-> len should be assigned after a null check
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
-> ---
-> net/bluetooth/mgmt_util.c | 3 ++-
-> 1 file changed, 2 insertions(+), 1 deletion(-)
+I don't believe the changes to the mmc core will cause any merge
+conflict, so feel free to funnel this through whatever tree makes best
+sense.
 
-patch has been applied to bluetooth-next tree.
+For the series:
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Regards
+Kind regards
+Uffe
 
-Marcel
-
+>
+>
+> J=C3=A9r=C3=B4me Pouiller (2):
+>   staging: wfx: WF200 has no official SDIO IDs
+>   staging: wfx: apply the necessary SDIO quirks for the Silabs WF200
+>
+>  drivers/mmc/core/quirks.h      | 5 +++++
+>  drivers/staging/wfx/bus_sdio.c | 8 ++------
+>  2 files changed, 7 insertions(+), 6 deletions(-)
+>
+> --
+> 2.34.1
+>
