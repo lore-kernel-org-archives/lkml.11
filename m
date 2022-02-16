@@ -2,113 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB296C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 12:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 635FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 12:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233333AbiBPM57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 07:57:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48498 "EHLO
+        id S233424AbiBPM7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 07:59:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiBPM56 (ORCPT
+        with ESMTP id S229379AbiBPM7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 07:57:58 -0500
-X-Greylist: delayed 902 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 04:57:46 PST
-Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391D6107822;
-        Wed, 16 Feb 2022 04:57:46 -0800 (PST)
-Received: from rd02-sz.amlogic.software (10.28.8.43) by mail-sz.amlogic.com
- (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Wed, 16 Feb 2022
- 20:42:41 +0800
-From:   Rong Chen <rong.chen@amlogic.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        <1131046452@qq.com>, <linux-mmc@vger.kernel.org>,
+        Wed, 16 Feb 2022 07:59:08 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C55C24CCF8;
+        Wed, 16 Feb 2022 04:58:51 -0800 (PST)
+X-UUID: 2d36106f0fa64d11946d669e4a8cd427-20220216
+X-UUID: 2d36106f0fa64d11946d669e4a8cd427-20220216
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1698583263; Wed, 16 Feb 2022 20:58:48 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 16 Feb 2022 20:58:47 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Feb
+ 2022 20:58:41 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 20:58:40 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Andrii Nakryiko" <andrii@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     <45581586@qq.com>, Rong Chen <rong.chen@amlogic.com>
-Subject: [PATCH v2] mmc: meson: Fix usage of meson_mmc_post_req()
-Date:   Wed, 16 Feb 2022 20:42:39 +0800
-Message-ID: <20220216124239.4007667-1-rong.chen@amlogic.com>
-X-Mailer: git-send-email 2.25.1
+        <linux-mediatek@lists.infradead.org>, <bpf@vger.kernel.org>,
+        <maze@google.com>, Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH] net: fix wrong network header length
+Date:   Wed, 16 Feb 2022 20:52:48 +0800
+Message-ID: <20220216125248.24851-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <d5dd3f10c144f7150ec508fa8e6d7a78ceabfc10.camel@redhat.com>
+References: <d5dd3f10c144f7150ec508fa8e6d7a78ceabfc10.camel@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.28.8.43]
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently meson_mmc_post_req() is called in meson_mmc_request() right
-after meson_mmc_start_cmd(). This could lead to DMA unmapping before the request
-is actually finished.
+On Thu, 2022-02-10 at 17:02 +0100, Paolo Abeni wrote:
+> On Wed, 2022-02-09 at 18:25 +0800, lina.wang wrote:
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 75dfbde8d2e6..f15bbb7449ce 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -3682,6 +3682,7 @@ struct sk_buff *skb_segment_list(struct
+> > sk_buff *skb,
+> >  	struct sk_buff *tail = NULL;
+> >  	struct sk_buff *nskb, *tmp;
+> >  	int err;
+> > +	unsigned int len_diff = 0;
+> 
+> Mintor nit: please respect the reverse x-mas tree order.
+> 
 
-To fix, don't call meson_mmc_post_req() until meson_mmc_request_done().
+v3 has updated, please give some advice!
 
-Signed-off-by: Rong Chen <rong.chen@amlogic.com>
----
- drivers/mmc/host/meson-gx-mmc.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+> >  
+> Paolo
+> 
 
-diff --git a/drivers/mmc/host/meson-gx-mmc.c b/drivers/mmc/host/meson-gx-mmc.c
-index 8f36536cb1b6..58ab9d90bc8b 100644
---- a/drivers/mmc/host/meson-gx-mmc.c
-+++ b/drivers/mmc/host/meson-gx-mmc.c
-@@ -173,6 +173,8 @@ struct meson_host {
- 	int irq;
- 
- 	bool vqmmc_enabled;
-+	bool needs_pre_post_req;
-+
- };
- 
- #define CMD_CFG_LENGTH_MASK GENMASK(8, 0)
-@@ -663,6 +665,8 @@ static void meson_mmc_request_done(struct mmc_host *mmc,
- 	struct meson_host *host = mmc_priv(mmc);
- 
- 	host->cmd = NULL;
-+	if (host->needs_pre_post_req)
-+		meson_mmc_post_req(mmc, mrq, 0);
- 	mmc_request_done(host->mmc, mrq);
- }
- 
-@@ -880,7 +884,7 @@ static int meson_mmc_validate_dram_access(struct mmc_host *mmc, struct mmc_data
- static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
- {
- 	struct meson_host *host = mmc_priv(mmc);
--	bool needs_pre_post_req = mrq->data &&
-+	host->needs_pre_post_req = mrq->data &&
- 			!(mrq->data->host_cookie & SD_EMMC_PRE_REQ_DONE);
- 
- 	/*
-@@ -896,22 +900,19 @@ static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
- 		}
- 	}
- 
--	if (needs_pre_post_req) {
-+	if (host->needs_pre_post_req) {
- 		meson_mmc_get_transfer_mode(mmc, mrq);
- 		if (!meson_mmc_desc_chain_mode(mrq->data))
--			needs_pre_post_req = false;
-+			host->needs_pre_post_req = false;
- 	}
- 
--	if (needs_pre_post_req)
-+	if (host->needs_pre_post_req)
- 		meson_mmc_pre_req(mmc, mrq);
- 
- 	/* Stop execution */
- 	writel(0, host->regs + SD_EMMC_START);
- 
- 	meson_mmc_start_cmd(mmc, mrq->sbc ?: mrq->cmd);
--
--	if (needs_pre_post_req)
--		meson_mmc_post_req(mmc, mrq, 0);
- }
- 
- static void meson_mmc_read_resp(struct mmc_host *mmc, struct mmc_command *cmd)
--- 
-2.25.1
-
+Thanks!
