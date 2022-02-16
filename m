@@ -2,106 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE54FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 02:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 02:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343760AbiBPCbw (ORCPT
+        id S1343761AbiBPCee (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 21:31:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39070 "EHLO
+        Tue, 15 Feb 2022 21:34:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236576AbiBPCbr (ORCPT
+        with ESMTP id S232760AbiBPCec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 21:31:47 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6A5996BE
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 18:31:36 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id w20so863103plq.12
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 18:31:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tMSwIfjOv1Uyh0Rn8c3FPvnNt2awh1M6+sjpagFNNPs=;
-        b=MrvjeIXCQ0Ol/ZNcfXLD9ryra3Lxo0LuahOeXNhhVa8XVLk1mUyCn13YOkRJMEu7rU
-         /IiaUHNDr77cLli/X5P8Akq/dF6VCwimLY3cWD9peCVXcnFV56IY9C7gNqaju6Y/YLy3
-         eWTGx5T7KUECG4JNaraqfYDi4uVSFg/kF5Iv+0n6BeHzpnTgQ2e9eIrsYZF3XfWZ3GhB
-         WuEwHitGwU6yPS5Z7i9bu7dfGGKty0EU7dChAqeZ/QpqjScnH0TkUWB4Mm5UyxLYNufD
-         qI3yU6sUDxkiD/3h9BfUlAfCRDkDWa7tEV0xEIg4ifAS6TMM+5ZGqlOi2GdVTXx1/dcO
-         Nq9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tMSwIfjOv1Uyh0Rn8c3FPvnNt2awh1M6+sjpagFNNPs=;
-        b=KxVm97Gs7UDNlE9rEWhjjZJh7wgzL1qPM+rSTSC1DOjeVy786OB/QcH1rVMJ9cgraB
-         G/Ecs0Q5K7JQa243Qr1I3VeySo3glVO9DJ6htqoh6+FGhbKWfRIdGoihNIhQSdkzOUYT
-         Jx5IKMCACB7rRB3MKuVJGCUN17lbj8Zg3WiOPgtVEotE6ytxjkYQlTGajsyfi4RHpa9T
-         QGeCfsvTgyzXuFfxPreJ4m6xbn8RNbLMis5OAOnEuJMHWbNnWrslN6DR1EopoX68WxDS
-         xccqdDnN0hruq4fn6c0D2phxXU3uf3Rv31G6MQ8OU++nKBZMr79eKJ4y9Eiiy0tClNs/
-         L+qA==
-X-Gm-Message-State: AOAM532vZK6G/w67lgKuGP5jwnbC7znkg5HARqCxQfxjd/KlRRecDCii
-        6DiTAg69ToitCREy02t6V4DHTw==
-X-Google-Smtp-Source: ABdhPJyU2ukSn0pACLz1YQlEvjfxSBDTqZwAmjsrkqyhGVLNZmkSRDuKwLpWoQymGsMeVVJJ0nyyig==
-X-Received: by 2002:a17:902:82c7:b0:14f:252d:67e7 with SMTP id u7-20020a17090282c700b0014f252d67e7mr777069plz.27.1644978695666;
-        Tue, 15 Feb 2022 18:31:35 -0800 (PST)
-Received: from google.com ([2401:fa00:1:10:adf7:46e7:cef5:ba49])
-        by smtp.gmail.com with ESMTPSA id 7sm18442035pjo.45.2022.02.15.18.31.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 18:31:35 -0800 (PST)
-Date:   Wed, 16 Feb 2022 10:31:32 +0800
-From:   Tzung-Bi Shih <tzungbi@google.com>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
-        chrome-platform@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] platform/chrome: cros_kbd_led_backlight: support OF
- match
-Message-ID: <YgxiBO7jDtyhWwlb@google.com>
-References: <20220214053646.3088298-1-tzungbi@google.com>
- <20220214053646.3088298-5-tzungbi@google.com>
- <CACeCKac+b1Rp6bZFALn=sbh8gkJbWeKTC=8bdzp+-90pgq=wSw@mail.gmail.com>
+        Tue, 15 Feb 2022 21:34:32 -0500
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 666449A4EA;
+        Tue, 15 Feb 2022 18:34:19 -0800 (PST)
+Received: by ajax-webmail-mail-app2 (Coremail) ; Wed, 16 Feb 2022 10:34:00
+ +0800 (GMT+08:00)
+X-Originating-IP: [180.169.129.130]
+Date:   Wed, 16 Feb 2022 10:34:00 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5Ya36Z2Z?= <3090101217@zju.edu.cn>
+To:     "Greg KH" <gregkh@linuxfoundation.org>
+Cc:     balbi@kernel.org, jleng@ambarella.com,
+        laurent.pinchart@ideasonboard.com, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH v2] usb: gadget: f_uvc: fix superspeedplus transfer
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <Yguzht2JJtF+8N76@kroah.com>
+References: <Ygow+EB1P84VflBb@kroah.com>
+ <20220215021647.4316-1-3090101217@zju.edu.cn> <Yguzht2JJtF+8N76@kroah.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACeCKac+b1Rp6bZFALn=sbh8gkJbWeKTC=8bdzp+-90pgq=wSw@mail.gmail.com>
+Message-ID: <6ca9a5a8.ae1fb.17f0061243d.Coremail.3090101217@zju.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: by_KCgBHRFCYYgxiFbnrAQ--.40657W
+X-CM-SenderInfo: qtqziiyqrsilo62m3hxhgxhubq/1tbiAwIDBVNG3Fih1gAAsh
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 05:10:04PM -0800, Prashant Malani wrote:
-> On Sun, Feb 13, 2022 at 9:37 PM Tzung-Bi Shih <tzungbi@google.com> wrote:
-> > diff --git a/drivers/platform/chrome/cros_kbd_led_backlight.c b/drivers/platform/chrome/cros_kbd_led_backlight.c
-> > index 814f2b74c602..ba853e55d29a 100644
-> > --- a/drivers/platform/chrome/cros_kbd_led_backlight.c
-> > +++ b/drivers/platform/chrome/cros_kbd_led_backlight.c
-> > @@ -10,6 +10,7 @@
-> >  #include <linux/kernel.h>
-> >  #include <linux/leds.h>
-> >  #include <linux/module.h>
-> > +#include <linux/of_device.h>
-> >  #include <linux/platform_device.h>
-> >  #include <linux/slab.h>
-> >
-> > @@ -128,8 +129,11 @@ static int keyboard_led_probe(struct platform_device *pdev)
-> >         int error;
-> >
-> >         drvdata = acpi_device_get_match_data(&pdev->dev);
-> > -       if (!drvdata)
-> > -               return -EINVAL;
-> > +       if (!drvdata) {
-> > +               drvdata = of_device_get_match_data(&pdev->dev);
-> > +               if (!drvdata)
-> > +                       return -EINVAL;
-> > +       }
-> 
-> I'm not familiar with this driver, so can't do a full review, but
-> shouldn't device_get_match_data()
-> from property.h [1] be able to handle both DT and ACPI cases?
-> 
-> [1]: https://elixir.bootlin.com/linux/v5.17-rc4/source/include/linux/property.h
-
-Yes, it does[2][3].  Thanks for the feedback, will fix it in next version.
-
-[2]: https://elixir.bootlin.com/linux/v5.17-rc4/source/drivers/of/property.c#L1474
-[3]: https://elixir.bootlin.com/linux/v5.17-rc4/source/drivers/acpi/property.c#L1386
+SGkgR3JlZyBLSCwKClNvcnJ5IGZvciB0aGUgdHJvdWJsZSwgYXMgYSBuZXcgY29udHJpYnV0b3Ig
+dG8ga2VybmVsLgpBbHRob3VnaCBJIGhhdmUgcmVhZGVkIHRoZSBkb2N1bWVudCB0aGF0IGhvdyB0
+byBzdWJtaXQgcGF0Y2hlcywKSSdtIHN0aWxsIG1pc3Npbmcgc29tZSBkZXRhaWxzLgoKPiBXaGF0
+IGRvZXMgImNhbGwgdHJhY2UiIGhlcmUgbWVhbj8gIElzIHRoaXMgYW4gZXJyb3I/ICBTb21ldGhp
+bmcgZWxzZT8KSXQgaXMgImNhbGwgdHJhY2UiIHdoZW4gdGhlIGtlcm5lbCBhY2Nlc3NlZCBOVUxM
+IHBvaW50ZXIgYW5kIGhhbmRlZC4KCj4gWW91IGRpZCBub3QgcmVhZCB0aGUgaW5mb3JtYXRpb24g
+dGhhdCBteSBib3QgdG9sZCB5b3UgdG8gcmVhZCwgZm9yIGhvdwo+IHRvIHByb3Blcmx5IHZlcnNp
+b24geW91ciBwYXRjaGVzIDooCj4gCj4gUGxlYXNlIGdvIGJhY2sgYW5kIGRvIHNvIHdoZW4geW91
+IHJlc2VuZCBhbGwgb2YgdGhlbS4KPiAKPiBBbHNvIHRoaXMgaXMgbm90IGEgcGF0Y2ggc2VyaWVz
+PyAgV2h5IG5vdD8KCkkgcmVhZGVkIHRoZSBib3QgdG9sZCwgYnV0IEkgc3RpbGwgbWlzc2VkIGl0
+LgpUaGUgbmV3IHBhdGNoIG9ubHkgYWRkcyBtb3JlIGRldGFpbGVkIHBhdGNoIGRlc2NyaXB0aW9u
+LgpTbyBpdCBpcyBub3QgYSBwYXRjaCBzZXJpZXMuCgp0aGFua3MsCgpKaW5nIExlbmc=
