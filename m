@@ -2,177 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33066C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 286ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbiBPHOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:14:33 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47678 "EHLO
+        id S229790AbiBPHQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:16:22 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbiBPHOa (ORCPT
+        with ESMTP id S229539AbiBPHQS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:14:30 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2065.outbound.protection.outlook.com [40.107.21.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9257F3A5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:14:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MW4kvM0nr7OwUd8wWrqd9TKQydSr1NODfM05OyPwJmhshVs2goSytQI6x9EIm4gkVIOXUqocwgm0pJcIMNEXcGLA/HnJitwEwqwRi5DTUdgvWZPD57N6C8hiGnuqlG107ufowBk88dHvQ+W3qJ6NJcZfGI5iRRkRccBl+sGm6v6mSgBpV/2oj6Z/L5o6aEU4qwt0RAiNGBMnikyH/OspyvBWrW6E7L3ntYH1zQKOaYb3HdPNLaNIDu1Zu3WDG6opAl94OuiBq3KUSc7W1uGXaQG4dhAq7tugfJwdy4Z4Zgh8NYRsfnFB96mpuFVKnIuFDt+XzM4+nrc0/awpiqox9w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kExFFvUXbo3RwmK5ystYGVcQdKBZqI3DM0gcp19G7fs=;
- b=lNpUtXEhVo8fLE+BAWK491z11Ge0ANyU/ZrZCJjl8J/efXq0PwwqQOstHe3k13/X9xBmibi1TSLNnOtVKp/eo+4YXNZtWA/amBWZSvobW32kmLUCk5Ac+yNZ+p9adAlRd20xXTrRSVHV9owfl6FL8yQgATZIUA89NEcynt+jRydNkO7Ghe9HuJfamvmdCl+UkpIFJsdWJqWkvYMbUneH/SZp+YOzkLi7ZKXH6IxBkJpRbvPh+FSPrFD6GfFNYlHw8U8EbseryLVuLpHDi8hv9UpR4TbLMSSW4VY6kXivJJhTl8lhcPj0F2440Hbu42pZQuIpRqZ7q71zRVoZU/RW4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kExFFvUXbo3RwmK5ystYGVcQdKBZqI3DM0gcp19G7fs=;
- b=pFGuuwd0KCYTZqqdkFACXHtEBDUwYH5s9q9dSXuRmsBrTJYbkfWi+d165QE0YJCF7XnuYuDIvBoaAFoswWBvaWUqWjjPvpZLVZ6eF4jY05pl0AoCtsoDRhlZ1INndc59iQI6yeOK+HTXvOJqj385q5dAtxUH9TVuA47BMZrzRwY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
- by AM6PR04MB6248.eurprd04.prod.outlook.com (2603:10a6:20b:bf::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.19; Wed, 16 Feb
- 2022 07:14:01 +0000
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::ddca:beb1:95b0:1ae1]) by AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::ddca:beb1:95b0:1ae1%4]) with mapi id 15.20.4995.016; Wed, 16 Feb 2022
- 07:14:00 +0000
-From:   Liu Ying <victor.liu@nxp.com>
-To:     linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     linux-imx@nxp.com, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
-Subject: [PATCH] phy: dphy: Correct lpx parameter and its derivatives(ta_{get,go,sure})
-Date:   Wed, 16 Feb 2022 15:12:57 +0800
-Message-Id: <20220216071257.1647703-1-victor.liu@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SI2PR02CA0002.apcprd02.prod.outlook.com
- (2603:1096:4:194::22) To AM7PR04MB7046.eurprd04.prod.outlook.com
- (2603:10a6:20b:113::22)
+        Wed, 16 Feb 2022 02:16:18 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03212B0A68
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:16:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644995747;
+        bh=suHsgXH+UCaPUEi9/z5ugIGYdtAIwHSMAlsMljlrGoo=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=Fk8xN8WzP+iC0JHRacbgt3/YFUiTv2Ap6uW7L08ZhMwrRnhIbs68wGHvOjPpNrl7w
+         Vfm3oTEbqIjFpfKagn/LHr+O05+j0OKVoqypM2qopwkC7j+pkiDuu6fAcc9It3zW+c
+         mjGtVBpHMPGS125soe1BQjRPYSjjmkfbNWoi438s=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.128.232]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MZTqW-1noWzk3GcQ-00WYiF; Wed, 16
+ Feb 2022 08:15:46 +0100
+Message-ID: <b6632459-92ec-8c79-6221-e0b3754b1f97@gmx.de>
+Date:   Wed, 16 Feb 2022 08:15:38 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dce8cf30-711e-45be-33cf-08d9f11be7cf
-X-MS-TrafficTypeDiagnostic: AM6PR04MB6248:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR04MB62480A2D5E83D745F43E3C9C98359@AM6PR04MB6248.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RLTua+A3DN4MT4f0J7xtAvOcyW84zf0aU2VBUVFBNuNgJLgCwRViDbHFjGEbrMXPZaSzY54M4KhYI6EJbhefe+77DArSN3R2OuEog2to3S78hJjJDvbiDrglt7XphYHaCJDDmbT5oGcNP6sUBCSetl6pnAQ9K6PDYXKOF6fWgX9FPWBZfKopB+YdI9uZx9eaI3T3B7d2dnzqIGOsJY1LxkzR4WIyHI2U/GyBa3hcmYAKQO93KGhGgsQSMVA39KYcAiFCt8fsGSXR+uBBw62MpW8qQJ7WSvw3D9z8tfSDfhFFi18OfIyNcyA10UlQX+2Hl1DoJ9z0P9wc/jnhqUWxyZi/58rdYRzEWVWdVzaAqY2dBI4UC19VwE/I01UcMsaJncXTctCGiw8HrrWMmM/EqqmjOuIpzwKfAtSauKPTQcyvKFM3nzpZqjOZ8EMJ9HIvYzKNBfeYxfS1+kKgjFx5a/rxm7I1kljn3uewalKg/pXahxT27lB3fZ4czXM3jsTX7CwSGfvYXwiEK2pRh/fBb0D0d+bYUNgL/ssDE3VwuJLu495S6WgJV7iY/Ow34Fxkit0qRXb/ebQimmlyu6T8nF9CcGUxqbNjvlYUNVZKlxRVB48fl4rAcZM+OQlJXL90cEg6VlSIrbYZJ/1dqlcSzIIGv3Ygiw1rwqbTNcskw7cRVRXMSpPuJDnTciddZ0e3EnJIVkTOeUKaKWHsRFULUg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(186003)(6486002)(2616005)(316002)(1076003)(54906003)(38100700002)(7416002)(5660300002)(52116002)(26005)(6666004)(38350700002)(6506007)(8936002)(86362001)(66556008)(66946007)(4326008)(8676002)(6512007)(66476007)(2906002)(83380400001)(66574015)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UGdXZU5kb2ZrVUoxZTRoL3JIcDl6WjdDZEl4endpd2pmb2tKS2hXbkxQaDQv?=
- =?utf-8?B?cXViZkFHVTBqMWc3Uk83RVh5VEtwRVpnVVNNWkdYMG5FUDZTQnJZMXlMQnMv?=
- =?utf-8?B?M3J0dlI3TXZjdUU3OU8xY3BiK2U0cGVaNDQwbzNCZjJRYzUvcFpkb1A4R1Bl?=
- =?utf-8?B?Vlcrck5TU2tNQUpyQlBzMHlnM2w4NmxPaXdhY20vOUV0QS9VRUN5MFJ5T2dH?=
- =?utf-8?B?ekpobmZaNkg5RG5mdlp1ZkJlU0NlR21YcnJKclUyWlU4QmpSOWJXQ2ZPNkNF?=
- =?utf-8?B?a2hZbVV3WlZJRHBYY1VKQVhCRm5qUjI1RkM2bXFxREsvNUZXTndXVnFaWlRJ?=
- =?utf-8?B?Z1BwbUZlM21sVE1QRmVyQjltQ2tvRGk4cGMzUCtKY3hvb0lUUlVNazhXTXdm?=
- =?utf-8?B?akF0RVZ2dnhMMkhhUVpWZ3pkaHFLNFZaUFNuY2kzQk91MFQvNlpwSFVYV0Uz?=
- =?utf-8?B?SFdFSVRTNXNiK1lxRzB5V1ZqNElCbFVRRWs5RmVsdVFYbElRMWR2eWFGSkVB?=
- =?utf-8?B?ZklZTmV1NFpyMHNXQ1F5T2QrcHZHS2I2MlhoTzJsT3MxemVRbEZxNWhqVTlF?=
- =?utf-8?B?OTFOUmJpSUh0OU5pZXZENHZtTmhUUXd1a2xOWnhpbXFQUzlzTytpVDB5T2hS?=
- =?utf-8?B?V0F0RzZXK2kwTTkzMU9RNnM0dXVVeHgzYlFNZjFBMXcxNkllN0F1QjNBcHor?=
- =?utf-8?B?cmFhclRobGhFamV3b1hydC84QlRCN2ZJNnY4ZWUzcFhlUWJPSHc2cFRiNEJC?=
- =?utf-8?B?YkNLMk5jalZYeGNCQWpKUDZ4U2IveFBtUDdMTnBNSDl2RXZTdlgwNnlqb1Az?=
- =?utf-8?B?RnAvMFhEUGRpT2tGMUZ3RjllR1N1Q1NaN3VidWhqQkI1Y201ZnV5YzNrVGw3?=
- =?utf-8?B?dm5MdzhVREVEamlia3BVNjJnMTlPUEI2UlhTZmZOUjRNYytxYUJBa3g3d1hO?=
- =?utf-8?B?MjluOEc5bm9yc1NuMkZCbGcwSXphUWVEQ2hreWZZZUplWkRaWUdLd25KNHhu?=
- =?utf-8?B?UFFGVTlVbGxtNTJFbDNnVDU3ck9XVVB4eGM4d2ppTkt2QkhwcVFXQ0lYYnVT?=
- =?utf-8?B?bExJQ1pNNGxiUmszOSt0S2RuWHFnR0JVVlZyaGt4bE1DRkh4MTllcFhQejZa?=
- =?utf-8?B?MkRRUTNyMC9rRkF6d3NDdFh6UGNyWGdUaHpNcmZMMkQ5cWIxQW9iLzJaMWFr?=
- =?utf-8?B?YUwzaGQ1K2IxQ0ltVy9tSDFUWWswQTRkN0EzT3kxWUxZelpBNnMxcWV1UVF3?=
- =?utf-8?B?ekZHMXRJUDZXQS8vU2tVWkN3NVV0cUU0aTZzcU56NUgyaStpLzVPNWlUUjJW?=
- =?utf-8?B?RDR2d1NmbTc0Sy9SdWtldXQ2cFFNMElOWW0reFBpWnI3NkFLb09xa2kyRnNX?=
- =?utf-8?B?VVZRMGRvR1U1b01lSEE2VWI1SzZwOVNsK2xDVGxxa01XTkxjZ2U4NEtOS1ZY?=
- =?utf-8?B?K0ZqNTVWM0xkclZ6VURnQm9SVmFyOExvbkM4NlV6U29hZUFRdFBHbHMzMVYr?=
- =?utf-8?B?c1NpZ1BsOGdnOUxVU2JqdXRHTjNFMFRSZmQvRFd3WVdUVUxTT0RMUkdic2R1?=
- =?utf-8?B?WGlBVjJvNE5jVTVzYnBCSlpBclJIVFBZb1dJMlQwSkNSQmlnaXdYQVl2WVhP?=
- =?utf-8?B?dHlONTZ2SHJoSWdwUnluUUtzeVkrbENqTEhHSXNHekc2QTMvNm1McUZOQnFz?=
- =?utf-8?B?NE8yYUo4Rko3WXV5Q0k1blphbFJhVDdFYktjd3hzRFJVL2NjTW9vQWp0UjBx?=
- =?utf-8?B?YzJVNWk2dkdGS1BQTEMraW1FYzVHVlozWTVHc1ZTWjJRMXl3VHp3S2lPKzF6?=
- =?utf-8?B?ZDZUSHg2K0pZZWN0R1doYkk2MVhoUk1mbmloQWZyZEtUNlBCSTROR3g3K3VI?=
- =?utf-8?B?WGtPQUNnSU5IV3ZQWkNmV1BEcEJMU3hsQkRFUWlLNWdZSU53bUN0eklpOFBZ?=
- =?utf-8?B?TWlwdG5XalM5RjFMWE40aFB1UlVZMmJjS0tpUlBjWThHT0pJbU5Ec2pPaWFw?=
- =?utf-8?B?ZlBaSGd2WFNCQ2pmYlhCY1huMEI3TC83SDFWbVdNNGtOaTZsQlptS3htKzdq?=
- =?utf-8?B?bkswbmp2SHkxNi9meDRkd0EwZWE2b2V3UFFTY25md1p0bGZYbUJRSXB0Vk9P?=
- =?utf-8?B?UzIrZUFlRFNmS2IzaDJ4MXk5RHpDblZ6UW9SNkNDT21DL1Y3OU54N0NJNVRV?=
- =?utf-8?Q?6/AzQpJLSBgUWzLglLaOmW8=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dce8cf30-711e-45be-33cf-08d9f11be7cf
-X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 07:14:00.7350
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 11KmnTHfASVveuTajPyR93lyBBFhVakh4gY+veTalFdXxhiSi2ktKiWbAVeQSHyahS5NiYbGjwvYmjpYgwV2Rw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6248
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [deller-fbdev:for-next 51/51]
+ drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:49: error:
+ 'component_compare_dev' undeclared; did you mean 'component_master_del'?
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, Yong Wu <yong.wu@mediatek.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+References: <202202160743.MUYvzd9B-lkp@intel.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <202202160743.MUYvzd9B-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:xdie6Bbv34PAIA1OJ/AkOe0LxEk9/dtU4Q4k/KhjKQuchEkqz83
+ M9saUWorgUnmmB2B47tR/QKjzsgv+jCyNO5Vpr8/eE7ASDvc/W0DPeYQ/Tr/Gu0luKItZCh
+ e3KxUwlH0KS6IoOvXpbbRtTk0C/wDTudmKDJzFH1VHgeEjGCdKXxK7SUV1ZAF5X8U8ewrgy
+ AKCKb2Get4XE0bYCoA8nQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:32wVd1S1KoQ=:GVw57s6Z5RH6wYdti6I31x
+ m0Zj9oAHif/tJ8c36Y5oE2ZLtVeWqHiy/7t+uU+Yo+oOF/9k2uk3Z3KVHGJReLW2ycgQkRLKs
+ vsVJVtVPQ4vyEHQlPIjQav+NqbzjgkAcQjsApIZA40mRkz56fYAY/zZbvohvQzB6prZD4R7Wa
+ 1VTD77UYu65iAiXLHLIOOmkrCoGpT6vexIcavfVtgSHzMBMC9+gPlnB2zwEBsHl6vHi4EgwZd
+ QLEmbwm/XWiTnHNiuSh1ns/ToK0Irv4rm5V/KHwRdp2sawh4cdN56KklDOdelHBd7IIg3Nb2Y
+ ZIjC5LCu9FlJViuHdwHbj8BlfipnIoXW3Oud19pYs8bJ2+I95xZUjrSh/lTL4mzvZmsU21wB4
+ tWUFwyan5VMKhSu1jWdc8lrbl+My1wR+QHZXKr2qU+SisBl7ruOxhTvnksov9gK4FHuYiUz6H
+ e/wBOEcAAyRvouuz5gOfAkb40XLG/QpNVB1EavYW1j8vVRJJx5EhkRsog3NzkSsb6RC/vNBvu
+ 30cKCGWVsZ5d0df4xt2jVuai5z2VrZ9Ff947uK22PehCpemFN1G/wN7F2BQrGjYXw0pqN2HQw
+ 3jRdy1lgnljdCiOpqpCjd94X+t5yp7HMYcbiqjBlzgPPinL0r0Z/WtPcA2gUDNdPyoDWLQz0o
+ nqtC7N2E6SU0c7TfEvVfwG09VldBv1wpQjhq94yf7EK2vgnswIYMdzkezKME3F4vD7j+rmoDb
+ Td8u47P8m2TOlOjf5zCf1eg9eOVIpepg7v54+EyeZmr9r3Oak0CKTDPrheBKpYixxqDSNRosh
+ vXQuV4y4vEI6YrCXlgz0NiHjeL9cGZqpum4j4DFilQ3B30WsrpOnl6eTmG1Ip0xHVT8qNqyyL
+ Kms/h/JWzSuyMB5CQ5Zz3RZNMY5I6Y1f4fG9JmhMjXzUhbONXfHdKqT8Ya8iggDkAGwwAFqnC
+ RbZ3KFjtv1vvqcRu5czRZqZBAyPlpOOI0UpCNlYwaMYVV9Kn7I712YDwfjGC+CFXqyyQrCzjQ
+ A4yKNTh9ANSZPOTMBUsyO0hBLzHeG1qImJ8OtU2JE/IDMlzEJJtACSz4JVA5mF0PoNXv9sXMY
+ 6p/BYDjatk/JAE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to the comment of the function phy_mipi_dphy_get_default_config(),
-it uses minimum D-PHY timings based on MIPI D-PHY specification.  They are
-derived from the valid ranges specified in Section 6.9, Table 14, Page 41
-of the D-PHY specification (v1.2).  The table 14 explicitly mentions that
-the minimum T-LPX parameter is 50 nanoseconds and the minimum TA-SURE
-parameter is T-LPX nanoseconds.  Likewise, the kernel doc of the 'lpx' and
-'ta_sure' members of struct phy_configure_opts_mipi_dphy mentions that
-the minimum values are 50000 picoseconds and @lpx picoseconds respectively.
-Also, the function phy_mipi_dphy_config_validate() checks if cfg->lpx is
-less than 50000 picoseconds and if cfg->ta_sure is less than cfg->lpx,
-which hints the same minimum values.
+On 2/16/22 00:49, kernel test robot wrote:
+> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev=
+.git for-next
+> head:   61038027aa13351c63b452a0d48c805bab1d2ce9
+> commit: 61038027aa13351c63b452a0d48c805bab1d2ce9 [51/51] video: fbdev: o=
+mapfb: Make use of the helper component_compare_dev
+> config: sh-allmodconfig (https://download.01.org/0day-ci/archive/2022021=
+6/202202160743.MUYvzd9B-lkp@intel.com/config)
+> compiler: sh4-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=3D1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sb=
+in/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-f=
+bdev.git/commit/?id=3D61038027aa13351c63b452a0d48c805bab1d2ce9
+>         git remote add deller-fbdev git://git.kernel.org/pub/scm/linux/k=
+ernel/git/deller/linux-fbdev.git
+>         git fetch --no-tags deller-fbdev for-next
+>         git checkout 61038027aa13351c63b452a0d48c805bab1d2ce9
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-11.2.0 make.cr=
+oss O=3Dbuild_dir ARCH=3Dsh SHELL=3D/bin/bash drivers/video/fbdev/omap2/om=
+apfb/dss/
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    drivers/video/fbdev/omap2/omapfb/dss/dss.c: In function 'dss_add_chil=
+d_component':
+>>> drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:49: error: 'component_=
+compare_dev' undeclared (first use in this function); did you mean 'compon=
+ent_master_del'?
+>     1209 |         component_match_add(dev->parent, match, component_com=
+pare_dev, dev);
+>          |                                                 ^~~~~~~~~~~~~=
+~~~~~~~~
+>          |                                                 component_mas=
+ter_del
+>    drivers/video/fbdev/omap2/omapfb/dss/dss.c:1209:49: note: each undecl=
+ared identifier is reported only once for each function it appears in
 
-Without this patch, the function phy_mipi_dphy_get_default_config()
-wrongly sets cfg->lpx to 60000 picoseconds and cfg->ta_sure to 2 * cfg->lpx.
-So, let's correct them to 50000 picoseconds and cfg->lpx respectively.
+Fixed now. I've dropped that patch.
 
-Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
-Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
-as I don't have the hardwares.
-
-Fixes: dddc97e82303 ("phy: dphy: Add configuration helpers")
-Cc: Andrzej Hajda <andrzej.hajda@intel.com>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Cc: Kishon Vijay Abraham I <kishon@ti.com>
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Guido Günther <agx@sigxcpu.org>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
----
- drivers/phy/phy-core-mipi-dphy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
-index ccb4045685cd..929e86d6558e 100644
---- a/drivers/phy/phy-core-mipi-dphy.c
-+++ b/drivers/phy/phy-core-mipi-dphy.c
-@@ -64,10 +64,10 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
- 	cfg->hs_trail = max(4 * 8 * ui, 60000 + 4 * 4 * ui);
- 
- 	cfg->init = 100;
--	cfg->lpx = 60000;
-+	cfg->lpx = 50000;
- 	cfg->ta_get = 5 * cfg->lpx;
- 	cfg->ta_go = 4 * cfg->lpx;
--	cfg->ta_sure = 2 * cfg->lpx;
-+	cfg->ta_sure = cfg->lpx;
- 	cfg->wakeup = 1000;
- 
- 	cfg->hs_clk_rate = hs_clk_rate;
--- 
-2.25.1
-
+Helge
