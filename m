@@ -2,161 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79ADEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46797C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234449AbiBPNbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:31:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42980 "EHLO
+        id S234481AbiBPNcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:32:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234499AbiBPNav (ORCPT
+        with ESMTP id S232462AbiBPNcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:30:51 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652CC1867E0;
-        Wed, 16 Feb 2022 05:30:34 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id g24so1656898qkl.3;
-        Wed, 16 Feb 2022 05:30:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rwvR7OO2WFCl0yXCxyqfDg2TPoyrx1rZW4Bqi6QfvMo=;
-        b=lP7LACSS/u6XbbHnx/k17PyESQC5bUbK9a27sF8RV7Wk8ozFIfszNXLjZtM348hGAZ
-         tb+148zvVF3xqMTjNLZWdyZeWADhoy4yduNXz/v1bzO0q5xj2/Vd1DHLRUKM4nLsW7Fb
-         DH71gu+A97+Tf89h8RR3Ilt3Ou4NBvAiCvU828E9Jx0cl/EkuY2GzJGczTwVKeajMqVS
-         vtGUkSBkF3qtBD0HaaANRSGtqcV2O0znhOKsNR6lledny9pCs9PZp/sij/rmHSupqKPC
-         bzay3KK+7XLRmgXkgqXi6rDK9P7pe4Es0Iuakhd30dv12MH9Hp0ri5SK8Ql03DpT2qLF
-         Wayg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rwvR7OO2WFCl0yXCxyqfDg2TPoyrx1rZW4Bqi6QfvMo=;
-        b=CwL/mjbk1dZEPtU1vx7BZdxITpL4f7BG+n1fvBz01Df6/WmDLemNfpZ2vpEoKXOI6+
-         mwWO7u9P3Vfnr90h3D84kFCjbRWQfT3mvQ/IUYq1mIeAFJA2qDiHDOfHmPRBr1GBkfqm
-         zrpnQRJeeAVlNcIOVv693b336/8UqmydaGjuBeYmpGOufuY9yxxuBxbkbqFo6Wz6PzPh
-         uqdWDv1FhxiQerIVp+S3uvWJit8qPrK/rduEulBmEh7widwyT2MVThc2l+XR9VS+GbVa
-         fPeBMlm2Ga2QS/ox0wNPMTaeIOzQOqJUdEkyNuQAo9sVmLProzRnmYXq2qjEKFnG4Zdc
-         FFRQ==
-X-Gm-Message-State: AOAM531VOXPVoDxZgFTEhPthw6UTDXSepPYCLenz5ZvtBOmWDOytGAR9
-        SzKP51jFbvREnWegek9qs7r/HIOsirV2iNblMos=
-X-Google-Smtp-Source: ABdhPJxrjmimwu0WwbgOQi/xAg0/b551w2Srv1rRx3mX08Q8rRI/us75tmQPZI0Osr0W5HvFtgbdqTce217+bXBUiyM=
-X-Received: by 2002:ae9:ef09:0:b0:506:aadb:1f1b with SMTP id
- d9-20020ae9ef09000000b00506aadb1f1bmr1195802qkg.609.1645018233522; Wed, 16
- Feb 2022 05:30:33 -0800 (PST)
+        Wed, 16 Feb 2022 08:32:50 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F13F1D;
+        Wed, 16 Feb 2022 05:32:37 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D0CDE1EC050F;
+        Wed, 16 Feb 2022 14:32:31 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645018352;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=JN8ROYzRXXLe/Rb2ENS9kb3VYdbDLeypkZRBnD2gAtc=;
+        b=K8M/99Amrj/s+w/DF9qiSpgHOY86lkghNmuYmi4X9PE+w/EmXNako513oa/ie6xcxJOkIl
+        747EnG7ncpAKd+kCoi4B+JSS4BIfWxy/oj1SPKII08u3VOCs2ZUQTQfnqj2dDKRwWfWYxw
+        fnzO+V0heq0JVG/T+iH6Gdh0XlaX+mQ=
+Date:   Wed, 16 Feb 2022 14:32:34 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Brijesh Singh <brijesh.singh@amd.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v10 21/45] x86/mm: Add support to validate memory when
+ changing C-bit
+Message-ID: <Ygz88uacbwuTTNat@zn.tnic>
+References: <20220209181039.1262882-1-brijesh.singh@amd.com>
+ <20220209181039.1262882-22-brijesh.singh@amd.com>
+ <YgZ427v95xcdOKSC@zn.tnic>
 MIME-Version: 1.0
-References: <20220216081041.70831-1-thomas.liu@ucloud.cn>
-In-Reply-To: <20220216081041.70831-1-thomas.liu@ucloud.cn>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 16 Feb 2022 08:29:57 -0500
-Message-ID: <CAF=yD-JH3uKC20eRcNGkrYHnz0Csgg_NvnGNw4k-ECz9vLpKbg@mail.gmail.com>
-Subject: Re: [PATCH net v2] gso: do not skip outer ip header in case of ipip
- and net_failover
-To:     Tao Liu <thomas.liu@ucloud.cn>
-Cc:     David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YgZ427v95xcdOKSC@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 3:23 AM Tao Liu <thomas.liu@ucloud.cn> wrote:
->
-> We encounter a tcp drop issue in our cloud environment. Packet GROed in
-> host forwards to a VM virtio_net nic with net_failover enabled. VM acts
-> as a IPVS LB with ipip encapsulation. The full path like:
-> host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
->  -> ipip encap -> net_failover tx -> virtio_net tx
->
-> When net_failover transmits a ipip pkt (gso_type = 0x0103), there is no gso
-> did because it supports TSO and GSO_IPXIP4. But network_header points to
-> inner ip header.
->
-> Call Trace:
->  tcp4_gso_segment        ------> return NULL
->  inet_gso_segment        ------> inner iph, network_header points to
->  ipip_gso_segment
->  inet_gso_segment        ------> outer iph
->  skb_mac_gso_segment
->
-> Afterwards virtio_net transmits the pkt, only inner ip header is modified.
-> And the outer one just keeps unchanged. The pkt will be dropped in remote
-> host. So we need to reset network header in this case.
->
-> Call Trace:
->  inet_gso_segment        ------> inner iph, outer iph is skipped
->  skb_mac_gso_segment
->  __skb_gso_segment
->  validate_xmit_skb
->  validate_xmit_skb_list
->  sch_direct_xmit
->  __qdisc_run
->  __dev_queue_xmit        ------> virtio_net
->  dev_hard_start_xmit
->  __dev_queue_xmit        ------> net_failover
->  ip_finish_output2
->  ip_output
->  iptunnel_xmit
->  ip_tunnel_xmit
->  ipip_tunnel_xmit        ------> ipip
->  dev_hard_start_xmit
->  __dev_queue_xmit
->  ip_finish_output2
->  ip_output
->  ip_forward
->  ip_rcv
->  __netif_receive_skb_one_core
->  netif_receive_skb_internal
->  napi_gro_receive
->  receive_buf
->  virtnet_poll
->  net_rx_action
+On Fri, Feb 11, 2022 at 03:55:23PM +0100, Borislav Petkov wrote:
+> Also, I think adding required functions to x86_platform.guest. is a very
+> nice way to solve the ugly if (guest_type) querying all over the place.
 
-I think the message could be rewritten to point out that the issue is
-specific with the rare combination of SKB_GSO_DODGY and a tunnel
-device that adds an SKB_GSO_ tunnel option.
+So I guess something like below. It builds here...
 
-> This patch also includes ipv6_gso_segment(), considering SIT, etc.
->
-> Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
-> Fixes: cfc80d9a1163 ("net: Introduce net_failover driver")
+---
+ arch/x86/include/asm/set_memory.h |  1 -
+ arch/x86/include/asm/sev.h        |  2 ++
+ arch/x86/include/asm/x86_init.h   | 12 ++++++++++++
+ arch/x86/kernel/sev.c             |  2 ++
+ arch/x86/mm/mem_encrypt_amd.c     |  6 +++---
+ arch/x86/mm/pat/set_memory.c      |  2 +-
+ 6 files changed, 20 insertions(+), 5 deletions(-)
 
-This is not a net_failover issue.
+diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
+index ff0f2d90338a..ce8dd215f5b3 100644
+--- a/arch/x86/include/asm/set_memory.h
++++ b/arch/x86/include/asm/set_memory.h
+@@ -84,7 +84,6 @@ int set_pages_rw(struct page *page, int numpages);
+ int set_direct_map_invalid_noflush(struct page *page);
+ int set_direct_map_default_noflush(struct page *page);
+ bool kernel_page_present(struct page *page);
+-void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc);
+ 
+ extern int kernel_set_to_readonly;
+ 
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index ec060c433589..2435b0ca6cfc 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -95,4 +95,6 @@ static inline void sev_es_nmi_complete(void) { }
+ static inline int sev_es_efi_map_ghcbs(pgd_t *pgd) { return 0; }
+ #endif
+ 
++void amd_notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc);
++
+ #endif
+diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
+index 22b7412c08f6..226663e2d769 100644
+--- a/arch/x86/include/asm/x86_init.h
++++ b/arch/x86/include/asm/x86_init.h
+@@ -141,6 +141,17 @@ struct x86_init_acpi {
+ 	void (*reduced_hw_early_init)(void);
+ };
+ 
++/**
++ * struct x86_guest - Functions used by misc guest incarnations like SEV, TDX,
++ * etc.
++ *
++ * @enc_status_change		Notify HV about change of encryption status of a
++ *				range of pages
++ */
++struct x86_guest {
++	void (*enc_status_change)(unsigned long vaddr, int npages, bool enc);
++};
++
+ /**
+  * struct x86_init_ops - functions for platform specific setup
+  *
+@@ -287,6 +298,7 @@ struct x86_platform_ops {
+ 	struct x86_legacy_features legacy;
+ 	void (*set_legacy_features)(void);
+ 	struct x86_hyper_runtime hyper;
++	struct x86_guest guest;
+ };
+ 
+ struct x86_apic_ops {
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index e6d316a01fdd..e645e868a49b 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -766,6 +766,8 @@ void __init sev_es_init_vc_handling(void)
+ 	if (!sev_es_check_cpu_features())
+ 		panic("SEV-ES CPU Features missing");
+ 
++	x86_platform.guest.enc_status_change = amd_notify_range_enc_status_changed;
++
+ 	/* Enable SEV-ES special handling */
+ 	static_branch_enable(&sev_es_enable_key);
+ 
+diff --git a/arch/x86/mm/mem_encrypt_amd.c b/arch/x86/mm/mem_encrypt_amd.c
+index 2b2d018ea345..7038a9f7ae55 100644
+--- a/arch/x86/mm/mem_encrypt_amd.c
++++ b/arch/x86/mm/mem_encrypt_amd.c
+@@ -256,7 +256,7 @@ static unsigned long pg_level_to_pfn(int level, pte_t *kpte, pgprot_t *ret_prot)
+ 	return pfn;
+ }
+ 
+-void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
++void amd_notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
+ {
+ #ifdef CONFIG_PARAVIRT
+ 	unsigned long sz = npages << PAGE_SHIFT;
+@@ -392,7 +392,7 @@ static int __init early_set_memory_enc_dec(unsigned long vaddr,
+ 
+ 	ret = 0;
+ 
+-	notify_range_enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
++	amd_notify_range_enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
+ out:
+ 	__flush_tlb_all();
+ 	return ret;
+@@ -410,7 +410,7 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size)
+ 
+ void __init early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages, bool enc)
+ {
+-	notify_range_enc_status_changed(vaddr, npages, enc);
++	amd_notify_range_enc_status_changed(vaddr, npages, enc);
+ }
+ 
+ void __init mem_encrypt_free_decrypted_mem(void)
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index b4072115c8ef..0acc52a3a5b7 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -2027,7 +2027,7 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+ 	 * Notify hypervisor that a given memory range is mapped encrypted
+ 	 * or decrypted.
+ 	 */
+-	notify_range_enc_status_changed(addr, numpages, enc);
++	x86_platform.guest.enc_status_change(addr, numpages, enc);
+ 
+ 	return ret;
+ }
+-- 
+2.29.2
 
-I'm not sure whether the issue existed at the time tunnel support was
-added, or introduced later. It's reasonable to assume that it was
-always there, but it might be worth a quick code inspection.
+-- 
+Regards/Gruss,
+    Boris.
 
-> Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
-> ---
->  net/ipv4/af_inet.c     | 5 ++++-
->  net/ipv6/ip6_offload.c | 2 ++
->  2 files changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> index 9c465ba..72fde28 100644
-> --- a/net/ipv4/af_inet.c
-> +++ b/net/ipv4/af_inet.c
-> @@ -1376,8 +1376,11 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
->         }
->
->         ops = rcu_dereference(inet_offloads[proto]);
-> -       if (likely(ops && ops->callbacks.gso_segment))
-> +       if (likely(ops && ops->callbacks.gso_segment)) {
->                 segs = ops->callbacks.gso_segment(skb, features);
-> +               if (!segs)
-> +                       skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
-> +       }
->
->         if (IS_ERR_OR_NULL(segs))
->                 goto out;
-
-It's unfortunate that we have to add a branch in the common path. But
-I also don't immediately see a cleaner option.
+https://people.kernel.org/tglx/notes-about-netiquette
