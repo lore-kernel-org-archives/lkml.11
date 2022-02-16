@@ -2,87 +2,523 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E37C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82204C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 10:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230232AbiBPKni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 05:43:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36312 "EHLO
+        id S230290AbiBPKtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 05:49:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiBPKng (ORCPT
+        with ESMTP id S229455AbiBPKtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 05:43:36 -0500
+        Wed, 16 Feb 2022 05:49:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7177326835F;
-        Wed, 16 Feb 2022 02:43:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B17EC;
+        Wed, 16 Feb 2022 02:48:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 204F1B81E74;
-        Wed, 16 Feb 2022 10:43:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BEEEC004E1;
-        Wed, 16 Feb 2022 10:43:21 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LN+U314q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645008198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FLVrjfhT3W8aNO8W4YUK8UwxqHmr1OB3Xs9XyYu/LAw=;
-        b=LN+U314qz5ae0xe+2oW32YGWXiptKFKcPzAFi//V42h1bKx4w3Od+Qez3w4SHdbajhEqg7
-        fA7pD6+VRD3CLJ1QoFxpQMIONiUORBqmEbZIIllpkqbQGU48FJSVea36EGYCk4QXxqEdbR
-        GBtBGG+qjJP5+m3myWISxpoIHMpXJIs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9bc629c6 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 16 Feb 2022 10:43:17 +0000 (UTC)
-Received: by mail-yb1-f173.google.com with SMTP id v63so4661542ybv.10;
-        Wed, 16 Feb 2022 02:43:16 -0800 (PST)
-X-Gm-Message-State: AOAM530v+4nRHutthXlLu56kXv2kKOek5/ZWfQl28GDX84GSd8bU4Bd8
-        PLmZ+U7/cb0NzoRZr1zj+vgRURyVPpX1mkwN3vw=
-X-Google-Smtp-Source: ABdhPJxiaSHJ3i2RRcIsj07+mvucZb540gljBceIzpbXww7fLhg+Lg6D8LmDRmq5NyIV/ooc3fooNxW+9sq/0Bf+KkU=
-X-Received: by 2002:a81:7d04:0:b0:2d0:d0e2:126f with SMTP id
- y4-20020a817d04000000b002d0d0e2126fmr1714487ywc.485.1645008195447; Wed, 16
- Feb 2022 02:43:15 -0800 (PST)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A95EFB81E73;
+        Wed, 16 Feb 2022 10:48:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DA9BC004E1;
+        Wed, 16 Feb 2022 10:48:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645008533;
+        bh=FDUfnwIJic5FVltYcTAVt1y5DGU8/MNOvxHfiZHthaw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QdvGX5j9xVE/P1xBTiT3iSgNsVfaJ7kMATyM5eIYlhTdVKPlwiQUYN4Lx9wmWg0Wf
+         imxi5EuoO5NSBwOMLD8KO2lOmYHA990YyhQtmGvBZtH4/VtdSLi8KyFFBxrhyUnufU
+         kAPEwShRZZAmPdaB4tjitlnN6XGz7qaapyw02S50=
+Date:   Wed, 16 Feb 2022 11:48:50 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, willy@infradead.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 05/23] cachefiles: introduce new devnode for on-demand
+ read mode
+Message-ID: <YgzWkhXCnlNDADvb@kroah.com>
+References: <bd9cb3bb-e29c-d4b3-e9bf-915b9771b553@linux.alibaba.com>
+ <20220215111335.123528-1-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
-References: <CAHmME9pZaYW-p=zU4v96TjeSijm-g03cNpvUJcNvhOqh5v+Lwg@mail.gmail.com>
- <20220216000230.22625-1-Jason@zx2c4.com> <5c23585b-7865-54fb-3835-12e58a7aee46@gmail.com>
-In-Reply-To: <5c23585b-7865-54fb-3835-12e58a7aee46@gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 16 Feb 2022 11:43:04 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
-Message-ID: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
-Subject: Re: [PATCH v2] ath9k: use hw_random API instead of directly dumping
- into random.c
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     miaoqing@codeaurora.org, Rui Salvaterra <rsalvaterra@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220215111335.123528-1-jefflexu@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Florian,
+On Tue, Feb 15, 2022 at 07:13:35PM +0800, Jeffle Xu wrote:
+> This patch introduces a new devnode 'cachefiles_ondemand' to support the
+> newly introduced on-demand read mode.
+> 
+> The precondition for on-demand reading semantics is that, all blob files
+> have been placed under corresponding directory with correct file size
+> (sparse files) on the first beginning. When upper fs starts to access
+> the blob file, it will "cache miss" (hit the hole) and then turn to user
+> daemon for preparing the data.
+> 
+> The interaction between kernel and user daemon is described as below.
+> 1. Once cache miss, .ondemand_read() callback of corresponding fscache
+>    backend is called to prepare the data. As for cachefiles, it just
+>    packages related metadata (file range to read, etc.) into a pending
+>    read request, and then the process triggering cache miss will fall
+>    asleep until the corresponding data gets fetched later.
+> 2. User daemon needs to poll on the devnode ('cachefiles_ondemand'),
+>    waiting for pending read request.
+> 3. Once there's pending read request, user daemon will be notified and
+>    shall read the devnode ('cachefiles_ondemand') to fetch one pending
+>    read request to process.
+> 4. For the fetched read request, user daemon need to somehow prepare the
+>    data (e.g. download from remote through network) and then write the
+>    fetched data into the backing file to fill the hole.
+> 5. After that, user daemon need to notify cachefiles backend by writing a
+>    'done' command to devnode ('cachefiles_ondemand'). It will also
+>    awake the previous asleep process triggering cache miss.
+> 6. By the time the process gets awaken, the data has been ready in the
+>    backing file. Then process can re-initiate a read request from the
+>    backing file.
+> 
+> If user daemon exits in advance when upper fs still mounted, no new
+> on-demand read request can be queued anymore and the existing pending
+> read requests will fail with -EIO.
+> 
+> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+> ---
+>  fs/cachefiles/daemon.c                   | 185 +++++++++++++++++++++++
+>  fs/cachefiles/internal.h                 |  12 ++
+>  fs/cachefiles/io.c                       |  64 ++++++++
+>  fs/cachefiles/main.c                     |  27 ++++
+>  include/uapi/linux/cachefiles_ondemand.h |  14 ++
+>  5 files changed, 302 insertions(+)
+>  create mode 100644 include/uapi/linux/cachefiles_ondemand.h
+> 
+> diff --git a/fs/cachefiles/daemon.c b/fs/cachefiles/daemon.c
+> index 6b8d7c5bbe5d..96aee8e0eb14 100644
+> --- a/fs/cachefiles/daemon.c
+> +++ b/fs/cachefiles/daemon.c
+> @@ -757,3 +757,188 @@ static void cachefiles_daemon_unbind(struct cachefiles_cache *cache)
+>  
+>  	_leave("");
+>  }
+> +
+> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+> +static unsigned long cachefiles_open_ondemand;
+> +
+> +static int cachefiles_ondemand_open(struct inode *inode, struct file *file);
+> +static int cachefiles_ondemand_release(struct inode *inode, struct file *file);
+> +static ssize_t cachefiles_ondemand_write(struct file *, const char __user *,
+> +					 size_t, loff_t *);
+> +static ssize_t cachefiles_ondemand_read(struct file *, char __user *, size_t,
+> +					loff_t *);
+> +static __poll_t cachefiles_ondemand_poll(struct file *,
+> +					 struct poll_table_struct *);
+> +static int cachefiles_daemon_done(struct cachefiles_cache *, char *);
+> +
+> +const struct file_operations cachefiles_ondemand_fops = {
+> +	.owner		= THIS_MODULE,
+> +	.open		= cachefiles_ondemand_open,
+> +	.release	= cachefiles_ondemand_release,
+> +	.read		= cachefiles_ondemand_read,
+> +	.write		= cachefiles_ondemand_write,
+> +	.poll		= cachefiles_ondemand_poll,
+> +	.llseek		= noop_llseek,
+> +};
+> +
+> +static const struct cachefiles_daemon_cmd cachefiles_ondemand_cmds[] = {
+> +	{ "bind",	cachefiles_daemon_bind		},
+> +	{ "brun",	cachefiles_daemon_brun		},
+> +	{ "bcull",	cachefiles_daemon_bcull		},
+> +	{ "bstop",	cachefiles_daemon_bstop		},
+> +	{ "cull",	cachefiles_daemon_cull		},
+> +	{ "debug",	cachefiles_daemon_debug		},
+> +	{ "dir",	cachefiles_daemon_dir		},
+> +	{ "frun",	cachefiles_daemon_frun		},
+> +	{ "fcull",	cachefiles_daemon_fcull		},
+> +	{ "fstop",	cachefiles_daemon_fstop		},
+> +	{ "inuse",	cachefiles_daemon_inuse		},
+> +	{ "secctx",	cachefiles_daemon_secctx	},
+> +	{ "tag",	cachefiles_daemon_tag		},
+> +	{ "done",	cachefiles_daemon_done		},
+> +	{ "",		NULL				}
+> +};
+> +
+> +static int cachefiles_ondemand_open(struct inode *inode, struct file *file)
+> +{
+> +	struct cachefiles_cache *cache;
+> +
+> +	_enter("");
 
-On Wed, Feb 16, 2022 at 4:13 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> You will have to give this instance an unique name because there can be
-> multiple ath9k adapters registered in a given system (like Wi-Fi
-> routers), and one of the first thing hwrng_register() does is ensure
-> that there is not an existing rng with the same name.
->
-> Maybe using a combination of ath9k + dev_name() ought to be unique enough?
+ftrace is your friend, no need to try to duplicate it with debugging
+stuff.  This and the _leave() calls should be removed.
 
-Good point. Will do. dev_name() probably won't cut it because of
-namespaces, but I can always just attach a counter. Will do that for
-v3.
+> +
+> +	/* only the superuser may do this */
+> +	if (!capable(CAP_SYS_ADMIN))
+> +		return -EPERM;
 
-Jason
+Shouldn't you rely on the userspace permissions of the file instead of
+this?
+
+> +
+> +	/* the cachefiles device may only be open once at a time */
+> +	if (xchg(&cachefiles_open_ondemand, 1) == 1)
+> +		return -EBUSY;
+> +
+> +	cache = cachefiles_daemon_open_cache();
+> +	if (!cache) {
+> +		cachefiles_open_ondemand = 0;
+> +		return -ENOMEM;
+> +	}
+> +
+> +	xa_init_flags(&cache->reqs, XA_FLAGS_ALLOC);
+> +	set_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags);
+> +
+> +	file->private_data = cache;
+> +	cache->cachefilesd = file;
+> +	return 0;
+> +}
+> +
+> +static void cachefiles_ondemand_flush_reqs(struct cachefiles_cache *cache)
+> +{
+> +	struct cachefiles_req *req;
+> +	unsigned long index;
+> +
+> +	xa_for_each(&cache->reqs, index, req) {
+> +		req->error = -EIO;
+> +		complete(&req->done);
+> +	}
+> +}
+> +
+> +static int cachefiles_ondemand_release(struct inode *inode, struct file *file)
+> +{
+> +	struct cachefiles_cache *cache = file->private_data;
+> +
+> +	_enter("");
+> +
+> +	ASSERT(cache);
+
+We don't mess with ASSERT() in the kernel, how can this ever be false?
+
+> +
+> +	set_bit(CACHEFILES_DEAD, &cache->flags);
+> +
+> +	cachefiles_ondemand_flush_reqs(cache);
+> +	cachefiles_daemon_unbind(cache);
+> +
+> +	/* clean up the control file interface */
+> +	xa_destroy(&cache->reqs);
+> +	cache->cachefilesd = NULL;
+> +	file->private_data = NULL;
+> +	cachefiles_open_ondemand = 0;
+> +
+> +	kfree(cache);
+> +
+> +	_leave("");
+> +	return 0;
+> +}
+> +
+> +static ssize_t cachefiles_ondemand_write(struct file *file,
+> +					 const char __user *_data,
+> +					 size_t datalen,
+> +					 loff_t *pos)
+> +{
+> +	return cachefiles_daemon_do_write(file, _data, datalen, pos,
+> +					  cachefiles_ondemand_cmds);
+> +}
+> +
+> +static ssize_t cachefiles_ondemand_read(struct file *file, char __user *_buffer,
+> +					size_t buflen, loff_t *pos)
+> +{
+> +	struct cachefiles_cache *cache = file->private_data;
+> +	struct cachefiles_req *req;
+> +	unsigned long id = 0;
+> +	int n;
+> +
+> +	if (!test_bit(CACHEFILES_READY, &cache->flags))
+> +		return 0;
+> +
+> +	req = xa_find(&cache->reqs, &id, UINT_MAX, XA_PRESENT);
+> +	if (!req)
+> +		return 0;
+> +
+> +	n = sizeof(struct cachefiles_req_in);
+> +	if (n > buflen)
+> +		return -EMSGSIZE;
+
+You forgot to test if you have a big enough buffer to copy the data
+into :(
+
+> +
+> +	req->base.id = id;
+> +	if (copy_to_user(_buffer, &req->base, n) != 0)
+
+No endian issues?
+
+> +		return -EFAULT;
+> +
+> +	return n;
+> +}
+> +
+> +static __poll_t cachefiles_ondemand_poll(struct file *file,
+> +					 struct poll_table_struct *poll)
+> +{
+> +	struct cachefiles_cache *cache = file->private_data;
+> +	__poll_t mask;
+> +
+> +	poll_wait(file, &cache->daemon_pollwq, poll);
+> +	mask = 0;
+> +
+> +	if (!xa_empty(&cache->reqs))
+> +		mask |= EPOLLIN;
+> +
+> +	return mask;
+> +}
+> +
+> +/*
+> + * Request completion
+> + * - command: "done <id>"
+> + */
+> +static int cachefiles_daemon_done(struct cachefiles_cache *cache, char *args)
+> +{
+> +	struct cachefiles_req *req;
+> +	unsigned long id;
+> +	int ret;
+> +
+> +	_enter(",%s", args);
+> +
+> +	if (!*args) {
+> +		pr_err("Empty id specified\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = kstrtoul(args, 0, &id);
+> +	if (ret)
+> +		return ret;
+> +
+> +	req = xa_erase(&cache->reqs, id);
+> +	if (!req)
+> +		return -EINVAL;
+> +
+> +	complete(&req->done);
+> +	return 0;
+> +}
+> +#endif
+> diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
+> index 6473634c41a9..59dd11e42cb3 100644
+> --- a/fs/cachefiles/internal.h
+> +++ b/fs/cachefiles/internal.h
+> @@ -15,6 +15,8 @@
+>  #include <linux/fscache-cache.h>
+>  #include <linux/cred.h>
+>  #include <linux/security.h>
+> +#include <linux/xarray.h>
+> +#include <linux/cachefiles_ondemand.h>
+>  
+>  #define CACHEFILES_DIO_BLOCK_SIZE 4096
+>  
+> @@ -102,6 +104,15 @@ struct cachefiles_cache {
+>  	char				*rootdirname;	/* name of cache root directory */
+>  	char				*secctx;	/* LSM security context */
+>  	char				*tag;		/* cache binding tag */
+> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+> +	struct xarray			reqs;
+> +#endif
+> +};
+> +
+> +struct cachefiles_req {
+> +	struct cachefiles_req_in base;
+> +	struct completion done;
+> +	int error;
+>  };
+>  
+>  #include <trace/events/cachefiles.h>
+> @@ -146,6 +157,7 @@ extern int cachefiles_has_space(struct cachefiles_cache *cache,
+>   * daemon.c
+>   */
+>  extern const struct file_operations cachefiles_daemon_fops;
+> +extern const struct file_operations cachefiles_ondemand_fops;
+>  
+>  /*
+>   * error_inject.c
+> diff --git a/fs/cachefiles/io.c b/fs/cachefiles/io.c
+> index 753986ea1583..7c51e53d52d1 100644
+> --- a/fs/cachefiles/io.c
+> +++ b/fs/cachefiles/io.c
+> @@ -597,6 +597,67 @@ static void cachefiles_end_operation(struct netfs_cache_resources *cres)
+>  	fscache_end_cookie_access(fscache_cres_cookie(cres), fscache_access_io_end);
+>  }
+>  
+> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+> +static struct cachefiles_req *cachefiles_alloc_req(struct cachefiles_object *object,
+> +						   loff_t start_pos,
+> +						   size_t len)
+> +{
+> +	struct cachefiles_req *req;
+> +	struct cachefiles_req_in *base;
+> +
+> +	req = kzalloc(sizeof(*req), GFP_KERNEL);
+> +	if (!req)
+> +		return NULL;
+> +
+> +	base = &req->base;
+> +
+> +	base->off = start_pos;
+> +	base->len = len;
+> +	strncpy(base->path, object->d_name, sizeof(base->path) - 1);
+> +
+> +	init_completion(&req->done);
+> +
+> +	return req;
+> +}
+> +
+> +static int cachefiles_ondemand_read(struct netfs_cache_resources *cres,
+> +				    loff_t start_pos, size_t len)
+> +{
+> +	struct cachefiles_object *object;
+> +	struct cachefiles_cache *cache;
+> +	struct cachefiles_req *req;
+> +	int ret;
+> +	u32 id;
+> +
+> +	object = cachefiles_cres_object(cres);
+> +	cache = object->volume->cache;
+> +
+> +	if (!test_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (test_bit(CACHEFILES_DEAD, &cache->flags))
+> +		return -EIO;
+> +
+> +	req = cachefiles_alloc_req(object, start_pos, len);
+> +	if (!req)
+> +		return -ENOMEM;
+> +
+> +	ret = xa_alloc(&cache->reqs, &id, req, xa_limit_32b, GFP_KERNEL);
+> +	if (ret) {
+> +		kfree(req);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	wake_up_all(&cache->daemon_pollwq);
+> +
+> +	wait_for_completion(&req->done);
+> +	ret = req->error;
+> +	kfree(req);
+> +
+> +	return ret;
+> +}
+> +#endif
+> +
+>  static const struct netfs_cache_ops cachefiles_netfs_cache_ops = {
+>  	.end_operation		= cachefiles_end_operation,
+>  	.read			= cachefiles_read,
+> @@ -604,6 +665,9 @@ static const struct netfs_cache_ops cachefiles_netfs_cache_ops = {
+>  	.prepare_read		= cachefiles_prepare_read,
+>  	.prepare_write		= cachefiles_prepare_write,
+>  	.query_occupancy	= cachefiles_query_occupancy,
+> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+> +	.ondemand_read		= cachefiles_ondemand_read,
+> +#endif
+>  };
+>  
+>  /*
+> diff --git a/fs/cachefiles/main.c b/fs/cachefiles/main.c
+> index 3f369c6f816d..eab17c3140d9 100644
+> --- a/fs/cachefiles/main.c
+> +++ b/fs/cachefiles/main.c
+> @@ -39,6 +39,27 @@ static struct miscdevice cachefiles_dev = {
+>  	.fops	= &cachefiles_daemon_fops,
+>  };
+>  
+> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+> +static struct miscdevice cachefiles_ondemand_dev = {
+> +	.minor	= MISC_DYNAMIC_MINOR,
+> +	.name	= "cachefiles_ondemand",
+
+That is a very big device node name.  Are you sure that is what you
+want?
+
+And where are you documenting this new misc device node name and format
+so that userspace knows about it?
+
+> +	.fops	= &cachefiles_ondemand_fops,
+> +};
+> +
+> +static inline int cachefiles_init_ondemand(void)
+> +{
+> +	return misc_register(&cachefiles_ondemand_dev);
+> +}
+> +
+> +static inline void cachefiles_exit_ondemand(void)
+> +{
+> +	misc_deregister(&cachefiles_ondemand_dev);
+> +}
+> +#else
+> +static inline int cachefiles_init_ondemand(void) { return 0; }
+> +static inline void cachefiles_exit_ondemand(void) {}
+> +#endif
+> +
+>  /*
+>   * initialise the fs caching module
+>   */
+> @@ -52,6 +73,9 @@ static int __init cachefiles_init(void)
+>  	ret = misc_register(&cachefiles_dev);
+>  	if (ret < 0)
+>  		goto error_dev;
+> +	ret = cachefiles_init_ondemand();
+> +	if (ret < 0)
+> +		goto error_ondemand_dev;
+>  
+>  	/* create an object jar */
+>  	ret = -ENOMEM;
+> @@ -68,6 +92,8 @@ static int __init cachefiles_init(void)
+>  	return 0;
+>  
+>  error_object_jar:
+> +	cachefiles_exit_ondemand();
+> +error_ondemand_dev:
+>  	misc_deregister(&cachefiles_dev);
+>  error_dev:
+>  	cachefiles_unregister_error_injection();
+> @@ -86,6 +112,7 @@ static void __exit cachefiles_exit(void)
+>  	pr_info("Unloading\n");
+>  
+>  	kmem_cache_destroy(cachefiles_object_jar);
+> +	cachefiles_exit_ondemand();
+>  	misc_deregister(&cachefiles_dev);
+>  	cachefiles_unregister_error_injection();
+>  }
+> diff --git a/include/uapi/linux/cachefiles_ondemand.h b/include/uapi/linux/cachefiles_ondemand.h
+> new file mode 100644
+> index 000000000000..e639a82f1098
+> --- /dev/null
+> +++ b/include/uapi/linux/cachefiles_ondemand.h
+> @@ -0,0 +1,14 @@
+> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +#ifndef _LINUX_CACHEFILES_ONDEMAND_H
+> +#define _LINUX_CACHEFILES_ONDEMAND_H
+> +
+> +#include <linux/limits.h>
+> +
+> +struct cachefiles_req_in {
+> +	uint64_t id;
+> +	uint64_t off;
+> +	uint64_t len;
+
+For structures that cross the user/kernel boundry, you have to use the
+correct types.  For this it would be __u64.
+
+> +	char path[NAME_MAX];
+
+__u8.
+
+Also, what is the endian of the other values here?  Always native?
+
+thanks,
+
+greg k-h
