@@ -2,107 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0038C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21324C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 14:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235085AbiBPOd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 09:33:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60020 "EHLO
+        id S235092AbiBPOeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 09:34:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235080AbiBPOdX (ORCPT
+        with ESMTP id S229379AbiBPOea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 09:33:23 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF8AC139CFE;
-        Wed, 16 Feb 2022 06:32:50 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4D66B106F;
-        Wed, 16 Feb 2022 06:32:50 -0800 (PST)
-Received: from bogus (unknown [10.57.3.35])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 341D43F718;
-        Wed, 16 Feb 2022 06:32:47 -0800 (PST)
-Date:   Wed, 16 Feb 2022 14:31:58 +0000
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Liviu Dudau <Liviu.Dudau@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-stable <stable@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        lkft-triage@lists.linaro.org,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 2/2] arm64: dts: juno: Enable more SMMUs
-Message-ID: <20220216143158.izrmexbqem3l5kz7@bogus>
-References: <720d0a9a42e33148fcac45cd39a727093a32bf32.1614965598.git.robin.murphy@arm.com>
- <a730070d718cb119f77c8ca1782a0d4189bfb3e7.1614965598.git.robin.murphy@arm.com>
- <0a1d437d-9ea0-de83-3c19-e07f560ad37c@arm.com>
- <20210730143431.GB1517404@mutt>
- <8b358507-dbdf-b05b-c1da-2ec9903a2912@arm.com>
- <CADYN=9LE2JnE+vmv_UaeyJj_RpHcp+zZUv711VuQekLSiQ2bJA@mail.gmail.com>
- <CA+G9fYu7ctvOfdvBkDZ1nABz0TaYZ49FUKVTctn+mBTCmk9JCQ@mail.gmail.com>
- <20220214141303.3lmnassl4qibsp3y@bogus>
- <CA+G9fYsUX2vHjNwZ7u=JtACEyfe9SkSHtYnwJXJ1JytF9+pSAQ@mail.gmail.com>
- <CA+G9fYsz89w-4-2GggA4ELOkNJ+pD4+u0=PEBZqiSDJea-aCoA@mail.gmail.com>
+        Wed, 16 Feb 2022 09:34:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D70C2A520B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:34:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645022056;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uAZTsZWbYnZinl4NvmWIbH2gwEcwA0kzPtah3A0t9z8=;
+        b=KAmkwMMixQlpoQ+saS9f/0n5o0aU3bihhgH2kuA+fteuWo02vh8oy753wtGe9QmOuf75NN
+        Im+mWppdliwKJjelfHmmrH/6rmI8ou8k+qZLbp5hq2tH6p4bPfFP7X8P2bMPgSIy07ld26
+        HT3WMI26MIfhQayKuVVzB6O5QeHj8n8=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-484-4-MGS2UiMAGTTW2wAYqUQQ-1; Wed, 16 Feb 2022 09:34:15 -0500
+X-MC-Unique: 4-MGS2UiMAGTTW2wAYqUQQ-1
+Received: by mail-wr1-f71.google.com with SMTP id k3-20020adfb343000000b001e463e6af20so1147250wrd.8
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 06:34:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uAZTsZWbYnZinl4NvmWIbH2gwEcwA0kzPtah3A0t9z8=;
+        b=sY4Nry6HboIJY4u39Hq2NxAdmBgwa3M3smTOdLlpcbEL73jH2xPMd0yE/dRUgvinWw
+         vjNrAnTUrLPvsgVldN8liaFYM7CMQoglZHYk8iI84Fu+GFDf+P9Aj3D5tI8EaUz1H3Y6
+         yxxkNfMcEH6zohts2O3NqtXBu7ed6kv2DpSxAcNUUjKnoAF2ZvsOzPN1XhJrWusdCjRk
+         8nI6g7KZVQOiBXjZDpGeSm57uFOFpKNqpCLz9D+g/InVExWQCRWsFxRGiPBWEG4EGl3v
+         hkNlJCi+WBWN0bDcFOy0B5D0LEZlUHHDQl0Xw0Wn2xCNyHEnPR/jVkK0WBKwsU2cGQPg
+         SCKA==
+X-Gm-Message-State: AOAM531tS7TVVJCAD+KKy2+kl8ErIr/HUQoTnaginkHtwnKuWhOO0IRG
+        wP6/9Go6ntt2oKrAV81HdXjbqFfnoAcQ/ukbPaN3RYGmDet+I6/qR0oz0xNVzrNqh8/5viwfzDv
+        D4/EoBYvnMdpfwrTiXI1aDHQ=
+X-Received: by 2002:a05:600c:364a:b0:37b:ac5d:b77b with SMTP id y10-20020a05600c364a00b0037bac5db77bmr1893320wmq.82.1645022054231;
+        Wed, 16 Feb 2022 06:34:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzzApKQp57v8R5P0ECy6xhaxHgRhVyGNnH56VU0prns/IVuxgeGt0IWLf+ZxRJdmdEh/jD6kg==
+X-Received: by 2002:a05:600c:364a:b0:37b:ac5d:b77b with SMTP id y10-20020a05600c364a00b0037bac5db77bmr1893300wmq.82.1645022053978;
+        Wed, 16 Feb 2022 06:34:13 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id l12sm32506343wrs.11.2022.02.16.06.34.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 06:34:13 -0800 (PST)
+Date:   Wed, 16 Feb 2022 14:34:12 +0000
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     Phil Auld <pauld@redhat.com>
+Cc:     frederic@kernel.org, tglx@linutronix.de, mingo@kernel.org,
+        mingo@redhat.com, atomlin@atomlin.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
+ idle tick was stopped too
+Message-ID: <20220216143412.dwxjlkq4w2zeweld@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220203214339.1889971-1-atomlin@redhat.com>
+ <YfxVpEO+UJTC+a9e@lorien.usersys.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CA+G9fYsz89w-4-2GggA4ELOkNJ+pD4+u0=PEBZqiSDJea-aCoA@mail.gmail.com>
+In-Reply-To: <YfxVpEO+UJTC+a9e@lorien.usersys.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 05:02:53PM +0530, Naresh Kamboju wrote:
-> Hi Sudeep,
-> 
-> On Mon, 14 Feb 2022 at 20:41, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-> >
-> > On Mon, 14 Feb 2022 at 19:43, Sudeep Holla <sudeep.holla@arm.com> wrote:
-> > >
-> > > On Mon, Feb 14, 2022 at 07:36:00PM +0530, Naresh Kamboju wrote:
-> > > > Hi Robin,
-> > > >
-> > > > Since we did not get a reply on this email thread.
-> > > > and those intermittent failures are causing a lot of noise in reports summary.
-> > > > We will wait one more week and stop running 64k page size testing on
-> > > > Juno-r2 devices.
-> > > >
-> > > > > > > diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
-> > > > > > > index 8e7a66943b01..d3148730e951 100644
-> > > > > > > --- a/arch/arm64/boot/dts/arm/juno-base.dtsi
-> > > > > > > +++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
-> > > > > > > @@ -545,8 +545,7 @@ pcie_ctlr: pcie@40000000 {
-> > > > > > >                           <0x02000000 0x00 0x50000000 0x00 0x50000000 0x0 0x08000000>,
-> > > > > > >                           <0x42000000 0x40 0x00000000 0x40 0x00000000 0x1 0x00000000>;
-> > > > > > >                  /* Standard AXI Translation entries as programmed by EDK2 */
-> > > > > > > -               dma-ranges = <0x02000000 0x0 0x2c1c0000 0x0 0x2c1c0000 0x0 0x00040000>,
-> > > > > > > -                            <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
-> > > > > > > +               dma-ranges = <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
-> > > > > > >                               <0x43000000 0x8 0x00000000 0x8 0x00000000 0x2 0x00000000>;
-> > > > > > >                  #interrupt-cells = <1>;
-> > > > > > >                  interrupt-map-mask = <0 0 0 7>;
-> > > > > > >
-> > > >
-> > > > Reference email thread,
-> > > > https://lore.kernel.org/stable/0a1d437d-9ea0-de83-3c19-e07f560ad37c@arm.com/
-> > > >
-> > >
-> > > I was about to tag the fix for this and was just reading this thread. I will
-> > > send the pull request soon. Sorry for the delay, it is in next for some time
-> > > now. Are you seeing the issue even in linux-next ?
-> 
-> I have tested Linux next arm64 64k page size builds on Juno-r2 and confirm that
-> the reported issue is fixed now.
-> 
-> Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+On Thu 2022-02-03 17:22 -0500, Phil Auld wrote:
+> As I said earlier, I don't think you want to call quiet_vmstat()
+> unconditionally. And I don't think this will catch the cases you are
+> trying to fix. Once the tick is stopped tick_nohz_stop_tick should not be
+> getting called again until it's been restarted.
 
-Thanks for testing. I have already sent the pull request to Arnd yesterday.
+Phil,
+
+Sorry about the delay. If I understand correctly, I see a scenario by which
+tick_nohz_stop_tick() can be called on transition/or exit from idle (e.g.
+default_idle_call()):
+
+	1.	The idle/or scheduling-clock was previously
+		stopped
+
+	2.	It is considered safe for the scheduling-clock
+	        tick to remain "stopped"/or omitted; no need to
+		reprogram and enable a periodic tick
+		(e.g. no queued/or expired pending timer)
+
+	  ...
+            do_idle
+	      cpuidle_idle_call
+	      {
+
+		...
+
+	.--     default_idle_call
+	|         arch_cpu_idle
+	|         goto exit_idle
+        |
+        |       exit_idle:
+	|         __current_set_polling()
+        |
+	|     }
+        |     tick_nohz_idle_exit()
+        |     {
+        |
+        |       tick_stopped = ts->tick_stopped
+        |
+        |       if (tick_stopped)
+        |         tick_nohz_idle_update_tick(ts, now)
+        |           if (tick_nohz_full_cpu(smp_processor_id()))
+        |             __tick_nohz_full_update_tick(ts, now)
+        |             {
+        |               int cpu = smp_processor_id()
+        |
+        |               if (can_stop_full_tick(cpu, ts))
+        |                 tick_nohz_stop_sched_tick(ts, cpu)
+        |                   if (tick_nohz_next_event(ts, cpu))
+        '--                   tick_nohz_stop_tick(ts, cpu)
+                      }
+              }
+
+If I understand correctly, __tick_nohz_full_update_tick() can return with
+no changes to the current tick (e.g. expire time == KTIME_MAX), no?
+
+
+Kind regards,
 
 -- 
-Regards,
-Sudeep
+Aaron Tomlin
+
