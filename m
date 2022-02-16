@@ -2,274 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52439C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7676C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 01:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245460AbiBPBYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 20:24:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43968 "EHLO
+        id S245463AbiBPB24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:28:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240360AbiBPBYr (ORCPT
+        with ESMTP id S238335AbiBPB2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 20:24:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5D8A279C;
-        Tue, 15 Feb 2022 17:24:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 176A4B81204;
-        Wed, 16 Feb 2022 01:24:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C025DC340EB;
-        Wed, 16 Feb 2022 01:24:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644974673;
-        bh=hrfBIdKht3dcKeSKr/sHyUC3lpNs97F3l7gh+ZVQELo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qBgcbf5kEm16L57DlbBeR9ECJsFyNnzk4Rwpso5PHEhxoW4db5nipJRVek9+mqXdq
-         DsHrUBWesS46N4k3DuNrvYoTay3yrn8FG0DvTIChUL+8+atDm5OC7bHicMDRrOnEwv
-         e4+26SfEoJVqVUtvwNNJb0bqOCH62tnld0i8Gh9f3UQKdXbf+y+8pJ4S2towFFXtJC
-         jvKHFORkAXo2OdrOUsQB9RMh9+75EPilngHJgXd/qxYJrphVKwpQiM08UDQw3uWOGe
-         hJ8fd0dh1EtPsfi533y9ddj3Q6aXeXRbh7JfVwAN/l/lxkrEHo4QrN/lDbXyuJ2F+K
-         FM6rAd0U+RdjA==
-Date:   Tue, 15 Feb 2022 17:24:33 -0800
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>
-Cc:     xfs <linux-xfs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] xfs: introduce xfs_bremapi_from_cowfork()
-Message-ID: <20220216012433.GI8338@magnolia>
-References: <20220209073655.22162-1-hsiangkao@linux.alibaba.com>
- <20220209073655.22162-4-hsiangkao@linux.alibaba.com>
+        Tue, 15 Feb 2022 20:28:54 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EC2CD5C6;
+        Tue, 15 Feb 2022 17:28:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644974923; x=1676510923;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=3f4y2yguXvUrU7lczgu8gh9tQfZt363S1MBqO0zPhoA=;
+  b=I7IRy1s6SkucObgiO4o9dMgmcGx2YFoMCebj9SqXyhAuFo3CLMpDltoj
+   B0IKGiXXYiZTWQZkGruATwWEzLtJYcAHme1wIg+oiIroXWk+1bewTaHvz
+   f85eP63c2g7Wf7VmRxfQNV1zy7OA7Q6SE5SSkYPxv3cWbQx8RwA3KRywP
+   e+R5+xlgPSQpgd6ULiXeugFOOCSQ1nNujeoIPAV74ROW1n7gy5J1+KdPD
+   MQBOk8zOV14WHs14/2HTlSsw0iTqcKg1rgJpfkQsVuhRvLqnyMCxSzfK/
+   SlWgw2wofKPzLVQjgpYS4L8IdyiGCOQkwgDlFVeINNSwN5OKntGYT6gZp
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="311238524"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="311238524"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 17:28:43 -0800
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="529171432"
+Received: from guptapa-mobl1.amr.corp.intel.com ([10.209.113.151])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 17:28:42 -0800
+Date:   Tue, 15 Feb 2022 17:28:41 -0800
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Andrew Cooper <Andrew.Cooper3@citrix.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "antonio.gomez.iglesias@linux.intel.com" 
+        <antonio.gomez.iglesias@linux.intel.com>,
+        "neelima.krishnan@intel.com" <neelima.krishnan@intel.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
+Message-ID: <20220216012841.vxlnugre2j4pczp7@guptapa-mobl1.amr.corp.intel.com>
+References: <20220214224121.ilhu23cfjdyhvahk@guptapa-mobl1.amr.corp.intel.com>
+ <YgrltbToK8+tG2qK@zn.tnic>
+ <20220215002014.mb7g4y3hfefmyozx@guptapa-mobl1.amr.corp.intel.com>
+ <Ygt/QSTSMlUJnzFS@zn.tnic>
+ <20220215121103.vhb2lpoygxn3xywy@guptapa-mobl1.amr.corp.intel.com>
+ <YgvVcdpmFCCn20A7@zn.tnic>
+ <20220215181931.wxfsn2a3npg7xmi2@guptapa-mobl1.amr.corp.intel.com>
+ <YgwAHU7gCnik8Kv6@zn.tnic>
+ <20220216003950.5jxecuf773g2kuwl@guptapa-mobl1.amr.corp.intel.com>
+ <6724088f-c7cf-da92-e894-d8970f13bf1e@citrix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220209073655.22162-4-hsiangkao@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6724088f-c7cf-da92-e894-d8970f13bf1e@citrix.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 03:36:55PM +0800, Gao Xiang wrote:
-> Previously, xfs_reflink_end_cow_extent() will unconditionally unmap
-> the corresponding old extent and remap an extent from COW fork.
-> However, it seems somewhat ineffective since the old bmbt records can
-> be directly updated for many cases instead.
-> 
-> This patch uses introduced xfs_bmap_update_extent_real() in the
-> previous patch for most extent inclusive cases or it will fall back
-> to the old way if such replacement is not possible.
-> 
-> Actually, we're planing to use a modified alway-cow like atomic write
-> approach internally, therefore it'd be nice to do some optimization
-> to reduce some metadata overhead.
-> 
-> Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-> ---
->  fs/xfs/libxfs/xfs_bmap.c | 117 ++++++++++++++++++++++++++++++++++++---
->  fs/xfs/libxfs/xfs_bmap.h |   3 +
->  fs/xfs/xfs_reflink.c     |  19 +------
->  3 files changed, 112 insertions(+), 27 deletions(-)
-> 
-> diff --git a/fs/xfs/libxfs/xfs_bmap.c b/fs/xfs/libxfs/xfs_bmap.c
-> index a10476dee701..0e132f811f7a 100644
-> --- a/fs/xfs/libxfs/xfs_bmap.c
-> +++ b/fs/xfs/libxfs/xfs_bmap.c
-> @@ -5880,6 +5880,114 @@ xfs_bmap_collapse_extents(
->  	return error;
->  }
->  
-> +/* Deferred mapping is only for real extents in the data fork. */
-> +static bool
-> +xfs_bmap_is_update_needed(
-> +	struct xfs_bmbt_irec	*bmap)
-> +{
-> +	return  bmap->br_startblock != HOLESTARTBLOCK &&
-> +		bmap->br_startblock != DELAYSTARTBLOCK;
-> +}
-> +
-> +/* del is an extent from COW fork */
-> +int
-> +xfs_bremapi_from_cowfork(
-> +	struct xfs_trans	*tp,
-> +	struct xfs_inode	*ip,
-> +	struct xfs_bmbt_irec	*icow)
-> +{
-> +	int			error;
-> +	xfs_filblks_t		rlen;
-> +
-> +	/* Use the old (unmap-remap) way for real-time inodes instead */
-> +	if (!XFS_IS_REALTIME_INODE(ip) && xfs_bmap_is_update_needed(icow)) {
+On 16.02.2022 00:49, Andrew Cooper wrote:
+>On 16/02/2022 00:39, Pawan Gupta wrote:
+>> On 15.02.2022 20:33, Borislav Petkov wrote:
+>>> On Tue, Feb 15, 2022 at 10:19:31AM -0800, Pawan Gupta wrote:
+>>>> I admit it has gotten complicated with so many bits associated with
+>>>> TSX.
+>>>
+>>> Yah, and looka here:
+>>>
+>>> https://github.com/andyhhp/xen/commit/ad9f7c3b2e0df38ad6d54f4769d4dccf765fbcee
+>>>
+>>>
+>>> It seems it isn't complicated enough. ;-\
+>>>
+>>> Andy just made me aware of this thing where you guys have added a new
+>>> MSR bit:
+>>>
+>>> MSR_MCU_OPT_CTRL[1] which is called something like
+>>> MCU_OPT_CTRL_RTM_ALLOW or so.
+>>
+>> RTM_ALLOW bit was added to MSR_MCU_OPT_CTRL, but its not set by default,
+>> and it is *not* recommended to be used in production deployments [1]:
+>>
+>>   Although MSR 0x122 (TSX_CTRL) and MSR 0x123 (IA32_MCU_OPT_CTRL) can be
+>>   used to reenable Intel TSX for development, doing so is not recommended
+>>   for production deployments. In particular, applying MD_CLEAR flows for
+>>   mitigation of the Intel TSX Asynchronous Abort (TAA) transient
+>> execution
+>>   attack may not be effective on these processors when Intel TSX is
+>>   enabled with updated microcode. The processors continue to be mitigated
+>>   against TAA when Intel TSX is disabled.
+>
+>The purpose of setting RTM_ALLOW isn't to enable TSX per say.
+>
+>The purpose is to make MSR_TSX_CTRL.RTM_DISABLE behaves consistently on
+>all hardware, which reduces the complexity and invasiveness of dealing
+>with this special case, because the TAA workaround will still turn TSX
+>off by default.
+>
+>The configuration you don't want to be running with is RTM_ALLOW &&
+>!RTM_DISABLE, because that is "still vulnerable to TSX Async Abort".
 
-When would be be remapping a realtime file with a COW fork?
+I am not sure how a system can end up with RTM_ALLOW && !RTM_DISABLE? I
+have no problem taking care of this case, I am just debating why we need
+it.
 
-> +		xfs_fileoff_t		start, end, max_len;
-> +		struct xfs_bmbt_irec	got;
-> +		struct xfs_iext_cursor	icur;
-> +		struct xfs_btree_cur	*cur = NULL;
-> +		struct xfs_ifork	*ifp = XFS_IFORK_PTR(ip, XFS_DATA_FORK);
-> +		int			logflags = 0;
-> +
-> +		error = xfs_iread_extents(tp, ip, XFS_DATA_FORK);
-> +		if (error)
-> +			return error;
-> +
-> +		max_len = xfs_refcount_max_unmap(tp->t_log_res);
-> +		if (max_len < icow->br_blockcount) {
-> +			icow->br_startoff += icow->br_blockcount - max_len;
-> +			icow->br_startblock += icow->br_blockcount - max_len;
-> +			icow->br_blockcount = max_len;
-> +		}
-> +
-> +		end = icow->br_startoff + icow->br_blockcount;
-> +		if (!xfs_iext_count(ifp) || !xfs_iext_lookup_extent_before(ip,
-> +				ifp, &end, &icur, &got) ||
-> +		    isnullstartblock(got.br_startblock) ||
-> +		    icow->br_startoff + icow->br_blockcount > got.br_startoff +
-> +				got.br_blockcount) {
-> +			error = -EAGAIN;
-> +		} else {
-> +			end = icow->br_startoff + icow->br_blockcount;
-> +			start = XFS_FILEOFF_MAX(icow->br_startoff,
-> +						got.br_startoff);
-> +			ASSERT(start < end);
-> +
-> +			/* Trim the extent to what we need */
-> +			xfs_trim_extent(icow, start, end - start);
-> +			xfs_trim_extent(&got, start, end - start);
-> +
-> +			if (ifp->if_format == XFS_DINODE_FMT_BTREE) {
-> +				cur = xfs_bmbt_init_cursor(tp->t_mountp, tp, ip,
-> +							   XFS_DATA_FORK);
-> +				cur->bc_ino.flags = 0;
-> +			}
-> +
-> +			/*
-> +			 * Free the CoW orphan record (it should be done here
-> +			 * before updating extent due to rmapbt update)
-> +			 */
-> +			xfs_refcount_free_cow_extent(tp, icow->br_startblock,
-> +						     icow->br_blockcount);
-> +
-> +			xfs_bmap_update_extent_real(tp, ip, XFS_DATA_FORK,
-> +					&icur, &cur, icow, &logflags, false);
+One way to get to this state is BIOS sets RTM_ALLOW (dont know why?) and
+linux cmdline has tsx=on.
 
-Hmm... are you directly updating the data fork mapping record from the
-COW fork mapping record?  Is the performance advantage you mentioned
-earlier a result of this code no longer logging a bmap map intent item
-and reducing the transaction roll count by one?
-
---D
-
-> +
-> +			/* Free previous referenced space */
-> +			xfs_refcount_decrease_extent(tp, &got);
-> +
-> +			trace_xfs_reflink_cow_remap(ip, icow);
-> +			error = 0;
-> +		}
-> +		if (cur)
-> +			xfs_btree_del_cursor(cur, 0);
-> +		if (logflags)
-> +			xfs_trans_log_inode(tp, ip, logflags);
-> +		if (!error)
-> +			return 0;
-> +	}
-> +
-> +	rlen = icow->br_blockcount;
-> +	error = __xfs_bunmapi(tp, ip, icow->br_startoff, &rlen, 0, 1);
-> +	if (error)
-> +		return error;
-> +
-> +	/* Trim the extent to whatever got unmapped. */
-> +	xfs_trim_extent(icow, icow->br_startoff + rlen,
-> +			icow->br_blockcount - rlen);
-> +	/* Free the CoW orphan record. */
-> +	xfs_refcount_free_cow_extent(tp, icow->br_startblock,
-> +				     icow->br_blockcount);
-> +
-> +	/* Map the new blocks into the data fork. */
-> +	xfs_bmap_map_extent(tp, ip, icow);
-> +
-> +	/* Charge this new data fork mapping to the on-disk quota. */
-> +	xfs_trans_mod_dquot_byino(tp, ip, XFS_TRANS_DQ_DELBCOUNT,
-> +			(long)icow->br_blockcount);
-> +	trace_xfs_reflink_cow_remap(ip, icow);
-> +	return 0;
-> +}
-> +
->  /* Make sure we won't be right-shifting an extent past the maximum bound. */
->  int
->  xfs_bmap_can_insert_extents(
-> @@ -6123,15 +6231,6 @@ xfs_bmap_split_extent(
->  	return error;
->  }
->  
-> -/* Deferred mapping is only for real extents in the data fork. */
-> -static bool
-> -xfs_bmap_is_update_needed(
-> -	struct xfs_bmbt_irec	*bmap)
-> -{
-> -	return  bmap->br_startblock != HOLESTARTBLOCK &&
-> -		bmap->br_startblock != DELAYSTARTBLOCK;
-> -}
-> -
->  /* Record a bmap intent. */
->  static int
->  __xfs_bmap_add(
-> diff --git a/fs/xfs/libxfs/xfs_bmap.h b/fs/xfs/libxfs/xfs_bmap.h
-> index c52ff94786e2..9da1cff41c1c 100644
-> --- a/fs/xfs/libxfs/xfs_bmap.h
-> +++ b/fs/xfs/libxfs/xfs_bmap.h
-> @@ -220,6 +220,9 @@ int	xfs_bmap_update_extent_real(struct xfs_trans *tp,
->  		struct xfs_inode *ip, int whichfork,
->  		struct xfs_iext_cursor *icur, struct xfs_btree_cur **curp,
->  		struct xfs_bmbt_irec *new, int *logflagsp, bool convert);
-> +int
-> +xfs_bremapi_from_cowfork(struct xfs_trans *tp, struct xfs_inode *ip,
-> +		struct xfs_bmbt_irec *icow);
->  
->  enum xfs_bmap_intent_type {
->  	XFS_BMAP_MAP = 1,
-> diff --git a/fs/xfs/xfs_reflink.c b/fs/xfs/xfs_reflink.c
-> index 276387a6a85d..75bd2e03cd5b 100644
-> --- a/fs/xfs/xfs_reflink.c
-> +++ b/fs/xfs/xfs_reflink.c
-> @@ -590,7 +590,6 @@ xfs_reflink_end_cow_extent(
->  	struct xfs_mount	*mp = ip->i_mount;
->  	struct xfs_trans	*tp;
->  	struct xfs_ifork	*ifp = XFS_IFORK_PTR(ip, XFS_COW_FORK);
-> -	xfs_filblks_t		rlen;
->  	unsigned int		resblks;
->  	int			error;
->  
-> @@ -651,26 +650,10 @@ xfs_reflink_end_cow_extent(
->  		goto out_cancel;
->  	}
->  
-> -	/* Unmap the old blocks in the data fork. */
-> -	rlen = del.br_blockcount;
-> -	error = __xfs_bunmapi(tp, ip, del.br_startoff, &rlen, 0, 1);
-> +	error = xfs_bremapi_from_cowfork(tp, ip, &del);
->  	if (error)
->  		goto out_cancel;
->  
-> -	/* Trim the extent to whatever got unmapped. */
-> -	xfs_trim_extent(&del, del.br_startoff + rlen, del.br_blockcount - rlen);
-> -	trace_xfs_reflink_cow_remap(ip, &del);
-> -
-> -	/* Free the CoW orphan record. */
-> -	xfs_refcount_free_cow_extent(tp, del.br_startblock, del.br_blockcount);
-> -
-> -	/* Map the new blocks into the data fork. */
-> -	xfs_bmap_map_extent(tp, ip, &del);
-> -
-> -	/* Charge this new data fork mapping to the on-disk quota. */
-> -	xfs_trans_mod_dquot_byino(tp, ip, XFS_TRANS_DQ_DELBCOUNT,
-> -			(long)del.br_blockcount);
-> -
->  	/* Remove the mapping from the CoW fork. */
->  	xfs_bmap_del_extent_cow(ip, &icur, &got, &del);
->  
-> -- 
-> 2.24.4
-> 
+Thanks,
+Pawan
