@@ -2,186 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0974EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07944C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234521AbiBPNd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:33:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53526 "EHLO
+        id S234538AbiBPNfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:35:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234520AbiBPNd2 (ORCPT
+        with ESMTP id S230237AbiBPNfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:33:28 -0500
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B52228C99;
-        Wed, 16 Feb 2022 05:33:15 -0800 (PST)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 6C73468B05; Wed, 16 Feb 2022 14:33:11 +0100 (CET)
-Date:   Wed, 16 Feb 2022 14:33:11 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Markus =?iso-8859-1?Q?Bl=F6chl?= <Markus.Bloechl@ipetronik.com>
-Cc:     Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stefan Roese <sr@denx.de>
-Subject: Re: [RFC PATCH] nvme: prevent hang on surprise removal of NVMe disk
-Message-ID: <20220216133311.GA16154@lst.de>
-References: <20220214095107.3t5en5a3tosaeoo6@ipetronik.com> <20220215201738.GA26945@lst.de> <20220216125937.d6brzu7labgywxcg@ipetronik.com>
+        Wed, 16 Feb 2022 08:35:09 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF6842AB512;
+        Wed, 16 Feb 2022 05:34:55 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.41:45428.1421487662
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
+        by 189.cn (HERMES) with SMTP id 7E6A6100204;
+        Wed, 16 Feb 2022 21:34:50 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id 8d768eae87b04679bd18d891250ceade for maxime@cerno.tech;
+        Wed, 16 Feb 2022 21:34:53 CST
+X-Transaction-ID: 8d768eae87b04679bd18d891250ceade
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <965ca520-229f-5729-bf06-ae64ed3af383@189.cn>
+Date:   Wed, 16 Feb 2022 21:34:47 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216125937.d6brzu7labgywxcg@ipetronik.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
+ controller
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>
+References: <20220203082546.3099-1-15330273260@189.cn>
+ <20220203082546.3099-2-15330273260@189.cn>
+ <20220203085851.yqstkfgt4dz7rcnw@houat>
+ <11ac5696-29e3-fefa-31c0-b7b86c88bbdc@189.cn>
+ <20220209084908.kub4bs64rzhvpvon@houat>
+ <84bfb2fc-595c-3bae-e8a0-c19ccbcfcfd8@189.cn>
+ <20220209161624.42ijbnhanaaari46@houat>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <20220209161624.42ijbnhanaaari46@houat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'd do something like this, which gets us a properly documented
-interface (the del_gendisk change will be split into a separate
-patch):
 
-diff --git a/block/blk-core.c b/block/blk-core.c
-index d93e3bb9a769b..15d5c5ba5bbe5 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -284,12 +284,19 @@ void blk_queue_start_drain(struct request_queue *q)
- 	wake_up_all(&q->mq_freeze_wq);
- }
- 
--void blk_set_queue_dying(struct request_queue *q)
-+/**
-+ * blk_set_disk_dead - mark a disk as dead
-+ * @disk: disk to mark as dead
-+ *
-+ * Mark as disk as dead (e.g. surprise removed) and don't accept any new I/O
-+ * to this disk.
-+ */
-+void blk_mark_disk_dead(struct gendisk *disk)
- {
--	blk_queue_flag_set(QUEUE_FLAG_DYING, q);
--	blk_queue_start_drain(q);
-+	set_bit(GD_DEAD, &disk->state);
-+	blk_queue_start_drain(disk->queue);
- }
--EXPORT_SYMBOL_GPL(blk_set_queue_dying);
-+EXPORT_SYMBOL_GPL(blk_mark_disk_dead);
- 
- /**
-  * blk_cleanup_queue - shutdown a request queue
-@@ -308,7 +315,8 @@ void blk_cleanup_queue(struct request_queue *q)
- 	WARN_ON_ONCE(blk_queue_registered(q));
- 
- 	/* mark @q DYING, no new request or merges will be allowed afterwards */
--	blk_set_queue_dying(q);
-+	blk_queue_flag_set(QUEUE_FLAG_DYING, q);
-+	blk_queue_start_drain(q);
- 
- 	blk_queue_flag_set(QUEUE_FLAG_NOMERGES, q);
- 	blk_queue_flag_set(QUEUE_FLAG_NOXMERGES, q);
-diff --git a/block/genhd.c b/block/genhd.c
-index 626c8406f21a6..35e49b7f1112a 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -584,7 +584,8 @@ void del_gendisk(struct gendisk *disk)
- 	blk_drop_partitions(disk);
- 	mutex_unlock(&disk->open_mutex);
- 
--	fsync_bdev(disk->part0);
-+	if (!test_bit(GD_DEAD, &disk->state))
-+		fsync_bdev(disk->part0);
- 	__invalidate_device(disk->part0, true);
- 
- 	/*
-diff --git a/drivers/block/mtip32xx/mtip32xx.c b/drivers/block/mtip32xx/mtip32xx.c
-index e6005c2323281..2b588b62cbbb2 100644
---- a/drivers/block/mtip32xx/mtip32xx.c
-+++ b/drivers/block/mtip32xx/mtip32xx.c
-@@ -4112,7 +4112,7 @@ static void mtip_pci_remove(struct pci_dev *pdev)
- 			"Completion workers still active!\n");
- 	}
- 
--	blk_set_queue_dying(dd->queue);
-+	blk_mark_disk_dead(dd->disk);
- 	set_bit(MTIP_DDF_REMOVE_PENDING_BIT, &dd->dd_flag);
- 
- 	/* Clean up the block layer. */
-diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
-index 4203cdab8abfd..b844432bad20b 100644
---- a/drivers/block/rbd.c
-+++ b/drivers/block/rbd.c
-@@ -7185,7 +7185,7 @@ static ssize_t do_rbd_remove(struct bus_type *bus,
- 		 * IO to complete/fail.
- 		 */
- 		blk_mq_freeze_queue(rbd_dev->disk->queue);
--		blk_set_queue_dying(rbd_dev->disk->queue);
-+		blk_mark_disk_dead(rbd_dev->disk);
- 	}
- 
- 	del_gendisk(rbd_dev->disk);
-diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index ccd0dd0c6b83c..ca71a0585333f 100644
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -2126,7 +2126,7 @@ static void blkfront_closing(struct blkfront_info *info)
- 
- 	/* No more blkif_request(). */
- 	blk_mq_stop_hw_queues(info->rq);
--	blk_set_queue_dying(info->rq);
-+	blk_mark_disk_dead(info->gd);
- 	set_capacity(info->gd, 0);
- 
- 	for_each_rinfo(info, rinfo, i) {
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index dcbd6d201619d..997ace47bbd54 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -2077,7 +2077,7 @@ static void __dm_destroy(struct mapped_device *md, bool wait)
- 	set_bit(DMF_FREEING, &md->flags);
- 	spin_unlock(&_minor_lock);
- 
--	blk_set_queue_dying(md->queue);
-+	blk_mark_disk_dead(md->disk);
- 
- 	/*
- 	 * Take suspend_lock so that presuspend and postsuspend methods
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 79005ea1a33e3..469f23186159c 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -4574,7 +4574,7 @@ static void nvme_set_queue_dying(struct nvme_ns *ns)
- 	if (test_and_set_bit(NVME_NS_DEAD, &ns->flags))
- 		return;
- 
--	blk_set_queue_dying(ns->queue);
-+	blk_mark_disk_dead(ns->disk);
- 	nvme_start_ns_queue(ns);
- 
- 	set_capacity_and_notify(ns->disk, 0);
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index f8bf6606eb2fc..ff775235534cf 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -848,7 +848,7 @@ void nvme_mpath_remove_disk(struct nvme_ns_head *head)
- {
- 	if (!head->disk)
- 		return;
--	blk_set_queue_dying(head->disk->queue);
-+	blk_mark_disk_dead(head->disk);
- 	/* make sure all pending bios are cleaned up */
- 	kblockd_schedule_work(&head->requeue_work);
- 	flush_work(&head->requeue_work);
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index f35aea98bc351..16b47035e4b06 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -748,7 +748,8 @@ extern bool blk_queue_can_use_dma_map_merging(struct request_queue *q,
- 
- bool __must_check blk_get_queue(struct request_queue *);
- extern void blk_put_queue(struct request_queue *);
--extern void blk_set_queue_dying(struct request_queue *);
-+
-+void blk_mark_disk_dead(struct gendisk *disk);
- 
- #ifdef CONFIG_BLOCK
- /*
+On 2022/2/10 00:16, Maxime Ripard wrote:
+> And, to reinstate, we already have a mechanism to set an EDID, and if it
+> wasn't an option, the DT is not the place to store an EDID blob.
+
+Hi,
+
+
+if DT is not the place to store EDID blob, why nvidia can do that ?
+
+output->edid = of_get_property(output->of_node, "nvidia,edid", &size); 
+[1][2]
+
+
+[1] ./drivers/gpu/drm/tegra/output.c
+
+[2] 
+https://docs.nvidia.com/drive/active/5.0.10.3L/nvvib_docs/index.html#page/NVIDIA%20DRIVE%20Linux%20SDK%20Development%20Guide/Appendix/AppendixDeviceTree.html
+
+
