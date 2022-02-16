@@ -2,462 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A944C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5749C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232382AbiBPJnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 04:43:23 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:57370 "EHLO
+        id S232394AbiBPJna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 04:43:30 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:57896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbiBPJnV (ORCPT
+        with ESMTP id S232381AbiBPJnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 04:43:21 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505FD28F97D
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:43:01 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id g39so2717858lfv.10
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:43:01 -0800 (PST)
+        Wed, 16 Feb 2022 04:43:25 -0500
+X-Greylist: delayed 66 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 01:43:09 PST
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750C429412B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:43:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RmzcFqNmIicXwKmfTqvqrWsz/Hiolw8GCGitWsGR0Nc=;
-        b=CriCBEOS3b/qYrPXhXMQCyDb6fpn29rFZE6YHxkOdhAQx7gDCjW7dSA73MIMVmIo5F
-         VDpyy/easuRxCgonu5mMF9KsWB/V5+a8tgGvNqZ0NF39P09RjUq1aED+dKfkrjsA7mwK
-         BZS8kX+2B1e4078ZzDN7QNallvNYbq3KKqdGijvyNOvLu5W5jQze7w5RyDUc4C2j2TIj
-         veQ17n5v1BAgS24ywo7OSyxhp4ZfL9PtXcdLoZrawPgakbNnzq/HFOO0phd2qk7qt2ge
-         1Axrdk62ZzTmGVAK3ptOmW5x3Y9Ksw0U1IGiT6274FNc6fMUYgRxt5KfI6l5kaMs/osi
-         Ed1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RmzcFqNmIicXwKmfTqvqrWsz/Hiolw8GCGitWsGR0Nc=;
-        b=MurZG6tMMVlJZ/p/961GP53eDJ1kK0o6oaWWAmnZPf2gBwIz36Pd5TiVIyilrkM8pZ
-         I1Kqb0dmLXmnu8V5LD0NgbUBBg7A3ELL9Q5oNIPtp3/3ym6++sWgqLMYPZ2XsDXjb0Is
-         BcWNVME0qQ0Xywvh6oS+Hr3cW66cquvHpHf4zRNbEuILkr2sTVNMiidMUHSejTd+OCJI
-         RRrQ/oorXXUZtQjyp6tQyI6li1LxZQGImk203Z0X1C2LGv0BU2UZf/VPBDye6eo8kYXg
-         QJJRyYTBx1/If6+ShPXwaHchrTptLmrH/ghAIeo0grBnzJ3mOIMeOdBp20HQv8olXpK7
-         eseQ==
-X-Gm-Message-State: AOAM5312s5HP3nQGKVD2zdwbQoRa/Vg3yqx2AcJuWfBw8WiltkeQ/Q4s
-        VXocZTSoR2uZGjl8ZihGfv8=
-X-Google-Smtp-Source: ABdhPJx3sex45ZPRpSWFrtKnozU42mbU/2i70zIfXr8Gw6hNKRMnwDmseVY9ByDoyQ28ff3cdLukYA==
-X-Received: by 2002:ac2:5cb3:0:b0:443:5e19:b12a with SMTP id e19-20020ac25cb3000000b004435e19b12amr1437397lfq.148.1645004579182;
-        Wed, 16 Feb 2022 01:42:59 -0800 (PST)
-Received: from [192.168.1.11] ([217.117.245.154])
-        by smtp.gmail.com with ESMTPSA id e10sm4727594ljk.30.2022.02.16.01.42.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 01:42:58 -0800 (PST)
-Message-ID: <e187df14-403c-2908-e4f5-8d38d7f63810@gmail.com>
-Date:   Wed, 16 Feb 2022 12:42:57 +0300
+  d=axis.com; q=dns/txt; s=axis-central1; t=1645004589;
+  x=1676540589;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=e0DJx/LBwDBcnKXR7T/m2VbehHGOddblLmaGHQmo1QM=;
+  b=dDKk5rDjYPhma2/qxpiUqbv1/GIY4vba28yGzdfkP532EqzdSmFPh5iB
+   OpV7LVq3AM7aIvuueMNgU9j0eoHHSyC4e55cpCQCYXBCbofnMbe3PA0fx
+   xTWiEVEzutmV4QTaSnY4GWCIVMVM59lqVdd4ueFvIfCt5BgZKiqfR+SRO
+   ztXf9ia6tJKtM2dhDyWraPWaq8RLgkUJvwIC0WM/cc+9LZHW1C9S7vWqQ
+   9uABs2eQmfCGvibCMgNiqc7hI46SO1m05Otp9YncB9APrAFZnya+DqSi4
+   ufAFG/qYG3HPe0lowrpvSbcMXsWwyhfLeVsSs6N7w9+hvPt6Hut920Xve
+   Q==;
+From:   =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>, <kernel@axis.com>,
+        <linux-kernel@vger.kernel.org>,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
+Subject: [PATCH] driver core: Free DMA range map when device is released
+Date:   Wed, 16 Feb 2022 10:41:28 +0100
+Message-ID: <20220216094128.4025861-1-marten.lindahl@axis.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2 02/15] staging: r8188eu: remove smaller sets of
- converted DBG_88E calls
-Content-Language: en-US
-To:     Phillip Potter <phil@philpotter.co.uk>, gregkh@linuxfoundation.org
-Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
-        straube.linux@gmail.com, martin@kaiser.cx,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220216010709.791-1-phil@philpotter.co.uk>
- <20220216010709.791-3-phil@philpotter.co.uk>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220216010709.791-3-phil@philpotter.co.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Phillip,
+When unbinding/binding a driver with DMA mapped memory, the DMA map is
+not freed before the driver is reloaded. This leads to a memory leak
+when the DMA map is overwritten when reprobing the driver.
 
-On 2/16/22 04:06, Phillip Potter wrote:
-> Remove all the smaller sets of dev_dbg/netdev_dbg/pr_debug calls that
-> were previously converted from DBG_88E. After some thought, it makes
-> more sense to just entirely strip all of these calls, so that debugging
-> code in the driver can be more consistent and useful going forwards.
-> 
-> Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+This can be reproduced with a platform driver having a dma-range:
 
-[code snip]
+dummy {
+	...
+	#address-cells = <0x2>;
+	#size-cells = <0x2>;
+	ranges;
+	dma-ranges = <...>;
+	...
+};
 
-> @@ -468,9 +440,6 @@ void update_bmc_sta(struct adapter *padapter)
->   			arg = psta->mac_id & 0x1f;
->   			arg |= BIT(7);
->   			tx_ra_bitmap |= ((raid << 28) & 0xf0000000);
-> -			netdev_dbg(padapter->pnetdev,
-> -				   "mask = 0x%x, arg = 0x%x\n",
-> -				   tx_ra_bitmap, arg);
->   
->   			/* bitmap[0:27] = tx_rate_bitmap */
->   			/* bitmap[28:31]= Rate Adaptive id */
-> @@ -489,7 +458,6 @@ void update_bmc_sta(struct adapter *padapter)
->   		spin_unlock_bh(&psta->lock);
->   
->   	} else {
-> -		netdev_dbg(padapter->pnetdev, "add_RATid_bmc_sta error!\n");
->   	}
+and then unbinding/binding it:
 
-else branch can be dropped completelly
+~# echo soc:dummy >/sys/bus/platform/drivers/<driver>/unbind
 
->   }
->   
-> @@ -575,8 +543,6 @@ static void update_bcn_erpinfo_ie(struct adapter *padapter)
->   	unsigned char *p, *ie = pnetwork->IEs;
->   	u32 len = 0;
->   
-> -	netdev_dbg(padapter->pnetdev, "ERP_enable = %d\n", pmlmeinfo->ERP_enable);
-> -
->   	if (!pmlmeinfo->ERP_enable)
->   		return;
->   
+DMA map object 0xffffff800b0ae540 still being held by &pdev->dev
 
-[code snip]
+~# echo soc:dummy >/sys/bus/platform/drivers/<driver>/bind
+~# echo scan > /sys/kernel/debug/kmemleak
+~# cat /sys/kernel/debug/kmemleak
+unreferenced object 0xffffff800b0ae540 (size 64):
+  comm "sh", pid 833, jiffies 4295174550 (age 2535.352s)
+  hex dump (first 32 bytes):
+    00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 80 00 00 00 00 00 00 00 80 00 00 00 00  ................
+  backtrace:
+    [<ffffffefd1694708>] create_object.isra.0+0x108/0x344
+    [<ffffffefd1d1a850>] kmemleak_alloc+0x8c/0xd0
+    [<ffffffefd167e2d0>] __kmalloc+0x440/0x6f0
+    [<ffffffefd1a960a4>] of_dma_get_range+0x124/0x220
+    [<ffffffefd1a8ce90>] of_dma_configure_id+0x40/0x2d0
+    [<ffffffefd198b68c>] platform_dma_configure+0x5c/0xa4
+    [<ffffffefd198846c>] really_probe+0x8c/0x514
+    [<ffffffefd1988990>] __driver_probe_device+0x9c/0x19c
+    [<ffffffefd1988cd8>] device_driver_attach+0x54/0xbc
+    [<ffffffefd1986634>] bind_store+0xc4/0x120
+    [<ffffffefd19856e0>] drv_attr_store+0x30/0x44
+    [<ffffffefd173c9b0>] sysfs_kf_write+0x50/0x60
+    [<ffffffefd173c1c4>] kernfs_fop_write_iter+0x124/0x1b4
+    [<ffffffefd16a013c>] new_sync_write+0xdc/0x160
+    [<ffffffefd16a256c>] vfs_write+0x23c/0x2a0
+    [<ffffffefd16a2758>] ksys_write+0x64/0xec
 
->   		if (!psta->no_ht_set) {
-> @@ -928,9 +874,6 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
->   			pmlmepriv->num_sta_no_ht++;
->   		}
->   		if (pmlmepriv->htpriv.ht_option) {
-> -			netdev_dbg(padapter->pnetdev,
-> -				   "STA %pM - no HT, num of non-HT stations %d\n",
-> -				   (psta->hwaddr), pmlmepriv->num_sta_no_ht);
->   		}
->   	}
->
+To prevent this we should free the dma_range_map when the device is
+released.
 
-same here
+Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
+---
+ drivers/base/dd.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> @@ -941,8 +884,6 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
->   
->   	/* update associated stations cap. */
->   	associated_clients_update(padapter,  beacon_updated);
-> -
-> -	netdev_dbg(padapter->pnetdev, "updated = %d\n", beacon_updated);
->   }
->   
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 9eaaff2f556c..f47cab21430f 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -629,6 +629,9 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ 			drv->remove(dev);
+ 
+ 		devres_release_all(dev);
++		arch_teardown_dma_ops(dev);
++		kfree(dev->dma_range_map);
++		dev->dma_range_map = NULL;
+ 		driver_sysfs_remove(dev);
+ 		dev->driver = NULL;
+ 		dev_set_drvdata(dev, NULL);
+@@ -1209,6 +1212,8 @@ static void __device_release_driver(struct device *dev, struct device *parent)
+ 
+ 		devres_release_all(dev);
+ 		arch_teardown_dma_ops(dev);
++		kfree(dev->dma_range_map);
++		dev->dma_range_map = NULL;
+ 		dev->driver = NULL;
+ 		dev_set_drvdata(dev, NULL);
+ 		if (dev->pm_domain && dev->pm_domain->dismiss)
+-- 
+2.30.2
 
-[code snip]
-
-> diff --git a/drivers/staging/r8188eu/core/rtw_ieee80211.c b/drivers/staging/r8188eu/core/rtw_ieee80211.c
-> index 25445f3ab4a3..c8998cb276be 100644
-> --- a/drivers/staging/r8188eu/core/rtw_ieee80211.c
-> +++ b/drivers/staging/r8188eu/core/rtw_ieee80211.c
-> @@ -655,8 +655,6 @@ static int rtw_ieee802_11_parse_vendor_specific(u8 *pos, uint elen,
->   	 * sub-type. */
->   	if (elen < 4) {
->   		if (show_errors) {
-> -			pr_debug("short vendor specific information element ignored (len=%lu)\n",
-> -				 (unsigned long)elen);
->   		}
->   		return -1;
-
-
-same here
-
->   	}
-> @@ -675,8 +673,6 @@ static int rtw_ieee802_11_parse_vendor_specific(u8 *pos, uint elen,
-
-[code snip]
-
-> @@ -754,8 +742,6 @@ enum parse_res rtw_ieee802_11_parse_elems(u8 *start, uint len,
->   
->   		if (elen > left) {
->   			if (show_errors) {
-> -				pr_debug("IEEE 802.11 element parse failed (id=%d elen=%d left=%lu)\n",
-> -					 id, elen, (unsigned long)left);
->   			}
->   			return ParseFailed;
->   		}
-
-same here
-
-> @@ -841,8 +827,6 @@ enum parse_res rtw_ieee802_11_parse_elems(u8 *start, uint len,
->   			unknown++;
->   			if (!show_errors)
->   				break;
-
-[code spin]
-
-> @@ -51,8 +47,6 @@ int rtw_IOL_append_cmds(struct xmit_frame *xmit_frame, u8 *IOL_cmds, u32 cmd_len
->   
->   	/* check if the io_buf can accommodate new cmds */
->   	if (ori_len + cmd_len + 8 > MAX_XMITBUF_SZ) {
-> -		pr_debug("%u is larger than MAX_XMITBUF_SZ:%u, can't accommodate new cmds\n",
-> -			 ori_len + cmd_len + 8, MAX_XMITBUF_SZ);
->   		return _FAIL;
->   	}
-
-Nit: if are going to post v3, please, make checkpatch happy by removing 
-bracers
-
->   
-> diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-> index 557f6b96e99c..d7494d820756 100644
-> --- a/drivers/staging/r8188eu/core/rtw_mlme.c
-> +++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-> @@ -611,9 +611,6 @@ static int rtw_is_desired_network(struct adapter *adapter, struct wlan_network *
->   	}
->   
->   	if ((desired_encmode != Ndis802_11EncryptionDisabled) && (privacy == 0)) {
-> -		netdev_dbg(adapter->pnetdev,
-> -			   "desired_encmode: %d, privacy: %d\n",
-> -			   desired_encmode, privacy);
->   		bselected = false;
->   	}
->   
-
-same bracers here
-
-> @@ -725,9 +722,6 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
->   				_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
->   				rtw_indicate_connect(adapter);
->   			} else {
-> -				netdev_dbg(adapter->pnetdev,
-> -					   "try_to_join, but select scanning queue fail, to_roaming:%d\n",
-> -					   pmlmepriv->to_roaming);
->   				if (rtw_to_roaming(adapter) != 0) {
->   					if (--pmlmepriv->to_roaming == 0 ||
->   					    _SUCCESS != rtw_sitesurvey_cmd(adapter, &pmlmepriv->assoc_ssid, 1, NULL, 0)) {
-> @@ -1225,10 +1219,6 @@ void rtw_stadel_event_callback(struct adapter *adapter, u8 *pbuf)
->   	else
->   		mac_id = pstadel->mac_id;
->   
-> -	netdev_dbg(adapter->pnetdev,
-> -		   "(mac_id=%d)=%pM\n",
-> -		   mac_id, pstadel->macaddr);
-> -
->   	if (mac_id >= 0) {
->   		u16 media_status;
->   		media_status = (mac_id << 8) | 0; /*   MACID|OPMODE:0 means disconnect */
-> @@ -1318,8 +1308,6 @@ void _rtw_join_timeout_handler (struct adapter *adapter)
->   	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
->   	int do_join_r;
->   
-> -	netdev_dbg(adapter->pnetdev, "fw_state=%x\n", get_fwstate(pmlmepriv));
-> -
->   	if (adapter->bDriverStopped || adapter->bSurpriseRemoved)
->   		return;
->   
-> @@ -1329,19 +1317,12 @@ void _rtw_join_timeout_handler (struct adapter *adapter)
->   		while (1) {
->   			pmlmepriv->to_roaming--;
->   			if (rtw_to_roaming(adapter) != 0) { /* try another */
-> -				netdev_dbg(adapter->pnetdev,
-> -					   "try another roaming\n");
->   				do_join_r = rtw_do_join(adapter);
->   				if (_SUCCESS != do_join_r) {
-> -					netdev_dbg(adapter->pnetdev,
-> -						   "roaming do_join return %d\n",
-> -						   do_join_r);
->   					continue;
->   				}
-
-And here. Ok, I won't point out to bracers anymore. I guess, you get me :)
-
-
->   				break;
->   			} else {
-> -				netdev_dbg(adapter->pnetdev,
-> -					   "We've tried roaming but failed\n");
->   				rtw_indicate_disconnect(adapter);
->   				break;
->   			}
-> @@ -1362,7 +1343,6 @@ void rtw_scan_timeout_handler (struct adapter *adapter)
->   {
->   	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
->   
-> -	netdev_dbg(adapter->pnetdev, "fw_state=%x\n", get_fwstate(pmlmepriv));
->   	spin_lock_bh(&pmlmepriv->lock);
->   	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
->   	spin_unlock_bh(&pmlmepriv->lock);
-> @@ -1467,15 +1447,6 @@ static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
->   		updated = true;
->   	}
->   	if (updated) {
-> -		netdev_dbg(adapter->pnetdev,
-> -			   "[by_bssid:%u][assoc_ssid:%s]new candidate: %s(%pM rssi:%d\n",
-> -			   pmlmepriv->assoc_by_bssid,
-> -			   pmlmepriv->assoc_ssid.Ssid,
-> -			   (*candidate)->network.Ssid.Ssid,
-> -			   (*candidate)->network.MacAddress,
-> -			   (int)(*candidate)->network.Rssi);
-> -		netdev_dbg(adapter->pnetdev,
-> -			   "[to_roaming:%u]\n", rtw_to_roaming(adapter));
->   	}
->   
-
-drop if
-
->   exit:
-> @@ -1513,21 +1484,13 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
->   		rtw_check_join_candidate(pmlmepriv, &candidate, pnetwork);
->   	}
->   	if (!candidate) {
-> -		netdev_dbg(adapter->pnetdev,
-> -			   "return _FAIL(candidate==NULL)\n");
->   		ret = _FAIL;
->   		goto exit;
->   	} else {
-> -		netdev_dbg(adapter->pnetdev, "candidate: %s(%pM ch:%u)\n",
-> -			   candidate->network.Ssid.Ssid, candidate->network.MacAddress,
-> -			   candidate->network.Configuration.DSConfig);
->   	}
->   
->   	/*  check for situation of  _FW_LINKED */
->   	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
-> -		netdev_dbg(adapter->pnetdev,
-> -			   "_FW_LINKED while ask_for_joinbss!!!\n");
-> -
->   		rtw_disassoc_cmd(adapter, 0, true);
->   		rtw_indicate_disconnect(adapter);
->   		rtw_free_assoc_resources(adapter, 0);
-> @@ -1537,9 +1500,6 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
->   	if (supp_ant_div) {
->   		u8 cur_ant;
->   		GetHalDefVar8188EUsb(adapter, HAL_DEF_CURRENT_ANTENNA, &cur_ant);
-> -		netdev_dbg(adapter->pnetdev, "Opt_Ant_(%s), cur_Ant(%s)\n",
-> -			   (candidate->network.PhyInfo.Optimum_antenna == 2) ? "A" : "B",
-> -			   (cur_ant == 2) ? "A" : "B");
->   	}
->   
->   	ret = rtw_joinbss_cmd(adapter, candidate);
-> @@ -1611,10 +1571,6 @@ int rtw_set_key(struct adapter *adapter, struct security_priv *psecuritypriv, in
->   	psetkeyparm->keyid = (u8)keyid;/* 0~3 */
->   	psetkeyparm->set_tx = set_tx;
->   	pmlmepriv->key_mask |= BIT(psetkeyparm->keyid);
-> -	netdev_dbg(adapter->pnetdev,
-> -		   "algorithm(%x), keyid(%x), key_mask(%x)\n",
-> -		   psetkeyparm->algorithm, psetkeyparm->keyid,
-> -		   pmlmepriv->key_mask);
->   
->   	switch (psetkeyparm->algorithm) {
->   	case _WEP40_:
-> @@ -2005,7 +1961,7 @@ void rtw_update_ht_cap(struct adapter *padapter, u8 *pie, uint ie_len)
->   	/*  Config SM Power Save setting */
->   	pmlmeinfo->SM_PS = (le16_to_cpu(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info) & 0x0C) >> 2;
->   	if (pmlmeinfo->SM_PS == WLAN_HT_CAP_SM_PS_STATIC)
-> -		netdev_dbg(padapter->pnetdev, "WLAN_HT_CAP_SM_PS_STATIC\n");
-> +		;
->   
-
-Why?
-
->   	/*  Config current HT Protection mode. */
->   	pmlmeinfo->HT_protection = pmlmeinfo->HT_info.infos[1] & 0x3;
-> @@ -2040,7 +1996,6 @@ void rtw_issue_addbareq_cmd(struct adapter *padapter, struct xmit_frame *pxmitfr
->   		issued |= (phtpriv->candidate_tid_bitmap >> priority) & 0x1;
->   
->   		if (0 == issued) {
-> -			netdev_dbg(padapter->pnetdev, "p=%d\n", priority);
->   			psta->htpriv.candidate_tid_bitmap |= BIT((u8)priority);
->   			rtw_addbareq_cmd(padapter, (u8)priority, pattrib->ra);
->   		}
-> @@ -2068,11 +2023,6 @@ void _rtw_roaming(struct adapter *padapter, struct wlan_network *tgt_network)
->   		pnetwork = &pmlmepriv->cur_network;
->   
->   	if (0 < rtw_to_roaming(padapter)) {
-> -		netdev_dbg(padapter->pnetdev,
-> -			   "roaming from %s(%pM length:%d\n",
-> -			   pnetwork->network.Ssid.Ssid,
-> -			   pnetwork->network.MacAddress,
-> -			   pnetwork->network.Ssid.SsidLength);
->   		memcpy(&pmlmepriv->assoc_ssid, &pnetwork->network.Ssid, sizeof(struct ndis_802_11_ssid));
->   
->   		pmlmepriv->assoc_by_bssid = false;
-> @@ -2082,16 +2032,11 @@ void _rtw_roaming(struct adapter *padapter, struct wlan_network *tgt_network)
->   			if (_SUCCESS == do_join_r) {
->   				break;
->   			} else {
-> -				netdev_dbg(padapter->pnetdev,
-> -					   "roaming do_join return %d\n",
-> -					   do_join_r);
->   				pmlmepriv->to_roaming--;
->   
->   				if (0 < pmlmepriv->to_roaming) {
->   					continue;
->   				} else {
-> -					netdev_dbg(padapter->pnetdev,
-> -						   "-to roaming fail, indicate_disconnect\n");
->   					rtw_indicate_disconnect(padapter);
->   					break;
->   				}
-> diff --git a/drivers/staging/r8188eu/core/rtw_security.c b/drivers/staging/r8188eu/core/rtw_security.c
-> index 4e93c720c1b6..fdd2dbf65eb7 100644
-> --- a/drivers/staging/r8188eu/core/rtw_security.c
-> +++ b/drivers/staging/r8188eu/core/rtw_security.c
-> @@ -545,8 +545,6 @@ u32 rtw_tkip_decrypt(struct adapter *padapter, struct recv_frame *precvframe)
->   			if (is_multicast_ether_addr(prxattrib->ra)) {
->   				if (!psecuritypriv->binstallGrpkey) {
->   					res = _FAIL;
-> -					netdev_dbg(padapter->pnetdev,
-> -						   "rx bc/mc packets, but didn't install group key!\n");
->   					goto exit;
->   				}
->   				prwskey = psecuritypriv->dot118021XGrpKey[prxattrib->key_index].skey;
-> @@ -1330,10 +1328,6 @@ static int aes_decipher(struct adapter *padapter, u8 *key, uint hdrlen,
->   	/* compare the mic */
->   	for (i = 0; i < 8; i++) {
->   		if (pframe[hdrlen + 8 + plen - 8 + i] != message[hdrlen + 8 + plen - 8 + i]) {
-> -			netdev_dbg(padapter->pnetdev,
-> -				   "mic check error mic[%d]: pframe(%x)!=message(%x)\n",
-> -				   i, pframe[hdrlen + 8 + plen - 8 + i],
-> -				   message[hdrlen + 8 + plen - 8 + i]);
->   			res = _FAIL;
->   		}
->   	}
-> @@ -1361,16 +1355,10 @@ u32 rtw_aes_decrypt(struct adapter *padapter, struct recv_frame *precvframe)
->   				/* in concurrent we should use sw descrypt in group key, so we remove this message */
->   				if (!psecuritypriv->binstallGrpkey) {
->   					res = _FAIL;
-> -					netdev_dbg(padapter->pnetdev,
-> -						   "rx bc/mc packets, but didn't install group key!\n");
->   					goto exit;
->   				}
->   				prwskey = psecuritypriv->dot118021XGrpKey[prxattrib->key_index].skey;
->   				if (psecuritypriv->dot118021XGrpKeyid != prxattrib->key_index) {
-> -					netdev_dbg(padapter->pnetdev,
-> -						   "not match packet_index=%d, install_index=%d\n",
-> -						   prxattrib->key_index,
-> -						   psecuritypriv->dot118021XGrpKeyid);
->   					res = _FAIL;
->   					goto exit;
->   				}
-> diff --git a/drivers/staging/r8188eu/core/rtw_sta_mgt.c b/drivers/staging/r8188eu/core/rtw_sta_mgt.c
-> index 79b49a13fe61..1fb9b6cc7eda 100644
-> --- a/drivers/staging/r8188eu/core/rtw_sta_mgt.c
-> +++ b/drivers/staging/r8188eu/core/rtw_sta_mgt.c
-> @@ -104,7 +104,7 @@ inline int rtw_stainfo_offset(struct sta_priv *stapriv, struct sta_info *sta)
->   	int offset = (((u8 *)sta) - stapriv->pstainfo_buf) / sizeof(struct sta_info);
->   
->   	if (!stainfo_offset_valid(offset))
-> -		pr_debug("invalid offset(%d), out of range!!!", offset);
-> +		;
->   
-
-Same "why?"
-
->   	return offset;
->   }
-> @@ -112,7 +112,7 @@ inline int rtw_stainfo_offset(struct sta_priv *stapriv, struct sta_info *sta)
->   inline struct sta_info *rtw_get_stainfo_by_offset(struct sta_priv *stapriv, int offset)
->   {
->   	if (!stainfo_offset_valid(offset))
-> -		pr_debug("invalid offset(%d), out of range!!!", offset);
-> +		;
->   
-
-Same "why?"
-
-
-I might be missing something, but looks like you are following some rule 
-by leaving empty branches. Can you, please, add explanations to commit 
-message or remove them, since now it looks very odd
-
-
-
-
-With regards,
-Pavel Skripkin
