@@ -2,102 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD652C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbiBPUAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 15:00:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53316 "EHLO
+        id S229629AbiBPUBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 15:01:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238509AbiBPT7x (ORCPT
+        with ESMTP id S229481AbiBPUBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:59:53 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA3E225D3C
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:59:41 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id x4so2820247plb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:59:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gKkiGODEySwn5Ud6cwmFKt9S5uiVPYEjk/1FwzY1D7M=;
-        b=FbCQhqCgY7+53halAemFJqR+/yEcT2gQBP93JU9UC8PAh275Z04yeP2cnPk8Byycoa
-         /6zwqH/8Dl7HBUIlAHe1l1LWGmjjWLR4OXWCNR8gwqRgFZXOvrZ0JahDSAUi2NXaAJf3
-         UKiz/7cjikcMEKRvFhkHpKC42JAbLsbQvj5zA=
+        Wed, 16 Feb 2022 15:01:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C12D415A3A
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:01:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645041689;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2VxECJm9oCcTZNF1nwOOvaIbVoK8MPKCQvBO1i/w1TA=;
+        b=Vv04gAFQhoWwfU+yN7IgPFVA7reZejSm41Gjb6s5qCL20RHqfdq2S33RQxUCD5zeN8WeWY
+        iABJqtnhI1kQzOOR9bUmxJm81nVv7RgHO1GV9rEk6gnrUo4TB2yuIoz2UL8xgxQTSTigUO
+        /WMChSjEwy2rpkdFCDuwUmrgza2GLwA=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-383-XrXaT839PzilHh95xRbOsw-1; Wed, 16 Feb 2022 15:01:27 -0500
+X-MC-Unique: XrXaT839PzilHh95xRbOsw-1
+Received: by mail-qk1-f199.google.com with SMTP id bi17-20020a05620a319100b0050850bdcbb2so2127406qkb.17
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:01:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gKkiGODEySwn5Ud6cwmFKt9S5uiVPYEjk/1FwzY1D7M=;
-        b=JteN8Z3Lym1fw1sOTrcWH3pOdZgYhJFp4hR0jy/wHstSJf2epURMGkS8U9g57QBLLy
-         9sMPb13uiUfl5xLCgUw8SA4T9w1GmAv6VX47el1euCxnlh5yWzgZa+ffOA/Jl2OJtwzG
-         gy2kirWc6iEF8XqUhuKt6TUfaldcWcQYWyVqWFr8zO1+rJsCDi+zzYNLn3ly3yDcvcEy
-         AEgQPTmuDaPw8xmV2D3tHbaA/RjCWsqAkqUh/mJ+6tA/lHH77xHcPSFMULCgpofNz/sY
-         8vpj69N/S0eej3wD520+WvJhw6M658ztsc777PhunJdhPVpwN/9bACiwao/ydbRDV2bv
-         tElw==
-X-Gm-Message-State: AOAM533c6igDf+RrwCpe20m/8UCABEl2qPJNUee/NocNgNlFU9vwB5mo
-        FEhe/Gg1nGlWT393cag2IKyqDqfWnAFMOA==
-X-Google-Smtp-Source: ABdhPJwjYxlN7gSR+7kFrYETcwqEK3eVK6gnPbD8ydzhwRC3qOldpUKOhhtBXZcjj79BjVyZBXsn2w==
-X-Received: by 2002:a17:902:b116:b0:14f:460d:bf42 with SMTP id q22-20020a170902b11600b0014f460dbf42mr4195532plr.108.1645041580606;
-        Wed, 16 Feb 2022 11:59:40 -0800 (PST)
-Received: from smtp.gmail.com ([2620:15c:202:201:5f39:68a1:3c2b:3486])
-        by smtp.gmail.com with ESMTPSA id u16sm6078840pgh.54.2022.02.16.11.59.39
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=2VxECJm9oCcTZNF1nwOOvaIbVoK8MPKCQvBO1i/w1TA=;
+        b=7ejIyh4qC4Fh/cOURdeO2rz8LeFe4pXxaHRHoJFxOROiudsA0msXK1B02Uy+um75SY
+         ykDEpsw/NcoVlUqy+GL9rwCi4bB+S5AL8yrzNed9fqP9Ig9NWSpyB702t1I7PV4wNe/Q
+         kIqXOGvUoSRVS27oD/t7oY3MDXf9kMyymUBl1MKudUldyW9Hgt7XHpRHBDnYZbRYnMiL
+         Wo1s/dXcfZ4agNJ2Wy1bOdrtGfvNFIweozoOeYvQ6yqxyNCtI7cCH7rbSB1Ln9LA2iuM
+         L43CgUGKt2SmiHOQIyfJtgBIJ4YEMi2XGP0clw+1OnZAMaSKWEScnF0gkxbmIDOTcnkE
+         FVdw==
+X-Gm-Message-State: AOAM533aGR1M7ix1j6X/sxQGb2Bo8FNAcMsO3fv6ywpNWkXGXlHnyCfW
+        /bIvMgQnlxP2ASPGjGaKJKx2NfNm4wt20H+Ac8xwkq7Z5gKP/8VlP5radbH2d2lcIKDKZoOqBXd
+        g+VhEt9IsxDiQJsR1V3UuTsmA
+X-Received: by 2002:ae9:eb12:0:b0:608:4151:c70f with SMTP id b18-20020ae9eb12000000b006084151c70fmr1842269qkg.281.1645041686720;
+        Wed, 16 Feb 2022 12:01:26 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzcmcVnXIz7khB34mtSJ5XeCHKuXXwpaasMWVF3vmW0irrcQH4GnwIH7nMDtcIH2X2ytZ5b9A==
+X-Received: by 2002:ae9:eb12:0:b0:608:4151:c70f with SMTP id b18-20020ae9eb12000000b006084151c70fmr1842215qkg.281.1645041686423;
+        Wed, 16 Feb 2022 12:01:26 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id p6sm8916153qkg.33.2022.02.16.12.01.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 11:59:40 -0800 (PST)
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>,
-        linux-kernel@vger.kernel.org, benjamin.tissoires@redhat.com,
-        Jiri Kosina <jikos@kernel.org>, linux-input@vger.kernel.org,
-        "Sean O'Brien" <seobrien@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH v4 4/4] HID: google: modify HID device groups of eel
-Date:   Wed, 16 Feb 2022 11:59:01 -0800
-Message-Id: <20220216195901.1326924-5-swboyd@chromium.org>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-In-Reply-To: <20220216195901.1326924-1-swboyd@chromium.org>
-References: <20220216195901.1326924-1-swboyd@chromium.org>
+        Wed, 16 Feb 2022 12:01:25 -0800 (PST)
+Date:   Wed, 16 Feb 2022 12:01:20 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     =?utf-8?B?RsSBbmctcnXDrCBTw7JuZw==?= <maskray@google.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Borislav Petkov <bp@alien8.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
+ unique-symbol` is available
+Message-ID: <20220216200120.djt6ijjenmcxmko6@treble>
+References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
+ <20220209185752.1226407-3-alexandr.lobakin@intel.com>
+ <20220211174130.xxgjoqr2vidotvyw@treble>
+ <CAFP8O3KvZOZJqOR8HYp9xZGgnYf3D8q5kNijZKORs06L-Vit1g@mail.gmail.com>
+ <20220211183529.q7qi2qmlyuscxyto@treble>
+ <alpine.LSU.2.21.2202161606430.1475@pobox.suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <alpine.LSU.2.21.2202161606430.1475@pobox.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>
+On Wed, Feb 16, 2022 at 04:15:20PM +0100, Miroslav Benes wrote:
+> > > I subscribe to llvm@lists.linux.dev and happen to notice this message
+> > > (can't keep up with the changes...)
+> > > I am a bit concerned with this option and replied last time on
+> > > https://lore.kernel.org/r/20220105032456.hs3od326sdl4zjv4@google.com
+> > > 
+> > > My full reasoning is on
+> > > https://maskray.me/blog/2020-11-15-explain-gnu-linker-options#z-unique-symbol
+> > 
+> > Ah, right.  Also discussed here:
+> > 
+> >   https://lore.kernel.org/all/20210123225928.z5hkmaw6qjs2gu5g@google.com/T/#u
+> >   https://lore.kernel.org/all/20210125172124.awabevkpvq4poqxf@treble/
+> > 
+> > I'm not qualified to comment on LTO/PGO stability issues, but it doesn't
+> > sound good.  And we want to support livepatch for LTO kernels.
+> 
+> Hm, bear with me, because I am very likely missing something which is 
+> clear to everyone else...
+> 
+> Is the stability really a problem for the live patching (and I am talking 
+> about the live patching only here. It may be a problem elsewhere, but I am 
+> just trying to understand.)? I understand that two different kernel builds 
+> could have a different name mapping between the original symbols and their 
+> unique renames. Not nice. But we can prepare two different live patches 
+> for these two different kernels. Something one would like to avoid if 
+> possible, but it is not impossible. Am I missing something?
 
-If HID_GROUP of eel is set to HID_GROUP_GENERIC, Whiskers Tablet Mode
-Switch of eel hammer will not be detected by system because the
-hid-vivaldi driver probes the device. When it is set to
-HID_GROUP_VIVALDI, system will detect Whiskers Tablet Mode Switch
-successfully and also support the vivaldi keyboard layout.
+Maybe Fāng-ruì can clarify, but my understanding was that the stability
+issue affects the kernel in general (particularly if LTO or PGO is
+enabled) and isn't necessarily specific to livepatch itself.
 
-Cc: Jiri Kosina <jikos@kernel.org>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Tested-by: "Sean O'Brien" <seobrien@chromium.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Acked-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>
-[swboyd@chromium.org: Expand on commit text]
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/hid/hid-google-hammer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/hid/hid-google-hammer.c b/drivers/hid/hid-google-hammer.c
-index f8e6dccf6ed8..8c4881796a0c 100644
---- a/drivers/hid/hid-google-hammer.c
-+++ b/drivers/hid/hid-google-hammer.c
-@@ -636,7 +636,7 @@ static void hammer_remove(struct hid_device *hdev)
- static const struct hid_device_id hammer_devices[] = {
- 	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
- 		     USB_VENDOR_ID_GOOGLE, USB_DEVICE_ID_GOOGLE_DON) },
--	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
-+	{ HID_DEVICE(BUS_USB, HID_GROUP_VIVALDI,
- 		     USB_VENDOR_ID_GOOGLE, USB_DEVICE_ID_GOOGLE_EEL) },
- 	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
- 		     USB_VENDOR_ID_GOOGLE, USB_DEVICE_ID_GOOGLE_HAMMER) },
 -- 
-https://chromeos.dev
+Josh
 
