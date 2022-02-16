@@ -2,104 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232404AbiBPJq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 04:46:56 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50618 "EHLO
+        id S232417AbiBPJrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 04:47:41 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232377AbiBPJqx (ORCPT
+        with ESMTP id S231837AbiBPJrk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 04:46:53 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA7463AC
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:46:34 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id p22so2775932lfu.5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:46:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YahjJ76dlvc0fVxCPDjqbZ1zbyUMaL1zYbVs3q3Ldno=;
-        b=CV40QRLasW6v5ghQgbIatjZKDlbh+mVaFRtvQbtVsjSZOp6fsQEsc4oklefz+mVzNf
-         d47Qsp6bo8q5yNu9jRbGmdB7/7yyzi9q5hvaXEnq2BiNJ3ciwSaswxYZN3ZYTt/5N3JW
-         QLy9voXY930FrYIosHMKN/9iespYO2xRde86MVMeU35Ua3fWfvliIfNCrfPCqYv2xWnp
-         VLu49nHi9QH95nPbILxXrnBF59c0ovEnA39qnmwc1KeyL3GZ1KVqJEdXa6JWzuhtJyzH
-         B74zZpWpX2wI722LhPIQ/nC3nwlR1NRM3SG+DXuNyDJe7VszmG8fI1z55RjlcQYnBFEB
-         dKpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YahjJ76dlvc0fVxCPDjqbZ1zbyUMaL1zYbVs3q3Ldno=;
-        b=6/Y+dqsTIXdFNfHP6Xkt8bZ50MTUpTFOaAPzK+p6sSyssgH6JKx8UT9deAQ/IQr5SV
-         f3rMOZoFqW1UXRqVLn6IoRgKElkBcjKtw0VsQ4vS5hmKsKyhbrCq2NNanOyetnD1ahtu
-         qpxbgH7FGBZ7RRDjD2DbTqAoyej1hYCka0fuaHVZPioCNiQR0YC6ImDdNzAz6pmizqqF
-         hnwwvz/Ci8XIp2ZOdO0Q9YVOeLg8QltmuYdrvzbR9AtXBx+Vzj7d0eyMTPakbkf4/ihp
-         DKLwiKf/27UQcvqmMLXSO6l7jsjCeIjZ2l5cGB+miigRMHTkCVd3db9ezOwDQoJP2bdx
-         gXhg==
-X-Gm-Message-State: AOAM53393w6sJVVIRs7o9CcemTvMFi4l8QHQwDVekYDX8H3SxeNdE9B+
-        lFCBWj3Fz+z8Ee+G2A4Zhj9N2Y+DDggBse9sONN4DMcIBgg=
-X-Google-Smtp-Source: ABdhPJy/UUNWeVL5Vx4o7ih820QBL83abR2iCp0/U0sI910fEnhhCU1gbcQKTcrzA7b+pStqIJVCYdNxzNv/whVvgQw=
-X-Received: by 2002:a19:9144:0:b0:43b:86a4:1497 with SMTP id
- y4-20020a199144000000b0043b86a41497mr1462531lfj.254.1645004792858; Wed, 16
- Feb 2022 01:46:32 -0800 (PST)
+        Wed, 16 Feb 2022 04:47:40 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D76B1AB4;
+        Wed, 16 Feb 2022 01:47:27 -0800 (PST)
+X-UUID: 43e5992bb4ca47e8a2d9ed72ddfbe55c-20220216
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:CC:To:Subject; bh=RX4zJ5sBZgDNyte8klxClMm6QaG0WtU72JE8EwaTSR8=;
+        b=ETk/k5E6a591GWaXD5QAmg0VRHSI6P9wAocjJcMVb/hjfCb6uC+4/4BlfGfvWZuSWzMuF6IkJy2O076UOt3KujqoIx7JuCVxWe8/gA8mPRHuyIKjhTitprHZI+c7K2uHCnDBYvKAUTHrkWOxQOe9L/k0/Qu16tWK+LfNR7VNscc=;
+X-UUID: 43e5992bb4ca47e8a2d9ed72ddfbe55c-20220216
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <macpaul.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 856271510; Wed, 16 Feb 2022 17:47:24 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 16 Feb 2022 17:47:23 +0800
+Received: from [172.21.84.99] (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 17:47:22 +0800
+Subject: Re: [v2,0/4] Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml
+ format
+To:     <xinlei.lee@mediatek.com>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
+        <robh+dt@kernel.org>, <matthias.bgg@gmail.com>,
+        <jitao.shi@mediatek.com>
+CC:     <allen-kh.cheng@mediatek.com>, <linux-pwm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.corp-partner.google.com>
+References: <1645003971-16908-1-git-send-email-xinlei.lee@mediatek.com>
+From:   Macpaul Lin <macpaul.lin@mediatek.com>
+Message-ID: <7d54ecb2-bb7a-ab3d-9e29-fa2541ec549d@mediatek.com>
+Date:   Wed, 16 Feb 2022 17:47:22 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20220204101657.233723-1-ulf.hansson@linaro.org> <dd7d0ebd-7bd8-9f2e-e212-5b597ec729d5@gmail.com>
-In-Reply-To: <dd7d0ebd-7bd8-9f2e-e212-5b597ec729d5@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 16 Feb 2022 10:45:56 +0100
-Message-ID: <CAPDyKFoDP-LT9nKwa0oKF0jW9DD3tZh4+v9zE0uS_KpJeFC-MQ@mail.gmail.com>
-Subject: Re: [PATCH v2] PM: domains: Prevent power off for parent unless child
- is in deepest state
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
-        Kevin Hilman <khilman@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1645003971-16908-1-git-send-email-xinlei.lee@mediatek.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022 at 22:49, Dmitry Osipenko <digetx@gmail.com> wrote:
->
-> 04.02.2022 13:16, Ulf Hansson =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> > A PM domain managed by genpd may support multiple idlestates. During
-> > genpd_power_off() a genpd governor may be asked to select one of the
-> > idlestates based upon the dev PM QoS constraints, for example.
-> >
-> > However, there is a problem with the behaviour around this in genpd. Mo=
-re
-> > precisely, a parent-domain is allowed to be powered off, no matter of w=
-hat
-> > idlestate that has been selected for the child-domain.
-> >
-> > So far, we have not received any reports about errors from the current
-> > behaviour. However, there is an STMicro platform that is being worked o=
-n,
-> > which can't cope with this.
->
-> Could you please provide some technical info about why STMicro platform
-> can't cope with that?
+DQoNCk9uIDIvMTYvMjIgNTozMiBQTSwgeGlubGVpLmxlZUBtZWRpYXRlay5jb20gd3JvdGU6DQo+
+IEZyb206IFhpbmxlaSBMZWUgPHhpbmxlaS5sZWVAbWVkaWF0ZWsuY29ycC1wYXJ0bmVyLmdvb2ds
+ZS5jb20+DQo+IA0KPiBDaGFuZ2VzIHNpbmNlIHYxOg0KPiAxLiBGaXhlZCBmb3JtYXR0aW5nIGlz
+c3VlcyBtZW50aW9uZWQgaW4gdGhlIHYxLg0KPiAyLiBEZWxldGUgcHdtLW10ay1kaXNwLnR4dC4N
+Cj4gMy4gQWRkIG10a19wd20gZHRfbWFpbnRhaW5lcnMuDQo+IDQuIEFkZCAiI3B3bS1jZWxscyIg
+JiBwb3dlci1kb21haW5zIHByb3BlcnRpZXMuDQo+IDUuIE1ha2UgZHRfY2hlY2tpbmcgc3VjY2Vz
+c2Z1bC4NCj4gDQo+IFhpbmxlaSBMZWUgKDQpOg0KPiAgICBkdC1iaW5kaW5nczogcHdtOiBDb252
+ZXJ0IHB3bS1tdGstZGlzcC50eHQgdG8gbWVkaWF0ZWsscHdtLWRpc3AueWFtbA0KPiAgICAgIGZv
+cm1hdA0KPiAgICBkdC1iaW5kaW5nczogcHdtOiBBZGQgY29tcGF0aWJsZSBmb3IgTWVkaWFUZWsg
+TVQ4MTkyDQo+ICAgIGR0LWJpbmRpbmdzOiBwd206IEFkZCBjb21wYXRpYmxlIGZvciBNZWRpYVRl
+ayBNVDgxOTUNCj4gICAgZHQtYmluZGluZ3M6IHB3bTogQWRkIGNvbXBhdGlibGUgZm9yIE1lZGlh
+VGVrIE1UODE4Ng0KPiANCj4gICAuLi4vYmluZGluZ3MvcHdtL21lZGlhdGVrLHB3bS1kaXNwLnlh
+bWwgICAgICAgfCA3NCArKysrKysrKysrKysrKysrKysrDQo+ICAgLi4uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvcHdtL3B3bS1tdGstZGlzcC50eHQgIHwgNDQgLS0tLS0tLS0tLS0NCj4gICAyIGZpbGVz
+IGNoYW5nZWQsIDc0IGluc2VydGlvbnMoKyksIDQ0IGRlbGV0aW9ucygtKQ0KPiAgIGNyZWF0ZSBt
+b2RlIDEwMDc1NSBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL21lZGlhdGVr
+LHB3bS1kaXNwLnlhbWwNCj4gICBkZWxldGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZp
+Y2V0cmVlL2JpbmRpbmdzL3B3bS9wd20tbXRrLWRpc3AudHh0DQo+IA0KDQpXaHkgZGlkIHlvdSBk
+cm9wIFtQQVRDSF0gdGFnIGluIHRoZSBzdWJqZWN0IG9mIHlvdXIgcGF0Y2ggc2VyaWVzPw0KUGxl
+YXNlIGtlZXAgaXQgZm9yIGRpc3Rpbmd1aXNoaW5nIGl0IGZyb20gUkZDL1JFU0VORCBhbmQgb3Ro
+ZXIgDQptZWFuaW5nZnVsIHRhZ3MgbmV4dCB0aW1lLg0KDQpUaGFua3MNCk1hY3BhdWwgTGlu
 
-There is a parent domain with one power-off state. The parent domain
-has a few devices attached to it, which means they need to be managed
-to together. The parent domain is controlling a shared power rail.
-
-The child domain, which has multiple idle states to choose from, also
-has some devices attached to it. The child domain is controlling a
-system clock, but also relies on the shared power rail that is managed
-by the parent domain.
-
-Obviously, these idle states are managed by firmware.
-
-I hope that made it a bit more clear?
-
-Kind regards
-Uffe
