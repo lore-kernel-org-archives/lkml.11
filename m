@@ -2,168 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 885EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 18:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A71C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 18:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237437AbiBPSJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 13:09:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49100 "EHLO
+        id S237453AbiBPSKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 13:10:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237428AbiBPSJq (ORCPT
+        with ESMTP id S237442AbiBPSKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 13:09:46 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1510C2A4A16
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:09:34 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id bu29so5474875lfb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:09:33 -0800 (PST)
+        Wed, 16 Feb 2022 13:10:30 -0500
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C7BA2A4A2C
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:10:17 -0800 (PST)
+Received: by mail-oo1-xc2e.google.com with SMTP id w10-20020a4ae08a000000b0031bdf7a6d76so1664633oos.10
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:10:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=dsoF6XbVRJnqOxLapkisfvdDBSbyOEKGfv87xWkqHBo=;
-        b=H8EZzc3vbZYf96mKzjlBDBIZSlEvwXS9/cmk8gIRTNI1MAwfaOAbt22JaPzIFJh6SU
-         haljNM84uLArCZw16a7/Bsg1jw9a9dpDJPFefdN6wlu3bpRuDM6rCoTBfs58oYcxVKD3
-         nbRVV3036QZdC6Y3iMcylW2hsU3GnC78jLfj8=
+        bh=zVC5cj0z6rMQpOyPOmFfrF76NsP0MR7V60Bxrd230h8=;
+        b=q8IQlHrCXptsSphCoGIR7Lz/Qw8ySxmbDGAVRO4mPP3/HsDpbPi0dH6R3rZYb7CTbj
+         ou7qsm3xMtjsRpCI7hDfZe5dyYBshj3mDeWQC7MGXKrucSIYTX76I/w6j9ZQoglE3qxn
+         gGBRb9lbvPw3ptllWGR3TWspruFJMRtoFGJ/U0db7bpKlTWzSez5629Z3SueBg9xkBMJ
+         +GtzU0/ZCH0ySgTz3rqladIHD+XSurzIcGCEmkvvsTVYnbieK23gTzKm6ccFvlyYnoiR
+         CHg3CgJHqqg/TT5WbA3KtwepYNaqP3kJN84qNyLMIe8KnoTBReIZInqK3NGQm+bbHuW7
+         Y3wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dsoF6XbVRJnqOxLapkisfvdDBSbyOEKGfv87xWkqHBo=;
-        b=pFY+AkXJJkLgK/vp70Czw4hhg+vTgMHjejdnyeVecrQiO0AFl1EaS+BEaWf/Ka+GBR
-         vxXGdfoDJ22Ets9FaIbFOBCStc+ByYrPWnvTiF8Bq3Pnt3TmlnLMy7UjjeKitefomDro
-         ZboQyocSlhaqbfwpPPyhTCUtpCHTKvN2JARRiTcdUScS4ISoRR4QBouIh/SuT3cZA/jf
-         k43cdOJSpVDynQTDqlKEfd7UAqCleJf9JT4fwxBLZqP3beLcF9+s7FzF5t6NKY2Dqpd4
-         sd+0pDgO9bVC9OkaBoihl00G8YWWeCpP7pdbq+lBf/udQrolCGLMxPnImg+ob243eYii
-         xTMA==
-X-Gm-Message-State: AOAM531xM0aI68A9Ce/6mNvUIz8o+Qx1qXVnjdxA7Ao9Rwl3lpoZYT6R
-        HBNlx/PNCJRiW5NbzXF2vC+y5/xKPd4BaKIs
-X-Google-Smtp-Source: ABdhPJw5WodQtqqgGH//8pniBelKJ9n0ZsFX9omN5ALNompeQRfFr0A7TZAsZbmaSng5O3gN9vkmNQ==
-X-Received: by 2002:a19:5212:0:b0:443:5b82:b6b with SMTP id m18-20020a195212000000b004435b820b6bmr2940838lfb.232.1645034972254;
-        Wed, 16 Feb 2022 10:09:32 -0800 (PST)
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
-        by smtp.gmail.com with ESMTPSA id b9sm168016lfs.303.2022.02.16.10.09.31
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 10:09:31 -0800 (PST)
-Received: by mail-lf1-f41.google.com with SMTP id d23so5315884lfv.13
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:09:31 -0800 (PST)
-X-Received: by 2002:ac2:5313:0:b0:443:99c1:7e89 with SMTP id
- c19-20020ac25313000000b0044399c17e89mr289887lfh.531.1645034970931; Wed, 16
- Feb 2022 10:09:30 -0800 (PST)
+        bh=zVC5cj0z6rMQpOyPOmFfrF76NsP0MR7V60Bxrd230h8=;
+        b=AnaF/6Uj0oivIrNPZNMSVPA3K4vlmqz493P5oq35B0p3s0FR1dpQ0R1HZwfmNAQShh
+         CTpryBrGBa4f0nfnVphGjvvofqFobKuHcFCRGwjprRTVw7zyHl6j3EN7udKyfeNKUTIq
+         iNmZhqMWn9WnEDJPAIMR40u7LFnA/xGFTVYyJAIqOXBEaLYtEQk7eS2pn9PhhkOo1hxU
+         pRKEt57ShwLEsXpLu4CKPHYNhnCZaNhHhCu+0c8sxFwRVGcpTy4ztTaX27hinmh0tjUA
+         XkFy94GBxfd7cUNljrD2UOZoU1xQiNwH8VUQ1BMOsL/ZOowX9N8hxsjpb5ovFMgqwBZz
+         WVUQ==
+X-Gm-Message-State: AOAM53020Ik2ioyb/JOurUTmoVSoWCO7zv6DwKh4WrxJIfiTfjMp0Gjo
+        5Z5OcLv2VelFfV+8ttQuPIFp1Ub6VbWjFEELvYI5+A==
+X-Google-Smtp-Source: ABdhPJx+8UjiPN1CieY4Xi5pUk7u/5mk2xIt09T8qbul+0tYqHo1/KGJJDhsJ9CEW8caQBqx6OCrmVhxg6tElA76mdM=
+X-Received: by 2002:a4a:5596:0:b0:2dd:bb93:8800 with SMTP id
+ e144-20020a4a5596000000b002ddbb938800mr1290780oob.85.1645035016433; Wed, 16
+ Feb 2022 10:10:16 -0800 (PST)
 MIME-Version: 1.0
-References: <1644984747-26706-1-git-send-email-byungchul.park@lge.com>
- <1644984964-28300-1-git-send-email-byungchul.park@lge.com>
- <1644984964-28300-3-git-send-email-byungchul.park@lge.com> <94b1cba2-0e78-bbc0-0321-8be70b2b3be2@opensource.wdc.com>
-In-Reply-To: <94b1cba2-0e78-bbc0-0321-8be70b2b3be2@opensource.wdc.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 16 Feb 2022 10:09:14 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgfpfWuNQi2SjXQL1ir6iKCpUdBruJ+kmOQP1frH7Zdig@mail.gmail.com>
-Message-ID: <CAHk-=wgfpfWuNQi2SjXQL1ir6iKCpUdBruJ+kmOQP1frH7Zdig@mail.gmail.com>
-Subject: Re: Report in ata_scsi_port_error_handler()
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Byungchul Park <byungchul.park@lge.com>, linux-ide@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+References: <20220117085307.93030-1-likexu@tencent.com> <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
+ <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com> <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
+ <7b5012d8-6ae1-7cde-a381-e82685dfed4f@linux.intel.com> <CALMp9eTOaWxQPfdwMSAn-OYAHKPLcuCyse7BpsSOM35vg5d0Jg@mail.gmail.com>
+ <e06db1a5-1b67-28ac-ee4c-34ece5857b1f@linux.intel.com> <CALMp9eSjDro169JjTXyCZn=Rf3PT0uHhdNXEifiXGYQK-Zn8LA@mail.gmail.com>
+ <d86ba87b-d98a-53a0-b2cd-5bf77b97b592@linux.intel.com> <CABOYuvZ9SZAWeRkrhhhpMM4XwzMzXv9A1WDpc6z8SUBquf0SFQ@mail.gmail.com>
+ <6afcec02-fb44-7b72-e527-6517a94855d4@linux.intel.com> <CALMp9eQ79Cnh1aqNGLR8n5MQuHTwuf=DMjJ2cTb9uXu94GGhEA@mail.gmail.com>
+ <2180ea93-5f05-b1c1-7253-e3707da29f8c@linux.intel.com> <CALMp9eQiaXtF3S0QZ=2_SWavFnv6zFHqf_zFXBrxXb9pVYh0nQ@mail.gmail.com>
+ <8d9149b5-e56f-b397-1527-9f21a26ad95b@linux.intel.com> <CALMp9eTqNyG-ke1Aq72hn0CVXER63SgVPamzXria76PmqiZvJQ@mail.gmail.com>
+ <31cd6e81-fd74-daa1-8518-8a8dfc6174d0@gmail.com>
+In-Reply-To: <31cd6e81-fd74-daa1-8518-8a8dfc6174d0@gmail.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Wed, 16 Feb 2022 10:10:05 -0800
+Message-ID: <CALMp9eTrKmtP4BHxBNvyG9+bhOAd1jofx0rQz0rF=MtaoShb=w@mail.gmail.com>
+Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
+ perfmon_event_map[] directly
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     "Liang, Kan" <kan.liang@linux.intel.com>,
+        David Dunn <daviddunn@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Chris Wilson <chris@chris-wilson.co.uk>, duyuyang@gmail.com,
-        johannes.berg@intel.com, Tejun Heo <tj@kernel.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dave Chinner <david@fromorbit.com>,
-        Amir Goldstein <amir73il@gmail.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel-team@lge.com, Linux-MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>, sj@kernel.org,
-        Jerome Glisse <jglisse@redhat.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, ngupta@vflare.org,
-        linux-block <linux-block@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, paolo.valente@linaro.org,
-        Josef Bacik <josef@toxicpanda.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>,
-        Jeff Layton <jlayton@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Dave Airlie <airlied@linux.ie>, rodrigosiqueiramelo@gmail.com,
-        melissa.srw@gmail.com, hamohammed.sa@gmail.com
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
+        Stephane Eranian <eranian@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 10:37 PM Damien Le Moal
-<damien.lemoal@opensource.wdc.com> wrote:
->
-> On 2/16/22 13:16, Byungchul Park wrote:
-> > [    2.051040] ===================================================
-> > [    2.051406] DEPT: Circular dependency has been detected.
-> > [    2.051730] 5.17.0-rc1-00014-gcf3441bb2012 #2 Tainted: G        W
-> > [    2.051991] ---------------------------------------------------
-> > [    2.051991] summary
-> > [    2.051991] ---------------------------------------------------
-> > [    2.051991] *** DEADLOCK ***
-> > [    2.051991]
-> > [    2.051991] context A
-> > [    2.051991]     [S] (unknown)(&(&ap->eh_wait_q)->dmap:0)
-> > [    2.051991]     [W] __raw_spin_lock_irq(&host->lock:0)
-> > [    2.051991]     [E] event(&(&ap->eh_wait_q)->dmap:0)
-> > [    2.051991]
-> > [    2.051991] context B
-> > [    2.051991]     [S] __raw_spin_lock_irqsave(&host->lock:0)
-> > [    2.051991]     [W] wait(&(&ap->eh_wait_q)->dmap:0)
-> > [    2.051991]     [E] spin_unlock(&host->lock:0)
->
-> Sleeping with a spinlock held would be triggering warnings already, so
-> these reports seem bogus to me.
+On Tue, Feb 15, 2022 at 11:36 PM Like Xu <like.xu.linux@gmail.com> wrote:
 
-Yeah, Matthew pointed out the same thing for another use-case, where
-it looks like DEPT is looking at the state at the wrong point (not at
-the scheduling point, but at prepare_to_sleep()).
+> Hardware resources will always be limited (the good news is that
+> the number of counters will increase in the future), and when we have
+> a common need for the same hardware, we should prioritize overall
+> fairness over a GUEST-first strategy.
 
-This ata_port_wait() is the exact same pattern, ie we have
+The bad news about the new counters on Intel is that they are less
+capable than the existing counters. SInce there is no bitmask for GP
+counters in CPUID.0AH, if you give 4 counters to the guest, then the
+host is stuck using the less capable counters.
 
-        spin_lock_irqsave(ap->lock, flags);
+Overall fairness is definitely not what we want. See the other thread,
+which has a proposal for a more configurable perf subsystem that
+should meet your needs as well as ours.
 
-        while (ap->pflags & (ATA_PFLAG_EH_PENDING | ATA_PFLAG_EH_IN_PROGRESS)) {
-                prepare_to_wait(&ap->eh_wait_q, &wait, TASK_UNINTERRUPTIBLE);
-                spin_unlock_irqrestore(ap->lock, flags);
-                schedule();
-
-and DEPT has incorrectly taken it to mean that 'ap->lock' is held
-during the wait, when it is actually released before actually waiting.
-
-For the spin-locks, this is all very obvious (because they'd have been
-caught long ago by much simpler debug code), but the same
-prepare_to_wait -> wait pattern can most definitely happen with
-sleeping locks too, so they are all slightly suspect.
-
-And yes, the detailed reports are hard to read because the locations
-are given as "ata_port_wait_eh+0x52/0xc0". Running them through
-scripts/decode_stacktrace.sh to turn them into filename and line
-numbers - and also sort out inlining - would help a lot.
-
-Byungchul, could you fix those two issues? Some of your reports may
-well be entirely valid, but the hard-to-read hex offsets and the
-knowledge that at least some of them are confused about how
-prepare_to_wait -> wait actually works makes the motivation to look at
-the details much less..
-
-           Linus
+Can we move all of this discussion to the other thread, BTW?
