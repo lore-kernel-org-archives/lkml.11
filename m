@@ -2,65 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 922D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0112DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238301AbiBPTrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:47:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35772 "EHLO
+        id S238307AbiBPTtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:49:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237689AbiBPTrR (ORCPT
+        with ESMTP id S238205AbiBPTtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:47:17 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B7C1CA515
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:47:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C11C4CE2844
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 19:47:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BDDC004E1;
-        Wed, 16 Feb 2022 19:47:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1645040821;
-        bh=O6A+dtwhJsUxbYzeWBeyoSFV8FBZ9gZbu1DG1ZCq9zw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WKP2MV151mFAwGNB+Ml5hTfhWp3CzXvBcrhr4CK9BGNTnXZPfzek5aGRCFU1uSfbF
-         80Zgb/85Ub4hd1ZTtVYGRmKa2BF8PUX2R6BOxg3h+EYCiY5vIMHUdA/OPN1hTrMmTb
-         skZrbKhqG0Yd5WBGpUUK+J86cPggqsItAcTlUpTQ=
-Date:   Wed, 16 Feb 2022 11:47:00 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 00/71] Introducing the Maple Tree
-Message-Id: <20220216114700.f9473d88144dc59fc4d764fb@linux-foundation.org>
-In-Reply-To: <20220215143728.3810954-1-Liam.Howlett@oracle.com>
-References: <20220215143728.3810954-1-Liam.Howlett@oracle.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Wed, 16 Feb 2022 14:49:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9813F1FFF74
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:48:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645040927;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=g513SF5HE5dJGo2fGBOLLgwg2DHDbXM/NEPim62cYqE=;
+        b=fczxFNHCrXkx5XOkahBlaa5BF8cnfIyCkUhka2ML0uK4JUMJ/uZcG1G271qeGzb9ogDS3k
+        tv1IQyAQtGq6k6VCF9w89uFbDuBBuLQ6qzWHd3A74Gj20uCKInwBwsKnx9uTDV0A3xwvkV
+        rxkl/WMeDtZAcFqwUba8gCi+LO5sk+g=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-135-UlXFKXW9N7GHEJvttbsN6w-1; Wed, 16 Feb 2022 14:48:46 -0500
+X-MC-Unique: UlXFKXW9N7GHEJvttbsN6w-1
+Received: by mail-ed1-f69.google.com with SMTP id l24-20020a056402231800b00410f19a3103so2230205eda.5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:48:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=g513SF5HE5dJGo2fGBOLLgwg2DHDbXM/NEPim62cYqE=;
+        b=7/2bsSk0k7f8w9SPytW1B5Q2op2GVVQm/0Zm+M4I8NnzSMgRQqYIQ1rJZH19d/W5sP
+         bzcu9yA9aff07C2U9DuVuwc5+H8B6oPp/6PZIFoCQNVcB1qnxknr/FxJ0QlPrxqi3tCR
+         5c2J1UFmI2kvKBnnVpeRhNS2aF9fRPGht7vMkVQ6BeJHo/MQgG+I9HUdDZiltzIpBJR4
+         58I/D/x47MvZwUu+DUM1nCWNbHeYVchZmmPgBLWrqw8xLxkM597p5P0/1riM3plb9TA4
+         TlMvR0g/3r2HsPCjNCJRYLqJVLvwIinmjwlCZOS7beXYg/fNQMJZeBWY1L6Xy1evLBzt
+         pqyQ==
+X-Gm-Message-State: AOAM530XLTJBIeG3NXBSHP9+8gr/1h+bxJ0MC3hvE8AMjxrCKFt/l9Xn
+        4lFoAi5Yx19uAl5D1jDVHFM+SiUnxeYlsXusLgPlq5BFZyXrPWxRzrwjBqhthedGWFzlezJBgEg
+        Dk2eAuoFGspCObNWblehYGzyF
+X-Received: by 2002:a17:906:4116:b0:6cd:1980:5ad0 with SMTP id j22-20020a170906411600b006cd19805ad0mr3703369ejk.595.1645040925106;
+        Wed, 16 Feb 2022 11:48:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwMON0qYvOx6QqzkreXI9Swt4cZKaNePxwWvGtZRanNq4QUNZVQJPSZeBJmGXDgJGmzsxNdLQ==
+X-Received: by 2002:a17:906:4116:b0:6cd:1980:5ad0 with SMTP id j22-20020a170906411600b006cd19805ad0mr3703360ejk.595.1645040924959;
+        Wed, 16 Feb 2022 11:48:44 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id b4sm269981ejv.108.2022.02.16.11.48.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 11:48:44 -0800 (PST)
+Message-ID: <dc1e2d11-dbb0-e2d1-bdf0-b38a9b90bea7@redhat.com>
+Date:   Wed, 16 Feb 2022 20:48:43 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] KVM: Move VM's worker kthreads back to the original
+ cgroups before exiting.
+Content-Language: en-US
+To:     Vipin Sharma <vipinsh@google.com>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Tejun Heo <tj@kernel.org>, seanjc@google.com,
+        lizefan.x@bytedance.com, hannes@cmpxchg.org, dmatlack@google.com,
+        jiangshanlai@gmail.com, kvm@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211222225350.1912249-1-vipinsh@google.com>
+ <20220105180420.GC6464@blackbody.suse.cz>
+ <CAHVum0e84nUcGtdPYQaJDQszKj-QVP5gM+nteBpSTaQ2sWYpmQ@mail.gmail.com>
+ <Yeclbe3GNdCMLlHz@slm.duckdns.org>
+ <7a0bc562-9f25-392d-5c05-9dbcd350d002@redhat.com>
+ <YehY0z2vHYVZk52J@slm.duckdns.org> <20220120150502.GC27269@blackbody.suse.cz>
+ <CAHVum0fOP-2XcUcG3PqW08DY7CmpDroG6Fcv9KoD1FqLmGpB8w@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CAHVum0fOP-2XcUcG3PqW08DY7CmpDroG6Fcv9KoD1FqLmGpB8w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022 14:37:44 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
+On 2/16/22 18:37, Vipin Sharma wrote:
+> Paolo:
+> Will you accept a patch which uses real_parent in
+> kvm_vm_worker_thread() as suggested by Sean, while I figure out the
+> recommendation from Michal about making kthread_stop() wait on
+> kernel_wait()?
+>          cgroup_attach_task_all(current->real_parent, current)
 
-> The maple tree is an RCU-safe range based B-tree designed to use modern
-> processor cache efficiently.  There are a number of places in the kernel
-> that a non-overlapping range-based tree would be beneficial, especially
-> one with a simple interface.  The first user that is covered in this
-> patch set is the vm_area_struct, where three data structures are
-> replaced by the maple tree: the augmented rbtree, the vma cache, and the
-> linked list of VMAs in the mm_struct.  The long term goal is to reduce
-> or remove the mmap_sem contention.
+Yes, of course.
 
-Has a path been chosen which gets us from here to significant reduction
-in mmap_lock overhead?
+Paolo
 
-If so, what's the plan and what must be done?
-
-Thanks.
