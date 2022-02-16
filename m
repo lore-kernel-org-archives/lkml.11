@@ -2,65 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9382C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC2BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231542AbiBPIOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 03:14:49 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50994 "EHLO
+        id S231560AbiBPIPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 03:15:25 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231540AbiBPIOj (ORCPT
+        with ESMTP id S231540AbiBPIPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 03:14:39 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEEB251E6C;
-        Wed, 16 Feb 2022 00:14:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=eK7JQP3AD1+05eQk/cFJFk4JohXRVweM/+B5FTB73ng=; b=SvNQmY6s0tTSr74RpoPjpXFknN
-        +ih/jXI0aVHS0v3cvv4SeAQUyxAkHesXys2OtGPFSpuO1g7lhDeXluXHsYHr6jbsd4LKXsV+I+EDS
-        mwITAK1Hdq6ubXuCm+ukvvLFAzw7wkLOUZOVz7PtfrjAMFJvmn0abE44k8/+98JjKBk+OHOA5WwLm
-        M5oRguh70Q5PNjzWhuHMWz4DS8yE7lugU+fx4oC7wzXq9Fqs833hNE19gwmTP31llnRs6XSduqhoE
-        6lVEAooGgzrhF3wUVQz6yZjdhocY2PL+tiQzXzgTtfu+hQ2rkmzkB7ls/4peyTwp1OTzsa9X+Zcy4
-        U6RQMGcg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nKFS2-0063dZ-Js; Wed, 16 Feb 2022 08:14:14 +0000
-Date:   Wed, 16 Feb 2022 00:14:14 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Nirmal Patel <nirmal.patel@linux.intel.com>,
-        Jonathan Derrick <jonathan.derrick@linux.dev>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3] PCI: vmd: Honor ACPI _OSC on PCIe features
-Message-ID: <YgyyVtDVV+0Jrogi@infradead.org>
-References: <CAJZ5v0i6+EMMGuKckhtTdt7TgC3LbofW7oS7B5=McSNjEh1yKA@mail.gmail.com>
- <20220216015303.GA137820@bhelgaas>
+        Wed, 16 Feb 2022 03:15:23 -0500
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2935253BFC;
+        Wed, 16 Feb 2022 00:15:09 -0800 (PST)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21FMVftI005999;
+        Wed, 16 Feb 2022 09:15:05 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=selector1;
+ bh=tXDN4IoanLCeWiPkxoxThdcyrsIF7Vx5q4hblSw40L4=;
+ b=OX1mtoF9wh/t/4GSaB8FuYnHXXwH+PYVPbkpz9R7szWLVmSpa3wjVbJICz8YcTJbXlsl
+ YLLwH4+TcHuEa4XTFXy3q6t6S1KL8ugM5/DQU7tBKCgQn0s83X7f1V3oZRn1PB4dI/PV
+ hcKKEav6NMge9tWON1qWO/CXoAwhDktUmEjb8XiwncT1zmBpKTC2UQrb0aX3d6N//fZB
+ iQeo83c2h0yYe5iQ4xyjOMIE3XPQ6DnSMOQ6/pIBivLI2ZK5YZPsPZOCztk91Lo9Dt+1
+ /6r9foYiAyoa9mKkcgsl1A+Q7Grwn9UeQAJCUZKCFMrT2/mvX/NgofsM8pAT7NE0HK35 qA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e8n20t90m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 09:15:05 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 911B710003E;
+        Wed, 16 Feb 2022 09:15:04 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7FBF82138CC;
+        Wed, 16 Feb 2022 09:15:04 +0100 (CET)
+Received: from localhost (10.75.127.45) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 16 Feb 2022 09:15:04
+ +0100
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To:     <hminas@synopsys.com>, <gregkh@linuxfoundation.org>
+CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <amelie.delaunay@foss.st.com>, <alexandre.torgue@foss.st.com>,
+        <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v3] usb: dwc2: drd: fix soft connect when gadget is unconfigured
+Date:   Wed, 16 Feb 2022 09:12:15 +0100
+Message-ID: <1644999135-13478-1-git-send-email-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216015303.GA137820@bhelgaas>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-16_03,2022-02-14_04,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 07:53:03PM -0600, Bjorn Helgaas wrote:
-> Apparently there's a firmware toggle, but I don't know exactly what it
-> does.  Maybe if the toggle is set to disable VMD, the VMD device looks
-> like a regular Root Port and the devices below are enumerated
-> normally even without any vmd.c?
+When the gadget driver hasn't been (yet) configured, and the cable is
+connected to a HOST, the SFTDISCON gets cleared unconditionally, so the
+HOST tries to enumerate it.
+At the host side, this can result in a stuck USB port or worse. When
+getting lucky, some dmesg can be observed at the host side:
+ new high-speed USB device number ...
+ device descriptor read/64, error -110
 
-Yes.  VMD is just an intel invention to make the OSes life incredibly
-painful (and to allow Intel to force binding their NVMe driver instead
-of the Microsoft one on windows).
+Fix it in drd, by checking the enabled flag before calling
+dwc2_hsotg_core_connect(). It will be called later, once configured,
+by the normal flow:
+- udc_bind_to_driver
+ - usb_gadget_connect
+   - dwc2_hsotg_pullup
+     - dwc2_hsotg_core_connect
+
+Fixes: 17f934024e84 ("usb: dwc2: override PHY input signals with usb role switch support")
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+Changes in v3:
+- remove extra () in dwc2_is_device_enabled() macro.
+Changes in v2:
+- Fix build error: 'struct dwc2_hsotg' has no member named 'enabled';
+  as reported by the kernel test robot.
+  https://lore.kernel.org/all/202202112236.AwoOTtHO-lkp@intel.com/
+  Add dwc2_is_device_enabled() macro to handle this.
+---
+ drivers/usb/dwc2/core.h | 2 ++
+ drivers/usb/dwc2/drd.c  | 6 ++++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/dwc2/core.h b/drivers/usb/dwc2/core.h
+index 8a63da3..88c337b 100644
+--- a/drivers/usb/dwc2/core.h
++++ b/drivers/usb/dwc2/core.h
+@@ -1418,6 +1418,7 @@ void dwc2_hsotg_core_connect(struct dwc2_hsotg *hsotg);
+ void dwc2_hsotg_disconnect(struct dwc2_hsotg *dwc2);
+ int dwc2_hsotg_set_test_mode(struct dwc2_hsotg *hsotg, int testmode);
+ #define dwc2_is_device_connected(hsotg) (hsotg->connected)
++#define dwc2_is_device_enabled(hsotg) (hsotg->enabled)
+ int dwc2_backup_device_registers(struct dwc2_hsotg *hsotg);
+ int dwc2_restore_device_registers(struct dwc2_hsotg *hsotg, int remote_wakeup);
+ int dwc2_gadget_enter_hibernation(struct dwc2_hsotg *hsotg);
+@@ -1454,6 +1455,7 @@ static inline int dwc2_hsotg_set_test_mode(struct dwc2_hsotg *hsotg,
+ 					   int testmode)
+ { return 0; }
+ #define dwc2_is_device_connected(hsotg) (0)
++#define dwc2_is_device_enabled(hsotg) (0)
+ static inline int dwc2_backup_device_registers(struct dwc2_hsotg *hsotg)
+ { return 0; }
+ static inline int dwc2_restore_device_registers(struct dwc2_hsotg *hsotg,
+diff --git a/drivers/usb/dwc2/drd.c b/drivers/usb/dwc2/drd.c
+index 1b39c47..d8d6493 100644
+--- a/drivers/usb/dwc2/drd.c
++++ b/drivers/usb/dwc2/drd.c
+@@ -130,8 +130,10 @@ static int dwc2_drd_role_sw_set(struct usb_role_switch *sw, enum usb_role role)
+ 		already = dwc2_ovr_avalid(hsotg, true);
+ 	} else if (role == USB_ROLE_DEVICE) {
+ 		already = dwc2_ovr_bvalid(hsotg, true);
+-		/* This clear DCTL.SFTDISCON bit */
+-		dwc2_hsotg_core_connect(hsotg);
++		if (dwc2_is_device_enabled(hsotg)) {
++			/* This clear DCTL.SFTDISCON bit */
++			dwc2_hsotg_core_connect(hsotg);
++		}
+ 	} else {
+ 		if (dwc2_is_device_mode(hsotg)) {
+ 			if (!dwc2_ovr_bvalid(hsotg, false))
+-- 
+2.7.4
+
