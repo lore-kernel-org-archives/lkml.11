@@ -2,237 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4639C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D667C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 09:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232609AbiBPJ7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 04:59:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46368 "EHLO
+        id S232621AbiBPJ7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 04:59:34 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232599AbiBPJ7R (ORCPT
+        with ESMTP id S232590AbiBPJ7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 04:59:17 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC36D2A4A22
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:59:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645005544; x=1676541544;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=cY39gSi5BKIRpuqOFQUh3+zixEbH2O5vxI8SJ+qmhEU=;
-  b=SQ71rHjhETePAuOw9exPPx/wsAc512PRvK0+dc8oN2gO8T+ljW2jlM40
-   U4YRwgprbJISkc2NgNno3qBlh4ClrwzO8g+3hpnk1HJw2FTvuD9bdRqU3
-   EurZVHKXLkVz8Va02Xxe2tlD/7c+wFbeI7fy5/MUNqVPCygddWql6qf2Q
-   7sMs0uNVnuxGfv3Y9+PZYHIV+dc6epKvoVqWakS15keteaXdAG7ldwmjL
-   bdVoo77Sx/cpIfnFwYX92Tge7ENVNCoy0FkKE4fHYoJP3ru3SGDf+kmbq
-   tV/kXerRt36AMYB2YHzurZG8sA97sq36lFNBbhvGBHWliu18GQdF3A4Wj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="311306986"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="311306986"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 01:58:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="704237234"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 16 Feb 2022 01:58:33 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKH4y-000Agt-RO; Wed, 16 Feb 2022 09:58:32 +0000
-Date:   Wed, 16 Feb 2022 17:57:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [gustavoars:for-next/kspp] BUILD SUCCESS
- 757856e8836bb03c418d2ea03a103ad12d361a69
-Message-ID: <620cca96.38WQ4pnTLc9QZnFr%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 16 Feb 2022 04:59:31 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44FA6265136
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:59:19 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id p5so4302615ybd.13
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 01:59:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g6yc0CzjhZvL8asvAOjVxpZRVzWjAV26MMR3ayD0Jss=;
+        b=XGdkv5sh7wesUFoBMJy2j3M0ZGke0f+k0scopU8aYxlvCwi4vR/FyE53oliA3nse3E
+         GsEQ2lf4rd2ykfkXR34DrqI2ga7koqk5dbsQuGeuH7cfUy4adGZqDjSF3dPD0ex7Uwzi
+         DM9zTFb60MwwHYDFxNhz7o/AH6f226Pms31VGM5NbXsno/58svkXLg73g0cnzKXY7KCi
+         KUQwn8q07xqK1RpieHRGRmyz7zDGH/5/T9Rf1sT/D7sJXvytIMv6oUjLJCCu0dUYNu4A
+         GOgq+VSjs6Eat5SoNAhgOqF664kfJ/lRXA+T7/mtIrz+MWugKBILKg2OzeWPdTaHa1nn
+         HGhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g6yc0CzjhZvL8asvAOjVxpZRVzWjAV26MMR3ayD0Jss=;
+        b=kBJ7em2DkuN0EnaaCTuY3ydaSeCBCOag+6FOekMShfnQTwGQ6DKXgDZhcZ64pGronv
+         5J+lsknqcBKucMq+0d4yEmdblDYNwz9tXS6sP1IYRt9/5NsU3In1j3JMqS1ZuuWPsg2k
+         D08tcZ6pEXru7ss1TnrWtj/jyXwLoftINPxHKqEO9NebfTU355rW5pIaRMKM9VnrOUFE
+         /2/SSP6Lg76yeUHM18quLvxmrgCzd0vzjwixm+WNZFtnUBgXFQw/I75lSQ1JbjZC1ECa
+         VvzXi+hgGNiH/i69fvgDRpJvTywws/O7RwJi9CHe6ETd2j/+KRQL6SkfcvHwXfDo9IZI
+         MG7w==
+X-Gm-Message-State: AOAM5326GBM14pcgLY5jKcqHh20pi4MhHvw6E8FH6QIR7U+Onya9oGOY
+        ITLlI2ABrk8VnoF6Lz0Ay0ivSc1DFWMc3IvKdJoJiA==
+X-Google-Smtp-Source: ABdhPJwU2OW7Do06toZ0xEFJUCUVefzB/0WZylYASkRpbaMU0drvCjN+jE7XQsJzmZgcUW8m27rMfk57hP+0LQAV3nA=
+X-Received: by 2002:a0d:ee41:0:b0:2d2:f0aa:d3ba with SMTP id
+ x62-20020a0dee41000000b002d2f0aad3bamr1771660ywe.512.1645005558266; Wed, 16
+ Feb 2022 01:59:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <f50c5f96ef896d7936192c888b0c0a7674e33184.1644943792.git.andreyknvl@google.com>
+In-Reply-To: <f50c5f96ef896d7936192c888b0c0a7674e33184.1644943792.git.andreyknvl@google.com>
+From:   Marco Elver <elver@google.com>
+Date:   Wed, 16 Feb 2022 10:59:06 +0100
+Message-ID: <CANpmjNPG2wP9xiGDJboMJzf-YD+skOO532O+bKkAz+tpvDsF=g@mail.gmail.com>
+Subject: Re: [PATCH mm] fix for "kasan, fork: reset pointer tags of vmapped stacks"
+To:     andrey.konovalov@linux.dev
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git for-next/kspp
-branch HEAD: 757856e8836bb03c418d2ea03a103ad12d361a69  Merge branch 'for-next/kspp-fam0' into for-next/kspp
+On Tue, 15 Feb 2022 at 17:52, <andrey.konovalov@linux.dev> wrote:
+>
+> From: Andrey Konovalov <andreyknvl@google.com>
+>
+> That patch didn't update the case when a stack is retrived from
+> cached_stacks in alloc_thread_stack_node(). As cached_stacks stores
+> vm_structs and not stack pointers themselves, the pointer tag needs
+> to be reset there as well.
+>
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 
-elapsed time: 763m
+Reviewed-by: Marco Elver <elver@google.com>
 
-configs tested: 158
-configs skipped: 4
+Did the test catch this? If not, can this be tested?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-arm64                            allyesconfig
-arm64                               defconfig
-i386                          randconfig-c001
-i386                 randconfig-c001-20220214
-sh                 kfr2r09-romimage_defconfig
-mips                        jmr3927_defconfig
-m68k                            mac_defconfig
-sh                           se7751_defconfig
-sh                  sh7785lcr_32bit_defconfig
-arm                           corgi_defconfig
-arc                      axs103_smp_defconfig
-xtensa                           alldefconfig
-microblaze                      mmu_defconfig
-m68k                       m5475evb_defconfig
-arc                         haps_hs_defconfig
-xtensa                  nommu_kc705_defconfig
-mips                  decstation_64_defconfig
-powerpc                 mpc834x_mds_defconfig
-arm                           sunxi_defconfig
-powerpc                 mpc85xx_cds_defconfig
-sh                                  defconfig
-arm                          gemini_defconfig
-powerpc                     pq2fads_defconfig
-m68k                       m5208evb_defconfig
-parisc                           alldefconfig
-arm                           h5000_defconfig
-mips                        bcm47xx_defconfig
-powerpc                    sam440ep_defconfig
-sparc64                          alldefconfig
-m68k                             alldefconfig
-arm                       aspeed_g5_defconfig
-arm                           viper_defconfig
-arm                            mps2_defconfig
-arm                      jornada720_defconfig
-openrisc                  or1klitex_defconfig
-powerpc                        warp_defconfig
-arm                        keystone_defconfig
-powerpc                        cell_defconfig
-arm                         at91_dt_defconfig
-powerpc                    klondike_defconfig
-h8300                               defconfig
-sh                             espt_defconfig
-mips                       capcella_defconfig
-arm                        cerfcube_defconfig
-mips                      loongson3_defconfig
-sh                        edosk7705_defconfig
-powerpc                 mpc834x_itx_defconfig
-m68k                        mvme16x_defconfig
-mips                            gpr_defconfig
-arm                          simpad_defconfig
-powerpc                  iss476-smp_defconfig
-arm                  randconfig-c002-20220214
-arm                  randconfig-c002-20220216
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64               randconfig-a013-20220214
-x86_64               randconfig-a014-20220214
-x86_64               randconfig-a012-20220214
-x86_64               randconfig-a015-20220214
-x86_64               randconfig-a011-20220214
-x86_64               randconfig-a016-20220214
-i386                 randconfig-a013-20220214
-i386                 randconfig-a016-20220214
-i386                 randconfig-a012-20220214
-i386                 randconfig-a015-20220214
-i386                 randconfig-a011-20220214
-i386                 randconfig-a014-20220214
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                randconfig-r042-20220214
-arc                  randconfig-r043-20220214
-s390                 randconfig-r044-20220214
-riscv                randconfig-r042-20220216
-arc                  randconfig-r043-20220216
-s390                 randconfig-r044-20220216
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-
-clang tested configs:
-riscv                randconfig-c006-20220216
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220216
-arm                  randconfig-c002-20220216
-i386                          randconfig-c001
-mips                 randconfig-c004-20220216
-arm                                 defconfig
-riscv                    nommu_virt_defconfig
-powerpc                       ebony_defconfig
-hexagon                             defconfig
-x86_64               randconfig-a002-20220214
-x86_64               randconfig-a006-20220214
-x86_64               randconfig-a005-20220214
-x86_64               randconfig-a004-20220214
-x86_64               randconfig-a003-20220214
-x86_64               randconfig-a001-20220214
-i386                 randconfig-a002-20220214
-i386                 randconfig-a003-20220214
-i386                 randconfig-a001-20220214
-i386                 randconfig-a004-20220214
-i386                 randconfig-a005-20220214
-i386                 randconfig-a006-20220214
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220216
-hexagon              randconfig-r041-20220216
-hexagon              randconfig-r045-20220214
-hexagon              randconfig-r041-20220214
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> ---
+>  kernel/fork.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+>
+> diff --git a/kernel/fork.c b/kernel/fork.c
+> index 57d624f05182..5e3ad2e7a756 100644
+> --- a/kernel/fork.c
+> +++ b/kernel/fork.c
+> @@ -226,15 +226,17 @@ static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int node)
+>                 if (!s)
+>                         continue;
+>
+> -               /* Mark stack accessible for KASAN. */
+> +               /* Reset stack metadata. */
+>                 kasan_unpoison_range(s->addr, THREAD_SIZE);
+>
+> +               stack = kasan_reset_tag(s->addr);
+> +
+>                 /* Clear stale pointers from reused stack. */
+> -               memset(s->addr, 0, THREAD_SIZE);
+> +               memset(stack, 0, THREAD_SIZE);
+>
+>                 tsk->stack_vm_area = s;
+> -               tsk->stack = s->addr;
+> -               return s->addr;
+> +               tsk->stack = stack;
+> +               return stack;
+>         }
+>
+>         /*
+> --
+> 2.25.1
+>
