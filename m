@@ -2,106 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9534C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:02:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF800C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236986AbiBPGCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 01:02:42 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39774 "EHLO
+        id S231495AbiBPGG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 01:06:26 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiBPGCl (ORCPT
+        with ESMTP id S229561AbiBPGGW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 01:02:41 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8649412F437
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:02:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644991349; x=1676527349;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=IVPlreFyMESNWqix37VZqoKjgqwMLI/tR34nJqXP0qY=;
-  b=PeMSL6h/Piu3vKzNCKtdRmB+pwxFvP+/b/aiuy5xyY9uSoXMzsK+3PWm
-   xofn4l6CyjMAShpuYTMDLECCI4M4AJ+Ayb/JUGqQDHXv9dj6ez9EKmRyN
-   OdJ1oMqvcdkhLxOybucwtMEpMktioWGPyJk9r0BlMIU63e057yeWwp96H
-   UuPjrqeZZz1UbSydzns8RVspfsp1eWMEENXwsvgvhNx8qCcHrNA0NMFrb
-   FjCvMBcaHs+egXCWkO32qqu4dNgDRnbC5FNgrlaAIAfsVse8aBIKP9iIq
-   319s0UB/CQSg4Arm72F7zGaFMOP/ur8ICVCViceq6KT5K1+8GhlFC/u3h
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="336963601"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="336963601"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 22:02:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="498267307"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 15 Feb 2022 22:02:27 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKDOU-000AUp-OI; Wed, 16 Feb 2022 06:02:26 +0000
-Date:   Wed, 16 Feb 2022 14:01:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Subject: [ammarfaizi2-block:axboe/linux-block/m1-test 248/382] undefined
- reference to `apple_sart_add_allowed_region'
-Message-ID: <202202161307.qyEsGhGi-lkp@intel.com>
+        Wed, 16 Feb 2022 01:06:22 -0500
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA3B15B995
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:06:10 -0800 (PST)
+Received: by mail-oo1-xc2e.google.com with SMTP id d134-20020a4a528c000000b00319244f4b04so1348812oob.8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:06:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CDBQKjrOHx1jFqanGpjTZz0mkLi+B8rGvMm6ZK2mah0=;
+        b=ANYaNLWFCQkj69oiskZkSh6DjZmPGeiq9PrEgU2cP3v3dn1nkwLwYm7cx+4vS6oOKw
+         RwNzEIyq3NLxuuxq6/pXX241+VkGVJtb86AlOXZXiNaOF+o9MwFTZ3Ial6STIS1UiAA5
+         dhBgfFPAMgGgTKfxv7tknbGcdLXT5auCslnVM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CDBQKjrOHx1jFqanGpjTZz0mkLi+B8rGvMm6ZK2mah0=;
+        b=wgHhQk8R3gdDhW32y0vBYZSQ4nh+Oa62SQkZ5whSFdQ9rAZ9o5xSymWJCxNDWtoYZn
+         hnUNbtzTwc+kHCtIKG7/ffGLmgbcV4S+/2hhuKPAq1zPKatHzrFj+dN+FEcZlidyweb5
+         l7x3CiyokN4oSvCxN30uPp8BrKJASY1XHhaewywd2uEME6fkrlAZoFOdR2u6L0YbjNgC
+         +wCvPgK0W8254FgMTTsC+Rl7RH3bTrpZgcpNeGykL2hUEs7V6v2KRbynvz3wir5HcQY2
+         dCQisHu/8lGwpOZ5/VRzTFjt0BSf/Xzg5PQVrvb44gCa4lYKObBRKGaZ7vjPIywdcugV
+         PSLA==
+X-Gm-Message-State: AOAM5313vqIgaBUp47OEG0XSsMZGq54c07oFEEPP6xu5cDNjgyGU3gI7
+        GfvY5d8zHpn8CSgpuhvQqTpLqLB/h3CJjpPHkbE=
+X-Google-Smtp-Source: ABdhPJyvdoaa4OxoS2tNvxqo9C0KlIDVywMK0LzHhYsWui4twUzQvOt2jHQLeaE+zoG3OxNVw7TVBw==
+X-Received: by 2002:a05:6870:30e:b0:bf:9b7f:7c63 with SMTP id m14-20020a056870030e00b000bf9b7f7c63mr11622oaf.84.1644991569849;
+        Tue, 15 Feb 2022 22:06:09 -0800 (PST)
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com. [209.85.210.48])
+        by smtp.gmail.com with ESMTPSA id x12sm14646616otq.6.2022.02.15.22.06.09
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 22:06:09 -0800 (PST)
+Received: by mail-ot1-f48.google.com with SMTP id g6-20020a9d6486000000b005acf9a0b644so853269otl.12
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 22:06:09 -0800 (PST)
+X-Received: by 2002:a0d:c383:0:b0:2d0:f04e:7ada with SMTP id
+ f125-20020a0dc383000000b002d0f04e7adamr1070020ywd.229.1644991156422; Tue, 15
+ Feb 2022 21:59:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220125085634.17972-1-yong.wu@mediatek.com> <20220125085634.17972-9-yong.wu@mediatek.com>
+ <ca47becf-adc9-f11e-5e59-03f203920344@collabora.com> <d9637b40196873f392ac9cebfe369106a6f0eee7.camel@mediatek.com>
+In-Reply-To: <d9637b40196873f392ac9cebfe369106a6f0eee7.camel@mediatek.com>
+From:   Tomasz Figa <tfiga@chromium.org>
+Date:   Wed, 16 Feb 2022 14:59:05 +0900
+X-Gmail-Original-Message-ID: <CAAFQd5Cqg2xPwtzcom_EZ1tw1tOBsND_i1YAQCO4kF=+eWePBQ@mail.gmail.com>
+Message-ID: <CAAFQd5Cqg2xPwtzcom_EZ1tw1tOBsND_i1YAQCO4kF=+eWePBQ@mail.gmail.com>
+Subject: Re: [PATCH v4 08/35] iommu/mediatek: Use kmalloc for protect buffer
+To:     Yong Wu <Yong.Wu@mediatek.com>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org,
+        Hsin-Yi Wang <hsinyi@chromium.org>, youlin.pei@mediatek.com,
+        anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
+        yen-chang.chen@mediatek.com, mingyuan.ma@mediatek.com,
+        yf.wang@mediatek.com, libo.kang@mediatek.com,
+        chengci.xu@mediatek.com, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1-test
-head:   5adfbb595194191bad98c47447ddbee7d3b60b8f
-commit: 4af74948141263ed097ad48f8845871d16410b08 [248/382] WIP: nvme-apple: add initial Apple SoC NVMe driver
-config: parisc-randconfig-r015-20220216 (https://download.01.org/0day-ci/archive/20220216/202202161307.qyEsGhGi-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/4af74948141263ed097ad48f8845871d16410b08
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1-test
-        git checkout 4af74948141263ed097ad48f8845871d16410b08
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
+On Wed, Feb 16, 2022 at 2:55 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> On Thu, 2022-01-27 at 12:08 +0100, AngeloGioacchino Del Regno wrote:
+> > Il 25/01/22 09:56, Yong Wu ha scritto:
+> > > No need zero for the protect buffer that is only accessed by the
+> > > IOMMU HW
+> > > translation fault happened.
+> > >
+> > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> >
+> > I would rather keep this a devm_kzalloc instead... the cost is very
+> > minimal and
+> > this will be handy when new hardware will be introduced, as it may
+> > require a bigger
+> > buffer: in that case, "older" platforms will use only part of it and
+> > we may get
+> > garbage data at the end.
+>
+> Currently this is to avoid zero 512 bytes for all the platforms.
+>
+> Sorry, I don't understand why it is unnecessary when the new hardware
+> requires a bigger buffer. If the buffer becomes bigger, then clearing
+> it to 0 need more cost. then this patch is more helpful?
+>
+> The content in this buffer is garbage, we won't care about or analyse
+> it.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I think we should zero it for security reasons regardless of any other
+aspects. With this patch it's leaking kernel data to the hardware.
 
-All errors (new ones prefixed by >>):
+At the same time, we're talking here about something executed just 1
+time when the driver probes. I don't think the cost would really
+matter.
 
-   hppa-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_alloc':
->> (.text+0x6f0): undefined reference to `apple_sart_add_allowed_region'
-   hppa-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_probe':
->> (.text+0x9d0): undefined reference to `apple_sart_get'
->> hppa-linux-ld: (.text+0xcc0): undefined reference to `devm_apple_rtkit_init'
-   hppa-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_disable':
->> (.text+0x1248): undefined reference to `apple_rtkit_is_crashed'
-   hppa-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_shutdown':
->> (.text+0x1400): undefined reference to `apple_rtkit_is_running'
->> hppa-linux-ld: (.text+0x1410): undefined reference to `apple_rtkit_shutdown'
-   hppa-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_remove':
-   (.text+0x1484): undefined reference to `apple_rtkit_is_running'
-   hppa-linux-ld: (.text+0x1494): undefined reference to `apple_rtkit_shutdown'
-   hppa-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_timeout':
-   (.text+0x15c8): undefined reference to `apple_rtkit_is_crashed'
-   hppa-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_reset_work':
-   (.text+0x1738): undefined reference to `apple_rtkit_is_crashed'
->> hppa-linux-ld: (.text+0x175c): undefined reference to `apple_rtkit_is_running'
-   hppa-linux-ld: (.text+0x1790): undefined reference to `apple_rtkit_shutdown'
->> hppa-linux-ld: (.text+0x17a8): undefined reference to `apple_rtkit_reinit'
->> hppa-linux-ld: (.text+0x17e0): undefined reference to `apple_rtkit_boot'
-   hppa-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_free':
->> (.text+0x1bbc): undefined reference to `apple_sart_remove_allowed_region'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Best regards,
+Tomasz
