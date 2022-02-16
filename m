@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A33C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DABBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:22:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234128AbiBPPVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:21:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57278 "EHLO
+        id S233203AbiBPPWc convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 10:22:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231733AbiBPPVN (ORCPT
+        with ESMTP id S231898AbiBPPWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:21:13 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E642A39F5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:21:00 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id x13so32336iop.4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:21:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uBW1C5wFk0wpTZVzu222A5UngO/IWRNu9ZiYVflWd9Y=;
-        b=i56LMHidru/lux2u/YrSKgJU+bbEQdHAE1K799Dk4ygQBtMRJ/+pD99/xsKygtsqld
-         VN34cOzYkmLCgxHXDM+1obWGrvvZWxXCE+trLuNyrktZnHsToGvVov33p1JGiyTJsnxr
-         8nIb11yF8nh7Xk/g51JYSqFApDRYJEZMpPBMXbc9sNoUnXVyc8Os4ei8wwIp28C69Or1
-         fHc/W55PuSxdLtfErtSFXVigC0z9TWrElvU0UD5I7h+LBOxLxu9bfcZGwnnF2DvC8WqM
-         2BmmRGjBiC9P09ODUqL9vhfzOQjy9F4j/74CGUTtWHmtxgiwEBDCFlSSLJyIlVUuko0h
-         dCag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uBW1C5wFk0wpTZVzu222A5UngO/IWRNu9ZiYVflWd9Y=;
-        b=gSyKb/8r2lEkgMe1OIAhYwsWiP9C6vhwr8WvkQAkdFSnWSIeYgYhKvOY+j44Wk+622
-         GLSfY73RuiWuBRpVsCg1oLrjkCyVkCskTfZ3Q2fCea+ff4fjpC4aVmIu7cZbdYMj2u57
-         gLjm3PKpnKKwRtdIYwtpRPYLDRFNnE7WLjtAqFrv6r/8jH+xS2KnAitELDA1XEk4wIxJ
-         GF8hS041btwQ0EALovg6+NCl7CEhnkPlIf1cbh5asagU8XWzMsNy8ps+qHrm+i119rtH
-         h7UXCJiyf8L2DUCsdhdTbTjv4DMXBpHkEZyo7JlA03dpxvfNqxTBE5xrb6Lr6phOF2cJ
-         FoVw==
-X-Gm-Message-State: AOAM530vWntBU0fDaXNwoCSyBIGcfN2jyEZo0pxupetk43xqP4hNw+jp
-        VHqbANicwg6JJ1kw433EN6HWzW6FKNzDqbQnHEY=
-X-Google-Smtp-Source: ABdhPJwv6JqLq+tNlN1qIvpvO1TTUyqoC1Tw2tFERpxyFP+V+f/r5WWie9UqPKBbf/tYwmRuVvYKi/XQ7fcCjGyC08I=
-X-Received: by 2002:a05:6638:1409:b0:30f:843:f953 with SMTP id
- k9-20020a056638140900b0030f0843f953mr2079611jad.22.1645024859660; Wed, 16 Feb
- 2022 07:20:59 -0800 (PST)
+        Wed, 16 Feb 2022 10:22:30 -0500
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A90CF4D3D;
+        Wed, 16 Feb 2022 07:22:17 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:59752)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nKM8E-00FUVx-J8; Wed, 16 Feb 2022 08:22:14 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35816 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nKM8D-00AnNX-Kw; Wed, 16 Feb 2022 08:22:14 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
+Cc:     linux-kernel@vger.kernel.org, Alexey Gladkov <legion@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        containers@lists.linux-foundation.org, stable@vger.kernel.org
+References: <87o83e2mbu.fsf@email.froward.int.ebiederm.org>
+        <20220211021324.4116773-1-ebiederm@xmission.com>
+        <20220214183727.GA10803@blackbody.suse.cz>
+Date:   Wed, 16 Feb 2022 09:22:06 -0600
+In-Reply-To: <20220214183727.GA10803@blackbody.suse.cz> ("Michal
+ =?utf-8?Q?Koutn=C3=BD=22's?=
+        message of "Mon, 14 Feb 2022 19:37:27 +0100")
+Message-ID: <87bkz6n8f5.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <f50c5f96ef896d7936192c888b0c0a7674e33184.1644943792.git.andreyknvl@google.com>
- <CANpmjNPG2wP9xiGDJboMJzf-YD+skOO532O+bKkAz+tpvDsF=g@mail.gmail.com>
-In-Reply-To: <CANpmjNPG2wP9xiGDJboMJzf-YD+skOO532O+bKkAz+tpvDsF=g@mail.gmail.com>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Wed, 16 Feb 2022 16:20:49 +0100
-Message-ID: <CA+fCnZf3x3rWDNbDVYSbbO6PztWm7EfbhQN9bCHiXaScg8J+kw@mail.gmail.com>
-Subject: Re: [PATCH mm] fix for "kasan, fork: reset pointer tags of vmapped stacks"
-To:     Marco Elver <elver@google.com>
-Cc:     andrey.konovalov@linux.dev,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-XM-SPF: eid=1nKM8D-00AnNX-Kw;;;mid=<87bkz6n8f5.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18GHd2u5OO43mJ7g75YNTvv6XIKXa6NCZc=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 1/8] ucounts: Fix RLIMIT_NPROC regression
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 10:59 AM Marco Elver <elver@google.com> wrote:
->
-> On Tue, 15 Feb 2022 at 17:52, <andrey.konovalov@linux.dev> wrote:
-> >
-> > From: Andrey Konovalov <andreyknvl@google.com>
-> >
-> > That patch didn't update the case when a stack is retrived from
-> > cached_stacks in alloc_thread_stack_node(). As cached_stacks stores
-> > vm_structs and not stack pointers themselves, the pointer tag needs
-> > to be reset there as well.
-> >
-> > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
->
-> Reviewed-by: Marco Elver <elver@google.com>
->
-> Did the test catch this? If not, can this be tested?
+Michal Koutný <mkoutny@suse.com> writes:
 
-Kind of, the kernel crashes on boot. I got KASAN_STACK accidentally
-disabled in my SW_TAGS config, so I didn't see the crash until now.
+> On Thu, Feb 10, 2022 at 08:13:17PM -0600, "Eric W. Biederman" <ebiederm@xmission.com> wrote:
+>> This can be fixed either by fixing the test or by moving the increment
+>> to be before the test.  Fix it my moving copy_creds which contains
+>> the increment before is_ucounts_overlimit.
+>
+> This is simpler than my approach and I find it correct too.
+>
+>> Both the test in fork and the test in set_user were semantically
+>> changed when the code moved to ucounts.  The change of the test in
+>> fork was bad because it was before the increment.
+>>
+>> The test in set_user was wrong and the change to ucounts fixed it.  So
+>> this fix is only restore the old behavior in one lcatio not two.
+>
+> Whom should be the task accounted to in the case of set*uid? (The change
+> to ucounts made the check against the pre-switch user's ucounts.)
+
+It needs to be post-switch in the case of set*id().
+
+I have that fixed in the next version of my patchset.
+
+>> ---
+>>  kernel/fork.c | 10 +++++-----
+>>  1 file changed, 5 insertions(+), 5 deletions(-)
+>
+> Reviewed-by: Michal Koutný <mkoutny@suse.com>
