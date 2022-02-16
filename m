@@ -2,196 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9260C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 00:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E02C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 00:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245105AbiBPAay convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 19:30:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53418 "EHLO
+        id S242855AbiBPAkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Feb 2022 19:40:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245186AbiBPAav (ORCPT
+        with ESMTP id S235223AbiBPAkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 19:30:51 -0500
-X-Greylist: delayed 184 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 16:30:39 PST
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D648F7479
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 16:30:39 -0800 (PST)
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 21G0R7mzC019869, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 21G0R7mzC019869
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 16 Feb 2022 08:27:07 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 16 Feb 2022 08:27:07 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Feb 2022 08:27:06 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Wed, 16 Feb 2022 08:27:06 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Jiri Kosina <jkosina@suse.cz>, Kalle Valo <kvalo@kernel.org>
-CC:     Johannes Berg <johannes@sipsolutions.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] rtw89: fix RCU usage in rtw89_core_txq_push()
-Thread-Topic: [PATCH] rtw89: fix RCU usage in rtw89_core_txq_push()
-Thread-Index: AQHYIqOb6vwbbBNtV0K4EdeAWNx0VKyVUlUQ
-Date:   Wed, 16 Feb 2022 00:27:06 +0000
-Message-ID: <58fa5d4b7d794228ad45485ec5b979df@realtek.com>
-References: <nycvar.YFH.7.76.2202152037000.11721@cbobk.fhfr.pm>
-In-Reply-To: <nycvar.YFH.7.76.2202152037000.11721@cbobk.fhfr.pm>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/2/15_=3F=3F_02:07:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Tue, 15 Feb 2022 19:40:08 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2053B60D86;
+        Tue, 15 Feb 2022 16:39:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644971998; x=1676507998;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Cd+0YC9gWXPn8NbISSpcfmmX5qnlmxqRhaAzyaZQsHk=;
+  b=L+Nhu0Zf4KhSo06pMy1EB9CB7vLUWuHJUOl29gfwObGjvQT2cfbcW+Am
+   +LS8dxvAUFB1/EZXAaCMFPB+3TyL5G2MNubjJbvpUTbtZmfrWJAqPJXRv
+   8l0mw0yfABJC/ccWqtgHOTP9Z2d1CYkG1wwidxYRROdo3/ttJbq59MkEm
+   4Q4R1qxT46BEiZdskFSMERPX+iDxNErHrb+1emcIIyFwzHG8c4xPv9ec0
+   nTSoiOgBqoipGRcrrM+Toz41H3xwJJo9OPIgbuymcI72Lv0RBFn2ON925
+   E/hWFnUCIG/USg4rW7NlzBt9eBYFEEVwX6l8OLmF5pQCaJFXTi+3qCZrY
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="275070166"
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="275070166"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 16:39:52 -0800
+X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
+   d="scan'208";a="636226996"
+Received: from guptapa-mobl1.amr.corp.intel.com ([10.209.113.151])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 16:39:51 -0800
+Date:   Tue, 15 Feb 2022 16:39:50 -0800
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Andrew Cooper <andrew.cooper3@citrix.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
+        antonio.gomez.iglesias@linux.intel.com, neelima.krishnan@intel.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
+Message-ID: <20220216003950.5jxecuf773g2kuwl@guptapa-mobl1.amr.corp.intel.com>
+References: <5bd785a1d6ea0b572250add0c6617b4504bc24d1.1644440311.git.pawan.kumar.gupta@linux.intel.com>
+ <YgqToxbGQluNHABF@zn.tnic>
+ <20220214224121.ilhu23cfjdyhvahk@guptapa-mobl1.amr.corp.intel.com>
+ <YgrltbToK8+tG2qK@zn.tnic>
+ <20220215002014.mb7g4y3hfefmyozx@guptapa-mobl1.amr.corp.intel.com>
+ <Ygt/QSTSMlUJnzFS@zn.tnic>
+ <20220215121103.vhb2lpoygxn3xywy@guptapa-mobl1.amr.corp.intel.com>
+ <YgvVcdpmFCCn20A7@zn.tnic>
+ <20220215181931.wxfsn2a3npg7xmi2@guptapa-mobl1.amr.corp.intel.com>
+ <YgwAHU7gCnik8Kv6@zn.tnic>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YgwAHU7gCnik8Kv6@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 15.02.2022 20:33, Borislav Petkov wrote:
+>On Tue, Feb 15, 2022 at 10:19:31AM -0800, Pawan Gupta wrote:
+>> I admit it has gotten complicated with so many bits associated with TSX.
+>
+>Yah, and looka here:
+>
+>https://github.com/andyhhp/xen/commit/ad9f7c3b2e0df38ad6d54f4769d4dccf765fbcee
+>
+>It seems it isn't complicated enough. ;-\
+>
+>Andy just made me aware of this thing where you guys have added a new
+>MSR bit:
+>
+>MSR_MCU_OPT_CTRL[1] which is called something like
+>MCU_OPT_CTRL_RTM_ALLOW or so.
 
-> -----Original Message-----
-> From: Jiri Kosina <jkosina@suse.cz>
-> Sent: Wednesday, February 16, 2022 3:38 AM
-> To: Kalle Valo <kvalo@kernel.org>
-> Cc: Johannes Berg <johannes@sipsolutions.net>; linux-wireless@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Pkshih <pkshih@realtek.com>
-> Subject: [PATCH] rtw89: fix RCU usage in rtw89_core_txq_push()
-> 
-> From: Jiri Kosina <jkosina@suse.cz>
-> Subject: [PATCH] rtw89: fix RCU usage in rtw89_core_txq_push()
-> 
-> ieee80211_tx_h_select_key() is performing a series of RCU dereferences,
-> but rtw89_core_txq_push() is calling it (via ieee80211_tx_dequeue_ni())
-> without RCU read-side lock held; fix that.
-> 
-> This addresses the splat below.
-> 
->  =============================
->  WARNING: suspicious RCU usage
->  5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
->  -----------------------------
->  net/mac80211/tx.c:593 suspicious rcu_dereference_check() usage!
-> 
->  other info that might help us debug this:
-> 
->  rcu_scheduler_active = 2, debug_locks = 1
->  2 locks held by kworker/u33:0/184:
->   #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
->   #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at:
-> process_one_work+0x258/0x660
-> 
->  stack backtrace:
->  CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3
-> 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
->  Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
->  Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
->  Call Trace:
->   <TASK>
->   dump_stack_lvl+0x58/0x71
->   ieee80211_tx_h_select_key+0x2c0/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
->   ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
->   rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
->   process_one_work+0x2d8/0x660
->   worker_thread+0x39/0x3e0
->   ? process_one_work+0x660/0x660
->   kthread+0xe5/0x110
->   ? kthread_complete_and_exit+0x20/0x20
->   ret_from_fork+0x22/0x30
->   </TASK>
-> 
->  =============================
->  WARNING: suspicious RCU usage
->  5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
->  -----------------------------
->  net/mac80211/tx.c:607 suspicious rcu_dereference_check() usage!
-> 
->  other info that might help us debug this:
-> 
->  rcu_scheduler_active = 2, debug_locks = 1
->  2 locks held by kworker/u33:0/184:
->   #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
->   #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at:
-> process_one_work+0x258/0x660
-> 
->  stack backtrace:
->  CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3
-> 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
->  Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
->  Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
->  Call Trace:
->   <TASK>
->   dump_stack_lvl+0x58/0x71
->   ieee80211_tx_h_select_key+0x464/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
->   ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
->   rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
->   process_one_work+0x2d8/0x660
->   worker_thread+0x39/0x3e0
->   ? process_one_work+0x660/0x660
->   kthread+0xe5/0x110
->   ? kthread_complete_and_exit+0x20/0x20
->   ret_from_fork+0x22/0x30
->   </TASK>
-> 
-> Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+RTM_ALLOW bit was added to MSR_MCU_OPT_CTRL, but its not set by default,
+and it is *not* recommended to be used in production deployments [1]:
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+   Although MSR 0x122 (TSX_CTRL) and MSR 0x123 (IA32_MCU_OPT_CTRL) can be
+   used to reenable Intel TSX for development, doing so is not recommended
+   for production deployments. In particular, applying MD_CLEAR flows for
+   mitigation of the Intel TSX Asynchronous Abort (TAA) transient execution
+   attack may not be effective on these processors when Intel TSX is
+   enabled with updated microcode. The processors continue to be mitigated
+   against TAA when Intel TSX is disabled.
 
-Thanks for your finding.
+> And lemme quote from that patch:
+>
+>            /*
+>             * Probe for the February 2022 microcode which de-features TSX on
+>             * TAA-vulnerable client parts - WHL-R/CFL-R.
+>             *
+>             * RTM_ALWAYS_ABORT (read above) enumerates the new functionality,
+>             * but is read as zero if MCU_OPT_CTRL.RTM_ALLOW has been set
+>             * before we run.  Undo this.
+>             */
 
-> ---
->  drivers/net/wireless/realtek/rtw89/core.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
-> index a0737eea9f81..9632e7f218dd 100644
-> --- a/drivers/net/wireless/realtek/rtw89/core.c
-> +++ b/drivers/net/wireless/realtek/rtw89/core.c
-> @@ -1509,11 +1509,12 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
->  	unsigned long i;
->  	int ret;
-> 
-> +	rcu_read_lock();
->  	for (i = 0; i < frame_cnt; i++) {
->  		skb = ieee80211_tx_dequeue_ni(rtwdev->hw, txq);
->  		if (!skb) {
->  			rtw89_debug(rtwdev, RTW89_DBG_TXRX, "dequeue a NULL skb\n");
-> -			return;
-> +			goto out;
->  		}
->  		rtw89_core_txq_check_agg(rtwdev, rtwtxq, skb);
->  		ret = rtw89_core_tx_write(rtwdev, vif, sta, skb, NULL);
-> @@ -1523,6 +1524,8 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
->  			break;
->  		}
->  	}
-> +out:
-> +	rcu_read_unlock();
->  }
-> 
->  static u32 rtw89_check_and_reclaim_tx_resource(struct rtw89_dev *rtwdev, u8 tid)
-> 
-> --
-> Jiri Kosina
-> SUSE Labs
-> 
-> 
-> ------Please consider the environment before printing this e-mail.
+Such development-only bit (SDV_ENABLE_RTM) existed for previous round of
+TSX defeature, but we decided not to use it:
+
+   https://lore.kernel.org/lkml/20210611232114.3dmmkpkkcqg5orhw@gupta-dev2.localdomain/
+
+I am not sure why do we need to handle RTM_ALLOW this time? I will
+update the patch if you think otherwise.
+
+Thanks,
+Pawan
+
+[1] Intel Transactional Synchronization Extension (Intel TSX) Disable Update for Selected Processors
+     https://cdrdv2.intel.com/v1/dl/getContent/643557
+
+
+>so MCU_OPT_CTRL.RTM_ALLOW=1 would have
+>CPUID.X86_FEATURE_RTM_ALWAYS_ABORT=0, which means, we cannot tie TSX disabling on
+>X86_FEATURE_RTM_ALWAYS_ABORT only.
+>
+>So this would need more work, it seems to me.
+>
+>Thx.
+>
+>-- 
+>Regards/Gruss,
+>    Boris.
+>
+>https://people.kernel.org/tglx/notes-about-netiquette
