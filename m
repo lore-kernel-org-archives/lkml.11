@@ -2,97 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F970C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E4EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbiBPLdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 06:33:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46340 "EHLO
+        id S231784AbiBPLd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 06:33:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiBPLdf (ORCPT
+        with ESMTP id S229479AbiBPLdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 06:33:35 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9967BB0A4F;
-        Wed, 16 Feb 2022 03:33:23 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id ki18-20020a17090ae91200b001b8be87e9abso3812104pjb.1;
-        Wed, 16 Feb 2022 03:33:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=/Q5i1rs4lIXUeYDzL8nbllPDsVhaLW6OGjHpaEqXpZc=;
-        b=O0B1XlkA1cPZBrpkAdvWaT2/Ssr79kVD3zVUFxXI6jaYUSswhqsh1gmP3PrcwlkvJs
-         E2VSZWxdxYgsnZEp5HhjwsNzvkcXXj93Ze2LaYLTC+Zw4rQRsheaIISHbztmUkzXEnGj
-         KR2birAbkaIX/vUrIHRozSr3gwDP9q2zEudod4HpMScS7cj5MWFxYRqiRuOpdDcXPm2x
-         z1FpymYtl8TAjewxgQVfy1Ko2yKgLOfpwX8LsBzd1OHyy1dMsNKTmrUSqGeK4cPYv52b
-         C9XiO8xECRXdPJnR4O0MtYifLiEleeE/kzQjleiSXebpAwm6iF+ihjWLKGmkdFZ9YVOk
-         DpjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=/Q5i1rs4lIXUeYDzL8nbllPDsVhaLW6OGjHpaEqXpZc=;
-        b=BXoC+6vA2G4e5xu+LGseAqRRM3DQyL/5k5WazDvMyInZJB9/H8Xdvv39031siI79BT
-         IwIIbQJu9buZ50UHxaeomKyJRLife3/NYGbD8PCwWLWUjrRxd5gZgzF6jVx7a5BigZZE
-         WBkKXWItoz7gF0GKpJjVakgx/r+6dMMxeSgCojyTEp/+p7wxSAr79q8308xczesTGoDi
-         fRcu6IWnuTp1XR6wpOoRAKWHEKVRYs0StfgGXYanpGbV+doi61ODCoPLtmGfygO1JoZc
-         ehTz9fNydqr25XvgvlA+3LufxoR+WUeaQUIq3ciiFtTC2SFCv3bkM3cd8LoV1p2quUFc
-         bjGA==
-X-Gm-Message-State: AOAM533ftlVkTuseoyxLKWE64W3RonuEW4uWtukVTHQkeY8fJeEtVNkg
-        /54jsLN8l/ASnhCSVuTwBR4=
-X-Google-Smtp-Source: ABdhPJx2chKXIlg3Cf++XymkKVZ6f5B2YEliefIb7XFKvwNsZj2zFoG9Joym3NIYUV/sZDZ3TYuEbQ==
-X-Received: by 2002:a17:902:7485:b0:14f:3b6:1847 with SMTP id h5-20020a170902748500b0014f03b61847mr2114546pll.70.1645011203126;
-        Wed, 16 Feb 2022 03:33:23 -0800 (PST)
-Received: from localhost.localdomain ([61.16.102.72])
-        by smtp.gmail.com with ESMTPSA id n2sm21607370pjp.56.2022.02.16.03.33.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 03:33:22 -0800 (PST)
-From:   "Wang Jianchao (Kuaishou)" <jianchao.wan9@gmail.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     hch@infradead.org, Bart Van Assche <bvanassche@acm.org>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] blk: do rq_qos_exit in blk_cleanup_queue
-Date:   Wed, 16 Feb 2022 19:32:12 +0800
-Message-Id: <20220216113212.83000-1-jianchao.wan9@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 16 Feb 2022 06:33:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C92322B24;
+        Wed, 16 Feb 2022 03:33:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9614B81E99;
+        Wed, 16 Feb 2022 11:33:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C708C004E1;
+        Wed, 16 Feb 2022 11:33:39 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DIxpza7y"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1645011217;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=esDVBJG6N16MKK8NeeRA41EIO93bGk1xkxH0HcIomqg=;
+        b=DIxpza7yGjQIWPpdUlT5lC+osTM+1SniCEQYp/cJFXcrkiAEWSj0hSZrw4/T3AbPfk3IEx
+        jXU8w7ZpbfuwKJuXYG24c+dqbZFZtn3Kqtj/aNQlTgKoJF4fCOvw8qYq7OWfvVwVcAcXuO
+        KAAAfcN+y03Bi5G4x+xQXOfzXdxCDnQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3cd753ef (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 16 Feb 2022 11:33:37 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     miaoqing@codeaurora.org, Rui Salvaterra <rsalvaterra@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v3] ath9k: use hw_random API instead of directly dumping into random.c
+Date:   Wed, 16 Feb 2022 12:33:23 +0100
+Message-Id: <20220216113323.53332-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
+References: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Jianchao <wangjianchao@kuaishou.com>
+Hardware random number generators are supposed to use the hw_random
+framework. This commit turns ath9k's kthread-based design into a proper
+hw_random driver.
 
-When __alloc_disk_node() failed, there will not not del_gendisk()
-any more, then resource in rqos policies is leaked. Add rq_qos_exit()
-into blk_cleanup_queue(). rqos is removed from the list, so needn't
-to worry .exit is called twice.
-
-Fixes: commit 8e141f9eb803 ("block: drain file system I/O on del_gendisk")
-Suggested-by: Bart Van Assche <bart.vanassche@wdc.com>
-Signed-off-by: Wang Jianchao <wangjianchao@kuaishou.com>
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: Rui Salvaterra <rsalvaterra@gmail.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- block/blk-core.c | 3 +++
- 1 file changed, 3 insertions(+)
+Changes v2->v3:
+- Use msleep_interruptable like other hwrng drivers.
+- Give up after 110 tries.
+- Return -EIO after giving up like other hwrng drivers.
+- Use for loop for style nits.
+- Append serial number for driver in case of multiple cards.
 
-diff --git a/block/blk-core.c b/block/blk-core.c
-index d93e3bb9a769..108c7207d048 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -50,6 +50,7 @@
- #include "blk-mq-sched.h"
- #include "blk-pm.h"
- #include "blk-throttle.h"
-+#include "blk-rq-qos.h"
+Changes v1->v2:
+- Count in words rather than bytes.
+
+ drivers/net/wireless/ath/ath9k/ath9k.h |  3 +-
+ drivers/net/wireless/ath/ath9k/rng.c   | 72 +++++++++++---------------
+ 2 files changed, 33 insertions(+), 42 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h b/drivers/net/wireless/ath/ath9k/ath9k.h
+index ef6f5ea06c1f..3ccf8cfc6b63 100644
+--- a/drivers/net/wireless/ath/ath9k/ath9k.h
++++ b/drivers/net/wireless/ath/ath9k/ath9k.h
+@@ -1071,8 +1071,9 @@ struct ath_softc {
+ #endif
  
- struct dentry *blk_debugfs_root;
+ #ifdef CONFIG_ATH9K_HWRNG
++	struct hwrng rng_ops;
+ 	u32 rng_last;
+-	struct task_struct *rng_task;
++	char rng_name[sizeof("ath9k_65535")];
+ #endif
+ };
  
-@@ -322,6 +323,8 @@ void blk_cleanup_queue(struct request_queue *q)
+diff --git a/drivers/net/wireless/ath/ath9k/rng.c b/drivers/net/wireless/ath/ath9k/rng.c
+index f9d3d6eedd3c..cb5414265a9b 100644
+--- a/drivers/net/wireless/ath/ath9k/rng.c
++++ b/drivers/net/wireless/ath/ath9k/rng.c
+@@ -21,11 +21,6 @@
+ #include "hw.h"
+ #include "ar9003_phy.h"
  
- 	blk_queue_flag_set(QUEUE_FLAG_DEAD, q);
+-#define ATH9K_RNG_BUF_SIZE	320
+-#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
+-
+-static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
+-
+ static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_size)
+ {
+ 	int i, j;
+@@ -71,61 +66,56 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
+ 	return delay;
+ }
  
-+	rq_qos_exit(q);
+-static int ath9k_rng_kthread(void *data)
++static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
+ {
+-	int bytes_read;
+-	struct ath_softc *sc = data;
+-	u32 *rng_buf;
+-	u32 delay, fail_stats = 0;
+-
+-	rng_buf = kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL);
+-	if (!rng_buf)
+-		goto out;
+-
+-	while (!kthread_should_stop()) {
+-		bytes_read = ath9k_rng_data_read(sc, rng_buf,
+-						 ATH9K_RNG_BUF_SIZE);
+-		if (unlikely(!bytes_read)) {
+-			delay = ath9k_rng_delay_get(++fail_stats);
+-			wait_event_interruptible_timeout(rng_queue,
+-							 kthread_should_stop(),
+-							 msecs_to_jiffies(delay));
+-			continue;
++	struct ath_softc *sc = container_of(rng, struct ath_softc, rng_ops);
++	u32 fail_stats = 0, word;
++	int bytes_read = 0;
 +
- 	blk_sync_queue(q);
- 	if (queue_is_mq(q)) {
- 		blk_mq_cancel_work_sync(q);
++	for (;;) {
++		if (max & ~3UL)
++			bytes_read = ath9k_rng_data_read(sc, buf, max >> 2);
++		if ((max & 3UL) && ath9k_rng_data_read(sc, &word, 1)) {
++			memcpy(buf + bytes_read, &word, max & 3UL);
++			bytes_read += max & 3UL;
++			memzero_explicit(&word, sizeof(word));
+ 		}
++		if (!wait || !max || likely(bytes_read) || fail_stats > 110)
++			break;
+ 
+-		fail_stats = 0;
+-
+-		/* sleep until entropy bits under write_wakeup_threshold */
+-		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
+-					   ATH9K_RNG_ENTROPY(bytes_read));
++		msleep_interruptible(ath9k_rng_delay_get(++fail_stats));
+ 	}
+ 
+-	kfree(rng_buf);
+-out:
+-	sc->rng_task = NULL;
+-
+-	return 0;
++	if (wait && !bytes_read && max)
++		bytes_read = -EIO;
++	return bytes_read;
+ }
+ 
+ void ath9k_rng_start(struct ath_softc *sc)
+ {
++	static atomic_t serial = ATOMIC_INIT(0);
+ 	struct ath_hw *ah = sc->sc_ah;
+ 
+-	if (sc->rng_task)
++	if (sc->rng_ops.read)
+ 		return;
+ 
+ 	if (!AR_SREV_9300_20_OR_LATER(ah))
+ 		return;
+ 
+-	sc->rng_task = kthread_run(ath9k_rng_kthread, sc, "ath9k-hwrng");
+-	if (IS_ERR(sc->rng_task))
+-		sc->rng_task = NULL;
++	snprintf(sc->rng_name, sizeof(sc->rng_name), "ath9k_%u",
++		 (atomic_inc_return(&serial) - 1) & U16_MAX);
++	sc->rng_ops.name = sc->rng_name;
++	sc->rng_ops.read = ath9k_rng_read;
++	sc->rng_ops.quality = 320;
++
++	if (devm_hwrng_register(sc->dev, &sc->rng_ops))
++		sc->rng_ops.read = NULL;
+ }
+ 
+ void ath9k_rng_stop(struct ath_softc *sc)
+ {
+-	if (sc->rng_task) {
+-		kthread_stop(sc->rng_task);
+-		sc->rng_task = NULL;
++	if (sc->rng_ops.read) {
++		devm_hwrng_unregister(sc->dev, &sc->rng_ops);
++		sc->rng_ops.read = NULL;
+ 	}
+ }
 -- 
-2.17.1
+2.35.0
 
