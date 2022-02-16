@@ -2,551 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 623A4C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:40:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236840AbiBPQkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:40:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41952 "EHLO
+        id S236655AbiBPQk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:40:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236576AbiBPQkK (ORCPT
+        with ESMTP id S236639AbiBPQkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:40:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C80C725DA5C
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:39:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645029594;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QZLAuSBTujpSbGE2gT6/qICB8ZjmrnuzRd4p8mZftXA=;
-        b=P9H0l2ar1G+PPXyj35poHr51ZmwNamjEvclAg48FF0q3X8LBrLCCMmNCEsIIyIgxSPDShi
-        cz34Y0VUrqhlGRWiK9wTBGTTMU/DpcEOZ7MoSNHKZfzCNPOI2u39XZNjrSRzya+aGUpgd1
-        Ybt5mA5A36RaHHx875S8vxlO1grf8nw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-48-lga8KTigP7SCNnACU47LPQ-1; Wed, 16 Feb 2022 11:39:48 -0500
-X-MC-Unique: lga8KTigP7SCNnACU47LPQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AC72B814245;
-        Wed, 16 Feb 2022 16:39:47 +0000 (UTC)
-Received: from jlaw-desktop.redhat.com (unknown [10.22.8.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3A48F753CD;
-        Wed, 16 Feb 2022 16:39:47 +0000 (UTC)
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-Subject: [RFC PATCH v6 08/12] livepatch/selftests: add klp-convert
-Date:   Wed, 16 Feb 2022 11:39:36 -0500
-Message-Id: <20220216163940.228309-9-joe.lawrence@redhat.com>
-In-Reply-To: <20220216163940.228309-1-joe.lawrence@redhat.com>
-References: <20220216163940.228309-1-joe.lawrence@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+        Wed, 16 Feb 2022 11:40:20 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C44725DA68;
+        Wed, 16 Feb 2022 08:40:06 -0800 (PST)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21GGGPjU024471;
+        Wed, 16 Feb 2022 16:39:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=QFAT4gUY7ssHFMRKnYKL1cpcMiUM8TBsa2LK3fdhHW0=;
+ b=CHsh3LQsQlw+AlPF9ZzINxswwd+y6vEDqWW8ApcopHUcmtHE96zS0EBj/kBQ6vgEgPJe
+ 45LERF2kn+i9i5yxZ9qweO+h/r1W0PCZSAFzNROIADPRPa6PQFz6iilDQLc2HxYK8VOo
+ 5+TUcnWvyHuciBZWBhNoU/Rfz0OtoFUB5qYy9kKB/oEG4lklVA/q6z+OVpaiWCFfM4+f
+ YOlGeZvApqVEjyKl4u7n/44wulVS6MufE1ruR298tspmQc8CEaRJPB/XPRvjpXQLLSxW
+ 43ClWHUdbHD9vwRUZMu4QpozHgDxqU+opANhFcmmhYNI+k1VvA5IgIu5X6k1Cz8fa7v+ RA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e94n48j4c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 16:39:48 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21GGH85m029532;
+        Wed, 16 Feb 2022 16:39:48 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e94n48j3q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 16:39:47 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21GGWu3o022678;
+        Wed, 16 Feb 2022 16:39:46 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma02fra.de.ibm.com with ESMTP id 3e64ha0y3b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 16:39:45 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21GGdgwK43385098
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 16 Feb 2022 16:39:42 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B9DA111C064;
+        Wed, 16 Feb 2022 16:39:42 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5B39011C052;
+        Wed, 16 Feb 2022 16:39:40 +0000 (GMT)
+Received: from sig-9-65-87-58.ibm.com (unknown [9.65.87.58])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 16 Feb 2022 16:39:40 +0000 (GMT)
+Message-ID: <bf435ffa5d176213acabb8c576c159d2cbd4d395.camel@linux.ibm.com>
+Subject: Re: [PATCH v10 06/27] ima: Move arch_policy_entry into ima_namespace
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Stefan Berger <stefanb@linux.ibm.com>,
+        linux-integrity@vger.kernel.org
+Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Christian Brauner <brauner@kernel.org>
+Date:   Wed, 16 Feb 2022 11:39:39 -0500
+In-Reply-To: <20220201203735.164593-7-stefanb@linux.ibm.com>
+References: <20220201203735.164593-1-stefanb@linux.ibm.com>
+         <20220201203735.164593-7-stefanb@linux.ibm.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: _kEptbkdhmHsaVrTiedogSKaxYCKIJe9
+X-Proofpoint-GUID: Pv9Dws_nJSQV-4Gm67F5Ftf7QF_YBqX_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-16_07,2022-02-16_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=986 suspectscore=0 phishscore=0 clxscore=1015 bulkscore=0
+ lowpriorityscore=0 priorityscore=1501 impostorscore=0 spamscore=0
+ adultscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202160097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a simple klp-convert livepatch selftest that exercises various
-symbol homonym sympos scenarios.
+On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote
 
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
----
- lib/livepatch/Makefile                        |   7 +
- lib/livepatch/test_klp_convert.h              |  14 ++
- lib/livepatch/test_klp_convert1.c             | 113 +++++++++++++++
- lib/livepatch/test_klp_convert2.c             | 110 ++++++++++++++
- lib/livepatch/test_klp_convert_mod_a.c        |  25 ++++
- lib/livepatch/test_klp_convert_mod_b.c        |  13 ++
- .../selftests/livepatch/test-livepatch.sh     | 134 ++++++++++++++++++
- 7 files changed, 416 insertions(+)
- create mode 100644 lib/livepatch/test_klp_convert.h
- create mode 100644 lib/livepatch/test_klp_convert1.c
- create mode 100644 lib/livepatch/test_klp_convert2.c
- create mode 100644 lib/livepatch/test_klp_convert_mod_a.c
- create mode 100644 lib/livepatch/test_klp_convert_mod_b.c
+Let's update the patch description providing a bit more background
+info:
 
-diff --git a/lib/livepatch/Makefile b/lib/livepatch/Makefile
-index dcc912b3478f..ced00515ff84 100644
---- a/lib/livepatch/Makefile
-+++ b/lib/livepatch/Makefile
-@@ -7,8 +7,15 @@ obj-$(CONFIG_TEST_LIVEPATCH) += test_klp_atomic_replace.o \
- 				test_klp_callbacks_demo2.o \
- 				test_klp_callbacks_busy.o \
- 				test_klp_callbacks_mod.o \
-+				test_klp_convert1.o \
-+				test_klp_convert2.o \
-+				test_klp_convert_mod.o \
- 				test_klp_livepatch.o \
- 				test_klp_shadow_vars.o \
- 				test_klp_state.o \
- 				test_klp_state2.o \
- 				test_klp_state3.o
-+
-+test_klp_convert_mod-y := \
-+	test_klp_convert_mod_a.o \
-+	test_klp_convert_mod_b.o
-diff --git a/lib/livepatch/test_klp_convert.h b/lib/livepatch/test_klp_convert.h
-new file mode 100644
-index 000000000000..5d97bc546d6e
---- /dev/null
-+++ b/lib/livepatch/test_klp_convert.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#ifndef _TEST_KLP_CONVERT_
-+#define _TEST_KLP_CONVERT_
-+
-+/* klp-convert symbols - vmlinux */
-+extern char *saved_command_line;
-+/* klp-convert symbols - test_klp_convert_mod.ko */
-+extern char driver_name[];
-+extern char homonym_string[];
-+extern const char *get_homonym_string(void);
-+extern const char *test_klp_get_driver_name(void);
-+
-+#endif
-diff --git a/lib/livepatch/test_klp_convert1.c b/lib/livepatch/test_klp_convert1.c
-new file mode 100644
-index 000000000000..cd2d3c638258
---- /dev/null
-+++ b/lib/livepatch/test_klp_convert1.c
-@@ -0,0 +1,113 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2019 Joe Lawrence <joe.lawrence@redhat.com>
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/livepatch.h>
-+#include "test_klp_convert.h"
-+
-+void print_saved_command_line(void)
-+{
-+	pr_info("saved_command_line, 0: %s\n", saved_command_line);
-+}
-+
-+void print_driver_name(void)
-+{
-+	pr_info("driver_name, 0: %s\n", driver_name);
-+	pr_info("test_klp_get_driver_name(), 0: %s\n", test_klp_get_driver_name());
-+}
-+
-+void print_homonym_string(void)
-+{
-+	pr_info("homonym_string, 1: %s\n", homonym_string);
-+	pr_info("get_homonym_string(), 1: %s\n", get_homonym_string());
-+}
-+
-+/* provide a sysfs handle to invoke debug functions */
-+static int print_debug;
-+static int print_debug_set(const char *val, const struct kernel_param *kp)
-+{
-+	print_saved_command_line();
-+	print_driver_name();
-+	print_homonym_string();
-+
-+	return 0;
-+}
-+static const struct kernel_param_ops print_debug_ops = {
-+	.set = print_debug_set,
-+	.get = param_get_int,
-+};
-+module_param_cb(print_debug, &print_debug_ops, &print_debug, 0200);
-+MODULE_PARM_DESC(print_debug, "print klp-convert debugging info");
-+
-+/*
-+ * saved_command_line is a unique symbol, so the sympos annotation is
-+ * optional.  Provide to test that sympos=0 works correctly.
-+ */
-+KLP_MODULE_RELOC(vmlinux) vmlinux_relocs[] = {
-+	KLP_SYMPOS(saved_command_line, 0)
-+};
-+
-+/*
-+ * driver_name symbols can be found in vmlinux (multiple) and also
-+ * test_klp_convert_mod, therefore the annotation is required to
-+ * clarify that we want the one from test_klp_convert_mod.
-+ *
-+ * test_klp_convert_mod contains multiple homonym_string and
-+ * get_homonym_string symbols, test resolving the first set here and
-+ *  the others in test_klp_convert2.c
-+ *
-+ * test_klp_get_driver_name is a uniquely named symbol, test that sympos=0
-+ * work correctly.
-+ */
-+KLP_MODULE_RELOC(test_klp_convert_mod) test_klp_convert_mod_relocs_a[] = {
-+	KLP_SYMPOS(driver_name, 0),
-+	KLP_SYMPOS(homonym_string, 1),
-+	KLP_SYMPOS(get_homonym_string, 1),
-+	KLP_SYMPOS(test_klp_get_driver_name, 0),
-+};
-+
-+static struct klp_func funcs[] = {
-+	{
-+	}, { }
-+};
-+
-+static struct klp_object objs[] = {
-+	{
-+		/* name being NULL means vmlinux */
-+		.funcs = funcs,
-+	},
-+	{
-+		.name = "test_klp_convert_mod",
-+		.funcs = funcs,
-+	}, { }
-+};
-+
-+static struct klp_patch patch = {
-+	.mod = THIS_MODULE,
-+	.objs = objs,
-+};
-+
-+static int test_klp_convert_init(void)
-+{
-+	int ret;
-+
-+	ret = klp_enable_patch(&patch);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static void test_klp_convert_exit(void)
-+{
-+}
-+
-+module_init(test_klp_convert_init);
-+module_exit(test_klp_convert_exit);
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Joe Lawrence <joe.lawrence@redhat.com>");
-+MODULE_DESCRIPTION("Livepatch test: klp-convert1");
-+MODULE_INFO(livepatch, "Y");
-diff --git a/lib/livepatch/test_klp_convert2.c b/lib/livepatch/test_klp_convert2.c
-new file mode 100644
-index 000000000000..93e7b3186018
---- /dev/null
-+++ b/lib/livepatch/test_klp_convert2.c
-@@ -0,0 +1,110 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2019 Joe Lawrence <joe.lawrence@redhat.com>
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/livepatch.h>
-+#include "test_klp_convert.h"
-+
-+void print_saved_command_line(void)
-+{
-+	pr_info("saved_command_line (auto): %s\n", saved_command_line);
-+}
-+
-+void print_driver_name(void)
-+{
-+	pr_info("driver_name, 0: %s\n", driver_name);
-+	pr_info("test_klp_get_driver_name(), (auto): %s\n", test_klp_get_driver_name());
-+}
-+
-+void print_homonym_string(void)
-+{
-+	pr_info("homonym_string, 2: %s\n", homonym_string);
-+	pr_info("get_homonym_string(), 2: %s\n", get_homonym_string());
-+}
-+
-+/* provide a sysfs handle to invoke debug functions */
-+static int print_debug;
-+static int print_debug_set(const char *val, const struct kernel_param *kp)
-+{
-+	print_saved_command_line();
-+	print_driver_name();
-+	print_homonym_string();
-+
-+	return 0;
-+}
-+static const struct kernel_param_ops print_debug_ops = {
-+	.set = print_debug_set,
-+	.get = param_get_int,
-+};
-+module_param_cb(print_debug, &print_debug_ops, &print_debug, 0200);
-+MODULE_PARM_DESC(print_debug, "print klp-convert debugging info");
-+
-+/*
-+ * saved_command_line is a uniquely named symbol, so the sympos
-+ * annotation is optional.  Skip it and test that klp-convert can
-+ * resolve the symbol on its own.
-+ */
-+
-+/*
-+ * driver_name symbols can be found in vmlinux (multiple) and also
-+ * test_klp_convert_mod, therefore the annotation is required to
-+ * clarify that we want the one from test_klp_convert_mod.
-+ *
-+ * test_klp_convert_mod contains multiple homonym_string symbols,
-+ * test_klp_convert1.c resolved to the first one, resolve to the
-+ * second one here.
-+ *
-+ * test_klp_get_driver_name is a uniquely named symbol, test klp-convert can
-+ * resolve it automatically.
-+ */
-+KLP_MODULE_RELOC(test_klp_convert_mod) test_klp_convert_mod_relocs_a[] = {
-+	KLP_SYMPOS(driver_name, 0),
-+	KLP_SYMPOS(homonym_string, 2),
-+	KLP_SYMPOS(get_homonym_string, 2),
-+};
-+
-+static struct klp_func funcs[] = {
-+	{
-+	}, { }
-+};
-+
-+static struct klp_object objs[] = {
-+	{
-+		/* name being NULL means vmlinux */
-+		.funcs = funcs,
-+	},
-+	{
-+		.name = "test_klp_convert_mod",
-+		.funcs = funcs,
-+	}, { }
-+};
-+
-+static struct klp_patch patch = {
-+	.mod = THIS_MODULE,
-+	.objs = objs,
-+};
-+
-+static int test_klp_convert_init(void)
-+{
-+	int ret;
-+
-+	ret = klp_enable_patch(&patch);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static void test_klp_convert_exit(void)
-+{
-+}
-+
-+module_init(test_klp_convert_init);
-+module_exit(test_klp_convert_exit);
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Joe Lawrence <joe.lawrence@redhat.com>");
-+MODULE_DESCRIPTION("Livepatch test: klp-convert2");
-+MODULE_INFO(livepatch, "Y");
-diff --git a/lib/livepatch/test_klp_convert_mod_a.c b/lib/livepatch/test_klp_convert_mod_a.c
-new file mode 100644
-index 000000000000..ae5e911fbb9b
---- /dev/null
-+++ b/lib/livepatch/test_klp_convert_mod_a.c
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2019 Joe Lawrence <joe.lawrence@redhat.com>
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+
-+/* Unique symbols that don't need sympos annotation */
-+static const char driver_name[] = KBUILD_MODNAME;
-+__used static const char *test_klp_get_driver_name(void)
-+{
-+	return driver_name;
-+}
-+
-+/* Common symbol names that need sympos */
-+static const char homonym_string[] = "homonym string A";
-+__used static const char *get_homonym_string(void)
-+{
-+	return homonym_string;
-+}
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Joe Lawrence <joe.lawrence@redhat.com>");
-+MODULE_DESCRIPTION("Livepatch test: klp-convert module");
-diff --git a/lib/livepatch/test_klp_convert_mod_b.c b/lib/livepatch/test_klp_convert_mod_b.c
-new file mode 100644
-index 000000000000..5eca8a4cae38
---- /dev/null
-+++ b/lib/livepatch/test_klp_convert_mod_b.c
-@@ -0,0 +1,13 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2019 Joe Lawrence <joe.lawrence@redhat.com>
-+
-+/*
-+ * A second compilation unit to provide another set of similarly named
-+ * symbols, forcing a livepatch to use sympos annotations.
-+ */
-+
-+static const char homonym_string[] = "homonym string B";
-+__used static const char *get_homonym_string(void)
-+{
-+	return homonym_string;
-+}
-diff --git a/tools/testing/selftests/livepatch/test-livepatch.sh b/tools/testing/selftests/livepatch/test-livepatch.sh
-index 5fe79ac34be1..25c21ddf30f0 100755
---- a/tools/testing/selftests/livepatch/test-livepatch.sh
-+++ b/tools/testing/selftests/livepatch/test-livepatch.sh
-@@ -6,6 +6,10 @@
- 
- MOD_LIVEPATCH=test_klp_livepatch
- MOD_REPLACE=test_klp_atomic_replace
-+MOD_KLP_CONVERT_MOD=test_klp_convert_mod
-+MOD_KLP_CONVERT1=test_klp_convert1
-+MOD_KLP_CONVERT2=test_klp_convert2
-+MOD_KLP_CONVERT_SECTIONS=test_klp_convert_sections
- 
- setup_config
- 
-@@ -159,4 +163,134 @@ livepatch: '$MOD_REPLACE': unpatching complete
- % rmmod $MOD_REPLACE"
- 
- 
-+# TEST: klp-convert symbols
-+# - load a livepatch that modifies the output from /proc/cmdline
-+#   including a reference to vmlinux-local symbol that klp-convert
-+#   will process
-+# - verify correct behavior
-+# - unload the livepatch and make sure the patch was removed
-+
-+start_test "klp-convert symbols"
-+
-+saved_cmdline=$(cat /proc/cmdline)
-+
-+load_mod $MOD_KLP_CONVERT_MOD
-+
-+load_lp $MOD_KLP_CONVERT1
-+echo 1 > /sys/module/$MOD_KLP_CONVERT1/parameters/print_debug
-+disable_lp $MOD_KLP_CONVERT1
-+unload_lp $MOD_KLP_CONVERT1
-+
-+load_lp $MOD_KLP_CONVERT2
-+echo 1 > /sys/module/$MOD_KLP_CONVERT2/parameters/print_debug
-+disable_lp $MOD_KLP_CONVERT2
-+unload_lp $MOD_KLP_CONVERT2
-+
-+unload_mod $MOD_KLP_CONVERT_MOD
-+
-+check_result "% modprobe $MOD_KLP_CONVERT_MOD
-+% modprobe $MOD_KLP_CONVERT1
-+livepatch: enabling patch '$MOD_KLP_CONVERT1'
-+livepatch: '$MOD_KLP_CONVERT1': initializing patching transition
-+livepatch: '$MOD_KLP_CONVERT1': starting patching transition
-+livepatch: '$MOD_KLP_CONVERT1': completing patching transition
-+livepatch: '$MOD_KLP_CONVERT1': patching complete
-+$MOD_KLP_CONVERT1: saved_command_line, 0: $saved_cmdline
-+$MOD_KLP_CONVERT1: driver_name, 0: $MOD_KLP_CONVERT_MOD
-+$MOD_KLP_CONVERT1: test_klp_get_driver_name(), 0: $MOD_KLP_CONVERT_MOD
-+$MOD_KLP_CONVERT1: homonym_string, 1: homonym string A
-+$MOD_KLP_CONVERT1: get_homonym_string(), 1: homonym string A
-+% echo 0 > /sys/kernel/livepatch/$MOD_KLP_CONVERT1/enabled
-+livepatch: '$MOD_KLP_CONVERT1': initializing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT1': starting unpatching transition
-+livepatch: '$MOD_KLP_CONVERT1': completing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT1': unpatching complete
-+% rmmod $MOD_KLP_CONVERT1
-+% modprobe $MOD_KLP_CONVERT2
-+livepatch: enabling patch '$MOD_KLP_CONVERT2'
-+livepatch: '$MOD_KLP_CONVERT2': initializing patching transition
-+livepatch: '$MOD_KLP_CONVERT2': starting patching transition
-+livepatch: '$MOD_KLP_CONVERT2': completing patching transition
-+livepatch: '$MOD_KLP_CONVERT2': patching complete
-+$MOD_KLP_CONVERT2: saved_command_line (auto): $saved_cmdline
-+$MOD_KLP_CONVERT2: driver_name, 0: $MOD_KLP_CONVERT_MOD
-+$MOD_KLP_CONVERT2: test_klp_get_driver_name(), (auto): $MOD_KLP_CONVERT_MOD
-+$MOD_KLP_CONVERT2: homonym_string, 2: homonym string B
-+$MOD_KLP_CONVERT2: get_homonym_string(), 2: homonym string B
-+% echo 0 > /sys/kernel/livepatch/$MOD_KLP_CONVERT2/enabled
-+livepatch: '$MOD_KLP_CONVERT2': initializing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT2': starting unpatching transition
-+livepatch: '$MOD_KLP_CONVERT2': completing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT2': unpatching complete
-+% rmmod $MOD_KLP_CONVERT2
-+% rmmod $MOD_KLP_CONVERT_MOD"
-+
-+
-+# TEST: klp-convert symbols (late module patching)
-+# - load a livepatch that modifies the output from /proc/cmdline
-+#   including a reference to vmlinux-local symbol that klp-convert
-+#   will process
-+# - load target module
-+# - verify correct behavior
-+# - unload the livepatch
-+
-+start_test "klp-convert symbols (late module patching)"
-+
-+saved_cmdline=$(cat /proc/cmdline)
-+
-+load_lp $MOD_KLP_CONVERT1
-+load_mod $MOD_KLP_CONVERT_MOD
-+echo 1 > /sys/module/$MOD_KLP_CONVERT1/parameters/print_debug
-+disable_lp $MOD_KLP_CONVERT1
-+unload_lp $MOD_KLP_CONVERT1
-+unload_mod $MOD_KLP_CONVERT_MOD
-+
-+load_lp $MOD_KLP_CONVERT2
-+load_mod $MOD_KLP_CONVERT_MOD
-+echo 1 > /sys/module/$MOD_KLP_CONVERT2/parameters/print_debug
-+disable_lp $MOD_KLP_CONVERT2
-+unload_lp $MOD_KLP_CONVERT2
-+unload_mod $MOD_KLP_CONVERT_MOD
-+
-+check_result "% modprobe $MOD_KLP_CONVERT1
-+livepatch: enabling patch '$MOD_KLP_CONVERT1'
-+livepatch: '$MOD_KLP_CONVERT1': initializing patching transition
-+livepatch: '$MOD_KLP_CONVERT1': starting patching transition
-+livepatch: '$MOD_KLP_CONVERT1': completing patching transition
-+livepatch: '$MOD_KLP_CONVERT1': patching complete
-+% modprobe $MOD_KLP_CONVERT_MOD
-+livepatch: applying patch '$MOD_KLP_CONVERT1' to loading module '$MOD_KLP_CONVERT_MOD'
-+$MOD_KLP_CONVERT1: saved_command_line, 0: $saved_cmdline
-+$MOD_KLP_CONVERT1: driver_name, 0: $MOD_KLP_CONVERT_MOD
-+$MOD_KLP_CONVERT1: test_klp_get_driver_name(), 0: $MOD_KLP_CONVERT_MOD
-+$MOD_KLP_CONVERT1: homonym_string, 1: homonym string A
-+$MOD_KLP_CONVERT1: get_homonym_string(), 1: homonym string A
-+% echo 0 > /sys/kernel/livepatch/$MOD_KLP_CONVERT1/enabled
-+livepatch: '$MOD_KLP_CONVERT1': initializing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT1': starting unpatching transition
-+livepatch: '$MOD_KLP_CONVERT1': completing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT1': unpatching complete
-+% rmmod $MOD_KLP_CONVERT1
-+% rmmod $MOD_KLP_CONVERT_MOD
-+% modprobe $MOD_KLP_CONVERT2
-+livepatch: enabling patch '$MOD_KLP_CONVERT2'
-+livepatch: '$MOD_KLP_CONVERT2': initializing patching transition
-+livepatch: '$MOD_KLP_CONVERT2': starting patching transition
-+livepatch: '$MOD_KLP_CONVERT2': completing patching transition
-+livepatch: '$MOD_KLP_CONVERT2': patching complete
-+% modprobe $MOD_KLP_CONVERT_MOD
-+livepatch: applying patch '$MOD_KLP_CONVERT2' to loading module '$MOD_KLP_CONVERT_MOD'
-+$MOD_KLP_CONVERT2: saved_command_line (auto): $saved_cmdline
-+$MOD_KLP_CONVERT2: driver_name, 0: $MOD_KLP_CONVERT_MOD
-+$MOD_KLP_CONVERT2: test_klp_get_driver_name(), (auto): $MOD_KLP_CONVERT_MOD
-+$MOD_KLP_CONVERT2: homonym_string, 2: homonym string B
-+$MOD_KLP_CONVERT2: get_homonym_string(), 2: homonym string B
-+% echo 0 > /sys/kernel/livepatch/$MOD_KLP_CONVERT2/enabled
-+livepatch: '$MOD_KLP_CONVERT2': initializing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT2': starting unpatching transition
-+livepatch: '$MOD_KLP_CONVERT2': completing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT2': unpatching complete
-+% rmmod $MOD_KLP_CONVERT2
-+% rmmod $MOD_KLP_CONVERT_MOD"
-+
- exit 0
--- 
-2.26.3
+The archictecture specific policy rules, currently defined for EFI and
+powerpc, require the kexec kernel image and kernel modules to be
+validly signed and measured, based on the system's secure boot and/or
+trusted boot mode and the IMA_ARCH_POLICY Kconfig option being enabled.
+
+> Move the arch_policy_entry pointer into ima_namespace.
+
+Perhaps include something about namespaces being allowed or not allowed
+to kexec a new kernel or load kernel modules.
+
+thanks,
+
+Mimi
+> 
+> When freeing the memory set the pointer to NULL.
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> Acked-by: Christian Brauner <brauner@kernel.org>
+> Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
 
