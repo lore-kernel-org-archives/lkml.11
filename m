@@ -2,99 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44414C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:26:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF966C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbiBPH0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:26:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55188 "EHLO
+        id S230094AbiBPH3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:29:25 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiBPH0N (ORCPT
+        with ESMTP id S230078AbiBPH3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:26:13 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E565C2FFE4
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:26:01 -0800 (PST)
-Received: from kwepemi100013.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jz7Wg3bzBzcbYP;
-        Wed, 16 Feb 2022 14:35:59 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- kwepemi100013.china.huawei.com (7.221.188.136) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Feb 2022 14:37:05 +0800
-Received: from [127.0.0.1] (10.174.177.249) by kwepemm600003.china.huawei.com
- (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 16 Feb
- 2022 14:37:04 +0800
-To:     <agk@redhat.com>, Mike Snitzer <snitzer@redhat.com>
-CC:     <dm-devel@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linfeilong <linfeilong@huawei.com>,
-        lixiaokeng <lixiaokeng@huawei.com>,
-        wuguanghao <wuguanghao3@huawei.com>
-From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Subject: [PATCH] md: remove unused dm_thin_remove_block()
-Message-ID: <b0ec028e-bc9e-f705-9674-ffc4a01ee2f0@huawei.com>
-Date:   Wed, 16 Feb 2022 14:37:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        Wed, 16 Feb 2022 02:29:20 -0500
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2488F9A9A3;
+        Tue, 15 Feb 2022 23:29:08 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id 072313201E09;
+        Wed, 16 Feb 2022 02:29:05 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Wed, 16 Feb 2022 02:29:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=KjXBnBkFmTnMa5KT8
+        A0kk6cT1M4Q1T5pu9mdxwSU6xQ=; b=kPgI2gXXWLd3gWz4GQmL2bk9ObAE4/1A8
+        W5P+kBGgOOFmTYATO5WW1oXMJmso6eQ8syTSG53dTBxWsCGBQ9CBuiXSupf6HVNN
+        GcJ0mZgsWctJCp7txozvDRncCsvitdvbsIkeztZXyyOJRly4ckHlqSlodNsAmPX7
+        6vwFvX5BpS3bRLTf8OJjJA76Bht8q+Y4hQC+Jya8UzKHUL0u6cndI3Kh6KLZUEtQ
+        Kv0OAEQEzG6HzEoYU1iN0qH/YKWKcd7gJY0/5ZmVvGhVZVvjqn3b9HqJb0n3huTY
+        ZTbTIlf+Ka3aAEWEv8Mx59cQtIdtxysq0Y20+vGOgL6xavvteHSUA==
+X-ME-Sender: <xms:wacMYpjZ9LMcmE8gNIS8_bueQmtsWtnrkkkM77ScY5Lek1ZMAxeiEA>
+    <xme:wacMYuBR1UrrSd1jl5D7TsPsgOpzlWqdpcuCt_SEIOabj0zO7DnRMhJmhgjmWKrSY
+    B94w2SSkclpl58>
+X-ME-Received: <xmr:wacMYpF0Qza7PJKX4tN5KAkARGCpYNo08o-QfqUS6nWs-Otu8biIgnCFS3Bkt4SzbmuGYlnS_FLp5bJxf_hEUqCh4zs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeehgddutdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:wacMYuRTAi6iyezzGuu7wPNGnt1jp4SZ8BXiHH_sbegyv6pUzjZTvg>
+    <xmx:wacMYmxU0PicsuQs8KsCRbDrqVYT5HTWIKrch33AFgQIroYAiHgC0A>
+    <xmx:wacMYk6WAxlEGQxDD0E0CxSwRVH_82zvSm8mq-gVZCWOeljSOWXKwA>
+    <xmx:wacMYtq_EuYmdFNxtYsXtPoc6z9lPkJH3Jd5HdXQtDnDMtOAO-H2Vw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 16 Feb 2022 02:29:04 -0500 (EST)
+Date:   Wed, 16 Feb 2022 09:29:00 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "wanghai (M)" <wanghai38@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, edumazet@google.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [BUG] net: ipv4: The sent udp broadcast message may be converted
+ to an arp request message
+Message-ID: <YgynvByk/juhr+8G@shredder>
+References: <55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com>
+ <YgIhGhh75mR5uLaS@shredder>
+ <f8272cf6-333a-c02a-73bf-35989f709e29@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.249]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f8272cf6-333a-c02a-73bf-35989f709e29@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Feb 16, 2022 at 11:19:01AM +0800, wanghai (M) wrote:
+> can you push this patch to the linux.git tree please?
 
-dm_thin_remove_block() is no longer unused, just remove it.
+Yes. Will post the patch and a test later this week.
 
-Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
----
- drivers/md/dm-thin-metadata.c | 12 ------------
- drivers/md/dm-thin-metadata.h |  1 -
- 2 files changed, 13 deletions(-)
-
-diff --git a/drivers/md/dm-thin-metadata.c b/drivers/md/dm-thin-metadata.c
-index 1a96a07cbf44..986a2dc9a686 100644
---- a/drivers/md/dm-thin-metadata.c
-+++ b/drivers/md/dm-thin-metadata.c
-@@ -1740,18 +1740,6 @@ static int __remove_range(struct dm_thin_device *td, dm_block_t begin, dm_block_
- 	return dm_btree_insert(&pmd->tl_info, pmd->root, keys, &value, &pmd->root);
- }
-
--int dm_thin_remove_block(struct dm_thin_device *td, dm_block_t block)
--{
--	int r = -EINVAL;
--
--	pmd_write_lock(td->pmd);
--	if (!td->pmd->fail_io)
--		r = __remove(td, block);
--	pmd_write_unlock(td->pmd);
--
--	return r;
--}
--
- int dm_thin_remove_range(struct dm_thin_device *td,
- 			 dm_block_t begin, dm_block_t end)
- {
-diff --git a/drivers/md/dm-thin-metadata.h b/drivers/md/dm-thin-metadata.h
-index 7ef56bd2a7e3..4d7a2caf21d9 100644
---- a/drivers/md/dm-thin-metadata.h
-+++ b/drivers/md/dm-thin-metadata.h
-@@ -166,7 +166,6 @@ int dm_pool_alloc_data_block(struct dm_pool_metadata *pmd, dm_block_t *result);
- int dm_thin_insert_block(struct dm_thin_device *td, dm_block_t block,
- 			 dm_block_t data_block);
-
--int dm_thin_remove_block(struct dm_thin_device *td, dm_block_t block);
- int dm_thin_remove_range(struct dm_thin_device *td,
- 			 dm_block_t begin, dm_block_t end);
-
--- 
-2.32.0
-
-
+BTW, since it's not fixing a regression (scenario never worked AFAICT) I
+will target it at net-next.
