@@ -2,114 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1756AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238081AbiBPTVA convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:21:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45298 "EHLO
+        id S238099AbiBPTVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:21:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238087AbiBPTUy (ORCPT
+        with ESMTP id S238087AbiBPTVc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:20:54 -0500
-X-Greylist: delayed 857 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 11:20:41 PST
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1963E2AF3C5;
-        Wed, 16 Feb 2022 11:20:40 -0800 (PST)
-Received: from [100.55.237.147] (unknown [106.121.183.245])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9CxvuACSw1iK0cCAA--.7848S3;
-        Thu, 17 Feb 2022 03:05:39 +0800 (CST)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-From:   Sui Jingfeng <suijingfeng@loongson.cn>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v8 2/3] MIPS: Loongson64: dts: update the display controller device node
-Date:   Thu, 17 Feb 2022 03:05:38 +0800
-Message-Id: <911122E5-27A8-4584-987D-A9F908351800@loongson.cn>
-References: <76e3d3f2-c457-2940-10ea-834f13e526cb@flygoat.com>
-Cc:     Sui Jingfeng <15330273260@189.cn>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>, Li Yi <liyi@loongson.cn>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-In-Reply-To: <76e3d3f2-c457-2940-10ea-834f13e526cb@flygoat.com>
-To:     Jiaxun Yang <jiaxun.yang@flygoat.com>
-X-Mailer: iPhone Mail (18D61)
-X-CM-TRANSID: AQAAf9CxvuACSw1iK0cCAA--.7848S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7uFy3Aw43tr18AF17Jw43Jrb_yoW8XF4kpw
-        13Ca4fKFsrJF9rG3Z3tF18Wr15ZFWrArnFgFsxtw17WF9xAa1jvr45KFs8XrW3ZFy8AFWj
-        v3yrKrW7KF1UCF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9j14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
-        628vn2kIc2xKxwCY02Avz4vE14v_WwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
-        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
-        67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
-        IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1l
-        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvf
-        C2KfnxnUUI43ZEXa7VUjjYLDUUUUU==
-X-CM-SenderInfo: xvxlyxpqjiv03j6o00pqjv00gofq/
+        Wed, 16 Feb 2022 14:21:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906F3297237
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:21:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38892B81D1B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 19:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBF50C340F0
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 19:21:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645039276;
+        bh=xVJhQv2N+t/b1QKR6ESSmdKPDVDMHh6xIUIeUWMzHo0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=toYpoJDywqdTkLDDy7vsY6xa9ls8AOIUEgpr6qH81qjMtO7v6QaZM1cpfGW83mBlw
+         70VkkBHZh1CumykZN6a01HtkAkRtYplWDOg84fU4+GRN/1TV1MnmzLWyKCb/z2C6q3
+         SQqeiC9uJFtg3WxKCMZ6eDl5KfO4vfSMSqo6wkkTtzENgOBWsrHzEe4gUFRl6PmoNY
+         BLRX7uvKIOS0PJOScQWd1xvINwCcV8Ll4F+6Z7pQGi1tO89hZVhJTpnc+trxIjYSm9
+         3bG1Wn3SriEKM6JCff120hzcAl5Mr5srX+V4RFgCNgGeFURzijxRWfoVzoi8Hb4CfQ
+         O0IbQ1jqlOokg==
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2d07ae0b1bfso9681047b3.6
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:21:16 -0800 (PST)
+X-Gm-Message-State: AOAM531y8WLTyqr9xmZIlURgxwsg5k1G7ZKw8xkCNAq7qN+pBJFkgbzd
+        Cpz+HZ4S/a3lv6ziUXZ33CRJIHm/CpR3/QIcH9E=
+X-Google-Smtp-Source: ABdhPJwR4ZTHAWlv6WG1amfCcdTCRPzx8xNifoprVymvxos5k0ZbWavHyZomK65dliV+z6ad38p0ufYBDpizWKpTOF4=
+X-Received: by 2002:a81:5354:0:b0:2ca:287c:6b5e with SMTP id
+ h81-20020a815354000000b002ca287c6b5emr3833390ywb.3.1645039275845; Wed, 16 Feb
+ 2022 11:21:15 -0800 (PST)
+MIME-Version: 1.0
+References: <20200917112538.GD8409@ziepe.ca> <CAHk-=wjtfjB3TqTFRzVmOrB9Mii6Yzc-=wKq0fu4ruDE6AsJgg@mail.gmail.com>
+ <20200917193824.GL8409@ziepe.ca> <CAHk-=wiY_g+SSjncZi8sO=LrxXmMox0NO7K34-Fs653XVXheGg@mail.gmail.com>
+ <20200918164032.GA5962@xz-x1> <20200918173240.GY8409@ziepe.ca>
+ <20200918204048.GC5962@xz-x1> <0af8c77e-ff60-cada-7d22-c7cfcf859b19@nvidia.com>
+ <20200919000153.GZ8409@ziepe.ca> <20200921083505.GA5862@quack2.suse.cz>
+ <20200921120301.GD8409@ziepe.ca> <CAFCwf10eNmwq2wD71xjUhqkvv5+_pJMR1nPug2RqNDcFT4H86Q@mail.gmail.com>
+ <CAHk-=wgLk5xWj8v6mQXaWL0zWAf2cis8EpPkQUuEZ7K3LxVQHQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wgLk5xWj8v6mQXaWL0zWAf2cis8EpPkQUuEZ7K3LxVQHQ@mail.gmail.com>
+From:   Oded Gabbay <ogabbay@kernel.org>
+Date:   Wed, 16 Feb 2022 21:20:49 +0200
+X-Gmail-Original-Message-ID: <CAFCwf10WEwrZzD7nWkyaZYnnYtZs0aWYwBniEPrb_xdgiQiggw@mail.gmail.com>
+Message-ID: <CAFCwf10WEwrZzD7nWkyaZYnnYtZs0aWYwBniEPrb_xdgiQiggw@mail.gmail.com>
+Subject: Re: [PATCH 1/4] mm: Trial do_wp_page() simplification
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jan Kara <jack@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Maya B . Gokhale" <gokhale2@llnl.gov>,
+        Yang Shi <yang.shi@linux.alibaba.com>,
+        Marty Mcfadden <mcfadden8@llnl.gov>,
+        Kirill Shutemov <kirill@shutemov.name>,
+        Oleg Nesterov <oleg@redhat.com>, Jann Horn <jannh@google.com>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Xu <peterx@redhat.com>, dave@sr71.net
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oh，sorry for that. This is what i am write for our downstream 4.19.190 kernel，I write it long time ago. It shouldn’t be included in this patch set. Please ignore that, I will remove it at next version.
+On Wed, Feb 16, 2022 at 9:04 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> [ Added David Hildenbrand to the participants. David, see
+>
+>     https://bugzilla.kernel.org/show_bug.cgi?id=215616
+>
+>   for details ]
+>
+> On Wed, Feb 16, 2022 at 8:59 AM Oded Gabbay <oded.gabbay@gmail.com> wrote:
+> >
+> > All the details are in the bug, but the bottom line is that somehow,
+> > this patch causes corruption when the numa balancing feature is
+> > enabled AND we don't use process affinity AND we use GUP to pin pages
+> > so our accelerator can DMA to/from system memory.
+>
+> Hmm. I thought all the remaining issues were related to THP - and
+> David Hildenbrand had a series to fix those up.
+>
+> The fact that it also shows up with numa balancing is a bit
+> unfortunate, because I think that means that that patch series may not
+> have caught that case.
+>
+> That said - what does "we use GUP to pin pages" mean? Does it actually
+> use the pinning logic, or just regular old GUP?
+>
+> I'm assuming this is just the existing pin_user_pages_fast() (ie a
+> proper pin) in drivers/misc/habanalabs/common/memory.c. But I wanted
+> to confirm that it's not some other situation.
+>
+>                    Linus
+>
+[Adding dave hansen as we chatted about it in irc]
 
-I am sorry introduce “bug” again.
+It uses the pinning logic, simply calling pin_user_pages_fast with the
+relevant gup flags to pin the userspace memory so we can after that
+dma map it and give the bus address to the h/w.
 
+And afaik, the gup flags combination we use
+(FOLL_FORCE | FOLL_WRITE | FOLL_LONGTERM) is the correct combination,
+at least according to the last time it was discussed with Daniel,
+Jason and other people.
 
-发自我的iPhone
-
-> 在 2022年2月17日，上午2:44，Jiaxun Yang <jiaxun.yang@flygoat.com> 写道：
-> 
-> ﻿
-> 
->> 在 2022/2/16 18:17, Sui Jingfeng 写道:
->> From: suijingfeng <suijingfeng@loongson.cn>
->> 
->> The display controller is a pci device, its PCI vendor id is 0x0014
->> its PCI device id is 0x7a06.
->> 
->> 1) In order to let the lsdc kms driver to know which chip the DC is
->>    contained in, we add different compatible for different chip.
->> 
->> 2) Add display controller device node for ls2k1000 SoC
->> 
->> Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
->> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
->> ---
->>  .../loongson/loongson,display-controller.yaml | 114 ++++++++++++++++++
->>  .../display/loongson/loongson-drm.txt         |  16 +++
-> ^ Is loongson-drm.txt intentional?
-> It seems irrelevant....
-> 
-> Thanks.
->>  .../boot/dts/loongson/loongson64-2k1000.dtsi  |   8 ++
->>  arch/mips/boot/dts/loongson/ls7a-pch.dtsi     |   7 +-
->>  4 files changed, 140 insertions(+), 5 deletions(-)
->>  create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
->>  create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson-drm.txt
-> [...]
-> - Jiaxun
-
+Oded
