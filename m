@@ -2,145 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E693C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A89B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbiBPLTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 06:19:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55600 "EHLO
+        id S231465AbiBPLYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 06:24:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiBPLS6 (ORCPT
+        with ESMTP id S230196AbiBPLYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 06:18:58 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70089.outbound.protection.outlook.com [40.107.7.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB893A6;
-        Wed, 16 Feb 2022 03:18:45 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kVuLkFePo+O4vpVPiqT02GhWkHoYITXg05kvZhgZ2qj4hPbPxvA6aNugowzy3mTpTgSTwd3KdB2MDoiaCXo3Q12oKOWlXf5XpJ45ccjmGmnFtKetHGrtOP2Z87pWXO69pddRyzW6eltUOttBGQWEjP2igtkW+tSf/Z0xCk1cKnuZUTxghuW6MrPzzpDkihSwBYRFvIAioXX3NcFOxShyd2yY5Lesm4zeyfVJXotuwpz4SXSeZJ21tvi1/oPCk69tjGvTUpZtOVbB+P84g6rrk2p5uh+jTmjDsgjMSCRGxBxGlAjFfIy3YX1pV7dR+H2ObarpKQqT2IMhbghZIFqe+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7xGo+edj9OT9bvqFlhkz8SWq2rBrrVOKffW7uRTyhwA=;
- b=FcMacYOpssmSao8ToegfK7KhsZ/ChfaXCagILuZ6or1/u/vcwkmLq8vuJ++ghxciW2jrxPrWgpq0iEkEnqT6WhdK0NdBn1I33BstLBBVuJN1T1FqSSv5BWS7u6iWUgHp62V8cSRtSlcql41RD9bvuRGowVZjQgJbcLS1h/hZE2LUZJ6SixwguueL3axP0QukoCaMkhYVdIPPcSiy4iGBDbiWiC07zctFPNRMoHpyP1VkwlzbO5avvkpwmVIVyiku6kRoCrfW8hjJGGt5u9578RnAscXCBGb2UoQ45dEwy/76PLzeimsbNbOQ7RAYsfq/ZehLrl5otC+3P+cWBOfaow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ipetronik.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7xGo+edj9OT9bvqFlhkz8SWq2rBrrVOKffW7uRTyhwA=;
- b=OQA+De2LdX3sKAWWEXpBd5/H3YO7vL6wDBaUfOH0btuWk49tEEC8Ygq7JF9zVTkIeUYgdGngeQUISLSxxeNwL+noE2TxlhmCGCk93OVhb6Yb7GSODJkreIRdJ8HRDRVGnJKpH3aV6r6IDmRrD1lyc4KsZKlw2aFijnvys4SATSsYUN2S8Li6ghfcKUj2gPHanGTGhDwrwiancxHBXullcIJLX5WEyr30z/RPAcBDrs/MVsvvtjshLCRC9EzZnizxq6i5mcBB3ITJgAp017eG0KAhH1rGUIqnr6yCb5ixRgbYXQPdors1ympQISJv0sQQvddXXhCS6GRaelYeFhiG3Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=ipetronik.com;
-Received: from AM9P193MB1572.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:307::12)
- by AS8P193MB1413.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:39b::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Wed, 16 Feb
- 2022 11:18:42 +0000
-Received: from AM9P193MB1572.EURP193.PROD.OUTLOOK.COM
- ([fe80::f127:41d:4d91:9dc0]) by AM9P193MB1572.EURP193.PROD.OUTLOOK.COM
- ([fe80::f127:41d:4d91:9dc0%8]) with mapi id 15.20.4995.016; Wed, 16 Feb 2022
- 11:18:42 +0000
-Date:   Wed, 16 Feb 2022 12:18:41 +0100
-From:   Markus =?utf-8?Q?Bl=C3=B6chl?= <Markus.Bloechl@ipetronik.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stefan Roese <sr@denx.de>
-Subject: Re: [RFC PATCH] nvme: prevent hang on surprise removal of NVMe disk
-Message-ID: <20220216111841.jaunxn6blouzjleg@ipetronik.com>
-References: <20220214095107.3t5en5a3tosaeoo6@ipetronik.com>
- <20220215191731.GB25076@lst.de>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220215191731.GB25076@lst.de>
-X-ClientProxiedBy: AM0PR10CA0118.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:e6::35) To AM9P193MB1572.EURP193.PROD.OUTLOOK.COM
- (2603:10a6:20b:307::12)
+        Wed, 16 Feb 2022 06:24:49 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A60D12A94
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 03:24:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645010677; x=1676546677;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WKeWYo3OrFlbW/B48YGMo66yFGWHV+Gg77NsB+U1VEI=;
+  b=W2BATo8lMgbj3tdkADN+XgqfXtHDuKaUScF3vNRzF0wOmrnDucUswtvQ
+   3JRtGmsZFe8U8102c3SAFaHTX9t431lOYdW0YaHAJbtf2ce0S+4qHcddv
+   ItDKuZDT8BZXvnhKG4fEiYd/loFwVINnti629Un6Ui6v+0E3Zmg3lSgag
+   EjvMmOT0l01GJoIxpQxn5cfmRTSD1T76Aa8hfnl64/2MWzEnsEXlsGhAJ
+   FLBXrVAVvLXrB9kJOfaUZyyMWYwEURJMhX26ITzyUK1kmFowzvv2Uutre
+   Knt81A8TND7pCc+jgKgHmmQGoxjEkoZIBpJxpj9FJIOUz2gU6tQP25ck1
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="313855714"
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="313855714"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 03:24:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="636444901"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 16 Feb 2022 03:24:35 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKIQE-000Akk-UE; Wed, 16 Feb 2022 11:24:34 +0000
+Date:   Wed, 16 Feb 2022 19:24:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tong Zhang <ztong0001@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Tong Zhang <ztong0001@gmail.com>
+Subject: Re: [PATCH] platform/chrome: cros_ec: honor acpi=off
+Message-ID: <202202161903.6YHDLR8F-lkp@intel.com>
+References: <20220216062601.779690-1-ztong0001@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ed799b0c-8fba-4066-312f-08d9f13e16d4
-X-MS-TrafficTypeDiagnostic: AS8P193MB1413:EE_
-X-Microsoft-Antispam-PRVS: <AS8P193MB1413010291100038AF01382492359@AS8P193MB1413.EURP193.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:179;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oT3U4USBMRieohPeykkSCKdVZU7hfynvyPil2GS3jo7iAmKBcTUPAcF5WjdLqhX3XElmOb0TrMVmfsUmDE3/JrsBMgs2ys3fZDnu6sWaGRtzyiYXb1LSv+9zBbQo9ig1Kb4LGI9IihRpPcnWbLANTz1FsPWGANlW7SB/LoNt4Hg9hBf+mKO5arnZnnJ2XR3fb768D0VrNMDrU3TOvoO5AwaqKNFRhCH+wXMIl1olXusD4ezGlZC8pr275IszKFkXT4K67H7vSHZdRLjLjQlS/W0NsXR6/zeeYh0T+/3PjTViP2SZJvaBgSwAZ+nCzH0nHElGoEJjavXhreQMEorCfCJGou9U3NWcMuE2B84U6uHBZeg4ws6Ys0hkm4mQPXNZ7YCfKx0zdbEOZTFMp7PQ7a+VNeR4WFXvADz/oHMJvV8iZgjUa/jmv09ILS5nv1o4CPGqM0fypFKRPeXD15GmTI2DMh40pBxf7IBxCEYfIkQuNpCqvS3G6ed3avZIPWq9kW4833CWqX3g/5tMIfESikMJBcGMO3G5ZLZt3FwnawrUz1YXGEmmKnF9Yie43TzaTFkElf4d6vzXPjPUxCNdlUtfZI6mrfOWvQ5RtVswxR6rct3jl5OY9VQGC2vqTyqJdIIJWHOOeNKHroARoijFWA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9P193MB1572.EURP193.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(86362001)(66556008)(36756003)(6486002)(508600001)(52116002)(6512007)(1076003)(38100700002)(316002)(54906003)(83380400001)(2906002)(4744005)(8936002)(5660300002)(8676002)(6916009)(4326008)(186003)(66476007)(2616005)(66946007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q0tNaHk0M3RWejRseWU4cUNPM0FmQVoyREpVYWNMM3JxbFk2T05ndmdVdERS?=
- =?utf-8?B?MVB0TGJWV3NCci8ydlh4ems4TGhCZW1mR1NOUW81TkFhVVJhY2kreko2QitM?=
- =?utf-8?B?ZXBxcGNBancrd1lvRCsvQWxHTVBScGFrUmM4aXNhemhGeEQ4YWF2dVRXZXlQ?=
- =?utf-8?B?Y1JpcjQvT0tGSDJObEFrZFVjVXU2MDFuZ01ad3cwdkJjRzRwL1h4RUdySE02?=
- =?utf-8?B?U0lTV012TkNaQ2xIbzJOVWFqRmVpeUI3K21NbG9MZFh4a2g3WnF6Yyt4ZTNh?=
- =?utf-8?B?dHpHZnJkN2FEWFRzSGxEYXN2Z3RnZFQ1T1U5TWJkQU9BRHlWQzlrZjFoU01T?=
- =?utf-8?B?RzlPTnNWN04yVEhmcVhEUmE4R0d4Z2NScVlKYTJ6Ym1raHpRYVZCQ2xOVzQ1?=
- =?utf-8?B?eU15WXJhdFFUNEorYjFHdjlENlRObGJleVJPL3lOaUNjdHpPUDBPODU2cjRX?=
- =?utf-8?B?ZjRmcVduMWN1aW0weWhtdjM4TGxCR1JwdkZRYmJhWW9XOEg1eHdDRFVQalNZ?=
- =?utf-8?B?eFJQMll5ZU1HbERjN0ZTd2lLMzF0S213NnpRL0puRTNTMTlUeFdOTmszak5y?=
- =?utf-8?B?aU1QRitUOTA4N1l3ZTQrMThFUDZOMmp2M3gycFd2YmVvbEJsUXVKeE8xeXZw?=
- =?utf-8?B?QmdFUVpJSjM3TUxVQVd2QkJKUnJYZHdaVlFrR3JtYis1czV1V0lLUHRtMU0v?=
- =?utf-8?B?dmpOeFM1Q1VJdDhrTDN2MHN0a3J5QWh6ZFFTQUVUcjFVeU91U2VnRWlGN0p5?=
- =?utf-8?B?ZGNkM3RSUkZZVy9HRWJqbjV2ZW1JSG10amduRG9ncVhFcWhzek1zR3Y2MVUv?=
- =?utf-8?B?UktPdmZhR3ZkZC9nWkZXZHQ4TXhpTGNvcDhVM2VUU2hWeDB6ajU4dWU0V25s?=
- =?utf-8?B?N241dDNVVEhZdThwOTEzOW13anlxUkR5MHhUaDJOYTZ3cXZSbDdNM0hzWGRU?=
- =?utf-8?B?MEVwS1dWK0M3K01ZbTVVNStHTExWbDdBbUNWcUQ0TlgxWVhBakNkVzBaeVNB?=
- =?utf-8?B?OStFeUpacVBwLzQxTkxiNmlKWVNNbG8rYnpyeEN2Uk9mVm11THNZS3E3NWlI?=
- =?utf-8?B?NytyVWFNQ2V0amtXT21ZWEZKTVIzWnltOGx3Uy9NMkhyTzRiNWp1ZUUwR3gz?=
- =?utf-8?B?T3BlekQ4eHkvSHFyM29nazlJMjJYR1RLWUEvY0U2QnAwbktxY3B0ZUI2SnVv?=
- =?utf-8?B?OVNPakQ3OWhCcGtxaXJYMndSaXlPRDBLMkp1anRId251cjg4dzZLQnNrWHZF?=
- =?utf-8?B?QysvVmJzRVdOZ2JoWGhuL1pRMVQ4bTgxZHlpYzRuT0FHNkVUd3ZXV0pSdC9J?=
- =?utf-8?B?Z3dtazRiQjlnb1djTFRKVVNueTRCaXFJaXJxd0ZabWxxd0xYTmtkU0FKZ0Qz?=
- =?utf-8?B?U0pnMVRYZDBFd1NvVmd5NS8vS09kS0VWMFU2RmI2NWdLdXR3eERtSGUrUDVs?=
- =?utf-8?B?ckRkRnpGbjFHWUFoN09UamNEdWRSendmeHdrT3AzOUNib3l2WW9hZ1Y2SWhD?=
- =?utf-8?B?NlRnSTE1SWVHVVB6OFNSYXBkMXlQYUtmc3FsNklHZWlKU0dwT08rZC9VaXpo?=
- =?utf-8?B?NkhIMkV4Nkg4a2wzTXNyVytZM21HeHo5SElDNyt5dmkvdWd4ZjJPRmRNUk5y?=
- =?utf-8?B?UjF2Tzl5cXpxVnBEWEtpcktlVkVqSU42aEs2clhEVXg2OENjbzg4VlVtNlVR?=
- =?utf-8?B?MGNocnd6VXZGOUtJdzBnQ3NDbjlCelFsRlBQbk9DMkI1SnhEN1BIcHhPUXFR?=
- =?utf-8?B?VWYrdUxRc0lxTnZ1cjR1QUlBNGJ3WEhzOXIzbW8wcjZKZGZ2Y0JSaVRJOUJo?=
- =?utf-8?B?MGN6TXZoeWV0T3ArSnp0NjlDVERSQmhuK25GTjh3bUhuMm5sUzI3VCtHeUVG?=
- =?utf-8?B?SmFqTFNrOFByZWQwcGgwRWlMQ2Evb1hJUHYwYzg5UDBzRDl1MzZncFNrOURy?=
- =?utf-8?B?RjluSktHMVNyOHpBd3F5QVdPTGJVVkh1WWVuQ1hpSkw3YzdONnlIT20ydGdI?=
- =?utf-8?B?QTBNUXRkSUQrbnJtZlBEM3FZaFNaRUtweXBZdHgrYzhMblJvUHRzNGFJSHl4?=
- =?utf-8?B?UlJVcGRWb0lWcVk2NHRJeVNPd0tubHEwSmdzNWQ0Uk5lMVNNSEF6c1pSaGRZ?=
- =?utf-8?B?V2NsZGJvSFdzWFpzUGVWS3Jnc2NyYnBnUkZtbmVnT2FzKzllbmJwbTZHMGQ1?=
- =?utf-8?B?ajJGa1hUY0hhMnRrQk1RcGYzcElpVXY3NXhEcTZvS3ZiaU9QMVVmQ09QZDhG?=
- =?utf-8?B?dU1DNU53UWdzT2xLdzh2Z0N6UGpHMll0a0NxelkvSkpOQ0g4REtIMjF3MElp?=
- =?utf-8?B?Mi95RitKWXI5VTYraHhlVzRFQ25ZZi8rQ3NEMEZlTEVoaHNJaG5sUT09?=
-X-OriginatorOrg: ipetronik.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed799b0c-8fba-4066-312f-08d9f13e16d4
-X-MS-Exchange-CrossTenant-AuthSource: AM9P193MB1572.EURP193.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 11:18:42.5406
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 982fe058-7d80-4936-bdfa-9bed4f9ae127
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FvMAkNxoXoB92hmewYmela7pyHGLHzxelLmnB2mSKSatRND14+xRbu0xFX/HJS4DXSgYSC7JGCbQZKIuTRysttO/sP04WdSEdWg3GZyZGeo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8P193MB1413
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216062601.779690-1-ztong0001@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 08:17:31PM +0100, Christoph Hellwig wrote:
-> On Mon, Feb 14, 2022 at 10:51:07AM +0100, Markus Blöchl wrote:
-> > After the surprise removal of a mounted NVMe disk the pciehp task
-> > reliably hangs forever with a trace similar to this one:
-> 
-> Do you have a specific reproducer? At least with doing a
-> 
-> echo 1 > /sys/.../remove
-> 
-> while running fsx on a file system I can't actually reproduce it.
+Hi Tong,
 
-We built our own enclosures with a custom connector to plug the disks.
+Thank you for the patch! Perhaps something to improve:
 
-So an external enclosure for thunderbolt is probably very similar.
-(or just ripping an unscrewed NVMe out of the M.2 ...)
+[auto build test WARNING on chrome-platform/for-next]
+[also build test WARNING on v5.17-rc4 next-20220216]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-But as already suggested, qemu might also be very useful here as it also
-allows us to test multiple namespaces and multipath I/O, if you/someone
-wants to check those too (hotplug with multipath I/O really scares me).
+url:    https://github.com/0day-ci/linux/commits/Tong-Zhang/platform-chrome-cros_ec-honor-acpi-off/20220216-142709
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git for-next
+config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220216/202202161903.6YHDLR8F-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/66345a4aecd6e4acba257476c6e44559fccca143
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Tong-Zhang/platform-chrome-cros_ec-honor-acpi-off/20220216-142709
+        git checkout 66345a4aecd6e4acba257476c6e44559fccca143
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/platform/chrome/
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/platform/chrome/cros_ec_lpc.c: In function 'cros_ec_lpc_init':
+>> drivers/platform/chrome/cros_ec_lpc.c:553:6: warning: the address of 'acpi_disable' will always evaluate as 'true' [-Waddress]
+     553 |  if (acpi_disable)
+         |      ^~~~~~~~~~~~
+
+
+vim +553 drivers/platform/chrome/cros_ec_lpc.c
+
+   547	
+   548	static int __init cros_ec_lpc_init(void)
+   549	{
+   550		int ret;
+   551		acpi_status status;
+   552	
+ > 553		if (acpi_disable)
+   554			return -ENODEV;
+   555	
+   556		status = acpi_get_devices(ACPI_DRV_NAME, cros_ec_lpc_parse_device,
+   557					  &cros_ec_lpc_acpi_device_found, NULL);
+   558		if (ACPI_FAILURE(status))
+   559			pr_warn(DRV_NAME ": Looking for %s failed\n", ACPI_DRV_NAME);
+   560	
+   561		if (!cros_ec_lpc_acpi_device_found &&
+   562		    !dmi_check_system(cros_ec_lpc_dmi_table)) {
+   563			pr_err(DRV_NAME ": unsupported system.\n");
+   564			return -ENODEV;
+   565		}
+   566	
+   567		cros_ec_lpc_mec_init(EC_HOST_CMD_REGION0,
+   568				     EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SIZE);
+   569	
+   570		/* Register the driver */
+   571		ret = platform_driver_register(&cros_ec_lpc_driver);
+   572		if (ret) {
+   573			pr_err(DRV_NAME ": can't register driver: %d\n", ret);
+   574			cros_ec_lpc_mec_destroy();
+   575			return ret;
+   576		}
+   577	
+   578		if (!cros_ec_lpc_acpi_device_found) {
+   579			/* Register the device, and it'll get hooked up automatically */
+   580			ret = platform_device_register(&cros_ec_lpc_device);
+   581			if (ret) {
+   582				pr_err(DRV_NAME ": can't register device: %d\n", ret);
+   583				platform_driver_unregister(&cros_ec_lpc_driver);
+   584				cros_ec_lpc_mec_destroy();
+   585			}
+   586		}
+   587	
+   588		return ret;
+   589	}
+   590	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
