@@ -2,91 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB7D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 18:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D08AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 18:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237463AbiBPSKn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 13:10:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49734 "EHLO
+        id S237484AbiBPSKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 13:10:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237455AbiBPSKl (ORCPT
+        with ESMTP id S237442AbiBPSKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 13:10:41 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F3B2B0B1A
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:10:28 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id f37so5354882lfv.8
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:10:27 -0800 (PST)
+        Wed, 16 Feb 2022 13:10:44 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011C32B0B1C
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:10:31 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id f13so412438ilq.5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:10:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IcjZSFFwvzH/2up3CoXhhR79DVF3xC2YmgnlBmig55Y=;
-        b=w0bfYwr/yIGgKsMa1Lc2zzEf7dvcqLF1kzRhwu0wytHvdRAS+simDuAOgxyM7Vwzu9
-         tlA5U3ssSqPOn3EMDTDRu2aq9oU+7vOWm6Roq0/pqSQOMdVBM3gbeduVwjmbT2DHWVMb
-         q9D5CEfQHC+J+H/Y7rnP2d/ViEGlk215M49G6LxjPZ3Yv1Gz1UZBEOmnRjhgIuqmvUgU
-         C8Eiuf2J1pQ6sjyI8nRt/GyZ2yP3Kbqx5fXJXA3lcicj7pPDK7CF//nRb9Wy/Et7Qb1y
-         iIZdq5bvjNBVYdqRcmCwQjysllfixuxZE6Oo5rcbxX4XfaY1rB9fH43GUQvoq0ccjNTB
-         HcQQ==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dhg8ObNqJqU9MXgC8htbZHEYozTLZfTKNUE4M3ppPEQ=;
+        b=X3YBCQPLYrjbSwdYieYTzfp5aHHmxsfeg3RTf4qZg0wFQ6+c9DxcKdaAJmOlc37Dsv
+         CTdEpl0BzCTg87o7PF2lX4vr7saXRgNN4zH/iPLgcyLTPMZGhRdeuiUlyPMWzB1yffkQ
+         L1SizYyjHV+Gfh5MA9OSmEyn4e1glalJ49FS0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IcjZSFFwvzH/2up3CoXhhR79DVF3xC2YmgnlBmig55Y=;
-        b=qmffeHr/gDpLUxQnD89tst+Wq1P2G99mtT/GoR+0CwnA5+zHExjvvpZcleUEc0Z272
-         kvSU8XI/8Tz1xbcnoB3no99VPX4ngIaH64hGTxbPncb8G8QEODNgsV9UBwoKt/tMPQms
-         0+LNMNZSzWE3D3Z1H9ijOo7hD4/3m5G7im6YOaUgxIUCZD0nY/hG4WRYWvHQPud/NSGE
-         xdIlGZJqWd3TVMcu6ponUl2HXReZwWquxOK5wqDON/VGoNLP7ecNHRHm6/lMYtX02eYC
-         uXUqzaGX4/ZEJqrIeFYDFiwY8m7c5NxPPlCY38uKDRO9OtZXoSTLpHM2q7lJn+C6+4dw
-         nDog==
-X-Gm-Message-State: AOAM531rTi9XU40W4MLHviROV60mNsoGIaGcJkGc9udRzZxiW6lwCt/X
-        Yf2n7A4mlvAtEDmYg7MwIhB46w==
-X-Google-Smtp-Source: ABdhPJyHHJ2z98x3FxWyYQVGxbdwLK7ZNxTg/1MKt2UFEenBVMHIcz9Wxy7OW5QZqcMRz5JB8DYs3Q==
-X-Received: by 2002:a05:6512:1507:b0:443:7e88:ce57 with SMTP id bq7-20020a056512150700b004437e88ce57mr2877346lfb.659.1645035026383;
-        Wed, 16 Feb 2022 10:10:26 -0800 (PST)
-Received: from cobook.home (nikaet.starlink.ru. [94.141.168.29])
-        by smtp.gmail.com with ESMTPSA id y18sm567909ljd.13.2022.02.16.10.10.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 10:10:25 -0800 (PST)
-From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH] arm64: dts: renesas: ulcb-kf: fix wrong comment
-Date:   Wed, 16 Feb 2022 21:10:04 +0300
-Message-Id: <20220216181003.114049-1-nikita.yoush@cogentembedded.com>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dhg8ObNqJqU9MXgC8htbZHEYozTLZfTKNUE4M3ppPEQ=;
+        b=ueoZreMQ1k4DLXCSdUsHQZ2vn7iQ90WHddohi2Vq1KHLJ1thG89EZWEeea9H/TGV9M
+         ROYRiWLJ4SIEXG3Yi1KqZ8+EnsY0nLM3g4GC00VKRsTkjD35DRpouz+AvaEjKwP0/NSs
+         bZGpjcK48O8HEcx293p3joUkSf1TKR/FHNxsb9PB0u2I3fP2p2uSpJxA2s3Jl/UOwaHJ
+         KynwkRCfaX7MPKvbKvxfKmGo9nyYIC/Xfws/HKQRmLGGSkXb5z8LO4M9cjwl2L1Yna75
+         GwffU0U3sQnYus/WlNKVABPZ8ZRLcS46qkrLqiVtcx1g3YS+gdQTk4OyCcq1MSOoaL3u
+         72Gg==
+X-Gm-Message-State: AOAM532fEBhwpXtWsen6Kc831Fb01OLRsJFx9ax9nMFYnKR24E5sAmYC
+        AJ38lmhxggJ06X1Mjwq0KZPlWxYGJUiK9A==
+X-Google-Smtp-Source: ABdhPJyC1DggR2p3sQ6nOYoxwJqirAuyffugkK9LFHAKY1NBaAMwy5VIlMoO6PmDJDGXMNPwp8yW4w==
+X-Received: by 2002:a92:c269:0:b0:2be:795d:abb2 with SMTP id h9-20020a92c269000000b002be795dabb2mr2638878ild.46.1645035031221;
+        Wed, 16 Feb 2022 10:10:31 -0800 (PST)
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com. [209.85.166.179])
+        by smtp.gmail.com with ESMTPSA id w4sm284536ilv.13.2022.02.16.10.10.28
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 10:10:29 -0800 (PST)
+Received: by mail-il1-f179.google.com with SMTP id z7so408410ilb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 10:10:28 -0800 (PST)
+X-Received: by 2002:a05:6e02:144f:b0:2bd:da3d:f50b with SMTP id
+ p15-20020a056e02144f00b002bdda3df50bmr2425111ilo.165.1645035028535; Wed, 16
+ Feb 2022 10:10:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211001144212.v2.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid>
+ <CAD=FV=XU0bYVZk+-jPWZVoODW79QXOJ=NQy+RH=fYyX+LCZb2Q@mail.gmail.com>
+ <CA+ASDXPXKVwcZGYoagJYPm4E7DzaJmEVEv2FANhLH-juJw+r+Q@mail.gmail.com>
+ <CAD=FV=VYe1rLKANQ8eom7g8x1v6_s_OYnX819Ax4m7O3UwDHmg@mail.gmail.com> <CA+ASDXO8c4dK31p=kvBABJQsDUs20qVHM6NxYf1JQDCr2oswAw@mail.gmail.com>
+In-Reply-To: <CA+ASDXO8c4dK31p=kvBABJQsDUs20qVHM6NxYf1JQDCr2oswAw@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 16 Feb 2022 10:10:16 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=XivCxy-7Wszv9pnHELi=gRCMeVasEweza17XTtEoiT4A@mail.gmail.com>
+Message-ID: <CAD=FV=XivCxy-7Wszv9pnHELi=gRCMeVasEweza17XTtEoiT4A@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sean Paul <sean@poorly.run>, Jonas Karlman <jonas@kwiboo.se>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        "# 4.0+" <stable@vger.kernel.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix comment referencing salvator board, likely a copy-paste leftover.
+Hi,
 
-ulcb-kf.dtsi has nothing to do with salvator.
+On Tue, Feb 15, 2022 at 4:41 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> On Tue, Feb 15, 2022 at 3:46 PM Doug Anderson <dianders@chromium.org> wrote:
+> > On Tue, Feb 15, 2022 at 2:52 PM Brian Norris <briannorris@chromium.org> wrote:
+> > > It still makes me wonder what the point
+> > > of the /dev/drm_dp_aux<N> interface is though, because it seems like
+> > > you're pretty much destined to not have reliable operation through
+> > > that means.
+> >
+> > I can't say I have tons of history for those files. I seem to recall
+> > maybe someone using them to have userspace tweak the embedded
+> > backlight on some external DP connected panels? I think we also might
+> > use it in Chrome OS to update the firmware of panels (dunno if
+> > internal or external) in some cases too? I suspect that it works OK
+> > for certain situations but it's really not going to work in all
+> > cases...
+>
+> Yes, I believe I'm only submitting patches like this because fwupd
+> apparently likes to indiscriminately whack at dpaux devices:
+> https://github.com/fwupd/fwupd/tree/main/plugins/synaptics-mst#kernel-dp-aux-interface
+>
+> That seems like a bad idea.
+>
+> (We've already disabled that plugin on these systems, but it seems
+> wise not to leave the stumbling block here for the next time.)
 
-Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
----
- arch/arm64/boot/dts/renesas/ulcb-kf.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi b/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi
-index d122e645a892..40147920bdf7 100644
---- a/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi
-+++ b/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi
-@@ -413,7 +413,7 @@ &sound_clk_pins
- 		     &sound_pcm_pins>;
- 
- 	ports {
--		/* rsnd_port0/1 are on salvator-common */
-+		/* rsnd_port0/1 are defined in ulcb.dtsi */
- 		rsnd_port2: port@2 {
- 			reg = <2>;
- 			rsnd_for_pcm3168a_play: endpoint {
--- 
-2.30.2
-
+Yeah, it doesn't seem great. I guess it's _slightly_ less bad since
+it's for an external device. As I understand it, they never really
+turn off in the same way. It still feels like letting userspace
+indiscriminately whack at DP AUX registers isn't a great idea, though.
