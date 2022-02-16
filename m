@@ -2,124 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA307C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbiBPUgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 15:36:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55648 "EHLO
+        id S232358AbiBPUgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 15:36:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232547AbiBPUfo (ORCPT
+        with ESMTP id S232424AbiBPUgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 15:35:44 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6AE2AE2A3;
-        Wed, 16 Feb 2022 12:35:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=dOT/1aOyaiDsVJvJU3JA5EooJNZncoACyNyR31PUbGw=; b=gHB55gRMUKJvsWEOn23DNCXR0+
-        9dNBp4Q3bo8fg63YX3+Xk0+2ry3W7Q7+4pjbCCFfBdR463dYXX9JacOAA0GKvh9AhOvJ5426FuLox
-        /6O6pV+BpWpodsyl4Ypjv3AyWxrG5Z2Bf0gMIibP2HDBkh79Xj3BgtKcJK4YEYe9H1AcXHSHCpogo
-        waGKjsR9DUcQ8eEjXLKCUD0DKQ8P88iNlK5K/64bZ/3BZkjZWyBdUBVxyEs7Z2OE3fMK3LQlDpF8F
-        KMSfXwHLTrF0y5abn6XMg/vq1CX2uHzNKlOfT+fvxU5dRPP+yngH/QB9vmNQsURUDJmumISikp0Qq
-        3qTkJmpw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nKR1L-00F1Wz-DL; Wed, 16 Feb 2022 20:35:27 +0000
-Message-ID: <6da7a555-61e9-4a66-be18-1bcaa6cdbc53@infradead.org>
-Date:   Wed, 16 Feb 2022 12:35:21 -0800
+        Wed, 16 Feb 2022 15:36:41 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE42E0EC
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:36:28 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id d187so3092032pfa.10
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:36:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=eJd4aXWZIs0H49MCtqJDRq40asV4LB3JVz3vZfyzy20=;
+        b=OvLwuaJuN7jjsoupZQzejUUIvEYxeqr4xggnf7tf1QsjL7U4I4Sk1BL6szewkbe2B/
+         /0w8twYBe+GunMFYIdW/zex0RHhv6VkWc/yZkGVN+oySOgamBUK5CawVK2MAm7IGrXSn
+         r7nae5JYy8waRlLGEPFtqssZEk+ajbIkBAhyg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=eJd4aXWZIs0H49MCtqJDRq40asV4LB3JVz3vZfyzy20=;
+        b=6ZcFbtrqYDln4yC0RPO2zfozyndEIo7zkwcP3I0Yds3d7AZf0CxxDORIXKGW3ocaI5
+         owNeOpk2EAoH91t/Ef9dp0/fvYejKGR4x5RoFDgZjC3SAZTXWYO3MnFN6MSHHA21Sfgw
+         v4IQQRk7in7xDpnf+k6RfOLhkH2fNFrEylv4YG4/L2AjkBknQMjfgNPJSvJfzmcbSCKK
+         ymiUpIiDWn6JKeUhX5WhqnRKicTQ/fNjHip5jFvtpjj4SBoo0vJsSmNFahkKcjam7EFo
+         7Oz/NgWlQUx+ESNTY4G7rYdyEB0M6ipwGghhCd6nlqKA+X4E/C+zJs2626yNaMgZhgPd
+         unLw==
+X-Gm-Message-State: AOAM532j4yyDHvAUTsO7tKmwB8GgImuudCDFLVewHvXiU/1GUBp0sUpR
+        FmiMD+QFgQ9ujnSdnlTbMb2oHQ==
+X-Google-Smtp-Source: ABdhPJxsqD2mY2NkmwK/BmEBgmiqpQQgFKtDkVDGkFZkejCndwQ4eKwb8c4Y2tNYoyYnZCkX2Ulaqg==
+X-Received: by 2002:a63:490c:0:b0:372:c378:6686 with SMTP id w12-20020a63490c000000b00372c3786686mr3696180pga.295.1645043787861;
+        Wed, 16 Feb 2022 12:36:27 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id w11sm44576546pfu.50.2022.02.16.12.36.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 12:36:27 -0800 (PST)
+Date:   Wed, 16 Feb 2022 12:36:27 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Cc: linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        ; Johannes Berg <johannes.berg@intel.com>
+Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
+        Cc:     ;Johannes Berg <johannes.berg@intel.com>
+                        ^-missing semicolon to end mail group, extraneous tokens in mailbox, missing end of mailbox
+Subject: Re: [PATCH] uapi: wireless: Replace zero-length array with
+ flexible-array member
+Message-ID: <202202161235.C593433C94@keescook>
+References: <20220216195306.GA904220@embeddedor>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] Docs: printk: add 'console=null|""' to
- admin/kernel-parameters
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-References: <20220215005615.11244-1-rdunlap@infradead.org>
- <YgviYXNc6zo2V+35@alley>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <YgviYXNc6zo2V+35@alley>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220216195306.GA904220@embeddedor>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Petr,
+On Wed, Feb 16, 2022 at 01:53:06PM -0600, Gustavo A. R. Silva wrote:
+> There is a regular need in the kernel to provide a way to declare
+> having a dynamically sized set of trailing elements in a structure.
+> Kernel code should always use “flexible array members”[1] for these
+> cases. The older style of one-element or zero-length arrays should
+> no longer be used[2].
+> 
+> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> 
+> Link: https://github.com/KSPP/linux/issues/78
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-On 2/15/22 09:26, Petr Mladek wrote:
-> On Mon 2022-02-14 16:56:15, Randy Dunlap wrote:
->> Tell about 'console=null|""' and how to use it.
->>
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> Cc: Petr Mladek <pmladek@suse.com>
->> Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
->> Cc: Steven Rostedt <rostedt@goodmis.org>
->> Cc: John Ogness <john.ogness@linutronix.de>
->> Cc: Jonathan Corbet <corbet@lwn.net>
->> Cc: linux-doc@vger.kernel.org
->> ---
->>  Documentation/admin-guide/kernel-parameters.txt |    6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> --- linux-next-20220214.orig/Documentation/admin-guide/kernel-parameters.txt
->> +++ linux-next-20220214/Documentation/admin-guide/kernel-parameters.txt
->> @@ -724,6 +724,12 @@
->>  		hvc<n>	Use the hypervisor console device <n>. This is for
->>  			both Xen and PowerPC hypervisors.
->>  
->> +		{ null | "" }
->> +			Use to disable console output, i.e., to have kernel
->> +			console messages discarded.
->> +			This must be the first (or only) console= string
->> +			used on the kernel command line.
-> 
-> It must be the only console= parameter on the command line. Otherwise,
-> the other consoles get enabled as well.
-> 
-> It might make sense to detect this situation and print a warning or
-> so. Nobody has sent a patch for this so far.
-> 
-> But there is even bigger problem. The default console is also used
-> as stdin/stdout/stderr for the init process. It might fail when there
-> is no console driver associated with it.
-> 
-> The problem with stdin/stdout/stderr does not happen when
-> CONFIG_NULL_TTY is enabled and ttynull driver is available.
-> Unfortunately, it can't be enabled by default because it can
-> be used by mistake, see the commit a91bd6223ecd46addc71e
-> ("Revert "init/console: Use ttynull as a fallback when there
-> is no console").
-> 
-> And there is still a mystery that has not been explained yet,
-> see https://lore.kernel.org/r/a46e9a26-5b9f-f14c-26be-0b4d41fa7429@roeck-us.net
-> 
-> On the positive note. console=null mostly works. All the problems are
-> hard to reproduce.
-> 
-> 
-> Now, what to do with this patch. I would suggest two changes:
-> 
-> 1. Replace "must be the first (or only)" with "must be the only"
-> 
-> 2. Mention that it is suggested to enable CONFIG_NULL_TTY that
->    will avoid problems with stdin/stdout/stderr of the init process.
->    But it might cause the ttynull might be used even when a real
->    console is configured. And that more details can be found
->    in the commit a91bd6223ecd46addc71e ("Revert "init/console:
->    Use ttynull as a fallback when there is no console").
-> 
->    It might be enough to mention this in the commit message.
+This UAPI change should be fine for any compiler that understood the
+older "[0]" syntax.
 
-Thanks for the history summary and suggestions.
-I'll send a v2...
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
 -- 
-~Randy
+Kees Cook
