@@ -2,371 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12126C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE57AC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234217AbiBPNUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:20:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39856 "EHLO
+        id S233169AbiBPNVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:21:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234222AbiBPNTW (ORCPT
+        with ESMTP id S231818AbiBPNTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:19:22 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A91299250;
-        Wed, 16 Feb 2022 05:18:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4CC4BCE26EE;
-        Wed, 16 Feb 2022 13:18:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A9E1C340F0;
-        Wed, 16 Feb 2022 13:18:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645017514;
-        bh=HK+tVapaV31snBn8v5Q1USmrkGxBnfuKp+8RGzmZzjI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bsuYzbxkAoiYAmxDbgE0FResaoqYp9lL2WRBFz6fdmL0V8tZZV8xaWKFJSo/3mJYx
-         WdQCiIu/zsrVqbxz09YsCZ9c64A7VZw0Vdg9LFehAVDOqZCFj+XOgd0VRFqvGKGYoO
-         +KodvujkWwd2KS2nWL6OlgsdBaGtV5H4BiRuPDazGZlooWEAIcbJSmY1TqXF9NJZbj
-         mRzzQ8X9nW3OGRlGtXQqj1EE+it/xVoinYPLds9k81saknC5jOmycuYH/4EUfXiqIz
-         PW0jEYAhflNTNWI39oCemJzad46eq07obLNFXbCilj6TnxpIOrAQV7vcvZgB/r5sRC
-         yEaD2i/JrlYBA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk
-Cc:     linux@armlinux.org.uk, will@kernel.org, guoren@kernel.org,
-        bcain@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu,
-        tsbogend@alpha.franken.de, nickhu@andestech.com,
-        green.hu@gmail.com, dinguyen@kernel.org, shorne@gmail.com,
-        deller@gmx.de, mpe@ellerman.id.au, peterz@infradead.org,
-        mingo@redhat.com, mark.rutland@arm.com, hca@linux.ibm.com,
-        dalias@libc.org, davem@davemloft.net, richard@nod.at,
-        x86@kernel.org, jcmvbkbc@gmail.com, ebiederm@xmission.com,
-        akpm@linux-foundation.org, ardb@kernel.org,
-        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org
-Subject: [PATCH v2 17/18] ia64: remove CONFIG_SET_FS support
-Date:   Wed, 16 Feb 2022 14:13:31 +0100
-Message-Id: <20220216131332.1489939-18-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220216131332.1489939-1-arnd@kernel.org>
-References: <20220216131332.1489939-1-arnd@kernel.org>
+        Wed, 16 Feb 2022 08:19:32 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BD5C29B9C2;
+        Wed, 16 Feb 2022 05:18:45 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87532106F;
+        Wed, 16 Feb 2022 05:18:45 -0800 (PST)
+Received: from [10.1.31.148] (e127744.cambridge.arm.com [10.1.31.148])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 017123F66F;
+        Wed, 16 Feb 2022 05:18:41 -0800 (PST)
+Subject: Re: [PATCH] perf test: update arm64 perf_event_attr tests for
+ --call-graph
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, irogers@google.com
+References: <20220125104435.2737-1-german.gomez@arm.com>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <622a42bd-69da-0df4-bbf3-7d21de77c73b@arm.com>
+Date:   Wed, 16 Feb 2022 13:17:56 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220125104435.2737-1-german.gomez@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Hi,
 
-ia64 only uses set_fs() in one file to handle unaligned access for
-both user space and kernel instructions. Rewrite this to explicitly
-pass around a flag about which one it is and drop the feature from
-the architecture.
+Friendly ping on this perf-test fix for arm64
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/ia64/Kconfig                   |  1 -
- arch/ia64/include/asm/processor.h   |  4 --
- arch/ia64/include/asm/thread_info.h |  2 -
- arch/ia64/include/asm/uaccess.h     | 21 +++-------
- arch/ia64/kernel/unaligned.c        | 60 +++++++++++++++++++----------
- 5 files changed, 45 insertions(+), 43 deletions(-)
+I will include some quick test notes:
+Before:
 
-diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
-index a7e01573abd8..6b6a35b3d959 100644
---- a/arch/ia64/Kconfig
-+++ b/arch/ia64/Kconfig
-@@ -61,7 +61,6 @@ config IA64
- 	select NEED_SG_DMA_LENGTH
- 	select NUMA if !FLATMEM
- 	select PCI_MSI_ARCH_FALLBACKS if PCI_MSI
--	select SET_FS
- 	select ZONE_DMA32
- 	default y
- 	help
-diff --git a/arch/ia64/include/asm/processor.h b/arch/ia64/include/asm/processor.h
-index 45365c2ef598..7cbce290f4e5 100644
---- a/arch/ia64/include/asm/processor.h
-+++ b/arch/ia64/include/asm/processor.h
-@@ -243,10 +243,6 @@ DECLARE_PER_CPU(struct cpuinfo_ia64, ia64_cpu_info);
- 
- extern void print_cpu_info (struct cpuinfo_ia64 *);
- 
--typedef struct {
--	unsigned long seg;
--} mm_segment_t;
--
- #define SET_UNALIGN_CTL(task,value)								\
- ({												\
- 	(task)->thread.flags = (((task)->thread.flags & ~IA64_THREAD_UAC_MASK)			\
-diff --git a/arch/ia64/include/asm/thread_info.h b/arch/ia64/include/asm/thread_info.h
-index 51d20cb37706..ef83493e6778 100644
---- a/arch/ia64/include/asm/thread_info.h
-+++ b/arch/ia64/include/asm/thread_info.h
-@@ -27,7 +27,6 @@ struct thread_info {
- 	__u32 cpu;			/* current CPU */
- 	__u32 last_cpu;			/* Last CPU thread ran on */
- 	__u32 status;			/* Thread synchronous flags */
--	mm_segment_t addr_limit;	/* user-level address space limit */
- 	int preempt_count;		/* 0=premptable, <0=BUG; will also serve as bh-counter */
- #ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
- 	__u64 utime;
-@@ -48,7 +47,6 @@ struct thread_info {
- 	.task		= &tsk,			\
- 	.flags		= 0,			\
- 	.cpu		= 0,			\
--	.addr_limit	= KERNEL_DS,		\
- 	.preempt_count	= INIT_PREEMPT_COUNT,	\
- }
- 
-diff --git a/arch/ia64/include/asm/uaccess.h b/arch/ia64/include/asm/uaccess.h
-index e242a3cc1330..60adadeb3e9e 100644
---- a/arch/ia64/include/asm/uaccess.h
-+++ b/arch/ia64/include/asm/uaccess.h
-@@ -42,26 +42,17 @@
- #include <asm/extable.h>
- 
- /*
-- * For historical reasons, the following macros are grossly misnamed:
-- */
--#define KERNEL_DS	((mm_segment_t) { ~0UL })		/* cf. access_ok() */
--#define USER_DS		((mm_segment_t) { TASK_SIZE-1 })	/* cf. access_ok() */
--
--#define get_fs()  (current_thread_info()->addr_limit)
--#define set_fs(x) (current_thread_info()->addr_limit = (x))
--
--/*
-- * When accessing user memory, we need to make sure the entire area really is in
-- * user-level space.  In order to do this efficiently, we make sure that the page at
-- * address TASK_SIZE is never valid.  We also need to make sure that the address doesn't
-+ * When accessing user memory, we need to make sure the entire area really is
-+ * in user-level space.  We also need to make sure that the address doesn't
-  * point inside the virtually mapped linear page table.
-  */
- static inline int __access_ok(const void __user *p, unsigned long size)
- {
-+	unsigned long limit = TASK_SIZE;
- 	unsigned long addr = (unsigned long)p;
--	unsigned long seg = get_fs().seg;
--	return likely(addr <= seg) &&
--	 (seg == KERNEL_DS.seg || likely(REGION_OFFSET(addr) < RGN_MAP_LIMIT));
-+
-+	return likely((size <= limit) && (addr <= (limit - size)) &&
-+		 likely(REGION_OFFSET(addr) < RGN_MAP_LIMIT));
- }
- #define __access_ok __access_ok
- #include <asm-generic/access_ok.h>
-diff --git a/arch/ia64/kernel/unaligned.c b/arch/ia64/kernel/unaligned.c
-index 6c1a8951dfbb..0acb5a0cd7ab 100644
---- a/arch/ia64/kernel/unaligned.c
-+++ b/arch/ia64/kernel/unaligned.c
-@@ -749,9 +749,25 @@ emulate_load_updates (update_t type, load_store_t ld, struct pt_regs *regs, unsi
- 	}
- }
- 
-+static int emulate_store(unsigned long ifa, void *val, int len, bool kernel_mode)
-+{
-+	if (kernel_mode)
-+		return copy_to_kernel_nofault((void *)ifa, val, len);
-+
-+	return copy_to_user((void __user *)ifa, val, len);
-+}
-+
-+static int emulate_load(void *val, unsigned long ifa, int len, bool kernel_mode)
-+{
-+	if (kernel_mode)
-+	       return copy_from_kernel_nofault(val, (void *)ifa, len);
-+
-+	return copy_from_user(val, (void __user *)ifa, len);
-+}
- 
- static int
--emulate_load_int (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
-+emulate_load_int (unsigned long ifa, load_store_t ld, struct pt_regs *regs,
-+		  bool kernel_mode)
- {
- 	unsigned int len = 1 << ld.x6_sz;
- 	unsigned long val = 0;
-@@ -774,7 +790,7 @@ emulate_load_int (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
- 		return -1;
- 	}
- 	/* this assumes little-endian byte-order: */
--	if (copy_from_user(&val, (void __user *) ifa, len))
-+	if (emulate_load(&val, ifa, len, kernel_mode))
- 		return -1;
- 	setreg(ld.r1, val, 0, regs);
- 
-@@ -872,7 +888,8 @@ emulate_load_int (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
- }
- 
- static int
--emulate_store_int (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
-+emulate_store_int (unsigned long ifa, load_store_t ld, struct pt_regs *regs,
-+		   bool kernel_mode)
- {
- 	unsigned long r2;
- 	unsigned int len = 1 << ld.x6_sz;
-@@ -901,7 +918,7 @@ emulate_store_int (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
- 	}
- 
- 	/* this assumes little-endian byte-order: */
--	if (copy_to_user((void __user *) ifa, &r2, len))
-+	if (emulate_store(ifa, &r2, len, kernel_mode))
- 		return -1;
- 
- 	/*
-@@ -1021,7 +1038,7 @@ float2mem_double (struct ia64_fpreg *init, struct ia64_fpreg *final)
- }
- 
- static int
--emulate_load_floatpair (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
-+emulate_load_floatpair (unsigned long ifa, load_store_t ld, struct pt_regs *regs, bool kernel_mode)
- {
- 	struct ia64_fpreg fpr_init[2];
- 	struct ia64_fpreg fpr_final[2];
-@@ -1050,8 +1067,8 @@ emulate_load_floatpair (unsigned long ifa, load_store_t ld, struct pt_regs *regs
- 		 * This assumes little-endian byte-order.  Note that there is no "ldfpe"
- 		 * instruction:
- 		 */
--		if (copy_from_user(&fpr_init[0], (void __user *) ifa, len)
--		    || copy_from_user(&fpr_init[1], (void __user *) (ifa + len), len))
-+		if (emulate_load(&fpr_init[0], ifa, len, kernel_mode)
-+		    || emulate_load(&fpr_init[1], (ifa + len), len, kernel_mode))
- 			return -1;
- 
- 		DPRINT("ld.r1=%d ld.imm=%d x6_sz=%d\n", ld.r1, ld.imm, ld.x6_sz);
-@@ -1126,7 +1143,8 @@ emulate_load_floatpair (unsigned long ifa, load_store_t ld, struct pt_regs *regs
- 
- 
- static int
--emulate_load_float (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
-+emulate_load_float (unsigned long ifa, load_store_t ld, struct pt_regs *regs,
-+	            bool kernel_mode)
- {
- 	struct ia64_fpreg fpr_init;
- 	struct ia64_fpreg fpr_final;
-@@ -1152,7 +1170,7 @@ emulate_load_float (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
- 	 * See comments in ldX for descriptions on how the various loads are handled.
- 	 */
- 	if (ld.x6_op != 0x2) {
--		if (copy_from_user(&fpr_init, (void __user *) ifa, len))
-+		if (emulate_load(&fpr_init, ifa, len, kernel_mode))
- 			return -1;
- 
- 		DPRINT("ld.r1=%d x6_sz=%d\n", ld.r1, ld.x6_sz);
-@@ -1202,7 +1220,8 @@ emulate_load_float (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
- 
- 
- static int
--emulate_store_float (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
-+emulate_store_float (unsigned long ifa, load_store_t ld, struct pt_regs *regs,
-+		     bool kernel_mode)
- {
- 	struct ia64_fpreg fpr_init;
- 	struct ia64_fpreg fpr_final;
-@@ -1244,7 +1263,7 @@ emulate_store_float (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
- 	DDUMP("fpr_init =", &fpr_init, len);
- 	DDUMP("fpr_final =", &fpr_final, len);
- 
--	if (copy_to_user((void __user *) ifa, &fpr_final, len))
-+	if (emulate_store(ifa, &fpr_final, len, kernel_mode))
- 		return -1;
- 
- 	/*
-@@ -1295,7 +1314,6 @@ void
- ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
- {
- 	struct ia64_psr *ipsr = ia64_psr(regs);
--	mm_segment_t old_fs = get_fs();
- 	unsigned long bundle[2];
- 	unsigned long opcode;
- 	const struct exception_table_entry *eh = NULL;
-@@ -1304,6 +1322,7 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
- 		load_store_t insn;
- 	} u;
- 	int ret = -1;
-+	bool kernel_mode = false;
- 
- 	if (ia64_psr(regs)->be) {
- 		/* we don't support big-endian accesses */
-@@ -1367,13 +1386,13 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
- 			if (unaligned_dump_stack)
- 				dump_stack();
- 		}
--		set_fs(KERNEL_DS);
-+		kernel_mode = true;
- 	}
- 
- 	DPRINT("iip=%lx ifa=%lx isr=%lx (ei=%d, sp=%d)\n",
- 	       regs->cr_iip, ifa, regs->cr_ipsr, ipsr->ri, ipsr->it);
- 
--	if (__copy_from_user(bundle, (void __user *) regs->cr_iip, 16))
-+	if (emulate_load(bundle, regs->cr_iip, 16, kernel_mode))
- 		goto failure;
- 
- 	/*
-@@ -1467,7 +1486,7 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
- 	      case LDCCLR_IMM_OP:
- 	      case LDCNC_IMM_OP:
- 	      case LDCCLRACQ_IMM_OP:
--		ret = emulate_load_int(ifa, u.insn, regs);
-+		ret = emulate_load_int(ifa, u.insn, regs, kernel_mode);
- 		break;
- 
- 	      case ST_OP:
-@@ -1478,7 +1497,7 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
- 		fallthrough;
- 	      case ST_IMM_OP:
- 	      case STREL_IMM_OP:
--		ret = emulate_store_int(ifa, u.insn, regs);
-+		ret = emulate_store_int(ifa, u.insn, regs, kernel_mode);
- 		break;
- 
- 	      case LDF_OP:
-@@ -1486,21 +1505,21 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
- 	      case LDFCCLR_OP:
- 	      case LDFCNC_OP:
- 		if (u.insn.x)
--			ret = emulate_load_floatpair(ifa, u.insn, regs);
-+			ret = emulate_load_floatpair(ifa, u.insn, regs, kernel_mode);
- 		else
--			ret = emulate_load_float(ifa, u.insn, regs);
-+			ret = emulate_load_float(ifa, u.insn, regs, kernel_mode);
- 		break;
- 
- 	      case LDF_IMM_OP:
- 	      case LDFA_IMM_OP:
- 	      case LDFCCLR_IMM_OP:
- 	      case LDFCNC_IMM_OP:
--		ret = emulate_load_float(ifa, u.insn, regs);
-+		ret = emulate_load_float(ifa, u.insn, regs, kernel_mode);
- 		break;
- 
- 	      case STF_OP:
- 	      case STF_IMM_OP:
--		ret = emulate_store_float(ifa, u.insn, regs);
-+		ret = emulate_store_float(ifa, u.insn, regs, kernel_mode);
- 		break;
- 
- 	      default:
-@@ -1521,7 +1540,6 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
- 
- 	DPRINT("ipsr->ri=%d iip=%lx\n", ipsr->ri, regs->cr_iip);
-   done:
--	set_fs(old_fs);		/* restore original address limit */
- 	return;
- 
-   failure:
--- 
-2.29.2
+$ ./perf test 17 -v
+17: Setup struct perf_event_attr
+[...]
+running './tests/attr/test-record-graph-default'
+expected sample_type=295, got 4391
+expected sample_regs_user=0, got 1073741824
+FAILED './tests/attr/test-record-graph-default' - match failure
+test child finished with -1
+---- end ----
 
+After:
+
+[...]
+running './tests/attr/test-record-graph-default-aarch64'
+test limitation 'aarch64'
+running './tests/attr/test-record-graph-fp-aarch64'
+test limitation 'aarch64'
+running './tests/attr/test-record-graph-default'
+test limitation '!aarch64'
+excluded architecture list ['aarch64']
+skipped [aarch64] './tests/attr/test-record-graph-default'
+running './tests/attr/test-record-graph-fp'
+test limitation '!aarch64'
+excluded architecture list ['aarch64']
+skipped [aarch64] './tests/attr/test-record-graph-fp'
+[...]
+
+Thanks,
+German
+
+On 25/01/2022 10:44, German Gomez wrote:
+> The struct perf_event_attr is initialised differently in Arm64 when
+> recording in call-graph fp mode, so update the relevant tests, and add
+> two extra arm64-only tests.
+>
+> Fixes: 7248e308a575 ("perf tools: Record ARM64 LR register automatically")
+> Signed-off-by: German Gomez <german.gomez@arm.com>
+> ---
+>  tools/perf/tests/attr/README                            | 2 ++
+>  tools/perf/tests/attr/test-record-graph-default         | 2 ++
+>  tools/perf/tests/attr/test-record-graph-default-aarch64 | 9 +++++++++
+>  tools/perf/tests/attr/test-record-graph-fp              | 2 ++
+>  tools/perf/tests/attr/test-record-graph-fp-aarch64      | 9 +++++++++
+>  5 files changed, 24 insertions(+)
+>  create mode 100644 tools/perf/tests/attr/test-record-graph-default-aarch64
+>  create mode 100644 tools/perf/tests/attr/test-record-graph-fp-aarch64
+>
+> diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
+> index a36f49fb4dbe..1116fc6bf2ac 100644
+> --- a/tools/perf/tests/attr/README
+> +++ b/tools/perf/tests/attr/README
+> @@ -45,8 +45,10 @@ Following tests are defined (with perf commands):
+>    perf record -d kill                           (test-record-data)
+>    perf record -F 100 kill                       (test-record-freq)
+>    perf record -g kill                           (test-record-graph-default)
+> +  perf record -g kill                           (test-record-graph-default-aarch64)
+>    perf record --call-graph dwarf kill		(test-record-graph-dwarf)
+>    perf record --call-graph fp kill              (test-record-graph-fp)
+> +  perf record --call-graph fp kill              (test-record-graph-fp-aarch64)
+>    perf record --group -e cycles,instructions kill (test-record-group)
+>    perf record -e '{cycles,instructions}' kill   (test-record-group1)
+>    perf record -e '{cycles/period=1/,instructions/period=2/}:S' kill (test-record-group2)
+> diff --git a/tools/perf/tests/attr/test-record-graph-default b/tools/perf/tests/attr/test-record-graph-default
+> index 5d8234d50845..f0a18b4ea4f5 100644
+> --- a/tools/perf/tests/attr/test-record-graph-default
+> +++ b/tools/perf/tests/attr/test-record-graph-default
+> @@ -2,6 +2,8 @@
+>  command = record
+>  args    = --no-bpf-event -g kill >/dev/null 2>&1
+>  ret     = 1
+> +# arm64 enables registers in the default mode (fp)
+> +arch    = !aarch64
+>  
+>  [event:base-record]
+>  sample_type=295
+> diff --git a/tools/perf/tests/attr/test-record-graph-default-aarch64 b/tools/perf/tests/attr/test-record-graph-default-aarch64
+> new file mode 100644
+> index 000000000000..e98d62efb6f7
+> --- /dev/null
+> +++ b/tools/perf/tests/attr/test-record-graph-default-aarch64
+> @@ -0,0 +1,9 @@
+> +[config]
+> +command = record
+> +args    = --no-bpf-event -g kill >/dev/null 2>&1
+> +ret     = 1
+> +arch    = aarch64
+> +
+> +[event:base-record]
+> +sample_type=4391
+> +sample_regs_user=1073741824
+> diff --git a/tools/perf/tests/attr/test-record-graph-fp b/tools/perf/tests/attr/test-record-graph-fp
+> index 5630521c0b0f..a6e60e839205 100644
+> --- a/tools/perf/tests/attr/test-record-graph-fp
+> +++ b/tools/perf/tests/attr/test-record-graph-fp
+> @@ -2,6 +2,8 @@
+>  command = record
+>  args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
+>  ret     = 1
+> +# arm64 enables registers in fp mode
+> +arch    = !aarch64
+>  
+>  [event:base-record]
+>  sample_type=295
+> diff --git a/tools/perf/tests/attr/test-record-graph-fp-aarch64 b/tools/perf/tests/attr/test-record-graph-fp-aarch64
+> new file mode 100644
+> index 000000000000..cbeea9971285
+> --- /dev/null
+> +++ b/tools/perf/tests/attr/test-record-graph-fp-aarch64
+> @@ -0,0 +1,9 @@
+> +[config]
+> +command = record
+> +args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
+> +ret     = 1
+> +arch    = aarch64
+> +
+> +[event:base-record]
+> +sample_type=4391
+> +sample_regs_user=1073741824
