@@ -2,118 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E56C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC66C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:41:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238151AbiBPTlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:41:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42522 "EHLO
+        id S238173AbiBPTlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:41:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238130AbiBPTlD (ORCPT
+        with ESMTP id S237789AbiBPTlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:41:03 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43EB2B0493
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:40:49 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id y17so5710036edd.10
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:40:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xbXARzhtH3QOWgRRPGrSYM+TBaIkAjRMKIK2lUHXdUQ=;
-        b=aeTblRuGs8dcHA4wMchgTThkGnuq2fTSdlxzklbCIvmLwUpS8ShDhEX4p/EYZAM17D
-         eebmW4UELfnrywrhWpQjXPLCdKWDjQ0ixHOAIlLZ74M5E32t4Ox5H4/1FWK30j8JSY+C
-         33pr6j3UbrgWDKfShPn/akSE9u0yxoEmVGdLj9QRSIYZCFekUG85m899lHeqrgTd/OGo
-         n+DGOhlT452avHjCPGgGU195WSj7OW4kMXN0o3zNT+JTuDhQ/SddXuz7Bk4XxsT3oe58
-         nchO5Ofvoqh9tUYYPxSsU3TcaQLAX7FYQbEGG7SeHFap4R71jcaA3001iW0/gvO+T3w7
-         b0OA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xbXARzhtH3QOWgRRPGrSYM+TBaIkAjRMKIK2lUHXdUQ=;
-        b=H2gupvyXNmBMXpUBZSpcAxmaMckS9XpMGyjxKdDsQM0LG6RXDLqH8yrvh94MBHArxg
-         uMFxiYYMsgLsFtIutKgIrlLfo/Cw17Yfb0TjhRVpsezvxm/R1AA1IHqRmp6XWykltnZC
-         eWpdyGzxksOq+/baI3QG8z5ga3E6OWrnMqnU1Pz3YZaQazbTH/8Wi74ynQ+CbKlCsgkR
-         /nZLkgt1VqbYdAYunj+/nn1qpK5vSXZJ99o+IItHacLDN9toW+GZ78scjkG/ZRfvho/x
-         vrnXuXsK2iOyWFXOIc4eybEgiJ+KCUIAC8QsIgIZGLwHJlCZ0IaW06XFpgfrv1/0ZF2Y
-         A1yw==
-X-Gm-Message-State: AOAM530jnsSD/nqU0rXEST5Npjb5nL//OE9KGi/IMVjOI/LLHok9CXQb
-        7nVCpDRfdzXAUkXBK85TRbw=
-X-Google-Smtp-Source: ABdhPJyRNIU/fXJS6CqwzSVFThzW41KIIFGEku02f0WfTQmRjhAulbs7ExESaR8z0IzNwYlowEcKow==
-X-Received: by 2002:a05:6402:4c6:b0:406:d579:2c4 with SMTP id n6-20020a05640204c600b00406d57902c4mr4769016edw.52.1645040448391;
-        Wed, 16 Feb 2022 11:40:48 -0800 (PST)
-Received: from localhost.localdomain (ip5f5abb8c.dynamic.kabel-deutschland.de. [95.90.187.140])
-        by smtp.gmail.com with ESMTPSA id z18sm276910ejl.78.2022.02.16.11.40.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 11:40:48 -0800 (PST)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 3/3] staging: r8188eu: rename CCKSwingTable_Ch1_Ch13
-Date:   Wed, 16 Feb 2022 20:40:38 +0100
-Message-Id: <20220216194038.6762-4-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220216194038.6762-1-straube.linux@gmail.com>
-References: <20220216194038.6762-1-straube.linux@gmail.com>
+        Wed, 16 Feb 2022 14:41:13 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637A82B04AB;
+        Wed, 16 Feb 2022 11:41:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C8755CE288B;
+        Wed, 16 Feb 2022 19:40:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5529CC340E8;
+        Wed, 16 Feb 2022 19:40:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645040457;
+        bh=wETB63wkrW29pVFYDN5iqpi8/oDhPHZmrk8FQPS0BWs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ote3JCvMRwxXqsDm/YtHXL8w+ORYSsLHwssTRh5GDO5OWiRL4g51gYlhF78pQ41jR
+         x7bq0RKH0ewLko5LxIkFuqTTwhcxohgkp8brgRhB4hWcC6GkezNR+mTdu9ArqCay8r
+         NMPMwxQbWotYhGG8GWO9kJpc252HrW+BUqo6X75WYi4kwQFrilmU5N6M9Qr3gBAR9F
+         hph5DKQfDKtuR3WFpBxeiv5Fi5N8XO6CNwOigFTSwC2GXxxfbJXt+rEnwopX0MV0kt
+         lHkujyIrYA3C1566mrjxd1o7t0i1qgPqJL8zD/b77sgOdzJhPzP6bEf1PSBD2lmfCm
+         UWRlckcB7+GLA==
+Date:   Wed, 16 Feb 2022 13:48:36 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] ath11k: Replace zero-length arrays with flexible-array
+ members
+Message-ID: <20220216194836.GA904035@embeddedor>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After removing CCKSwingTable_Ch14 there is only one table left and we
-can rename CCKSwingTable_Ch1_Ch13 to simply cck_swing_table.
+There is a regular need in the kernel to provide a way to declare
+having a dynamically sized set of trailing elements in a structure.
+Kernel code should always use “flexible array members”[1] for these
+cases. The older style of one-element or zero-length arrays should
+no longer be used[2].
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+
+Link: https://github.com/KSPP/linux/issues/78
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/staging/r8188eu/hal/HalPhyRf_8188e.c | 2 +-
- drivers/staging/r8188eu/hal/odm.c            | 2 +-
- drivers/staging/r8188eu/include/odm.h        | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath11k/ce.h       |  2 +-
+ drivers/net/wireless/ath/ath11k/core.h     |  2 +-
+ drivers/net/wireless/ath/ath11k/dp.h       | 10 +++++-----
+ drivers/net/wireless/ath/ath11k/rx_desc.h  |  6 +++---
+ drivers/net/wireless/ath/ath11k/spectral.c |  2 +-
+ 5 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-index 523d4fedb3cc..b944c8071a3b 100644
---- a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-+++ b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-@@ -149,7 +149,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_8188E(
- 		TempCCk = dm_odm->RFCalibrateInfo.RegA24;
+diff --git a/drivers/net/wireless/ath/ath11k/ce.h b/drivers/net/wireless/ath/ath11k/ce.h
+index 8255b6cfab0c..9644ff909502 100644
+--- a/drivers/net/wireless/ath/ath11k/ce.h
++++ b/drivers/net/wireless/ath/ath11k/ce.h
+@@ -145,7 +145,7 @@ struct ath11k_ce_ring {
+ 	u32 hal_ring_id;
  
- 		for (i = 0; i < CCK_TABLE_SIZE; i++) {
--			if (memcmp((void *)&TempCCk, (void *)&CCKSwingTable_Ch1_Ch13[i][2], 4)) {
-+			if (memcmp((void *)&TempCCk, (void *)&cck_swing_table[i][2], 4)) {
- 				CCK_index_old = (u8)i;
- 				dm_odm->BbSwingIdxCckBase = (u8)i;
- 				break;
-diff --git a/drivers/staging/r8188eu/hal/odm.c b/drivers/staging/r8188eu/hal/odm.c
-index 24a884bcea3b..e0824eefd83a 100644
---- a/drivers/staging/r8188eu/hal/odm.c
-+++ b/drivers/staging/r8188eu/hal/odm.c
-@@ -65,7 +65,7 @@ u32 OFDMSwingTable[OFDM_TABLE_SIZE_92D] = {
- 	0x0b40002d,/*  42, -15.0dB */
+ 	/* keep last */
+-	struct sk_buff *skb[0];
++	struct sk_buff *skb[];
  };
  
--u8 CCKSwingTable_Ch1_Ch13[CCK_TABLE_SIZE][8] = {
-+u8 cck_swing_table[CCK_TABLE_SIZE][8] = {
- 	{0x36, 0x35, 0x2e, 0x25, 0x1c, 0x12, 0x09, 0x04}, /*  0, +0dB */
- 	{0x33, 0x32, 0x2b, 0x23, 0x1a, 0x11, 0x08, 0x04}, /*  1, -0.5dB */
- 	{0x30, 0x2f, 0x29, 0x21, 0x19, 0x10, 0x08, 0x03}, /*  2, -1.0dB */
-diff --git a/drivers/staging/r8188eu/include/odm.h b/drivers/staging/r8188eu/include/odm.h
-index f17c707f2cde..9fb09e0a0df9 100644
---- a/drivers/staging/r8188eu/include/odm.h
-+++ b/drivers/staging/r8188eu/include/odm.h
-@@ -447,7 +447,7 @@ enum dm_swas {
- #define	CCK_TABLE_SIZE		33
+ struct ath11k_ce_pipe {
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 9e88ccca5ca7..e5cc007b6feb 100644
+--- a/drivers/net/wireless/ath/ath11k/core.h
++++ b/drivers/net/wireless/ath/ath11k/core.h
+@@ -806,7 +806,7 @@ struct ath11k_base {
+ 	} id;
  
- extern	u32 OFDMSwingTable[OFDM_TABLE_SIZE_92D];
--extern	u8 CCKSwingTable_Ch1_Ch13[CCK_TABLE_SIZE][8];
-+extern u8 cck_swing_table[CCK_TABLE_SIZE][8];
+ 	/* must be last */
+-	u8 drv_priv[0] __aligned(sizeof(void *));
++	u8 drv_priv[] __aligned(sizeof(void *));
+ };
  
- /*  check Sta pointer valid or not */
- #define IS_STA_VALID(pSta)		(pSta)
+ struct ath11k_fw_stats_pdev {
+diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
+index 409d6cc5a1d5..b644e4675818 100644
+--- a/drivers/net/wireless/ath/ath11k/dp.h
++++ b/drivers/net/wireless/ath/ath11k/dp.h
+@@ -1170,12 +1170,12 @@ struct ath11k_htt_ppdu_stats_msg {
+ 	u32 ppdu_id;
+ 	u32 timestamp;
+ 	u32 rsvd;
+-	u8 data[0];
++	u8 data[];
+ } __packed;
+ 
+ struct htt_tlv {
+ 	u32 header;
+-	u8 value[0];
++	u8 value[];
+ } __packed;
+ 
+ #define HTT_TLV_TAG			GENMASK(11, 0)
+@@ -1362,7 +1362,7 @@ struct htt_ppdu_stats_usr_cmn_array {
+ 	 * tx_ppdu_stats_info is variable length, with length =
+ 	 *     number_of_ppdu_stats * sizeof (struct htt_tx_ppdu_stats_info)
+ 	 */
+-	struct htt_tx_ppdu_stats_info tx_ppdu_info[0];
++	struct htt_tx_ppdu_stats_info tx_ppdu_info[];
+ } __packed;
+ 
+ struct htt_ppdu_user_stats {
+@@ -1424,7 +1424,7 @@ struct htt_ppdu_stats_info {
+  */
+ struct htt_pktlog_msg {
+ 	u32 hdr;
+-	u8 payload[0];
++	u8 payload[];
+ };
+ 
+ /**
+@@ -1645,7 +1645,7 @@ struct ath11k_htt_extd_stats_msg {
+ 	u32 info0;
+ 	u64 cookie;
+ 	u32 info1;
+-	u8 data[0];
++	u8 data[];
+ } __packed;
+ 
+ #define	HTT_MAC_ADDR_L32_0	GENMASK(7, 0)
+diff --git a/drivers/net/wireless/ath/ath11k/rx_desc.h b/drivers/net/wireless/ath/ath11k/rx_desc.h
+index 79c50804d7dc..26ecc1bcd9d5 100644
+--- a/drivers/net/wireless/ath/ath11k/rx_desc.h
++++ b/drivers/net/wireless/ath/ath11k/rx_desc.h
+@@ -1445,7 +1445,7 @@ struct hal_rx_desc_ipq8074 {
+ 	__le32 hdr_status_tag;
+ 	__le32 phy_ppdu_id;
+ 	u8 hdr_status[HAL_RX_DESC_HDR_STATUS_LEN];
+-	u8 msdu_payload[0];
++	u8 msdu_payload[];
+ } __packed;
+ 
+ struct hal_rx_desc_qcn9074 {
+@@ -1464,7 +1464,7 @@ struct hal_rx_desc_qcn9074 {
+ 	__le32 hdr_status_tag;
+ 	__le32 phy_ppdu_id;
+ 	u8 hdr_status[HAL_RX_DESC_HDR_STATUS_LEN];
+-	u8 msdu_payload[0];
++	u8 msdu_payload[];
+ } __packed;
+ 
+ struct hal_rx_desc_wcn6855 {
+@@ -1483,7 +1483,7 @@ struct hal_rx_desc_wcn6855 {
+ 	__le32 hdr_status_tag;
+ 	__le32 phy_ppdu_id;
+ 	u8 hdr_status[HAL_RX_DESC_HDR_STATUS_LEN];
+-	u8 msdu_payload[0];
++	u8 msdu_payload[];
+ } __packed;
+ 
+ struct hal_rx_desc {
+diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
+index 4100cc1449a2..2b18871d5f7c 100644
+--- a/drivers/net/wireless/ath/ath11k/spectral.c
++++ b/drivers/net/wireless/ath/ath11k/spectral.c
+@@ -107,7 +107,7 @@ struct spectral_search_fft_report {
+ 	__le32 info1;
+ 	__le32 info2;
+ 	__le32 reserve0;
+-	u8 bins[0];
++	u8 bins[];
+ } __packed;
+ 
+ struct ath11k_spectral_search_report {
 -- 
-2.35.1
+2.27.0
 
