@@ -2,88 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbiBPHTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:19:08 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43856 "EHLO
+        id S229877AbiBPHUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:20:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiBPHTC (ORCPT
+        with ESMTP id S229596AbiBPHUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:19:02 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3793DD007A
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:18:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644995926; x=1676531926;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Rtxj1UDHxt0cG+aH0MjVGov4YzjQBNtjm2W/22eZowE=;
-  b=gMCjequZWMpq5/evJmRdimCoMAkaLWQto7rOWiKrhL5NL9JCs42czbJ6
-   XVIO9LcAOh9sn/8IsoTOFGdQceyM14cBhLf26DhcBjiN6Ekh/VRzkvVwI
-   1jF2kd8Kuch69LYPzB7pFAdpa0qlWNLpxmPEOalF+3n4SvOaiYVnLIGoU
-   nSbQurqnJpapJ8Doo2yVVu7ViEOQiVmHmjTeJX9XOHRjhWxqOzCxEXQ/S
-   kyuLcuF8pe2BB0SNbmJ+62DnOC+0OUqQY+QK5tmE84w7M5sz73ubkncRt
-   cB9xGXWkSsz9Mr5gMpAcJJJyfA1scDeHIG8rD7it7VtdcS8iMafMU8Use
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="230502234"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="230502234"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 23:04:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
-   d="scan'208";a="681387754"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2022 23:04:43 -0800
-Message-ID: <ae863355-3f44-5eae-4f35-90a62cb2d89f@linux.intel.com>
-Date:   Wed, 16 Feb 2022 15:03:23 +0800
+        Wed, 16 Feb 2022 02:20:02 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBB3DBD04
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:19:48 -0800 (PST)
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2489F40333
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:19:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644995987;
+        bh=3QteeCZRrYGG8lRD/0x4vggPgtmzvyjVPqyeuzYI/CI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=amsve6dJUYAvb9iA92K/zo+JR23UrvQuNPZ5wtE/CVmmvVK9rP6rg5TpvNDhVuNk3
+         g8BDuylbvJb6eikk0E4urKjlTmrtnkEXaZXsi5589rUeh2XU+t3A2oCVcLA9pkPz6E
+         iAdxGY80N8yisxMl/0BgRY8BMpQWNFObIoFuKsTcPi+Yyt9yW7X/XdUtKezZxRa1XF
+         YNESHwwFqyXgxJdXdmNXm76pEkh62yr0ccWxPH/aym+xVKeZq0uqj4QwoSpAUP5YtK
+         rVWvl7B6dIIEEOE0JZObENMJwhVDKBa79Zw0S1u7peohPC65SeaAkzGNLyX8HZ7AhG
+         4Kc9KuUNB/gKQ==
+Received: by mail-wr1-f69.google.com with SMTP id e11-20020adf9bcb000000b001e316b01456so663258wrc.21
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:19:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3QteeCZRrYGG8lRD/0x4vggPgtmzvyjVPqyeuzYI/CI=;
+        b=5PStHAWD/Y0OLTkK1dCcHMPTw6tJMPUe2zSEBWKlqYShDBLnZ4kRh8rHev/VgxyWKe
+         abj3hvVhqGcJXrKf16Xo+KHogKjun8pgE3YMY+D3uk7jLVCyL7sDuWXw5oRMAA0LlOPO
+         BeuclNqPwtabR9WCmy5uOArhTYPGLFmX4cGy9OwF/ztQ7vJCTyf0BkABJhpwMnUJdbqA
+         IBGjcDduFdEPiy6qQ6vCFQ2pVBYcZSdwbBrKgEUfkcEdsKByA8RwxwHf1qN6z17ZgL92
+         ovxCwZi0AQx5VXhzFOz78YrZNd01jUB7qTyUzauOz0uXQl7+WE4XEqNlh1lGTrSenOMS
+         0RTA==
+X-Gm-Message-State: AOAM531W6tlVEm1Gb2+MiLL/ip4haCUzZ0LkDsRvTRJGaEHmvasB/iI3
+        p0mO871r7QBcsRVIk5iY3G44OhdYHqWTncXPihJqtXkd1gl48qk+eEU/hJk/Fl/KH2moUImbgDA
+        YVGBtSU7k6VDCg7UyQX5stJBhstUxUJoyfO2FMRNsKQ==
+X-Received: by 2002:a05:600c:2502:b0:37b:ce43:9ac0 with SMTP id d2-20020a05600c250200b0037bce439ac0mr251772wma.37.1644995986825;
+        Tue, 15 Feb 2022 23:19:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz0qUMxjV+5o8oLXBCBqBJN8fqGl7V096OWi35LZe9vA29ZRLzI2LtWlImYQream3SgUc8SdQ==
+X-Received: by 2002:a05:600c:2502:b0:37b:ce43:9ac0 with SMTP id d2-20020a05600c250200b0037bce439ac0mr251757wma.37.1644995986615;
+        Tue, 15 Feb 2022 23:19:46 -0800 (PST)
+Received: from [192.168.0.110] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id az2sm26332158wmb.2.2022.02.15.23.19.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 23:19:46 -0800 (PST)
+Message-ID: <275a4a2e-e8e2-b398-3574-73eae7cc6505@canonical.com>
+Date:   Wed, 16 Feb 2022 08:19:45 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v2 1/1] iommu/vt-d: Move intel_iommu_ops to header file
+Subject: Re: [PATCH v3 1/3] dt-bindings: ps2-gpio: convert binding to
+ json-schema
 Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20220207141240.8253-1-andriy.shevchenko@linux.intel.com>
- <YgpY1IIBkFIxxjbm@8bytes.org>
- <30e45a7e-088d-7479-a284-68effadf3cbe@linux.intel.com>
- <Ygt3jibBVRyCn909@smile.fi.intel.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <Ygt3jibBVRyCn909@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Danilo Krummrich <danilokrummrich@dk-develop.de>,
+        dmitry.torokhov@gmail.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linus.walleij@linaro.org
+References: <20220215180829.63543-1-danilokrummrich@dk-develop.de>
+ <20220215180829.63543-2-danilokrummrich@dk-develop.de>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220215180829.63543-2-danilokrummrich@dk-develop.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/15/22 5:51 PM, Andy Shevchenko wrote:
-> On Tue, Feb 15, 2022 at 09:31:37AM +0800, Lu Baolu wrote:
->> On 2/14/22 9:27 PM, Joerg Roedel wrote:
->>> On Mon, Feb 07, 2022 at 04:12:40PM +0200, Andy Shevchenko wrote:
+On 15/02/2022 19:08, Danilo Krummrich wrote:
+> Convert the ps2-gpio dt-binding documentation to DT schema format using
+> the json-schema.
 > 
-> ...
-> 
->>>> +extern const struct iommu_ops intel_iommu_ops;
-> 
->>> The intel_iommu_ops symbol is only used in drivers/iommu/intel, so I
->>> would prefer a header in that directory. But I leave that up to Baolu to
->>> decide.
->>
->> Agreed. I also have a plan to split them out into a internal header.
-> 
-> The above change is hanging for more than a year, can we apply it and then
-> you can do a split?
+> Signed-off-by: Danilo Krummrich <danilokrummrich@dk-develop.de>
+> ---
+>  .../devicetree/bindings/serio/ps2-gpio.txt    | 23 --------
+>  .../devicetree/bindings/serio/ps2-gpio.yaml   | 58 +++++++++++++++++++
+>  2 files changed, 58 insertions(+), 23 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serio/ps2-gpio.txt
+>  create mode 100644 Documentation/devicetree/bindings/serio/ps2-gpio.yaml
 > 
 
-Yeah. This is my plan. The include/linux/intel-iommu.h also keeps other
-internal only helpers. It worth a separated cleanup patch.
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+
 
 Best regards,
-baolu
+Krzysztof
