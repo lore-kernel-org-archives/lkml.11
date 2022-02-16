@@ -2,334 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D01CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06203C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbiBPHbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:31:17 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46520 "EHLO
+        id S230123AbiBPHb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:31:28 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiBPHbO (ORCPT
+        with ESMTP id S230074AbiBPHbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:31:14 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBF2D0B73;
-        Tue, 15 Feb 2022 23:31:02 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id e17so1473637pfv.5;
-        Tue, 15 Feb 2022 23:31:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=QO04mi9P51FCKMM2/J+pZrM97cQ38QT9y3ElCPNBoIU=;
-        b=Krtl4kWCMaa1gpG+fVCvZCIctsIF8KiO6YsiP/PZ4FfvuqFNpp2gfhbHXS2+D1vmf0
-         Jyfoa0AGYzOFBhdyi/aEgJ7ac7WR6LVYEkeNCbyuheUKFJGHNf7qqRZ9ytqz5AW0esYb
-         tnqp2P1TFXL1u6sg+sMmx0JOnsJCm5mCr43mnYb1/zmSw5Xs9xD2EtInyAJkubOQqo1z
-         yqLiuSC4ZwVMh3LIK62E2BOBWmPcvb+RSm8B4wOo29ww5j7P8ktLyQNDYkT4fmjCQRFb
-         9n/yDtwzF4gumykY2dOSO+Z4j5DkWIXlir6mn2t606XK3KSahrGE/PMTxYChsAhLCkG2
-         K5XQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=QO04mi9P51FCKMM2/J+pZrM97cQ38QT9y3ElCPNBoIU=;
-        b=5vtEEW/BaeEOZGLqClNJyCpcbURWOgv+hfUtSGHf8LngsPQSkPp6tIoP7MCV/McNn3
-         6x9Qs/KpvL7opJ80vgZg/byGeWaRbhGMCrfFBBNVVLG/H287di0b2xHD3rFVvVTfdeXH
-         jHUeFwFTcMn9ghFphf+sHjfQXL/gT52+4ybWkg81CjkoMiy5QRT1FNTW6sUg5/IUyA9S
-         mQGwjmFRIxbqxGEB3FRgO2BLbWvKVC9YXJDHL9Of9GtzinMn18s1waeJaApsejKiwtKb
-         alB+YNepSDb0dC9bykA8eycYUdHiUC3vvG89AUwpWu8q/cLKLEKpDZDHVkKu7TBD7j7E
-         Nzpg==
-X-Gm-Message-State: AOAM532IHeNgjzet2Q+LVtF0+2WYS33z0QiklOb/2+yujfb+AhT9+fEJ
-        c3Gm0lOrWtma1f8b4vG2XnI=
-X-Google-Smtp-Source: ABdhPJwIRsEcqXMKzVOyLThBX92p4pM7DgDFeAIIYkSKAJNoLimBwAoIMmosMRyIkby+VsH/8c33kQ==
-X-Received: by 2002:a05:6a00:26e0:b0:4e1:7131:de2b with SMTP id p32-20020a056a0026e000b004e17131de2bmr1828821pfw.20.1644996661875;
-        Tue, 15 Feb 2022 23:31:01 -0800 (PST)
-Received: from [192.168.255.10] ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id c11sm43169808pfv.76.2022.02.15.23.30.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 23:31:01 -0800 (PST)
-Message-ID: <ceb56bc2-e154-2e37-863c-b075ee174d5e@gmail.com>
-Date:   Wed, 16 Feb 2022 15:30:50 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
- perfmon_event_map[] directly
+        Wed, 16 Feb 2022 02:31:21 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2086.outbound.protection.outlook.com [40.107.93.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD3110F20E;
+        Tue, 15 Feb 2022 23:31:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RIrZ/6V3i1uJILOsRivasQnFQqc72KDA3kEEKryq4XgZgfUL9Q3jNC55v23+e04mR3JbwrDCh5ThclRacFwcOviTs9xJAS1wUwMUhp7XypguDdwjc0wBYyRL866MbU9pjXwGlmWzlMkIiHcZE5aIE5I6vU3rQScWQG8ReW0WkhkH7X7M/KonXelSL9EOVsDHeTGlQA6czSTM0E8Y/Dozi6wLv+X6aWV8LxA+qx7W36JPKFq2RS0JWZpOWTkmTwTnbVojHxwZAkZw89vg77yGpgb1j/eXKPVp6ZgnZZoZnstw6S1iAYnFiCZODEUMA7ZJGp9v2usW4ubH2uLhlpz2xw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5A/2027vx5pLt5iDeaumLs7ox9N+sFPxVkL3tj+H44s=;
+ b=obaletMcPn5Ra7s5vJr4/51iEcRInwVS02+/WXt8h5cAwSb9JDlwkFPqATWf0BBdD9fifRKPwZGdo51v4z9hWejZSr33/Sp08PtN5un/53q6qzIzMDv65TG5fQRPG/rCUM74/BUVN+BHMKM4fvaJP66a420PRTggAc/TKIbdBtMo7RefpzBJbodt+LbKXTCxprM1v+meDBX3cOeuz+soYn9/OMQ7j2bm56TylugthN5uDCx9DlV53te5VKk9Dc8sIQhZV3dfVr4uf9ysepa7DLVCwOzB3rvxEx6Pf6qCEjEhiEQRep0Qenw+VAAxj1d3TsY+9SKwjgRh4q4elXW1ZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5A/2027vx5pLt5iDeaumLs7ox9N+sFPxVkL3tj+H44s=;
+ b=j+3U+Z8znMRbEUUjLmZ6RRDh/2GokRIA+YPT2+gRMANj/uhbrxlTkQHIPj0f9mC0WP1XIGULPMTeyuukiu3FWmxvQj+dkX2KHu+p9tZ2BHtaOlG/RQ0WBQyZCi9sHTZFpqo+RoDdFrtsMLhCmrN+KB6eFB/slWCdkYkHt+oebdObwknSUneRHfmfVSSCDVYOMBAHMz7OlxuCT44VpxZrbcvD9RIkt1fSB/ES0m0PqQK/5ENTOSPrseoYSQMCio0TrNnnbpDHbmv2RN9LSA0PIwK+Ajy3+o9Bj/+/pJLdDVjxVK4Jo6riee1aw+Q6c0VlxSzA9gP9ttCMIfzMswRE1A==
+Received: from DM6PR12MB4435.namprd12.prod.outlook.com (2603:10b6:5:2a6::23)
+ by BN6PR12MB1364.namprd12.prod.outlook.com (2603:10b6:404:1e::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Wed, 16 Feb
+ 2022 07:31:01 +0000
+Received: from DM6PR12MB4435.namprd12.prod.outlook.com
+ ([fe80::83b:60bf:1e58:de83]) by DM6PR12MB4435.namprd12.prod.outlook.com
+ ([fe80::83b:60bf:1e58:de83%7]) with mapi id 15.20.4995.015; Wed, 16 Feb 2022
+ 07:31:01 +0000
+From:   Mohan Kumar D <mkumard@nvidia.com>
+To:     Takashi Iwai <tiwai@suse.de>
+CC:     "broonie@kernel.org" <broonie@kernel.org>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Sameer Pujar <spujar@nvidia.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 0/6] Add Tegra234 HDA support
+Thread-Topic: [PATCH v2 0/6] Add Tegra234 HDA support
+Thread-Index: AQHYHkqfIXhpDBHnV0GiVPOVgWWYmqyUo6YAgAABJoCAASyu4A==
+Date:   Wed, 16 Feb 2022 07:31:01 +0000
+Message-ID: <DM6PR12MB4435BDDAA9DF1820C5D92637C1359@DM6PR12MB4435.namprd12.prod.outlook.com>
+References: <20220210065057.13555-1-mkumard@nvidia.com>
+        <s5hmtiscl65.wl-tiwai@suse.de> <s5hk0dwckza.wl-tiwai@suse.de>
+In-Reply-To: <s5hk0dwckza.wl-tiwai@suse.de>
+Accept-Language: en-US, ta-IN
 Content-Language: en-US
-To:     "Liang, Kan" <kan.liang@linux.intel.com>,
-        Jim Mattson <jmattson@google.com>
-Cc:     David Dunn <daviddunn@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>
-References: <20220117085307.93030-1-likexu@tencent.com>
- <20220117085307.93030-3-likexu@tencent.com>
- <20220202144308.GB20638@worktop.programming.kicks-ass.net>
- <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
- <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net>
- <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
- <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
- <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com>
- <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
- <7b5012d8-6ae1-7cde-a381-e82685dfed4f@linux.intel.com>
- <CALMp9eTOaWxQPfdwMSAn-OYAHKPLcuCyse7BpsSOM35vg5d0Jg@mail.gmail.com>
- <e06db1a5-1b67-28ac-ee4c-34ece5857b1f@linux.intel.com>
- <CALMp9eSjDro169JjTXyCZn=Rf3PT0uHhdNXEifiXGYQK-Zn8LA@mail.gmail.com>
- <d86ba87b-d98a-53a0-b2cd-5bf77b97b592@linux.intel.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-Organization: Tencent
-In-Reply-To: <d86ba87b-d98a-53a0-b2cd-5bf77b97b592@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 31c4690e-aed0-4660-915f-08d9f11e4846
+x-ms-traffictypediagnostic: BN6PR12MB1364:EE_
+x-microsoft-antispam-prvs: <BN6PR12MB136459F58FDA499983C726A0C1359@BN6PR12MB1364.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0cOalGH5KKH0Vi2H9hsUtl7/PdCv9J9UxcjdvxCPDD8djrfyRHf6/Vi6t4gCKVAxQs30g7TAGy5xDSNGvzdOpphyI61Q3b/HWt6ibAgMrL2H/LoY8tQ0CWZY++jUaZR1kTtSaOF0TSnTvQupKNQ1H0Ydr4oSav3aXW/Ue0Q4iV1JKWSXfW3uEomn9ND/QRbnSxHr0/brsfxkv/v8K3ijp3DUr1ON50bd/OFPlEs90raVNH3/7EkscPmHc/OLsKolc7aK+3vdugNroY/2LYrdX7I3eCSzxHdFAQhtdV4jUiFFfKzTQ8vPRHFgZVdcp5wfAKli2EIkpSN1e1n6gbjuz9Bjq4m8bpZAXD7+H7nAQOWe0RLK2XFtNhkAvnIz+b+daAR7QmJwXplCE2SR4Bpm2fG+9OLQgEcxMXsUMfJvIMUB5/hawTJQdCvO1h+FXaZ8DUJIWeW7EqqHX1wND57rmm8KtJTM3CjQx6eSaXlSQs3EiVQMaV6JOuyToSXM8syUam4RYS6yTg2quDJ2RBFo7OrL7LJsRxNmLV4YWp3GcvGfeJZF6BmhZCVWfFCIv4bRiwgxk2oWBk+6QLVPJZSJ/YRsJ/Md+HDaXzbFxmbEQt5j8Y8PRdWBJXgYCp1VugTGlcOxgTMA0HMRW0FcztoPX/MA2tMbAtnOH3wx1tCtQ4LzPOcmqp4fcKvnNTe6a/ueUAanmyOckkzawQfNb0ohVQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4435.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(122000001)(6506007)(55016003)(7696005)(9686003)(38070700005)(33656002)(71200400001)(508600001)(38100700002)(26005)(186003)(83380400001)(86362001)(4326008)(2906002)(8676002)(316002)(76116006)(8936002)(66946007)(66556008)(66446008)(64756008)(66476007)(6916009)(54906003)(7416002)(5660300002)(52536014);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JNzmvtn+yW2gzs3Erg6FSHuvDCYiRDnz75qUMVoyUmBzHad2PcVwODr4CVCB?=
+ =?us-ascii?Q?lAx6kMeZowsfWp3R5hqpwLAKtLnxVv0EvrQrqDUp3mxKpGX/6SbRWJG7kWhd?=
+ =?us-ascii?Q?8OFU/2WAcIGL7QkCChHNGChNM1nF2l1w2IJhQ8+MocKS/JQpDKmzpDl03RnU?=
+ =?us-ascii?Q?WBxrD43B8XKTbx2Ea9VjivWdDjD+d7NUqInjfagKwcyKAIJ3RPJ/19w0ELkx?=
+ =?us-ascii?Q?IM0+I3uq6myhn+Hrh8RwTbkD80HWYQHy/14Se9aA+et3fRxsW92MNIvQR82k?=
+ =?us-ascii?Q?BrrKUx2SOyggC/LUhRLtlwYfkp3B0+CYdh5I2Nn4yEV+NXBENyIvrwlA7hW3?=
+ =?us-ascii?Q?/qaDVaG2qJTKdsgFkCP+H3tm7rRi7UOQknvW84cIyEsnC8jwPXR4L//ClREg?=
+ =?us-ascii?Q?NbCoy8L4uhKJBxKDELJuwZv+e5hie7CkqVoGDescSlG2Y5qGWFU6oXJnPh57?=
+ =?us-ascii?Q?TxoHYBq0UrdCepVfHxTLMLDT+QVEl31Z3RqalR5iuSilen9pdR+ULMZGgpt4?=
+ =?us-ascii?Q?mgYvm63inpqSndVIt8z3j+PjcFpfS+LmjrjomSzQ4mmYY64diJdL+ywNHfWn?=
+ =?us-ascii?Q?DPvrkJWbBF/476u8rnnDjWKA7x38XM0L6hm9J6kfD+wsOYc7djYFWyqyfBMT?=
+ =?us-ascii?Q?7CvD37zglWqeIaYnjfTGra2T3jq3B/ssweRis8uM766bjZeOprmQGxPuEahN?=
+ =?us-ascii?Q?5v/XK+0dWzk0+rBdPBNIQUS9jvZl3dT0fRXqOnx1e4hOAP/YcSFU8YoWoF3+?=
+ =?us-ascii?Q?xp+KyHB+FvIkkC7J40uL9zT18LUXY+ifqxKyPtOv/SAovJ1yMod2VHBRnR4E?=
+ =?us-ascii?Q?2CaxjXEjdlSPsDVjXJnaZG7ku6asmEyTgKeZysgc2KFYhvYA4gFrRNo9665c?=
+ =?us-ascii?Q?GtFuf6husJK1b5FmUalOtmj04/xFf3M8RTntZZtdd53Ul3DGoaMB05VTXjyc?=
+ =?us-ascii?Q?j0wbNro8wopazDGkSDHCfZ1LSesq+y+C4wafCsW4C7RAXZpJg5QrNvvFmyAJ?=
+ =?us-ascii?Q?toenZrpFdOl5dTuz08ZA1SEwn8nIss7t6cY3/sjIgCvfwId/KvTMo9wgLNVz?=
+ =?us-ascii?Q?uqL2ajOwk8lk8pGivSMfBa+XFY0jp1XSbSK1UZT4d1iE364yeckUJ5ew8kQN?=
+ =?us-ascii?Q?caRYENZvBu/Cj6CDdoWZRUw0ohhi5/PGwhN+giabG+DvhhQTloYReNCd2d/N?=
+ =?us-ascii?Q?wSuG5Jlt5E5qAbGBESrihkgAjE7vpE50WzUalwKtAbL/RJqBkbZabIHWiaJ3?=
+ =?us-ascii?Q?K1DzqKsb5y1sdWLMwJYCJ8YmMfhbU9cyV9/HhXYBniKpTfyhdmG9qoIHd8JN?=
+ =?us-ascii?Q?NQRH4Hr3s3r69TPc0KZaOodWGxcKMELhdKZmTptMrrwsxZh2DuznrYqYZRKd?=
+ =?us-ascii?Q?AIrqsbF7Bzid+qGR61nJNVudUXpHdik3FxZy3FJbWn23c9cwTOscdQckMLlm?=
+ =?us-ascii?Q?xVDIh9aNGczpREicKPtvy/tCCcFpNycH7pg567hNMIfirj0iq9FsenMSxaTN?=
+ =?us-ascii?Q?ojn1fNwCt+d9ib8LCTO0F4Jj57L9+G5Y2SHab6a7TFbP4pSVSqWwRGOrdhfo?=
+ =?us-ascii?Q?1XLT/1Swrhl8NtDfpOVTp/AD98YccQBFtT0MXOcwGOn9LZy0UEUooSv4E/4j?=
+ =?us-ascii?Q?WQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4435.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31c4690e-aed0-4660-915f-08d9f11e4846
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2022 07:31:01.3064
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2MBoQirGuzHj+xmJXZ+EHz/BmVgMtlswERERYrSFUVXlmJD9lLpTDmwWpo8GpGgFr2XbcnUkTmstRoS8GtjdRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1364
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/2/2022 3:46 am, Liang, Kan wrote:
-> 
-> 
-> On 2/10/2022 2:16 PM, Jim Mattson wrote:
->> On Thu, Feb 10, 2022 at 10:30 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
->>>
->>>
->>>
->>> On 2/10/2022 11:34 AM, Jim Mattson wrote:
->>>> On Thu, Feb 10, 2022 at 7:34 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
->>>>>
->>>>>
->>>>>
->>>>> On 2/9/2022 2:24 PM, David Dunn wrote:
->>>>>> Dave,
->>>>>>
->>>>>> In my opinion, the right policy depends on what the host owner and
->>>>>> guest owner are trying to achieve.
->>>>>>
->>>>>> If the PMU is being used to locate places where performance could be
->>>>>> improved in the system, there are two sub scenarios:
->>>>>>       - The host and guest are owned by same entity that is optimizing
->>>>>> overall system.  In this case, the guest doesn't need PMU access and
->>>>>> better information is provided by profiling the entire system from the
->>>>>> host.
->>>>>>       - The host and guest are owned by different entities.  In this
->>>>>> case, profiling from the host can identify perf issues in the guest.
->>>>>> But what action can be taken?  The host entity must communicate issues
->>>>>> back to the guest owner through some sort of out-of-band information
->>>>>> channel.  On the other hand, preempting the host PMU to give the guest
->>>>>> a fully functional PMU serves this use case well.
->>>>>>
->>>>>> TDX and SGX (outside of debug mode) strongly assume different
->>>>>> entities.  And Intel is doing this to reduce insight of the host into
->>>>>> guest operations.  So in my opinion, preemption makes sense.
->>>>>>
->>>>>> There are also scenarios where the host owner is trying to identify
->>>>>> systemwide impacts of guest actions.  For example, detecting memory
->>>>>> bandwidth consumption or split locks.  In this case, host control
->>>>>> without preemption is necessary.
->>>>>>
->>>>>> To address these various scenarios, it seems like the host needs to be
->>>>>> able to have policy control on whether it is willing to have the PMU
->>>>>> preempted by the guest.
->>>>>>
->>>>>> But I don't see what scenario is well served by the current situation
->>>>>> in KVM.  Currently the guest will either be told it has no PMU (which
->>>>>> is fine) or that it has full control of a PMU.  If the guest is told
->>>>>> it has full control of the PMU, it actually doesn't.  But instead of
->>>>>> losing counters on well defined events (from the guest perspective),
->>>>>> they simply stop counting depending on what the host is doing with the
->>>>>> PMU.
->>>>>
->>>>> For the current perf subsystem, a PMU should be shared among different
->>>>> users via the multiplexing mechanism if the resource is limited. No one
->>>>> has full control of a PMU for lifetime. A user can only have the PMU in
->>>>> its given period. I think the user can understand how long it runs via
->>>>> total_time_enabled and total_time_running.
->>>>
->>>> For most clients, yes. For kvm, no. KVM currently tosses
->>>> total_time_enabled and total_time_running in the bitbucket. It could
->>>> extrapolate, but that would result in loss of precision. Some guest
->>>> uses of the PMU would not be able to cope (e.g.
->>>> https://github.com/rr-debugger/rr).
->>>>
->>>>> For a guest, it should rely on the host to tell whether the PMU resource
->>>>> is available. But unfortunately, I don't think we have such a
->>>>> notification mechanism in KVM. The guest has the wrong impression that
->>>>> the guest can have full control of the PMU.
->>>>
->>>> That is the only impression that the architectural specification
->>>> allows the guest to have. On Intel, we can mask off individual fixed
->>>> counters, and we can reduce the number of GP counters, but AMD offers
->>>> us no such freedom. Whatever resources we advertise to the guest must
+Ok, Let me resync linux-next to clear the conflict and will resend patches =
+with v3.
 
-The future may look a little better, with more and more server
-hardware being designed with virtualization requirement in mind.
+-----Original Message-----
+From: Takashi Iwai <tiwai@suse.de>=20
+Sent: Tuesday, February 15, 2022 7:04 PM
+To: Mohan Kumar D <mkumard@nvidia.com>
+Cc: broonie@kernel.org; lgirdwood@gmail.com; robh+dt@kernel.org; thierry.re=
+ding@gmail.com; tiwai@suse.com; Jonathan Hunter <jonathanh@nvidia.com>; Sam=
+eer Pujar <spujar@nvidia.com>; alsa-devel@alsa-project.org; devicetree@vger=
+.kernel.org; linux-tegra@vger.kernel.org; linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] Add Tegra234 HDA support
 
->>>> be available for its use whenever it wants. Otherwise, PMU
->>>> virtualization is simply broken.
+External email: Use caution opening links or attachments
 
-YES for "simply broken" but no for "available whenever it wants"
-If there is no host (core) pmu user, the guest pmu is fully and architecturally 
-available.
 
-If there is no perf agent on host (like watchdog),
-current guest pmu is working fine except for some emulated instructions.
+On Tue, 15 Feb 2022 14:29:54 +0100,
+Takashi Iwai wrote:
+>
+> On Thu, 10 Feb 2022 07:50:51 +0100,
+> Mohan Kumar wrote:
+> >
+> > This series add the support for TEGRA234 HDA driver support
+> >
+> > Mohan Kumar (6):
+> >   ALSA: hda/tegra: Add Tegra234 hda driver support
+> >   ALSA: hda/tegra: Hardcode GCAP ISS value on T234
+> >   ALSA: hda/tegra: Update scratch reg. communication
+> >   dt-bindings: Add HDA support for Tegra234
+> >   dt-bindings: Document Tegra234 HDA support
+> >   arm64: tegra: Add hda dts node for Tegra234
+>
+> Applied all six patches to for-next branch now.
 
->>>>
->>>>> In my opinion, we should add the notification mechanism in KVM. When the
->>>>> PMU resource is limited, the guest can know whether it's multiplexing or
->>>>> can choose to reschedule the event.
+... and now I realized that it's conflicting with the latest Tegra234 reset=
+ stuff on linux-next.
 
-Eventually, we moved the topic to an open discussion and I am relieved.
+Maybe better to split the patches to be merged through several trees?
 
-The total_time_enabled and total_time_running of the perf_events
-created by KVM are quite unreliable and invisible to the guest, and
-we may need to clearly define what they reallt mean, for example
-when profiling the SGX applications.
 
-The elephant in the vPMU room at the moment is that the guest has
-no way of knowing if the physical pmc on the back end of the vPMC
-is being multiplexed, even though the KVM is able to know.
-
-One way to mitigate this is to allow perf to not apply a multiplexing
-policy (sys knob), for example with a first-come, first-served policy.
-In this case, each user of the same priority of PMC is fair, and KVM
-goes first to request hardware when the guest uses vPMC, or requests
-re-sched to another pCPU, and only fails in the worst case.
-
->>>>
->>>> That sounds like a paravirtual perf mechanism, rather than PMU
->>>> virtualization. Are you suggesting that we not try to virtualize the
->>>> PMU? Unfortunately, PMU virtualization is what we have customers
->>>> clamoring for. No one is interested in a paravirtual perf mechanism.
->>>> For example, when will VTune in the guest know how to use your
->>>> proposed paravirtual interface?
->>>
->>> OK. If KVM cannot notify the guest, maybe guest can query the usage of
->>> counters before using a counter. There is a IA32_PERF_GLOBAL_INUSE MSR
->>> introduced with Arch perfmon v4. The MSR provides an "InUse" bit for
->>> each counters. But it cannot guarantee that the counter can always be
->>> owned by the guest unless the host treats the guest as a super-user and
->>> agrees to not touch its counter. This should only works for the Intel
->>> platforms.
->>
->> Simple question: Do all existing guests (Windows and Linux are my
->> primary interest) query that MSR today? If not, then this proposal is
->> DOA.
->>
-> 
-> No, we don't, at least for Linux. Because the host own everything. It doesn't 
-> need the MSR to tell which one is in use. We track it in an SW way.
-
-Indeed, "the host own everything", which is also the
-starting point for the host perf when it received the changes.
-
-> 
-> For the new request from the guest to own a counter, I guess maybe it is worth 
-> implementing it. But yes, the existing/legacy guest never check the MSR.
-
-We probably need an X86 generic notification solution for the worst case.
-
-> 
-> 
->>>>
->>>>> But seems the notification mechanism may not work for TDX case?
-
-Shared memory can be used for communication between the host and
-the guest, if it's allowed by the TDX guest.
-
->>>>>>
->>>>>> On the other hand, if we flip it around the semantics are more clear.
->>>>>> A guest will be told it has no PMU (which is fine) or that it has full
->>>>>> control of the PMU.  If the guest is told that it has full control of
->>>>>> the PMU, it does.  And the host (which is the thing that granted the
->>>>>> full PMU to the guest) knows that events inside the guest are not
->>>>>> being measured.  This results in all entities seeing something that
->>>>>> can be reasoned about from their perspective.
->>>>>>
->>>>>
->>>>> I assume that this is for the TDX case (where the notification mechanism
->>>>>     doesn't work). The host still control all the PMU resources. The TDX
->>>>> guest is treated as a super-user who can 'own' a PMU. The admin in the
->>>>> host can configure/change the owned PMUs of the TDX. Personally, I think
->>>>> it makes sense. But please keep in mind that the counters are not
->>>>> identical. There are some special events that can only run on a specific
->>>>> counter. If the special counter is assigned to TDX, other entities can
->>>>> never run some events. We should let other entities know if it happens.
->>>>> Or we should never let non-host entities own the special counter.
->>>>
->>>> Right; the counters are not fungible. Ideally, when the guest requests
->>>> a particular counter, that is the counter it gets. If it is given a
->>>> different counter, the counter it is given must provide the same
->>>> behavior as the requested counter for the event in question.
->>>
->>> Ideally, Yes, but sometimes KVM/host may not know whether they can use
->>> another counter to replace the requested counter, because KVM/host
->>> cannot retrieve the event constraint information from guest.
->>
->> In that case, don't do it. When the guest asks for a specific counter,
->> give the guest that counter. This isn't rocket science.
->>
-> 
-> Sounds like the guest can own everything if they want. Maybe it makes sense from 
-> the virtualization's perspective. But it sounds too aggressive to me. :)
-
-Until Perterz changes his will, upstream may not see this kind of change.
-(I actually used to like this design too).
-
-> 
-> Thanks,
-> Kan
-> 
-> 
->>> For example, we have Precise Distribution (PDist) feature enabled only
->>> for the GP counter 0 on SPR. Perf uses the precise_level 3 (a SW
->>> variable) to indicate the feature. For the KVM/host, they never know
->>> whether the guest apply the PDist feature.
-
-Yes, just check what we did on PEBS, which is Acked-by PeterZ.
-
->>>
->>> I have a patch that forces the perf scheduler starts from the regular
->>> counters, which may mitigates the issue, but cannot fix it. (I will post
->>> the patch separately.)
->>>
->>> Or we should never let the guest own the special counters. Although the
->>> guest has to lose some special events, I guess the host may more likely
->>> be willing to let the guest own a regular counter.
-
-AMD seems to do this, but it's just another disable-pmu compromise.
-
->>>
->>>
->>> Thanks,
->>> Kan
->>>
->>>>
->>>>>
->>>>> Thanks,
->>>>> Kan
->>>>>
->>>>>> Thanks,
->>>>>>
->>>>>> Dave Dunn
->>>>>>
->>>>>> On Wed, Feb 9, 2022 at 10:57 AM Dave Hansen <dave.hansen@intel.com> wrote:
->>>>>>
->>>>>>>> I was referring to gaps in the collection of data that the host perf
->>>>>>>> subsystem doesn't know about if ATTRIBUTES.PERFMON is set for a TDX
->>>>>>>> guest. This can potentially be a problem if someone is trying to
->>>>>>>> measure events per unit of time.
->>>>>>>
->>>>>>> Ahh, that makes sense.
->>>>>>>
->>>>>>> Does SGX cause problem for these people?  It can create some of the same
->>>>>>> collection gaps:
->>>>>>>
->>>>>>>            performance monitoring activities are suppressed when entering
->>>>>>>            an opt-out (of performance monitoring) enclave.
+Takashi
