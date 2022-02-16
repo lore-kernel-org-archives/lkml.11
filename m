@@ -2,275 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DACC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 17:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 863D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 17:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237289AbiBPRma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 12:42:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39138 "EHLO
+        id S237299AbiBPRms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 12:42:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233585AbiBPRm2 (ORCPT
+        with ESMTP id S237293AbiBPRmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 12:42:28 -0500
-X-Greylist: delayed 1665 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 09:42:15 PST
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93443125505;
-        Wed, 16 Feb 2022 09:42:15 -0800 (PST)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21G9uJV2008610;
-        Wed, 16 Feb 2022 11:14:16 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=33vqaw4OMqIg+THa03UUOG1n/gnvCXtRmFHkVk9Gw2A=;
- b=dvwp7kDR8mpNCHBu2+U20GV2xQQEaWNiBWwDokjTqKolWgTtpfxTnZKbaRXJYCOJY7P2
- fCaKH/gTFVZxFAQ/4qnPpZpJ6UAZO+3N5tpl9Shht4QZMugx1T4xAWq0szDi3jZZdrg+
- BJXrYi8cvmLUnHI/gTztImfhseSEx7iyAucbTsh6Pqwe1yr7PHP6IuZQhQkhvx47AIdR
- /Q4YQUQO7L0GdNZsjGADj5Xv7/agTv2fOjEd0Az5FpvXM/B5FGrUDsUAU8ACWrlVoZdc
- oVdRWbVkrm1xT7vlHt8oxU4JI4yV5rFJjlyjjRS3DCQ3WC7fXa1iBROeJwG823BiJGZW uA== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3e8nrah4gr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 16 Feb 2022 11:14:15 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 16 Feb
- 2022 17:14:13 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Wed, 16 Feb 2022 17:14:13 +0000
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.64.199])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 909FB459;
-        Wed, 16 Feb 2022 17:14:13 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <kuninori.morimoto.gx@renesas.com>
-CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH 2/2] ASoC: audio_graph_card2: Add support for variable slot widths
-Date:   Wed, 16 Feb 2022 17:14:08 +0000
-Message-ID: <20220216171408.265605-3-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220216171408.265605-1-rf@opensource.cirrus.com>
-References: <20220216171408.265605-1-rf@opensource.cirrus.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: BmFtjN7WAIqI9Sq_9KwVaQVh_6YETDSk
-X-Proofpoint-GUID: BmFtjN7WAIqI9Sq_9KwVaQVh_6YETDSk
-X-Proofpoint-Spam-Reason: safe
+        Wed, 16 Feb 2022 12:42:45 -0500
+Received: from mother.openwall.net (mother.openwall.net [195.42.179.200])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id AAA781598E7
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 09:42:29 -0800 (PST)
+Received: (qmail 28379 invoked from network); 16 Feb 2022 17:42:27 -0000
+Received: from localhost (HELO pvt.openwall.com) (127.0.0.1)
+  by localhost with SMTP; 16 Feb 2022 17:42:27 -0000
+Received: by pvt.openwall.com (Postfix, from userid 503)
+        id B379BAB88C; Wed, 16 Feb 2022 18:42:20 +0100 (CET)
+Date:   Wed, 16 Feb 2022 18:42:20 +0100
+From:   Solar Designer <solar@openwall.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, Alexey Gladkov <legion@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        containers@lists.linux-foundation.org,
+        Michal Koutn?? <mkoutny@suse.com>, linux-api@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] rlimit: Fix RLIMIT_NPROC enforcement failure caused by capability calls in set_user
+Message-ID: <20220216174220.GA10389@openwall.com>
+References: <87ilteiz4a.fsf_-_@email.froward.int.ebiederm.org> <20220216155832.680775-1-ebiederm@xmission.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216155832.680775-1-ebiederm@xmission.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some audio hardware cannot support a fixed slot width or a slot width
-equal to the sample width in all cases. This is usually due either to
-limitations of the audio serial port or system clocking restrictions.
-A typical example would be:
+On Wed, Feb 16, 2022 at 09:58:28AM -0600, Eric W. Biederman wrote:
+> Solar Designer <solar@openwall.com> wrote:
+> > I'm not aware of anyone actually running into this issue and reporting
+> > it.  The systems that I personally know use suexec along with rlimits
+> > still run older/distro kernels, so would not yet be affected.
+> >
+> > So my mention was based on my understanding of how suexec works, and
+> > code review.  Specifically, Apache httpd has the setting RLimitNPROC,
+> > which makes it set RLIMIT_NPROC:
+> >
+> > https://httpd.apache.org/docs/2.4/mod/core.html#rlimitnproc
+> >
+> > The above documentation for it includes:
+> >
+> > "This applies to processes forked from Apache httpd children servicing
+> > requests, not the Apache httpd children themselves. This includes CGI
+> > scripts and SSI exec commands, but not any processes forked from the
+> > Apache httpd parent, such as piped logs."
+> >
+> > In code, there are:
+> >
+> > ./modules/generators/mod_cgid.c:        ( (cgid_req.limits.limit_nproc_set) && ((rc = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC,
+> > ./modules/generators/mod_cgi.c:        ((rc = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC,
+> > ./modules/filters/mod_ext_filter.c:    rv = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC, conf->limit_nproc);
+> >
+> > For example, in mod_cgi.c this is in run_cgi_child().
+> >
+> > I think this means an httpd child sets RLIMIT_NPROC shortly before it
+> > execs suexec, which is a SUID root program.  suexec then switches to the
+> > target user and execs the CGI script.
+> >
+> > Before 2863643fb8b9, the setuid() in suexec would set the flag, and the
+> > target user's process count would be checked against RLIMIT_NPROC on
+> > execve().  After 2863643fb8b9, the setuid() in suexec wouldn't set the
+> > flag because setuid() is (naturally) called when the process is still
+> > running as root (thus, has those limits bypass capabilities), and
+> > accordingly execve() would not check the target user's process count
+> > against RLIMIT_NPROC.
+> 
+> In commit 2863643fb8b9 ("set_user: add capability check when
+> rlimit(RLIMIT_NPROC) exceeds") capable calls were added to set_user to
+> make it more consistent with fork.  Unfortunately because of call site
+> differences those capables calls were checking the credentials of the
 
-- 16-bit samples in 16-bit slots
-- 24-bit samples in 32-bit slots
+s/capables/capable/
 
-The new dai-tdm-slot-width-map property allows setting a mapping of
-sample widths and the corresponding tdm slot widths. The content is
-an array of integers. Each pair of values are the sample_width and
-the corresponding slot width.
+> user before set*id() instead of after set*id().
+> 
+> This breaks enforcement of RLIMIT_NPROC for applications that set the
+> rlimit and then call set*id() while holding a full set of
+> capabilities.  The capabilities are only changed in the new credential
+> in security_task_fix_setuid().
+> 
+> The code in apache suexec appears to follow this pattern.
+> 
+> Commit 909cc4ae86f3 ("[PATCH] Fix two bugs with process limits
+> (RLIMIT_NPROC)") where this check was added describes the targes of this
+> capability check as:
+> 
+>   2/ When a root-owned process (e.g. cgiwrap) sets up process limits and then
+>       calls setuid, the setuid should fail if the user would then be running
+>       more than rlim_cur[RLIMIT_NPROC] processes, but it doesn't.  This patch
+>       adds an appropriate test.  With this patch, and per-user process limit
+>       imposed in cgiwrap really works.
+> 
+> So the original use case also of this check also appears to match the broken
+> pattern.
 
-The property is added to each endpoint node that needs the restriction.
+Duplicate "also" - drop one.
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
----
- include/sound/simple_card_utils.h     | 11 ++++
- sound/soc/generic/audio-graph-card2.c |  4 ++
- sound/soc/generic/simple-card-utils.c | 95 +++++++++++++++++++++++++++
- 3 files changed, 110 insertions(+)
+> Restore the enforcement of RLIMIT_NPROC by removing the bad capable
+> checks added in set_user.  This unfortunately restores the
+> inconsistencies state the code has been in for the last 11 years, but
 
-diff --git a/include/sound/simple_card_utils.h b/include/sound/simple_card_utils.h
-index 5ee269c59aac..1c966efe0187 100644
---- a/include/sound/simple_card_utils.h
-+++ b/include/sound/simple_card_utils.h
-@@ -16,6 +16,11 @@
- #define asoc_simple_init_mic(card, sjack, prefix) \
- 	asoc_simple_init_jack(card, sjack, 0, prefix, NULL)
- 
-+struct asoc_simple_tdm_width_map {
-+	int sample_bits;
-+	int slot_width;
-+};
-+
- struct asoc_simple_dai {
- 	const char *name;
- 	unsigned int sysclk;
-@@ -26,6 +31,9 @@ struct asoc_simple_dai {
- 	unsigned int rx_slot_mask;
- 	struct clk *clk;
- 	bool clk_fixed;
-+	struct asoc_simple_tdm_width_map *tdm_width_map;
-+	int n_tdm_widths;
-+	struct snd_soc_dai *dai;
- };
- 
- struct asoc_simple_data {
-@@ -132,6 +140,9 @@ int asoc_simple_parse_daifmt(struct device *dev,
- 			     struct device_node *codec,
- 			     char *prefix,
- 			     unsigned int *retfmt);
-+int asoc_simple_parse_tdm_width_map(struct device *dev, struct device_node *np,
-+				    struct asoc_simple_dai *dai);
-+
- __printf(3, 4)
- int asoc_simple_set_dailink_name(struct device *dev,
- 				 struct snd_soc_dai_link *dai_link,
-diff --git a/sound/soc/generic/audio-graph-card2.c b/sound/soc/generic/audio-graph-card2.c
-index c3947347dda3..c0f3907a01fd 100644
---- a/sound/soc/generic/audio-graph-card2.c
-+++ b/sound/soc/generic/audio-graph-card2.c
-@@ -503,6 +503,10 @@ static int __graph_parse_node(struct asoc_simple_priv *priv,
- 	if (ret < 0)
- 		return ret;
- 
-+	ret = asoc_simple_parse_tdm_width_map(dev, ep, dai);
-+	if (ret < 0)
-+		return ret;
-+
- 	ret = asoc_simple_parse_clk(dev, ep, dai, dlc);
- 	if (ret < 0)
- 		return ret;
-diff --git a/sound/soc/generic/simple-card-utils.c b/sound/soc/generic/simple-card-utils.c
-index a4babfb63175..60653d7d7ae7 100644
---- a/sound/soc/generic/simple-card-utils.c
-+++ b/sound/soc/generic/simple-card-utils.c
-@@ -12,6 +12,7 @@
- #include <linux/of_gpio.h>
- #include <linux/of_graph.h>
- #include <sound/jack.h>
-+#include <sound/pcm_params.h>
- #include <sound/simple_card_utils.h>
- 
- void asoc_simple_convert_fixup(struct asoc_simple_data *data,
-@@ -87,6 +88,49 @@ int asoc_simple_parse_daifmt(struct device *dev,
- }
- EXPORT_SYMBOL_GPL(asoc_simple_parse_daifmt);
- 
-+int asoc_simple_parse_tdm_width_map(struct device *dev, struct device_node *np,
-+				    struct asoc_simple_dai *dai)
-+{
-+	u32 *array_values;
-+	int n, i, ret;
-+
-+	if (!of_property_read_bool(np, "dai-tdm-slot-width-map"))
-+		return 0;
-+
-+	n = of_property_count_elems_of_size(np, "dai-tdm-slot-width-map", sizeof(u32));
-+	if (n % 1) {
-+		dev_err(dev, "Invalid number of cells for dai-tdm-slot-width-map\n");
-+		return -EINVAL;
-+	}
-+
-+	dai->tdm_width_map = devm_kcalloc(dev, n, sizeof(*dai->tdm_width_map), GFP_KERNEL);
-+	if (!dai->tdm_width_map)
-+		return -ENOMEM;
-+
-+	array_values = kcalloc(n, sizeof(*array_values), GFP_KERNEL);
-+	if (!array_values)
-+		return -ENOMEM;
-+
-+	ret = of_property_read_u32_array(np, "dai-tdm-slot-width-map", array_values, n);
-+	if (ret < 0) {
-+		dev_err(dev, "Could not read dai-tdm-slot-width-map: %d\n", ret);
-+		goto out;
-+	}
-+
-+	for (i = 0; i < n; i += 2) {
-+		dai->tdm_width_map[i / 2].sample_bits = array_values[i];
-+		dai->tdm_width_map[i / 2].slot_width = array_values[i + 1];
-+	}
-+
-+	dai->n_tdm_widths = n / 2;
-+	ret = 0;
-+out:
-+	kfree(array_values);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(asoc_simple_parse_tdm_width_map);
-+
- int asoc_simple_set_dailink_name(struct device *dev,
- 				 struct snd_soc_dai_link *dai_link,
- 				 const char *fmt, ...)
-@@ -309,6 +353,42 @@ static int asoc_simple_set_clk_rate(struct device *dev,
- 	return clk_set_rate(simple_dai->clk, rate);
- }
- 
-+static int asoc_simple_set_tdm(struct asoc_simple_dai *simple_dai,
-+				struct snd_pcm_hw_params *params)
-+{
-+	int slot_width = params_width(params);
-+	int sample_bits = params_width(params);
-+	int i, ret;
-+
-+	if (!simple_dai)
-+		return 0;
-+
-+	if (!simple_dai->dai || !simple_dai->tdm_width_map)
-+		return 0;
-+
-+	if (simple_dai->slot_width)
-+		slot_width = simple_dai->slot_width;
-+
-+	for (i = 0; i < simple_dai->n_tdm_widths; ++i) {
-+		if (simple_dai->tdm_width_map[i].sample_bits == sample_bits) {
-+			slot_width = simple_dai->tdm_width_map[i].slot_width;
-+			break;
-+		}
-+	}
-+
-+	ret = snd_soc_dai_set_tdm_slot(simple_dai->dai,
-+				       simple_dai->tx_slot_mask,
-+				       simple_dai->rx_slot_mask,
-+				       simple_dai->slots,
-+				       slot_width);
-+	if (ret && ret != -ENOTSUPP) {
-+		dev_err(simple_dai->dai->dev, "simple-card: set_tdm_slot error: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- int asoc_simple_hw_params(struct snd_pcm_substream *substream,
- 			  struct snd_pcm_hw_params *params)
- {
-@@ -362,6 +442,19 @@ int asoc_simple_hw_params(struct snd_pcm_substream *substream,
- 				return ret;
- 		}
- 	}
-+
-+	for_each_prop_dai_codec(props, i, pdai) {
-+		ret = asoc_simple_set_tdm(pdai, params);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	for_each_prop_dai_cpu(props, i, pdai) {
-+		ret = asoc_simple_set_tdm(pdai, params);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(asoc_simple_hw_params);
-@@ -386,6 +479,8 @@ static int asoc_simple_init_dai(struct snd_soc_dai *dai,
- 	if (!simple_dai)
- 		return 0;
- 
-+	simple_dai->dai = dai;
-+
- 	if (simple_dai->sysclk) {
- 		ret = snd_soc_dai_set_sysclk(dai, 0, simple_dai->sysclk,
- 					     simple_dai->clk_direction);
--- 
-2.30.2
+s/inconsistencies/inconsistent/
 
+> dealing with the inconsistencies looks like a larger problem.
+> 
+> Cc: stable@vger.kernel.org
+> Link: https://lore.kernel.org/all/20210907213042.GA22626@openwall.com/
+> Link: https://lkml.kernel.org/r/20220212221412.GA29214@openwall.com
+> Fixes: 2863643fb8b9 ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
+> History-Tree: https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
+> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> ---
+>  kernel/sys.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/kernel/sys.c b/kernel/sys.c
+> index ecc4cf019242..8dd938a3d2bf 100644
+> --- a/kernel/sys.c
+> +++ b/kernel/sys.c
+> @@ -480,8 +480,7 @@ static int set_user(struct cred *new)
+>  	 * failure to the execve() stage.
+>  	 */
+>  	if (is_ucounts_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
+> -			new_user != INIT_USER &&
+> -			!capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
+> +			new_user != INIT_USER)
+>  		current->flags |= PF_NPROC_EXCEEDED;
+>  	else
+>  		current->flags &= ~PF_NPROC_EXCEEDED;
+
+Reviewed-by: Solar Designer <solar@openwall.com>
+
+Alexander
