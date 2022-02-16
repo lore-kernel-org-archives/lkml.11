@@ -2,155 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BECC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236195AbiBPQOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:14:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60310 "EHLO
+        id S236213AbiBPQOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:14:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236177AbiBPQNy (ORCPT
+        with ESMTP id S236204AbiBPQOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:13:54 -0500
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9325E1F6B91;
-        Wed, 16 Feb 2022 08:13:41 -0800 (PST)
-Received: by mail-qv1-f41.google.com with SMTP id p7so2766105qvk.11;
-        Wed, 16 Feb 2022 08:13:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=azl/iLsb26myp3zpwyeRv5JZYujJh0LXxE2G7XtXIR8=;
-        b=ZlI6F6ExorJPmowwEofDsxizZXSD4b+rtVpSdBigUkE8c6NnxouQ222XUwPOjpUkms
-         b+hO+m0ixieNNJbrWhlZ0Acd0KICXpNjn5rNxLJwrMzIsHwAzMUmwvW9gW9D4Y4wH1vE
-         P1Ky6g20NDOPhfXQn/PXKHnttIBF9X8P+WfQP4i8OXb/taIo2SDxV0YnaV/vUiHZa3e9
-         4yk5A2t2+QIGQvLmcS9X5RqBS3eMfXvmRSuFZJQO9sav1IdC97W9FhExWi9RZ2rdMug9
-         crLS2JOFMhPLCUTw1gaSdLwInGIHSRTWdzO/Xy6jSYTK5I9J+/HsshsF4zvnank2nwEq
-         cU6A==
-X-Gm-Message-State: AOAM533+Ua4s1SNaDyTtuByUPkMI4CL3N453Z19qJKl0xCfkG9P/PZPv
-        JApBx6JF8/LGvSGHr2081h/XSWlmsTCdzg==
-X-Google-Smtp-Source: ABdhPJyGH0FygRPJsxuUBPWKFoFaQdmcFa2SP2guTbMOLt2/LvJ9Z/RVSzok6rD0gGaujjxNiwM3bQ==
-X-Received: by 2002:a05:622a:196:b0:2ce:c222:b601 with SMTP id s22-20020a05622a019600b002cec222b601mr2507862qtw.179.1645028020167;
-        Wed, 16 Feb 2022 08:13:40 -0800 (PST)
-Received: from localhost (fwdproxy-ash-024.fbsv.net. [2a03:2880:20ff:18::face:b00c])
-        by smtp.gmail.com with ESMTPSA id e9sm22957221qtx.37.2022.02.16.08.13.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 08:13:38 -0800 (PST)
-From:   David Vernet <void@manifault.com>
-To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
-        mbenes@suse.cz, joe.lawrence@redhat.com, corbet@lwn.net
-Cc:     void@manifault.com, kernel-team@fb.com
-Subject: [PATCH v3] livepatch: Skip livepatch tests if ftrace cannot be configured
-Date:   Wed, 16 Feb 2022 08:11:01 -0800
-Message-Id: <20220216161100.3243100-1-void@manifault.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 16 Feb 2022 11:14:01 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D7D2AE059;
+        Wed, 16 Feb 2022 08:13:49 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: tonyk)
+        with ESMTPSA id 32E711F45194
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645028028;
+        bh=3BUsXE89fj7rTHTZ2Yhpsi6N0U9oLnOlc4n50VFT60E=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=evPGizZJx/nOUe+JgN1fgupzxHJO36/YI1+2yhKP6QhIRUN1Gzyqm0qAoWKIg4RcX
+         Z8RwxS217pBNbSCQaNkY3Tl/Q9qfDcE7u9I60YmLAt1ZCXqoy+fO/Wh4/wbRsamizS
+         sH3HnNDrl2iUng7LD4hxbkEj/FppjDA2Z9n7JFqSjhj3TP/VXk/RTsOHbT65bGmags
+         wddJbxb+6bQWQX07Aj7WEmsBWPHyQtNGlXYpQC29DJNUw+gKqG5eqLbnTymB9YiGOC
+         HJITtUMnrUrcuCBu97cMrqVXNjeEixrjkscTFFk31Ow0qyBqJ+c/wf3I1lPOYwt4e/
+         G7gMUXmc/Sbjw==
+Message-ID: <2e3e718f-d547-e85b-ec83-dfb2f28c6447@collabora.com>
+Date:   Wed, 16 Feb 2022 13:13:41 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: linux-next: build failure after merge of the spi tree
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220216161718.2c094b08@canb.auug.org.au>
+ <c041df98-fbea-bc76-75c0-42d549248dfd@collabora.com>
+ <284e2e05-9402-e480-7a69-3282b7e95b6f@collabora.com>
+ <Yg0hbeSPpDa4Oy2x@sirena.org.uk>
+From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>
+In-Reply-To: <Yg0hbeSPpDa4Oy2x@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-livepatch has a set of selftests that are used to validate the behavior of
-the livepatching subsystem.  One of the testcases in the livepatch
-testsuite is test-ftrace.sh, which among other things, validates that
-livepatching gracefully fails when ftrace is disabled.  In the event that
-ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
-will fail later due to it unexpectedly successfully loading the
-test_klp_livepatch module.
+Às 13:08 de 16/02/22, Mark Brown escreveu:
+> On Wed, Feb 16, 2022 at 10:07:02AM -0300, André Almeida wrote:
+> 
+>> ACPI_PTR() make it as NULL if CONFIG_ACPI is not set, making the driver
+>> suitable for test compiling even without ACPI enabled. Mark, I'll send a
+>> v3 with this fixed.
+> 
+> Please do not submit new versions of already applied patches, please
+> submit incremental updates to the existing code.  Modifying existing
+> commits creates problems for other users building on top of those
+> commits so it's best practice to only change pubished git commits if
+> absolutely essential.
 
-While the livepatch selftests are careful to remove any of the livepatch
-test modules between testcases to avoid this situation, ftrace may still
-fail to be disabled if another trace is active on the system that was
-enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
-that use trampolines will cause this test to fail due to the trampoline
-being implemented with register_ftrace_direct().  The following is an
-example of such a trace:
-
-tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
-(call_direct_funcs+0x0/0x30)
-        direct-->bpf_trampoline_6442550536_0+0x0/0x1000
-
-In order to make the test more resilient to system state that is out of its
-control, this patch updates set_ftrace_enabled() to detect sysctl failures,
-and skip the testrun when appropriate.
-
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: David Vernet <void@manifault.com>
----
-v3:
-  - Fixed a bug in v1 and v2 pointed out by Petr in
-    https://lore.kernel.org/all/20220209154934.5w5k5tqcqldbfjt3@dev0025.ash9.facebook.com/
-    wherein we'd incorrectly skip() in test-ftrace.sh when we expected to
-    fail to set sysctl due to ftrace being in-use by livepatch.
-  - Applied Petr's suggestions for the patch, which address the
-    aforementioned issue by adding a --fail flag to set_ftrace_enabled().
-    This allows callers to signal that they expect an invocation to fail.
-  - Updates the caller in test-ftrace.sh that expects the call to
-    set_ftrace_enabled() to fail, to pass this --fail flag.
-  - Slightly updates the commit summary to reflect that we only skip the
-    test "when appropriate" rather than if the call to sysctl fails.
-
-v2:
-  - Fix typo in newly added comment (s/permament/permanent).
-  - Adjust the location of the added newline to be before the new comment
-    rather than that the end of the function.
-  - Make the failure-path check a bit less brittle by checking for the
-    exact expected string, rather than specifically for "Device or resource
-    busy".
-
- .../testing/selftests/livepatch/functions.sh  | 22 ++++++++++++++++---
- .../selftests/livepatch/test-ftrace.sh        |  3 ++-
- 2 files changed, 21 insertions(+), 4 deletions(-)
-
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index 846c7ed71556..9230b869371d 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -75,9 +75,25 @@ function set_dynamic_debug() {
- }
- 
- function set_ftrace_enabled() {
--	result=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1 && \
--		 sysctl kernel.ftrace_enabled 2>&1)
--	echo "livepatch: $result" > /dev/kmsg
-+	local can_fail=0
-+	if [[ "$1" == "--fail" ]] ; then
-+		can_fail=1
-+		shift
-+	fi
-+
-+	local err=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1)
-+	local result=$(sysctl --values kernel.ftrace_enabled)
-+
-+	if [[ "$result" != "$1" ]] ; then
-+		if [[ $can_fail -eq 1 ]] ; then
-+			echo "livepatch: $err" > /dev/kmsg
-+			return
-+		fi
-+
-+		skip "failed to set kernel.ftrace_enabled = $1"
-+	fi
-+
-+	echo "livepatch: kernel.ftrace_enabled = $result" > /dev/kmsg
- }
- 
- function cleanup() {
-diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
-index 552e165512f4..825540a5194d 100755
---- a/tools/testing/selftests/livepatch/test-ftrace.sh
-+++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-@@ -25,7 +25,8 @@ if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]]
- 	die "livepatch kselftest(s) failed"
- fi
- 
--set_ftrace_enabled 0
-+# Check that ftrace could not get disabled when a livepatch is enabled
-+set_ftrace_enabled --fail 0
- if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
- 	echo -e "FAIL\n\n"
- 	die "livepatch kselftest(s) failed"
--- 
-2.30.2
-
+Ok, let me send a fixing patch then.
