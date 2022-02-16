@@ -2,156 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2153CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231660AbiBPIs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 03:48:29 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55112 "EHLO
+        id S231682AbiBPIsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 03:48:53 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231639AbiBPIs0 (ORCPT
+        with ESMTP id S231649AbiBPIsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 03:48:26 -0500
-Received: from 9.mo552.mail-out.ovh.net (9.mo552.mail-out.ovh.net [87.98.180.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679A51A6A7F
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:48:13 -0800 (PST)
-Received: from mxplan5.mail.ovh.net (unknown [10.109.156.219])
-        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 3D56D24B44;
-        Wed, 16 Feb 2022 08:12:56 +0000 (UTC)
-Received: from kaod.org (37.59.142.96) by DAG4EX1.mxp5.local (172.16.2.31)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 16 Feb
- 2022 09:12:54 +0100
-Authentication-Results: garm.ovh; auth=pass (GARM-96R0010590fb10-4626-4deb-8236-9a8be91dbf44,
-                    CB3E44AF90526EF3DA3218D7163352937EBBBEE5) smtp.auth=clg@kaod.org
-X-OVh-ClientIp: 82.64.250.170
-Message-ID: <d517d453-ddd5-8c9e-7b1f-56f5f83d2f1e@kaod.org>
-Date:   Wed, 16 Feb 2022 09:12:48 +0100
+        Wed, 16 Feb 2022 03:48:52 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D3A1B0A31;
+        Wed, 16 Feb 2022 00:48:39 -0800 (PST)
+X-UUID: 3d90d90f041c4385a2bb62e15c0bdb3d-20220216
+X-UUID: 3d90d90f041c4385a2bb62e15c0bdb3d-20220216
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1448310942; Wed, 16 Feb 2022 16:48:35 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 16 Feb 2022 16:48:34 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Feb
+ 2022 16:48:33 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 16:48:33 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <jassisinghbrar@gmail.com>, <fparent@baylibre.com>,
+        <yongqiang.niu@mediatek.com>, <hsinyi@chromium.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v3,4/5] soc: mediatek: add MTK mutex support for MT8186
+Date:   Wed, 16 Feb 2022 16:48:30 +0800
+Message-ID: <20220216084831.14883-5-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220216084831.14883-1-rex-bc.chen@mediatek.com>
+References: <20220216084831.14883-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 10/10] spi: aspeed: Activate new spi-mem driver
-Content-Language: en-US
-To:     Joel Stanley <joel@jms.id.au>
-CC:     <linux-spi@vger.kernel.org>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220214094231.3753686-1-clg@kaod.org>
- <20220214094231.3753686-11-clg@kaod.org>
- <CACPK8XdvczyZ1QHtFm7JJAC7AY+QmWSx0MarUwLjUyOtC9DnSQ@mail.gmail.com>
-From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
-In-Reply-To: <CACPK8XdvczyZ1QHtFm7JJAC7AY+QmWSx0MarUwLjUyOtC9DnSQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [37.59.142.96]
-X-ClientProxiedBy: DAG3EX1.mxp5.local (172.16.2.21) To DAG4EX1.mxp5.local
- (172.16.2.31)
-X-Ovh-Tracer-GUID: 365dd3b7-2a44-4f14-8514-26cf6445fd31
-X-Ovh-Tracer-Id: 12828503540660800388
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrjeehgdduudegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepieegvdffkeegfeetuddttddtveduiefhgeduffekiedtkeekteekhfffleevleelnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrdelieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepmhigphhlrghnhedrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegtlhhgsehkrghougdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/16/22 08:02, Joel Stanley wrote:
-> On Mon, 14 Feb 2022 at 09:43, Cédric Le Goater <clg@kaod.org> wrote:
->>
->> The previous driver using the MTD SPI NOR interface is kept in case we
->> find some issues but we should remove it quickly once the new driver
->> using the spi-mem interface has been sufficiently exposed.
->>
->> Signed-off-by: Cédric Le Goater <clg@kaod.org>
-> 
-> I suggest we drop the defconfig changes from both this patch and the
-> first. This way we'll always have the new driver being built, with
-> less churn.
-> 
-> If you strongly prefer the way you've done it then that's fine too.
+From: Yongqiang Niu <yongqiang.niu@mediatek.com>
 
-I am fine with that, but, with only patch 1, the defconfig files would
-be referencing an non-existing CONFIG. Is that ok ?
+Add MTK mutex support for MT8186 SoC.
+We need MTK mutex to control timing of display modules and there
+are two display pathes for MT8186 including internal and external
+display.
 
-Thanks,
+MTK mutex for internal display:
+- Timing source: DSI
+- Control modules: OVL0/RDMA0/COLOR0/CCORR/AAL0/GAMMA/POSTMASK0/DITHER
 
-C.
+MTK mutex for external display:
+- Timing source : DPI
+- Control modules: OVL_2L0/RDMA1
 
+Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+---
+ drivers/soc/mediatek/mtk-mutex.c | 45 ++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-
-> 
->> ---
->>   arch/arm/configs/aspeed_g4_defconfig | 2 +-
->>   arch/arm/configs/aspeed_g5_defconfig | 2 +-
->>   arch/arm/configs/multi_v5_defconfig  | 2 +-
->>   arch/arm/configs/multi_v7_defconfig  | 2 +-
->>   4 files changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/arch/arm/configs/aspeed_g4_defconfig b/arch/arm/configs/aspeed_g4_defconfig
->> index 964536444cd7..b4a1b2ed1a17 100644
->> --- a/arch/arm/configs/aspeed_g4_defconfig
->> +++ b/arch/arm/configs/aspeed_g4_defconfig
->> @@ -64,7 +64,7 @@ CONFIG_MTD_BLOCK=y
->>   CONFIG_MTD_PARTITIONED_MASTER=y
->>   CONFIG_MTD_SPI_NOR=y
->>   # CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is not set
->> -CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
->> +CONFIG_SPI_ASPEED_SMC=y
->>   CONFIG_MTD_UBI=y
->>   CONFIG_MTD_UBI_FASTMAP=y
->>   CONFIG_MTD_UBI_BLOCK=y
->> diff --git a/arch/arm/configs/aspeed_g5_defconfig b/arch/arm/configs/aspeed_g5_defconfig
->> index e809236ca88b..ccc4240ee4b5 100644
->> --- a/arch/arm/configs/aspeed_g5_defconfig
->> +++ b/arch/arm/configs/aspeed_g5_defconfig
->> @@ -103,7 +103,7 @@ CONFIG_MTD_BLOCK=y
->>   CONFIG_MTD_PARTITIONED_MASTER=y
->>   CONFIG_MTD_SPI_NOR=y
->>   # CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is not set
->> -CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
->> +CONFIG_SPI_ASPEED_SMC=y
->>   CONFIG_MTD_UBI=y
->>   CONFIG_MTD_UBI_FASTMAP=y
->>   CONFIG_MTD_UBI_BLOCK=y
->> diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
->> index 49083ef05fb0..80a3ae02d759 100644
->> --- a/arch/arm/configs/multi_v5_defconfig
->> +++ b/arch/arm/configs/multi_v5_defconfig
->> @@ -103,7 +103,7 @@ CONFIG_MTD_RAW_NAND=y
->>   CONFIG_MTD_NAND_ATMEL=y
->>   CONFIG_MTD_NAND_ORION=y
->>   CONFIG_MTD_SPI_NOR=y
->> -CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=y
->> +CONFIG_SPI_ASPEED_SMC=y
->>   CONFIG_MTD_UBI=y
->>   CONFIG_BLK_DEV_LOOP=y
->>   CONFIG_ATMEL_SSC=m
->> diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
->> index fc1b69256b64..33572998dbbe 100644
->> --- a/arch/arm/configs/multi_v7_defconfig
->> +++ b/arch/arm/configs/multi_v7_defconfig
->> @@ -217,7 +217,7 @@ CONFIG_MTD_NAND_DAVINCI=y
->>   CONFIG_MTD_NAND_STM32_FMC2=y
->>   CONFIG_MTD_NAND_PL35X=y
->>   CONFIG_MTD_SPI_NOR=y
->> -CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR=m
->> +CONFIG_SPI_ASPEED_SMC=m
->>   CONFIG_MTD_UBI=y
->>   CONFIG_BLK_DEV_LOOP=y
->>   CONFIG_BLK_DEV_RAM=y
->> --
->> 2.34.1
->>
+diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
+index 2ca55bb5a8be..b69da13c1479 100644
+--- a/drivers/soc/mediatek/mtk-mutex.c
++++ b/drivers/soc/mediatek/mtk-mutex.c
+@@ -26,6 +26,23 @@
+ 
+ #define INT_MUTEX				BIT(1)
+ 
++#define MT8186_MUTEX_MOD_DISP_OVL0		0
++#define MT8186_MUTEX_MOD_DISP_OVL0_2L		1
++#define MT8186_MUTEX_MOD_DISP_RDMA0		2
++#define MT8186_MUTEX_MOD_DISP_COLOR0		4
++#define MT8186_MUTEX_MOD_DISP_CCORR0		5
++#define MT8186_MUTEX_MOD_DISP_AAL0		7
++#define MT8186_MUTEX_MOD_DISP_GAMMA0		8
++#define MT8186_MUTEX_MOD_DISP_POSTMASK0		9
++#define MT8186_MUTEX_MOD_DISP_DITHER0		10
++#define MT8186_MUTEX_MOD_DISP_RDMA1		17
++
++#define MT8186_MUTEX_SOF_SINGLE_MODE 0
++#define MT8186_MUTEX_SOF_DSI0 1
++#define MT8186_MUTEX_SOF_DPI0 2
++#define MT8186_MUTEX_EOF_DSI0 (MT8186_MUTEX_SOF_DSI0 << 6)
++#define MT8186_MUTEX_EOF_DPI0 (MT8186_MUTEX_SOF_DPI0 << 6)
++
+ #define MT8167_MUTEX_MOD_DISP_PWM		1
+ #define MT8167_MUTEX_MOD_DISP_OVL0		6
+ #define MT8167_MUTEX_MOD_DISP_OVL1		7
+@@ -226,6 +243,19 @@ static const unsigned int mt8183_mutex_mod[DDP_COMPONENT_ID_MAX] = {
+ 	[DDP_COMPONENT_WDMA0] = MT8183_MUTEX_MOD_DISP_WDMA0,
+ };
+ 
++static const unsigned int mt8186_mutex_mod[DDP_COMPONENT_ID_MAX] = {
++	[DDP_COMPONENT_AAL0] = MT8186_MUTEX_MOD_DISP_AAL0,
++	[DDP_COMPONENT_CCORR] = MT8186_MUTEX_MOD_DISP_CCORR0,
++	[DDP_COMPONENT_COLOR0] = MT8186_MUTEX_MOD_DISP_COLOR0,
++	[DDP_COMPONENT_DITHER] = MT8186_MUTEX_MOD_DISP_DITHER0,
++	[DDP_COMPONENT_GAMMA] = MT8186_MUTEX_MOD_DISP_GAMMA0,
++	[DDP_COMPONENT_OVL0] = MT8186_MUTEX_MOD_DISP_OVL0,
++	[DDP_COMPONENT_OVL_2L0] = MT8186_MUTEX_MOD_DISP_OVL0_2L,
++	[DDP_COMPONENT_POSTMASK0] = MT8186_MUTEX_MOD_DISP_POSTMASK0,
++	[DDP_COMPONENT_RDMA0] = MT8186_MUTEX_MOD_DISP_RDMA0,
++	[DDP_COMPONENT_RDMA1] = MT8186_MUTEX_MOD_DISP_RDMA1,
++};
++
+ static const unsigned int mt8192_mutex_mod[DDP_COMPONENT_ID_MAX] = {
+ 	[DDP_COMPONENT_AAL0] = MT8192_MUTEX_MOD_DISP_AAL0,
+ 	[DDP_COMPONENT_CCORR] = MT8192_MUTEX_MOD_DISP_CCORR0,
+@@ -264,6 +294,12 @@ static const unsigned int mt8183_mutex_sof[MUTEX_SOF_DSI3 + 1] = {
+ 	[MUTEX_SOF_DPI0] = MT8183_MUTEX_SOF_DPI0 | MT8183_MUTEX_EOF_DPI0,
+ };
+ 
++static const unsigned int mt8186_mutex_sof[MUTEX_SOF_DSI3 + 1] = {
++	[MUTEX_SOF_SINGLE_MODE] = MUTEX_SOF_SINGLE_MODE,
++	[MUTEX_SOF_DSI0] = MT8186_MUTEX_SOF_DSI0 | MT8186_MUTEX_EOF_DSI0,
++	[MUTEX_SOF_DPI0] = MT8186_MUTEX_SOF_DPI0 | MT8186_MUTEX_EOF_DPI0,
++};
++
+ static const struct mtk_mutex_data mt2701_mutex_driver_data = {
+ 	.mutex_mod = mt2701_mutex_mod,
+ 	.mutex_sof = mt2712_mutex_sof,
+@@ -301,6 +337,13 @@ static const struct mtk_mutex_data mt8183_mutex_driver_data = {
+ 	.no_clk = true,
+ };
+ 
++static const struct mtk_mutex_data mt8186_mutex_driver_data = {
++	.mutex_mod = mt8186_mutex_mod,
++	.mutex_sof = mt8186_mutex_sof,
++	.mutex_mod_reg = MT8183_MUTEX0_MOD0,
++	.mutex_sof_reg = MT8183_MUTEX0_SOF0,
++};
++
+ static const struct mtk_mutex_data mt8192_mutex_driver_data = {
+ 	.mutex_mod = mt8192_mutex_mod,
+ 	.mutex_sof = mt8183_mutex_sof,
+@@ -540,6 +583,8 @@ static const struct of_device_id mutex_driver_dt_match[] = {
+ 	  .data = &mt8173_mutex_driver_data},
+ 	{ .compatible = "mediatek,mt8183-disp-mutex",
+ 	  .data = &mt8183_mutex_driver_data},
++	{ .compatible = "mediatek,mt8186-disp-mutex",
++	  .data = &mt8186_mutex_driver_data},
+ 	{ .compatible = "mediatek,mt8192-disp-mutex",
+ 	  .data = &mt8192_mutex_driver_data},
+ 	{},
+-- 
+2.18.0
 
