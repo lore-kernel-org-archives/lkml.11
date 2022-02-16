@@ -2,107 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3612CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 08:05:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbiBPIFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 03:05:33 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51836 "EHLO
+        id S231392AbiBPIFk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 03:05:40 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbiBPIFc (ORCPT
+        with ESMTP id S231279AbiBPIFd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 03:05:32 -0500
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3F2225D02
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:05:20 -0800 (PST)
-Received: by mail-vs1-f52.google.com with SMTP id w4so1576974vsq.1
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:05:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ypJwYqHXPE7+OZ6ZFQc5ZOyLgQjz7Ks3XYn9nG1mEao=;
-        b=UReJ6SGYWYpZUql1yK8+8nVaMvWKX7ZTRWiAGoNTgAwUZHvuWr+Gkd2zcQDJJFGc0X
-         efJOanfzZpFobjSsxRzDaHGtg0o26t91vT621VH9c3v73g3qEJOa1U0u4bCHAqcH7G5M
-         VgYx2JxwN8OaORfWz1gAfi2ETnpWfsFSkTFqKuBKf92chmmji5wd0i4z/aUVkCA5LvZ9
-         qp6t1KeUy4LCkm1Fa4LOh+oD0P23d8Vq9QJv1k6HeQ+VbJKj06khjRNePop7Qnl0900R
-         97gZAjcvPT7P1bqtcqzNWsA9+8aWy4NjUXxPig5C8ECvhm1XxVCQY04dPFOeOsTd7bAR
-         4HeQ==
-X-Gm-Message-State: AOAM5311b8f0hRiPECACbr+lhlYOqpzTvEL4m869NH9ASHFDV2SwS1Dv
-        +Pna6wefKIgs3Y6RbTVyyCpN5LHOjUTfBg==
-X-Google-Smtp-Source: ABdhPJxCyiuumZOW0oTthtvZUfbjwYG5YFpiwyP8RdZVKk2Z+16C6Btm9qeQ5M4Da4RqsRrUJVrxxw==
-X-Received: by 2002:a05:6102:358d:b0:31b:c683:305e with SMTP id h13-20020a056102358d00b0031bc683305emr233618vsu.30.1644998719438;
-        Wed, 16 Feb 2022 00:05:19 -0800 (PST)
-Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com. [209.85.221.182])
-        by smtp.gmail.com with ESMTPSA id l5sm1521111vsj.17.2022.02.16.00.05.19
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 00:05:19 -0800 (PST)
-Received: by mail-vk1-f182.google.com with SMTP id f12so828570vkl.2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 00:05:19 -0800 (PST)
-X-Received: by 2002:a05:6122:8c7:b0:32d:7e3:96c8 with SMTP id
- 7-20020a05612208c700b0032d07e396c8mr642579vkg.7.1644998718873; Wed, 16 Feb
- 2022 00:05:18 -0800 (PST)
+        Wed, 16 Feb 2022 03:05:33 -0500
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24178225D37;
+        Wed, 16 Feb 2022 00:05:20 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21G85CJB089471;
+        Wed, 16 Feb 2022 02:05:12 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644998712;
+        bh=3UQwduVUZ+q8wif62BV/grOjAvJhZ7t6eekjdb8k+us=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=dtmziO/5CXQ6QOxqCyUs6sD0TFQNQpbhjo/LSvPWpzGLinggT8s98SI/eZuOyNZyv
+         eVD1vamxdgNHt5jlxOvjJ6YPKv69bdqsyhfxvCXWOB9Lp2Qnjo8+Owt1LIvAjYvL29
+         xy7DErcybvNB1BFZbR7+Wv2XSm6NyROSkVUHAxOM=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21G85Cgo055891
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 16 Feb 2022 02:05:12 -0600
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 16
+ Feb 2022 02:05:12 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 16 Feb 2022 02:05:12 -0600
+Received: from [10.250.148.139] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21G8571R087433;
+        Wed, 16 Feb 2022 02:05:08 -0600
+Message-ID: <a575a328-fb88-5d39-3769-b4c2c4060b47@ti.com>
+Date:   Wed, 16 Feb 2022 13:35:07 +0530
 MIME-Version: 1.0
-References: <20220214093704.1773948-1-geert@linux-m68k.org> <6f4af4c2-3ac0-a4d0-96c7-7164417cb8d7@infradead.org>
-In-Reply-To: <6f4af4c2-3ac0-a4d0-96c7-7164417cb8d7@infradead.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 16 Feb 2022 09:05:07 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW9Po1V5yH+gHzUJGx8NLcoCUyBa4FF41eH9vDbQWBW8w@mail.gmail.com>
-Message-ID: <CAMuHMdW9Po1V5yH+gHzUJGx8NLcoCUyBa4FF41eH9vDbQWBW8w@mail.gmail.com>
-Subject: Re: Build regressions/improvements in v5.17-rc4
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [EXTERNAL] Re: [PATCH v4 1/2] remoteproc: Introduce
+ deny_sysfs_ops flag
+Content-Language: en-US
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>
+CC:     <kishon@ti.com>, <vigneshr@ti.com>, <s-anna@ti.com>,
+        <bjorn.andersson@linaro.org>, <linux-remoteproc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220209090342.13220-1-p-mohan@ti.com>
+ <20220209090342.13220-2-p-mohan@ti.com> <20220210184802.GB3603040@p14s>
+From:   Puranjay Mohan <p-mohan@ti.com>
+In-Reply-To: <20220210184802.GB3603040@p14s>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Randy,
+Hi Mathieu,
 
-On Tue, Feb 15, 2022 at 10:14 PM Randy Dunlap <rdunlap@infradead.org> wrote:
-> On 2/14/22 01:37, Geert Uytterhoeven wrote:
-> > Below is the list of build error/warning regressions/improvements in
-> > v5.17-rc4[1] compared to v5.16[2].
-> >
-> > Summarized:
-> >   - build errors: +14/-2
-> >   - build warnings: +23/-25
+On 11/02/22 00:18, Mathieu Poirier wrote:
+> Hi Puranjay,
+> 
+> On Wed, Feb 09, 2022 at 02:33:41PM +0530, Puranjay Mohan wrote:
+>> The remoteproc framework provides sysfs interfaces for changing
+>> the firmware name and for starting/stopping a remote processor
+>> through the sysfs files 'state' and 'firmware'. The 'recovery'
+>> sysfs file can also be used similarly to control the error recovery
+>> state machine of a remoteproc. These interfaces are currently
+>> allowed irrespective of how the remoteprocs were booted (like
+>> remoteproc self auto-boot, remoteproc client-driven boot etc).
+>> These interfaces can adversely affect a remoteproc and its clients
+>> especially when a remoteproc is being controlled by a remoteproc
+>> client driver(s). Also, not all remoteproc drivers may want to
+>> support the sysfs interfaces by default.
+>>
+>> Add support to deny the sysfs state/firmware/recovery change by
+>> introducing a state flag 'deny_sysfs_ops' that the individual
+>> remoteproc drivers can set based on their usage needs. The default
+>> behavior is to allow the sysfs operations as before.
+>>
+>> Implement attribute_group->is_visible() to hide the sysfs
+>> state/firmware/recovery entries when deny_sysfs_ops flag is set.
+>>
+>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+>> ---
+>> Changes in v3->v4:
+>> Use mode = 0444 in rproc_is_visible() to make the sysfs entries
+>> read-only when the deny_sysfs_ops flag is set.
+>> ---
+>>  drivers/remoteproc/remoteproc_sysfs.c | 18 +++++++++++++++++-
+>>  include/linux/remoteproc.h            |  2 ++
+>>  2 files changed, 19 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
+>> index ea8b89f97d7b..da2d0eecfa44 100644
+>> --- a/drivers/remoteproc/remoteproc_sysfs.c
+>> +++ b/drivers/remoteproc/remoteproc_sysfs.c
+>> @@ -230,6 +230,21 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
+>>  }
+>>  static DEVICE_ATTR_RO(name);
+>>  
+>> +static umode_t rproc_is_visible(struct kobject *kobj, struct attribute *attr,
+>> +				int n)
+>> +{
+>> +	struct device *dev = kobj_to_dev(kobj);
+>> +	struct rproc *rproc = to_rproc(dev);
+>> +	umode_t mode = attr->mode;
+>> +
+>> +	if (rproc->deny_sysfs_ops && (attr == &dev_attr_recovery.attr ||
+>> +				      attr == &dev_attr_firmware.attr ||
+>> +				      attr == &dev_attr_state.attr))
+> 
+> I was wondering if we should also add coredump to this group to make it an all
+> or nothing option (name is already read only).
 
-> > 23 warning regressions:
-> >   + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14410): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
->
-> This is a little confusing. Was there a problem with qed and qede network drivers?
-> Is it still a problem?
+I have sent a v5 where I have added coredump to this.
 
-Yes there is.
+> 
+>> +		mode = 0444;
+> 
+> Much better.
+> 
+>> +
+>> +	return mode;
+>> +}
+>> +
+>>  static struct attribute *rproc_attrs[] = {
+>>  	&dev_attr_coredump.attr,
+>>  	&dev_attr_recovery.attr,
+>> @@ -240,7 +255,8 @@ static struct attribute *rproc_attrs[] = {
+>>  };
+>>  
+>>  static const struct attribute_group rproc_devgroup = {
+>> -	.attrs = rproc_attrs
+>> +	.attrs = rproc_attrs,
+>> +	.is_visible = rproc_is_visible,
+>>  };
+>>  
+>>  static const struct attribute_group *rproc_devgroups[] = {
+>> diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
+>> index e0600e1e5c17..3849c66ce38f 100644
+>> --- a/include/linux/remoteproc.h
+>> +++ b/include/linux/remoteproc.h
+>> @@ -523,6 +523,7 @@ struct rproc_dump_segment {
+>>   * @table_sz: size of @cached_table
+>>   * @has_iommu: flag to indicate if remote processor is behind an MMU
+>>   * @auto_boot: flag to indicate if remote processor should be auto-started
+>> + * @deny_sysfs_ops: flag to not permit sysfs operations on state, firmware and recovery
+>>   * @dump_segments: list of segments in the firmware
+>>   * @nb_vdev: number of vdev currently handled by rproc
+>>   * @elf_class: firmware ELF class
+>> @@ -562,6 +563,7 @@ struct rproc {
+>>  	size_t table_sz;
+>>  	bool has_iommu;
+>>  	bool auto_boot;
+>> +	bool deny_sysfs_ops;
+> 
+> Wouldn't "sysfs_read_only" make more sense?
 
-> Many of the lines above and below are very similar.
+I agree, I have renamed it to sysfs_read_only in v5 patch
 
-Sorry, my script to filter out errors/warnings that just moved does
-not handle modpost output yet.
+> 
+> 
+> With or without the above and for this set:
+> 
+> Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 
-> If there is still a problem, what $ARCH and config(s) cause it?
-> I can't reproduce it on 11 $ARCH tries.
-> Or maybe it is compiler-specific also.
+Thanks.
+Puranjay Mohan
 
-xtensa-gcc11/xtensa-allmodconfig
-http://kisskb.ellerman.id.au/kisskb/buildresult/14697521/
-I don't know why it doesn't show up in the other gcc11 builds.
-
-I had a look at the problem before, but fixing it is non-trivial:
-the driver uses a non-init table of structures that contains pointers
-to init data (only used early) and non-init data (used later, too).
-Sprinkling __ref over the code may help, but won't protect against
-introducing new bugs.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> 
+>>  	struct list_head dump_segments;
+>>  	int nb_vdev;
+>>  	u8 elf_class;
+>> -- 
+>> 2.17.1
+>>
