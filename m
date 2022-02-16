@@ -2,88 +2,413 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC0DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238423AbiBPT4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:56:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37070 "EHLO
+        id S238453AbiBPT4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:56:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238394AbiBPTzd (ORCPT
+        with ESMTP id S238489AbiBPTzo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:55:33 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4232B102C;
-        Wed, 16 Feb 2022 11:55:20 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id y17so5771693edd.10;
-        Wed, 16 Feb 2022 11:55:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PD6yzCgOYpWVSwenJgOD3M2UZqs8pw6XfrocvAB3tzQ=;
-        b=LW13VbLkwTWAZedb390gkobGLU9vJgjeSnIV+ZGYVYe26PJNMm7yXL4LjCeRv2Lg5X
-         W1OVyibLduGH1TDCldY5uIkkMCuAFmSwwAGrATLjBGM0rkV4dNZCciBzlAs9FXJuKDzt
-         a42VB6GOtSAAKARxnXVWWoLUa8+9hyJ4JFq68f8CkQZi+HBNlOAEIHfuZ6a7AUBVDUaq
-         P+HFnmIABQejUZFNDj7/CgtECH8x/GOXxItG8tdmFPjy7F0qmfaoeiUOX331JgeRwjXN
-         9lp+7kiN29bFKciIhvtQ/UevMttvbRBSn3bk7zRUeEeoe89Oxzae9a0UaHgJyO+rKtUo
-         wEcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PD6yzCgOYpWVSwenJgOD3M2UZqs8pw6XfrocvAB3tzQ=;
-        b=4l7J42oZuI0yXP5FH8ZntNV5iREuq7ayVIzTaBD+hCupHrFo4UVg9r2CJENYc9KvJJ
-         XZb0V5bkeDvy/ikuytaLr3w6CqujXdRAiDJcxIjPQZAqxVc+Aw6T5ZAd4ePbptJKc2CK
-         a5DZqXRTtE8Y3w7vIEd+Ocim3x/sabMZiBlOh3QhRaX5lWN5IZ4EubAJu0pr91ST/HSB
-         vjq+erp64WHwN5W9zfcWfAgpKL5RH599lcY1mLTjFDaaooM9ZhX47WovhVtQQAEnAilS
-         /VOK/ianY/kfgRDZWZFO7XRyHOg4OJn7e5wA0FJ67MI6Agv8NFvwHUlxleHdGIZdePP3
-         D4Vg==
-X-Gm-Message-State: AOAM531+/OBec82zg1ImbkDIislYfBQYyo5VqlSMiK51V87l1uxHV0un
-        7qFvqTgcz+zQZcWQT6vrLr4=
-X-Google-Smtp-Source: ABdhPJwzX9rXztPm8dfsc3nzWcIwAAE+AuY4iJwnmgmrnaoHyGFSukZqgjH8Mhp/D9pIU+CXifMmyA==
-X-Received: by 2002:a05:6402:b62:b0:3e2:a75f:b949 with SMTP id cb2-20020a0564020b6200b003e2a75fb949mr4770157edb.62.1645041319061;
-        Wed, 16 Feb 2022 11:55:19 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id z5sm284783eja.20.2022.02.16.11.55.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 11:55:18 -0800 (PST)
-Date:   Wed, 16 Feb 2022 21:55:17 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Mans Rullgard <mans@mansr.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Juergen Borleis <kernel@pengutronix.de>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: lan9303: add VLAN IDs to master device
-Message-ID: <20220216195517.o6dk64gwoe4sizl6@skbuf>
-References: <20220216151111.6376-1-mans@mansr.com>
- <202202170327.RiXqUeGc-lkp@intel.com>
+        Wed, 16 Feb 2022 14:55:44 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789722B102C
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 11:55:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645041331; x=1676577331;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wx+10nvyuqDniGdZU6VDpfEF6N+4KhpXUut7ijnAFjI=;
+  b=FqtnutE9xa086hxcre7s2/mZeRx+eTayqZ4W9z50mmRX5nqRh5aZyUqe
+   81jNL6ZdcL2uflpNyVqpfhZdyC+lMmFbYsreVE9Jzim0/keHOxLtHob6G
+   PPB4Ao0wUp4132Cu452wrA3fkBqON2xkkzlBibCBTkYElNwFyEH+ahufg
+   qG47S+2xKHCLt9IuJOuIOFc2Nf1GOrg+u1SraR/9aWChnqHy1DYJE+u+I
+   YTR4SKEp8NskSEvqUl2d9HDd0MPPCfC7e/NRdxuDLph8MoyXuZU30jvLD
+   YNc2WdwoTv7TMHGPBQrWuk6J8SYxD0V0v8bYMV00RwlDCStlZ2Pw0IzUK
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="275294416"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="275294416"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:55:31 -0800
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="545140399"
+Received: from sannilnx.jer.intel.com ([10.12.231.79])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:55:27 -0800
+From:   Alexander Usyskin <alexander.usyskin@intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc:     Tomas Winkler <tomas.winkler@intel.com>,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Vitaly Lubart <vitaly.lubart@intel.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v8 2/5] mei: add support for graphics system controller (gsc) devices
+Date:   Wed, 16 Feb 2022 21:54:56 +0200
+Message-Id: <20220216195459.3918414-3-alexander.usyskin@intel.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220216195459.3918414-1-alexander.usyskin@intel.com>
+References: <20220216195459.3918414-1-alexander.usyskin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202202170327.RiXqUeGc-lkp@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 03:33:39AM +0800, kernel test robot wrote:
-> >> drivers/net/dsa/lan9303-core.c:1095:2: error: implicit declaration of function 'vlan_vid_add' [-Werror,-Wimplicit-function-declaration]
->            vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
->            ^
-> >> drivers/net/dsa/lan9303-core.c:1111:2: error: implicit declaration of function 'vlan_vid_del' [-Werror,-Wimplicit-function-declaration]
->            vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
->            ^
+From: Tomas Winkler <tomas.winkler@intel.com>
 
-#include <linux/if_vlan.h>
+GSC is a graphics system controller, based on CSE, it provides
+a chassis controller for graphics discrete cards, as well as it
+supports media protection on selected devices.
 
-drivers/net/dsa/Kconfig:
+mei_gsc binds to a auxiliary devices exposed by Intel discrete
+driver i915.
 
-config NET_DSA_SMSC_LAN9303
-	depends on VLAN_8021Q || VLAN_8021Q=n
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+---
+V4: drop debug prints
+    replace selects with depends on in Kconfig
+V5: Rebase
+V6: Rebase
+V7: add Greg KH Reviewed-by
+V8: Rebase
+---
+ drivers/misc/mei/Kconfig  |  14 +++
+ drivers/misc/mei/Makefile |   3 +
+ drivers/misc/mei/gsc-me.c | 186 ++++++++++++++++++++++++++++++++++++++
+ drivers/misc/mei/hw-me.c  |  27 +++++-
+ drivers/misc/mei/hw-me.h  |   2 +
+ 5 files changed, 230 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/misc/mei/gsc-me.c
 
-and maybe you can access using dp->cpu_dp in the next revision.
+diff --git a/drivers/misc/mei/Kconfig b/drivers/misc/mei/Kconfig
+index 0e0bcd0da852..d21486d69df2 100644
+--- a/drivers/misc/mei/Kconfig
++++ b/drivers/misc/mei/Kconfig
+@@ -46,6 +46,20 @@ config INTEL_MEI_TXE
+ 	  Supported SoCs:
+ 	  Intel Bay Trail
+ 
++config INTEL_MEI_GSC
++	tristate "Intel MEI GSC embedded device"
++	depends on INTEL_MEI
++	depends on INTEL_MEI_ME
++	depends on X86 && PCI
++	depends on DRM_I915
++	help
++	  Intel auxiliary driver for GSC devices embedded in Intel graphics devices.
++
++	  An MEI device here called GSC can be embedded in an
++	  Intel graphics devices, to support a range of chassis
++	  tasks such as graphics card firmware update and security
++	  tasks.
++
+ source "drivers/misc/mei/hdcp/Kconfig"
+ source "drivers/misc/mei/pxp/Kconfig"
+ 
+diff --git a/drivers/misc/mei/Makefile b/drivers/misc/mei/Makefile
+index d8e5165917f2..fb740d754900 100644
+--- a/drivers/misc/mei/Makefile
++++ b/drivers/misc/mei/Makefile
+@@ -18,6 +18,9 @@ obj-$(CONFIG_INTEL_MEI_ME) += mei-me.o
+ mei-me-objs := pci-me.o
+ mei-me-objs += hw-me.o
+ 
++obj-$(CONFIG_INTEL_MEI_GSC) += mei-gsc.o
++mei-gsc-objs := gsc-me.o
++
+ obj-$(CONFIG_INTEL_MEI_TXE) += mei-txe.o
+ mei-txe-objs := pci-txe.o
+ mei-txe-objs += hw-txe.o
+diff --git a/drivers/misc/mei/gsc-me.c b/drivers/misc/mei/gsc-me.c
+new file mode 100644
+index 000000000000..0afae70e0609
+--- /dev/null
++++ b/drivers/misc/mei/gsc-me.c
+@@ -0,0 +1,186 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright(c) 2019-2022, Intel Corporation. All rights reserved.
++ *
++ * Intel Management Engine Interface (Intel MEI) Linux driver
++ */
++
++#include <linux/module.h>
++#include <linux/mei_aux.h>
++#include <linux/device.h>
++#include <linux/irqreturn.h>
++#include <linux/jiffies.h>
++#include <linux/ktime.h>
++#include <linux/delay.h>
++#include <linux/pm_runtime.h>
++
++#include "mei_dev.h"
++#include "hw-me.h"
++#include "hw-me-regs.h"
++
++#include "mei-trace.h"
++
++#define MEI_GSC_RPM_TIMEOUT 500
++
++static int mei_gsc_read_hfs(const struct mei_device *dev, int where, u32 *val)
++{
++	struct mei_me_hw *hw = to_me_hw(dev);
++
++	*val = ioread32(hw->mem_addr + where + 0xC00);
++
++	return 0;
++}
++
++static int mei_gsc_probe(struct auxiliary_device *aux_dev,
++			 const struct auxiliary_device_id *aux_dev_id)
++{
++	struct mei_aux_device *adev = auxiliary_dev_to_mei_aux_dev(aux_dev);
++	struct mei_device *dev;
++	struct mei_me_hw *hw;
++	struct device *device;
++	const struct mei_cfg *cfg;
++	int ret;
++
++	cfg = mei_me_get_cfg(aux_dev_id->driver_data);
++	if (!cfg)
++		return -ENODEV;
++
++	device = &aux_dev->dev;
++
++	dev = mei_me_dev_init(device, cfg);
++	if (IS_ERR(dev)) {
++		ret = PTR_ERR(dev);
++		goto err;
++	}
++
++	hw = to_me_hw(dev);
++	hw->mem_addr = devm_ioremap_resource(device, &adev->bar);
++	if (IS_ERR(hw->mem_addr)) {
++		dev_err(device, "mmio not mapped\n");
++		ret = PTR_ERR(hw->mem_addr);
++		goto err;
++	}
++
++	hw->irq = adev->irq;
++	hw->read_fws = mei_gsc_read_hfs;
++
++	dev_set_drvdata(&aux_dev->dev, dev);
++
++	ret = devm_request_threaded_irq(device, hw->irq,
++					mei_me_irq_quick_handler,
++					mei_me_irq_thread_handler,
++					IRQF_ONESHOT, KBUILD_MODNAME, dev);
++	if (ret) {
++		dev_err(device, "irq register failed %d\n", ret);
++		goto err;
++	}
++
++	pm_runtime_get_noresume(device);
++	pm_runtime_set_active(device);
++	pm_runtime_enable(device);
++
++	if (mei_start(dev)) {
++		dev_err(device, "init hw failure.\n");
++		ret = -ENODEV;
++		goto err;
++	}
++
++	pm_runtime_set_autosuspend_delay(device, MEI_GSC_RPM_TIMEOUT);
++	pm_runtime_use_autosuspend(device);
++
++	ret = mei_register(dev, device);
++	if (ret)
++		goto register_err;
++
++	pm_runtime_put_noidle(device);
++	return 0;
++
++register_err:
++	mei_stop(dev);
++
++err:
++	dev_err(device, "probe failed: %d\n", ret);
++	dev_set_drvdata(&aux_dev->dev, NULL);
++	return ret;
++}
++
++static void mei_gsc_remove(struct auxiliary_device *aux_dev)
++{
++	struct mei_device *dev;
++
++	dev = dev_get_drvdata(&aux_dev->dev);
++	if (!dev)
++		return;
++
++	mei_stop(dev);
++
++	mei_deregister(dev);
++
++	pm_runtime_disable(&aux_dev->dev);
++}
++
++static int __maybe_unused mei_gsc_pm_suspend(struct device *device)
++{
++	struct mei_device *dev = dev_get_drvdata(device);
++
++	if (!dev)
++		return -ENODEV;
++
++	mei_stop(dev);
++
++	mei_disable_interrupts(dev);
++
++	return 0;
++}
++
++static int __maybe_unused mei_gsc_pm_resume(struct device *device)
++{
++	struct mei_device *dev = dev_get_drvdata(device);
++	int err;
++
++	if (!dev)
++		return -ENODEV;
++
++	err = mei_restart(dev);
++	if (err)
++		return err;
++
++	/* Start timer if stopped in suspend */
++	schedule_delayed_work(&dev->timer_work, HZ);
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(mei_gsc_pm_ops, mei_gsc_pm_suspend, mei_gsc_pm_resume);
++
++static const struct auxiliary_device_id mei_gsc_id_table[] = {
++	{
++		.name = "i915.mei-gsc",
++		.driver_data = MEI_ME_GSC_CFG,
++
++	},
++	{
++		.name = "i915.mei-gscfi",
++		.driver_data = MEI_ME_GSCFI_CFG,
++	},
++	{
++		/* sentinel */
++	}
++};
++MODULE_DEVICE_TABLE(auxiliary, mei_gsc_id_table);
++
++static struct auxiliary_driver mei_gsc_driver = {
++	.probe	= mei_gsc_probe,
++	.remove = mei_gsc_remove,
++	.driver = {
++		/* auxiliary_driver_register() sets .name to be the modname */
++		.pm = &mei_gsc_pm_ops,
++	},
++	.id_table = mei_gsc_id_table
++};
++module_auxiliary_driver(mei_gsc_driver);
++
++MODULE_AUTHOR("Intel Corporation");
++MODULE_ALIAS("auxiliary:i915.mei-gsc");
++MODULE_ALIAS("auxiliary:i915.mei-gscfi");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
+index d3a6c0728645..9748d14849a1 100644
+--- a/drivers/misc/mei/hw-me.c
++++ b/drivers/misc/mei/hw-me.c
+@@ -1226,6 +1226,7 @@ irqreturn_t mei_me_irq_quick_handler(int irq, void *dev_id)
+ 	me_intr_disable(dev, hcsr);
+ 	return IRQ_WAKE_THREAD;
+ }
++EXPORT_SYMBOL_GPL(mei_me_irq_quick_handler);
+ 
+ /**
+  * mei_me_irq_thread_handler - function called after ISR to handle the interrupt
+@@ -1320,6 +1321,7 @@ irqreturn_t mei_me_irq_thread_handler(int irq, void *dev_id)
+ 	mutex_unlock(&dev->device_lock);
+ 	return IRQ_HANDLED;
+ }
++EXPORT_SYMBOL_GPL(mei_me_irq_thread_handler);
+ 
+ static const struct mei_hw_ops mei_me_hw_ops = {
+ 
+@@ -1433,6 +1435,12 @@ static bool mei_me_fw_type_sps(const struct pci_dev *pdev)
+ #define MEI_CFG_KIND_ITOUCH                     \
+ 	.kind = "itouch"
+ 
++#define MEI_CFG_TYPE_GSC                        \
++	.kind = "gsc"
++
++#define MEI_CFG_TYPE_GSCFI                      \
++	.kind = "gscfi"
++
+ #define MEI_CFG_FW_SPS                          \
+ 	.quirk_probe = mei_me_fw_type_sps
+ 
+@@ -1565,6 +1573,18 @@ static const struct mei_cfg mei_me_pch15_sps_cfg = {
+ 	MEI_CFG_FW_SPS,
+ };
+ 
++/* Graphics System Controller */
++static const struct mei_cfg mei_me_gsc_cfg = {
++	MEI_CFG_TYPE_GSC,
++	MEI_CFG_PCH8_HFS,
++};
++
++/* Graphics System Controller Firmware Interface */
++static const struct mei_cfg mei_me_gscfi_cfg = {
++	MEI_CFG_TYPE_GSCFI,
++	MEI_CFG_PCH8_HFS,
++};
++
+ /*
+  * mei_cfg_list - A list of platform platform specific configurations.
+  * Note: has to be synchronized with  enum mei_cfg_idx.
+@@ -1585,6 +1605,8 @@ static const struct mei_cfg *const mei_cfg_list[] = {
+ 	[MEI_ME_PCH12_SPS_ITOUCH_CFG] = &mei_me_pch12_itouch_sps_cfg,
+ 	[MEI_ME_PCH15_CFG] = &mei_me_pch15_cfg,
+ 	[MEI_ME_PCH15_SPS_CFG] = &mei_me_pch15_sps_cfg,
++	[MEI_ME_GSC_CFG] = &mei_me_gsc_cfg,
++	[MEI_ME_GSCFI_CFG] = &mei_me_gscfi_cfg,
+ };
+ 
+ const struct mei_cfg *mei_me_get_cfg(kernel_ulong_t idx)
+@@ -1595,7 +1617,8 @@ const struct mei_cfg *mei_me_get_cfg(kernel_ulong_t idx)
+ 		return NULL;
+ 
+ 	return mei_cfg_list[idx];
+-};
++}
++EXPORT_SYMBOL_GPL(mei_me_get_cfg);
+ 
+ /**
+  * mei_me_dev_init - allocates and initializes the mei device structure
+@@ -1630,4 +1653,4 @@ struct mei_device *mei_me_dev_init(struct device *parent,
+ 
+ 	return dev;
+ }
+-
++EXPORT_SYMBOL_GPL(mei_me_dev_init);
+diff --git a/drivers/misc/mei/hw-me.h b/drivers/misc/mei/hw-me.h
+index 00a7132ac7a2..a071c645e905 100644
+--- a/drivers/misc/mei/hw-me.h
++++ b/drivers/misc/mei/hw-me.h
+@@ -112,6 +112,8 @@ enum mei_cfg_idx {
+ 	MEI_ME_PCH12_SPS_ITOUCH_CFG,
+ 	MEI_ME_PCH15_CFG,
+ 	MEI_ME_PCH15_SPS_CFG,
++	MEI_ME_GSC_CFG,
++	MEI_ME_GSCFI_CFG,
+ 	MEI_ME_NUM_CFG,
+ };
+ 
+-- 
+2.32.0
+
