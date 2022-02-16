@@ -2,116 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D04AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231243AbiBPH6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:58:38 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39904 "EHLO
+        id S231252AbiBPH7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:59:21 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiBPH6f (ORCPT
+        with ESMTP id S229379AbiBPH7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:58:35 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2DED5DD9;
-        Tue, 15 Feb 2022 23:58:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=YXSZvLdp2WpAvYAgpt65RWGqBzfUFzNyTw8axHgAK10=; b=o3pYssSMY/qnKmyqV5QbRt0DFQ
-        yb5+W59T5AHuXcl8hFjcKbcyFo8ZpPWILUCZWYzfgeRtNGYrMZ04btWArup73rBlL4neEiZJTRjPA
-        XKJ8KvPEt5Fz8U6l4/WAq1zjzAxzU+Vd5XPWtmzDw8Q2S3hhcd08aVvXaw9S/4tapcMk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nKEuC-006BMz-7p; Wed, 16 Feb 2022 08:39:16 +0100
-Date:   Wed, 16 Feb 2022 08:39:16 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, linux@armlinux.org.uk,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-Message-ID: <YgyqJAokWhXvDPik@lunn.ch>
-References: <YelxMFOiqnfIVmyy@lunn.ch>
- <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
- <Yeqzhx3GbMzaIbj6@lunn.ch>
- <CAAd53p5pF+SRfwGfJaBTPkH7+9Z6vhPHcuk-c=w8aPTzMBxPcg@mail.gmail.com>
- <YerOIXi7afbH/3QJ@lunn.ch>
- <3d7b1ff0-6776-6480-ed20-c9ad61b400f7@gmail.com>
- <Yex0rZ0wRWQH/L4n@lunn.ch>
- <CAAd53p6pfuYDor3vgm_bHFe_o7urNhv7W6=QGxVz6c=htt7wLg@mail.gmail.com>
- <YgwMslde2OxOOp9d@lunn.ch>
- <CAAd53p4QXHe7XTv5ntsdnC1Z9EpDfXQECKHDEsRA++SEQSdbYQ@mail.gmail.com>
+        Wed, 16 Feb 2022 02:59:18 -0500
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA17A14099
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:59:06 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R881e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V4c7Ght_1644998322;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V4c7Ght_1644998322)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 16 Feb 2022 15:59:04 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     rostedt@goodmis.org
+Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] tracing: Fix kernel-doc
+Date:   Wed, 16 Feb 2022 15:58:40 +0800
+Message-Id: <20220216075840.63755-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAd53p4QXHe7XTv5ntsdnC1Z9EpDfXQECKHDEsRA++SEQSdbYQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > > This is an ACPI based platform and we are working on new firmware
-> > > property "use-firmware-led" to give driver a hint:
-> > > ...
-> > >     Scope (_SB.PC00.OTN0)
-> > >     {
-> > >         Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
-> > >         {
-> > >             ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301") /* Device
-> > > Properties for _DSD */,
-> > >             Package (0x01)
-> > >             {
-> > >                 Package (0x02)
-> > >                 {
-> > >                     "use-firmware-led",
-> > >                     One
-> > >                 }
-> > >             }
-> > >         })
-> > >     }
-> > > ...
-> > >
-> > > Because the property is under PCI device namespace, I am not sure how
-> > > to (cleanly) bring the property from the phylink side to phydev side.
-> > > Do you have any suggestion?
-> >
-> > I'm no ACPI expert, but i think
-> > Documentation/firmware-guide/acpi/dsd/phy.rst gives you the basis:
-> >
-> >     During the MDIO bus driver initialization, PHYs on this bus are probed
-> >     using the _ADR object as shown below and are registered on the MDIO bus.
-> >
-> >       Scope(\_SB.MDI0)
-> >       {
-> >         Device(PHY1) {
-> >           Name (_ADR, 0x1)
-> >         } // end of PHY1
-> >
-> >         Device(PHY2) {
-> >           Name (_ADR, 0x2)
-> >         } // end of PHY2
-> >       }
-> >
-> > These are the PHYs on the MDIO bus. I _think_ that next to the Name,
-> > you can add additional properties, like your "use-firmware-led". This
-> > would then be very similar to DT, which is in effect what ACPI is
-> > copying. So you need to update this document with your new property,
-> > making it clear that this property only applies to boot, not
-> > suspend/resume. And fwnode_mdiobus_register_phy() can look for the
-> > property and set a flag in the phydev structure indicating that ACPI
-> > is totally responsible for LEDs at boot time.
-> 
-> The problem here is there's no MDIO bus in ACPI namespace, namely no
-> "Scope(\_SB.MDI0)" on this platform.
+Fix the following W=1 kernel warnings:
 
-So add it. Basically, copy what DT does. I assume there is a node for
-the Ethernet device? And is the MDIO bus driver instantiated by the
-Ethernet device? So you can add the MDIO node as a sub node of the
-Ethernet device. When you register the MDIO bus using
-acpi_mdiobus_register() pass a pointer to this MDIO sub node.
+kernel/trace/trace.c:1181: warning: expecting prototype for
+tracing_snapshot_cond_data(). Prototype was for
+tracing_cond_snapshot_data() instead.
 
-     Andrew
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ kernel/trace/trace.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 7c2578efde26..326d96304b84 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -1122,7 +1122,7 @@ void tracing_snapshot_instance(struct trace_array *tr)
+ 	tracing_snapshot_instance_cond(tr, NULL);
+ }
+ 
+-/**
++/*
+  * tracing_snapshot - take a snapshot of the current buffer.
+  *
+  * This causes a swap between the snapshot buffer and the current live
+@@ -1144,7 +1144,7 @@ void tracing_snapshot(void)
+ }
+ EXPORT_SYMBOL_GPL(tracing_snapshot);
+ 
+-/**
++/*
+  * tracing_snapshot_cond - conditionally take a snapshot of the current buffer.
+  * @tr:		The tracing instance to snapshot
+  * @cond_data:	The data to be tested conditionally, and possibly saved
+@@ -1163,8 +1163,8 @@ void tracing_snapshot_cond(struct trace_array *tr, void *cond_data)
+ }
+ EXPORT_SYMBOL_GPL(tracing_snapshot_cond);
+ 
+-/**
+- * tracing_snapshot_cond_data - get the user data associated with a snapshot
++/*
++ * tracing_cond_snapshot_data - get the user data associated with a snapshot
+  * @tr:		The tracing instance
+  *
+  * When the user enables a conditional snapshot using
+-- 
+2.20.1.7.g153144c
+
