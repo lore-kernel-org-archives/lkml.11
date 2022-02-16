@@ -2,162 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 870C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236144AbiBPQLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:11:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48894 "EHLO
+        id S236138AbiBPQLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:11:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236098AbiBPQK5 (ORCPT
+        with ESMTP id S234846AbiBPQLq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:10:57 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EB62AD677
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:10:45 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 54DFA2177B;
-        Wed, 16 Feb 2022 16:10:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645027844; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Wed, 16 Feb 2022 11:11:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F6AB1DA51
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:11:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645027892;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=4bDvymKzSLLrtbDA6EXSQG+NWXMWEYN2CVr6HzbEY3I=;
-        b=kesOboPnTpeky5AGrib1knxPwu5U1RqU3zXLunk0Ju9NTWD1zUaDIJ+uQcDclz32jZImLa
-        N1rN1tfoIzqRs+KUe1ejs3sy+mCkpmh3KYpO87iR9t1mokj01iXwbPokm4FrQS0I0DxZu1
-        PxnaohjTPXFcFpthOeLzwFMptNlHxfk=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 138FAA3B84;
-        Wed, 16 Feb 2022 16:10:43 +0000 (UTC)
-Date:   Wed, 16 Feb 2022 17:10:43 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        bh=TWp8XfA6tyc//eVPa5BXVi9Z+b2Xu2vCpHljwlzLi0E=;
+        b=H9QynJK4i83pOcYnelDVUoJVDdAUETwjirjuU0ENWH5T+MPLvHAwq8Ma3LLAB2486BuXwh
+        8MduTXe9S5Pr5xcaWhjjuddXkHJbyX2RHR4uyXFwXFu6MKric8YacprGhjJn3LiCPcsjf2
+        PdhRGui7gUD9LhUCNfBPSoYZmd5dC5o=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-418-LESS_FvgMwuQpKbKeXUW8w-1; Wed, 16 Feb 2022 11:11:31 -0500
+X-MC-Unique: LESS_FvgMwuQpKbKeXUW8w-1
+Received: by mail-ot1-f70.google.com with SMTP id s3-20020a9d58c3000000b005ad0c01d2dcso99199oth.12
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:11:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TWp8XfA6tyc//eVPa5BXVi9Z+b2Xu2vCpHljwlzLi0E=;
+        b=sFOWfIj5GXOaYanx0r/uPdt4YpzzeM3D5/6wgx3++Umlzjb09Hv2lz9snt4ymFokfy
+         XMSN6TkGFX36hb9uyg9CqGcehkLMiYhMXccg9rNsB4PFGG6Hmqbp057McylZs013NL5W
+         oNF1+NxAAyNbiSzNUm5om8U6Do2soS0bPDvAf9TtGnNo63LNQcI/f0KgAkDLEvsY+Eax
+         URf4zON/QhTHZnLOyMaMWzlxwVpGfH+XVW8NG3sfXLequJQvQCT7qMtfD9BeXIgA/Ky+
+         HuNgVj6ByNRNgBNjmYRF7KpVqzrX/k4oqVF6YJzk+2X8JXQKtwWLkz3Yv45fURCej6rK
+         wHlw==
+X-Gm-Message-State: AOAM533vyRRqGxe3B49TadWFuGQ7K3E7n4n7m96H2amFDG+6opi2jXV7
+        92curIt66/2UD2hGNd1ot6Ok+lJRrMIeCuIOIddtshYhQMvBHTPMNqeidYXihwUNVJ2MJGx5zSo
+        +YSuBS4yY5pXDLN7qjp4s4KW5
+X-Received: by 2002:a05:6808:19a5:b0:2cf:3047:e78f with SMTP id bj37-20020a05680819a500b002cf3047e78fmr1017619oib.43.1645027890110;
+        Wed, 16 Feb 2022 08:11:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxt+YgdfI5Fk0Xh7kX7VKIgYAe4XUjIZjnwAnXycbpxMk9pjuatlkjUMY0+5sKDhCNzHWL9NA==
+X-Received: by 2002:a05:6808:19a5:b0:2cf:3047:e78f with SMTP id bj37-20020a05680819a500b002cf3047e78fmr1017598oib.43.1645027889848;
+        Wed, 16 Feb 2022 08:11:29 -0800 (PST)
+Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
+        by smtp.gmail.com with ESMTPSA id bg30sm2235654oib.4.2022.02.16.08.11.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 08:11:29 -0800 (PST)
+Date:   Wed, 16 Feb 2022 17:11:22 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Seth Forshee <sforshee@digitalocean.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH printk v1 07/13] printk: move buffer definitions into
- console_emit_next_record() caller
-Message-ID: <Yg0iA/McHYWK6d4D@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-8-john.ogness@linutronix.de>
+Subject: Re: [PATCH] vsock: remove vsock from connected table when connect is
+ interrupted by a signal
+Message-ID: <20220216161122.eacdfgljg2c6yeby@sgarzare-redhat>
+References: <20220216143222.1614690-1-sforshee@digitalocean.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220207194323.273637-8-john.ogness@linutronix.de>
+In-Reply-To: <20220216143222.1614690-1-sforshee@digitalocean.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-02-07 20:49:17, John Ogness wrote:
-> Extended consoles print extended messages and do not print messages about
-> dropped records.
-> 
-> Non-extended consoles print "normal" messages as well as extra messages
-> about dropped records.
-> 
-> Currently the buffers for these various message types are defined within
-> the functions that might use them and their usage is based upon the
-> CON_EXTENDED flag. This will be a problem when moving to kthread printers
-> because each printer must be able to provide its own buffers.
-> 
-> Move all the message buffer definitions outside of
-> console_emit_next_record(). The caller knows if extended or dropped
-> messages should be printed and can specify the appropriate buffers to
-> use. The console_emit_next_record() and call_console_driver() functions
-> can know what to print based on whether specified buffers are non-NULL.
-> 
-> With this change, buffer definition/allocation/specification is separated
-> from the code that does the various types of string printing.
-> 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 822b7b6ad6d1..02bde45c1149 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2597,13 +2611,13 @@ static bool console_emit_next_record(struct console *con, bool *handover)
->  		goto skip;
->  	}
->  
-> -	if (con->flags & CON_EXTENDED) {
-> -		write_text = &ext_text[0];
-> -		len = info_print_ext_header(ext_text, sizeof(ext_text), r.info);
-> -		len += msg_print_ext_body(ext_text + len, sizeof(ext_text) - len,
-> +	if (ext_text) {
-> +		write_text = ext_text;
-> +		len = info_print_ext_header(ext_text, CONSOLE_EXT_LOG_MAX, r.info);
-> +		len += msg_print_ext_body(ext_text + len, CONSOLE_EXT_LOG_MAX - len,
->  					  &r.text_buf[0], r.info->text_len, &r.info->dev_info);
->  	} else {
-> -		write_text = &text[0];
-> +		write_text = text;
->  		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
+Hi Seth,
 
-@text and @ext_text buffers are never used at the same time. It might
-be enough to use a single text[CONSOLE_EXT_LOG_MAX] buffer. It would
-even slightly simplify the code.
+On Wed, Feb 16, 2022 at 08:32:22AM -0600, Seth Forshee wrote:
+>vsock_connect() expects that the socket could already be in the
+>TCP_ESTABLISHED state when the connecting task wakes up with a signal
+>pending. If this happens the socket will be in the connected table, and
+>it is not removed when the socket state is reset. In this situation it's
+>common for the process to retry connect(), and if the connection is
+>successful the socket will be added to the connected table a second
+>time, corrupting the list.
+>
+>Prevent this by calling vsock_remove_connected() if a signal is received
+>while waiting for a connection. This is harmless if the socket is not in
+>the connected table, and if it is in the table then removing it will
+>prevent list corruption from a double add.
+>
+>Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+>---
+> net/vmw_vsock/af_vsock.c | 1 +
+> 1 file changed, 1 insertion(+)
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index 3235261f138d..38baeb189d4e 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -1401,6 +1401,7 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+> 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+> 			sock->state = SS_UNCONNECTED;
+> 			vsock_transport_cancel_pkt(vsk);
+>+			vsock_remove_connected(vsk);
+> 			goto out_wait;
+> 		} else if (timeout == 0) {
+> 			err = -ETIMEDOUT;
+>-- 
+>2.32.0
+>
 
->  	}
->  
-> @@ -2621,7 +2635,7 @@ static bool console_emit_next_record(struct console *con, bool *handover)
->  	console_lock_spinning_enable();
->  
->  	stop_critical_timings();	/* don't trace print latency */
-> -	call_console_driver(con, write_text, len);
-> +	call_console_driver(con, write_text, len, dropped_text);
->  	start_critical_timings();
->  
->  	con->seq++;
-> @@ -2650,6 +2664,9 @@ static bool console_emit_next_record(struct console *con, bool *handover)
->   */
->  static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handover)
->  {
-> +	static char dropped_text[DROPPED_TEXT_MAX];
-> +	static char ext_text[CONSOLE_EXT_LOG_MAX];
-> +	static char text[CONSOLE_LOG_MAX];
+Thanks for this fix! The patch LGTM:
 
-These buffers are for printing from console_unlock(). The same buffers
-will need to be allocated for each console in the kthreads.
-
-It might make sense to allocate these buffers in register_console()
-and store the pointers in struct console.
-
-Well, we might need extra buffers for atomic console drivers and
-diffent contexts that would be used during panic. But maybe
-they can be allocated in register_console() as well.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
 
+@Dave, @Jakub, since we need this also in stable branches, I was going 
+to suggest adding a Fixes tag, but I'm a little confused: the issue 
+seems to have always been there, so from commit d021c344051a ("VSOCK: 
+Introduce VM Sockets"), but to use vsock_remove_connected() as we are 
+using in this patch, we really need commit d5afa82c977e ("vsock: correct 
+removal of socket from the list").
 
->  	bool any_usable = false;
->  	struct console *con;
->  	bool any_progress;
-> @@ -2667,7 +2684,16 @@ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handove
->  				continue;
->  			any_usable = true;
->  
-> -			progress = console_emit_next_record(con, handover);
-> +			if (con->flags & CON_EXTENDED) {
-> +				/* Extended consoles do not print "dropped messages". */
-> +				progress = console_emit_next_record(con, &text[0],
+Commit d5afa82c977e was introduces in v5.3 and it was backported in 
+v4.19 and v4.14, but not in v4.9.
+So if we want to backport this patch also for v4.9, I think we need 
+commit d5afa82c977e as well.
 
-IMHO, &text[0] buffer is not used for extended consoles.
+Thanks,
+Stefano
 
-> +								    &ext_text[0], NULL,
-> +								    handover);
-> +			} else {
-> +				progress = console_emit_next_record(con, &text[0],
-> +								    NULL, &dropped_text[0],
-> +								    handover);
-> +			}
->  			if (*handover)
->  				return true;
-
-I do not resist on allocating the buffers in register_console(). I am
-not sure if it would really makes things easier.
-
-But I would really like to use the same buffer for normal and extended
-consoles if possible.
-
-Best Regards,
-Petr
