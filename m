@@ -2,148 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF844C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DD7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235882AbiBPQBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:01:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42832 "EHLO
+        id S235889AbiBPQDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:03:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235880AbiBPQBt (ORCPT
+        with ESMTP id S233934AbiBPQDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:01:49 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFF510A5;
-        Wed, 16 Feb 2022 08:01:34 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id m17so4620290edc.13;
-        Wed, 16 Feb 2022 08:01:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=14dfXqiviWvFWbZ7hDtjVX4wUngEitaG2TtCJwozqVc=;
-        b=dselpBPU48A4OFRui0ktf19YXTMhvx5YTY/Sphlb4uE7oejsdyX2QrP1tkrDf0myU8
-         g/TtfZZedPY1m3fOkweMbFluVWMxiScKUTZ1VrKbX1hM/c/8VushT97r40yTJSEYNOgn
-         f8JB/qJUBW/5rRU84RXoPKXClBpYN8ZLPszRbHwB2q0KZ8ATNWUJxVJQXRiL7tIW6SUY
-         wFL3+hgT1Bwb3QjpPUz12ArZE10R5woiiBAxkfHasJtgKuNWisFFGmvFOCdTK1VczkOm
-         w+aNao4junf5kFQdEkV3rlzgQviXUgGG8wgxvihNuFNijQE3xehsiPkvXJZ5hLi+GAK/
-         p3qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=14dfXqiviWvFWbZ7hDtjVX4wUngEitaG2TtCJwozqVc=;
-        b=h30vGOU1rzUAUpbUGtI8Ysul1Sh+YK2GJtp2Za40MRF/w/1B9nDItZQl1mLjKu4HFl
-         S4g98toLJk0b/J9lGCblGJI4EUmALSf2eZvmNIsRSE+2SBzGwmeO8AKhXvsW5Y3xEr/G
-         4c2HsVnetWSS/RU+gAiwuWwWNxGBcQXdD93k0lmhPXxVAct+J+UzshMtFNHgkEDH6KZU
-         Fe2ByxrdqfRFRrz2gHw4fC8Zi00BaR5vru/lj63B28PyboF+FqMVjBPfEvOh99SPgTiG
-         2+DaWDdDnTwh1FncTqElf4dPU3MTPmcZFRmK+1Fbw+dhE2DZvw+0Us+7vKeS3Xl9Ikpk
-         BUtw==
-X-Gm-Message-State: AOAM530pV1rc5i9/GmNajtHOE2KZrNZQY8gN0liON0G3oeBblUc/bw3L
-        B7p99Cezr/Be+24nBErGA2s=
-X-Google-Smtp-Source: ABdhPJyR3n8irQCaf3MTjG/4tZjtU4Bti1nk83yB2dgpJyzuxrad4tKW2yRTDjG6HE8iRWszQKkTvw==
-X-Received: by 2002:a05:6402:5214:b0:412:996:9ffb with SMTP id s20-20020a056402521400b0041209969ffbmr3312338edd.238.1645027293296;
-        Wed, 16 Feb 2022 08:01:33 -0800 (PST)
-Received: from tiger.museclub.art (p200300cf9f235800e668694710673d4b.dip0.t-ipconnect.de. [2003:cf:9f23:5800:e668:6947:1067:3d4b])
-        by smtp.googlemail.com with ESMTPSA id m4sm59108ejl.45.2022.02.16.08.01.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 08:01:32 -0800 (PST)
-From:   Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     Eugene Shalygin <eugene.shalygin@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] hwmon: (asus-ec-sensors) merge setup functions
-Date:   Wed, 16 Feb 2022 17:01:28 +0100
-Message-Id: <20220216160128.2418025-1-eugene.shalygin@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220216153407.2412409-1-eugene.shalygin@gmail.com>
-References: <20220216153407.2412409-1-eugene.shalygin@gmail.com>
+        Wed, 16 Feb 2022 11:03:01 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AAA1ED1F4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:02:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645027369; x=1676563369;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Go6SPGW0Dhq+tJy23R6dUPUDSfYPivomuuhjvNdQh5c=;
+  b=Uv0vmORc0YDRObansTT5UgQI0WqFZFHPGQvE1vsjX8hCZK+G05knt8r/
+   Xr8FYoUnIXrQOq/LR0U+9QtxxKWwbbWChuQYVOiEVj5z9H7euwBB5Y79O
+   2KLRWM6K9/uNrRy4qaa4NV9B0e7j/963YIL+IrD8qvKLpDV+uFqlgb/yg
+   goHETzqV8xJqk8Celh88qgMiDSzAyKpuj15cABHeac3JlGa61dUlF6zJl
+   G3WadJMAHKba8yLvbhFvP+9dmQJqak2qPHfVe+qbmrPCwoH2P7hODq0WB
+   seGBZIqFMbLvpR88+zZ0Ln7iAcqSI263VMJf0tuwpBsqSV61lkbIMzIvB
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="249483777"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="249483777"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 08:00:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="503088259"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 16 Feb 2022 08:00:42 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKMjR-000Av6-HK; Wed, 16 Feb 2022 16:00:41 +0000
+Date:   Thu, 17 Feb 2022 00:00:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: coreboot_table.c:undefined reference to `memremap'
+Message-ID: <202202162338.iHngg0KZ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Merge configure_sensor_setup() into probe().
+Hi Arnd,
 
-Changes:
- - v2: add local struct device *dev = &pdev->dev;
- - v3: initialize dev at declaration
+FYI, the error/warning still remains.
 
-Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   c5d9ae265b105d9a67575fb67bd4650a6fc08e25
+commit: 951cd3a0866d29cb9c01ebc1d9c17590e598226e firmware: include drivers/firmware/Kconfig unconditionally
+date:   4 months ago
+config: s390-randconfig-r023-20220216 (https://download.01.org/0day-ci/archive/20220216/202202162338.iHngg0KZ-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=951cd3a0866d29cb9c01ebc1d9c17590e598226e
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 951cd3a0866d29cb9c01ebc1d9c17590e598226e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   s390-linux-ld: drivers/clk/clk-fixed-mmio.o: in function `fixed_mmio_clk_setup':
+   clk-fixed-mmio.c:(.text+0x96): undefined reference to `of_iomap'
+   s390-linux-ld: clk-fixed-mmio.c:(.text+0x118): undefined reference to `iounmap'
+   s390-linux-ld: drivers/dma/fsl-edma.o: in function `fsl_edma_probe':
+   fsl-edma.c:(.text+0x10ee): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: fsl-edma.c:(.text+0x181c): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: drivers/dma/idma64.o: in function `idma64_platform_probe':
+   idma64.c:(.text+0x38bc): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: drivers/dma/qcom/hidma.o: in function `hidma_probe':
+   hidma.c:(.text+0x28ec): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: hidma.c:(.text+0x2934): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: drivers/char/xillybus/xillybus_of.o: in function `xilly_drv_probe':
+   xillybus_of.c:(.text+0x2c0): undefined reference to `devm_platform_ioremap_resource'
+   s390-linux-ld: drivers/net/ethernet/altera/altera_tse_main.o: in function `request_and_map':
+   altera_tse_main.c:(.text+0x1b98): undefined reference to `devm_ioremap'
+   s390-linux-ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
+>> coreboot_table.c:(.text+0x596): undefined reference to `memremap'
+>> s390-linux-ld: coreboot_table.c:(.text+0x646): undefined reference to `memunmap'
+>> s390-linux-ld: coreboot_table.c:(.text+0x692): undefined reference to `memremap'
+   s390-linux-ld: coreboot_table.c:(.text+0x6dc): undefined reference to `memunmap'
+   s390-linux-ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
+>> memconsole-coreboot.c:(.text+0x2f6): undefined reference to `memremap'
+>> s390-linux-ld: memconsole-coreboot.c:(.text+0x3ca): undefined reference to `devm_memremap'
+>> s390-linux-ld: memconsole-coreboot.c:(.text+0x3da): undefined reference to `memunmap'
+   s390-linux-ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
+   vpd.c:(.text+0x812): undefined reference to `memunmap'
+   s390-linux-ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
+   vpd.c:(.text+0x986): undefined reference to `memremap'
+   s390-linux-ld: vpd.c:(.text+0xc04): undefined reference to `memunmap'
+   s390-linux-ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
+   vpd.c:(.text+0xe0c): undefined reference to `memremap'
+   s390-linux-ld: vpd.c:(.text+0xe32): undefined reference to `memunmap'
+
 ---
- drivers/hwmon/asus-ec-sensors.c | 38 ++++++++++++++-------------------
- 1 file changed, 16 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
-index bfac08a5dc57..b9eb9126e433 100644
---- a/drivers/hwmon/asus-ec-sensors.c
-+++ b/drivers/hwmon/asus-ec-sensors.c
-@@ -589,23 +589,33 @@ get_board_sensors(const struct device *dev)
- 	return (unsigned long)dmi_entry->driver_data;
- }
- 
--static int __init configure_sensor_setup(struct device *dev)
-+static int __init asus_ec_probe(struct platform_device *pdev)
- {
--	struct ec_sensors_data *ec_data = dev_get_drvdata(dev);
-+	const struct hwmon_channel_info **ptr_asus_ec_ci;
- 	int nr_count[hwmon_max] = { 0 }, nr_types = 0;
--	struct device *hwdev;
- 	struct hwmon_channel_info *asus_ec_hwmon_chan;
--	const struct hwmon_channel_info **ptr_asus_ec_ci;
- 	const struct hwmon_chip_info *chip_info;
- 	const struct ec_sensor_info *si;
-+	struct ec_sensors_data *ec_data;
- 	enum hwmon_sensor_types type;
-+	unsigned long board_sensors;
-+	struct device *hwdev;
- 	unsigned int i;
- 
--	ec_data->board_sensors = get_board_sensors(dev);
--	if (!ec_data->board_sensors) {
-+	struct device *dev = &pdev->dev;
-+	board_sensors = get_board_sensors(dev);
-+	if (!board_sensors) {
- 		return -ENODEV;
- 	}
- 
-+	ec_data = devm_kzalloc(dev, sizeof(struct ec_sensors_data),
-+			     GFP_KERNEL);
-+	if (!ec_data) {
-+		return -ENOMEM;
-+	}
-+
-+	dev_set_drvdata(dev, ec_data);
-+	ec_data->board_sensors = board_sensors;
- 	ec_data->nr_sensors = board_sensors_count(ec_data->board_sensors);
- 	ec_data->sensors = devm_kcalloc(dev, ec_data->nr_sensors,
- 					sizeof(struct ec_sensor), GFP_KERNEL);
-@@ -666,22 +676,6 @@ static int __init configure_sensor_setup(struct device *dev)
- 	return PTR_ERR_OR_ZERO(hwdev);
- }
- 
--static int __init asus_ec_probe(struct platform_device *pdev)
--{
--	struct ec_sensors_data *state;
--	int status = 0;
--
--	state = devm_kzalloc(&pdev->dev, sizeof(struct ec_sensors_data),
--			     GFP_KERNEL);
--
--	if (!state) {
--		return -ENOMEM;
--	}
--
--	dev_set_drvdata(&pdev->dev, state);
--	status = configure_sensor_setup(&pdev->dev);
--	return status;
--}
- 
- static const struct acpi_device_id acpi_ec_ids[] = {
- 	/* Embedded Controller Device */
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
