@@ -2,125 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6252CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACBDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 06:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbiBPGqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 01:46:40 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:54014 "EHLO
+        id S229597AbiBPGzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 01:55:10 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiBPGqj (ORCPT
+        with ESMTP id S229449AbiBPGzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 01:46:39 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE1A22BDF8;
-        Tue, 15 Feb 2022 22:46:20 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id x5so1211977qtw.10;
-        Tue, 15 Feb 2022 22:46:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6XS4kLUNe+IZUuCNJBO1SJPPEbuousn0y/b6MeXhwcE=;
-        b=U6xlUW2G7CBkjX5Crf4XgUS0U7WRFsrbEUBpEjblJWIu0xtg4LzVxQUehE4ZxbTjv4
-         gayuTt24Ah902YuIOb7MFBeYlC3ryKbGQC7DxEI+NHbp5hQmoVBlLEUHOvbYQUNQF9fM
-         cmMqpKuAEhRFeMu4dOC0dApTv5wEnbshEbQzQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6XS4kLUNe+IZUuCNJBO1SJPPEbuousn0y/b6MeXhwcE=;
-        b=TlyHfma6sOpkDzJchmcjcElMUDuYZWCWPAdWkQNMp4Mpzq1vcnOVXcm7fkPuPC3nLs
-         Sy+OsTihfF1ralu1NZ/44T4i1r5X+jfcLnrBT4MMQ99/uPxO+e/nRntPREcBRlH0BdiI
-         ulaqV0X9UrmhO2ThuzGLGgq8SegSaODKvkqwLV4OJnTrB42/MRr13W5z0y0J58phywux
-         nX1nsWYBFzaaS6pCGGtz3kyRHSfjv2MszNxZQHTYC7kV8OrhCibkQbFVUaOr9AysoBPt
-         E1eiasTxrmpxb4DKX/Nb+dEqKIDJXjbHkHyLchWKXxH96Euvn9yfg6dxDppwQRooU/Bl
-         vQZA==
-X-Gm-Message-State: AOAM532JRXVYM/f5SePKn4HuQ7CBmW6G+pNnjtGR3Pj29GuxqL+P+lb/
-        faCF8kJ8wbSzgrDMf8eUBt0xnUnPmsV493/49MX3Zgiv
-X-Google-Smtp-Source: ABdhPJxR8AyxoX+WWn1H3SzPot8I7lRW3fMjMORcGOksDawBB0Sdpvgh8N+BFtwatYalcZ8srn0jbnH0BlLiKVlVY8s=
-X-Received: by 2002:a37:a147:0:b0:47a:be0e:4a0c with SMTP id
- k68-20020a37a147000000b0047abe0e4a0cmr577727qke.165.1644993248256; Tue, 15
- Feb 2022 22:34:08 -0800 (PST)
+        Wed, 16 Feb 2022 01:55:08 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B0128BF5D;
+        Tue, 15 Feb 2022 22:54:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644994476; x=1676530476;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lM1SEU0VwVmIPrNwAlzATA/OOqDndWKV5hV1fkHz7+w=;
+  b=FeXDaC+ah1o+kWko/ojzfu3deBnt0FfDBmJ5OedFCypW0FiD+FOvLQrk
+   i4VS1/xpdjs71LblirNG3Hyvg9cgkl5nmqeKi2w5UFeNhODpA5Eh4Oo5x
+   jaTLUl8wojBfyhrCG8L1oTrVd87BApqso8dXoDx+uCIcFcMseORRshuB7
+   4/StY7i1cHxkjTvoNA1cQS9EcKhxCqhb0esIyyk174JP8XDwMaAlKvswC
+   LvpcoEMtIkl1z/POGESdd8/tXI0nbezWNyB7J/fH0MtBIZaV70ZWSCUxX
+   2qLNCo63P7/HdpnNhBtZpKQMSN7/E5oHe3pGUOkug7COCiEzGqcCiio02
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250274364"
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="250274364"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 22:43:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; 
+   d="scan'208";a="773887453"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 15 Feb 2022 22:43:28 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKE2B-000AWi-MV; Wed, 16 Feb 2022 06:43:27 +0000
+Date:   Wed, 16 Feb 2022 14:42:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
+        bgoswami@codeaurora.org, perex@perex.cz, tiwai@suse.com,
+        srinivas.kandagatla@linaro.org, rohitkr@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org, judyhsiao@chromium.org
+Cc:     kbuild-all@lists.01.org,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [RESEND v13 07/10] ASoC: qcom: Add support for codec dma driver
+Message-ID: <202202161407.5MOObZwm-lkp@intel.com>
+References: <1644850708-11099-8-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-References: <20220215151022.7498-1-eajames@linux.ibm.com> <20220215151022.7498-5-eajames@linux.ibm.com>
-In-Reply-To: <20220215151022.7498-5-eajames@linux.ibm.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Wed, 16 Feb 2022 06:33:56 +0000
-Message-ID: <CACPK8Xe+M97Covu0+Qc9M-8vdCc9pTXfZjJ9y6_Xm-j1E4GUPQ@mail.gmail.com>
-Subject: Re: [PATCH 4/4] hwmon: (occ) Add soft minimum power cap attribute
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644850708-11099-8-git-send-email-quic_srivasam@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022 at 15:11, Eddie James <eajames@linux.ibm.com> wrote:
->
-> Export the power caps data for the soft minimum power cap through hwmon.
->
-> Signed-off-by: Eddie James <eajames@linux.ibm.com>
-> ---
->  drivers/hwmon/occ/common.c | 19 ++++++++++++++++---
->  1 file changed, 16 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/hwmon/occ/common.c b/drivers/hwmon/occ/common.c
-> index 0cb4a0a6cbc1..f00cd59f1d19 100644
-> --- a/drivers/hwmon/occ/common.c
-> +++ b/drivers/hwmon/occ/common.c
-> @@ -674,6 +674,9 @@ static ssize_t occ_show_caps_3(struct device *dev,
->         case 7:
->                 val = caps->user_source;
->                 break;
-> +       case 8:
-> +               val = get_unaligned_be16(&caps->soft_min) * 1000000ULL;
-> +               break;
->         default:
->                 return -EINVAL;
->         }
-> @@ -835,12 +838,13 @@ static int occ_setup_sensor_attrs(struct occ *occ)
->         case 1:
->                 num_attrs += (sensors->caps.num_sensors * 7);
->                 break;
-> -       case 3:
-> -               show_caps = occ_show_caps_3;
-> -               fallthrough;
->         case 2:
->                 num_attrs += (sensors->caps.num_sensors * 8);
->                 break;
-> +       case 3:
-> +               show_caps = occ_show_caps_3;
-> +               num_attrs += (sensors->caps.num_sensors * 9);
+Hi Srinivasa,
 
-How do we know this changed from 8 to 9?
+Thank you for the patch! Perhaps something to improve:
 
-We should start adding links to the occ source code, or a similar
-reference, when making these changes so they can be reviewed.
+[auto build test WARNING on broonie-sound/for-next]
+[also build test WARNING on v5.17-rc4 next-20220215]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-> +               break;
->         default:
->                 sensors->caps.num_sensors = 0;
->         }
-> @@ -1047,6 +1051,15 @@ static int occ_setup_sensor_attrs(struct occ *occ)
->                         attr->sensor = OCC_INIT_ATTR(attr->name, 0444,
->                                                      show_caps, NULL, 7, 0);
->                         attr++;
-> +
-> +                       if (sensors->caps.version > 2) {
-> +                               snprintf(attr->name, sizeof(attr->name),
-> +                                        "power%d_cap_min_soft", s);
-> +                               attr->sensor = OCC_INIT_ATTR(attr->name, 0444,
-> +                                                            show_caps, NULL,
-> +                                                            8, 0);
-> +                               attr++;
-> +                       }
->                 }
->         }
->
-> --
-> 2.27.0
->
+url:    https://github.com/0day-ci/linux/commits/Srinivasa-Rao-Mandadapu/Add-support-for-audio-on-SC7280-based-targets/20220214-230256
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+config: csky-randconfig-s032-20220216 (https://download.01.org/0day-ci/archive/20220216/202202161407.5MOObZwm-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/e81c7e5d842d2b8039700a71557683e88ce0162d
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Srinivasa-Rao-Mandadapu/Add-support-for-audio-on-SC7280-based-targets/20220214-230256
+        git checkout e81c7e5d842d2b8039700a71557683e88ce0162d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=csky SHELL=/bin/bash sound/soc/qcom/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> sound/soc/qcom/lpass-platform.c:1218:52: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void [noderef] __iomem *dma_buf @@     got unsigned char * @@
+   sound/soc/qcom/lpass-platform.c:1218:52: sparse:     expected void [noderef] __iomem *dma_buf
+   sound/soc/qcom/lpass-platform.c:1218:52: sparse:     got unsigned char *
+
+vim +1218 sound/soc/qcom/lpass-platform.c
+
+  1209	
+  1210	static int lpass_platform_copy(struct snd_soc_component *component,
+  1211				       struct snd_pcm_substream *substream, int channel,
+  1212				       unsigned long pos, void __user *buf, unsigned long bytes)
+  1213	{
+  1214		struct snd_pcm_runtime *rt = substream->runtime;
+  1215		unsigned int dai_id = component->id;
+  1216		int ret = 0;
+  1217	
+> 1218		void __iomem *dma_buf = rt->dma_area + pos +
+  1219					channel * (rt->dma_bytes / rt->channels);
+  1220	
+  1221		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+  1222			if (is_cdc_dma_port(dai_id))
+  1223				ret = copy_from_user_toio(dma_buf, buf, bytes);
+  1224			else
+  1225				ret = copy_from_user((void __force *)dma_buf, buf, bytes);
+  1226		} else if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
+  1227			if (is_cdc_dma_port(dai_id))
+  1228				ret = copy_to_user_fromio(buf, dma_buf, bytes);
+  1229			else
+  1230				ret = copy_to_user(buf, (void __force *)dma_buf, bytes);
+  1231		}
+  1232	
+  1233		return ret;
+  1234	}
+  1235	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
