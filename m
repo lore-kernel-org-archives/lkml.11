@@ -2,200 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4443BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96FA3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 13:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234579AbiBPNhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 08:37:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58668 "EHLO
+        id S234599AbiBPNhp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:37:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiBPNhH (ORCPT
+        with ESMTP id S234075AbiBPNhm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 08:37:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D396F1A76EA;
-        Wed, 16 Feb 2022 05:36:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 892D4B81EE6;
-        Wed, 16 Feb 2022 13:36:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02594C004E1;
-        Wed, 16 Feb 2022 13:36:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645018612;
-        bh=ZSkVb1slYA4F/pp9dzxY4tduW9grcjLC4TTtHzhDpuM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h4fYWrQCCOolWCrtXeDOPaIlXIxxB1dSAl1tLxSPrm5HxzV1eqJb0518M0U9tnxn6
-         1OGLMcVglnEyWOBv8QVpLFmTt0WGJg/FGRE6dRwuCrmSWOFaeG9QIqK3NCaefC8joj
-         aCgDQHnFOjSEdZcE31JQWrOveNtc9bX9WziBEAylLh+HwRK2Z/3EGeMwm1TCnACaIu
-         gn3as+6A1gEkF+Db5gfpdtdLZ60n3lpokYvxrMFMXAeZPXdEHSaDoqcASLyXIY6LA1
-         KZ5mFQpJ6hbObwDvl+zo1gHpiJa4E6gLXtrfsCb282+L/ae7cLJr3xI6APHI+4aWO4
-         /Vn5ZWq4/MW9A==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 229E4400FE; Wed, 16 Feb 2022 10:36:49 -0300 (-03)
-Date:   Wed, 16 Feb 2022 10:36:49 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     German Gomez <german.gomez@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, irogers@google.com
-Subject: Re: [PATCH] perf test: update arm64 perf_event_attr tests for
- --call-graph
-Message-ID: <Ygz98VJyz418jv55@kernel.org>
-References: <20220125104435.2737-1-german.gomez@arm.com>
- <622a42bd-69da-0df4-bbf3-7d21de77c73b@arm.com>
+        Wed, 16 Feb 2022 08:37:42 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03211CF3D3;
+        Wed, 16 Feb 2022 05:37:29 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id 132so2186103pga.5;
+        Wed, 16 Feb 2022 05:37:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jbgmIPg6mcyI2bdNGcYen9hRXeYps+4u66vJjpSYCqo=;
+        b=g0LvFcpYfc7oKzhMCRk4i2KsbfqpzVePasSnwqlU1nMbV74KVDB+36AJlyTA2496qO
+         ZLEg2wfYwmi6/m+xpsunl5atpaURPymBGg3xp9CCJHisBmPeAUWPRQiZFiLA44/FTPhz
+         YN4OVsCAtztUE+uyycA6/o2qyQvjr7gNzVIt62amLCi64Zfd61aDSmPGFB2gkdDfolHU
+         OUYycYU0mSgAPYLCG+HkvJ6cc5hBepOhzSV/UkEp/IkMnN2QFU9kCm48KKs8refwK3jS
+         cbkdflky67qV5jZkthe7l/qsjMCTNwaGsDvcw/jYium4guNC3bkqhuLMxa1TxznE6Xs8
+         stVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jbgmIPg6mcyI2bdNGcYen9hRXeYps+4u66vJjpSYCqo=;
+        b=eaz5aDUDvsboQRt85GCAJx8xsbzAYxVxt0dMxFkdr1RVUzssdqRMj7FMM/6o+WP7hW
+         4Fd4uGQGdaAsKhlag3l/Si+dGwuL3vgA8hz/hR2VJmUGanPkvKLVv3w/yHMP5oN5LiaM
+         qwdoxDIS3KduB5u5zmMy50osAeFE67Cb9eprPsrVgp+Gsp4ty05nh1X0HAMQRXurGylq
+         h6AU7p+AEasjgOkPCH1yA5fMPTEJhUK3vXgGMi70HdvN2AzuqA6pHXIjzvcqOO3BOeWx
+         lLdInvfdbmHPQpDcZQCJkO8G0+p6ji5q/WM150MO5LRNQlMmKrIrPVItp06H+q0CxeiI
+         EbZA==
+X-Gm-Message-State: AOAM531pwGVwXDQlqZkNZaG9jZzX/0G1wXXKKyw+BvCci0+OAN8nN9Wg
+        LmkqOhFn0qa+qSswbaEkSYU=
+X-Google-Smtp-Source: ABdhPJx1pTSdzZkre30qEK6d3y5+GESeMMz+HFMsCtfOctCeFFiB6BeYdq9NpF2aEWPvz5qfWhHPNQ==
+X-Received: by 2002:a05:6a00:244b:b0:4c9:319e:ecb7 with SMTP id d11-20020a056a00244b00b004c9319eecb7mr2805177pfj.58.1645018649260;
+        Wed, 16 Feb 2022 05:37:29 -0800 (PST)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id y20sm44412310pfi.78.2022.02.16.05.37.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 05:37:28 -0800 (PST)
+Message-ID: <5d8e8c09-64ca-38cd-591d-c193d1c01c7e@gmail.com>
+Date:   Wed, 16 Feb 2022 22:37:26 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <622a42bd-69da-0df4-bbf3-7d21de77c73b@arm.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 15/20] docs: add Rust documentation
+Content-Language: en-US
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rust-for-linux@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>
+References: <20220212130410.6901-16-ojeda@kernel.org>
+ <8baf7006-90ed-25b8-3005-69b5475215cf@gmail.com>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <8baf7006-90ed-25b8-3005-69b5475215cf@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Feb 16, 2022 at 01:17:56PM +0000, German Gomez escreveu:
+[Dropped most CCs]
+
+Hi Miguel.
+I have a follow-up hint on cross referencing for you.  See below.
+
+On Mon, 14 Feb 2022 19:47:36 +0900,
+Akira Yokosawa wrote:
 > Hi,
 > 
-> Friendly ping on this perf-test fix for arm64
-
-> I will include some quick test notes:
-
-Thanks, adding it to the cset, applying.
-
-- Arnaldo
-
-> Before:
- 
-> $ ./perf test 17 -v
-> 17: Setup struct perf_event_attr
-> [...]
-> running './tests/attr/test-record-graph-default'
-> expected sample_type=295, got 4391
-> expected sample_regs_user=0, got 1073741824
-> FAILED './tests/attr/test-record-graph-default' - match failure
-> test child finished with -1
-> ---- end ----
+> Please find inline comments WRT ReST-in-kereneldoc.
 > 
-> After:
+> Jon, if I'm missing something, please enlighten me.
 > 
-> [...]
-> running './tests/attr/test-record-graph-default-aarch64'
-> test limitation 'aarch64'
-> running './tests/attr/test-record-graph-fp-aarch64'
-> test limitation 'aarch64'
-> running './tests/attr/test-record-graph-default'
-> test limitation '!aarch64'
-> excluded architecture list ['aarch64']
-> skipped [aarch64] './tests/attr/test-record-graph-default'
-> running './tests/attr/test-record-graph-fp'
-> test limitation '!aarch64'
-> excluded architecture list ['aarch64']
-> skipped [aarch64] './tests/attr/test-record-graph-fp'
-> [...]
-> 
-> Thanks,
-> German
-> 
-> On 25/01/2022 10:44, German Gomez wrote:
-> > The struct perf_event_attr is initialised differently in Arm64 when
-> > recording in call-graph fp mode, so update the relevant tests, and add
-> > two extra arm64-only tests.
-> >
-> > Fixes: 7248e308a575 ("perf tools: Record ARM64 LR register automatically")
-> > Signed-off-by: German Gomez <german.gomez@arm.com>
-> > ---
-> >  tools/perf/tests/attr/README                            | 2 ++
-> >  tools/perf/tests/attr/test-record-graph-default         | 2 ++
-> >  tools/perf/tests/attr/test-record-graph-default-aarch64 | 9 +++++++++
-> >  tools/perf/tests/attr/test-record-graph-fp              | 2 ++
-> >  tools/perf/tests/attr/test-record-graph-fp-aarch64      | 9 +++++++++
-> >  5 files changed, 24 insertions(+)
-> >  create mode 100644 tools/perf/tests/attr/test-record-graph-default-aarch64
-> >  create mode 100644 tools/perf/tests/attr/test-record-graph-fp-aarch64
-> >
-> > diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
-> > index a36f49fb4dbe..1116fc6bf2ac 100644
-> > --- a/tools/perf/tests/attr/README
-> > +++ b/tools/perf/tests/attr/README
-> > @@ -45,8 +45,10 @@ Following tests are defined (with perf commands):
-> >    perf record -d kill                           (test-record-data)
-> >    perf record -F 100 kill                       (test-record-freq)
-> >    perf record -g kill                           (test-record-graph-default)
-> > +  perf record -g kill                           (test-record-graph-default-aarch64)
-> >    perf record --call-graph dwarf kill		(test-record-graph-dwarf)
-> >    perf record --call-graph fp kill              (test-record-graph-fp)
-> > +  perf record --call-graph fp kill              (test-record-graph-fp-aarch64)
-> >    perf record --group -e cycles,instructions kill (test-record-group)
-> >    perf record -e '{cycles,instructions}' kill   (test-record-group1)
-> >    perf record -e '{cycles/period=1/,instructions/period=2/}:S' kill (test-record-group2)
-> > diff --git a/tools/perf/tests/attr/test-record-graph-default b/tools/perf/tests/attr/test-record-graph-default
-> > index 5d8234d50845..f0a18b4ea4f5 100644
-> > --- a/tools/perf/tests/attr/test-record-graph-default
-> > +++ b/tools/perf/tests/attr/test-record-graph-default
-> > @@ -2,6 +2,8 @@
-> >  command = record
-> >  args    = --no-bpf-event -g kill >/dev/null 2>&1
-> >  ret     = 1
-> > +# arm64 enables registers in the default mode (fp)
-> > +arch    = !aarch64
-> >  
-> >  [event:base-record]
-> >  sample_type=295
-> > diff --git a/tools/perf/tests/attr/test-record-graph-default-aarch64 b/tools/perf/tests/attr/test-record-graph-default-aarch64
-> > new file mode 100644
-> > index 000000000000..e98d62efb6f7
-> > --- /dev/null
-> > +++ b/tools/perf/tests/attr/test-record-graph-default-aarch64
-> > @@ -0,0 +1,9 @@
-> > +[config]
-> > +command = record
-> > +args    = --no-bpf-event -g kill >/dev/null 2>&1
-> > +ret     = 1
-> > +arch    = aarch64
-> > +
-> > +[event:base-record]
-> > +sample_type=4391
-> > +sample_regs_user=1073741824
-> > diff --git a/tools/perf/tests/attr/test-record-graph-fp b/tools/perf/tests/attr/test-record-graph-fp
-> > index 5630521c0b0f..a6e60e839205 100644
-> > --- a/tools/perf/tests/attr/test-record-graph-fp
-> > +++ b/tools/perf/tests/attr/test-record-graph-fp
-> > @@ -2,6 +2,8 @@
-> >  command = record
-> >  args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
-> >  ret     = 1
-> > +# arm64 enables registers in fp mode
-> > +arch    = !aarch64
-> >  
-> >  [event:base-record]
-> >  sample_type=295
-> > diff --git a/tools/perf/tests/attr/test-record-graph-fp-aarch64 b/tools/perf/tests/attr/test-record-graph-fp-aarch64
-> > new file mode 100644
-> > index 000000000000..cbeea9971285
-> > --- /dev/null
-> > +++ b/tools/perf/tests/attr/test-record-graph-fp-aarch64
-> > @@ -0,0 +1,9 @@
-> > +[config]
-> > +command = record
-> > +args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
-> > +ret     = 1
-> > +arch    = aarch64
-> > +
-> > +[event:base-record]
-> > +sample_type=4391
-> > +sample_regs_user=1073741824
+> On Sat, 12 Feb 2022 14:03:41 +0100,
+> Miguel Ojeda <ojeda@kernel.org> wrote:
+[...]
 
--- 
+>> diff --git a/Documentation/rust/general-information.rst b/Documentation/rust/general-information.rst
+>> new file mode 100644
+>> index 000000000000..9ee4c6994d08
+>> --- /dev/null
+>> +++ b/Documentation/rust/general-information.rst
+>> @@ -0,0 +1,80 @@
+>> +.. _rust_general_information:
+> Unnecessary tag.
+> 
+>> +
+>> +General Information
+>> +===================
+>> +
+>> +This document contains useful information to know when working with
+>> +the Rust support in the kernel.
+>> +
+>> +
+>> +Code documentation
+>> +------------------
+>> +
+>> +Rust kernel code is documented using ``rustdoc``, its built-in documentation
+>> +generator.
+>> +
+>> +The generated HTML docs include integrated search, linked items (e.g. types,
+>> +functions, constants), source code, etc. They may be read at (TODO: link when
+>> +in mainline and generated alongside the rest of the documentation):
+>> +
+>> +	http://kernel.org/
+>> +
+>> +The docs can also be easily generated and read locally. This is quite fast
+>> +(same order as compiling the code itself) and no special tools or environment
+>> +are needed. This has the added advantage that they will be tailored to
+>> +the particular kernel configuration used. To generate them, use the ``rustdoc``
+>> +target with the same invocation used for compilation, e.g.::
+>> +
+>> +	make LLVM=1 rustdoc
+>> +
+>> +To read the docs locally in your web browser, run e.g.::
+>> +
+>> +	xdg-open rust/doc/kernel/index.html
+>> +
+>> +To learn about how to write the documentation, please see the coding guidelines
+>> +at :ref:`Documentation/rust/coding-guidelines.rst <rust_coding_guidelines>`.
+>    at Documentation/rust/coding-guidelines.rst.
 
-- Arnaldo
+Here, the cross reference is internal to Documentation/rust/.
+In this case, a relative path works for both top and subdirectory level build.
+So you can say:
+
+    at coding-guidelines.rst.
+
+> 
+>> +
+>> +
+>> +Extra lints
+>> +-----------
+>> +
+>> +While ``rustc`` is a very helpful compiler, some extra lints and analyses are
+>> +available via ``clippy``, a Rust linter. To enable it, pass ``CLIPPY=1`` to
+>> +the same invocation used for compilation, e.g.::
+>> +
+>> +	make LLVM=1 CLIPPY=1
+>> +
+>> +Please note that Clippy may change code generation, thus it should not be
+>> +enabled while building a production kernel.
+>> +
+>> +
+>> +Abstractions vs. bindings
+>> +-------------------------
+>> +
+>> +Abstractions are Rust code wrapping kernel functionality from the C side.
+>> +
+>> +In order to use functions and types from the C side, bindings are created.
+>> +Bindings are the declarations for Rust of those functions and types from
+>> +the C side.
+>> +
+>> +For instance, one may write a ``Mutex`` abstraction in Rust which wraps
+>> +a ``struct mutex`` from the C side and calls its functions through the bindings.
+>> +
+>> +Abstractions are not available for all the kernel internal APIs and concepts,
+>> +but it is intended that coverage is expanded as time goes on. "Leaf" modules
+>> +(e.g. drivers) should not use the C bindings directly. Instead, subsystems
+>> +should provide as-safe-as-possible abstractions as needed.
+>> +
+>> +
+>> +Conditional compilation
+>> +-----------------------
+>> +
+>> +Rust code has access to conditional compilation based on the kernel
+>> +configuration:
+>> +
+>> +.. code-block:: rust
+>> +
+>> +	#[cfg(CONFIG_X)]       // Enabled               (`y` or `m`)
+>> +	#[cfg(CONFIG_X="y")]   // Enabled as a built-in (`y`)
+>> +	#[cfg(CONFIG_X="m")]   // Enabled as a module   (`m`)
+>> +	#[cfg(not(CONFIG_X))]  // Disabled
+>> diff --git a/Documentation/rust/index.rst b/Documentation/rust/index.rst
+>> new file mode 100644
+>> index 000000000000..6e20af5b723a
+>> --- /dev/null
+>> +++ b/Documentation/rust/index.rst
+>> @@ -0,0 +1,21 @@
+>> +Rust
+>> +====
+>> +
+>> +Documentation related to Rust within the kernel. To start using Rust
+>> +in the kernel, please read the
+>> +:ref:`Documentation/rust/quick-start.rst <rust_quick_start>` guide.
+>    in the kernel, please read the guide in Documentation/rust/quick-start.rst.
+    in the kernel, please read the guide in quick-start.rst.
+
+, and so on.
+
+        Thanks, Akira
+
+[...]
+> 
+> 
+> Notes:
+> 
+> Those cross-references of plain path such as
+> 
+>    Documentation/rust/general-information.rst
+> 
+> are recognized when you build by the top level "make htmldocs".
+> If you specify a subdirectory by "make SPHINXDIRS=rust htmldocs",
+> current build script can't recognize them.  This is one of (not
+> widely recognized) issues in subdirectory handling of automarkup.py.
+> Hopefully, they can be resolved soon.
+> 
+> Tags at the top of .rst files are redundant and should be avoided.
+> Existing ones can be removed after referencing sites are updated.
+> 
+>         Thanks, Akira
