@@ -2,116 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC722C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B19FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 15:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235770AbiBPPvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 10:51:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43138 "EHLO
+        id S235020AbiBPPyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 10:54:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235769AbiBPPvL (ORCPT
+        with ESMTP id S230377AbiBPPyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:51:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521952A82E2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:50:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E236761A5C
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 15:50:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE471C004E1;
-        Wed, 16 Feb 2022 15:50:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645026655;
-        bh=SFNdUdbviVuwsH4h90rOML9Z996F328RaBfL4P8s3dM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oj5fpci1jHz1H55wQp76gOIJCXMFRUFI3BjWhaSX82iHKgncmP6hA1UUjEUoWqeYI
-         3Ab9eS1RHRzahzf3lCXWT2D6Dq66/gtrVdFac+2RpOmnUEu2A4A8mdyuv1rJ/3DM/L
-         1eGThY/89DyIfpV3MtlDe5RxlCpgfnNPbGVpTwamRd7eoq5itZFNcREkDfmCSQvc8B
-         dv5Ra3sfarVvztyXI9UUU0NHTE3ziM3eyxfjJ9gzXrIgtSyNxuXWN6pTdXHDF1vGY6
-         UbVAjuSyqeUXjU44QFQBbJyBzDTzyb74dA3t6p6qgEfdpZzoQxfa/1g7o9UjLwlt2x
-         ZMOchAVzzvaAw==
-Date:   Wed, 16 Feb 2022 08:50:51 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        "kernelci.org bot" <bot@kernelci.org>
-Subject: Re: [PATCH] mm/page_alloc: Mark pagesets as __maybe_unused
-Message-ID: <Yg0dWwfpGyGC/q40@dev-arch.archlinux-ax161>
-References: <20220215184322.440969-1-nathan@kernel.org>
- <YgyvCTiIWAFKq6G4@linutronix.de>
+        Wed, 16 Feb 2022 10:54:20 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B042944E9
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 07:54:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645026848; x=1676562848;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=neS35sHyxRlh4Jho4hsIICF3KtedGOUD+wQQGFKgvB4=;
+  b=OkKDTSV0muIOKbvwFW+k8lUQBxMx5BVznOfLiNhIU3xVDcFTn/3uFNRl
+   mKafsRjGS7Wn3NDweI1nHZrkt3Qh6fClVeL4flWQlHM/e2IfO6+5eoSp8
+   0SX56mN+Y6Jrnv3ngG5mJamYHAdB5JmNeVgd/lj0JeGv3wPxYlXonJRu3
+   +fYMCPrFstgD5FAUTcJgs1GxttCBRu7CuhqdEFXQvIbX3NrcKtjQta/Dr
+   ncxGT2o/x78CR18apEaoq+pFJUYuP8jfb0r8L8yeq08xoUACQkpyRpCcN
+   1oIF9nCn6EMaOsb6DyS09pxKKZRiZa37q5rp123Ac+ZhAbuhtIE8B1Pju
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="249478559"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="249478559"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 07:48:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="636556360"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 16 Feb 2022 07:47:53 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 52C9D37E; Wed, 16 Feb 2022 17:48:09 +0200 (EET)
+Date:   Wed, 16 Feb 2022 18:48:09 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Kai Huang <kai.huang@intel.com>, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@intel.com, luto@kernel.org,
+        peterz@infradead.org, sathyanarayanan.kuppuswamy@linux.intel.com,
+        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
+        david@redhat.com, hpa@zytor.com, jgross@suse.com,
+        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
+        knsathya@kernel.org, pbonzini@redhat.com, sdeep@vmware.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCHv2 00/29] TDX Guest: TDX core support
+Message-ID: <20220216154809.w27bt6oi3ql4ssip@black.fi.intel.com>
+References: <20220209235613.652f5720cd196331d7a220ec@intel.com>
+ <YgOgog9Pb886lfsv@zn.tnic>
+ <20220210003033.e57c2925b69bab5cfabf7292@intel.com>
+ <YgOoId+vyd1VhIqQ@zn.tnic>
+ <20220210004831.03dea501738bee060003d040@intel.com>
+ <YgOr6tZjsooJgAi9@zn.tnic>
+ <YgPwwI2+16/7jQC4@google.com>
+ <YgQR/S67Fqz9PanR@zn.tnic>
+ <YgQfGKXOemtXnFau@google.com>
+ <YgQl6Uk9rONgv9+F@zn.tnic>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YgyvCTiIWAFKq6G4@linutronix.de>
+In-Reply-To: <YgQl6Uk9rONgv9+F@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 09:00:09AM +0100, Sebastian Andrzej Siewior wrote:
-> On 2022-02-15 11:43:22 [-0700], Nathan Chancellor wrote:
-> > Commit 9983a9d577db ("locking/local_lock: Make the empty local_lock_*()
-> > function a macro.") in the -tip tree converted the local_lock_*()
-> > functions into macros, which causes a warning with clang with
-> > CONFIG_PREEMPT_RT=n + CONFIG_DEBUG_LOCK_ALLOC=n:
-> > 
-> >   mm/page_alloc.c:131:40: error: variable 'pagesets' is not needed and will not be emitted [-Werror,-Wunneeded-internal-declaration]
-> >   static DEFINE_PER_CPU(struct pagesets, pagesets) = {
-> >                                          ^
-> >   1 error generated.
-> > 
-> > Prior to that change, clang was not able to tell that pagesets was
-> > unused in this configuration because it does not perform cross function
-> > analysis in the frontend. After that change, it sees that the macros
-> > just do a typecheck on the lock member of pagesets, which is evaluated
-> > at compile time (so the variable is technically "used"), meaning the
-> > variable is not needed in the final assembly, as the warning states.
-> > 
-> > Mark the variable as __maybe_unused to make it clear to clang that this
-> > is expected in this configuration so there is no more warning.
-> > 
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/1593
-> > Reported-by: "kernelci.org bot" <bot@kernelci.org>
-> > Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> > ---
-> >  mm/page_alloc.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> > index 7ff1efc84205..406f5d0c610f 100644
-> > --- a/mm/page_alloc.c
-> > +++ b/mm/page_alloc.c
-> > @@ -128,7 +128,7 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
-> >  struct pagesets {
-> >  	local_lock_t lock;
-> >  };
-> > -static DEFINE_PER_CPU(struct pagesets, pagesets) = {
-> > +static DEFINE_PER_CPU(struct pagesets, pagesets) __maybe_unused = {
+On Wed, Feb 09, 2022 at 09:36:57PM +0100, Borislav Petkov wrote:
+> + SEV guys. You can scroll upthread to read up on the context.
 > 
-> No, I need to think of something else then for the local_lock thing.  I
-> haven't seen it with gcc. There is probably more than just this one.
+> On Wed, Feb 09, 2022 at 08:07:52PM +0000, Sean Christopherson wrote:
+> > Don't forget :-)
+> > 
+> >   arch/x86/kernel/kvm.c - KVM guest stuff
+> 
+> I knew I'd miss something, ofc.
+> 
+> > No objection to omitting "coco".  Though what about using "vmx" and "svm" instead
+> > of "tdx" and "sev".
+> 
+> I'm not dead-set on this but ...
+> 
+> > We lose the more explicit tie to coco, but it would mirror the
+> > sub-directories in arch/x86/kvm/
+> 
+> ... having them too close in naming to the non-coco stuff, might cause
+> confusion when looking at:
+> 
+> arch/x86/kvm/vmx/vmx.c
+> 
+> vs
+> 
+> arch/x86/virt/vmx/vmx.c
+> 
+> Instead of having
+> 
+> arch/x86/kvm/vmx/vmx.c
+> 
+> and
+> 
+> arch/x86/virt/tdx/vmx.c
+> 
+> That second version differs just the right amount. :-)
+> 
+> > and would avoid a mess in the scenario where tdx
+> > or sev needs to share code with the non-coco side, e.g. I'm guessing TDX will need
+> > to do VMXON.
+> > 
+> >   arch/x86/virt/vmx/
+> >   	tdx.c
+> > 	vmx.c
+> > 
+> >   arch/x86/virt/svm/
+> >   	sev.c
+> > 	sev-es.c
+> > 	sev-snp.c
+> >   	svm.c
+> 
+> That will probably be two files too: sev.c and svm.c
+> 
+> But let's see what the other folks think first...
 
-As far as I am aware, this is a clang only warning.
+So, any conclusion?
 
-From my brief audit of uses of local_lock_t, I believe this is the only
-one that will trigger this warning because every other structure that
-has a local_lock_t also has another member that is unconditionally used,
-meaning an instance of that structure will not just be used at compile
-time. In this case, 'struct pagesets' ONLY contains a local_lock_t,
-which is only used at compile time in this configuration, hence the
-warning.
+I want to understand where to land TDX guest code and host-guest shared TDX code.
+Host-guest shared code doesn't seem to fit anywhere nicely.
 
-Of course, if you can think of something that works for your use case
-and doesn't make clang warn, that would be ideal but I don't see this
-patch as the worst solution. I'll run through my full set of builds
-tonight and see if there are any other instances of this warning; this
-particular instance was visible in several defconfigs so I fixed it
-first.
+Or should I leave it under arch/x86/kernel until decision is made?
 
-Cheers,
-Nathan
+-- 
+ Kirill A. Shutemov
