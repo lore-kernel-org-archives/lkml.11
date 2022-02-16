@@ -2,72 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A92C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 11:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232198AbiBPLqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 06:46:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37916 "EHLO
+        id S232245AbiBPLq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 06:46:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232222AbiBPLqG (ORCPT
+        with ESMTP id S231491AbiBPLqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 06:46:06 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B8ED205D;
-        Wed, 16 Feb 2022 03:45:54 -0800 (PST)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JzGKP1qvcz8wZP;
-        Wed, 16 Feb 2022 19:42:33 +0800 (CST)
-Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
- (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 16 Feb
- 2022 19:45:52 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <colin.king@intel.com>, <yuehaibing@huawei.com>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] crypto: x86/des3 - Remove unused inline function des3_ede_enc_blk_3way()
-Date:   Wed, 16 Feb 2022 19:45:21 +0800
-Message-ID: <20220216114521.20092-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        Wed, 16 Feb 2022 06:46:24 -0500
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8176BBE15;
+        Wed, 16 Feb 2022 03:46:11 -0800 (PST)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nKIl4-00076X-4g; Wed, 16 Feb 2022 12:46:06 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>
+Cc:     Atish Patra <atishp@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        devicetree@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-riscv@lists.infradead.org,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v4 5/6] RISC-V: Do no continue isa string parsing without correct XLEN
+Date:   Wed, 16 Feb 2022 12:46:05 +0100
+Message-ID: <3202369.D2aLoNIhS8@diego>
+In-Reply-To: <20220216002911.1219593-6-atishp@rivosinc.com>
+References: <20220216002911.1219593-1-atishp@rivosinc.com> <20220216002911.1219593-6-atishp@rivosinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is unused after commit 768db5fee3bb ("crypto: x86/des - drop CTR mode implementation")
+Am Mittwoch, 16. Februar 2022, 01:29:10 CET schrieb Atish Patra:
+> The isa string should begin with either rv64 or rv32. Otherwise, it is
+> an incorrect isa string. Currently, the string parsing continues even if
+> it doesnot begin with current XLEN.
+> 
+> Fix this by checking if it found "rv64" or "rv32" in the beginning.
+> 
+> Signed-off-by: Atish Patra <atishp@rivosinc.com>
+> ---
+>  arch/riscv/kernel/cpufeature.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> index 59c70c104256..cb9c9e0aab31 100644
+> --- a/arch/riscv/kernel/cpufeature.c
+> +++ b/arch/riscv/kernel/cpufeature.c
+> @@ -84,6 +84,7 @@ void __init riscv_fill_hwcap(void)
+>  	for_each_of_cpu_node(node) {
+>  		unsigned long this_hwcap = 0;
+>  		DECLARE_BITMAP(this_isa, RISCV_ISA_EXT_MAX);
+> +		const char *temp;
+>  
+>  		if (riscv_of_processor_hartid(node) < 0)
+>  			continue;
+> @@ -93,6 +94,7 @@ void __init riscv_fill_hwcap(void)
+>  			continue;
+>  		}
+>  
+> +		temp = isa;
+>  #if IS_ENABLED(CONFIG_32BIT)
+>  		if (!strncmp(isa, "rv32", 4))
+>  			isa += 4;
+> @@ -100,6 +102,9 @@ void __init riscv_fill_hwcap(void)
+>  		if (!strncmp(isa, "rv64", 4))
+>  			isa += 4;
+>  #endif
+> +		/* The riscv,isa DT property must start with rv64 or rv32 */
+> +		if (temp == isa)
+> +			continue;
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- arch/x86/crypto/des3_ede_glue.c | 8 --------
- 1 file changed, 8 deletions(-)
+hmm, should (and can) this create some warning about the ignored
+malformed ISA string?
 
-diff --git a/arch/x86/crypto/des3_ede_glue.c b/arch/x86/crypto/des3_ede_glue.c
-index 787c234d2469..abb8b1fe123b 100644
---- a/arch/x86/crypto/des3_ede_glue.c
-+++ b/arch/x86/crypto/des3_ede_glue.c
-@@ -45,14 +45,6 @@ static inline void des3_ede_dec_blk(struct des3_ede_x86_ctx *ctx, u8 *dst,
- 	des3_ede_x86_64_crypt_blk(dec_ctx, dst, src);
- }
- 
--static inline void des3_ede_enc_blk_3way(struct des3_ede_x86_ctx *ctx, u8 *dst,
--					 const u8 *src)
--{
--	u32 *enc_ctx = ctx->enc.expkey;
--
--	des3_ede_x86_64_crypt_blk_3way(enc_ctx, dst, src);
--}
--
- static inline void des3_ede_dec_blk_3way(struct des3_ede_x86_ctx *ctx, u8 *dst,
- 					 const u8 *src)
- {
--- 
-2.17.1
+Otherwise
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+
+>  		bitmap_zero(this_isa, RISCV_ISA_EXT_MAX);
+>  		for (; *isa; ++isa) {
+>  			const char *ext = isa++;
+> 
+
+
+
 
