@@ -2,122 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DB3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69CD4C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 20:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbiBPU14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 15:27:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34254 "EHLO
+        id S231350AbiBPUdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 15:33:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230327AbiBPU1z (ORCPT
+        with ESMTP id S231286AbiBPUdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 15:27:55 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA7C4DF42;
-        Wed, 16 Feb 2022 12:27:41 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: shreeya)
-        with ESMTPSA id F065F1F453B9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645043260;
-        bh=TcGzEzWhEGA7ZhG+nrdWLrKb2z0r4SS8tB5fiOXVUHg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Kw/y/Fdm06VoVfhWPkwb0xWxGzPUC4v6MXGP+uVaVoEGUhKWaXWM3YO54oQa6MP81
-         DgrrmCZMM5V/hcwyE5u1RmywR27r4GgAgDgbCE3FNlhYyCsO1lgc4YHYFcUze1egBa
-         QD47TmmBlkMLRuE2XVnZP4tTfL7lOg8tkU2PCFjf8FGk/Igzo4YOQU7+PQhg9dkl69
-         bVsRX6M/aUb1Tw9CkpvtNal5E+fCBRdxOt5DZv9yILX7VjLsl4twz8e8UZOuNzTNia
-         hktLVFh0pcc0vOdIDzJy0Vz7R28C9GkLS8loJrQiq6VCOB7rCKETSx5d60wa2aaGn9
-         t4QpytcPu5VfA==
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl, bgolaszewski@baylibre.com
-Cc:     krisman@collabora.com, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v5] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
-Date:   Thu, 17 Feb 2022 01:56:55 +0530
-Message-Id: <20220216202655.194795-1-shreeya.patel@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 16 Feb 2022 15:33:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E431B18E111
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 12:33:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645043590;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=esrjKhqDjQRh/iEBpaxk9ksIYgz7Irgaj2mX7UxyKYA=;
+        b=SXth4u3usvEkSNfzXkJZwNffggJSjuwJCkRr3PrthipaFWKrc9nbv32QUHjrlBVKUp7PZA
+        M2OLzN3cAJKEDagkfwo6woPR45AcLcMPe1i9nxd5dofklfDRwHVjs5gxCR9LJVg5OCWxNJ
+        KjhTZ4kg493e8t9DkCM3/BE7RkRgkzk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-561-Vy3cQXvAM8KFOvE-Jg-Pqw-1; Wed, 16 Feb 2022 15:33:06 -0500
+X-MC-Unique: Vy3cQXvAM8KFOvE-Jg-Pqw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 423DB1091DA0;
+        Wed, 16 Feb 2022 20:33:01 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.8.49])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C152C12E39;
+        Wed, 16 Feb 2022 20:32:43 +0000 (UTC)
+Date:   Wed, 16 Feb 2022 15:32:41 -0500
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        =?utf-8?B?RsSBbmctcnXDrCBTw7JuZw==?= <maskray@google.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Borislav Petkov <bp@alien8.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
+ unique-symbol` is available
+Message-ID: <Yg1fab6h1rTjVbYO@redhat.com>
+References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
+ <20220209185752.1226407-3-alexandr.lobakin@intel.com>
+ <20220211174130.xxgjoqr2vidotvyw@treble>
+ <CAFP8O3KvZOZJqOR8HYp9xZGgnYf3D8q5kNijZKORs06L-Vit1g@mail.gmail.com>
+ <20220211183529.q7qi2qmlyuscxyto@treble>
+ <20220214122433.288910-1-alexandr.lobakin@intel.com>
+ <20220214181000.xln2qgyzgswjxwcz@treble>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214181000.xln2qgyzgswjxwcz@treble>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We are racing the registering of .to_irq when probing the
-i2c driver. This results in random failure of touchscreen
-devices.
+On Mon, Feb 14, 2022 at 10:10:00AM -0800, Josh Poimboeuf wrote:
+> On Mon, Feb 14, 2022 at 01:24:33PM +0100, Alexander Lobakin wrote:
+> > > One idea I mentioned before, it may be worth exploring changing the "F"
+> > > in FGKASLR to "File" instead of "Function".  In other words, only
+> > > shuffle at an object-file granularity.  Then, even with duplicates, the
+> > > <file+function> symbol pair doesn't change in the symbol table.  And as
+> > > a bonus, it should help FGKASLR i-cache performance, significantly.
+> > 
+> > Yeah, I keep that in mind. However, this wouldn't solve the
+> > duplicate static function names problem, right?
+> > Let's say you have a static function f() in file1 and f() in file2,
+> > then the layout each boot can be
+> > 
+> > .text.file1  or  .text.file2
+> > f()              f()
+> > .text.file2      .text.file1
+> > f()              f()
+> > 
+> > and position-based search won't work anyway, right?
+> 
+> Right, so we'd have to abandon position-based search in favor of
+> file+func based search.
+> 
+> It's not perfect because there are still a few file+func duplicates.
+> But it might be good enough.  We would presumably just refuse to patch a
+> duplicate.  Or we could remove them (and enforce their continued removal
+> with tooling-based warnings).
+> 
 
-Following explains the race condition better.
+You're talking about duplicate file+func combinations as stored in the
+symbol table?
 
-[gpio driver] gpio driver registers gpio chip
-[gpio consumer] gpio is acquired
-[gpio consumer] gpiod_to_irq() fails with -ENXIO
-[gpio driver] gpio driver registers irqchip
-gpiod_to_irq works at this point, but -ENXIO is fatal
+From a recent rhel-9 development kernel:
 
-We could see the following errors in dmesg logs when gc->to_irq is NULL
+$ readelf --wide --symbols vmlinux | \
+  awk '$4=="FILE" { f=$NF } $4=="OBJECT" || $4=="FUNC" { print $4 " " f "::" $NF }' | \
+  sort | uniq -c | sort -n | awk '$1 != 1'
 
-[2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
-[2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
+      2 FUNC bus.c::new_id_store
+      2 FUNC core.c::native_read_msr
+      2 FUNC core.c::type_show
+      2 FUNC diag.c::sk_diag_fill.constprop.0
+      2 FUNC hid-core.c::hid_exit
+      2 FUNC hid-core.c::hid_init
+      2 FUNC inode.c::remove_one
+      2 FUNC iommu.c::__list_del_entry
+      2 FUNC msr.c::msr_init
+      2 FUNC msr.c::msr_read
+      2 FUNC proc.c::c_next
+      2 FUNC proc.c::c_start
+      2 FUNC proc.c::c_stop
+      2 FUNC raw.c::copy_overflow
+      2 FUNC raw.c::dst_output
+      2 FUNC route.c::dst_discard
+      2 FUNC sysfs.c::name_show
+      2 FUNC udp.c::copy_overflow
+      2 FUNC udp.c::udp_lib_close
+      2 FUNC udp.c::udp_lib_hash
+      2 FUNC udp.c::udplite_getfrag
+      2 FUNC udplite.c::udp_lib_close
+      2 FUNC udplite.c::udp_lib_hash
+      2 FUNC udplite.c::udplite_sk_init
+      2 OBJECT acpi.c::__func__.0
+      2 OBJECT amd.c::__already_done.10
+      2 OBJECT amd.c::__func__.4
+      2 OBJECT amd.c::__func__.5
+      2 OBJECT bus.c::driver_attr_new_id
+      2 OBJECT bus.c::__func__.1
+      2 OBJECT bus.c::__func__.2
+      2 OBJECT bus.c::__func__.3
+      2 OBJECT bus.c::__func__.4
+      2 OBJECT bus.c::__func__.5
+      2 OBJECT bus.c::__func__.6
+      2 OBJECT bus.c::__func__.7
+      2 OBJECT bus.c::__func__.8
+      2 OBJECT bus.c::__func__.9
+      2 OBJECT cgroup.c::__func__.0
+      2 OBJECT class.c::__func__.0
+      2 OBJECT class.c::__func__.1
+      2 OBJECT class.c::__func__.3
+      2 OBJECT class.c::__func__.5
+      2 OBJECT class.c::__key.0
+      2 OBJECT class.c::__key.1
+      2 OBJECT class.c::__key.4
+      2 OBJECT core.c::__already_done.18
+      2 OBJECT core.c::__already_done.19
+      2 OBJECT core.c::__already_done.3
+      2 OBJECT core.c::dev_attr_size
+      2 OBJECT core.c::dev_attr_start
+      2 OBJECT core.c::dev_attr_type
+      2 OBJECT core.c::empty_attrs
+      2 OBJECT core.c::__func__.10
+      2 OBJECT core.c::__func__.14
+      2 OBJECT core.c::__func__.7
+      2 OBJECT core.c::__func__.9
+      2 OBJECT core.c::__key.0
+      2 OBJECT core.c::__key.2
+      2 OBJECT core.c::__key.3
+      2 OBJECT dev.c::__func__.0
+      2 OBJECT dir.c::__func__.3
+      2 OBJECT driver.c::__func__.0
+      2 OBJECT fib_rules.c::__msg.0
+      2 OBJECT file.c::__func__.2
+      2 OBJECT file.c::__key.1
+      2 OBJECT file.c::__key.2
+      2 OBJECT hpet.c::__func__.4
+      2 OBJECT icmp.c::__func__.1
+      2 OBJECT inode.c::__func__.1
+      2 OBJECT inode.c::__func__.3
+      2 OBJECT intel.c::__already_done.10
+      2 OBJECT intel.c::__already_done.11
+      2 OBJECT intel.c::__already_done.13
+      2 OBJECT ioctl.c::__func__.0
+      2 OBJECT iommu.c::__already_done.15
+      2 OBJECT iommu.c::__func__.10
+      2 OBJECT iommu.c::__func__.2
+      2 OBJECT iommu.c::_rs.13
+      2 OBJECT iommu.c::_rs.5
+      2 OBJECT iommu.c::_rs.9
+      2 OBJECT irq.c::__func__.0
+      2 OBJECT irq.c::__func__.2
+      2 OBJECT irqdomain.c::__func__.0
+      2 OBJECT irqdomain.c::__func__.1
+      2 OBJECT irqdomain.c::__func__.3
+      2 OBJECT main.c::__func__.10
+      2 OBJECT main.c::__func__.11
+      2 OBJECT main.c::__func__.3
+      2 OBJECT main.c::__func__.4
+      2 OBJECT main.c::__func__.5
+      2 OBJECT manage.c::__func__.1
+      2 OBJECT mount.c::__func__.0
+      2 OBJECT msr.c::__func__.0
+      2 OBJECT ping.c::__func__.1
+      2 OBJECT property.c::__func__.3
+      2 OBJECT qos.c::__func__.0
+      2 OBJECT qos.c::__func__.2
+      2 OBJECT resource.c::__func__.1
+      2 OBJECT route.c::__key.0
+      2 OBJECT route.c::__msg.1
+      2 OBJECT route.c::__msg.2
+      2 OBJECT route.c::__msg.3
+      2 OBJECT route.c::__msg.4
+      2 OBJECT route.c::__msg.5
+      2 OBJECT route.c::__msg.6
+      2 OBJECT swap.c::__func__.0
+      2 OBJECT syncookies.c::___done.1
+      2 OBJECT syncookies.c::msstab
+      2 OBJECT syncookies.c::___once_key.2
+      2 OBJECT sysfs.c::dev_attr_name
+      2 OBJECT sysfs.c::__key.1
+      2 OBJECT sysfs.c::power_attrs
+      2 OBJECT udp.c::descriptor.12
+      2 OBJECT udp.c::descriptor.13
+      2 OBJECT udp.c::__func__.2
+      2 OBJECT udp.c::__func__.3
+      2 OBJECT udp.c::__func__.4
+      2 OBJECT utils.c::__func__.5
+      3 FUNC core.c::cmask_show
+      3 FUNC core.c::edge_show
+      3 FUNC core.c::event_show
+      3 FUNC core.c::inv_show
+      3 FUNC core.c::umask_show
+      3 FUNC inode.c::init_once
+      3 OBJECT acpi.c::__func__.1
+      3 OBJECT core.c::format_attr_cmask
+      3 OBJECT core.c::format_attr_edge
+      3 OBJECT core.c::format_attr_event
+      3 OBJECT core.c::format_attr_inv
+      3 OBJECT core.c::format_attr_umask
+      3 OBJECT core.c::__func__.6
+      3 OBJECT core.c::__func__.8
+      3 OBJECT file.c::__key.3
+      3 OBJECT generic.c::__func__.0
+      3 OBJECT iommu.c::__func__.0
+      3 OBJECT iommu.c::__func__.1
+      3 OBJECT iommu.c::__func__.8
+      3 OBJECT main.c::__func__.0
+      3 OBJECT main.c::__func__.1
+      3 OBJECT main.c::__func__.6
+      3 OBJECT quirks.c::__func__.0
+      3 OBJECT sysfs.c::__func__.0
+      4 OBJECT core.c::__func__.4
+      5 OBJECT inode.c::tokens
+      6 OBJECT core.c::__func__.3
+      6 OBJECT core.c::__func__.5
+      7 OBJECT core.c::__func__.1
+      8 OBJECT core.c::__func__.0
+      8 OBJECT core.c::__func__.2
 
-To avoid this situation, defer probing until to_irq is registered.
-Returning -EPROBE_DEFER would be the first step towards avoiding
-the failure of devices due to the race in registration of .to_irq.
-Final solution to this issue would be to avoid using gc irq members
-until they are fully initialized.
+We could probably minimize the FUNC duplicates with unique names, but
+I'm not as optimistic about the OBJECTs as most are created via macros
+like __already_done.X.  Unless clever macro magic?
 
-This issue has been reported many times in past and people have been
-using workarounds like changing the pinctrl_amd to built-in instead
-of loading it as a module or by adding a softdep for pinctrl_amd into
-the config file.
+Next question: what are the odds that these entries, at least the ones
+we can't easily rename, need disambiguity for livepatching?  or
+kpatch-build for related purposes?
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
-
----
-Changes in v5
-  - Improve explanation in commit message and sending it to the correct
-email address.
-
-Changes in v4
-  - Remove blank line and make the first letter of the sentence
-capital.
-
-Changes in v3
-  - Fix the error reported by kernel test robot.
-
-Changes in v2
-  - Add a condition to check for irq chip to avoid bogus error.
----
- drivers/gpio/gpiolib.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index 3859911b61e9..a3d14277f17c 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -3147,6 +3147,16 @@ int gpiod_to_irq(const struct gpio_desc *desc)
- 
- 		return retirq;
- 	}
-+#ifdef CONFIG_GPIOLIB_IRQCHIP
-+	if (gc->irq.chip) {
-+		/*
-+		 * Avoid race condition with other code, which tries to lookup
-+		 * an IRQ before the irqchip has been properly registered,
-+		 * i.e. while gpiochip is still being brought up.
-+		 */
-+		return -EPROBE_DEFER;
-+	}
-+#endif
- 	return -ENXIO;
- }
- EXPORT_SYMBOL_GPL(gpiod_to_irq);
--- 
-2.30.2
+-- Joe
 
