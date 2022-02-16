@@ -2,114 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:52:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E44C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238366AbiBPTwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:52:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53022 "EHLO
+        id S238386AbiBPTxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:53:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238301AbiBPTwl (ORCPT
+        with ESMTP id S234717AbiBPTxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:52:41 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8BBFABE9;
-        Wed, 16 Feb 2022 11:52:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645041148; x=1676577148;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4Cr7vmjqZ19YsPqPC5f59BS6ggXP0WOv3DKiSQA5gj0=;
-  b=Wy7pKQKZlKPl5pTw0zWLHu68FeZhPaCEkuFsJb50bLwoDi0F3vPvc1wC
-   LzYhfnMxWW93z8dymlZ7d8tTLw5laH46PXNrBMB8VW5RXSLcgYMO7ar2A
-   81KG6K+wqaPDUZnV2WcIg2Of34d0CjdHGwy6o1lu42fXzrDpG8yLHbwfm
-   Xd6tP9Xq76mWt0+1IeoVIf1ENeSubcsF7BzbNDt/eLfFSi3g5+1DSh7/U
-   D4AAQaTTqK6MoKEvEoxAffqvyTFrOc3chBkAH21DOI443YpKuiXg3wZam
-   J7RfDWbIK+WTi7o1zccbuLG1JIsu6zv6FB/RkyrUqGO0oBuxE75hZAIOr
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="248310663"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="248310663"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:52:28 -0800
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="529677653"
-Received: from ddahlenx-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.148.13])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:52:27 -0800
-Message-ID: <1525de98e422b2978f18378c752b92513c328ccd.camel@linux.intel.com>
-Subject: Re: [RFC PATCH 1/4] tools/lib/thermal: Add a thermal library
-From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Date:   Wed, 16 Feb 2022 11:52:27 -0800
-In-Reply-To: <c5889d73-7acb-a564-b091-44e71ba5ddb3@linaro.org>
-References: <20220214210446.255780-1-daniel.lezcano@linaro.org>
-         <0be77e01c0dc91e227fcb7219cf89d9497b4be39.camel@linux.intel.com>
-         <c5889d73-7acb-a564-b091-44e71ba5ddb3@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Wed, 16 Feb 2022 14:53:54 -0500
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62062B0B0F;
+        Wed, 16 Feb 2022 11:53:41 -0800 (PST)
+Received: from g550jk.localnet (ip-213-127-118-180.ip.prioritytelecom.net [213.127.118.180])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id C8517C3E9E;
+        Wed, 16 Feb 2022 19:53:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1645041220; bh=W3gVUgcU/OTVyEAEJ6EdabcIZ9I2bCwWK8lOeD2BH9I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=iStu35P26Rt0zu05xfrVXPLGIcP6dlbY6qX9lYz9BhDj5lAi6ebbHleFI1C8wqrCk
+         7M/zvMM3AoUO/Ol432qonVTINCGzQGybQrvW+4UoReP/prbWcC4zQ/mB1rXDJwDZnr
+         ELMaEdsEEWI0w6TzC1aOeVe1McZ/FxgnbWqD3SY4=
+From:   Luca Weiss <luca@z3ntu.xyz>
+To:     Pavel Machek <pavel@ucw.cz>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Satya Priya Kakitapalli <c_skakit@qti.qualcomm.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v12 2/2] leds: Add driver for Qualcomm LPG
+Date:   Wed, 16 Feb 2022 20:53:39 +0100
+Message-ID: <8036183.EvYhyI6sBW@g550jk>
+In-Reply-To: <20220216045620.1716537-2-bjorn.andersson@linaro.org>
+References: <20220216045620.1716537-1-bjorn.andersson@linaro.org> <20220216045620.1716537-2-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+Hi Bjorn,
 
-On Wed, 2022-02-16 at 20:38 +0100, Daniel Lezcano wrote:
+On Mittwoch, 16. Februar 2022 05:56:20 CET Bjorn Andersson wrote:
+> The Light Pulse Generator (LPG) is a PWM-block found in a wide range of
+> PMICs from Qualcomm. These PMICs typically comes with 1-8 LPG instances,
+> with their output being routed to various other components, such as
+> current sinks or GPIOs.
 > 
-> Hi Srinivas,
+> Each LPG instance can operate on fixed parameters or based on a shared
+> lookup-table, altering the duty cycle over time. This provides the means
+> for hardware assisted transitions of LED brightness.
 > 
-> thanks for the review
+> A typical use case for the fixed parameter mode is to drive a PWM
+> backlight control signal, the driver therefor allows each LPG instance
+> to be exposed to the kernel either through the LED framework or the PWM
+> framework.
 > 
-> On 16/02/2022 17:40, srinivas pandruvada wrote:
-> > On Mon, 2022-02-14 at 22:04 +0100, Daniel Lezcano wrote:
-> > > The thermal framework implements a netlink notification mechanism
-> > > to
-> > > be used by the userspace to have a thermal configuration
-> > > discovery,
-> > > trip point changes or violation, cooling device changes
-> > > notifications,
-> > > etc...
-> > > 
-> > > This library provides a level of abstraction for the thermal
-> > > netlink
-> > > notification allowing the userspace to connect to the
-> > > notification
-> > > mechanism more easily. The library is callback oriented.
-> > > 
-> > Some minor comments.
-> > May be better use some defines instead of returning "-1" for error
-> > conditions.
+> A typical use case for the LED configuration is to drive RGB LEDs in
+> smartphones etc, for which the driver supports multiple channels to be
+> ganged up to a MULTICOLOR LED. In this configuration the pattern
+> generators will be synchronized, to allow for multi-color patterns.
 > 
-> Do you suggest like an enum with different errors or just having -1 
-> replaced by eg. THERMAL_ERROR ?
-This will be fine.
+> The idea of modelling this as a LED driver ontop of a PWM driver was
+> considered, but setting the properties related to patterns does not fit
+> in the PWM API. Similarly the idea of just duplicating the lower bits in
+> a PWM and LED driver separately was considered, but this would not allow
+> the PWM channels and LEDs to be configured on a per-board basis. The
+> driver implements the more complex LED interface, and provides a PWM
+> interface on the side of that, in the same driver.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Thanks,
-Srinivas
+Works great on pm8941 / msm8974-fairphone-fp2!
+
+Tested-by: Luca Weiss <luca@z3ntu.xyz>
+
+Regards
+Luca
+
+> ---
+> 
+> Changes since v11:
+> - Extended commit message to cover decision to put pwm_chip in the LED
+> driver - Added Documentation, in particular for the hw_pattern format
+> - Added a lock to synchronize requests from LED and PWM frameworks
+> - Turned out that the 9bit selector differs per channel in some PMICs, so
+>   replaced bitmask in lpg_data with lookup based on QPNP SUBTYPE
+> - Fixed kerneldoc for the struct device pointer in struct lpg
+> - Rewrote conditional in lut_free() to make it easier to read
+> - Corrected and deduplicated max_period expression in lpg_calc_freq()
+> - Extended nom/dom to numerator/denominator in lpg_calc_freq()
+> - Replaced 1 << 9 with LPG_RESOLUTION in one more place in lpg_calc_freq()
+> - Use FIELD_PREP() in lpg_apply_freq() as masks was introduced for reading
+> the same in get_state()
+> - Cleaned up the pattern format, to allow specifying both low and high pause
+> with and without pingpong mode.
+> - Only update frequency and pwm_value if PWM channel is enabled in
+> lpg_pwm_apply - Make lpg_pwm_get_state() read the hardware state, in order
+> to pick up e.g. bootloader backlight configuration
+> - Use devm_bitmap_zalloc() to allocate the lut_bitmap
+> - Use dev_err_probe() in lpg_probe()
+> - Extended Kconfig help text to mention module name and satisfy checkpatch
+> 
+>  Documentation/leds/leds-qcom-lpg.rst |   76 ++
+>  drivers/leds/Kconfig                 |    3 +
+>  drivers/leds/Makefile                |    3 +
+>  drivers/leds/rgb/Kconfig             |   18 +
+>  drivers/leds/rgb/Makefile            |    3 +
+>  drivers/leds/rgb/leds-qcom-lpg.c     | 1401 ++++++++++++++++++++++++++
+>  6 files changed, 1504 insertions(+)
+>  create mode 100644 Documentation/leds/leds-qcom-lpg.rst
+>  create mode 100644 drivers/leds/rgb/Kconfig
+>  create mode 100644 drivers/leds/rgb/Makefile
+>  create mode 100644 drivers/leds/rgb/leds-qcom-lpg.c
 
 
-> 
-> 
-> [ ... ]
-> 
-> > > + * Low level netlink
-> > > + */
-> > > +extern int nl_subscribe_thermal(struct nl_sock *nl_sock, struct
-> > > nl_cb *nl_cb,
-> > > +                               const char *group);
-> > > +
-> > To complete API, don't we need nl_unsubscribe which calls
-> > nl_socket_drop_memberships()?
-> Ah, yes. I'll add it.
-> 
-> Thanks
-> 
-> 
-> 
 
