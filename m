@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F022C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F30C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 16:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236489AbiBPQkL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 11:40:11 -0500
+        id S236580AbiBPQkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 11:40:16 -0500
 Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236522AbiBPQkG (ORCPT
+        with ESMTP id S236534AbiBPQkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:40:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C11EE25D250
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:39:50 -0800 (PST)
+        Wed, 16 Feb 2022 11:40:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A117025D264
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 08:39:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645029589;
+        s=mimecast20190719; t=1645029590;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fep8h/a2rBAjVkyzxF4UU9KV97g8HyQ2x+dsEyK6TzU=;
-        b=N79LgyqAPK/AQohM02f6lWargDyb+rrXYQBc2ZYWQBUpS7bW5esMwD/oAixQBL1LzrGknx
-        di/31uXREcr3/F+8JE1vgbL4eVhXLTmPoFAWPZolhOnaN+YMjtZutXGTZX9kwpxh1ImqKY
-        gbs8B0O3D7LNAbcCAxVH3FaZiWw8o4g=
+        bh=EYfjisjZqIY36JDFITzF8hRLD/Q7GSgYyUA2NagtatU=;
+        b=D1kdrVesXBmbx6GAb6Lx0SkQycATPz2uxIV+JepU74xl+OjMBpk2bS5RMctR+e7BuZHume
+        rejxzTTENuzEZ/Q1ZU56QiHhUYEFUEog1SKIY0rJRIucSdsIPTUcb5nT5XhINPOQ7kt1IF
+        Z9RPpnb/Rzp7ipAkVZFeSppumPLbbuQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-103-skYrovt2PWq2U_YM3oV2cg-1; Wed, 16 Feb 2022 11:39:44 -0500
-X-MC-Unique: skYrovt2PWq2U_YM3oV2cg-1
+ us-mta-648-xA6M3ESfNtC0MMAB1RyWhQ-1; Wed, 16 Feb 2022 11:39:47 -0500
+X-MC-Unique: xA6M3ESfNtC0MMAB1RyWhQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9F19E80D690;
-        Wed, 16 Feb 2022 16:39:43 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6C755100C612;
+        Wed, 16 Feb 2022 16:39:46 +0000 (UTC)
 Received: from jlaw-desktop.redhat.com (unknown [10.22.8.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C68C753D3;
-        Wed, 16 Feb 2022 16:39:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EEDF3753CD;
+        Wed, 16 Feb 2022 16:39:45 +0000 (UTC)
 From:   Joe Lawrence <joe.lawrence@redhat.com>
 To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kbuild@vger.kernel.org
-Subject: [RFC PATCH v6 02/12] kbuild: Support for symbols.klp creation
-Date:   Wed, 16 Feb 2022 11:39:30 -0500
-Message-Id: <20220216163940.228309-3-joe.lawrence@redhat.com>
+Subject: [RFC PATCH v6 06/12] livepatch: Add sample livepatch module
+Date:   Wed, 16 Feb 2022 11:39:34 -0500
+Message-Id: <20220216163940.228309-7-joe.lawrence@redhat.com>
 In-Reply-To: <20220216163940.228309-1-joe.lawrence@redhat.com>
 References: <20220216163940.228309-1-joe.lawrence@redhat.com>
 MIME-Version: 1.0
@@ -53,138 +53,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joao Moreira <jmoreira@suse.de>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-For automatic resolution of livepatch relocations, a file called
-symbols.klp is used. This file maps symbols within every compiled kernel
-object allowing the identification of symbols whose name is unique, thus
-relocation can be automatically inferred, or providing information that
-helps developers when code annotation is required for solving the
-matter.
+Add a new livepatch sample in samples/livepatch/ to make use of symbols
+that must be post-processed to enable load-time relocation resolution.
+As the new sample is to be used as an example, it is annotated with
+KLP_MODULE_RELOC and with KLP_SYMPOS macros.
 
-Add support for creating symbols.klp in the main Makefile. First, ensure
-that built-in is compiled when CONFIG_LIVEPATCH is enabled (as required
-to achieve a complete symbols.klp file). Define the command to build
-symbols.klp (cmd_klp_map) and hook it in the modules rule.
+The livepatch sample updates the function cmdline_proc_show to print the
+string referenced by the symbol saved_command_line appended by the
+string "livepatch=1".
 
-As it is undesirable to have symbols from livepatch objects inside
-symbols.klp, make livepatches discernible by modifying
-scripts/Makefile.build to create a .livepatch file for each livepatch in
-$(MODVERDIR). This file then used by cmd_klp_map to identify and bypass
-livepatches.
+Update livepatch-sample.c to remove livepatch MODULE_INFO statement.
 
-For identifying livepatches during the build process, a flag variable
-LIVEPATCH_$(basetarget).o is considered in scripts/Makefile.build. This
-way, set this flag for the livepatch sample Makefile in
-samples/livepatch/Makefile.
-
-Finally, Add a clean rule to ensure that symbols.klp is removed during
-clean.
-
-Notes:
-
-To achieve a correct symbols.klp file, all kernel objects must be
-considered, thus, its construction require these objects to be priorly
-built. On the other hand, invoking scripts/Makefile.modpost without
-having a complete symbols.klp in place would occasionally lead to
-in-tree livepatches being post-processed incorrectly. To prevent this
-from becoming a circular dependency, the construction of symbols.klp
-uses non-post-processed kernel objects and such does not cause harm as
-the symbols normally referenced from within livepatches are visible at
-this stage. Also due to these requirements, the spot in-between modules
-compilation and the invocation of scripts/Makefile.modpost was picked
-for hooking cmd_klp_map.
-
-The approach based on .livepatch files was proposed as an alternative to
-using MODULE_INFO statements. This approach was originally proposed by
-Miroslav Benes as a workaround for identifying livepathes without
-depending on modinfo during the modpost stage. It was moved to this
-patch as the approach also shown to be useful while building
-symbols.klp.
-
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Joao Moreira <jmoreira@suse.de>
 Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 ---
- .gitignore             |  1 +
- Documentation/dontdiff |  1 +
- Makefile               | 24 ++++++++++++++++++++++--
- 3 files changed, 24 insertions(+), 2 deletions(-)
+ samples/livepatch/Makefile                    |  1 +
+ .../livepatch/livepatch-annotated-sample.c    | 93 +++++++++++++++++++
+ 2 files changed, 94 insertions(+)
+ create mode 100644 samples/livepatch/livepatch-annotated-sample.c
 
-diff --git a/.gitignore b/.gitignore
-index 7afd412dadd2..50638a15a527 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -61,6 +61,7 @@ modules.order
- /vmlinux.symvers
- /vmlinux-gdb.py
- /vmlinuz
-+/symbols.klp
- /System.map
- /Module.markers
- /modules.builtin
-diff --git a/Documentation/dontdiff b/Documentation/dontdiff
-index 910b30a2a7d9..25c656fdd99f 100644
---- a/Documentation/dontdiff
-+++ b/Documentation/dontdiff
-@@ -76,6 +76,7 @@ Module.markers
- Module.symvers
- PENDING
- SCCS
-+symbols.klp
- System.map*
- TAGS
- aconf
-diff --git a/Makefile b/Makefile
-index 0fb4f94a6885..64ec4bc8172c 100644
---- a/Makefile
-+++ b/Makefile
-@@ -639,8 +639,13 @@ KBUILD_MODULES :=
- KBUILD_BUILTIN := 1
- 
- # If we have only "make modules", don't compile built-in objects.
-+# When we're building livepatch modules, we need to consider the
-+# built-in objects during the descend as well, as built-in objects may
-+# hold symbols which are referenced from livepatches and are required by
-+# klp-convert post-processing tool for resolving these cases.
+diff --git a/samples/livepatch/Makefile b/samples/livepatch/Makefile
+index 9f853eeb6140..f2b41f4d6c16 100644
+--- a/samples/livepatch/Makefile
++++ b/samples/livepatch/Makefile
+@@ -6,3 +6,4 @@ obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-shadow-fix2.o
+ obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-demo.o
+ obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-mod.o
+ obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-busymod.o
++obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-annotated-sample.o
+diff --git a/samples/livepatch/livepatch-annotated-sample.c b/samples/livepatch/livepatch-annotated-sample.c
+new file mode 100644
+index 000000000000..4fe0e16423c7
+--- /dev/null
++++ b/samples/livepatch/livepatch-annotated-sample.c
+@@ -0,0 +1,93 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2014 Seth Jennings <sjenning@redhat.com>
++ */
 +
- ifeq ($(MAKECMDGOALS),modules)
--  KBUILD_BUILTIN :=
-+  KBUILD_BUILTIN := $(if $(CONFIG_LIVEPATCH),1)
- endif
- 
- # If we have "make <whatever> modules", compile modules
-@@ -1487,7 +1492,7 @@ MRPROPER_FILES += include/config include/generated          \
- 		  arch/$(SRCARCH)/include/generated .tmp_objdiff \
- 		  debian snap tar-install \
- 		  .config .config.old .version \
--		  Module.symvers \
-+		  Module.symvers symbols.klp \
- 		  certs/signing_key.pem \
- 		  certs/x509.genkey \
- 		  vmlinux-gdb.py \
-@@ -1742,7 +1747,22 @@ PHONY += modules modules_install
- 
- ifdef CONFIG_MODULES
- 
-+quiet_cmd_klp_map = KLP     symbols.klp
++/*
++ * livepatch-annotated-sample.c - Kernel Live Patching Sample Module
++ */
 +
-+define cmd_klp_map
-+	$(shell echo "klp-convert-symbol-data.0.1" > $(objtree)/symbols.klp)				\
-+	$(shell echo "*vmlinux" >> $(objtree)/symbols.klp)						\
-+	$(shell nm -f posix $(objtree)/vmlinux | cut -d\  -f1 >> $(objtree)/symbols.klp)		\
-+	$(foreach ko, $(sort $(shell cat modules.order)),						\
-+		$(eval mod = $(patsubst %.ko,%.mod,$(ko)))						\
-+		$(eval obj = $(patsubst %.ko,%.o,$(ko)))						\
-+		$(if $(shell grep -o LIVEPATCH $(mod)),,						\
-+			$(shell echo "*$(shell basename -s .ko $(ko))" >> $(objtree)/symbols.klp)	\
-+			$(shell nm -f posix $(obj) | cut -d\  -f1 >> $(objtree)/symbols.klp)))
-+endef
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 +
- modules: modules_check
-+	$(if $(CONFIG_LIVEPATCH), $(call cmd,klp_map))
- 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modpost
- 
- PHONY += modules_check
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/livepatch.h>
++
++/*
++ * This (dumb) live patch overrides the function that prints the
++ * kernel boot cmdline when /proc/cmdline is read.
++ *
++ * This livepatch uses the symbol saved_command_line whose relocation
++ * must be resolved during load time. To enable that, this module
++ * must be post-processed by a tool called klp-convert, which embeds
++ * information to be used by the loader to solve the relocation.
++ *
++ * The module is annotated with KLP_MODULE_RELOC/KLP_SYMPOS macros.
++ * These annotations are used by klp-convert to infer that the symbol
++ * saved_command_line is in the object vmlinux.
++ *
++ * As saved_command_line has no other homonimous symbol across
++ * kernel objects, this annotation is not a requirement, and can be
++ * suppressed with no harm to klp-convert. Yet, it is kept here as an
++ * example on how to annotate livepatch modules that contain symbols
++ * whose names are used in more than one kernel object.
++ *
++ * Example:
++ *
++ * $ cat /proc/cmdline
++ * <your cmdline>
++ *
++ * $ insmod livepatch-sample.ko
++ * $ cat /proc/cmdline
++ * <your cmdline> livepatch=1
++ *
++ * $ echo 0 > /sys/kernel/livepatch/livepatch_sample/enabled
++ * $ cat /proc/cmdline
++ * <your cmdline>
++ */
++
++extern char *saved_command_line;
++
++#include <linux/seq_file.h>
++static int livepatch_cmdline_proc_show(struct seq_file *m, void *v)
++{
++	seq_printf(m, "%s livepatch=1\n", saved_command_line);
++	return 0;
++}
++
++KLP_MODULE_RELOC(vmlinux) vmlinux_relocs[] = {
++	KLP_SYMPOS(saved_command_line, 0)
++};
++
++static struct klp_func funcs[] = {
++	{
++		.old_name = "cmdline_proc_show",
++		.new_func = livepatch_cmdline_proc_show,
++	}, { }
++};
++
++static struct klp_object objs[] = {
++	{
++		/* name being NULL means vmlinux */
++		.funcs = funcs,
++	}, { }
++};
++
++static struct klp_patch patch = {
++	.mod = THIS_MODULE,
++	.objs = objs,
++};
++
++static int livepatch_init(void)
++{
++	return klp_enable_patch(&patch);
++}
++
++static void livepatch_exit(void)
++{
++}
++
++module_init(livepatch_init);
++module_exit(livepatch_exit);
++MODULE_LICENSE("GPL");
++MODULE_INFO(livepatch, "Y");
 -- 
 2.26.3
 
