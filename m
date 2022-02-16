@@ -2,115 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01EABC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED07EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 07:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbiBPHRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 02:17:25 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33598 "EHLO
+        id S229850AbiBPHSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 02:18:00 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiBPHRO (ORCPT
+        with ESMTP id S229555AbiBPHR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 02:17:14 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F566286C8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Feb 2022 23:17:00 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nKEYJ-0007Pg-NX; Wed, 16 Feb 2022 08:16:39 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nKEYE-0000vr-0Z; Wed, 16 Feb 2022 08:16:34 +0100
-Date:   Wed, 16 Feb 2022 08:16:33 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Scott Branden <sbranden@broadcom.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tony Lindgren <tony@atomide.com>, kernel@pengutronix.de,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v3 4/8] ARM: dts: bcm283x: fix ethernet node name
-Message-ID: <20220216071633.GB19299@pengutronix.de>
-References: <20220215080937.2263111-1-o.rempel@pengutronix.de>
- <20220215080937.2263111-4-o.rempel@pengutronix.de>
- <f5ea3375-0306-e37f-5847-e1472164d7b7@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <f5ea3375-0306-e37f-5847-e1472164d7b7@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:10:05 up 67 days, 15:55, 56 users,  load average: 0.27, 0.23,
- 0.18
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Wed, 16 Feb 2022 02:17:58 -0500
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E7DC7D5A;
+        Tue, 15 Feb 2022 23:17:46 -0800 (PST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 615E61A1A4B;
+        Wed, 16 Feb 2022 07:52:52 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 28C701A1A50;
+        Wed, 16 Feb 2022 07:52:52 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id DCCF9183F0C0;
+        Wed, 16 Feb 2022 14:52:50 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
+        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v7 2/8] PCI: imx6: Add the error propagation from host_init
+Date:   Wed, 16 Feb 2022 14:20:57 +0800
+Message-Id: <1644992463-14467-3-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644992463-14467-1-git-send-email-hongxing.zhu@nxp.com>
+References: <1644992463-14467-1-git-send-email-hongxing.zhu@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 01:01:06PM -0800, Florian Fainelli wrote:
-> On 2/15/22 12:09 AM, Oleksij Rempel wrote:
-> > It should be "ethernet@x" instead of "usbether@x"
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> 
-> This looks like, a quick grep on the u-boot source code seems to suggest
-> that only one file is assuming that 'usbether@1' is to be used as a node
-> name and the error message does not even match the code it is patching:
-> 
-> board/liebherr/xea/xea.c:
->   #ifdef CONFIG_OF_BOARD_SETUP
->   static int fdt_fixup_l2switch(void *blob)
->   {
->           u8 ethaddr[6];
->           int ret;
-> 
->           if (eth_env_get_enetaddr("ethaddr", ethaddr)) {
->                   ret = fdt_find_and_setprop(blob,
-> 
-> "/ahb@80080000/switch@800f0000",
->                                              "local-mac-address",
-> ethaddr, 6, 1);
->                   if (ret < 0)
->                           printf("%s: can't find usbether@1 node: %d\n",
->                                  __func__, ret);
->           }
+Since there is error return check of the host_init callback, add error
+check to imx6_pcie_deassert_core_reset() function, and change the
+function type accordingly.
 
-\o/ :)
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+---
+ drivers/pci/controller/dwc/pci-imx6.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
->           return 0;
->   }
-> 
-> I will wait for the other maintainers on the other patches to provide
-> some feedback, but if all is well, will apply this one soon.
-
-Full path fdt matching has proven to be not stable enough. Especially on
-chips with early DT adaptation like iMX. It is better to use aliases
-where possible. 
-
-Regards,
-Oleksij
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 5582ee1b420a..3ca2eef39617 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -546,24 +546,24 @@ static void imx7d_pcie_wait_for_phy_pll_lock(struct imx6_pcie *imx6_pcie)
+ 		dev_err(dev, "PCIe PLL lock timeout\n");
+ }
+ 
+-static void imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
++static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+ {
+ 	struct dw_pcie *pci = imx6_pcie->pci;
+ 	struct device *dev = pci->dev;
+-	int ret;
++	int ret, err;
+ 
+ 	if (imx6_pcie->vpcie && !regulator_is_enabled(imx6_pcie->vpcie)) {
+ 		ret = regulator_enable(imx6_pcie->vpcie);
+ 		if (ret) {
+ 			dev_err(dev, "failed to enable vpcie regulator: %d\n",
+ 				ret);
+-			return;
++			return ret;
+ 		}
+ 	}
+ 
+-	ret = imx6_pcie_clk_enable(imx6_pcie);
+-	if (ret) {
+-		dev_err(dev, "unable to enable pcie clocks\n");
++	err = imx6_pcie_clk_enable(imx6_pcie);
++	if (err) {
++		dev_err(dev, "unable to enable pcie clocks: %d\n", err);
+ 		goto err_clks;
+ 	}
+ 
+@@ -622,7 +622,7 @@ static void imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+ 		break;
+ 	}
+ 
+-	return;
++	return 0;
+ 
+ err_clks:
+ 	if (imx6_pcie->vpcie && regulator_is_enabled(imx6_pcie->vpcie) > 0) {
+@@ -631,6 +631,7 @@ static void imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+ 			dev_err(dev, "failed to disable vpcie regulator: %d\n",
+ 				ret);
+ 	}
++	return err;
+ }
+ 
+ static void imx6_pcie_configure_type(struct imx6_pcie *imx6_pcie)
+@@ -882,11 +883,18 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+ static int imx6_pcie_host_init(struct pcie_port *pp)
+ {
+ 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
++	struct device *dev = pci->dev;
+ 	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
++	int ret;
+ 
+ 	imx6_pcie_assert_core_reset(imx6_pcie);
+ 	imx6_pcie_init_phy(imx6_pcie);
+-	imx6_pcie_deassert_core_reset(imx6_pcie);
++	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
++	if (ret < 0) {
++		dev_err(dev, "pcie host init failed: %d.\n", ret);
++		return ret;
++	}
++
+ 	imx6_setup_phy_mpll(imx6_pcie);
+ 
+ 	return 0;
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.25.1
+
