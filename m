@@ -2,87 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F03C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 22:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5383C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 22:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237536AbiBPWsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 17:48:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55738 "EHLO
+        id S237629AbiBPWwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 17:52:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231648AbiBPWsB (ORCPT
+        with ESMTP id S231648AbiBPWwJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 17:48:01 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07BA134DEB
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 14:47:48 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id m14so6610416lfu.4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 14:47:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5eQzUlBBbN3LIoyK9nl/nS8qXfRu/+keDWNHs9SzLBE=;
-        b=g9doDMJjI1xslX56Y6WS/yYmKio6ItRFaGZv+X4uBUWvSLqPjRG55zm9KqzcLdvfes
-         SD577cJ+p7QmIMM4gFrcL6m26/ljjceK/VP4cJTdtfZJcT6QExtosH38yW2+m+Dryq+R
-         p8wBfVVB8tcEQpZoIDeh354XEK2cK8iUxZp/G/hyutnnAReJHFFecYqTCbSEZ2dt0+Q4
-         LvLfqQEpypggjDStspmJQCwl44uFgZKwhm97qqiGpLM8KWEx7Bag0B+jl+c6Du5R2dTq
-         ayjSLl/X58B7nFoBoZdD1o2rf8B3msWlO2jFe9Iyy+QdFIHX/HRd2M3gCvVW3WKLFLOq
-         p/DA==
+        Wed, 16 Feb 2022 17:52:09 -0500
+Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B98945AE7;
+        Wed, 16 Feb 2022 14:51:56 -0800 (PST)
+Received: by mail-io1-f53.google.com with SMTP id e79so1568808iof.13;
+        Wed, 16 Feb 2022 14:51:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5eQzUlBBbN3LIoyK9nl/nS8qXfRu/+keDWNHs9SzLBE=;
-        b=sHuXsVDEBJ5u/Y6FerIVSXRLH7Bfr/pJYlmVxAN36KZ8k9A4aP8KQP79xGPqdd1wBO
-         bda7LHcgHo3Vgo6lOiXA1oxSRi9c/ira4/9K4mAS+TrThRZMjmacpKbHUaW4yg+rXFcK
-         uvXaGcmg8KOj0mIx0pK+BLceQxof/tx+9KxGpA5ky/9RbjHvbEXFIvNjnhwF3fd8u4RK
-         6VdF26Q4/PuyyJ9sH84EneddDtITk0op6P+V6XpIUrjvuM2Wc4oauR4yvtqnWfA4sEVu
-         nYvXpBJrQ7BHEJVAdHQUBqRYz+U9OC9+xIEvZWi9qakzZf8kGY78V1wpT298LFlaEFI9
-         a/9w==
-X-Gm-Message-State: AOAM530OabvzRf5W1YolT7LQgcqLqwSVvemVfezGWDw4JIi+dfIW2GpG
-        vwb843rzu6V4m3hXbdJ153j6wlEn+X4KWfmQvaGKqg==
-X-Google-Smtp-Source: ABdhPJwXgiCBqMwy6i/HD2uHx0cjX4YslKBZy0bAbLJHM2GmXJ3FdSpGpa8ZrEEvi/P1eI0Z6oalbN9Q6+Mn3ao5sGc=
-X-Received: by 2002:a05:6512:208d:b0:443:1833:7473 with SMTP id
- t13-20020a056512208d00b0044318337473mr133778lfr.651.1645051666773; Wed, 16
- Feb 2022 14:47:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20220216224153.2242451-1-keescook@chromium.org>
-In-Reply-To: <20220216224153.2242451-1-keescook@chromium.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 16 Feb 2022 14:47:35 -0800
-Message-ID: <CAKwvOdm62iA1dNiC6Q11UJ-MnTqtc4kXkm-ubPaFMK824_k0nw@mail.gmail.com>
-Subject: Re: [PATCH] lib: overflow: Convert to Kunit
-To:     Kees Cook <keescook@chromium.org>
-Cc:     David Gow <davidgow@google.com>,
-        Vitor Massaru Iha <vitor@massaru.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        linux-kselftest@vger.kernel.org, linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=3r6h2sBdcW1kkCKh7UVq3dUjkuKu9ak2ZM+xBcxiBd0=;
+        b=PrjSbjFYBRZsSCFrFuV2l25GRfp9peqpmZ6iroyZ3V49mVfkkgr5bCMjHTz9pNjTuU
+         OB7AfsdusJQSXIrwTuOqQ8lXITNJw24kxDmiOSo3SPWQAlSfnQMzGi2rkknvzPwm598f
+         oF84/lW1G6ws1U/hS0ufWKY8mB9+aBFAqe031n7KAh6EaBydGQ2GlfK2QPaLAm99nYmK
+         prtiDmSGjYJSM7NT07smUG9HMvjWRRxgacq/J/w0BUCdBIPrzsaJD0WEAkcSCGdxLSNf
+         NC+OkX790A2uF+Fh1PX2CMOvBg2X5i/M81r6aY0vxH/Wqy/quL67bfjHfm89mO3xhAyb
+         +okg==
+X-Gm-Message-State: AOAM533ty24nQPm6kuyzRXDPxkmoFZ0BVnFdBfUXWVEiR7QS9wFOMyI5
+        xJGkf/2xwBVB7OVqW7na2w==
+X-Google-Smtp-Source: ABdhPJyhkxR5J8ILPyX1MmO7R0auSfTU9wY7qKGqq0W+NoKQgFqJrxA0ffZkJwTt3tb0CM71gtO84A==
+X-Received: by 2002:a05:6638:1241:b0:311:b694:ef58 with SMTP id o1-20020a056638124100b00311b694ef58mr70606jas.88.1645051915548;
+        Wed, 16 Feb 2022 14:51:55 -0800 (PST)
+Received: from robh.at.kernel.org ([64.188.179.250])
+        by smtp.gmail.com with ESMTPSA id i13sm762384ilv.58.2022.02.16.14.51.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 14:51:54 -0800 (PST)
+Received: (nullmailer pid 1825831 invoked by uid 1000);
+        Wed, 16 Feb 2022 22:51:53 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Sergiu Moga <sergiu.moga@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        ludovic.desroches@microchip.com, linux-rtc@vger.kernel.org,
+        a.zummo@towertech.it, robh+dt@kernel.org,
+        nicolas.ferre@microchip.com, devicetree@vger.kernel.org,
+        alexandre.belloni@bootlin.com
+In-Reply-To: <20220215144649.14378-1-sergiu.moga@microchip.com>
+References: <20220215144649.14378-1-sergiu.moga@microchip.com>
+Subject: Re: [PATCH] dt-bindings: rtc: convert at91sam9 bindings to json-schema
+Date:   Wed, 16 Feb 2022 16:51:53 -0600
+Message-Id: <1645051913.059197.1825830.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 2:41 PM Kees Cook <keescook@chromium.org> wrote:
->
-> Convert overflow unit tests to KUnit, for better integration into the
-> kernel self test framework. Includes a rename of test_overflow.c to
-> overflow_kunit.c, and CONFIG_TEST_OVERFLOW to CONFIG_OVERFLOW_KUNIT_TEST.
->
-> Cc: David Gow <davidgow@google.com>
-> Cc: Vitor Massaru Iha <vitor@massaru.org>
-> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> Cc: Nick Desaulniers <ndesaulniers@google.com>
-> Co-developed-by: Vitor Massaru Iha <vitor@massaru.org>
-> Signed-off-by: Vitor Massaru Iha <vitor@massaru.org>
-> Link: https://lore.kernel.org/lkml/20200720224418.200495-1-vitor@massaru.org/
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+On Tue, 15 Feb 2022 16:46:49 +0200, Sergiu Moga wrote:
+> Convert RTC binding for Atmel/Microchip SoCs to Device Tree Schema
+> format.
+> 
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
 > ---
-> Assuming no one objects, I'll carry this in my for-next/overflow tree. :)
+>  .../bindings/rtc/atmel,at91sam9-rtc.txt       | 25 --------
+>  .../bindings/rtc/atmel,at91sam9-rtc.yaml      | 61 +++++++++++++++++++
+>  2 files changed, 61 insertions(+), 25 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
+>  create mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+> 
 
-Acked-by: Nick Desaulniers <ndesaulniers@google.com>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
--- 
-Thanks,
-~Nick Desaulniers
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml:20:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+./Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml:22:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.example.dt.yaml: rtt@fffffd20: $nodename:0: 'rtt@fffffd20' does not match '^rtc(@.*|-[0-9a-f])*$'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.example.dt.yaml: rtt@fffffd20: atmel,rtt-rtc-time-reg:0: [4294967295, 0] is too long
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1593106
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
