@@ -2,98 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 23:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FD5C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 23:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238598AbiBPXpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 18:45:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36856 "EHLO
+        id S238625AbiBPXpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 18:45:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiBPXpj (ORCPT
+        with ESMTP id S238599AbiBPXpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 18:45:39 -0500
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D5024467B;
-        Wed, 16 Feb 2022 15:45:26 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 26BBA784;
-        Wed, 16 Feb 2022 23:45:26 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 26BBA784
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1645055126; bh=Sau/8cjm8I8qhCKztqdxWnh/G71DxOC+cWRj6cLXdWs=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=AKTZ0g7C8vjqdhi9kWWEzoEe9Y0BVE8ZI4Qn++H8qhAH0hw9tl0l/yu2u7f5U5F0h
-         LycKi5cpybaGfE0hOXC1fj6Q0yCE3exH8DVwfNcGGN/+mcylM7zBzNilSjO+WSI7gm
-         H0inRMW/gkE096yiONRLhc0i72p+LwRM/MCAIHJn7CST++V6NUK+h9QW8jKZ4s4Yf6
-         GLZn8A1pBZHSSQa6pJym5IE/eJzSRjT+ZGxxY28j+LfBE3EY2/HNK8684SuQTYBZRv
-         lfuOx0P9aPBlRYeEj0MkBuA4v8imNjzEd4naVnDBAA/gvsog/+NJPgVUcRpszAd/IO
-         qH2VkHPdTpK5Q==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Tomasz =?utf-8?B?V2FybmllxYLFgm8=?= <tomasz.warniello@gmail.com>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tomasz =?utf-8?B?V2FybmllxYLFgm8=?= <tomasz.warniello@gmail.com>
-Subject: Re: [RFC] scripts: kernel-doc: Major kernel-doc rework
-In-Reply-To: <20220205233945.7a4d22d8@fuji.fritz.box>
-References: <20220205233945.7a4d22d8@fuji.fritz.box>
-Date:   Wed, 16 Feb 2022 16:45:25 -0700
-Message-ID: <8735ki2x62.fsf@meer.lwn.net>
+        Wed, 16 Feb 2022 18:45:43 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E05B24467B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 15:45:30 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id s8so1707914oij.13
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 15:45:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=urbTff3ySXfX9ztkV2WSW1OMaQe9/9WZx066jydpeK4=;
+        b=UzcSTBuyQpdljM0EhR7KpOMLMhNNmtZphfI7ahI46AEzDy5QHc3Q8LaLJJ88O2gr4o
+         4PE3i+XfXarTxFLdZUUHSYQg7TIOsZQojW4+XKTcUGHm2J1o5agTYsm/IURoH0UmKm0v
+         g228bJBGD5Y5aNyrqxIRE6jNVhnLBxnSzAEX4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=urbTff3ySXfX9ztkV2WSW1OMaQe9/9WZx066jydpeK4=;
+        b=bDEoBUTRXn/PeQ4vhbEmH5ep/Wxarwtt3/VzmICEbZevS/TlK5BsQXSVCLqky10TNR
+         WzmT0ARtdpjqFuasJAucxzhMvXV/nHBy/pTOaLaapmGc7fnhUAL2iQoAZM17q4UOG0sG
+         We9KtBUD8bdRSlJahIzcAj35e8iSkb6Bn59FMXo73yySrI/wokJ4fov4+owb3cCL7xOg
+         GisYEojV7k//3YDkYuAEoZJ3WZo9zuwnyvDa/gjSwdj2UTHYfKZwNGDhnmOwbqC8DNP8
+         dAa4vOaB98vRMRRqCVjajuV9UxNEdzht72jPCnZZ/L7S7k8pDizD69Mom6tGtBjnkNmp
+         UK9Q==
+X-Gm-Message-State: AOAM533UABP26POGDr8rO2ZSUt7oaB5ojz+otbqj3W6p8+TfWbb0V7K/
+        MByfpfEbtlhTphKDmj0SjkCSJv1LzTU0yL5gn9iPWQ==
+X-Google-Smtp-Source: ABdhPJwC+FZjkkt2k3aFm5upT8ZPjK+9KsMueCF3faJbdaaR7O9txcNN340aCsdpy2KadNskAEcn2MGE3nVZyZRZ0i4=
+X-Received: by 2002:aca:df44:0:b0:2ce:285f:cb99 with SMTP id
+ w65-20020acadf44000000b002ce285fcb99mr1720720oig.40.1645055129570; Wed, 16
+ Feb 2022 15:45:29 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 16 Feb 2022 15:45:29 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1643828199-8564-3-git-send-email-quic_khsieh@quicinc.com>
+References: <1643828199-8564-1-git-send-email-quic_khsieh@quicinc.com> <1643828199-8564-3-git-send-email-quic_khsieh@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 16 Feb 2022 15:45:29 -0800
+Message-ID: <CAE-0n50aJykz-PGiZQ1oxfpRHpFJK9Oo2rZ3VVX320Pcd5uM5A@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] drm/msm/dp: enhance debug info related to dp phy
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
+        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
+        dmitry.baryshkov@linaro.org, dri-devel@lists.freedesktop.org,
+        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tomasz Warnie=C5=82=C5=82o <tomasz.warniello@gmail.com> writes:
-
-> This is in fact a release notification of a major kernel-doc script
-> refurbishment I have done. My work has reached a stage, which can be
-> considered a world sync point and here we are.
+Quoting Kuogee Hsieh (2022-02-02 10:56:38)
+> DP phy should be initialized and exited symmetrically to avoid
+> clock being stucked at either on or off error. Add debug info
+> to cover all DP phy to identify clock issues easily.
 >
-> I'm not sending all the patches to the Linux mailing list, as I prefer
-> to check what you think before I emit about 500 emails.
->
-> I've parked the lot for you to inspect here:
-> https://salsa.debian.org/guest/kernel-doc
->
-> This also helps me report the bug fixes. See the issue tracker:
-> https://salsa.debian.org/guest/kernel-doc/-/issues
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> ---
 
-I've taken a quick look - that's a lot of stuff.  Thanks for not sending
-it all; you would have gotten some unhappy answers.
-
-Some overall thoughts:
-
- - Work like this needs to be broken up into digestible batches.  Let's
-   start with the POD stuff that I've (finally) commented on; other
-   stuff can come later.
-
- - The coding style in the new work is very unkernellike; that will make
-   it harder to get this work merged.
-
- - But let's take a step back and ask: why are we doing all of this work
-   in the first place?  What is the benefit to the kernel community from
-   all this churn, and a growth of the kernel-doc script by over 2,000
-   lines (even if an awful lot of them are blank)?
-
-I'm serious about that last question; do we really want to invest that
-kind of effort into this nasty old script?  Or, if we're going to do
-such a thing, should we maybe start with Markus's rewrite into Python
-instead?  If we're going to thrash the code and make it unrecognizable,
-perhaps we should move to a language that is consistent with the rest of
-the docs build system and which, I believe, is easier for more kernel
-developers to deal with?
-
-I am *not* saying that this work cannot be accepted, and I certainly do
-not want to alienate somebody who is actually able to look at kernel-doc
-and not have their eyes bleed out.  But I am saying that, before
-launching into a hundreds-of-patches journey, we should know where we're
-going and why we are doing it.
-
-See what I'm getting at?
-
-Thanks,
-
-jon
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
