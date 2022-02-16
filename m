@@ -2,171 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 922FDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 121CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 19:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238333AbiBPTtb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 14:49:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45804 "EHLO
+        id S238322AbiBPTvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 14:51:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238313AbiBPTtY (ORCPT
+        with ESMTP id S234886AbiBPTvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 14:49:24 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3680202068;
-        Wed, 16 Feb 2022 11:49:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645040951; x=1676576951;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=uttn9/DySER6QLvzk9CdFYOB7YGwLWPHJwLCb82MXjs=;
-  b=GeplCpSTgNqI3KyGVX5tJ1AdWTpynDUArU4iE34ooMR4pQTQbEe1/q18
-   x6Y9+QjK0xsx3UBbaDErwX3vE6lOmrPjYCwzd2kSeW2n40cZFkq8aZo1A
-   fX8hSw9azQ8RzfO0P1ag+bQQT+A6RGM752kY1sebmJKXL5ozV5Y1ylh4o
-   4=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 16 Feb 2022 11:49:11 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:49:11 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 16 Feb 2022 11:49:10 -0800
-Received: from [10.111.168.21] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Wed, 16 Feb
- 2022 11:49:08 -0800
-Message-ID: <a65a62ab-427f-3a5a-b633-2c457f797dab@quicinc.com>
-Date:   Wed, 16 Feb 2022 11:49:03 -0800
+        Wed, 16 Feb 2022 14:51:22 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA1B2B1024;
+        Wed, 16 Feb 2022 11:51:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645041069; x=1676577069;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HH+CeWCLXFRu3dE8FJg+idDdWcYVfzcRC1ijA/ezLtk=;
+  b=HpPZHxWdVzKhimmviWkNWnFxNp7nzpmEJM4Ik8IBIJ5LDPNip2etXhv2
+   92H+UESES9GmzMQDNyznEVlEPyyd/x7KaStqCSdY1RZRxCE6TDl/5Ejel
+   nw9CUkcEGFDkLHDqQKCORTK9A4rqQDA6aUKNPnIBbh7ubPqoZUr5tAeUX
+   hQh0pmc+0jvF1tK1bfTSiE2jsaMhklM3ViB8a7jX5mYFdsA3C87ortJM4
+   Q8QyvsZf/kN2kV7t6bx6XlRvE7g1cGqbXcUGzdH0OXikWy7cLiXGJXY5Q
+   kJUI5yzY+MmpBGOnN45Ee6TqbWMAonpjPY+4nJ8SgwQ0pgoS+Og9JUSkt
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="238115738"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="238115738"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:51:09 -0800
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="503180886"
+Received: from ddahlenx-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.148.13])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:51:08 -0800
+Message-ID: <11b23ddcbd05e277f5511557ee954e2fade0039a.camel@linux.intel.com>
+Subject: Re: [PATCH] Documentation: admin-guide: pm: Document uncore
+ frequency scaling
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Date:   Wed, 16 Feb 2022 11:51:08 -0800
+In-Reply-To: <CAJZ5v0gqatnkRt0VqTyHjgL8yNp40Ui3UCMv-PV8qvzefaV5HQ@mail.gmail.com>
+References: <20220207191307.2903314-1-srinivas.pandruvada@linux.intel.com>
+         <CAJZ5v0gqatnkRt0VqTyHjgL8yNp40Ui3UCMv-PV8qvzefaV5HQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [REPOST PATCH v4 04/13] drm/msm/disp/dpu1: Add support for DSC in
- pingpong block
-Content-Language: en-US
-To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
-CC:     <linux-arm-msm@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <freedreno@lists.freedesktop.org>
-References: <20220210103423.271016-1-vkoul@kernel.org>
- <20220210103423.271016-5-vkoul@kernel.org>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <20220210103423.271016-5-vkoul@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/10/2022 2:34 AM, Vinod Koul wrote:
-> In SDM845, DSC can be enabled by writing to pingpong block registers, so
-> add support for DSC in hw_pp
+On Wed, 2022-02-16 at 19:44 +0100, Rafael J. Wysocki wrote:
+> On Mon, Feb 7, 2022 at 8:13 PM Srinivas Pandruvada
+> <srinivas.pandruvada@linux.intel.com> wrote:
+> > 
+> > Added documentation to configure uncore frequency limits in Intel
+> > Xeon processors.
+> > 
+> > Signed-off-by: Srinivas Pandruvada
+> > <srinivas.pandruvada@linux.intel.com>
+> > ---
+> > Resent by adding linux-pm@vger.kernel.org
+> > 
+> >  .../pm/intel_uncore_frequency_scaling.rst     | 56
+> > +++++++++++++++++++
+> >  .../admin-guide/pm/working-state.rst          |  1 +
+> >  2 files changed, 57 insertions(+)
+> >  create mode 100644 Documentation/admin-
+> > guide/pm/intel_uncore_frequency_scaling.rst
+> > 
+> > diff --git a/Documentation/admin-
+> > guide/pm/intel_uncore_frequency_scaling.rst b/Documentation/admin-
+> > guide/pm/intel_uncore_frequency_scaling.rst
+> > new file mode 100644
+> > index 000000000000..b3519560594b
+> > --- /dev/null
+> > +++ b/Documentation/admin-
+> > guide/pm/intel_uncore_frequency_scaling.rst
+> > @@ -0,0 +1,56 @@
+> > +.. SPDX-License-Identifier: GPL-2.0
+> > +.. include:: <isonum.txt>
+> > +
+> > +==============================
+> > +Intel Uncore Frequency Scaling
+> > +==============================
+> > +
+> > +:Copyright: |copy| 2022 Intel Corporation
+> > +
+> > +:Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > +
+> > +Introduction
+> > +===========================================
 > 
-> Reviewed-by: Abhinav Kumar <abhinavk@codeaurora.org>
-
-For the sake of uniformity, please use
-
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
-> ---
->   .../gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c   | 32 +++++++++++++++++++
->   .../gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h   | 14 ++++++++
->   2 files changed, 46 insertions(+)
+> There are no other sections in this file, so can the section header
+> above be dropped?
 > 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
-> index 55766c97c4c8..47c6ab6caf95 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c
-> @@ -28,6 +28,9 @@
->   #define PP_FBC_MODE                     0x034
->   #define PP_FBC_BUDGET_CTL               0x038
->   #define PP_FBC_LOSSY_MODE               0x03C
-> +#define PP_DSC_MODE                     0x0a0
-> +#define PP_DCE_DATA_IN_SWAP             0x0ac
-> +#define PP_DCE_DATA_OUT_SWAP            0x0c8
->   
->   #define PP_DITHER_EN			0x000
->   #define PP_DITHER_BITDEPTH		0x004
-> @@ -245,6 +248,32 @@ static u32 dpu_hw_pp_get_line_count(struct dpu_hw_pingpong *pp)
->   	return line;
->   }
->   
-> +static int dpu_hw_pp_dsc_enable(struct dpu_hw_pingpong *pp)
-> +{
-> +	struct dpu_hw_blk_reg_map *c = &pp->hw;
-> +
-> +	DPU_REG_WRITE(c, PP_DSC_MODE, 1);
-> +	return 0;
-> +}
-> +
-> +static void dpu_hw_pp_dsc_disable(struct dpu_hw_pingpong *pp)
-> +{
-> +	struct dpu_hw_blk_reg_map *c = &pp->hw;
-> +
-> +	DPU_REG_WRITE(c, PP_DSC_MODE, 0);
-> +}
-> +
-> +static int dpu_hw_pp_setup_dsc(struct dpu_hw_pingpong *pp)
-> +{
-> +	struct dpu_hw_blk_reg_map *pp_c = &pp->hw;
-> +	int data;
-> +
-> +	data = DPU_REG_READ(pp_c, PP_DCE_DATA_OUT_SWAP);
-> +	data |= BIT(18); /* endian flip */
-> +	DPU_REG_WRITE(pp_c, PP_DCE_DATA_OUT_SWAP, data);
-> +	return 0;
-> +}
-> +
->   static void _setup_pingpong_ops(struct dpu_hw_pingpong *c,
->   				unsigned long features)
->   {
-> @@ -256,6 +285,9 @@ static void _setup_pingpong_ops(struct dpu_hw_pingpong *c,
->   	c->ops.get_autorefresh = dpu_hw_pp_get_autorefresh_config;
->   	c->ops.poll_timeout_wr_ptr = dpu_hw_pp_poll_timeout_wr_ptr;
->   	c->ops.get_line_count = dpu_hw_pp_get_line_count;
-> +	c->ops.setup_dsc = dpu_hw_pp_setup_dsc;
-> +	c->ops.enable_dsc = dpu_hw_pp_dsc_enable;
-> +	c->ops.disable_dsc = dpu_hw_pp_dsc_disable;
->   
->   	if (test_bit(DPU_PINGPONG_DITHER, &features))
->   		c->ops.setup_dither = dpu_hw_pp_setup_dither;
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
-> index 89d08a715c16..12758468d9ca 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h
-> @@ -124,6 +124,20 @@ struct dpu_hw_pingpong_ops {
->   	 */
->   	void (*setup_dither)(struct dpu_hw_pingpong *pp,
->   			struct dpu_hw_dither_cfg *cfg);
-> +	/**
-> +	 * Enable DSC
-> +	 */
-> +	int (*enable_dsc)(struct dpu_hw_pingpong *pp);
-> +
-> +	/**
-> +	 * Disable DSC
-> +	 */
-> +	void (*disable_dsc)(struct dpu_hw_pingpong *pp);
-> +
-> +	/**
-> +	 * Setup DSC
-> +	 */
-> +	int (*setup_dsc)(struct dpu_hw_pingpong *pp);
->   };
->   
->   struct dpu_hw_merge_3d;
+Sure.
+
+Thanks,
+Srinivas
+
+> > +
+> > +Uncore can consume significant amount of power in Intel's Xeon
+> > servers based
+> > +on the workload characteristics. To optimize total power and
+> > improve overall
+> > +performance, SoC has an internal algorithm for scaling uncore
+> > frequency. These
+> > +algorithms monitor workload usage of uncore and set a desirable
+> > frequency.
+> > +
+> > +It is possible that users have different expectations of uncore
+> > performance and
+> > +want to have control over it. The objective is similar to set
+> > scaling min/max
+> > +frequencies using cpufreq sysfs to improve compute performance.
+> > Users may have
+> > +some latency sensitive workload where they do not want any change
+> > to uncore
+> > +frequency. Also, users may have workload which requires different
+> > core and
+> > +uncore performance at distinct phases and they want to use both
+> > cpufreq and
+> > +uncore scaling interface to distribute power and improve overall
+> > performance.
+> > +
+> > +To control uncore frequency, a sysfs interface is provided in the
+> > directory:
+> > +`/sys/devices/system/cpu/intel_uncore_frequency/`.
+> > +
+> > +There is one directory for each package and die combination as the
+> > scope of
+> > +uncore scaling control is per die in multiple dies/package SoC or
+> > per
+> > +package for single die per package SoC. The name represents the
+> > +scope of control. For example: 'package_00_die_00' is for package
+> > id 0 and
+> > +die 0 in it.
+> > +
+> > +Each package_*_die_* contains following attributes:
+> > +
+> > +``initial_max_freq_khz``
+> > +       Out of reset, this attribute represent the maximum possible
+> > frequency.
+> > +       This is a read only attribute. If users adjust
+> > max_freq_khz,
+> > +       they can always go back to maximum using the value from
+> > this attribute.
+> > +
+> > +``initial_min_freq_khz``
+> > +       Out of reset, this attribute represent the minimum possible
+> > frequency.
+> > +       This is a read only attribute. If users adjust
+> > min_freq_khz,
+> > +       they can always go back to minimum using the value from
+> > this attribute.
+> > +
+> > +``max_freq_khz``
+> > +       This attribute is used to set the maximum uncore frequency.
+> > +
+> > +``min_freq_khz``
+> > +       This attribute is used to set the minimum uncore frequency.
+> > +
+> > +``current_freq_khz``
+> > +       This attribute is used to get the current uncore frequency.
+> > diff --git a/Documentation/admin-guide/pm/working-state.rst
+> > b/Documentation/admin-guide/pm/working-state.rst
+> > index 5d2757e2de65..ee45887811ff 100644
+> > --- a/Documentation/admin-guide/pm/working-state.rst
+> > +++ b/Documentation/admin-guide/pm/working-state.rst
+> > @@ -15,3 +15,4 @@ Working-State Power Management
+> >     cpufreq_drivers
+> >     intel_epb
+> >     intel-speed-select
+> > +   intel_uncore_frequency_scaling
+> > --
+> > 2.34.1
+> > 
+
