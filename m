@@ -2,130 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69498C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 02:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2062FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Feb 2022 02:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343826AbiBPCnx (ORCPT
+        id S1343828AbiBPCpJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Feb 2022 21:43:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57244 "EHLO
+        Tue, 15 Feb 2022 21:45:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240774AbiBPCnw (ORCPT
+        with ESMTP id S237229AbiBPCpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Feb 2022 21:43:52 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7988FBA49;
-        Tue, 15 Feb 2022 18:43:40 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id d10so1308684eje.10;
-        Tue, 15 Feb 2022 18:43:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EDJssklYQD1n4k3ObsN0bw+9i+I4dsggbJJR//VLJ20=;
-        b=Zl1xm3D354LVEdk6A1RDC5V8EuHE+coeR6zi4f0ARUyC12YBR5vOArEE//4Cxtn5dO
-         qvndiWQPdZjG/DshCt1bSFTLc3Uaw/nW6gR5jGrwlVvJ4nt74WaIuvevEnojDkK43bZu
-         fnq2ND1g5TP0M5VqS0orFL5ClL2EHaeOu6aPBtOgTE8Oy7Rhrfj41XoFk6vyzX/TrWxS
-         wsBGMaDKnQlYQm3SViOfnND/9w1pqDBt31O+4A40ijW1hj8rjwMVDkmzAtt11XC6cuZW
-         NHEwGGp3PQefrt8IjH1Qhk6UFcphAIMTHBsbc1r8Vy1eYQK0FUA5NSfCl0h+hQZjtj1B
-         gfng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EDJssklYQD1n4k3ObsN0bw+9i+I4dsggbJJR//VLJ20=;
-        b=XWFemS6nOlz5cmPfIqG4iW4g+LOUPP2UcGeIyKLNUp9LiJT92cxk+QJbEANztztPKO
-         7aQ2I9zZ0Ez0UdSos1qfbBofFlDROcbIz5z5YCHSBhza+RY2k180+lgiiRs37D+LiFAC
-         UxpChbbCuolR/XSHg5bI/GwTxthPyDpwfn1IKcVzzLQYBJ+/G2JHdB8rd+M05XDdgy6T
-         FbWW/exqe0uGwdMRyRAe1cPU4lHYBRMvhXuEUKmJAR0fn6I+gSt/ep8i78Hh4eefLe9g
-         R0R/9J5vVYBXjfsMw8rr9gEVlmbrblvMLDb1iFEJNJgv+Wm0BZiHIHnazjH5hZyNCnxD
-         yQbg==
-X-Gm-Message-State: AOAM532ZJkUnuU4zfzZAPI7p+SPGl/+Y2NSWhdXj3g3eUzMjAIqVUnBQ
-        yRAuDDOVWAcABCrqwS1OgV0sf38iBgqr3RQVSp0=
-X-Google-Smtp-Source: ABdhPJxkhm7FKRBh+yyBJ1rNwZFW3Xhyw+ayQ2oppPG4d4kbp1nasELqUQ+uZz+N2pXbirXgW6PySSHKLyIXoVl2hko=
-X-Received: by 2002:a17:906:4cd2:b0:6c8:7a90:9c7 with SMTP id
- q18-20020a1709064cd200b006c87a9009c7mr612436ejt.439.1644979419568; Tue, 15
- Feb 2022 18:43:39 -0800 (PST)
+        Tue, 15 Feb 2022 21:45:06 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A73FBA73;
+        Tue, 15 Feb 2022 18:44:52 -0800 (PST)
+X-UUID: b070c4003ec8456184ba0c4c303423d6-20220216
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:CC:To:Subject; bh=Pzq1ASA1hc2sgu0ItXffmb7MYGAO/ElkjWHHNwr99Yw=;
+        b=R5wKSy6A4oAJ+50cSviOAmsKXFEwwMXEVcO74JZppaSEgcC6XzQHn4xJpDZSn+vtkKgLveuuD0TdvjEYRSVdDf1iuLSUJqjNCr9un3Dun04JWnm/BOdiyNuiL7nqYT4n4ff5c62xl+PyxQ8dD0ZX6QdD1yqXkRCMNTFArGg6Vnk=;
+X-UUID: b070c4003ec8456184ba0c4c303423d6-20220216
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <macpaul.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 713896900; Wed, 16 Feb 2022 10:44:48 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 16 Feb 2022 10:44:47 +0800
+Received: from [172.21.84.99] (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Feb 2022 10:44:47 +0800
+Subject: Re: [v2 0/2] Mediatek MT8186 power domain support
+To:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Nicolas Boichat" <drinkcat@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+References: <20220215104917.5726-1-chun-jie.chen@mediatek.com>
+From:   Macpaul Lin <macpaul.lin@mediatek.com>
+Message-ID: <75e57cf8-0704-1a6c-5c0b-860c7fb4e947@mediatek.com>
+Date:   Wed, 16 Feb 2022 10:44:47 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20220215112812.2093852-1-imagedong@tencent.com>
- <20220215112812.2093852-2-imagedong@tencent.com> <CANn89iLWOBy=X1CpY+gvukhQ-bb7hDWd5y+m46K7o5XR0Pbt_A@mail.gmail.com>
- <f626571a-30de-5549-a73e-aaef874d3c36@kernel.org>
-In-Reply-To: <f626571a-30de-5549-a73e-aaef874d3c36@kernel.org>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Wed, 16 Feb 2022 10:38:28 +0800
-Message-ID: <CADxym3ZS1Fva1CcYo3Lyj2wy2t-FRE51eZB-fESybwiBdKSWVQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 01/19] net: tcp: introduce tcp_drop_reason()
-To:     David Ahern <dsahern@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        flyingpeng@tencent.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220215104917.5726-1-chun-jie.chen@mediatek.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 2:47 AM David Ahern <dsahern@kernel.org> wrote:
->
-> On 2/15/22 10:34 AM, Eric Dumazet wrote:
-> >> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> >> index af94a6d22a9d..e3811afd1756 100644
-> >> --- a/net/ipv4/tcp_input.c
-> >> +++ b/net/ipv4/tcp_input.c
-> >> @@ -4684,10 +4684,19 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
-> >>         return res;
-> >>  }
-> >>
-> >> -static void tcp_drop(struct sock *sk, struct sk_buff *skb)
-> >> +static void tcp_drop_reason(struct sock *sk, struct sk_buff *skb,
-> >> +                           enum skb_drop_reason reason)
-> >>  {
-> >>         sk_drops_add(sk, skb);
-> >> -       __kfree_skb(skb);
-> >> +       /* why __kfree_skb() used here before, other than kfree_skb()?
-> >> +        * confusing......
-> >
-> > Do not add comments like that if you do not know the difference...
-> >
-> > __kfree_skb() is used by TCP stack because it owns skb in receive
-> > queues, and avoids touching skb->users
-> > because it must be one already.
->
-> and it bypasses kfree_skb tracepoint which seems by design.
+DQoNCk9uIDIvMTUvMjIgNjo0OSBQTSwgQ2h1bi1KaWUgQ2hlbiB3cm90ZToNCj4gVGhpcyBwYXRj
+aCBzZXJpZXMgYWRkcyBwb3dlciBkb21haW4gc3VwcG9ydCBmb3IgTVQ4MTg2DQo+IGFuZCBkZXBl
+bmRzIG9uIFsxXSBiYXNlZCBvbiA1LjE3LXJjMS4NCj4gDQo+IGNoYW5nZSBzaW5jZSB2MToNCj4g
+LSBjaGFuZ2UgdG8gZHVhbCBsaWNlbnNlIGluIGR0LWJpbmRpbmcNCj4gDQo+IFsxXSBodHRwczov
+L3VybGRlZmVuc2UuY29tL3YzL19faHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9wcm9qZWN0
+L2xpbnV4LW1lZGlhdGVrL2xpc3QvP3Nlcmllcz02MDk3OTlfXzshIUNUUk5LQTl3TWcwQVJidyEz
+Q0pBQzAtVklxQXltckNjQVJza29hNlhJMElkcUg5Ynh6UHRDR0V1X29LUmVtMGwwSUVPZXRZOFNj
+YkdnOUNMWkNjJA0KPiANCj4gQ2h1bi1KaWUgQ2hlbiAoMik6DQo+ICAgIGR0LWJpbmRpbmdzOiBw
+b3dlcjogQWRkIE1UODE4NiBwb3dlciBkb21haW5zDQo+ICAgIHNvYzogbWVkaWF0ZWs6IHBtLWRv
+bWFpbnM6IEFkZCBzdXBwb3J0IGZvciBtdDgxODYNCj4gDQo+ICAgLi4uL3Bvd2VyL21lZGlhdGVr
+LHBvd2VyLWNvbnRyb2xsZXIueWFtbCAgICAgIHwgICAxICsNCj4gICBkcml2ZXJzL3NvYy9tZWRp
+YXRlay9tdDgxODYtcG0tZG9tYWlucy5oICAgICAgfCAzNDQgKysrKysrKysrKysrKysrKysrDQo+
+ICAgZHJpdmVycy9zb2MvbWVkaWF0ZWsvbXRrLXBtLWRvbWFpbnMuYyAgICAgICAgIHwgICA1ICsN
+Cj4gICBpbmNsdWRlL2R0LWJpbmRpbmdzL3Bvd2VyL210ODE4Ni1wb3dlci5oICAgICAgfCAgMzIg
+KysNCj4gICBpbmNsdWRlL2xpbnV4L3NvYy9tZWRpYXRlay9pbmZyYWNmZy5oICAgICAgICAgfCAg
+NDggKysrDQo+ICAgNSBmaWxlcyBjaGFuZ2VkLCA0MzAgaW5zZXJ0aW9ucygrKQ0KPiAgIGNyZWF0
+ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3NvYy9tZWRpYXRlay9tdDgxODYtcG0tZG9tYWlucy5oDQo+
+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGluY2x1ZGUvZHQtYmluZGluZ3MvcG93ZXIvbXQ4MTg2LXBv
+d2VyLmgNCj4gDQo+IC0tDQo+IDIuMTguMA0KDQpXaHkgZGlkIHlvdSBkcm9wIFtQQVRDSF0gdGFn
+IGluIHRoZSBzdWJqZWN0IG9mIHlvdXIgcGF0Y2ggc2VyaWVzPw0KUGxlYXNlIGtlZXAgaXQgZm9y
+IGRpc3Rpbmd1aXNoaW5nIGl0IGZyb20gUkZDIGFuZCBvdGhlciBtZWFuaW5nZnVsIHRhZ3MgDQpu
+ZXh0IHRpbWUuDQoNClRoYW5rcw0KTWFjcGF1bCBMaW4=
 
-Do you mean it shouldn't be traced here?
-According to my understanding, __kfree_skb() was used in the
-beginning as skb->users aren't touched by TCP. Later,
-tcp_drop() was introduced to record drop count to the socket.
-
-Considering the skb is indeed dropped and no other event is triggered,
-is it ok to trigger the kfree_skb tracepoint?
-
-Thanks!
-Menglong Dong
