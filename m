@@ -2,168 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18AEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 12:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 12:37:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240488AbiBQMfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 07:35:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58680 "EHLO
+        id S240488AbiBQMhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 07:37:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237579AbiBQMfH (ORCPT
+        with ESMTP id S231514AbiBQMhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 07:35:07 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD7829E958;
-        Thu, 17 Feb 2022 04:34:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645101293; x=1676637293;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jqp1fYTheCWhRfv2OpCYkVHRkEpKWkW7APtc8Kxi2c0=;
-  b=XeAGlkEvX022u6vmMigCbV2QvNfbUkeG0ZG2tzxEajtClmJsfWH1biHa
-   4tZ+ortxmeAztSPr4xcUtCiKHOf1/vVBZBdjyzzAeH5NDj3T2sEg+U0PX
-   6jbtsJWjh7Pz8Zl+/lHlL6ET6B9gBxSgYQyXvYhWAuVgUF62hN8YzB7gl
-   KmVlIxMc+h6Y6Lbge+BqUkJLpXMA3lrsH/Q0UFWLG31uFSzf6ngYEZj5X
-   gKQi12nCC6NSGm4Nsmyg5TohPtFkvFvywHTnYgLNkn1LJawU18Iqodmyo
-   btu9ATM0Qi/6DzDieGDjF/F9u+AUZNoCSgbijwqPRxBmVmawp0NBFsCxm
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="250599301"
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="250599301"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 04:34:52 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="503486546"
-Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 17 Feb 2022 04:34:49 -0800
-Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKfzk-0000BS-Px; Thu, 17 Feb 2022 12:34:48 +0000
-Date:   Thu, 17 Feb 2022 20:34:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vipin Sharma <vipinsh@google.com>, pbonzini@redhat.com,
-        seanjc@google.com
-Cc:     kbuild-all@lists.01.org, mkoutny@suse.com, tj@kernel.org,
-        lizefan.x@bytedance.com, hannes@cmpxchg.org, dmatlack@google.com,
-        jiangshanlai@gmail.com, kvm@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vipin Sharma <vipinsh@google.com>
-Subject: Re: [PATCH v3] KVM: Move VM's worker kthreads back to the original
- cgroup before exiting.
-Message-ID: <202202172046.GuW8pHQc-lkp@intel.com>
-References: <20220217061616.3303271-1-vipinsh@google.com>
+        Thu, 17 Feb 2022 07:37:32 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEDFBA8EE0;
+        Thu, 17 Feb 2022 04:37:17 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6A4AF113E;
+        Thu, 17 Feb 2022 04:37:17 -0800 (PST)
+Received: from [10.57.17.240] (unknown [10.57.17.240])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6706D3F66F;
+        Thu, 17 Feb 2022 04:37:13 -0800 (PST)
+Subject: Re: [PATCH 1/2] thermal: cooling: Check Energy Model type in
+ cpufreq_cooling and devfreq_cooling
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        amit daniel kachhap <amit.kachhap@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Pierre.Gondois@arm.com, Stephen Boyd <swboyd@chromium.org>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <20220207073036.14901-1-lukasz.luba@arm.com>
+ <20220207073036.14901-2-lukasz.luba@arm.com> <YgG+TmLrCSXX4Bvt@google.com>
+ <4a7d4e94-1461-5bac-5798-29998af9793a@arm.com> <YgKnnFl7Gp8AS30X@google.com>
+ <e4532f65-7f8a-7e89-97c1-85cc61462040@arm.com> <YgQ9XLcto9v0fyTf@google.com>
+ <d120110a-7d01-0cfd-f7eb-d160e17ec2a8@arm.com>
+ <CAD=FV=VntGw1_AzJPpdOk0zSpOVZRH2X1JNg84JX+zCeU1jvXg@mail.gmail.com>
+ <7c059f4f-7439-0cad-c398-96dbde4e49c1@linaro.org>
+ <5b8ca53e-3595-85fd-5ae9-a5e8285e8513@arm.com>
+ <53bc13ca-998f-ff83-d9f7-9a83d35b24fd@linaro.org>
+ <97ecc29b-13a9-fa15-4e88-21c8612ebb7f@arm.com>
+ <1812eadf-7924-5abd-857b-22b7dfdf8f7d@linaro.org>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+Message-ID: <33bd6122-b4aa-1659-6063-95175a8748b3@arm.com>
+Date:   Thu, 17 Feb 2022 12:37:11 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217061616.3303271-1-vipinsh@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1812eadf-7924-5abd-857b-22b7dfdf8f7d@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vipin,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on db6e7adf8de9b3b99a9856acb73870cc3a70e3ca]
-
-url:    https://github.com/0day-ci/linux/commits/Vipin-Sharma/KVM-Move-VM-s-worker-kthreads-back-to-the-original-cgroup-before-exiting/20220217-141723
-base:   db6e7adf8de9b3b99a9856acb73870cc3a70e3ca
-config: s390-randconfig-s032-20220217 (https://download.01.org/0day-ci/archive/20220217/202202172046.GuW8pHQc-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/1abffef71ef85b6fb8f1296e6ef38febc4f2b007
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Vipin-Sharma/KVM-Move-VM-s-worker-kthreads-back-to-the-original-cgroup-before-exiting/20220217-141723
-        git checkout 1abffef71ef85b6fb8f1296e6ef38febc4f2b007
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
 
 
-sparse warnings: (new ones prefixed by >>)
-   arch/s390/kvm/../../../virt/kvm/kvm_main.c: note: in included file:
-   include/linux/kvm_host.h:1877:54: sparse: sparse: array of flexible structures
-   include/linux/kvm_host.h:1879:56: sparse: sparse: array of flexible structures
->> arch/s390/kvm/../../../virt/kvm/kvm_main.c:5859:54: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct task_struct *from @@     got struct task_struct [noderef] __rcu *real_parent @@
-   arch/s390/kvm/../../../virt/kvm/kvm_main.c:5859:54: sparse:     expected struct task_struct *from
-   arch/s390/kvm/../../../virt/kvm/kvm_main.c:5859:54: sparse:     got struct task_struct [noderef] __rcu *real_parent
-   arch/s390/kvm/../../../virt/kvm/kvm_main.c:2522:9: sparse: sparse: context imbalance in 'hva_to_pfn_remapped' - unexpected unlock
+On 2/17/22 12:33 PM, Daniel Lezcano wrote:
+> On 17/02/2022 13:11, Lukasz Luba wrote:
+> 
+> [ ... ]
+> 
+>>> Why not make it more generic and replace the frequency by a 
+>>> performance index, so it can be used by any kind of perf limiter?
+>>
+>> For that DT array, yes, it can be an index, so effectively it could be
+>> a simple 1d array.
+>>
+>> something like:
+>>
+>> msm_gpu_energy_model: msm-gpu-energy-model {
+>>      compatible = "energy-model"
+>>      /* Values are sorted micro-Watts which correspond to each OPP
+>>         or performance state. The total amount of them must match
+>>         number of OPPs. */
+>>      power-microwatt = <100000>,
+>>              <230000>,
+>>              <380000>,
+>>              <600000>;
+>> };
+>>
+>> then in gpu node instead of having 'dynamic-power-coefficient',
+>> which is useless because voltage is missing, we would have
+>> 'energy-model', like:
+>>
+>>      energy-model = <&msm_gpu_energy_model>;
+>>
+>>
+>> If you agree to continue this topic. I will send an RFC so we could
+>> further discuss this idea. This $subject doesn't fit well.
+> 
+> Yes, definitively I agree to continue on this topic.
+> 
+> 
 
-vim +5859 arch/s390/kvm/../../../virt/kvm/kvm_main.c
-
-  5805	
-  5806	static int kvm_vm_worker_thread(void *context)
-  5807	{
-  5808		/*
-  5809		 * The init_context is allocated on the stack of the parent thread, so
-  5810		 * we have to locally copy anything that is needed beyond initialization
-  5811		 */
-  5812		struct kvm_vm_worker_thread_context *init_context = context;
-  5813		struct kvm *kvm = init_context->kvm;
-  5814		kvm_vm_thread_fn_t thread_fn = init_context->thread_fn;
-  5815		uintptr_t data = init_context->data;
-  5816		int err, reattach_err;
-  5817	
-  5818		err = kthread_park(current);
-  5819		/* kthread_park(current) is never supposed to return an error */
-  5820		WARN_ON(err != 0);
-  5821		if (err)
-  5822			goto init_complete;
-  5823	
-  5824		err = cgroup_attach_task_all(init_context->parent, current);
-  5825		if (err) {
-  5826			kvm_err("%s: cgroup_attach_task_all failed with err %d\n",
-  5827				__func__, err);
-  5828			goto init_complete;
-  5829		}
-  5830	
-  5831		set_user_nice(current, task_nice(init_context->parent));
-  5832	
-  5833	init_complete:
-  5834		init_context->err = err;
-  5835		complete(&init_context->init_done);
-  5836		init_context = NULL;
-  5837	
-  5838		if (err)
-  5839			goto out;
-  5840	
-  5841		/* Wait to be woken up by the spawner before proceeding. */
-  5842		kthread_parkme();
-  5843	
-  5844		if (!kthread_should_stop())
-  5845			err = thread_fn(kvm, data);
-  5846	
-  5847	out:
-  5848		/*
-  5849		 * Move kthread back to its original cgroup to prevent it lingering in
-  5850		 * the cgroup of the VM process, after the latter finishes its
-  5851		 * execution.
-  5852		 *
-  5853		 * kthread_stop() waits on the 'exited' completion condition which is
-  5854		 * set in exit_mm(), via mm_release(), in do_exit(). However, the
-  5855		 * kthread is removed from the cgroup in the cgroup_exit() which is
-  5856		 * called after the exit_mm(). This causes the kthread_stop() to return
-  5857		 * before the kthread actually quits the cgroup.
-  5858		 */
-> 5859		reattach_err = cgroup_attach_task_all(current->real_parent, current);
-  5860		if (reattach_err) {
-  5861			kvm_err("%s: cgroup_attach_task_all failed on reattach with err %d\n",
-  5862				__func__, reattach_err);
-  5863		}
-  5864		return err;
-  5865	}
-  5866	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Great! I'm going to craft something...
