@@ -2,119 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8751BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FCBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245199AbiBQT3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:29:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48706 "EHLO
+        id S240384AbiBQTd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:33:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243254AbiBQT3f (ORCPT
+        with ESMTP id S230171AbiBQTdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:29:35 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06A113080D
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:29:20 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id c15so934564ljf.11
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:29:20 -0800 (PST)
+        Thu, 17 Feb 2022 14:33:24 -0500
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C8F1598FF;
+        Thu, 17 Feb 2022 11:33:08 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id a19so10331836qvm.4;
+        Thu, 17 Feb 2022 11:33:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lnyxuwnOdncpAS1xjev/hDqsQLHcd0tj4FHfjQh+CjA=;
-        b=ccyryMdiEgcpSRhX4gZCak+kU2OOJEhmxeA8qlEM6a2ghuWU8vd7dkFdwO0zJWFCGE
-         LZFHOcHEC0222TD79XiavfVFIhgGW/RshNy3NhkdBTcOInA1YOb1YpQKhwsF95d+cEhQ
-         ZPUpqx7oG3OqCckvUe/VD6eDfTD/KoBk1AXwM=
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=rBxmT3+5CTt9IdhylIa0a5TlmY8jTHgnD/JXk7m1eDE=;
+        b=Do8oVw2kp2yEl4I8UGBfELOtUezWrLbMjFLltSg307aAXy5a21BwcnrRlAUNOwgrpp
+         lUrxx06H40fwQBf/AE3F02b7I/sH+MmnTUQzbbR6gvlj5rHYV5fCDnVUv3FeRRJjVx6L
+         8kRammeTn3TLN0gbUzBCnaP2ZlgRXHBCgfYiBxMFesT24QFN1DK83jirH+dk2OghHw0R
+         1rt4H2SByGWOmb+HIrSudTg+JxOcKboecm68cGS3dfqPzd7m3Vj3mvfnbeoYQCtxOquB
+         5ym/3iSV06R6sxy5R5vILvQZ8JnWDcBjRDqFDNFtcTtlv4bZF0y25XV5V5Ad6p4FYedW
+         xDlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lnyxuwnOdncpAS1xjev/hDqsQLHcd0tj4FHfjQh+CjA=;
-        b=UbnOG1riuOFM1EODl0GgVFxJQiVLSjrolv4p0rZIGscYmF6h9Ktc1KpXdZ1mQMcLqG
-         jkOArhylpPGIhvol5oFgXlPOWnzX92Htfy/FEFmJLO6wtWO6OrG13sGDt+PXYx+yhO3a
-         nJwx840UkCNXnpNxKkdC2i/2aD6NMtIxtk64cRpSbz4LUIBnWYibO+cKeDmW59/cLthR
-         toBalOgWxMTUtH7kvw0scSiCVPU/xBZPoraCr+OlurHykPaVXZLRPyGjybm4nD/e6lNJ
-         fsD2JX8d8byacf4Y5IpUuw4eYGdgS3oesjmT2GPJzfrJvGmL0JaTasN/KBONXR4vHoKM
-         qfRA==
-X-Gm-Message-State: AOAM531fnzkmhTufX3ycQE3EFUbgtqo2/RxB65tTIiAqITpZPOHDendr
-        qkhbqC5qu7IikFkQz4wwBjWaZgJBEcO074Tr
-X-Google-Smtp-Source: ABdhPJx95Eo7fU8EXP2q5n/AbQGJhfEGjqTvWhjRG+RedqOlY5Lpq5MdU9N/P+lHpTw6+XkUZT/C2Q==
-X-Received: by 2002:a2e:86cb:0:b0:246:12b0:940c with SMTP id n11-20020a2e86cb000000b0024612b0940cmr3235382ljj.40.1645126158866;
-        Thu, 17 Feb 2022 11:29:18 -0800 (PST)
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
-        by smtp.gmail.com with ESMTPSA id z18sm46324lfr.256.2022.02.17.11.29.14
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=rBxmT3+5CTt9IdhylIa0a5TlmY8jTHgnD/JXk7m1eDE=;
+        b=VicuAaZBww6Dlel/DW7mIqAb5xPs4YPgGCVWuqyoL4sy2f5gLG1H7Sd8V5sTUavovU
+         XYqFezVwKRu07cG0wnIo132MvmsEuP7HGjYbmaupR3vcER1KYaYA1PO2t16QYLoDHOMo
+         NN0J2th3YuTYhAwN6HRzw5MhEsamGa3wR6iiInDRTg4a94O6VvDPzANRJK0cN54rk8ix
+         Guc4hox5zLfl5ZsOHMuPCVpWbi2qaIJluwu9sR0gDKR74r4EXLpR4CxbpagSiAjinlyW
+         I8zrr2nz2Zd0VyfCIJaiZGx4PA0pL+LJwHc3CShEQrja1S35t/nC29wYwrNpgDH6ziC7
+         dOsA==
+X-Gm-Message-State: AOAM5302PfxlmxYJoBSHdyqHEBae2WTJzOo6hNLP5x3ITFPFI4k8Dhfq
+        NVLI4xfrprDOeUQXYy8f2RBUwRsPUISgDw==
+X-Google-Smtp-Source: ABdhPJzCwNOh0o4gHu5fbDAM9egA9v84qNxeFoF+LbuJQYWgydkUFjf+wf5ljJbSERkA55PYYM3a1A==
+X-Received: by 2002:a05:6214:581:b0:42d:7ccf:220b with SMTP id bx1-20020a056214058100b0042d7ccf220bmr3222930qvb.9.1645126387949;
+        Thu, 17 Feb 2022 11:33:07 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id j14sm22031729qko.10.2022.02.17.11.33.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 11:29:15 -0800 (PST)
-Received: by mail-lf1-f53.google.com with SMTP id d23so1103101lfv.13
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:29:14 -0800 (PST)
-X-Received: by 2002:a05:6512:3042:b0:437:96f5:e68a with SMTP id
- b2-20020a056512304200b0043796f5e68amr3071125lfb.449.1645126154304; Thu, 17
- Feb 2022 11:29:14 -0800 (PST)
+        Thu, 17 Feb 2022 11:33:07 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <a8e9e6f1-e7a0-d40d-8065-b72f60c72a32@roeck-us.net>
+Date:   Thu, 17 Feb 2022 11:33:05 -0800
 MIME-Version: 1.0
-References: <20220217184829.1991035-1-jakobkoschel@gmail.com> <20220217184829.1991035-4-jakobkoschel@gmail.com>
-In-Reply-To: <20220217184829.1991035-4-jakobkoschel@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 17 Feb 2022 11:28:58 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
-Message-ID: <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergman <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220217072340.2472987-1-eugene.shalygin@gmail.com>
+ <bf18f96a-b9ee-43f0-8b53-fc7d4aa6cf39@roeck-us.net>
+ <CAB95QASiF=mXcUoBsOwKvtZ8KmVYgNd1bP-5+e0WYifcEzK55w@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] hwmon: (asus-ec-sensors) do not print from .probe()
+In-Reply-To: <CAB95QASiF=mXcUoBsOwKvtZ8KmVYgNd1bP-5+e0WYifcEzK55w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 10:50 AM Jakob Koschel <jakobkoschel@gmail.com> wrote:
->
-> It is unsafe to assume that &req->req != _req can only evaluate
-> to false if the break within the list iterator is hit.
+On 2/17/22 10:43, Eugene Shalygin wrote:
+> On Thu, 17 Feb 2022 at 19:26, Guenter Roeck <linux@roeck-us.net> wrote:
+>> Looks like you did not run checkpatch.
+> 
+> I did (0 errors/warnings/checks). What needs to be corrected?
+> 
 
-I don't understand what problem you are trying to fix.
+Interesting. It appears that the continuation line in the declaration
+confuses it. Otherwise you would get:
 
-Since "req" absolutely *has* to be stable for any of this code to be
-valid, then "&req->req" is stable and unambiguous too. The *only* way
-_req can point to it would be if we finished the iteration properly.
+WARNING: Missing a blank line after declarations
 
-So I don't see the unsafeness.
+>> Either case, I think you should just drop this function In probe:
+> 
+> Yes, currently that function is tiny, but some tests with motherboards
+> from other families are done by users and if I add other families, the
+> information required for each board model will grow and in that case
+> I'd switch from dmi_system_id array to a custom struct to define all
+> the board-related data at at the same place, and to save some space in
+> the module binary, as unused parts of the dmi_system_id array already
+> take a quarter of the total binary size. So, the function will likely
+> get some more code soon.
+> 
 
-Note that all this work with "speculative" execution fundamentally CAN
-NOT affect semantics of the code, yet this patch makes statements
-about exactly that.
+Hmm, ok. Wouldn't you still need some kind of dmi match ?
 
-That's not how CPU speculation works.
+Thanks,
+Guenter
 
-CPU speculation can expose hidden information that is not
-"semantically important" (typically through cache access patterns, but
-that's not the only way). So it might be exposing information it
-shouldn't.
+> Regards,
+> Eugene
 
-But if speculation is actually changing semantics, then it's no longer
-"speculation" - it's just a bug, plain and simple (either a software
-bug due to insufficient serialization, or an actual hardware bug).
-
-IOW, I don't want to see these kinds of apparently pointless changes
-to list walking. The patches should explain what that SECONDARY hidden
-value you try to protect actually is for each case.
-
-This patch is basically not sensible. It just moves code around in a
-way that the compiler could have done anyway (or the compiler could
-decide to undo). It doesn't explain what the magic protected value is
-that shouldn't be leaked, and it leaves the code just looking odd and
-pointless.
-
-                   Linus
