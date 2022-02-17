@@ -2,193 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 03:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A33DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 03:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232301AbiBQDDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 22:03:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45384 "EHLO
+        id S232327AbiBQDEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 22:04:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231782AbiBQDDm (ORCPT
+        with ESMTP id S230183AbiBQDEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 22:03:42 -0500
-Received: from spam.unicloud.com (mx.uniclinxens.com [220.194.70.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADAD225D31;
-        Wed, 16 Feb 2022 19:03:26 -0800 (PST)
-Received: from eage.unicloud.com ([220.194.70.35])
-        by spam.unicloud.com with ESMTP id 21H30oTu032234;
-        Thu, 17 Feb 2022 11:00:50 +0800 (GMT-8)
-        (envelope-from luofei@unicloud.com)
-Received: from localhost.localdomain (10.10.1.7) by zgys-ex-mb09.Unicloud.com
- (10.10.0.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2375.17; Thu, 17
- Feb 2022 11:00:49 +0800
-From:   luofei <luofei@unicloud.com>
-To:     <tony.luck@intel.com>, <bp@alien8.de>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <dave.hansen@linux.intel.com>,
-        <x86@kernel.org>, <akpm@linux-foundation.org>,
-        <naoya.horiguchi@nec.com>
-CC:     <hpa@zytor.com>, <linux-edac@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        luofei <luofei@unicloud.com>
-Subject: [PATCH v2] hw/poison: Add in-use hugepage filter judgement and avoid filter page impact on mce handler
-Date:   Wed, 16 Feb 2022 22:00:38 -0500
-Message-ID: <20220217030038.1552124-1-luofei@unicloud.com>
-X-Mailer: git-send-email 2.27.0
+        Wed, 16 Feb 2022 22:04:04 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA9523BF2B;
+        Wed, 16 Feb 2022 19:03:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645067031; x=1676603031;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RhyL2jS7+HJqsAu/LNZglEPwWlKDeA0PnF0rf3RKWIE=;
+  b=LBdqe75HzcKWXh88Tf03GMmhEx1yoOZUVua/ymKWjdh2u3f6gNg7uvzx
+   lfQQOlA9D7yrp01Uad7EQgzAQtOeWHtotUwQ3cZ/UMFC8QE3ERhh7JwyM
+   bPoMCz7/bpCOkfDE9OY0hbALJeMrnsaSShZkpdmNCqBCDnd5xSpMEU2P6
+   4=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 Feb 2022 19:03:51 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 19:03:51 -0800
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 16 Feb 2022 19:03:50 -0800
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 16 Feb 2022 19:03:47 -0800
+Date:   Thu, 17 Feb 2022 08:33:43 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>
+CC:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_ugoswami@quicinc.com>, Jung Daehwan <dh10.jung@samsung.com>,
+        "Sergey Shtylyov" <s.shtylyov@omp.ru>
+Subject: Re: [PATCH v2] xhci: reduce xhci_handshake timeout in xhci_reset
+Message-ID: <20220217030343.GA32039@hu-pkondeti-hyd.qualcomm.com>
+References: <1644836663-29220-1-git-send-email-quic_pkondeti@quicinc.com>
+ <1644841216-1468-1-git-send-email-quic_pkondeti@quicinc.com>
+ <d82746d2-4096-1477-42dd-fd393e0ff827@linux.intel.com>
+ <20220214135310.GC31021@hu-pkondeti-hyd.qualcomm.com>
+ <1b9e7641-2ae9-0f81-2ad9-18340d5e148f@linux.intel.com>
+ <20220215104920.GE31021@hu-pkondeti-hyd.qualcomm.com>
+ <20220215170718.GF31021@hu-pkondeti-hyd.qualcomm.com>
+ <70ebdb8c-1ea5-1a3e-046e-5e457f54726d@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.10.1.7]
-X-ClientProxiedBy: zgys-ex-mb11.Unicloud.com (10.10.0.28) To
- zgys-ex-mb09.Unicloud.com (10.10.0.24)
-X-DNSRBL: 
-X-MAIL: spam.unicloud.com 21H30oTu032234
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <70ebdb8c-1ea5-1a3e-046e-5e457f54726d@linux.intel.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After successfully obtaining the reference count of the huge
-page, it is still necessary to call hwpoison_filter() to make a
-filter judgement, otherwise the filter hugepage will be unmaped
-and the related process may be killed.
+Hi Mathias,
 
-Also when the huge page meets the filter conditions, it should
-not be regarded as successful memory_failure() processing for
-mce handler, but should return a value to inform the caller,
-otherwise the caller regards the error page has been identified
-and isolated, which may lead to calling set_mce_nospec() to change
-page attribute, etc.
+On Wed, Feb 16, 2022 at 05:58:15PM +0200, Mathias Nyman wrote:
+> On 15.2.2022 19.07, Pavan Kondeti wrote:
+> >>>>
+> >>>> The crash reports I have seen are pointing to
+> >>>>
+> >>>> usb_remove_hcd()->xhci_stop()->xhci_reset()
+> >>>
+> >>> Ok, so xhci_stop() and xhci_shutdown() both may call xhci_reset() with interrupts
+> >>> disabled and spinlock held. In both these cases we're not that interested in the
+> >>> outcome of xhci_reset().
+> >>>
+> >>> But during probe we call xhci_reset() with interrupts enabled without spinlock,
+> >>> and here we really care about it succeeding.
+> >>> I'm also guessing reset could take a longer time during probe due to possible recent
+> >>> BIOS handover, or firmware loading etc.
+> >>>
+> >>> So how about passing a timeout value to xhci_reset()?
+> >>> Give it 10 seconds during probe, and 250ms in the other cases.
+> >>>
+> >>
+> >> Thanks for this suggestion.
+> >>
+> >> This sounds better compared to the quirks approach. xhci_resume() also seems
+> >> to be calling xhci_reset() in the hibernation path, I believe we should treat
+> >> this like probe()/startup case and give larger timeout.
+> >>
+> > I will test the below patch as per Mathias suggestion.
+> > 
+> > Thanks,
+> > Pavan
+> > 
+> > diff --git a/drivers/usb/host/xhci-hub.c b/drivers/usb/host/xhci-hub.c
+> > index df3522d..031fe90 100644
+> > --- a/drivers/usb/host/xhci-hub.c
+> > +++ b/drivers/usb/host/xhci-hub.c
+> > @@ -762,7 +762,7 @@ static int xhci_exit_test_mode(struct xhci_hcd *xhci)
+> >  	}
+> >  	pm_runtime_allow(xhci_to_hcd(xhci)->self.controller);
+> >  	xhci->test_mode = 0;
+> > -	return xhci_reset(xhci);
+> > +	return xhci_reset(xhci, false);
+> 
+> Maybe just pass the timeout value directly to xhci_reset().
+> Looks like readl_poll_timeout_atomic() uses u64 for timeout_us,
+> makes sense to use the same.
+> 
+> Sergey also pointed out xhci_handshake() incorrectly uses a signed integer for timeouts.
+> This could be changed to u64 as well.
+> 
+> I'll write a patch that does all above
+> 
+Thank you. I will look forward to your patch and provide the test results with
+it.
 
-Signed-off-by: luofei <luofei@unicloud.com>
----
- arch/x86/kernel/cpu/mce/core.c | 22 +++++++++++-----------
- include/linux/mm.h             |  1 +
- mm/memory-failure.c            | 25 +++++++++++++++++++++++--
- 3 files changed, 35 insertions(+), 13 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 5818b837fd4d..c2b99c60225f 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -612,7 +612,7 @@ static int uc_decode_notifier(struct notifier_block *nb, unsigned long val,
- 		return NOTIFY_DONE;
- 
- 	pfn = mce->addr >> PAGE_SHIFT;
--	if (!memory_failure(pfn, 0)) {
-+	if (!memory_failure(pfn, MF_MCE_HANDLE)) {
- 		set_mce_nospec(pfn, whole_page(mce));
- 		mce->kflags |= MCE_HANDLED_UC;
- 	}
-@@ -1286,7 +1286,7 @@ static void kill_me_now(struct callback_head *ch)
- static void kill_me_maybe(struct callback_head *cb)
- {
- 	struct task_struct *p = container_of(cb, struct task_struct, mce_kill_me);
--	int flags = MF_ACTION_REQUIRED;
-+	int flags = MF_ACTION_REQUIRED | MF_MCE_HANDLE;
- 	int ret;
- 
- 	p->mce_count = 0;
-@@ -1300,14 +1300,14 @@ static void kill_me_maybe(struct callback_head *cb)
- 		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
- 		sync_core();
- 		return;
--	}
--
--	/*
--	 * -EHWPOISON from memory_failure() means that it already sent SIGBUS
--	 * to the current process with the proper error info, so no need to
--	 * send SIGBUS here again.
--	 */
--	if (ret == -EHWPOISON)
-+	} else if (ret == -EHWPOISON || ret == 1)
-+		/*
-+		 * -EHWPOISON from memory_failure() means that it already sent SIGBUS
-+		 * to the current process with the proper error info, so no need to
-+		 * send SIGBUS here again.
-+		 *
-+		 * 1 means it's a filter page, no need to deal with.
-+		 */
- 		return;
- 
- 	pr_err("Memory error not recovered");
-@@ -1320,7 +1320,7 @@ static void kill_me_never(struct callback_head *cb)
- 
- 	p->mce_count = 0;
- 	pr_err("Kernel accessed poison in user space at %llx\n", p->mce_addr);
--	if (!memory_failure(p->mce_addr >> PAGE_SHIFT, 0))
-+	if (!memory_failure(p->mce_addr >> PAGE_SHIFT, MF_MCE_HANDLE))
- 		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
- }
- 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 213cc569b192..f4703f948e9a 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3188,6 +3188,7 @@ enum mf_flags {
- 	MF_MUST_KILL = 1 << 2,
- 	MF_SOFT_OFFLINE = 1 << 3,
- 	MF_UNPOISON = 1 << 4,
-+	MF_MCE_HANDLE = 1 << 5,
- };
- extern int memory_failure(unsigned long pfn, int flags);
- extern void memory_failure_queue(unsigned long pfn, int flags);
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 97a9ed8f87a9..1a0bd91a685b 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1526,7 +1526,10 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
- 				if (TestClearPageHWPoison(head))
- 					num_poisoned_pages_dec();
- 				unlock_page(head);
--				return 0;
-+				if (flags & MF_MCE_HANDLE)
-+					return 1;
-+				else
-+					return 0;
- 			}
- 			unlock_page(head);
- 			res = MF_FAILED;
-@@ -1545,6 +1548,17 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
- 	lock_page(head);
- 	page_flags = head->flags;
- 
-+	if (hwpoison_filter(p)) {
-+		if (TestClearPageHWPoison(head))
-+			num_poisoned_pages_dec();
-+		put_page(p);
-+		if (flags & MF_MCE_HANDLE)
-+			res = 1;
-+		else
-+			res = 0;
-+		goto out;
-+	}
-+
- 	/*
- 	 * TODO: hwpoison for pud-sized hugetlb doesn't work right now, so
- 	 * simply disable it. In order to make it work properly, we need
-@@ -1613,7 +1627,10 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
- 		goto out;
- 
- 	if (hwpoison_filter(page)) {
--		rc = 0;
-+		if (flags & MF_MCE_HANDLE)
-+			rc = 1;
-+		else
-+			rc = 0;
- 		goto unlock;
- 	}
- 
-@@ -1837,6 +1854,10 @@ int memory_failure(unsigned long pfn, int flags)
- 			num_poisoned_pages_dec();
- 		unlock_page(p);
- 		put_page(p);
-+		if (flags & MF_MCE_HANDLE)
-+			res = 1;
-+		else
-+			res = 0;
- 		goto unlock_mutex;
- 	}
- 
--- 
-2.27.0
-
+Thanks,
+Pavan
