@@ -2,108 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58081C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4492AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229471AbiBQGlH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 01:41:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34106 "EHLO
+        id S235524AbiBQGnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 01:43:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235688AbiBQGlF (ORCPT
+        with ESMTP id S229471AbiBQGnk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 01:41:05 -0500
-X-Greylist: delayed 438 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 22:40:52 PST
-Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D612A520E;
-        Wed, 16 Feb 2022 22:40:52 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id E55DF2B000CC;
-        Thu, 17 Feb 2022 01:33:32 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 17 Feb 2022 01:33:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=bScFzG/9Q+cvU4qTsd2N9JV5iBRYrTzK32M9S+
-        WSUno=; b=dNpR7rJSEng1YnYyzUAFQclOnlGpMpQhgSuD2dQlOQDcro6NZzDrHA
-        gOlXig0esP9AIvJGDhwkAWOHpg/N6B+rqGLPNOXC8RAzZp4z8tu9s+DCmidkrldb
-        9l1TPlH34WQ/C79QuxQNO5OXSAcb6Mj72sADxy/IoPAqtGTx1OkTRDMk40woGsr3
-        veHUnNnptlBkHP0zb4gwFGp600JmVN0QqLukkW2zS5N5tNB2VGX2U/iX7xSr8lhw
-        +pmIIyJvljMP91p8MtxKlavssumPseDP2Wv3MBHnvXs/Jh2niUwuKICWJWwAqy/G
-        qmYpXK/j6y4fDJkAZF4y/ULahA51UwAA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=bScFzG/9Q+cvU4qTs
-        d2N9JV5iBRYrTzK32M9S+WSUno=; b=AE6OdSDHp7UVdsK9ejK4lM1VOrA1yhkMa
-        TEF8rTiwik6Pcz5IZ9c1hIoHXekHHU3QNKwQIJrSIthHFst2ILwcnxdGn1hFA9qo
-        ALVUf0MssJyTihBLy+qe2grX55VjD4V2qOqC9LtRouqpkqS8qgWKJXO2BZjXwbZ7
-        z3Y6u+ZLN5ylx9+AUnVxfEl8WIRxt7+EyXfm1oNasY+tVWd0gR0c+86EaNNp/sRZ
-        5p3dGnVLpJ+JaqLzpny4u65uTe/ym0Dt3YutmvkEOvSTWd3hi0nSddaWaDB4AWbj
-        CfS7u9u+lZvHUaeZWYSsf8vp8ptFxqMhwxoZXGOkMplVfgS5PhS+w==
-X-ME-Sender: <xms:O-wNYnb6EByCWVxBYBMx7R2hAkwmdIxrLP09QOBIhPfWbGWaL3hy3w>
-    <xme:O-wNYmbE_rRSAF_RpbEsPmyD9Ivg3JpsyWpEiuzmL7hu7595F_KQTbmd5KxmxDjzA
-    HuFUnb5UopIjQ>
-X-ME-Received: <xmr:O-wNYp-bVW60RkMLDC4FbQjyPn3850WcgfHJ2GZKudi4zEIZz5iYmTGez4IxiP0qarq7tLETfNXSJpKPv5eHzsMc3KvBkz0k>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeejgdelhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghgucfm
-    jfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepveeuheejgf
-    ffgfeivddukedvkedtleelleeghfeljeeiueeggeevueduudekvdetnecuvehluhhsthgv
-    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrd
-    gtohhm
-X-ME-Proxy: <xmx:O-wNYtqIu4HICIEzvxWIpR7MEJNpm0V07zqOc2_7TXKOrtYhpEm36A>
-    <xmx:O-wNYirlCCvv_DIzl63CwMFPYXID2qCRJqzdg6dFYhNGs04Y3NHA2A>
-    <xmx:O-wNYjTrS4BAuihdupdDu6mn61M-wrn3Yv4ADCezZmTm-7OdxIztFA>
-    <xmx:POwNYvgVeyZlVtnYRSrR3X6tugIZhn3pEVD86fRjzplf-PhawB0mYureDmU>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Feb 2022 01:33:31 -0500 (EST)
-Date:   Thu, 17 Feb 2022 07:33:28 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Michael Straube <straube.linux@gmail.com>
-Subject: Re: linux-next: manual merge of the staging tree with the
- kspp-gustavo tree
-Message-ID: <Yg3sOIChxwSuI8aU@kroah.com>
-References: <20220217141603.7a0ef4ed@canb.auug.org.au>
+        Thu, 17 Feb 2022 01:43:40 -0500
+X-Greylist: delayed 292 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 22:43:24 PST
+Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2809714864F;
+        Wed, 16 Feb 2022 22:43:23 -0800 (PST)
+Received: from localhost (unknown [127.0.0.1])
+        by ha.nfschina.com (Postfix) with ESMTP id 45DF81E80D5E;
+        Thu, 17 Feb 2022 14:34:06 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from ha.nfschina.com ([127.0.0.1])
+        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ck-wX0osscM8; Thu, 17 Feb 2022 14:34:03 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by ha.nfschina.com (Postfix) with ESMTPA id 3FAA61E80CB5;
+        Thu, 17 Feb 2022 14:34:03 +0800 (CST)
+From:   liqiong <liqiong@nfschina.com>
+To:     linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org, liqiong <liqiong@nfschina.com>,
+        stable@vger.kernel.org
+Subject: [PATCH] mm: fix dereference a null pointer in migrate[_huge]_page_move_mapping()
+Date:   Thu, 17 Feb 2022 14:38:08 +0800
+Message-Id: <20220217063808.42018-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217141603.7a0ef4ed@canb.auug.org.au>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 02:16:03PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the staging tree got a conflict in:
-> 
->   drivers/staging/r8188eu/include/ieee80211.h
-> 
-> between commit:
-> 
->   fbe9ccfe809d ("treewide: Replace zero-length arrays with flexible-array members")
-> 
-> from the kspp-gustavo tree and commit:
-> 
->   6c36bcbfcef7 ("staging: r8188eu: remove unused structs from ieee80211.h")
-> 
-> from the staging tree.
-> 
-> I fixed it up (the latter removed the structs updated by the former) and
-> can carry the fix as necessary. This is now fixed as far as linux-next
-> is concerned, but any non trivial conflicts should be mentioned to your
-> upstream maintainer when your tree is submitted for merging.  You may
-> also want to consider cooperating with the maintainer of the conflicting
-> tree to minimise any particularly complex conflicts.
+Upstream has no this bug.
 
-The merge sounds correct, thanks.
+The two functions look up a slot and dereference the pointer,
+If the pointer is null, the kernel would crash and dump.
 
-greg k-h
+The 'numad' service calls 'migrate_pages' periodically. If some slots
+being replaced (Cache Eviction), the radix_tree_lookup_slot() returns
+a null pointer, then, kernel crash.
+
+"numad":  crash> bt
+[exception RIP: migrate_page_move_mapping+337]
+
+Introduct a pointer checking to avoid dereference a null pointer.
+
+Cc: <stable@vger.kernel.org> # v4.19-rc8
+Signed-off-by: liqiong <liqiong@nfschina.com>
+---
+ mm/migrate.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 84381b55b2bd..1ff95c259511 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -474,6 +474,10 @@ int migrate_page_move_mapping(struct address_space *mapping,
+ 
+ 	pslot = radix_tree_lookup_slot(&mapping->i_pages,
+  					page_index(page));
++	if (pslot == NULL) {
++		xa_unlock_irq(&mapping->i_pages);
++		return -EAGAIN;
++	}
+ 
+ 	expected_count += hpage_nr_pages(page) + page_has_private(page);
+ 	if (page_count(page) != expected_count ||
+@@ -592,6 +596,10 @@ int migrate_huge_page_move_mapping(struct address_space *mapping,
+ 	xa_lock_irq(&mapping->i_pages);
+ 
+ 	pslot = radix_tree_lookup_slot(&mapping->i_pages, page_index(page));
++	if (pslot == NULL) {
++		xa_unlock_irq(&mapping->i_pages);
++		return -EAGAIN;
++	}
+ 
+ 	expected_count = 2 + page_has_private(page);
+ 	if (page_count(page) != expected_count ||
+-- 
+2.25.1
+
