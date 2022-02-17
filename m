@@ -2,110 +2,286 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D867C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242690AbiBQPon (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:44:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46762 "EHLO
+        id S242701AbiBQPor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:44:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242677AbiBQPog (ORCPT
+        with ESMTP id S242675AbiBQPoe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:44:36 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B9C2B1025;
-        Thu, 17 Feb 2022 07:44:21 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Jzzdp0n13z9sSQ;
-        Thu, 17 Feb 2022 16:44:14 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id YORT1PJT__e6; Thu, 17 Feb 2022 16:44:14 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jzzdn72n8z9sQx;
-        Thu, 17 Feb 2022 16:44:13 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D9A6A8B77C;
-        Thu, 17 Feb 2022 16:44:13 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id EOIxpR6cf71e; Thu, 17 Feb 2022 16:44:13 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.239])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id A8D7D8B763;
-        Thu, 17 Feb 2022 16:44:13 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21HFi4WD603563
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 16:44:04 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21HFi2uT603562;
-        Thu, 17 Feb 2022 16:44:02 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: [PATCH net-next v1] net: Use csum_replace_... and csum_sub() helpers instead of opencoding
-Date:   Thu, 17 Feb 2022 16:43:55 +0100
-Message-Id: <fe60030b6f674d9bf41f56426a4b0a8a9db0d20f.1645112415.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
+        Thu, 17 Feb 2022 10:44:34 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EDDB23AD
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:44:20 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id z17so4893641plb.9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:44:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8c8qUSDML4pELaqmow9If9ubJ2YNKV4cb1f0Kg7vIhc=;
+        b=DZJEGwcKPRuKMTlN8wElSnrFIVNjERV1GQdLA1u6bMTbcrxKI/CFuusUoSIFs3Hyyh
+         uUWYI+tHr6HEiklU3LfcjNGoViUmJY/CY4UVxo2RSQdnNVDw4H8KXTnaluw1WlgiWMkS
+         kTYsBxvFFtIPNBqSUdpDSgKC/yP4vtTgZkPghn7sLGAWg8J5QZuVxwbXIOG3w2aXC/wA
+         74DBk7OxKZiQg+Kk2QTFERT0sy/fdZpSUJ4E8B/gSiTv74q+rjwjOW2zXQqnfBUXiV2N
+         OuYdnHFFZbNoP0BqhQQztpUrHxfDkQICXvcryWOjFX63fHJntzggwTlbQ17bJRoFz98y
+         siKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8c8qUSDML4pELaqmow9If9ubJ2YNKV4cb1f0Kg7vIhc=;
+        b=MDV3+Uufr451l3xFOJHu5hx06ZpHekemziqw7lI77YRyn6RCsfE5KFQjJPC5ZaqHON
+         KcnC6XwZIs4OqPXYZuFo7OokcSmRGAlMfht0OL+FP2Bf6LLfQ8XwMg3HOKE6eQIp0s5g
+         Xa1ozNX0wfFeB9m6AzRHJQJ8/+rVqRWROE+cDgn1+mqBpEVAIfo7BNezHBGKgmYQkadu
+         ONjQeA2KBBoqA71TiJsefvh210Q0rJhbDlzV3vvib5Y5ThCLqlhy5gRC+TOjk6uOFo2h
+         y97AiQM9q/teO+nJLU9yht+wGSEYr6ZriYd17bfsPKe8jNLXeeIpU6OeWMin5Jorw6I8
+         3bCQ==
+X-Gm-Message-State: AOAM533UjzKHhOHRMthIuz80Nnfo10Ym5WQoTldDmAP6bv0da41C4xZ7
+        w5biy9VQP9/VrxA2XPNz2LO1gS+QoR70Pw==
+X-Google-Smtp-Source: ABdhPJyJWf0xIPg3G7CLAb8e9ZxCOdulcgJWLUbeDnOUXht7QJ44V3fwvfk0SdNcoBkVWlyX72f16g==
+X-Received: by 2002:a17:90b:3755:b0:1b9:bc4a:b9dc with SMTP id ne21-20020a17090b375500b001b9bc4ab9dcmr3576201pjb.159.1645112659553;
+        Thu, 17 Feb 2022 07:44:19 -0800 (PST)
+Received: from localhost.localdomain ([139.177.225.254])
+        by smtp.gmail.com with ESMTPSA id s6sm24108pfk.86.2022.02.17.07.44.15
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 17 Feb 2022 07:44:19 -0800 (PST)
+From:   Abel Wu <wuyun.abel@bytedance.com>
+To:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 2/5] sched/fair: introduce sched-idle balance
+Date:   Thu, 17 Feb 2022 23:43:58 +0800
+Message-Id: <20220217154403.6497-3-wuyun.abel@bytedance.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220217154403.6497-1-wuyun.abel@bytedance.com>
+References: <20220217154403.6497-1-wuyun.abel@bytedance.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645112634; l=1582; s=20211009; h=from:subject:message-id; bh=qDaGxyd/pqGG9s1E0j72Fi43hJ/XYgHZbSIbmrxq7S0=; b=aKRMITAt6QN7aUpMRIAs5kbGVOO1OkfwH/B12QUYMkgfwVp4huQwNbORsqVKepw3y6j8zXnWa9a9 9pHC23uNA0ruYXBUcQZ/+bEpYn3OqXO9TCCKlDT2+/gN74V6ylxF
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a couple places, open coded calculation can be avoided
-and replaced by the equivalent csum_replace4() and
-csum_replace_by_diff().
+The goal of the sched-idle balancing is to let the non-idle
+tasks make full use of cpu resources. To achieve that, we
+mainly do two things:
 
-There's also one place where csum_sub() should be used instead of
-csum_add().
+  - pull non-idle tasks for sched-idle or idle rqs
+    from the overloaded ones, and
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+  - prevent pulling the last non-idle task in an rq
+
+We do sched-idle balance at normal load balancing and newly
+idle if necessary. The idle balancing is ignored due to high
+wakeup latency.
+
+Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
 ---
- net/core/utils.c            | 4 ++--
- net/netfilter/nft_payload.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ include/linux/sched/idle.h |   1 +
+ kernel/sched/fair.c        | 128 +++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 129 insertions(+)
 
-diff --git a/net/core/utils.c b/net/core/utils.c
-index 1f31a39236d5..938495bc1d34 100644
---- a/net/core/utils.c
-+++ b/net/core/utils.c
-@@ -476,9 +476,9 @@ void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
- 				     __wsum diff, bool pseudohdr)
- {
- 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
--		*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
-+		csum_replace_by_diff(sum, diff);
- 		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
--			skb->csum = ~csum_add(diff, ~skb->csum);
-+			skb->csum = ~csum_sub(diff, skb->csum);
- 	} else if (pseudohdr) {
- 		*sum = ~csum_fold(csum_add(diff, csum_unfold(*sum)));
- 	}
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 5cc06aef4345..b6cfd0759bc5 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -557,7 +557,7 @@ const struct nft_expr_ops nft_payload_fast_ops = {
+diff --git a/include/linux/sched/idle.h b/include/linux/sched/idle.h
+index d73d314d59c6..50ec5c770f85 100644
+--- a/include/linux/sched/idle.h
++++ b/include/linux/sched/idle.h
+@@ -8,6 +8,7 @@ enum cpu_idle_type {
+ 	CPU_IDLE,
+ 	CPU_NOT_IDLE,
+ 	CPU_NEWLY_IDLE,
++	CPU_SCHED_IDLE,
+ 	CPU_MAX_IDLE_TYPES
+ };
  
- static inline void nft_csum_replace(__sum16 *sum, __wsum fsum, __wsum tsum)
- {
--	*sum = csum_fold(csum_add(csum_sub(~csum_unfold(*sum), fsum), tsum));
-+	csum_replace4(sum, fsum, tsum);
- 	if (*sum == 0)
- 		*sum = CSUM_MANGLED_0;
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 0a0438c3319b..070a6fb1d2bf 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -456,6 +456,21 @@ static int se_is_idle(struct sched_entity *se)
+ 	return cfs_rq_is_idle(group_cfs_rq(se));
  }
+ 
++/* Is task idle from the top hierarchy POV */
++static int task_h_idle(struct task_struct *p)
++{
++	struct sched_entity *se = &p->se;
++
++	if (task_has_idle_policy(p))
++		return 1;
++
++	for_each_sched_entity(se)
++		if (cfs_rq_is_idle(cfs_rq_of(se)))
++			return 1;
++
++	return 0;
++}
++
+ #else	/* !CONFIG_FAIR_GROUP_SCHED */
+ 
+ #define for_each_sched_entity(se) \
+@@ -508,6 +523,11 @@ static int se_is_idle(struct sched_entity *se)
+ 	return 0;
+ }
+ 
++static inline int task_h_idle(struct task_struct *p)
++{
++	return task_has_idle_policy(p);
++}
++
+ #endif	/* CONFIG_FAIR_GROUP_SCHED */
+ 
+ static __always_inline
+@@ -6974,6 +6994,11 @@ static inline int cfs_rq_overloaded(struct rq *rq)
+ 	return rq->cfs.h_nr_running - rq->cfs.idle_h_nr_running > 1;
+ }
+ 
++static inline bool need_pull_cfs_task(struct rq *rq)
++{
++	return rq->cfs.h_nr_running == rq->cfs.idle_h_nr_running;
++}
++
+ /* Must be called with rq locked */
+ static void update_overload_status(struct rq *rq)
+ {
+@@ -7767,6 +7792,22 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
+ 	if (kthread_is_per_cpu(p))
+ 		return 0;
+ 
++	/*
++	 * Disregard hierarchically idle tasks during sched-idle
++	 * load balancing.
++	 */
++	if (env->idle == CPU_SCHED_IDLE && task_h_idle(p))
++		return 0;
++
++	/*
++	 * Skip p if it is the last non-idle task in src_rq. This
++	 * protects latency and throughput for non-idle tasks at
++	 * the cost of temporary load imbalance (which will probably
++	 * be fixed soon).
++	 */
++	if (!cfs_rq_overloaded(env->src_rq) && !task_h_idle(p))
++		return 0;
++
+ 	if (!cpumask_test_cpu(env->dst_cpu, p->cpus_ptr)) {
+ 		int cpu;
+ 
+@@ -10265,6 +10306,83 @@ static inline bool update_newidle_cost(struct sched_domain *sd, u64 cost)
+ }
+ 
+ /*
++ * The sched-idle balancing tries to eliminate overloaded cfs rqs
++ * by spreading out non-idle tasks prior to normal load balancing.
++ */
++static void sched_idle_balance(struct rq *dst_rq)
++{
++	struct sched_domain *sd;
++	struct task_struct *p;
++	int dst_cpu = cpu_of(dst_rq), cpu;
++
++	sd = rcu_dereference(per_cpu(sd_llc, dst_cpu));
++	if (unlikely(!sd))
++		return;
++
++	if (!atomic_read(&sd->shared->nr_overloaded))
++		return;
++
++	for_each_cpu_wrap(cpu, sdo_mask(sd->shared), dst_cpu + 1) {
++		struct rq *rq = cpu_rq(cpu);
++		struct rq_flags rf;
++		struct lb_env env;
++
++		if (cpu == dst_cpu)
++			continue;
++
++		if (!cfs_rq_overloaded(rq))
++			continue;
++
++		rq_lock_irqsave(rq, &rf);
++
++		/*
++		 * Check again to ensure there are pullable tasks.
++		 * This is necessary because multiple rqs can pull
++		 * tasks at the same time. IOW contention on this
++		 * rq is heavy, so it would be better clear this
++		 * cpu from overloaded mask.
++		 */
++		if (unlikely(!cfs_rq_overloaded(rq))) {
++			update_overload_status(rq);
++			rq_unlock_irqrestore(rq, &rf);
++			continue;
++		}
++
++		env = (struct lb_env) {
++			.sd		= sd,
++			.dst_cpu	= dst_cpu,
++			.dst_rq		= dst_rq,
++			.src_cpu	= cpu,
++			.src_rq		= rq,
++			.idle		= CPU_SCHED_IDLE, /* non-idle only */
++			.flags		= LBF_DST_PINNED, /* pin dst_cpu */
++		};
++
++		update_rq_clock(rq);
++		p = detach_one_task(&env);
++
++		/*
++		 * Lazy updating overloaded mask here. If the rq is
++		 * still overloaded then we are just wasting cycles.
++		 * And it's OK even if the rq becomes un-overloaded
++		 * since the cost of peeking rq's data without lock
++		 * won't be much in next loops (during which the rq
++		 * can even be overloaded again).
++		 */
++
++		rq_unlock(rq, &rf);
++
++		if (p) {
++			attach_one_task(dst_rq, p);
++			local_irq_restore(rf.flags);
++			return;
++		}
++
++		local_irq_restore(rf.flags);
++	}
++}
++
++/*
+  * It checks each scheduling domain to see if it is due to be balanced,
+  * and initiates a balancing operation if so.
+  *
+@@ -10284,6 +10402,10 @@ static void rebalance_domains(struct rq *rq, enum cpu_idle_type idle)
+ 	u64 max_cost = 0;
+ 
+ 	rcu_read_lock();
++
++	if (need_pull_cfs_task(rq))
++		sched_idle_balance(rq);
++
+ 	for_each_domain(cpu, sd) {
+ 		/*
+ 		 * Decay the newidle max times here because this is a regular
+@@ -10913,6 +11035,12 @@ static int newidle_balance(struct rq *this_rq, struct rq_flags *rf)
+ 	update_blocked_averages(this_cpu);
+ 
+ 	rcu_read_lock();
++
++	sched_idle_balance(this_rq);
++	t1 = sched_clock_cpu(this_cpu);
++	curr_cost += t1 - t0;
++	t0 = t1;
++
+ 	for_each_domain(this_cpu, sd) {
+ 		int continue_balancing = 1;
+ 		u64 domain_cost;
 -- 
-2.34.1
+2.11.0
 
