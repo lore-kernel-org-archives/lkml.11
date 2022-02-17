@@ -2,137 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BD4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239580AbiBQSzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:55:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60402 "EHLO
+        id S233691AbiBQS4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:56:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237519AbiBQSza (ORCPT
+        with ESMTP id S237519AbiBQS4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:55:30 -0500
-X-Greylist: delayed 1351 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 10:55:15 PST
-Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.45.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38AA55BD4
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:55:15 -0800 (PST)
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id 29888400C74A1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 12:32:43 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id Kla7nN4wvdx86Kla7nyNXB; Thu, 17 Feb 2022 12:32:43 -0600
-X-Authority-Reason: nr=8
-Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:34156 helo=[10.0.0.45])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nKla5-002U7P-7e; Thu, 17 Feb 2022 12:32:41 -0600
-Message-ID: <7f227281-a5c8-ba55-ed75-6ce2c4d423e3@kernel.org>
-Date:   Thu, 17 Feb 2022 19:32:34 +0100
+        Thu, 17 Feb 2022 13:56:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A080758E6F;
+        Thu, 17 Feb 2022 10:55:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C5B361B8A;
+        Thu, 17 Feb 2022 18:55:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02E7CC340E8;
+        Thu, 17 Feb 2022 18:55:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645124144;
+        bh=Rh0qZRyhLF/JeJYDSRhXWN0tLJc2VU+e0gkrEgt5rFo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LwvbAGf9J25gZA48/mDNJ6DibV8IANCyxD6WtW/RFemLIbgE+LJaLy+EvhGcPjEtr
+         am4y3jvh3KGJSTMf1HHFIkrJqKq3qIlyxIM0EIVidMjVV6kJqK+9XaNbK+ciyyKSNz
+         0/lNivsSwhVFSMMidaIdtSJS4o5en5LR8Tsd7YVM=
+Date:   Thu, 17 Feb 2022 19:55:41 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        oliver.sang@intel.com, beibei.si@intel.com, jannh@google.com,
+        mszeredi@redhat.com, torvalds@linux-foundation.org,
+        yukuai3@huawei.com
+Subject: Re: [PATCH 5.10] fget: clarify and improve __fget_files()
+ implementation
+Message-ID: <Yg6aLQCR3zxn5XoW@kroah.com>
+References: <20220215065107.3045023-1-libaokun1@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC V2 17/21] watchdog/dev: Add tracepoints
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        "Peter.Enderborg@sony.com" <Peter.Enderborg@sony.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-trace-devel@vger.kernel.org" 
-        <linux-trace-devel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-References: <cover.1644830251.git.bristot@kernel.org>
- <e67874c8b676ea8dfe38679efa25363889bb1e76.1644830251.git.bristot@kernel.org>
- <96f418b4-0ba8-01fe-ead0-2028bfc42560@sony.com>
- <ba924008-c0ab-4800-aac4-d9d9ae930c32@kernel.org>
- <ef1b1d99-6172-2b4d-9612-7ecbe8fc6c8b@roeck-us.net>
- <6c6fc4fa-6464-2dbf-40da-e3c61f322d95@redhat.com>
- <b59155c2-81c1-b2d8-c8d9-a97e3166cee3@roeck-us.net>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <b59155c2-81c1-b2d8-c8d9-a97e3166cee3@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 95.232.30.176
-X-Source-L: No
-X-Exim-ID: 1nKla5-002U7P-7e
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:34156
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 3
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220215065107.3045023-1-libaokun1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 19:17, Guenter Roeck wrote:
-> On 2/17/22 09:49, Gabriele Paoloni wrote:
->>
->>
->> On 17/02/2022 18:27, Guenter Roeck wrote:
->>> On 2/17/22 08:27, Daniel Bristot de Oliveira wrote:
->>>> Hi Peter
->>>>
->>>> On 2/16/22 17:01, Peter.Enderborg@sony.com wrote:
->>>>> On 2/14/22 11:45, Daniel Bristot de Oliveira wrote:
->>>>>> Add a set of tracepoints, enabling the observability of the watchdog
->>>>>> device interactions with user-space.
->>>>>>
->>>>>> The events are:
->>>>>>      watchdog:watchdog_open
->>>>>>      watchdog:watchdog_close
->>>>>>      watchdog:watchdog_start
->>>>>>      watchdog:watchdog_stop
->>>>>>      watchdog:watchdog_set_timeout
->>>>>>      watchdog:watchdog_ping
->>>>>>      watchdog:watchdog_nowayout
->>>>>>      watchdog:watchdog_set_keep_alive
->>>>>>      watchdog:watchdog_keep_alive
->>>>>
->>>>> Some watchdogs have a bark functionality, I think it should be event
->>>>> for that too.
->>>>>
->>>>
->>>> I understand. The problems is that I do not see the bark abstraction
->>>> in the
->>>> watchdog_dev layer.
->>>>
->>>
->>> I don't even know what "bark functionality" means. A new term for
->>> pretimeout ?
->>> Something else ?
->>
->>> From my understanding the bark timeout is actually the pretimeout
->> whereas the bite timeout is the actual timeout.
->> I think in the Kernel ftwdt010_wdt and qcom-wdt are bark/bite WTDs
->>
+On Tue, Feb 15, 2022 at 02:51:07PM +0800, Baokun Li wrote:
+> From: Linus Torvalds <torvalds@linux-foundation.org>
 > 
-> If that is the case, I would prefer if we could stick to existing
-> terminology to avoid issues like "I do not see the bark abstraction".
+> commit e386dfc56f837da66d00a078e5314bc8382fab83 upstream.
+> 
+> Commit 054aa8d439b9 ("fget: check that the fd still exists after getting
+> a ref to it") fixed a race with getting a reference to a file just as it
+> was being closed.  It was a fairly minimal patch, and I didn't think
+> re-checking the file pointer lookup would be a measurable overhead,
+> since it was all right there and cached.
+> 
+> But I was wrong, as pointed out by the kernel test robot.
+> 
+> The 'poll2' case of the will-it-scale.per_thread_ops benchmark regressed
+> quite noticeably.  Admittedly it seems to be a very artificial test:
+> doing "poll()" system calls on regular files in a very tight loop in
+> multiple threads.
+> 
+> That means that basically all the time is spent just looking up file
+> descriptors without ever doing anything useful with them (not that doing
+> 'poll()' on a regular file is useful to begin with).  And as a result it
+> shows the extra "re-check fd" cost as a sore thumb.
+> 
+> Happily, the regression is fixable by just writing the code to loook up
+> the fd to be better and clearer.  There's still a cost to verify the
+> file pointer, but now it's basically in the noise even for that
+> benchmark that does nothing else - and the code is more understandable
+> and has better comments too.
+> 
+> [ Side note: this patch is also a classic case of one that looks very
+>   messy with the default greedy Myers diff - it's much more legible with
+>   either the patience of histogram diff algorithm ]
+> 
+> Link: https://lore.kernel.org/lkml/20211210053743.GA36420@xsang-OptiPlex-9020/
+> Link: https://lore.kernel.org/lkml/20211213083154.GA20853@linux.intel.com/
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Tested-by: Carel Si <beibei.si@intel.com>
+> Cc: Jann Horn <jannh@google.com>
+> Cc: Miklos Szeredi <mszeredi@redhat.com>
+> Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Signed-off-by: Baokun Li <libaokun1@huawei.com>
+> ---
+>  fs/file.c | 72 ++++++++++++++++++++++++++++++++++++++++++-------------
+>  1 file changed, 56 insertions(+), 16 deletions(-)
 
-I agree! I am using the terminology from watchdog dev. Like, I hear the term
-"pet" for the "ping", I used "ping."
+Now queued up, thanks.
 
--- Daniel
+Any chance you can do this for 5.4 and older kernels too?
+
+greg k-h
