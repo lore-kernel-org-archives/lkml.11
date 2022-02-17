@@ -2,84 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C361C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D92AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243366AbiBQQk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:40:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49582 "EHLO
+        id S243371AbiBQQka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:40:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239518AbiBQQkS (ORCPT
+        with ESMTP id S233867AbiBQQkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:40:18 -0500
-Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D822B2FFE;
-        Thu, 17 Feb 2022 08:40:03 -0800 (PST)
-Received: by mail-il1-f182.google.com with SMTP id p11so2686211ils.1;
-        Thu, 17 Feb 2022 08:40:03 -0800 (PST)
+        Thu, 17 Feb 2022 11:40:23 -0500
+Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B9A2B31B4;
+        Thu, 17 Feb 2022 08:40:08 -0800 (PST)
+Received: by mail-il1-f177.google.com with SMTP id 9so1960816ily.11;
+        Thu, 17 Feb 2022 08:40:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=ZTjwSd+wHhmCGk8JqBXyhv8IcrizpvVNCPSWVUYfN5Q=;
-        b=GqcH+bNBCdbBMu/Q3xd7RgD0yGfOpCIb7KiLDo9mqxZ6e0uEyeDhh4iEFHo+m3V/3y
-         K6oE/gJT4VtrTKzyRMbMyvBwDDfhuxQLliTVy1r7qFnNumwNAogLBh87bZZA7xE1sFXm
-         ABdXvaCyjdKTMf/UmgwzvYK5zHyL3nCSae2isTojg6rOkxQWQ5A35MhgK0yIiiccL7Bc
-         aCgvT8erJ6K33Ebz6lzcQbF77uknpMQJq18CnbF+EdbJSTs0FzuKFfbo53Xu692e+Q6a
-         3os9rsWNdJVdjZzO90HYZaT/TcmGWByk6+o9ffWS86bYdumyQmYOXOfZXkltWGRmGwV9
-         5aMQ==
-X-Gm-Message-State: AOAM531RVzMzYdnp4V5I4hStt64XO0Wesz6ArZ/S+8EstwtIiV+yiCdx
-        RfoW8NlK4GIdaE9ZHB12Cw==
-X-Google-Smtp-Source: ABdhPJz1Y8+veVYBuVo5eRY627g99ZkONn9xwBPYq02yX+hJd5PmyyrIfeQd/bz4Iu6Wu1GjvWbFEQ==
-X-Received: by 2002:a92:d242:0:b0:2b9:a33b:9068 with SMTP id v2-20020a92d242000000b002b9a33b9068mr2622224ilg.144.1645116002966;
-        Thu, 17 Feb 2022 08:40:02 -0800 (PST)
+        bh=FG2H7omY9RofxBYIWqf/AqADQ+9egAxBNOFJHSTjFn8=;
+        b=iG8UAruKRt/C616UqTuXelswnPyQjtP0UYSrcCWKkoaB8IQg8xnDv7icJjjTLtEUAO
+         9FX/gwGLupEhZ1wKheb6b1/cyucJyUw00mgTzst1P2Dpce5YoAqM9M9Sr7HQ+5qlR3Ha
+         iy0nr1scdC7kmp7yH8Wk9IsurdcUfyplWV2su+geLru4GNlzKmOAd+3dpmYV2SmTfYq4
+         /THCobs75i58lhJuhB3CyWP6HpbXPiKHQTZ8uvMUmIIgLtqYKaNkVOdONAGFtRgtkBAG
+         gTYyCd0OzUtfniKhm6+1QROJU5KjSm6rLVA6wDOna8MrTHX2WutyMXEnSU0O0gvqYbh0
+         berQ==
+X-Gm-Message-State: AOAM532goEkcB4e1tEuRACz3qzJyaqJNSSTsKt+NC9E4LZMueMDfQdOh
+        KtADBtEZOuUtDVUA8q/GoK+O0y3T/g==
+X-Google-Smtp-Source: ABdhPJwmuv4Ou8IkxQmMGckJPm80zD2OBF0ztUKoJ0WK/FADyqFbwkpG2ZcG1QBGYVRNdpq4k6OzJw==
+X-Received: by 2002:a05:6e02:692:b0:2be:a3a4:8f0 with SMTP id o18-20020a056e02069200b002bea3a408f0mr2562966ils.134.1645116008024;
+        Thu, 17 Feb 2022 08:40:08 -0800 (PST)
 Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id q4sm2131485ilv.5.2022.02.17.08.40.01
+        by smtp.gmail.com with ESMTPSA id x11sm2300132iow.8.2022.02.17.08.40.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 08:40:02 -0800 (PST)
-Received: (nullmailer pid 3365327 invoked by uid 1000);
+        Thu, 17 Feb 2022 08:40:07 -0800 (PST)
+Received: (nullmailer pid 3365325 invoked by uid 1000);
         Thu, 17 Feb 2022 16:39:55 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Zev Weiss <zev@bewilderbeest.net>
-Cc:     devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-In-Reply-To: <20220217104444.7695-4-zev@bewilderbeest.net>
-References: <20220217104444.7695-1-zev@bewilderbeest.net> <20220217104444.7695-4-zev@bewilderbeest.net>
-Subject: Re: [PATCH 3/4] dt-bindings: Add power-efuse binding
+To:     Cristian Pop <cristian.pop@analog.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, jic23@kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <20220217101241.71702-1-cristian.pop@analog.com>
+References: <20220217101241.71702-1-cristian.pop@analog.com>
+Subject: Re: [PATCH v3 1/2] dt:bindings:iio:frequency: Add ADMV4420 doc
 Date:   Thu, 17 Feb 2022 10:39:55 -0600
-Message-Id: <1645115995.379177.3365326.nullmailer@robh.at.kernel.org>
+Message-Id: <1645115995.366904.3365324.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 02:44:43 -0800, Zev Weiss wrote:
-> This can be used to describe a power output supplied by a regulator
-> device that the system controls.
+On Thu, 17 Feb 2022 12:12:40 +0200, Cristian Pop wrote:
+> Add device tree bindings for the ADMV4420 K band downconverter.
 > 
-> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+> Signed-off-by: Cristian Pop <cristian.pop@analog.com>
 > ---
->  .../devicetree/bindings/misc/power-efuse.yaml | 37 +++++++++++++++++++
->  1 file changed, 37 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/misc/power-efuse.yaml
+> changes in v3:
+>  - Fix indentation
+>  - Rename property 'adi,lo-freq-hz' to 'adi,lo-freq-khz'
+>  .../bindings/iio/frequency/adi,admv4420.yaml  | 54 +++++++++++++++++++
+>  1 file changed, 54 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
-./Documentation/devicetree/bindings/misc/power-efuse.yaml:10:2: [warning] wrong indentation: expected 2 but found 1 (indentation)
 
 dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml: properties:adi,lo-freq-khz: 'oneOf' conditional failed, one must be fixed:
+	'type' is a required property
+		hint: A vendor boolean property can use "type: boolean"
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml: properties:adi,lo-freq-khz: 'oneOf' conditional failed, one must be fixed:
+		'enum' is a required property
+		'const' is a required property
+		hint: A vendor string property with exact values has an implicit type
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml: properties:adi,lo-freq-khz: 'oneOf' conditional failed, one must be fixed:
+		'$ref' is a required property
+		'allOf' is a required property
+		hint: A vendor property needs a $ref to types.yaml
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml: ignoring, error in schema: properties: adi,lo-freq-khz
+Documentation/devicetree/bindings/iio/frequency/adi,admv4420.example.dt.yaml:0:0: /example-0/spi/admv4420@0: failed to match any schema with compatible: ['adi,admv4420']
 
 doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1594124
+See https://patchwork.ozlabs.org/patch/1594130
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
