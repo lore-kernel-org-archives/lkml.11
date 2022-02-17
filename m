@@ -2,85 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8913C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245093AbiBQTS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:18:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44242 "EHLO
+        id S245126AbiBQTY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:24:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236437AbiBQTSZ (ORCPT
+        with ESMTP id S245120AbiBQTYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:18:25 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851EDC2E4B;
-        Thu, 17 Feb 2022 11:18:10 -0800 (PST)
-Date:   Thu, 17 Feb 2022 20:18:07 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645125489;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sCin5ygrpBsE7zD6si65r+YVbvKS66A/QsQ3ZrIRoDs=;
-        b=wj84dHxGq//td/JnJiGIo4OlkBeb1iUsbSKmW6uLZttVdxPQe03if76JU8kfvO3y4YKnMU
-        SBwOiqJ5AdoTADdWJKTKHXtmJ/1PMk5zTindMBUitjAb3X7u3vsqtax8/Qw9U0VLrM90ya
-        wb41+lNNARsWwB2EytlOEUEj7/etV1vCl/WQlHItTO20FyN51z+Yw9qVC/4sdbcp1ULA8c
-        DRRxHTK1ZntmebTgQFCPbI/KskIskO/zP961yfdpK13fGOG95DUdrNMuPF1MTUSYInhDSl
-        C+uYvto6wBR7OwcZ6+mIf+2aKHpsvps+XMjaWxtdHPprFBLxEQYmEZ6Xij9Olg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645125489;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sCin5ygrpBsE7zD6si65r+YVbvKS66A/QsQ3ZrIRoDs=;
-        b=Q3jXS0qCLOJg66uNIW2rqKiNczEgml33xjYY4HpHu57a/nPliLYmEYuHR0vXv7kxumTseQ
-        EcPkbmZ/+m4ikoAA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH v6] random: clear fast pool, crng, and batches in cpuhp
- bring up
-Message-ID: <Yg6fbwtNghu76z2V@linutronix.de>
-References: <CAHmME9prO9dop7iBRwN54=GMtLH7amS3m_VqGUzL44G1h=R+2A@mail.gmail.com>
- <20220217180409.13151-1-Jason@zx2c4.com>
+        Thu, 17 Feb 2022 14:24:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2223F94D9;
+        Thu, 17 Feb 2022 11:24:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D9C161CC7;
+        Thu, 17 Feb 2022 19:24:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2D5AC340E8;
+        Thu, 17 Feb 2022 19:24:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645125879;
+        bh=r0FFFkQf0v+Vq0994D2RUjxFXog+gDvbX6KefPHK3dM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ny4nH9oRvZxO4sdirwRFEzdQyb+FedPG/TtZtia5tof0ulcZG7V7kVFVztg3KsQhn
+         q6nHNP8tHb3ERbAlhvHyR6BmIiOOUqU/RG1+TmbfXFnUyyDwpXnL5HrLjtUQtj+fbM
+         DPF5vGQUJsUFOvURAG2AgHzFd/yU8JGjnyQcD/qDxo3aw4aS0CPSmg8+KpgO4VeRwT
+         j81K1m0ilN1jHDGdUxp2ldSzyXp4BNJvOx4gLD8b0HETBykTK0b7FknOxuMiWocTIH
+         V/PsUIFUOMcKy7/YItFJ79f2PsGduZJk12mFQcKJmlYFSVk5p/ZnH0RYb8QjCLhcG+
+         uIdAs2bRZYfzA==
+Date:   Thu, 17 Feb 2022 19:24:35 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Liam Howlett <liam.howlett@oracle.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the maple tree
+Message-ID: <20220217192434.GA11800@willie-the-truck>
+References: <20220217191857.6d9917c2@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220217180409.13151-1-Jason@zx2c4.com>
+In-Reply-To: <20220217191857.6d9917c2@canb.auug.org.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-17 19:04:09 [+0100], Jason A. Donenfeld wrote:
-> For the irq randomness fast pool, rather than having to use expensive
-> atomics, which were visibly the most expensive thing in the entire irq
-> handler, simply take care of the extreme edge case of resetting count to
-> zero in the cpuhp online handler, just after workqueues have been
-> reenabled. This simplifies the code a bit and lets us use vanilla
-> variables rather than atomics, and performance should be improved.
+On Thu, Feb 17, 2022 at 07:18:57PM +1100, Stephen Rothwell wrote:
+> Hi all,
 > 
-> As well, very early on when the CPU comes up, while interrupts are still
-> disabled, we clear out the per-cpu crng and its batches, so that it
-> always starts with fresh randomness.
+> After merging the maple tree, today's linux-next build (arm64 defconfig)
+> failed like this:
 > 
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
-> v6 improves the comments around each of the cpuhp functions, as
-> requested.
+> arch/arm64/kernel/elfcore.c: In function 'elf_core_extra_phdrs':
+> arch/arm64/kernel/elfcore.c:13:35: error: 'struct mm_struct' has no member named 'mmap'
+>    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
+>       |                                   ^~
+> arch/arm64/kernel/elfcore.c:69:9: note: in expansion of macro 'for_each_mte_vma'
+>    69 |         for_each_mte_vma(current, vma)
+>       |         ^~~~~~~~~~~~~~~~
+> arch/arm64/kernel/elfcore.c:13:57: error: 'struct vm_area_struct' has no member named 'vm_next'
+>    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
+>       |                                                         ^~
+> arch/arm64/kernel/elfcore.c:69:9: note: in expansion of macro 'for_each_mte_vma'
+>    69 |         for_each_mte_vma(current, vma)
+>       |         ^~~~~~~~~~~~~~~~
+> arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_phdrs':
+> arch/arm64/kernel/elfcore.c:13:35: error: 'struct mm_struct' has no member named 'mmap'
+>    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
+>       |                                   ^~
+> arch/arm64/kernel/elfcore.c:79:9: note: in expansion of macro 'for_each_mte_vma'
+>    79 |         for_each_mte_vma(current, vma) {
+>       |         ^~~~~~~~~~~~~~~~
+> arch/arm64/kernel/elfcore.c:13:57: error: 'struct vm_area_struct' has no member named 'vm_next'
+>    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
+>       |                                                         ^~
+> arch/arm64/kernel/elfcore.c:79:9: note: in expansion of macro 'for_each_mte_vma'
+>    79 |         for_each_mte_vma(current, vma) {
+>       |         ^~~~~~~~~~~~~~~~
+> arch/arm64/kernel/elfcore.c: In function 'elf_core_extra_data_size':
+> arch/arm64/kernel/elfcore.c:13:35: error: 'struct mm_struct' has no member named 'mmap'
+>    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
+>       |                                   ^~
+> arch/arm64/kernel/elfcore.c:104:9: note: in expansion of macro 'for_each_mte_vma'
+>   104 |         for_each_mte_vma(current, vma)
+>       |         ^~~~~~~~~~~~~~~~
+> arch/arm64/kernel/elfcore.c:13:57: error: 'struct vm_area_struct' has no member named 'vm_next'
+>    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
+>       |                                                         ^~
+> arch/arm64/kernel/elfcore.c:104:9: note: in expansion of macro 'for_each_mte_vma'
+>   104 |         for_each_mte_vma(current, vma)
+>       |         ^~~~~~~~~~~~~~~~
+> arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_data':
+> arch/arm64/kernel/elfcore.c:13:35: error: 'struct mm_struct' has no member named 'mmap'
+>    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
+>       |                                   ^~
+> arch/arm64/kernel/elfcore.c:114:9: note: in expansion of macro 'for_each_mte_vma'
+>   114 |         for_each_mte_vma(current, vma) {
+>       |         ^~~~~~~~~~~~~~~~
+> arch/arm64/kernel/elfcore.c:13:57: error: 'struct vm_area_struct' has no member named 'vm_next'
+>    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
+>       |                                                         ^~
+> arch/arm64/kernel/elfcore.c:114:9: note: in expansion of macro 'for_each_mte_vma'
+>   114 |         for_each_mte_vma(current, vma) {
+>       |         ^~~~~~~~~~~~~~~~
+> 
+> Caused by commit
+> 
+>   b09e8361a4c3 ("mm: Remove the vma linked list")
+> 
+> interacting with commit
+> 
+>   6dd8b1a0b6cb ("arm64: mte: Dump the MTE tags in the core file")
+> 
+> from the arm64 tree.
 
-Perfect thank you.
-Did you miss my question regarding cross-CPU init in
-random_prepare_cpu()?
+Yikes, this is quite a mess. Liam -- how would you like to resolve this?
 
-Sebastian
+Will
