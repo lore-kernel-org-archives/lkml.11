@@ -2,32 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D07C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241227AbiBQNnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:43:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40158 "EHLO
+        id S241253AbiBQNnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:43:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241112AbiBQNmk (ORCPT
+        with ESMTP id S241071AbiBQNmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:42:40 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0554F2AC6E;
-        Thu, 17 Feb 2022 05:42:22 -0800 (PST)
-X-UUID: 6cb9f83d0d764f77a35c1f486b60c158-20220217
-X-UUID: 6cb9f83d0d764f77a35c1f486b60c158-20220217
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        Thu, 17 Feb 2022 08:42:44 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B16F0A;
+        Thu, 17 Feb 2022 05:42:27 -0800 (PST)
+X-UUID: 33a878f3bced48489ce46014fa5e4dcb-20220217
+X-UUID: 33a878f3bced48489ce46014fa5e4dcb-20220217
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
         (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1022268012; Thu, 17 Feb 2022 21:42:18 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1087931347; Thu, 17 Feb 2022 21:42:23 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 17 Feb 2022 21:42:17 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 17 Feb 2022 21:42:21 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 21:42:16 +0800
+ Transport; Thu, 17 Feb 2022 21:42:20 +0800
 From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
 To:     <broonie@kernel.org>
 CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
@@ -39,9 +38,9 @@ CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, Jiaxin Yu <jiaxin.yu@mediatek.com>
-Subject: [v2 06/17] ASoC: mediatek: mt8186: support i2s in platform driver
-Date:   Thu, 17 Feb 2022 21:41:54 +0800
-Message-ID: <20220217134205.15400-7-jiaxin.yu@mediatek.com>
+Subject: [v2 10/17] ASoC: mediatek: mt8186: support audio clock control in platform driver
+Date:   Thu, 17 Feb 2022 21:41:58 +0800
+Message-ID: <20220217134205.15400-11-jiaxin.yu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
 References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
@@ -53,1391 +52,957 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds mt8186 i2s dai driver
+This patch add audio clock control with CCF interface.
 
 Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
 ---
- sound/soc/mediatek/mt8186/mt8186-dai-i2s.c | 1371 ++++++++++++++++++++
- 1 file changed, 1371 insertions(+)
- create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-i2s.c
+ sound/soc/mediatek/mt8186/mt8186-afe-clk.c | 719 +++++++++++++++++++++
+ sound/soc/mediatek/mt8186/mt8186-afe-clk.h | 210 ++++++
+ 2 files changed, 929 insertions(+)
+ create mode 100644 sound/soc/mediatek/mt8186/mt8186-afe-clk.c
+ create mode 100644 sound/soc/mediatek/mt8186/mt8186-afe-clk.h
 
-diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-i2s.c b/sound/soc/mediatek/mt8186/mt8186-dai-i2s.c
+diff --git a/sound/soc/mediatek/mt8186/mt8186-afe-clk.c b/sound/soc/mediatek/mt8186/mt8186-afe-clk.c
 new file mode 100644
-index 000000000000..d6db5f6a7315
+index 000000000000..14f64b935619
 --- /dev/null
-+++ b/sound/soc/mediatek/mt8186/mt8186-dai-i2s.c
-@@ -0,0 +1,1371 @@
++++ b/sound/soc/mediatek/mt8186/mt8186-afe-clk.c
+@@ -0,0 +1,719 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
-+// MediaTek ALSA SoC Audio DAI I2S Control
++// mt8186-afe-clk.c  --  Mediatek 8186 afe clock ctrl
 +//
 +// Copyright (c) 2022 MediaTek Inc.
 +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
 +
-+#include <linux/bitops.h>
++#include <linux/clk.h>
 +#include <linux/regmap.h>
-+#include <sound/pcm_params.h>
-+#include "mt8186-afe-clk.h"
++#include <linux/mfd/syscon.h>
++
 +#include "mt8186-afe-common.h"
-+#include "mt8186-afe-gpio.h"
-+#include "mt8186-interconnection.h"
++#include "mt8186-afe-clk.h"
++#include "mt8186-audsys-clk.h"
 +
-+enum {
-+	I2S_FMT_EIAJ = 0,
-+	I2S_FMT_I2S = 1,
++static DEFINE_MUTEX(mutex_request_dram);
++
++static const char *aud_clks[CLK_NUM] = {
++	[CLK_AFE] = "aud_afe_clk",
++	[CLK_DAC] = "aud_dac_clk",
++	[CLK_DAC_PREDIS] = "aud_dac_predis_clk",
++	[CLK_ADC] = "aud_adc_clk",
++	[CLK_TML] = "aud_tml_clk",
++	[CLK_APLL22M] = "aud_apll22m_clk",
++	[CLK_APLL24M] = "aud_apll24m_clk",
++	[CLK_APLL1_TUNER] = "aud_apll_tuner_clk",
++	[CLK_APLL2_TUNER] = "aud_apll2_tuner_clk",
++	[CLK_TDM] = "aud_tdm_clk",
++	[CLK_NLE] = "aud_nle_clk",
++	[CLK_DAC_HIRES] = "aud_dac_hires_clk",
++	[CLK_ADC_HIRES] = "aud_adc_hires_clk",
++	[CLK_I2S1_BCLK] = "aud_i2s1_bclk",
++	[CLK_I2S2_BCLK] = "aud_i2s2_bclk",
++	[CLK_I2S3_BCLK] = "aud_i2s3_bclk",
++	[CLK_I2S4_BCLK] = "aud_i2s4_bclk",
++	[CLK_CONNSYS_I2S_ASRC] = "aud_connsys_i2s_asrc",
++	[CLK_GENERAL1_ASRC] = "aud_general1_asrc",
++	[CLK_GENERAL2_ASRC] = "aud_general2_asrc",
++	[CLK_ADC_HIRES_TML] = "aud_adc_hires_tml",
++	[CLK_ADDA6_ADC] = "aud_adda6_adc",
++	[CLK_ADDA6_ADC_HIRES] = "aud_adda6_adc_hires",
++	[CLK_3RD_DAC] = "aud_3rd_dac",
++	[CLK_3RD_DAC_PREDIS] = "aud_3rd_dac_predis",
++	[CLK_3RD_DAC_TML] = "aud_3rd_dac_tml",
++	[CLK_3RD_DAC_HIRES] = "aud_3rd_dac_hires",
++	[CLK_ETDM_IN1_BCLK] = "aud_etdm_in1_bclk",
++	[CLK_ETDM_OUT1_BCLK] = "aud_etdm_out1_bclk",
++	[CLK_INFRA_SYS_AUDIO] = "aud_infra_clk",
++	[CLK_INFRA_AUDIO_26M] = "mtkaif_26m_clk",
++	[CLK_MUX_AUDIO] = "top_mux_audio",
++	[CLK_MUX_AUDIOINTBUS] = "top_mux_audio_int",
++	[CLK_TOP_MAINPLL_D2_D4] = "top_mainpll_d2_d4",
++	[CLK_TOP_MUX_AUD_1] = "top_mux_aud_1",
++	[CLK_TOP_APLL1_CK] = "top_apll1_ck",
++	[CLK_TOP_MUX_AUD_2] = "top_mux_aud_2",
++	[CLK_TOP_APLL2_CK] = "top_apll2_ck",
++	[CLK_TOP_MUX_AUD_ENG1] = "top_mux_aud_eng1",
++	[CLK_TOP_APLL1_D8] = "top_apll1_d8",
++	[CLK_TOP_MUX_AUD_ENG2] = "top_mux_aud_eng2",
++	[CLK_TOP_APLL2_D8] = "top_apll2_d8",
++	[CLK_TOP_MUX_AUDIO_H] = "top_mux_audio_h",
++	[CLK_TOP_I2S0_M_SEL] = "top_i2s0_m_sel",
++	[CLK_TOP_I2S1_M_SEL] = "top_i2s1_m_sel",
++	[CLK_TOP_I2S2_M_SEL] = "top_i2s2_m_sel",
++	[CLK_TOP_I2S4_M_SEL] = "top_i2s4_m_sel",
++	[CLK_TOP_TDM_M_SEL] = "top_tdm_m_sel",
++	[CLK_TOP_APLL12_DIV0] = "top_apll12_div0",
++	[CLK_TOP_APLL12_DIV1] = "top_apll12_div1",
++	[CLK_TOP_APLL12_DIV2] = "top_apll12_div2",
++	[CLK_TOP_APLL12_DIV4] = "top_apll12_div4",
++	[CLK_TOP_APLL12_DIV_TDM] = "top_apll12_div_tdm",
++	[CLK_CLK26M] = "top_clk26m_clk",
 +};
 +
-+enum {
-+	I2S_WLEN_16_BIT = 0,
-+	I2S_WLEN_32_BIT = 1,
-+};
-+
-+enum {
-+	I2S_HD_NORMAL = 0,
-+	I2S_HD_LOW_JITTER = 1,
-+};
-+
-+enum {
-+	I2S1_SEL_O28_O29 = 0,
-+	I2S1_SEL_O03_O04 = 1,
-+};
-+
-+enum {
-+	I2S_IN_PAD_CONNSYS = 0,
-+	I2S_IN_PAD_IO_MUX = 1,
-+};
-+
-+struct mtk_afe_i2s_priv {
-+	int id;
-+	int rate; /* for determine which apll to use */
-+	int low_jitter_en;
-+	int master; /* only i2s0 has slave mode*/
-+
-+	const char *share_property_name;
-+	int share_i2s_id;
-+
-+	int mclk_id;
-+	int mclk_rate;
-+	int mclk_apll;
-+};
-+
-+static unsigned int get_i2s_wlen(snd_pcm_format_t format)
-+{
-+	return snd_pcm_format_physical_width(format) <= 16 ?
-+	       I2S_WLEN_16_BIT : I2S_WLEN_32_BIT;
-+}
-+
-+#define MTK_AFE_I2S0_KCONTROL_NAME "I2S0_HD_Mux"
-+#define MTK_AFE_I2S1_KCONTROL_NAME "I2S1_HD_Mux"
-+#define MTK_AFE_I2S2_KCONTROL_NAME "I2S2_HD_Mux"
-+#define MTK_AFE_I2S3_KCONTROL_NAME "I2S3_HD_Mux"
-+#define MTK_AFE_I2S0_SRC_KCONTROL_NAME "I2S0_SRC_Mux"
-+
-+#define I2S0_HD_EN_W_NAME "I2S0_HD_EN"
-+#define I2S1_HD_EN_W_NAME "I2S1_HD_EN"
-+#define I2S2_HD_EN_W_NAME "I2S2_HD_EN"
-+#define I2S3_HD_EN_W_NAME "I2S3_HD_EN"
-+
-+#define I2S0_MCLK_EN_W_NAME "I2S0_MCLK_EN"
-+#define I2S1_MCLK_EN_W_NAME "I2S1_MCLK_EN"
-+#define I2S2_MCLK_EN_W_NAME "I2S2_MCLK_EN"
-+#define I2S3_MCLK_EN_W_NAME "I2S3_MCLK_EN"
-+
-+static int get_i2s_id_by_name(struct mtk_base_afe *afe,
-+			      const char *name)
-+{
-+	if (strncmp(name, "I2S0", 4) == 0)
-+		return MT8186_DAI_I2S_0;
-+	else if (strncmp(name, "I2S1", 4) == 0)
-+		return MT8186_DAI_I2S_1;
-+	else if (strncmp(name, "I2S2", 4) == 0)
-+		return MT8186_DAI_I2S_2;
-+	else if (strncmp(name, "I2S3", 4) == 0)
-+		return MT8186_DAI_I2S_3;
-+	else
-+		return -EINVAL;
-+}
-+
-+static struct mtk_afe_i2s_priv *get_i2s_priv_by_name(struct mtk_base_afe *afe,
-+						     const char *name)
++int mt8186_set_audio_int_bus_parent(struct mtk_base_afe *afe,
++				    int clk_id)
 +{
 +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-+	int dai_id = get_i2s_id_by_name(afe, name);
++	int ret;
 +
-+	if (dai_id < 0)
-+		return NULL;
-+
-+	return afe_priv->dai_priv[dai_id];
-+}
-+
-+/* low jitter control */
-+static const char * const mt8186_i2s_hd_str[] = {
-+	"Normal", "Low_Jitter"
-+};
-+
-+static const struct soc_enum mt8186_i2s_enum[] = {
-+	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(mt8186_i2s_hd_str),
-+			    mt8186_i2s_hd_str),
-+};
-+
-+/* clock source control */
-+static const char * const mt8186_i2s_src_str[] = {
-+	"Master", "Slave"
-+};
-+
-+static const struct soc_enum mt8186_i2s_src_enum[] = {
-+	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(mt8186_i2s_src_str),
-+			    mt8186_i2s_src_str),
-+};
-+
-+static int mt8186_i2s_hd_get(struct snd_kcontrol *kcontrol,
-+			     struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *cmpnt = snd_soc_kcontrol_component(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, kcontrol->id.name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return -EINVAL;
++	ret = clk_set_parent(afe_priv->clk[CLK_MUX_AUDIOINTBUS],
++			     afe_priv->clk[clk_id]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++			 __func__, aud_clks[CLK_MUX_AUDIOINTBUS],
++			 aud_clks[clk_id], ret);
 +	}
-+
-+	ucontrol->value.integer.value[0] = i2s_priv->low_jitter_en;
-+
-+	return 0;
-+}
-+
-+static int mt8186_i2s_hd_set(struct snd_kcontrol *kcontrol,
-+			     struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *cmpnt = snd_soc_kcontrol_component(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
-+	int hd_en;
-+
-+	if (ucontrol->value.enumerated.item[0] >= e->items)
-+		return -EINVAL;
-+
-+	hd_en = ucontrol->value.integer.value[0];
-+
-+	dev_info(afe->dev, "%s(), kcontrol name %s, hd_en %d\n",
-+		 __func__, kcontrol->id.name, hd_en);
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, kcontrol->id.name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return -EINVAL;
-+	}
-+
-+	i2s_priv->low_jitter_en = hd_en;
-+
-+	return 0;
-+}
-+
-+static int mt8186_i2s_src_get(struct snd_kcontrol *kcontrol,
-+			      struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *cmpnt = snd_soc_kcontrol_component(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, kcontrol->id.name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return -EINVAL;
-+	}
-+
-+	ucontrol->value.integer.value[0] = i2s_priv->master;
-+
-+	return 0;
-+}
-+
-+static int mt8186_i2s_src_set(struct snd_kcontrol *kcontrol,
-+			      struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *cmpnt = snd_soc_kcontrol_component(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
-+	int clk_src;
-+	int dai_id;
-+
-+	if (ucontrol->value.enumerated.item[0] >= e->items)
-+		return -EINVAL;
-+
-+	clk_src = ucontrol->value.integer.value[0];
-+
-+	dev_info(afe->dev, "%s(), kcontrol name %s, hd_en %d\n",
-+		 __func__, kcontrol->id.name, clk_src);
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, kcontrol->id.name);
-+	dai_id = get_i2s_id_by_name(afe, kcontrol->id.name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return -EINVAL;
-+	}
-+
-+	switch (dai_id) {
-+	case MT8186_DAI_I2S_0:
-+		regmap_update_bits(afe->regmap, AFE_I2S_CON,
-+				   I2S_SRC_MASK_SFT,
-+				   clk_src << I2S_SRC_SFT);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	i2s_priv->master = clk_src;
-+
-+	return 0;
-+}
-+
-+static const struct snd_kcontrol_new mtk_dai_i2s_controls[] = {
-+	SOC_ENUM_EXT(MTK_AFE_I2S0_KCONTROL_NAME, mt8186_i2s_enum[0],
-+		     mt8186_i2s_hd_get, mt8186_i2s_hd_set),
-+	SOC_ENUM_EXT(MTK_AFE_I2S1_KCONTROL_NAME, mt8186_i2s_enum[0],
-+		     mt8186_i2s_hd_get, mt8186_i2s_hd_set),
-+	SOC_ENUM_EXT(MTK_AFE_I2S2_KCONTROL_NAME, mt8186_i2s_enum[0],
-+		     mt8186_i2s_hd_get, mt8186_i2s_hd_set),
-+	SOC_ENUM_EXT(MTK_AFE_I2S3_KCONTROL_NAME, mt8186_i2s_enum[0],
-+		     mt8186_i2s_hd_get, mt8186_i2s_hd_set),
-+	SOC_ENUM_EXT(MTK_AFE_I2S0_SRC_KCONTROL_NAME, mt8186_i2s_src_enum[0],
-+		     mt8186_i2s_src_get, mt8186_i2s_src_set),
-+};
-+
-+/* dai component */
-+/* i2s virtual mux to output widget */
-+static const char * const i2s_mux_map[] = {
-+	"Normal", "Dummy_Widget",
-+};
-+
-+static int i2s_mux_map_value[] = {
-+	0, 1,
-+};
-+
-+static SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL(i2s_mux_map_enum,
-+					      SND_SOC_NOPM,
-+					      0,
-+					      1,
-+					      i2s_mux_map,
-+					      i2s_mux_map_value);
-+
-+static const struct snd_kcontrol_new i2s0_in_mux_control =
-+	SOC_DAPM_ENUM("I2S0 In Select", i2s_mux_map_enum);
-+
-+static const struct snd_kcontrol_new i2s1_out_mux_control =
-+	SOC_DAPM_ENUM("I2S1 Out Select", i2s_mux_map_enum);
-+
-+static const struct snd_kcontrol_new i2s2_in_mux_control =
-+	SOC_DAPM_ENUM("I2S2 In Select", i2s_mux_map_enum);
-+
-+static const struct snd_kcontrol_new i2s3_out_mux_control =
-+	SOC_DAPM_ENUM("I2S3 Out Select", i2s_mux_map_enum);
-+
-+/* i2s in lpbk */
-+static const char * const i2s_lpbk_mux_map[] = {
-+	"Normal", "Lpbk",
-+};
-+
-+static int i2s_lpbk_mux_map_value[] = {
-+	0, 1,
-+};
-+
-+static SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL(i2s0_lpbk_mux_map_enum,
-+					      AFE_I2S_CON,
-+					      I2S_LOOPBACK_SFT,
-+					      1,
-+					      i2s_lpbk_mux_map,
-+					      i2s_lpbk_mux_map_value);
-+
-+static const struct snd_kcontrol_new i2s0_lpbk_mux_control =
-+	SOC_DAPM_ENUM("I2S Lpbk Select", i2s0_lpbk_mux_map_enum);
-+
-+static SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL(i2s2_lpbk_mux_map_enum,
-+					      AFE_I2S_CON2,
-+					      I2S3_LOOPBACK_SFT,
-+					      1,
-+					      i2s_lpbk_mux_map,
-+					      i2s_lpbk_mux_map_value);
-+
-+static const struct snd_kcontrol_new i2s2_lpbk_mux_control =
-+	SOC_DAPM_ENUM("I2S Lpbk Select", i2s2_lpbk_mux_map_enum);
-+
-+/* interconnection */
-+static const struct snd_kcontrol_new mtk_i2s3_ch1_mix[] = {
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH1 Switch", AFE_CONN0,
-+				    I_DL1_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH1 Switch", AFE_CONN0,
-+				    I_DL2_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL3_CH1 Switch", AFE_CONN0,
-+				    I_DL3_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH1 Switch", AFE_CONN0,
-+				    I_DL12_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH3 Switch", AFE_CONN0,
-+				    I_DL12_CH3, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH1 Switch", AFE_CONN0_1,
-+				    I_DL6_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH1 Switch", AFE_CONN0_1,
-+				    I_DL4_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL5_CH1 Switch", AFE_CONN0_1,
-+				    I_DL5_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL8_CH1 Switch", AFE_CONN0_1,
-+				    I_DL8_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("GAIN1_OUT_CH1 Switch", AFE_CONN0,
-+				    I_GAIN1_OUT_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1 Switch", AFE_CONN0,
-+				    I_ADDA_UL_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH2 Switch", AFE_CONN0,
-+				    I_ADDA_UL_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH3 Switch", AFE_CONN0,
-+				    I_ADDA_UL_CH3, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH1 Switch", AFE_CONN0,
-+				    I_PCM_1_CAP_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("SRC_1_OUT_CH1 Switch", AFE_CONN0_1,
-+				    I_SRC_1_OUT_CH1, 1, 0),
-+};
-+
-+static const struct snd_kcontrol_new mtk_i2s3_ch2_mix[] = {
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH2 Switch", AFE_CONN1,
-+				    I_DL1_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH2 Switch", AFE_CONN1,
-+				    I_DL2_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL3_CH2 Switch", AFE_CONN1,
-+				    I_DL3_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH2 Switch", AFE_CONN1,
-+				    I_DL12_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH4 Switch", AFE_CONN1,
-+				    I_DL12_CH4, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH2 Switch", AFE_CONN1_1,
-+				    I_DL6_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH2 Switch", AFE_CONN1_1,
-+				    I_DL4_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL5_CH2 Switch", AFE_CONN1_1,
-+				    I_DL5_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL8_CH2 Switch", AFE_CONN1_1,
-+				    I_DL8_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("GAIN1_OUT_CH2 Switch", AFE_CONN1,
-+				    I_GAIN1_OUT_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1 Switch", AFE_CONN1,
-+				    I_ADDA_UL_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH2 Switch", AFE_CONN1,
-+				    I_ADDA_UL_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH3 Switch", AFE_CONN1,
-+				    I_ADDA_UL_CH3, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH1 Switch", AFE_CONN1,
-+				    I_PCM_1_CAP_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH2 Switch", AFE_CONN1,
-+				    I_PCM_1_CAP_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("SRC_1_OUT_CH2 Switch", AFE_CONN1_1,
-+				    I_SRC_1_OUT_CH2, 1, 0),
-+};
-+
-+static const struct snd_kcontrol_new mtk_i2s1_ch1_mix[] = {
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH1 Switch", AFE_CONN28,
-+				    I_DL1_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH1 Switch", AFE_CONN28,
-+				    I_DL2_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL3_CH1 Switch", AFE_CONN28,
-+				    I_DL3_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH1 Switch", AFE_CONN28,
-+				    I_DL12_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH3 Switch", AFE_CONN28,
-+				    I_DL12_CH3, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH1 Switch", AFE_CONN28_1,
-+				    I_DL6_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH1 Switch", AFE_CONN28_1,
-+				    I_DL4_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL5_CH1 Switch", AFE_CONN28_1,
-+				    I_DL5_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL8_CH1 Switch", AFE_CONN28_1,
-+				    I_DL8_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("GAIN1_OUT_CH1 Switch", AFE_CONN28,
-+				    I_GAIN1_OUT_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1 Switch", AFE_CONN28,
-+				    I_ADDA_UL_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH1 Switch", AFE_CONN28,
-+				    I_PCM_1_CAP_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("SRC_1_OUT_CH1 Switch", AFE_CONN28_1,
-+				    I_SRC_1_OUT_CH1, 1, 0),
-+};
-+
-+static const struct snd_kcontrol_new mtk_i2s1_ch2_mix[] = {
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH2 Switch", AFE_CONN29,
-+				    I_DL1_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH2 Switch", AFE_CONN29,
-+				    I_DL2_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL3_CH2 Switch", AFE_CONN29,
-+				    I_DL3_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH2 Switch", AFE_CONN29,
-+				    I_DL12_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH4 Switch", AFE_CONN29,
-+				    I_DL12_CH4, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH2 Switch", AFE_CONN29_1,
-+				    I_DL6_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH2 Switch", AFE_CONN29_1,
-+				    I_DL4_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL5_CH2 Switch", AFE_CONN29_1,
-+				    I_DL5_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("DL8_CH2 Switch", AFE_CONN29_1,
-+				    I_DL8_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("GAIN1_OUT_CH2 Switch", AFE_CONN29,
-+				    I_GAIN1_OUT_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH2 Switch", AFE_CONN29,
-+				    I_ADDA_UL_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH1 Switch", AFE_CONN29,
-+				    I_PCM_1_CAP_CH1, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH2 Switch", AFE_CONN29,
-+				    I_PCM_1_CAP_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("SRC_1_OUT_CH2 Switch", AFE_CONN29_1,
-+				    I_SRC_1_OUT_CH2, 1, 0),
-+};
-+
-+enum {
-+	SUPPLY_SEQ_APLL,
-+	SUPPLY_SEQ_I2S_MCLK_EN,
-+	SUPPLY_SEQ_I2S_HD_EN,
-+	SUPPLY_SEQ_I2S_EN,
-+};
-+
-+static int mtk_i2s_en_event(struct snd_soc_dapm_widget *w,
-+			    struct snd_kcontrol *kcontrol,
-+			    int event)
-+{
-+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, w->name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return -EINVAL;
-+	}
-+
-+	dev_dbg(cmpnt->dev, "%s(), name %s, event 0x%x\n",
-+		__func__, w->name, event);
-+
-+	switch (event) {
-+	case SND_SOC_DAPM_PRE_PMU:
-+		mt8186_afe_gpio_request(afe->dev, true, i2s_priv->id, 0);
-+		break;
-+	case SND_SOC_DAPM_POST_PMD:
-+		mt8186_afe_gpio_request(afe->dev, false, i2s_priv->id, 0);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mtk_apll_event(struct snd_soc_dapm_widget *w,
-+			  struct snd_kcontrol *kcontrol,
-+			  int event)
-+{
-+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+
-+	dev_dbg(cmpnt->dev, "%s(), name %s, event 0x%x\n",
-+		__func__, w->name, event);
-+
-+	switch (event) {
-+	case SND_SOC_DAPM_PRE_PMU:
-+		if (strcmp(w->name, APLL1_W_NAME) == 0)
-+			mt8186_apll1_enable(afe);
-+		else
-+			mt8186_apll2_enable(afe);
-+		break;
-+	case SND_SOC_DAPM_POST_PMD:
-+		if (strcmp(w->name, APLL1_W_NAME) == 0)
-+			mt8186_apll1_disable(afe);
-+		else
-+			mt8186_apll2_disable(afe);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mtk_mclk_en_event(struct snd_soc_dapm_widget *w,
-+			     struct snd_kcontrol *kcontrol,
-+			     int event)
-+{
-+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+
-+	dev_dbg(cmpnt->dev, "%s(), name %s, event 0x%x\n",
-+		__func__, w->name, event);
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, w->name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return -EINVAL;
-+	}
-+
-+	switch (event) {
-+	case SND_SOC_DAPM_PRE_PMU:
-+		mt8186_mck_enable(afe, i2s_priv->mclk_id, i2s_priv->mclk_rate);
-+		break;
-+	case SND_SOC_DAPM_POST_PMD:
-+		i2s_priv->mclk_rate = 0;
-+		mt8186_mck_disable(afe, i2s_priv->mclk_id);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct snd_soc_dapm_widget mtk_dai_i2s_widgets[] = {
-+	SND_SOC_DAPM_INPUT("CONNSYS"),
-+
-+	SND_SOC_DAPM_MIXER("I2S1_CH1", SND_SOC_NOPM, 0, 0,
-+			   mtk_i2s1_ch1_mix,
-+			   ARRAY_SIZE(mtk_i2s1_ch1_mix)),
-+	SND_SOC_DAPM_MIXER("I2S1_CH2", SND_SOC_NOPM, 0, 0,
-+			   mtk_i2s1_ch2_mix,
-+			   ARRAY_SIZE(mtk_i2s1_ch2_mix)),
-+
-+	SND_SOC_DAPM_MIXER("I2S3_CH1", SND_SOC_NOPM, 0, 0,
-+			   mtk_i2s3_ch1_mix,
-+			   ARRAY_SIZE(mtk_i2s3_ch1_mix)),
-+	SND_SOC_DAPM_MIXER("I2S3_CH2", SND_SOC_NOPM, 0, 0,
-+			   mtk_i2s3_ch2_mix,
-+			   ARRAY_SIZE(mtk_i2s3_ch2_mix)),
-+
-+	/* i2s en*/
-+	SND_SOC_DAPM_SUPPLY_S("I2S0_EN", SUPPLY_SEQ_I2S_EN,
-+			      AFE_I2S_CON, I2S_EN_SFT, 0,
-+			      mtk_i2s_en_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S("I2S1_EN", SUPPLY_SEQ_I2S_EN,
-+			      AFE_I2S_CON1, I2S_EN_SFT, 0,
-+			      mtk_i2s_en_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S("I2S2_EN", SUPPLY_SEQ_I2S_EN,
-+			      AFE_I2S_CON2, I2S_EN_SFT, 0,
-+			      mtk_i2s_en_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S("I2S3_EN", SUPPLY_SEQ_I2S_EN,
-+			      AFE_I2S_CON3, I2S_EN_SFT, 0,
-+			      mtk_i2s_en_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	/* i2s hd en */
-+	SND_SOC_DAPM_SUPPLY_S(I2S0_HD_EN_W_NAME, SUPPLY_SEQ_I2S_HD_EN,
-+			      AFE_I2S_CON, I2S1_HD_EN_SFT, 0, NULL,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S(I2S1_HD_EN_W_NAME, SUPPLY_SEQ_I2S_HD_EN,
-+			      AFE_I2S_CON1, I2S2_HD_EN_SFT, 0, NULL,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S(I2S2_HD_EN_W_NAME, SUPPLY_SEQ_I2S_HD_EN,
-+			      AFE_I2S_CON2, I2S3_HD_EN_SFT, 0, NULL,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S(I2S3_HD_EN_W_NAME, SUPPLY_SEQ_I2S_HD_EN,
-+			      AFE_I2S_CON3, I2S4_HD_EN_SFT, 0, NULL,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+
-+	/* i2s mclk en */
-+	SND_SOC_DAPM_SUPPLY_S(I2S0_MCLK_EN_W_NAME, SUPPLY_SEQ_I2S_MCLK_EN,
-+			      SND_SOC_NOPM, 0, 0,
-+			      mtk_mclk_en_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S(I2S1_MCLK_EN_W_NAME, SUPPLY_SEQ_I2S_MCLK_EN,
-+			      SND_SOC_NOPM, 0, 0,
-+			      mtk_mclk_en_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S(I2S2_MCLK_EN_W_NAME, SUPPLY_SEQ_I2S_MCLK_EN,
-+			      SND_SOC_NOPM, 0, 0,
-+			      mtk_mclk_en_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S(I2S3_MCLK_EN_W_NAME, SUPPLY_SEQ_I2S_MCLK_EN,
-+			      SND_SOC_NOPM, 0, 0,
-+			      mtk_mclk_en_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+
-+	/* apll */
-+	SND_SOC_DAPM_SUPPLY_S(APLL1_W_NAME, SUPPLY_SEQ_APLL,
-+			      SND_SOC_NOPM, 0, 0,
-+			      mtk_apll_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+	SND_SOC_DAPM_SUPPLY_S(APLL2_W_NAME, SUPPLY_SEQ_APLL,
-+			      SND_SOC_NOPM, 0, 0,
-+			      mtk_apll_event,
-+			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-+
-+	/* allow i2s on without codec on */
-+	SND_SOC_DAPM_OUTPUT("I2S_DUMMY_OUT"),
-+	SND_SOC_DAPM_MUX("I2S1_Out_Mux",
-+			 SND_SOC_NOPM, 0, 0, &i2s1_out_mux_control),
-+	SND_SOC_DAPM_MUX("I2S3_Out_Mux",
-+			 SND_SOC_NOPM, 0, 0, &i2s3_out_mux_control),
-+	SND_SOC_DAPM_INPUT("I2S_DUMMY_IN"),
-+	SND_SOC_DAPM_MUX("I2S0_In_Mux",
-+			 SND_SOC_NOPM, 0, 0, &i2s0_in_mux_control),
-+	SND_SOC_DAPM_MUX("I2S2_In_Mux",
-+			 SND_SOC_NOPM, 0, 0, &i2s2_in_mux_control),
-+
-+	/* i2s in lpbk */
-+	SND_SOC_DAPM_MUX("I2S0_Lpbk_Mux",
-+			 SND_SOC_NOPM, 0, 0, &i2s0_lpbk_mux_control),
-+	SND_SOC_DAPM_MUX("I2S2_Lpbk_Mux",
-+			 SND_SOC_NOPM, 0, 0, &i2s2_lpbk_mux_control),
-+};
-+
-+static int mtk_afe_i2s_share_connect(struct snd_soc_dapm_widget *source,
-+				     struct snd_soc_dapm_widget *sink)
-+{
-+	struct snd_soc_dapm_widget *w = sink;
-+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, sink->name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return 0;
-+	}
-+
-+	if (i2s_priv->share_i2s_id < 0)
-+		return 0;
-+
-+	return i2s_priv->share_i2s_id == get_i2s_id_by_name(afe, source->name);
-+}
-+
-+static int mtk_afe_i2s_hd_connect(struct snd_soc_dapm_widget *source,
-+				  struct snd_soc_dapm_widget *sink)
-+{
-+	struct snd_soc_dapm_widget *w = sink;
-+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, sink->name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return 0;
-+	}
-+
-+	if (get_i2s_id_by_name(afe, sink->name) ==
-+	    get_i2s_id_by_name(afe, source->name))
-+		return i2s_priv->low_jitter_en;
-+
-+	/* check if share i2s need hd en */
-+	if (i2s_priv->share_i2s_id < 0)
-+		return 0;
-+
-+	if (i2s_priv->share_i2s_id == get_i2s_id_by_name(afe, source->name))
-+		return i2s_priv->low_jitter_en;
-+
-+	return 0;
-+}
-+
-+static int mtk_afe_i2s_apll_connect(struct snd_soc_dapm_widget *source,
-+				    struct snd_soc_dapm_widget *sink)
-+{
-+	struct snd_soc_dapm_widget *w = sink;
-+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+	int cur_apll;
-+	int i2s_need_apll;
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, w->name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return 0;
-+	}
-+
-+	/* which apll */
-+	cur_apll = mt8186_get_apll_by_name(afe, source->name);
-+
-+	/* choose APLL from i2s rate */
-+	i2s_need_apll = mt8186_get_apll_by_rate(afe, i2s_priv->rate);
-+
-+	return (i2s_need_apll == cur_apll) ? 1 : 0;
-+}
-+
-+static int mtk_afe_i2s_mclk_connect(struct snd_soc_dapm_widget *source,
-+				    struct snd_soc_dapm_widget *sink)
-+{
-+	struct snd_soc_dapm_widget *w = sink;
-+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, sink->name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return 0;
-+	}
-+
-+	if (get_i2s_id_by_name(afe, sink->name) ==
-+	    get_i2s_id_by_name(afe, source->name))
-+		return (i2s_priv->mclk_rate > 0) ? 1 : 0;
-+
-+	/* check if share i2s need mclk */
-+	if (i2s_priv->share_i2s_id < 0)
-+		return 0;
-+
-+	if (i2s_priv->share_i2s_id == get_i2s_id_by_name(afe, source->name))
-+		return (i2s_priv->mclk_rate > 0) ? 1 : 0;
-+
-+	return 0;
-+}
-+
-+static int mtk_afe_mclk_apll_connect(struct snd_soc_dapm_widget *source,
-+				     struct snd_soc_dapm_widget *sink)
-+{
-+	struct snd_soc_dapm_widget *w = sink;
-+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+	int cur_apll;
-+
-+	i2s_priv = get_i2s_priv_by_name(afe, w->name);
-+
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return 0;
-+	}
-+
-+	/* which apll */
-+	cur_apll = mt8186_get_apll_by_name(afe, source->name);
-+
-+	return (i2s_priv->mclk_apll == cur_apll) ? 1 : 0;
-+}
-+
-+static const struct snd_soc_dapm_route mtk_dai_i2s_routes[] = {
-+	{"Connsys I2S", NULL, "CONNSYS"},
-+
-+	/* i2s0 */
-+	{"I2S0", NULL, "I2S0_EN"},
-+	{"I2S0", NULL, "I2S1_EN", mtk_afe_i2s_share_connect},
-+	{"I2S0", NULL, "I2S2_EN", mtk_afe_i2s_share_connect},
-+	{"I2S0", NULL, "I2S3_EN", mtk_afe_i2s_share_connect},
-+
-+	{"I2S0", NULL, I2S0_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S0", NULL, I2S1_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S0", NULL, I2S2_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S0", NULL, I2S3_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{I2S0_HD_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_i2s_apll_connect},
-+	{I2S0_HD_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_i2s_apll_connect},
-+
-+	{"I2S0", NULL, I2S0_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S0", NULL, I2S1_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S0", NULL, I2S2_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S0", NULL, I2S3_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{I2S0_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
-+	{I2S0_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
-+
-+	/* i2s1 */
-+	{"I2S1_CH1", "DL1_CH1 Switch", "DL1"},
-+	{"I2S1_CH2", "DL1_CH2 Switch", "DL1"},
-+
-+	{"I2S1_CH1", "DL2_CH1 Switch", "DL2"},
-+	{"I2S1_CH2", "DL2_CH2 Switch", "DL2"},
-+
-+	{"I2S1_CH1", "DL3_CH1 Switch", "DL3"},
-+	{"I2S1_CH2", "DL3_CH2 Switch", "DL3"},
-+
-+	{"I2S1_CH1", "DL12_CH1 Switch", "DL12"},
-+	{"I2S1_CH2", "DL12_CH2 Switch", "DL12"},
-+
-+	{"I2S1_CH1", "DL12_CH3 Switch", "DL12"},
-+	{"I2S1_CH2", "DL12_CH4 Switch", "DL12"},
-+
-+	{"I2S1_CH1", "DL6_CH1 Switch", "DL6"},
-+	{"I2S1_CH2", "DL6_CH2 Switch", "DL6"},
-+
-+	{"I2S1_CH1", "DL4_CH1 Switch", "DL4"},
-+	{"I2S1_CH2", "DL4_CH2 Switch", "DL4"},
-+
-+	{"I2S1_CH1", "DL5_CH1 Switch", "DL5"},
-+	{"I2S1_CH2", "DL5_CH2 Switch", "DL5"},
-+
-+	{"I2S1_CH1", "DL8_CH1 Switch", "DL8"},
-+	{"I2S1_CH2", "DL8_CH2 Switch", "DL8"},
-+
-+	{"I2S1", NULL, "I2S1_CH1"},
-+	{"I2S1", NULL, "I2S1_CH2"},
-+
-+	{"I2S1", NULL, "I2S0_EN", mtk_afe_i2s_share_connect},
-+	{"I2S1", NULL, "I2S1_EN"},
-+	{"I2S1", NULL, "I2S2_EN", mtk_afe_i2s_share_connect},
-+	{"I2S1", NULL, "I2S3_EN", mtk_afe_i2s_share_connect},
-+
-+	{"I2S1", NULL, I2S0_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S1", NULL, I2S1_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S1", NULL, I2S2_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S1", NULL, I2S3_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{I2S1_HD_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_i2s_apll_connect},
-+	{I2S1_HD_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_i2s_apll_connect},
-+
-+	{"I2S1", NULL, I2S0_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S1", NULL, I2S1_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S1", NULL, I2S2_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S1", NULL, I2S3_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{I2S1_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
-+	{I2S1_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
-+
-+	/* i2s2 */
-+	{"I2S2", NULL, "I2S0_EN", mtk_afe_i2s_share_connect},
-+	{"I2S2", NULL, "I2S1_EN", mtk_afe_i2s_share_connect},
-+	{"I2S2", NULL, "I2S2_EN"},
-+	{"I2S2", NULL, "I2S3_EN", mtk_afe_i2s_share_connect},
-+
-+	{"I2S2", NULL, I2S0_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S2", NULL, I2S1_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S2", NULL, I2S2_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S2", NULL, I2S3_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{I2S2_HD_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_i2s_apll_connect},
-+	{I2S2_HD_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_i2s_apll_connect},
-+
-+	{"I2S2", NULL, I2S0_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S2", NULL, I2S1_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S2", NULL, I2S2_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S2", NULL, I2S3_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{I2S2_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
-+	{I2S2_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
-+
-+	/* i2s3 */
-+	{"I2S3_CH1", "DL1_CH1 Switch", "DL1"},
-+	{"I2S3_CH2", "DL1_CH2 Switch", "DL1"},
-+
-+	{"I2S3_CH1", "DL2_CH1 Switch", "DL2"},
-+	{"I2S3_CH2", "DL2_CH2 Switch", "DL2"},
-+
-+	{"I2S3_CH1", "DL3_CH1 Switch", "DL3"},
-+	{"I2S3_CH2", "DL3_CH2 Switch", "DL3"},
-+
-+	{"I2S3_CH1", "DL12_CH1 Switch", "DL12"},
-+	{"I2S3_CH2", "DL12_CH2 Switch", "DL12"},
-+
-+	{"I2S3_CH1", "DL12_CH3 Switch", "DL12"},
-+	{"I2S3_CH2", "DL12_CH4 Switch", "DL12"},
-+
-+	{"I2S3_CH1", "DL6_CH1 Switch", "DL6"},
-+	{"I2S3_CH2", "DL6_CH2 Switch", "DL6"},
-+
-+	{"I2S3_CH1", "DL4_CH1 Switch", "DL4"},
-+	{"I2S3_CH2", "DL4_CH2 Switch", "DL4"},
-+
-+	{"I2S3_CH1", "DL5_CH1 Switch", "DL5"},
-+	{"I2S3_CH2", "DL5_CH2 Switch", "DL5"},
-+
-+	{"I2S3_CH1", "DL8_CH1 Switch", "DL8"},
-+	{"I2S3_CH2", "DL8_CH2 Switch", "DL8"},
-+
-+	{"I2S3", NULL, "I2S3_CH1"},
-+	{"I2S3", NULL, "I2S3_CH2"},
-+
-+	{"I2S3", NULL, "I2S0_EN", mtk_afe_i2s_share_connect},
-+	{"I2S3", NULL, "I2S1_EN", mtk_afe_i2s_share_connect},
-+	{"I2S3", NULL, "I2S2_EN", mtk_afe_i2s_share_connect},
-+	{"I2S3", NULL, "I2S3_EN"},
-+
-+	{"I2S3", NULL, I2S0_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S3", NULL, I2S1_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S3", NULL, I2S2_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{"I2S3", NULL, I2S3_HD_EN_W_NAME, mtk_afe_i2s_hd_connect},
-+	{I2S3_HD_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_i2s_apll_connect},
-+	{I2S3_HD_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_i2s_apll_connect},
-+
-+	{"I2S3", NULL, I2S0_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S3", NULL, I2S1_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S3", NULL, I2S2_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{"I2S3", NULL, I2S3_MCLK_EN_W_NAME, mtk_afe_i2s_mclk_connect},
-+	{I2S3_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
-+	{I2S3_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
-+
-+	/* allow i2s on without codec on */
-+	{"I2S0", NULL, "I2S0_In_Mux"},
-+	{"I2S0_In_Mux", "Dummy_Widget", "I2S_DUMMY_IN"},
-+
-+	{"I2S1_Out_Mux", "Dummy_Widget", "I2S1"},
-+	{"I2S_DUMMY_OUT", NULL, "I2S1_Out_Mux"},
-+
-+	{"I2S2", NULL, "I2S2_In_Mux"},
-+	{"I2S2_In_Mux", "Dummy_Widget", "I2S_DUMMY_IN"},
-+
-+	{"I2S3_Out_Mux", "Dummy_Widget", "I2S3"},
-+	{"I2S_DUMMY_OUT", NULL, "I2S3_Out_Mux"},
-+
-+	/* i2s in lpbk */
-+	{"I2S0_Lpbk_Mux", "Lpbk", "I2S3"},
-+	{"I2S2_Lpbk_Mux", "Lpbk", "I2S1"},
-+	{"I2S0", NULL, "I2S0_Lpbk_Mux"},
-+	{"I2S2", NULL, "I2S2_Lpbk_Mux"},
-+};
-+
-+/* dai ops */
-+static int mtk_dai_connsys_i2s_hw_params(struct snd_pcm_substream *substream,
-+					 struct snd_pcm_hw_params *params,
-+					 struct snd_soc_dai *dai)
-+{
-+	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
-+	unsigned int rate = params_rate(params);
-+	unsigned int rate_reg = mt8186_rate_transform(afe->dev,
-+						      rate, dai->id);
-+	unsigned int i2s_con = 0;
-+
-+	dev_info(afe->dev, "%s(), id %d, stream %d, rate %d\n",
-+		 __func__,
-+		 dai->id,
-+		 substream->stream,
-+		 rate);
-+
-+	/* non-inverse, i2s mode, slave, 16bits, from connsys */
-+	i2s_con |= 0 << INV_PAD_CTRL_SFT;
-+	i2s_con |= I2S_FMT_I2S << I2S_FMT_SFT;
-+	i2s_con |= 1 << I2S_SRC_SFT;
-+	i2s_con |= get_i2s_wlen(SNDRV_PCM_FORMAT_S16_LE) << I2S_WLEN_SFT;
-+	i2s_con |= 0 << I2SIN_PAD_SEL_SFT;
-+	regmap_write(afe->regmap, AFE_CONNSYS_I2S_CON, i2s_con);
-+
-+	/* use asrc */
-+	regmap_update_bits(afe->regmap,
-+			   AFE_CONNSYS_I2S_CON,
-+			   I2S_BYPSRC_MASK_SFT,
-+			   0x0 << I2S_BYPSRC_SFT);
-+
-+	/* slave mode, set i2s for asrc */
-+	regmap_update_bits(afe->regmap,
-+			   AFE_CONNSYS_I2S_CON,
-+			   I2S_MODE_MASK_SFT,
-+			   rate_reg << I2S_MODE_SFT);
-+
-+	if (rate == 44100)
-+		regmap_write(afe->regmap, AFE_ASRC_2CH_CON3, 0x001B9000);
-+	else if (rate == 32000)
-+		regmap_write(afe->regmap, AFE_ASRC_2CH_CON3, 0x140000);
-+	else
-+		regmap_write(afe->regmap, AFE_ASRC_2CH_CON3, 0x001E0000);
-+
-+	/* Calibration setting */
-+	regmap_write(afe->regmap, AFE_ASRC_2CH_CON4, 0x00140000);
-+	regmap_write(afe->regmap, AFE_ASRC_2CH_CON9, 0x00036000);
-+	regmap_write(afe->regmap, AFE_ASRC_2CH_CON10, 0x0002FC00);
-+	regmap_write(afe->regmap, AFE_ASRC_2CH_CON6, 0x00007EF4);
-+	regmap_write(afe->regmap, AFE_ASRC_2CH_CON5, 0x00FF5986);
-+
-+	/* 0:Stereo 1:Mono */
-+	regmap_update_bits(afe->regmap,
-+			   AFE_ASRC_2CH_CON2,
-+			   CHSET_IS_MONO_MASK_SFT,
-+			   0x0 << CHSET_IS_MONO_SFT);
-+
-+	return 0;
-+}
-+
-+static int mtk_dai_connsys_i2s_trigger(struct snd_pcm_substream *substream,
-+				       int cmd, struct snd_soc_dai *dai)
-+{
-+	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
-+	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-+
-+	dev_info(afe->dev, "%s(), cmd %d, stream %d\n",
-+		 __func__,
-+		 cmd,
-+		 substream->stream);
-+
-+	switch (cmd) {
-+	case SNDRV_PCM_TRIGGER_START:
-+	case SNDRV_PCM_TRIGGER_RESUME:
-+		/* i2s enable */
-+		regmap_update_bits(afe->regmap,
-+				   AFE_CONNSYS_I2S_CON,
-+				   I2S_EN_MASK_SFT,
-+				   0x1 << I2S_EN_SFT);
-+
-+		/* calibrator enable */
-+		regmap_update_bits(afe->regmap,
-+				   AFE_ASRC_2CH_CON5,
-+				   CALI_EN_MASK_SFT,
-+				   0x1 << CALI_EN_SFT);
-+
-+		/* asrc enable */
-+		regmap_update_bits(afe->regmap,
-+				   AFE_ASRC_2CH_CON0,
-+				   CON0_CHSET_STR_CLR_MASK_SFT,
-+				   0x1 << CON0_CHSET_STR_CLR_SFT);
-+		regmap_update_bits(afe->regmap,
-+				   AFE_ASRC_2CH_CON0,
-+				   CON0_ASM_ON_MASK_SFT,
-+				   0x1 << CON0_ASM_ON_SFT);
-+
-+		afe_priv->dai_on[dai->id] = true;
-+		return 0;
-+	case SNDRV_PCM_TRIGGER_STOP:
-+	case SNDRV_PCM_TRIGGER_SUSPEND:
-+		regmap_update_bits(afe->regmap,
-+				   AFE_ASRC_2CH_CON0,
-+				   CON0_ASM_ON_MASK_SFT,
-+				   0 << CON0_ASM_ON_SFT);
-+		regmap_update_bits(afe->regmap,
-+				   AFE_ASRC_2CH_CON5,
-+				   CALI_EN_MASK_SFT,
-+				   0 << CALI_EN_SFT);
-+
-+		/* i2s disable */
-+		regmap_update_bits(afe->regmap,
-+				   AFE_CONNSYS_I2S_CON,
-+				   I2S_EN_MASK_SFT,
-+				   0x0 << I2S_EN_SFT);
-+
-+		/* bypass asrc */
-+		regmap_update_bits(afe->regmap,
-+				   AFE_CONNSYS_I2S_CON,
-+				   I2S_BYPSRC_MASK_SFT,
-+				   0x1 << I2S_BYPSRC_SFT);
-+
-+		afe_priv->dai_on[dai->id] = false;
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
-+static const struct snd_soc_dai_ops mtk_dai_connsys_i2s_ops = {
-+	.hw_params = mtk_dai_connsys_i2s_hw_params,
-+	.trigger = mtk_dai_connsys_i2s_trigger,
-+};
-+
-+/* i2s */
-+static int mtk_dai_i2s_config(struct mtk_base_afe *afe,
-+			      struct snd_pcm_hw_params *params,
-+			      int i2s_id)
-+{
-+	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-+	struct mtk_afe_i2s_priv *i2s_priv = afe_priv->dai_priv[i2s_id];
-+
-+	unsigned int rate = params_rate(params);
-+	unsigned int rate_reg = mt8186_rate_transform(afe->dev,
-+						      rate, i2s_id);
-+	snd_pcm_format_t format = params_format(params);
-+	unsigned int i2s_con = 0;
-+	int ret = 0;
-+
-+	dev_info(afe->dev, "%s(), id %d, rate %d, format %d\n",
-+		 __func__,
-+		 i2s_id,
-+		 rate, format);
-+
-+	if (i2s_priv)
-+		i2s_priv->rate = rate;
-+	else
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+
-+	switch (i2s_id) {
-+	case MT8186_DAI_I2S_0:
-+		i2s_con = I2S_IN_PAD_IO_MUX << I2SIN_PAD_SEL_SFT;
-+		i2s_con |= rate_reg << I2S_OUT_MODE_SFT;
-+		i2s_con |= I2S_FMT_I2S << I2S_FMT_SFT;
-+		i2s_con |= get_i2s_wlen(format) << I2S_WLEN_SFT;
-+		regmap_update_bits(afe->regmap, AFE_I2S_CON,
-+				   0xffffeffa, i2s_con);
-+		break;
-+	case MT8186_DAI_I2S_1:
-+		i2s_con = I2S1_SEL_O28_O29 << I2S2_SEL_O03_O04_SFT;
-+		i2s_con |= rate_reg << I2S2_OUT_MODE_SFT;
-+		i2s_con |= I2S_FMT_I2S << I2S2_FMT_SFT;
-+		i2s_con |= get_i2s_wlen(format) << I2S2_WLEN_SFT;
-+		regmap_update_bits(afe->regmap, AFE_I2S_CON1,
-+				   0xffffeffa, i2s_con);
-+		break;
-+	case MT8186_DAI_I2S_2:
-+		i2s_con = 8 << I2S3_UPDATE_WORD_SFT;
-+		i2s_con |= rate_reg << I2S3_OUT_MODE_SFT;
-+		i2s_con |= I2S_FMT_I2S << I2S3_FMT_SFT;
-+		i2s_con |= get_i2s_wlen(format) << I2S3_WLEN_SFT;
-+		regmap_update_bits(afe->regmap, AFE_I2S_CON2,
-+				   0xffffeffa, i2s_con);
-+		break;
-+	case MT8186_DAI_I2S_3:
-+		i2s_con = rate_reg << I2S4_OUT_MODE_SFT;
-+		i2s_con |= I2S_FMT_I2S << I2S4_FMT_SFT;
-+		i2s_con |= get_i2s_wlen(format) << I2S4_WLEN_SFT;
-+		regmap_update_bits(afe->regmap, AFE_I2S_CON3,
-+				   0xffffeffa, i2s_con);
-+		break;
-+	default:
-+		dev_info(afe->dev, "%s(), id %d not support\n",
-+			 __func__, i2s_id);
-+		return -EINVAL;
-+	}
-+
-+	/* set share i2s */
-+	if (i2s_priv && i2s_priv->share_i2s_id >= 0)
-+		ret = mtk_dai_i2s_config(afe, params, i2s_priv->share_i2s_id);
 +
 +	return ret;
 +}
 +
-+static int mtk_dai_i2s_hw_params(struct snd_pcm_substream *substream,
-+				 struct snd_pcm_hw_params *params,
-+				 struct snd_soc_dai *dai)
++static int apll1_mux_setting(struct mtk_base_afe *afe, bool enable)
 +{
-+	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
-+
-+	return mtk_dai_i2s_config(afe, params, dai->id);
-+}
-+
-+static int mtk_dai_i2s_set_sysclk(struct snd_soc_dai *dai,
-+				  int clk_id, unsigned int freq, int dir)
-+{
-+	struct mtk_base_afe *afe = dev_get_drvdata(dai->dev);
 +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-+	struct mtk_afe_i2s_priv *i2s_priv = afe_priv->dai_priv[dai->id];
-+	int apll;
-+	int apll_rate;
++	int ret = 0;
 +
-+	if (!i2s_priv) {
-+		dev_info(afe->dev, "%s(), i2s_priv == NULL", __func__);
-+		return -EINVAL;
-+	}
-+
-+	if (dir != SND_SOC_CLOCK_OUT) {
-+		dev_info(afe->dev, "%s(), dir != SND_SOC_CLOCK_OUT", __func__);
-+		return -EINVAL;
-+	}
-+
-+	dev_info(afe->dev, "%s(), freq %d\n", __func__, freq);
-+
-+	apll = mt8186_get_apll_by_rate(afe, freq);
-+	apll_rate = mt8186_get_apll_rate(afe, apll);
-+
-+	if (freq > apll_rate) {
-+		dev_info(afe->dev, "%s(), freq > apll rate", __func__);
-+		return -EINVAL;
-+	}
-+
-+	if (apll_rate % freq != 0) {
-+		dev_info(afe->dev, "%s(), APLL cannot generate freq Hz", __func__);
-+		return -EINVAL;
-+	}
-+
-+	i2s_priv->mclk_rate = freq;
-+	i2s_priv->mclk_apll = apll;
-+
-+	if (i2s_priv->share_i2s_id > 0) {
-+		struct mtk_afe_i2s_priv *share_i2s_priv;
-+
-+		share_i2s_priv = afe_priv->dai_priv[i2s_priv->share_i2s_id];
-+		if (!share_i2s_priv) {
-+			dev_info(afe->dev, "%s(), share_i2s_priv == NULL", __func__);
-+			return -EINVAL;
++	if (enable) {
++		ret = clk_prepare_enable(afe_priv->clk[CLK_TOP_MUX_AUD_1]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_1], ret);
++			goto EXIT;
++		}
++		ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUD_1],
++				     afe_priv->clk[CLK_TOP_APLL1_CK]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_1],
++				 aud_clks[CLK_TOP_APLL1_CK], ret);
++			goto EXIT;
 +		}
 +
-+		share_i2s_priv->mclk_rate = i2s_priv->mclk_rate;
-+		share_i2s_priv->mclk_apll = i2s_priv->mclk_apll;
-+	}
++		/* 180.6336 / 8 = 22.5792MHz */
++		ret = clk_prepare_enable(afe_priv->clk[CLK_TOP_MUX_AUD_ENG1]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_ENG1], ret);
++			goto EXIT;
++		}
++		ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUD_ENG1],
++				     afe_priv->clk[CLK_TOP_APLL1_D8]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_ENG1],
++				 aud_clks[CLK_TOP_APLL1_D8], ret);
++			goto EXIT;
++		}
++	} else {
++		ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUD_ENG1],
++				     afe_priv->clk[CLK_CLK26M]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_ENG1],
++				 aud_clks[CLK_CLK26M], ret);
++			goto EXIT;
++		}
++		clk_disable_unprepare(afe_priv->clk[CLK_TOP_MUX_AUD_ENG1]);
 +
++		ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUD_1],
++				     afe_priv->clk[CLK_CLK26M]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_1],
++				 aud_clks[CLK_CLK26M], ret);
++			goto EXIT;
++		}
++		clk_disable_unprepare(afe_priv->clk[CLK_TOP_MUX_AUD_1]);
++	}
++EXIT:
 +	return 0;
 +}
 +
-+static const struct snd_soc_dai_ops mtk_dai_i2s_ops = {
-+	.hw_params = mtk_dai_i2s_hw_params,
-+	.set_sysclk = mtk_dai_i2s_set_sysclk,
-+};
-+
-+/* dai driver */
-+#define MTK_CONNSYS_I2S_RATES (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000)
-+
-+#define MTK_I2S_RATES (SNDRV_PCM_RATE_8000_48000 |\
-+		       SNDRV_PCM_RATE_88200 |\
-+		       SNDRV_PCM_RATE_96000 |\
-+		       SNDRV_PCM_RATE_176400 |\
-+		       SNDRV_PCM_RATE_192000)
-+
-+#define MTK_I2S_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
-+			 SNDRV_PCM_FMTBIT_S24_LE |\
-+			 SNDRV_PCM_FMTBIT_S32_LE)
-+
-+static struct snd_soc_dai_driver mtk_dai_i2s_driver[] = {
-+	{
-+		.name = "CONNSYS_I2S",
-+		.id = MT8186_DAI_CONNSYS_I2S,
-+		.capture = {
-+			.stream_name = "Connsys I2S",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_CONNSYS_I2S_RATES,
-+			.formats = MTK_I2S_FORMATS,
-+		},
-+		.ops = &mtk_dai_connsys_i2s_ops,
-+	},
-+	{
-+		.name = "I2S0",
-+		.id = MT8186_DAI_I2S_0,
-+		.capture = {
-+			.stream_name = "I2S0",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_I2S_RATES,
-+			.formats = MTK_I2S_FORMATS,
-+		},
-+		.ops = &mtk_dai_i2s_ops,
-+	},
-+	{
-+		.name = "I2S1",
-+		.id = MT8186_DAI_I2S_1,
-+		.playback = {
-+			.stream_name = "I2S1",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_I2S_RATES,
-+			.formats = MTK_I2S_FORMATS,
-+		},
-+		.ops = &mtk_dai_i2s_ops,
-+	},
-+	{
-+		.name = "I2S2",
-+		.id = MT8186_DAI_I2S_2,
-+		.capture = {
-+			.stream_name = "I2S2",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_I2S_RATES,
-+			.formats = MTK_I2S_FORMATS,
-+		},
-+		.ops = &mtk_dai_i2s_ops,
-+	},
-+	{
-+		.name = "I2S3",
-+		.id = MT8186_DAI_I2S_3,
-+		.playback = {
-+			.stream_name = "I2S3",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_I2S_RATES,
-+			.formats = MTK_I2S_FORMATS,
-+		},
-+		.ops = &mtk_dai_i2s_ops,
-+	}
-+};
-+
-+/* this enum is merely for mtk_afe_i2s_priv declare */
-+enum {
-+	DAI_I2S0 = 0,
-+	DAI_I2S1,
-+	DAI_I2S2,
-+	DAI_I2S3,
-+	DAI_I2S_NUM,
-+};
-+
-+static const struct mtk_afe_i2s_priv mt8186_i2s_priv[DAI_I2S_NUM] = {
-+	[DAI_I2S0] = {
-+		.id = MT8186_DAI_I2S_0,
-+		.mclk_id = MT8186_I2S0_MCK,
-+		.share_property_name = "i2s0-share",
-+		.share_i2s_id = -1,
-+	},
-+	[DAI_I2S1] = {
-+		.id = MT8186_DAI_I2S_1,
-+		.mclk_id = MT8186_I2S1_MCK,
-+		.share_property_name = "i2s1-share",
-+		.share_i2s_id = -1,
-+	},
-+	[DAI_I2S2] = {
-+		.id = MT8186_DAI_I2S_2,
-+		.mclk_id = MT8186_I2S2_MCK,
-+		.share_property_name = "i2s2-share",
-+		.share_i2s_id = -1,
-+	},
-+	[DAI_I2S3] = {
-+		.id = MT8186_DAI_I2S_3,
-+		/*  clock gate naming is hf_faud_i2s4_m_ck*/
-+		.mclk_id = MT8186_I2S4_MCK,
-+		.share_property_name = "i2s3-share",
-+		.share_i2s_id = -1,
-+	}
-+};
-+
-+static int mt8186_dai_i2s_get_share(struct mtk_base_afe *afe)
++static int apll2_mux_setting(struct mtk_base_afe *afe, bool enable)
 +{
 +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-+	const struct device_node *of_node = afe->dev->of_node;
-+	const char *of_str;
-+	const char *property_name;
-+	struct mtk_afe_i2s_priv *i2s_priv;
-+	int i;
++	int ret = 0;
 +
-+	for (i = 0; i < DAI_I2S_NUM; i++) {
-+		i2s_priv = afe_priv->dai_priv[mt8186_i2s_priv[i].id];
-+		property_name = mt8186_i2s_priv[i].share_property_name;
-+		if (of_property_read_string(of_node, property_name, &of_str))
-+			continue;
-+		i2s_priv->share_i2s_id = get_i2s_id_by_name(afe, of_str);
++	if (enable) {
++		ret = clk_prepare_enable(afe_priv->clk[CLK_TOP_MUX_AUD_2]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_2], ret);
++			goto EXIT;
++		}
++		ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUD_2],
++				     afe_priv->clk[CLK_TOP_APLL2_CK]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_2],
++				 aud_clks[CLK_TOP_APLL2_CK], ret);
++			goto EXIT;
++		}
++
++		/* 196.608 / 8 = 24.576MHz */
++		ret = clk_prepare_enable(afe_priv->clk[CLK_TOP_MUX_AUD_ENG2]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_ENG2], ret);
++			goto EXIT;
++		}
++		ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUD_ENG2],
++				     afe_priv->clk[CLK_TOP_APLL2_D8]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_ENG2],
++				 aud_clks[CLK_TOP_APLL2_D8], ret);
++			goto EXIT;
++		}
++	} else {
++		ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUD_ENG2],
++				     afe_priv->clk[CLK_CLK26M]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_ENG2],
++				 aud_clks[CLK_CLK26M], ret);
++			goto EXIT;
++		}
++		clk_disable_unprepare(afe_priv->clk[CLK_TOP_MUX_AUD_ENG2]);
++
++		ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUD_2],
++				     afe_priv->clk[CLK_CLK26M]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[CLK_TOP_MUX_AUD_2],
++				 aud_clks[CLK_CLK26M], ret);
++			goto EXIT;
++		}
++		clk_disable_unprepare(afe_priv->clk[CLK_TOP_MUX_AUD_2]);
 +	}
 +
++EXIT:
 +	return 0;
 +}
 +
-+static int mt8186_dai_i2s_set_priv(struct mtk_base_afe *afe)
++int mt8186_afe_enable_cgs(struct mtk_base_afe *afe)
 +{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int ret = 0;
 +	int i;
-+	int ret;
 +
-+	for (i = 0; i < DAI_I2S_NUM; i++) {
-+		ret = mt8186_dai_set_priv(afe, mt8186_i2s_priv[i].id,
-+					  sizeof(struct mtk_afe_i2s_priv),
-+					  &mt8186_i2s_priv[i]);
-+		if (ret)
++	for (i = CLK_I2S1_BCLK; i <= CLK_ETDM_OUT1_BCLK; i++) {
++		ret = clk_prepare_enable(afe_priv->clk[i]);
++		if (ret) {
++			dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++				 __func__, aud_clks[i], ret);
 +			return ret;
++		}
 +	}
 +
 +	return 0;
 +}
 +
-+int mt8186_dai_i2s_register(struct mtk_base_afe *afe)
++void mt8186_afe_disable_cgs(struct mtk_base_afe *afe)
 +{
-+	struct mtk_base_afe_dai *dai;
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int i;
++
++	for (i = CLK_I2S1_BCLK; i <= CLK_ETDM_OUT1_BCLK; i++)
++		clk_disable_unprepare(afe_priv->clk[i]);
++}
++
++int mt8186_afe_enable_clock(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int ret = 0;
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_INFRA_SYS_AUDIO]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_INFRA_SYS_AUDIO], ret);
++		goto CLK_INFRA_SYS_AUDIO_ERR;
++	}
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_INFRA_AUDIO_26M]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_INFRA_AUDIO_26M], ret);
++		goto CLK_INFRA_AUDIO_26M_ERR;
++	}
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_MUX_AUDIO]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_MUX_AUDIO], ret);
++		goto CLK_MUX_AUDIO_ERR;
++	}
++	ret = clk_set_parent(afe_priv->clk[CLK_MUX_AUDIO],
++			     afe_priv->clk[CLK_CLK26M]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++			 __func__, aud_clks[CLK_MUX_AUDIO],
++			 aud_clks[CLK_CLK26M], ret);
++		goto CLK_MUX_AUDIO_ERR;
++	}
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_MUX_AUDIOINTBUS], ret);
++		goto CLK_MUX_AUDIO_INTBUS_ERR;
++	}
++	ret = mt8186_set_audio_int_bus_parent(afe,
++					      CLK_TOP_MAINPLL_D2_D4);
++	if (ret)
++		goto CLK_MUX_AUDIO_INTBUS_PARENT_ERR;
++
++	ret = clk_set_parent(afe_priv->clk[CLK_TOP_MUX_AUDIO_H],
++			     afe_priv->clk[CLK_TOP_APLL2_CK]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_set_parent %s-%s fail %d\n",
++			 __func__, aud_clks[CLK_TOP_MUX_AUDIO_H],
++			 aud_clks[CLK_TOP_APLL2_CK], ret);
++		goto CLK_MUX_AUDIO_H_PARENT_ERR;
++	}
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_AFE]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_AFE], ret);
++		goto CLK_AFE_ERR;
++	}
++
++	return 0;
++
++CLK_AFE_ERR:
++	clk_disable_unprepare(afe_priv->clk[CLK_AFE]);
++CLK_MUX_AUDIO_H_PARENT_ERR:
++CLK_MUX_AUDIO_INTBUS_PARENT_ERR:
++	mt8186_set_audio_int_bus_parent(afe, CLK_CLK26M);
++CLK_MUX_AUDIO_INTBUS_ERR:
++	clk_disable_unprepare(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++CLK_MUX_AUDIO_ERR:
++	clk_disable_unprepare(afe_priv->clk[CLK_MUX_AUDIO]);
++CLK_INFRA_SYS_AUDIO_ERR:
++	clk_disable_unprepare(afe_priv->clk[CLK_INFRA_SYS_AUDIO]);
++CLK_INFRA_AUDIO_26M_ERR:
++	clk_disable_unprepare(afe_priv->clk[CLK_INFRA_AUDIO_26M]);
++
++	return ret;
++}
++
++void mt8186_afe_disable_clock(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++
++	clk_disable_unprepare(afe_priv->clk[CLK_AFE]);
++	mt8186_set_audio_int_bus_parent(afe, CLK_CLK26M);
++	clk_disable_unprepare(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++	clk_disable_unprepare(afe_priv->clk[CLK_MUX_AUDIO]);
++	clk_disable_unprepare(afe_priv->clk[CLK_INFRA_AUDIO_26M]);
++	clk_disable_unprepare(afe_priv->clk[CLK_INFRA_SYS_AUDIO]);
++}
++
++int mt8186_afe_suspend_clock(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
 +	int ret;
 +
-+	dai = devm_kzalloc(afe->dev, sizeof(*dai), GFP_KERNEL);
-+	if (!dai)
++	/* set audio int bus to 26M */
++	ret = clk_prepare_enable(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_MUX_AUDIOINTBUS], ret);
++		goto CLK_MUX_AUDIO_INTBUS_ERR;
++	}
++	ret = mt8186_set_audio_int_bus_parent(afe, CLK_CLK26M);
++	if (ret)
++		goto CLK_MUX_AUDIO_INTBUS_PARENT_ERR;
++
++	clk_disable_unprepare(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++
++	return 0;
++
++CLK_MUX_AUDIO_INTBUS_PARENT_ERR:
++	mt8186_set_audio_int_bus_parent(afe, CLK_TOP_MAINPLL_D2_D4);
++CLK_MUX_AUDIO_INTBUS_ERR:
++	clk_disable_unprepare(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++	return ret;
++}
++
++int mt8186_afe_resume_clock(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int ret;
++
++	/* set audio int bus to normal working clock */
++	ret = clk_prepare_enable(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_MUX_AUDIOINTBUS], ret);
++		goto CLK_MUX_AUDIO_INTBUS_ERR;
++	}
++	ret = mt8186_set_audio_int_bus_parent(afe,
++					      CLK_TOP_MAINPLL_D2_D4);
++	if (ret)
++		goto CLK_MUX_AUDIO_INTBUS_PARENT_ERR;
++
++	clk_disable_unprepare(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++
++	return 0;
++
++CLK_MUX_AUDIO_INTBUS_PARENT_ERR:
++	mt8186_set_audio_int_bus_parent(afe, CLK_CLK26M);
++CLK_MUX_AUDIO_INTBUS_ERR:
++	clk_disable_unprepare(afe_priv->clk[CLK_MUX_AUDIOINTBUS]);
++	return ret;
++}
++
++int mt8186_apll1_enable(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int ret;
++
++	/* setting for APLL */
++	apll1_mux_setting(afe, true);
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_APLL22M]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_APLL22M], ret);
++		goto ERR_CLK_APLL22M;
++	}
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_APLL1_TUNER]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_APLL1_TUNER], ret);
++		goto ERR_CLK_APLL1_TUNER;
++	}
++
++	regmap_update_bits(afe->regmap, AFE_APLL1_TUNER_CFG,
++			   0x0000FFF7, 0x00000832);
++	regmap_update_bits(afe->regmap, AFE_APLL1_TUNER_CFG, 0x1, 0x1);
++
++	regmap_update_bits(afe->regmap, AFE_HD_ENGEN_ENABLE,
++			   AFE_22M_ON_MASK_SFT,
++			   0x1 << AFE_22M_ON_SFT);
++
++	return 0;
++
++ERR_CLK_APLL1_TUNER:
++	clk_disable_unprepare(afe_priv->clk[CLK_APLL1_TUNER]);
++ERR_CLK_APLL22M:
++	clk_disable_unprepare(afe_priv->clk[CLK_APLL22M]);
++
++	return ret;
++}
++
++void mt8186_apll1_disable(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++
++	regmap_update_bits(afe->regmap, AFE_HD_ENGEN_ENABLE,
++			   AFE_22M_ON_MASK_SFT,
++			   0x0 << AFE_22M_ON_SFT);
++
++	regmap_update_bits(afe->regmap, AFE_APLL1_TUNER_CFG, 0x1, 0x0);
++
++	clk_disable_unprepare(afe_priv->clk[CLK_APLL1_TUNER]);
++	clk_disable_unprepare(afe_priv->clk[CLK_APLL22M]);
++
++	apll1_mux_setting(afe, false);
++}
++
++int mt8186_apll2_enable(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int ret;
++
++	/* setting for APLL */
++	apll2_mux_setting(afe, true);
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_APLL24M]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_APLL24M], ret);
++		goto ERR_CLK_APLL24M;
++	}
++
++	ret = clk_prepare_enable(afe_priv->clk[CLK_APLL2_TUNER]);
++	if (ret) {
++		dev_info(afe->dev, "%s clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[CLK_APLL2_TUNER], ret);
++		goto ERR_CLK_APLL2_TUNER;
++	}
++
++	regmap_update_bits(afe->regmap, AFE_APLL2_TUNER_CFG,
++			   0x0000FFF7, 0x00000634);
++	regmap_update_bits(afe->regmap, AFE_APLL2_TUNER_CFG, 0x1, 0x1);
++
++	regmap_update_bits(afe->regmap, AFE_HD_ENGEN_ENABLE,
++			   AFE_24M_ON_MASK_SFT,
++			   0x1 << AFE_24M_ON_SFT);
++
++	return 0;
++
++ERR_CLK_APLL2_TUNER:
++	clk_disable_unprepare(afe_priv->clk[CLK_APLL2_TUNER]);
++ERR_CLK_APLL24M:
++	clk_disable_unprepare(afe_priv->clk[CLK_APLL24M]);
++
++	return ret;
++}
++
++void mt8186_apll2_disable(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++
++	regmap_update_bits(afe->regmap, AFE_HD_ENGEN_ENABLE,
++			   AFE_24M_ON_MASK_SFT,
++			   0x0 << AFE_24M_ON_SFT);
++
++	regmap_update_bits(afe->regmap, AFE_APLL2_TUNER_CFG, 0x1, 0x0);
++
++	clk_disable_unprepare(afe_priv->clk[CLK_APLL2_TUNER]);
++	clk_disable_unprepare(afe_priv->clk[CLK_APLL24M]);
++
++	apll2_mux_setting(afe, false);
++}
++
++int mt8186_get_apll_rate(struct mtk_base_afe *afe, int apll)
++{
++	return (apll == MT8186_APLL1) ? 180633600 : 196608000;
++}
++
++int mt8186_get_apll_by_rate(struct mtk_base_afe *afe, int rate)
++{
++	return ((rate % 8000) == 0) ? MT8186_APLL2 : MT8186_APLL1;
++}
++
++int mt8186_get_apll_by_name(struct mtk_base_afe *afe, const char *name)
++{
++	if (strcmp(name, APLL1_W_NAME) == 0)
++		return MT8186_APLL1;
++	else
++		return MT8186_APLL2;
++}
++
++/* mck */
++struct mt8186_mck_div {
++	int m_sel_id;
++	int div_clk_id;
++	/* below will be deprecated */
++	int div_pdn_reg;
++	int div_pdn_mask_sft;
++	int div_reg;
++	int div_mask_sft;
++	int div_mask;
++	int div_sft;
++	int div_msb_reg;
++	int div_msb_mask_sft;
++	int div_msb_mask;
++	int div_msb_sft;
++	int div_apll_sel_reg;
++	int div_apll_sel_mask_sft;
++	int div_apll_sel_sft;
++	int div_inv_reg;
++	int div_inv_mask_sft;
++};
++
++static const struct mt8186_mck_div mck_div[MT8186_MCK_NUM] = {
++	[MT8186_I2S0_MCK] = {
++		.m_sel_id = CLK_TOP_I2S0_M_SEL,
++		.div_clk_id = CLK_TOP_APLL12_DIV0,
++		.div_pdn_reg = CLK_AUDDIV_0,
++		.div_pdn_mask_sft = APLL12_DIV0_PDN_MASK_SFT,
++		.div_reg = CLK_AUDDIV_2,
++		.div_mask_sft = APLL12_CK_DIV0_MASK_SFT,
++		.div_mask = APLL12_CK_DIV0_MASK,
++		.div_sft = APLL12_CK_DIV0_SFT,
++		.div_apll_sel_reg = CLK_AUDDIV_0,
++		.div_apll_sel_mask_sft = APLL_I2S0_MCK_SEL_MASK_SFT,
++		.div_apll_sel_sft = APLL_I2S0_MCK_SEL_SFT,
++	},
++	[MT8186_I2S1_MCK] = {
++		.m_sel_id = CLK_TOP_I2S1_M_SEL,
++		.div_clk_id = CLK_TOP_APLL12_DIV1,
++		.div_pdn_reg = CLK_AUDDIV_0,
++		.div_pdn_mask_sft = APLL12_DIV1_PDN_MASK_SFT,
++		.div_reg = CLK_AUDDIV_2,
++		.div_mask_sft = APLL12_CK_DIV1_MASK_SFT,
++		.div_mask = APLL12_CK_DIV1_MASK,
++		.div_sft = APLL12_CK_DIV1_SFT,
++		.div_apll_sel_reg = CLK_AUDDIV_0,
++		.div_apll_sel_mask_sft = APLL_I2S1_MCK_SEL_MASK_SFT,
++		.div_apll_sel_sft = APLL_I2S1_MCK_SEL_SFT,
++	},
++	[MT8186_I2S2_MCK] = {
++		.m_sel_id = CLK_TOP_I2S2_M_SEL,
++		.div_clk_id = CLK_TOP_APLL12_DIV2,
++		.div_pdn_reg = CLK_AUDDIV_0,
++		.div_pdn_mask_sft = APLL12_DIV2_PDN_MASK_SFT,
++		.div_reg = CLK_AUDDIV_2,
++		.div_mask_sft = APLL12_CK_DIV2_MASK_SFT,
++		.div_mask = APLL12_CK_DIV2_MASK,
++		.div_sft = APLL12_CK_DIV2_SFT,
++		.div_apll_sel_reg = CLK_AUDDIV_0,
++		.div_apll_sel_mask_sft = APLL_I2S2_MCK_SEL_MASK_SFT,
++		.div_apll_sel_sft = APLL_I2S2_MCK_SEL_SFT,
++	},
++	[MT8186_I2S4_MCK] = {
++		.m_sel_id = CLK_TOP_I2S4_M_SEL,
++		.div_clk_id = CLK_TOP_APLL12_DIV4,
++		.div_pdn_reg = CLK_AUDDIV_0,
++		.div_pdn_mask_sft = APLL12_DIV4_PDN_MASK_SFT,
++		.div_reg = CLK_AUDDIV_2,
++		.div_mask_sft = APLL12_CK_DIV4_MASK_SFT,
++		.div_mask = APLL12_CK_DIV4_MASK,
++		.div_sft = APLL12_CK_DIV4_SFT,
++		.div_apll_sel_reg = CLK_AUDDIV_0,
++		.div_apll_sel_mask_sft = APLL_I2S4_MCK_SEL_MASK_SFT,
++		.div_apll_sel_sft = APLL_I2S4_MCK_SEL_SFT,
++	},
++	[MT8186_TDM_MCK] = {
++		.m_sel_id = CLK_TOP_TDM_M_SEL,
++		.div_clk_id = CLK_TOP_APLL12_DIV_TDM,
++		.div_pdn_reg = CLK_AUDDIV_0,
++		.div_pdn_mask_sft = APLL12_DIV_TDM_PDN_MASK_SFT,
++		.div_reg = CLK_AUDDIV_3,
++		.div_mask_sft = APLL12_CK_DIV_TDM_MASK_SFT,
++		.div_mask = APLL12_CK_DIV_TDM_MASK,
++		.div_sft = APLL12_CK_DIV_TDM_SFT,
++		.div_apll_sel_reg = CLK_AUDDIV_0,
++		.div_apll_sel_mask_sft = APLL_TDM_MCK_SEL_MASK_SFT,
++		.div_apll_sel_sft = APLL_TDM_MCK_SEL_SFT,
++	},
++};
++
++int mt8186_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int apll = mt8186_get_apll_by_rate(afe, rate);
++	int apll_clk_id = apll == MT8186_APLL1 ?
++			  CLK_TOP_MUX_AUD_1 : CLK_TOP_MUX_AUD_2;
++	int m_sel_id = mck_div[mck_id].m_sel_id;
++	int div_clk_id = mck_div[mck_id].div_clk_id;
++	int ret;
++
++	/* select apll */
++	if (m_sel_id >= 0) {
++		ret = clk_prepare_enable(afe_priv->clk[m_sel_id]);
++		if (ret) {
++			dev_info(afe->dev, "%s(), clk_prepare_enable %s fail %d\n",
++				 __func__, aud_clks[m_sel_id], ret);
++			return ret;
++		}
++		ret = clk_set_parent(afe_priv->clk[m_sel_id],
++				     afe_priv->clk[apll_clk_id]);
++		if (ret) {
++			dev_info(afe->dev, "%s(), clk_set_parent %s-%s fail %d\n",
++				 __func__, aud_clks[m_sel_id],
++				aud_clks[apll_clk_id], ret);
++			return ret;
++		}
++	}
++
++	/* enable div, set rate */
++	ret = clk_prepare_enable(afe_priv->clk[div_clk_id]);
++	if (ret) {
++		dev_info(afe->dev, "%s(), clk_prepare_enable %s fail %d\n",
++			 __func__, aud_clks[div_clk_id], ret);
++		return ret;
++	}
++	ret = clk_set_rate(afe_priv->clk[div_clk_id], rate);
++	if (ret) {
++		dev_info(afe->dev, "%s(), clk_set_rate %s, rate %d, fail %d\n",
++			 __func__, aud_clks[div_clk_id],
++			 rate, ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++void mt8186_mck_disable(struct mtk_base_afe *afe, int mck_id)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int m_sel_id = mck_div[mck_id].m_sel_id;
++	int div_clk_id = mck_div[mck_id].div_clk_id;
++
++	clk_disable_unprepare(afe_priv->clk[div_clk_id]);
++	if (m_sel_id >= 0)
++		clk_disable_unprepare(afe_priv->clk[m_sel_id]);
++}
++
++int mt8186_init_clock(struct mtk_base_afe *afe)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	struct device_node *of_node = afe->dev->of_node;
++	int i = 0;
++
++	 mt8186_audsys_clk_register(afe);
++
++	afe_priv->clk = devm_kcalloc(afe->dev, CLK_NUM, sizeof(*afe_priv->clk),
++				     GFP_KERNEL);
++	if (!afe_priv->clk)
 +		return -ENOMEM;
 +
-+	list_add(&dai->list, &afe->sub_dais);
++	for (i = 0; i < CLK_NUM; i++) {
++		afe_priv->clk[i] = devm_clk_get(afe->dev, aud_clks[i]);
++		if (IS_ERR(afe_priv->clk[i])) {
++			dev_info(afe->dev, "%s devm_clk_get %s fail, ret %ld\n",
++				 __func__,
++				 aud_clks[i], PTR_ERR(afe_priv->clk[i]));
++			afe_priv->clk[i] = NULL;
++		}
++	}
 +
-+	dai->dai_drivers = mtk_dai_i2s_driver;
-+	dai->num_dai_drivers = ARRAY_SIZE(mtk_dai_i2s_driver);
++	afe_priv->apmixedsys = syscon_regmap_lookup_by_phandle(of_node,
++							       "mediatek,apmixedsys");
++	if (IS_ERR(afe_priv->apmixedsys)) {
++		dev_err(afe->dev, "%s() Cannot find apmixedsys controller: %ld\n",
++			__func__, PTR_ERR(afe_priv->apmixedsys));
++		return PTR_ERR(afe_priv->apmixedsys);
++	}
 +
-+	dai->controls = mtk_dai_i2s_controls;
-+	dai->num_controls = ARRAY_SIZE(mtk_dai_i2s_controls);
-+	dai->dapm_widgets = mtk_dai_i2s_widgets;
-+	dai->num_dapm_widgets = ARRAY_SIZE(mtk_dai_i2s_widgets);
-+	dai->dapm_routes = mtk_dai_i2s_routes;
-+	dai->num_dapm_routes = ARRAY_SIZE(mtk_dai_i2s_routes);
++	afe_priv->topckgen = syscon_regmap_lookup_by_phandle(of_node,
++							     "mediatek,topckgen");
++	if (IS_ERR(afe_priv->topckgen)) {
++		dev_err(afe->dev, "%s() Cannot find topckgen controller: %ld\n",
++			__func__, PTR_ERR(afe_priv->topckgen));
++		return PTR_ERR(afe_priv->topckgen);
++	}
 +
-+	/* set all dai i2s private data */
-+	ret = mt8186_dai_i2s_set_priv(afe);
-+	if (ret)
-+		return ret;
-+
-+	/* parse share i2s */
-+	ret = mt8186_dai_i2s_get_share(afe);
-+	if (ret)
-+		return ret;
++	afe_priv->infracfg = syscon_regmap_lookup_by_phandle(of_node,
++							     "mediatek,infracfg");
++	if (IS_ERR(afe_priv->infracfg)) {
++		dev_err(afe->dev, "%s() Cannot find infracfg: %ld\n",
++			__func__, PTR_ERR(afe_priv->infracfg));
++		return PTR_ERR(afe_priv->infracfg);
++	}
 +
 +	return 0;
 +}
++
++void mt8186_deinit_clock(struct mtk_base_afe *afe)
++{
++	mt8186_audsys_clk_unregister(afe);
++}
+diff --git a/sound/soc/mediatek/mt8186/mt8186-afe-clk.h b/sound/soc/mediatek/mt8186/mt8186-afe-clk.h
+new file mode 100644
+index 000000000000..3ce7a9a24d4a
+--- /dev/null
++++ b/sound/soc/mediatek/mt8186/mt8186-afe-clk.h
+@@ -0,0 +1,210 @@
++/* SPDX-License-Identifier: GPL-2.0
++ *
++ * mt8186-afe-clk.h  --  Mediatek 8186 afe clock ctrl definition
++ *
++ * Copyright (c) 2022 MediaTek Inc.
++ * Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
++ */
++
++#ifndef _MT8186_AFE_CLOCK_CTRL_H_
++#define _MT8186_AFE_CLOCK_CTRL_H_
++
++#define PERI_BUS_DCM_CTRL 0x0074
++#define MODULE_SW_CG_1_STA 0x0094
++#define MODULE_SW_CG_2_STA 0x00ac
++#define CLK_CFG_7 0x0080
++#define CLK_CFG_8 0x0090
++#define CLK_CFG_11 0x00c0
++#define CLK_CFG_12 0x00d0
++#define CLK_CFG_13 0x00e0
++#define CLK_CFG_15 0x0100
++#define AP_PLL_CON3 0x0014
++#define APLL1_CON4 0x0328
++#define APLL1_TUNER_CON0 0x0040
++#define APLL2_CON4 0x033c
++#define APLL2_TUNER_CON0 0x0044
++
++#define AP_PLL_CON5 0x0014
++#define APLL1_CON0 0x02c0
++#define APLL1_CON1 0x02c4
++#define APLL1_CON2 0x02c8
++#define APLL1_CON3 0x02cc
++#define APLL1_PWR_CON0 0x02d0
++
++#define APLL2_CON0 0x02d4
++#define APLL2_CON1 0x02d8
++#define APLL2_CON2 0x02dc
++#define APLL2_CON3 0x02e0
++#define APLL2_PWR_CON0 0x02e4
++
++#define APMIXEDSYS_MAX_LENGTH APLL2_PWR_CON0
++
++#define CLK_CFG_6 0x0080
++#define CLK_AUDDIV_0 0x0320
++#define CLK_AUDDIV_1 0x0324
++#define CLK_AUDDIV_2 0x0328
++#define CKSYS_AUD_TOP_CFG 0x032c
++#define CKSYS_AUD_TOP_MON 0x0330
++#define CLK_AUDDIV_3 0x0334
++
++#define CLK_MAX_LENGTH CLK_AUDDIV_3
++
++/* CLK_CFG_6 */
++#define CLK_AUD_INTBUS_SEL_SFT              16
++#define CLK_AUD_INTBUS_SEL_MASK             0x3
++#define CLK_AUD_INTBUS_SEL_MASK_SFT         (0x3 << 16)
++
++/* CLK_AUDDIV_0 */
++#define APLL12_DIV0_PDN_SFT                0
++#define APLL12_DIV0_PDN_MASK               0x1
++#define APLL12_DIV0_PDN_MASK_SFT           (0x1 << 0)
++#define APLL12_DIV1_PDN_SFT                1
++#define APLL12_DIV1_PDN_MASK               0x1
++#define APLL12_DIV1_PDN_MASK_SFT           (0x1 << 1)
++#define APLL12_DIV2_PDN_SFT                2
++#define APLL12_DIV2_PDN_MASK               0x1
++#define APLL12_DIV2_PDN_MASK_SFT           (0x1 << 2)
++#define APLL12_DIV4_PDN_SFT                3
++#define APLL12_DIV4_PDN_MASK               0x1
++#define APLL12_DIV4_PDN_MASK_SFT           (0x1 << 3)
++#define APLL12_DIV_TDM_PDN_SFT             4
++#define APLL12_DIV_TDM_PDN_MASK            0x1
++#define APLL12_DIV_TDM_PDN_MASK_SFT        (0x1 << 4)
++#define APLL_I2S0_MCK_SEL_SFT              16
++#define APLL_I2S0_MCK_SEL_MASK             0x1
++#define APLL_I2S0_MCK_SEL_MASK_SFT         (0x1 << 16)
++#define APLL_I2S1_MCK_SEL_SFT              17
++#define APLL_I2S1_MCK_SEL_MASK             0x1
++#define APLL_I2S1_MCK_SEL_MASK_SFT         (0x1 << 17)
++#define APLL_I2S2_MCK_SEL_SFT              18
++#define APLL_I2S2_MCK_SEL_MASK             0x1
++#define APLL_I2S2_MCK_SEL_MASK_SFT         (0x1 << 17)
++#define APLL_I2S4_MCK_SEL_SFT              19
++#define APLL_I2S4_MCK_SEL_MASK             0x1
++#define APLL_I2S4_MCK_SEL_MASK_SFT         (0x1 << 19)
++#define APLL_TDM_MCK_SEL_SFT               20
++#define APLL_TDM_MCK_SEL_MASK              0x1
++#define APLL_TDM_MCK_SEL_MASK_SFT          (0x1 << 20)
++
++/* CLK_AUDDIV_2 */
++#define APLL12_CK_DIV0_SFT                 0
++#define APLL12_CK_DIV0_MASK                0xff
++#define APLL12_CK_DIV0_MASK_SFT            (0xff << 0)
++#define APLL12_CK_DIV1_SFT                 8
++#define APLL12_CK_DIV1_MASK                0xff
++#define APLL12_CK_DIV1_MASK_SFT            (0xff << 8)
++#define APLL12_CK_DIV2_SFT                 16
++#define APLL12_CK_DIV2_MASK                0xff
++#define APLL12_CK_DIV2_MASK_SFT            (0xff << 16)
++#define APLL12_CK_DIV4_SFT                 24
++#define APLL12_CK_DIV4_MASK                0xff
++#define APLL12_CK_DIV4_MASK_SFT            (0xff << 24)
++
++/* CLK_AUDDIV_3 */
++#define APLL12_CK_DIV_TDM_SFT              0
++#define APLL12_CK_DIV_TDM_MASK             0xff
++#define APLL12_CK_DIV_TDM_MASK_SFT         (0xff << 0)
++
++/* AUD_TOP_CFG */
++#define AUD_TOP_CFG_SFT                    0
++#define AUD_TOP_CFG_MASK                   0xffffffff
++#define AUD_TOP_CFG_MASK_SFT               (0xffffffff << 0)
++
++/* AUD_TOP_MON */
++#define AUD_TOP_MON_SFT                    0
++#define AUD_TOP_MON_MASK                   0xffffffff
++#define AUD_TOP_MON_MASK_SFT               (0xffffffff << 0)
++
++/* APLL */
++#define APLL1_W_NAME "APLL1"
++#define APLL2_W_NAME "APLL2"
++enum {
++	MT8186_APLL1 = 0,
++	MT8186_APLL2,
++};
++
++enum {
++	CLK_AFE = 0,
++	CLK_DAC,
++	CLK_DAC_PREDIS,
++	CLK_ADC,
++	CLK_TML,
++	CLK_APLL22M,
++	CLK_APLL24M,
++	CLK_APLL1_TUNER,
++	CLK_APLL2_TUNER,
++	CLK_TDM,
++	CLK_NLE,
++	CLK_DAC_HIRES,
++	CLK_ADC_HIRES,
++	CLK_I2S1_BCLK,
++	CLK_I2S2_BCLK,
++	CLK_I2S3_BCLK,
++	CLK_I2S4_BCLK,
++	CLK_CONNSYS_I2S_ASRC,
++	CLK_GENERAL1_ASRC,
++	CLK_GENERAL2_ASRC,
++	CLK_ADC_HIRES_TML,
++	CLK_ADDA6_ADC,
++	CLK_ADDA6_ADC_HIRES,
++	CLK_3RD_DAC,
++	CLK_3RD_DAC_PREDIS,
++	CLK_3RD_DAC_TML,
++	CLK_3RD_DAC_HIRES,
++	CLK_ETDM_IN1_BCLK,
++	CLK_ETDM_OUT1_BCLK,
++	CLK_INFRA_SYS_AUDIO,
++	CLK_INFRA_AUDIO_26M,
++	CLK_MUX_AUDIO,
++	CLK_MUX_AUDIOINTBUS,
++	CLK_TOP_MAINPLL_D2_D4,
++	/* apll related mux */
++	CLK_TOP_MUX_AUD_1,
++	CLK_TOP_APLL1_CK,
++	CLK_TOP_MUX_AUD_2,
++	CLK_TOP_APLL2_CK,
++	CLK_TOP_MUX_AUD_ENG1,
++	CLK_TOP_APLL1_D8,
++	CLK_TOP_MUX_AUD_ENG2,
++	CLK_TOP_APLL2_D8,
++	CLK_TOP_MUX_AUDIO_H,
++	CLK_TOP_I2S0_M_SEL,
++	CLK_TOP_I2S1_M_SEL,
++	CLK_TOP_I2S2_M_SEL,
++	CLK_TOP_I2S4_M_SEL,
++	CLK_TOP_TDM_M_SEL,
++	CLK_TOP_APLL12_DIV0,
++	CLK_TOP_APLL12_DIV1,
++	CLK_TOP_APLL12_DIV2,
++	CLK_TOP_APLL12_DIV4,
++	CLK_TOP_APLL12_DIV_TDM,
++	CLK_CLK26M,
++	CLK_NUM
++};
++
++struct mtk_base_afe;
++int mt8186_set_audio_int_bus_parent(struct mtk_base_afe *afe, int clk_id);
++int mt8186_init_clock(struct mtk_base_afe *afe);
++void mt8186_deinit_clock(struct mtk_base_afe *afe);
++int mt8186_afe_enable_cgs(struct mtk_base_afe *afe);
++void mt8186_afe_disable_cgs(struct mtk_base_afe *afe);
++int mt8186_afe_enable_clock(struct mtk_base_afe *afe);
++void mt8186_afe_disable_clock(struct mtk_base_afe *afe);
++int mt8186_afe_suspend_clock(struct mtk_base_afe *afe);
++int mt8186_afe_resume_clock(struct mtk_base_afe *afe);
++
++int mt8186_apll1_enable(struct mtk_base_afe *afe);
++void mt8186_apll1_disable(struct mtk_base_afe *afe);
++
++int mt8186_apll2_enable(struct mtk_base_afe *afe);
++void mt8186_apll2_disable(struct mtk_base_afe *afe);
++
++int mt8186_get_apll_rate(struct mtk_base_afe *afe, int apll);
++int mt8186_get_apll_by_rate(struct mtk_base_afe *afe, int rate);
++int mt8186_get_apll_by_name(struct mtk_base_afe *afe, const char *name);
++
++/* these will be replaced by using CCF */
++int mt8186_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate);
++void mt8186_mck_disable(struct mtk_base_afe *afe, int mck_id);
++
++#endif
 -- 
 2.18.0
 
