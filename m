@@ -2,339 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B849C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240799AbiBQNNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:13:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57594 "EHLO
+        id S240486AbiBQNOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:14:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240729AbiBQNNX (ORCPT
+        with ESMTP id S240817AbiBQNNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:13:23 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A3412AE285
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:13:09 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BCAD11396;
-        Thu, 17 Feb 2022 05:12:53 -0800 (PST)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E4E8F3F66F;
-        Thu, 17 Feb 2022 05:12:51 -0800 (PST)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
-        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
-        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
-        igor.skalkin@opensynergy.com, cristian.marussi@arm.com,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH v5 1/8] firmware: arm_scmi: Add a virtio channel refcount
-Date:   Thu, 17 Feb 2022 13:12:27 +0000
-Message-Id: <20220217131234.50328-2-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220217131234.50328-1-cristian.marussi@arm.com>
-References: <20220217131234.50328-1-cristian.marussi@arm.com>
+        Thu, 17 Feb 2022 08:13:51 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B14F2AFE9A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:13:32 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id r20so8266903ljj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:13:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pdlNEpbYE3AKZ4++IrQq+erVwdFLOX7YrQql8ZPAing=;
+        b=diluvxs/p/mDwX2wAUYQSiDQnxJujdPkx+IxZgFACL8A7mgOPrUjzGgnge3fLEh6/C
+         rIxTy+DI2rse2zra/YRAxuOOULUoyonrRTvf/qeJfcSXgXWilzcRWUluD/Siru9Zkt+h
+         5viN31OFq6CIdv1TJjsfa1BEsfRV3VGLfnh44Bi0qRXeLBezDpeD1f/j1uqs3gUzR3OI
+         XSUrMFZXPazlUapXQDeEjkUs0Fye1/Zcw38lZiHlXSYhyLb+LfzBa2GZoSMQWoFWbZ3Q
+         CPVnm2YMUxwV8TqL86wjL4cncqnQ7/oohvs+kYZxa8zJ7Yt8GaB3MPIwIIdzc4B7YKH5
+         N38g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pdlNEpbYE3AKZ4++IrQq+erVwdFLOX7YrQql8ZPAing=;
+        b=pnmXsgFWCf7+z1yOEnNDxoNdu9Y2vkBA7fVNpZmZZ2Yhx9v8o7OAnNOGCto2V+gmf4
+         aY2wpSJMtr5EmZRcyYKAZbAcv5AVK7GTWpNNgOoRHWSqgey5cbpiHGKYpFz3vHOuxVMZ
+         9Wfbwxoha1zKcp2DxvHqkMhqDDD3u6rzNYZb527rpg8XGO6bsc/wsV5xDfl70stezqAu
+         K5DiyOmeUOefgpQtIxts7gn8TfM3XePV/DLTnp5x7yk976KpkqHX6C7LE2V98L1DYd1w
+         lQDFywH+4yjIZ/J/F0VBk055WlwW77DZT4vXrEYnRVfoXTOCPI9hIUIY0Gr9/jX8iyAx
+         sNGA==
+X-Gm-Message-State: AOAM533mXU1Bpzh2bbfy3wpEhJJkKvwZ1WGDBd+QZXZszwgM7WItGidc
+        +FF7CsyLXTRTsD7mLACoIppU7wcDasdxu+PKf1Ra7A==
+X-Google-Smtp-Source: ABdhPJwHbTeXogZyYR1sNuEfn18kJ05zYRCC7JuJLH6m5k7uhKBnDRk+3nhVg2/rZfeazilHULJve593HVImXgDT45U=
+X-Received: by 2002:a05:651c:50f:b0:239:3332:2a1e with SMTP id
+ o15-20020a05651c050f00b0023933322a1emr2216225ljp.16.1645103610821; Thu, 17
+ Feb 2022 05:13:30 -0800 (PST)
+MIME-Version: 1.0
+References: <20220130210210.549877-1-daniel.lezcano@linaro.org>
+ <20220130210210.549877-4-daniel.lezcano@linaro.org> <CAPDyKFp5X7JuhXWSb--FUVwF=r-wtnPW0My9=oG14vHaPxSZFQ@mail.gmail.com>
+ <0e7bf391-08f1-88b3-14c2-8bbf45ad7491@linaro.org>
+In-Reply-To: <0e7bf391-08f1-88b3-14c2-8bbf45ad7491@linaro.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 17 Feb 2022 14:12:54 +0100
+Message-ID: <CAPDyKFq1sbLYn+uWmNB-X_tWz0vsLoUY-fyVa2634sZ-nz=ipA@mail.gmail.com>
+Subject: Re: [PATCH v1 4/7] powercap/dtpm: Destroy hierarchy function
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     rjw@rjwysocki.net, heiko@sntech.de, lukasz.luba@arm.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently SCMI VirtIO channels are marked with a ready flag and related
-lock to track channel lifetime and support proper synchronization at
-shutdown when virtqueues have to be stopped.
+On Wed, 16 Feb 2022 at 20:25, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+>
+> On 16/02/2022 17:31, Ulf Hansson wrote:
+> > On Sun, 30 Jan 2022 at 22:02, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+> >>
+> >> The hierarchy creation function exits but without a destroy hierarchy
+> >> function. Due to that, the modules creating the hierarchy can not be
+> >> unloaded properly because they don't have an exit callback.
+> >>
+> >> Provide the dtpm_destroy_hierarchy() function to remove the previously
+> >> created hierarchy.
+> >>
+> >> The function relies on all the release mechanisms implemented by the
+> >> underlying powercap framework.
+> >>
+> >> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> >> ---
+> >>   drivers/powercap/dtpm.c | 43 +++++++++++++++++++++++++++++++++++++++++
+> >>   include/linux/dtpm.h    |  3 +++
+> >>   2 files changed, 46 insertions(+)
+> >>
+> >> diff --git a/drivers/powercap/dtpm.c b/drivers/powercap/dtpm.c
+> >> index 7bddd25a6767..d9d74f981118 100644
+> >> --- a/drivers/powercap/dtpm.c
+> >> +++ b/drivers/powercap/dtpm.c
+> >> @@ -617,3 +617,46 @@ int dtpm_create_hierarchy(struct of_device_id *dtpm_match_table)
+> >>          return ret;
+> >>   }
+> >>   EXPORT_SYMBOL_GPL(dtpm_create_hierarchy);
+> >> +
+> >> +static void __dtpm_destroy_hierarchy(struct dtpm *dtpm)
+> >> +{
+> >> +       struct dtpm *child, *aux;
+> >> +
+> >> +       list_for_each_entry_safe(child, aux, &dtpm->children, sibling)
+> >> +               __dtpm_destroy_hierarchy(child);
+> >> +
+> >> +       /*
+> >> +        * At this point, we know all children were removed from the
+> >> +        * recursive call before
+> >> +        */
+> >> +       dtpm_unregister(dtpm);
+> >> +}
+> >> +
+> >> +void dtpm_destroy_hierarchy(void)
+> >> +{
+> >> +       int i;
+> >> +
+> >> +       mutex_lock(&dtpm_lock);
+> >> +
+> >> +       if (!pct)
+> >
+> > As I kind of indicated in one of the earlier replies, it looks like
+> > dtpm_lock is being used to protect the global "pct". What else?
+>
+> The root node pointer and the lists describing the hierarchy
+>
+> > Rather than doing it like this, couldn't you instead let
+> > dtpm_create_hiearchy() return a handle/cookie for a "dtpm hierarchy".
+> > This handle then needs to be passed to dtpm_destroy_hierarchy().
+> >
+> > In this way, the "pct" doesn't need to be protected and you wouldn't
+> > need the global "pct" at all. Although, maybe there would be other
+> > problems with this?
+>
+> The only problem I see with this approach is the dtpm framework is
+> designed to be a singleton, no other instance of the hierarchy can exists.
 
-This leads to some extended spinlocked sections with IRQs off on the RX
-path to keep hold of the ready flag and does not scale well especially when
-SCMI VirtIO polling mode will be introduced.
+Right. So, it's not likely that we need to change this in future then,
+I assume!?
 
-Add an SCMI VirtIO channel dedicated refcount to track active users on both
-the TX and the RX path and properly enforce synchronization and cleanup at
-shutdown, inhibiting further usage of the channel once freed.
+>
+> By allowing returning a pointer or whatever, that implies multiple
+> controller can be created.
 
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Igor Skalkin <igor.skalkin@opensynergy.com>
-Cc: Peter Hilber <peter.hilber@opensynergy.com>
-Cc: virtualization@lists.linux-foundation.org
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
----
-v4 --> v5
-- removed unneeded virtqueue re-enable when fail to acquire channel in
-  complete_cb
-v2 --> v3
-- Break virtio device at shutdown while cleaning up SCMI channel
----
- drivers/firmware/arm_scmi/virtio.c | 143 +++++++++++++++++++----------
- 1 file changed, 92 insertions(+), 51 deletions(-)
+Yes.
 
-diff --git a/drivers/firmware/arm_scmi/virtio.c b/drivers/firmware/arm_scmi/virtio.c
-index fd0f6f91fc0b..ed00b072e981 100644
---- a/drivers/firmware/arm_scmi/virtio.c
-+++ b/drivers/firmware/arm_scmi/virtio.c
-@@ -17,7 +17,9 @@
-  * virtqueue. Access to each virtqueue is protected by spinlocks.
-  */
- 
-+#include <linux/completion.h>
- #include <linux/errno.h>
-+#include <linux/refcount.h>
- #include <linux/slab.h>
- #include <linux/virtio.h>
- #include <linux/virtio_config.h>
-@@ -27,6 +29,7 @@
- 
- #include "common.h"
- 
-+#define VIRTIO_MAX_RX_TIMEOUT_MS	60000
- #define VIRTIO_SCMI_MAX_MSG_SIZE 128 /* Value may be increased. */
- #define VIRTIO_SCMI_MAX_PDU_SIZE \
- 	(VIRTIO_SCMI_MAX_MSG_SIZE + SCMI_MSG_MAX_PROT_OVERHEAD)
-@@ -39,23 +42,21 @@
-  * @cinfo: SCMI Tx or Rx channel
-  * @free_list: List of unused scmi_vio_msg, maintained for Tx channels only
-  * @is_rx: Whether channel is an Rx channel
-- * @ready: Whether transport user is ready to hear about channel
-  * @max_msg: Maximum number of pending messages for this channel.
-- * @lock: Protects access to all members except ready.
-- * @ready_lock: Protects access to ready. If required, it must be taken before
-- *              lock.
-+ * @lock: Protects access to all members except users.
-+ * @shutdown_done: A reference to a completion used when freeing this channel.
-+ * @users: A reference count to currently active users of this channel.
-  */
- struct scmi_vio_channel {
- 	struct virtqueue *vqueue;
- 	struct scmi_chan_info *cinfo;
- 	struct list_head free_list;
- 	bool is_rx;
--	bool ready;
- 	unsigned int max_msg;
--	/* lock to protect access to all members except ready. */
-+	/* lock to protect access to all members except users. */
- 	spinlock_t lock;
--	/* lock to rotects access to ready flag. */
--	spinlock_t ready_lock;
-+	struct completion *shutdown_done;
-+	refcount_t users;
- };
- 
- /**
-@@ -76,6 +77,63 @@ struct scmi_vio_msg {
- /* Only one SCMI VirtIO device can possibly exist */
- static struct virtio_device *scmi_vdev;
- 
-+static void scmi_vio_channel_ready(struct scmi_vio_channel *vioch,
-+				   struct scmi_chan_info *cinfo)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&vioch->lock, flags);
-+	cinfo->transport_info = vioch;
-+	/* Indirectly setting channel not available any more */
-+	vioch->cinfo = cinfo;
-+	spin_unlock_irqrestore(&vioch->lock, flags);
-+
-+	refcount_set(&vioch->users, 1);
-+}
-+
-+static inline bool scmi_vio_channel_acquire(struct scmi_vio_channel *vioch)
-+{
-+	return refcount_inc_not_zero(&vioch->users);
-+}
-+
-+static inline void scmi_vio_channel_release(struct scmi_vio_channel *vioch)
-+{
-+	if (refcount_dec_and_test(&vioch->users)) {
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&vioch->lock, flags);
-+		if (vioch->shutdown_done) {
-+			vioch->cinfo = NULL;
-+			complete(vioch->shutdown_done);
-+		}
-+		spin_unlock_irqrestore(&vioch->lock, flags);
-+	}
-+}
-+
-+static void scmi_vio_channel_cleanup_sync(struct scmi_vio_channel *vioch)
-+{
-+	unsigned long flags;
-+	DECLARE_COMPLETION_ONSTACK(vioch_shutdown_done);
-+
-+	/*
-+	 * Prepare to wait for the last release if not already released
-+	 * or in progress.
-+	 */
-+	spin_lock_irqsave(&vioch->lock, flags);
-+	if (!vioch->cinfo || vioch->shutdown_done) {
-+		spin_unlock_irqrestore(&vioch->lock, flags);
-+		return;
-+	}
-+	vioch->shutdown_done = &vioch_shutdown_done;
-+	virtio_break_device(vioch->vqueue->vdev);
-+	spin_unlock_irqrestore(&vioch->lock, flags);
-+
-+	scmi_vio_channel_release(vioch);
-+
-+	/* Let any possibly concurrent RX path release the channel */
-+	wait_for_completion(vioch->shutdown_done);
-+}
-+
- static bool scmi_vio_have_vq_rx(struct virtio_device *vdev)
- {
- 	return virtio_has_feature(vdev, VIRTIO_SCMI_F_P2A_CHANNELS);
-@@ -119,7 +177,7 @@ static void scmi_finalize_message(struct scmi_vio_channel *vioch,
- 
- static void scmi_vio_complete_cb(struct virtqueue *vqueue)
- {
--	unsigned long ready_flags;
-+	unsigned long flags;
- 	unsigned int length;
- 	struct scmi_vio_channel *vioch;
- 	struct scmi_vio_msg *msg;
-@@ -130,27 +188,24 @@ static void scmi_vio_complete_cb(struct virtqueue *vqueue)
- 	vioch = &((struct scmi_vio_channel *)vqueue->vdev->priv)[vqueue->index];
- 
- 	for (;;) {
--		spin_lock_irqsave(&vioch->ready_lock, ready_flags);
--
--		if (!vioch->ready) {
--			if (!cb_enabled)
--				(void)virtqueue_enable_cb(vqueue);
--			goto unlock_ready_out;
--		}
-+		if (!scmi_vio_channel_acquire(vioch))
-+			return;
- 
--		/* IRQs already disabled here no need to irqsave */
--		spin_lock(&vioch->lock);
-+		spin_lock_irqsave(&vioch->lock, flags);
- 		if (cb_enabled) {
- 			virtqueue_disable_cb(vqueue);
- 			cb_enabled = false;
- 		}
- 		msg = virtqueue_get_buf(vqueue, &length);
- 		if (!msg) {
--			if (virtqueue_enable_cb(vqueue))
--				goto unlock_out;
-+			if (virtqueue_enable_cb(vqueue)) {
-+				spin_unlock_irqrestore(&vioch->lock, flags);
-+				scmi_vio_channel_release(vioch);
-+				return;
-+			}
- 			cb_enabled = true;
- 		}
--		spin_unlock(&vioch->lock);
-+		spin_unlock_irqrestore(&vioch->lock, flags);
- 
- 		if (msg) {
- 			msg->rx_len = length;
-@@ -161,19 +216,14 @@ static void scmi_vio_complete_cb(struct virtqueue *vqueue)
- 		}
- 
- 		/*
--		 * Release ready_lock and re-enable IRQs between loop iterations
--		 * to allow virtio_chan_free() to possibly kick in and set the
--		 * flag vioch->ready to false even in between processing of
--		 * messages, so as to force outstanding messages to be ignored
--		 * when system is shutting down.
-+		 * Release vio channel between loop iterations to allow
-+		 * virtio_chan_free() to eventually fully release it when
-+		 * shutting down; in such a case, any outstanding message will
-+		 * be ignored since this loop will bail out at the next
-+		 * iteration.
- 		 */
--		spin_unlock_irqrestore(&vioch->ready_lock, ready_flags);
-+		scmi_vio_channel_release(vioch);
- 	}
--
--unlock_out:
--	spin_unlock(&vioch->lock);
--unlock_ready_out:
--	spin_unlock_irqrestore(&vioch->ready_lock, ready_flags);
- }
- 
- static const char *const scmi_vio_vqueue_names[] = { "tx", "rx" };
-@@ -273,35 +323,20 @@ static int virtio_chan_setup(struct scmi_chan_info *cinfo, struct device *dev,
- 		}
- 	}
- 
--	spin_lock_irqsave(&vioch->lock, flags);
--	cinfo->transport_info = vioch;
--	/* Indirectly setting channel not available any more */
--	vioch->cinfo = cinfo;
--	spin_unlock_irqrestore(&vioch->lock, flags);
--
--	spin_lock_irqsave(&vioch->ready_lock, flags);
--	vioch->ready = true;
--	spin_unlock_irqrestore(&vioch->ready_lock, flags);
-+	scmi_vio_channel_ready(vioch, cinfo);
- 
- 	return 0;
- }
- 
- static int virtio_chan_free(int id, void *p, void *data)
- {
--	unsigned long flags;
- 	struct scmi_chan_info *cinfo = p;
- 	struct scmi_vio_channel *vioch = cinfo->transport_info;
- 
--	spin_lock_irqsave(&vioch->ready_lock, flags);
--	vioch->ready = false;
--	spin_unlock_irqrestore(&vioch->ready_lock, flags);
-+	scmi_vio_channel_cleanup_sync(vioch);
- 
- 	scmi_free_channel(cinfo, data, id);
- 
--	spin_lock_irqsave(&vioch->lock, flags);
--	vioch->cinfo = NULL;
--	spin_unlock_irqrestore(&vioch->lock, flags);
--
- 	return 0;
- }
- 
-@@ -316,10 +351,14 @@ static int virtio_send_message(struct scmi_chan_info *cinfo,
- 	int rc;
- 	struct scmi_vio_msg *msg;
- 
-+	if (!scmi_vio_channel_acquire(vioch))
-+		return -EINVAL;
-+
- 	spin_lock_irqsave(&vioch->lock, flags);
- 
- 	if (list_empty(&vioch->free_list)) {
- 		spin_unlock_irqrestore(&vioch->lock, flags);
-+		scmi_vio_channel_release(vioch);
- 		return -EBUSY;
- 	}
- 
-@@ -342,6 +381,8 @@ static int virtio_send_message(struct scmi_chan_info *cinfo,
- 
- 	spin_unlock_irqrestore(&vioch->lock, flags);
- 
-+	scmi_vio_channel_release(vioch);
-+
- 	return rc;
- }
- 
-@@ -416,7 +457,6 @@ static int scmi_vio_probe(struct virtio_device *vdev)
- 		unsigned int sz;
- 
- 		spin_lock_init(&channels[i].lock);
--		spin_lock_init(&channels[i].ready_lock);
- 		INIT_LIST_HEAD(&channels[i].free_list);
- 		channels[i].vqueue = vqs[i];
- 
-@@ -503,7 +543,8 @@ const struct scmi_desc scmi_virtio_desc = {
- 	.transport_init = virtio_scmi_init,
- 	.transport_exit = virtio_scmi_exit,
- 	.ops = &scmi_virtio_ops,
--	.max_rx_timeout_ms = 60000, /* for non-realtime virtio devices */
-+	/* for non-realtime virtio devices */
-+	.max_rx_timeout_ms = VIRTIO_MAX_RX_TIMEOUT_MS,
- 	.max_msg = 0, /* overridden by virtio_get_max_msg() */
- 	.max_msg_size = VIRTIO_SCMI_MAX_MSG_SIZE,
- };
--- 
-2.17.1
+>
+> In addition that would mean duplicating a global variable for each
+> module to store the pointer at init time in order to reuse it at exit time.
 
+Yes, that seems unnecessary. At least as long as the dtpm framework
+remains to be a singleton.
+
+Kind regards
+Uffe
