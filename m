@@ -2,87 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F3AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE04C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239674AbiBQLLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 06:11:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53342 "EHLO
+        id S238753AbiBQLLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 06:11:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239664AbiBQLLE (ORCPT
+        with ESMTP id S239693AbiBQLLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 06:11:04 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9258929691E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:10:42 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JzsT561Ycz1FDG5;
-        Thu, 17 Feb 2022 19:06:17 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Feb
- 2022 19:10:40 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] mm/mmu_notifiers: use helper function mmu_notifier_synchronize()
-Date:   Thu, 17 Feb 2022 19:09:48 +0800
-Message-ID: <20220217110948.35477-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Thu, 17 Feb 2022 06:11:08 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CBF2A5218;
+        Thu, 17 Feb 2022 03:10:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645096249; x=1676632249;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kUAzxYLqH3Wl8CbcjdnZky0Irg6Ay/7fZGWkkNOZACY=;
+  b=BdJG3U8t8nip1IOZCi250iFzNmC6P1wS+2bDjnccUaquMw6sw8ncvEP4
+   oMpMIyRtydg7ajkNPRP5UKyf+RRjhoxVP7yTlX5Ru9Dyixs1COI8N0g0J
+   qwQY60ixI+9oi9VJWYX4fu2PqOasXa5IG4nl8cGgRH9meUwTxXvbrf0m5
+   G6li6tbYpCV9hkmNoCKTlkrAg2W5ETLOYsTn7v2UzA4kOxBaLK23XQjdY
+   jg3oH3ZHD+e4Qmwn7vkg0Ctkp1Epb/pZWBZLCh093mMR+KS4PTlX3wi8o
+   nUvLKwPqqWFBVMUoyUE1g/aqgtbvgGZLd+YRGmkW4nzXZd5D8WuzAG3WI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="234380572"
+X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
+   d="scan'208";a="234380572"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 03:10:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
+   d="scan'208";a="530135129"
+Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 17 Feb 2022 03:10:46 -0800
+Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKegP-00006C-Gf; Thu, 17 Feb 2022 11:10:45 +0000
+Date:   Thu, 17 Feb 2022 19:10:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guixin Liu <kanie@linux.alibaba.com>, gregkh@linuxfoundation.org,
+        bostroesser@gmail.com, martin.petersen@oracle.com
+Cc:     kbuild-all@lists.01.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xiaoguang.wang@linux.alibaba.com, xlpang@linux.alibaba.com
+Subject: [RFC PATCH] scsi:target:tcmu:
+ tcmu_ioctl_copy_between_sgl_and_iovec() can be static
+Message-ID: <20220217111004.GA73979@5a5c9590ad42>
+References: <1645064962-94123-2-git-send-email-kanie@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1645064962-94123-2-git-send-email-kanie@linux.alibaba.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use helper function mmu_notifier_synchronize() to ensure all mmu_notifiers
-are freed. Minor readability improvement.
+drivers/target/target_core_user.c:1987:6: warning: symbol 'tcmu_ioctl_copy_between_sgl_and_iovec' was not declared. Should it be static?
+drivers/target/target_core_user.c:2031:6: warning: symbol 'tcmu_ioctl' was not declared. Should it be static?
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
 ---
- mm/mmu_notifier.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/target/target_core_user.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/mm/mmu_notifier.c b/mm/mmu_notifier.c
-index 459d195d2ff6..159f70c20236 100644
---- a/mm/mmu_notifier.c
-+++ b/mm/mmu_notifier.c
-@@ -334,15 +334,15 @@ static void mn_hlist_release(struct mmu_notifier_subscriptions *subscriptions,
- 	srcu_read_unlock(&srcu, id);
- 
- 	/*
--	 * synchronize_srcu here prevents mmu_notifier_release from returning to
--	 * exit_mmap (which would proceed with freeing all pages in the mm)
--	 * until the ->release method returns, if it was invoked by
--	 * mmu_notifier_unregister.
-+	 * mmu_notifier_synchronize here prevents mmu_notifier_release from
-+	 * returning to exit_mmap (which would proceed with freeing all pages
-+	 * in the mm) until the ->release method returns, if it was invoked
-+	 * by mmu_notifier_unregister.
- 	 *
- 	 * The notifier_subscriptions can't go away from under us because
- 	 * one mm_count is held by exit_mmap.
- 	 */
--	synchronize_srcu(&srcu);
-+	mmu_notifier_synchronize();
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index afea088f24862b..ea1af59e03deff 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -1984,7 +1984,7 @@ static int tcmu_release(struct uio_info *info, struct inode *inode)
+ 	return 0;
  }
  
- void __mmu_notifier_release(struct mm_struct *mm)
-@@ -851,7 +851,7 @@ void mmu_notifier_unregister(struct mmu_notifier *subscription,
- 	 * Wait for any running method to finish, of course including
- 	 * ->release if it was run by mmu_notifier_release instead of us.
- 	 */
--	synchronize_srcu(&srcu);
-+	mmu_notifier_synchronize();
+-long tcmu_ioctl_copy_between_sgl_and_iovec(struct tcmu_cmd *tcmu_cmd,
++static long tcmu_ioctl_copy_between_sgl_and_iovec(struct tcmu_cmd *tcmu_cmd,
+ 			struct iovec __user *uiovec,
+ 			unsigned long vcnt,
+ 			bool is_copy_to_sgl)
+@@ -2028,7 +2028,7 @@ long tcmu_ioctl_copy_between_sgl_and_iovec(struct tcmu_cmd *tcmu_cmd,
+ 	return copy_ret;
+ }
  
- 	BUG_ON(atomic_read(&mm->mm_count) <= 0);
- 
--- 
-2.23.0
-
+-long tcmu_ioctl(struct uio_info *info, unsigned int cmd, unsigned long arg)
++static long tcmu_ioctl(struct uio_info *info, unsigned int cmd, unsigned long arg)
+ {
+ 	struct tcmu_dev *udev = container_of(info, struct tcmu_dev, uio_info);
+ 	struct tcmu_data_xfer __user *uxfer = (struct tcmu_data_xfer __user *)arg;
