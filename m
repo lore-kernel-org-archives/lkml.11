@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F881C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:04:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245304AbiBQVFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:05:00 -0500
+        id S242205AbiBQVFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 16:05:03 -0500
 Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244127AbiBQVEH (ORCPT
+        with ESMTP id S244150AbiBQVEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:04:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6305485643
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:03:52 -0800 (PST)
+        Thu, 17 Feb 2022 16:04:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31A9511109A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:03:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645131831;
+        s=mimecast20190719; t=1645131832;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=81CUj4DjODMnVGrRe0STdd54o6R4Y7aXMKzbSnkZtJE=;
-        b=YSXJw+RvhOVyfm4o4u4Auq/vH1JmKATlBmAm+kZoZU3iOWZySidLHGYVfPN7gDmXf6PksF
-        wzMHX7z1Ng5YzkG+mG2vdFH7mVHB8+Zm2/k8jvWf/ICXJIGiui34jpX2/LluvfvF3mnX3p
-        cgPqtAzOh49Cauj+mrtuIBrR/u6d7xU=
+        bh=mUS9+xPfstqadLkqJ3LrklUPZUjyiG4wtcGNmDoEiYw=;
+        b=eX8kValO+Vn8GdzD8zYvYtbf3z/mWMWT35EjvrG92qY68fEgXUMIldxtw9HB9NT4HvoZlw
+        aQxyJilmyi0k8BvGWmDYrp92xdLDrY7k6MF0NHBUhPYMryIRIpz/57a0UIE0cRMqWDxFLk
+        twwy/4POj0yTYAxl+05z1pdeHsAo3AQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-56-XlrGCRQfPPKL-v2OHu4MxA-1; Thu, 17 Feb 2022 16:03:50 -0500
-X-MC-Unique: XlrGCRQfPPKL-v2OHu4MxA-1
+ us-mta-311-gP4HMt8lMwyQIBWXz0nXDg-1; Thu, 17 Feb 2022 16:03:51 -0500
+X-MC-Unique: gP4HMt8lMwyQIBWXz0nXDg-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 12240801ADB;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E48C01091DA0;
         Thu, 17 Feb 2022 21:03:49 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B6F4C6ABA4;
-        Thu, 17 Feb 2022 21:03:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 95C486AB90;
+        Thu, 17 Feb 2022 21:03:49 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH v2 16/18] KVM: x86: introduce KVM_REQ_MMU_UPDATE_ROOT
-Date:   Thu, 17 Feb 2022 16:03:38 -0500
-Message-Id: <20220217210340.312449-17-pbonzini@redhat.com>
+Subject: [PATCH v2 18/18] KVM: x86: do not unload MMU roots on all role changes
+Date:   Thu, 17 Feb 2022 16:03:40 -0500
+Message-Id: <20220217210340.312449-19-pbonzini@redhat.com>
 In-Reply-To: <20220217210340.312449-1-pbonzini@redhat.com>
 References: <20220217210340.312449-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -53,105 +53,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Whenever KVM knows the page role flags have changed, it needs to drop
-the current MMU root and possibly load one from the prev_roots cache.
-Currently it is papering over some overly simplistic code by just
-dropping _all_ roots, so that the root will be reloaded by
-kvm_mmu_reload, but this has bad performance for the TDP MMU
-(which drops the whole of the page tables when freeing a root,
-without the performance safety net of a hash table).
+kvm_mmu_reset_context is called on all role changes and right now it
+calls kvm_mmu_unload.  With the legacy MMU this is a relatively cheap
+operation; the previous PGDs remains in the hash table and is picked
+up immediately on the next page fault.  With the TDP MMU, however, the
+roots are thrown away for good and a full rebuild of the page tables is
+necessary, which is many times more expensive.
 
-To do this, KVM needs to do a more kvm_mmu_update_root call from
-kvm_mmu_reset_context.  Introduce a new request bit so that the call
-can be delayed until after a possible KVM_REQ_MMU_RELOAD, which would
-kill all hopes of finding a cached PGD.
+Fortunately, throwing away the roots is not necessary except when
+the manual says a TLB flush is required:
+
+- changing CR0.PG from 1 to 0 (because it flushes the TLB according to
+  the x86 architecture specification)
+
+- changing CPUID (which changes the interpretation of page tables in
+  ways not reflected by the role).
+
+- changing CR4.SMEP from 0 to 1 (not doing so actually breaks access.c)
+
+Except for these cases, once the MMU has updated the CPU/MMU roles
+and metadata it is enough to force-reload the current value of CR3.
+KVM will look up the cached roots for an entry with the right role and
+PGD, and only if the cache misses a new root will be created.
+
+Measuring with vmexit.flat from kvm-unit-tests shows the following
+improvement:
+
+             TDP         legacy       shadow
+   before    46754       5096         5150
+   after     4879        4875         5006
+
+which is for very small page tables.  The impact is however much larger
+when running as an L1 hypervisor, because the new page tables cause
+extra work for L0 to shadow them.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  1 +
- arch/x86/kvm/svm/nested.c       |  2 +-
- arch/x86/kvm/vmx/nested.c       |  2 +-
- arch/x86/kvm/x86.c              | 13 +++++++++++--
- 4 files changed, 14 insertions(+), 4 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 319ac0918aa2..532cda546eb9 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -102,6 +102,7 @@
- #define KVM_REQ_MSR_FILTER_CHANGED	KVM_ARCH_REQ(29)
- #define KVM_REQ_UPDATE_CPU_DIRTY_LOGGING \
- 	KVM_ARCH_REQ_FLAGS(30, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
-+#define KVM_REQ_MMU_UPDATE_ROOT		KVM_ARCH_REQ(31)
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index c44b5114f947..913cc7229bf4 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5043,8 +5043,8 @@ EXPORT_SYMBOL_GPL(kvm_init_mmu);
+ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ {
+ 	/*
+-	 * Invalidate all MMU roles to force them to reinitialize as CPUID
+-	 * information is factored into reserved bit calculations.
++	 * Invalidate all MMU roles and roots to force them to reinitialize,
++	 * as CPUID information is factored into reserved bit calculations.
+ 	 *
+ 	 * Correctly handling multiple vCPU models with respect to paging and
+ 	 * physical address properties) in a single VM would require tracking
+@@ -5057,6 +5057,7 @@ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 	vcpu->arch.root_mmu.mmu_role.ext.valid = 0;
+ 	vcpu->arch.guest_mmu.mmu_role.ext.valid = 0;
+ 	vcpu->arch.nested_mmu.mmu_role.ext.valid = 0;
++	kvm_mmu_unload(vcpu);
+ 	kvm_mmu_reset_context(vcpu);
  
- #define CR0_RESERVED_BITS                                               \
- 	(~(unsigned long)(X86_CR0_PE | X86_CR0_MP | X86_CR0_EM | X86_CR0_TS \
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 2386fadae9ed..8e6e62d8df36 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -498,7 +498,7 @@ static int nested_svm_load_cr3(struct kvm_vcpu *vcpu, unsigned long cr3,
+ 	/*
+@@ -5068,8 +5069,8 @@ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 
+ void kvm_mmu_reset_context(struct kvm_vcpu *vcpu)
+ {
+-	kvm_mmu_unload(vcpu);
  	kvm_init_mmu(vcpu);
- 
- 	if (!nested_npt)
--		kvm_mmu_update_root(vcpu);
-+		kvm_make_request(KVM_REQ_MMU_UPDATE_ROOT, vcpu);
- 
- 	return 0;
++	kvm_make_request(KVM_REQ_MMU_UPDATE_ROOT, vcpu);
  }
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 2dbd7a9ada84..c3595bc0a02d 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -1133,7 +1133,7 @@ static int nested_vmx_load_cr3(struct kvm_vcpu *vcpu, unsigned long cr3,
- 	kvm_init_mmu(vcpu);
+ EXPORT_SYMBOL_GPL(kvm_mmu_reset_context);
  
- 	if (!nested_ept)
--		kvm_mmu_update_root(vcpu);
-+		kvm_make_request(KVM_REQ_MMU_UPDATE_ROOT, vcpu);
- 
- 	return 0;
- }
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 9800c8883a48..9043548e6baf 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1189,7 +1189,7 @@ int kvm_set_cr3(struct kvm_vcpu *vcpu, unsigned long cr3)
- 		return 1;
- 
- 	if (cr3 != kvm_read_cr3(vcpu))
--		kvm_mmu_update_root(vcpu);
-+		kvm_make_request(KVM_REQ_MMU_UPDATE_ROOT, vcpu);
- 
- 	vcpu->arch.cr3 = cr3;
- 	kvm_register_mark_dirty(vcpu, VCPU_EXREG_CR3);
-@@ -9835,8 +9835,15 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 				goto out;
- 			}
- 		}
--		if (kvm_check_request(KVM_REQ_MMU_RELOAD, vcpu))
-+		if (kvm_check_request(KVM_REQ_MMU_RELOAD, vcpu)) {
- 			kvm_mmu_unload(vcpu);
-+
-+			/*
-+			 * Dropping all roots leaves no hope for loading a cached
-+			 * one.  Let kvm_mmu_reload build a new one.
-+			 */
-+			kvm_clear_request(KVM_REQ_MMU_UPDATE_ROOT, vcpu);
-+		}
- 		if (kvm_check_request(KVM_REQ_MIGRATE_TIMER, vcpu))
- 			__kvm_migrate_timers(vcpu);
- 		if (kvm_check_request(KVM_REQ_MASTERCLOCK_UPDATE, vcpu))
-@@ -9848,6 +9855,8 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 			if (unlikely(r))
- 				goto out;
- 		}
-+		if (kvm_check_request(KVM_REQ_MMU_UPDATE_ROOT, vcpu))
-+			kvm_mmu_update_root(vcpu);
- 		if (kvm_check_request(KVM_REQ_MMU_SYNC, vcpu))
- 			kvm_mmu_sync_roots(vcpu);
- 		if (kvm_check_request(KVM_REQ_LOAD_MMU_PGD, vcpu))
 -- 
 2.31.1
-
 
