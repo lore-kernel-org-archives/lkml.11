@@ -2,146 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A52C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE80C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbiBQXNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 18:13:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59668 "EHLO
+        id S229850AbiBQXP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 18:15:28 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiBQXNO (ORCPT
+        with ESMTP id S229506AbiBQXPZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 18:13:14 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587EC2DCFB4;
-        Thu, 17 Feb 2022 15:12:52 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id c10so1690991ljr.9;
-        Thu, 17 Feb 2022 15:12:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7Fv9iaLU1K6vjoxOcHxKGaRqkglRuk5iz5YNCohBSrU=;
-        b=GOo5/hBWZpSj+M0IcEV2EK7F2yNLJQiWEV9fk5VCPVNEr6VRpiCvAta1NDLzs2EbT+
-         FHWx7GmcxX770eR77ZByYi+pDUacqJZkBLkTVR/n/hAAahbwQC8G+GEu9OUPcz5c3h+F
-         q9S/IJYsEP7aJ4F8sQBiGhyAodf8waAmNfr6HZpsXM/vlR41EEElFWnkv/YLXox3uEIH
-         Ow1xBmq65TwyLQ5MjtaqRV+bpCpdCtRE0KWy9YWw92Oe2nIesIK6SuSxA+5XTRWT+Cdq
-         0orsrF42JVuFrLE6il/He/9paQue6qbR7JFuFYYe7p4UI/043u2S1ClyXgz2W0T7uSYc
-         o4Iw==
+        Thu, 17 Feb 2022 18:15:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93FDF2B760E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 15:15:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645139664;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cbnvbc3fsHmXHX+qkuLBQ8KJ8n5Rlnoh3IJADqcgMiQ=;
+        b=jQxrL1PNcaWa+pMoSQOT5ljOIgdrfdDIRwdVDDDFcfh6vXnDpLeGt4AAVOIAN+k5qvaaRY
+        gQ4+QLlImvzwV346tRftI/UsPNn3wZnGm0QFvL0ApWOTBdFc/3X6+qk7KYGxAVtQAPxtRY
+        CoRbLmeUaO/sj+tngfINqBDUdFLvb+Y=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-172-qYPHiRvMOeSF70yOEvVcRg-1; Thu, 17 Feb 2022 18:14:23 -0500
+X-MC-Unique: qYPHiRvMOeSF70yOEvVcRg-1
+Received: by mail-io1-f69.google.com with SMTP id n20-20020a6bed14000000b0060faa0aefd3so3169275iog.20
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 15:14:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7Fv9iaLU1K6vjoxOcHxKGaRqkglRuk5iz5YNCohBSrU=;
-        b=6D9lJKhuYygO6roGOT5aia6Q+o9lnofgpDdWGOgsQtJGC2zgzIOg7LZ8J5detGzVjn
-         9Cgg9IomvOtl7/++WFEJrda5hwo7MJ1NhG8MiXKG7LPEYtm/bHXAXH3FtD/Yvtu7yF2A
-         +LU+K/XZ1CGUqZ8uCZwU+Vj2uugxn+hC3u0PS8+LbFOkDIseedO3FjropvDyTZnXWdFo
-         RuSzYOetMciiT0qMBGBultcGSF4nx3UA31UtHiIpu0i0sP8r6K4zBDaW56KtebFVQb7+
-         MJvvuXslnKGhkiDtui7NeRVfJAszDYYK/7Zk0GRsD9cnf+nPp5OoyeZH5kKOLFRM7941
-         +ukQ==
-X-Gm-Message-State: AOAM5337SV+qy6Un4VZorUCVffJJSJf/GgU9m00v2MXF46Ub+AABWvlN
-        wAaeIroc1tgGUMjpolYa5rsbFdLcDgU=
-X-Google-Smtp-Source: ABdhPJxt562ZlKFmYJNNqARRDYwOB2vxSB+j5UTQOJY/uj2hNg5IKwjG4q9KbRm1kvzSoNK57nSbiQ==
-X-Received: by 2002:a05:651c:1a29:b0:243:c0eb:dd5f with SMTP id by41-20020a05651c1a2900b00243c0ebdd5fmr3811132ljb.323.1645139513058;
-        Thu, 17 Feb 2022 15:11:53 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id v10sm118073ljj.2.2022.02.17.15.11.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 15:11:52 -0800 (PST)
-Message-ID: <a869b705-c10e-ed0b-4119-35ef0a028311@gmail.com>
-Date:   Fri, 18 Feb 2022 02:11:51 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=cbnvbc3fsHmXHX+qkuLBQ8KJ8n5Rlnoh3IJADqcgMiQ=;
+        b=pOVAt9tP11r3Cpo4nIWrTDMA2x03yN1bqeknJKdDo11j1yIppXDkvT7u8uqWnBst2k
+         JLKkVCsH/nFiRBq5yy3ZOnsDYWHvJ58BBNzWFt8DV6PLmhPPkXNIhH+eWEbCzNz3Is5O
+         d5Dhg9DJVP7wuHn9mwRaxHSrnyRYbBwWhM59odJ5SqgdXk4+fZmBtz+ftSod54DO1d9N
+         fmQ+dOrZJ5zUatoIa8Egc8p/Mz3UdYtjAzbWLni985hk4JE5W5jTmDwwe+c3MNpEkvIF
+         GNGDCMP5ZH11cTVXME4qfOJS/6K3OrtJ0+3eXGE6r8QQM8QDQyhpaXJjXDL1+kMHEThC
+         gtmQ==
+X-Gm-Message-State: AOAM531uZRTtxS7xIASU1XM5e1Xu9tf0uPg+zesoaQLzqUOT8hHrdS3V
+        Es5gPR82BR/r1i5y+z+k6UH+5DaBKxGxO6Mdlkib4Q6jzqvjn6DXBF5uVNzXMFNnMc0iu216X2V
+        zkgslSBM+5vd8VsD0dprEDo+T
+X-Received: by 2002:a05:6638:12d6:b0:314:3e89:58db with SMTP id v22-20020a05663812d600b003143e8958dbmr3325377jas.216.1645139662316;
+        Thu, 17 Feb 2022 15:14:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzYE3q8jS5VDryDylvqVHq+LTf5McaTWOUTQOMzTPWtDASW3mAJ36djui+NZWt45ANx653jKA==
+X-Received: by 2002:a05:6638:12d6:b0:314:3e89:58db with SMTP id v22-20020a05663812d600b003143e8958dbmr3325360jas.216.1645139661966;
+        Thu, 17 Feb 2022 15:14:21 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id j14sm2565897ilc.62.2022.02.17.15.14.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 15:14:21 -0800 (PST)
+Date:   Thu, 17 Feb 2022 16:14:20 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Abhishek Sahu <abhsahu@nvidia.com>
+Cc:     <kvm@vger.kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v2 4/5] vfio/pci: Invalidate mmaps and block the
+ access in D3hot power state
+Message-ID: <20220217161420.7232eab6.alex.williamson@redhat.com>
+In-Reply-To: <20220124181726.19174-5-abhsahu@nvidia.com>
+References: <20220124181726.19174-1-abhsahu@nvidia.com>
+        <20220124181726.19174-5-abhsahu@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] PM: domains: Prevent power off for parent unless child
- is in deepest state
-Content-Language: en-US
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
-Cc:     Kevin Hilman <khilman@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220217124950.211354-1-ulf.hansson@linaro.org>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <20220217124950.211354-1-ulf.hansson@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-17.02.2022 15:49, Ulf Hansson пишет:
-> A PM domain managed by genpd may support multiple idlestates (power-off
-> states). During genpd_power_off() a genpd governor may be asked to select
-> one of the idlestates based upon the dev PM QoS constraints, for example.
+On Mon, 24 Jan 2022 23:47:25 +0530
+Abhishek Sahu <abhsahu@nvidia.com> wrote:
+
+> According to [PCIe v5 5.3.1.4.1] for D3hot state
 > 
-> However, there is a problem with the behaviour around this in genpd. More
-> precisely, a parent-domain is allowed to be powered off, no matter of what
-> idlestate that has been selected for the child-domain.
+>  "Configuration and Message requests are the only TLPs accepted by a
+>   Function in the D3Hot state. All other received Requests must be
+>   handled as Unsupported Requests, and all received Completions may
+>   optionally be handled as Unexpected Completions."
 > 
-> For the stm32mp1 platform from STMicro, this behaviour doesn't play well.
-> Instead, the parent-domain must not be powered off, unless the deepest
-> idlestate has been selected for the child-domain. As the current behaviour
-> in genpd is quite questionable anyway, let's simply change it into what is
-> needed by the stm32mp1 platform.
+> Currently, if the vfio PCI device has been put into D3hot state and if
+> user makes non-config related read/write request in D3hot state, these
+> requests will be forwarded to the host and this access may cause
+> issues on a few systems.
 > 
-> If it surprisingly turns out that other platforms may need a different
-> behaviour from genpd, then we will have to revisit this to find a way to
-> make it configurable.
+> This patch leverages the memory-disable support added in commit
+> 'abafbc551fdd ("vfio-pci: Invalidate mmaps and block MMIO access on
+> disabled memory")' to generate page fault on mmap access and
+> return error for the direct read/write. If the device is D3hot state,
+> then the error needs to be returned for all kinds of BAR
+> related access (memory, IO and ROM). Also, the power related structure
+> fields need to be protected so we can use the same 'memory_lock' to
+> protect these fields also. For the few cases, this 'memory_lock' will be
+> already acquired by callers so introduce a separate function
+> vfio_pci_set_power_state_locked(). The original
+> vfio_pci_set_power_state() now contains the code to do the locking
+> related operations.
 > 
-> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
 > ---
+>  drivers/vfio/pci/vfio_pci_core.c | 47 +++++++++++++++++++++++++-------
+>  drivers/vfio/pci/vfio_pci_rdwr.c | 20 ++++++++++----
+>  2 files changed, 51 insertions(+), 16 deletions(-)
 > 
-> Changes in v2:
-> 	- Clarified commit message - based upon discussions with Dmitry.
-> 	- Updated a comment in the code, suggested by Dmitry.
-> 
-> ---
->  drivers/base/power/domain.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
-> 
-> diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> index 5db704f02e71..c87588c21700 100644
-> --- a/drivers/base/power/domain.c
-> +++ b/drivers/base/power/domain.c
-> @@ -636,6 +636,18 @@ static int genpd_power_off(struct generic_pm_domain *genpd, bool one_dev_on,
->  			atomic_read(&genpd->sd_count) > 0)
->  		return -EBUSY;
+> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> index ee2fb8af57fa..38440d48973f 100644
+> --- a/drivers/vfio/pci/vfio_pci_core.c
+> +++ b/drivers/vfio/pci/vfio_pci_core.c
+> @@ -201,11 +201,12 @@ static void vfio_pci_probe_power_state(struct vfio_pci_core_device *vdev)
+>  }
 >  
-> +	/*
-> +	 * The children must be in their deepest (powered-off) states to allow
-> +	 * the parent to be powered off. Note that, there's no need for
-> +	 * additional locking, as powering on a child, requires the parent's
-> +	 * lock to be acquired first.
-> +	 */
-> +	list_for_each_entry(link, &genpd->parent_links, parent_node) {
-> +		struct generic_pm_domain *child = link->child;
-> +		if (child->state_idx < child->state_count - 1)
-> +			return -EBUSY;
+>  /*
+> - * pci_set_power_state() wrapper handling devices which perform a soft reset on
+> - * D3->D0 transition.  Save state prior to D0/1/2->D3, stash it on the vdev,
+> - * restore when returned to D0.  Saved separately from pci_saved_state for use
+> - * by PM capability emulation and separately from pci_dev internal saved state
+> - * to avoid it being overwritten and consumed around other resets.
+> + * vfio_pci_set_power_state_locked() wrapper handling devices which perform a
+> + * soft reset on D3->D0 transition.  Save state prior to D0/1/2->D3, stash it
+> + * on the vdev, restore when returned to D0.  Saved separately from
+> + * pci_saved_state for use by PM capability emulation and separately from
+> + * pci_dev internal saved state to avoid it being overwritten and consumed
+> + * around other resets.
+>   *
+>   * There are few cases where the PCI power state can be changed to D0
+>   * without the involvement of this API. So, cache the power state locally
+> @@ -215,7 +216,8 @@ static void vfio_pci_probe_power_state(struct vfio_pci_core_device *vdev)
+>   * The memory taken for saving this PCI state needs to be freed to
+>   * prevent memory leak.
+>   */
+> -int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev, pci_power_t state)
+> +static int vfio_pci_set_power_state_locked(struct vfio_pci_core_device *vdev,
+> +					   pci_power_t state)
+>  {
+>  	struct pci_dev *pdev = vdev->pdev;
+>  	bool needs_restore = false, needs_save = false;
+> @@ -260,6 +262,26 @@ int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev, pci_power_t stat
+>  	return ret;
+>  }
+>  
+> +/*
+> + * vfio_pci_set_power_state() takes all the required locks to protect
+> + * the access of power related variables and then invokes
+> + * vfio_pci_set_power_state_locked().
+> + */
+> +int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev,
+> +			     pci_power_t state)
+> +{
+> +	int ret;
+> +
+> +	if (state >= PCI_D3hot)
+> +		vfio_pci_zap_and_down_write_memory_lock(vdev);
+> +	else
+> +		down_write(&vdev->memory_lock);
+> +
+> +	ret = vfio_pci_set_power_state_locked(vdev, state);
+> +	up_write(&vdev->memory_lock);
+> +	return ret;
+> +}
+> +
+>  int vfio_pci_core_enable(struct vfio_pci_core_device *vdev)
+>  {
+>  	struct pci_dev *pdev = vdev->pdev;
+> @@ -354,7 +376,7 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
+>  	 * in running the logic needed for D0 power state. The subsequent
+>  	 * runtime PM API's will put the device into the low power state again.
+>  	 */
+> -	vfio_pci_set_power_state(vdev, PCI_D0);
+> +	vfio_pci_set_power_state_locked(vdev, PCI_D0);
+>  
+>  	/* Stop the device from further DMA */
+>  	pci_clear_master(pdev);
+> @@ -967,7 +989,7 @@ long vfio_pci_core_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
+>  		 * interaction. Update the power state in vfio driver to perform
+>  		 * the logic needed for D0 power state.
+>  		 */
+> -		vfio_pci_set_power_state(vdev, PCI_D0);
+> +		vfio_pci_set_power_state_locked(vdev, PCI_D0);
+>  		up_write(&vdev->memory_lock);
+>  
+>  		return ret;
+> @@ -1453,6 +1475,11 @@ static vm_fault_t vfio_pci_mmap_fault(struct vm_fault *vmf)
+>  		goto up_out;
+>  	}
+>  
+> +	if (vdev->power_state >= PCI_D3hot) {
+> +		ret = VM_FAULT_SIGBUS;
+> +		goto up_out;
 > +	}
 > +
->  	list_for_each_entry(pdd, &genpd->dev_list, list_node) {
->  		enum pm_qos_flags_status stat;
+>  	/*
+>  	 * We populate the whole vma on fault, so we need to test whether
+>  	 * the vma has already been mapped, such as for concurrent faults
+> @@ -1902,7 +1929,7 @@ int vfio_pci_core_register_device(struct vfio_pci_core_device *vdev)
+>  	 * be able to get to D3.  Therefore first do a D0 transition
+>  	 * before enabling runtime PM.
+>  	 */
+> -	vfio_pci_set_power_state(vdev, PCI_D0);
+> +	vfio_pci_set_power_state_locked(vdev, PCI_D0);
+>  	pm_runtime_allow(&pdev->dev);
 >  
-> @@ -1073,6 +1085,13 @@ static void genpd_sync_power_off(struct generic_pm_domain *genpd, bool use_lock,
->  	    || atomic_read(&genpd->sd_count) > 0)
->  		return;
->  
-> +	/* Check that the children are in their deepest (powered-off) state. */
-> +	list_for_each_entry(link, &genpd->parent_links, parent_node) {
-> +		struct generic_pm_domain *child = link->child;
-> +		if (child->state_idx < child->state_count - 1)
-> +			return;
-> +	}
-> +
->  	/* Choose the deepest state when suspending */
->  	genpd->state_idx = genpd->state_count - 1;
->  	if (_genpd_power_off(genpd, false))
+>  	if (!disable_idle_d3)
+> @@ -2117,7 +2144,7 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
+>  		 * interaction. Update the power state in vfio driver to perform
+>  		 * the logic needed for D0 power state.
+>  		 */
+> -		vfio_pci_set_power_state(cur, PCI_D0);
+> +		vfio_pci_set_power_state_locked(cur, PCI_D0);
+>  		if (cur == cur_mem)
+>  			is_mem = false;
+>  		if (cur == cur_vma)
+> diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
+> index 57d3b2cbbd8e..e97ba14c4aa0 100644
+> --- a/drivers/vfio/pci/vfio_pci_rdwr.c
+> +++ b/drivers/vfio/pci/vfio_pci_rdwr.c
+> @@ -41,8 +41,13 @@
+>  static int vfio_pci_iowrite##size(struct vfio_pci_core_device *vdev,		\
+>  			bool test_mem, u##size val, void __iomem *io)	\
+>  {									\
+> +	down_read(&vdev->memory_lock);					\
+> +	if (vdev->power_state >= PCI_D3hot) {				\
+> +		up_read(&vdev->memory_lock);				\
+> +		return -EIO;						\
+> +	}								\
+> +									\
 
-Thank you, looks good. Although, this should be v3.
+The reason that we only set test_mem for MMIO BARs is that systems are
+generally more lenient about probing unresponsive I/O port space to
+support legacy use cases.  Have you found cases where access to an I/O
+port BAR when the device is either in D3hot+ or I/O port is disabled in
+the command register triggers a system fault?  If not it seems we could
+roll the power_state check into __vfio_pci_memory_enabled(), if so then
+we probably need to improve our coverage of access to disabled I/O port
+BARs beyond only the power_state check.  Thanks,
 
-Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
+Alex
+
+>  	if (test_mem) {							\
+> -		down_read(&vdev->memory_lock);				\
+>  		if (!__vfio_pci_memory_enabled(vdev)) {			\
+>  			up_read(&vdev->memory_lock);			\
+>  			return -EIO;					\
+> @@ -51,8 +56,7 @@ static int vfio_pci_iowrite##size(struct vfio_pci_core_device *vdev,		\
+>  									\
+>  	vfio_iowrite##size(val, io);					\
+>  									\
+> -	if (test_mem)							\
+> -		up_read(&vdev->memory_lock);				\
+> +	up_read(&vdev->memory_lock);					\
+>  									\
+>  	return 0;							\
+>  }
+> @@ -68,8 +72,13 @@ VFIO_IOWRITE(64)
+>  static int vfio_pci_ioread##size(struct vfio_pci_core_device *vdev,		\
+>  			bool test_mem, u##size *val, void __iomem *io)	\
+>  {									\
+> +	down_read(&vdev->memory_lock);					\
+> +	if (vdev->power_state >= PCI_D3hot) {				\
+> +		up_read(&vdev->memory_lock);				\
+> +		return -EIO;						\
+> +	}								\
+> +									\
+>  	if (test_mem) {							\
+> -		down_read(&vdev->memory_lock);				\
+>  		if (!__vfio_pci_memory_enabled(vdev)) {			\
+>  			up_read(&vdev->memory_lock);			\
+>  			return -EIO;					\
+> @@ -78,8 +87,7 @@ static int vfio_pci_ioread##size(struct vfio_pci_core_device *vdev,		\
+>  									\
+>  	*val = vfio_ioread##size(io);					\
+>  									\
+> -	if (test_mem)							\
+> -		up_read(&vdev->memory_lock);				\
+> +	up_read(&vdev->memory_lock);					\
+>  									\
+>  	return 0;							\
+>  }
+
