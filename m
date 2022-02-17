@@ -2,199 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC68C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 732A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240788AbiBQNQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:16:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60346 "EHLO
+        id S240804AbiBQNR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:17:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231520AbiBQNQW (ORCPT
+        with ESMTP id S231520AbiBQNR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:16:22 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DEC2AE2AD;
-        Thu, 17 Feb 2022 05:16:06 -0800 (PST)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21HCrki3027723;
-        Thu, 17 Feb 2022 13:15:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : in-reply-to : mime-version;
- s=corp-2021-07-09; bh=ZrInU4hItlZjOkBPHqlTEQwgyIIJtR/yr2S9Qvtns0g=;
- b=njoJwE3XsiK6DMNoqRSHknFJscIQCyEtZZpsuLGPO6qQg0p1cVgySHVwrIiLRe+4DgmO
- L2edUTffpPp77MzInzOUFpTz2E6Q8DRbBJo9Y23jfksIyeR0r/wtH2lnQesgP/zAzY4r
- wF4z4q8tOol2nQWnQWkjKxdLO9CzXqN8gfkLsiCCCfMT1varkGIT4iJb5V5i7QK5qHLe
- wjXKFtGu3knG4RZ/lr/HId8OJ3QqVtH15Xozy/0UNcpic+ymgFP5RmUyBsfX2Ck1hoPt
- jeN80F+fpcJRv+dLNzoYDbLIITwSB6SH7Ovf5lc9KImJcKptuc2d8YmutgEkevt4daV8 Lw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e8nr95wmu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Feb 2022 13:15:01 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21HDAdPg185744;
-        Thu, 17 Feb 2022 13:15:00 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2044.outbound.protection.outlook.com [104.47.66.44])
-        by aserp3030.oracle.com with ESMTP id 3e9brccs9a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Feb 2022 13:14:59 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eubhKq8vssKwTHpZsGdOQ+DFKzpyfr9RUhebxg4OJp6rRgSjzX/j4HhKUuTRyDgqE+waRhtG8Zyz+BlX9SmaZBfbLL0qTPUubcJWIZtA9gc1Z+rjfwPCHndhy7Yi1omeWKhXNKJ7GICPX1WL483wb96b3bgX3hO+oF1woc9u5mC+zm7Gn71YEXCt0cdV/2rEk7SGJJNtQzcnwOwBqY6G1dSIuj57rjhQP3xOBPpuh2czE8wBAxllUSPoYA7rZSUqVAn3iBWlrIxidkOUTEHKW+LgndBg5hjAd8RlruUL7+p5WuBrFZ+7yAu99g/hPjr74hpcT7mCiH1UJUNZec5PWA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZrInU4hItlZjOkBPHqlTEQwgyIIJtR/yr2S9Qvtns0g=;
- b=UeQ1dfGZIKlht9KnJgfE+v8nYI+NfwUmuAyktJO7GTRyILIleT2KyP4vbQAarkpO7m1MzwfhmvXCjH1cGNhglUYpdJcR4vEMDobg7BP/RkUdXQvAjIVaaLxBDCTt1iYJY2I8S1GOE/0vlgFE9oS7I1e9BFMb8O1LR39tNYbvGzMJ1ElCvWCfrkFU2dP1QzZAN/JWYY4ncmDcqGXaw2uRVJY4WQdb6EW88f/ije7ymRa8ylF/rGxkr1FmKltC+nmifIX0G4Sx/86K7ql/7fRo/8pK+f9jxq4zLfeHED+rGuescw2PW18ZHAFoIYQYeFStxtHUAadza7DJzH1UhPYGHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZrInU4hItlZjOkBPHqlTEQwgyIIJtR/yr2S9Qvtns0g=;
- b=mbkqBlwh1v63dVAFdJ8quXdWA/TyqY0d5+nQWY57QzVQysxGydh3LjJYke8oSHi1c16nQDalWd/Xjv6/bOrStnCjOcTa076MIvXj3fC6bVUYQNSfNCr75k1rc/i+TBwG5UX7mWmxcAIQRYd1KnZprbJOC5pSCGWA1iwyQwIeFr8=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CH0PR10MB5337.namprd10.prod.outlook.com
- (2603:10b6:610:d8::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Thu, 17 Feb
- 2022 13:14:57 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%3]) with mapi id 15.20.4975.019; Thu, 17 Feb 2022
- 13:14:57 +0000
-Date:   Thu, 17 Feb 2022 16:14:23 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
-        bgoswami@codeaurora.org, perex@perex.cz, tiwai@suse.com,
-        srinivas.kandagatla@linaro.org, rohitkr@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        swboyd@chromium.org, judyhsiao@chromium.org
-Cc:     lkp@intel.com, kbuild-all@lists.01.org,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [RESEND v13 07/10] ASoC: qcom: Add support for codec dma driver
-Message-ID: <202202151059.hEuYfkLa-lkp@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644850708-11099-8-git-send-email-quic_srivasam@quicinc.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0049.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::12)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Thu, 17 Feb 2022 08:17:57 -0500
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4827E62C7
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:17:43 -0800 (PST)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21H6Pe7P024602;
+        Thu, 17 Feb 2022 07:17:35 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=PODMain02222019;
+ bh=2/2QWMVQZuOrEboq7TUrZ8hnD0NRdcbNcRPzzJbzT9E=;
+ b=c4GZHKc8TDgn0mkT7E5V7rRePL7qpURwfH/sqxkyZxkbnl0aK3izfSCGCzQb671EhxQ6
+ 5AzwNT6yzZUVFVErtxNBG0f2B6ur2rda0n6IYCpIDVZdxa/TRLGTQ8UQ/P805bCRu1BS
+ W1fMYF7a2v0ANyl8np2XWNBFFYRCVi8hDiOJLrMq5LArQH5yuMqMuYT39lKBuC/DFeOD
+ VoNZf4am1+8hKBys5W3JL+YyjnoPvbsGZU3dlB0CjxCYyjfP5HSFYs8HS6M3FbHGSuy7
+ Fa3JMAsIQxeK+bx8+ZV9ooG3GJ79AAkJSNRuJ2ZQWvVEbor2U/aHEkZ9qZJBYci4ln+7 kA== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3e8nraj7tq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 17 Feb 2022 07:17:35 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 17 Feb
+ 2022 13:17:33 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Thu, 17 Feb 2022 13:17:33 +0000
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 5961D11DC;
+        Thu, 17 Feb 2022 13:17:33 +0000 (UTC)
+Date:   Thu, 17 Feb 2022 13:17:33 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+CC:     Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v3] regmap-irq: Update interrupt clear register for
+ proper reset
+Message-ID: <20220217131733.GH38351@ediswmail.ad.cirrus.com>
+References: <20220217085007.30218-1-quic_pkumpatl@quicinc.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 58b05a58-593c-4edc-1864-08d9f2177e76
-X-MS-TrafficTypeDiagnostic: CH0PR10MB5337:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR10MB53376DDB62DE8EA82DC362EC8E369@CH0PR10MB5337.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WQXrakzkuHXRMlSTWTheJ0aTTISaIwYe1abQvOO53w6eGkzmedvsUDvKey08BlNCam/trWRJqzghM69f+rFi7Li2C1RUfdwI+zasLMJ76UQBUfgA2Gn3Q+WiXB9pnjNj21Ulaqizy9jBDDZIRr88rBZGPk/2t6pQ3euFY26bVrZ3rv2+1XFXE+bh3dkuwy57k6nZy7deXnHavql/6JxkMdYg+iuqq9qfgh8eCYp9UDEcafrF9D81JBf5z8INC/AZm2kGDaI3CfnU51c5fifSJtXeQoY0B2KBcm2SRAuv6akEdHvEK0/P3emTegUGdH3Wu66+TV38lgAfBcVSzru/tfkhBh5T3Fv+o7jNTjFEkQEHuP6GvPespqWnpGrjuxATHhWE88Ec8c+1L6N/r35iwZEGD+0bKOOtmhqEziwltYbGl7+3MFbwVwzIHiAp14xhZTVvqoq74u72Z7W3OfbQkHA36JNMNICJjG1hpSMqq/XNu4T6y9Q7YFAE/g2zdwPl+6Sg6M2ERmR9RZlwSE3eAnNeol2jqwJhzN51mmyH1UT+cjcbAm5fErMv9ZML8Zm4WOqV0MqjTHcZ4WSa3s1daspqNukETD3lSmjfLgxRLHQrvX1O/BYt9RFLqv8fgRpqDXhIEcOGvaQvP/B9AR9yFxSONJkRLr9IhvUh+MWgjUUqBqtX/AXrUCtQVS+DRKeLlGdCaOofpDgka16KEQ6ZPxXMWiSe945dF+IwCDMmaD8JRvonzkT5FCtvkBeD83zCQumR8/1YQm54zgf7sgfUrTtOkR0o7jXx1bupbEY8/M3b8N4qG3c0S9tu8I6c6CU9DhuGEBm3JqhqZNv+Ghezr7H2ow2vo/Q1yHPhBlfKn/4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(66946007)(66556008)(4326008)(8676002)(66476007)(921005)(508600001)(38100700002)(6666004)(966005)(6486002)(83380400001)(7416002)(26005)(186003)(44832011)(54906003)(316002)(1076003)(6512007)(9686003)(8936002)(52116002)(36756003)(5660300002)(86362001)(38350700002)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nAwtlvVmxXfPiRNZRrBOeZDK8kYPpvrCjk4lK3hHsk2FbkQyBXswHqwlqGL/?=
- =?us-ascii?Q?my02pQO8lwvRodPgWFcM8nXn53LULy9U0uE8l7y23PjIBkQRC+331qxk+pd8?=
- =?us-ascii?Q?mpzshDp+Q85YzPx/yXeNGeYMdeo3C6tul8vtyABAEC37des/+Ob27K8FD7v3?=
- =?us-ascii?Q?gh11URduZwvoTKWO1SkxqQMYCnTl+fL3MwUPoZMLMbW43/DJ+k9epZ+SHbzq?=
- =?us-ascii?Q?iVDT9dAIxQCm4nR0/sBDydDphRfsW1rqVTddgEjelZA8fp759rp8pyHCB0Sp?=
- =?us-ascii?Q?SBIpGUjslBTpnOXFea8zyGYoJ7xoQHBRRNhAwtUqQBjBWihHz73lxVXAm1yk?=
- =?us-ascii?Q?viTq1lKE3uhJhz0qqovfuUbq4nGkCW0w18PpLzkslLrdyINbVt2bb32EANVa?=
- =?us-ascii?Q?sZb8fiAZ5H84XvLhN9wkG4b602QlfV5FGyUpKd4lMX0/OaI6QfmjRH34hj3s?=
- =?us-ascii?Q?IECJV1d9tjuCqf8OUi+vLEMoD3QVs1tP5Rmgt+PTJhAbXsv70n7w9t7kA7Zl?=
- =?us-ascii?Q?3GB8U+KJ46WPArtx/NI4uGlAbyPIWRawMgk7wzfzZdmiPkNXt6unXEvfqgoh?=
- =?us-ascii?Q?JJ4SbOHbwChxvyC3vXlJ4k20LuWEzWbIJyQAfMcN9k1aALAp11IFj1+toi4Y?=
- =?us-ascii?Q?M+iHjgmRr/279Pn2t09xt+4chjN5BnnGImgK/EjsXEHCrGzzL+Vz/P23stCD?=
- =?us-ascii?Q?DdHFU1GrAcBKvV9EfMCHZdDGkO5OfACRn+q0OyvJIM4zNhsr3jMf0k69RPzH?=
- =?us-ascii?Q?/dohWcCw8gis4WXJtHKPBEpCznC5XJfSpIxczpLMNzlbWDMFe+xJOljHDD1a?=
- =?us-ascii?Q?HthcItt7j8WXe9VyB7c3wmH7PkeX8PUnI2cRj/vVGci2sEI6VfRqQGPO9tZH?=
- =?us-ascii?Q?No2VsRkgPlv9OJlhSsopnv3akWDKZUnefZmeRwqY62T7SRUaYqNjA8JFQQjv?=
- =?us-ascii?Q?lzDRWKYrHXgkPr89jhEIpcQXqmJHx4ur4V86WsDI1pW2OYTlIHRVOJ+ORrZQ?=
- =?us-ascii?Q?wwRdfWCjurFTQJjnUVTkyDRoIBx3UHijW39wjX78AdWDdZ/H7DfUUU5YOWfo?=
- =?us-ascii?Q?SVsUo/Y4MYow1W3pKp0E/5K7GU2c6ZIEWRJ9TiGdRX5QYSm3XOgzCd7CeEdN?=
- =?us-ascii?Q?C3LKHRvaWLp8gPx9JLzNlAF0T2xFJio2DsJGdZGAlgNsBGsNpLuIPJcGwqXB?=
- =?us-ascii?Q?etCtCIqBV5n/0pt2wDRhAw9c8uk/F8+D1wHEbtjHkHX269Vd56LNEMM+gdFZ?=
- =?us-ascii?Q?l9hsMeAX2zb/NJHeNPX//AuYcYZ9m8Rk9NGAq1Z815LmHje0TkXBIa37Ap1n?=
- =?us-ascii?Q?5Zv9ClnG4p4h3FrOZd4UN9gturzl6tljPVUb0Fy6iImA2Cp0BSCcDuC5AgP7?=
- =?us-ascii?Q?Brg3BIXyhaXR2qTrK5Mqz5XFnz+uz1emN2dh3U0TgkgRSbVYZzfmoSPexqmH?=
- =?us-ascii?Q?EgHd80xLsxk07uTgb0k9501odxsr0lmSIuSdJZTUPCue9hgaZpCKLVeFxrXd?=
- =?us-ascii?Q?ycdw2A5tHYTUN+UHTqvWYeifkIrHkjR5/zMajS9ngzePiQpNwI/f+NzToNyu?=
- =?us-ascii?Q?JFcLQfmVCUH83f7o2OQD/z6Q7q4txOCB+9Djlk9Gx2U8Eq57xFLYdrdUqaon?=
- =?us-ascii?Q?jut9QDvCLGsnnJCPXfr5S9lTuNGDNG4yQWqru9PSIGayoiG+u2RVjXkcwbmX?=
- =?us-ascii?Q?CemFUw=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58b05a58-593c-4edc-1864-08d9f2177e76
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2022 13:14:57.1973
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yPXjENbq6KIb6uDdKJb2GwB3yIFtMLT7uvUf0YhRaOuAc2UqDbYmsHiBPvZ2o4Jb31sYDfkVFd+xwDSdzQSlukxGzUYbXEd0vjOtSvxmpKA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5337
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10260 signatures=675971
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 phishscore=0
- suspectscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202170060
-X-Proofpoint-GUID: 3Nk1RqjrH0O0B4q0KhsN-AS6C9PdgzSB
-X-Proofpoint-ORIG-GUID: 3Nk1RqjrH0O0B4q0KhsN-AS6C9PdgzSB
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220217085007.30218-1-quic_pkumpatl@quicinc.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: WGJGyZmZCTyhZc9SHxtslOVB1tpT9C0j
+X-Proofpoint-GUID: WGJGyZmZCTyhZc9SHxtslOVB1tpT9C0j
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Srinivasa,
+On Thu, Feb 17, 2022 at 02:20:07PM +0530, Prasad Kumpatla wrote:
 
-url:    https://github.com/0day-ci/linux/commits/Srinivasa-Rao-Mandadapu/Add-support-for-audio-on-SC7280-based-targets/20220214-230256
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-config: m68k-randconfig-m031-20220214 (https://download.01.org/0day-ci/archive/20220215/202202151059.hEuYfkLa-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
++ Marek Szyprowski, as the old version of the patch was causing
+problems on his system.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> With the existing logic where clear_ack is true (HW doesn’t support
+> auto clear for ICR), interrupt clear register reset is not handled
+> properly. Due to this only the first interrupts get processed properly
+> and further interrupts are blocked due to not resetting interrupt
+> clear register.
+> 
+> Example for issue case where Invert_ack is false and clear_ack is true:
+> 
+>     Say Default ISR=0x00 & ICR=0x00 and ISR is triggered with 2
+>     interrupts making ISR = 0x11.
+> 
+>     Step 1: Say ISR is set 0x11 (store status_buff = ISR). ISR needs to
+>             be cleared with the help of ICR once the Interrupt is processed.
+> 
+>     Step 2: Write ICR = 0x11 (status_buff), this will clear the ISR to 0x00.
+> 
+>     Step 3: Issue - In the existing code, ICR is written with ICR =
+>             ~(status_buff) i.e ICR = 0xEE -> This will block all the interrupts
+>             from raising except for interrupts 0 and 4. So expectation here is to
+>             reset ICR, which will unblock all the interrupts.
+> 
+>             if (chip->clear_ack) {
+>                  if (chip->ack_invert && !ret)
+>                   ........
+>                  else if (!ret)
+>                      ret = regmap_write(map, reg,
+>                             ~data->status_buf[i]);
+> 
+> So writing 0 and 0xff (when ack_invert is true) should have no effect, other
+> than clearing the ACKs just set.
+> 
+> Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
+> Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+> ---
 
-smatch warnings:
-sound/soc/qcom/lpass-platform.c:1233 lpass_platform_copy() warn: maybe return -EFAULT instead of the bytes remaining?
+I think this version looks like it should work to me.
 
-vim +1233 sound/soc/qcom/lpass-platform.c
+Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1210  static int lpass_platform_copy(struct snd_soc_component *component,
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1211  			       struct snd_pcm_substream *substream, int channel,
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1212  			       unsigned long pos, void __user *buf, unsigned long bytes)
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1213  {
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1214  	struct snd_pcm_runtime *rt = substream->runtime;
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1215  	unsigned int dai_id = component->id;
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1216  	int ret = 0;
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1217  
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1218  	void __iomem *dma_buf = rt->dma_area + pos +
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1219  				channel * (rt->dma_bytes / rt->channels);
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1220  
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1221  	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1222  		if (is_cdc_dma_port(dai_id))
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1223  			ret = copy_from_user_toio(dma_buf, buf, bytes);
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1224  		else
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1225  			ret = copy_from_user((void __force *)dma_buf, buf, bytes);
-                                                                                      ^^^^^^^^^^^^^^
-Positives are treated as success in _soc_component_ret()
+Thanks,
+Charles
 
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1226  	} else if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1227  		if (is_cdc_dma_port(dai_id))
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1228  			ret = copy_to_user_fromio(buf, dma_buf, bytes);
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1229  		else
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1230  			ret = copy_to_user(buf, (void __force *)dma_buf, bytes);
-
-Same
-
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1231  	}
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1232  
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14 @1233  	return ret;
-e81c7e5d842d2b Srinivasa Rao Mandadapu 2022-02-14  1234  }
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
+>  drivers/base/regmap/regmap-irq.c | 20 ++++++--------------
+>  1 file changed, 6 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+> index d2656581a608..4a446259a184 100644
+> --- a/drivers/base/regmap/regmap-irq.c
+> +++ b/drivers/base/regmap/regmap-irq.c
+> @@ -189,11 +189,9 @@ static void regmap_irq_sync_unlock(struct irq_data *data)
+>  				ret = regmap_write(map, reg, d->mask_buf[i]);
+>  			if (d->chip->clear_ack) {
+>  				if (d->chip->ack_invert && !ret)
+> -					ret = regmap_write(map, reg,
+> -							   d->mask_buf[i]);
+> +					ret = regmap_write(map, reg, UINT_MAX);
+>  				else if (!ret)
+> -					ret = regmap_write(map, reg,
+> -							   ~d->mask_buf[i]);
+> +					ret = regmap_write(map, reg, 0);
+>  			}
+>  			if (ret != 0)
+>  				dev_err(d->map->dev, "Failed to ack 0x%x: %d\n",
+> @@ -556,11 +554,9 @@ static irqreturn_t regmap_irq_thread(int irq, void *d)
+>  						data->status_buf[i]);
+>  			if (chip->clear_ack) {
+>  				if (chip->ack_invert && !ret)
+> -					ret = regmap_write(map, reg,
+> -							data->status_buf[i]);
+> +					ret = regmap_write(map, reg, UINT_MAX);
+>  				else if (!ret)
+> -					ret = regmap_write(map, reg,
+> -							~data->status_buf[i]);
+> +					ret = regmap_write(map, reg, 0);
+>  			}
+>  			if (ret != 0)
+>  				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+> @@ -817,13 +813,9 @@ int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
+>  					d->status_buf[i] & d->mask_buf[i]);
+>  			if (chip->clear_ack) {
+>  				if (chip->ack_invert && !ret)
+> -					ret = regmap_write(map, reg,
+> -						(d->status_buf[i] &
+> -						 d->mask_buf[i]));
+> +					ret = regmap_write(map, reg, UINT_MAX);
+>  				else if (!ret)
+> -					ret = regmap_write(map, reg,
+> -						~(d->status_buf[i] &
+> -						  d->mask_buf[i]));
+> +					ret = regmap_write(map, reg, 0);
+>  			}
+>  			if (ret != 0) {
+>  				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+> -- 
+> 2.17.1
+> 
