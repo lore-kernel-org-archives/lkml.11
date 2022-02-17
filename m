@@ -2,161 +2,320 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 911B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239373AbiBQOH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:07:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35946 "EHLO
+        id S239623AbiBQOIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:08:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiBQOHz (ORCPT
+        with ESMTP id S230104AbiBQOIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:07:55 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A231C89C5
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:07:40 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nKhRQ-0000BX-Gc; Thu, 17 Feb 2022 15:07:28 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nKhRP-0012Y2-EA; Thu, 17 Feb 2022 15:07:27 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v1 1/1] net: dsa: microchip: ksz9477: export HW stats over stats64 interface
-Date:   Thu, 17 Feb 2022 15:07:26 +0100
-Message-Id: <20220217140726.248071-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Thu, 17 Feb 2022 09:08:32 -0500
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C812838E6;
+        Thu, 17 Feb 2022 06:08:16 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id E324DFF810;
+        Thu, 17 Feb 2022 14:08:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645106894;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Irnc71t6sIpvAau3FPruuts4J8cX0QFTebragmAHbBw=;
+        b=PzrrJYrXPvHAs9FGZ0QLdgAqMfhjGRHXHcia5yASFkhrSZ45kJf/7+wD2ymiWx8aOvuw11
+        6Eg03U1rjrdFrHReBOb2GsE8NLURbKECNBUZ+CQV3llVaSaBwYlY1R5t1Gi0p2bS98JeTE
+        vqHEn/2e0nkr0D03WVqwcMEcXQHFerjI+kVSoAtj4SR0YRJURJIONt9QQhcw2yDEWN/m77
+        TUsDsz/qWN1qh3qpyv6OSqr5gmaNH7OngSwM0Ef7+HKVWhJPV5oK/9TTPjxdZ9cnJv3mTA
+        XKLI/bO0ulwNMUeUvo0brTa5QNORXIRqDaevGsfz+v6eXm06NtS6QSJOwx719w==
+Date:   Thu, 17 Feb 2022 15:08:10 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     Christophe Kerello <christophe.kerello@foss.st.com>,
+        Pratyush Yadav <p.yadav@ti.com>, richard@nod.at,
+        vigneshr@ti.com, robh+dt@kernel.org, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        devicetree@vger.kernel.org, chenshumin86@sina.com,
+        Tudor Ambarus <Tudor.Ambarus@microchip.com>,
+        Khouloud Touil <ktouil@baylibre.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH v2 4/4] mtd: core: Fix a conflict between MTD and NVMEM
+ on wp-gpios property
+Message-ID: <20220217150810.354dfa62@xps13>
+In-Reply-To: <8ae6faa4-a46e-bb72-799c-b4a04513b3e4@linaro.org>
+References: <20220131095755.8981-1-christophe.kerello@foss.st.com>
+        <20220131095755.8981-5-christophe.kerello@foss.st.com>
+        <20220131144309.0ffe7cc8@xps13>
+        <20220201104727.7xvcyexf3yucegcb@ti.com>
+        <eebfa629-ead2-d63f-9cfb-4cafc1534678@foss.st.com>
+        <20220202115327.53oqg5n7tx6b6q7u@ti.com>
+        <f6687807-607c-f672-2394-ad463735d597@foss.st.com>
+        <d1000482-5385-c6f1-d10e-e5396218e0ea@linaro.org>
+        <20220217094819.2548a25e@xps13>
+        <8ae6faa4-a46e-bb72-799c-b4a04513b3e4@linaro.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide access to HW offloaded packets over stats64 interface.
-The rx/tx_bytes values needed some fixing since HW is accounting size of
-the Ethernet frame together with FCS.
+Hi Srinivas,
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz9477.c | 83 +++++++++++++++++++++++++++++
- 1 file changed, 83 insertions(+)
+srinivas.kandagatla@linaro.org wrote on Thu, 17 Feb 2022 11:00:23 +0000:
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index a85d990896b0..d0990f536a36 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -64,6 +64,88 @@ static const struct {
- 	{ 0x83, "tx_discards" },
- };
- 
-+struct ksz9477_stats_raw {
-+	u64 rx_hi;
-+	u64 rx_undersize;
-+	u64 rx_fragments;
-+	u64 rx_oversize;
-+	u64 rx_jabbers;
-+	u64 rx_symbol_err;
-+	u64 rx_crc_err;
-+	u64 rx_align_err;
-+	u64 rx_mac_ctrl;
-+	u64 rx_pause;
-+	u64 rx_bcast;
-+	u64 rx_mcast;
-+	u64 rx_ucast;
-+	u64 rx_64_or_less;
-+	u64 rx_65_127;
-+	u64 rx_128_255;
-+	u64 rx_256_511;
-+	u64 rx_512_1023;
-+	u64 rx_1024_1522;
-+	u64 rx_1523_2000;
-+	u64 rx_2001;
-+	u64 tx_hi;
-+	u64 tx_late_col;
-+	u64 tx_pause;
-+	u64 tx_bcast;
-+	u64 tx_mcast;
-+	u64 tx_ucast;
-+	u64 tx_deferred;
-+	u64 tx_total_col;
-+	u64 tx_exc_col;
-+	u64 tx_single_col;
-+	u64 tx_mult_col;
-+	u64 rx_total;
-+	u64 tx_total;
-+	u64 rx_discards;
-+	u64 tx_discards;
-+};
-+
-+static void ksz9477_get_stats64(struct dsa_switch *ds, int port,
-+				struct rtnl_link_stats64 *stats)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz9477_stats_raw *raw;
-+	struct ksz_port_mib *mib;
-+	int ret;
-+
-+	mib = &dev->ports[port].mib;
-+	raw = (struct ksz9477_stats_raw *)mib->counters;
-+
-+	mutex_lock(&mib->cnt_mutex);
-+
-+	stats->rx_packets = raw->rx_bcast + raw->rx_mcast + raw->rx_ucast;
-+	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast;
-+
-+	/* HW counters are counting bytes + FCS which is not acceptable
-+	 * for rtnl_link_stats64 interface
-+	 */
-+	stats->rx_bytes = raw->rx_total - stats->rx_packets * ETH_FCS_LEN;
-+	stats->tx_bytes = raw->tx_total - stats->tx_packets * ETH_FCS_LEN;
-+
-+	stats->rx_length_errors = raw->rx_undersize + raw->rx_fragments +
-+		raw->rx_oversize;
-+
-+	stats->rx_crc_errors = raw->rx_crc_err;
-+	stats->rx_frame_errors = raw->rx_align_err;
-+	stats->rx_dropped = raw->rx_discards;
-+	stats->rx_errors = stats->rx_length_errors + stats->rx_crc_errors +
-+		stats->rx_frame_errors  + stats->rx_dropped;
-+
-+	stats->tx_window_errors = raw->tx_late_col;
-+	stats->tx_fifo_errors = raw->tx_discards;
-+	stats->tx_aborted_errors = raw->tx_exc_col;
-+	stats->tx_errors = stats->tx_window_errors + stats->tx_fifo_errors +
-+		stats->tx_aborted_errors;
-+
-+	stats->multicast = raw->rx_mcast;
-+	stats->collisions = raw->tx_total_col;
-+
-+	mutex_unlock(&mib->cnt_mutex);
-+}
-+
- static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
- {
- 	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
-@@ -1365,6 +1447,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_mdb_del           = ksz9477_port_mdb_del,
- 	.port_mirror_add	= ksz9477_port_mirror_add,
- 	.port_mirror_del	= ksz9477_port_mirror_del,
-+	.get_stats64		= ksz9477_get_stats64,
- };
- 
- static u32 ksz9477_get_port_addr(int port, int offset)
--- 
-2.30.2
+> On 17/02/2022 08:48, Miquel Raynal wrote:
+> > Hi Srinivas,
+> >=20
+> > srinivas.kandagatla@linaro.org wrote on Wed, 16 Feb 2022 09:24:29 +0000:
+> >  =20
+> >> On 16/02/2022 08:46, Christophe Kerello wrote: =20
+> >>> Hi Miquel, Pratyush, Srinivas,
+> >>>
+> >>> On 2/2/22 12:53, Pratyush Yadav wrote: =20
+> >>>> + Khouloud, Linus, Bartosz
+> >>>>
+> >>>> On 02/02/22 11:44AM, Christophe Kerello wrote: =20
+> >>>>> Hi,
+> >>>>>
+> >>>>> On 2/1/22 11:47, Pratyush Yadav wrote: =20
+> >>>>>> On 31/01/22 02:43PM, Miquel Raynal wrote: =20
+> >>>>>>> Hi Vignesh, Tudory, Pratyush,
+> >>>>>>>
+> >>>>>>> + Tudor and Pratyush
+> >>>>>>>
+> >>>>>>> christophe.kerello@foss.st.com wrote on Mon, 31 Jan 2022 10:57:55=
+ >>>>> +0100: =20
+> >>>>>>>   >>>>>>>> Wp-gpios property can be used on NVMEM nodes and the s=
+ame property >>>>>> can =20
+> >>>>>>>> be also used on MTD NAND nodes. In case of the wp-gpios property=
+ is
+> >>>>>>>> defined at NAND level node, the GPIO management is done at NAND =
+>>>>>> driver
+> >>>>>>>> level. Write protect is disabled when the driver is probed or re=
+sumed
+> >>>>>>>> and is enabled when the driver is released or suspended.
+> >>>>>>>>
+> >>>>>>>> When no partitions are defined in the NAND DT node, then the NAN=
+D >>>>>> DT node
+> >>>>>>>> will be passed to NVMEM framework. If wp-gpios property is defin=
+ed in
+> >>>>>>>> this node, the GPIO resource is taken twice and the NAND control=
+ler
+> >>>>>>>> driver fails to probe.
+> >>>>>>>>
+> >>>>>>>> A new Boolean flag named skip_wp_gpio has been added in nvmem_co=
+nfig.
+> >>>>>>>> In case skip_wp_gpio is set, it means that the GPIO is handled b=
+y the
+> >>>>>>>> provider. Lets set this flag in MTD layer to avoid the conflict =
+on
+> >>>>>>>> wp_gpios property.
+> >>>>>>>>
+> >>>>>>>> Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.co=
+m>
+> >>>>>>>> ---
+> >>>>>>>>  =C2=A0=C2=A0 drivers/mtd/mtdcore.c | 2 ++
+> >>>>>>>>  =C2=A0=C2=A0 1 file changed, 2 insertions(+)
+> >>>>>>>>
+> >>>>>>>> diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
+> >>>>>>>> index 70f492dce158..e6d251594def 100644
+> >>>>>>>> --- a/drivers/mtd/mtdcore.c
+> >>>>>>>> +++ b/drivers/mtd/mtdcore.c
+> >>>>>>>> @@ -546,6 +546,7 @@ static int mtd_nvmem_add(struct mtd_info *mt=
+d)
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.stride =3D 1;
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.read_only =3D true;
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.root_only =3D true;
+> >>>>>>>> +=C2=A0=C2=A0=C2=A0 config.skip_wp_gpio =3D true;
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.no_of_node =3D !of_=
+device_is_compatible(node, >>>>>> "nvmem-cells");
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.priv =3D mtd;
+> >>>>>>>> @@ -833,6 +834,7 @@ static struct nvmem_device >>>>>> *mtd_otp_n=
+vmem_register(struct mtd_info *mtd,
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.owner =3D THIS_MODU=
+LE;
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.type =3D NVMEM_TYPE=
+_OTP;
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.root_only =3D true;
+> >>>>>>>> +=C2=A0=C2=A0=C2=A0 config.skip_wp_gpio =3D true;
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.reg_read =3D reg_re=
+ad;
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.size =3D size;
+> >>>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 config.of_node =3D np; =20
+> >>>>>>>
+> >>>>>>> TLDR: There is a conflict between MTD and NVMEM, who should handl=
+e the
+> >>>>>>> WP pin when there is one? At least for raw NAND devices, I don't =
+want
+> >>>>>>> the NVMEM core to handle the wp pin. So we've introduced this
+> >>>>>>> skip_wp_gpio nvmem config option. But there are two places where =
+this
+> >>>>>>> boolean can be set and one of these is for otp regions (see above=
+). In
+> >>>>>>> this case, I don't know if it is safe or if CFI/SPI-NOR rely on t=
+he
+> >>>>>>> nvmem protection. Please tell us if you think this is fine for yo=
+u. =20
+> >>>>>>
+> >>>>>> Why does NVMEM touch hardware write protection in the first place?=
+ The
+> >>>>>> purpose of the framework is to provide a way to retrieve config st=
+ored
+> >>>>>> in memory. It has no business dealing with details of the chip lik=
+e the
+> >>>>>> WP line. That should be MTD's job (which it should delegate to SPI=
+ NOR,
+> >>>>>> SPI NAND, etc.). If you want to write protect a cell then do it in
+> >>>>>> software. I don't see why NVMEM should be dealing with hardware >>=
+>> directly
+> >>>>>> at all.
+> >>>>>>
+> >>>>>> That is my mental model of how things _should_ work. I have not sp=
+ent
+> >>>>>> much time digging into how things actually work currently. =20
+> >>>>>>   >>>>> =20
+> >>>>> Wp-gpios property management was added in MVMEM framework in Januar=
+y >>> 2020 =3D>
+> >>>>> sha1: 2a127da461a9d8d97782d6e82b227041393eb4d2
+> >>>>> "
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 nvmem: add support for the write-protect =
+pin
+> >>>>>
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 The write-protect pin handling looks like=
+ a standard property that
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 could benefit other users if available in=
+ the core nvmem framework.
+> >>>>>
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 Instead of modifying all the memory drive=
+rs to check this pin, make
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 the NVMEM subsystem check if the write-pr=
+otect GPIO being passed
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 through the nvmem_config or defined in th=
+e device tree and pull it
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 low whenever writing to the memory.
+> >>>>> "
+> >>>>>
+> >>>>> And this modification was done for EEPROMs flashes =3D> sha1:
+> >>>>> 1c89074bf85068d1b86f2e0f0c2110fdd9b83c9f
+> >>>>> "
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 eeprom: at24: remove the write-protect pi=
+n support
+> >>>>>
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 NVMEM framework is an interface for the a=
+t24 EEPROMs as well as for
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 other drivers, instead of passing the wp-=
+gpios over the different
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 drivers each time, it would be better to =
+pass it over the NVMEM
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 subsystem once and for all.
+> >>>>>
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 Removing the support for the write-protec=
+t pin after adding it to
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 the NVMEM subsystem.
+> >>>>> "
+> >>>>>
+> >>>>> Current NVMEM framework implementation toggles the WP GPIO when >>>=
+ reg_write
+> >>>>> nvmem_config API is defined. In case of MTD framework, reg_write is=
+ not
+> >>>>> defined in nvmem_config. =20
+> >>>>
+> >>>> Thanks for digging these up. I think this was the wrong decision to
+> >>>> make. NVMEM should just provide the APIs for handling read/write, and
+> >>>> leave the rest to the drivers.
+> >>>>
+> >>>> It might be convenient for some drivers to put the WP GPIO handling =
+to
+> >>>> NVMEM core but I just don't think it is the job of the framework to =
+deal
+> >>>> with this, and it just does not know enough about the device to deal
+> >>>> with correctly and completely anyway. For example, wp-gpio is only o=
+ne
+> >>>> of the ways to write protect a chip. SPI NOR flashes have a WP# pin =
+that
+> >>>> is often toggled via the SPI controller. There could also be registe=
+rs
+> >>>> that do the write protection.
+> >>>>
+> >>>> One would have to make strong justifications for making nvmem direct=
+ly
+> >>>> deal with hardware level details to convince me it is a good idea. I=
+MHO
+> >>>> if AT24 EEPROM is the only driver relying on this as of now then we
+> >>>> should just revert the patches and not have to deal with the
+> >>>> skip_wp_gpio hackery. =20
+> >>>>   >>> =20
+> >>> Based on the=C2=A0 bindings documentation, AT24 EEPROM driver is not =
+the only
+> >>> driver relying on this implementation. At least, AT25 EEPROM driver w=
+ill
+> >>> have to be modified to handle the Write Protect management, and there=
+ is
+> >>> probably others drivers relying on this implementation.
+> >>>
+> >>> So, should we keep the legacy and apply the proposal patch to fix this
+> >>> conflict (I can send a V3 with a fixes tag on patch 3 and 4 as
+> >>> recommended by Miquel)?
+> >>> Or should we revert the Write Protect management in NVMEM framework
+> >>> but in this case I will not be able to handle such modifications (I am
+> >>> not able to test those drivers). =20
+> >>
+> >> Firstly sorry for such a long delay to reply this thread as I was in t=
+ravel.
+> >>
+> >> I agree with comments from Pratyush but I see no harm in handling simp=
+le usecases of write-protect gpio in nvmem core. In fact wp-gpios and read-=
+only are part of nvmem provider bindings.
+> >>
+> >> But usecases like the ones described in this patch series which do not=
+ want nvmem core to deal with this pin should set this new flag. I think th=
+is is a balanced choice.
+> >>
+> >> reverting the wp-gpio patch is going to break other providers that are=
+ using this bindings. =20
+> >=20
+> > I am always puzzled when the community deeply cares about non-mainline
+> > drivers.
+> >=20
+> > On one side I can understand that creating a 'grab-the-wp-line'
+> > flag would immediately break all external users but this is, as
+> > reported by Pratyush, the more logical approach IMHO. However we might
+> > possibly miss situations where the flag is necessary and break these
+> > devices.
+> >=20
+> > Otherwise the 'ignore-wp' flag is more conservative, it does not =20
+>=20
+> ingore-wp seems to be more sensible flag than skip_wp_gpio flag.
+>=20
+>=20
+> > break the existing users but would just address the MTD case for now, we
+> > might have other in-tree subsystem that are affected.
+> >=20
+> > I'm fine either way TBH :-) I would just like this patchset to go in =20
+>=20
+> Am okay either way too, It is just that ingore-wp seems a balanced choice=
+ in the current situation :-).
+>=20
+> > through the next merge window. =20
+> Sure.
+>=20
+> I can Ack nvmem patch if you wish to carry it via mtd tree.
 
+Yes, that would be ideal to prevent build issues during the merge
+window/in linux-next.
+
+>=20
+> or
+>=20
+> nvmem patches go via Greg's char-misc tree. I can take 4/4 if you ack it =
+once V3 is sent
+
+Thanks,
+Miqu=C3=A8l
