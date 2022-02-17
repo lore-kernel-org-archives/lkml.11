@@ -2,318 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F3BC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230028AbiBRAGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 19:06:16 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49174 "EHLO
+        id S230049AbiBRAGg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 19:06:36 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiBRAFr (ORCPT
+        with ESMTP id S229936AbiBRAGc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 19:05:47 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81AD255A1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:05:30 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id e17so1862553ljk.5
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:05:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=yAlw04hcfTCv74ddGK4J1voPhYuq0nzDrCLwVV1ZFXw=;
-        b=wGYpKAA+7kcYyR/wALeOORxH8B+LAgUYGC9uOGzPJeLcVH0nUJ/hdipy350Jiia0hP
-         6iatEddX+g/2M/9gJTk5djQpy0jDnX3STG3GU4zF+JBRi95D5Sf9nc4FAS5T0tX778PP
-         /4AMMN+GJ0ZVRj1U7xKzegcSNWFcqwW988SvCZ7VkW8Xq59b5ReE6u5gvM4MfU9X91Uk
-         ai0PADQrXSuCA0NC0ci921cAe6hbtZCbF4qgKQlOAmjNpB/HFfdaEArlHFHX/gzDLLWq
-         cL0cq5+p7vut9dSddCwBk98CE49XE5vd0AhdRoPANh+Sp2bfaXI6aF1xWR7Wuo/4boPp
-         K75Q==
+        Thu, 17 Feb 2022 19:06:32 -0500
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A5251E63;
+        Thu, 17 Feb 2022 16:06:04 -0800 (PST)
+Received: by mail-pf1-f179.google.com with SMTP id z16so1005772pfh.3;
+        Thu, 17 Feb 2022 16:06:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=yAlw04hcfTCv74ddGK4J1voPhYuq0nzDrCLwVV1ZFXw=;
-        b=I5wQKx02wdCcsKS1mO294byOSr4hf9xUF5AXw/IzcCtNme2KpiSrCP5xoGfcEvUDMc
-         ySh7SkUYCnPfRbrctrX4iWFVaDTl90tqsGQODfNtSxMyOB9vAONzNbn8l/SM5x7cmEx6
-         fUgyrnv99q+uhxotNtCqvg34ayfEOUr5gA3bM2WlYBHXDIMSCx+UUW7J6Bl4CoYrlEkE
-         fsC2VdB/d8y84ITRjXAWR6dIh4aDF84/Lp1/JGlvYV9ELLY1C4HaC52XHk3vqeETmqWk
-         hJBBNsbHK1vnB+apXvFfcBDGBxGQDhQxcQ3BX0R8pYW+jDuD2n7t7z0RaDaUf4ntXN6m
-         T9sw==
-X-Gm-Message-State: AOAM531UujygZRHIix8Qi5KY8vDofY64Ydr4P4JTKBmJCO6ciz1Kfaer
-        7tGc13rwnKUv3FDI2N5lqcrzuCrkUywQtQ==
-X-Google-Smtp-Source: ABdhPJzpsDxT2uKXBPZy9xVI4sLVS1/xh/OMZWVDxzVPL5uSrtaZ6l16nlsyD5pHIQD/j3gmeN1M7Q==
-X-Received: by 2002:a2e:9048:0:b0:246:1988:3105 with SMTP id n8-20020a2e9048000000b0024619883105mr2969195ljg.404.1645142724339;
-        Thu, 17 Feb 2022 16:05:24 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id m1sm94217lfg.308.2022.02.17.16.05.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 16:05:23 -0800 (PST)
-Message-ID: <be01dccd-d558-08bb-3faf-eca3fd342b83@linaro.org>
-Date:   Fri, 18 Feb 2022 03:05:22 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=s929dscyVLXL47tG8YulOaG8Qoyz2aoFJHGoNxnOm6g=;
+        b=qLfU4SHQR2+YL9a5Dcge/xGo3PafejM+vToi1VjPiBa6IfWVYMQY00lN0YQJBY5CWD
+         jWs9O6mssLUMfLdX4PBHvQVAClZPP2kVT8lQymQIsP8GsWHolSLxk4WB/AyQJ2BzmwVt
+         iw5TjdlFnWy6AP8s35kPXMLvt2Ngg45rZPVD012qVNNU7h5LmFO0JkW8SECD9a7dwT+v
+         Yq0OLgo36ChhKUh9pEX6BI7f4og/eCt6JDteYkrmrb5O1fbzhtO2jCl1quPYyAOwaBNZ
+         uGxU01QCRplIIXQfCSVA1emS1ZoarUF8yTAiJJyBnggu2cM6m9ParnWEh1Wx5X+0Qyc7
+         ROcQ==
+X-Gm-Message-State: AOAM530R8yl6knqBhkZ+VGMcNy1RR8rfQeIECAmxhECsE4i/Tm8v55jZ
+        ZAxs1uz4oGeRYEyJJFcH+qYrLFq1hw==
+X-Google-Smtp-Source: ABdhPJyWUVkU+CbllDyvAbEcidfFEm9xfSeMGni+GqR8gNOSrJ8HQeqkslB+1u5bMqeKbC/5N5yHdA==
+X-Received: by 2002:a05:6e02:1a66:b0:2c1:888d:b9cb with SMTP id w6-20020a056e021a6600b002c1888db9cbmr2874007ilv.74.1645142298733;
+        Thu, 17 Feb 2022 15:58:18 -0800 (PST)
+Received: from robh.at.kernel.org ([64.188.179.250])
+        by smtp.gmail.com with ESMTPSA id f13sm2839519ion.18.2022.02.17.15.58.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 15:58:18 -0800 (PST)
+Received: (nullmailer pid 4013102 invoked by uid 1000);
+        Thu, 17 Feb 2022 23:58:16 -0000
+Date:   Thu, 17 Feb 2022 17:58:16 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH V2 2/3] dt-bindings: nvmem: brcm,nvram: add NVMEM cell to
+ example
+Message-ID: <Yg7hGKWFWG4ntk+u@robh.at.kernel.org>
+References: <20220124160300.25131-1-zajec5@gmail.com>
+ <20220211130554.13062-1-zajec5@gmail.com>
+ <20220211130554.13062-3-zajec5@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [Freedreno] [PATCH v2 2/2] drm/msm/dpu: Add SC8180x to hw catalog
-Content-Language: en-GB
-To:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, Rob Clark <robdclark@gmail.com>,
-        freedreno@lists.freedesktop.org
-References: <20220215043353.1256754-1-bjorn.andersson@linaro.org>
- <20220215043353.1256754-2-bjorn.andersson@linaro.org>
- <be397e2e-05ab-5c18-8e2d-16c443f0a6d1@quicinc.com>
- <Ygvisfhi0SY6XdAz@builder.lan>
- <6a3ef247-b26b-d505-cd85-92fb277163dd@quicinc.com>
- <YgxeCHi5AsYPTmeZ@builder.lan>
- <51675806-641d-c57e-ada7-a044e37ad808@quicinc.com> <YgyIPnc/sZLE0ABn@yoga>
- <fcf676d0-1e25-aeda-ce6f-f051d34e0bbe@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <fcf676d0-1e25-aeda-ce6f-f051d34e0bbe@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220211130554.13062-3-zajec5@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/02/2022 10:19, Abhinav Kumar wrote:
+On Fri, Feb 11, 2022 at 02:05:53PM +0100, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> NVRAM doesn't have cells at hardcoded addresses. They are stored in
+> internal struct (custom & dynamic format) . It's still important to
+> define relevant cells in DT so NVMEM consumers can reference them.
+> 
+> One of cells set in almost every device is "et0macaddr" containing MAC
+> address. Add it to example to show how it can be referenced.
+> 
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> ---
+> V2: Add children nodes description per Rob's request
+> ---
+>  .../devicetree/bindings/nvmem/brcm,nvram.yaml    | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml b/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
+> index 8c3f0cd22821..fc1df9d1c4d4 100644
+> --- a/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
+> +++ b/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
+> @@ -27,11 +27,23 @@ properties:
+>    reg:
+>      maxItems: 1
+>  
+> +patternProperties:
+> +  ".*":
+
+This doesn't really work as a schema as it matches every property or 
+child node.
+
+> +    description: |
+> +      Each child node represents one NVRAM entry (variable). Node name has to
+> +      match variable name as internally defined in the NVRAM.
+> +
+> +      Some of common NVRAM variables are: "board_id", "boardflags", "boot_wait",
+> +      "clkfreq", "et0macaddr", "sdram_config", "wait_time".
+
+I meant documenting these as schema, not just in a description:
+
+properties:
+  board_id:
+    type: object
+    description: ...
+
+  board_flags:
+    type: object
+    description: ...
+
+I'm guessing making this list exhaustive is not possible?
+
+> +
+>  unevaluatedProperties: false
+
+     type: object
+
+To say anything else must be a child node.
+
+>  
+>  examples:
+>    - |
+>      nvram@1eff0000 {
+> -            compatible = "brcm,nvram";
+> -            reg = <0x1eff0000 0x10000>;
+> +        compatible = "brcm,nvram";
+> +        reg = <0x1eff0000 0x10000>;
+> +
+> +        mac: et0macaddr {
+> +        };
+>      };
+> -- 
+> 2.34.1
 > 
 > 
-> On 2/15/2022 9:14 PM, Bjorn Andersson wrote:
->> On Tue 15 Feb 20:38 CST 2022, Abhinav Kumar wrote:
->>
->>>
->>>
->>> On 2/15/2022 6:14 PM, Bjorn Andersson wrote:
->>>> On Tue 15 Feb 11:42 CST 2022, Abhinav Kumar wrote:
->>>>
->>>>>
->>>>>
->>>>> On 2/15/2022 9:28 AM, Bjorn Andersson wrote:
->>>>>> On Tue 15 Feb 11:14 CST 2022, Abhinav Kumar wrote:
->>>>>>
->>>>>>>
->>>>>>>
->>>>>>> On 2/14/2022 8:33 PM, Bjorn Andersson wrote:
->>>>>>>> From: Rob Clark <robdclark@chromium.org>
->>>>>>>>
->>>>>>>> Add SC8180x to the hardware catalog, for initial support for the
->>>>>>>> platform. Due to limitations in the DP driver only one of the 
->>>>>>>> four DP
->>>>>>>> interfaces is left enabled.
->>>>>>>>
->>>>>>>> The SC8180x platform supports the newly added DPU_INTF_WIDEBUS 
->>>>>>>> flag and
->>>>>>>> the Windows-on-Snapdragon bootloader leaves the widebus bit set, 
->>>>>>>> so this
->>>>>>>> is flagged appropriately to ensure widebus is disabled - for now.
->>>>>>>>
->>>>>>>> Signed-off-by: Rob Clark <robdclark@chromium.org>
->>>>>>>> [bjorn: Reworked intf and irq definitions]
->>>>>>>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
->>>>>>>> ---
->>>>>>>>
->>>>>>>> Changes since v1:
->>>>>>>> - Dropped widebus flag
->>>>>>>>
->>>>>>>>      .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c    | 129 
->>>>>>>> ++++++++++++++++++
->>>>>>>>      .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h    |   1 +
->>>>>>>>      drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |   1 +
->>>>>>>>      drivers/gpu/drm/msm/msm_drv.c                 |   1 +
->>>>>>>>      4 files changed, 132 insertions(+)
->>>>>>>>
->>>>>>>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c 
->>>>>>>> b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>>>>>>> index aa75991903a6..7ac0fe32df49 100644
->>>>>>>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>>>>>>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>>>>>>> @@ -90,6 +90,17 @@
->>>>>>>>                   BIT(MDP_INTF3_INTR) | \
->>>>>>>>                   BIT(MDP_INTF4_INTR))
->>>>>>>> +#define IRQ_SC8180X_MASK (BIT(MDP_SSPP_TOP0_INTR) | \
->>>>>>>> +              BIT(MDP_SSPP_TOP0_INTR2) | \
->>>>>>>> +              BIT(MDP_SSPP_TOP0_HIST_INTR) | \
->>>>>>>> +              BIT(MDP_INTF0_INTR) | \
->>>>>>>> +              BIT(MDP_INTF1_INTR) | \
->>>>>>>> +              BIT(MDP_INTF2_INTR) | \
->>>>>>>> +              BIT(MDP_INTF3_INTR) | \
->>>>>>>> +              BIT(MDP_INTF4_INTR) | \
->>>>>>>> +              BIT(MDP_INTF5_INTR) | \
->>>>>>>> +              BIT(MDP_AD4_0_INTR) | \
->>>>>>>> +              BIT(MDP_AD4_1_INTR))
->>>>>>>>      #define DEFAULT_PIXEL_RAM_SIZE        (50 * 1024)
->>>>>>>>      #define DEFAULT_DPU_LINE_WIDTH        2048
->>>>>>>> @@ -225,6 +236,22 @@ static const struct dpu_caps 
->>>>>>>> sm8150_dpu_caps = {
->>>>>>>>          .max_vdeci_exp = MAX_VERT_DECIMATION,
->>>>>>>>      };
->>>>>>>> +static const struct dpu_caps sc8180x_dpu_caps = {
->>>>>>>> +    .max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
->>>>>>>> +    .max_mixer_blendstages = 0xb,
->>>>>>>> +    .qseed_type = DPU_SSPP_SCALER_QSEED3,
->>>>>>>> +    .smart_dma_rev = DPU_SSPP_SMART_DMA_V2, /* TODO: v2.5 */
->>>>>>>> +    .ubwc_version = DPU_HW_UBWC_VER_30,
->>>>>>>> +    .has_src_split = true,
->>>>>>>> +    .has_dim_layer = true,
->>>>>>>> +    .has_idle_pc = true,
->>>>>>>> +    .has_3d_merge = true,
->>>>>>>> +    .max_linewidth = 4096,
->>>>>>>> +    .pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
->>>>>>>> +    .max_hdeci_exp = MAX_HORZ_DECIMATION,
->>>>>>>> +    .max_vdeci_exp = MAX_VERT_DECIMATION,
->>>>>>>> +};
->>>>>>>> +
->>>>>>>>      static const struct dpu_caps sm8250_dpu_caps = {
->>>>>>>>          .max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
->>>>>>>>          .max_mixer_blendstages = 0xb,
->>>>>>>> @@ -293,6 +320,31 @@ static const struct dpu_mdp_cfg 
->>>>>>>> sc7180_mdp[] = {
->>>>>>>>          },
->>>>>>>>      };
->>>>>>>> +static const struct dpu_mdp_cfg sc8180x_mdp[] = {
->>>>>>>> +    {
->>>>>>>> +    .name = "top_0", .id = MDP_TOP,
->>>>>>>> +    .base = 0x0, .len = 0x45C,
->>>>>>>> +    .features = 0,
->>>>>>>> +    .highest_bank_bit = 0x3,
->>>>>>>> +    .clk_ctrls[DPU_CLK_CTRL_VIG0] = {
->>>>>>>> +            .reg_off = 0x2AC, .bit_off = 0},
->>>>>>>> +    .clk_ctrls[DPU_CLK_CTRL_VIG1] = {
->>>>>>>> +            .reg_off = 0x2B4, .bit_off = 0},
->>>>>>>> +    .clk_ctrls[DPU_CLK_CTRL_VIG2] = {
->>>>>>>> +            .reg_off = 0x2BC, .bit_off = 0},
->>>>>>>> +    .clk_ctrls[DPU_CLK_CTRL_VIG3] = {
->>>>>>>> +            .reg_off = 0x2C4, .bit_off = 0},
->>>>>>>> +    .clk_ctrls[DPU_CLK_CTRL_DMA0] = {
->>>>>>>> +            .reg_off = 0x2AC, .bit_off = 8},
->>>>>>>> +    .clk_ctrls[DPU_CLK_CTRL_DMA1] = {
->>>>>>>> +            .reg_off = 0x2B4, .bit_off = 8},
->>>>>>>> +    .clk_ctrls[DPU_CLK_CTRL_CURSOR0] = {
->>>>>>>> +            .reg_off = 0x2BC, .bit_off = 8},
->>>>>>>> +    .clk_ctrls[DPU_CLK_CTRL_CURSOR1] = {
->>>>>>>> +            .reg_off = 0x2C4, .bit_off = 8},
->>>>>>>> +    },
->>>>>>>> +};
->>>>>>>> +
->>>>>>>>      static const struct dpu_mdp_cfg sm8250_mdp[] = {
->>>>>>>>          {
->>>>>>>>          .name = "top_0", .id = MDP_TOP,
->>>>>>>> @@ -861,6 +913,16 @@ static const struct dpu_intf_cfg 
->>>>>>>> sc7280_intf[] = {
->>>>>>>>          INTF_BLK("intf_5", INTF_5, 0x39000, INTF_DP, 
->>>>>>>> MSM_DP_CONTROLLER_1, 24, INTF_SC7280_MASK, MDP_SSPP_TOP0_INTR, 
->>>>>>>> 22, 23),
->>>>>>>>      };
->>>>>>>> +static const struct dpu_intf_cfg sc8180x_intf[] = {
->>>>>>>> +    INTF_BLK("intf_0", INTF_0, 0x6A000, INTF_DP, 
->>>>>>>> MSM_DP_CONTROLLER_0, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 
->>>>>>>> 24, 25),
->>>>>>>> +    INTF_BLK("intf_1", INTF_1, 0x6A800, INTF_DSI, 0, 24, 
->>>>>>>> INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 26, 27),
->>>>>>>> +    INTF_BLK("intf_2", INTF_2, 0x6B000, INTF_DSI, 1, 24, 
->>>>>>>> INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 28, 29),
->>>>>>>> +    /* INTF_3 is for MST, wired to INTF_DP 0 and 1, use dummy 
->>>>>>>> index until this is supported */
->>>>>>>> +    INTF_BLK("intf_3", INTF_3, 0x6B800, INTF_DP, 999, 24, 
->>>>>>>> INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 30, 31),
->>>>>>>> +    INTF_BLK("intf_4", INTF_4, 0x6C000, INTF_DP, 
->>>>>>>> MSM_DP_CONTROLLER_1, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 
->>>>>>>> 20, 21),
->>>>>>>> +    INTF_BLK("intf_5", INTF_5, 0x6C800, INTF_DP, 
->>>>>>>> MSM_DP_CONTROLLER_2, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 
->>>>>>>> 22, 23),
->>>>>>>
->>>>>>> This is a continued discussion from
->>>>>>> https://patchwork.freedesktop.org/patch/474179/.
->>>>>>>
->>>>>>> Shouldnt INTF_5 be marked as INTF_eDP?
->>>>>>>
->>>>>>
->>>>>> Might be, I didn't even know we had an INTF_EDP define...
->>>>>>
->>>>>> Is there any reason to distinguish DP and EDP in the DPU?  I see 
->>>>>> sc7280
->>>>>> doesn't distinguish the DP and EDP interfaces.
->>>>>>
->>>>>> Regards,
->>>>>> Bjorn
->>>>>>
->>>>>
->>>>> Like I have mentioned in the other patch, I think we have enough 
->>>>> confusion
->>>>> between eDP and DP with the common driver. Since DPU does have 
->>>>> separate
->>>>> interfaces I think we should fix that.
->>>>>
->>>>> Regarding sc7280 using INTF_DP, I synced up with Sankeerth. He 
->>>>> referred to
->>>>> your change
->>>>> https://patchwork.freedesktop.org/patch/457776/?series=92992&rev=5 
->>>>> as it was
->>>>> posted earlier and ended up using the same INTF_DP macro. So its 
->>>>> turning out
->>>>> to be a cyclical error.
->>>>>
->>>>
->>>> That made me take a second look at the HPG, and sure enough INTF_5 on
->>>> SC7280 is connected to a eDP/DP Combo PHY. We have the same setup in
->>>> SC8280XP.
->>>>
->>>> In SC8180X, INTF_5 is documented as being connected to a eDP (only) 
->>>> PHY,
->>>> so perhaps it makes sense to do it there, but for the others its wrong.
->>>>
->>>
->>> Here you are specifying the controller in the catalog.
->>
->> No, I'm specifying the type of the INTF. We then use the type of the
->> intf and the index to match that to a particular DP TX block.
->>
->>> So independent of the PHY thats being used, shouldnt this remain
->>> INTF_eDP?
->>>
->>
->> I don't think it's going to help anyone to say that an interface
->> connected to a PHY that can be either DP or EDP, should be INTF_EDP.
->>
->> People are going to make assumptions in the code such as INTF_EDP does
->> not have audio and then someone designs a board based on SC7280 with DP
->> output where they expect audio. Or assumptions about HPD, panel etc...
-
-Well, eDP links can embed audio streams (like DP links do).
-
->>
->> I'm not saying that we have all the details figured out on how that's
->> going to be controlled, but until there's a reason to distinguish
->> INTF_DP from INTF_EDP I think we should not make one up. And I don't see
->> that those differences should be hard coded in the DPU driver.
->>
->>
->> If it's confusing to people that DP might be driving an EDP output, then
->> perhaps we can just name it TMDS again? ;)
-> 
-> If you prefer to have TMDS, then like I commented earlier we dont really 
-> need this change https://patchwork.freedesktop.org/patch/474271/ :)
-> 
-> Whats the benefit of making that change? DRM_ENCODER_TMDS_* can be eDP 
-> and DP . Then there is no confusion or guess work in the encoder.
-> 
-> DRM_ENCODER_DSI - INTF_DSI
-> DRM_ENCODER_VIRTUAL - INTF_WB
-> DRM_ENCODER_TMDS - INTF_DP OR INTF_eDP ( doesnt matter )
-
-The benefit for me was in the cleaness that we are asking for the 
-INTF_DP with index #3 or INTF_DSI idx 1. The less knowledge he have 
-behind the scenes the better is the code.
-
-> 
->>
->> Regards,
->> Bjorn
-
-
--- 
-With best wishes
-Dmitry
