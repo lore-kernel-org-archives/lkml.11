@@ -2,143 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14328C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDEA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238138AbiBQIue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 03:50:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49642 "EHLO
+        id S238180AbiBQIui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 03:50:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238101AbiBQIu3 (ORCPT
+        with ESMTP id S238114AbiBQIub (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 03:50:29 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090592A2297
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:50:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645087815; x=1676623815;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=66scgPRS6kRQoZ6YzjFqve8ZyUUdKt+n3VOjraBcZ9A=;
-  b=lghmDfAgXUCszQ2bgBpVuUBHZjqoSmbPIT0eaamD7TG8VRt+Inii7k1B
-   86UvrVG4HOpROoAnL99fx3odjxNP6NhILn76VIinqacpRWVXx92rUnh+i
-   UqDWANv4kuZcY20Bxmy+6SQ/3awTFCPjd3OgXSp/doXi95PuggzD1e1nR
-   c=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 17 Feb 2022 00:50:14 -0800
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 17 Feb 2022 00:50:13 -0800
-X-QCInternal: smtphost
-Received: from hu-pkumpatl-hyd.qualcomm.com (HELO hu-maiyas-hyd.qualcomm.com) ([10.213.109.81])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 17 Feb 2022 14:20:11 +0530
-Received: by hu-maiyas-hyd.qualcomm.com (Postfix, from userid 3914174)
-        id F1DB85001C2; Thu, 17 Feb 2022 14:20:10 +0530 (+0530)
-From:   Prasad Kumpatla <quic_pkumpatl@quicinc.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Prasad Kumpatla <quic_pkumpatl@quicinc.com>
-Subject: [PATCH v3] regmap-irq: Update interrupt clear register for proper reset
-Date:   Thu, 17 Feb 2022 14:20:07 +0530
-Message-Id: <20220217085007.30218-1-quic_pkumpatl@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 17 Feb 2022 03:50:31 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E49F2A229A;
+        Thu, 17 Feb 2022 00:50:17 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4JzpS71R4gz9sSn;
+        Thu, 17 Feb 2022 09:50:15 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Zp3kcSnZ9IwF; Thu, 17 Feb 2022 09:50:15 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4JzpS424nDz9sSZ;
+        Thu, 17 Feb 2022 09:50:12 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 366678B77A;
+        Thu, 17 Feb 2022 09:50:12 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id ntk_fVf6iUkT; Thu, 17 Feb 2022 09:50:12 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.225])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E760B8B763;
+        Thu, 17 Feb 2022 09:50:11 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21H8o20x345518
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 09:50:02 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21H8o0Ew345517;
+        Thu, 17 Feb 2022 09:50:00 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v2] vsprintf: Fix %pK with kptr_restrict == 0
+Date:   Thu, 17 Feb 2022 09:49:59 +0100
+Message-Id: <107476128e59bff11a309b5bf7579a1753a41aca.1645087605.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645087798; l=4466; s=20211009; h=from:subject:message-id; bh=dLHQV1fFbxDzziI+jHDqlL7hJXcffZqPNoUQg+RXCaE=; b=RdE0988bpb7eoHvBctHTt7Ru8x9D9fQ3HjQYdmRhvuWi7m6yJjHUuh7V0DqMYUifRQrvveemrNJh 9gp6rlrPCUuFHTCKqA8XbR4Wzl/HmLOlT4BC8GcOS9d+L5eSZREJ
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the existing logic where clear_ack is true (HW doesn’t support
-auto clear for ICR), interrupt clear register reset is not handled
-properly. Due to this only the first interrupts get processed properly
-and further interrupts are blocked due to not resetting interrupt
-clear register.
+Although kptr_restrict is set to 0 and the kernel is booted with
+no_hash_pointers parameter, the content of /proc/vmallocinfo is
+lacking the real addresses.
 
-Example for issue case where Invert_ack is false and clear_ack is true:
+  / # cat /proc/vmallocinfo
+  0x(ptrval)-0x(ptrval)    8192 load_module+0xc0c/0x2c0c pages=1 vmalloc
+  0x(ptrval)-0x(ptrval)   12288 start_kernel+0x4e0/0x690 pages=2 vmalloc
+  0x(ptrval)-0x(ptrval)   12288 start_kernel+0x4e0/0x690 pages=2 vmalloc
+  0x(ptrval)-0x(ptrval)    8192 _mpic_map_mmio.constprop.0+0x20/0x44 phys=0x80041000 ioremap
+  0x(ptrval)-0x(ptrval)   12288 _mpic_map_mmio.constprop.0+0x20/0x44 phys=0x80041000 ioremap
+    ...
 
-    Say Default ISR=0x00 & ICR=0x00 and ISR is triggered with 2
-    interrupts making ISR = 0x11.
+According to the documentation for /proc/sys/kernel/, %pK is
+equivalent to %p when kptr_restrict is set to 0.
 
-    Step 1: Say ISR is set 0x11 (store status_buff = ISR). ISR needs to
-            be cleared with the help of ICR once the Interrupt is processed.
-
-    Step 2: Write ICR = 0x11 (status_buff), this will clear the ISR to 0x00.
-
-    Step 3: Issue - In the existing code, ICR is written with ICR =
-            ~(status_buff) i.e ICR = 0xEE -> This will block all the interrupts
-            from raising except for interrupts 0 and 4. So expectation here is to
-            reset ICR, which will unblock all the interrupts.
-
-            if (chip->clear_ack) {
-                 if (chip->ack_invert && !ret)
-                  ........
-                 else if (!ret)
-                     ret = regmap_write(map, reg,
-                            ~data->status_buf[i]);
-
-So writing 0 and 0xff (when ack_invert is true) should have no effect, other
-than clearing the ACKs just set.
-
-Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
-Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+Fixes: 5ead723a20e0 ("lib/vsprintf: no_hash_pointers prints all addresses as unhashed")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- drivers/base/regmap/regmap-irq.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
+v2: Refactor %p default handling into default_pointer()
+---
+ .../admin-guide/kernel-parameters.txt         |  3 +-
+ lib/vsprintf.c                                | 36 +++++++++++--------
+ 2 files changed, 22 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
-index d2656581a608..4a446259a184 100644
---- a/drivers/base/regmap/regmap-irq.c
-+++ b/drivers/base/regmap/regmap-irq.c
-@@ -189,11 +189,9 @@ static void regmap_irq_sync_unlock(struct irq_data *data)
- 				ret = regmap_write(map, reg, d->mask_buf[i]);
- 			if (d->chip->clear_ack) {
- 				if (d->chip->ack_invert && !ret)
--					ret = regmap_write(map, reg,
--							   d->mask_buf[i]);
-+					ret = regmap_write(map, reg, UINT_MAX);
- 				else if (!ret)
--					ret = regmap_write(map, reg,
--							   ~d->mask_buf[i]);
-+					ret = regmap_write(map, reg, 0);
- 			}
- 			if (ret != 0)
- 				dev_err(d->map->dev, "Failed to ack 0x%x: %d\n",
-@@ -556,11 +554,9 @@ static irqreturn_t regmap_irq_thread(int irq, void *d)
- 						data->status_buf[i]);
- 			if (chip->clear_ack) {
- 				if (chip->ack_invert && !ret)
--					ret = regmap_write(map, reg,
--							data->status_buf[i]);
-+					ret = regmap_write(map, reg, UINT_MAX);
- 				else if (!ret)
--					ret = regmap_write(map, reg,
--							~data->status_buf[i]);
-+					ret = regmap_write(map, reg, 0);
- 			}
- 			if (ret != 0)
- 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
-@@ -817,13 +813,9 @@ int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
- 					d->status_buf[i] & d->mask_buf[i]);
- 			if (chip->clear_ack) {
- 				if (chip->ack_invert && !ret)
--					ret = regmap_write(map, reg,
--						(d->status_buf[i] &
--						 d->mask_buf[i]));
-+					ret = regmap_write(map, reg, UINT_MAX);
- 				else if (!ret)
--					ret = regmap_write(map, reg,
--						~(d->status_buf[i] &
--						  d->mask_buf[i]));
-+					ret = regmap_write(map, reg, 0);
- 			}
- 			if (ret != 0) {
- 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index f5a27f067db9..c3133f97aa42 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3485,8 +3485,7 @@
+ 			difficult since unequal pointers can no longer be
+ 			compared.  However, if this command-line option is
+ 			specified, then all normal pointers will have their true
+-			value printed.  Pointers printed via %pK may still be
+-			hashed.  This option should only be specified when
++			value printed. This option should only be specified when
+ 			debugging the kernel.  Please do not use on production
+ 			kernels.
+ 
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 3b8129dd374c..7003c9ff787b 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -53,6 +53,10 @@
+ #include <linux/string_helpers.h>
+ #include "kstrtox.h"
+ 
++/* Disable pointer hashing if requested */
++bool no_hash_pointers __ro_after_init;
++EXPORT_SYMBOL_GPL(no_hash_pointers);
++
+ static noinline unsigned long long simple_strntoull(const char *startp, size_t max_chars, char **endp, unsigned int base)
+ {
+ 	const char *cp;
+@@ -848,6 +852,19 @@ static char *ptr_to_id(char *buf, char *end, const void *ptr,
+ 	return pointer_string(buf, end, (const void *)hashval, spec);
+ }
+ 
++static char *default_pointer(char *buf, char *end, const void *ptr,
++			     struct printf_spec spec)
++{
++	/*
++	 * default is to _not_ leak addresses, so hash before printing,
++	 * unless no_hash_pointers is specified on the command line.
++	 */
++	if (unlikely(no_hash_pointers))
++		return pointer_string(buf, end, ptr, spec);
++
++	return ptr_to_id(buf, end, ptr, spec);
++}
++
+ int kptr_restrict __read_mostly;
+ 
+ static noinline_for_stack
+@@ -857,7 +874,7 @@ char *restricted_pointer(char *buf, char *end, const void *ptr,
+ 	switch (kptr_restrict) {
+ 	case 0:
+ 		/* Handle as %p, hash and do _not_ leak addresses. */
+-		return ptr_to_id(buf, end, ptr, spec);
++		return default_pointer(buf, end, ptr, spec);
+ 	case 1: {
+ 		const struct cred *cred;
+ 
+@@ -2223,10 +2240,6 @@ char *fwnode_string(char *buf, char *end, struct fwnode_handle *fwnode,
+ 	return widen_string(buf, buf - buf_start, end, spec);
+ }
+ 
+-/* Disable pointer hashing if requested */
+-bool no_hash_pointers __ro_after_init;
+-EXPORT_SYMBOL_GPL(no_hash_pointers);
+-
+ int __init no_hash_pointers_enable(char *str)
+ {
+ 	if (no_hash_pointers)
+@@ -2455,7 +2468,7 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+ 	case 'e':
+ 		/* %pe with a non-ERR_PTR gets treated as plain %p */
+ 		if (!IS_ERR(ptr))
+-			break;
++			return default_pointer(buf, end, ptr, spec);
+ 		return err_ptr(buf, end, ptr, spec);
+ 	case 'u':
+ 	case 'k':
+@@ -2465,16 +2478,9 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+ 		default:
+ 			return error_string(buf, end, "(einval)", spec);
+ 		}
++	default:
++		return default_pointer(buf, end, ptr, spec);
+ 	}
+-
+-	/*
+-	 * default is to _not_ leak addresses, so hash before printing,
+-	 * unless no_hash_pointers is specified on the command line.
+-	 */
+-	if (unlikely(no_hash_pointers))
+-		return pointer_string(buf, end, ptr, spec);
+-	else
+-		return ptr_to_id(buf, end, ptr, spec);
+ }
+ 
+ /*
 -- 
-2.17.1
+2.34.1
 
