@@ -2,34 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E51DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB6FC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240823AbiBQNTF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:19:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41212 "EHLO
+        id S240838AbiBQNTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:19:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233011AbiBQNTD (ORCPT
+        with ESMTP id S233011AbiBQNTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:19:03 -0500
-Received: from unicorn.mansr.com (unicorn.mansr.com [IPv6:2001:8b0:ca0d:8d8e::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747852AE727
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:18:47 -0800 (PST)
-Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
-        by unicorn.mansr.com (Postfix) with ESMTPS id 84F8A15360;
-        Thu, 17 Feb 2022 13:18:45 +0000 (GMT)
-Received: by raven.mansr.com (Postfix, from userid 51770)
-        id 4EB30219C0A; Thu, 17 Feb 2022 13:18:45 +0000 (GMT)
-From:   Mans Rullgard <mans@mansr.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] pinctrl: sunxi: do not print error message for EPROBE_DEFER
-Date:   Thu, 17 Feb 2022 13:17:37 +0000
-Message-Id: <20220217131737.10931-1-mans@mansr.com>
+        Thu, 17 Feb 2022 08:19:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE912AE714;
+        Thu, 17 Feb 2022 05:19:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F27B61BC4;
+        Thu, 17 Feb 2022 13:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237E3C340E9;
+        Thu, 17 Feb 2022 13:19:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645103960;
+        bh=4EyEkWFqrHHaf+rJiEPSN1RBWYPrrcSmy23C9np2YRk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WHelvKVDfsFke/qLmJjKQGeO8J1BcsSAKCuZxV0PTASlG9ZPvNcNPNOXjkVnBCaDI
+         HJOO/HpMbDQK0/hYuhTnR8ZR+xtJWLQo3ckgjpWVivqMuW0j2U+7ALXRBYx3eX/Hoq
+         PicImU5n68NVmWZ/GTb6ueBRq+h/VS6sGM6gKr85nuD7ASr8Yh+Abmfo6VoUVK40/8
+         5P+fKQ7W0ndWpVAhe4+ajU5gEjkhg8CcjKGLiYI9Tha5e2+TbQ+ag5/kxvtvQPxyNc
+         kPns+u0TTRpyjfQ8/bdTZJJEQFO2F1b//Nj0v+bz1JsS/lwbROfvyeYqGog0r5+Ep9
+         Rb74O5dcuCiKg==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: [PATCHv2 0/3] perf/bpf: Replace deprecated code
+Date:   Thu, 17 Feb 2022 14:19:13 +0100
+Message-Id: <20220217131916.50615-1-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -37,35 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoid printing an error message if getting a regulator fails with
-EPROBE_DEFER.  This can happen if, for example, a regulator supplying
-one of the main banks is controlled by a PL pin.
+hi,
+the original patchset [1] removed the whole perf functionality
+with the hope nobody's using that. But it turned out there's
+actually bpf script using prologue functionality, so there
+might be users of this.
 
-Signed-off-by: Mans Rullgard <mans@mansr.com>
+This patchset gets rid of and adds workaround (and keeps the
+current functionality) for following deprecated libbpf
+functions/struct:
+
+  bpf_program__set_priv
+  bpf_program__priv
+  bpf_map__set_priv
+  bpf_map__priv
+  bpf_program__set_prep
+  bpf_program__nth_fd
+  struct bpf_prog_prep_result
+
+Basically it implements workarounds suggested by Andrii in [2].
+
+I tested with script from examples/bpf that are working for me:
+
+  examples/bpf/hello.c
+  examples/bpf/5sec.c
+
+The rest seem to fail for various reasons even without this
+change..  they seem unmaintained for some time now, but I might
+have wrong setup.
+
+Also available in here:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  perf/depre
+
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/linux-perf-users/YgoPxhE3OEEmZqla@krava/T/#t
+[2] https://lore.kernel.org/linux-perf-users/YgoPxhE3OEEmZqla@krava/T/#md3ccab9fe70a4583e94603b1a562e369bd67b17d
 ---
- drivers/pinctrl/sunxi/pinctrl-sunxi.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+Jiri Olsa (3):
+      perf tools: Remove bpf_program__set_priv/bpf_program__priv usage
+      perf tools: Remove bpf_map__set_priv/bpf_map__priv usage
+      perf tools: Rework prologue generation code
 
-diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-index e42a3a0005a7..534c42ee0718 100644
---- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-@@ -777,11 +777,10 @@ static int sunxi_pmx_request(struct pinctrl_dev *pctldev, unsigned offset)
- 
- 	snprintf(supply, sizeof(supply), "vcc-p%c", 'a' + bank);
- 	reg = regulator_get(pctl->dev, supply);
--	if (IS_ERR(reg)) {
--		dev_err(pctl->dev, "Couldn't get bank P%c regulator\n",
--			'A' + bank);
--		return PTR_ERR(reg);
--	}
-+	if (IS_ERR(reg))
-+		return dev_err_probe(pctl->dev, PTR_ERR(reg),
-+				     "Couldn't get bank P%c regulator\n",
-+				     'A' + bank);
- 
- 	ret = regulator_enable(reg);
- 	if (ret) {
--- 
-2.35.1
-
+ tools/perf/util/bpf-loader.c | 267 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 230 insertions(+), 37 deletions(-)
