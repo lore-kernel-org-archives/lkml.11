@@ -2,54 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242532AbiBQPb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:31:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40700 "EHLO
+        id S235045AbiBQPca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:32:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242528AbiBQPby (ORCPT
+        with ESMTP id S229573AbiBQPc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:31:54 -0500
-Received: from out162-62-57-49.mail.qq.com (out162-62-57-49.mail.qq.com [162.62.57.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E83DEF7
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:31:35 -0800 (PST)
+        Thu, 17 Feb 2022 10:32:28 -0500
+Received: from out162-62-57-87.mail.qq.com (out162-62-57-87.mail.qq.com [162.62.57.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3072B2C73
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:32:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1645111891;
-        bh=FihfJldaJ6r2xVuFS8/jwCVqViJT/Juw+yF0fIUwbtQ=;
+        s=s201512; t=1645111928;
+        bh=uPF+2bN3BhUMtB3HE0L6AB4knqomSQEQRNJEz5GSk+U=;
         h=From:To:Cc:Subject:Date;
-        b=EEMDUMO6rPmbsPDc77JEeADLmFBW80Cke9UFh0rjyBm+jucSVBvpOSoD3lSsCbvk9
-         OyOgXfqHy5jDiXfnd2e12B+mp9IOcxxb5YcLlc+O31wafa4UCdhmRXoaMIpzRzXgzj
-         M2z5QPTYtNX91rEk9NiG+xVM5XpjBgxrrGP1D4gk=
+        b=NWkmuglYtF0q/vQQ4rgqKYAL/4HDC6sW8XgnShBjngYePiSIFkW4u2YZwJVC+cnBj
+         LLiVvDbX+Ikk+4J8+HGklPn/hg+MBUAAgGF8o8ZTi9V3RCHXgVLOdFBlWjyWHUNb3q
+         GU2NLk6lCTZHBqlck4oCJy7mTH02Pf9b+/JECsQU=
 Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc10.qq.com (NewEsmtp) with SMTP
-        id 78DB94C8; Thu, 17 Feb 2022 23:30:13 +0800
-X-QQ-mid: xmsmtpt1645111813t42y1perq
-Message-ID: <tencent_A552D77F0E081BB36EAE11C720455D78BD06@qq.com>
-X-QQ-XMAILINFO: NOIkHYnr7VzdBovMCoZOh3CgEwz50dkDvRc6BZyxzTCU3rAJPriHHKsqJamEwf
-         VdPGYFBsRcZoPeYLk8uLvbaJZ0wFt5irk6lV4nYWFpFSbHk9wK8V6LkC5Ml65QlyybE6k8KEwBXD
-         XJBsdH/FZglrztGCURRy6n8/R+JiaI0SpO2SZPLkyrB+AnwMfAcA1F7avwZnbosFvCgv6b7jMFN/
-         nLyQW600y5Aukd1l1k9+c4NGfCIJGIj9/tM/Ytt7z0YFl8QEVzXs5gj/TI7uF3s211UQfKtAUVPu
-         0cxVc4D9L8gUKC7Fnvcg7L0JUyDiPpRWb2Hzq2NHB3Yn8t2GKGx+/qLSzmNKtPqES4FJoto9RtPu
-         SRsCJ+JVczQ/b3dXnGyGPNPXCrCsn42KmdpnB8A3cHQVE+in/vTePGMtK3LDTXJmfkkk4/vGdSQD
-         jcOrmhI6vB8w8peswhimI4T2lhmthG6NbgtT0pxoS6uVSyCRjMSaG6+eyIS75lBn/ogdEAAYn7g+
-         Fe3AgeKI6RJ8SHlbcVaVDPng2/Z5UH6MlRbPyhMprsWA3CxqNbDNY8AxlxxrRaWfciwIB0PBlsnW
-         rqFP4mJ9/0oWy3NWYJupuLRy9GaUTT3lnmQ2pBobQmJDBW0zA2ttD3Vs56KCLfjEBa5ZgiafoJz/
-         sp9XjjgmPXmMHAYEyigWV/aEn2Rpn+gdINQgQ4klxaInAqMAdU5fhcr7cAKaIS704DNhlNR3Zlmu
-         WSdEAjnuDt2XPtN6qs4vO+ruimDrYga49LD9oldbxJqML0IF0QbMr+GvJJLfoY/lujK/wmZMLebz
-         0yT0XxAbJ0Bqgi5R6RdD21BjDBMLCMZRTzmiUg3YdmM8Gy3dxHgLkbRu1pcrJR+O3w3EK0EIOPjh
-         T4hMlluvs13xUgt6UJczUpukrEUJnogqGmIAbd478pzui1o7Xg+sEiFTPcRJM0cz75Ev2sFj6W
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id 7BA1B2BD; Thu, 17 Feb 2022 23:30:58 +0800
+X-QQ-mid: xmsmtpt1645111858tfvj2j1uk
+Message-ID: <tencent_9C9780638BA22F9C5709F0DF190480393905@qq.com>
+X-QQ-XMAILINFO: MgQY1K25Ph0m5cskmfXkJHQq2KMd2PO7D8cRZg+ulKAEXYDg5DXRAcaR5T/MV/
+         ShhKupnc5u8DkDw+dO7XV/E7ZUsVJYmRZgUBBvsZIUKCV3D4LGI8lvMZzM2UhgOHR/pRFmGS9YWZ
+         lYgygRfxXDHhC2i+j7pBbMC64IK32zK/9+m6KLaxGd7vyvo4NNAehqYfnm894AlR0IIMRTkCNOGO
+         sUkUpuuhYHEtXWCDPl5kvLf3i6Ic8/bniQy8k2wvy5lkJhD6nk8mEmvJ0t1mV5KYxsqH9VWto23J
+         bv5GzGF+PWFgMqHqL5oEaWeZ4wW1lYfFxe6DbDn9MJbKXJdNWyo/f5yRGzUv2QDY8s1yIwvD78lG
+         HXIc7HrYcX4XuCpCk4UFk8hkd562cIhGtmHEI5zml+XvkpaZn9IthDIIsYF7PA6uqjX5xtxs5D31
+         wS0wb0s7FSvXVSVVIZq0yJhOA8oGPBkhokZlSSheS999InZ4G/QDxCeoOUYUkJP43ujRspP+FLIh
+         k2mtvx60TSGpQgMDU1G4SKsTWSi0ynHrl6laKPDaV+Eu2AaGSR8fdI0e0MnRM/ogk5FP1GCiaQsa
+         sHACIYEvyG1JUZCA9jMlPepYcw1+WqEN8u2cQApJpNRqu0RrBVxIvSUUpAKH372aFsoYfeGwFVYi
+         afU9MI6igF8i0hEU5YGKyy8pnCzjB1XximbGNE5O91cm8Rujgd8LY+o6YlIcmO2NStm/VPHTGsJ8
+         ZMWgmIh8AeFJquvlgL0gtb/R31XjE7YPZO13z3H953m4znmgZUHtJdyiIo3mVQS7HTk1q8qMeQig
+         Dq2IrMfxbf3TtWiwsNY/W2n8iiv4nrkpSWFdc06lyNLUmbSSCgHhxFSCO8F2uaQOJCZhOVYu+bU1
+         U3HPY7rVlB7yqUaARTytA21bP+frAAPdYI0d0W7x1qgHidQvQ5WwDFwz9E5gYxftXch5KhyPxL
 From:   xkernel.wang@foxmail.com
 To:     jerome.pouiller@silabs.com, gregkh@linuxfoundation.org
 Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] staging: wfx: fix the error handling in wfx_init_common()
-Date:   Thu, 17 Feb 2022 23:29:06 +0800
-X-OQ-MSGID: <20220217152906.1029-1-xkernel.wang@foxmail.com>
+Subject: [PATCH v3] staging: wfx: check the return value of devm_kmalloc()
+Date:   Thu, 17 Feb 2022 23:30:23 +0800
+X-OQ-MSGID: <20220217153023.1050-1-xkernel.wang@foxmail.com>
 X-Mailer: git-send-email 2.33.0.windows.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -57,43 +56,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-All the error handlers of wfx_init_common() return without calling
-ieee80211_free_hw(hw), which may result in memory leak. So I add
-one err label to unify the error handlers.
+devm_kmalloc() returns a pointer to allocated memory on success, NULL
+on failure. While there is a memory allocation of devm_kmalloc()
+without proper check. It is better to check the return value of it to
+prevent wrong memory access.
 
-Suggested-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
 Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 ---
- drivers/staging/wfx/main.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Changelog:
+v2-v3 use the err label.
+ drivers/staging/wfx/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/staging/wfx/main.c b/drivers/staging/wfx/main.c
-index 4b9fdf9..f83df9f 100644
+index f83df9f..5d4fcc3 100644
 --- a/drivers/staging/wfx/main.c
 +++ b/drivers/staging/wfx/main.c
-@@ -309,7 +309,8 @@ struct wfx_dev *wfx_init_common(struct device *dev,
- 	wdev->pdata.gpio_wakeup = devm_gpiod_get_optional(dev, "wakeup",
- 							  GPIOD_OUT_LOW);
- 	if (IS_ERR(wdev->pdata.gpio_wakeup))
--		return NULL;
+@@ -294,6 +294,9 @@ struct wfx_dev *wfx_init_common(struct device *dev,
+ 	hw->wiphy->n_iface_combinations = ARRAY_SIZE(wfx_iface_combinations);
+ 	hw->wiphy->iface_combinations = wfx_iface_combinations;
+ 	hw->wiphy->bands[NL80211_BAND_2GHZ] = devm_kmalloc(dev, sizeof(wfx_band_2ghz), GFP_KERNEL);
++	if (!hw->wiphy->bands[NL80211_BAND_2GHZ])
 +		goto err;
 +
- 	if (wdev->pdata.gpio_wakeup)
- 		gpiod_set_consumer_name(wdev->pdata.gpio_wakeup, "wfx wakeup");
- 
-@@ -325,9 +326,13 @@ struct wfx_dev *wfx_init_common(struct device *dev,
- 	wdev->force_ps_timeout = -1;
- 
- 	if (devm_add_action_or_reset(dev, wfx_free_common, wdev))
--		return NULL;
-+		goto err;
- 
- 	return wdev;
-+
-+err:
-+	ieee80211_free_hw(hw);
-+	return NULL;
- }
- 
- int wfx_probe(struct wfx_dev *wdev)
+ 	// FIXME: also copy wfx_rates and wfx_2ghz_chantable
+ 	memcpy(hw->wiphy->bands[NL80211_BAND_2GHZ], &wfx_band_2ghz,
+ 	       sizeof(wfx_band_2ghz));
 -- 
