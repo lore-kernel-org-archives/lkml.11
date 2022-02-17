@@ -2,117 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44341C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1418C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240682AbiBQPvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:51:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41154 "EHLO
+        id S242866AbiBQPvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:51:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241539AbiBQPvl (ORCPT
+        with ESMTP id S242947AbiBQPu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:51:41 -0500
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27F0185542;
-        Thu, 17 Feb 2022 07:51:15 -0800 (PST)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 21HFp9vA004055
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 10:51:10 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 4815815C34C8; Thu, 17 Feb 2022 10:51:09 -0500 (EST)
-Date:   Thu, 17 Feb 2022 10:51:09 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Byungchul Park <byungchul.park@lge.com>
-Cc:     torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
-        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, willy@infradead.org,
-        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: Re: [PATCH 00/16] DEPT(Dependency Tracker)
-Message-ID: <Yg5u7dzUxL3Vkncg@mit.edu>
-References: <1645095472-26530-1-git-send-email-byungchul.park@lge.com>
+        Thu, 17 Feb 2022 10:50:29 -0500
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07AE2B3565
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:50:14 -0800 (PST)
+Received: by mail-qv1-xf34.google.com with SMTP id p7so8971447qvk.11
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:50:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TrDQU0wSmJ6gbE5qWNC2HspX1mTvA/w61hnKamurULY=;
+        b=Bjc0C/P8P3VM61dFTCNftf1IoTERJSFiCh6cp97oIk7fgWzNuZ+688kiVF8wS89ArW
+         PJSElY9F/Ndstf4E4cCqluq6d9+x/aV27fLitAhzwSn6dFRPhvcuGsU4MLfBrcZAWlFP
+         Qa/adfQ0pmzUCOSE9s1QwHPmMa9/XxEEMWTaW06DY+f8JM3AAuLlssbqGmD0TG6hY93v
+         kwwJVBmVImOHKpQryqXIbBN0Yz/I237/xO87gxOdwFzslFRjnS+FYJIQcTvG9HiGb+WX
+         H0uN4X6GofFaAemkyoi2WGP9NWfs+YB/Hu9HXd5/wdRKDVBjZ2PpLWEfkfRrJJFpU6kd
+         QW9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TrDQU0wSmJ6gbE5qWNC2HspX1mTvA/w61hnKamurULY=;
+        b=XCGWIvURetOc7HClPWMg/JkUM2bTV+/cQ1+FZSJcbv8/zXqJrvX1kMG++cWxyW7cT6
+         0TwaCcYM+Xj3jgvgZVsAZGwHcJG7uXD7nO86FjBC6D+hyZEzWjFVhfIqHW+oF4Z0y7k2
+         h2WGLLwiAg+HSFdhy4Bip9uRU0QPvwdYVJNDYL6ZpjYKYLbssEngltaNWZ+hPO7QPfp3
+         gcE0H0VJAEBPTalOFs723aVokcbtvbg/K6FHfWSblB+OOmv2oVq8+s8OTfMpzfxA7nsz
+         8kV599hveQbFigna2ADU954KGAEAdsiuYkMfhIOnt95gyF6mTf5z2oDsvnxs0lBz1s0H
+         U9kw==
+X-Gm-Message-State: AOAM530I1C0A6tGa5pjM0xgJ/kvY/0Kvygxa0VD8dDuBnqNJ4iU1UfCh
+        gHR2ax2FN6Y7j1m4QHNljsBHcqTzB97lDQ==
+X-Google-Smtp-Source: ABdhPJzPCX/BmaO5y5ccTenFCqI0tT7p3C7WedWxRly8fWyyPG9Kcsrdkf1zkVyjGuUFHnnYJ6inHQ==
+X-Received: by 2002:a05:6214:5a3:b0:42c:2c13:759c with SMTP id by3-20020a05621405a300b0042c2c13759cmr2687720qvb.20.1645113014138;
+        Thu, 17 Feb 2022 07:50:14 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id m5sm20092682qkp.132.2022.02.17.07.50.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 07:50:13 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nKj2q-0060gp-E5; Thu, 17 Feb 2022 11:50:12 -0400
+Date:   Thu, 17 Feb 2022 11:50:12 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/mmu_notifiers: use helper function
+ mmu_notifier_synchronize()
+Message-ID: <20220217155012.GC1037534@ziepe.ca>
+References: <20220217110948.35477-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1645095472-26530-1-git-send-email-byungchul.park@lge.com>
+In-Reply-To: <20220217110948.35477-1-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 07:57:36PM +0900, Byungchul Park wrote:
+On Thu, Feb 17, 2022 at 07:09:48PM +0800, Miaohe Lin wrote:
+> Use helper function mmu_notifier_synchronize() to ensure all mmu_notifiers
+> are freed. Minor readability improvement.
 > 
-> I've got several reports from the tool. Some of them look like false
-> alarms and some others look like real deadlock possibility. Because of
-> my unfamiliarity of the domain, it's hard to confirm if it's a real one.
-> Let me add the reports on this email thread.
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/mmu_notifier.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 
-The problem is we have so many potentially invalid, or
-so-rare-as-to-be-not-worth-the-time-to-investigate-in-the-
-grand-scheme-of-all-of-the-fires-burning-on-maintainers laps that it's
-really not reasonable to ask maintainers to determine whether
-something is a false alarm or not.  If I want more of these unreliable
-potential bug reports to investigate, there is a huge backlog in
-Syzkaller.  :-)
+I'm not keen on this, the internal synchronize_srcu's don't have the
+same usage model as described in the comment for
+mmu_notifier_synchronize(). Instead they are doing what their comments
+say.
 
-Looking at the second ext4 report, it doesn't make any sense.  Context
-A is the kjournald thread.  We don't do a commit until (a) the timeout
-expires, or (b) someone explicitly requests that a commit happen
-waking up j_wait_commit.  I'm guessing that complaint here is that
-DEPT thinks nothing is explicitly requesting a wake up.  But note that
-after 5 seconds (or whatever journal->j_commit_interval) is configured
-to be we *will* always start a commit.  So ergo, there can't be a deadlock.
+Yes, it is the same code, but the purpose is different.
 
-At a higher level of discussion, it's an unfair tax on maintainer's
-times to ask maintainers to help you debug DEPT for you.  Tools like
-Syzkaller and DEPT are useful insofar as they save us time in making
-our subsystems better.  But until you can prove that it's not going to
-be a massive denial of service attack on maintainer's time, at the
-*very* least keep an RFC on the patch, or add massive warnings that
-more often than not DEPT is going to be sending maintainers on a wild
-goose chase.
-
-If you know there there "appear to be false positives", you need to
-make sure you've tracked them all down before trying to ask that this
-be merged.
-
-You may also want to add some documentation about why we should trust
-this; in particular for wait channels, when a process calls schedule()
-there may be multiple reasons why the thread will wake up --- in the
-worst case, such as in the select(2) or epoll(2) system call, there
-may be literally thousands of reasons (one for every file desriptor
-the select is waiting on) --- why the process will wake up and thus
-resolve the potential "deadlock" that DEPT is worrying about.  How is
-DEPT going to handle those cases?  If the answer is that things need
-to be tagged, then at least disclose potential reasons why DEPT might
-be untrustworthy to save your reviewers time.
-
-I know that you're trying to help us, but this tool needs to be far
-better than Lockdep before we should think about merging it.  Even if
-it finds 5% more potential deadlocks, if it creates 95% more false
-positive reports --- and the ones it finds are crazy things that
-rarely actually happen in practice, are the costs worth the benefits?
-And who is bearing the costs, and who is receiving the benefits?
-
-Regards,
-
-					- Ted
+Jason
