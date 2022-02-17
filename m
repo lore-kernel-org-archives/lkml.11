@@ -2,222 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A324C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 03:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 039EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 03:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232480AbiBQDOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 22:14:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52048 "EHLO
+        id S232509AbiBQDPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 22:15:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231329AbiBQDOb (ORCPT
+        with ESMTP id S231329AbiBQDP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 22:14:31 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384FD137769;
-        Wed, 16 Feb 2022 19:14:18 -0800 (PST)
+        Wed, 16 Feb 2022 22:15:29 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB672727B1;
+        Wed, 16 Feb 2022 19:15:15 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id qe15so4294255pjb.3;
+        Wed, 16 Feb 2022 19:15:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645067658; x=1676603658;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7c5qPhNtgRk69J0dGeUIKOWwKPD0CRs0eHIEIsCitqU=;
-  b=uIcEcQbTkfJFoJ/cnG8lAxucHfxuPMPAopyc++wHVkghBshpfXYhmNJP
-   ETDiNNbmSuLxluY8XCW8aQlbXQ5wesxyp0DAPB0YwGmhoGaDABUhJORId
-   9o11wMTe+38wD29ibWOo8MjztAiG4SCTQqXNK9CmP4itksD/HkaQD3LvB
-   c=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 16 Feb 2022 19:14:17 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 19:14:16 -0800
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 16 Feb 2022 19:14:16 -0800
-Received: from [10.111.174.92] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Wed, 16 Feb
- 2022 19:14:13 -0800
-Message-ID: <ea1ad5ce-4545-82e1-dfb5-8460b4264494@quicinc.com>
-Date:   Wed, 16 Feb 2022 19:14:11 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [REPOST PATCH v4 11/13] drm/msm/disp/dpu1: Add DSC support in RM
-Content-Language: en-US
-To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
-CC:     <linux-arm-msm@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <freedreno@lists.freedesktop.org>
-References: <20220210103423.271016-1-vkoul@kernel.org>
- <20220210103423.271016-12-vkoul@kernel.org>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <20220210103423.271016-12-vkoul@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=LmgepXP/Vtuh5oVHO9dtuvcfXAWSOUVOBIqTArmUnB4=;
+        b=kj/jTVICqbtyVh4P9EU3cDaIFy+nJu84K7xiBHnUb9RUeXjlweD4oqmGigQDGNWByf
+         1aQ3DCXOk+dT6RKLaSJn79HAQJ2yuMWBwb7de9rFrW+T1whFG9g66bM1KF9sUyKhdhHU
+         /0dkD9Hf32ZuMdEPbXVZaQgNYPB3dwRgrBRxaAZHcQaM5BfWz10mHtBej3VmCH3iSBo9
+         u9cIaUsFtqHfgihMQA7ofMoE1Wz6h93FiYIqOVuamwmAFfBrS/maSzQo0jmZeK4lVr7r
+         dYzRXaCRUR3Gy6AX4THgZn2NWR89ovEZlZvrE4czogVaks+MoJKgLJo2cuIq8LglKLhN
+         hx7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LmgepXP/Vtuh5oVHO9dtuvcfXAWSOUVOBIqTArmUnB4=;
+        b=Nkl3EA5iK8qUXH8XGR3TkEauPQIcncEFyFrnqbVzFg5QLsgAn2BtNxXrHtASZds04a
+         m7OD6Fjz1M6Q0YJd6yfI0eOOUjw1l0muNeuRjRR9SHQJzeTocVn9SelkS5CAwR3pkxbq
+         XW77IcJxAlsxmViNjIrMpvpcPZZA4J8jVMJOq+27fRDpl45u1iB3k5765SFHUblrGXBT
+         TjGiBYtOX0E3eurKjfxDOVCDEU1ZGp8N2TI1rtgQdtMU8Ofpn1MFjYGeH4+WfiAj5+Xa
+         AdA+f9h0AamRvzFOiQu9UKSJJFs55lnYG3ywXXgF68TNky3uQYrsNeJsx3aqHhmmcki2
+         bp2w==
+X-Gm-Message-State: AOAM531Fjmpyh+O51kh9qtrKlJZ54ESriL1hwQ4LU5odSZN+5Rzvj3Eu
+        mbwpWuhk1X56cObsJWLhrTw=
+X-Google-Smtp-Source: ABdhPJx2zsmexVDBX/XeYLm2KRhRqgPZJ5fxjvUiqGjSA3rJ8fD9Jtrm1YKyUo2KXvi/OO1i0gdPNA==
+X-Received: by 2002:a17:902:9684:b0:14d:85a7:6eda with SMTP id n4-20020a170902968400b0014d85a76edamr912134plp.111.1645067715224;
+        Wed, 16 Feb 2022 19:15:15 -0800 (PST)
+Received: from localhost.localdomain ([162.219.34.248])
+        by smtp.gmail.com with ESMTPSA id cu21sm421018pjb.50.2022.02.16.19.15.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 19:15:14 -0800 (PST)
+From:   "Wang Jianchao (Kuaishou)" <jianchao.wan9@gmail.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Josef Bacik <jbacik@fb.com>, Tejun Heo <tj@kernel.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC V4 0/6] blk: make blk-rq-qos policies pluggable and modular
+Date:   Thu, 17 Feb 2022 11:13:43 +0800
+Message-Id: <20220217031349.98561-1-jianchao.wan9@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Jens
 
+blk-rq-qos is a standalone framework out of io-sched and can be used to
+control or observe the IO progress in block-layer with hooks. blk-rq-qos
+is a great design but right now, it is totally fixed and built-in and shut
+out peoples who want to use it with external module.
 
-On 2/10/2022 2:34 AM, Vinod Koul wrote:
-> This add the bits in RM to enable the DSC blocks
-> 
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
-> --Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
->   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h |  1 +
->   drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c  | 56 +++++++++++++++++++++++++
->   drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h  |  1 +
->   3 files changed, 58 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-> index 2d385b4b7f5e..8f2fb667b05c 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-> @@ -146,6 +146,7 @@ struct dpu_global_state {
->   	uint32_t ctl_to_enc_id[CTL_MAX - CTL_0];
->   	uint32_t intf_to_enc_id[INTF_MAX - INTF_0];
->   	uint32_t dspp_to_enc_id[DSPP_MAX - DSPP_0];
-> +	uint32_t dsc_to_enc_id[DSC_MAX - DSC_0];
->   };
->   
->   struct dpu_global_state
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-> index f9c83d6e427a..fbb24bb2b998 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-> @@ -11,6 +11,7 @@
->   #include "dpu_hw_intf.h"
->   #include "dpu_hw_dspp.h"
->   #include "dpu_hw_merge3d.h"
-> +#include "dpu_hw_dsc.h"
->   #include "dpu_encoder.h"
->   #include "dpu_trace.h"
->   
-> @@ -75,6 +76,14 @@ int dpu_rm_destroy(struct dpu_rm *rm)
->   			dpu_hw_intf_destroy(hw);
->   		}
->   	}
-> +	for (i = 0; i < ARRAY_SIZE(rm->dsc_blks); i++) {
-> +		struct dpu_hw_dsc *hw;
-> +
-> +		if (rm->dsc_blks[i]) {
-> +			hw = to_dpu_hw_dsc(rm->dsc_blks[i]);
-> +			dpu_hw_dsc_destroy(hw);
-> +		}
-> +	}
->   
->   	return 0;
->   }
-> @@ -221,6 +230,19 @@ int dpu_rm_init(struct dpu_rm *rm,
->   		rm->dspp_blks[dspp->id - DSPP_0] = &hw->base;
->   	}
->   
-> +	for (i = 0; i < cat->dsc_count; i++) {
-> +		struct dpu_hw_dsc *hw;
-> +		const struct dpu_dsc_cfg *dsc = &cat->dsc[i];
-> +
-> +		hw = dpu_hw_dsc_init(dsc->id, mmio, cat);
-> +		if (IS_ERR_OR_NULL(hw)) {
-> +			rc = PTR_ERR(hw);
-> +			DPU_ERROR("failed dsc object creation: err %d\n", rc);
-> +			goto fail;
-> +		}
-> +		rm->dsc_blks[dsc->id - DSC_0] = &hw->base;
-> +	}
-> +
->   	return 0;
->   
->   fail:
-> @@ -476,6 +498,7 @@ static int _dpu_rm_reserve_intf(
->   	}
->   
->   	global_state->intf_to_enc_id[idx] = enc_id;
-> +
->   	return 0;
->   }
->   
-> @@ -500,6 +523,28 @@ static int _dpu_rm_reserve_intf_related_hw(
->   	return ret;
->   }
->   
-> +static int _dpu_rm_reserve_dsc(struct dpu_rm *rm,
-> +			       struct dpu_global_state *global_state,
-> +			       struct drm_encoder *enc,
-> +			       const struct msm_display_topology *top)
-> +{
-> +	int num_dsc = top->num_dsc;
-> +	int i;
-> +
-> +	/* check if DSC required are allocated or not */
-> +	for (i = 0; i < num_dsc; i++) {
-> +		if (global_state->dsc_to_enc_id[i]) {
-> +			DPU_ERROR("DSC %d is already allocated\n", i);
-> +			return -EIO;
-> +		}
-> +	}
-> +
-> +	for (i = 0; i < num_dsc; i++)
-> +		global_state->dsc_to_enc_id[i] = enc->base.id;
-> +
-> +	return 0;
-> +}
-> +
->   static int _dpu_rm_make_reservation(
->   		struct dpu_rm *rm,
->   		struct dpu_global_state *global_state,
-> @@ -526,6 +571,10 @@ static int _dpu_rm_make_reservation(
->   	if (ret)
->   		return ret;
->   
-> +	ret  = _dpu_rm_reserve_dsc(rm, global_state, enc, &reqs->topology);
-> +	if (ret)
-> +		return ret;
-> +
->   	return ret;
->   }
->   
-> @@ -567,6 +616,8 @@ void dpu_rm_release(struct dpu_global_state *global_state,
->   		ARRAY_SIZE(global_state->ctl_to_enc_id), enc->base.id);
->   	_dpu_rm_clear_mapping(global_state->intf_to_enc_id,
->   		ARRAY_SIZE(global_state->intf_to_enc_id), enc->base.id);
-> +	_dpu_rm_clear_mapping(global_state->dsc_to_enc_id,
-> +		ARRAY_SIZE(global_state->dsc_to_enc_id), enc->base.id);
->   }
->   
->   int dpu_rm_reserve(
-> @@ -640,6 +691,11 @@ int dpu_rm_get_assigned_resources(struct dpu_rm *rm,
->   		hw_to_enc_id = global_state->dspp_to_enc_id;
->   		max_blks = ARRAY_SIZE(rm->dspp_blks);
->   		break;
-> +	case DPU_HW_BLK_DSC:
-> +		hw_blks = rm->dsc_blks;
-> +		hw_to_enc_id = global_state->dsc_to_enc_id;
-> +		max_blks = ARRAY_SIZE(rm->dsc_blks);
-> +		break;
->   	default:
->   		DPU_ERROR("blk type %d not managed by rm\n", type);
->   		return 0;
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-> index 1f12c8d5b8aa..278d2a510b80 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-> @@ -30,6 +30,7 @@ struct dpu_rm {
->   	struct dpu_hw_blk *intf_blks[INTF_MAX - INTF_0];
->   	struct dpu_hw_blk *dspp_blks[DSPP_MAX - DSPP_0];
->   	struct dpu_hw_blk *merge_3d_blks[MERGE_3D_MAX - MERGE_3D_0];
-> +	struct dpu_hw_blk *dsc_blks[DSC_MAX - DSC_0];
->   
->   	uint32_t lm_max_width;
->   };
+This patchset attempts to make blk-rq-qos framework pluggable and modular.
+Then we can update the blk-rq-qos policy module w/o stopping the IO workload.
+And it is more convenient to introduce new policy on old machines w/o udgrade
+kernel. And we can close all of the blk-rq-qos policy if we needn't any of
+them. At the moment, the request_queue.rqos list is empty, we needn't to
+waste cpu cyles on them.
+
+Changes since v3:
+ - Fix some code sytle issues
+ - Rename policies to blk-wbt, blk-iolat, blk-iocost, blk-ioprio
+
+Changes since v2:
+ Refactor the patches,
+ - patch01 only provide new interfaces and not export the sysfs interface.
+ - patch02 adapt the wbt to new interface, reserve the previous action
+   when write to wbt_lat
+ - export sysfs interface in last patch when all of the blk-rqos policies
+   are preprared well.
+
+Changes since v1:
+ - Just make iocost and iolatency pluggable, then we needn't to export
+   those interfaces
+ - Remove the iostat rqos policy
+ - Rename module of blk-ioprio to io-prio to avoid rename ioprio.c file
+
+WangJianchao(6):
+	blk: prepare to make blk-rq-qos pluggable and modular
+    blk-wbt: make wbt pluggable
+    blk-iolatency: make iolatency pluggable
+    blk-iocost: make iocost pluggable
+    blk-ioprio: make ioprio pluggable and modular
+    blk: export the sysfs for switching qos
+
+ block/Kconfig          |   2 +-
+ block/Makefile         |   3 +-
+ block/blk-cgroup.c     |  11 ---
+ block/blk-iocost.c     |  49 +++++++-----
+ block/blk-iolatency.c  |  33 +++++++--
+ block/blk-ioprio.c     |  50 ++++++++-----
+ block/blk-ioprio.h     |  19 -----
+ block/blk-mq-debugfs.c |  23 ++----
+ block/blk-rq-qos.c     | 303 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ block/blk-rq-qos.h     |  96 +++++++++---------------
+ block/blk-sysfs.c      |   2 +
+ block/blk-wbt.c        |  52 +++++++++++--
+ block/blk-wbt.h        |   7 +-
+ block/blk.h            |   6 --
+ include/linux/blkdev.h |   4 +
+ 15 files changed, 488 insertions(+), 172 deletions(-)
+
