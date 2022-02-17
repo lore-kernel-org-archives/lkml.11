@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C40C8C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C7A7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241507AbiBQN6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:58:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52366 "EHLO
+        id S241517AbiBQN6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:58:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235260AbiBQN6L (ORCPT
+        with ESMTP id S241508AbiBQN6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:58:11 -0500
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1B82790B5;
-        Thu, 17 Feb 2022 05:57:54 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 865C0580304;
-        Thu, 17 Feb 2022 08:57:52 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 17 Feb 2022 08:57:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=ewexVFaFRMWe+RzWS
-        r4kmNRQq7+UUt8s/r9ORkquS7A=; b=mWy9vRgL4CcQbAfN2PiozK+s6kRnRIFzn
-        kMqlzD7/kp5oSpykKPxXRmYuqMPS2YZ+IpmJ+42jkocZVRSZJAn79QQkXJmBsUf6
-        MkUbrscUZsjdS9z+Z6udOnpNiMhe67ta3lgL1XpymBFF+m1SBOsGb3IyK7gUuq9/
-        QIBdNj4S9SFmXBiO3ZMaxi1iXWkpYFmxKJzeS/8RIYHfMD7gVCul/3021HsTndl4
-        TlA5MAx78oczzKgjqd9MNzxPhgf5hGGkrOcwc1v9tNOvY8fX+8UHYVAQep6+tdrp
-        97LqPyhjRwFWjTbm8cCbz4LQax0+2JTW8Lx9KYbiPlaIlmW+OcHOw==
-X-ME-Sender: <xms:X1QOYoavoSBxV5dVcuG5EZ5hGGFYv4qeX7udtY46OWOaMhYzGNZRnw>
-    <xme:X1QOYjY8CHRVMYJ1Jygte7TS7wNCc8JTbtvWNm_m47QC-gV2O6TUX6-pwm-gyxxJb
-    MbB6MgDEoFkVYk>
-X-ME-Received: <xmr:X1QOYi9_whrNVeDXBk9prknD2zWXfeNzohfc-9k7nPUiuRM4tQwBI5FHUsYdjGlcb7TTfAlBlf9OwdUvO0skfYIznRs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeekgdehjecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:X1QOYirNS2mcn3VDft-AZY6gdcGd5tdovr5tFUk-mgzYzfBFiG2RFQ>
-    <xmx:X1QOYjrblbq3EYP-uMQT4Tsvh4Urd0FiJrSnrC8TE97cxFoitvgCBA>
-    <xmx:X1QOYgQQI_u03vVe8Y1h-ZyNJRPUh_QL9hIT_cvkLuaarZ7HElJO-A>
-    <xmx:YFQOYmWJfM1psDmUjPC2ibQd_Lqs7T6TnmnqrVVR6OdNDns_NGfFKA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Feb 2022 08:57:50 -0500 (EST)
-Date:   Thu, 17 Feb 2022 15:57:47 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jianbo Liu <jianbol@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
-        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
-        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
-        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        simon.horman@corigine.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        baowen.zheng@corigine.com, louis.peens@netronome.com,
-        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
-Subject: Re: [PATCH net-next v2 2/2] flow_offload: reject offload for all
- drivers with invalid police parameters
-Message-ID: <Yg5UW4WzL2NX4st5@shredder>
-References: <20220217082803.3881-1-jianbol@nvidia.com>
- <20220217082803.3881-3-jianbol@nvidia.com>
- <20220217124935.p7pbgv2cfmhpshxv@skbuf>
+        Thu, 17 Feb 2022 08:58:13 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B472E27AA3D;
+        Thu, 17 Feb 2022 05:57:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645106279; x=1676642279;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=krqpNlGU1PyCsmPAJWzacDtV9sBcV2Yf9rfYsyaElPs=;
+  b=1h6dzferH76P6mJ9L+R5ec+93u8ZAiI5TK2uIQSZ3vMX/DAUS4evYdBZ
+   AVJaNjmgnN0MaeSxVn4x21HvoHTH0f34W8WeLsus7atv8hDeuGzt7wM6c
+   jIHCG6iNFnWhaGUC7ht9IyPejKZczRXXIH561RtpNKwOrwaIXKHe/Ztw/
+   VpX5j6mgWJihYIjhDGaLIIkke/1haZ1Ol2lc/JzrFalk4GFaU5i1aEweG
+   ekQORWsNwtMsWm7ycrMcwsNUY04YK7t/HzjZTNhS69Xv8h6D70HrmItfz
+   5RpIq/rM4z9DwIqp0SjW6JZvBXHzDsvfnQcSUJVXoQmcESSCn7uAJq90K
+   w==;
+IronPort-SDR: gYTH9kugQOH1rISpRLFhtViMg24Ex7QEFg6i2IzA9ybnDdBsvduPkQZ9HpdcrKEH9yeVO61Dpj
+ cL6mbLD4TBnk2A/pmN//O4gZZjn2xaxLMluuboa24zHPRY4lMxFWGgX8n7YXslpcBRj8ARDL4B
+ z0C8sG+JQef47SDXPjqmypSUzs5Ghhip8P8AvybdED+XZvbFdOMkiIoEFDA18w2NMJsSEvC9ST
+ ouFp/n+/TI9QHkqfWnY7SP/IZ6mFG5HEkC4y/nOMnBJ+37h/iev0oFmiB7qmAM1Isn7K3HxnOl
+ Kx+mYLgMJOoiOYlY9kkrRGvE
+X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
+   d="scan'208";a="162631981"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Feb 2022 06:57:58 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 17 Feb 2022 06:57:58 -0700
+Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 17 Feb 2022 06:57:37 -0700
+From:   Eugen Hristev <eugen.hristev@microchip.com>
+To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>,
+        <hverkuil-cisco@xs4all.nl>, <nicolas.ferre@microchip.com>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <claudiu.beznea@microchip.com>,
+        "Eugen Hristev" <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil@xs4all.nl>
+Subject: [PATCH v5 02/13] media: atmel: atmel-isc-base: replace is_streaming call in s_fmt_vid_cap
+Date:   Thu, 17 Feb 2022 15:56:34 +0200
+Message-ID: <20220217135645.1427466-3-eugen.hristev@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220217135645.1427466-1-eugen.hristev@microchip.com>
+References: <20220217135645.1427466-1-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217124935.p7pbgv2cfmhpshxv@skbuf>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 02:49:35PM +0200, Vladimir Oltean wrote:
-> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+In s_fmt_vid_cap, we should check if vb2_is_busy and return EBUSY,
+not check if it's streaming to return the busy state.
 
-Thanks for testing
+Suggested-by: Hans Verkuil <hverkuil@xs4all.nl>
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ drivers/media/platform/atmel/atmel-isc-base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> But could we cut down on line length a little? Example for sja1105
-> (messages were also shortened):
+diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+index d2cc6c99984f..67b4a2323fed 100644
+--- a/drivers/media/platform/atmel/atmel-isc-base.c
++++ b/drivers/media/platform/atmel/atmel-isc-base.c
+@@ -1029,7 +1029,7 @@ static int isc_s_fmt_vid_cap(struct file *file, void *priv,
+ {
+ 	struct isc_device *isc = video_drvdata(file);
+ 
+-	if (vb2_is_streaming(&isc->vb2_vidq))
++	if (vb2_is_busy(&isc->vb2_vidq))
+ 		return -EBUSY;
+ 
+ 	return isc_set_fmt(isc, f);
+-- 
+2.25.1
 
-No problem
-
-[...]
-
-> Also, if you create a "validate" function for every driver, you'll
-> remove code duplication for those drivers that support both matchall and
-> flower policers.
-
-Will do
