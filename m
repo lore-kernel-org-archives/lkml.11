@@ -2,83 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68ABBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAE2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243170AbiBQQ2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:28:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36408 "EHLO
+        id S243237AbiBQQ3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:29:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243147AbiBQQ2d (ORCPT
+        with ESMTP id S243209AbiBQQ26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:28:33 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCA6AEF10;
-        Thu, 17 Feb 2022 08:28:17 -0800 (PST)
-Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K00WN2Wm9z67vp0;
-        Fri, 18 Feb 2022 00:23:44 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Feb 2022 17:28:15 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Feb 2022 16:28:11 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <elver@google.com>, <leo.yan@linaro.org>, <dvyukov@google.com>,
-        <will@kernel.org>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux@armlinux.org.uk>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH] perf test: Skip Sigtrap test for arm+aarch64
-Date:   Fri, 18 Feb 2022 00:22:39 +0800
-Message-ID: <1645114959-119064-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Thu, 17 Feb 2022 11:28:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5CADB2E21
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:28:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645115316;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OJgq/KDxxDOjnZUJexh0KDqV30PHIV148TQLzey+mso=;
+        b=dEam0yCRoCsB7y58Z0FKG4PO3Vz6SMIWpTVWYScmXpV1TOXf4b+FL9m5b1kgf4GUrpcNIm
+        WOVGpz1NSoOHyysIGG7+WO4B8iU28APiabSJR50jNsLT+elxnjyCQzsxxIq8KoRoQIR/Nj
+        HSOcRGjWNPeC8qZw5ltnxgR4TXPim8M=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-251-o8jw3VtdMjWT0pJqmG--Pg-1; Thu, 17 Feb 2022 11:28:34 -0500
+X-MC-Unique: o8jw3VtdMjWT0pJqmG--Pg-1
+Received: by mail-ej1-f70.google.com with SMTP id m12-20020a1709062acc00b006cfc98179e2so1765928eje.6
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:28:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OJgq/KDxxDOjnZUJexh0KDqV30PHIV148TQLzey+mso=;
+        b=WkZ8suRA7d92IkR0jXXe2HfkCmLcRsHXP+e/D78ErnkPv6HbCQX7nKjbyWT+Dyymin
+         s3088au1L5P8SaOgymy/oYGtQW/VJRj0SiCNSFI0YjypP5q52EkQK+M5L3OAL5JhhGJe
+         LrV+BEgkSPmJPrNX3U6RPeuKev0Au4vbei66KtTjHfYZ/Nq5u18AQ2TpSSRFJQZmKekp
+         EwJAPUi/cCweP5j7haDemNT/IUnsCLIpQpPDZeUfZtpqBaOAlMRfRHyLvFMfIar0FdV8
+         UAVOeLMzqvUcjxqQ4C0SIxCJjTl7nTq2eg34b/22Oo1UfAFuoalX3eTM3ql05RjeENLF
+         EhGw==
+X-Gm-Message-State: AOAM5330rw2xW8HoN7bMbb2IUX8nrzLuwozFqqIfhcRaR/EvyRc44nf+
+        frJ1ciZdNQgsqp8fVtSTIu521YkcRzX5YL1IqPAw3Slh819OGfwTIyi2CWC3x6WXatQzwjnvUDE
+        1QD5/biaQL2LZ2wTDwfKi58d6
+X-Received: by 2002:a17:907:70c1:b0:6ce:78ff:bad4 with SMTP id yk1-20020a17090770c100b006ce78ffbad4mr2958946ejb.68.1645115313579;
+        Thu, 17 Feb 2022 08:28:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzHk0mBIn5UH4jO+7vKeoLKOM8666LODusd64tZnougD4T+k/q3YUvhnxrSBAizbwwT0+edxw==
+X-Received: by 2002:a17:907:70c1:b0:6ce:78ff:bad4 with SMTP id yk1-20020a17090770c100b006ce78ffbad4mr2958934ejb.68.1645115313445;
+        Thu, 17 Feb 2022 08:28:33 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id ee30sm3403540edb.4.2022.02.17.08.28.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 08:28:32 -0800 (PST)
+Message-ID: <84de2a98-3051-82ec-6686-ef4161535d23@redhat.com>
+Date:   Thu, 17 Feb 2022 17:28:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] platform/x86: Add Steam Deck driver
+Content-Language: en-US
+To:     Andrey Smirnov <andrew.smirnov@gmail.com>,
+        =?UTF-8?Q?Barnab=c3=a1s_P=c5=91cze?= <pobrn@protonmail.com>
+Cc:     platform-driver-x86@vger.kernel.org,
+        Mark Gross <markgross@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-hwmon@vger.kernel.org
+References: <20220206022023.376142-1-andrew.smirnov@gmail.com>
+ <gfQUxZHzyr7uH4TwqJwXGsxCIYa-VvrN955036G3kKr6ligJYTAI3dqhf-FJddyHVBomp3JUUBNFMmmR8rwm7WzSxprlclT9Cbkrr2dknP0=@protonmail.com>
+ <CAHQ1cqF5HCJVsmyMHMxU85Uwv_Yd8qoAUVMz7R_zo0S9_pFZfg@mail.gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <CAHQ1cqF5HCJVsmyMHMxU85Uwv_Yd8qoAUVMz7R_zo0S9_pFZfg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Skip the Sigtrap test for arm + arm64, same as was done for s390 in
-commit a840974e96fd ("perf test: Test 73 Sig_trap fails on s390").
+Hi,
 
-As described by Will at [0], in the test we get stuck in a loop of handling
-the HW breakpoint exception and never making progress. GDB handles this
-by stepping over the faulting instruction, but with perf the kernel is
-expected to handle the step (which it doesn't for arm).
+On 2/13/22 00:30, Andrey Smirnov wrote:
 
-Dmitry made an attempt to get this work, also mentioned in the same thread
-as [0], which was appreciated. But the best thing to do is skip the test
-for now.
+<snip>
 
-[0] https://lore.kernel.org/linux-perf-users/20220118124343.GC98966@leoy-ThinkPad-X240s/T/#m13b06c39d2a5100d340f009435df6f4d8ee57b5a
+>>> +static struct attribute *steamdeck_attributes[] = {
+>>> +     &dev_attr_target_cpu_temp.attr,
+>>> +     &dev_attr_gain.attr,
+>>> +     &dev_attr_ramp_rate.attr,
+>>> +     &dev_attr_hysteresis.attr,
+>>> +     &dev_attr_maximum_battery_charge_rate.attr,
+>>> +     &dev_attr_recalculate.attr,
+>>> +     &dev_attr_power_cycle_display.attr,
+>>> +
+>>> +     &dev_attr_led_brightness.attr,
+>>
+>> Have you considered using a led class device instead? I think that should
+>> work even without the ability to query the brightness.
+>>
+> 
+> Not very seriously. Will take another look.
+> 
+>>
+>>> +     &dev_attr_content_adaptive_brightness.attr,
+>>> +     &dev_attr_gamma_set.attr,
+>>> +     &dev_attr_display_brightness.attr,
+>>
+>> Have you considered using a backlight class device?
+>>
+> 
+> Ditto.
 
-Fixes: Fixes: 5504f67944484 ("perf test sigtrap: Add basic stress test for sigtrap handling")
-Signed-off-by: John Garry <john.garry@huawei.com>
+Note that for both of these I would go a bit further then
+"have you considered?". Since you are implementing standardized
+userspace APIs here you *must* use the shared subsystem code
+for registering a LED resp backlight class device here so that
+everything is guaranteed to behave as expected by userspace.
 
-diff --git a/tools/perf/tests/sigtrap.c b/tools/perf/tests/sigtrap.c
-index 1f147fe6595f..3f0b5c1398b5 100644
---- a/tools/perf/tests/sigtrap.c
-+++ b/tools/perf/tests/sigtrap.c
-@@ -29,7 +29,8 @@
-  * Just disable the test for these architectures until these issues are
-  * resolved.
-  */
--#if defined(__powerpc__) || defined(__s390x__)
-+#if defined(__powerpc__) || defined(__s390x__) || \
-+	defined(__arm__) || defined(__aarch64__)
- #define BP_ACCOUNT_IS_SUPPORTED 0
- #else
- #define BP_ACCOUNT_IS_SUPPORTED 1
--- 
-2.26.2
+Regards,
+
+Hans
 
