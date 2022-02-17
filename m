@@ -2,112 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C542C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2FBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343643AbiBQVo1 (ORCPT
+        id S1343696AbiBQVoj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:44:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56736 "EHLO
+        Thu, 17 Feb 2022 16:44:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244859AbiBQVoY (ORCPT
+        with ESMTP id S244859AbiBQVoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:44:24 -0500
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643C9E7AE6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:44:08 -0800 (PST)
-Received: by mail-qv1-xf2b.google.com with SMTP id n6so10942985qvk.13
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:44:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6R8qn+rbL8OvPipxuVgINO0b1lTKNrdKLs//Tzx1/Vg=;
-        b=OUIGVb3AgkfYqWJ/jpUcEbfG8cQNrWOf8W2dm9Aqt3J2zie173GvWoJ6AE1eFBXLC+
-         BSrfwVz9fk/DeGoOPMaaLOco12vCxmYrdThUp0Oa9hS/3sFO6UnQIqVcOO4F2xKxh+PS
-         KxCRQL7yuVFQ8uZvzWDrWsR0S/qmvs3ZYwPY2d2PLEzOwj61ELQhYX+B1P1CQWUgQ3AI
-         ZxF2302qHhiCMNBL+mmWhLle2wsG0oQerm4BN3OG3PPiqrNpxvWA/AyXeef6nJeL8ksP
-         FrqLcsYjKGcHLtKtfpcvyAxnuIyMEMepLLNdQ1yYlz2Ado2t2Fueu8AP/0v5WbaBpg5o
-         +kWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6R8qn+rbL8OvPipxuVgINO0b1lTKNrdKLs//Tzx1/Vg=;
-        b=EwV/4jrEphrjSXQbGImeIlbzo6NAtizJ/Y0J3rmHfdu+526YQUSxLwA84fNIWmrAAd
-         NwCkLiDlD68oWULtme/WDt/uI6Yj39OC+T0ugDZYvbOIlzTQdn3yUU7viskobJiNJubj
-         NP0tpCvLN+7baQTAsk5l3uj6wTAAxA3vapRrZfKKfVaQzCdApCmc4CAgKWMmeh5JLgFU
-         eR8CInKyKQviMS8nR4WOPDeC+wBokIZ6b7/ZdV7nMZvmolJsOKdSpW+NrTMGBgsaNn1T
-         /OgJj97YAGQPjjqVXG51OgxKWoOIYGPhTQxIbHgeiijm0+ExXF6tRbfnwo1JdDvCAFGt
-         F/ug==
-X-Gm-Message-State: AOAM531T9a1jOp7l1tYRoVhVwoBq7YzYqaDuDYy89Q3h2YzbuI3oaSVW
-        SKULn2Oja038Dkv2Ccs8CxPc6aABUdJV34mmuXXa+g==
-X-Google-Smtp-Source: ABdhPJy1qvJVD1rgLNeWV3GUhnlxwMyxzExFz2q3A1g24QsHgiswLGR3hNBpdmvyvE2dyuEWTwWn6PzdWBJHOiiKd4Y=
-X-Received: by 2002:ac8:584c:0:b0:2dd:89dc:8000 with SMTP id
- h12-20020ac8584c000000b002dd89dc8000mr1907274qth.370.1645134247505; Thu, 17
- Feb 2022 13:44:07 -0800 (PST)
+        Thu, 17 Feb 2022 16:44:38 -0500
+Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [IPv6:2001:4b7a:2000:18::171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48193F11A5;
+        Thu, 17 Feb 2022 13:44:22 -0800 (PST)
+Received: from SoMainline.org (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 1F7943F7D5;
+        Thu, 17 Feb 2022 22:44:19 +0100 (CET)
+Date:   Thu, 17 Feb 2022 22:44:17 +0100
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: Re: [REPOST PATCH v4 10/13] drm/msm/disp/dpu1: Add support for DSC
+ in topology
+Message-ID: <20220217214417.hb6sdx53cs36us6j@SoMainline.org>
+References: <20220210103423.271016-1-vkoul@kernel.org>
+ <20220210103423.271016-11-vkoul@kernel.org>
 MIME-Version: 1.0
-References: <1645133788-5057-1-git-send-email-quic_khsieh@quicinc.com> <1645133788-5057-2-git-send-email-quic_khsieh@quicinc.com>
-In-Reply-To: <1645133788-5057-2-git-send-email-quic_khsieh@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Fri, 18 Feb 2022 00:43:56 +0300
-Message-ID: <CAA8EJpqu2VsYkACe+FL+Z0J=j7Pp-w69_YNyBWn_7Ah1GoW23Q@mail.gmail.com>
-Subject: Re: [PATCH v8 1/4] drm/msm/dpu: adjust display_v_end for eDP and DP
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, robdclark@gmail.com,
-        sean@poorly.run, swboyd@chromium.org, vkoul@kernel.org,
-        daniel@ffwll.ch, airlied@linux.ie, agross@kernel.org,
-        bjorn.andersson@linaro.org, quic_abhinavk@quicinc.com,
-        quic_aravindh@quicinc.com, quic_sbillaka@quicinc.com,
-        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210103423.271016-11-vkoul@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Feb 2022 at 00:36, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
->
-> The =E2=80=9CDP timing=E2=80=9D requires the active region to be defined =
-in the
-> bottom-right corner of the frame dimensions which is different
-> with DSI. Therefore both display_h_end and display_v_end need
-> to be adjusted accordingly. However current implementation has
-> only display_h_end adjusted.
->
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-
-Fixes: fc3a69ec68d3 ("drm/msm/dpu: intf timing path for displayport")
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-
+On 2022-02-10 16:04:20, Vinod Koul wrote:
+> For DSC to work we typically need a 2,2,1 configuration. This should
+> suffice for resolutions up to 4k. For more resolutions like 8k this won't
+> work.
+> 
+> Also, it is better to use 2 LMs and DSC instances as half width results
+> in lesser power consumption as compared to single LM, DSC at full width.
+> 
+> The panel has been tested only with 2,2,1 configuration, so for
+> now we blindly create 2,2,1 topology when DSC is enabled
+> 
+> Co-developed-by: Abhinav Kumar <abhinavk@codeaurora.org>
+> Signed-off-by: Abhinav Kumar <abhinavk@codeaurora.org>
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
 > ---
->  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c b/drivers/gpu/dr=
-m/msm/disp/dpu1/dpu_hw_intf.c
-> index 116e2b5..284f561 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-> @@ -148,6 +148,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dp=
-u_hw_intf *ctx,
->                 active_v_end =3D active_v_start + (p->yres * hsync_period=
-) - 1;
->
->                 display_v_start +=3D p->hsync_pulse_width + p->h_back_por=
-ch;
-> +               display_v_end   -=3D p->h_front_porch;
->
->                 active_hctl =3D (active_h_end << 16) | active_h_start;
->                 display_hctl =3D active_hctl;
-> --
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum=
-,
-> a Linux Foundation Collaborative Project
->
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 13 +++++++++++++
+>  drivers/gpu/drm/msm/msm_drv.h               |  2 ++
+>  2 files changed, 15 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> index 95a7bf362e81..13ccb7b3cce5 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> @@ -574,8 +574,21 @@ static struct msm_display_topology dpu_encoder_get_topology(
+>  	topology.num_enc = 0;
+>  	topology.num_intf = intf_count;
+>  
+> +	if (dpu_enc->dsc) {
+> +		/* In case of Display Stream Compression DSC, we would use
+> +		 * 2 encoders, 2 line mixers and 1 interface
 
+LM is a layer mixer, not a line mixer, right?
 
---=20
-With best wishes
-Dmitry
+- Marijn
+
+> +		 * this is power optimal and can drive up to (including) 4k
+> +		 * screens
+> +		 */
+> +		topology.num_enc = 2;
+> +		topology.num_dsc = 2;
+> +		topology.num_intf = 1;
+> +		topology.num_lm = 2;
+> +	}
+> +
+>  	return topology;
+>  }
+> +
+>  static int dpu_encoder_virt_atomic_check(
+>  		struct drm_encoder *drm_enc,
+>  		struct drm_crtc_state *crtc_state,
+> diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+> index 6425a42e997c..994d895d1a47 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.h
+> +++ b/drivers/gpu/drm/msm/msm_drv.h
+> @@ -103,12 +103,14 @@ enum msm_event_wait {
+>   * @num_enc:      number of compression encoder blocks used
+>   * @num_intf:     number of interfaces the panel is mounted on
+>   * @num_dspp:     number of dspp blocks used
+> + * @num_dsc:      number of Display Stream Compression (DSC) blocks used
+>   */
+>  struct msm_display_topology {
+>  	u32 num_lm;
+>  	u32 num_enc;
+>  	u32 num_intf;
+>  	u32 num_dspp;
+> +	u32 num_dsc;
+>  };
+>  
+>  /**
+> -- 
+> 2.31.1
+> 
