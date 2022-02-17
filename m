@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 579CAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244020AbiBQSI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:08:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34962 "EHLO
+        id S244028AbiBQSI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:08:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241215AbiBQSIw (ORCPT
+        with ESMTP id S243992AbiBQSIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 13:08:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F5BA15F0BE
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:08:37 -0800 (PST)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3636E15F340
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:08:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645121316;
+        s=mimecast20190719; t=1645121317;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=s7fWuoXldmh0bz49CnTiNZWwsovHYbPOq1Hj86Bdtoc=;
-        b=ZWgi5W1jcp6ZRVjKht4AdmEcjYVUUNOARJcAvNEUjR4Plm7Fx87pzrT8iSc4LxB29S3CA3
-        Ra/aLhz05ZXhAs5uTLXmclUgwsFpY+2XAXESJCv+I2rLVBRq1Uu98z3dd1gSZbvBh3C/lM
-        RateDXcLdsJ1PRexmLOfY0Qa5JbPdLE=
+        bh=NddvV5YdcdOzeYriNQptNRl/fzAcSqQNp8LjUvptsnA=;
+        b=ML+cI5vKAZKpk5FV1XS7/v0rnkvo1OGXqsKfb9PZ6zHSu17hxyNcCPd8VdxzSU6qIaFXry
+        mtqz5OOhqaZD/r353/6Ta/C6mLbSTRduyLsZA3lT/Wz9iVSkmdYyx3+jZ2xHIfnZzdUiZr
+        uqGESE0PX3TPu8Vxbr0qE7V/0qHyXNo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-180-ZF-W6gpgNsC5UM9RJHJVLw-1; Thu, 17 Feb 2022 13:08:35 -0500
-X-MC-Unique: ZF-W6gpgNsC5UM9RJHJVLw-1
+ us-mta-561-xPaeMU26MY-7O86hV9xyYQ-1; Thu, 17 Feb 2022 13:08:34 -0500
+X-MC-Unique: xPaeMU26MY-7O86hV9xyYQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A4A7180A0A3;
-        Thu, 17 Feb 2022 18:08:34 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DD6E0814249;
+        Thu, 17 Feb 2022 18:08:32 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DF4BD8276C;
-        Thu, 17 Feb 2022 18:08:33 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8DF7B8276C;
+        Thu, 17 Feb 2022 18:08:32 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH v3 4/6] KVM: x86: warn on incorrectly NULL members of kvm_x86_ops
-Date:   Thu, 17 Feb 2022 13:08:29 -0500
-Message-Id: <20220217180831.288210-5-pbonzini@redhat.com>
+Subject: [PATCH v3 1/6] KVM: x86: return 1 unconditionally for availability of KVM_CAP_VAPIC
+Date:   Thu, 17 Feb 2022 13:08:26 -0500
+Message-Id: <20220217180831.288210-2-pbonzini@redhat.com>
 In-Reply-To: <20220217180831.288210-1-pbonzini@redhat.com>
 References: <20220217180831.288210-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -53,34 +53,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the newly corrected KVM_X86_OP annotations to warn about possible
-NULL pointer dereferences as soon as the vendor module is loaded.
+The two ioctl used to implement userspace-accelerated TPR,
+KVM_TPR_ACCESS_REPORTING and KVM_SET_VAPIC_ADDR, are available
+even if hardware-accelerated TPR can be used.  So there is
+no reason not to report KVM_CAP_VAPIC.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/kvm-x86-ops.h | 1 -
+ arch/x86/include/asm/kvm_host.h    | 1 -
+ arch/x86/kvm/svm/svm.c             | 6 ------
+ arch/x86/kvm/vmx/vmx.c             | 6 ------
+ arch/x86/kvm/x86.c                 | 4 +---
+ 5 files changed, 1 insertion(+), 17 deletions(-)
 
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 9e37dc3d8863..695ed7feef7e 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -15,7 +15,6 @@ BUILD_BUG_ON(1)
+ KVM_X86_OP_NULL(hardware_enable)
+ KVM_X86_OP_NULL(hardware_disable)
+ KVM_X86_OP_NULL(hardware_unsetup)
+-KVM_X86_OP_NULL(cpu_has_accelerated_tpr)
+ KVM_X86_OP(has_emulated_msr)
+ KVM_X86_OP(vcpu_after_set_cpuid)
+ KVM_X86_OP(vm_init)
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 7d733f601106..a7e82fc1f1f3 100644
+index 10815b672a26..e0d2cdfe54ab 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -1545,10 +1545,13 @@ extern struct kvm_x86_ops kvm_x86_ops;
+@@ -1318,7 +1318,6 @@ struct kvm_x86_ops {
+ 	int (*hardware_enable)(void);
+ 	void (*hardware_disable)(void);
+ 	void (*hardware_unsetup)(void);
+-	bool (*cpu_has_accelerated_tpr)(void);
+ 	bool (*has_emulated_msr)(struct kvm *kvm, u32 index);
+ 	void (*vcpu_after_set_cpuid)(struct kvm_vcpu *vcpu);
  
- static inline void kvm_ops_static_call_update(void)
- {
--#define KVM_X86_OP(func) \
-+#define __KVM_X86_OP(func) \
- 	static_call_update(kvm_x86_##func, kvm_x86_ops.func);
--#define KVM_X86_OP_OPTIONAL KVM_X86_OP
-+#define KVM_X86_OP(func) \
-+	WARN_ON(!kvm_x86_ops.func); __KVM_X86_OP(func)
-+#define KVM_X86_OP_OPTIONAL __KVM_X86_OP
- #include <asm/kvm-x86-ops.h>
-+#undef __KVM_X86_OP
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 4243bb355db0..abced3fe2013 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3912,11 +3912,6 @@ static int __init svm_check_processor_compat(void)
+ 	return 0;
  }
  
- #define __KVM_HAVE_ARCH_VM_ALLOC
+-static bool svm_cpu_has_accelerated_tpr(void)
+-{
+-	return false;
+-}
+-
+ /*
+  * The kvm parameter can be NULL (module initialization, or invocation before
+  * VM creation). Be sure to check the kvm parameter before using it.
+@@ -4529,7 +4524,6 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+ 	.hardware_unsetup = svm_hardware_unsetup,
+ 	.hardware_enable = svm_hardware_enable,
+ 	.hardware_disable = svm_hardware_disable,
+-	.cpu_has_accelerated_tpr = svm_cpu_has_accelerated_tpr,
+ 	.has_emulated_msr = svm_has_emulated_msr,
+ 
+ 	.vcpu_create = svm_vcpu_create,
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 70e7f00362bc..d8547144d3b7 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -541,11 +541,6 @@ static inline bool cpu_need_virtualize_apic_accesses(struct kvm_vcpu *vcpu)
+ 	return flexpriority_enabled && lapic_in_kernel(vcpu);
+ }
+ 
+-static inline bool vmx_cpu_has_accelerated_tpr(void)
+-{
+-	return flexpriority_enabled;
+-}
+-
+ static int possible_passthrough_msr_slot(u32 msr)
+ {
+ 	u32 i;
+@@ -7714,7 +7709,6 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
+ 
+ 	.hardware_enable = vmx_hardware_enable,
+ 	.hardware_disable = vmx_hardware_disable,
+-	.cpu_has_accelerated_tpr = vmx_cpu_has_accelerated_tpr,
+ 	.has_emulated_msr = vmx_has_emulated_msr,
+ 
+ 	.vm_size = sizeof(struct kvm_vmx),
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index eaa3b5b89c5e..746f72ae2c95 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4234,6 +4234,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 	case KVM_CAP_EXIT_ON_EMULATION_FAILURE:
+ 	case KVM_CAP_VCPU_ATTRIBUTES:
+ 	case KVM_CAP_SYS_ATTRIBUTES:
++	case KVM_CAP_VAPIC:
+ 		r = 1;
+ 		break;
+ 	case KVM_CAP_EXIT_HYPERCALL:
+@@ -4274,9 +4275,6 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 		 */
+ 		r = static_call(kvm_x86_has_emulated_msr)(kvm, MSR_IA32_SMBASE);
+ 		break;
+-	case KVM_CAP_VAPIC:
+-		r = !static_call(kvm_x86_cpu_has_accelerated_tpr)();
+-		break;
+ 	case KVM_CAP_NR_VCPUS:
+ 		r = min_t(unsigned int, num_online_cpus(), KVM_MAX_VCPUS);
+ 		break;
 -- 
 2.31.1
 
