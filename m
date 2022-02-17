@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3AD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 731E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244794AbiBQS51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:57:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38854 "EHLO
+        id S244811AbiBQS5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:57:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235762AbiBQS5K (ORCPT
+        with ESMTP id S244700AbiBQS5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:57:10 -0500
+        Thu, 17 Feb 2022 13:57:07 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1B05D668;
-        Thu, 17 Feb 2022 10:56:54 -0800 (PST)
-Date:   Thu, 17 Feb 2022 18:56:51 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9035D1B7;
+        Thu, 17 Feb 2022 10:56:52 -0800 (PST)
+Date:   Thu, 17 Feb 2022 18:56:49 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645124212;
+        s=2020; t=1645124210;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MBMvQsiG2NvPPtzi/hVREDQBmKieIMZ8/hnkIeo5qAI=;
-        b=m5aicU8ilSs0PYwuPDPEWtL4fVvhC63oaoBwSdgHwLAIxYj9kQ7d8HwFCEsS6sLdqrQWps
-        zyIuo8AI/EcNVe8NpFwX2xc7Gs7j8Yc2gFMZBBVO8j7aGgOUn1MQm6Tag5zDmRmwfwe6RJ
-        8gQl73OXVhyWZxWsoFDyys8kn3XqdkZZvmOZTktAXTRG3GvUmDGvC0drEC60G0L4U5dvvE
-        fmhTGKWkxgdrhnKKGtp2N09lkPlBUJCypiNHo+R/JW8BEO4ik17X8gwMTBlWCOwt7JLKz/
-        5J8igOdGszXViTzaynSjUAxRFd4C+HUYrWx3Ngj2KkrmBenoVbb8WAkIgJZCoQ==
+        bh=baQcv6wFGYKcQd6nz1d1Tn5RZ82tFmyiUoZNlnwCtvM=;
+        b=3rvZ0UjQN6iv4wfIvlR5FpqEuz8R9LtEBLW6WreBigvqObb0QQAFaKqA0/vdcP5g42mLcQ
+        +qnvRhx//huF3Kc8CB13qBzqtDZ0MIrqZJB7tjUvbE51f7IgEqvZ4H8eIfXMD0gj1s8rYi
+        tdi18+ODCMkDPj03Agirg3GCAoqr5DKjwx06SKZlxT0stybDADpFCFC2Sw8bPPZRzb2uUB
+        MmgTetw1J8yz4EZXagqTP5n/pQ7SFmPQFmFZ3e1Op5JQeJOJEuPKMOCmIZCzGG9/8/9GJq
+        EV0rCQ0LanwyjVfTI1p+cZX4U40yfni0s78kahyN2ExOAhQOBNsW//A0OC3J5w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645124212;
+        s=2020e; t=1645124210;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MBMvQsiG2NvPPtzi/hVREDQBmKieIMZ8/hnkIeo5qAI=;
-        b=GlTioHL4Z0gYLex3RV2RAxab5XgKvWZ9gRg0MbTtMIf7MOC20Pa3+jg7ZlyLY55GA0JPhP
-        tBK8n4URjEZpo+Dg==
-From:   "tip-bot2 for Zhaoyang Huang" <tip-bot2@linutronix.de>
+        bh=baQcv6wFGYKcQd6nz1d1Tn5RZ82tFmyiUoZNlnwCtvM=;
+        b=Xg5opv/QVpyyn3FJPWePeINyOizrH3+7O3aTlrY9YXXZ+oOKxXgW9Y/dFEPW/Py9KoXZNM
+        gNW47fWcZ71A/RBg==
+From:   "tip-bot2 for Frederic Weisbecker" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] psi: fix possible trigger missing in the window
-Cc:     Suren Baghdasaryan <surenb@google.com>,
-        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
+Subject: [tip: sched/core] workqueue: Decouple HK_FLAG_WQ and HK_FLAG_DOMAIN
+ cpumask fetch
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <1643093818-19835-1-git-send-email-huangzhaoyang@gmail.com>
-References: <1643093818-19835-1-git-send-email-huangzhaoyang@gmail.com>
+        Juri Lelli <juri.lelli@redhat.com>,
+        Phil Auld <pauld@redhat.com>, Tejun Heo <tj@kernel.org>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220207155910.527133-3-frederic@kernel.org>
+References: <20220207155910.527133-3-frederic@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164512421171.16921.5147262447831853726.tip-bot2@tip-bot2>
+Message-ID: <164512420990.16921.13332664205737872057.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,131 +64,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     e6df4ead85d9da1b07dd40bd4c6d2182f3e210c4
-Gitweb:        https://git.kernel.org/tip/e6df4ead85d9da1b07dd40bd4c6d2182f3e210c4
-Author:        Zhaoyang Huang <zhaoyang.huang@unisoc.com>
-AuthorDate:    Tue, 25 Jan 2022 14:56:58 +08:00
+Commit-ID:     7b45b51e778021cd7817b8f0d743a2c73205c011
+Gitweb:        https://git.kernel.org/tip/7b45b51e778021cd7817b8f0d743a2c73205c011
+Author:        Frederic Weisbecker <frederic@kernel.org>
+AuthorDate:    Mon, 07 Feb 2022 16:59:04 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
 CommitterDate: Wed, 16 Feb 2022 15:57:54 +01:00
 
-psi: fix possible trigger missing in the window
+workqueue: Decouple HK_FLAG_WQ and HK_FLAG_DOMAIN cpumask fetch
 
-When a new threshold breaching stall happens after a psi event was
-generated and within the window duration, the new event is not
-generated because the events are rate-limited to one per window. If
-after that no new stall is recorded then the event will not be
-generated even after rate-limiting duration has passed. This is
-happening because with no new stall, window_update will not be called
-even though threshold was previously breached. To fix this, record
-threshold breaching occurrence and generate the event once window
-duration is passed.
+To prepare for supporting each feature of the housekeeping cpumask
+toward cpuset, prepare each of the HK_FLAG_* entries to move to their
+own cpumask with enforcing to fetch them individually. The new
+constraint is that multiple HK_FLAG_* entries can't be mixed together
+anymore in a single call to housekeeping cpumask().
 
-Suggested-by: Suren Baghdasaryan <surenb@google.com>
-Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+This will later allow, for example, to runtime modify the cpulist passed
+through "isolcpus=", "nohz_full=" and "rcu_nocbs=" kernel boot
+parameters.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Acked-by: Suren Baghdasaryan <surenb@google.com>
-Link: https://lore.kernel.org/r/1643093818-19835-1-git-send-email-huangzhaoyang@gmail.com
+Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
+Reviewed-by: Phil Auld <pauld@redhat.com>
+Acked-by: Tejun Heo <tj@kernel.org>
+Link: https://lore.kernel.org/r/20220207155910.527133-3-frederic@kernel.org
 ---
- include/linux/psi_types.h |  3 ++-
- kernel/sched/psi.c        | 46 ++++++++++++++++++++++++--------------
- 2 files changed, 33 insertions(+), 16 deletions(-)
+ kernel/workqueue.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
-index 516c0fe..dc3ec5e 100644
---- a/include/linux/psi_types.h
-+++ b/include/linux/psi_types.h
-@@ -144,6 +144,9 @@ struct psi_trigger {
- 
- 	/* Refcounting to prevent premature destruction */
- 	struct kref refcount;
-+
-+	/* Deferred event(s) from previous ratelimit window */
-+	bool pending_event;
- };
- 
- struct psi_group {
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index cfe76f7..e9d623c 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -523,7 +523,7 @@ static void init_triggers(struct psi_group *group, u64 now)
- static u64 update_triggers(struct psi_group *group, u64 now)
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 33f1106..61ed310 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -6006,13 +6006,13 @@ static void __init wq_numa_init(void)
+ void __init workqueue_init_early(void)
  {
- 	struct psi_trigger *t;
--	bool new_stall = false;
-+	bool update_total = false;
- 	u64 *total = group->total[PSI_POLL];
+ 	int std_nice[NR_STD_WORKER_POOLS] = { 0, HIGHPRI_NICE_LEVEL };
+-	int hk_flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
+ 	int i, cpu;
  
- 	/*
-@@ -532,24 +532,35 @@ static u64 update_triggers(struct psi_group *group, u64 now)
- 	 */
- 	list_for_each_entry(t, &group->triggers, node) {
- 		u64 growth;
-+		bool new_stall;
+ 	BUILD_BUG_ON(__alignof__(struct pool_workqueue) < __alignof__(long long));
  
--		/* Check for stall activity */
--		if (group->polling_total[t->state] == total[t->state])
--			continue;
-+		new_stall = group->polling_total[t->state] != total[t->state];
+ 	BUG_ON(!alloc_cpumask_var(&wq_unbound_cpumask, GFP_KERNEL));
+-	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(hk_flags));
++	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_FLAG_WQ));
++	cpumask_and(wq_unbound_cpumask, wq_unbound_cpumask, housekeeping_cpumask(HK_FLAG_DOMAIN));
  
-+		/* Check for stall activity or a previous threshold breach */
-+		if (!new_stall && !t->pending_event)
-+			continue;
- 		/*
--		 * Multiple triggers might be looking at the same state,
--		 * remember to update group->polling_total[] once we've
--		 * been through all of them. Also remember to extend the
--		 * polling time if we see new stall activity.
-+		 * Check for new stall activity, as well as deferred
-+		 * events that occurred in the last window after the
-+		 * trigger had already fired (we want to ratelimit
-+		 * events without dropping any).
- 		 */
--		new_stall = true;
--
--		/* Calculate growth since last update */
--		growth = window_update(&t->win, now, total[t->state]);
--		if (growth < t->threshold)
--			continue;
--
-+		if (new_stall) {
-+			/*
-+			 * Multiple triggers might be looking at the same state,
-+			 * remember to update group->polling_total[] once we've
-+			 * been through all of them. Also remember to extend the
-+			 * polling time if we see new stall activity.
-+			 */
-+			update_total = true;
-+
-+			/* Calculate growth since last update */
-+			growth = window_update(&t->win, now, total[t->state]);
-+			if (growth < t->threshold)
-+				continue;
-+
-+			t->pending_event = true;
-+		}
- 		/* Limit event signaling to once per window */
- 		if (now < t->last_event_time + t->win.size)
- 			continue;
-@@ -558,9 +569,11 @@ static u64 update_triggers(struct psi_group *group, u64 now)
- 		if (cmpxchg(&t->event, 0, 1) == 0)
- 			wake_up_interruptible(&t->event_wait);
- 		t->last_event_time = now;
-+		/* Reset threshold breach flag once event got generated */
-+		t->pending_event = false;
- 	}
- 
--	if (new_stall)
-+	if (update_total)
- 		memcpy(group->polling_total, total,
- 				sizeof(group->polling_total));
- 
-@@ -1125,6 +1138,7 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
- 	t->last_event_time = 0;
- 	init_waitqueue_head(&t->event_wait);
- 	kref_init(&t->refcount);
-+	t->pending_event = false;
- 
- 	mutex_lock(&group->trigger_lock);
+ 	pwq_cache = KMEM_CACHE(pool_workqueue, SLAB_PANIC);
  
