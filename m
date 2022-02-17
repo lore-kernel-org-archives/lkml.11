@@ -2,144 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B157C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC99C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242848AbiBQPtw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:49:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33806 "EHLO
+        id S242858AbiBQPtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:49:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239767AbiBQPti (ORCPT
+        with ESMTP id S242832AbiBQPtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:49:38 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63EA169235;
-        Thu, 17 Feb 2022 07:49:10 -0800 (PST)
-Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JzzkQ1ShHz67ycM;
-        Thu, 17 Feb 2022 23:48:14 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Feb 2022 16:49:08 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Feb 2022 15:49:04 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
-        <chenxiang66@hisilicon.com>, <damien.lemoal@opensource.wdc.com>,
-        <hch@lst.de>
-CC:     <Ajish.Koshy@microchip.com>, <yanaijie@huawei.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
-        <liuqi115@huawei.com>, <Viswas.G@microchip.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v2 11/18] scsi: libsas: Add TMF handler exec complete callback
-Date:   Thu, 17 Feb 2022 23:42:39 +0800
-Message-ID: <1645112566-115804-12-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1645112566-115804-1-git-send-email-john.garry@huawei.com>
-References: <1645112566-115804-1-git-send-email-john.garry@huawei.com>
+        Thu, 17 Feb 2022 10:49:39 -0500
+Received: from out203-205-251-27.mail.qq.com (out203-205-251-27.mail.qq.com [203.205.251.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02BA15C64E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:49:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1645112953;
+        bh=R2T64fF012MpAvx/2pefsZbIP7UbuXf+c8VwNQhS83s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=vfHd6cjtV5/ICRSNtM3tSkXbj1FVd842jm6689ZCw9jTyt+W2gYRMoT2UXVyR2/JX
+         Rca5AUwr+UvboFhoNg7EE+4gqx4R3kNxc4656RK6dG3vJi7lN2inlOufwTFNMZY6UA
+         axYwFs5w6I1wN5tVps0oFfJ+1sQxcqHxCcVzDtWA=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrsza8.qq.com (NewEsmtp) with SMTP
+        id C45B0427; Thu, 17 Feb 2022 23:49:05 +0800
+X-QQ-mid: xmsmtpt1645112948t4765e92p
+Message-ID: <tencent_03873F2A51FFDF808C33B3E73A717C51400A@qq.com>
+X-QQ-XMAILINFO: MbECzfofyKaSxDTk9gm8v6uGmbRVERi5ZYRBZi5Vqa7NapwMKJqFMcrAd3KsOE
+         Kry8r3SbYipGbd7g4AhNDMxrFBRcNHlzv/NY9E7RAsnFMItpDi4R+4+FMbaBnoqEw1OcBQGBDnrH
+         BXktggiepK9oAr/LBNULORqPNCHKu0pp3wWyYfXYgnBbo+47MySM7uRjF6gQbA4y+SpZOa9TQF/m
+         CVbXHm/yUTwvhCr8bH5gC240JvrInUZY+lM4xj33GvtP6Ar2ksHmBtaySaUBxK86ljjX1bMfLGYm
+         VraSpTdoT/G7IiSE8cMIGyfJwccrPusxLaUyTtqiqBRIWIDyEB2HtJotPuEUcel3/vRcgr+VEHSb
+         o8lqz00yhQgjLbDcuidrjAp9x4spzaJXo/brM+lvsDMKMkqs465VDAMCY17TDKtlpq1n5LnnAh1A
+         qtiroDr4ibdiWqGTilARTx2qzZwy1PXhQNrVoyxyH9AbQrRZ+d3ZhE2RLPte6vcuw46dCbFwbffu
+         HvUypXzDZ+iT+6BM/I1cLlDIPtossQa6j0lPpLOufE+ZaqOvJVkEzR16FqkAAqs+9t5JmcEXcgLy
+         wa3mVcmJ4vg+h0J88u/nH2wroyG5Fj1QpJQ562CZOU1x0aXuP+7rnOpSrRvUYef3Aq72INdfKHQo
+         sbpzJwJQk23R2ZyPbd9Y87IpG2cx8Y8M22vdtelGsuJ9m/FmILkoKufE2NJBDENgMgjW6ugrjRdy
+         o4+tVWGvwW2fPbWamFUu1563tBpbchaLwdj6h4pj21xAjykj/cWEd5BG2reLTtpJPLdRliKfxhKY
+         OWGkzCiSguZL3OzyY471D6yHT0dS5udV/ZqzSb3qB9NTrxO6FfXSJBqFnyu26mUic5M50uYIcfGv
+         6s+02AW2H/nRj2Cy8sdWyN+q2sqB26mJxvmouA5GT/yhOPfj+XLNiI7lh8t9/mbjJn5wA0Uq0Kpw
+         hr8L+iUrGa1+fCLR1rJL6hDf5qlqnIIHJdR63EAS0=
+From:   xkernel.wang@foxmail.com
+To:     jerome.pouiller@silabs.com, gregkh@linuxfoundation.org
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH 2/2] staging: wfx: check the return value of devm_kmalloc()
+Date:   Thu, 17 Feb 2022 23:47:22 +0800
+X-OQ-MSGID: <20220217154722.1226-2-xkernel.wang@foxmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
+In-Reply-To: <20220217154722.1226-1-xkernel.wang@foxmail.com>
+References: <20220217154722.1226-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pm8001 TMF handler has some special processing when the TMF completes,
-so add a callback and fill it in for the pm8001 driver.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Tested-by: Yihang Li <liyihang6@hisilicon.com>
+devm_kmalloc() returns a pointer to allocated memory on success, NULL
+on failure. While there is a memory allocation of devm_kmalloc()
+without proper check. It is better to check the return value of it to
+prevent wrong memory access.
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 ---
- drivers/scsi/libsas/sas_scsi_host.c |  3 +++
- drivers/scsi/pm8001/pm8001_init.c   |  1 +
- drivers/scsi/pm8001/pm8001_sas.c    | 14 ++++++++++++++
- drivers/scsi/pm8001/pm8001_sas.h    |  1 +
- include/scsi/libsas.h               |  3 +++
- 5 files changed, 22 insertions(+)
+ drivers/staging/wfx/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/libsas/sas_scsi_host.c b/drivers/scsi/libsas/sas_scsi_host.c
-index af2dd95a2b28..0f599744738d 100644
---- a/drivers/scsi/libsas/sas_scsi_host.c
-+++ b/drivers/scsi/libsas/sas_scsi_host.c
-@@ -957,6 +957,9 @@ int sas_execute_tmf(struct domain_device *device, void *parameter,
- 
- 		wait_for_completion(&task->slow_task->completion);
- 
-+		if (i->dft->lldd_tmf_exec_complete)
-+			i->dft->lldd_tmf_exec_complete(device);
+diff --git a/drivers/staging/wfx/main.c b/drivers/staging/wfx/main.c
+index f83df9f..5d4fcc3 100644
+--- a/drivers/staging/wfx/main.c
++++ b/drivers/staging/wfx/main.c
+@@ -294,6 +294,9 @@ struct wfx_dev *wfx_init_common(struct device *dev,
+ 	hw->wiphy->n_iface_combinations = ARRAY_SIZE(wfx_iface_combinations);
+ 	hw->wiphy->iface_combinations = wfx_iface_combinations;
+ 	hw->wiphy->bands[NL80211_BAND_2GHZ] = devm_kmalloc(dev, sizeof(wfx_band_2ghz), GFP_KERNEL);
++	if (!hw->wiphy->bands[NL80211_BAND_2GHZ])
++		goto err;
 +
- 		res = TMF_RESP_FUNC_FAILED;
- 
- 		if ((task->task_state_flags & SAS_TASK_STATE_ABORTED)) {
-diff --git a/drivers/scsi/pm8001/pm8001_init.c b/drivers/scsi/pm8001/pm8001_init.c
-index b8cf1bae4040..8eef8f4de42f 100644
---- a/drivers/scsi/pm8001/pm8001_init.c
-+++ b/drivers/scsi/pm8001/pm8001_init.c
-@@ -128,6 +128,7 @@ static struct sas_domain_function_template pm8001_transport_ops = {
- 	.lldd_lu_reset		= pm8001_lu_reset,
- 	.lldd_query_task	= pm8001_query_task,
- 	.lldd_port_formed	= pm8001_port_formed,
-+	.lldd_tmf_exec_complete = pm8001_setds_completion,
- };
- 
- /**
-diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
-index a53e4b54154f..69da7246ea20 100644
---- a/drivers/scsi/pm8001/pm8001_sas.c
-+++ b/drivers/scsi/pm8001/pm8001_sas.c
-@@ -1376,3 +1376,17 @@ void pm8001_port_formed(struct asd_sas_phy *sas_phy)
- 	}
- 	sas_port->lldd_port = port;
- }
-+
-+void pm8001_setds_completion(struct domain_device *dev)
-+{
-+	struct pm8001_hba_info *pm8001_ha = pm8001_find_ha_by_dev(dev);
-+	struct pm8001_device *pm8001_dev = dev->lldd_dev;
-+	DECLARE_COMPLETION_ONSTACK(completion_setstate);
-+
-+	if (pm8001_ha->chip_id != chip_8001) {
-+		pm8001_dev->setds_completion = &completion_setstate;
-+		PM8001_CHIP_DISP->set_dev_state_req(pm8001_ha,
-+			pm8001_dev, DS_OPERATIONAL);
-+		wait_for_completion(&completion_setstate);
-+	}
-+}
-diff --git a/drivers/scsi/pm8001/pm8001_sas.h b/drivers/scsi/pm8001/pm8001_sas.h
-index 0b1086042ca6..c19c9c80206c 100644
---- a/drivers/scsi/pm8001/pm8001_sas.h
-+++ b/drivers/scsi/pm8001/pm8001_sas.h
-@@ -742,6 +742,7 @@ pm8001_ccb_task_free_done(struct pm8001_hba_info *pm8001_ha,
- 	smp_mb(); /*in order to force CPU ordering*/
- 	task->task_done(task);
- }
-+void pm8001_setds_completion(struct domain_device *dev);
- 
- #endif
- 
-diff --git a/include/scsi/libsas.h b/include/scsi/libsas.h
-index 9c181ebccfee..dd6551e809a0 100644
---- a/include/scsi/libsas.h
-+++ b/include/scsi/libsas.h
-@@ -652,6 +652,9 @@ struct sas_domain_function_template {
- 	int (*lldd_lu_reset)(struct domain_device *, u8 *lun);
- 	int (*lldd_query_task)(struct sas_task *);
- 
-+	/* Special TMF callbacks */
-+	void (*lldd_tmf_exec_complete)(struct domain_device *dev);
-+
- 	/* Port and Adapter management */
- 	int (*lldd_clear_nexus_port)(struct asd_sas_port *);
- 	int (*lldd_clear_nexus_ha)(struct sas_ha_struct *);
+ 	// FIXME: also copy wfx_rates and wfx_2ghz_chantable
+ 	memcpy(hw->wiphy->bands[NL80211_BAND_2GHZ], &wfx_band_2ghz,
+ 	       sizeof(wfx_band_2ghz));
 -- 
-2.26.2
-
