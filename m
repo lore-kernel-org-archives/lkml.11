@@ -2,137 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B85C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68ABBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243264AbiBQQ2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:28:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32972 "EHLO
+        id S243170AbiBQQ2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:28:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243182AbiBQQ1z (ORCPT
+        with ESMTP id S243147AbiBQQ2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:27:55 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934ABB2E08;
-        Thu, 17 Feb 2022 08:27:37 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id d10so8516236eje.10;
-        Thu, 17 Feb 2022 08:27:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=x0CAWbNuIuDfQpbJainmJSxgl05KS6pI1nwvw77TVRY=;
-        b=XYjjMpDhaV3y4guUdwjcp7pgm0CCJvpxAYqNX/uRe1b80YfpnK0ARRNBQuuarUXsmt
-         IuoP9UGADm0phg5YjhICWB2TYsr8Q15w9dvHc8shFxuizpjNbhIo8BnklYElCvt1LVfH
-         aHEjCRuS/wUZhdmJDKGXCXZH2MeGUT5QgqowghefD1jO/9ZYE8o3eZGL/FRNKnJPk8ni
-         ky4p5t2DWKWEzWnNXX/Q+f4T3nvBS9CpocYX9sHIJdlvOprs79hV9JmszQBdz25z9bUi
-         Q2t7B+W8f1RiL4+buQH0S5DKRQ9D5BHYgteg7ctM8Z1DIkqdwZjesChIj/808a++1E4J
-         cu2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=x0CAWbNuIuDfQpbJainmJSxgl05KS6pI1nwvw77TVRY=;
-        b=5v4SbT74eWBvdrpKEuR6C2yACdN6GvJI9LmPptnr80C4XKH56j6k/94iC/fPG0kybQ
-         im6aGSLxQh6uBYqXTxJKmmQtRqO8SNfiSh6xLxyxsSS+Y7jxYXFmHtdhWCrU9c+Sc00p
-         W9FtU3qCKZbP2L0M0GkrqGc/FbJz1XZS7jznZjLfueLvgrKQXi7ddoxlFerWoiEO+W+q
-         DfJhkweC42W6z6eNGN2qZwp5lJpNmhsqJ75Hd7D3hBRDCrDZ1b1Q+6hiHfZese3VHmAl
-         BY8rszViXilMVzRnQ/t8CSYNGgOKTl4kpYoT+Usp9L0nF0fComXmwOQt2Rj0w2+Sduwf
-         eT0Q==
-X-Gm-Message-State: AOAM533VpJkhagUH9xAj/OKI/SxuLha4CIW8r+BTobfJMbVOCANbwcPT
-        6W5KizBWCro6mrguGc04n14=
-X-Google-Smtp-Source: ABdhPJzlwfwiOWxf+goTzxLgaAJ6/r/qIVfSm0JJTyMJULqZyhZQz20H7AUpWOyqFSUm3xkOn6AE4Q==
-X-Received: by 2002:a17:907:2bf6:b0:6b9:725e:4e1f with SMTP id gv54-20020a1709072bf600b006b9725e4e1fmr2943906ejc.527.1645115256153;
-        Thu, 17 Feb 2022 08:27:36 -0800 (PST)
-Received: from poker.lan (static.2-229-210-222.ip198.fastwebnet.it. [2.229.210.222])
-        by smtp.gmail.com with ESMTPSA id j13sm3653742edw.24.2022.02.17.08.27.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 08:27:35 -0800 (PST)
-From:   Andrea Merello <andrea.merello@gmail.com>
-To:     jic23@kernel.org, mchehab+huawei@kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
-        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
-        jacopo@jmondi.org, Andrea Merello <andrea.merello@gmail.com>,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: [v3 13/13] docs: iio: add documentation for BNO055 driver
-Date:   Thu, 17 Feb 2022 17:27:10 +0100
-Message-Id: <20220217162710.33615-14-andrea.merello@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220217162710.33615-1-andrea.merello@gmail.com>
-References: <20220217162710.33615-1-andrea.merello@gmail.com>
+        Thu, 17 Feb 2022 11:28:33 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCA6AEF10;
+        Thu, 17 Feb 2022 08:28:17 -0800 (PST)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K00WN2Wm9z67vp0;
+        Fri, 18 Feb 2022 00:23:44 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Feb 2022 17:28:15 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Feb 2022 16:28:11 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <jolsa@kernel.org>, <namhyung@kernel.org>,
+        <elver@google.com>, <leo.yan@linaro.org>, <dvyukov@google.com>,
+        <will@kernel.org>
+CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux@armlinux.org.uk>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH] perf test: Skip Sigtrap test for arm+aarch64
+Date:   Fri, 18 Feb 2022 00:22:39 +0800
+Message-ID: <1645114959-119064-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Andrea Merello <andrea.merello@iit.it>
----
- Documentation/iio/bno055.rst | 53 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
- create mode 100644 Documentation/iio/bno055.rst
+Skip the Sigtrap test for arm + arm64, same as was done for s390 in
+commit a840974e96fd ("perf test: Test 73 Sig_trap fails on s390").
 
-diff --git a/Documentation/iio/bno055.rst b/Documentation/iio/bno055.rst
-new file mode 100644
-index 000000000000..4bb185075325
---- /dev/null
-+++ b/Documentation/iio/bno055.rst
-@@ -0,0 +1,53 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+==============================
-+BNO055 driver
-+==============================
-+
-+1. Overview
-+===========
-+
-+This driver supports Bosch BNO055 IMUs (on both serial and I2C busses).
-+
-+Accelerometer, magnetometer and gyroscope measures are always provided.
-+When "fusion_enable" sysfs attribute is set to 1, orientation (both Euler
-+angles and quaternion), linear velocity and gravity vector are also
-+provided, but some sensor settings (e.g. low pass filtering and range)
-+became locked (the IMU firmware controls them).
-+
-+IIO attributes for unavailable measurements (e.g. Euler angles when fusion
-+mode is disabled) just read zero.
-+
-+This driver supports also IIO buffers.
-+
-+2. Calibration
-+==============
-+
-+The IMU continuously performs an autocalibration procedure if (and only if)
-+operating in fusion mode. The magnetometer autocalibration can however be
-+disabled writing 0 in the sysfs in_magn_calibration_fast_enable attribute.
-+
-+The driver provides access to autocalibration flags (i.e. you can known if
-+the IMU has successfully autocalibrated) and to the calibration data blob.
-+
-+The user can save this blob in a firmware file (i.e. in /lib/firmware) that
-+the driver looks for at probe time. If found, then the IMU is initialized
-+with this calibration data. This saves the user from performing the
-+calibration procedure every time (which consist of moving the IMU in
-+various way).
-+
-+The driver looks for calibration data file using two different names: first
-+a file whose name is suffixed with the IMU unique ID (exposed in sysfs as
-+serial_number) is searched for; this is useful when there is more than one
-+IMU instance. If this file is not found, then a "generic" calibration file
-+is searched for (which can be used when only one IMU is present, without
-+struggling with fancy names, that change on each device).
-+
-+Valid calibration file names would be e.g.
-+ bno055-caldata-0e7c26a33541515120204a35342b04ff.dat
-+ bno055-caldata.dat
-+
-+In non-fusion mode the IIO 'offset' attributes provide access to the
-+offsets from calibration data (if any), so that the user can apply them to
-+the accel, angvel and magn IIO attributes. In fusion mode they are not
-+needed (the IMU firmware internally applies those corrections) and they
-+read as zero.
+As described by Will at [0], in the test we get stuck in a loop of handling
+the HW breakpoint exception and never making progress. GDB handles this
+by stepping over the faulting instruction, but with perf the kernel is
+expected to handle the step (which it doesn't for arm).
+
+Dmitry made an attempt to get this work, also mentioned in the same thread
+as [0], which was appreciated. But the best thing to do is skip the test
+for now.
+
+[0] https://lore.kernel.org/linux-perf-users/20220118124343.GC98966@leoy-ThinkPad-X240s/T/#m13b06c39d2a5100d340f009435df6f4d8ee57b5a
+
+Fixes: Fixes: 5504f67944484 ("perf test sigtrap: Add basic stress test for sigtrap handling")
+Signed-off-by: John Garry <john.garry@huawei.com>
+
+diff --git a/tools/perf/tests/sigtrap.c b/tools/perf/tests/sigtrap.c
+index 1f147fe6595f..3f0b5c1398b5 100644
+--- a/tools/perf/tests/sigtrap.c
++++ b/tools/perf/tests/sigtrap.c
+@@ -29,7 +29,8 @@
+  * Just disable the test for these architectures until these issues are
+  * resolved.
+  */
+-#if defined(__powerpc__) || defined(__s390x__)
++#if defined(__powerpc__) || defined(__s390x__) || \
++	defined(__arm__) || defined(__aarch64__)
+ #define BP_ACCOUNT_IS_SUPPORTED 0
+ #else
+ #define BP_ACCOUNT_IS_SUPPORTED 1
 -- 
-2.17.1
+2.26.2
 
