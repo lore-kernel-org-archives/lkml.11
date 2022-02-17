@@ -2,92 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 496FBC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C223FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243826AbiBQRgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 12:36:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53734 "EHLO
+        id S243832AbiBQRhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 12:37:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242741AbiBQRgf (ORCPT
+        with ESMTP id S229953AbiBQRhI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 12:36:35 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606B32B3AC3
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 09:36:20 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id h11so2796157ilq.9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 09:36:20 -0800 (PST)
+        Thu, 17 Feb 2022 12:37:08 -0500
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADB6CE;
+        Thu, 17 Feb 2022 09:36:54 -0800 (PST)
+Received: by mail-qv1-xf2f.google.com with SMTP id d7so9682219qvk.2;
+        Thu, 17 Feb 2022 09:36:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IDkmkuICMD0GBUFdglrzboVl2xOTROzNihfxF3HUYOI=;
-        b=LUz6HJnAr3QvZg7fZl1dRg6z+fbryWq7p15eSxwfbqvBhNyopS2Dsm7YKI5Y5r5NaN
-         NFaoV8M/WfR96MNLj49SeNp9/Qbyoh9iTM29qW/C8/RgDbEs+gJEw/kjkUOSJIkAxzlz
-         qL5YLStcIK/6wHU46yAbTfFw6bEE0Ffm44UhU=
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=YT6i6zAvuPIDw8rTT9iPdqVsfeJV5gVLu6Dx+ZSH/OY=;
+        b=aHY3iAwP93+Sffc+Iy8H+y3Z4UBYKxmRouQbVIphbflwD79lzkmL+AgV8pHerrz9vq
+         dP2nar/x4c829KAcM6P/Tzbc4HhUF8pnkv1LCSsZnWUhNtR63xDihqzO1yLBZ6Kx84An
+         eReDKqiFv3cFlOwwmu/Da6lHjgav6pNLtbLaqX6v2no4MYDje6wbn2ukVBO5hRokx3dr
+         BZuqYDxVuqmQ76ih4pputFZLJU1jKbfg7omosoBlFj9zw/GrPSy+72wcoy+Lquc0DZwy
+         Yxlc2Ew+rFsprXE/P5h5/apHK0KvmD+kd98Oz3kAGUChU7/eCf2krAu3WV2XPE/BRszj
+         EGJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
          :content-transfer-encoding;
-        bh=IDkmkuICMD0GBUFdglrzboVl2xOTROzNihfxF3HUYOI=;
-        b=R801IgVOBkf7L9cnKXWJU5q3VJ+IHLBqdqJbOw5npKZLXAoUSyWtXJQYY8YgxDnIq2
-         fckb8J2GxbKXIpC+KH3QDkjS5Ot7upkEx+6dKXx0BZ/aEFuqB+g66+OmywOPIIOIupeN
-         1wMDFTKu25KtshGIy2FN65Tpu223jKkcsERfk5G16QabX55i8wfm8L6AFEKMiO0PprGN
-         VyYtTzlQCYz54g9tp+XRv0fK/7mISJk8ATNi0KxM4maLwCzNtYjioHtcP9D2fMl52UWj
-         TqdmGguHp1x6YwgHf+kjmMWnLea1XmOKoOrpnsBn02aYXqsRH7Ic2gFQLcycS10fHGiX
-         RnoQ==
-X-Gm-Message-State: AOAM530PrtEDM3CFOz7rMHWMytbSo3d4NAOt4wCQL4RJ4zNF6IFKIwrS
-        601Eg1Q9R83BvCvBIp+Oy7Zs5A==
-X-Google-Smtp-Source: ABdhPJykB0DMj9uLVBhuDfqDOeURZhtb+jbGA7GfSaBsNbhqhdUIkXyg6L0cpXMjTz4lGIh5w5nc4g==
-X-Received: by 2002:a92:dc44:0:b0:2bf:adaa:7a2a with SMTP id x4-20020a92dc44000000b002bfadaa7a2amr2707205ilq.172.1645119379738;
-        Thu, 17 Feb 2022 09:36:19 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id u26sm2200082ior.52.2022.02.17.09.36.18
+        bh=YT6i6zAvuPIDw8rTT9iPdqVsfeJV5gVLu6Dx+ZSH/OY=;
+        b=fmP/z57fiU3el3jmCbejEDeBNGkKHg8cOSgXW77KCJQgF7EEus+yW575ZVRQWOgvwZ
+         0ANOsgTXV5jyZuKr8jPIunE2Q27G5bEtd3YU9hhJmKYoBNoUyDqclU9lbtOKV5jVaLaG
+         9dzR5OJlQrewZa4p6qgcfHMUgzf/UxuCn8xhZvekJeG9huJcVYuFbSo5p8LoENlaRFE5
+         6yiTR48S7rgrgMRMOoC4o6yUT90+I+3YFgwaMGgjU/7YHFCpO3XOLqdyTOXka2UxOVoq
+         46sXgiasFdRPH9t07CZ7P4OcMq3wHfnbgjwkig45OKwlU+lfxAPw2BN2BEr44qJ5uT+I
+         28MA==
+X-Gm-Message-State: AOAM530M8YFdELg3dIU618n8qyrl5Knf7tnrC8cVnc3y5p9M4NFYWr17
+        7vpTYFvvzpzt4Q1QF5Up3bs=
+X-Google-Smtp-Source: ABdhPJw2puxE1pTENCjPFJTErkM68D0PT+SquQSdWLfxjixiX0Wd0bm45v2Us+WFviI2Rul3eZuBvg==
+X-Received: by 2002:ac8:5907:0:b0:2dc:62f:27c7 with SMTP id 7-20020ac85907000000b002dc062f27c7mr3451592qty.315.1645119413377;
+        Thu, 17 Feb 2022 09:36:53 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 84sm3611257qkk.32.2022.02.17.09.36.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 09:36:19 -0800 (PST)
-Subject: Re: [PATCH 1/2] KVM: s390: selftests: Refactor memop test
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     Thomas Huth <thuth@redhat.com>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220211182215.2730017-11-scgl@linux.ibm.com>
- <20220217145336.1794778-1-scgl@linux.ibm.com>
- <20220217145336.1794778-2-scgl@linux.ibm.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <ce27dcb4-c2a3-fad6-8277-f5b86e184892@linuxfoundation.org>
-Date:   Thu, 17 Feb 2022 10:36:18 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Thu, 17 Feb 2022 09:36:52 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <15b95695-6fbc-1916-ff39-abf13e989fc4@roeck-us.net>
+Date:   Thu, 17 Feb 2022 09:36:51 -0800
 MIME-Version: 1.0
-In-Reply-To: <20220217145336.1794778-2-scgl@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
 Content-Language: en-US
+To:     Marcello Sylvester Bauer <sylv@sylv.io>,
+        Jean Delvare <jdelvare@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        Patrick Rudolph <patrick.rudolph@9elements.com>
+References: <cover.1645092563.git.sylv@sylv.io>
+ <d3563864d03a3d3450cf00b3be05465dc506e161.1645092563.git.sylv@sylv.io>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v1 1/1] hwmon: (pmbus) Add regulator supply into macro
+In-Reply-To: <d3563864d03a3d3450cf00b3be05465dc506e161.1645092563.git.sylv@sylv.io>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 7:53 AM, Janis Schoetterl-Glausch wrote:
-> Introduce macro for performing MEM_OP ioctls in a concise way.
+On 2/17/22 02:23, Marcello Sylvester Bauer wrote:
+> Add optional regulator supply into PWBUS_REGULATOR macro. This makes it
 
-How does this help? What is the value in re-writing existing
-code and turning it into a macro?
+The code doesn't look optional to me. What exactly is optional ?
 
+> possible to define a vin-supply in DT. Not defining a supply will only
+> cause the following debug output:
+> 
+> ```
+> Looking up vin-supply property in node [...] failed
+> ```
+> 
+> Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+> ---
+>   drivers/hwmon/pmbus/pmbus.h | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
+> index e0aa8aa46d8c..38f049d68d32 100644
+> --- a/drivers/hwmon/pmbus/pmbus.h
+> +++ b/drivers/hwmon/pmbus/pmbus.h
+> @@ -464,6 +464,7 @@ extern const struct regulator_ops pmbus_regulator_ops;
+>   #define PMBUS_REGULATOR(_name, _id)				\
+>   	[_id] = {						\
+>   		.name = (_name # _id),				\
+> +		.supply_name = "vin",				\
+>   		.id = (_id),					\
+>   		.of_match = of_match_ptr(_name # _id),		\
+>   		.regulators_node = of_match_ptr("regulators"),	\
 
-> Split test cases into multiple host/guest pairs making them independent.
+That seems to be quite far reaching. How does this affect / change behavior
+of existing systems which so far did not expect supply_name to be set ?
 
-This is a good change.
-
-> Make various minor improvements.
-> All in all this lays the groundwork for future extensions.
-
-Also good if these changes make it easier to add test. Would be helpful
-to know the details of the groundwork.
-
-thanks,
--- Shuah
+Guenter
