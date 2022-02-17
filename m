@@ -2,163 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AEEDC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A2EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243391AbiBQQkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:40:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49688 "EHLO
+        id S241245AbiBQQln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:41:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243374AbiBQQkb (ORCPT
+        with ESMTP id S242077AbiBQQlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:40:31 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A8C2B2FFE;
-        Thu, 17 Feb 2022 08:40:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=CiWUvZ5366lvIGhETsSSEgnHPIlanXaVnZLtS1TTtsI=; b=QsoogWw/JVCdBKfTtTDfPkNwuS
-        hwTOkgQ0FzqnYrFza/hSa2oOK6BUHsw8hJShqzZ6POFid6nIrZIGyMEqRpSmrVYxLgrOagTmOWvDs
-        Iw+o/gznG5u+fEHDG/2ZiEFcO9tPT1rcoGWG1hUn51Pt0ytcskrKkzYir76AHEJc5kXGpa8KPjF75
-        rf6rco1DHi0m+gL+7CWEj+T2U5XsW6xa3PGmehMMpAXnHOj4t02oYVlAu2r9LAKYJtStWOLI/hN9U
-        rj7+kekdZ9ahS+Rjb6tOrutggtlAPJlbr9M5CJvWr2WufB9EdhP0dcEuyN6P4dF2ZOXZ7FhkTegkC
-        QzMZ9g3g==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nKjoq-00Fm3P-Az; Thu, 17 Feb 2022 16:39:48 +0000
-Message-ID: <a9c40409-a72d-276c-777f-c7b1863e4537@infradead.org>
-Date:   Thu, 17 Feb 2022 08:39:41 -0800
+        Thu, 17 Feb 2022 11:41:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81C062B356B
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:41:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645116078;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NZLivYuLnXFIGdCejA7zd1S5U4NvNvoWvtuXURyH+rc=;
+        b=h79he9WuAJjJ0OCtbZWF/MLIWSIYC94jHmKidHeL24+sNW6/gzpl994WItMn37DTX81jjf
+        K2Bg+Sd3GOnzBDoYuLwQGppP9PwdJFRHTJ5IJ2sjza4oHqr8qV0BrIX7Rc/BayQMKyFnLd
+        lSgeBz9gRzYo8NU7XbeJQH+i4i+oixo=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-533-cf_jxhFbNMecLhcEv5569g-1; Thu, 17 Feb 2022 11:41:17 -0500
+X-MC-Unique: cf_jxhFbNMecLhcEv5569g-1
+Received: by mail-oo1-f71.google.com with SMTP id v10-20020a4ade8a000000b003177422e81dso88286oou.3
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:41:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NZLivYuLnXFIGdCejA7zd1S5U4NvNvoWvtuXURyH+rc=;
+        b=N7K2DbIqFmq9AKKymPmVmy0yVjzaDjiukXjD5ZGzAhR8QS7/sraYFNagbEUt0kFCK5
+         6QM/hBr2uyKuuzWAeNk/sSrC8FSKoIQJglzYV/q+ap5x8jKZiXFpxoYnVjwGzfihF3ki
+         KBKVJeYKcmptOq4/+ryuog2/2jRe0mIhhBglrWZoqlHvG0DUh+vkWSnc3Niatag8AELP
+         MkenfcAmwuLDOu9w6+J+esWxHFA+N2zX3ZiVZnXfZRtPpDIIqGeCBvFujW5UNKCVKQ4d
+         uZWnVHk2dJX/GNQBLXxhsfcd+DAs9VjsBwo8bmkm0328EEjVzzlU5A16ipiSOd6eTdi/
+         A6sw==
+X-Gm-Message-State: AOAM532lrET6E81kWglFreNhayketUdZHG7R+QC9amiiYYfDOI5We1Pl
+        JPxbeKqBN9vNoGCCbOvUbidNTjAdpLR218O8xB25AsVOvPqfcDyDt5e4m8DJb8CzRFiPEKASmLR
+        o8d7bxy1mSzRUBG/nURyNEQq+
+X-Received: by 2002:a05:6808:1808:b0:2d4:6241:4b68 with SMTP id bh8-20020a056808180800b002d462414b68mr1459840oib.144.1645116076616;
+        Thu, 17 Feb 2022 08:41:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzY81YLz3R+btUH+HwXzqO3VuFqto6H0t4DtW0M3Mj5JPgoD/uw4ueVsQaD+uGA6bBPpr4M4w==
+X-Received: by 2002:a05:6808:1808:b0:2d4:6241:4b68 with SMTP id bh8-20020a056808180800b002d462414b68mr1459828oib.144.1645116076436;
+        Thu, 17 Feb 2022 08:41:16 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id p23sm106844otk.17.2022.02.17.08.41.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 08:41:16 -0800 (PST)
+From:   trix@redhat.com
+To:     Felix.Kuehling@amd.com, alexander.deucher@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, nathan@kernel.org, ndesaulniers@google.com,
+        jonathan.kim@amd.com
+Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] drm/amdkfd: fix typo in setting enum value
+Date:   Thu, 17 Feb 2022 08:41:10 -0800
+Message-Id: <20220217164110.3258269-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2] net: ethernet: xilinx: cleanup comments
-Content-Language: en-US
-To:     trix@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        michal.simek@xilinx.com, radhey.shyam.pandey@xilinx.com,
-        esben@geanix.com, arnd@arndb.de, huangguangbin2@huawei.com,
-        chenhao288@hisilicon.com, moyufeng@huawei.com, michael@walle.cc,
-        yuehaibing@huawei.com, prabhakar.mahadev-lad.rj@bp.renesas.com
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220217160518.3255003-1-trix@redhat.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220217160518.3255003-1-trix@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Tom Rix <trix@redhat.com>
 
+Clang build fails with
+kfd_packet_manager_v9.c:267:3: error: implicit conversion
+  from enumeration type 'enum mes_map_queues_extended_engine_sel_enum'
+  to different enumeration type
+  'enum mes_unmap_queues_extended_engine_sel_enum'
+   extended_engine_sel__mes_map_queues__sdma0_to_7_sel :
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-On 2/17/22 08:05, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> Remove the second 'the'.
-> Replacements:
-> endiannes to endianness
-> areconnected to are connected
-> Mamagement to Management
-> undoccumented to undocumented
-> Xilink to Xilinx
-> strucutre to structure
-> 
-> Change kernel-doc comment style to c style for
-> /* Management ...
-> 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> Reviewed-by: Michal Simek <michal.simek@xilinx.com>
+This looks like a typo, the function is _unmap_, the enum
+extended_engine_sel__mes_map_queues__sdma0_to_7_sel  is _map_.
+To match the packet->bitfields2.extended_engine_set type
+it should be extended_engine_sel__mes_unmap_queues__sdma0_to_7_sel.
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Fixes: 009e9a158505 ("drm/amdkfd: navi2x requires extended engines to map and unmap sdma queues")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thanks.
-
-> ---
-> v2: Change the /** to /* 
->     Add Michal's Reviewed-by: tag
-> 
->  drivers/net/ethernet/xilinx/Kconfig               | 2 +-
->  drivers/net/ethernet/xilinx/ll_temac.h            | 4 ++--
->  drivers/net/ethernet/xilinx/ll_temac_main.c       | 2 +-
->  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 2 +-
->  drivers/net/ethernet/xilinx/xilinx_emaclite.c     | 2 +-
->  5 files changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
-> index 911b5ef9e680..0014729b8865 100644
-> --- a/drivers/net/ethernet/xilinx/Kconfig
-> +++ b/drivers/net/ethernet/xilinx/Kconfig
-> @@ -1,6 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0-only
->  #
-> -# Xilink device configuration
-> +# Xilinx device configuration
->  #
->  
->  config NET_VENDOR_XILINX
-> diff --git a/drivers/net/ethernet/xilinx/ll_temac.h b/drivers/net/ethernet/xilinx/ll_temac.h
-> index 4a73127e10a6..c6395c406418 100644
-> --- a/drivers/net/ethernet/xilinx/ll_temac.h
-> +++ b/drivers/net/ethernet/xilinx/ll_temac.h
-> @@ -271,7 +271,7 @@ This option defaults to enabled (set) */
->  
->  #define XTE_TIE_OFFSET			0x000003A4 /* Interrupt enable */
->  
-> -/**  MII Mamagement Control register (MGTCR) */
-> +/* MII Management Control register (MGTCR) */
->  #define XTE_MGTDR_OFFSET		0x000003B0 /* MII data */
->  #define XTE_MIIMAI_OFFSET		0x000003B4 /* MII control */
->  
-> @@ -283,7 +283,7 @@ This option defaults to enabled (set) */
->  
->  #define STS_CTRL_APP0_ERR         (1 << 31)
->  #define STS_CTRL_APP0_IRQONEND    (1 << 30)
-> -/* undoccumented */
-> +/* undocumented */
->  #define STS_CTRL_APP0_STOPONEND   (1 << 29)
->  #define STS_CTRL_APP0_CMPLT       (1 << 28)
->  #define STS_CTRL_APP0_SOP         (1 << 27)
-> diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-> index b900ab5aef2a..7171b5cdec26 100644
-> --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-> +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-> @@ -1008,7 +1008,7 @@ static void ll_temac_recv(struct net_device *ndev)
->  		    (skb->len > 64)) {
->  
->  			/* Convert from device endianness (be32) to cpu
-> -			 * endiannes, and if necessary swap the bytes
-> +			 * endianness, and if necessary swap the bytes
->  			 * (back) for proper IP checksum byte order
->  			 * (be16).
->  			 */
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index de0a6372ae0e..6eeaab77fbe0 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -537,7 +537,7 @@ static int __axienet_device_reset(struct axienet_local *lp)
->   * This function is called to reset and initialize the Axi Ethernet core. This
->   * is typically called during initialization. It does a reset of the Axi DMA
->   * Rx/Tx channels and initializes the Axi DMA BDs. Since Axi DMA reset lines
-> - * areconnected to Axi Ethernet reset lines, this in turn resets the Axi
-> + * are connected to Axi Ethernet reset lines, this in turn resets the Axi
->   * Ethernet core. No separate hardware reset is done for the Axi Ethernet
->   * core.
->   * Returns 0 on success or a negative error number otherwise.
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> index 519599480b15..f65a638b7239 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-> @@ -498,7 +498,7 @@ static void xemaclite_update_address(struct net_local *drvdata,
->   * @dev:	Pointer to the network device instance
->   * @address:	Void pointer to the sockaddr structure
->   *
-> - * This function copies the HW address from the sockaddr strucutre to the
-> + * This function copies the HW address from the sockaddr structure to the
->   * net_device structure and updates the address in HW.
->   *
->   * Return:	Error if the net device is busy or 0 if the addr is set
-
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c b/drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c
+index 806a03566a24..18250845a989 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c
+@@ -264,7 +264,7 @@ static int pm_unmap_queues_v9(struct packet_manager *pm, uint32_t *buffer,
+ 					sizeof(struct pm4_mes_unmap_queues));
+ 
+ 	packet->bitfields2.extended_engine_sel = pm_use_ext_eng(pm->dqm->dev) ?
+-		extended_engine_sel__mes_map_queues__sdma0_to_7_sel :
++		extended_engine_sel__mes_unmap_queues__sdma0_to_7_sel :
+ 		extended_engine_sel__mes_unmap_queues__legacy_engine_sel;
+ 
+ 	packet->bitfields2.engine_sel =
 -- 
-~Randy
+2.26.3
+
