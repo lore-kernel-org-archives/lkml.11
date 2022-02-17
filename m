@@ -2,57 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78652C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 332E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244823AbiBQS5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:57:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38764 "EHLO
+        id S243147AbiBQS5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:57:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244704AbiBQS5I (ORCPT
+        with ESMTP id S244715AbiBQS5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:57:08 -0500
+        Thu, 17 Feb 2022 13:57:12 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3861A5D642;
-        Thu, 17 Feb 2022 10:56:53 -0800 (PST)
-Date:   Thu, 17 Feb 2022 18:56:50 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C91F5D677;
+        Thu, 17 Feb 2022 10:56:55 -0800 (PST)
+Date:   Thu, 17 Feb 2022 18:56:52 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645124211;
+        s=2020; t=1645124213;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jvX3VcVTdDFf7XLd1SSfYubyFz74SefeqCtNmezfg4s=;
-        b=KLFLrl+7m5fbrPb6Zl9HQPrEPpJUJMBxhQsV6EmyAq0/99GOilk2o7u7iI4afgwLMD3NGd
-        QWTp1Cs1KIDoCLP4Cy/RcdzKTOtSBG7ZOu0E9mAcGyj7rsAKerCpJG3G7WAic1AizVGN7r
-        drMjxzRjUnTnS+PKz1Colgaq75fPI5Xe0S69QdogaUU69ytagbbF9lE4PfXHQgtSBxFA9j
-        bc52o9/694ni3tt/vmNxQKUYVuczjHRVUZP+rh68drLUvmkIoxJK6IHd1VUQg+kT+mJebE
-        +j0O0GM3vvTId0KJ8acgsZEqWjpEBwFk0K5Ce+3VgLrJzDH0FAPrasFrX6CzWg==
+        bh=RBiiPgn306sx/WT8q1jLcKd/StsV4JxTYp9CRAuANlY=;
+        b=V7zt69gRwx9uUcpoRKxrDVzD1d8f+7wxNuUpm2uQe4ZprtYaIBYMyIvm/vI2f2F9SD7+cu
+        TAHAX4bKKWIKdcFzNxGl4iGZ7pohtDUFwZ3cbw/Ot0w0t8P9RRuO2ZJsrA6miQTHEQcDrI
+        lvwNTuQprt7TI6M8B1y1MEIVHnUsuUa8T6PjtpFx0/5JbLWD3dmQoyvqrJnP9UhDi8wMVA
+        5svdZXpMgYZ2lUjbljLgh/Svf4bxVvXmr19SMYOP4sGQRybrrMKPM55nwDqof/k3N9diUK
+        2X1aQtKjVXM/kCoHIq4NxrTvH0yQxfrUIvmX6j6py0dWIKHvqsXIiMdccc6z7A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645124211;
+        s=2020e; t=1645124213;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jvX3VcVTdDFf7XLd1SSfYubyFz74SefeqCtNmezfg4s=;
-        b=OI3ztUFrmfgI9MHO6wpJ2NBlfSqg7DocyMaEKGJAcOG55gW3mzTeEH4JWuigpws2jukaSI
-        rrYHdSLa0nCGf0CQ==
-From:   "tip-bot2 for Frederic Weisbecker" <tip-bot2@linutronix.de>
+        bh=RBiiPgn306sx/WT8q1jLcKd/StsV4JxTYp9CRAuANlY=;
+        b=bPHZrtMUSvp8FUJf0z9SpjLhz11gfLu1ZT/hr++H5H0lQW9/cG3dnJAzXRTu9n0qtBKinn
+        13f1AJX3GYiwz5Aw==
+From:   "tip-bot2 for Huang Ying" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] pci: Decouple HK_FLAG_WQ and HK_FLAG_DOMAIN cpumask fetch
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Phil Auld <pauld@redhat.com>, x86@kernel.org,
+Subject: [tip: sched/core] sched/numa: Avoid migrating task to CPU-less node
+Cc:     "Huang, Ying" <ying.huang@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220207155910.527133-2-frederic@kernel.org>
-References: <20220207155910.527133-2-frederic@kernel.org>
+In-Reply-To: <20220214121553.582248-2-ying.huang@intel.com>
+References: <20220214121553.582248-2-ying.huang@intel.com>
 MIME-Version: 1.0
-Message-ID: <164512421082.16921.14468730232385715895.tip-bot2@tip-bot2>
+Message-ID: <164512421264.16921.689831789198253265.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,77 +61,101 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     9d42ea0d6984044a82258f41d8407ee442687f30
-Gitweb:        https://git.kernel.org/tip/9d42ea0d6984044a82258f41d8407ee442687f30
-Author:        Frederic Weisbecker <frederic@kernel.org>
-AuthorDate:    Mon, 07 Feb 2022 16:59:03 +01:00
+Commit-ID:     5c7b1aaf139dab5072311853bacc40fc3457d1f9
+Gitweb:        https://git.kernel.org/tip/5c7b1aaf139dab5072311853bacc40fc3457d1f9
+Author:        Huang Ying <ying.huang@intel.com>
+AuthorDate:    Mon, 14 Feb 2022 20:15:53 +08:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Wed, 16 Feb 2022 15:57:54 +01:00
+CommitterDate: Wed, 16 Feb 2022 15:57:53 +01:00
 
-pci: Decouple HK_FLAG_WQ and HK_FLAG_DOMAIN cpumask fetch
+sched/numa: Avoid migrating task to CPU-less node
 
-To prepare for supporting each feature of the housekeeping cpumask
-toward cpuset, prepare each of the HK_FLAG_* entries to move to their
-own cpumask with enforcing to fetch them individually. The new
-constraint is that multiple HK_FLAG_* entries can't be mixed together
-anymore in a single call to housekeeping cpumask().
+In a typical memory tiering system, there's no CPU in slow (PMEM) NUMA
+nodes.  But if the number of the hint page faults on a PMEM node is
+the max for a task, The current NUMA balancing policy may try to place
+the task on the PMEM node instead of DRAM node.  This is unreasonable,
+because there's no CPU in PMEM NUMA nodes.  To fix this, CPU-less
+nodes are ignored when searching the migration target node for a task
+in this patch.
 
-This will later allow, for example, to runtime modify the cpulist passed
-through "isolcpus=", "nohz_full=" and "rcu_nocbs=" kernel boot
-parameters.
+To test the patch, we run a workload that accesses more memory in PMEM
+node than memory in DRAM node.  Without the patch, the PMEM node will
+be chosen as preferred node in task_numa_placement().  While the DRAM
+node will be chosen instead with the patch.
 
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Link: https://lore.kernel.org/r/20220207155910.527133-2-frederic@kernel.org
+Link: https://lkml.kernel.org/r/20220214121553.582248-2-ying.huang@intel.com
 ---
- drivers/pci/pci-driver.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ kernel/sched/fair.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 588588c..4a5792c 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -350,7 +350,6 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
- 			  const struct pci_device_id *id)
- {
- 	int error, node, cpu;
--	int hk_flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
- 	struct drv_dev_and_id ddi = { drv, dev, id };
- 
- 	/*
-@@ -368,17 +367,29 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
- 	 * device is probed from work_on_cpu() of the Physical device.
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index da3230b..11a72e1 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -1989,7 +1989,7 @@ static int task_numa_migrate(struct task_struct *p)
  	 */
- 	if (node < 0 || node >= MAX_NUMNODES || !node_online(node) ||
--	    pci_physfn_is_probed(dev))
-+	    pci_physfn_is_probed(dev)) {
- 		cpu = nr_cpu_ids;
--	else
-+	} else {
-+		cpumask_var_t wq_domain_mask;
-+
-+		if (!zalloc_cpumask_var(&wq_domain_mask, GFP_KERNEL)) {
-+			error = -ENOMEM;
-+			goto out;
-+		}
-+		cpumask_and(wq_domain_mask,
-+			    housekeeping_cpumask(HK_FLAG_WQ),
-+			    housekeeping_cpumask(HK_FLAG_DOMAIN));
-+
- 		cpu = cpumask_any_and(cpumask_of_node(node),
--				      housekeeping_cpumask(hk_flags));
-+				      wq_domain_mask);
-+		free_cpumask_var(wq_domain_mask);
-+	}
+ 	ng = deref_curr_numa_group(p);
+ 	if (env.best_cpu == -1 || (ng && ng->active_nodes > 1)) {
+-		for_each_online_node(nid) {
++		for_each_node_state(nid, N_CPU) {
+ 			if (nid == env.src_nid || nid == p->numa_preferred_nid)
+ 				continue;
  
- 	if (cpu < nr_cpu_ids)
- 		error = work_on_cpu(cpu, local_pci_probe, &ddi);
- 	else
- 		error = local_pci_probe(&ddi);
--
-+out:
- 	dev->is_probed = 0;
- 	cpu_hotplug_enable();
- 	return error;
+@@ -2087,13 +2087,13 @@ static void numa_group_count_active_nodes(struct numa_group *numa_group)
+ 	unsigned long faults, max_faults = 0;
+ 	int nid, active_nodes = 0;
+ 
+-	for_each_online_node(nid) {
++	for_each_node_state(nid, N_CPU) {
+ 		faults = group_faults_cpu(numa_group, nid);
+ 		if (faults > max_faults)
+ 			max_faults = faults;
+ 	}
+ 
+-	for_each_online_node(nid) {
++	for_each_node_state(nid, N_CPU) {
+ 		faults = group_faults_cpu(numa_group, nid);
+ 		if (faults * ACTIVE_NODE_FRACTION > max_faults)
+ 			active_nodes++;
+@@ -2247,7 +2247,7 @@ static int preferred_group_nid(struct task_struct *p, int nid)
+ 
+ 		dist = sched_max_numa_distance;
+ 
+-		for_each_online_node(node) {
++		for_each_node_state(node, N_CPU) {
+ 			score = group_weight(p, node, dist);
+ 			if (score > max_score) {
+ 				max_score = score;
+@@ -2266,7 +2266,7 @@ static int preferred_group_nid(struct task_struct *p, int nid)
+ 	 * inside the highest scoring group of nodes. The nodemask tricks
+ 	 * keep the complexity of the search down.
+ 	 */
+-	nodes = node_online_map;
++	nodes = node_states[N_CPU];
+ 	for (dist = sched_max_numa_distance; dist > LOCAL_DISTANCE; dist--) {
+ 		unsigned long max_faults = 0;
+ 		nodemask_t max_group = NODE_MASK_NONE;
+@@ -2405,6 +2405,21 @@ static void task_numa_placement(struct task_struct *p)
+ 		}
+ 	}
+ 
++	/* Cannot migrate task to CPU-less node */
++	if (!node_state(max_nid, N_CPU)) {
++		int near_nid = max_nid;
++		int distance, near_distance = INT_MAX;
++
++		for_each_node_state(nid, N_CPU) {
++			distance = node_distance(max_nid, nid);
++			if (distance < near_distance) {
++				near_nid = nid;
++				near_distance = distance;
++			}
++		}
++		max_nid = near_nid;
++	}
++
+ 	if (ng) {
+ 		numa_group_count_active_nodes(ng);
+ 		spin_unlock_irq(group_lock);
