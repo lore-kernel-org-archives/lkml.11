@@ -2,87 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2913CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85817C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239258AbiBQKo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 05:44:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59466 "EHLO
+        id S239269AbiBQKpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 05:45:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237461AbiBQKoX (ORCPT
+        with ESMTP id S237461AbiBQKpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 05:44:23 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EE4293B76
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 02:44:08 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JzrtR3XpPz1FDJ3;
-        Thu, 17 Feb 2022 18:39:43 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Feb 2022 18:44:05 +0800
-Subject: Re: [PATCH] mm/slab_common: use helper function is_power_of_2()
-To:     Vlastimil Babka <vbabka@suse.cz>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Lameter <cl@linux.com>, <penberg@kernel.org>,
-        <rientjes@google.com>, <iamjoonsoo.kim@lge.com>
-References: <20220217091609.8214-1-linmiaohe@huawei.com>
- <8f307e8a-5f97-cf5d-0a77-1c79b05abd60@suse.cz>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <5d904bee-3faf-374a-090c-ce7c99c84ea9@huawei.com>
-Date:   Thu, 17 Feb 2022 18:44:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-MIME-Version: 1.0
-In-Reply-To: <8f307e8a-5f97-cf5d-0a77-1c79b05abd60@suse.cz>
+        Thu, 17 Feb 2022 05:45:30 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2060.outbound.protection.outlook.com [40.107.22.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C25294105;
+        Thu, 17 Feb 2022 02:45:16 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZKlkTkzPcQKS91gumc0MPylKH+sRENLYbjdj6Kd7BiuOAZlpJ3zbhYiIhsUpdngCuTdaew+BPtrT6FDUkMyRNa7uLWCBT3VCWrJpUEcsmTbPUHmNyg6x4lgEB6BlTIwTtWHj00prltAmNsMGnRJ3eKGaFZEUp6tquPyk1tzuNyL7ThPaiJHB1aobVYdhFDXL6cJjTovu55+/Qsg/O6H5VixjJXluRI6R/incu7Em4R+0BzhSHGDetgwGqaqhUFxwGN1uQuAgaWU4piMvh/B/w4t0oc3GsVyei/KZs0XtXim/dovWX6c5jEWFpQXcx5VZPRWXVDu2bVjVdkZPggJaMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AQEKmElfesErMmpzQbzrZ26b7KyTX6t/1T9DXboo1Gw=;
+ b=n7QWV8WJrvnA/Z5PJh0yt32u4/Idol7nfedMIdDqxbo9lyxPcY/jusqnYFpSBhbQKm98z/oz52HsBPa1Bk624YXY0qd/D+HPk4JXHWMoxqszWy9G2n6D2bWD9on41FmBpBMtbyWwj1X9QMjJCP3r4GZJo5YajbU8RXUNIKpxpivzy2yv8l5JbiadKlUesSrF9aKtxhA/avKPmDn2uUrF6s0UPDYRPOVzXQAg3+12A5mpUeT0C2Ycs+Mcli1XNcLdlRNbCXaB2bHF2Xlhsh8WamTR1o5yvuzNEaVkzTQ4kb0mdzKEXTCB7dgOZErnn+srsW1WwV5x2w1exEEOCnstmQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AQEKmElfesErMmpzQbzrZ26b7KyTX6t/1T9DXboo1Gw=;
+ b=gZPTKo91rwH3jnG2aJpBSL7/pLirwry610x/3+1XkLUTseKZJUj5FTvayW5aye81t/I4ZJMOdEbiAxQrDw+13nqlWmnOLXXWNbC6KXUUcDIqj0Qz8XRmYPN8h/kHFmzKdP5n1M+2Mq+APTFCarqiC8egKtgQ64v7wnoCPMi/FDHHgLyuhsg3Ud/eo50cnBh8nso3kuCRFud09F1sjA8nv5bcRZrR9WPepDvBNrmV18DpG6qzMzftr4s1vEWSZsFiCVjjPQUq+hCzHi6OVQKZEOmuaObW5UBSOczLcnUUOnwkNx3U/2gLTY8bPOoS8aVjGw4h7yWAUB2lIA3lYf9EDQ==
+Received: from AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:200:98::12) by VI1PR10MB3309.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:803:13b::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Thu, 17 Feb
+ 2022 10:45:14 +0000
+Received: from AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::f909:2310:3487:4150]) by AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::f909:2310:3487:4150%6]) with mapi id 15.20.4995.017; Thu, 17 Feb 2022
+ 10:45:14 +0000
+From:   "Starke, Daniel" <daniel.starke@siemens.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/1] tty: n_gsm: fix encoding of control signal octet bit
+ DV
+Thread-Topic: [PATCH 1/1] tty: n_gsm: fix encoding of control signal octet bit
+ DV
+Thread-Index: Adgj6sm0fdOjTCg/QgK8Vejl3021pg==
+Date:   Thu, 17 Feb 2022 10:45:14 +0000
+Message-ID: <AM4PR1001MB1378023FB7411DD0E6A18CD3E0369@AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 05e419f5-4e9a-4ff6-d20b-08d9f2029466
+x-ms-traffictypediagnostic: VI1PR10MB3309:EE_
+x-microsoft-antispam-prvs: <VI1PR10MB33092F0151A068AF2FD21E14E0369@VI1PR10MB3309.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SvMJGayQrKD8nhLaMMbvy26t0u+LBSZ/7DjyOeVqQlZ6uw0w0WH1w8iwL0eNofuw6An0ISe7IczZExQLBhLkbE1/qedIywDJ3Y1aXtxbFqz94CaD4Wt72RioINdxrgU4bH1KsJOfgZRH6j0VuYSXAxnuazBKZW1kVHYsKZz5n0JYIk6Rr8MNuCtYszW9JrxzJ2ePY1UgHvJn7Terw9AYV8OHmq1t7fNyJLXkHQiliPl7LrMKpDW1h8B8toKrg0ELGo/nCg3jSsvBZVrIz8eeWwp/fcpUBXAXzpfeKPqN2K+OZM8klLuAMxkTdjNMIuDQcqnAninyZZCQuJz1qqqV+2Mhl5hbwy6PJ4wB6MA8CYxKcoSUKb7FDmKd0rQ37igpypNz3uVtfIcz6ZVlV9H8wljNDud7UK2b3l7OeUvmUomJhiMy9Jq2BKeGW9CTnnwPOKgPqGb/Ha5qT8ZGkHrn/WjyzObuhqfp05UgTFaNZi5UzUuJugqbO80uBw1flnLo34xWfG+JGc7/BA6Zj5cALl0YCqIz2Odx6PC8L3HfT4698Bd3DTN0zynjxoey/y74jDkQ4lOxhrIogWwPsOm/4KBMagy7Syfa6LQBwfgMaAL1ZFsY59BcgsNIUWxgCSeSkOh1l0JgvUmQck89/4pF5KGoSsncG7cy47lhnzimlOx9U19/uP5CIBATHy+6EDzQ5lg7SXBknfNB/Q5AoCE/7g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52536014)(66556008)(66476007)(66446008)(76116006)(316002)(33656002)(8936002)(54906003)(64756008)(71200400001)(8676002)(6916009)(6506007)(7696005)(4326008)(66946007)(508600001)(86362001)(55016003)(186003)(26005)(9686003)(38100700002)(55236004)(5660300002)(4744005)(38070700005)(122000001)(82960400001)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OG10UkRsTkhaemFtM0JkOTJ5aW1CbFdGSFBqc0oybTk4eGY4T1VUNVpJWENh?=
+ =?utf-8?B?c1c4eHMwL1R1eW1nNEwwdlNRUWFkb2J4eVZ6eHp5aVp4TnlXV3QxSzlJeitP?=
+ =?utf-8?B?U1N3SURneWluMXJKOW1VL08weEI4ZzBzT1JVODZwNEwzY05MMzV3c0FIQTZJ?=
+ =?utf-8?B?cThSWXZEYnZaWlZSM3VwOW85b2tZQ1NHSUdnM0VMK3dacEtENWxvaXhWWVFV?=
+ =?utf-8?B?R1MzWjc5YkV3b3d6dVNkcE5ac0ZBVTVOYUpZMVNtYzVRRXZwZzdScmNzdGpZ?=
+ =?utf-8?B?VnE0M3pXSXJJYmkvbGtWd2pMN0FtZFl0TnJJN3NIb3RRaWxjeGRibkEyM1BW?=
+ =?utf-8?B?YVVKTFVaemJCc3RpWmhLSmpEeWQ3Qzh1Q1dkZDViZ2RMWGRwRk9SenBqWmdR?=
+ =?utf-8?B?bDFBWlRFdHN4ZXZmVGFSUzVaQm9oMERrTzYzZlFlWWxWWjRFczg0clNyMS9U?=
+ =?utf-8?B?NnJsT054QjcwdVNOWWFiVXRmL3VkWGZNazFFVEU3OFNYdi9lTUE0a3pSWE45?=
+ =?utf-8?B?QWJWbEs2dFhaZ0RLZ3JlcFZkSndPN2ZKUkwxQ0dlWGtIS1ViTklESFRwYmVv?=
+ =?utf-8?B?ZGQ2Y2NLbndQZDB2KzVGWXVEb3hYQTVtMEtyZUlxS0hYNTVOZkhLbWdOMGRF?=
+ =?utf-8?B?YkU2OUlnUUIwQ2dFNUtKeUdyVVowYkYrWmZoZ1daS0kvSXR6OEdINDJkK3dJ?=
+ =?utf-8?B?dnMydFkxenBIM0FuUURBRkV3YUVTc2JFSndYY0VuVEp1UlJ4RlU2di9IdG1j?=
+ =?utf-8?B?WHpiU2hxQ2JXYkpXeTJKajNRaDlMOTRWTUg0OHlhVVkwa2ZZQzFXOWx6eGhp?=
+ =?utf-8?B?ckZZQVZnMUx6dkVGYzZXeTFDN1ppSEoxbVVCR2t3RDFyWGtITW1uKy9Ha1BF?=
+ =?utf-8?B?SzhRcitGNFpycUR5RG94T0pwVFJwR0l1UTg5SjNjcXllMHZhM1R3bDBoRUFv?=
+ =?utf-8?B?OStRWEhXemZzZ2hxYWtBRW1EeFZIcnFlN0lPVUsxVmpLejBkTGszMG5qTGEx?=
+ =?utf-8?B?blJZLzFMd20zMWN3YS93ZS9lT0Vybkl1YmhYdEFxbjZ3NnRENWRlbTNmK0tP?=
+ =?utf-8?B?UmFWYWFYaVJkdWlza1BwYXJFdVZmSEtSRm5hVzJDaHROY2MzLzR4U1FHaXZh?=
+ =?utf-8?B?TElQRlNQODh5SHJQTHFCZjdLZWpNR1FRNCsvbjJUdThDY1JPTUMwTjNPOUo3?=
+ =?utf-8?B?SjFlRUIra3dlZlNEdS9kd1lWZUJTeFFNVHB0VW1mOFpUcjBGU1dibzg2LzM3?=
+ =?utf-8?B?dE0yWlNVWmtxTW5scDZ0amlkNlZVS1lONWoyVDY4SjYxajcxQnQwYVYwK1Fi?=
+ =?utf-8?B?NHcvS2FSbWpwVWt6V0FVUld2SFN5b3U0clhuVVRYU3NLOW12WGFiUzBOdkdk?=
+ =?utf-8?B?RE13bWVEK1ZTVnpjakpmTk82eWZKUzdjbkgzN0NIRFBKUjNvekkrN3FYMTJh?=
+ =?utf-8?B?UDRPdmlrbm5NQy91RFp5NUozSTVPUHUvOTlsNnU2NEtCOFNxeXJKemRwd3I3?=
+ =?utf-8?B?c2JmSXNqcXZRb0gxK0JDTnlsNkpjb3JVSmcrTHArNFIwZjRRTlJQSFN0d3ZT?=
+ =?utf-8?B?QjFVbFdFdkxDNFc1WjVBeFB3MzRKNzhCOUM3b1IrQ294OTJDM0I1MXdGQ1kz?=
+ =?utf-8?B?TUZlNTgwNXYyYkpQS3I1L2h6T1BFVzNDb3dHbEpUcHhKU2xxV1RWSkhJT2kw?=
+ =?utf-8?B?blFQU3JQTGdicmlneEJPRDBDNGRVMjNSVDJDL1RrVExzNVFuRUIzTUlyczBM?=
+ =?utf-8?B?YkNadm1wOVFRTFhUZXZOemtObjdPUkJZL2xtMkt0SFYzYWZWR3VvMm82QlpG?=
+ =?utf-8?B?OTg4aHg3bWJxVWNYNU9OMDk1YlphSzFhZHJxRDlhOXNJSWs3dEFiSHpiVWhC?=
+ =?utf-8?B?ZWdNQmpjUnQ4Wi9DdU5IWXc5OXk0SkZoTWpGdE9OS0VOMVVPUSt3Z1N3TFAx?=
+ =?utf-8?B?MVNpZ3BHSDJQT21kK1A4aExwZCsxbjBWeHgxR0hoaUsxckdCZm9mWkczcGZY?=
+ =?utf-8?B?TXczTTJhdTIwd1dxVzBsZzE1a0NSTS9oMTJMR3NtNUUxS3owdWpoS240UjVG?=
+ =?utf-8?B?QVJpeUdCcDQ1K3dINGVzWUNxYURya2hWc0UxMlh0VGV4L3VKckx5cnAwUk91?=
+ =?utf-8?B?ZjZWeGpDMU5uQlZscjVHUkJVQkY4L2VhVC85eXNiaEs3N2ZvRUdzRjFSUVR4?=
+ =?utf-8?B?b3k5dUNZcjdqbk5oQXlVSGU4K0FteTFsd1R5UWg1M1ZyTHlLLzgxR3NMNGFn?=
+ =?utf-8?B?Nnh2YjdXbnBxSTdqU1I1c1lUbllBPT0=?=
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 05e419f5-4e9a-4ff6-d20b-08d9f2029466
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2022 10:45:14.2946
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QZSXMn80mAbjL9FzdV/txI+Lzi82A/TqyZAclaIiAoax/VFT9tS5regsvh5vWUrU0w6a3UZ8DK1CCwHYKmUrHHjD04fR/t+WnmsdHSp0Ll0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3309
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/2/17 17:23, Vlastimil Babka wrote:
-> On 2/17/22 10:16, Miaohe Lin wrote:
->> Use helper function is_power_of_2() to check if KMALLOC_MIN_SIZE is power
->> of two. Minor readability improvement.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> 
-> We can try, but in case some compiler will no longer able to perform the
-> check at build-time (although is_power_of_2() looks sufficiently trivial
-> too), we'll have to revert it.
-
-I see. I checked the compiler in my env but there might be some compilers can't
-perform the check at build-time.
-
-Many thanks for your reply.
-
-> 
->> ---
->>  mm/slab_common.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/mm/slab_common.c b/mm/slab_common.c
->> index 23f2ab0713b7..6ee64d6208b3 100644
->> --- a/mm/slab_common.c
->> +++ b/mm/slab_common.c
->> @@ -807,7 +807,7 @@ void __init setup_kmalloc_cache_index_table(void)
->>  	unsigned int i;
->>  
->>  	BUILD_BUG_ON(KMALLOC_MIN_SIZE > 256 ||
->> -		(KMALLOC_MIN_SIZE & (KMALLOC_MIN_SIZE - 1)));
->> +		!is_power_of_2(KMALLOC_MIN_SIZE));
->>  
->>  	for (i = 8; i < KMALLOC_MIN_SIZE; i += 8) {
->>  		unsigned int elem = size_index_elem(i);
-> 
-> .
-> 
-
+PiBBbGwgb2YgdGhlc2UgYXJlIHBhdGNoIDEvMSwgd2hpY2ggaXMgb2RkIDooDQo+IA0KPiBQbGVh
+c2UgcmVudW1iZXIgdGhlbSBwcm9wZXJseSBhbmQgcmVzZW5kLg0KDQpBbGwgdGhlc2UgcGF0Y2hl
+cyBhcmUgYmFzZWQgb24gdGhlIGN1cnJlbnQgdmVyc2lvbiBvZiB0dHktbmV4dCBhbmQgYXJlDQpj
+b21wbGV0ZWx5IGluZGVwZW5kZW50IGZyb20gZWFjaCBvdGhlci4gVGhlIG9ubHkgY29tbW9uIHBh
+cnQgaXMgdGhlIGZpbGUNCnRoZXkgYXBwbHkgdG8uIFRoZXJlZm9yZSwgdGhpcyBpcyBub3QgYSBw
+YXRjaCBzZXJpZXMuIFdvdWxkIHlvdSBzdGlsbA0Kc3VnZ2VzdCB0byBhcHBseSBhIGRpZmZlcmVu
+dCBudW1iZXJpbmc/DQoNCldpdGggYmVzdCByZWdhcmRzLA0KRGFuaWVsIFN0YXJrZQ0K
