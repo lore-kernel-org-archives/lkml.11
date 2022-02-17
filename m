@@ -2,147 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2012AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241998AbiBQOmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:42:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38014 "EHLO
+        id S242011AbiBQOml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:42:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241961AbiBQOm1 (ORCPT
+        with ESMTP id S241975AbiBQOmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:42:27 -0500
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38C51EA724;
-        Thu, 17 Feb 2022 06:42:11 -0800 (PST)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:105:465:1:3:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4JzyG94nTmz9sTy;
-        Thu, 17 Feb 2022 15:42:09 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
-        t=1645108927;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7aWy03r2xG591PkmlPEtGVpU4AD/zizcWjrvxdU3HJ4=;
-        b=rcSeESX3HETeERVII6U1hG6wt6gZz4rE3b2WLKxLRgfQRq4SL5Y5GF5DSc0tdvFrqAJ+ko
-        YYuKcEZxgu40TZvY5vU3C0nLW4qdfe2lp4hwplANH6hs/I07843qKJ7WJp4m1ZGOPKy3xW
-        +50PCqPT5uqc0e0pSKZRsX20DGxyxyb0dhsuqV/d4IkdBZpWXxlappgxw0XKAiI/gAuCKB
-        5zI4X3dRMs59R+aifvzB+DytHOxnvfoR/DInZGwPkeZUOtZRnr9LzIc4LvFPgq2yoGxouZ
-        Fe2tDCQkiYHgbMp8y6ON1XNJXutBfd40mNG2nPrhWtvtQKRMs84OQ/Pj8p6wtw==
-From:   Marcello Sylvester Bauer <sylv@sylv.io>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Marcello Sylvester Bauer <sylv@sylv.io>,
-        linux-doc@vger.kernel.org
-Subject: [PATCH v2 2/3] hwmon (xdpe12284): Add support for xdpe11280
-Date:   Thu, 17 Feb 2022 15:41:34 +0100
-Message-Id: <6103836f1116a045a25919ae3e5c18dfdc485902.1645108566.git.sylv@sylv.io>
-In-Reply-To: <cover.1645108566.git.sylv@sylv.io>
-References: <cover.1645108566.git.sylv@sylv.io>
+        Thu, 17 Feb 2022 09:42:33 -0500
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 06:42:15 PST
+Received: from esa4.mentor.iphmx.com (esa4.mentor.iphmx.com [68.232.137.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C881EA710;
+        Thu, 17 Feb 2022 06:42:15 -0800 (PST)
+IronPort-SDR: mYI/ABF/DRwGmr1JDfW7M1EEflyDLpZ/u/DtTUwaTAhdB+IY4z1Iv0/4Q4eCyrZ0TEJ02MIMDk
+ bT3ZfG29L6GIXSNvfhzHmTpvA+0OVmKLDV4uHE3MFTYvLgMqvi1I3IqY9a2qbp1E9VOec4niQO
+ g1uqKshddxrdVRjTPlppkpc6fju1h36WJxRZwelxnlYFMP3mbnd7UnfgiuEM8ByYfVW0LHeh/q
+ qagJPmN6avl2lPeNvEmUjrFD4qrgeV8Gv2IHFiRoXWCoMX1R0Rb7JqM1SBSXS7vXorEBKNFYX7
+ mAJUz/FNyMnYqu2nOonSf820
+X-IronPort-AV: E=Sophos;i="5.88,376,1635235200"; 
+   d="scan'208";a="72081798"
+Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
+  by esa4.mentor.iphmx.com with ESMTP; 17 Feb 2022 06:41:12 -0800
+IronPort-SDR: 5vO35a3HQ31nmaqSObbk0ZxQamAwBV886ZZr/ckDFS4PvNtTl6wqfs1VyCVw4gV19AYTqWfRbN
+ fIOS1bbxoDFnJs4ghqhVoIZOvwGLfvMXV1t6w5hr5J0WPI7IkZND3mUwtYMcM8m/nT+AXS0Ee+
+ 55jiF0CzanTegedPQuVhZFc9pKILPVyEncZNNgPjiba9uCiul64Q/Ttj0iP6qbe4T6Viz6zjKM
+ QTg6Ys0BmPc6ekxSjWj/GlLTGNilU+jzAxv41tcCMTkLldcCnN3gTPVASIZiVwTS1ufu7fBr3y
+ TkY=
+From:   Andrew Gabbasov <andrew_gabbasov@mentor.com>
+To:     'Geert Uytterhoeven' <geert+renesas@glider.be>,
+        'Wolfram Sang' <wsa+renesas@sang-engineering.com>
+CC:     'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>,
+        'Linux I2C' <linux-i2c@vger.kernel.org>,
+        'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>,
+        "Surachari, Bhuvanesh" <Bhuvanesh_Surachari@mentor.com>
+References: <20210922160649.28449-1-andrew_gabbasov@mentor.com> <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>    
+In-Reply-To: 
+Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+Date:   Thu, 17 Feb 2022 17:40:56 +0300
+Organization: Mentor Graphics Corporation
+Message-ID: <000001d8240c$65be7de0$313b79a0$@mentor.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHXue1eCQdNXjaiK021FrevUeTu7qvGRbCQgEMVGxCAUkv+EIAYU0UAgCSk5iA=
+Content-Language: en-us
+X-Originating-IP: [137.202.0.90]
+X-ClientProxiedBy: svr-ies-mbx-11.mgc.mentorg.com (139.181.222.11) To
+ svr-ies-mbx-02.mgc.mentorg.com (139.181.222.2)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for another family of Infineon Multi-phase controllers.
-The xdpe11280 uses linear instead of vid data format for VOUT.
-Add the required logic to detect VOUT_MODE during identification,
-and set the format accordingly.
+Hello Geert, Wolfram,
 
-Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
----
- Documentation/hwmon/xdpe12284.rst | 10 +++++++---
- drivers/hwmon/pmbus/xdpe12284.c   | 17 ++++++++++++++++-
- 2 files changed, 23 insertions(+), 4 deletions(-)
+Could you please let us know your opinion on this patch
+and further requirements, if any.
 
-diff --git a/Documentation/hwmon/xdpe12284.rst b/Documentation/hwmon/xdpe12284.rst
-index 67d1f87808e5..e9a5a19b0c3d 100644
---- a/Documentation/hwmon/xdpe12284.rst
-+++ b/Documentation/hwmon/xdpe12284.rst
-@@ -5,6 +5,10 @@ Kernel driver xdpe122
- 
- Supported chips:
- 
-+  * Infineon XDPE11280
-+
-+    Prefix: 'xdpe11280'
-+
-   * Infineon XDPE12254
- 
-     Prefix: 'xdpe12254'
-@@ -20,9 +24,9 @@ Authors:
- Description
- -----------
- 
--This driver implements support for Infineon Multi-phase XDPE122 family
--dual loop voltage regulators.
--The family includes XDPE12284 and XDPE12254 devices.
-+This driver implements support for Infineon Multi-phase XDPE112 and XDPE122
-+family dual loop voltage regulators.
-+These families include XDPE11280, XDPE12284 and XDPE12254 devices.
- The devices from this family complaint with:
- 
- - Intel VR13 and VR13HC rev 1.3, IMVP8 rev 1.2 and IMPVP9 rev 1.3 DC-DC
-diff --git a/drivers/hwmon/pmbus/xdpe12284.c b/drivers/hwmon/pmbus/xdpe12284.c
-index b07da06a40c9..ec947c697670 100644
---- a/drivers/hwmon/pmbus/xdpe12284.c
-+++ b/drivers/hwmon/pmbus/xdpe12284.c
-@@ -27,6 +27,9 @@ static int xdpe122_read_word_data(struct i2c_client *client, int page,
- 	s32 mantissa;
- 	int ret;
- 
-+	if (info->format[PSC_VOLTAGE_OUT] == linear)
-+		return -ENODATA;
-+
- 	switch (reg) {
- 	case PMBUS_VOUT_OV_FAULT_LIMIT:
- 	case PMBUS_VOUT_UV_FAULT_LIMIT:
-@@ -75,9 +78,19 @@ static int xdpe122_read_word_data(struct i2c_client *client, int page,
- static int xdpe122_identify(struct i2c_client *client,
- 			    struct pmbus_driver_info *info)
- {
--	u8 vout_params;
-+	u8 vout_mode, vout_params;
- 	int i, ret;
- 
-+	ret = pmbus_read_byte_data(client, 0, PMBUS_VOUT_MODE);
-+	if (ret < 0)
-+		return ret;
-+
-+	vout_mode = ret >> 5;
-+	if (vout_mode == 0) {
-+		info->format[PSC_VOLTAGE_OUT] = linear;
-+		return 0;
-+	}
-+
- 	for (i = 0; i < XDPE122_PAGE_NUM; i++) {
- 		/* Read the register with VOUT scaling value.*/
- 		ret = pmbus_read_byte_data(client, i, PMBUS_VOUT_MODE);
-@@ -140,6 +153,7 @@ static int xdpe122_probe(struct i2c_client *client)
- }
- 
- static const struct i2c_device_id xdpe122_id[] = {
-+	{"xdpe11280", 0},
- 	{"xdpe12254", 0},
- 	{"xdpe12284", 0},
- 	{}
-@@ -148,6 +162,7 @@ static const struct i2c_device_id xdpe122_id[] = {
- MODULE_DEVICE_TABLE(i2c, xdpe122_id);
- 
- static const struct of_device_id __maybe_unused xdpe122_of_match[] = {
-+	{.compatible = "infineon,xdpe11280"},
- 	{.compatible = "infineon,xdpe12254"},
- 	{.compatible = "infineon,xdpe12284"},
- 	{}
--- 
-2.34.1
+Thanks!
+
+Best regards,
+Andrew
+
+> -----Original Message-----
+> From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> Sent: Tuesday, January 25, 2022 9:46 AM
+> To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
+> Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux Kernel
+> Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
+> Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+> 
+> Hello Geert, Wolfram,
+> 
+> Any feedback on the patch, please?
+> 
+> Thanks.
+> 
+> Best regards,
+> Andrew
+> 
+> > -----Original Message-----
+> > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> > Sent: Sunday, January 09, 2022 10:20 PM
+> > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
+> > Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux Kernel
+> > Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
+> > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+> >
+> > Hello Geert, Wolfram,
+> >
+> > Could you please let me know your opinion on version 2 of this patch,
+> > that addressed your earlier review comments?
+> >
+> > https://lore.kernel.org/all/20211006182314.10585-1-andrew_gabbasov@mentor.com/
+> >
+> > Does it still need any further modifications or are you going to promote it further upstream?
+> >
+> > Thanks.
+> >
+> > Best regards,
+> > Andrew
+> >
+> > > -----Original Message-----
+> > > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> > > Sent: Thursday, November 18, 2021 1:35 PM
+> > > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
+> > > Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux
+> Kernel
+> > > Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
+> > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> > > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+> > >
+> > > Hello Geert, Wolfram,
+> > >
+> > > Do you have any feedback on version 2 of this patch, that was submitted
+> > > after your review comments below?
+> > >
+> > > https://lore.kernel.org/all/20211006182314.10585-1-andrew_gabbasov@mentor.com/
+> > >
+> > > Thanks!
+> > >
+> > > Best regards,
+> > > Andrew
+> > >
+> > > > -----Original Message-----
+> > > > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> > > > Sent: Wednesday, October 06, 2021 9:12 PM
+> > > > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
+> > > > Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Linux I2C <linux-i2c@vger.kernel.org>; Linux Kernel
+> > > > Mailing List <linux-kernel@vger.kernel.org>; Wolfram Sang <wsa+renesas@sang-engineering.com>; Surachari,
+> > > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> > > > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+> > > >
+> > > > Hi Geert,
+> > > >
+> > > > Thank you for your review!
+> > > >
+> > > > > -----Original Message-----
+> > > > > From: Geert Uytterhoeven <geert@linux-m68k.org>
+> > > > > Sent: Tuesday, October 05, 2021 4:32 PM
+> > > > > To: Gabbasov, Andrew <Andrew_Gabbasov@mentor.com>
+> > > > > Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Linux I2C <linux-i2c@vger.kernel.org>; Linux
+> Kernel
+> > > > > Mailing List <linux-kernel@vger.kernel.org>; Wolfram Sang <wsa+renesas@sang-engineering.com>; Surachari,
+> > > > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> > > > > Subject: Re: [PATCH] i2c: rcar: add SMBus block read support
+> > > > >
+> > > > > Hi Andrew,
+> > > > >
+> > > > > On Wed, Sep 22, 2021 at 6:14 PM Andrew Gabbasov
+> > > > > <andrew_gabbasov@mentor.com> wrote:
+> > > > > > The smbus block read is not currently supported for rcar i2c devices.
+> > > > > > This patchset adds the support to rcar i2c bus so that blocks of data
+> > > > > > can be read using SMbus block reads.(using i2c_smbus_read_block_data()
+> > > > > > function from the i2c-core-smbus.c).
+> > > > > >
+> > > > > > Inspired by commit 8e8782c71595 ("i2c: imx: add SMBus block read support")
+> > > > > >
+> > > > > > This patch (adapted) was tested with v4.14, but due to lack of real
+> > > > > > hardware with SMBus block read operations support, using "simulation",
+> > > > > > that is manual analysis of data, read from plain I2C devices with
+> > > > > > SMBus block read request.
+> > > > > >
+> > > > > > Signed-off-by: Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>
+> > > > > > Signed-off-by: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> > > > >
+> > > > > Thanks for your patch!
+> > > > >
+> > > > > > --- a/drivers/i2c/busses/i2c-rcar.c
+> > > > > > +++ b/drivers/i2c/busses/i2c-rcar.c
+> > > > > > @@ -429,9 +431,16 @@ static bool rcar_i2c_dma(struct rcar_i2c_priv *priv)
+> > > > > >                 /*
+> > > > > >                  * The last two bytes needs to be fetched using PIO in
+> > > > > >                  * order for the STOP phase to work.
+> > > > > > +                *
+> > > > > > +                * For SMBus block read the first byte was received using PIO.
+> > > > >
+> > > > > So it might be easier to read, and more maintainable, to keep the
+> > > > > old assignments:
+> > > > >
+> > > > >     buf = priv->msg->buf;
+> > > > >     len = priv->msg->len - 2;
+> > > > >
+> > > > > and adjust them for SMBus afterwards:
+> > > > >
+> > > > >     if (block_data) {
+> > > > >             /* For SMBus block read the first byte was received using PIO */
+> > > > >             buf++;
+> > > > >             len--;
+> > > > >     }
+> > > > >
+> > > > > ?
+> > > > >
+> > > > > >                  */
+> > > > > > -               buf = priv->msg->buf;
+> > > > > > -               len = priv->msg->len - 2;
+> > > > > > +               if (block_data) {
+> > > > > > +                       buf = priv->msg->buf + 1;
+> > > > > > +                       len = priv->msg->len - 3;
+> > > > > > +               } else {
+> > > > > > +                       buf = priv->msg->buf;
+> > > > > > +                       len = priv->msg->len - 2;
+> > > > > > +               }
+> > > > > >         } else {
+> > > > > >                 /*
+> > > > > >                  * First byte in message was sent using PIO.
+> > > > >
+> > > > > And below we have another case handling buf and len :-(
+> > > > >
+> > > > > So perhaps:
+> > > > >
+> > > > >     buf = priv->msg->buf;
+> > > > >     len = priv->msg->len;
+> > > > >
+> > > > >     if (read) {
+> > > > >             /*
+> > > > >              * The last two bytes needs to be fetched using PIO in
+> > > > >              * order for the STOP phase to work.
+> > > > >              */
+> > > > >             len -= 2;
+> > > > >     }
+> > > > >     if (!read || block_data) {
+> > > > >             /* First byte in message was sent using PIO *
+> > > > >             buf++;
+> > > > >             len--;
+> > > > >     }
+> > > >
+> > > > Probably I was trying to minimize the changes ;-)
+> > > >
+> > > > However, I agree with you that the whole code fragment can be simplified
+> > > > and your variant indeed looks more clean and understandable.
+> > > > Thank you for your suggestion, I'll submit version 2 of the patch
+> > > > with this fragment changed.
+> > > >
+> > > > Thanks!
+> > > >
+> > > > Best regards,
+> > > > Andrew
 
