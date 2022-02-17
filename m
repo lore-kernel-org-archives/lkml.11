@@ -2,247 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90170C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240139AbiBQLla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 06:41:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57888 "EHLO
+        id S240174AbiBQLkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 06:40:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239930AbiBQLlR (ORCPT
+        with ESMTP id S237599AbiBQLkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 06:41:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7CE524BF9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:41:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645098062;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P/q1kZQEgMusUuWFuSa5r2nvnAdcxOG1sB0tjtALakw=;
-        b=Wo+SjLvScitPZI3WJ899HJeZyiJfHUeLsgQhHoLiCI7/Q1sQSPzVvhe+QUVqDJehdKBVSu
-        YatdkAO4jnmIyGpVrjG1xDIsQrPKrsra5V6hLndDU/5SWpvlrinyVbWp1wR/Ebu7kC7++6
-        8R2klv0h734sam/h5nwCH0Z72SeY8oQ=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-131-pxmJzIXzO4SM0U5SVi9qew-1; Thu, 17 Feb 2022 06:40:45 -0500
-X-MC-Unique: pxmJzIXzO4SM0U5SVi9qew-1
-Received: by mail-ed1-f69.google.com with SMTP id f6-20020a0564021e8600b0040f662b99ffso3363719edf.7
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:40:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=P/q1kZQEgMusUuWFuSa5r2nvnAdcxOG1sB0tjtALakw=;
-        b=xsZQWgei/IeBkJtBSgHRC/JkFjgGKh6gGbDfrfMkMYNJxs96TaRch0qr4QQ4TOziT2
-         swAZoRemzWp7HI8Jl+9PUywpoMoUIlPsosWY2pJYoVyphF9QbQJ7EGBrv0wZosj1LlkJ
-         SqMm4Cjnb5cSpij+XTHgxH4xS8hhZ169v/YK5tAGFX7A/YNroIGMjt9Zg6vkebbH2iF+
-         +ypWcsqaMbYotUfC03mD38xd7YOreyzjzpN8JPTsrJKUc1zN8YGaqnztRJbcm7J5i5ZW
-         NfKK6mOc4+8o3HuUSNWXKabqYWgbvAiWluDNrPnH4aJVK80gTDslMBUHVgpmyhzLZYAq
-         ldeg==
-X-Gm-Message-State: AOAM531bMunu/ZS222gBs1LJR0aNfjTwcau2vsTreW7x0SRstOuEETfv
-        beUzGj6tUScaWMtyDpGIoiDX18NV4kiiOkoYdot4RtUj2CRfB1wF1TJgwjOg8Kq1oYPpfxcxNb9
-        Q9zNQEeeH3UhlC1zvcZYzij5t
-X-Received: by 2002:a05:6402:280d:b0:410:be87:c59d with SMTP id h13-20020a056402280d00b00410be87c59dmr2166297ede.95.1645098043653;
-        Thu, 17 Feb 2022 03:40:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzEJPMQOF7E9N27ZyA+VdRNkLeIINC1JMuaIyOfNfnS2e55NWz2pK6KkDAIDCwVEL9yzKt+bw==
-X-Received: by 2002:a05:6402:280d:b0:410:be87:c59d with SMTP id h13-20020a056402280d00b00410be87c59dmr2166282ede.95.1645098043391;
-        Thu, 17 Feb 2022 03:40:43 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id 12sm1118106ejh.30.2022.02.17.03.40.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 03:40:42 -0800 (PST)
-Message-ID: <52a0b719-c1ed-cfbe-ac1a-b54d53835d39@redhat.com>
-Date:   Thu, 17 Feb 2022 12:40:42 +0100
+        Thu, 17 Feb 2022 06:40:23 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F7E2AAB10;
+        Thu, 17 Feb 2022 03:40:05 -0800 (PST)
+X-UUID: c5e553f974f445b0a96fafc288093e60-20220217
+X-UUID: c5e553f974f445b0a96fafc288093e60-20220217
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 67241806; Thu, 17 Feb 2022 19:40:01 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 17 Feb 2022 19:40:00 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Feb 2022 19:39:58 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v5 30/34] iommu/mediatek: Change the domid to iova_region_id
+Date:   Thu, 17 Feb 2022 19:34:49 +0800
+Message-ID: <20220217113453.13658-31-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220217113453.13658-1-yong.wu@mediatek.com>
+References: <20220217113453.13658-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] platform/x86: intel_scu_ipc: Keep polling IPC status if
- it reads IPC_STATUS_ERR
-Content-Language: en-US
-To:     "Khandelwal, Rajat" <rajat.khandelwal@intel.com>,
-        "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>,
-        "Westerberg, Mika" <mika.westerberg@intel.com>
-References: <20211230082353.2585-1-rajat.khandelwal@intel.com>
- <CO1PR11MB48359C6EC7DAC17F7FDD91D896459@CO1PR11MB4835.namprd11.prod.outlook.com>
- <e49ac79d-eca1-e404-922b-48129f8a7e54@redhat.com>
- <CO1PR11MB483572AC606C04CBD061AC0896289@CO1PR11MB4835.namprd11.prod.outlook.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <CO1PR11MB483572AC606C04CBD061AC0896289@CO1PR11MB4835.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rajat,
+Prepare for adding bankid, also no functional change.
 
-On 2/3/22 15:10, Khandelwal, Rajat wrote:
-> Hi @Hans de Goede
-> Yes, when the ERR bit is set, it still polls until timeout expires. 
-> Also, IPC doesn’t clear the bit after msec as I have manually tested it and verified.
-> But also, in the current implementation, it returns ETIMEDOUT even when the status reflects BUSY. This leads to developers thinking that the communication didn’t go through because timeout occurred not because the SCU was busy. We had to write manual debug prints to differentiate between these two. 
-> 
-> Linux 5.17 has also come. Can you drive a closure to this patch?
+In the previous SoC, each a iova_region is a domain; In the multi-banks
+case, each a bank is a domain, then the original function name
+"mtk_iommu_get_domain_id" is not proper. Use "iova_region_id" instead of
+"domain_id".
 
-I'm sorry, but in its current state the patch is no good at all:
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/iommu/mtk_iommu.c | 46 +++++++++++++++++++--------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
-1. You never properly submitted it, as Mika already responded here:
-https://lore.kernel.org/platform-driver-x86/CO1PR11MB4835D217B78F17BA6AD79F0096449@CO1PR11MB4835.namprd11.prod.outlook.com/T/
-
-"Please run checkpatch.pl and fix all the issues it reports, and change
-the $subject line to match the style in that file and then re-send."
-
-Still I decided to try and merge it manually from your "original message"
-(which I nor the archive ever received) quote:
-
-"""
---- a/drivers/platform/x86/intel_scu_ipc.c
-+++ b/drivers/platform/x86/intel_scu_ipc.c
-@@ -233,17 +233,19 @@ static inline u32 ipc_data_readl(struct intel_scu_ipc_dev *scu, u32 offset)  static inline int busy_loop(struct intel_scu_ipc_dev *scu)  {
- 	unsigned long end = jiffies + IPC_TIMEOUT;
-+	u32 status;
- 
- 	do {
--		u32 status;
--
- 		status = ipc_read_status(scu);
- 		if (!(status & IPC_STATUS_BUSY)) {
--			return (status & IPC_STATUS_ERR) ? -EIO : 0;
-+			if (!(status & IPC_STATUS_ERR))
-+				return 0;
-+		}
- 
- 		usleep_range(50, 100);
- 	} while (time_before(jiffies, end));
- 
-+	if (status & IPC_STATUS_BUSY)
-+		return -EBUSY;
-+	if (status & IPC_STATUS_ERR)
-+		return -EIO;
-+
- 	return -ETIMEDOUT;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index a58c0dbefedf..86d235d22db1 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -478,8 +478,8 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
  }
  
-"""
-
-But this actually is a corrupt unified diff. Count the number of + and - lines,
-there are 17 - lines, as indicated in the chunk header, but there are 23 +
-lines, where as the chunk header: "@@ -233,17 +233,19" @@ claims there are only
-19. So this smells like a manually edited diff and one which was not even
-test applied after editing let alone it actually being compiled
-and functionally tested.
-
-I generally dislike it when other kernel subsystem maintainers use
-strong language, but I have to say that the above
-(never applied as submitted, thus never tested as submitted)
-is utter garbage.
-
-Please:
-
-1. Create a new patch which actually applies and *thoroughly* test that
-before submitting the new version
-
-2. Directly submit it to me / the mailinglist the proper way as documented:
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html
-
-3. Don't you ever ever again send an untested patch for upstream
-inclusion!!
-
-Regards,
-
-Hans
-
-
-
-
-> -----Original Message-----
-> From: Hans de Goede <hdegoede@redhat.com> 
-> Sent: Monday, January 17, 2022 3:19 PM
-> To: Khandelwal, Rajat <rajat.khandelwal@intel.com>; mika.westerberg@linux.intel.com
-> Cc: linux-kernel@vger.kernel.org; platform-driver-x86@vger.kernel.org; Westerberg, Mika <mika.westerberg@intel.com>
-> Subject: Re: [PATCH] platform/x86: intel_scu_ipc: Keep polling IPC status if it reads IPC_STATUS_ERR
-> 
-> Hi,
-> 
-> On 12/30/21 09:30, Khandelwal, Rajat wrote:
->> Hi Mika
->> I hope this annotation is correct? Sorry for the multiple errors! 
->>
->> -----Original Message-----
->> From: Khandelwal, Rajat <rajat.khandelwal@intel.com>
->> Sent: Thursday, December 30, 2021 1:54 PM
->> To: mika.westerberg@linux.intel.com
->> Cc: linux-kernel@vger.kernel.org; platform-driver-x86@vger.kernel.org; 
->> Khandelwal, Rajat <rajat.khandelwal@intel.com>; Westerberg, Mika 
->> <mika.westerberg@intel.com>
->> Subject: [PATCH] platform/x86: intel_scu_ipc: Keep polling IPC status 
->> if it reads IPC_STATUS_ERR
->>
->> The current implementation returns -EIO if and when IPC_STATUS_ERR is returned and returns -ETIMEDOUT even if the status is busy.
->> This patch polls the IPC status even if IPC_STATUS_ERR is returned until timeout expires and returns -EBUSY if the status shows busy.
->> Observed in multiple scenarios, trying to fetch the status of IPC after it shows ERR sometimes eradicates the ERR status.
-> 
-> So what this is doing is continue to poll, even though the SCU says it is ready, when the ERR bit is set ?
-> 
-> Are we sure the IPC does not just simply clear the err bit after some time becuse it expects it to be "consumed" within X msec after dropping busy low?
-> 
-> IOW what guarantees are there that this new behavior of ipc_data_readl() is not actually causing us to ignore actual errors ?
-> 
-> Regards,
-> 
-> Hans
-> 
-> 
-> 
-> 
-> 
->>
->> Signed-off-by: Rajat-Khandelwal <rajat.khandelwal@intel.com>
->> ---
->>  drivers/platform/x86/intel_scu_ipc.c | 14 ++++++++++----
->>  1 file changed, 10 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/platform/x86/intel_scu_ipc.c 
->> b/drivers/platform/x86/intel_scu_ipc.c
->> index 7cc9089d1e14..1f90acaa7212 100644
->> --- a/drivers/platform/x86/intel_scu_ipc.c
->> +++ b/drivers/platform/x86/intel_scu_ipc.c
->> @@ -233,17 +233,23 @@ static inline u32 ipc_data_readl(struct intel_scu_ipc_dev *scu, u32 offset)  static inline int busy_loop(struct intel_scu_ipc_dev *scu)  {
->>  	unsigned long end = jiffies + IPC_TIMEOUT;
->> +	u32 status;
->>  
->>  	do {
->> -		u32 status;
->> -
->>  		status = ipc_read_status(scu);
->> -		if (!(status & IPC_STATUS_BUSY))
->> -			return (status & IPC_STATUS_ERR) ? -EIO : 0;
->> +		if (!(status & IPC_STATUS_BUSY)) {
->> +			if (!(status & IPC_STATUS_ERR))
->> +				return 0;
->> +		}
->>  
->>  		usleep_range(50, 100);
->>  	} while (time_before(jiffies, end));
->>  
->> +	if (status & IPC_STATUS_BUSY)
->> +		return -EBUSY;
->> +	if (status & IPC_STATUS_ERR)
->> +		return -EIO;
->> +
->>  	return -ETIMEDOUT;
->>  }
->>  
->> --
->> 2.17.1
->>
-> 
+-static int mtk_iommu_get_domain_id(struct device *dev,
+-				   const struct mtk_iommu_plat_data *plat_data)
++static int mtk_iommu_get_iova_region_id(struct device *dev,
++					const struct mtk_iommu_plat_data *plat_data)
+ {
+ 	const struct mtk_iommu_iova_region *rgn = plat_data->iova_region;
+ 	const struct bus_dma_region *dma_rgn = dev->dma_range_map;
+@@ -509,7 +509,7 @@ static int mtk_iommu_get_domain_id(struct device *dev,
+ }
+ 
+ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+-			    bool enable, unsigned int domid)
++			    bool enable, unsigned int regionid)
+ {
+ 	struct mtk_smi_larb_iommu    *larb_mmu;
+ 	unsigned int                 larbid, portid;
+@@ -525,12 +525,12 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+ 		if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
+ 			larb_mmu = &data->larb_imu[larbid];
+ 
+-			region = data->plat_data->iova_region + domid;
++			region = data->plat_data->iova_region + regionid;
+ 			larb_mmu->bank[portid] = upper_32_bits(region->iova_base);
+ 
+-			dev_dbg(dev, "%s iommu for larb(%s) port %d dom %d bank %d.\n",
++			dev_dbg(dev, "%s iommu for larb(%s) port %d region %d rgn-bank %d.\n",
+ 				enable ? "enable" : "disable", dev_name(larb_mmu->dev),
+-				portid, domid, larb_mmu->bank[portid]);
++				portid, regionid, larb_mmu->bank[portid]);
+ 
+ 			if (enable)
+ 				larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
+@@ -556,7 +556,7 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+ 
+ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+ 				     struct mtk_iommu_data *data,
+-				     unsigned int domid)
++				     unsigned int region_id)
+ {
+ 	const struct mtk_iommu_iova_region *region;
+ 	struct mtk_iommu_domain	*m4u_dom;
+@@ -595,7 +595,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+ 
+ update_iova_region:
+ 	/* Update the iova region for this domain */
+-	region = data->plat_data->iova_region + domid;
++	region = data->plat_data->iova_region + region_id;
+ 	dom->domain.geometry.aperture_start = region->iova_base;
+ 	dom->domain.geometry.aperture_end = region->iova_base + region->size - 1;
+ 	dom->domain.geometry.force_aperture = true;
+@@ -631,18 +631,18 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 	struct device *m4udev = data->dev;
+ 	struct mtk_iommu_bank_data *bank;
+ 	unsigned int bankid = 0;
+-	int ret, domid;
++	int ret, region_id;
+ 
+-	domid = mtk_iommu_get_domain_id(dev, data->plat_data);
+-	if (domid < 0)
+-		return domid;
++	region_id = mtk_iommu_get_iova_region_id(dev, data->plat_data);
++	if (region_id < 0)
++		return region_id;
+ 
+ 	mutex_lock(&dom->mutex);
+ 	if (!dom->bank) {
+ 		/* Data is in the frstdata in sharing pgtable case. */
+ 		frstdata = mtk_iommu_get_frst_data(hw_list);
+ 
+-		ret = mtk_iommu_domain_finalise(dom, frstdata, domid);
++		ret = mtk_iommu_domain_finalise(dom, frstdata, region_id);
+ 		if (ret) {
+ 			mutex_unlock(&dom->mutex);
+ 			return -ENODEV;
+@@ -673,7 +673,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 	}
+ 	mutex_unlock(&data->mutex);
+ 
+-	return mtk_iommu_config(data, dev, true, domid);
++	return mtk_iommu_config(data, dev, true, region_id);
+ 
+ err_unlock:
+ 	mutex_unlock(&data->mutex);
+@@ -813,22 +813,22 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+ 	struct mtk_iommu_data *c_data = dev_iommu_priv_get(dev), *data;
+ 	struct list_head *hw_list = c_data->hw_list;
+ 	struct iommu_group *group;
+-	int domid;
++	int regionid;
+ 
+ 	data = mtk_iommu_get_frst_data(hw_list);
+ 	if (!data)
+ 		return ERR_PTR(-ENODEV);
+ 
+-	domid = mtk_iommu_get_domain_id(dev, data->plat_data);
+-	if (domid < 0)
+-		return ERR_PTR(domid);
++	regionid = mtk_iommu_get_iova_region_id(dev, data->plat_data);
++	if (regionid < 0)
++		return ERR_PTR(regionid);
+ 
+ 	mutex_lock(&data->mutex);
+-	group = data->m4u_group[domid];
++	group = data->m4u_group[regionid];
+ 	if (!group) {
+ 		group = iommu_group_alloc();
+ 		if (!IS_ERR(group))
+-			data->m4u_group[domid] = group;
++			data->m4u_group[regionid] = group;
+ 	} else {
+ 		iommu_group_ref_get(group);
+ 	}
+@@ -862,14 +862,14 @@ static void mtk_iommu_get_resv_regions(struct device *dev,
+ 				       struct list_head *head)
+ {
+ 	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
+-	unsigned int domid = mtk_iommu_get_domain_id(dev, data->plat_data), i;
++	unsigned int regionid = mtk_iommu_get_iova_region_id(dev, data->plat_data), i;
+ 	const struct mtk_iommu_iova_region *resv, *curdom;
+ 	struct iommu_resv_region *region;
+ 	int prot = IOMMU_WRITE | IOMMU_READ;
+ 
+-	if ((int)domid < 0)
++	if ((int)regionid < 0)
+ 		return;
+-	curdom = data->plat_data->iova_region + domid;
++	curdom = data->plat_data->iova_region + regionid;
+ 	for (i = 0; i < data->plat_data->iova_region_nr; i++) {
+ 		resv = data->plat_data->iova_region + i;
+ 
+-- 
+2.18.0
 
