@@ -2,82 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6893DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241782AbiBQOyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:54:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60790 "EHLO
+        id S240839AbiBQOzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:55:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242227AbiBQOyg (ORCPT
+        with ESMTP id S242212AbiBQOzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:54:36 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6BFF2B2E38
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:54:17 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JzyVD6Jwzz9ryc;
-        Thu, 17 Feb 2022 22:52:36 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Feb
- 2022 22:54:08 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <rppt@kernel.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] memblock: use kfree() to release kmalloced memblock regions
-Date:   Thu, 17 Feb 2022 22:53:27 +0800
-Message-ID: <20220217145327.16553-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Thu, 17 Feb 2022 09:55:01 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7948C29E94E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:54:45 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id u20so10513282lff.2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:54:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=11Msxpj6saXhCjkH+nNzBnzST2VwOlijviYdJ5EL8xY=;
+        b=h5HMBr2qhvXOVt5Rfn/vHXtiCQDuOpsxkvtFXY0SaiScqWYvwpMJt7Ts5GoC0oM9lu
+         oZj3IfLiiIcHvrxc3JwV25jjQsMvXlueV81dkAF15o0UJ2Wc1KHJgUiBV6+YYsPTH98G
+         8nWuYP3W8FBS6N4SeEuBzBAYUDcjwdH/gP8aX0MTiZXvEu4z93liPMgb34C5FYDQctPi
+         G5G0CrnohL2XTBUHXFu9UhV0YmK4fiIERHclNELjygJMVr+BGfUBjhvEtptQCK+yxtkm
+         aeY1WFNrw8P8mIxnuUxVsLdP4wnwmi1KwCEPf/m/0deGHDK0O/gNRAMxVaGIpLfuPW6C
+         jOmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=11Msxpj6saXhCjkH+nNzBnzST2VwOlijviYdJ5EL8xY=;
+        b=RkGGJPtxYpsje/KFRa1CpLOaIkDsxwE+ddifcDJVHjSljk5Jpgc3Ixt8lruniRqRk5
+         pSZzB84lsE6EhAO0+MQd4uaIwT0pCFBwFtj14GTRS4pSQU8V1L/F0Da6aAIuws2IJ0Qo
+         vOw4XIlz/IIdR+RpejxMDS/dpcPGOP03nPtNAqniTty9KsoyAtnmRcrRuym5y252J7X4
+         l7pfS45VFbxoeoDEIUCtm2hkn399a7YPSZ4bYYHMIXcRe53c3Awlyy/bVmACsG8PoXiz
+         QwNOCAg47czOQGI4inFSNHpeBuiuWimnSPbwbcF4xDNcQiWcnwUl5B9q3gmAMuGVakhR
+         ZkpA==
+X-Gm-Message-State: AOAM531/H0leiUYjpKKs1bkgLhXrXgoSc8waS1cFSUifVYRUcI9q5o6Z
+        sTdn1zD40E0Nkf14mLDawhpUjkzMUWQ02ihs8r5W0g==
+X-Google-Smtp-Source: ABdhPJxr6FXLaH1va6dG7alhD1yu9EwTbfNIoN/IWCmHeyc0IwCpkdkpbk1bdcrCPBR912vFQwi6slrPY3X5Othxofw=
+X-Received: by 2002:a19:9144:0:b0:43b:86a4:1497 with SMTP id
+ y4-20020a199144000000b0043b86a41497mr2301608lfj.254.1645109683832; Thu, 17
+ Feb 2022 06:54:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220216093112.92469-1-Jerome.Pouiller@silabs.com>
+ <20220216093112.92469-3-Jerome.Pouiller@silabs.com> <878ru924qr.fsf@kernel.org>
+In-Reply-To: <878ru924qr.fsf@kernel.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 17 Feb 2022 15:54:05 +0100
+Message-ID: <CAPDyKFqm3tGa+dtAGPn803rLnfY=tdcoX5DySnG-spFFqM=CrA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] staging: wfx: apply the necessary SDIO quirks for the
+ Silabs WF200
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Jerome Pouiller <Jerome.Pouiller@silabs.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-mmc@vger.kernel.org,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-memblock.{reserved,memory}.regions may be allocated using kmalloc() in
-memblock_double_array(). Use kfree() to release these kmalloced regions
-indicated by memblock_{reserved,memory}_in_slab.
+On Thu, 17 Feb 2022 at 10:59, Kalle Valo <kvalo@kernel.org> wrote:
+>
+> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+>
+> > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+> >
+> > Until now, the SDIO quirks are applied directly from the driver.
+> > However, it is better to apply the quirks before driver probing. So,
+> > this patch relocate the quirks in the MMC framework.
+>
+> It would be good to know how this is better, what's the concrete
+> advantage?
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Fixes: 3010f876500f ("mm: discard memblock data later")
----
- mm/memblock.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+The mmc core has a quirk interface for all types of cards
+(eMMC/SD/SDIO), which thus keeps these things from sprinkling to
+drivers. In some cases, the quirk needs to be applied already during
+card initialization, which is earlier than when probing an SDIO func
+driver or the MMC block device driver.
 
-diff --git a/mm/memblock.c b/mm/memblock.c
-index 11561bbff8f5..e4f03a6e8e56 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -366,14 +366,20 @@ void __init memblock_discard(void)
- 		addr = __pa(memblock.reserved.regions);
- 		size = PAGE_ALIGN(sizeof(struct memblock_region) *
- 				  memblock.reserved.max);
--		memblock_free_late(addr, size);
-+		if (memblock_reserved_in_slab)
-+			kfree(memblock.reserved.regions);
-+		else
-+			memblock_free_late(addr, size);
- 	}
- 
- 	if (memblock.memory.regions != memblock_memory_init_regions) {
- 		addr = __pa(memblock.memory.regions);
- 		size = PAGE_ALIGN(sizeof(struct memblock_region) *
- 				  memblock.memory.max);
--		memblock_free_late(addr, size);
-+		if (memblock_memory_in_slab)
-+			kfree(memblock.memory.regions);
-+		else
-+			memblock_free_late(addr, size);
- 	}
- 
- 	memblock_memory = NULL;
--- 
-2.23.0
+Perhaps it's a good idea to explain a bit about this in the commit message.
 
+Kind regards
+Uffe
