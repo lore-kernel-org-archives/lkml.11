@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 632D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 07:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0AE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 07:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235959AbiBQHHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 02:07:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56696 "EHLO
+        id S235998AbiBQHIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 02:08:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235894AbiBQHHT (ORCPT
+        with ESMTP id S235949AbiBQHIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 02:07:19 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FD01B8FEE
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 23:07:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645081625; x=1676617625;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=aIAIHiSYFQs1OHO8vn3EML5N+RuWuBiMvLCuRRsbiQw=;
-  b=hQyM+/2xXYSc4aVgo/1h2nXw2LYqIbRtCNTN61umgOUWm+Du4pvWmR5c
-   F+DWfL/kIcUg22l7wvc1+yPpb368r63NBOuXhds37YiyGMJj0hlxygt5W
-   TQSupe+fvZu62sNR+jDRkQ21u0+afslmljUTxEyREL7EHonObpdSnlt8X
-   zIE+07eBbOji3ofbwsbeLN6ILqXZy5+M7xfXqCyLoU7ZQlmb2xKogf1ov
-   eO9KRGTZ9F3LjBIVBEoQPdzh7Nux1VNHeBObmJDNSvJjsBNYs2eq9oyb8
-   FK0H/NBRQyjCyfg6I67AQW2fLpPcIKWxtQJXU4xfwef98vnWHb3/7cCLJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="234341125"
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="234341125"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 23:07:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="776955949"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 16 Feb 2022 23:07:03 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKasZ-000BYK-1x; Thu, 17 Feb 2022 07:07:03 +0000
-Date:   Thu, 17 Feb 2022 15:06:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
-Subject: drivers/fpga/microchip-spi.c:341:34: warning: unused variable
- 'mpf_of_ids'
-Message-ID: <202202171552.gFz6PXXK-lkp@intel.com>
+        Thu, 17 Feb 2022 02:08:00 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5EF28ADA2;
+        Wed, 16 Feb 2022 23:07:41 -0800 (PST)
+X-UUID: a549484970ab4c659dbf3a1fca61e35b-20220217
+X-UUID: a549484970ab4c659dbf3a1fca61e35b-20220217
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1352216927; Thu, 17 Feb 2022 15:07:34 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 17 Feb 2022 15:07:33 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Feb 2022 15:07:32 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+CC:     Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        bpf <bpf@vger.kernel.org>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH v3] net: fix wrong network header length
+Date:   Thu, 17 Feb 2022 15:01:39 +0800
+Message-ID: <20220217070139.30028-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <CAADnVQK78PN8N6c6u_O2BAxdyXwH_HVYMV_x3oGgyfT50a6ymg@mail.gmail.com>
+References: <CAADnVQK78PN8N6c6u_O2BAxdyXwH_HVYMV_x3oGgyfT50a6ymg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="y"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/0day-ci/linux/commits/UPDATE-20220217-002021/Ivan-Bornyakov/fpga-microsemi-spi-add-Microsemi-FPGA-manager/20220214-222923
-head:   6acf97cc27bd55298cb9d6a365b078b09e2b6acf
-commit: 6acf97cc27bd55298cb9d6a365b078b09e2b6acf fpga: microchip-spi: add Microchip FPGA manager
-date:   15 hours ago
-config: mips-randconfig-r006-20220217 (https://download.01.org/0day-ci/archive/20220217/202202171552.gFz6PXXK-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0bad7cb56526f2572c74449fcf97c1fcda42b41d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/0day-ci/linux/commit/6acf97cc27bd55298cb9d6a365b078b09e2b6acf
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review UPDATE-20220217-002021/Ivan-Bornyakov/fpga-microsemi-spi-add-Microsemi-FPGA-manager/20220214-222923
-        git checkout 6acf97cc27bd55298cb9d6a365b078b09e2b6acf
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/fpga/
+On Wed, 2022-02-16 at 19:05 -0800, Alexei Starovoitov wrote:
+> On Tue, Feb 15, 2022 at 11:37 PM Lina Wang <lina.wang@mediatek.com>
+> wrote:
+> > 
+> > When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is
+> > enable,
+> > several skbs are gathered in skb_shinfo(skb)->frag_list. The first
+> > skb's
+> > ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+> > network_header\transport_header\mac_header have been updated as
+> > ipv4 acts,
+> > but other skbs in frag_list didnot update anything, just ipv6
+> > packets.
+> 
+> Please add a test that demonstrates the issue and verifies the fix.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I used iperf udp test to verify the patch, server peer enabled -d to debug
+received packets.
 
-All warnings (new ones prefixed by >>):
+192.0.0.4 is clatd interface ip, corresponding ipv6 addr is 
+2000:1:1:1:afca:1b1f:1a9:b367, server peer ip is 1.1.1.1,
+whose ipv6 is 2004:1:1:1::101:101.
 
->> drivers/fpga/microchip-spi.c:341:34: warning: unused variable 'mpf_of_ids' [-Wunused-const-variable]
-   static const struct of_device_id mpf_of_ids[] = {
-                                    ^
-   1 warning generated.
+Without the patch, when udp length 2840 packets received, iperf shows:
+pcount 1 packet_count 0
+pcount 27898727 packet_count 1
+pcount 3 packet_count 27898727
 
+pcount should be 2, but is 27898727(0x1a9b367) , which is 20 bytes put 
+forward. 
 
-vim +/mpf_of_ids +341 drivers/fpga/microchip-spi.c
+12:08:02.680299	Unicast to us 2004:1:1:1::101:101   2000:1:1:1:afca:1b1f:1a9:b367 UDP 51196 → 5201 Len=2840
+0000   20 00 00 01 00 01 00 01 af ca 1b 1f 01 a9 b3 67   ipv6 dst address
+0000   c7 fc 14 51 0b 20 c7 ab                           udp header
+0000   00 00 00 ab 00 0e f3 49 00 00 00 01 08 06 69 d2   00000001 is pcount
+12:08:02.682084	Unicast to us	1.1.1.1	                 192.0.0.4 	 	  UDP 51196 → 5201 Len=2840
 
-   340	
- > 341	static const struct of_device_id mpf_of_ids[] = {
-   342		{ .compatible = "microchip,mpf-spi-fpga-mgr" },
-   343		{},
-   344	};
-   345	MODULE_DEVICE_TABLE(of, mpf_of_ids);
-   346	
+After applied the patch, there is no OOO, pcount acted in order.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks!
