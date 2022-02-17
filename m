@@ -2,154 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 02:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46938C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 02:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231899AbiBQCrT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 21:47:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50814 "EHLO
+        id S231929AbiBQCsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 21:48:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbiBQCrR (ORCPT
+        with ESMTP id S231864AbiBQCsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 21:47:17 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C731FFC8E;
-        Wed, 16 Feb 2022 18:47:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645066024; x=1676602024;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=QSnSOxdDtObgqzE/ltifayE1DCxwz1VCxKc2xdK3BnQ=;
-  b=iLUKKwqyOfbqw+wVLqKkAXgMews9dyh47MjeTZ6KVmpp75ILA9p+qHhU
-   eubs3/8EUdOQ34x5giGe0RAr1xHEbgCsZW9V1pfkjiXRd25whignlWtXg
-   +R2sDq9DIwh6su3/YGAZ3WJuV7vzhPiJdv2voITp7KgGRIO0P+iGaM1v1
-   BUzFI+BdBxFYGMwRguEzSam6OHTzyGjFBYAm+SBm5GYDmoX4+nu+cpE97
-   bpdjYayBinwRbCgdJzvE3/GMu5jMo1Xz0G/WY5/2C2Tebmr08yL8VpO41
-   Ne2610ibnXgDQcEFShZhal8a12AKcQEpIdQCmMo5froNr41vyAGGHpDBi
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="231399148"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="231399148"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 18:46:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="545307562"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.68])
-  by orsmga008.jf.intel.com with ESMTP; 16 Feb 2022 18:46:46 -0800
-Date:   Thu, 17 Feb 2022 10:38:16 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Tom Rix <trix@redhat.com>
-Cc:     Tianfei zhang <tianfei.zhang@intel.com>, hao.wu@intel.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        corbet@lwn.net
-Subject: Re: [PATCH v1 2/7] fpga: dfl: check feature type before parse irq
-  info
-Message-ID: <20220217023816.GD1145049@yilunxu-OptiPlex-7050>
-References: <20220214112619.219761-1-tianfei.zhang@intel.com>
- <20220214112619.219761-3-tianfei.zhang@intel.com>
- <0de9c8fb-0f04-684f-630c-1d13b0b55ba1@redhat.com>
+        Wed, 16 Feb 2022 21:48:07 -0500
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 774CA1FFC8E;
+        Wed, 16 Feb 2022 18:47:52 -0800 (PST)
+Received: by ajax-webmail-mail-app2 (Coremail) ; Thu, 17 Feb 2022 10:47:44
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.192.171.246]
+Date:   Thu, 17 Feb 2022 10:47:44 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     linux-hams@vger.kernel.org, ajk@comnets.uni-bremen.de,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH] drivers: hamradio: 6pack: fix UAF bug caused by
+ mod_timer()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220215203955.7d7a3eed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220216023549.50223-1-duoming@zju.edu.cn>
+ <20220215203955.7d7a3eed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0de9c8fb-0f04-684f-630c-1d13b0b55ba1@redhat.com>
+Message-ID: <cbb5412.b171f.17f05941412.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: by_KCgDHzyNQtw1imZHyAQ--.39720W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgEEAVZdtYMQOwACsS
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWUCw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 06:49:05AM -0800, Tom Rix wrote:
-> 
-> On 2/14/22 3:26 AM, Tianfei zhang wrote:
-> > From: Tianfei Zhang <tianfei.zhang@intel.com>
-> > 
-> > The feature ID of "Port User Interrupt" and the
-> > "PMCI Subsystem" are identical, 0x12, but one is for FME,
-> > other is for Port. It should check the feature type While
-> > parsing the irq info in parse_feature_irqs().
-> 
-> This seems like a bug fix and not part of iofs feature.
-> 
-> Split this out of the patchset.
-> 
-> This is a workaround a hardware problem, there should be some comments to
-> the effect that you can't trust _this_ or _that_ feature id and some special
-> handling earlier.
-> 
-> The ambiguity of feature id is a problem, and this sort of bug will happen
-
-Actually this is not the feature id definition problem. The identity of the
-feature is determined by the dfl_id_type(FME, PORT) AND feature_id. So the
-driver should match the dfl_id_type & feature_id to know what feature it
-is.
-
-Thanks,
-Yilun
-
-> again.
-> 
-> What can be done to prevent this in the future ?
-> 
-> > 
-> > Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
-> > ---
-> >   drivers/fpga/dfl.c | 11 +++++++++++
-> >   1 file changed, 11 insertions(+)
-> > 
-> > diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-> > index 599bb21d86af..26f8cf890700 100644
-> > --- a/drivers/fpga/dfl.c
-> > +++ b/drivers/fpga/dfl.c
-> > @@ -940,9 +940,14 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
-> >   {
-> >   	void __iomem *base = binfo->ioaddr + ofst;
-> >   	unsigned int i, ibase, inr = 0;
-> > +	enum dfl_id_type type;
-> >   	int virq;
-> >   	u64 v;
-> > +	type = feature_dev_id_type(binfo->feature_dev);
-> > +	if (type >= DFL_ID_MAX)
-> > +		return -EINVAL;
-> > +
-> >   	/*
-> >   	 * Ideally DFL framework should only read info from DFL header, but
-> >   	 * current version DFL only provides mmio resources information for
-> > @@ -959,16 +964,22 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
-> >   	 */
-> >   	switch (fid) {
-> >   	case PORT_FEATURE_ID_UINT:
-> > +		if (type != PORT_ID)
-> > +			break;
-> 
-> Instead of embedding a break in the switch, break the switch into fme switch
-> and port switch
-> 
-> if (type == PORT_ID)
-> 
->   port-switch
-> 
-> else if (type == FME_ID
-> 
->   fme-switch
-> 
-> Tom
-> 
-> >   		v = readq(base + PORT_UINT_CAP);
-> >   		ibase = FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
-> >   		inr = FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
-> >   		break;
-> >   	case PORT_FEATURE_ID_ERROR:
-> > +		if (type != PORT_ID)
-> > +			break;
-> >   		v = readq(base + PORT_ERROR_CAP);
-> >   		ibase = FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
-> >   		inr = FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
-> >   		break;
-> >   	case FME_FEATURE_ID_GLOBAL_ERR:
-> > +		if (type != FME_ID)
-> > +			break;
-> >   		v = readq(base + FME_ERROR_CAP);
-> >   		ibase = FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
-> >   		inr = FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
+SGVsbG8sCgpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciB5b3VyIHRpbWUgYW5kIHBvaW50aW5nIG91
+dCBwcm9ibGVtcyBpbiBteSBwYXRjaC4KSSBoYXZlIHNlbnQgdGhlIG1vZGlmaWVkIHBhdGNoIGFn
+YWluIGp1c3Qgbm93LgoKV2UgdXNlIHB0eSB0byBzaW11bGF0ZSA2cGFjayBkZXZpY2UsIHRoZSBy
+ZWxlYXNlZCByZXNvdXJjZSBpcyB0dHlfc3RydWN0LT50dHlfcG9ydAppbiB0dHkgbGF5ZXIuIAoK
+VGhlIGZyZWUgdHJhY2UgaXMgc2hvd24gYXMgYmVsb3c6CnR0eV9yZWxlYXNlKCktPnR0eV9yZWxl
+YXNlX3N0cnVjdCgpLT5yZWxlYXNlX3R0eSgpLT50dHlfa3JlZl9wdXQoKS0+CnF1ZXVlX3JlbGVh
+c2Vfb25lX3R0eSgpLT5yZWxlYXNlX29uZV90dHkoKS0+cHR5X2NsZWFudXAoKS0+dHR5X3BvcnRf
+cHV0KHR0eS0+cG9ydCk7CgpUaGUgdXNlIHRyYWNlIGlzIHNob3duIGFzIGJlbG93OgpzcF94bWl0
+X29uX2FpcigpLT5wdHlfd3JpdGUoKS0+dHR5X2ZsaXBfYnVmZmVyX3B1c2goKS0+dHR5X3NjaGVk
+dWxlX2ZsaXAocG9ydCk7CgoKQmVzdCB3aXNoZXMsCkR1b21pbmcgWmhvdQoK
