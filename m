@@ -2,99 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15074C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E15C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243091AbiBQQ1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:27:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57860 "EHLO
+        id S243101AbiBQQ1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:27:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236819AbiBQQ1D (ORCPT
+        with ESMTP id S234411AbiBQQ1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:27:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FA149AD9B
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:26:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645115208;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hCGdZ67U7n7QTxmEpkXTMre/CxFj1dLb8EpsB9Wt9NU=;
-        b=GezvIP/FDCuCmOONL2/N+znUrvSlf3Dn1YzdVsR8UGtqHkUlHeHjrzXvZ4uMgpgTxfZdQB
-        5Fdi+oNp1g9Pot3OTRH3VRqxQNJxihltcVv0Bw7qEyr0U+qAbCIbXMp9h+usElW1+8fgAH
-        yT1qx1qbo0kM/mYTRrQVGvDci7EE68E=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-338-PiK3aXcyMfyvswnMJNt5rQ-1; Thu, 17 Feb 2022 11:26:47 -0500
-X-MC-Unique: PiK3aXcyMfyvswnMJNt5rQ-1
-Received: by mail-lj1-f200.google.com with SMTP id q17-20020a2e7511000000b0023c95987502so47451ljc.16
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:26:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hCGdZ67U7n7QTxmEpkXTMre/CxFj1dLb8EpsB9Wt9NU=;
-        b=AcDu8M/Jjb0i9MYtWGjDEsNJNek/i+Hx3kJbRDuD1R/Cqr+octT90ntrQDWHr5lxIz
-         k5KxZ1Mf5a7v1YgRnTy6saqdiHOi3QnSyqqH9VFL93bTnMlG8Ge2D8Cv5XoWUPo0VijB
-         7FxQYJzCjf35pFEq/ki98F0r3q8/XlFqhKTDvNpEs0L3Da+BXnyRJ9VGdF2N+sPmYiwb
-         L5W9jHLd7MoG27g/PcnSEEKyoDjxrNMC/YfmxEkPq54gjZ544/bpPQlr69m7dqp0bF2I
-         cbrrtT0USwfunjOu6UUel94rnMNMhI+MZyd+kb4VnA/nhdkC2y8mHHHulF1gmqA76Thz
-         n/lg==
-X-Gm-Message-State: AOAM533AiUi+hMPZrM0tFSClzVa1aIIpoiG7dm4P8azIXrsJP3WaoskG
-        83F5Ej/I/2ejeMIbaVaImXVmtMMVz/dI80cPBvGnIQTZnBfXuZDUmA+E1uxb6HC2Z95TnjGr+Lv
-        lL6OhsVuYn+mNtJa2vJQnbWQtdVyWwjKdRUFxrMw=
-X-Received: by 2002:a05:6512:150d:b0:442:aad5:2550 with SMTP id bq13-20020a056512150d00b00442aad52550mr2567895lfb.678.1645115205790;
-        Thu, 17 Feb 2022 08:26:45 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzLZ9H9RgrFT61tMlkFrlaF/ED3Z9gDTXl+XfGnohcx4TPIGO+mRgxBZFxuaJb0yee8DvwIgmsS16CP6ZukixU=
-X-Received: by 2002:a05:6512:150d:b0:442:aad5:2550 with SMTP id
- bq13-20020a056512150d00b00442aad52550mr2567879lfb.678.1645115205613; Thu, 17
- Feb 2022 08:26:45 -0800 (PST)
+        Thu, 17 Feb 2022 11:27:34 -0500
+Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com [192.185.143.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036809AD9B
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:27:19 -0800 (PST)
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id BDEBA5351F
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:27:18 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id KjckndtUx9AGSKjcknQY06; Thu, 17 Feb 2022 10:27:18 -0600
+X-Authority-Reason: nr=8
+Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:34148 helo=[10.0.0.45])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nKjcj-003u9J-0E; Thu, 17 Feb 2022 10:27:17 -0600
+Message-ID: <ba924008-c0ab-4800-aac4-d9d9ae930c32@kernel.org>
+Date:   Thu, 17 Feb 2022 17:27:09 +0100
 MIME-Version: 1.0
-References: <20220209171118.3269581-1-atomlin@redhat.com> <20220209171118.3269581-3-atomlin@redhat.com>
- <14a1678f-0c56-1237-c5c7-4ca1bac4b42a@csgroup.eu> <CANfR36gVY+1k7YJy0fn1z+mGv-LqEmZJSvSHXn_BFR4WC+oJrQ@mail.gmail.com>
- <alpine.LSU.2.21.2202171648590.29121@pobox.suse.cz>
-In-Reply-To: <alpine.LSU.2.21.2202171648590.29121@pobox.suse.cz>
-From:   Aaron Tomlin <atomlin@redhat.com>
-Date:   Thu, 17 Feb 2022 16:26:33 +0000
-Message-ID: <CANfR36hExnjBM1=529Ae6EvETx7XiPFDSmZCTOV2MLS_YEfoCQ@mail.gmail.com>
-Subject: Re: [PATCH v5 13/13] module: Move version support into a separate file
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC V2 17/21] watchdog/dev: Add tracepoints
+Content-Language: en-US
+To:     "Peter.Enderborg@sony.com" <Peter.Enderborg@sony.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "atomlin@atomlin.com" <atomlin@atomlin.com>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "void@manifault.com" <void@manifault.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
-Content-Type: text/plain; charset="UTF-8"
+        "linux-trace-devel@vger.kernel.org" 
+        <linux-trace-devel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+References: <cover.1644830251.git.bristot@kernel.org>
+ <e67874c8b676ea8dfe38679efa25363889bb1e76.1644830251.git.bristot@kernel.org>
+ <96f418b4-0ba8-01fe-ead0-2028bfc42560@sony.com>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <96f418b4-0ba8-01fe-ead0-2028bfc42560@sony.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 95.232.30.176
+X-Source-L: No
+X-Exim-ID: 1nKjcj-003u9J-0E
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:34148
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 3
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-02-17 16:51 +0100, Miroslav Benes wrote:
-> It is not, but "struct find_symbol_arg", which you moved, uses "enum
-> mod_license" defined above, so you can either leave it as it is, or carve
-> "enum mod_license" definition out.
+Hi Peter
 
-Hi Miroslav,
+On 2/16/22 17:01, Peter.Enderborg@sony.com wrote:
+> On 2/14/22 11:45, Daniel Bristot de Oliveira wrote:
+>> Add a set of tracepoints, enabling the observability of the watchdog
+>> device interactions with user-space.
+>>
+>> The events are:
+>> 	watchdog:watchdog_open
+>> 	watchdog:watchdog_close
+>> 	watchdog:watchdog_start
+>> 	watchdog:watchdog_stop
+>> 	watchdog:watchdog_set_timeout
+>> 	watchdog:watchdog_ping
+>> 	watchdog:watchdog_nowayout
+>> 	watchdog:watchdog_set_keep_alive
+>> 	watchdog:watchdog_keep_alive
+> 
+> Some watchdogs have a bark functionality, I think it should be event for that too.
+> 
 
-I've done this already for v6. I hope to share the latest version for
-review shortly.
+I understand. The problems is that I do not see the bark abstraction in the
+watchdog_dev layer.
 
+In the case I am investigating (the safety_monitor/safety_app) the bark is
+outside of the "OS" view, it is an hardware action - like. shutdown.
 
-Kind regards,
+Am I missing something? Thoughts?
 
--- 
-Aaron Tomlin
-
+-- Daniel
