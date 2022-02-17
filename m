@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC937C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3471C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:51:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239922AbiBQNtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:49:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42666 "EHLO
+        id S241063AbiBQNvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:51:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241461AbiBQNtH (ORCPT
+        with ESMTP id S237663AbiBQNvq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:49:07 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583CBC7C33;
-        Thu, 17 Feb 2022 05:48:53 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21HCNFGO030051;
-        Thu, 17 Feb 2022 07:48:41 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=RXMw4ELiiPGxb1BhM1EtrpskMk8OtBkyJrUegKF5rBQ=;
- b=XRLRW4jOC2j3jgVA8macDkPJcqW9rzrqrL3Um9hPcrcXyy74QMxLqgTBuIIbcWmsw179
- SFQw+I0dF1t9IKkHpq44aDyIYB3k7nkTF40TpDcFjdTudqVz4Y8BKE3+znwjgA/qbPlu
- ktsoII82Nv+LWfJ8ejVgdGIr3dbqI0wJtd72UBt/Pwo7698T1RVKxIW71t7ex9axAEqr
- WTOuztt3CY16bnuW3zNZhzngzzT0Hd3tfavfmHBKll/PjXZ+UULzYBZ6VTIWyLaVk0CF
- SXseO1t968TVfIiCJtIj77Ld8Gn1tWG9KVqkZ+ItXNhQ5BmsjuVbuQgjF9tCKOtCwGzS tA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3e8nyda81v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 17 Feb 2022 07:48:40 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 17 Feb
- 2022 13:48:39 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Thu, 17 Feb 2022 13:48:39 +0000
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.64.199])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 1641146B;
-        Thu, 17 Feb 2022 13:48:38 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <kuninori.morimoto.gx@renesas.com>
-CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH V2 0/2] ASoC: audio_graph_card2: Support variable slot widths
-Date:   Thu, 17 Feb 2022 13:48:33 +0000
-Message-ID: <20220217134835.282389-1-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 17 Feb 2022 08:51:46 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C501F5C99
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:51:30 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id z4so5060156pgh.12
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:51:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0kr8dYO1AqVlag5MK+6evkHEcy2nXbV4DT4/fu7hw/4=;
+        b=Kvq39B+ccBdYlKyENKVpOGTfQdtUIKL0wWDVBtxZte/cDqwK7APs5Lv7sTnV8fdjX+
+         gRF5r2r+Y7Z2plRlEswKV5BQiKH86VRIYAbeKZdbJLNhOVGUj6YAyGYEbusVVUJdACh0
+         2NTAFU0+/M826p7vBSAbhHX4uelQHZcJEi7PgNhSXP023lx+v0ASXlbZ+4qmZFdYy+I+
+         b4gxk/JefTLd9n4QHT5jnYwrNQEVgbzGZTqf0i2YJ2Ct1MYk46PPfti/joJ37SD9QuWX
+         YUl1AnBN/QHEIwVsglqyMwVnNeu7g29ZqDeXcHfunSb3eftATJG7bnbpR9JTgy+gwW5X
+         Tlag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0kr8dYO1AqVlag5MK+6evkHEcy2nXbV4DT4/fu7hw/4=;
+        b=XvezWKmRK759iShn64ytK4NsW7WnCkVzT+VHrt0t7qUV2Sj/XeWyOtZzQ98PWQtydx
+         doTKr2ZV20YGyLwIEOgKQO7XklUDNh1DiXZkKCcz8brhDve0MBDyXf0h4kaw2lyByeB/
+         a4SaJZ1tTujm/xHaF97W++UzlxoPGuKL/vJnrEKcu0nhh3CXujO3+fzAz6E/l3T435Qt
+         7SyXfVkthEtFiwnRS4FvrUtbeh9kEvwxFZXDlVBS8wias5AMccVNoHKoPVS9i2uv5FAf
+         EUhyDOC347/s0bkhulaGzSvfMsmnwV4PT6gkQ/S1wfO/UkGKPxvlM6gCO5etAAlX4wOL
+         OPvw==
+X-Gm-Message-State: AOAM5310/6xr5rIlBFieIwOKpPoInE7SRgoTc8k4IGVQfg2XMiRdYA6m
+        /BMyRWS3tLZ6+LKpXBrMNJ5AOjRB6ubT8g==
+X-Google-Smtp-Source: ABdhPJwj8dzIfXUejV9MkeZMkKqNO0xeuopTqfpsWZ77olKhau/mQvMiNf8OQxR0n7/T/B2Z1KUnLA==
+X-Received: by 2002:a05:6a00:1ad3:b0:4e1:5623:fdd with SMTP id f19-20020a056a001ad300b004e156230fddmr3044509pfv.26.1645105889597;
+        Thu, 17 Feb 2022 05:51:29 -0800 (PST)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id j7sm43990395pfa.36.2022.02.17.05.51.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 05:51:29 -0800 (PST)
+Message-ID: <b6bf2ab5-031d-8be8-e9e7-ba04f39ef35e@kernel.dk>
+Date:   Thu, 17 Feb 2022 06:51:27 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: E2bZm9GJmWyN-WL5TubSTxMn7nc8Cscq
-X-Proofpoint-ORIG-GUID: E2bZm9GJmWyN-WL5TubSTxMn7nc8Cscq
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] tps6598x: clear int mask on probe failure
+Content-Language: en-US
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Sven Peter <sven@svenpeter.dev>
+References: <e6b80669-20f3-06e7-9ed5-8951a9c6db6f@kernel.dk>
+ <Yg4HwO2SKGDvOASz@kuha.fi.intel.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <Yg4HwO2SKGDvOASz@kuha.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds support for I2S/TDM links where the slot width varies
-depending on the sample width, in a way that cannot be guessed by
-component hw_params().
+On 2/17/22 1:30 AM, Heikki Krogerus wrote:
+> On Tue, Feb 15, 2022 at 11:22:04AM -0700, Jens Axboe wrote:
+>> The interrupt mask is enabled before any potential failure points in
+>> the driver, which can leave a failure path where we exit with
+>> interrupts enabled but the device not live. This causes an infinite
+>> stream of interrupts on an Apple M1 Pro laptop on USB-C.
+>>
+>> Add a failure label that's used post enabling interrupts, where we
+>> mask them again before returning an error.
+>>
+>> Suggested-by: Sven Peter <sven@svenpeter.dev>
+>> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> 
+> Should this be marked as a fix?
 
-A typical example is:
+Maybe, I can try and dig out the offending commit. From some quick
+checking, it didn't come in with recent fixes, so it's probably been
+there since support got added. Maybe we just mark it stable?
 
-- 16-bit samples use 16-bit slots
-- 24-bit samples use 32-bit slots
+> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-There is no way for a component hw_params() to deduce from the information
-it is passed that 24-bit samples will be in 32-bit slots.
-
-Some audio hardware cannot support a fixed slot width or a slot width
-equal to the sample width in all cases. This is usually due either to
-limitations of the audio serial port or system clocking restrictions.
-
-These two patches add support for defining a mapping between sample widths
-and sample slots. This allows audio_graph_card2 to be used in these
-situations instead of having to write a custom machine driver.
-
-Richard Fitzgerald (2):
-  ASoC: dt-bindings: audio-graph-port: Add dai-tdm-slot-width-map
-  ASoC: audio_graph_card2: Add support for variable slot widths
-
- .../bindings/sound/audio-graph-port.yaml      |  7 ++
- include/sound/simple_card_utils.h             | 10 ++
- sound/soc/generic/audio-graph-card2.c         |  4 +
- sound/soc/generic/simple-card-utils.c         | 93 +++++++++++++++++++
- 4 files changed, 114 insertions(+)
+Thanks! Greg, will you pick this up?
 
 -- 
-2.30.2
+Jens Axboe
 
