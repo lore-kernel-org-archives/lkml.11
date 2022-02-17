@@ -2,145 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20373C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF25FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241437AbiBQNrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:47:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34218 "EHLO
+        id S241451AbiBQNrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:47:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241434AbiBQNrJ (ORCPT
+        with ESMTP id S241431AbiBQNrt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:47:09 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9484F5FA1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:46:52 -0800 (PST)
+        Thu, 17 Feb 2022 08:47:49 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE2AC7C33;
+        Thu, 17 Feb 2022 05:47:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645105612; x=1676641612;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=IRMYvqtZwSpO6PEeyPJDE8QpQ6MriLpky18kjc5z/04=;
-  b=e92mWgU+MRhz/VikDyWy5k5YBmukK10JgzdOPw6vgS2GDDU4R4JC83GQ
-   l2gBQeR26Zc3cxEJTbpk/1a+s8LK5uIip5p4inFsjKeg38GmF6EXW3rsw
-   r/eoTbwkQcyBv8t8DKjq+Qmsm/rWxdDKZJ4N4wsYYgBFf/3F6KcNEX1wz
-   oPD8pKK/uznTG9uyrV4mzSwwopSwzO6LeAqPrrX7V4E4xXPWCRqe9rC6b
-   lG8HNVlz4OA05Rn2LXgfK7yrSmcyulEoDuOhXnQvl2o3QyT6gCM6BPV5w
-   bnvH4fie4wUJKdVb9VCF1vQ1MVqSSnfhoMf3PyldZrWlSuHC0mHkNPoA9
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="250611551"
+  t=1645105655; x=1676641655;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=00jU+EOCM+jaTdG7EhL3AgRMsoum/qW8+F9FVekDncc=;
+  b=Y+GDxmtjn9iv1O3+8XGGFByZ3j5rF8sny/cDr1GM85e5pif9DNtlsJ4H
+   XYQBG95z6aMsKqtdheJrNOIZvhJ/udJigVA0anXjKXfWuN0HJZ1UOjV3E
+   8UcXVe7GRtTf4CIm20F4TbCtvnOgo8+jWzOkUvpdvd5ObrPrklNMfi34I
+   l3wrLee+IKrRxiAmcxUOAkOaVI7R20yN/MuxJkTipep9Uoec2OI2s/1Rf
+   ILYbYqNn+yGCh+SBEnxnKgvs7JmiuJ1mzynWVdb/xhn8cnE3ZsDq6Kusg
+   36VF3fOrmjvYqSLIdlfC3rCemBp5ktgcyypNwF0KoQWlNVuJeGfTb1nVN
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="251073528"
 X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="250611551"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 05:46:52 -0800
+   d="scan'208";a="251073528"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 05:47:34 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="530228258"
-Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 17 Feb 2022 05:46:50 -0800
-Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKh7R-0000Ek-VZ; Thu, 17 Feb 2022 13:46:49 +0000
-Date:   Thu, 17 Feb 2022 21:45:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Subject: arch/arm/mach-ep93xx/clock.c:210:35: sparse: sparse: Using plain
- integer as NULL pointer
-Message-ID: <202202172100.TE6YfATQ-lkp@intel.com>
+   d="scan'208";a="503514098"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by orsmga002.jf.intel.com with ESMTP; 17 Feb 2022 05:47:27 -0800
+Date:   Thu, 17 Feb 2022 21:47:05 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-api@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v4 00/12] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <20220217134705.GB33836@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+ <YgK3buC2xes9/lLj@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YgK3buC2xes9/lLj@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   f71077a4d84bbe8c7b91b7db7c4ef815755ac5e3
-commit: 9645ccc7bd7a16cd73c3be9dee70cd702b03be37 ep93xx: clock: convert in-place to COMMON_CLK
-date:   4 months ago
-config: arm-randconfig-s032-20220217 (https://download.01.org/0day-ci/archive/20220217/202202172100.TE6YfATQ-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9645ccc7bd7a16cd73c3be9dee70cd702b03be37
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 9645ccc7bd7a16cd73c3be9dee70cd702b03be37
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash
+On Tue, Feb 08, 2022 at 08:33:18PM +0200, Mike Rapoport wrote:
+> (addded linux-api)
+> 
+> On Tue, Jan 18, 2022 at 09:21:09PM +0800, Chao Peng wrote:
+> > This is the v4 of this series which try to implement the fd-based KVM
+> > guest private memory. The patches are based on latest kvm/queue branch
+> > commit:
+> > 
+> >   fea31d169094 KVM: x86/pmu: Fix available_event_types check for
+> >                REF_CPU_CYCLES event
+> > 
+> > Introduction
+> > ------------
+> > In general this patch series introduce fd-based memslot which provides
+> > guest memory through memory file descriptor fd[offset,size] instead of
+> > hva/size. The fd can be created from a supported memory filesystem
+> > like tmpfs/hugetlbfs etc. which we refer as memory backing store. KVM
+> > and the the memory backing store exchange callbacks when such memslot
+> > gets created. At runtime KVM will call into callbacks provided by the
+> > backing store to get the pfn with the fd+offset. Memory backing store
+> > will also call into KVM callbacks when userspace fallocate/punch hole
+> > on the fd to notify KVM to map/unmap secondary MMU page tables.
+> > 
+> > Comparing to existing hva-based memslot, this new type of memslot allows
+> > guest memory unmapped from host userspace like QEMU and even the kernel
+> > itself, therefore reduce attack surface and prevent bugs.
+> > 
+> > Based on this fd-based memslot, we can build guest private memory that
+> > is going to be used in confidential computing environments such as Intel
+> > TDX and AMD SEV. When supported, the memory backing store can provide
+> > more enforcement on the fd and KVM can use a single memslot to hold both
+> > the private and shared part of the guest memory. 
+> > 
+> > mm extension
+> > ---------------------
+> > Introduces new F_SEAL_INACCESSIBLE for shmem and new MFD_INACCESSIBLE
+> > flag for memfd_create(), the file created with these flags cannot read(),
+> > write() or mmap() etc via normal MMU operations. The file content can
+> > only be used with the newly introduced memfile_notifier extension.
+> 
+> It would be great to see man page draft for new ABI flags
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes I can provide the man page.
 
-
-sparse warnings: (new ones prefixed by >>)
->> arch/arm/mach-ep93xx/clock.c:210:35: sparse: sparse: Using plain integer as NULL pointer
-   arch/arm/mach-ep93xx/clock.c:99:9: sparse: sparse: context imbalance in 'ep93xx_clk_enable' - different lock contexts for basic block
-   arch/arm/mach-ep93xx/clock.c:116:9: sparse: sparse: context imbalance in 'ep93xx_clk_disable' - different lock contexts for basic block
-   arch/arm/mach-ep93xx/clock.c:197:9: sparse: sparse: context imbalance in 'ep93xx_mux_set_parent_lock' - different lock contexts for basic block
-
-vim +210 arch/arm/mach-ep93xx/clock.c
-
-   205	
-   206	static int ep93xx_mux_determine_rate(struct clk_hw *hw,
-   207					struct clk_rate_request *req)
-   208	{
-   209		unsigned long rate = req->rate;
- > 210		struct clk *best_parent = 0;
-   211		unsigned long __parent_rate;
-   212		unsigned long best_rate = 0, actual_rate, mclk_rate;
-   213		unsigned long best_parent_rate;
-   214		int __div = 0, __pdiv = 0;
-   215		int i;
-   216	
-   217		/*
-   218		 * Try the two pll's and the external clock
-   219		 * Because the valid predividers are 2, 2.5 and 3, we multiply
-   220		 * all the clocks by 2 to avoid floating point math.
-   221		 *
-   222		 * This is based on the algorithm in the ep93xx raster guide:
-   223		 * http://be-a-maverick.com/en/pubs/appNote/AN269REV1.pdf
-   224		 *
-   225		 */
-   226		for (i = 0; i < ARRAY_SIZE(mux_parents); i++) {
-   227			struct clk *parent = clk_get_sys(mux_parents[i], NULL);
-   228	
-   229			__parent_rate = clk_get_rate(parent);
-   230			mclk_rate = __parent_rate * 2;
-   231	
-   232			/* Try each predivider value */
-   233			for (__pdiv = 4; __pdiv <= 6; __pdiv++) {
-   234				__div = mclk_rate / (rate * __pdiv);
-   235				if (__div < 2 || __div > 127)
-   236					continue;
-   237	
-   238				actual_rate = mclk_rate / (__pdiv * __div);
-   239				if (is_best(rate, actual_rate, best_rate)) {
-   240					best_rate = actual_rate;
-   241					best_parent_rate = __parent_rate;
-   242					best_parent = parent;
-   243				}
-   244			}
-   245		}
-   246	
-   247		if (!best_parent)
-   248			return -EINVAL;
-   249	
-   250		req->best_parent_rate = best_parent_rate;
-   251		req->best_parent_hw = __clk_get_hw(best_parent);
-   252		req->rate = best_rate;
-   253	
-   254		return 0;
-   255	}
-   256	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks,
+Chao
