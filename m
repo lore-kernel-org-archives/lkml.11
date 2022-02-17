@@ -2,71 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED3F6C43217
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 20:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0024C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229496AbiBZUOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 15:14:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56668 "EHLO
+        id S242174AbiBQOyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:54:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiBZUOf (ORCPT
+        with ESMTP id S230138AbiBQOyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 15:14:35 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496BF55BC6;
-        Sat, 26 Feb 2022 12:14:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=jxSlVaBmXz/dVNo8icv8AU6oobDK34V/whJUepgdojM=; b=aW03886MhAt0oh4a2AME0c7m5U
-        QWT37fnD7HG/48pZXDm6TSh+J/O2AFiZxqmsNgHN+GUYLsNwmIq1iAsshrpdcP/On6qXjX2SwjVYn
-        CYYr5dFJzsH5onQ7aV9YzCgOoKx/rKqSQTeHiHVPjInbSkBUjuAIP1DBD7VvITIAYkty7UckNCKpn
-        8pqy+DQ1rIi6w7Dka+0C8tgEDq8G33N9oRcAUjuf7+s+BH/b0otja3bWgII5qrGAlxtRf1JfHzcyk
-        7hkRlsl660Q/7RqS6rZpyfiYZMGofaIB7oSTWWYfTCNU68t1Pw1DG2Pohr/PMrNc8/R7W+NhP464p
-        V0Zqq9SQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nO3Rj-008Tvl-BV; Sat, 26 Feb 2022 20:13:39 +0000
-Date:   Sat, 26 Feb 2022 12:13:39 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Meng Tang <tangmeng@uniontech.com>
-Cc:     keescook@chromium.org, yzaikin@google.com, guoren@kernel.org,
-        nickhu@andestech.com, green.hu@gmail.com, deanbo422@gmail.com,
-        ebiggers@kernel.org, tytso@mit.edu, wad@chromium.org,
-        john.johansen@canonical.com, jmorris@namei.org, serge@hallyn.com,
-        linux-csky@vger.kernel.org, linux-fscrypt@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] fs/proc: Optimize arrays defined by struct
- ctl_path
-Message-ID: <YhqJ8yqcjKJqHfcR@bombadil.infradead.org>
-References: <20220224133217.1755-1-tangmeng@uniontech.com>
- <20220224133217.1755-2-tangmeng@uniontech.com>
+        Thu, 17 Feb 2022 09:54:03 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF9A12CC04;
+        Thu, 17 Feb 2022 06:53:44 -0800 (PST)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21HElCPF013571;
+        Thu, 17 Feb 2022 14:53:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=Ie7MjdehH0xnUFlpIS6Po+Kb9Gi8VBM1gokV58n/GvI=;
+ b=jzVjkUnBVuHd1EoH7jlJVt+slnwYl6cVaWO0XomYNJapAtfCUtBL204EONcm67VTnymL
+ fBR7hx2yVKkFNQX3MsF6ClQTyn9jR1LfJgEkWpBPqqi5QRUHQGAkScSLC2ojwDhhrhWU
+ vHTbt305o+IUBGS35pJetgJiVj0GIKG5F3PXYx0GMTqa/3Vytz4XWWhNwn8IuwJ1kxCY
+ gYv7eQOzaVmNXS7TcFN/kfy/h0+X4l4Zrm8K/h5/41OVJnFGXA00tzicgUF6es1ve2vv
+ I4x2/0rfCFbhNogH2T6Jifqc5xPV8NqcXOD3G+ikRmdOi1fBe+NxKnkECnDtnf7j7Wuc fQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e9reb84hb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 14:53:44 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21HEmhYu021962;
+        Thu, 17 Feb 2022 14:53:43 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e9reb84gw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 14:53:43 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21HEjSgM017823;
+        Thu, 17 Feb 2022 14:53:42 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03ams.nl.ibm.com with ESMTP id 3e64hakdqu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 14:53:41 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21HErcOZ38928790
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 17 Feb 2022 14:53:38 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7FDB64C04E;
+        Thu, 17 Feb 2022 14:53:38 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 306F94C058;
+        Thu, 17 Feb 2022 14:53:38 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 17 Feb 2022 14:53:38 +0000 (GMT)
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Thomas Huth <thuth@redhat.com>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: 
+Date:   Thu, 17 Feb 2022 15:53:34 +0100
+Message-Id: <20220217145336.1794778-1-scgl@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220211182215.2730017-11-scgl@linux.ibm.com>
+References: <20220211182215.2730017-11-scgl@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224133217.1755-2-tangmeng@uniontech.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: yb_-3ly1ZlzcQmP_teriXRah2OQ5U6rz
+X-Proofpoint-GUID: JuWzhVlCiSepSFdTxWpeHWwRRLdxted9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-17_05,2022-02-17_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=826 mlxscore=0 clxscore=1015 malwarescore=0 phishscore=0
+ spamscore=0 bulkscore=0 lowpriorityscore=0 priorityscore=1501
+ impostorscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202170066
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 09:32:17PM +0800, Meng Tang wrote:
-> Previously, arrays defined by struct ctl_path is terminated
-> with an empty one. When we actually only register one ctl_path,
-> we've gone from 8 bytes to 16 bytes.
-> 
-> The optimization has been implemented in the previous patch,
-> here to remove unnecessary terminate ctl_path with an empty one.
-> 
-> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH 0/2] memop selftest for storage key checking
 
-If these things are built-in, can you verify you're saving bytes
-with size before and after the patch?
+As previously mentioned, I rewrote the memop selftest.
+It makes heavy use of macros, but that should be fine for a test.
+Feedback appreciated.
+Requires Thomas' recent SIDA memop selftest patch.
 
-I wonder if having something like DECLARE_SYSCTL_PATH_ONE() would make
-this nicer on the eyes, and also useful for the other changes you
-are making. Do you have many other single path entries you are changing
-later?
+Janis Schoetterl-Glausch (2):
+  KVM: s390: selftests: Refactor memop test
+  KVM: s390: selftests: Test vm and vcpu memop with keys
 
-  Luis
+ tools/testing/selftests/kvm/s390x/memop.c | 741 ++++++++++++++++++----
+ 1 file changed, 623 insertions(+), 118 deletions(-)
+
+-- 
+2.32.0
+
