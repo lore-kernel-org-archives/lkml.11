@@ -2,124 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF25FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C0A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241451AbiBQNrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:47:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36270 "EHLO
+        id S241462AbiBQNtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:49:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241431AbiBQNrt (ORCPT
+        with ESMTP id S231161AbiBQNtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:47:49 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE2AC7C33;
-        Thu, 17 Feb 2022 05:47:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645105655; x=1676641655;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=00jU+EOCM+jaTdG7EhL3AgRMsoum/qW8+F9FVekDncc=;
-  b=Y+GDxmtjn9iv1O3+8XGGFByZ3j5rF8sny/cDr1GM85e5pif9DNtlsJ4H
-   XYQBG95z6aMsKqtdheJrNOIZvhJ/udJigVA0anXjKXfWuN0HJZ1UOjV3E
-   8UcXVe7GRtTf4CIm20F4TbCtvnOgo8+jWzOkUvpdvd5ObrPrklNMfi34I
-   l3wrLee+IKrRxiAmcxUOAkOaVI7R20yN/MuxJkTipep9Uoec2OI2s/1Rf
-   ILYbYqNn+yGCh+SBEnxnKgvs7JmiuJ1mzynWVdb/xhn8cnE3ZsDq6Kusg
-   36VF3fOrmjvYqSLIdlfC3rCemBp5ktgcyypNwF0KoQWlNVuJeGfTb1nVN
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="251073528"
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="251073528"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 05:47:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="503514098"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by orsmga002.jf.intel.com with ESMTP; 17 Feb 2022 05:47:27 -0800
-Date:   Thu, 17 Feb 2022 21:47:05 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     linux-api@vger.kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v4 00/12] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <20220217134705.GB33836@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <YgK3buC2xes9/lLj@kernel.org>
+        Thu, 17 Feb 2022 08:49:05 -0500
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F5CF3932;
+        Thu, 17 Feb 2022 05:48:51 -0800 (PST)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21HCNFGP030051;
+        Thu, 17 Feb 2022 07:48:41 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=Uh8AyLBAG4qIzsXNtiDc4oAV8d43DRpyK27/SmkxrXI=;
+ b=EcFTIw9BAVTqvy5P0dYcjGfJL9+KBIJlDEEG+Mtx1E92zvu4qwJ8zuRFpOHbQYLdsArL
+ EvKXbpwAX0y25v8L4rlXPijAuesjXbOaBbtrwaVuBfo8jovMpIz2WIHdY3Ibvx1MgIVt
+ sNbq0+UMDZHy0ySjrrz3u6QgAfZKgWgfERkRQRSe2+FrJsCsSpsZE4jzPibbWsI2kufm
+ FIwLnRPIgn1CKPJQ2GZ1BDg1QpfevVNGkNp7su8x84tjXbDhTsg8e7X0AX68Lv8wx/k8
+ 4SLq1uy7OLGanGamhu77KVq+CHvuH7gJR/k8mpmmdMjfktYsrlrOVYxBE/3VM+HJ/HUn xQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3e8nyda81w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 17 Feb 2022 07:48:41 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 17 Feb
+ 2022 13:48:39 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Thu, 17 Feb 2022 13:48:39 +0000
+Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.64.199])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 115BA11DC;
+        Thu, 17 Feb 2022 13:48:39 +0000 (UTC)
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <kuninori.morimoto.gx@renesas.com>
+CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Subject: [PATCH V2 1/2] ASoC: dt-bindings: audio-graph-port: Add dai-tdm-slot-width-map
+Date:   Thu, 17 Feb 2022 13:48:34 +0000
+Message-ID: <20220217134835.282389-2-rf@opensource.cirrus.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220217134835.282389-1-rf@opensource.cirrus.com>
+References: <20220217134835.282389-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgK3buC2xes9/lLj@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: Ho48_Ro26eK_WO_Der2J9WeeRmnOXvAS
+X-Proofpoint-ORIG-GUID: Ho48_Ro26eK_WO_Der2J9WeeRmnOXvAS
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 08:33:18PM +0200, Mike Rapoport wrote:
-> (addded linux-api)
-> 
-> On Tue, Jan 18, 2022 at 09:21:09PM +0800, Chao Peng wrote:
-> > This is the v4 of this series which try to implement the fd-based KVM
-> > guest private memory. The patches are based on latest kvm/queue branch
-> > commit:
-> > 
-> >   fea31d169094 KVM: x86/pmu: Fix available_event_types check for
-> >                REF_CPU_CYCLES event
-> > 
-> > Introduction
-> > ------------
-> > In general this patch series introduce fd-based memslot which provides
-> > guest memory through memory file descriptor fd[offset,size] instead of
-> > hva/size. The fd can be created from a supported memory filesystem
-> > like tmpfs/hugetlbfs etc. which we refer as memory backing store. KVM
-> > and the the memory backing store exchange callbacks when such memslot
-> > gets created. At runtime KVM will call into callbacks provided by the
-> > backing store to get the pfn with the fd+offset. Memory backing store
-> > will also call into KVM callbacks when userspace fallocate/punch hole
-> > on the fd to notify KVM to map/unmap secondary MMU page tables.
-> > 
-> > Comparing to existing hva-based memslot, this new type of memslot allows
-> > guest memory unmapped from host userspace like QEMU and even the kernel
-> > itself, therefore reduce attack surface and prevent bugs.
-> > 
-> > Based on this fd-based memslot, we can build guest private memory that
-> > is going to be used in confidential computing environments such as Intel
-> > TDX and AMD SEV. When supported, the memory backing store can provide
-> > more enforcement on the fd and KVM can use a single memslot to hold both
-> > the private and shared part of the guest memory. 
-> > 
-> > mm extension
-> > ---------------------
-> > Introduces new F_SEAL_INACCESSIBLE for shmem and new MFD_INACCESSIBLE
-> > flag for memfd_create(), the file created with these flags cannot read(),
-> > write() or mmap() etc via normal MMU operations. The file content can
-> > only be used with the newly introduced memfile_notifier extension.
-> 
-> It would be great to see man page draft for new ABI flags
+Some audio hardware cannot support a fixed slot width or a slot width
+equal to the sample width in all cases. This is usually due either to
+limitations of the audio serial port or system clocking restrictions.
 
-Yes I can provide the man page.
+This property allows setting a mapping of sample widths and the
+corresponding tdm slot widths.
 
-Thanks,
-Chao
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+---
+ .../devicetree/bindings/sound/audio-graph-port.yaml        | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/audio-graph-port.yaml b/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
+index 476dcb49ece6..420adad49382 100644
+--- a/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
++++ b/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
+@@ -71,4 +71,11 @@ patternProperties:
+         description: CPU to Codec rate channels.
+         $ref: /schemas/types.yaml#/definitions/uint32
+ 
++      dai-tdm-slot-width-map:
++        description: Mapping of sample widths to slot widths. For hardware that
++          cannot support a fixed slot width or a slot width equal to sample
++          width. An array containing one or more pairs of values. Each pair
++          of values is a sample_width and the corresponding slot_width.
++        $ref: /schemas/types.yaml#/definitions/uint32-array
++
+ additionalProperties: true
+-- 
+2.30.2
+
