@@ -2,162 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 843BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242441AbiBQPYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:24:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55210 "EHLO
+        id S242448AbiBQPYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:24:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242418AbiBQPYD (ORCPT
+        with ESMTP id S242426AbiBQPYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 10:24:03 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46C32B1026
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:23:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645111422; x=1676647422;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9pm+JNs87cHYr0IO7JHqlLotHAymk6x5/b2UJNM8AJk=;
-  b=RHT++OXOgPe3FrXWrI4SHJ01IUrKdvdShn1HszJGb3a3T2rRvqPDtNzT
-   7xg/YJywovU8TVo5JrysFv0uP8IsvqevseiwtjL0DlYIaMl5xdB/zDMH2
-   3msPwEj98UUjsgruUdKFj+m3/OwE8X0s9a436buqH29nNq/FjpNY1La84
-   XZjYTDTP5U6jqTzVrM93o5hhCcF5eJCIY66zk8JruTs5PahFOztdQWh9D
-   2hsBKbLGt9U5z9QOPRBOWOhmoc2AVK7ZuMwoW+l34QNsaT173Xs8M+9le
-   snHEp4XHA7ddWCNbitkP30dEAh9xLCleEnx5IiwNbgTN1HUhgJe5el1Lb
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="238300086"
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="238300086"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 07:23:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="545659103"
-Received: from sannilnx.jer.intel.com ([10.12.231.79])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 07:23:39 -0800
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v9 4/5] mei: gsc: add runtime pm handlers
-Date:   Thu, 17 Feb 2022 17:22:47 +0200
-Message-Id: <20220217152248.1016134-5-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220217152248.1016134-1-alexander.usyskin@intel.com>
-References: <20220217152248.1016134-1-alexander.usyskin@intel.com>
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB932B103D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:23:43 -0800 (PST)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2d62593ad9bso35432887b3.8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:23:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eHgl2T651ZUAY0dUPlPE7t+ZMJITI1iQLNfhsdAOi9A=;
+        b=OyyGSpGsXoRUMe1+VpsE32Jzw9pC/T/sEcDlrwAfqTzFtyGDBuqSpPNuEl6SeVR0Qs
+         AFKDV5ZQ+hSEpEmAZEquWsQhiHVRa+51dPltVToyoWlHiWM3F05pRItVl0UKT0SKGTD6
+         Gnd0oITi7nX9dnvZedukOqsSj7dQH0gNGnogTJVu7dGl1enSylVzxd6sIOsMS/AB86YP
+         A/Bue505Xt+429q5JQ96dXyKTLgWr3e0sJXowp398lVnEJS7amIKej8Lhrr6MbHdPkmV
+         V1EDN4J9TgejynO66RlqTRvfaiuXkOCZFK/K+elmI9ZrPXgNaVLtbF1hH+O9ZN5vseEv
+         BpKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eHgl2T651ZUAY0dUPlPE7t+ZMJITI1iQLNfhsdAOi9A=;
+        b=TOarCXMpHuHKSETr6gA6gY5gTNgICgQigYgz6UAw3Jb/x9xc2zIfO1AIYZkualTlKf
+         5Lb9bRAM90cPVdTH9S++TnGrTO0dPhSrdx1hFXDb6CWG8LVluUFbxeuDPYQK4c4Mw1As
+         ltfaXV/3MqTjQSMh3BU611tmyZ5dTXmiiXEj/9vjkn29rgW9h8a/h3SmRkhOJhfThYU+
+         fQhkvt/m3NHKv8oEV2esl+1Sz2wrxJhhntHAxySVZxpMBnv96EoIswrxBvUhnwPLa74P
+         fA4UH76tJL6GPBSD1VzHsxEsK9taE22db8rf21R9C59FopS1+jKI1pC9zQmP8XwkjMbS
+         n+Ug==
+X-Gm-Message-State: AOAM531m3Q6IYH9xPGoEw4eSu3zms8+Crhib9afKQ81Omcil3FooNAqT
+        uDEHWzNwWUkkeF3/2EqxFEzEDPRDnqfCWYlExUjPKA==
+X-Google-Smtp-Source: ABdhPJxz5oowmiHJjEfemLbZOdX9nQtJEvLXg9XI3jQCQQwFJ1+9KfpYgOqyvfPS/LNFkEGjad8EoMOsgMFm6yB5kso=
+X-Received: by 2002:a81:91d2:0:b0:2d6:af3d:c93 with SMTP id
+ i201-20020a8191d2000000b002d6af3d0c93mr1481740ywg.467.1645111422161; Thu, 17
+ Feb 2022 07:23:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220217140441.1218045-1-andrzej.hajda@intel.com> <20220217140441.1218045-3-andrzej.hajda@intel.com>
+In-Reply-To: <20220217140441.1218045-3-andrzej.hajda@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 17 Feb 2022 07:23:31 -0800
+Message-ID: <CANn89iKgzztLA3y6V+vw3RiyoScC3K=1Z1_gajj8H56wGWDw6A@mail.gmail.com>
+Subject: Re: [PATCH 2/9] lib/ref_tracker: compact stacktraces before printing
+To:     Andrzej Hajda <andrzej.hajda@intel.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        netdev <netdev@vger.kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Winkler <tomas.winkler@intel.com>
+On Thu, Feb 17, 2022 at 6:05 AM Andrzej Hajda <andrzej.hajda@intel.com> wrote:
+>
+> In cases references are taken alternately on multiple exec paths leak
+> report can grow substantially, sorting and grouping leaks by stack_handle
+> allows to compact it.
+>
+> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
+> Reviewed-by: Chris Wilson <chris.p.wilson@intel.com>
+> ---
+>  lib/ref_tracker.c | 35 +++++++++++++++++++++++++++--------
+>  1 file changed, 27 insertions(+), 8 deletions(-)
+>
+> diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
+> index 1b0c6d645d64a..0e9c7d2828ccb 100644
+> --- a/lib/ref_tracker.c
+> +++ b/lib/ref_tracker.c
+> @@ -1,5 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0-or-later
+>  #include <linux/export.h>
+> +#include <linux/list_sort.h>
+>  #include <linux/ref_tracker.h>
+>  #include <linux/slab.h>
+>  #include <linux/stacktrace.h>
+> @@ -14,23 +15,41 @@ struct ref_tracker {
+>         depot_stack_handle_t    free_stack_handle;
+>  };
+>
+> +static int ref_tracker_cmp(void *priv, const struct list_head *a, const struct list_head *b)
+> +{
+> +       const struct ref_tracker *ta = list_entry(a, const struct ref_tracker, head);
+> +       const struct ref_tracker *tb = list_entry(b, const struct ref_tracker, head);
+> +
+> +       return ta->alloc_stack_handle - tb->alloc_stack_handle;
+> +}
+> +
+>  void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
+>                            unsigned int display_limit)
+>  {
+> +       unsigned int i = 0, count = 0;
+>         struct ref_tracker *tracker;
+> -       unsigned int i = 0;
+> +       depot_stack_handle_t stack;
+>
+>         lockdep_assert_held(&dir->lock);
+>
+> +       if (list_empty(&dir->list))
+> +               return;
+> +
+> +       list_sort(NULL, &dir->list, ref_tracker_cmp);
 
-Implement runtime handlers for mei-gsc, to track
-idle state of the device properly.
+What is going to be the cost of sorting a list with 1,000,000 items in it ?
 
-CC: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
----
-V4: drop debug prints
-V5: Rebase
-V6: Rebase
-V7: add Greg KH Reviewed-by
-V8: Rebase
-V9: Rebase
----
- drivers/misc/mei/gsc-me.c | 67 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 66 insertions(+), 1 deletion(-)
+I just want to make sure we do not trade printing at most ~10 references
+(from netdev_wait_allrefs()) to a soft lockup :/ with no useful info
+if something went terribly wrong.
 
-diff --git a/drivers/misc/mei/gsc-me.c b/drivers/misc/mei/gsc-me.c
-index cf427f6fdec9..dac482ddab51 100644
---- a/drivers/misc/mei/gsc-me.c
-+++ b/drivers/misc/mei/gsc-me.c
-@@ -152,7 +152,72 @@ static int __maybe_unused mei_gsc_pm_resume(struct device *device)
- 	return 0;
- }
- 
--static SIMPLE_DEV_PM_OPS(mei_gsc_pm_ops, mei_gsc_pm_suspend, mei_gsc_pm_resume);
-+static int __maybe_unused mei_gsc_pm_runtime_idle(struct device *device)
-+{
-+	struct mei_device *dev = dev_get_drvdata(device);
-+
-+	if (!dev)
-+		return -ENODEV;
-+	if (mei_write_is_idle(dev))
-+		pm_runtime_autosuspend(device);
-+
-+	return -EBUSY;
-+}
-+
-+static int  __maybe_unused mei_gsc_pm_runtime_suspend(struct device *device)
-+{
-+	struct mei_device *dev = dev_get_drvdata(device);
-+	struct mei_me_hw *hw;
-+	int ret;
-+
-+	if (!dev)
-+		return -ENODEV;
-+
-+	mutex_lock(&dev->device_lock);
-+
-+	if (mei_write_is_idle(dev)) {
-+		hw = to_me_hw(dev);
-+		hw->pg_state = MEI_PG_ON;
-+		ret = 0;
-+	} else {
-+		ret = -EAGAIN;
-+	}
-+
-+	mutex_unlock(&dev->device_lock);
-+
-+	return ret;
-+}
-+
-+static int __maybe_unused mei_gsc_pm_runtime_resume(struct device *device)
-+{
-+	struct mei_device *dev = dev_get_drvdata(device);
-+	struct mei_me_hw *hw;
-+	irqreturn_t irq_ret;
-+
-+	if (!dev)
-+		return -ENODEV;
-+
-+	mutex_lock(&dev->device_lock);
-+
-+	hw = to_me_hw(dev);
-+	hw->pg_state = MEI_PG_OFF;
-+
-+	mutex_unlock(&dev->device_lock);
-+
-+	irq_ret = mei_me_irq_thread_handler(1, dev);
-+	if (irq_ret != IRQ_HANDLED)
-+		dev_err(dev->dev, "thread handler fail %d\n", irq_ret);
-+
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops mei_gsc_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(mei_gsc_pm_suspend,
-+				mei_gsc_pm_resume)
-+	SET_RUNTIME_PM_OPS(mei_gsc_pm_runtime_suspend,
-+			   mei_gsc_pm_runtime_resume,
-+			   mei_gsc_pm_runtime_idle)
-+};
- 
- static const struct auxiliary_device_id mei_gsc_id_table[] = {
- 	{
--- 
-2.32.0
+I suggest that you do not sort a potential big list, and instead
+attempt to allocate an array of @display_limits 'struct stack_counts'
 
+I suspect @display_limits will always be kept to a reasonable value
+(less than 100 ?)
+
+struct stack_counts {
+    depot_stack_handle_t stack_handle;
+    unsigned int count;
+}
+
+Then, iterating the list and update the array (that you can keep
+sorted by ->stack_handle)
+
+Then after iterating, print the (at_most) @display_limits handles
+found in the temp array.
+
+> +
+>         list_for_each_entry(tracker, &dir->list, head) {
+> -               if (i < display_limit) {
+> -                       pr_err("leaked reference.\n");
+> -                       if (tracker->alloc_stack_handle)
+> -                               stack_depot_print(tracker->alloc_stack_handle);
+> -                       i++;
+> -               } else {
+> +               if (i++ >= display_limit)
+>                         break;
+> -               }
+> +               if (!count++)
+> +                       stack = tracker->alloc_stack_handle;
+> +               if (stack == tracker->alloc_stack_handle &&
+> +                   !list_is_last(&tracker->head, &dir->list))
+> +                       continue;
+> +
+> +               pr_err("leaked %d references.\n", count);
+> +               if (stack)
+> +                       stack_depot_print(stack);
+> +               count = 0;
+>         }
+>  }
+>  EXPORT_SYMBOL(__ref_tracker_dir_print);
+> --
+> 2.25.1
+>
