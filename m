@@ -2,130 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94328C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E10CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237840AbiBQIgf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 03:36:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59002 "EHLO
+        id S237877AbiBQIgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 03:36:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237579AbiBQIga (ORCPT
+        with ESMTP id S237832AbiBQIgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 03:36:30 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF2129A568;
-        Thu, 17 Feb 2022 00:36:16 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id y18so4054427plb.11;
-        Thu, 17 Feb 2022 00:36:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zFQNTKgYptCbdXsZlL/77IF7MTD6u26PIaEBtpH1VaM=;
-        b=aDXX3JawX1MwT2vrGeK9N8VChXByzIuDCaxBM2jl3JLJmjXK9FkHS3K23DgfpV/GMS
-         v51fLkB1/Sgltd+DYeAZ0rSdvc3CixpI4Oatc2UqenO9TBbwmghk7oJucbaFI1hSp/ms
-         EzKUrN4t85TES1mttPn2RIbOncIhbNorBVID+AXpyBkOHPRPJ7I1+9pfA9h53OZnZGAl
-         nWW6echqo1yugx8ikTic2wqnyP6Vh9oPj7XqjEjl986oaSzdYEARprtTxWbHJbMqlQE5
-         4wcb+ne3rSpuE8ljKe0N+RyS4KDJFgkuoopyZtgr1fo/jEz+YOISlfkNFHzKV8TAdlG+
-         2h3Q==
+        Thu, 17 Feb 2022 03:36:50 -0500
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF12B12FA;
+        Thu, 17 Feb 2022 00:36:36 -0800 (PST)
+Received: by mail-pg1-f175.google.com with SMTP id d16so4391979pgd.9;
+        Thu, 17 Feb 2022 00:36:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zFQNTKgYptCbdXsZlL/77IF7MTD6u26PIaEBtpH1VaM=;
-        b=KJUPAdsKLzZp4OjVFrsWOwo356FCvyOW+5kL7oKph6ply5tkg3kpNwL53yWy7fMXTP
-         aug1nKbdr4aaQiaqRM+mGzptdyMImYHx0TTtdM+m67+HfoafS7dUrEKiZ4OoP13muIqF
-         Z1pAKB1lyjkUFnsPN331woJawJm1t6g4qfvZXhdXuKE0FJqVUuGpICu+kT5Qy5CXa11W
-         7D7KXGGkNW/WlmhTAkZhSc8Uj758BAnUWWnVfAR/KvLP0JV/hXdp1/BMAJXZH0tEdmMU
-         AbIIiepthkR/kJZ/8DmyOGvgzuG6vSAASS2t+hsMAaOmkZguXrckOQLJXtG2o2ARC9BQ
-         7yfQ==
-X-Gm-Message-State: AOAM530vPdlCOdIltxOhL8xhn6aHQRyAwA10yzRnbDoIbhb+KyHNC/CF
-        IH01uG57nfoYh4ZQirFzNNE=
-X-Google-Smtp-Source: ABdhPJwfoqlZhQYdFIyoiSza2d+G2zxKPTEJX5nCkLIuP8lHJj0/F+rD8p3wdPPo0yZDdp49YdwLMA==
-X-Received: by 2002:a17:90b:291:b0:1b9:3cb7:41ad with SMTP id az17-20020a17090b029100b001b93cb741admr6315770pjb.16.1645086975819;
-        Thu, 17 Feb 2022 00:36:15 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id a17sm5475843pfv.23.2022.02.17.00.36.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c0pu3AOa7Jqr4q26ebNJ4LdMU0x/lC3tR2Tx7zL6lHg=;
+        b=pYdZ8fd+OgIvMVaBzVXM9G+pee4dw7B6jav7njzVGG9zRRStaVJtSKu6R3V6LclkfX
+         Ndeiic8NjpynUj4xGfFljIXUxiqG1f1MA+k2Zm3yvX7WwZ96JcQZeoIxEMY4F0V7JprR
+         TxbOJm6VWNZNzwnJw1xZ+7OhGCZyYjg2aVVv6sFTj1sJ8Sj7WsWoJn8vD2VK0MjAclW8
+         WdmS8N/kMfc8JraWQq3KXPpVxDAKtTCuOGxy0xHTom0EVvBVVJy+E7s0lgkAs0LoY7vt
+         v9VlWid4k05YYAJSsmO30U6jnxiYHsxrXdpO0gZgo/3mdJfW4+V1mbFPCt7MJ+bQ6pyY
+         B/0g==
+X-Gm-Message-State: AOAM531wihTeLV5VIkH2SHkaIgRHU566d73F7pAM6I5sc+JlJwWYTP1U
+        iwsKYqCQiAYxoTxumUKHy28=
+X-Google-Smtp-Source: ABdhPJxBt7Z+O4vFbpVhfGNT3TGbLxz1vmlCiZLvikj1oSVLWqBDGQ3nJ/8d9qgUnXxcV37sMxYLVg==
+X-Received: by 2002:a05:6a00:23cd:b0:4e1:7ab2:334c with SMTP id g13-20020a056a0023cd00b004e17ab2334cmr2123595pfc.4.1645086995489;
+        Thu, 17 Feb 2022 00:36:35 -0800 (PST)
+Received: from garbanzo (136-24-173-63.cab.webpass.net. [136.24.173.63])
+        by smtp.gmail.com with ESMTPSA id g1sm44078801pfu.32.2022.02.17.00.36.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 00:36:15 -0800 (PST)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Eric Hankland <ehankland@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Thu, 17 Feb 2022 00:36:34 -0800 (PST)
+Date:   Thu, 17 Feb 2022 00:36:31 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Nitesh Shetty <nj.shetty@samsung.com>
+Cc:     javier@javigon.com, chaitanyak@nvidia.com,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        dm-devel@redhat.com, linux-nvme@lists.infradead.org,
+        linux-fsdevel@vger.kernel.org, axboe@kernel.dk,
+        msnitzer@redhat.com, bvanassche@acm.org,
+        martin.petersen@oracle.com, hare@suse.de, kbusch@kernel.org,
+        hch@lst.de, Frederick.Knight@netapp.com, osandov@fb.com,
+        lsf-pc@lists.linux-foundation.org, djwong@kernel.org,
+        josef@toxicpanda.com, clm@fb.com, dsterba@suse.com, tytso@mit.edu,
+        jack@suse.com, joshi.k@samsung.com, arnav.dawn@samsung.com,
+        nitheshshetty@gmail.com, SelvaKumar S <selvakuma.s1@samsung.com>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        James Smart <james.smart@broadcom.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] KVM: x86/pmu: Protect kvm->arch.pmu_event_filter with SRCU
-Date:   Thu, 17 Feb 2022 16:36:01 +0800
-Message-Id: <20220217083601.24829-2-likexu@tencent.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220217083601.24829-1-likexu@tencent.com>
-References: <20220217083601.24829-1-likexu@tencent.com>
+Subject: Re: [PATCH v3 01/10] block: make bio_map_kern() non static
+Message-ID: <20220217083631.34ii6gqdrknrmufv@garbanzo>
+References: <20220214080002.18381-1-nj.shetty@samsung.com>
+ <CGME20220214080558epcas5p17c1fb3b659b956908ff7215a61bcc0c9@epcas5p1.samsung.com>
+ <20220214080002.18381-2-nj.shetty@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214080002.18381-2-nj.shetty@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On Mon, Feb 14, 2022 at 01:29:51PM +0530, Nitesh Shetty wrote:
+> From: SelvaKumar S <selvakuma.s1@samsung.com>
+> 
+> Make bio_map_kern() non static
+> 
+> Signed-off-by: SelvaKumar S <selvakuma.s1@samsung.com>
+> Signed-off-by: Nitesh Shetty <nj.shetty@samsung.com>
 
-Fix the following positive warning:
+This patch makes no sense on its own. I'd just merge it with
+its first user.
 
- =============================
- WARNING: suspicious RCU usage
- arch/x86/kvm/pmu.c:190 suspicious rcu_dereference_check() usage!
- other info that might help us debug this:
- rcu_scheduler_active = 2, debug_locks = 1
- 1 lock held by CPU 28/KVM/370841:
- #0: ff11004089f280b8 (&vcpu->mutex){+.+.}-{3:3}, at: kvm_vcpu_ioctl+0x87/0x730 [kvm]
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x59/0x73
-  reprogram_fixed_counter+0x15d/0x1a0 [kvm]
-  kvm_pmu_trigger_event+0x1a3/0x260 [kvm]
-  ? free_moved_vector+0x1b4/0x1e0
-  complete_fast_pio_in+0x8a/0xd0 [kvm]
-  [...]
-
-It's possible to call KVM_SET_PMU_EVENT_FILTER ioctl with the vCPU running.
-Similar to "kvm->arch.msr_filter", KVM should guarantee that vCPUs will
-see either the previous filter or the new filter so that guest pmu events
-with identical settings in both the old and new filter have deterministic
-behavior.
-
-Fixes: 66bb8a065f5a ("KVM: x86: PMU Event Filter")
-Signed-off-by: Like Xu <likexu@tencent.com>
-Reviewed-by: Wanpeng Li <wanpengli@tencent.com>
----
- arch/x86/kvm/pmu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index af2a3dd22dd9..94319f627f64 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -185,8 +185,9 @@ static bool check_pmu_event_filter(struct kvm_pmc *pmc)
- 	struct kvm *kvm = pmc->vcpu->kvm;
- 	bool allow_event = true;
- 	__u64 key;
--	int idx;
-+	int idx, srcu_idx;
- 
-+	srcu_idx = srcu_read_lock(&kvm->srcu);
- 	filter = srcu_dereference(kvm->arch.pmu_event_filter, &kvm->srcu);
- 	if (!filter)
- 		goto out;
-@@ -209,6 +210,7 @@ static bool check_pmu_event_filter(struct kvm_pmc *pmc)
- 	}
- 
- out:
-+	srcu_read_unlock(&kvm->srcu, srcu_idx);
- 	return allow_event;
- }
- 
--- 
-2.35.0
-
+  Luis
