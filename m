@@ -2,35 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD29C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241217AbiBQNlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:41:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35498 "EHLO
+        id S241172AbiBQNla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:41:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241119AbiBQNlJ (ORCPT
+        with ESMTP id S241102AbiBQNlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:41:09 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134F52B0483;
+        Thu, 17 Feb 2022 08:41:08 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A4A2AFEBF;
         Thu, 17 Feb 2022 05:40:46 -0800 (PST)
-X-UUID: daf0c277bd7045d3841f1dc65923301b-20220217
-X-UUID: daf0c277bd7045d3841f1dc65923301b-20220217
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+X-UUID: cc69676a449446c987785daf569bf724-20220217
+X-UUID: cc69676a449446c987785daf569bf724-20220217
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
         (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 480523759; Thu, 17 Feb 2022 21:40:44 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 620692942; Thu, 17 Feb 2022 21:40:42 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 17 Feb 2022 21:40:43 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Feb
- 2022 21:40:43 +0800
+ Thu, 17 Feb 2022 21:40:40 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 21:40:42 +0800
+ Transport; Thu, 17 Feb 2022 21:40:40 +0800
 From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -43,9 +40,9 @@ CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         "Chen-Yu Tsai" <wenst@chromium.org>,
         Ryder Lee <ryder.lee@kernel.org>,
         Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH 08/17] arm64: dts: mt8192: Add PCIe node
-Date:   Thu, 17 Feb 2022 21:40:26 +0800
-Message-ID: <20220217134027.508-9-allen-kh.cheng@mediatek.com>
+Subject: [PATCH 06/17] arm64: dts: mt8192: Add xhci node
+Date:   Thu, 17 Feb 2022 21:40:24 +0800
+Message-ID: <20220217134027.508-7-allen-kh.cheng@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220217134027.508-1-allen-kh.cheng@mediatek.com>
 References: <20220217134027.508-1-allen-kh.cheng@mediatek.com>
@@ -56,57 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add PCIe node for mt8192 SoC.
+Add xhci node for mt8192 SoC.
 
 Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 38 ++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 25 ++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 92262a67ef68..723bfdc3a1aa 100644
+index 9d9bb67bc65d..d56ac78620ee 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -870,6 +870,44 @@
- 			};
+@@ -9,6 +9,7 @@
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
++#include <dt-bindings/phy/phy.h>
+ #include <dt-bindings/power/mt8192-power.h>
+ 
+ / {
+@@ -717,6 +718,30 @@
+ 			status = "disabled";
  		};
  
-+		pcie: pcie@11230000 {
-+			compatible = "mediatek,mt8192-pcie";
-+			device_type = "pci";
-+			reg = <0 0x11230000 0 0x2000>;
-+			reg-names = "pcie-mac";
-+			#address-cells = <3>;
++		xhci: xhci@11200000 {
++			compatible = "mediatek,mt8192-xhci",
++				     "mediatek,mtk-xhci";
++			reg = <0 0x11200000 0 0x1000>,
++			      <0 0x11203e00 0 0x0100>;
++			reg-names = "mac", "ippc";
++			interrupts-extended = <&gic GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupt-names = "host";
++			phys = <&u2port0 PHY_TYPE_USB2>,
++			       <&u3port0 PHY_TYPE_USB3>;
++			assigned-clocks = <&topckgen CLK_TOP_USB_TOP_SEL>,
++					  <&topckgen CLK_TOP_SSUSB_XHCI_SEL>;
++			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5_D4>,
++						 <&topckgen CLK_TOP_UNIVPLL_D5_D4>;
++			clocks = <&infracfg CLK_INFRA_SSUSB>,
++				 <&infracfg CLK_INFRA_SSUSB_XHCI>,
++				 <&apmixedsys CLK_APMIXED_USBPLL>;
++			clock-names = "sys_ck", "xhci_ck", "ref_ck";
++			wakeup-source;
++			mediatek,syscon-wakeup = <&pericfg 0x420 102>;
++			#address-cells = <2>;
 +			#size-cells = <2>;
-+			clocks = <&infracfg CLK_INFRA_PCIE_TL_26M>,
-+				<&infracfg CLK_INFRA_PCIE_TL_96M>,
-+				<&infracfg CLK_INFRA_PCIE_TL_32K>,
-+				<&infracfg CLK_INFRA_PCIE_PERI_26M>,
-+				<&infracfg CLK_INFRA_PCIE_TOP_H_133M>,
-+				<&infracfg CLK_INFRA_PCIE_PL_P_250M>;
-+			clock-names = "sys_ck0", "ahb_ck0", "aux_ck0",
-+				 "obff_ck0", "axi_ck0", "pipe_ck0";
-+			assigned-clocks = <&topckgen CLK_TOP_TL_SEL>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_MAINPLL_D6_D4>;
-+			resets = <&infracfg_rst 2>,
-+				 <&infracfg_rst 3>;
-+			reset-names = "phy", "mac";
-+			interrupts = <GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH 0>;
-+			bus-range = <0x00 0xff>;
-+			ranges = <0x82000000 0 0x12000000 0x0 0x12000000 0 0x0800000>,
-+				 <0x81000000 0 0x12800000 0x0 0x12800000 0 0x0800000>;
-+
-+			#interrupt-cells = <1>;
-+			interrupt-map-mask = <0 0 0 7>;
-+			interrupt-map = <0 0 0 1 &pcie_intc0 0>,
-+				   <0 0 0 2 &pcie_intc0 1>,
-+				   <0 0 0 3 &pcie_intc0 2>,
-+				   <0 0 0 4 &pcie_intc0 3>;
-+			pcie_intc0: interrupt-controller {
-+				interrupt-controller;
-+				#address-cells = <0>;
-+				#interrupt-cells = <1>;
-+			};
 +		};
 +
  		nor_flash: spi@11234000 {
