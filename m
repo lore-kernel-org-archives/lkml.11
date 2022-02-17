@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A0EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C193C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239662AbiBQK67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 05:58:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35752 "EHLO
+        id S239539AbiBQK7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 05:59:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239538AbiBQK6h (ORCPT
+        with ESMTP id S239562AbiBQK6o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 05:58:37 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 910F2296925
+        Thu, 17 Feb 2022 05:58:44 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3023A297209
         for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 02:58:01 -0800 (PST)
 Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
-        by 156.147.23.51 with ESMTP; 17 Feb 2022 19:58:00 +0900
+        by 156.147.23.52 with ESMTP; 17 Feb 2022 19:58:00 +0900
 X-Original-SENDERIP: 156.147.1.125
 X-Original-MAILFROM: byungchul.park@lge.com
 Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
@@ -47,9 +47,9 @@ Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
         dri-devel@lists.freedesktop.org, airlied@linux.ie,
         rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
         hamohammed.sa@gmail.com
-Subject: [PATCH 10/16] dept: Add proc knobs to show stats and dependency graph
-Date:   Thu, 17 Feb 2022 19:57:46 +0900
-Message-Id: <1645095472-26530-11-git-send-email-byungchul.park@lge.com>
+Subject: [PATCH 13/16] dept: Apply SDT to swait
+Date:   Thu, 17 Feb 2022 19:57:49 +0900
+Message-Id: <1645095472-26530-14-git-send-email-byungchul.park@lge.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1645095472-26530-1-git-send-email-byungchul.park@lge.com>
 References: <1645095472-26530-1-git-send-email-byungchul.park@lge.com>
@@ -57,250 +57,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It'd be useful to show Dept internal stats and dependency graph on
-runtime via proc for better information. Introduced the knobs.
+Makes SDT able to track dependencies by swait.
 
 Signed-off-by: Byungchul Park <byungchul.park@lge.com>
 ---
- kernel/dependency/Makefile        |  1 +
- kernel/dependency/dept.c          | 24 ++++------
- kernel/dependency/dept_internal.h | 26 +++++++++++
- kernel/dependency/dept_proc.c     | 93 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 129 insertions(+), 15 deletions(-)
- create mode 100644 kernel/dependency/dept_internal.h
- create mode 100644 kernel/dependency/dept_proc.c
+ include/linux/swait.h |  4 ++++
+ kernel/sched/swait.c  | 10 ++++++++++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/kernel/dependency/Makefile b/kernel/dependency/Makefile
-index 9f7778e..49152ad 100644
---- a/kernel/dependency/Makefile
-+++ b/kernel/dependency/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
+diff --git a/include/linux/swait.h b/include/linux/swait.h
+index 6a8c22b..dbdf2ce 100644
+--- a/include/linux/swait.h
++++ b/include/linux/swait.h
+@@ -6,6 +6,7 @@
+ #include <linux/stddef.h>
+ #include <linux/spinlock.h>
+ #include <linux/wait.h>
++#include <linux/dept_sdt.h>
+ #include <asm/current.h>
  
- obj-$(CONFIG_DEPT) += dept.o
-+obj-$(CONFIG_DEPT) += dept_proc.o
+ /*
+@@ -43,6 +44,7 @@
+ struct swait_queue_head {
+ 	raw_spinlock_t		lock;
+ 	struct list_head	task_list;
++	struct dept_map		dmap;
+ };
  
-diff --git a/kernel/dependency/dept.c b/kernel/dependency/dept.c
-index 4a3ab39..b8d56075 100644
---- a/kernel/dependency/dept.c
-+++ b/kernel/dependency/dept.c
-@@ -90,6 +90,7 @@
- #include <linux/hash.h>
- #include <linux/dept.h>
- #include <linux/utsname.h>
-+#include "dept_internal.h"
- 
- static int dept_stop;
- static int dept_per_cpu_ready;
-@@ -250,20 +251,13 @@ static inline struct dept_task *dept_task(void)
-  *       have been freed will be placed.
-  */
- 
--enum object_t {
--#define OBJECT(id, nr) OBJECT_##id,
--	#include "dept_object.h"
--#undef  OBJECT
--	OBJECT_NR,
--};
--
- #define OBJECT(id, nr)							\
- static struct dept_##id spool_##id[nr];					\
- static DEFINE_PER_CPU(struct llist_head, lpool_##id);
- 	#include "dept_object.h"
- #undef  OBJECT
- 
--static struct dept_pool pool[OBJECT_NR] = {
-+struct dept_pool dept_pool[OBJECT_NR] = {
- #define OBJECT(id, nr) {						\
- 	.name = #id,							\
- 	.obj_sz = sizeof(struct dept_##id),				\
-@@ -292,7 +286,7 @@ static void *from_pool(enum object_t t)
- 	if (DEPT_WARN_ON(!irqs_disabled()))
- 		return NULL;
- 
--	p = &pool[t];
-+	p = &dept_pool[t];
- 
- 	/*
- 	 * Try local pool first.
-@@ -321,7 +315,7 @@ static void *from_pool(enum object_t t)
- 
- static void to_pool(void *o, enum object_t t)
- {
--	struct dept_pool *p = &pool[t];
-+	struct dept_pool *p = &dept_pool[t];
- 	struct llist_head *h;
- 
- 	preempt_disable();
-@@ -1996,7 +1990,7 @@ void dept_map_nocheck(struct dept_map *m)
+ struct swait_queue {
+@@ -61,6 +63,7 @@ struct swait_queue {
+ #define __SWAIT_QUEUE_HEAD_INITIALIZER(name) {				\
+ 	.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),		\
+ 	.task_list	= LIST_HEAD_INIT((name).task_list),		\
++	.dmap		= DEPT_SDT_MAP_INIT(name),			\
  }
- EXPORT_SYMBOL_GPL(dept_map_nocheck);
  
--static LIST_HEAD(classes);
-+LIST_HEAD(dept_classes);
+ #define DECLARE_SWAIT_QUEUE_HEAD(name)					\
+@@ -72,6 +75,7 @@ extern void __init_swait_queue_head(struct swait_queue_head *q, const char *name
+ #define init_swait_queue_head(q)				\
+ 	do {							\
+ 		static struct lock_class_key __key;		\
++		sdt_map_init(&(q)->dmap);			\
+ 		__init_swait_queue_head((q), #q, &__key);	\
+ 	} while (0)
  
- static inline bool within(const void *addr, void *start, unsigned long size)
- {
-@@ -2023,7 +2017,7 @@ void dept_free_range(void *start, unsigned int sz)
- 	while (unlikely(!dept_lock()))
- 		cpu_relax();
+diff --git a/kernel/sched/swait.c b/kernel/sched/swait.c
+index e1c655f..4ca7d6e 100644
+--- a/kernel/sched/swait.c
++++ b/kernel/sched/swait.c
+@@ -27,6 +27,7 @@ void swake_up_locked(struct swait_queue_head *q)
+ 		return;
  
--	list_for_each_entry_safe(c, n, &classes, all_node) {
-+	list_for_each_entry_safe(c, n, &dept_classes, all_node) {
- 		if (!within((void *)c->key, start, sz) &&
- 		    !within(c->name, start, sz))
- 			continue;
-@@ -2092,7 +2086,7 @@ static struct dept_class *check_new_class(struct dept_key *local,
- 	c->sub = sub;
- 	c->key = (unsigned long)(k->subkeys + sub);
- 	hash_add_class(c);
--	list_add(&c->all_node, &classes);
-+	list_add(&c->all_node, &dept_classes);
- unlock:
- 	dept_unlock();
- caching:
-@@ -2537,8 +2531,8 @@ static void migrate_per_cpu_pool(void)
- 		struct llist_head *from;
- 		struct llist_head *to;
+ 	curr = list_first_entry(&q->task_list, typeof(*curr), task_list);
++	sdt_event(&q->dmap);
+ 	wake_up_process(curr->task);
+ 	list_del_init(&curr->task_list);
+ }
+@@ -69,6 +70,7 @@ void swake_up_all(struct swait_queue_head *q)
+ 	while (!list_empty(&tmp)) {
+ 		curr = list_first_entry(&tmp, typeof(*curr), task_list);
  
--		from = &pool[i].boot_pool;
--		to = per_cpu_ptr(pool[i].lpool, boot_cpu);
-+		from = &dept_pool[i].boot_pool;
-+		to = per_cpu_ptr(dept_pool[i].lpool, boot_cpu);
- 		move_llist(to, from);
++		sdt_event(&q->dmap);
+ 		wake_up_state(curr->task, TASK_NORMAL);
+ 		list_del_init(&curr->task_list);
+ 
+@@ -97,6 +99,9 @@ void prepare_to_swait_exclusive(struct swait_queue_head *q, struct swait_queue *
+ 	__prepare_to_swait(q, wait);
+ 	set_current_state(state);
+ 	raw_spin_unlock_irqrestore(&q->lock, flags);
++
++	if (state & TASK_NORMAL)
++		sdt_wait_prepare(&q->dmap);
+ }
+ EXPORT_SYMBOL(prepare_to_swait_exclusive);
+ 
+@@ -119,12 +124,16 @@ long prepare_to_swait_event(struct swait_queue_head *q, struct swait_queue *wait
  	}
+ 	raw_spin_unlock_irqrestore(&q->lock, flags);
+ 
++	if (!ret && state & TASK_NORMAL)
++		sdt_wait_prepare(&q->dmap);
++
+ 	return ret;
  }
-diff --git a/kernel/dependency/dept_internal.h b/kernel/dependency/dept_internal.h
-new file mode 100644
-index 0000000..007c1ee
---- /dev/null
-+++ b/kernel/dependency/dept_internal.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Dept(DEPendency Tracker) - runtime dependency tracker internal header
-+ *
-+ * Started by Byungchul Park <max.byungchul.park@gmail.com>:
-+ *
-+ *  Copyright (c) 2020 LG Electronics, Inc., Byungchul Park
-+ */
-+
-+#ifndef __DEPT_INTERNAL_H
-+#define __DEPT_INTERNAL_H
-+
-+#ifdef CONFIG_DEPT
-+
-+enum object_t {
-+#define OBJECT(id, nr) OBJECT_##id,
-+	#include "dept_object.h"
-+#undef  OBJECT
-+	OBJECT_NR,
-+};
-+
-+extern struct list_head dept_classes;
-+extern struct dept_pool dept_pool[];
-+
-+#endif
-+#endif /* __DEPT_INTERNAL_H */
-diff --git a/kernel/dependency/dept_proc.c b/kernel/dependency/dept_proc.c
-new file mode 100644
-index 0000000..465a91c
---- /dev/null
-+++ b/kernel/dependency/dept_proc.c
-@@ -0,0 +1,93 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Procfs knobs for Dept(DEPendency Tracker)
-+ *
-+ * Started by Byungchul Park <max.byungchul.park@gmail.com>:
-+ *
-+ *  Copyright (C) 2021 LG Electronics, Inc. , Byungchul Park
-+ */
-+#include <linux/proc_fs.h>
-+#include <linux/seq_file.h>
-+#include <linux/dept.h>
-+#include "dept_internal.h"
-+
-+static void *l_next(struct seq_file *m, void *v, loff_t *pos)
-+{
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	return seq_list_next(v, &dept_classes, pos);
-+}
-+
-+static void *l_start(struct seq_file *m, loff_t *pos)
-+{
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	return seq_list_start_head(&dept_classes, *pos);
-+}
-+
-+static void l_stop(struct seq_file *m, void *v)
-+{
-+}
-+
-+static int l_show(struct seq_file *m, void *v)
-+{
-+	struct dept_class *fc = list_entry(v, struct dept_class, all_node);
-+	struct dept_dep *d;
-+
-+	if (v == &dept_classes) {
-+		seq_puts(m, "All classes:\n\n");
-+		return 0;
-+	}
-+
-+	seq_printf(m, "[%p] %s\n", (void *)fc->key, fc->name);
-+
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	list_for_each_entry(d, &fc->dep_head, dep_node) {
-+		struct dept_class *tc = d->wait->class;
-+
-+		seq_printf(m, " -> [%p] %s\n", (void *)tc->key, tc->name);
-+	}
-+	seq_puts(m, "\n");
-+
-+	return 0;
-+}
-+
-+static const struct seq_operations dept_deps_ops = {
-+	.start	= l_start,
-+	.next	= l_next,
-+	.stop	= l_stop,
-+	.show	= l_show,
-+};
-+
-+static int dept_stats_show(struct seq_file *m, void *v)
-+{
-+	int r;
-+
-+	seq_puts(m, "Availability in the static pools:\n\n");
-+#define OBJECT(id, nr)							\
-+	r = atomic_read(&dept_pool[OBJECT_##id].obj_nr);		\
-+	if (r < 0)							\
-+		r = 0;							\
-+	seq_printf(m, "%s\t%d/%d(%d%%)\n", #id, r, nr, (r * 100) / (nr));
-+	#include "dept_object.h"
-+#undef  OBJECT
-+
-+	return 0;
-+}
-+
-+static int __init dept_proc_init(void)
-+{
-+	proc_create_seq("dept_deps", S_IRUSR, NULL, &dept_deps_ops);
-+	proc_create_single("dept_stats", S_IRUSR, NULL, dept_stats_show);
-+	return 0;
-+}
-+
-+__initcall(dept_proc_init);
-+
+ EXPORT_SYMBOL(prepare_to_swait_event);
+ 
+ void __finish_swait(struct swait_queue_head *q, struct swait_queue *wait)
+ {
++	sdt_wait_finish();
+ 	__set_current_state(TASK_RUNNING);
+ 	if (!list_empty(&wait->task_list))
+ 		list_del_init(&wait->task_list);
+@@ -134,6 +143,7 @@ void finish_swait(struct swait_queue_head *q, struct swait_queue *wait)
+ {
+ 	unsigned long flags;
+ 
++	sdt_wait_finish();
+ 	__set_current_state(TASK_RUNNING);
+ 
+ 	if (!list_empty_careful(&wait->task_list)) {
 -- 
 1.9.1
 
