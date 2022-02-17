@@ -2,74 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1979C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:40:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242620AbiBQPkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:40:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60966 "EHLO
+        id S242633AbiBQPkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:40:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242618AbiBQPkO (ORCPT
+        with ESMTP id S242627AbiBQPkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:40:14 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FCD72B2E27
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:39:59 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id o2so35031lfd.1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:39:59 -0800 (PST)
+        Thu, 17 Feb 2022 10:40:19 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9993C2B2E2B
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:40:03 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id o6so13947ljp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:40:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7RtYDADx4QQw3nzWuN70oIVG8nEMTl5DSCkcy5LhUkE=;
-        b=QII7ZKn99paThcY5nBrDoRQ4DFbIageeAVtKvpe+UeTY/hcPuVE2V69G3kYeVBcjqg
-         FpDph57yvjDFIAb4vvyvx/EB8NObDf6kK+pacX4hT5CuNKon/AG5ULZQHh8TY6XS9OOP
-         /X4inNHe1rI//4TM0/8VKSQ/asjArtn0ltdWIIeKP1hkgFwgZ1tRMKt4PMuj5mT7F0xE
-         XlDWC5MMm+kIW4DLDWm8Q9Ni9M0llxk2+dZR741HTB/51dYL2b3DHlptUyFuHrNziFUw
-         vVYLS5fAEQOoLR51gNiMgqywUifJveAQmIlw1jk04xSryDjEPJz1nkSApyiNcY1KK0jk
-         fQZA==
+        bh=qKaf8T6bwo43/+sxm31m52Fuq6JfePQe5wLfdK/sZ50=;
+        b=KPzAxecZid6LlUo+0wXILBlFXqEIIMlQhrTqEj6z4UqIp9jIQF/gbYiCxGu81gLFpJ
+         /pIGlLeDUvdHwupl4nghICsruLArh0hORXmoOtKaH6HpqNuBvjs+4ihA3oAWbqhEwkDd
+         T5ThBdpMxq1FEOb1fMDz2mAoWunpfky3vnZyTBNmJjqtuwuMvexR2rTKaztVVD9Y7mFT
+         pSkdWAYemi7Dg2p/PAZ6kUQyJizRwmSoZPO3SN8oNgMcOWtjdFb59gSvTJlmKxV3ebyO
+         swvV57on6z9k7ex4uQZNZiEhi7wpsexsYfo+YGjAX6eu4VmlQXo9PvDl66YhEpV8QHuQ
+         vYWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7RtYDADx4QQw3nzWuN70oIVG8nEMTl5DSCkcy5LhUkE=;
-        b=RuPJ0PB3JqGvS4Qvda4C6BwFNzPDmwZgW8XP69Fi2usKgX37Y/lxfKNtRB+SDAqolM
-         /t7sFr9l3n9FoRmucjmBjTOQC7HTP2DmsTmUcvFsLZdAjEMCyrrAfLMEz5YR1h9NrVLC
-         YLkeJ0u3DZGumKZYLc+yt0wL9wle06ml3bDLAmcm9a5Kf+QGERJSSJAcofvIqU75A0l0
-         MxGQyVAkulhGkK8IBe8nQu1kcybD6HVQToYmFIQgncvyOYx3pZ/n9YbKX7OFz8QJMZo3
-         VBkRJRI5J2AzGxGCojVzQa20MgMmyDMrldBnI4KskuAhF9BaxxHtRMZ0X7mHHCDsVpRC
-         Q8+g==
-X-Gm-Message-State: AOAM533eTNZNB3uiVXGCO58PPYuzgYbwwqlsi76WVv6I2cPpaqPKoigw
-        xLLsWImaE/E3ezIFNTdVtVVX8l0y1z6127hKH5OgHA==
-X-Google-Smtp-Source: ABdhPJxx+WlNwrj3g8DmHHCXPTELFCPxQlK7IqCQ3NAlli3irDlMVGL1v6Gnap+Mi7IrIbGn91W64bziVKF4OQAMSk8=
-X-Received: by 2002:a05:6512:3d2a:b0:443:3198:cb95 with SMTP id
- d42-20020a0565123d2a00b004433198cb95mr2461725lfv.233.1645112397989; Thu, 17
- Feb 2022 07:39:57 -0800 (PST)
+        bh=qKaf8T6bwo43/+sxm31m52Fuq6JfePQe5wLfdK/sZ50=;
+        b=ya04x53lv2hr6asoadGglihuWcKrMkLQ+CrxY6Uu+0JDJT+OUPTim9ovx87zOY83Ml
+         8qtOu4BaGfX07T5isVXBKA2ntsyWLvxVDqQ1BzEx+3nFaj3yFSfQrJUV+1cvfGkk9rZ3
+         lCdFPGRABrRgdgr0AHIebFIiQK41zIM/8E6LLN9+vMX58zOezsBS1g1SRg7EZJjYnPYz
+         KZVGEOO5y1bNR1Z7+n8dnM6ZPVnjE/nkyg/bq9NV6Eu50wkQR993QsiUaoW6XjwfFLPE
+         XFLi9tNDOAaoIM6iSn6zMNGX2X4ipv9vmvt0kkqy9u3e7dUrvc14TkguIiNonZDq1FGM
+         tEeg==
+X-Gm-Message-State: AOAM532I71Pj6nYnL9M9ohpR825CBvdBSiZD4P4q04Ulex/aGS6AVfB4
+        oCPICwY8ixViNnuVEn/vrLlt41g4EZLG+Si1w7ipBQ==
+X-Google-Smtp-Source: ABdhPJy3TfM6nshThKhOgFc73bYv1Dg2ra93FL9Fw7hGDmnU8ExqI9gSmyeqSR0lzf7QncPN+wOHbziKZqL/5WQjZ/s=
+X-Received: by 2002:a05:651c:50f:b0:239:3332:2a1e with SMTP id
+ o15-20020a05651c050f00b0023933322a1emr2636574ljp.16.1645112401967; Thu, 17
+ Feb 2022 07:40:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20220211075056.26179-1-a-govindraju@ti.com>
-In-Reply-To: <20220211075056.26179-1-a-govindraju@ti.com>
+References: <20220216134346.11029-1-a-govindraju@ti.com>
+In-Reply-To: <20220216134346.11029-1-a-govindraju@ti.com>
 From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 17 Feb 2022 16:39:21 +0100
-Message-ID: <CAPDyKFpH4nnnzbFRfZ8p_vLSqh+m+fEd4yW2T2Z4rq6tRQS-Lw@mail.gmail.com>
-Subject: Re: [PATCH] mmc: sdhci_am654: Fix the driver data of AM64 SoC
+Date:   Thu, 17 Feb 2022 16:39:25 +0100
+Message-ID: <CAPDyKFqORZ-8aGQvfm8bSVLUzDGK-wWDRr+ABFLpH0q+D92EYg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: mmc: sdhci-am654: Add compatible string for
+ AM62 SoC
 To:     Aswath Govindraju <a-govindraju@ti.com>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Faiz Abbas <faiz_abbas@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 at 08:51, Aswath Govindraju <a-govindraju@ti.com> wrote:
+On Wed, 16 Feb 2022 at 14:43, Aswath Govindraju <a-govindraju@ti.com> wrote:
 >
-> The MMCSD IPs used in AM64 are the same as the ones used in J721E.
-> Therefore, fix this by using the driver data from J721E for AM64 too, for
-> both 8 and 4 bit instances.
+> Add compatible string for AM62 SoC in device tree binding of AM654
+> SDHCI module as the same IP is used.
 >
-> Fixes: 754b7f2f7d2a ("mmc: sdhci_am654: Add Support for TI's AM64 SoC")
 > Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 
 Applied for next, thanks!
@@ -79,54 +78,21 @@ Uffe
 
 
 > ---
->  drivers/mmc/host/sdhci_am654.c | 24 ++----------------------
->  1 file changed, 2 insertions(+), 22 deletions(-)
+>  Documentation/devicetree/bindings/mmc/sdhci-am654.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
-> index f654afbe8e83..b4891bb26648 100644
-> --- a/drivers/mmc/host/sdhci_am654.c
-> +++ b/drivers/mmc/host/sdhci_am654.c
-> @@ -514,26 +514,6 @@ static const struct sdhci_am654_driver_data sdhci_j721e_4bit_drvdata = {
->         .flags = IOMUX_PRESENT,
->  };
->
-> -static const struct sdhci_pltfm_data sdhci_am64_8bit_pdata = {
-> -       .ops = &sdhci_j721e_8bit_ops,
-> -       .quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
-> -};
-> -
-> -static const struct sdhci_am654_driver_data sdhci_am64_8bit_drvdata = {
-> -       .pdata = &sdhci_am64_8bit_pdata,
-> -       .flags = DLL_PRESENT | DLL_CALIB,
-> -};
-> -
-> -static const struct sdhci_pltfm_data sdhci_am64_4bit_pdata = {
-> -       .ops = &sdhci_j721e_4bit_ops,
-> -       .quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
-> -};
-> -
-> -static const struct sdhci_am654_driver_data sdhci_am64_4bit_drvdata = {
-> -       .pdata = &sdhci_am64_4bit_pdata,
-> -       .flags = IOMUX_PRESENT,
-> -};
-> -
->  static const struct soc_device_attribute sdhci_am654_devices[] = {
->         { .family = "AM65X",
->           .revision = "SR1.0",
-> @@ -759,11 +739,11 @@ static const struct of_device_id sdhci_am654_of_match[] = {
->         },
->         {
->                 .compatible = "ti,am64-sdhci-8bit",
-> -               .data = &sdhci_am64_8bit_drvdata,
-> +               .data = &sdhci_j721e_8bit_drvdata,
->         },
->         {
->                 .compatible = "ti,am64-sdhci-4bit",
-> -               .data = &sdhci_am64_4bit_drvdata,
-> +               .data = &sdhci_j721e_4bit_drvdata,
->         },
->         { /* sentinel */ }
->  };
+> diff --git a/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml b/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml
+> index 9fbf16b3bc8d..0566493c4def 100644
+> --- a/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml
+> @@ -21,6 +21,7 @@ properties:
+>        - const: ti,j721e-sdhci-4bit
+>        - const: ti,am64-sdhci-8bit
+>        - const: ti,am64-sdhci-4bit
+> +      - const: ti,am62-sdhci
+>        - items:
+>            - const: ti,j7200-sdhci-8bit
+>            - const: ti,j721e-sdhci-8bit
 > --
 > 2.17.1
 >
