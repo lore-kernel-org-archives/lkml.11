@@ -2,78 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 621DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE59C3526E
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiBQX45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 18:56:57 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50156 "EHLO
+        id S229809AbiBQX5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 18:57:24 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiBQX44 (ORCPT
+        with ESMTP id S229728AbiBQX5V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 18:56:56 -0500
-Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2146F45ADA;
-        Thu, 17 Feb 2022 15:56:41 -0800 (PST)
-Received: by mail-il1-f177.google.com with SMTP id t9so948955ilf.13;
-        Thu, 17 Feb 2022 15:56:41 -0800 (PST)
+        Thu, 17 Feb 2022 18:57:21 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2769A42497;
+        Thu, 17 Feb 2022 15:57:05 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id p9so11626808wra.12;
+        Thu, 17 Feb 2022 15:57:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qVmlOhX5PcDPicm3lYGlBTzA02rk1OQ79iZTV4IdZTk=;
+        b=PMom3qB5NG9d/fWPRASFGft/y5FRfzyyJ6Aepa9redZBO+yJ+8f3QW3tXQuPc3Kx6f
+         Dr++GnvVTGe4/RlRXsKKpLLumvxoR5hDeKKcuG+N2ZsecERGL6kqnuSzHhgZnlBfro5p
+         WJiEPPlVhyzV1Xq4XEs6pZpkEdDkSnBvJLzRM48l6lOn4KaAAKWaf8c1PJocZql1Hk4s
+         ce1dWvwtkpk4E0QHDBsq720a1WsRuGpVtF3wWIKjjiimBthtO8oEG+4pEvfLkHH4kg+N
+         QOTMbsXFhzo8bctTLup81Ie94p24O4nt41TCUWuWhEeduRt4MO0dJhRKM2nGXKV388R2
+         tUaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vADKNGJMZ3WvnhwsSTViLOVm49gkP1dC5MYlKD5ocGA=;
-        b=ESwvWLJT5/ZJyoaPpmZPnCRrgQtpBgkX1IM9/WLI/ZmLk4WYxsC4lqsS3Xru1RlHK+
-         ht0wxrq83Tvj0Uj7FZY/Ar3zQ0OYlgM0Ak70mEvmxcpXTl3B1DYEczWnmDw0vEyspM5T
-         NG1qm4BUcdxe/DbC1V22jO8CQlucIQ7GXYzA9MYyON874n3oEMVk7u1WwiZePH4gY8YE
-         p590CNc3Ri5YCr2urLzQY/bs+hCkGTzf2+FK+LxQkwYSk7RpnLxG7QSFqPafeGPjEZue
-         FCevUJwU88IhWQn3ExLP6j77AnVr9/d+/8ue22kPeAPSbRWNuXjwC5Sq/GHJ7QAXII1s
-         8ofw==
-X-Gm-Message-State: AOAM532CLiT/Vc0KKuUhbsh4tYsIvAcsx5MKjvAbtWB3OYU3qFZu0FBK
-        q0sVjX+ayp8lzykYCW3r+k9Nm4MZzQ==
-X-Google-Smtp-Source: ABdhPJz2uhw/0396q6HkbPxCRaaVXMhQ3cEVjBUY6URBMOBH2FQe7OFi+g7J2NVfqN4QAfxCKdbozQ==
-X-Received: by 2002:a05:6602:1541:b0:614:d42b:2c86 with SMTP id h1-20020a056602154100b00614d42b2c86mr3567242iow.145.1645140529859;
-        Thu, 17 Feb 2022 15:28:49 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id g9sm2804683ile.41.2022.02.17.15.28.47
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qVmlOhX5PcDPicm3lYGlBTzA02rk1OQ79iZTV4IdZTk=;
+        b=EDSyD+HZp6ajeh3p6n136WWrihsisG7Ju0NlxUlZHvYlif2jkY/sFSPorEQuFzvMXG
+         iD+/achMohIPDWrS36d/dCNJISQywvCJ9urGecEVkPQ7e5QQbybPEsi/Kgd1Jwm4UB7Q
+         PM4GoTI1aY1c28ibS5fTvXWxiDXC6gdYf2RjHh4Fyu4/nesQ6LSvAL6xxf1D5qkV5VCa
+         Y8/jJF9lmuuk2V23dcCnpaIFt+6z3TRq/ADP//SjK2RmgP4gfUn7IC/PjfOG6g0fo9QK
+         B5j6+JYCC3ZMsD5giuhOKvfbtAy6E8J0hMeiVlYCHb80b7BiSfKYV7lVKkS9S/Bq/YsI
+         bZrA==
+X-Gm-Message-State: AOAM530R0HlPASYP+H/tWa1bQiI/5uFkhJPKMV6AsQyBvNk2kgoUbCoD
+        UIoQlBLLy8ZnACzud6Yw2Oc=
+X-Google-Smtp-Source: ABdhPJySbGj8fUBmzrgQ2vpc0iEgvmPl8Q+GfLB1uHIRLyg8RiYytQ2fBJzridL03YC+KIQST+YuAg==
+X-Received: by 2002:a5d:518d:0:b0:1e5:8cc9:5aa4 with SMTP id k13-20020a5d518d000000b001e58cc95aa4mr3845386wrv.119.1645142223343;
+        Thu, 17 Feb 2022 15:57:03 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id r2sm3691694wmq.24.2022.02.17.15.57.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:28:49 -0800 (PST)
-Received: (nullmailer pid 3971311 invoked by uid 1000);
-        Thu, 17 Feb 2022 23:28:47 -0000
-Date:   Thu, 17 Feb 2022 17:28:47 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc:     kavyasree.kotagiri@microchip.com, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, devicetree@vger.kernel.org,
-        alexandre.belloni@bootlin.com, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, herbert@gondor.apana.org.au,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        krzysztof.kozlowski@canonical.com
-Subject: Re: [PACTH v4 2/3] dt-bindings: crypto: Convert Atmel TDES to yaml
-Message-ID: <Yg7aL+0RjEi+bdMl@robh.at.kernel.org>
-References: <20220211093922.456634-1-tudor.ambarus@microchip.com>
- <20220211093922.456634-3-tudor.ambarus@microchip.com>
+        Thu, 17 Feb 2022 15:57:02 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Taniya Das <tdas@codeaurora.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 00/16] Multiple addition and improvement to ipq8064 gcc
+Date:   Fri, 18 Feb 2022 00:56:47 +0100
+Message-Id: <20220217235703.26641-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220211093922.456634-3-tudor.ambarus@microchip.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 11:39:21 +0200, Tudor Ambarus wrote:
-> Convert Atmel TDES documentation to yaml format. With the conversion the
-> clock and clock-names properties are made mandatory. The driver returns
-> -EINVAL if "tdes_clk" is not found, reflect that in the bindings and make
-> the clock and clock-names properties mandatory. Update the example to
-> better describe how one should define the dt node.
-> 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> ---
->  .../crypto/atmel,at91sam9g46-tdes.yaml        | 64 +++++++++++++++++++
->  .../bindings/crypto/atmel-crypto.txt          | 23 -------
->  2 files changed, 64 insertions(+), 23 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml
-> 
+This is an attempt in making the ipq8064 SoC actually usable. Currently
+many feature are missing for this SoC and devs user off-the-tree patches
+to make it work (example patch for missing clock, patch for cpufreq
+driver, patch to add missing node in the dts)
 
-Applied, thanks!
+I notice there was some work in modernizing the gcc driver for other
+qcom target but this wasn't done for ipq806x. This does exactly this, we
+drop any parent_names stuff and we switch to the parent_data way. We
+also drop the pxo and cxo source clk from gcc driver and we refer to the
+dts for it.
+
+This also add all the missing feature for the nss cores and the
+cryptoengine in them. It does also introduce the required flags to make
+the RPM actually work and NOT reject any command. There was an attempt
+in declaring these clock as core clock in the dts but this ends up in no
+serial as the kernel makes these clock not accessible. We just want to
+make the kernel NOT disable them if unused nothing more.
+
+At the end we update the ipq8064 dtsi to add the pxo and cxo tag and
+declare them in gcc and also fix a problem with tsens probe.
+
+v4:
+- Drop drivers in all the patches.
+- Introduce floor ops for sdc
+- gcc.yaml to gcc-other.yaml
+- gcc-common.yaml to gcc.yaml
+v3:
+- Rework Documentation with Rob suggestions
+v2:
+- Fix error from Rob bot.
+- Add additional commits to make qcom,gcc.yaml a template
+- Squash parent_hws patch with the modernize patch
+- Create gcc_pxo instead of using long define.
+
+Ansuel Smith (16):
+  dt-bindings: clock: split qcom,gcc.yaml to common and specific schema
+  dt-bindings: clock: simplify qcom,gcc-apq8064 Documentation
+  dt-bindings: clock: Document qcom,gcc-ipq8064 binding
+  clk: qcom: gcc-ipq806x: fix wrong naming for gcc_pxo_pll8_pll0
+  clk: qcom: gcc-ipq806x: convert parent_names to parent_data
+  clk: qcom: gcc-ipq806x: use ARRAY_SIZE for num_parents
+  clk: qcom: gcc-ipq806x: drop hardcoded pxo and cxo source clk
+  clk: qcom: gcc-ipq806x: add additional freq nss cores
+  clk: qcom: gcc-ipq806x: add unusued flag for critical clock
+  clk: qcom: clk-rcg: add clk_rcg_floor_ops ops
+  clk: qcom: gcc-ipq806x: add additional freq for sdc table
+  dt-bindings: clock: add ipq8064 ce5 clk define
+  clk: qcom: gcc-ipq806x: add CryptoEngine clocks
+  dt-bindings: reset: add ipq8064 ce5 resets
+  clk: qcom: gcc-ipq806x: add CryptoEngine resets
+  ARM: dts: qcom: Add syscon and cxo/pxo clock to gcc node for ipq8064
+
+ .../bindings/clock/qcom,gcc-apq8064.yaml      |  29 +-
+ .../bindings/clock/qcom,gcc-ipq8064.yaml      |  76 +++
+ .../bindings/clock/qcom,gcc-other.yaml        |  70 ++
+ .../devicetree/bindings/clock/qcom,gcc.yaml   |  63 +-
+ arch/arm/boot/dts/qcom-ipq8064.dtsi           |   8 +-
+ drivers/clk/qcom/clk-rcg.c                    |  24 +
+ drivers/clk/qcom/gcc-ipq806x.c                | 640 +++++++++++++-----
+ include/dt-bindings/clock/qcom,gcc-ipq806x.h  |   5 +-
+ include/dt-bindings/reset/qcom,gcc-ipq806x.h  |   5 +
+ 9 files changed, 670 insertions(+), 250 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
+
+-- 
+2.34.1
+
