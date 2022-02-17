@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F71C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:05:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3656BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240781AbiBQVFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:05:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38182 "EHLO
+        id S245490AbiBQVFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 16:05:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244181AbiBQVEI (ORCPT
+        with ESMTP id S244255AbiBQVEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:04:08 -0500
+        Thu, 17 Feb 2022 16:04:11 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A89A5606C0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:03:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF7A51017EF
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:03:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645131832;
+        s=mimecast20190719; t=1645131834;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZgAtpSiEllHqyj81dALZNFNhaF5xNC1SM5IGKvMVmio=;
-        b=Wq//u8JsbhX+I9EkFKQGt8xjXOmWZ5XxVOaXPTsInXTk/LMJQhJm1aJU3rpPWAvxawKwCM
-        jwMAmhasLMw9npVVqlJSrrMuC2SU3eVw0hsNzcJfOaAEs0E/Tt1+Vj6TNvRVovvWtSq1x2
-        t7qX8zqMJd8ihTJTs7tmEBXNkn9rMG0=
+        bh=NX/p+3ovzAsh1RMwMjnRGHxJsp1FvXTx8d19l00fGLI=;
+        b=WkHleUe/TbcMKTnGo0WPjIFPZBc7Peqd3z2aBcYxY1dCWJdmQFmi6VAwHqMfTBxqxysX8E
+        PTgNbGICrmjt+954CWAwvGuBU6uOZnRwRta/ESRsAUWKDoJVKdB8Y3FER9HjiEYnWZWDGJ
+        O+/mJL+cC8xo3VRm/X6VoiAa13kLqkk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-121-9h1SdD80Nu6TLhpGroVYYg-1; Thu, 17 Feb 2022 16:03:49 -0500
-X-MC-Unique: 9h1SdD80Nu6TLhpGroVYYg-1
+ us-mta-569-at2ZsQzxN1-8gbUmI3ucJw-1; Thu, 17 Feb 2022 16:03:50 -0500
+X-MC-Unique: at2ZsQzxN1-8gbUmI3ucJw-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 329692F4A;
-        Thu, 17 Feb 2022 21:03:48 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B661814245;
+        Thu, 17 Feb 2022 21:03:49 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D7EAF6AB90;
-        Thu, 17 Feb 2022 21:03:47 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C82F6AB90;
+        Thu, 17 Feb 2022 21:03:49 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH v2 14/18] KVM: x86/mmu: avoid indirect call for get_cr3
-Date:   Thu, 17 Feb 2022 16:03:36 -0500
-Message-Id: <20220217210340.312449-15-pbonzini@redhat.com>
+Subject: [PATCH v2 17/18] KVM: x86: flush TLB separately from MMU reset
+Date:   Thu, 17 Feb 2022 16:03:39 -0500
+Message-Id: <20220217210340.312449-18-pbonzini@redhat.com>
 In-Reply-To: <20220217210340.312449-1-pbonzini@redhat.com>
 References: <20220217210340.312449-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -53,130 +53,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Most of the time, calls to get_guest_pgd result in calling
-kvm_read_cr3 (the exception is only nested TDP).  Hardcode
-the default instead of using the get_cr3 function, avoiding
-a retpoline if they are enabled.
+For both CR0 and CR4, disassociate the TLB flush logic from the
+MMU role logic.  Instead  of relying on kvm_mmu_reset_context() being
+a superset of various TLB flushes (which is not necessarily going to
+be the case in the future), always call it if the role changes
+but also set the various TLB flush requests according to what is
+in the manual.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu.h             | 13 +++++++++++++
- arch/x86/kvm/mmu/mmu.c         | 15 +++++----------
- arch/x86/kvm/mmu/paging_tmpl.h |  2 +-
- arch/x86/kvm/x86.c             |  2 +-
- 4 files changed, 20 insertions(+), 12 deletions(-)
+ arch/x86/kvm/x86.c | 58 ++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 40 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index 1d0c1904d69a..1808d6814ddb 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -116,6 +116,19 @@ static inline void kvm_mmu_load_pgd(struct kvm_vcpu *vcpu)
- 					  vcpu->arch.mmu->shadow_root_level);
- }
- 
-+static inline gpa_t __kvm_mmu_get_guest_pgd(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
-+{
-+	if (!mmu->get_guest_pgd)
-+		return kvm_read_cr3(vcpu);
-+	else
-+		return mmu->get_guest_pgd(vcpu);
-+}
-+
-+static inline gpa_t kvm_mmu_get_guest_pgd(struct kvm_vcpu *vcpu)
-+{
-+	return __kvm_mmu_get_guest_pgd(vcpu, vcpu->arch.mmu);
-+}
-+
- struct kvm_page_fault {
- 	/* arguments to kvm_mmu_do_page_fault.  */
- 	const gpa_t addr;
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 4e8e3e9530ca..d422d0d2adf8 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3451,7 +3451,7 @@ static int mmu_alloc_shadow_roots(struct kvm_vcpu *vcpu)
- 	unsigned i;
- 	int r;
- 
--	root_pgd = mmu->get_guest_pgd(vcpu);
-+	root_pgd = kvm_mmu_get_guest_pgd(vcpu);
- 	root_gfn = root_pgd >> PAGE_SHIFT;
- 
- 	if (mmu_check_root(vcpu, root_gfn))
-@@ -3881,7 +3881,7 @@ static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 	arch.token = (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
- 	arch.gfn = gfn;
- 	arch.direct_map = vcpu->arch.mmu->direct_map;
--	arch.cr3 = vcpu->arch.mmu->get_guest_pgd(vcpu);
-+	arch.cr3 = kvm_mmu_get_guest_pgd(vcpu);
- 
- 	return kvm_setup_async_pf(vcpu, cr2_or_gpa,
- 				  kvm_vcpu_gfn_to_hva(vcpu, gfn), &arch);
-@@ -4230,11 +4230,6 @@ void kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd)
- }
- EXPORT_SYMBOL_GPL(kvm_mmu_new_pgd);
- 
--static unsigned long get_cr3(struct kvm_vcpu *vcpu)
--{
--	return kvm_read_cr3(vcpu);
--}
--
- static bool sync_mmio_spte(struct kvm_vcpu *vcpu, u64 *sptep, gfn_t gfn,
- 			   unsigned int access)
- {
-@@ -4789,7 +4784,7 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu)
- 	context->invlpg = NULL;
- 	context->shadow_root_level = kvm_mmu_get_tdp_level(vcpu);
- 	context->direct_map = true;
--	context->get_guest_pgd = get_cr3;
-+	context->get_guest_pgd = NULL; /* use kvm_read_cr3 */
- 	context->get_pdptr = kvm_pdptr_read;
- 	context->inject_page_fault = kvm_inject_page_fault;
- 	context->root_level = role_regs_to_root_level(&regs);
-@@ -4964,7 +4959,7 @@ static void init_kvm_softmmu(struct kvm_vcpu *vcpu)
- 
- 	kvm_init_shadow_mmu(vcpu, &regs);
- 
--	context->get_guest_pgd     = get_cr3;
-+	context->get_guest_pgd	   = NULL; /* use kvm_read_cr3 */
- 	context->get_pdptr         = kvm_pdptr_read;
- 	context->inject_page_fault = kvm_inject_page_fault;
- }
-@@ -4996,7 +4991,7 @@ static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu)
- 		return;
- 
- 	g_context->mmu_role.as_u64 = new_role.as_u64;
--	g_context->get_guest_pgd     = get_cr3;
-+	g_context->get_guest_pgd     = NULL; /* use kvm_read_cr3 */
- 	g_context->get_pdptr         = kvm_pdptr_read;
- 	g_context->inject_page_fault = kvm_inject_page_fault;
- 	g_context->root_level        = new_role.base.level;
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 346f3bad3cb9..1a85aba837b2 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -362,7 +362,7 @@ static int FNAME(walk_addr_generic)(struct guest_walker *walker,
- 	trace_kvm_mmu_pagetable_walk(addr, access);
- retry_walk:
- 	walker->level = mmu->root_level;
--	pte           = mmu->get_guest_pgd(vcpu);
-+	pte           = __kvm_mmu_get_guest_pgd(vcpu, mmu);
- 	have_ad       = PT_HAVE_ACCESSED_DIRTY(mmu);
- 
- #if PTTYPE == 64
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index f10878aa5b20..adcee7c305ca 100644
+index 9043548e6baf..2b4663dfcd8d 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -12161,7 +12161,7 @@ void kvm_arch_async_page_ready(struct kvm_vcpu *vcpu, struct kvm_async_pf *work)
- 		return;
+@@ -871,6 +871,13 @@ void kvm_post_set_cr0(struct kvm_vcpu *vcpu, unsigned long old_cr0, unsigned lon
+ 	if ((cr0 ^ old_cr0) & X86_CR0_PG) {
+ 		kvm_clear_async_pf_completion_queue(vcpu);
+ 		kvm_async_pf_hash_reset(vcpu);
++
++		/*
++		 * Clearing CR0.PG is defined to flush the TLB from the guest's
++		 * perspective.
++		 */
++		if (!(cr0 & X86_CR0_PG))
++			kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
+ 	}
  
- 	if (!vcpu->arch.mmu->direct_map &&
--	      work->arch.cr3 != vcpu->arch.mmu->get_guest_pgd(vcpu))
-+	      work->arch.cr3 != kvm_mmu_get_guest_pgd(vcpu))
- 		return;
+ 	if ((cr0 ^ old_cr0) & KVM_MMU_CR0_ROLE_BITS)
+@@ -1057,28 +1064,41 @@ EXPORT_SYMBOL_GPL(kvm_is_valid_cr4);
  
- 	kvm_mmu_do_page_fault(vcpu, work->cr2_or_gpa, 0, true);
+ void kvm_post_set_cr4(struct kvm_vcpu *vcpu, unsigned long old_cr4, unsigned long cr4)
+ {
++	if ((cr4 ^ old_cr4) & KVM_MMU_CR4_ROLE_BITS)
++		kvm_mmu_reset_context(vcpu);
++
+ 	/*
+-	 * If any role bit is changed, the MMU needs to be reset.
+-	 *
+-	 * If CR4.PCIDE is changed 1 -> 0, the guest TLB must be flushed.
+ 	 * If CR4.PCIDE is changed 0 -> 1, there is no need to flush the TLB
+ 	 * according to the SDM; however, stale prev_roots could be reused
+ 	 * incorrectly in the future after a MOV to CR3 with NOFLUSH=1, so we
+-	 * free them all.  KVM_REQ_MMU_RELOAD is fit for the both cases; it
+-	 * is slow, but changing CR4.PCIDE is a rare case.
+-	 *
+-	 * If CR4.PGE is changed, the guest TLB must be flushed.
+-	 *
+-	 * Note: resetting MMU is a superset of KVM_REQ_MMU_RELOAD and
+-	 * KVM_REQ_MMU_RELOAD is a superset of KVM_REQ_TLB_FLUSH_GUEST, hence
+-	 * the usage of "else if".
++	 * free them all.  This is *not* a superset of KVM_REQ_TLB_FLUSH_GUEST
++	 * or KVM_REQ_TLB_FLUSH_CURRENT, because the hardware TLB is not flushed,
++	 * so fall through.
+ 	 */
+-	if ((cr4 ^ old_cr4) & KVM_MMU_CR4_ROLE_BITS)
+-		kvm_mmu_reset_context(vcpu);
+-	else if ((cr4 ^ old_cr4) & X86_CR4_PCIDE)
++	if (!tdp_enabled &&
++	    (cr4 & X86_CR4_PCIDE) && !(old_cr4 & X86_CR4_PCIDE))
+ 		kvm_make_request(KVM_REQ_MMU_RELOAD, vcpu);
+-	else if ((cr4 ^ old_cr4) & X86_CR4_PGE)
+-		kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
++
++	/*
++	 * The TLB has to be flushed for all PCIDs on:
++	 * - CR4.PCIDE changed from 1 to 0
++	 * - any change to CR4.PGE
++	 *
++	 * This is a superset of KVM_REQ_TLB_FLUSH_CURRENT.
++	 */
++	if (((cr4 ^ old_cr4) & X86_CR4_PGE) ||
++	    (!(cr4 & X86_CR4_PCIDE) && (old_cr4 & X86_CR4_PCIDE)))
++		 kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
++
++	/*
++	 * The TLB has to be flushed for the current PCID on:
++	 * - CR4.SMEP changed from 0 to 1
++	 * - any change to CR4.PAE
++	 */
++	else if (((cr4 ^ old_cr4) & X86_CR4_PAE) ||
++		 ((cr4 & X86_CR4_SMEP) && !(old_cr4 & X86_CR4_SMEP)))
++		 kvm_make_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu);
++
+ }
+ EXPORT_SYMBOL_GPL(kvm_post_set_cr4);
+ 
+@@ -11323,15 +11343,17 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	static_call(kvm_x86_update_exception_bitmap)(vcpu);
+ 
+ 	/*
+-	 * Reset the MMU context if paging was enabled prior to INIT (which is
++	 * A TLB flush is needed if paging was enabled prior to INIT (which is
+ 	 * implied if CR0.PG=1 as CR0 will be '0' prior to RESET).  Unlike the
+ 	 * standard CR0/CR4/EFER modification paths, only CR0.PG needs to be
+ 	 * checked because it is unconditionally cleared on INIT and all other
+ 	 * paging related bits are ignored if paging is disabled, i.e. CR0.WP,
+ 	 * CR4, and EFER changes are all irrelevant if CR0.PG was '0'.
+ 	 */
+-	if (old_cr0 & X86_CR0_PG)
++	if (old_cr0 & X86_CR0_PG) {
++		kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
+ 		kvm_mmu_reset_context(vcpu);
++	}
+ 
+ 	/*
+ 	 * Intel's SDM states that all TLB entries are flushed on INIT.  AMD's
 -- 
 2.31.1
 
