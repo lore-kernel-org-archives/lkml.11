@@ -2,190 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EAA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E30C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239126AbiBQKe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 05:34:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40798 "EHLO
+        id S239249AbiBQKgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 05:36:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234080AbiBQKey (ORCPT
+        with ESMTP id S232082AbiBQKfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 05:34:54 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B011A1389;
-        Thu, 17 Feb 2022 02:34:39 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id A59FE1F45962
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645094078;
-        bh=SVtmAhjbCcfy60glzhGufZJi/SGBEgXxMHHvfrInk78=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Hir6ZAzP5xKsuWQJOkhmD4vmeuRqOSqkuXfR5V6cDif2zWwrK1EiCJKXbHqjUymQv
-         hK3JJK7UtdpfXb6vWnjhQLk5DT5SogIyZjUq+3Mddf8u/+Bws8877ifRtK0VKf96oV
-         vtH/MoPn4acGO0u0QFn9vpZZzTvXlC52V/QwXAruED9l3UfddfbfMdG4h18XC3bTOM
-         NLisby2js2QXmSlS9eqEwBncQIGW8OVIUkVMKBjK2rw7L/y3dfTVkTXPKjdew6n7g5
-         NNSZ93bQiuyKWMlWMtyRz4k7RcRR3R4k5AvgR9zp9KZ27EhkO3ahufxwORHUxSvPS+
-         TsdLmKayGDXIQ==
-Message-ID: <0c91da54-190f-7039-ca5d-414e397f7a95@collabora.com>
-Date:   Thu, 17 Feb 2022 11:34:35 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2] arm64: dts: mediatek: Add Mediatek mt8192 cpufreq
- device nodes
-Content-Language: en-US
-To:     "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        srv_heupstream@mediatek.com,
-        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-References: <1609223471-24325-1-git-send-email-andrew-sh.cheng@mediatek.com>
- <20220210144659.2vkuuh74xagic3ud@notapiano>
- <20220210185603.lmgf4ppppe3ccscj@notapiano>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220210185603.lmgf4ppppe3ccscj@notapiano>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Thu, 17 Feb 2022 05:35:52 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29F37280ED8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 02:35:36 -0800 (PST)
+Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
+        by 156.147.23.53 with ESMTP; 17 Feb 2022 19:35:34 +0900
+X-Original-SENDERIP: 156.147.1.125
+X-Original-MAILFROM: byungchul.park@lge.com
+Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
+        by 156.147.1.125 with ESMTP; 17 Feb 2022 19:35:34 +0900
+X-Original-SENDERIP: 10.177.244.38
+X-Original-MAILFROM: byungchul.park@lge.com
+From:   Byungchul Park <byungchul.park@lge.com>
+To:     torvalds@linux-foundation.org
+Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        mingo@redhat.com, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
+        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
+        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
+        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
+        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
+        amir73il@gmail.com, bfields@fieldses.org,
+        gregkh@linuxfoundation.org, kernel-team@lge.com,
+        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
+        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
+        ngupta@vflare.org, linux-block@vger.kernel.org, axboe@kernel.dk,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
+        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com
+Subject: Re: Report in ata_scsi_port_error_handler()
+Date:   Thu, 17 Feb 2022 19:35:28 +0900
+Message-Id: <1645094128-17099-1-git-send-email-byungchul.park@lge.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <CAHk-=wgfpfWuNQi2SjXQL1ir6iKCpUdBruJ+kmOQP1frH7Zdig@mail.gmail.com>
+References: <CAHk-=wgfpfWuNQi2SjXQL1ir6iKCpUdBruJ+kmOQP1frH7Zdig@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 10/02/22 19:56, Nícolas F. R. A. Prado ha scritto:
-> Hi again,
-> please see my comment below.
+<torvalds@linux-foundation.org> wrote:
+> On Tue, Feb 15, 2022 at 10:37 PM Damien Le Moal
+> <damien.lemoal@opensource.wdc.com> wrote:
+> >
+> > On 2/16/22 13:16, Byungchul Park wrote:
+> > > [    2.051040 ] ===================================================
+> > > [    2.051406 ] DEPT: Circular dependency has been detected.
+> > > [    2.051730 ] 5.17.0-rc1-00014-gcf3441bb2012 #2 Tainted: G        W
+> > > [    2.051991 ] ---------------------------------------------------
+> > > [    2.051991 ] summary
+> > > [    2.051991 ] ---------------------------------------------------
+> > > [    2.051991 ] *** DEADLOCK ***
+> > > [    2.051991 ]
+> > > [    2.051991 ] context A
+> > > [    2.051991 ]     [S] (unknown)(&(&ap->eh_wait_q)->dmap:0)
+> > > [    2.051991 ]     [W] __raw_spin_lock_irq(&host->lock:0)
+> > > [    2.051991 ]     [E] event(&(&ap->eh_wait_q)->dmap:0)
+> > > [    2.051991 ]
+> > > [    2.051991 ] context B
+> > > [    2.051991 ]     [S] __raw_spin_lock_irqsave(&host->lock:0)
+> > > [    2.051991 ]     [W] wait(&(&ap->eh_wait_q)->dmap:0)
+> > > [    2.051991 ]     [E] spin_unlock(&host->lock:0)
+> >
+> > Sleeping with a spinlock held would be triggering warnings already, so
+> > these reports seem bogus to me.
 > 
-> On Thu, Feb 10, 2022 at 09:47:04AM -0500, Nícolas F. R. A. Prado wrote:
->> Hi Andrew,
->>
->> On Tue, Dec 29, 2020 at 02:31:11PM +0800, Andrew-sh.Cheng wrote:
->>> From: "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>
->>>
->>> Correct dts node name in patch v1: performance-domain
->>> This patch depends on [1] and [2].
->>>
->>> [1]http://lists.infradead.org/pipermail/linux-mediatek/2020-November/019378.html
->>> [2]https://patchwork.kernel.org/project/linux-mediatek/patch/1607586516-6547-3-git-send-email-hector.yuan@mediatek.com/
->>
->> Those two series are now merged, so no dependencies missing for this patch any
->> longer.
->>
->> Please rebase this patch, as there are some conflicts. I've already verified it,
->> and after you rebase I can send a reviewed-by.
->>
->> Thanks,
->> Nícolas
->>
->>>
->>> Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
->>> ---
->>>   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 14 ++++++++++++++
->>>   1 file changed, 14 insertions(+)
->>>
->>> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
->>> index 69d45c7b31f1..a907ee7e650a 100644
->>> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
->>> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
->>> @@ -39,6 +39,7 @@
->>>   			compatible = "arm,cortex-a55";
->>>   			reg = <0x000>;
->>>   			enable-method = "psci";
->>> +			performance-domains = <&performance 0>;
->>>   			clock-frequency = <1701000000>;
->>>   			next-level-cache = <&l2_0>;
->>>   			capacity-dmips-mhz = <530>;
->>> @@ -49,6 +50,7 @@
->>>   			compatible = "arm,cortex-a55";
->>>   			reg = <0x100>;
->>>   			enable-method = "psci";
->>> +			performance-domains = <&performance 0>;
->>>   			clock-frequency = <1701000000>;
->>>   			next-level-cache = <&l2_0>;
->>>   			capacity-dmips-mhz = <530>;
->>> @@ -59,6 +61,7 @@
->>>   			compatible = "arm,cortex-a55";
->>>   			reg = <0x200>;
->>>   			enable-method = "psci";
->>> +			performance-domains = <&performance 0>;
->>>   			clock-frequency = <1701000000>;
->>>   			next-level-cache = <&l2_0>;
->>>   			capacity-dmips-mhz = <530>;
->>> @@ -69,6 +72,7 @@
->>>   			compatible = "arm,cortex-a55";
->>>   			reg = <0x300>;
->>>   			enable-method = "psci";
->>> +			performance-domains = <&performance 0>;
->>>   			clock-frequency = <1701000000>;
->>>   			next-level-cache = <&l2_0>;
->>>   			capacity-dmips-mhz = <530>;
->>> @@ -79,6 +83,7 @@
->>>   			compatible = "arm,cortex-a76";
->>>   			reg = <0x400>;
->>>   			enable-method = "psci";
->>> +			performance-domains = <&performance 1>;
->>>   			clock-frequency = <2171000000>;
->>>   			next-level-cache = <&l2_1>;
->>>   			capacity-dmips-mhz = <1024>;
->>> @@ -89,6 +94,7 @@
->>>   			compatible = "arm,cortex-a76";
->>>   			reg = <0x500>;
->>>   			enable-method = "psci";
->>> +			performance-domains = <&performance 1>;
->>>   			clock-frequency = <2171000000>;
->>>   			next-level-cache = <&l2_1>;
->>>   			capacity-dmips-mhz = <1024>;
->>> @@ -99,6 +105,7 @@
->>>   			compatible = "arm,cortex-a76";
->>>   			reg = <0x600>;
->>>   			enable-method = "psci";
->>> +			performance-domains = <&performance 1>;
->>>   			clock-frequency = <2171000000>;
->>>   			next-level-cache = <&l2_1>;
->>>   			capacity-dmips-mhz = <1024>;
->>> @@ -109,6 +116,7 @@
->>>   			compatible = "arm,cortex-a76";
->>>   			reg = <0x700>;
->>>   			enable-method = "psci";
->>> +			performance-domains = <&performance 1>;
->>>   			clock-frequency = <2171000000>;
->>>   			next-level-cache = <&l2_1>;
->>>   			capacity-dmips-mhz = <1024>;
->>> @@ -194,6 +202,12 @@
->>>   		compatible = "simple-bus";
->>>   		ranges;
->>>   
->>> +		performance: performance-controller@0011bc00 {
+> Yeah, Matthew pointed out the same thing for another use-case, where
+> it looks like DEPT is looking at the state at the wrong point (not at
+> the scheduling point, but at prepare_to_sleep()).
 > 
-> Actually there is a warning being introduced here on dtbs_check:
+> This ata_port_wait() is the exact same pattern, ie we have
 > 
-> 	soc: 'performance-controller@0011bc00' does not match any of the regexes: '@(0|[1-9a-f][0-9a-f]*)$', '^[^@]+$', 'pinctrl-[0-9]+'
-> 		From schema: [...]/dtschema/schemas/simple-bus.yaml
+>	spin_lock_irqsave(ap->lock, flags);
 > 
-> So you should also change the address to not start with zeros: 11bc00
+>	while (ap->pflags & (ATA_PFLAG_EH_PENDING | ATA_PFLAG_EH_IN_PROGRESS)) {
+>		prepare_to_wait(&ap->eh_wait_q, &wait, TASK_UNINTERRUPTIBLE);
+>		spin_unlock_irqrestore(ap->lock, flags);
+>		schedule();
 > 
-> Thanks,
-> Nícolas
+> and DEPT has incorrectly taken it to mean that 'ap->lock' is held
+> during the wait, when it is actually released before actually waiting.
 > 
->>> +			compatible = "mediatek,cpufreq-hw";
->>> +			reg = <0 0x0011bc10 0 0x120>, <0 0x0011bd30 0 0x120>;
->>> +			#performance-domain-cells = <1>;
->>> +		};
->>> +
->>>   		gic: interrupt-controller@c000000 {
->>>   			compatible = "arm,gic-v3";
->>>   			#interrupt-cells = <4>;
->>> -- 
->>> 2.12.5
+> For the spin-locks, this is all very obvious (because they'd have been
+> caught long ago by much simpler debug code), but the same
+> prepare_to_wait -> wait pattern can most definitely happen with
+> sleeping locks too, so they are all slightly suspect.
+> 
+> And yes, the detailed reports are hard to read because the locations
+> are given as "ata_port_wait_eh+0x52/0xc0". Running them through
+> scripts/decode_stacktrace.sh to turn them into filename and line
+> numbers - and also sort out inlining - would help a lot.
+> 
+> Byungchul, could you fix those two issues? Some of your reports may
 
-Hello Andrew,
+Of couse, that's what I should do. Thanks for your feedback.
 
-are you still interested in upstreaming this patch?
-If you are, please update it with the suggested changes.
-
-Thank you,
-Angelo
+> well be entirely valid, but the hard-to-read hex offsets and the
+> knowledge that at least some of them are confused about how
+> prepare_to_wait -> wait actually works makes the motivation to look at
+> the details much less..
+> 
+> 	Linus
