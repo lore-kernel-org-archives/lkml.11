@@ -2,136 +2,275 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0642BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244222AbiBQSXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:23:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53562 "EHLO
+        id S244224AbiBQSX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:23:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244189AbiBQSXR (ORCPT
+        with ESMTP id S244211AbiBQSXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:23:17 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A538220196;
-        Thu, 17 Feb 2022 10:23:02 -0800 (PST)
-Date:   Thu, 17 Feb 2022 18:22:59 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645122181;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NQfR/4Bh3Na8ZE2qdjeZClIZpmTHDnvnT8L0QQMwGfg=;
-        b=AOZz+GNDbSJLpHnoP5mVaNbFNgVNidgsGep+JcXXWBcBzvhi9HQBXYmp1KyWry5z5RUYDx
-        tOzuKvGL86bu9b0Y1gT5CnzDattNQI4YTTGvcfhOHQBT682mhlu1TTHpxnMz2KrZJNk1i9
-        6lXhXuw1r00nO68SI8szSarklUkpUEPHJUPPYbWbpctLXA17RE0sNRO3q2U5/hv9AuzIp4
-        fE6617uahQ3x3a3aAqZGRyaQgSX5TCnNaVaSq8P1Jb3bZhgYqNylMxsU+4GDkyBDyj6QpC
-        Egln65X3RF7p+VnS7/Jb3J+36+4yfVt3S8MGKs24mLpSE8JDoG6WazNEOAD+lA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645122181;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NQfR/4Bh3Na8ZE2qdjeZClIZpmTHDnvnT8L0QQMwGfg=;
-        b=YraBV9jHzeqPwWyEVejDv2H6MT9QO/tLW8wrNxMXuSQrS/hFQpOAoknZYxmucsa2jPt5Cy
-        muHisMgVx1eLlFCg==
-From:   "tip-bot2 for Reinette Chatre" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/sgx: Add poison handling to reclaimer
-Cc:     Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: =?utf-8?q?=3Cdcc95eb2aaefb042527ac50d0a50738c7c160dac=2E16438?=
- =?utf-8?q?30353=2Egit=2Ereinette=2Echatre=40intel=2Ecom=3E?=
-References: =?utf-8?q?=3Cdcc95eb2aaefb042527ac50d0a50738c7c160dac=2E164383?=
- =?utf-8?q?0353=2Egit=2Ereinette=2Echatre=40intel=2Ecom=3E?=
+        Thu, 17 Feb 2022 13:23:19 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29E8D23BCE
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:23:03 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BF4771515;
+        Thu, 17 Feb 2022 10:23:03 -0800 (PST)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8FB333F718;
+        Thu, 17 Feb 2022 10:23:01 -0800 (PST)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        Jamie Iles <jamie@nuviainc.com>,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com
+Subject: [PATCH v3 03/21] x86/resctrl: Add domain online callback for resctrl work
+Date:   Thu, 17 Feb 2022 18:20:52 +0000
+Message-Id: <20220217182110.7176-4-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220217182110.7176-1-james.morse@arm.com>
+References: <20220217182110.7176-1-james.morse@arm.com>
 MIME-Version: 1.0
-Message-ID: <164512217993.16921.1720244213113719560.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+Because domains are exposed to user-space via resctrl, the filesystem
+must update its state when CPU hotplug callbacks are triggered.
 
-Commit-ID:     f4b2a4606a14ab0b697a4e21754c9ad19d39f8ca
-Gitweb:        https://git.kernel.org/tip/f4b2a4606a14ab0b697a4e21754c9ad19d39f8ca
-Author:        Reinette Chatre <reinette.chatre@intel.com>
-AuthorDate:    Wed, 02 Feb 2022 11:41:12 -08:00
-Committer:     Dave Hansen <dave.hansen@linux.intel.com>
-CommitterDate: Thu, 17 Feb 2022 09:12:04 -08:00
+Some of this work is common to any architecture that would support
+resctrl, but the work is tied up with the architecture code to
+allocate the memory.
 
-x86/sgx: Add poison handling to reclaimer
+Move domain_setup_mon_state(), the monitor subdir creation call and the
+mbm/limbo workers into a new resctrl_online_domain() call. These bits
+are not specific to the architecture. Grouping them in one function
+allows that code to be moved to /fs/ and re-used by another architecture.
 
-The SGX reclaimer code lacks page poison handling in its main
-free path. This can lead to avoidable machine checks if a
-poisoned page is freed and reallocated instead of being
-isolated.
-
-A troublesome scenario is:
- 1. Machine check (#MC) occurs (asynchronous, !MF_ACTION_REQUIRED)
- 2. arch_memory_failure() is eventually called
- 3. (SGX) page->poison set to 1
- 4. Page is reclaimed
- 5. Page added to normal free lists by sgx_reclaim_pages()
-    ^ This is the bug (poison pages should be isolated on the
-    sgx_poison_page_list instead)
- 6. Page is reallocated by some innocent enclave, a second (synchronous)
-    in-kernel #MC is induced, probably during EADD instruction.
-    ^ This is the fallout from the bug
-
-(6) is unfortunate and can be avoided by replacing the open coded
-enclave page freeing code in the reclaimer with sgx_free_epc_page()
-to obtain support for poison page handling that includes placing the
-poisoned page on the correct list.
-
-Fixes: d6d261bded8a ("x86/sgx: Add new sgx_epc_page flag bit to mark free pages")
-Fixes: 992801ae9243 ("x86/sgx: Initial poison handling for dirty and free pages")
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Link: https://lkml.kernel.org/r/dcc95eb2aaefb042527ac50d0a50738c7c160dac.1643830353.git.reinette.chatre@intel.com
+Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/x86/kernel/cpu/sgx/main.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+Changes since v2:
+ * Fixed kfree(d) rebase artefact.
 
-diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
-index 4b41efc..8e4bc64 100644
---- a/arch/x86/kernel/cpu/sgx/main.c
-+++ b/arch/x86/kernel/cpu/sgx/main.c
-@@ -344,10 +344,8 @@ static void sgx_reclaim_pages(void)
- {
- 	struct sgx_epc_page *chunk[SGX_NR_TO_SCAN];
- 	struct sgx_backing backing[SGX_NR_TO_SCAN];
--	struct sgx_epc_section *section;
- 	struct sgx_encl_page *encl_page;
- 	struct sgx_epc_page *epc_page;
--	struct sgx_numa_node *node;
- 	pgoff_t page_index;
- 	int cnt = 0;
- 	int ret;
-@@ -418,13 +416,7 @@ skip:
- 		kref_put(&encl_page->encl->refcount, sgx_encl_release);
- 		epc_page->flags &= ~SGX_EPC_PAGE_RECLAIMER_TRACKED;
- 
--		section = &sgx_epc_sections[epc_page->section];
--		node = section->node;
--
--		spin_lock(&node->lock);
--		list_add_tail(&epc_page->list, &node->free_page_list);
--		spin_unlock(&node->lock);
--		atomic_long_inc(&sgx_nr_free_pages);
-+		sgx_free_epc_page(epc_page);
- 	}
+Changes since v1:
+ * Capitalisation
+ * Removed inline comment
+ * Added to the commit message
+---
+ arch/x86/kernel/cpu/resctrl/core.c     | 57 ++++------------------
+ arch/x86/kernel/cpu/resctrl/internal.h |  2 -
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c | 65 ++++++++++++++++++++++++--
+ include/linux/resctrl.h                |  1 +
+ 4 files changed, 69 insertions(+), 56 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
+index 2f87177f1f69..25f30148478b 100644
+--- a/arch/x86/kernel/cpu/resctrl/core.c
++++ b/arch/x86/kernel/cpu/resctrl/core.c
+@@ -443,42 +443,6 @@ static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_domain *d)
+ 	return 0;
  }
  
+-static int domain_setup_mon_state(struct rdt_resource *r, struct rdt_domain *d)
+-{
+-	size_t tsize;
+-
+-	if (is_llc_occupancy_enabled()) {
+-		d->rmid_busy_llc = bitmap_zalloc(r->num_rmid, GFP_KERNEL);
+-		if (!d->rmid_busy_llc)
+-			return -ENOMEM;
+-		INIT_DELAYED_WORK(&d->cqm_limbo, cqm_handle_limbo);
+-	}
+-	if (is_mbm_total_enabled()) {
+-		tsize = sizeof(*d->mbm_total);
+-		d->mbm_total = kcalloc(r->num_rmid, tsize, GFP_KERNEL);
+-		if (!d->mbm_total) {
+-			bitmap_free(d->rmid_busy_llc);
+-			return -ENOMEM;
+-		}
+-	}
+-	if (is_mbm_local_enabled()) {
+-		tsize = sizeof(*d->mbm_local);
+-		d->mbm_local = kcalloc(r->num_rmid, tsize, GFP_KERNEL);
+-		if (!d->mbm_local) {
+-			bitmap_free(d->rmid_busy_llc);
+-			kfree(d->mbm_total);
+-			return -ENOMEM;
+-		}
+-	}
+-
+-	if (is_mbm_enabled()) {
+-		INIT_DELAYED_WORK(&d->mbm_over, mbm_handle_overflow);
+-		mbm_setup_overflow_handler(d, MBM_OVERFLOW_INTERVAL);
+-	}
+-
+-	return 0;
+-}
+-
+ /*
+  * domain_add_cpu - Add a cpu to a resource's domain list.
+  *
+@@ -498,6 +462,7 @@ static void domain_add_cpu(int cpu, struct rdt_resource *r)
+ 	struct list_head *add_pos = NULL;
+ 	struct rdt_hw_domain *hw_dom;
+ 	struct rdt_domain *d;
++	int err;
+ 
+ 	d = rdt_find_domain(r, id, &add_pos);
+ 	if (IS_ERR(d)) {
+@@ -527,21 +492,15 @@ static void domain_add_cpu(int cpu, struct rdt_resource *r)
+ 		return;
+ 	}
+ 
+-	if (r->mon_capable && domain_setup_mon_state(r, d)) {
+-		kfree(hw_dom->ctrl_val);
+-		kfree(hw_dom->mbps_val);
+-		kfree(hw_dom);
+-		return;
+-	}
+-
+ 	list_add_tail(&d->list, add_pos);
+ 
+-	/*
+-	 * If resctrl is mounted, add
+-	 * per domain monitor data directories.
+-	 */
+-	if (static_branch_unlikely(&rdt_mon_enable_key))
+-		mkdir_mondata_subdir_allrdtgrp(r, d);
++	err = resctrl_online_domain(r, d);
++	if (err) {
++		list_del(&d->list);
++		kfree(hw_dom->ctrl_val);
++		kfree(hw_dom->mbps_val);
++		kfree(hw_dom);
++	}
+ }
+ 
+ static void domain_remove_cpu(int cpu, struct rdt_resource *r)
+diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
+index 8828b5c1b6d2..be48a682dbdb 100644
+--- a/arch/x86/kernel/cpu/resctrl/internal.h
++++ b/arch/x86/kernel/cpu/resctrl/internal.h
+@@ -524,8 +524,6 @@ void mon_event_count(void *info);
+ int rdtgroup_mondata_show(struct seq_file *m, void *arg);
+ void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
+ 				    unsigned int dom_id);
+-void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
+-				    struct rdt_domain *d);
+ void mon_event_read(struct rmid_read *rr, struct rdt_resource *r,
+ 		    struct rdt_domain *d, struct rdtgroup *rdtgrp,
+ 		    int evtid, int first);
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index e243c7d15b81..19691f9ab061 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -2565,16 +2565,13 @@ static int mkdir_mondata_subdir(struct kernfs_node *parent_kn,
+  * Add all subdirectories of mon_data for "ctrl_mon" groups
+  * and "monitor" groups with given domain id.
+  */
+-void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
+-				    struct rdt_domain *d)
++static void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
++					   struct rdt_domain *d)
+ {
+ 	struct kernfs_node *parent_kn;
+ 	struct rdtgroup *prgrp, *crgrp;
+ 	struct list_head *head;
+ 
+-	if (!r->mon_capable)
+-		return;
+-
+ 	list_for_each_entry(prgrp, &rdt_all_groups, rdtgroup_list) {
+ 		parent_kn = prgrp->mon.mon_data_kn;
+ 		mkdir_mondata_subdir(parent_kn, d, r, prgrp);
+@@ -3236,6 +3233,64 @@ static int __init rdtgroup_setup_root(void)
+ 	return ret;
+ }
+ 
++static int domain_setup_mon_state(struct rdt_resource *r, struct rdt_domain *d)
++{
++	size_t tsize;
++
++	if (is_llc_occupancy_enabled()) {
++		d->rmid_busy_llc = bitmap_zalloc(r->num_rmid, GFP_KERNEL);
++		if (!d->rmid_busy_llc)
++			return -ENOMEM;
++	}
++	if (is_mbm_total_enabled()) {
++		tsize = sizeof(*d->mbm_total);
++		d->mbm_total = kcalloc(r->num_rmid, tsize, GFP_KERNEL);
++		if (!d->mbm_total) {
++			bitmap_free(d->rmid_busy_llc);
++			return -ENOMEM;
++		}
++	}
++	if (is_mbm_local_enabled()) {
++		tsize = sizeof(*d->mbm_local);
++		d->mbm_local = kcalloc(r->num_rmid, tsize, GFP_KERNEL);
++		if (!d->mbm_local) {
++			bitmap_free(d->rmid_busy_llc);
++			kfree(d->mbm_total);
++			return -ENOMEM;
++		}
++	}
++
++	return 0;
++}
++
++int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
++{
++	int err;
++
++	lockdep_assert_held(&rdtgroup_mutex);
++
++	if (!r->mon_capable)
++		return 0;
++
++	err = domain_setup_mon_state(r, d);
++	if (err)
++		return err;
++
++	if (is_mbm_enabled()) {
++		INIT_DELAYED_WORK(&d->mbm_over, mbm_handle_overflow);
++		mbm_setup_overflow_handler(d, MBM_OVERFLOW_INTERVAL);
++	}
++
++	if (is_llc_occupancy_enabled())
++		INIT_DELAYED_WORK(&d->cqm_limbo, cqm_handle_limbo);
++
++	/* If resctrl is mounted, add per domain monitor data directories. */
++	if (static_branch_unlikely(&rdt_mon_enable_key))
++		mkdir_mondata_subdir_allrdtgrp(r, d);
++
++	return 0;
++}
++
+ /*
+  * rdtgroup_init - rdtgroup initialization
+  *
+diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
+index 8180c539800d..d512455b4c3a 100644
+--- a/include/linux/resctrl.h
++++ b/include/linux/resctrl.h
+@@ -192,5 +192,6 @@ u32 resctrl_arch_get_num_closid(struct rdt_resource *r);
+ int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid);
+ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
+ 			    u32 closid, enum resctrl_conf_type type);
++int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
+ 
+ #endif /* _RESCTRL_H */
+-- 
+2.30.2
+
