@@ -2,120 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3BCEC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 101E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 07:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235840AbiBQG4V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 01:56:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50044 "EHLO
+        id S235943AbiBQHHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 02:07:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbiBQG4T (ORCPT
+        with ESMTP id S229483AbiBQHHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 01:56:19 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE66727F298;
-        Wed, 16 Feb 2022 22:56:05 -0800 (PST)
+        Thu, 17 Feb 2022 02:07:19 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839EE1B8FE4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 23:07:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645080965; x=1676616965;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nbe4Fwiyx8rYqaNPl7hAoUCmlKv54SDhqXwRa/L9Toc=;
-  b=hTdE9UcvGinkNDmcXWf3TcmLw/9RbIRb9Tux8Js3HTMFleG4kwJAHjB1
-   ryD5tnsywx06DLTMp0X1wBnzl2GvRA7Z3qAVoZoQKGM1V8HB4+2agrcxx
-   ZVmlIHaQjBJHOB4crOCkslkyi2Q2CrwuMHhmPMf9Q0uW4X9H/XkVBL2Jy
-   1kax8RMf3bBWzGjQACqBt8tb4wvcKF3OD7GvMVKupmZv9s3NQ5ngx0+NN
-   gEAXxvse09ccffUyP2jyufp4EYmy7nZQtRueIcBIkIovSIDjpv2dSHFO9
-   VMwWXy04ouhCuZMg3VMDgZZjNtKhBTOs1NWYCow0hqKBIFg3etK2k+3le
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="231432854"
+  t=1645081625; x=1676617625;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/CMRxxgpYFcN8OCyhrZweqdmJFVzeDxEGk4XSaM1dvY=;
+  b=euzoQOwYei9TldU2jeIsI9hezV9hrQDiFHQSf/ArNtVxFZlHUzgUQf9b
+   RursNdGFwa97UqwgHI5mkvr4YTXWhqyUEvAi7CC1vcaiTwNMeHpwnPkz5
+   8dXA52VOAceqxXcUQ1NYlhF/tZXLpFzqZPnNNloTx16qSCg5nAEi0Lz7O
+   ZmMTFgH30HpQ2sxS58tu2bmIvsSSQm2VfoiS9bVUHj3pyFLX8r32vYmWL
+   MfLj+E2e8O7KMbfKGkYchuXn+owtj5DA5xTmzeYT6GtE/2afcifBUnx97
+   R174Sbv5MfZTX4mh0Jv15yEpdHa7ihbjbBOvwNFcxt4Z683MemN/gRHnc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="275398746"
 X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="231432854"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 22:56:05 -0800
+   d="scan'208";a="275398746"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 23:07:05 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="625853020"
+   d="scan'208";a="529998525"
 Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Feb 2022 22:56:03 -0800
+  by orsmga007.jf.intel.com with ESMTP; 16 Feb 2022 23:07:03 -0800
 Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nKahu-000BXe-RS; Thu, 17 Feb 2022 06:56:02 +0000
-Date:   Thu, 17 Feb 2022 14:55:47 +0800
+        id 1nKasZ-000BYH-1T; Thu, 17 Feb 2022 07:07:03 +0000
+Date:   Thu, 17 Feb 2022 15:06:06 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Guixin Liu <kanie@linux.alibaba.com>, gregkh@linuxfoundation.org,
-        bostroesser@gmail.com, martin.petersen@oracle.com
-Cc:     kbuild-all@lists.01.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xiaoguang.wang@linux.alibaba.com, xlpang@linux.alibaba.com
-Subject: Re: [PATCH 1/2] uio: add ioctl to uio
-Message-ID: <202202171444.RSO1up2n-lkp@intel.com>
-References: <1645064962-94123-1-git-send-email-kanie@linux.alibaba.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Rich Felker <dalias@libc.org>
+Subject: arch/sh/kernel/traps_32.c:574:9: sparse: sparse: incorrect type in
+ initializer (different address spaces)
+Message-ID: <202202171504.3sm5Zvhs-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1645064962-94123-1-git-send-email-kanie@linux.alibaba.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guixin,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on char-misc/char-misc-testing]
-[also build test WARNING on mkp-scsi/for-next linux/master linus/master v5.17-rc4 next-20220216]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Guixin-Liu/uio-add-ioctl-to-uio/20220217-103120
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git e6cb9c167eeb8f90ab924666c573e69e85e700a0
-config: arc-randconfig-r035-20220217 (https://download.01.org/0day-ci/archive/20220217/202202171444.RSO1up2n-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   f71077a4d84bbe8c7b91b7db7c4ef815755ac5e3
+commit: ca42bc4b7bda7c6d68f1cc97c27fc8ff7385c4c7 sh: fix trivial misannotations
+date:   5 months ago
+config: sh-randconfig-s032-20220217 (https://download.01.org/0day-ci/archive/20220217/202202171504.3sm5Zvhs-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.2.0
+reproduce:
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/8786f129af888d844bc38ed78db7a6788e45655c
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Guixin-Liu/uio-add-ioctl-to-uio/20220217-103120
-        git checkout 8786f129af888d844bc38ed78db7a6788e45655c
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ca42bc4b7bda7c6d68f1cc97c27fc8ff7385c4c7
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout ca42bc4b7bda7c6d68f1cc97c27fc8ff7385c4c7
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/uio/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sh SHELL=/bin/bash arch/sh/kernel/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
 
->> drivers/uio/uio.c:818:6: warning: no previous prototype for 'uio_ioctl' [-Wmissing-prototypes]
-     818 | long uio_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
-         |      ^~~~~~~~~
+sparse warnings: (new ones prefixed by >>)
+>> arch/sh/kernel/traps_32.c:574:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned short const [noderef] __user *__gu_addr @@     got unsigned short * @@
+   arch/sh/kernel/traps_32.c:574:9: sparse:     expected unsigned short const [noderef] __user *__gu_addr
+   arch/sh/kernel/traps_32.c:574:9: sparse:     got unsigned short *
+   arch/sh/kernel/traps_32.c:563:5: sparse: sparse: symbol 'is_dsp_inst' was not declared. Should it be static?
 
+vim +574 arch/sh/kernel/traps_32.c
 
-vim +/uio_ioctl +818 drivers/uio/uio.c
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  558  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  559  #ifdef CONFIG_SH_DSP
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  560  /*
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  561   *	SH-DSP support gerg@snapgear.com.
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  562   */
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  563  int is_dsp_inst(struct pt_regs *regs)
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  564  {
+882c12c4e1a95e arch/sh/kernel/traps.c Paul Mundt     2007-05-14  565  	unsigned short inst = 0;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  566  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  567  	/*
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  568  	 * Safe guard if DSP mode is already enabled or we're lacking
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  569  	 * the DSP altogether.
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  570  	 */
+11c1965687b0a4 arch/sh/kernel/traps.c Paul Mundt     2006-12-25  571  	if (!(current_cpu_data.flags & CPU_HAS_DSP) || (regs->sr & SR_DSP))
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  572  		return 0;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  573  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16 @574  	get_user(inst, ((unsigned short *) regs->pc));
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  575  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  576  	inst &= 0xf000;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  577  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  578  	/* Check for any type of DSP or support instruction */
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  579  	if ((inst == 0xf000) || (inst == 0x4000))
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  580  		return 1;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  581  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  582  	return 0;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  583  }
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  584  #else
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  585  #define is_dsp_inst(regs)	(0)
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  586  #endif /* CONFIG_SH_DSP */
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  587  
 
-   817	
- > 818	long uio_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
-   819	{
-   820		struct uio_listener *listener = filep->private_data;
-   821		struct uio_device *idev = listener->dev;
-   822		long retval = 0;
-   823	
-   824		mutex_lock(&idev->info_lock);
-   825		if (!idev->info || !idev->info->ioctl) {
-   826			retval = -EINVAL;
-   827			goto out;
-   828		}
-   829	
-   830		retval = idev->info->ioctl(idev->info, cmd, arg);
-   831	out:
-   832		mutex_unlock(&idev->info_lock);
-   833		return retval;
-   834	}
-   835	
+:::::: The code at line 574 was first introduced by commit
+:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
+
+:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
+:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
