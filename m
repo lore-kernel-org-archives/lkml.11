@@ -2,112 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD86AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245609AbiBQVfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:35:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58624 "EHLO
+        id S245624AbiBQVgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 16:36:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234005AbiBQVfP (ORCPT
+        with ESMTP id S229694AbiBQVgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:35:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BB914CDBD;
-        Thu, 17 Feb 2022 13:35:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A65B9B82522;
-        Thu, 17 Feb 2022 21:34:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ECF9C340F6;
-        Thu, 17 Feb 2022 21:34:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645133697;
-        bh=9ZKFzvuxqGDuxePE3PZ3oKNhPCfiECwJr72AD11sbFY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=H2/fEdiI7Xhi3piBuQ1VTw64c6U5/tW4+8NghSs8QoRfCd32mX+hMXVnGH7+m7miF
-         UBIW3S3nGRbCJpw6eDMS7Y49iT/GBxXVwUoyXTK+WwBgxCfI9yDTc+5aTXj37mha/z
-         ZXrUYJ1esod7SXOHSit3YqX+2XV9T9nishJomHWbpRWWyA55Vkv+Q5zU9YUzOvoZ6A
-         NIzghDpjVjdp0QOnqpIGVcw+y8u5x2vqEp9OiP8B55Bor+DQliSFrSnDg/dLCxMWwF
-         hBjrJhKSlTFWjO1nG0lCEt/KtxfdCuq59nR91V3MN7onnRvRHVq9o/TzXRu+5uPy/U
-         tjP8H0nCwuauA==
-Received: by mail-ed1-f49.google.com with SMTP id q17so12051957edd.4;
-        Thu, 17 Feb 2022 13:34:57 -0800 (PST)
-X-Gm-Message-State: AOAM532LT3Nj3p7epuhwd33IOmnBaS7jjgfLWa5xTdFNicRSAw3WDcFG
-        4D6bL63cPwNohqZ/5adKHZOc46p2k4Pyew2PAQ==
-X-Google-Smtp-Source: ABdhPJwMwWaIqmzsA7pkOHfJvLLdy1aqNJdJJazYozh0+S0QqJEe9bX4ggabJGlocMvwwqLVXTQQV+g6qFWIIF9KPxo=
-X-Received: by 2002:a05:6402:278b:b0:412:80a5:6cb3 with SMTP id
- b11-20020a056402278b00b0041280a56cb3mr4864452ede.157.1645133695579; Thu, 17
- Feb 2022 13:34:55 -0800 (PST)
+        Thu, 17 Feb 2022 16:36:50 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897666622F;
+        Thu, 17 Feb 2022 13:36:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1645133771;
+        bh=sh1DPaASGW9V2zkfziMd7+l7s/QlEn4SX5JpX6nJ3v0=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=Sv9dWkeaeIzH6NL8B8qO33aTGzXF3HAl1zMMXwbQNLdhi71L+zlgBC6dtaKPZUpFx
+         xzOZwnQuqLJNu1Wdknq3ofxY0lqbUeC/Sz8teI9J5qNLX3AcU6AUrjTK/8DGdejZps
+         pMc152GcOaHIrSnBodvvbrxqxqmWpNBiK56mQ3KU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.78] ([149.172.237.68]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M6UZv-1nNGDq1hlJ-006vSG; Thu, 17
+ Feb 2022 22:36:11 +0100
+Subject: Re: [PATCH 2 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        u.kleine-koenig@pengutronix.de, linux@armlinux.org.uk,
+        richard.genoud@gmail.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+References: <20220216001803.637-1-LinoSanfilippo@gmx.de>
+ <20220216001803.637-2-LinoSanfilippo@gmx.de>
+ <20220217113354.GA7826@wunner.de>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <03604709-fcc5-f528-c5cf-5b8c2d0abfd0@gmx.de>
+Date:   Thu, 17 Feb 2022 22:36:09 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20220217131234.50328-1-cristian.marussi@arm.com> <20220217131234.50328-5-cristian.marussi@arm.com>
-In-Reply-To: <20220217131234.50328-5-cristian.marussi@arm.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 17 Feb 2022 15:34:44 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+JrLtXUoG10O3kcwYNEbzXXYn0HBLsSfm9R+qLajneeA@mail.gmail.com>
-Message-ID: <CAL_Jsq+JrLtXUoG10O3kcwYNEbzXXYn0HBLsSfm9R+qLajneeA@mail.gmail.com>
-Subject: Re: [PATCH v5 4/8] dt-bindings: firmware: arm,scmi: Add
- atomic-threshold-us optional property
-To:     Cristian Marussi <cristian.marussi@arm.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Jim Quinlan <james.quinlan@broadcom.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Etienne Carriere <etienne.carriere@linaro.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        souvik.chakravarty@arm.com,
-        Peter Hilber <peter.hilber@opensynergy.com>,
-        Igor Skalkin <igor.skalkin@opensynergy.com>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220217113354.GA7826@wunner.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:PcdHdcVTNQnY7ZlbLSzK1FYNltMg8wlri9F+ts0o/nBFWnhsy/c
+ Hlc15FyNnhioUoOXzxbM8tXwQoeXFbMUBz1tsYOT4YJoUK0jxiliABFzWMk9sHnGe7vPSB1
+ OyL/7wbDzgYfoW1TZ1NlBmTePPoZTBDHT1dpysRDSix2U1GGAnFYItw5L+7q9SUsjEuzSNS
+ YPgzJx7tkshMeWH06iKaw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xXdSJIbiOW0=:L/EqqrP/p+Od95kAdJz4ji
+ PkLd8shzbwi6IeBHYYnj1MpaKOEH7qWPcUeLnr0TWq6flKTKD8XLn9GGoJIhRJrSNXXVSH95c
+ 12s98dOcePln5dU0gyx9Q9xBDG8q4JWPEkz7DP2UgxIuuDQlaug4yvZZtDVctcvxznyRVS42n
+ QsZPDSAtmdWHZURFupjPukhALS3V6wgpaKE80LMMFVrHQtqib6mgr3Jau5yC53RiHjxNfNY/w
+ Pa5rYvJe9DJZJHo7kL5tWE6J7N9m7lCY/RKIqp6LooTJ2dLlY+sDA71Nm/tsqVoScG4XqY9VE
+ E7TfCN/ySf7sySMWgYE7q0fRZ40V+F5u+LG69UCiYTrQQk5330n9WmE8u18qoyvkbNrTyr6DR
+ KbIQBYYMeueM3iENiL93ITWMV3sQtCdnOXTxepFwLspvdfy2aTxKriuptJe4eEv9jwhJDMKwk
+ l1IEW1UWsOAr6g3Z+mSGl7URXYU/lIenXz6/D0YsBRi3z04bkMYupb1h1XfaBMd8KZuMnLWsK
+ Lloj6OGuzpsSlC4fMe/Eua2+aTDfVN1Nbre7ytJI66S6DeB8Fs4xYkMjX6cK2Vl42rb3ip5Jy
+ yaV0m0g3CohOJqHAiHaj7Uo0/hlhDa3svNBrohCs3wi10iSzwF5ISuZKmkkIM8vegnqDpsOXD
+ WMhpDWmJUHbhvxehZq3vVQsqG6/mIclu4ZkKCbeeuQ+NDgxp2iI7YGxBalUcwZPnpHnTAt2m7
+ HlAFYgdKT/v37sQzewNVPb9JaByjNFW7n3/Dls4G/QKwzt8l4FBveKuFkmSuvaoYWQIyrLuIi
+ giW9tw65el1SK9hvIHR5lC5178r1nZvxQuG/4MGiFdt+0PGCTvETeHJ29Ag/bQJIx88ZfzgpR
+ mM2DkCdmhNOflrjfl7q9A2HnfLGbcR1Z5KLdv2YOojDJnk2/gzwDc/SS6kSmPQVCcK1J9utq9
+ HfxbOdlA7FK4ffiIjW5/BdC+JOplPo7udayLSrdLc24EBoatBHeuFC2c4jtm4qXeHLR73yg7a
+ 5oW4SXhSpUxDU5Xwv+nVeXxTequntWXJqZE+Htr5k5y2CYnOG3mzoUamUmcXp1+Cyga4die2g
+ ZCASi7QtpGgsNU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 7:13 AM Cristian Marussi
-<cristian.marussi@arm.com> wrote:
+
+Hi,
+
+On 17.02.22 at 12:33, Lukas Wunner wrote:
+> On Wed, Feb 16, 2022 at 01:17:55AM +0100, Lino Sanfilippo wrote:
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -1282,8 +1282,26 @@ static int uart_set_rs485_config(struct uart_por=
+t *port,
+>>  	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
+>>  		return -EFAULT;
+>>
+>> +	/* pick sane settings if the user hasn't */
+>> +	if (!(rs485.flags & SER_RS485_RTS_ON_SEND) =3D=3D
+>> +	    !(rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
+>> +		rs485.flags |=3D SER_RS485_RTS_ON_SEND;
+>> +		rs485.flags &=3D ~SER_RS485_RTS_AFTER_SEND;
+>> +	}
 >
-> SCMI protocols in the platform can optionally signal to the OSPM agent
-> the expected execution latency for a specific resource/operation pair.
+> The policy you're enforcing here is:  If settings are nonsensical,
+> always default to active-high polarity.
 >
-> Introduce an SCMI system wide optional property to describe a global time
-> threshold which can be configured on a per-platform base to determine the
-> opportunity, or not, for an SCMI command advertised to have a higher
-> latency than the threshold, to be considered for atomic operations:
-> high-latency SCMI synchronous commands should be preferably issued in the
-> usual non-atomic mode.
+> However some drivers currently enforce a completely different policy:
+> E.g. with 8250_lpc18xx.c, if SER_RS485_RTS_ON_SEND is set, use active-hi=
+gh
+> (and fix up SER_RS485_RTS_AFTER_SEND), else use active-low polarity.
+> This yields a different result compared to your policy in case both bits
+> are cleared.
+>> Similarly, sc16is7xx.c defaults to active-low if SER_RS485_RTS_AFTER_SE=
+ND
+> is set, else active-high polarity.  This yields a different result compa=
+red
+> to your policy in case both bits are set.
 >
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-> ---
-> v4 --> v5:
-> - fixed example and removed dtschema warnings/errors :
->   arm,scmi.yaml: properties:atomic-threshold-us:
->         '$ref' should not be valid under {'const': '$ref'}
+> You risk breaking existing user space applications with this change
+> if those applications specify nonsensical polarity settings.
+>
 
-Seems an old version got picked up for linux-next:
+Ok, but IMHO this is a very small risk. I cannot imagine that there
+are many (or any at all) userspace applications that do not
+specify any RTS setting and then rely on a driver specific fallback
+implementation. I would not like to remove the RTS check from
+uart_set_rs485_config() only because of that.
 
-/builds/robherring/linux-dt/Documentation/devicetree/bindings/firmware/arm,scmi.yaml:
-properties:atomic-threshold-us: '$ref' should not be valid under
-{'const': '$ref'}
-hint: Standard unit suffix properties don't need a type $ref
-from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-/builds/robherring/linux-dt/Documentation/devicetree/bindings/firmware/arm,scmi.yaml:
-ignoring, error in schema: properties: atomic-threshold-us
+>
+> I happen to have created a similar commit to this one a month ago
+> and I came to the conclusion that all one can do is offer a library
+> function uart_sanitize_rs485_mode() which drivers may elect to call
+> if that helper's policy is identical to what they're doing now:
+>
+> https://github.com/l1k/linux/commit/637984111e42
+>>
+>> +
+>> +	rs485.delay_rts_before_send =3D min_t(unsigned int,
+>> +					    rs485.delay_rts_before_send,
+>> +					    SER_RS485_MAX_RTS_DELAY);
+>> +	rs485.delay_rts_after_send =3D min_t(unsigned int,
+>> +					   rs485.delay_rts_after_send,
+>> +					   SER_RS485_MAX_RTS_DELAY);
+>
+> Nonsensical delays may not only be passed in from user space via ioctl()=
+,
+> but through the device tree.  That's another reason to use a library
+> function:  It can be called both from the ioctl() as well as after (or i=
+n)
+> uart_get_rs485_mode().
+>
 
-> - added default: 0 clause
-> v3 --> v4
-> - renamed property to atomic-threshold-us
-> v1 --> v2
-> - rephrased the property description
-> ---
->  .../devicetree/bindings/firmware/arm,scmi.yaml         | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+The idea of my patch set is actually to provide a common behavior for the
+RS485 configuration by userspace similar to what uart_get_rs485_mode()
+provides for the configuration by device tree.
 
-For this version:
+However with the solution you propose sanity checks for userspace
+configuration are still up to each single driver and thus can vary
+from driver to driver or not be implemented at all. I dont think that
+this is the better approach in the long term.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+
+>
+>> +	/* Return clean padding area to userspace */
+>> +	memset(rs485.padding, 0, sizeof(rs485.padding));
+>
+> Unlike the polarity and delay handling, this one makes sense.
+>
+> Thanks,
+>
+> Lukas
+>
+
+Regards,
+Lino
