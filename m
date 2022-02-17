@@ -2,278 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:04:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE244C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:05:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243962AbiBQSEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:04:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53572 "EHLO
+        id S243968AbiBQSFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:05:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbiBQSEk (ORCPT
+        with ESMTP id S241274AbiBQSFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:04:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7FC19E724;
-        Thu, 17 Feb 2022 10:04:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BED1FB823BC;
-        Thu, 17 Feb 2022 18:04:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC4FC340E8;
-        Thu, 17 Feb 2022 18:04:21 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ekrv+7Po"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645121059;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3sdSMpRluECl8F3M66Ei85zNDZpALsnQKpJdjXWjujY=;
-        b=ekrv+7PoL7vxDneeC2Mupod818mRGqWYdALDoKn2+rfNvYdBUNFzEa3RaUBxZBlbjx9QBo
-        35J55E1VJ4algD8Ds7sKK7klLxwWrgyjTj8FuHVcUZkjYgqApSqeL4zs5yfjvUFxK2UDLD
-        0wEiN/HrBji29kx5X4c4LUdy9K2UjcM=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c9b1b92e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 17 Feb 2022 18:04:18 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     bigeasy@linutronix.de, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH v6] random: clear fast pool, crng, and batches in cpuhp bring up
-Date:   Thu, 17 Feb 2022 19:04:09 +0100
-Message-Id: <20220217180409.13151-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9prO9dop7iBRwN54=GMtLH7amS3m_VqGUzL44G1h=R+2A@mail.gmail.com>
-References: <CAHmME9prO9dop7iBRwN54=GMtLH7amS3m_VqGUzL44G1h=R+2A@mail.gmail.com>
+        Thu, 17 Feb 2022 13:05:34 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59C1D284D21;
+        Thu, 17 Feb 2022 10:05:19 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 217B6113E;
+        Thu, 17 Feb 2022 10:05:19 -0800 (PST)
+Received: from [10.57.17.240] (unknown [10.57.17.240])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0A1D03F718;
+        Thu, 17 Feb 2022 10:05:15 -0800 (PST)
+Subject: Re: [PATCH 1/2] thermal: cooling: Check Energy Model type in
+ cpufreq_cooling and devfreq_cooling
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        Doug Anderson <dianders@chromium.org>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        amit daniel kachhap <amit.kachhap@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Pierre.Gondois@arm.com, Stephen Boyd <swboyd@chromium.org>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        jorcrous@amazon.com, Rob Clark <robdclark@chromium.org>
+References: <YgG+TmLrCSXX4Bvt@google.com>
+ <4a7d4e94-1461-5bac-5798-29998af9793a@arm.com> <YgKnnFl7Gp8AS30X@google.com>
+ <e4532f65-7f8a-7e89-97c1-85cc61462040@arm.com> <YgQ9XLcto9v0fyTf@google.com>
+ <d120110a-7d01-0cfd-f7eb-d160e17ec2a8@arm.com>
+ <CAD=FV=VntGw1_AzJPpdOk0zSpOVZRH2X1JNg84JX+zCeU1jvXg@mail.gmail.com>
+ <7c059f4f-7439-0cad-c398-96dbde4e49c1@linaro.org>
+ <5b8ca53e-3595-85fd-5ae9-a5e8285e8513@arm.com>
+ <CAD=FV=WMaMP84YLZxBZbj4DJSgcDLVkSHf4QdDwtFfp8UbyE7A@mail.gmail.com>
+ <Yg6CaT9iQGXXi7s2@google.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+Message-ID: <7b51e2a9-99c3-f33c-690a-fa72692da612@arm.com>
+Date:   Thu, 17 Feb 2022 18:05:14 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yg6CaT9iQGXXi7s2@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the irq randomness fast pool, rather than having to use expensive
-atomics, which were visibly the most expensive thing in the entire irq
-handler, simply take care of the extreme edge case of resetting count to
-zero in the cpuhp online handler, just after workqueues have been
-reenabled. This simplifies the code a bit and lets us use vanilla
-variables rather than atomics, and performance should be improved.
 
-As well, very early on when the CPU comes up, while interrupts are still
-disabled, we clear out the per-cpu crng and its batches, so that it
-always starts with fresh randomness.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-v6 improves the comments around each of the cpuhp functions, as
-requested.
+On 2/17/22 5:14 PM, Matthias Kaehlcke wrote:
+> On Thu, Feb 17, 2022 at 08:37:39AM -0800, Doug Anderson wrote:
+>> Hi,
+>>
+>> On Thu, Feb 17, 2022 at 2:47 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
+>>>
+>>> Hi Daniel,
+>>>
+>>> On 2/17/22 10:10 AM, Daniel Lezcano wrote:
+>>>> On 16/02/2022 18:33, Doug Anderson wrote:
+>>>>> Hi,
+>>>>>
+>>>>> On Wed, Feb 16, 2022 at 7:35 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
+>>>>>>
+>>>>>> Hi Matthias,
+>>>>>>
+>>>>>> On 2/9/22 10:17 PM, Matthias Kaehlcke wrote:
+>>>>>>> On Wed, Feb 09, 2022 at 11:16:36AM +0000, Lukasz Luba wrote:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> On 2/8/22 5:25 PM, Matthias Kaehlcke wrote:
+>>>>>>>>> On Tue, Feb 08, 2022 at 09:32:28AM +0000, Lukasz Luba wrote:
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>
+>>>>>> [snip]
+>>>>>>
+>>>>>>>>>> Could you point me to those devices please?
+>>>>>>>>>
+>>>>>>>>> arch/arm64/boot/dts/qcom/sc7180-trogdor-*
+>>>>>>>>>
+>>>>>>>>> Though as per above they shouldn't be impacted by your change,
+>>>>>>>>> since the
+>>>>>>>>> CPUs always pretend to use milli-Watts.
+>>>>>>>>>
+>>>>>>>>> [skipped some questions/answers since sc7180 isn't actually
+>>>>>>>>> impacted by
+>>>>>>>>>      the change]
+>>>>>>>>
+>>>>>>>> Thank you Matthias. I will investigate your setup to get better
+>>>>>>>> understanding.
+>>>>>>>
+>>>>>>> Thanks!
+>>>>>>>
+>>>>>>
+>>>>>> I've checked those DT files and related code.
+>>>>>> As you already said, this patch is safe for them.
+>>>>>> So we can apply it IMO.
+>>>>>>
+>>>>>>
+>>>>>> -------------Off-topic------------------
+>>>>>> Not in $subject comments:
+>>>>>>
+>>>>>> AFAICS based on two files which define thermal zones:
+>>>>>> sc7180-trogdor-homestar.dtsi
+>>>>>> sc7180-trogdor-coachz.dtsi
+>>>>>>
+>>>>>> only the 'big' cores are used as cooling devices in the
+>>>>>> 'skin_temp_thermal' - the CPU6 and CPU7.
+>>>>>>
+>>>>>> I assume you don't want to model at all the power usage
+>>>>>> from the Little cluster (which is quite big: 6 CPUs), do you?
+>>>>>> I can see that the Little CPUs have small dyn-power-coeff
+>>>>>> ~30% of the big and lower max freq, but still might be worth
+>>>>>> to add them to IPA. You might give them more 'weight', to
+>>>>>> make sure they receive more power during power split.
+>>>>>>
+>>>>>> You also don't have GPU cooling device in that thermal zone.
+>>>>>> Based on my experience if your GPU is a power hungry one,
+>>>>>> e.g. 2-4Watts, you might get better results when you model
+>>>>>> this 'hot' device (which impacts your temp sensor reported value).
+>>>>>
+>>>>> I think the two boards you point at (homestar and coachz) are just the
+>>>>> two that override the default defined in the SoC dtsi file. If you
+>>>>> look in sc7180.dtsi you'll see 'gpuss1-thermal' which has a cooling
+>>>>> map. You can also see the cooling maps for the littles.
+>>>>>
+>>>>> I guess we don't have a `dynamic-power-coefficient` for the GPU,
+>>>>> though? Seems like we should, but I haven't dug through all the code
+>>>>> here...
+>>>>
+>>>> The dynamic-power-coefficient is available for OPPs which includes
+>>>> CPUfreq and devfreq. As the GPU is managed by devfreq, setting the
+>>>> dynamic-power-coefficient makes the energy model available for it.
+>>>>
+>>>> However, the OPPs must define the frequency and the voltage. That is the
+>>>> case for most platforms except on QCom platform.
+>>>>
+>>>> That may not be specified as it uses a frequency index and the hardware
+>>>> does the voltage change in our back. The QCom cpufreq backend get the
+>>>> voltage table from a register (or whatever) and completes the voltage
+>>>> values for the OPPs, thus adding the information which is missing in the
+>>>> device tree. The energy model can then initializes itself and allows the
+>>>> usage of the Energy Aware Scheduler.
+>>>>
+>>>> However this piece of code is missing for the GPU part.
+>>>>
+>>>
+>>> Thank you for joining the discussion. I don't know about that Qcom
+>>> GPU voltage information is missing.
+>>>
+>>> If the voltage is not available (only the frequencies), there is
+>>> another way. There is an 'advanced' EM which uses registration function:
+>>> em_dev_register_perf_domain(). It uses a local driver callback to get
+>>> power for each found frequency. It has benefit because there is no
+>>> restriction to 'fit' into the math formula, instead just avg power
+>>> values can be feed into EM. It's called 'advanced' EM [1].
+>>
+>> It seems like there _should_ be a way to get the voltage out for GPU
+>> operating points, like is done with cpufreq in
+>> qcom_cpufreq_hw_read_lut(), but it might need someone with Qualcomm
+>> documentation to help with it. Maybe Rajendra would be able to help?
+>> Adding Jordon and Rob to this conversation in case they're aware of
+>> anything.
+>>
+>> As you said, we could just list a power for each frequency, though.
+>>
+>> I'm actually not sure which one would be more accurate across a range
+>> of devices with different "corners": specifying a dynamic power
+>> coefficient used for all "corners" and then using the actual voltage
+>> and doing the math, or specifying a power number for each frequency
+>> and ignoring the actual voltage used. In any case we're trying to get
+>> ballpark numbers and not every device will be exactly the same, so
+>> probably it doesn't matter that much.
+>>
+>>
+>>> Now we hit (again) the DT & EM issue (it's an old one, IIRC Morten
+>>> was proposing from ~2014 this upstream, but EAS wasn't merged back
+>>> then):
+>>> where to store these power-freq values, which are then used by the
+>>> callback. We have the 'dynamic-power-coefficient' in DT, but
+>>> it has limitations. It would be good to have this simple array
+>>> attached to the GPU/CPU node. IMHO it meet the requirement of DT,
+>>> it describes the HW (it would have HZ and Watts values).
+>>>
+>>> Doug, Matthias could you have a look at that function and its
+>>> usage, please [1]?
+>>> If you guys would support me in this, I would start, with an RFC
+>>> proposal, a discussion on LKML.
+>>>
+>>> [1]
+>>> https://elixir.bootlin.com/linux/v5.17-rc4/source/Documentation/power/energy-model.rst#L87
+>>
+>> Matthias: I think you've spent more time on the thermal stuff than me
+>> so I'll assume you'll follow-up here. If not then please yell!
+>>
+>> Ideally, though, someone from Qualcomm would jump in an own this.
+>> Basically it allows more intelligently throttling the GPU and CPU
+>> together in tandem instead of treating them separately IIUC, right?
+> 
+> Yes, I think for the em_dev_register_perf_domain() route support from
+> Qualcomm would be needed since "Drivers must provide a callback
+> function returning <frequency, power> tuples for each performance
+> state. ".
+> 
 
- drivers/char/random.c      | 62 +++++++++++++++++++++++++++++---------
- include/linux/cpuhotplug.h |  2 ++
- include/linux/random.h     |  5 +++
- kernel/cpu.c               | 11 +++++++
- 4 files changed, 65 insertions(+), 15 deletions(-)
+Not necessarily. It might be done 'generically' by fwk.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 8d5abeefcc4f..caa276cfbc76 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -697,6 +697,25 @@ u32 get_random_u32(void)
- }
- EXPORT_SYMBOL(get_random_u32);
- 
-+#ifdef CONFIG_SMP
-+/*
-+ * This function is called when the CPU is coming up, with entry
-+ * CPUHP_RANDOM_PREPARE, which comes before CPUHP_WORKQUEUE_PREP.
-+ */
-+int random_prepare_cpu(unsigned int cpu)
-+{
-+	/*
-+	 * When the cpu comes back online, immediately invalidate both
-+	 * the per-cpu crng and all batches, so that we serve fresh
-+	 * randomness.
-+	 */
-+	per_cpu_ptr(&crngs, cpu)->generation = ULONG_MAX;
-+	per_cpu_ptr(&batched_entropy_u32, cpu)->position = UINT_MAX;
-+	per_cpu_ptr(&batched_entropy_u64, cpu)->position = UINT_MAX;
-+	return 0;
-+}
-+#endif
-+
- /**
-  * randomize_page - Generate a random, page aligned address
-  * @start:	The smallest acceptable address the caller will take.
-@@ -1182,7 +1201,7 @@ struct fast_pool {
- 	};
- 	struct work_struct mix;
- 	unsigned long last;
--	atomic_t count;
-+	unsigned int count;
- 	u16 reg_idx;
- };
- 
-@@ -1218,6 +1237,29 @@ static void fast_mix(u32 pool[4])
- 
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
- 
-+#ifdef CONFIG_SMP
-+/*
-+ * This function is called when the CPU has just come online, with
-+ * entry CPUHP_AP_RANDOM_ONLINE, just after CPUHP_AP_WORKQUEUE_ONLINE.
-+ */
-+int random_online_cpu(unsigned int cpu)
-+{
-+	/*
-+	 * During CPU shutdown and before CPU onlining, add_interrupt_
-+	 * randomness() may schedule mix_interrupt_randomness(), and
-+	 * set the MIX_INFLIGHT flag. However, because the worker can
-+	 * be scheduled on a different CPU during this period, that
-+	 * flag will never be cleared. For that reason, we zero out
-+	 * the flag here, which runs just after workqueues are onlined
-+	 * for the CPU again. This also has the effect of setting the
-+	 * irq randomness count to zero so that new accumulated irqs
-+	 * are fresh.
-+	 */
-+	per_cpu_ptr(&irq_randomness, cpu)->count = 0;
-+	return 0;
-+}
-+#endif
-+
- static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
- {
- 	u32 *ptr = (u32 *)regs;
-@@ -1242,15 +1284,6 @@ static void mix_interrupt_randomness(struct work_struct *work)
- 	local_irq_disable();
- 	if (fast_pool != this_cpu_ptr(&irq_randomness)) {
- 		local_irq_enable();
--		/*
--		 * If we are unlucky enough to have been moved to another CPU,
--		 * during CPU hotplug while the CPU was shutdown then we set
--		 * our count to zero atomically so that when the CPU comes
--		 * back online, it can enqueue work again. The _release here
--		 * pairs with the atomic_inc_return_acquire in
--		 * add_interrupt_randomness().
--		 */
--		atomic_set_release(&fast_pool->count, 0);
- 		return;
- 	}
- 
-@@ -1259,7 +1292,7 @@ static void mix_interrupt_randomness(struct work_struct *work)
- 	 * consistent view, before we reenable irqs again.
- 	 */
- 	memcpy(pool, fast_pool->pool32, sizeof(pool));
--	atomic_set(&fast_pool->count, 0);
-+	fast_pool->count = 0;
- 	fast_pool->last = jiffies;
- 	local_irq_enable();
- 
-@@ -1295,14 +1328,13 @@ void add_interrupt_randomness(int irq)
- 	}
- 
- 	fast_mix(fast_pool->pool32);
--	/* The _acquire here pairs with the atomic_set_release in mix_interrupt_randomness(). */
--	new_count = (unsigned int)atomic_inc_return_acquire(&fast_pool->count);
-+	new_count = ++fast_pool->count;
- 
- 	if (unlikely(crng_init == 0)) {
- 		if (new_count >= 64 &&
- 		    crng_pre_init_inject(fast_pool->pool32, sizeof(fast_pool->pool32),
- 					 true, true) > 0) {
--			atomic_set(&fast_pool->count, 0);
-+			fast_pool->count = 0;
- 			fast_pool->last = now;
- 			if (spin_trylock(&input_pool.lock)) {
- 				_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
-@@ -1320,7 +1352,7 @@ void add_interrupt_randomness(int irq)
- 
- 	if (unlikely(!fast_pool->mix.func))
- 		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
--	atomic_or(MIX_INFLIGHT, &fast_pool->count);
-+	fast_pool->count |= MIX_INFLIGHT;
- 	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
- }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
-diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
-index 411a428ace4d..481e565cc5c4 100644
---- a/include/linux/cpuhotplug.h
-+++ b/include/linux/cpuhotplug.h
-@@ -100,6 +100,7 @@ enum cpuhp_state {
- 	CPUHP_AP_ARM_CACHE_B15_RAC_DEAD,
- 	CPUHP_PADATA_DEAD,
- 	CPUHP_AP_DTPM_CPU_DEAD,
-+	CPUHP_RANDOM_PREPARE,
- 	CPUHP_WORKQUEUE_PREP,
- 	CPUHP_POWER_NUMA_PREPARE,
- 	CPUHP_HRTIMERS_PREPARE,
-@@ -240,6 +241,7 @@ enum cpuhp_state {
- 	CPUHP_AP_PERF_CSKY_ONLINE,
- 	CPUHP_AP_WATCHDOG_ONLINE,
- 	CPUHP_AP_WORKQUEUE_ONLINE,
-+	CPUHP_AP_RANDOM_ONLINE,
- 	CPUHP_AP_RCUTREE_ONLINE,
- 	CPUHP_AP_BASE_CACHEINFO_ONLINE,
- 	CPUHP_AP_ONLINE_DYN,
-diff --git a/include/linux/random.h b/include/linux/random.h
-index d7354de9351e..6148b8d1ccf3 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -156,4 +156,9 @@ static inline bool __init arch_get_random_long_early(unsigned long *v)
- }
- #endif
- 
-+#ifdef CONFIG_SMP
-+extern int random_prepare_cpu(unsigned int cpu);
-+extern int random_online_cpu(unsigned int cpu);
-+#endif
-+
- #endif /* _LINUX_RANDOM_H */
-diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 407a2568f35e..238cba15449f 100644
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -34,6 +34,7 @@
- #include <linux/scs.h>
- #include <linux/percpu-rwsem.h>
- #include <linux/cpuset.h>
-+#include <linux/random.h>
- 
- #include <trace/events/power.h>
- #define CREATE_TRACE_POINTS
-@@ -1659,6 +1660,11 @@ static struct cpuhp_step cpuhp_hp_states[] = {
- 		.startup.single		= perf_event_init_cpu,
- 		.teardown.single	= perf_event_exit_cpu,
- 	},
-+	[CPUHP_RANDOM_PREPARE] = {
-+		.name			= "random:prepare",
-+		.startup.single		= random_prepare_cpu,
-+		.teardown.single	= NULL,
-+	},
- 	[CPUHP_WORKQUEUE_PREP] = {
- 		.name			= "workqueue:prepare",
- 		.startup.single		= workqueue_prepare_cpu,
-@@ -1782,6 +1788,11 @@ static struct cpuhp_step cpuhp_hp_states[] = {
- 		.startup.single		= workqueue_online_cpu,
- 		.teardown.single	= workqueue_offline_cpu,
- 	},
-+	[CPUHP_AP_RANDOM_ONLINE] = {
-+		.name			= "random:online",
-+		.startup.single		= random_online_cpu,
-+		.teardown.single	= NULL,
-+	},
- 	[CPUHP_AP_RCUTREE_ONLINE] = {
- 		.name			= "RCU/tree:online",
- 		.startup.single		= rcutree_online_cpu,
--- 
-2.35.0
+There are other benefits of this 'energy-model' entry in the DT.
+I'll list them in the cover letter. Let me send an RFC, so we could
+discuss there.
 
+Thanks guys!
+
+Regards,
+Lukasz
