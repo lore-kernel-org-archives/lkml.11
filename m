@@ -2,99 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7164C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C40C8C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241490AbiBQN5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:57:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50998 "EHLO
+        id S241507AbiBQN6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:58:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241461AbiBQN5w (ORCPT
+        with ESMTP id S235260AbiBQN6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:57:52 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6AE17BCFE;
-        Thu, 17 Feb 2022 05:57:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645106258; x=1676642258;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZaYSKtA1O7qxouP3wb+9mrJGwNtoT++RyRl6T1YABRU=;
-  b=XC+R6ZDLToFpJmSkaVeiKLUF+MaGiYPzkSmGrneNzbF2HxfkqOSw1rfs
-   CpgM9m95mkzxVo37KPzdAHhyhb+Tc/qU6rr3ZSqQoqPVNtXEM9qmwv+A6
-   6t2/ODOUtt4J23jMHsyPeNCL2DrYWpL4SU1LfiMkt4Hz78LJFGhpamIHi
-   iSxkSLiGKvHbPHmsk2JsVoXsiAvL8xJjjfeaHjRtO+peabpQNhNmNt7Ba
-   n7v4agtlwa1F4VaDlPmpRTN+t0QBlBiFulf4QOxxDU4UHfpBPsXxYa/IR
-   uBdEBFzbETNx/SXdmSiyMFREy9GcAisClKHbF2L2BJ3DPYc9g/wMVornb
-   w==;
-IronPort-SDR: AoTl3KjTNUNer6KXMevhQNk8QL7VpRuMBPgjxmvwanWZWUwkxK0qJn+MzuOm2N3hEvux986l/N
- mYHuhMacrdQ9jxMB9t2Vmzcr9zaVgDlvwV0zWEyGRNpGkuDb5aAf/c6uJbd4zHf55wihv34rrL
- FBtKVb0tdG/agbZ9y9iMZSLx7lXmRBXPEMDVkkRVMtyGhDJXLe6k3e+JvISgGOaBVEhzYmFiVW
- BEB73XndZqb/uy7d+4ypppbYLuSNaWe30us0JKf8IuxesvlFzLinil0dIGHaTrgOyIQ37I82Nh
- GdZ4nFv00Qyz/wOtiyDsrJ5a
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="153432049"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Feb 2022 06:57:38 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Feb 2022 06:57:36 -0700
-Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 17 Feb 2022 06:57:24 -0700
-From:   Eugen Hristev <eugen.hristev@microchip.com>
-To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>,
-        <hverkuil-cisco@xs4all.nl>, <nicolas.ferre@microchip.com>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <claudiu.beznea@microchip.com>,
-        "Eugen Hristev" <eugen.hristev@microchip.com>
-Subject: [PATCH v5 01/13] media: atmel: atmel-isc-base: use streaming status when queueing buffers
-Date:   Thu, 17 Feb 2022 15:56:33 +0200
-Message-ID: <20220217135645.1427466-2-eugen.hristev@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220217135645.1427466-1-eugen.hristev@microchip.com>
-References: <20220217135645.1427466-1-eugen.hristev@microchip.com>
+        Thu, 17 Feb 2022 08:58:11 -0500
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1B82790B5;
+        Thu, 17 Feb 2022 05:57:54 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 865C0580304;
+        Thu, 17 Feb 2022 08:57:52 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 17 Feb 2022 08:57:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=ewexVFaFRMWe+RzWS
+        r4kmNRQq7+UUt8s/r9ORkquS7A=; b=mWy9vRgL4CcQbAfN2PiozK+s6kRnRIFzn
+        kMqlzD7/kp5oSpykKPxXRmYuqMPS2YZ+IpmJ+42jkocZVRSZJAn79QQkXJmBsUf6
+        MkUbrscUZsjdS9z+Z6udOnpNiMhe67ta3lgL1XpymBFF+m1SBOsGb3IyK7gUuq9/
+        QIBdNj4S9SFmXBiO3ZMaxi1iXWkpYFmxKJzeS/8RIYHfMD7gVCul/3021HsTndl4
+        TlA5MAx78oczzKgjqd9MNzxPhgf5hGGkrOcwc1v9tNOvY8fX+8UHYVAQep6+tdrp
+        97LqPyhjRwFWjTbm8cCbz4LQax0+2JTW8Lx9KYbiPlaIlmW+OcHOw==
+X-ME-Sender: <xms:X1QOYoavoSBxV5dVcuG5EZ5hGGFYv4qeX7udtY46OWOaMhYzGNZRnw>
+    <xme:X1QOYjY8CHRVMYJ1Jygte7TS7wNCc8JTbtvWNm_m47QC-gV2O6TUX6-pwm-gyxxJb
+    MbB6MgDEoFkVYk>
+X-ME-Received: <xmr:X1QOYi9_whrNVeDXBk9prknD2zWXfeNzohfc-9k7nPUiuRM4tQwBI5FHUsYdjGlcb7TTfAlBlf9OwdUvO0skfYIznRs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeekgdehjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:X1QOYirNS2mcn3VDft-AZY6gdcGd5tdovr5tFUk-mgzYzfBFiG2RFQ>
+    <xmx:X1QOYjrblbq3EYP-uMQT4Tsvh4Urd0FiJrSnrC8TE97cxFoitvgCBA>
+    <xmx:X1QOYgQQI_u03vVe8Y1h-ZyNJRPUh_QL9hIT_cvkLuaarZ7HElJO-A>
+    <xmx:YFQOYmWJfM1psDmUjPC2ibQd_Lqs7T6TnmnqrVVR6OdNDns_NGfFKA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 17 Feb 2022 08:57:50 -0500 (EST)
+Date:   Thu, 17 Feb 2022 15:57:47 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jianbo Liu <jianbol@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
+        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
+        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        simon.horman@corigine.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        baowen.zheng@corigine.com, louis.peens@netronome.com,
+        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
+Subject: Re: [PATCH net-next v2 2/2] flow_offload: reject offload for all
+ drivers with invalid police parameters
+Message-ID: <Yg5UW4WzL2NX4st5@shredder>
+References: <20220217082803.3881-1-jianbol@nvidia.com>
+ <20220217082803.3881-3-jianbol@nvidia.com>
+ <20220217124935.p7pbgv2cfmhpshxv@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217124935.p7pbgv2cfmhpshxv@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During experiments with libcamera, it looks like vb2_is_streaming returns
-true before our start streaming is called.
-Order of operations is streamon -> queue -> start_streaming
-ISC would have started the DMA immediately when a buffer is being added
-to the vbqueue if the queue is streaming.
-It is more safe to start the DMA after the start streaming of the driver is
-called.
-Thus, even if vb2queue is streaming, add the buffer to the dma queue of the
-driver instead of actually starting the DMA process, if the start streaming
-has not been called yet.
-Tho achieve this, we have to use vb2_start_streaming_called instead of
-vb2_is_streaming.
+On Thu, Feb 17, 2022 at 02:49:35PM +0200, Vladimir Oltean wrote:
+> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
----
- drivers/media/platform/atmel/atmel-isc-base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for testing
 
-diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-index db15770d5b88..d2cc6c99984f 100644
---- a/drivers/media/platform/atmel/atmel-isc-base.c
-+++ b/drivers/media/platform/atmel/atmel-isc-base.c
-@@ -442,7 +442,7 @@ static void isc_buffer_queue(struct vb2_buffer *vb)
- 
- 	spin_lock_irqsave(&isc->dma_queue_lock, flags);
- 	if (!isc->cur_frm && list_empty(&isc->dma_queue) &&
--		vb2_is_streaming(vb->vb2_queue)) {
-+		vb2_start_streaming_called(vb->vb2_queue)) {
- 		isc->cur_frm = buf;
- 		isc_start_dma(isc);
- 	} else
--- 
-2.25.1
+> 
+> But could we cut down on line length a little? Example for sja1105
+> (messages were also shortened):
 
+No problem
+
+[...]
+
+> Also, if you create a "validate" function for every driver, you'll
+> remove code duplication for those drivers that support both matchall and
+> flower policers.
+
+Will do
