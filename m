@@ -2,103 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5CAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8510C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243843AbiBQRlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 12:41:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45784 "EHLO
+        id S243796AbiBQRmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 12:42:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243828AbiBQRlN (ORCPT
+        with ESMTP id S241845AbiBQRmB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 12:41:13 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2E12B3ACC
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 09:40:58 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2d66f95f1d1so40066737b3.0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 09:40:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xG7+45oqf2NS1ULMFZPBvVQbomZLDhmCLViBMWlu/5k=;
-        b=hz0dRrKJ7PWqiodgggDAx7ROzkgUjtT6NmpVRxtVC0QGo4NeVEVB+VN8NLY0fNtCgt
-         wzyYrGNpB+1/XQkvDm99hmXwydVFpwj/3e50GVor5HYxdiuqYMAtLXy35cJtPAE5O4hU
-         ZlPQUm7v+e3K0QcJ+Zqzw+ojAU4xWZCsCwEttSE2Jejij1E/NqBgXXNugSl0kuEBo4Xc
-         A+N2nZgn8yz4JqWgL4BIma/aSVex/ZKBdtImt9SNh9RlanaM7KXKElEDZK2z8mddp48V
-         NjkVYIzvKFZGoR31t2+/F23ouE/xGT4rHAewpWqe4VAJ8gg7QMB8SA9AHAkEPjuUrTuQ
-         1V4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xG7+45oqf2NS1ULMFZPBvVQbomZLDhmCLViBMWlu/5k=;
-        b=iTTOgc+FOIyJ/vM7W2YFqLSFu39jC11QUHN3w9v+DJJ8n5h1w4/BwhyZ03tckQIs37
-         Q0f1BaBW26PFxPnEtpbOn1aOlRdpqh3BrslMruCAYaYdK8cI9tjOJkIg1cBKAwsi0/9J
-         VnP2TDW8b8JaRp5GtoY5iTUEvn6OiEVuIQM91S91jVJNwyNlzxuW52I3K1vV1uvqqw5y
-         vQS/FZu17OqRTVswdqWw1YBhO4o8vqQtfmU4hwciMDyaMq5/IoSLthKBglbkd8WOX4CX
-         QJZ0WIY/35VWrSlKaY3lM4jEWKDWdCyB2L+/kPl7/PWV4QtKvZKHKym0b0So0ntiko+Y
-         fegw==
-X-Gm-Message-State: AOAM533XEj7q4ixXFX9D9OJxpPAlU3C7Q/K/VreOCvX3TRygnIWOyHhd
-        3snjKnzaqwifCDIhi7a91GB1AwZiGv0D1JJkR/UXlg==
-X-Google-Smtp-Source: ABdhPJwwvBrGab+ahjvONXUZlOncszsPm0JyUwad3a8Qevmv31Bpy7OktCb6OFGKSZ+G4L3pvPjfzXQpuycf9DGgoNI=
-X-Received: by 2002:a0d:ee41:0:b0:2d2:f0aa:d3ba with SMTP id
- x62-20020a0dee41000000b002d2f0aad3bamr3808690ywe.512.1645119656516; Thu, 17
- Feb 2022 09:40:56 -0800 (PST)
+        Thu, 17 Feb 2022 12:42:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3C321819;
+        Thu, 17 Feb 2022 09:41:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9051FB820C2;
+        Thu, 17 Feb 2022 17:41:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 467FFC340E8;
+        Thu, 17 Feb 2022 17:41:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645119703;
+        bh=8pbZj/3cVuW2vQLaHmXTlBvSAEOnHZPHPU8EvjwJvmY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lICo15JaGIZ/+wRcv2OoGVinuJEdNg3fOgujgAyrExKrBVNZWnseGROU0F8zsi3XY
+         SwZR4kNdyhOIKqUv8y+gsMfXk8TBoQPckN91MTym3WTpQB1X7VLe8CL/u5O+Pf9x9a
+         UxRJvr1+jg2PvqdiG+nBI0C+x2ZyLUiI3nyUguqk62WvzsT2+H3tL3JabPWuJXf4cU
+         AKOkKRnJBf9FTiqOTbx2N6qVW5b2iVuCWLutJcz2kv473EmYc2TlKYMhu4n1/gj0d9
+         1TjxBU5O4nVFT1ikddcrYzGZ55h/hVIr4rQws6yNoehya20EIeOGWhPPzUpR1bL+Nv
+         XQ6Bz+csenJuw==
+Date:   Thu, 17 Feb 2022 10:41:37 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        David Gow <davidgow@google.com>, linux-um@lists.infradead.org,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, kunit-dev@googlegroups.com,
+        llvm@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        X86 ML <x86@kernel.org>, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] um: Allow builds with Clang
+Message-ID: <Yg6I0YZAh5yWYpT2@dev-arch.archlinux-ax161>
+References: <20220217002843.2312603-1-keescook@chromium.org>
+ <CAK7LNASMobjuAen+_O4eFOgkOoUwf5ANk6_TjL4SdtT47Jge-w@mail.gmail.com>
 MIME-Version: 1.0
-References: <1645114959-119064-1-git-send-email-john.garry@huawei.com>
- <CANpmjNOO6yxF+xXoatR==uvSaEwsWyZ=n7ExEM_=OJaDYBCeSw@mail.gmail.com> <f7782f09-7f12-b957-a1b2-d0673ec1304c@huawei.com>
-In-Reply-To: <f7782f09-7f12-b957-a1b2-d0673ec1304c@huawei.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 17 Feb 2022 18:40:45 +0100
-Message-ID: <CANpmjNOO-fsU7PP_PqeT53_N=xmNruiT3mvE0e1y=EtKJUfFGg@mail.gmail.com>
-Subject: Re: [PATCH] perf test: Skip Sigtrap test for arm+aarch64
-To:     John Garry <john.garry@huawei.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, jolsa@kernel.org, namhyung@kernel.org,
-        leo.yan@linaro.org, dvyukov@google.com, will@kernel.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
-        irogers@google.com, Thomas Richter <tmricht@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK7LNASMobjuAen+_O4eFOgkOoUwf5ANk6_TjL4SdtT47Jge-w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 at 18:34, John Garry <john.garry@huawei.com> wrote:
-[...]
-> >> -#if defined(__powerpc__) || defined(__s390x__)
-> >> +#if defined(__powerpc__) || defined(__s390x__) || \
-> >> +       defined(__arm__) || defined(__aarch64__)
-> >>   #define BP_ACCOUNT_IS_SUPPORTED 0
-> >>   #else
-> >>   #define BP_ACCOUNT_IS_SUPPORTED 1
+On Thu, Feb 17, 2022 at 01:54:58PM +0900, Masahiro Yamada wrote:
+> On Thu, Feb 17, 2022 at 9:28 AM Kees Cook <keescook@chromium.org> wrote:
 > >
-> > This is now equivalent to BP_SIGNAL_IS_SUPPORTED
-> > tools/perf/tests/tests.h -- and different from the original
-> > BP_ACCOUNT_IS_SUPPORTED (and makes me wonder why
-> > BP_SIGNAL_IS_SUPPORTED wasn't just used from the beginning). Perhaps
-> > just use BP_SIGNAL_IS_SUPPORTED.
+> > Add x86-64 target for Clang+um and update user-offsets.c to use
+> > Clang-friendly assembler, similar to the fix from commit cf0c3e68aa81
+> > ("kbuild: fix asm-offset generation to work with clang").
 > >
->
-> We currently have BP_ACCOUNT_IS_SUPPORTED defined now in 2x locations:
->
-> tests/sigtrap.c
-> tests/bp_account.c
->
-> bp_account works for arm64, and we don't want to skip that test. So, as
-> long as the macro meaning is appropriate, we can reuse
-> BP_SIGNAL_IS_SUPPORTED for sigtrap.c
+> > This lets me run KUnit tests with Clang:
+> >
+> > $ ./tools/testing/kunit/kunit.py config --make_options LLVM=1
+> > ...
+> > $ ./tools/testing/kunit/kunit.py run --make_options LLVM=1
+> > ...
+> >
+> > Cc: Jeff Dike <jdike@addtoit.com>
+> > Cc: Richard Weinberger <richard@nod.at>
+> > Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+> > Cc: Masahiro Yamada <masahiroy@kernel.org>
+> > Cc: Nick Desaulniers <ndesaulniers@google.com>
+> > Cc: Nathan Chancellor <nathan@kernel.org>
+> > Cc: David Gow <davidgow@google.com>
+> > Cc: linux-um@lists.infradead.org
+> > Cc: linux-kbuild@vger.kernel.org
+> > Cc: linux-kselftest@vger.kernel.org
+> > Cc: kunit-dev@googlegroups.com
+> > Cc: llvm@lists.linux.dev
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > ---
+> >  arch/x86/um/user-offsets.c | 4 ++--
+> >  scripts/Makefile.clang     | 1 +
+> >  2 files changed, 3 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/arch/x86/um/user-offsets.c b/arch/x86/um/user-offsets.c
+> > index bae61554abcc..d9071827b515 100644
+> > --- a/arch/x86/um/user-offsets.c
+> > +++ b/arch/x86/um/user-offsets.c
+> > @@ -10,10 +10,10 @@
+> >  #include <asm/types.h>
+> >
+> >  #define DEFINE(sym, val) \
+> > -       asm volatile("\n->" #sym " %0 " #val : : "i" (val))
+> > +       asm volatile("\n.ascii \"->" #sym " %0 " #val "\"": : "i" (val))
+> >
+> >  #define DEFINE_LONGS(sym, val) \
+> > -       asm volatile("\n->" #sym " %0 " #val : : "i" (val/sizeof(unsigned long)))
+> > +       asm volatile("\n.ascii \"->" #sym " %0 " #val "\"": : "i" (val/sizeof(unsigned long)))
+> >
+> >  void foo(void)
+> >  {
+> > diff --git a/scripts/Makefile.clang b/scripts/Makefile.clang
+> > index 51fc23e2e9e5..857b23de51c6 100644
+> > --- a/scripts/Makefile.clang
+> > +++ b/scripts/Makefile.clang
+> > @@ -10,6 +10,7 @@ CLANG_TARGET_FLAGS_powerpc    := powerpc64le-linux-gnu
+> >  CLANG_TARGET_FLAGS_riscv       := riscv64-linux-gnu
+> >  CLANG_TARGET_FLAGS_s390                := s390x-linux-gnu
+> >  CLANG_TARGET_FLAGS_x86         := x86_64-linux-gnu
+> > +CLANG_TARGET_FLAGS_um          := x86_64-linux-gnu
+> 
+> 
+> Does this work for the i386 host?
+> 
+> UML supports i386 and x86_64 as the host architecture as of now,
+> but this always compiles UML for x86_64?
 
-BP_ACCOUNT seems to say something about the "breakpoint accounting /
-measuring" test. BP_SIGNAL is about the tests that want to use
-breakpoints to generate signals.
+I think the current code will work because arch/x86/Makefile.um includes
+-m32 for CONFIG_X86_32, which will implicitly change x86_64-linux-gnu
+into a 32-bit target triple:
 
-So it's very much appropriate to use BP_SIGNAL here if, as we have
-discovered regardless how they're generated in response to
-breakpoints, are broken on arm/arm64. On the day arm/arm64 decides to
-fix signals, I'm assuming all tests being skipped with
-BP_SIGNAL_IS_SUPPORTED can be re-enabled (or so we hope).
+$ echo | clang --target=x86_64-linux-gnu -x c -c -o test.o -
 
-Thanks,
--- Marco
+$ file test.o
+test.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped
+
+$ echo | clang --target=x86_64-linux-gnu -m32 -x c -c -o test.o -
+
+$ file test.o
+test.o: ELF 32-bit LSB relocatable, Intel 80386, version 1 (SYSV), not stripped
+
+In fact, we rely on this for ARCH=i386 LLVM=1 right now, as it uses
+x86_64-linux-gnu for the target flag.
+
+While UML only supports x86, maybe it is worth using SUBARCH instead of
+hardcoding the triple? No strong opinion around that though.
+
+diff --git a/scripts/Makefile.clang b/scripts/Makefile.clang
+index 51fc23e2e9e5..87285b76adb2 100644
+--- a/scripts/Makefile.clang
++++ b/scripts/Makefile.clang
+@@ -10,6 +10,7 @@ CLANG_TARGET_FLAGS_powerpc	:= powerpc64le-linux-gnu
+ CLANG_TARGET_FLAGS_riscv	:= riscv64-linux-gnu
+ CLANG_TARGET_FLAGS_s390		:= s390x-linux-gnu
+ CLANG_TARGET_FLAGS_x86		:= x86_64-linux-gnu
++CLANG_TARGET_FLAGS_um		:= $(CLANG_TARGET_FLAGS_$(SUBARCH))
+ CLANG_TARGET_FLAGS		:= $(CLANG_TARGET_FLAGS_$(SRCARCH))
+ 
+ ifeq ($(CROSS_COMPILE),)
+
+> >  CLANG_TARGET_FLAGS             := $(CLANG_TARGET_FLAGS_$(SRCARCH))
+> >
+> >  ifeq ($(CROSS_COMPILE),)
+> > --
+> > 2.30.2
+> >
+> 
+> 
+> -- 
+> Best Regards
+> Masahiro Yamada
