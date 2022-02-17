@@ -2,145 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB11C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236497AbiBQNpC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:45:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48514 "EHLO
+        id S241426AbiBQNqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:46:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241316AbiBQNoq (ORCPT
+        with ESMTP id S237030AbiBQNqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:44:46 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F9E92B3194
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:43:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=xMLGTKj4HTOTXdlhSUyVvWQINdLGyf8MyKTFBShV+f4=; b=YgRZ2OECOBTphRSxVwowj4LEGo
-        MfNJFpDMUbcRjXPoQ6THgCYUAwdvAh9DZUiABlDIfEHnReQTVnR+r2Ob8djBg17cpOK4t2ZWlRSYu
-        BK3TnQeXuf5YnCshO2gbo7prAxxOCXXmpOw3ieSqEy6RBV+p8vUrRsuVwsVSww93FmzQ8ghuu/jIf
-        o5Sy3KYuKPSj/hsPYoIrAXExk2wUWN46Q4Kn60c3rERbMgYXOojrHB5zO8j3zvjAcBR7alCgLwq5B
-        SDEjyoMJnme/ujnlAWjh0sYfUSau86++w1jG+2m0umDX88QXROlGHlGyxd+qj/08qFK/7ZT0MoXfX
-        8n6lYpGQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nKh4O-00FeQI-Td; Thu, 17 Feb 2022 13:43:40 +0000
-Date:   Thu, 17 Feb 2022 13:43:40 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>, cgel.zte@gmail.com,
-        kirill@shutemov.name, songliubraving@fb.com,
-        akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, yang.yang29@zte.com.cn,
-        wang.yong12@zte.com.cn, Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next] Fix shmem huge page failed to set
- F_SEAL_WRITE attribute problem
-Message-ID: <Yg5RDDRLVsuT/Rfw@casper.infradead.org>
-References: <20220215073743.1769979-1-cgel.zte@gmail.com>
- <1f486393-3829-4618-39a1-931afc580835@oracle.com>
- <d6e74520-88bc-9f57-e189-8e4f389726e@google.com>
+        Thu, 17 Feb 2022 08:46:32 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A249F2AF91B;
+        Thu, 17 Feb 2022 05:46:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645105577; x=1676641577;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=8+xFg8pu7fX7w5OrNIMbop+pkXQzV4mq0rLcHHtAokE=;
+  b=KyH2syqz/8lV+/aUSKd7shF5ekhfitmw6ENLWNQrOyiDT2NuEk2DQe9V
+   5E+sjQ8CYA2kI+oTqW30Xb1K7+DBrbCizknYoGt/Ms7RISsbQW1/aiDs6
+   sp776BTtxRQbOyZBSzX8RgPVyRDLLtmwqLoTA6IaQJn8IfJa5GDDLfv4t
+   jFhVZZ1xmS/an0HIQ7JRltdZp66jdMBQY0mmUec0z/6M4Qab0MR1CikZG
+   Vpn3z32PQ8YvoE5R4WbZPF7SAA1+v4jZOB/lrs+wyTaXhrNFSg+GCDJCJ
+   KLcmZluts0SN43bk5ZndqHMTsDzUPUhQ8MG61k06tV/PISLtG82+lpzfm
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="249710570"
+X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
+   d="scan'208";a="249710570"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 05:46:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
+   d="scan'208";a="503513631"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by orsmga002.jf.intel.com with ESMTP; 17 Feb 2022 05:46:10 -0800
+Date:   Thu, 17 Feb 2022 21:45:48 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Yu Zhang <yu.c.zhang@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, kvm@vger.kernel.org,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, qemu-devel@nongnu.org
+Subject: Re: [PATCH v4 12/12] KVM: Expose KVM_MEM_PRIVATE
+Message-ID: <20220217134548.GA33836@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+ <20220118132121.31388-13-chao.p.peng@linux.intel.com>
+ <a121e766-900d-2135-1516-e1d3ba716834@maciej.szmigiero.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d6e74520-88bc-9f57-e189-8e4f389726e@google.com>
+In-Reply-To: <a121e766-900d-2135-1516-e1d3ba716834@maciej.szmigiero.name>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 05:25:17PM -0800, Hugh Dickins wrote:
-> On Wed, 16 Feb 2022, Mike Kravetz wrote:
-> > On 2/14/22 23:37, cgel.zte@gmail.com wrote:
-> > > From: wangyong <wang.yong12@zte.com.cn>
-> > > 
-> > > After enabling tmpfs filesystem to support transparent hugepage with the
-> > > following command:
-> > >  echo always > /sys/kernel/mm/transparent_hugepage/shmem_enabled
-> > > The docker program adds F_SEAL_WRITE through the following command will
-> > > prompt EBUSY.
-> > >  fcntl(5, F_ADD_SEALS, F_SEAL_WRITE)=-1.
-> > > 
-> > > It is found that in memfd_wait_for_pins function, the page_count of
-> > > hugepage is 512 and page_mapcount is 0, which does not meet the
-> > > conditions:
-> > >  page_count(page) - page_mapcount(page) != 1.
-> > > But the page is not busy at this time, therefore, the page_order of
-> > > hugepage should be taken into account in the calculation.
-> > > 
-> > > Reported-by: Zeal Robot <zealci@zte.com.cn>
-> > > Signed-off-by: wangyong <wang.yong12@zte.com.cn>
-> > > ---
-> > >  mm/memfd.c | 16 +++++++++++++---
-> > >  1 file changed, 13 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/mm/memfd.c b/mm/memfd.c
-> > > index 9f80f162791a..26d1d390a22a 100644
-> > > --- a/mm/memfd.c
-> > > +++ b/mm/memfd.c
-> > > @@ -31,6 +31,7 @@
-> > >  static void memfd_tag_pins(struct xa_state *xas)
-> > >  {
-> > >  	struct page *page;
-> > > +	int count = 0;
-> > >  	unsigned int tagged = 0;
-> > >  
-> > >  	lru_add_drain();
-> > > @@ -39,8 +40,12 @@ static void memfd_tag_pins(struct xa_state *xas)
-> > >  	xas_for_each(xas, page, ULONG_MAX) {
-> > >  		if (xa_is_value(page))
-> > >  			continue;
-> > > +
-> > >  		page = find_subpage(page, xas->xa_index);
-> > > -		if (page_count(page) - page_mapcount(page) > 1)
-> > > +		count = page_count(page);
-> > > +		if (PageTransCompound(page))
+On Tue, Jan 25, 2022 at 09:20:39PM +0100, Maciej S. Szmigiero wrote:
+> On 18.01.2022 14:21, Chao Peng wrote:
+> > KVM_MEM_PRIVATE is not exposed by default but architecture code can turn
+> > on it by implementing kvm_arch_private_memory_supported().
 > > 
-> > PageTransCompound() is true for hugetlb pages as well as THP.  And, hugetlb
-> > pages will not have a ref per subpage as THP does.  So, I believe this will
-> > break hugetlb seal usage.
+> > Also private memslot cannot be movable and the same file+offset can not
+> > be mapped into different GFNs.
+> > 
+> > Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> > ---
+> (..)
+> >   static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
+> > -				      gfn_t start, gfn_t end)
+> > +				      struct file *file,
+> > +				      gfn_t start, gfn_t end,
+> > +				      loff_t start_off, loff_t end_off)
+> >   {
+> >   	struct kvm_memslot_iter iter;
+> > +	struct kvm_memory_slot *slot;
+> > +	struct inode *inode;
+> > +	int bkt;
+> >   	kvm_for_each_memslot_in_gfn_range(&iter, slots, start, end) {
+> >   		if (iter.slot->id != id)
+> >   			return true;
+> >   	}
+> > +	/* Disallow mapping the same file+offset into multiple gfns. */
+> > +	if (file) {
+> > +		inode = file_inode(file);
+> > +		kvm_for_each_memslot(slot, bkt, slots) {
+> > +			if (slot->private_file &&
+> > +			     file_inode(slot->private_file) == inode &&
+> > +			     !(end_off <= slot->private_offset ||
+> > +			       start_off >= slot->private_offset
+> > +					     + (slot->npages >> PAGE_SHIFT)))
+> > +				return true;
+> > +		}
+> > +	}
 > 
-> Yes, I think so too; and that is not the only issue with the patch
-> (I don't think page_mapcount is enough, I had to use total_mapcount).
-> 
-> It's a good find, and thank you WangYong for the report.
-> I found the same issue when testing my MFD_HUGEPAGE patch last year,
-> and devised a patch to fix it (and keep MFD_HUGETLB working) then; but
-> never sent that in because there wasn't time to re-present MFD_HUGEPAGE.
-> 
-> I'm currently retesting my patch: just found something failing which
-> I thought should pass; but maybe I'm confused, or maybe the xarray is
-> working differently now.  I'm rushing to reply now because I don't want
-> others to waste their own time on it.
+> That's a linear scan of all memslots on each CREATE (and MOVE) operation
+> with a fd - we just spent more than a year rewriting similar linear scans
+> into more efficient operations in KVM.
 
-I did change how the XArray works for THP recently.
+In the last version I tried to solve this problem by using interval tree
+(just like existing hva_tree), but finally we realized that in one VM we
+can have multiple fds with overlapped offsets so that approach is
+incorrect. See https://lkml.org/lkml/2021/12/28/480 for the discussion.
 
-Kirill's original patch stored:
+So linear scan is used before I can find a better way.
 
-512: p
-513: p+1
-514: p+2
-...
-1023: p+511
-
-A couple of years ago, I changed it to store:
-
-512: p
-513: p
-514: p
-...
-1023: p
-
-And in January, Linus merged the commit which changes it to:
-
-512-575: p
-576-639: (sibling of 512)
-640-703: (sibling of 512)
-...
-960-1023: (sibling of 512)
-
-That is, I removed a level of the tree and store sibling entries
-rather than duplicate entries.  That wasn't for fun; I needed to do
-that in order to make msync() work with large folios.  Commit
-6b24ca4a1a8d has more detail and hopefully can inspire whatever
-changes you need to make to your patch.
+Chao
