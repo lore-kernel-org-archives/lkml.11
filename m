@@ -2,69 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8461DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 12:02:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FD68C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 12:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240143AbiBQMCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 07:02:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51954 "EHLO
+        id S239410AbiBQMCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 07:02:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240210AbiBQMCY (ORCPT
+        with ESMTP id S240227AbiBQMCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 07:02:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4246305
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 04:02:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D568A612D1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 12:02:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F390C340E9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 12:02:08 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="BorPETqJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645099325;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nCRtd9pKms2My+4fOdrY97sIPH9oqF8HF91XcKL/ML8=;
-        b=BorPETqJnKcA2ZaG6Dd0heLU3Uw1v4lq0ptLs8emoe9Hax8xPVho8wbXhlLBYIeoQI4ez3
-        cyFbWvG7QNkiMPEGPF9B7z5DVl0KyyZR6g+hjDCIO9i4LzJEATS1Is7+/fiScq9cvJo8qW
-        Mt2wEEpL+l0VMXT69nSojPn8FaNS4O0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 22c7d7c1 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Thu, 17 Feb 2022 12:02:05 +0000 (UTC)
-Received: by mail-yb1-f175.google.com with SMTP id j12so12508965ybh.8
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 04:02:05 -0800 (PST)
-X-Gm-Message-State: AOAM532izqWFD78u0trhsx/pR6Mz/PIuXJLjGJwoVSpDFx8exEuwR72/
-        +c/QN1rI6XSpJzG/wHwN8fhXRGlGNWh7JTRmUOY=
-X-Google-Smtp-Source: ABdhPJxqV4CruHjyDFnQhvVF5c53pQ5L7IK+pVx9YR4U6Y4OL7sR35z1LgqYdFsXMSHCqeiaOq2jR5n9jnixhfs3BvU=
-X-Received: by 2002:a05:6902:102a:b0:614:105b:33a6 with SMTP id
- x10-20020a056902102a00b00614105b33a6mr2066427ybt.457.1645099324181; Thu, 17
- Feb 2022 04:02:04 -0800 (PST)
+        Thu, 17 Feb 2022 07:02:50 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD3B2AC906
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 04:02:25 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4Jztjr3ywzz9sSZ;
+        Thu, 17 Feb 2022 13:02:24 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id N8HK48oUeKlw; Thu, 17 Feb 2022 13:02:24 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jztjr3Bxmz9sRv;
+        Thu, 17 Feb 2022 13:02:24 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5F1478B780;
+        Thu, 17 Feb 2022 13:02:24 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id FQJtncJFfTIv; Thu, 17 Feb 2022 13:02:24 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.225])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1604B8B763;
+        Thu, 17 Feb 2022 13:02:24 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21HC2ITQ400842
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 13:02:18 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21HC2In7400841;
+        Thu, 17 Feb 2022 13:02:18 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v1 3/4] powerpc/ftrace: Regroup PPC64 specific operations in ftrace_mprofile.S
+Date:   Thu, 17 Feb 2022 13:01:58 +0100
+Message-Id: <619dfb672bf4f1b777a4b3f8b4f14e637fea2716.1645099283.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <ec286d2cc6989668a96f14543275437d2f3f0e3a.1645099283.git.christophe.leroy@csgroup.eu>
+References: <ec286d2cc6989668a96f14543275437d2f3f0e3a.1645099283.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-References: <20220215212255.273253-1-Jason@zx2c4.com> <20220215212255.273253-2-Jason@zx2c4.com>
-In-Reply-To: <20220215212255.273253-2-Jason@zx2c4.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 17 Feb 2022 13:01:53 +0100
-X-Gmail-Original-Message-ID: <CAHmME9q6gv8mseUUsYvj7t=m6h0cCfzj7TvFBJW-MSpV8L4fcQ@mail.gmail.com>
-Message-ID: <CAHmME9q6gv8mseUUsYvj7t=m6h0cCfzj7TvFBJW-MSpV8L4fcQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] random: set fast pool count to zero in cpuhp prepare
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Sebastian Siewior <bigeasy@linutronix.de>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sultan Alsawaf <sultan@kerneltoast.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Theodore Ts'o" <tytso@mit.edu>
-Content-Type: text/plain; charset="UTF-8"
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645099315; l=1188; s=20211009; h=from:subject:message-id; bh=XMIYYhQft+jL7/o2oyJXW3QWdZRHg33NfV3DhZbDywQ=; b=t5/JLVBulgsg7g1omxoG3MZAkrTcPSUvsnjYBnC+ZSWqQif8+O0lrHAG0EFcsi+kaN3dZvsRuXJ9 aDFwdjTEATn1MLYkcZLEQt1or9tfe2HXQkQK/uN0L0kQ4g/0zkP2
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alas I've finally realized the rollback logic makes this inoperable
-too, in which those workers are unbound at one phase, but then we
-never hit this stage, so we never zero them back. So, a v5 is coming
-up, where I'll implement basically your exact suggestion from before.
+CONFIG_MPROFILE_KERNEL is only for PPC64 and ftrace_mprofile.o
+is build on PPC64 only when CONFIG_MPROFILE_KERNEL is defined.
+
+Move saving of r0 inside #ifdef PPC64
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/kernel/trace/ftrace_mprofile.S | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/arch/powerpc/kernel/trace/ftrace_mprofile.S b/arch/powerpc/kernel/trace/ftrace_mprofile.S
+index 630b2de9957b..f5d31c458e6b 100644
+--- a/arch/powerpc/kernel/trace/ftrace_mprofile.S
++++ b/arch/powerpc/kernel/trace/ftrace_mprofile.S
+@@ -33,11 +33,6 @@
+  * and then arrange for the ftrace function to be called.
+  */
+ .macro	ftrace_regs_entry allregs
+-	/* Save the original return address in A's stack frame */
+-#ifdef CONFIG_MPROFILE_KERNEL
+-	PPC_STL	r0,LRSAVE(r1)
+-#endif
+-
+ 	/* Create our stack frame + pt_regs */
+ 	PPC_STLU	r1,-SWITCH_FRAME_SIZE(r1)
+ 
+@@ -46,6 +41,8 @@
+ 	SAVE_GPRS(3, 10, r1)
+ 
+ #ifdef CONFIG_PPC64
++	/* Save the original return address in A's stack frame */
++	std	r0, LRSAVE+SWITCH_FRAME_SIZE(r1)
+ 	/* Ok to continue? */
+ 	lbz	r3, PACA_FTRACE_ENABLED(r13)
+ 	cmpdi	r3, 0
+-- 
+2.34.1
+
