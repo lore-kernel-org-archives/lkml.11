@@ -2,110 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06413C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 09:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D716C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 09:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238812AbiBQJmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 04:42:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48186 "EHLO
+        id S237017AbiBQJpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 04:45:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237910AbiBQJmY (ORCPT
+        with ESMTP id S230072AbiBQJpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 04:42:24 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BED13CF9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 01:42:10 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        Thu, 17 Feb 2022 04:45:13 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84301704A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 01:44:59 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 78EEF2198B;
-        Thu, 17 Feb 2022 09:42:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645090929; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wmVL2GYDhN1VFmtx9IfL5/C+kz1evNxXCS6Kv/s4HgU=;
-        b=ZHdJNthK2g0RPIYnVRM/p3Q5ZMW83LBt0jMHt8WtevyBS1WEKFwfKsAOgcYtqDUHm6Rnio
-        GnNa1qBidJqRr6FM7RGkv1J5Q5PJs/lQTQ5MKt4UrwzRpNDIQUWJJOaNblUVeFR/rDojyw
-        20EPCAEwrQWv/MIluN8mAo96Dr3dqjk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645090929;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wmVL2GYDhN1VFmtx9IfL5/C+kz1evNxXCS6Kv/s4HgU=;
-        b=m5plmMifhjqXPOqwW0ysI7NX//dFVlmox3Iba58D5g0v1RSHNuLv2p3lczJbTMAPYI4egg
-        yZEUpKn2PsawZlBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5901813BBF;
-        Thu, 17 Feb 2022 09:42:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id zd8ZFXEYDmJdKQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 17 Feb 2022 09:42:09 +0000
-Message-ID: <25381c82-36b6-e62b-de20-db438bc85adb@suse.cz>
-Date:   Thu, 17 Feb 2022 10:42:09 +0100
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 70D393F4BA
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 09:44:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645091098;
+        bh=/6BRQwo9F2YRhb8CCreWYd07yVTpbMqy24rXfG8Cqa0=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=wExrARZiqKQ2l55eNJt6LginpSvSUiNa7sdSc54N+PuLrxRv4v1xMJX0yp/HJmcU7
+         yEWd3NYQ31osq9nV9sP3+0nUjte1g1D0mPiW1pAHmDCDbAQZ2nG4QehwjEqYfddfio
+         dmraQpFTtO11X9f9CUyGOoWRUBxwUufeOWlRBBYADP+S4JeMSgOqB+rkdfN7NiIH8k
+         ibXw3QYI5hWJwBQhUK39eWzcWg6sfToFF6H3EQRbPZfikulXEFBqI/YWJvDLbDo3U8
+         AmD84Di6E0Bc0c4J4sfVAGlARBwf/BS4r+CUMQ75ad90p2V+oJ5cR0sS0pIMe9jRm/
+         gHZkevolbTAXQ==
+Received: by mail-ej1-f72.google.com with SMTP id r18-20020a17090609d200b006a6e943d09eso1237128eje.20
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 01:44:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/6BRQwo9F2YRhb8CCreWYd07yVTpbMqy24rXfG8Cqa0=;
+        b=09ql49N+i7vVVMUrYsTy0Js6YTi8a+aewqHNfgOicw2HCGfqF2jDmjh1AohFGA7Ku5
+         PrChL6MwEDLSQQJ4zCKXqUMVfMp9MpGJ9JI11aA5boAEXgbNhicX1CZedwr9gZeX0sEj
+         c6EozeOIjGjL1F1dpyVktPdkj+oPAN/Dmw6pY/AvN/iRPndwkKKhUzELUDOU7+/EOvTQ
+         FNvjiGbCSl+/ZweXLPXljEL2gomkHcAv0Ssd137A9fu3LTqxWCaYmi37P27Q89rZdm7C
+         qebE12JwBkIvscbqxRycT/5g+tRXFDv0/hSgDsUBs33GBB29l7MnVInJ83TArdLOzfd/
+         q53A==
+X-Gm-Message-State: AOAM5313NkNLjRfxLdW9Swi5vEvBqjHcUvcHsutveuoYcF69hsmA+Xyf
+        /a2NFUYahpkxlvDqHSGE/geTSJWqr88152GjkHQnfkpIZPrcEczhAXRBYoo0CQWlC84IK7mGNql
+        7GFfQn9MBqHEnTG3BW9QL6Ox3HxedzWO03IYblWozVg==
+X-Received: by 2002:a50:fc05:0:b0:408:4d18:5070 with SMTP id i5-20020a50fc05000000b004084d185070mr1687912edr.365.1645091095451;
+        Thu, 17 Feb 2022 01:44:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw4HEhNYvN/1dbYjwwFvdfSqvPJagGu9NoMyYbc/Z0Rqg0vqOwN6P+MvYMdO9RtArG/+LyFyw==
+X-Received: by 2002:a50:fc05:0:b0:408:4d18:5070 with SMTP id i5-20020a50fc05000000b004084d185070mr1687899edr.365.1645091095209;
+        Thu, 17 Feb 2022 01:44:55 -0800 (PST)
+Received: from [192.168.0.110] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id l7sm3171222edb.53.2022.02.17.01.44.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 01:44:54 -0800 (PST)
+Message-ID: <dde7c475-e44f-c464-ee4f-afe9346f16e3@canonical.com>
+Date:   Thu, 17 Feb 2022 10:44:54 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 4/6] mm/page_alloc: Drain the requested list first during
- bulk free
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] [v1] dt-bindings: watchdog: Add HPE GXP Watchdog timer
+ binding
 Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Aaron Lu <aaron.lu@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220217002227.5739-1-mgorman@techsingularity.net>
- <20220217002227.5739-5-mgorman@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220217002227.5739-5-mgorman@techsingularity.net>
+To:     nick.hawkins@hpe.com, verdun@hpe.com
+Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <nick.hawkins@hpe.com>
+ <20220215184039.41882-1-nick.hawkins@hpe.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220215184039.41882-1-nick.hawkins@hpe.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 01:22, Mel Gorman wrote:
-> Prior to the series, pindex 0 (order-0 MIGRATE_UNMOVABLE) was always
-> skipped first and the precise reason is forgotten. A potential reason may
-> have been to artificially preserve MIGRATE_UNMOVABLE but there is no reason
-> why that would be optimal as it depends on the workload. The more likely
-> reason is that it was less complicated to do a pre-increment instead of
-> a post-increment in terms of overall code flow. As free_pcppages_bulk()
-> now typically receives the pindex of the PCP list that exceeded high,
-> always start draining that list.
+On 15/02/2022 19:40, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
 > 
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> Description: Creating binding for the GXP watchdog timer to be used in
+>  the device tree. This along with the
+>   dt-bindings: timer: Add HPE GXP Timer binding patch will be used to
+>    create the basic dts and dtsi for GXP.
+> Information: GXP is the name of the HPE SoC.
+>  This SoC is used to implement BMC features of HPE servers
+>   (all ProLiant, Synergy, and many Apollo, and Superdome machines)
+>    It does support many features including:
+>         ARMv7 architecture, and it is based on a Cortex A9 core
+>         Use an AXI bus to which
+>                 a memory controller is attached, as well as
+>                  multiple SPI interfaces to connect boot flash,
+>                  and ROM flash, a 10/100/1000 Mac engine which
+>                  supports SGMII (2 ports) and RMII
+>                 Multiple I2C engines to drive connectivity with a
+> 				 host infrastructure
+>                 A video engine which support VGA and DP, as well as
+>                  an hardware video encoder
+>                 Multiple PCIe ports
+>                 A PECI interface, and LPC eSPI
+>                 Multiple UART for debug purpose, and Virtual UART for
+>                  host connectivity
+>                 A GPIO engine.
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+All this commit msg looks irrelevant, obfuscating and duplicating the
+same message.
 
+> 
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 > ---
->  mm/page_alloc.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  .../bindings/watchdog/hpe,gxp-wdt.yaml        | 37 +++++++++++++++++++
+>  MAINTAINERS                                   |  6 +++
+>  2 files changed, 43 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
 > 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index dfc347a58ea6..635a4e0f70b4 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -1463,6 +1463,10 @@ static void free_pcppages_bulk(struct zone *zone, int count,
->  	 * below while (list_empty(list)) loop.
->  	 */
->  	count = min(pcp->count, count);
+> diff --git a/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+> new file mode 100644
+> index 000000000000..6044496b4968
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+> @@ -0,0 +1,37 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/watchdog/hpe,gxp-wdt.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	/* Ensure requested pindex is drained first. */
-> +	pindex = pindex - 1;
+> +title: HPE GXP Controlled Watchdog
 > +
->  	while (count > 0) {
->  		struct list_head *list;
->  		int nr_pages;
+> +allOf:
+> +  - $ref: "watchdog.yaml#"
+> +
+> +maintainers:
+> +  - Nick Hawkins <nick.hawkins@hpe.com>
+> +  - Jean-Marie Verdun <verdun@hpe.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: hpe,gxp-wdt
+> +
+> +  reg:
+> +    items:
+> +      - description: WDGRST register
+> +      - description: WDGCS register
+> +
 
+Quite ascetic bindings - no clocks? no power-domains? interrupts?
+
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    watchdog0:  watchdog@c0000090 {
+> +      compatible = "hpe,gxp-wdt";
+> +      reg = <0xc0000090 0x02>, <0xc0000096 0x01>;
+> +    };
+> +
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index f41088418aae..8c96f4db900c 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -8385,6 +8385,12 @@ L:	linux-efi@vger.kernel.org
+>  S:	Maintained
+>  F:	block/partitions/efi.*
+>  
+> +GXP WATCHDOG TIMER
+> +M:	Nick Hawkins <nick.hawkins@hpe.com>
+> +M:	Jean-Marie Verdun <verdun@hpe.com>
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+
+If you have the same maintainers for each of your drivers, it's actually
+easier to keep them in one entry - HPE GXP ARCHITECTURE. There is little
+benefit in having per-block entries which are the same as your main entry.
+
+Best regards,
+Krzysztof
