@@ -2,120 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 307EAC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB77C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245395AbiBQTrW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:47:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45012 "EHLO
+        id S245404AbiBQTrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:47:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiBQTrU (ORCPT
+        with ESMTP id S244843AbiBQTrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 14:47:20 -0500
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825A326549
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:47:03 -0800 (PST)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2d6923bca1aso34913267b3.9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:47:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oaFgdGApNlDvtZyiIfo82SRxAus8TF8HrqjXlvq9h8Y=;
-        b=SuxQdh+t5+fvwh5ODRCj4O0o5dFuhnXt8wycvDS/oc9U/RxDeBZ3bX5ZeesGn6+oJY
-         CgPo+r2zBBVKinwJc2jONuwupZkCPpbAswzez7svHTfufRM0UpnHc0JQysuQUpfg39SP
-         AhXLqSKJ8RK3c/iQgxWFs5sMqgai7dSUoqMso=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oaFgdGApNlDvtZyiIfo82SRxAus8TF8HrqjXlvq9h8Y=;
-        b=ropDwHzriT53P2XN4BMshlzuatgQ5ccSa0knnRtXmxtbhj4ChyS5Yp/CNGTKdNV7uT
-         igPkf0HKpqWkc2CaPrN+k50YwVNWpeyTPS6bGcjTCLtqKi65bmYMoEJfaLBb2DFQ5AAn
-         sNHrfe4ElVS50eZZ/xfdYk2scuYEszfgJupjD6pPfiuSHuCETvPs/aqxhjh5IqhcomHv
-         S2GpokAZufg8pWJY0+dyEyEdZ58EjxKKzzb5TB6pLWx3nt6uCt7BJmGnxVNZoHV/XCwy
-         6IHtLxgs/sISpVOpA/FTcShL1rKUFv5IV3T6dehTUehFtp19Wp9AL1vUVO0pQ29Nh45Q
-         +b5Q==
-X-Gm-Message-State: AOAM530jTQ3uqheFP7sIOehNw0s2I86YuG9Yy+wL6zGbkEbhXXmOco5M
-        ekwIHBDqzcUBn/E+ZaFp2V6bKL7EQi6CinPBuBmh
-X-Google-Smtp-Source: ABdhPJyYFJ0q/2SlA60syxammhFOBpSQhcIB9lrLmw/nIlWery9i8zrN9e9Vgg9W2i5AsrahmkX7VAebgSiqcHvfTL4=
-X-Received: by 2002:a81:924a:0:b0:2d6:b588:bd0e with SMTP id
- j71-20020a81924a000000b002d6b588bd0emr2097858ywg.402.1645127222718; Thu, 17
- Feb 2022 11:47:02 -0800 (PST)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668E42654B
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:47:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645127224; x=1676663224;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xv6pcA5dxgACBVYnbVuiAe1cTKMxE6gTqfXo+UBD0dU=;
+  b=cjghv1UqOHj9b/c8IQKFwTrGt1rSDffBHykMioDCgcv03iOq3pmWJ5IO
+   KR/ONm2/m6MzRU/QZMdn4WmY6+EdstnPDNADHyPASyTKuwmo04rJaCUZg
+   ByH6Ic0Q+IWYK9BA+rizmT4peAuw4I63ccbO/msKkKlk+TOPOxTnWKbzR
+   DmoRjWGnrCDaH/3Tf3Wjb+tzGdX+icYrGZyNT+FcaOUqw3t3iW7rB7LtS
+   dAepnnPiTtACDpEXUSFuQ36YU7RQvcsqzto2avQP79SC/QSUEZokTKCXc
+   vo90AnfVKCJzTWXLymHa/nIvT8boOYKuUqC1b2JE+31RE7cI1wzNjCA5Q
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="337404433"
+X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
+   d="scan'208";a="337404433"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 11:47:04 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
+   d="scan'208";a="605157230"
+Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 17 Feb 2022 11:47:01 -0800
+Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKmk1-0000Ty-3I; Thu, 17 Feb 2022 19:47:01 +0000
+Date:   Fri, 18 Feb 2022 03:46:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [hnaz-mm:master 237/343] arch/powerpc/mm/book3s64/pgtable.c:540:15:
+ warning: no previous prototype for 'memremap_compat_align'
+Message-ID: <202202172347.lJ6oYVOE-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
- <877d9xx14f.fsf@igel.home> <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de>
- <87tud1vjn4.fsf@igel.home> <49d3aeab-1fe6-8d17-bc83-78f3555109c7@gmx.de>
- <87pmnpvh66.fsf@igel.home> <20220217105450.GA20183@sunil-ThinkPad-T490>
-In-Reply-To: <20220217105450.GA20183@sunil-ThinkPad-T490>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Thu, 17 Feb 2022 11:46:52 -0800
-Message-ID: <CAOnJCULWjCHCCS7wzTBVsYcPzWPpL9jmS7xx5LUFT2tRvAZk6w@mail.gmail.com>
-Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return value
-To:     Sunil V L <sunilvl@ventanamicro.com>
-Cc:     Andreas Schwab <schwab@linux-m68k.org>,
-        Heinrich Schuchardt <xypron.glpk@gmx.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Anup Patel <apatel@ventanamicro.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 2:55 AM Sunil V L <sunilvl@ventanamicro.com> wrote:
->
-> On Mon, Feb 14, 2022 at 12:09:05PM +0100, Andreas Schwab wrote:
-> > On Feb 14 2022, Heinrich Schuchardt wrote:
-> >
-> > > On 2/14/22 11:15, Andreas Schwab wrote:
-> > >> On Feb 14 2022, Heinrich Schuchardt wrote:
-> > >>
-> > >>> set_boot_hartid() implies that the caller can change the boot hart ID.
-> > >>> As this is not a case this name obviously would be a misnomer.
-> > >>
-> > >> initialize_boot_hartid would fit better.
-> > >>
-> > >
-> > > Another misnomer.
-> >
-> > But the best fit so far.
->
-> Can we use the name init_boot_hartid_from_fdt()? While I understand
-> Heinrich's point, I think since we have "_from_fdt", this may be fine.
->
+tree:   https://github.com/hnaz/linux-mm master
+head:   8857950589bc3b4920d69c3e0b2c06d33f445d21
+commit: 236e08e72c118cbb20e780cc853378e2c341825c [237/343] mm: don't include <linux/memremap.h> in <linux/mm.h>
+config: powerpc64-randconfig-m031-20220217 (https://download.01.org/0day-ci/archive/20220217/202202172347.lJ6oYVOE-lkp@intel.com/config)
+compiler: powerpc64le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/hnaz/linux-mm/commit/236e08e72c118cbb20e780cc853378e2c341825c
+        git remote add hnaz-mm https://github.com/hnaz/linux-mm
+        git fetch --no-tags hnaz-mm master
+        git checkout 236e08e72c118cbb20e780cc853378e2c341825c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/mm/book3s64/
 
-init_boot_hartid_from_fdt or parse_boot_hartid_from_fdt
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-are definitely much better than the current one.
+All warnings (new ones prefixed by >>):
 
-> I didn't rename the function since it was not recommended to do multiple
-> things in a "Fix" patch. If we can consider this as not very serious
-> issue which needs a "Fix" patch, then I can combine this patch with the
-> RISCV_EFI_BOOT_PROTOCOL patch series.
->
-
-IMHO, it is okay to include this in the RISCV_EFI_BOOT_PROTOCOL series
-as we are not going to have hartid U32_MAX in a few months :)
+>> arch/powerpc/mm/book3s64/pgtable.c:540:15: warning: no previous prototype for 'memremap_compat_align' [-Wmissing-prototypes]
+     540 | unsigned long memremap_compat_align(void)
+         |               ^~~~~~~~~~~~~~~~~~~~~
 
 
-> Hi Ard, let me know your suggestion on how to proceed with this.
->
-> Thanks
-> Sunil
-> >
-> > --
-> > Andreas Schwab, schwab@linux-m68k.org
-> > GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
-> > "And now for something completely different."
+vim +/memremap_compat_align +540 arch/powerpc/mm/book3s64/pgtable.c
 
+20626177c9de72 Nicholas Piggin 2021-12-02  531  
+387e220a2e5e63 Nicholas Piggin 2021-12-02  532  #if defined(CONFIG_ZONE_DEVICE) && defined(CONFIG_ARCH_HAS_MEMREMAP_COMPAT_ALIGN)
+20626177c9de72 Nicholas Piggin 2021-12-02  533  /*
+20626177c9de72 Nicholas Piggin 2021-12-02  534   * Override the generic version in mm/memremap.c.
+20626177c9de72 Nicholas Piggin 2021-12-02  535   *
+20626177c9de72 Nicholas Piggin 2021-12-02  536   * With hash translation, the direct-map range is mapped with just one
+20626177c9de72 Nicholas Piggin 2021-12-02  537   * page size selected by htab_init_page_sizes(). Consult
+20626177c9de72 Nicholas Piggin 2021-12-02  538   * mmu_psize_defs[] to determine the minimum page size alignment.
+20626177c9de72 Nicholas Piggin 2021-12-02  539  */
+20626177c9de72 Nicholas Piggin 2021-12-02 @540  unsigned long memremap_compat_align(void)
 
+:::::: The code at line 540 was first introduced by commit
+:::::: 20626177c9de726c48802c15e8635cc154645588 powerpc: make memremap_compat_align 64s-only
 
--- 
-Regards,
-Atish
+:::::: TO: Nicholas Piggin <npiggin@gmail.com>
+:::::: CC: Michael Ellerman <mpe@ellerman.id.au>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
