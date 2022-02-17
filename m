@@ -2,70 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4F6C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B23C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242732AbiBQPsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:48:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58906 "EHLO
+        id S242746AbiBQPs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:48:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242582AbiBQPsw (ORCPT
+        with ESMTP id S241599AbiBQPsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:48:52 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A6015C672;
-        Thu, 17 Feb 2022 07:48:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=C64EWtN/f9bCsY8A/y864AzqVeE3CzsItNdn/gVkzik=; b=jCfaIcxlLYVA6BVbQUUqoq9vs3
-        ttepisGsE54fuHbaxe7EZGo8aY4x5XyqA0Gq3DycWRmaSI47gwocc9MsqKRASysh54GhMwhY1GLwk
-        gceCtl3pqUzVV9ADo9SxQCcFaLuNdArZwG8Ijbx6Avbpczu5T8YWM6dloPLyr0hYmuIISBTyrVnOM
-        DYRhGWt1EwNRQ22wwnIC5imtDAx4Qo9i/eYZybjnEaVhoWoAE+p8ckk98ByTUVWS9uvTcdkBhKlKN
-        aIxNyleEJsc4zglXLG3+zbpoXIgldXFi59/lpjrt3hTRbacTXZTR3p/PzcCfgqle0FgaWes7/niLS
-        EBD2gAZQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nKj1F-00BL4C-UU; Thu, 17 Feb 2022 15:48:33 +0000
-Date:   Thu, 17 Feb 2022 07:48:33 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        "Wang Jianchao (Kuaishou)" <jianchao.wan9@gmail.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] blk: do rq_qos_exit in blk_cleanup_queue
-Message-ID: <Yg5uUeMONPn4jnng@infradead.org>
-References: <20220216113212.83000-1-jianchao.wan9@gmail.com>
- <Yg392sqFydj9p3My@infradead.org>
- <96deb063-f4ef-fadd-543b-e905495898f6@kernel.dk>
- <Yg5VnRtsrrQX4mFG@infradead.org>
- <eb8e2477-d8f6-b032-6177-8ce187de12ab@kernel.dk>
+        Thu, 17 Feb 2022 10:48:46 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A29F15C64D;
+        Thu, 17 Feb 2022 07:48:32 -0800 (PST)
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jzzjg2fklz67m9x;
+        Thu, 17 Feb 2022 23:47:35 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Feb 2022 16:48:30 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Feb 2022 15:48:25 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
+        <chenxiang66@hisilicon.com>, <damien.lemoal@opensource.wdc.com>,
+        <hch@lst.de>
+CC:     <Ajish.Koshy@microchip.com>, <yanaijie@huawei.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
+        <liuqi115@huawei.com>, <Viswas.G@microchip.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v2 02/18] scsi: libsas: Use enum for response frame DATAPRES field
+Date:   Thu, 17 Feb 2022 23:42:30 +0800
+Message-ID: <1645112566-115804-3-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1645112566-115804-1-git-send-email-john.garry@huawei.com>
+References: <1645112566-115804-1-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eb8e2477-d8f6-b032-6177-8ce187de12ab@kernel.dk>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 07:55:16AM -0700, Jens Axboe wrote:
-> > from Jan 22.  Although it would need a rebase so it can be applied
-> > without the preceding patches.
-> 
-> Can someone respin that for 5.17 then?
+As defined in table 126 of the SAS spec 1.1, use an enum for the DATAPRES
+field, which makes reading the code easier.
 
-I looked at it and it I don't think we can do that without a lot of
-the prep patches.
+Also change sas_ssp_task_response() to use a switch statement, which is
+more suitable (than if-else), as suggested by Christoph.
 
-That being said I think this version of the patch also is buggy, we
-want the policies shut down in del_gendisk with the queue frozen for
-normal operation.
+Suggested-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Tested-by: Yihang Li <liyihang6@hisilicon.com>
+---
+ drivers/scsi/aic94xx/aic94xx_tmf.c |  2 +-
+ drivers/scsi/isci/request.c        |  7 ++++---
+ drivers/scsi/libsas/sas_task.c     | 14 +++++++++-----
+ drivers/scsi/mvsas/mv_sas.c        |  2 +-
+ include/scsi/sas.h                 |  7 +++++++
+ 5 files changed, 22 insertions(+), 10 deletions(-)
 
-I guess until we can move the initialization and teardown entirely
-to the gendisk as in Ming's more complex series we need to keep the
-call in del_gendisk and also do it in blk_cleanup_queue.  For the
-normal shutdown on disk that were life del_gendisk does the all the
-work on the frozen queue, while for queues that never had a disk
-blk_cleanup_queue will clean up the unused rq_qos.
+diff --git a/drivers/scsi/aic94xx/aic94xx_tmf.c b/drivers/scsi/aic94xx/aic94xx_tmf.c
+index 0eb6e206a2b4..2ba91eaaf0ee 100644
+--- a/drivers/scsi/aic94xx/aic94xx_tmf.c
++++ b/drivers/scsi/aic94xx/aic94xx_tmf.c
+@@ -287,7 +287,7 @@ static int asd_get_tmf_resp_tasklet(struct asd_ascb *ascb,
+ 	fh = edb->vaddr + 16;
+ 	ru = edb->vaddr + 16 + sizeof(*fh);
+ 	res = ru->status;
+-	if (ru->datapres == 1)	  /* Response data present */
++	if (ru->datapres == SAS_DATAPRES_RESPONSE_DATA)
+ 		res = ru->resp_data[3];
+ #if 0
+ 	ascb->tag = fh->tag;
+diff --git a/drivers/scsi/isci/request.c b/drivers/scsi/isci/request.c
+index 92394884fbeb..ac17e3a35d2c 100644
+--- a/drivers/scsi/isci/request.c
++++ b/drivers/scsi/isci/request.c
+@@ -1047,7 +1047,8 @@ request_started_state_tc_event(struct isci_request *ireq,
+ 		resp_iu = &ireq->ssp.rsp;
+ 		datapres = resp_iu->datapres;
+ 
+-		if (datapres == 1 || datapres == 2) {
++		if (datapres == SAS_DATAPRES_RESPONSE_DATA ||
++		    datapres == SAS_DATAPRES_SENSE_DATA) {
+ 			ireq->scu_status = SCU_TASK_DONE_CHECK_RESPONSE;
+ 			ireq->sci_status = SCI_FAILURE_IO_RESPONSE_VALID;
+ 		} else {
+@@ -1730,8 +1731,8 @@ sci_io_request_frame_handler(struct isci_request *ireq,
+ 
+ 			resp_iu = &ireq->ssp.rsp;
+ 
+-			if (resp_iu->datapres == 0x01 ||
+-			    resp_iu->datapres == 0x02) {
++			if (resp_iu->datapres == SAS_DATAPRES_RESPONSE_DATA ||
++			    resp_iu->datapres == SAS_DATAPRES_SENSE_DATA) {
+ 				ireq->scu_status = SCU_TASK_DONE_CHECK_RESPONSE;
+ 				ireq->sci_status = SCI_FAILURE_CONTROLLER_SPECIFIC_IO_ERR;
+ 			} else {
+diff --git a/drivers/scsi/libsas/sas_task.c b/drivers/scsi/libsas/sas_task.c
+index 2966ead1d421..e9d291007817 100644
+--- a/drivers/scsi/libsas/sas_task.c
++++ b/drivers/scsi/libsas/sas_task.c
+@@ -15,11 +15,14 @@ void sas_ssp_task_response(struct device *dev, struct sas_task *task,
+ 
+ 	tstat->resp = SAS_TASK_COMPLETE;
+ 
+-	if (iu->datapres == 0)
++	switch (iu->datapres) {
++	case SAS_DATAPRES_NO_DATA:
+ 		tstat->stat = iu->status;
+-	else if (iu->datapres == 1)
++		break;
++	case SAS_DATAPRES_RESPONSE_DATA:
+ 		tstat->stat = iu->resp_data[3];
+-	else if (iu->datapres == 2) {
++		break;
++	case SAS_DATAPRES_SENSE_DATA:
+ 		tstat->stat = SAS_SAM_STAT_CHECK_CONDITION;
+ 		tstat->buf_valid_size =
+ 			min_t(int, SAS_STATUS_BUF_SIZE,
+@@ -29,10 +32,11 @@ void sas_ssp_task_response(struct device *dev, struct sas_task *task,
+ 		if (iu->status != SAM_STAT_CHECK_CONDITION)
+ 			dev_warn(dev, "dev %016llx sent sense data, but stat(0x%x) is not CHECK CONDITION\n",
+ 				 SAS_ADDR(task->dev->sas_addr), iu->status);
+-	}
+-	else
++		break;
++	default:
+ 		/* when datapres contains corrupt/unknown value... */
+ 		tstat->stat = SAS_SAM_STAT_CHECK_CONDITION;
++	}
+ }
+ EXPORT_SYMBOL_GPL(sas_ssp_task_response);
+ 
+diff --git a/drivers/scsi/mvsas/mv_sas.c b/drivers/scsi/mvsas/mv_sas.c
+index a8d1f3dd607a..b48ae26e29a9 100644
+--- a/drivers/scsi/mvsas/mv_sas.c
++++ b/drivers/scsi/mvsas/mv_sas.c
+@@ -1638,7 +1638,7 @@ static void mvs_set_sense(u8 *buffer, int len, int d_sense,
+ static void mvs_fill_ssp_resp_iu(struct ssp_response_iu *iu,
+ 				u8 key, u8 asc, u8 asc_q)
+ {
+-	iu->datapres = 2;
++	iu->datapres = SAS_DATAPRES_SENSE_DATA;
+ 	iu->response_data_len = 0;
+ 	iu->sense_data_len = 17;
+ 	iu->status = 02;
+diff --git a/include/scsi/sas.h b/include/scsi/sas.h
+index 64154c1fed02..332a463d08ef 100644
+--- a/include/scsi/sas.h
++++ b/include/scsi/sas.h
+@@ -191,6 +191,13 @@ enum sas_gpio_reg_type {
+ 	SAS_GPIO_REG_TX_GP = 4,
+ };
+ 
++/* Response frame DATAPRES field */
++enum {
++	SAS_DATAPRES_NO_DATA		= 0,
++	SAS_DATAPRES_RESPONSE_DATA	= 1,
++	SAS_DATAPRES_SENSE_DATA		= 2,
++};
++
+ struct  dev_to_host_fis {
+ 	u8     fis_type;	  /* 0x34 */
+ 	u8     flags;
+-- 
+2.26.2
+
