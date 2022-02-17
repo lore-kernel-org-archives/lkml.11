@@ -2,98 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E56E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5026C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245511AbiBQTuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:50:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58844 "EHLO
+        id S242658AbiBQTut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:50:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244989AbiBQTuG (ORCPT
+        with ESMTP id S245540AbiBQTur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:50:06 -0500
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E273043EF5;
-        Thu, 17 Feb 2022 11:49:50 -0800 (PST)
-Received: by mail-il1-x12d.google.com with SMTP id m8so3062529ilg.7;
-        Thu, 17 Feb 2022 11:49:50 -0800 (PST)
+        Thu, 17 Feb 2022 14:50:47 -0500
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56B0151694
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:50:31 -0800 (PST)
+Received: by mail-oo1-xc33.google.com with SMTP id p206-20020a4a2fd7000000b0031bfec11983so836698oop.13
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:50:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vzK5esxwKtf3QmXFi7RB++PMzIXUAMKz2NRvQ5MKEaI=;
-        b=EhcTn0QU/eiiY9W/4pqfmCWtP1aqNeeOFQiFjNmwIG2A+4Y9cifyV5Q5P/U14YMQ+G
-         LII84Odsy3gdt/LpqG5ioA2pPbn7DiwyWaHe7vO/2BfUewUndEyJvAaiynmtMNb/KHzN
-         8qMO/TQcTcL+tavqk2kw8Mjsv1eho4SsTqbG/X041K0DG/SMeqy/StDFOZqziM35PukU
-         F8BqwzS6T3zOy076/5CZ8xpVEbK3Z/oXUU6/LVSZgN7SpX1DNLVo1WDzSEnhQOL9OJhU
-         x5tZkJZFnXdMhU0Ng9D8LxYShhPVi+XTmcAGdvwN2so+ErlbN0eqTriXUtntqorHgQg5
-         uwGA==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=eWaEdeMD4Xv456vmrRGc9qq+PbUbRsqsTAjVK+O/A3k=;
+        b=PQ/+IxLufKEfZw3+3BxKwa39k5Der0KnGqK9LOeDgyvMzu+9rYUbaXvDW5F2sDCK9i
+         rHPE+pmib/x+k9+D9i9Y2t5i4znFUgb3PS9gS6vVcNu/X78T5zEaV8RnW8dYBHe5ADrl
+         33JqjY3PS+zvUy8ZV8YPmX2cw56SZNWHf5DW4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vzK5esxwKtf3QmXFi7RB++PMzIXUAMKz2NRvQ5MKEaI=;
-        b=IXwyhAblbe0KsL9TAVoXwbHmDwamy9LUvrxGHVdpcaKsoJJh2FrgbaSlyTZWkPitvy
-         ssFJFcKGDeGj1OhyLl+BRw7/2fiRHG9iPNQVwewskGJryKO7l7ZP1qTiCJjH9SyZwtWG
-         S19BRD3R7g17EUo9cSWdK5WadCpb1JN+y8Upjf/zk3jd7F7JyQe6IXBZWQEDybmlY0zf
-         0LjP1Skta2AQmy8ZmT0+wB/FbNPX98xzSayqK8R1X5kcxdso/AFWIhw2zCAIr0BfYAvw
-         zihUKMGtAvk1NIetCq2m5Yz6glf1CdOJJ+ng2s0BtkEOj+rDzKBBWu9WcJ3gsD+LG94T
-         oY0w==
-X-Gm-Message-State: AOAM530PLx31syXLKEZjMGf3AUpvqoAdIoufYY6AvgY2isJFVVAJ0CiM
-        6SBLQDxTez84l/JsL99uPGyE+rYJSHy8/UOOiNg=
-X-Google-Smtp-Source: ABdhPJx+vEr7tgoxzCWZbd3TV9zPoXSRZOeL4GOANK/HcO8WBcdHN68CuicWsiWBWi07vMICwkzVtKYLOrR+vkwpYNs=
-X-Received: by 2002:a92:cf12:0:b0:2be:3a27:67c7 with SMTP id
- c18-20020a92cf12000000b002be3a2767c7mr3098661ilo.187.1645127390329; Thu, 17
- Feb 2022 11:49:50 -0800 (PST)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=eWaEdeMD4Xv456vmrRGc9qq+PbUbRsqsTAjVK+O/A3k=;
+        b=L52jXXu0tyhJ4rMnGIxx3evY9XY1P/uQIYkV+jq/18AkeNpuWfasunIbak7VMhJWM/
+         oezQwtujfF2qT8vIUIWGCo6OOZWjfj50Ve9uFIHVIfbdrVHbzT+i87cQ6vYCfwH/OBUN
+         B/t6elhghZxvOB+gorLtbSWT+pBZ0WYAqx+OOJkXYUdzZVmlMZzJve9vm9xyXWIS4Uo6
+         nsL0CEU43g+xzuONKoFQdCSVtpkTh7ZO0JUwqWGWOSZT9jdY5jhJy9agHI4eqMeiocjj
+         gTmuE+Tivh6N0HB8xIaUTZbTHeh2N/Tomj2CTsbvIg90Q6Ply11aRrHtGbwdsOy5CIX6
+         NuuA==
+X-Gm-Message-State: AOAM533ak5VPWppLO8X1ktAJF0t/8ExSatVWHM16lhHWag534t1C7eKr
+        pbLkiDY1fZpdkSqnQ8nR+E/yP7NuD1LhHcltKxpfGA==
+X-Google-Smtp-Source: ABdhPJygWUf+9oy/v+5ILtSSdP1c6aKp1Fl/1GiMiljIGiyPEsgSm7xOdBhhbwj67EUli0MEDgFysnA46NQ92dSAXMk=
+X-Received: by 2002:a05:6870:5829:b0:c8:9f42:f919 with SMTP id
+ r41-20020a056870582900b000c89f42f919mr1722376oap.54.1645127431001; Thu, 17
+ Feb 2022 11:50:31 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 17 Feb 2022 11:50:30 -0800
 MIME-Version: 1.0
-References: <20220217072340.2472987-1-eugene.shalygin@gmail.com>
- <bf18f96a-b9ee-43f0-8b53-fc7d4aa6cf39@roeck-us.net> <CAB95QASiF=mXcUoBsOwKvtZ8KmVYgNd1bP-5+e0WYifcEzK55w@mail.gmail.com>
- <a8e9e6f1-e7a0-d40d-8065-b72f60c72a32@roeck-us.net>
-In-Reply-To: <a8e9e6f1-e7a0-d40d-8065-b72f60c72a32@roeck-us.net>
-From:   Eugene Shalygin <eugene.shalygin@gmail.com>
-Date:   Thu, 17 Feb 2022 20:49:39 +0100
-Message-ID: <CAB95QATVnZMQLCU_eTr7=ASVmJ+aYayQGJ0xZ=OtowdhPZQKSw@mail.gmail.com>
-Subject: Re: [PATCH] hwmon: (asus-ec-sensors) do not print from .probe()
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+In-Reply-To: <0093b56c-95a0-7344-1480-2473f790db90@quicinc.com>
+References: <1644850708-11099-1-git-send-email-quic_srivasam@quicinc.com>
+ <1644850708-11099-8-git-send-email-quic_srivasam@quicinc.com>
+ <CAE-0n507RB89eoTPGUemdWh4cbcXtWkxKLt_0nCy8xGeJhb1sA@mail.gmail.com> <0093b56c-95a0-7344-1480-2473f790db90@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 17 Feb 2022 11:50:30 -0800
+Message-ID: <CAE-0n52+r5nN6HC6KQt-Yioh3r+9bgY_V-KA1yQ071-zY7qfEQ@mail.gmail.com>
+Subject: Re: [RESEND v13 07/10] ASoC: qcom: Add support for codec dma driver
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, alsa-devel@alsa-project.org,
+        bgoswami@codeaurora.org, bjorn.andersson@linaro.org,
+        broonie@kernel.org, devicetree@vger.kernel.org,
+        judyhsiao@chromium.org, lgirdwood@gmail.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        perex@perex.cz, quic_plai@quicinc.com, robh+dt@kernel.org,
+        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org,
+        tiwai@suse.com
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 at 20:33, Guenter Roeck <linux@roeck-us.net> wrote:
+Quoting Srinivasa Rao Mandadapu (2022-02-15 22:53:11)
 >
-> On 2/17/22 10:43, Eugene Shalygin wrote:
-> > On Thu, 17 Feb 2022 at 19:26, Guenter Roeck <linux@roeck-us.net> wrote:
-> >> Looks like you did not run checkpatch.
+> On 2/15/2022 6:57 AM, Stephen Boyd wrote:
+> Thanks for your time and valuable review comments Stephen!!!
+> > Quoting Srinivasa Rao Mandadapu (2022-02-14 06:58:25)
+> >> diff --git a/sound/soc/qcom/lpass-platform.c b/sound/soc/qcom/lpass-platform.c
+> >> index 5d77240..12b8d40 100644
+> >> --- a/sound/soc/qcom/lpass-platform.c
+> >> +++ b/sound/soc/qcom/lpass-platform.c
+[...]
 > >
-> > I did (0 errors/warnings/checks). What needs to be corrected?
+> >> +       if (ret)
+> >> +               return ret;
+> >> +
+> >> +       buf = &substream->dma_buffer;
+> >> +       buf->dev.dev = pcm->card->dev;
+> >> +       buf->private_data = NULL;
+> >> +
+> >> +       /* Assign Codec DMA buffer pointers */
+> >> +       buf->dev.type = SNDRV_DMA_TYPE_CONTINUOUS;
+> >> +
+> >> +       switch (dai_id) {
+> >> +       case LPASS_CDC_DMA_RX0 ... LPASS_CDC_DMA_RX9:
+> >> +               buf->bytes = lpass_platform_rxtx_hardware.buffer_bytes_max;
+> >> +               buf->addr = drvdata->rxtx_cdc_dma_lpm_buf;
+> >> +               break;
+> >> +       case LPASS_CDC_DMA_TX0 ... LPASS_CDC_DMA_TX8:
+> >> +               buf->bytes = lpass_platform_rxtx_hardware.buffer_bytes_max;
+> >> +               buf->addr = drvdata->rxtx_cdc_dma_lpm_buf + LPASS_RXTX_CDC_DMA_LPM_BUFF_SIZE;
+> >> +               break;
+> >> +       case LPASS_CDC_DMA_VA_TX0 ... LPASS_CDC_DMA_VA_TX8:
+> >> +               buf->bytes = lpass_platform_va_hardware.buffer_bytes_max;
+> >> +               buf->addr = drvdata->va_cdc_dma_lpm_buf;
+> >> +               break;
+> >> +       default:
+> >> +               break;
+> >> +       }
+> >> +
+> >> +       buf->area = (unsigned char * __force)ioremap(buf->addr, buf->bytes);
+> > Why aren't we using the DMA mapping framework?
+> Here, Need to use hardware memory, that is LPASS LPM region for codec DMA.
+
+It does not look like iomem, so the usage of ioremap() is wrong. I
+understand that it is some place inside the audio subsystem used to DMA.
+ioremap() memory should be accessed through the io accessors,
+readl/writel, ioread/iowrite.
+
+> >> @@ -827,6 +1207,31 @@ static int lpass_platform_pcmops_resume(struct snd_soc_component *component)
+> >>          return regcache_sync(map);
+> >>   }
+> >>
+> >> +static int lpass_platform_copy(struct snd_soc_component *component,
+> >> +                              struct snd_pcm_substream *substream, int channel,
+> >> +                              unsigned long pos, void __user *buf, unsigned long bytes)
+> >> +{
+> >> +       struct snd_pcm_runtime *rt = substream->runtime;
+> >> +       unsigned int dai_id = component->id;
+> >> +       int ret = 0;
+> >> +
+> >> +       void __iomem *dma_buf = rt->dma_area + pos +
+> >> +                               channel * (rt->dma_bytes / rt->channels);
+> >> +
+> >> +       if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+> >> +               if (is_cdc_dma_port(dai_id))
+> >> +                       ret = copy_from_user_toio(dma_buf, buf, bytes);
+> >> +               else
+> >> +                       ret = copy_from_user((void __force *)dma_buf, buf, bytes);
+> >> +       } else if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
+> >> +               if (is_cdc_dma_port(dai_id))
+> >> +                       ret = copy_to_user_fromio(buf, dma_buf, bytes);
+> >> +               else
+> >> +                       ret = copy_to_user(buf, (void __force *)dma_buf, bytes);
+> > Having __force in here highlights the lack of DMA API usage. I guess
+> > there's a sound dma wrapper library in sound/core/memalloc.c? Why can't
+> > that be used?
+> Didn't see any memcopy wrapper functions in memalloc.c. Could You please
+> elaborate or share some example.
+
+Can you add some memcpy wrappers to memalloc.c? Or implement the copy
+wrapper you need?
+
 > >
->
-> Interesting. It appears that the continuation line in the declaration
-> confuses it. Otherwise you would get:
->
-> WARNING: Missing a blank line after declarations
+> >> +       }
+> >> +
+> >> +       return ret;
+> >> +}
+> >>
+> >>   static const struct snd_soc_component_driver lpass_component_driver = {
+> >>          .name           = DRV_NAME,
+> >> @@ -837,9 +1242,11 @@ static const struct snd_soc_component_driver lpass_component_driver = {
+> >>          .prepare        = lpass_platform_pcmops_prepare,
+> >>          .trigger        = lpass_platform_pcmops_trigger,
+> >>          .pointer        = lpass_platform_pcmops_pointer,
+> >> +       .mmap           = lpass_platform_pcmops_mmap,
+> >>          .pcm_construct  = lpass_platform_pcm_new,
+> >>          .suspend                = lpass_platform_pcmops_suspend,
+> >>          .resume                 = lpass_platform_pcmops_resume,
+> >> +       .copy_user              = lpass_platform_copy,
+> >>
+> >>   };
+> >>
+> >> @@ -877,6 +1284,60 @@ int asoc_qcom_lpass_platform_register(struct platform_device *pdev)
+> >>                  return ret;
+> >>          }
+> >>
+> >> +       if (drvdata->codec_dma_enable) {
+> >> +               ret = regmap_write(drvdata->rxtx_lpaif_map,
+> >> +                       LPAIF_RXTX_IRQEN_REG(v, LPAIF_IRQ_PORT_HOST), 0x0);
+> >> +               if (ret) {
+> >> +                       dev_err(&pdev->dev, "error writing to rxtx irqen reg: %d\n", ret);
+> >> +                       return ret;
+> >> +               }
+> >> +               ret = regmap_write(drvdata->va_lpaif_map,
+> >> +                       LPAIF_VA_IRQEN_REG(v, LPAIF_IRQ_PORT_HOST), 0x0);
+> >> +               if (ret) {
+> >> +                       dev_err(&pdev->dev, "error writing to rxtx irqen reg: %d\n", ret);
+> >> +                       return ret;
+> >> +               }
+> >> +               drvdata->rxtxif_irq = platform_get_irq_byname(pdev, "lpass-irq-rxtxif");
+> >> +               if (drvdata->rxtxif_irq < 0)
+> >> +                       return -ENODEV;
+> >> +
+> >> +               ret = devm_request_irq(&pdev->dev, drvdata->rxtxif_irq,
+> >> +                               lpass_platform_rxtxif_irq, IRQF_TRIGGER_RISING,
+> > Drop flags and get it from firmware please.
+> Same is followed in existing for other i2s and HDMI interrupts. Could
+> You please give some example if it's really matters?
 
-Added in v2, thank you!
-
-> >> Either case, I think you should just drop this function In probe:
-> >
-> > Yes, currently that function is tiny, but some tests with motherboards
-> > from other families are done by users and if I add other families, the
-> > information required for each board model will grow and in that case
-> > I'd switch from dmi_system_id array to a custom struct to define all
-> > the board-related data at at the same place, and to save some space in
-> > the module binary, as unused parts of the dmi_system_id array already
-> > take a quarter of the total binary size. So, the function will likely
-> > get some more code soon.
-> >
->
-> Hmm, ok. Wouldn't you still need some kind of dmi match ?
-
-Of course, just not via dmi_first_match():
-https://github.com/zeule/asus-ec-sensors/blob/feature/prime-x470-pro-no-dmi/asus-ec-sensors.c#L787
-
-Regards,
-Eugene
+It matters in the case that the hardware team decides to change the pin
+to falling. DT already has the flags encoded, so having a zero here
+avoids conflicting with what DT has set and also alleviates us from
+having to set different flags on different devices. Everyone wins. Look
+around for drivers that pass 0 in place of IRQF_TRIGGER_RISING, there
+are many examples.
