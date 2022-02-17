@@ -2,120 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E637EC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:36:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244588AbiBQSgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:36:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59540 "EHLO
+        id S231302AbiBQSgo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:36:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244980AbiBQSgA (ORCPT
+        with ESMTP id S244534AbiBQSgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:36:00 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A42024593;
-        Thu, 17 Feb 2022 10:34:11 -0800 (PST)
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K03Np424Mz67bZ1;
-        Fri, 18 Feb 2022 02:33:14 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Feb 2022 19:34:09 +0100
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Feb
- 2022 18:34:08 +0000
-Date:   Thu, 17 Feb 2022 18:34:07 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     chegbeli <ciprian.hegbeli@analog.com>
-CC:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] iio: add meter subdirectory
-Message-ID: <20220217183407.00005bcb@Huawei.com>
-In-Reply-To: <20220217135140.5658-2-ciprian.hegbeli@analog.com>
-References: <20220217135140.5658-1-ciprian.hegbeli@analog.com>
-        <20220217135140.5658-2-ciprian.hegbeli@analog.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Thu, 17 Feb 2022 13:36:04 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A8738A0;
+        Thu, 17 Feb 2022 10:35:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645122946; x=1676658946;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=sEmE1WZUmqWjwfocPA6SyYXNPkOmoqNqw4Foo23Ps54=;
+  b=kz3G2Fj2eHV18RdZ6YVWsItvTfsrkbeCuZYzKNXjXG1v4Q0sa+xCQf4R
+   ZhIEWbltIX26ZIUd4O/j8oD01Kr46PRYuKW00YjtvkryulcAcZcQWj3Tk
+   UZwSLdXM++K4AJmFgyKESYUCymIDxPWI1o3YMdvJtSGEt3Lssoafk7Qar
+   c=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 17 Feb 2022 10:35:45 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 10:35:45 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Thu, 17 Feb 2022 10:35:44 -0800
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Thu, 17 Feb 2022 10:35:43 -0800
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
+        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 2/3] drm/msm/dp: enhance debug info related to dp phy
+Date:   Thu, 17 Feb 2022 10:35:29 -0800
+Message-ID: <1645122930-23863-3-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1645122930-23863-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1645122930-23863-1-git-send-email-quic_khsieh@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml723-chm.china.huawei.com (10.201.108.74) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 15:51:38 +0200
-chegbeli <ciprian.hegbeli@analog.com> wrote:
+DP phy should be initialized and exited symmetrically to avoid
+clock being stucked at either on or off error. Add debug info
+to cover all DP phy to identify clock issues easily.
 
-> For IIO devices which are designed to measure and process power
-> readings.
-> 
-> Signed-off-by: chegbeli <ciprian.hegbeli@analog.com>
-No need for separate patch - just squash this with the driver patch.
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-> ---
->  drivers/iio/Kconfig        | 1 +
->  drivers/iio/Makefile       | 1 +
->  drivers/iio/meter/Kconfig  | 9 +++++++++
->  drivers/iio/meter/Makefile | 5 +++++
->  4 files changed, 16 insertions(+)
->  create mode 100644 drivers/iio/meter/Kconfig
->  create mode 100644 drivers/iio/meter/Makefile
-> 
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index b190846c3dc2..892c7f575416 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -86,6 +86,7 @@ source "drivers/iio/humidity/Kconfig"
->  source "drivers/iio/imu/Kconfig"
->  source "drivers/iio/light/Kconfig"
->  source "drivers/iio/magnetometer/Kconfig"
-> +source "drivers/iio/meter/Kconfig"
->  source "drivers/iio/multiplexer/Kconfig"
->  source "drivers/iio/orientation/Kconfig"
->  source "drivers/iio/test/Kconfig"
-> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-> index 3be08cdadd7e..c8afc053fccf 100644
-> --- a/drivers/iio/Makefile
-> +++ b/drivers/iio/Makefile
-> @@ -32,6 +32,7 @@ obj-y += humidity/
->  obj-y += imu/
->  obj-y += light/
->  obj-y += magnetometer/
-> +obj-y += meter/
->  obj-y += multiplexer/
->  obj-y += orientation/
->  obj-y += position/
-> diff --git a/drivers/iio/meter/Kconfig b/drivers/iio/meter/Kconfig
-> new file mode 100644
-> index 000000000000..d1c91eed5283
-> --- /dev/null
-> +++ b/drivers/iio/meter/Kconfig
-> @@ -0,0 +1,9 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +#
-> +# Energy meter drivers
-> +#
-> +# When adding new entries keep the list in alphabetical order
-> +
-> +menu "Active energy metering"
-> +
-> +endmenu
-> diff --git a/drivers/iio/meter/Makefile b/drivers/iio/meter/Makefile
-> new file mode 100644
-> index 000000000000..c27cba44fc0b
-> --- /dev/null
-> +++ b/drivers/iio/meter/Makefile
-> @@ -0,0 +1,5 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +#
-> +# Makefile for enrgy metering drivers
-> +#
-> +# When adding new entries keep the list in alphabetical order
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 245e1b9..dcd0126 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1396,6 +1396,8 @@ void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
+ 
+ 	dp_catalog_ctrl_phy_reset(ctrl->catalog);
+ 	phy_init(phy);
++	DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
++			phy, phy->init_count, phy->power_count);
+ }
+ 
+ void dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl)
+@@ -1410,6 +1412,8 @@ void dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl)
+ 
+ 	dp_catalog_ctrl_phy_reset(ctrl->catalog);
+ 	phy_exit(phy);
++	DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
++			phy, phy->init_count, phy->power_count);
+ }
+ 
+ static bool dp_ctrl_use_fixed_nvid(struct dp_ctrl_private *ctrl)
+@@ -1484,6 +1488,8 @@ static int dp_ctrl_deinitialize_mainlink(struct dp_ctrl_private *ctrl)
+ 	phy_exit(phy);
+ 	phy_init(phy);
+ 
++	DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
++			phy, phy->init_count, phy->power_count);
+ 	return 0;
+ }
+ 
+@@ -1895,14 +1901,12 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
+ 
+ 	phy_power_off(phy);
+ 
+-	DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
+-		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
+-
+ 	/* aux channel down, reinit phy */
+ 	phy_exit(phy);
+ 	phy_init(phy);
+ 
+-	DRM_DEBUG_DP("DP off link/stream done\n");
++	DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
++			phy, phy->init_count, phy->power_count);
+ 	return ret;
+ }
+ 
+@@ -1933,13 +1937,9 @@ int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
+ 		DRM_ERROR("Failed to disable link clocks. ret=%d\n", ret);
+ 	}
+ 
+-	DRM_DEBUG_DP("Before, phy=%x init_count=%d power_on=%d\n",
+-		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
+-
+ 	phy_power_off(phy);
+-
+-	DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
+-		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
++	DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
++			phy, phy->init_count, phy->power_count);
+ 
+ 	return ret;
+ }
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
