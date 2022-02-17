@@ -2,70 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBCF6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 12:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D70C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 12:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240510AbiBQMqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 07:46:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42746 "EHLO
+        id S240518AbiBQMrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 07:47:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230445AbiBQMqW (ORCPT
+        with ESMTP id S240512AbiBQMrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 07:46:22 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D3A2A59A7;
-        Thu, 17 Feb 2022 04:46:07 -0800 (PST)
-Received: from [192.168.1.111] (91-156-85-209.elisa-laajakaista.fi [91.156.85.209])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 2DA3225B;
-        Thu, 17 Feb 2022 13:46:03 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1645101963;
-        bh=nhhWEcMkMbDxADxYj1RgUC6I3/acetFo25XZBSPdrPE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oZ/GpToytbAjcw3RLuZE5OIQ/+i4mlgrLvXUyzeNY8rf0ExbBpwe8/N3XglPrQcI9
-         6p+tM1IHb/E72I3YAptgdVYsXUw0ZYAgpb4MyI8SbGtHcitDyjWGEGkhCycktuT2vG
-         fmm/+L2OmNutcFeyI5bUiLWAI8cmb9NS+htergCM=
-Message-ID: <5b6d3e7f-c638-fdc7-5080-44d34abed610@ideasonboard.com>
-Date:   Thu, 17 Feb 2022 14:46:00 +0200
+        Thu, 17 Feb 2022 07:47:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBECD2A82D9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 04:47:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B4A761A5C
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 12:47:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 096F2C340E8;
+        Thu, 17 Feb 2022 12:47:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645102052;
+        bh=wA4TA6YrIQbtLFi/OT33hqNlirr/i2Jv1hJ6PQ0u86s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AuIJ0amGpgBfYTZr1CLfAhxR2BMIvMN57lnrgx+MmlxUdbKfLcvrNb9SNhYa2XoBr
+         /btsI3/KNoDsi//mijxsgQ1LlPITenNf8vwoO3DgHtWDstzoIienp0rT3iu3a08jBP
+         GjCSxQRj7hrlmbbp1wwqFHKVbTwHbla1DVe1JLVbGx2TJPCc7I6jDF1IHrSDHTym/D
+         hVJl8nxnXKcL8hfVKIXRNuh2WEBy7awoIQS+cUHKKdkgoAXLHhlcNicf4iUrUcz4eH
+         4wR5TWQGig6cv1SbXsaWDxW/MKky0GfjJqKAm5fSSCEnS68mWy8PhMi/X7m3vnGr6W
+         8BIAOhc8vaSUQ==
+Date:   Thu, 17 Feb 2022 13:47:29 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Aaron Tomlin <atomlin@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Christoph Lameter <cl@linux.com>
+Cc:     tglx@linutronix.de, mingo@kernel.org, atomlin@atomlin.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Phil Auld <pauld@redhat.com>
+Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
+ idle tick was stopped too
+Message-ID: <20220217124729.GA743618@lothringen>
+References: <20220203214339.1889971-1-atomlin@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 3/3] drm: omapdrm: Do no allocate non-scanout GEMs through
- DMM/TILER
-Content-Language: en-US
-To:     Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>, tomba@kernel.org,
-        airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, merlijn@wizzup.org, tony@atomide.com
-References: <1642587791-13222-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <1642587791-13222-4-git-send-email-ivo.g.dimitrov.75@gmail.com>
-From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-In-Reply-To: <1642587791-13222-4-git-send-email-ivo.g.dimitrov.75@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203214339.1889971-1-atomlin@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Aaron,
 
-On 19/01/2022 12:23, Ivaylo Dimitrov wrote:
-> On devices with DMM, all allocations are done through either DMM or TILER.
-> DMM/TILER being a limited resource means that such allocations will start
-> to fail before actual free memory is exhausted. What is even worse is that
-> with time DMM/TILER space gets fragmented to the point that even if we have
-> enough free DMM/TILER space and free memory, allocation fails because there
-> is no big enough free block in DMM/TILER space.
+I fear my blood-brain barrier doesn't let much of mm/ code in, so I'm adding a
+few interested people in Cc. Meanwhile a few comments below:
+
+
+On Thu, Feb 03, 2022 at 09:43:39PM +0000, Aaron Tomlin wrote:
+> Hi Frederic,
 > 
-> Such failures can be easily observed with OMAP xorg DDX, for example -
-> starting few GUI applications (so buffers for their windows are allocated)
-> and then rotating landscape<->portrait while closing and opening new
-> windows soon results in allocation failures.
+> If I understand correctly, in the context of the idle task and a nohz_full
+> CPU, quiet_vmstat() can be called: before stopping the idle tick, entering
+> an idle state and on exit. In particular, for the latter case, when the
+> idle task is required to reschedule, the idle tick can remain stopped and
+> the timer expiration time endless i.e., KTIME_MAX. Now, indeed before a
+> nohz_full CPU enters an idle state, CPU-specific vmstat counters should
+> be processed to ensure the respective values have been reset and folded
+> into the zone specific vm_stat[]. That being said, it can only occur when:
+> the idle tick was previously stopped, and reprogramming of the timer is not
+> required.
+
+So, to make sure I understand, the issue is that with nohz_full, we may
+well enter into the idle loop with the tick already stopped. We may also
+exit from idle without restarting the tick (again only with nohz_full). And
+so this can cause the vmstat to not be flushed upon idle entry. Right?
+
 > 
-> Fix that by mapping buffers through DMM/TILER only when really needed,
-> like, for scanout buffers.
+> A customer provided some evidence which indicates that the idle tick was
+> stopped; albeit, CPU-specific vmstat counters still remained populated.
+> Thus one can only assume quiet_vmstat() was not invoked on return to the
+> idle loop.
+> 
+> Unfortunately, I suspect this divergence might erroneously prevent a
+> reclaim attempt by kswapd. If the number of zone specific free pages are
+> below their per-cpu drift value then zone_page_state_snapshot() is used to
+> compute a more accurate view of the aforementioned statistic.
+> Thus any task blocked on the NUMA node specific pfmemalloc_wait queue will
+> be unable to make significant progress via direct reclaim unless it is
+> killed after being woken up by kswapd (see throttle_direct_reclaim()).
+> That being said, eventually reclaim should give up if the conditions are
+> correct, no?
 
-Doesn't this break users that get a buffer from omapdrm and expect it to 
-be contiguous?
+Now if quiet_vmstat() isn't called, the vmstat_work should fix this later,
+right? Or does that happen too late perhaps?
 
-  Tomi
+Thanks!
