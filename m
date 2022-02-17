@@ -2,212 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA63C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 09:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4889BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 09:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238823AbiBQJqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 04:46:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56820 "EHLO
+        id S238836AbiBQJqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 04:46:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237910AbiBQJqc (ORCPT
+        with ESMTP id S234504AbiBQJqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 04:46:32 -0500
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AFC1705F
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 01:46:17 -0800 (PST)
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220217094614epoutp03faffe20f9477998150e7f835dac9fabd~UibUGjxJY0327503275epoutp03T
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 09:46:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220217094614epoutp03faffe20f9477998150e7f835dac9fabd~UibUGjxJY0327503275epoutp03T
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1645091174;
-        bh=YtIs6HfKgm2suQmqonwEnnMUyJ6x6ufYGCqDDJ4lONs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NC/ghVqyClo0RFx4GhzkD7drcdLLp0eaINnDdJmSOcqGybgUWvGLjQA1+IvNPqc5I
-         3f5sEmVUjpZkisf80TnvwVFy8/BAt0zIbNbZJgoH2nU5RdSFdavBnfp3py5ETyihta
-         OH1N+BOFsxUXZTQNjV8m0dwK0pUP07LmCpsHv/wk=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20220217094613epcas2p1a31e86bb83f74b755bd23c393a6245d0~UibTaWa_q1972619726epcas2p1t;
-        Thu, 17 Feb 2022 09:46:13 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.36.99]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4Jzqhh0V7Jz4x9Q7; Thu, 17 Feb
-        2022 09:46:12 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        0C.B0.12141.1F81E026; Thu, 17 Feb 2022 18:44:17 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220217094611epcas2p135157769acb0262a71533bad35abebc1~UibRblKun0379003790epcas2p1J;
-        Thu, 17 Feb 2022 09:46:11 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220217094611epsmtrp2dcacb285fae860020f4d262f791b99d2~UibRa19lR1108811088epsmtrp2G;
-        Thu, 17 Feb 2022 09:46:11 +0000 (GMT)
-X-AuditID: b6c32a48-d73ff70000002f6d-2d-620e18f122bf
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        AE.E5.08738.3691E026; Thu, 17 Feb 2022 18:46:11 +0900 (KST)
-Received: from ubuntu (unknown [12.36.155.120]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220217094611epsmtip26ec2678ee27e63d0f6fc877c3a1bce91~UibRSPVLU2129621296epsmtip2Q;
-        Thu, 17 Feb 2022 09:46:11 +0000 (GMT)
-Date:   Thu, 17 Feb 2022 18:43:54 +0900
-From:   Jung Daehwan <dh10.jung@samsung.com>
-To:     Wesley Cheng <quic_wcheng@quicinc.com>
-Cc:     balbi@kernel.org, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_jackp@quicinc.com, Thinh.Nguyen@synopsys.com
-Subject: Re: [RFC PATCH v2 3/3] usb: dwc3: Issue core soft reset before
- enabling run/stop
-Message-ID: <20220217094354.GB152781@ubuntu>
+        Thu, 17 Feb 2022 04:46:44 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B84DF4C;
+        Thu, 17 Feb 2022 01:46:30 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id n24so7374597ljj.10;
+        Thu, 17 Feb 2022 01:46:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=HcorFhl/CKANEYKOlL5BhoEnFeIHTHQOS2F7iJiHPnE=;
+        b=dvJXR0Glhlz5X26JKYpehPOhu+MuwIVPwOlU7CZ+qombV/ktFcB6JwekETZNvw+wzq
+         bZ++m7o2Fqw4/3K0AGd+WefGiTXyAiA8s+SLbz5sxq3Wy20NAtO8x2H1J7Esl/xT0AAT
+         fv8Zucd+VGgDH4k8KWAAdRsX1ZPPbHS81gZJlXyJo+ZCik4RtCiaE+S3qWgiFzfblWdH
+         h8pyNKcjajaQEC/jmBXhJZHZ7uuaM6hPTj0UKbudcMzJTyXRNLK3tyyeGJIPnDRv1icX
+         y3BAtYZ2iAsGdUv/N/bsGcxeoYXWFXz2ejeImKoWxHlLYcwB5YUAY8BdiR15PY22DPpY
+         2ptQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=HcorFhl/CKANEYKOlL5BhoEnFeIHTHQOS2F7iJiHPnE=;
+        b=Y99Dc2PG/r/RbKO419fz1jiad+XmtJgSWYAYRxGGOXkaRjujrE7gJ5ksRoSDttYvnH
+         +Spce52viRpwkGT7Aikp9kgTiYsbFVEbjlpenpnyy5nkLyI6Al3aPHeG3/Mygx5xMzqY
+         j7fqr01ZkNRXNdlPAvKVebgaEc6RsODBQovhP1s0PvOUGZSnSRogdYLjqcejd8pKEa9P
+         1iF36HjKdyNP8X/Y8iYo0mJieIevikxiruyRHwZo9WlBABHLoAqogwdIdurk+tZlMeGl
+         pX5LvmZCVuJfXQ9iILiTDXxFIS/RLf6B9gbWhIUvHKOJ+MliXb04l2i4Zmd1JcCK0PEz
+         a0Aw==
+X-Gm-Message-State: AOAM533uhXWo0HDoJJi1nKxuBs2f6M7HrKvY1ZBBodsx4V73eatLnqNk
+        yui9k0Iz7qySnpNRySNtcMc=
+X-Google-Smtp-Source: ABdhPJz1DxZT+ySvf4y6si2qjIZqvjAZBM53rG/UUK8KNz7Usv+PrxlQb40NVymujmTOs6Kv5J0iug==
+X-Received: by 2002:a2e:b5a1:0:b0:244:d3b4:dc24 with SMTP id f1-20020a2eb5a1000000b00244d3b4dc24mr1611829ljn.83.1645091188340;
+        Thu, 17 Feb 2022 01:46:28 -0800 (PST)
+Received: from eldfell ([194.136.85.206])
+        by smtp.gmail.com with ESMTPSA id f17sm461508lfk.221.2022.02.17.01.46.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 01:46:27 -0800 (PST)
+Date:   Thu, 17 Feb 2022 11:46:17 +0200
+From:   Pekka Paalanen <ppaalanen@gmail.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-fbdev@vger.kernel.org, linux-m68k@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/8] drm/fourcc: Add DRM_FORMAT_C[124]
+Message-ID: <20220217114617.582c3b7d@eldfell>
+In-Reply-To: <20220215165226.2738568-2-geert@linux-m68k.org>
+References: <20220215165226.2738568-1-geert@linux-m68k.org>
+        <20220215165226.2738568-2-geert@linux-m68k.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20220217055214.GA152781@ubuntu>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGJsWRmVeSWpSXmKPExsWy7bCmme5HCb4kg2fXFC2OtT1ht2hevJ7N
-        4vKuOWwWi5a1Mlvs+reIyWLT7j5Wi1ULDrA7sHtsWtXJ5rF/7hp2j4l76jy27P/M6PF5k1wA
-        a1S2TUZqYkpqkUJqXnJ+SmZeuq2Sd3C8c7ypmYGhrqGlhbmSQl5ibqqtkotPgK5bZg7QFUoK
-        ZYk5pUChgMTiYiV9O5ui/NKSVIWM/OISW6XUgpScAvMCveLE3OLSvHS9vNQSK0MDAyNToMKE
-        7IwVCx4yFpyUrvizdxNrA+NysS5GTg4JAROJJ4+es3UxcnEICexglOj4+ZcNJCEk8IlR4shH
-        c4jEZ0aJrd8XMsJ0fGpewQSR2MUo8e/EFRYI5wmjxPmHb1hBqlgEVCUmtu8DG8UmoCVx78cJ
-        ZhBbBMi+M+c+I0gDs8ACRomLEy6AFQkLREssaboFVsQroCOx8t1NRghbUOLkzCcsIDangK7E
-        jd9NQDYHh6iAisSrg/UgcyQEfrJL3PkPc56LxKOvXewQtrDEq+NboGwpic/v9rJB2MUSuz61
-        MkE0NzBKND6AuE5CwFhi1rN2sEHMApkSXyftZAVZJiGgLHHkFgtEmE+i4/Bfdogwr0RHmxBE
-        p7LE9MsTWCFsSYmDr89BTfSQWPToIRMkSJ8xSpz7kTyBUX4Wks9mIVkGYetILNj9iW0W0AZm
-        AWmJ5f84IExNifW79Bcwsq5iFEstKM5NTy02KjCBR3Zyfu4mRnAC1fLYwTj77Qe9Q4xMHIyH
-        GCU4mJVEeD8c5E0S4k1JrKxKLcqPLyrNSS0+xGgKjKeJzFKiyfnAFJ5XEm9oYmlgYmZmaG5k
-        amCuJM7rlbIhUUggPbEkNTs1tSC1CKaPiYNTqoGp+EzFJ03m6A8z4o5JOPjorZIou/sorKhi
-        zSJrvwiv7SobfVcy/P7+vMDC/RCbxMmAKUZpMpW+EnbnY8snz8tapWasvsO4wjVoltiS5c3b
-        v3p/5b/nHHar3Ng9wjvBuuB3n7rMGv+U6yUJXzI2XNqzOudf55IUp2kqy1J+iBpofNL9YPP6
-        3mXW2Ltr0791Tmxh+yvqpPbKzlDggrD/nca3jnPSnn/e+FPMUip5Sve2Eta5y47/c9eq/O09
-        /8h23aibFqH/5qRIW2U92vGn5Yu6zKffB48dipitppx4X6BH92Lb7/IuThGOY7ft5of+j1Mu
-        mH5/R/VvX8WDOp5iU3f9efn2xH4Bd/ePh+pvbZqvxFKckWioxVxUnAgAxppbeykEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrDLMWRmVeSWpSXmKPExsWy7bCSvG6yJF+SwcZ7ihbH2p6wWzQvXs9m
-        cXnXHDaLRctamS12/VvEZLFpdx+rxaoFB9gd2D02repk89g/dw27x8Q9dR5b9n9m9Pi8SS6A
-        NYrLJiU1J7MstUjfLoEr4/PLJ8wFbZIVE/+FNDD+Fe5i5OSQEDCR+NS8gqmLkYtDSGAHo8Tl
-        HfvZIRKSEkvn3oCyhSXutxxhhSh6xCjx/vRPVpAEi4CqxMT2fWwgNpuAlsS9HyeYQWwRIPvO
-        nPuMIA3MAgsYJS5OuABWJCwQLbGk6RZYEa+AjsTKdzcZIaY+Y5SYs3w3C0RCUOLkzCdgNjPQ
-        pBv/XgLdxwFkS0ss/8cBEuYU0JW48buJBSQsKqAi8epg/QRGwVlImmchaZ6F0LyAkXkVo2Rq
-        QXFuem6xYYFRXmq5XnFibnFpXrpecn7uJkZwBGhp7WDcs+qD3iFGJg7GQ4wSHMxKIrwfDvIm
-        CfGmJFZWpRblxxeV5qQWH2KU5mBREue90HUyXkggPbEkNTs1tSC1CCbLxMEp1cCUOsUpe8PG
-        3yf3zT18+uWcmDmHpN35Z7Y0GMQVxorWvqnov+kzW3JdBq+c8oOQD4v+nJhlFfp1lWHDx/mX
-        BeSKz108/JJdJHH38WiHY7bnctyUG/ySJE7eksiuf5G613T31+Wla+c/fb/suOytA0JzT0Rp
-        VHHmte3LXXQ8xW+BsbTP1+gZb732/n6wVLjj778jJhO9lX4453Brr1jgO7M8Wd8vSmlq7BoX
-        IVm5kP1nlycu4udQS9sZN6+icer5yvNflmi9VxYynPTTZ0fNIol36zdG8rwIO7nvjdfxUzor
-        jVxuLfsoL3x/14LezvX6smKlyZ6e3G9nilZ+59r5cLtIxtt13Z25627KFbmIZEo0K7EUZyQa
-        ajEXFScCAKabbuzvAgAA
-X-CMS-MailID: 20220217094611epcas2p135157769acb0262a71533bad35abebc1
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----.rW42XXn7_Ji6OxwuAF4RAMbP.qed.OeqKlvEhSLhB3noATS=_100ab0_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220216000912epcas2p419fb5d4f7044389451e28802dd471c5e
-References: <20220216000835.25400-1-quic_wcheng@quicinc.com>
-        <CGME20220216000912epcas2p419fb5d4f7044389451e28802dd471c5e@epcas2p4.samsung.com>
-        <20220216000835.25400-4-quic_wcheng@quicinc.com>
-        <20220217055214.GA152781@ubuntu>
+Content-Type: multipart/signed; boundary="Sig_/3iRivHF=QF0GVYji/QgBxGk";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------.rW42XXn7_Ji6OxwuAF4RAMbP.qed.OeqKlvEhSLhB3noATS=_100ab0_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+--Sig_/3iRivHF=QF0GVYji/QgBxGk
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 17, 2022 at 02:52:14PM +0900, Jung Daehwan wrote:
-> Hi wesley,
-> 
-> On Tue, Feb 15, 2022 at 04:08:35PM -0800, Wesley Cheng wrote:
-> > It is recommended by the Synopsis databook to issue a DCTL.CSftReset
-> > when reconnecting from a device-initiated disconnect routine.  This
-> > resolves issues with enumeration during fast composition switching
-> > cases, which result in an unknown device on the host.
-> > 
-> > Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
-> > ---
-> >  drivers/usb/dwc3/core.c   |  4 +---
-> >  drivers/usb/dwc3/core.h   |  2 ++
-> >  drivers/usb/dwc3/gadget.c | 11 +++++++++++
-> >  3 files changed, 14 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> > index 18adddfba3da..02d10e1cb774 100644
-> > --- a/drivers/usb/dwc3/core.c
-> > +++ b/drivers/usb/dwc3/core.c
-> > @@ -115,8 +115,6 @@ void dwc3_set_prtcap(struct dwc3 *dwc, u32 mode)
-> >  	dwc->current_dr_role = mode;
-> >  }
-> >  
-> > -static int dwc3_core_soft_reset(struct dwc3 *dwc);
-> > -
-> >  static void __dwc3_set_mode(struct work_struct *work)
-> >  {
-> >  	struct dwc3 *dwc = work_to_dwc(work);
-> > @@ -261,7 +259,7 @@ u32 dwc3_core_fifo_space(struct dwc3_ep *dep, u8 type)
-> >   * dwc3_core_soft_reset - Issues core soft reset and PHY reset
-> >   * @dwc: pointer to our context structure
-> >   */
-> > -static int dwc3_core_soft_reset(struct dwc3 *dwc)
-> > +int dwc3_core_soft_reset(struct dwc3 *dwc)
-> >  {
-> >  	u32		reg;
-> >  	int		retries = 1000;
-> > diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
-> > index 00348d6d479b..b27ad8dad317 100644
-> > --- a/drivers/usb/dwc3/core.h
-> > +++ b/drivers/usb/dwc3/core.h
-> > @@ -1532,6 +1532,8 @@ bool dwc3_has_imod(struct dwc3 *dwc);
-> >  int dwc3_event_buffers_setup(struct dwc3 *dwc);
-> >  void dwc3_event_buffers_cleanup(struct dwc3 *dwc);
-> >  
-> > +int dwc3_core_soft_reset(struct dwc3 *dwc);
-> > +
-> >  #if IS_ENABLED(CONFIG_USB_DWC3_HOST) || IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE)
-> >  int dwc3_host_init(struct dwc3 *dwc);
-> >  void dwc3_host_exit(struct dwc3 *dwc);
-> > diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-> > index 0c89baedf220..788889f924f9 100644
-> > --- a/drivers/usb/dwc3/gadget.c
-> > +++ b/drivers/usb/dwc3/gadget.c
-> > @@ -2585,6 +2585,17 @@ static int dwc3_gadget_pullup(struct usb_gadget *g, int is_on)
-> >  						dwc->ev_buf->length;
-> >  		}
-> >  	} else {
-> > +		/*
-> > +		 * In the Synopsis DesignWare Cores USB3 Databook Rev. 1.90a
-> > +		 * Section 4.1.9, it specifies that for a reconnect after a
-> > +		 * device-initiated disconnect requires a core soft reset
-> > +		 * (DCTL.CSftRst) before enabling the run/stop bit.
-> > +		 */
-> > +		spin_unlock_irqrestore(&dwc->lock, flags);
-> > +		dwc3_core_soft_reset(dwc);
-> > +		spin_lock_irqsave(&dwc->lock, flags);
-> > +
-> > +		dwc3_event_buffers_setup(dwc);
-> 
-> Could you tell me why you add dwc3_event_buffer_setup?
-> 
-> Best Regards,
-> Jung Daehwan
-> 
+On Tue, 15 Feb 2022 17:52:19 +0100
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
-I'm sorry I misunderstood databook then. It seems to be needed.
+> Introduce fourcc codes for color-indexed frame buffer formats with two,
+> four, and sixteen color, and provide a suitable mapping from bit per
+> pixel and depth to fourcc codes.
+>=20
+> As the number of bits per pixel is less than eight, these rely on proper
+> block handling for the calculation of bits per pixel and pitch.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+> Do we want to keep the rounding down if depth < bpp, or insist on depth
+> =3D=3D bpp? I don't think the rounding down will still be needed after
+> "[PATCH 4/8] drm/client: Use actual bpp when allocating frame buffers".
+> ---
+>  drivers/gpu/drm/drm_fourcc.c  | 18 ++++++++++++++++++
+>  include/uapi/drm/drm_fourcc.h |  3 +++
+>  2 files changed, 21 insertions(+)
+>=20
+> diff --git a/drivers/gpu/drm/drm_fourcc.c b/drivers/gpu/drm/drm_fourcc.c
+> index 07741b678798b0f1..60ce63d728b8e308 100644
+> --- a/drivers/gpu/drm/drm_fourcc.c
+> +++ b/drivers/gpu/drm/drm_fourcc.c
+> @@ -46,6 +46,18 @@ uint32_t drm_mode_legacy_fb_format(uint32_t bpp, uint3=
+2_t depth)
+>  	case 8:
+>  		if (depth =3D=3D 8)
+>  			fmt =3D DRM_FORMAT_C8;
+> +		fallthrough;
+> +	case 4:
+> +		if (depth =3D=3D 4)
+> +			fmt =3D DRM_FORMAT_C4;
+> +		fallthrough;
+> +	case 2:
+> +		if (depth =3D=3D 2)
+> +			fmt =3D DRM_FORMAT_C2;
+> +		fallthrough;
+> +	case 1:
+> +		if (depth =3D=3D 1)
+> +			fmt =3D DRM_FORMAT_C1;
+>  		break;
+> =20
+>  	case 16:
+> @@ -132,6 +144,12 @@ EXPORT_SYMBOL(drm_driver_legacy_fb_format);
+>  const struct drm_format_info *__drm_format_info(u32 format)
+>  {
+>  	static const struct drm_format_info formats[] =3D {
+> +		{ .format =3D DRM_FORMAT_C1,		.depth =3D 1,  .num_planes =3D 1,
+> +		  .char_per_block =3D { 1, }, .block_w =3D { 8, }, .block_h =3D { 1, }=
+, .hsub =3D 1, .vsub =3D 1 },
+> +		{ .format =3D DRM_FORMAT_C2,		.depth =3D 2,  .num_planes =3D 1,
+> +		  .char_per_block =3D { 1, }, .block_w =3D { 4, }, .block_h =3D { 1, }=
+, .hsub =3D 1, .vsub =3D 1 },
+> +		{ .format =3D DRM_FORMAT_C4,		.depth =3D 4,  .num_planes =3D 1,
+> +		  .char_per_block =3D { 1, }, .block_w =3D { 2, }, .block_h =3D { 1, }=
+, .hsub =3D 1, .vsub =3D 1 },
+>  		{ .format =3D DRM_FORMAT_C8,		.depth =3D 8,  .num_planes =3D 1, .cpp =
+=3D { 1, 0, 0 }, .hsub =3D 1, .vsub =3D 1 },
+>  		{ .format =3D DRM_FORMAT_R8,		.depth =3D 8,  .num_planes =3D 1, .cpp =
+=3D { 1, 0, 0 }, .hsub =3D 1, .vsub =3D 1 },
+>  		{ .format =3D DRM_FORMAT_R10,		.depth =3D 10, .num_planes =3D 1, .cpp =
+=3D { 2, 0, 0 }, .hsub =3D 1, .vsub =3D 1 },
+> diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+> index fc0c1454d2757d5d..3f09174670b3cce6 100644
+> --- a/include/uapi/drm/drm_fourcc.h
+> +++ b/include/uapi/drm/drm_fourcc.h
+> @@ -99,6 +99,9 @@ extern "C" {
+>  #define DRM_FORMAT_INVALID	0
+> =20
+>  /* color index */
+> +#define DRM_FORMAT_C1		fourcc_code('C', '1', ' ', ' ') /* [0] C */
+> +#define DRM_FORMAT_C2		fourcc_code('C', '2', ' ', ' ') /* [1:0] C */
+> +#define DRM_FORMAT_C4		fourcc_code('C', '4', ' ', ' ') /* [3:0] C */
 
-Best Regrards,
-Jung Daehwan
+Hi Geert,
 
-> >  		__dwc3_gadget_start(dwc);
-> >  	}
-> >  
-> > 
+generally this looks fine to me though I'm not familiar with the
+code. The thing I'm missing here is a more precise description of the
+new pixel formats.
+
+>  #define DRM_FORMAT_C8		fourcc_code('C', '8', ' ', ' ') /* [7:0] C */
+
+This description of C8 is a little vague maybe, but presumably one
+pixel being one byte, the address of pixel x is just &bytes[x].
+
+C4, C2 and C1 should also specify the pixel order within the byte.
+There is some precedent of that in with some YUV formats in this file.=20
+
+Maybe something like:=20
+
+C2 /* [7:0] c0:c1:c2:c3 2:2:2:2 four pixels per byte */
+
+or the other way around, which ever your ordering is?
 
 
+Thanks,
+pq
 
-------.rW42XXn7_Ji6OxwuAF4RAMbP.qed.OeqKlvEhSLhB3noATS=_100ab0_
-Content-Type: text/plain; charset="utf-8"
+--Sig_/3iRivHF=QF0GVYji/QgBxGk
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
 
-------.rW42XXn7_Ji6OxwuAF4RAMbP.qed.OeqKlvEhSLhB3noATS=_100ab0_--
+iQIzBAEBCAAdFiEEJQjwWQChkWOYOIONI1/ltBGqqqcFAmIOGWkACgkQI1/ltBGq
+qqe5Sg//Uh9D3UOI0B4aI3SQxsqXUnJGJmcpyK0wfxKijz0p+CZDTBnK6109x4pP
+8ohxSFY/IQZJQttfakRdby1kX6gmF7KmE+q+fSa0BLIL0MUMW1mOGIES62GprGMz
+qEkKgajOrGsleVcPwXQm9vICVDeO7lTmWAXh9AI2xqQhKti5BytynvQHvzHnO21L
+THab1x2sat/TeuPGeS08ibxPztZLgH1HDO0jMaUZwEY2kMsCFDGgmTJRV8u3ff5m
+fDPqHUTp6KFItDowMpB5pHh+9/tWGEJz1qr0WOPKBkaq4cz1nkXPc9t4m0YJyVYQ
+JLfFiFqqkiBsMC5iitJuCagrI2ZoVIPZ0wBGJwZ4im8Lz2cf2pXlhs1C5gf8z6ac
+/8nia6+mfeg6vH4iWXlwFGsZAmbbl9LG+Ca7qDy1u9zI2v5z+c6XvIY9+bL6VEh3
+FdGXKrYOOpS2iurD7L0kMdHs1wRlGknrWP20WNOF2ImD90W48y/4BNtWw+Z1fnkI
+Y3KAGqHCXwUR5Gx3o4LvLaF9RWBAoU0hSsE0t5yAR4wp8iug864ijLOxQej9MevO
+V8zagQkTQpTCw9uDos1zWKjNv70s3r2an3Uecp+Un1fpjUOfH47MM7fN8nNiickM
+/fcSpNfFZVoozBtan5wrI0CsjsXR4HIe3kz3/3heK7z8mzNtspg=
+=Rcp/
+-----END PGP SIGNATURE-----
+
+--Sig_/3iRivHF=QF0GVYji/QgBxGk--
