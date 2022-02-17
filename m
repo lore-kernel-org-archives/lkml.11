@@ -2,75 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 563E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244464AbiBQSZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:25:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56892 "EHLO
+        id S244310AbiBQS0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:26:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244400AbiBQSYx (ORCPT
+        with ESMTP id S233791AbiBQS0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:24:53 -0500
-Received: from cloud48395.mywhc.ca (cloud48395.mywhc.ca [173.209.37.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76713BFAA
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:24:21 -0800 (PST)
-Received: from [45.44.224.220] (port=39846 helo=localhost)
-        by cloud48395.mywhc.ca with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <olivier@trillion01.com>)
-        id 1nKkvU-0001fk-2c; Thu, 17 Feb 2022 12:50:44 -0500
-From:   Olivier Langlois <olivier@trillion01.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        io-uring <io-uring@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Message-ID: <bd7c0495f7656e803e5736708591bb665e6eaacd.1645041650.git.olivier@trillion01.com>
-From:   Olivier Langlois <olivier@trillion01.com>
-Date:   Wed, 16 Feb 2022 14:53:42 -0500
-Subject: [PATCH] io_uring: Remove unneeded test in io_run_task_work_sig()
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cloud48395.mywhc.ca
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - trillion01.com
-X-Get-Message-Sender-Via: cloud48395.mywhc.ca: authenticated_id: olivier@trillion01.com
-X-Authenticated-Sender: cloud48395.mywhc.ca: olivier@trillion01.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+        Thu, 17 Feb 2022 13:26:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B69333A2A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:26:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645122359;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=e0k61bWKoEdgCZKiT1/ArMJBvBOZzkgfosoEUmRiXDo=;
+        b=GinFhDlWlw+j7X1ctcvC1ioDc0hH2PBzkJ48PY0LeUv5YPYB/P6fmlMAXxskmx/RbHrLaG
+        QqA4AnvVlYSTHBZ+8dISBxbkdlZ4/BsJhNmH9NzIgeVrSOjih5uTrGCXbkReRan9uS1Nzt
+        vu3Pf7gnDT51ycUamEX4zMZpb3K47vQ=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-15-G9lfG6d-OdykW6PmRpTU_A-1; Thu, 17 Feb 2022 13:25:58 -0500
+X-MC-Unique: G9lfG6d-OdykW6PmRpTU_A-1
+Received: by mail-oi1-f199.google.com with SMTP id bx17-20020a0568081b1100b002d2e2df9e60so187395oib.22
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:25:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e0k61bWKoEdgCZKiT1/ArMJBvBOZzkgfosoEUmRiXDo=;
+        b=AKUPKzxnUluXH1eNCXaTeMA30NtwRtLES8NVIfjQRO542xOw5O4F5QLfY8upuHUHDB
+         /3qOEO0s88VH7MeekcqcMcycwZPgwDZ+tI4jT0LvxvC5n2WCJ3i8Nlz6feiD66XnV/7E
+         XarD2fqYk4j2Lx0xxkWhWtiaOQTui4Fj3+bmY2RNw4CBN6lXsIV7h6TVj17MXWEGka/G
+         +LPoVKq48rf8AzKT8M3vSrJesay4yveVvJR2ETwi663npwT9jRehhrgsyQXBKh7OLySD
+         5clJ28R9tAQCBmOrJ1x1UVOZJaoDQzhWPQYoFne1Boj9ETA700wtC+CcfuRulqNg/8w0
+         oOYw==
+X-Gm-Message-State: AOAM531ah3nvhDJpq/GhowCHR6CPAc5GbV8jlv01eQ7kvD5yHMiP1lLN
+        o0HfveUqKlPKMThwroyTQW1vTeHI9qW42FE1BJbbSqMzfKYrqVNkvfdLZ3GXRo9JPyHWSOL7Uvd
+        jTYSdAFnBqm1B9xj5AcEyeA/Y
+X-Received: by 2002:a9d:4d98:0:b0:5ac:e4ba:27a6 with SMTP id u24-20020a9d4d98000000b005ace4ba27a6mr1351163otk.334.1645122357556;
+        Thu, 17 Feb 2022 10:25:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyCwbZbDciz2AYCTeRHeNW502dpeRN+vDb4rWM50eiSxkFPNnA38L0B5o4I9cXETuQE3tb77g==
+X-Received: by 2002:a9d:4d98:0:b0:5ac:e4ba:27a6 with SMTP id u24-20020a9d4d98000000b005ace4ba27a6mr1351152otk.334.1645122357293;
+        Thu, 17 Feb 2022 10:25:57 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id w7sm320674oiv.8.2022.02.17.10.25.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 10:25:56 -0800 (PST)
+From:   trix@redhat.com
+To:     vkoul@kernel.org, peter.ujfalusi@gmail.com
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] dma: ti: cleanup comments
+Date:   Thu, 17 Feb 2022 10:25:46 -0800
+Message-Id: <20220217182546.3266909-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220216195342.msHzSzRnlA5-AkKCUXsBadGES4RKF7GtdwBUCMY4xLU@z>
 
-Avoid testing TIF_NOTIFY_SIGNAL twice by calling task_sigpending()
-directly from io_run_task_work_sig()
+From: Tom Rix <trix@redhat.com>
 
-Signed-off-by: Olivier Langlois <olivier@trillion01.com>
+Remove the second 'the'
+
+Replacements
+completetion to completion
+seens to seen
+pendling to pending
+atleast to at least
+tranfer to transfer
+multibple to a multiple
+transfering to transferring
+
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- fs/io_uring.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/dma/ti/cppi41.c   |  6 +++---
+ drivers/dma/ti/edma.c     | 10 +++++-----
+ drivers/dma/ti/omap-dma.c |  2 +-
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 77b9c7e4793b..9b320b5f158c 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -7683,11 +7683,11 @@ static int io_run_task_work_sig(void)
- {
- 	if (io_run_task_work())
- 		return 1;
--	if (!signal_pending(current))
--		return 0;
- 	if (test_thread_flag(TIF_NOTIFY_SIGNAL))
- 		return -ERESTARTSYS;
--	return -EINTR;
-+	if (task_sigpending(current))
-+		return -EINTR;
-+	return 0;
- }
+diff --git a/drivers/dma/ti/cppi41.c b/drivers/dma/ti/cppi41.c
+index 8c2f7ebe998c..062bd9bd4de0 100644
+--- a/drivers/dma/ti/cppi41.c
++++ b/drivers/dma/ti/cppi41.c
+@@ -315,7 +315,7 @@ static irqreturn_t cppi41_irq(int irq, void *data)
+ 		val = cppi_readl(cdd->qmgr_mem + QMGR_PEND(i));
+ 		if (i == QMGR_PENDING_SLOT_Q(first_completion_queue) && val) {
+ 			u32 mask;
+-			/* set corresponding bit for completetion Q 93 */
++			/* set corresponding bit for completion Q 93 */
+ 			mask = 1 << QMGR_PENDING_BIT_Q(first_completion_queue);
+ 			/* not set all bits for queues less than Q 93 */
+ 			mask--;
+@@ -703,7 +703,7 @@ static int cppi41_tear_down_chan(struct cppi41_channel *c)
+ 	 * transfer descriptor followed by TD descriptor. Waiting seems not to
+ 	 * cause any difference.
+ 	 * RX seems to be thrown out right away. However once the TearDown
+-	 * descriptor gets through we are done. If we have seens the transfer
++	 * descriptor gets through we are done. If we have seen the transfer
+ 	 * descriptor before the TD we fetch it from enqueue, it has to be
+ 	 * there waiting for us.
+ 	 */
+@@ -747,7 +747,7 @@ static int cppi41_stop_chan(struct dma_chan *chan)
+ 		struct cppi41_channel *cc, *_ct;
  
- /* when returns >0, the caller should retry */
+ 		/*
+-		 * channels might still be in the pendling list if
++		 * channels might still be in the pending list if
+ 		 * cppi41_dma_issue_pending() is called after
+ 		 * cppi41_runtime_suspend() is called
+ 		 */
+diff --git a/drivers/dma/ti/edma.c b/drivers/dma/ti/edma.c
+index 08e47f44d325..3ea8ef7f57df 100644
+--- a/drivers/dma/ti/edma.c
++++ b/drivers/dma/ti/edma.c
+@@ -118,10 +118,10 @@
+ 
+ /*
+  * Max of 20 segments per channel to conserve PaRAM slots
+- * Also note that MAX_NR_SG should be atleast the no.of periods
++ * Also note that MAX_NR_SG should be at least the no.of periods
+  * that are required for ASoC, otherwise DMA prep calls will
+  * fail. Today davinci-pcm is the only user of this driver and
+- * requires atleast 17 slots, so we setup the default to 20.
++ * requires at least 17 slots, so we setup the default to 20.
+  */
+ #define MAX_NR_SG		20
+ #define EDMA_MAX_SLOTS		MAX_NR_SG
+@@ -976,7 +976,7 @@ static int edma_config_pset(struct dma_chan *chan, struct edma_pset *epset,
+ 		 * and quotient respectively of the division of:
+ 		 * (dma_length / acnt) by (SZ_64K -1). This is so
+ 		 * that in case bcnt over flows, we have ccnt to use.
+-		 * Note: In A-sync tranfer only, bcntrld is used, but it
++		 * Note: In A-sync transfer only, bcntrld is used, but it
+ 		 * only applies for sg_dma_len(sg) >= SZ_64K.
+ 		 * In this case, the best way adopted is- bccnt for the
+ 		 * first frame will be the remainder below. Then for
+@@ -1203,7 +1203,7 @@ static struct dma_async_tx_descriptor *edma_prep_dma_memcpy(
+ 		 * slot2: the remaining amount of data after slot1.
+ 		 *	  ACNT = full_length - length1, length2 = ACNT
+ 		 *
+-		 * When the full_length is multibple of 32767 one slot can be
++		 * When the full_length is a multiple of 32767 one slot can be
+ 		 * used to complete the transfer.
+ 		 */
+ 		width = array_size;
+@@ -1814,7 +1814,7 @@ static void edma_issue_pending(struct dma_chan *chan)
+  * This limit exists to avoid a possible infinite loop when waiting for proof
+  * that a particular transfer is completed. This limit can be hit if there
+  * are large bursts to/from slow devices or the CPU is never able to catch
+- * the DMA hardware idle. On an AM335x transfering 48 bytes from the UART
++ * the DMA hardware idle. On an AM335x transferring 48 bytes from the UART
+  * RX-FIFO, as many as 55 loops have been seen.
+  */
+ #define EDMA_MAX_TR_WAIT_LOOPS 1000
+diff --git a/drivers/dma/ti/omap-dma.c b/drivers/dma/ti/omap-dma.c
+index 7cb577e6587b..8e52a0dc1f78 100644
+--- a/drivers/dma/ti/omap-dma.c
++++ b/drivers/dma/ti/omap-dma.c
+@@ -1442,7 +1442,7 @@ static int omap_dma_pause(struct dma_chan *chan)
+ 	 * A source-synchronised channel is one where the fetching of data is
+ 	 * under control of the device. In other words, a device-to-memory
+ 	 * transfer. So, a destination-synchronised channel (which would be a
+-	 * memory-to-device transfer) undergoes an abort if the the CCR_ENABLE
++	 * memory-to-device transfer) undergoes an abort if the CCR_ENABLE
+ 	 * bit is cleared.
+ 	 * From 16.1.4.20.4.6.2 Abort: "If an abort trigger occurs, the channel
+ 	 * aborts immediately after completion of current read/write
 -- 
-2.35.1
+2.26.3
 
