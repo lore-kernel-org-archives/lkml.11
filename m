@@ -2,144 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9616CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3079CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229575AbiBQXr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 18:47:28 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55452 "EHLO
+        id S229597AbiBQXrd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 18:47:33 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiBQXr1 (ORCPT
+        with ESMTP id S229473AbiBQXrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 18:47:27 -0500
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B65237842F;
+        Thu, 17 Feb 2022 18:47:31 -0500
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB0B378F5A;
         Thu, 17 Feb 2022 15:47:04 -0800 (PST)
-Received: by mail-pf1-f174.google.com with SMTP id u16so941499pfg.12;
-        Thu, 17 Feb 2022 15:47:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=u00A7HXNqtn6x61TYWm7OlmiKFTOsyXYfH8TCwr1QB8=;
-        b=p15mpCPvBPQa1JJ3cMVulmRKIRseXMQEsaEWk2vbVJztGY6ojcdBHQuaZbEHH1b4A9
-         vdh7rQrVzJiwneRnftFMojLEHyo5Oxz8p9JGyovy2LJuU5E5aMKPZUNq2ZTF1eDD1Y1I
-         /pMdAFiJsfLftcXH8Jv8ckjq2HX4TmWaeEfizIBLdOFQbVpDHy1tcht95zlmqv5Nvovc
-         OzDQmtxQY5pTfcRmlYnuv8RtjIywzMoe5ZcXWYu+RbF888mjBoAeotvpUgZE+o1E2apg
-         vnP3rwO288Au9CKm/bE4mpfl0Ao1yX+3Q6t0izEzeKwHuYTUnYT56/yEc2bHUw/IcrXS
-         1Ddg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=u00A7HXNqtn6x61TYWm7OlmiKFTOsyXYfH8TCwr1QB8=;
-        b=xfYBO3kq4HBRT/kGYY4mKRVkcIlem+9Ii2sUOxG3H7O+pdun283QnyOxPmwi/0vTFH
-         1uQ4jDSWa0nl0ONG+gT8kk4hjFWGvlmJYkGBKN3ZDRLj46zcWXCWmreEO/SSutELxb8V
-         3UNnU28oJaSx+M7CmHNAjM9+fxI97tAr3lrr6HJv7MKTZGDUG4YrifE8UAwNDuj2XPxY
-         aNvXEF0Sm1W5qVnbv6S4gXnr+br26dUy/K7LQoTlzuzD1Hfgd1WdaTZ4jiy6jhjQy/jQ
-         DqS9EKGVy9MjvXyOH/BiX3pc11QR9RVTzW02fixbinTUzqWfU0AiKPpiGhi+dSkolTV1
-         WClQ==
-X-Gm-Message-State: AOAM5332CB0kP63+w9Sr2LJybBOQjJt/shPAMgk3hH9dtzLi80gOreyA
-        rMV40BSct4aTMnS5+YsHKq4jzlfifT2z+Q==
-X-Google-Smtp-Source: ABdhPJw6JQyNTvhVXbUzQ/+zneEXeBpconb6izjpkCJT8lXzfplhbWtbFhX9XlPnZPRE1ihsoVUY8Q==
-X-Received: by 2002:a65:6201:0:b0:369:4a47:aff1 with SMTP id d1-20020a656201000000b003694a47aff1mr4188198pgv.238.1645141377577;
-        Thu, 17 Feb 2022 15:42:57 -0800 (PST)
-Received: from shinobu (113x37x72x24.ap113.ftth.ucom.ne.jp. [113.37.72.24])
-        by smtp.gmail.com with ESMTPSA id b11sm658653pfl.123.2022.02.17.15.42.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:42:56 -0800 (PST)
-Date:   Fri, 18 Feb 2022 08:42:51 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] counter: Stop using dev_get_drvdata() to get the counter
- device
-Message-ID: <Yg7de1ZlUJoNGYNa@shinobu>
-References: <YfzPcyusGwAOkys6@shinobu>
- <20220204082556.370348-1-u.kleine-koenig@pengutronix.de>
- <YgHKekl9rJ2jH5j4@shinobu>
- <b9099ac3-a5fa-1aba-92a3-05a7212525ab@linux.intel.com>
- <20220217160308.oo3fmghapnvmummz@pengutronix.de>
+Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id E7DFF135;
+        Thu, 17 Feb 2022 15:37:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1645141061;
+        bh=vR4wXeIsXpO2AhBfg332ghYS2clWTWkcLNBwoNM5S2w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UwM3xDxYKJYkwEYh3RtBbQE2Eu79t1a2jQOUNlsVvXmE/G5vPk9pBGt9jFV51PG7R
+         QrrgrFIzDLevsMP352cJ7xc1wGPWIpEX6CPwAEWN8jBUoMb/kymUkzqctzyiLhXoxG
+         rrjAV1utG/aYOEThHP+APsipOU0RcHg+C9cIDQiY=
+Date:   Thu, 17 Feb 2022 15:37:39 -0800
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        openbmc@lists.ozlabs.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Subject: Re: [PATCH 1/4] hwmon: (pmbus) Add get_error_flags support to
+ regulator ops
+Message-ID: <Yg7cQwA+i5oTYqHJ@hatter.bewilderbeest.net>
+References: <20220217104444.7695-1-zev@bewilderbeest.net>
+ <20220217104444.7695-2-zev@bewilderbeest.net>
+ <b22ca322-c8f2-d17c-75ff-54ee26b0041b@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="iNB/FkNypOb1hr7K"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220217160308.oo3fmghapnvmummz@pengutronix.de>
+In-Reply-To: <b22ca322-c8f2-d17c-75ff-54ee26b0041b@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Feb 17, 2022 at 10:11:32AM PST, Guenter Roeck wrote:
+>On 2/17/22 02:44, Zev Weiss wrote:
+>>The various PMBus status bits don't all map perfectly to the more
+>>limited set of REGULATOR_ERROR_* flags, but there's a reasonable
+>>number where they correspond well enough.
+>>
+>>Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+>>---
+>>  drivers/hwmon/pmbus/pmbus_core.c | 97 ++++++++++++++++++++++++++++++++
+>>  1 file changed, 97 insertions(+)
+>>
+>>diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+>>index 776ee2237be2..a274e8e524a5 100644
+>>--- a/drivers/hwmon/pmbus/pmbus_core.c
+>>+++ b/drivers/hwmon/pmbus/pmbus_core.c
+>>@@ -2417,10 +2417,107 @@ static int pmbus_regulator_disable(struct regulator_dev *rdev)
+>>  	return _pmbus_regulator_on_off(rdev, 0);
+>>  }
+>>+/* A PMBus status flag and the corresponding REGULATOR_ERROR_* flag */
+>>+struct pmbus_regulator_status_assoc {
+>>+	int pflag, rflag;
+>>+};
+>>+
+>>+/* PMBus->regulator bit mappings for a PMBus status register */
+>>+struct pmbus_regulator_status_category {
+>>+	int func;
+>>+	int reg;
+>>+	const struct pmbus_regulator_status_assoc *bits; /* zero-terminated */
+>>+};
+>>+
+>>+static const struct pmbus_regulator_status_category pmbus_regulator_flag_map[] = {
+>>+	{
+>>+		.func = PMBUS_HAVE_STATUS_VOUT,
+>>+		.reg = PMBUS_STATUS_VOUT,
+>>+		.bits = (const struct pmbus_regulator_status_assoc[]) {
+>>+			{ PB_VOLTAGE_UV_WARNING, REGULATOR_ERROR_UNDER_VOLTAGE_WARN },
+>>+			{ PB_VOLTAGE_UV_FAULT,   REGULATOR_ERROR_UNDER_VOLTAGE },
+>>+			{ PB_VOLTAGE_OV_WARNING, REGULATOR_ERROR_OVER_VOLTAGE_WARN },
+>>+			{ PB_VOLTAGE_OV_FAULT,   REGULATOR_ERROR_REGULATION_OUT },
+>>+			{ },
+>>+		},
+>>+	}, {
+>>+		.func = PMBUS_HAVE_STATUS_IOUT,
+>>+		.reg = PMBUS_STATUS_IOUT,
+>>+		.bits = (const struct pmbus_regulator_status_assoc[]) {
+>>+			{ PB_IOUT_OC_WARNING,    REGULATOR_ERROR_OVER_CURRENT_WARN },
+>>+			{ PB_IOUT_OC_FAULT,      REGULATOR_ERROR_OVER_CURRENT },
+>>+			{ PB_IOUT_OC_LV_FAULT,   REGULATOR_ERROR_OVER_CURRENT },
+>>+			{ },
+>>+		},
+>>+	}, {
+>>+		.func = PMBUS_HAVE_STATUS_TEMP,
+>>+		.reg = PMBUS_STATUS_TEMPERATURE,
+>>+		.bits = (const struct pmbus_regulator_status_assoc[]) {
+>>+			{ PB_TEMP_OT_WARNING,    REGULATOR_ERROR_OVER_TEMP_WARN },
+>>+			{ PB_TEMP_OT_FAULT,      REGULATOR_ERROR_OVER_TEMP },
+>>+			{ },
+>>+		},
+>>+	},
+>>+};
+>>+
+>>+static int pmbus_regulator_get_error_flags(struct regulator_dev *rdev, unsigned int *flags)
+>>+{
+>>+	int i, status, statusreg;
+>>+	const struct pmbus_regulator_status_category *cat;
+>>+	const struct pmbus_regulator_status_assoc *bit;
+>>+	struct device *dev = rdev_get_dev(rdev);
+>>+	struct i2c_client *client = to_i2c_client(dev->parent);
+>>+	struct pmbus_data *data = i2c_get_clientdata(client);
+>>+	u8 page = rdev_get_id(rdev);
+>>+	int func = data->info->func[page];
+>>+
+>>+	*flags = 0;
+>>+
+>>+	for (i = 0; i < ARRAY_SIZE(pmbus_regulator_flag_map); i++) {
+>>+		cat = &pmbus_regulator_flag_map[i];
+>>+		if (!(func & cat->func))
+>>+			continue;
+>>+
+>>+		status = pmbus_read_byte_data(client, page, cat->reg);
+>>+		if (status < 0)
+>>+			return status;
+>>+
+>>+		for (bit = cat->bits; bit->pflag; bit++) {
+>>+			if (status & bit->pflag)
+>>+				*flags |= bit->rflag;
+>>+		}
+>>+	}
+>>+
+>>+	/*
+>>+	 * Map what bits of STATUS_{WORD,BYTE} we can to REGULATOR_ERROR_*
+>>+	 * bits.  Some of the other bits are tempting (especially for cases
+>>+	 * where we don't have the relevant PMBUS_HAVE_STATUS_*
+>>+	 * functionality), but there's an unfortunate ambiguity in that
+>>+	 * they're defined as indicating a fault *or* a warning, so we can't
+>>+	 * easily determine whether to report REGULATOR_ERROR_<foo> or
+>>+	 * REGULATOR_ERROR_<foo>_WARN.
+>>+	 */
+>>+	statusreg = data->has_status_word ? PMBUS_STATUS_WORD : PMBUS_STATUS_BYTE;
+>>+	status = pmbus_get_status(client, page, statusreg);
+>>+
+>
+>pmbus_get_status() calls data->read_status if PMBUS_STATUS_WORD is provided
+>as parameter, and data->read_status is set to pmbus_read_status_byte()
+>if reading the word status is not supported. Given that, why not just call
+>pmbus_get_status(client, page, PMBUS_STATUS_WORD) ?
 
---iNB/FkNypOb1hr7K
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Good point, I'll change it to do that instead.  (And send v2 separately 
+from the power-efuse driver patches.)
 
-On Thu, Feb 17, 2022 at 05:03:08PM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> On Thu, Feb 17, 2022 at 04:48:50PM +0200, Jarkko Nikula wrote:
-> > On 2/8/22 03:42, William Breathitt Gray wrote:
-> > > On Fri, Feb 04, 2022 at 09:25:56AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> > > > dev_get_drvdata() returns NULL since commit b56346ddbd82 ("counter:=
- Use
-> > > > container_of instead of drvdata to track counter_device") which wro=
-ngly
-> > > > claimed there were no users of drvdata. Convert to container_of() to
-> > > > fix a null pointer dereference.
-> > > >=20
-> > > > Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > > Fixes: b56346ddbd82 ("counter: Use container_of instead of drvdata =
-to track counter_device")
-> > > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.d=
-e>
-> > >=20
-> > > I'll pick this up and apply it to my tree.
-> >
-> > Perhaps late but I hit this same issue, patch here fixes it and I wante=
-d to
-> > confirm it.
-> >=20
-> > Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
->=20
-> I wonder if this patch is scheduled for 5.17. Currently it's not even in
-> next ... :-\
->=20
-> Best regards
-> Uwe
+>
+>>+	if (status < 0)
+>>+		return status;
+>>+
+>>+	if (pmbus_regulator_is_enabled(rdev) && (status & PB_STATUS_OFF))
+>>+		*flags |= REGULATOR_ERROR_FAIL;
+>>+	if (status & PB_STATUS_IOUT_OC)
+>>+		*flags |= REGULATOR_ERROR_OVER_CURRENT;
+>
+>If the current status register is supported, this effectively means that
+>an overcurrent warning is always reported as both REGULATOR_ERROR_OVER_CURRENT
+>and REGULATOR_ERROR_OVER_CURRENT_WARN. Is that intentional ?
+>
 
-Hi Uwe,
+No, but I don't think (by my reading of the spec) that's what would 
+happen?
 
-I've got it in my tree. I'm sending a pull request for the Counter
-patches for 5.17 next week, so they should all be merged after that.
+I'm looking at table 16 ("STATUS_WORD Message Contents") in section 17.2 
+("STATUS_WORD") of Part II of revision 1.3.1 of the PMBus spec, which 
+says that bit 4 of the low byte (PB_STATUS_IOUT_OC) indicates an output 
+overcurrent fault, not a warning (in contrast to most of the other bits, 
+which may indicate either).
 
-Sincerely,
+>
+>>+	if (status & PB_STATUS_VOUT_OV)
+>>+		*flags |= REGULATOR_ERROR_REGULATION_OUT;
+>
+>Same for voltage.
 
-William Breathitt Gray
+Likewise, PB_STATUS_VOUT_OV is specified as indicating a fault, not a 
+warning.
 
---iNB/FkNypOb1hr7K
-Content-Type: application/pgp-signature; name="signature.asc"
+>On the other side, temperature limit violations are not
+>reported at all unless the temperature status register exists.
+>That seems to be a bit inconsistent to me.
+>
 
------BEGIN PGP SIGNATURE-----
+Right -- that's because PB_STATUS_TEMPERATURE is one of the "fault or 
+warning" bits (unlike VOUT_OV and IOUT_OC), and hence it's an ambiguous 
+case as described in the comment before the pmbus_get_status() call.
 
-iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmIO3WQACgkQhvpINdm7
-VJKqAQ/+N4Ipb9S/Ax8Xl5ttPmJedMOl/V5NBJ+GjFdcKkoyS/SP2FC1mylie/Ju
-mbkMIL5k+enkr5EFqmIBRmJFc79RU7JWR68n4TLx+5+l7EdruUx1CDmmxu0lhgnl
-gKbWj1zUsu41aEi+doFOeMfmGwMHMCNazhzaj8S7+1YRhnoKGqnV+PjJShAt1f0D
-HLA6hBvm0rk5dIWH0HZ0faKnbVeBPxE4+oD5ZOZbDrr3A7x1AY6vXKDhq0BuLLI/
-eEFl2u2s+13tzNsqm176RXaKD656M8qgJ3+L+WU6yPfDgNiW+5etejcwd7i6Gl6y
-S3+//ijKPFmv0npH/Pcnq3VuerE9KnA5COXDvKTJ5osiMaE6G6rzdNyvrywFNigV
-HyikQgQg7QTFX2WeQdkCEkDj7ZQ9P0o83bnLgA6TJxDLJjaPaQXKm9XDNM7rfQSR
-L9OsDbhJM2LdC3w75lz6hgRe7EVLpKT47SRIRtQj3j0qVyWgvZb4keLJVBjNMmic
-IJ+c38ZgsQDUUfrT7ciqKWY964/1wZGEigJoBWr1qGrNhKPiAjndLDTSJaYGatx2
-YFTBNhZhZS55ytn3mm9kZtgx2D8MR4gNbLK5SJbxMPNOWTneCiPDWIcdTN0jr6sL
-uOkdb1abxVE4VyibUZ5OFycg/ijE49J0JBY3chXEHV+PMG9RC+s=
-=sOb8
------END PGP SIGNATURE-----
+It's certainly not ideal, but it seemed like the best approach I could 
+see given the semantics of the available flags -- I'm open to other 
+possibilities though if there's something else that would work better.
 
---iNB/FkNypOb1hr7K--
+Thanks for the review,
+Zev
+
