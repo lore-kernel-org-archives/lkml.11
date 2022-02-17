@@ -2,75 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC6AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E77C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237563AbiBQI1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 03:27:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56618 "EHLO
+        id S237583AbiBQI1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 03:27:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237515AbiBQI1Q (ORCPT
+        with ESMTP id S237592AbiBQI1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 03:27:16 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4641C4553
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:27:02 -0800 (PST)
-X-UUID: 3bda9c3e7c77403d80421edde0fef750-20220217
-X-UUID: 3bda9c3e7c77403d80421edde0fef750-20220217
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 984733380; Thu, 17 Feb 2022 16:26:56 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 17 Feb 2022 16:26:55 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 16:26:55 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <matthias.bgg@gmail.com>
-CC:     <chunkuang.hu@kernel.org>, <jitao.shi@mediatek.com>,
-        <xinlei.lee@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v2,0/2] Add mmsys reset control for MT8186
-Date:   Thu, 17 Feb 2022 16:26:24 +0800
-Message-ID: <20220217082626.15728-1-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Thu, 17 Feb 2022 03:27:42 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8AD1F6B87;
+        Thu, 17 Feb 2022 00:27:25 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jznxl4tSnz4xZq;
+        Thu, 17 Feb 2022 19:27:23 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1645086443;
+        bh=bApq11IKYHzDfTSJ/UX5xND0Jryd27YhT1z48powltU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Yl2fgvnVDft4zBJLzP+NaHDL9x5N5268chjYMlSSWO7esD2axln6QU/g5NmL/fiVw
+         nG93jNhwj2pkKVYRlpPFrF/eoRxg5QJjvT+WqOrkANBRY3qj6ESIP4STcm5jjFJZVE
+         OL4FK8wjJEQV0ueWbcHabSsZum5wGXrKA5tUmtXxpUCsgFklaDB9nSZUgM068sG2Xd
+         JWz85fqTiUGvxyOiXN5NpeqXlqIBT2EmnrfrtiadmC+U1cCCQ6OgHO839rCK+qk4hP
+         TgozynyJwEv6mW/uHoGpivNj8dbuDBx3vvFCyryBjtMsWMsD1xDri/LRaqPTmFROCK
+         AsUX2RmYiQ6Pw==
+Date:   Thu, 17 Feb 2022 19:27:22 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the maple tree
+Message-ID: <20220217192722.1447f4a9@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: multipart/signed; boundary="Sig_/to3ae14.n114hFdfGdKn2D4";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v2:
-1. Change variable type from unsigned int to u16.
+--Sig_/to3ae14.n114hFdfGdKn2D4
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-v1:
-1. Add a new variable in mmsys driver data to control different register
-   offset for different SoCs.
-2. Add MT8183 reset register offset.
-3. Add mmsys reset control for MT8186.
+Hi all,
 
-This series is based on mmsys patch for MT8186 on [1].
-[1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220216084831.14883-4-rex-bc.chen@mediatek.com/
+After merging the maple tree, today's linux-next build (powerpc
+allyesconfig) failed like this:
 
-Rex-BC Chen (2):
-  soc: mediatek: mmsys: add sw0_rst_offset in mmsys driver data
-  soc: mediatek: mmsys: add mmsys reset control for MT8186
+In file included from /home/sfr/next/next/mm/damon/vaddr.c:762:
+/home/sfr/next/next/mm/damon/vaddr-test.h: In function 'damon_test_three_re=
+gions_in_vmas':
+/home/sfr/next/next/mm/damon/vaddr-test.h:85:1: error: the frame size of 27=
+20 bytes is larger than 2048 bytes [-Werror=3Dframe-larger-than=3D]
+   85 | }
+      | ^
+cc1: all warnings being treated as errors
 
- drivers/soc/mediatek/mt8183-mmsys.h | 2 ++
- drivers/soc/mediatek/mt8186-mmsys.h | 2 ++
- drivers/soc/mediatek/mtk-mmsys.c    | 7 +++++--
- drivers/soc/mediatek/mtk-mmsys.h    | 3 +--
- 4 files changed, 10 insertions(+), 4 deletions(-)
+Caused by commit
 
--- 
-2.18.0
+  42672fae77a4 ("damon: Convert __damon_va_three_regions to use the VMA ite=
+rator")
 
+I have dropped the maple tree for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/to3ae14.n114hFdfGdKn2D4
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIOBuoACgkQAVBC80lX
+0GzArgf/WP3eX4I0DJEIlR6DlPa/ZepBq3CEw4wPHdoszDZ6g/JqUKkMqzjaCSw9
++AIiTqqu8i2Ckq3kO/O1dTkYkWhcyjkwSF4wC1GqZ+mpIk51mPhPyxMY4v18v32q
+c7corp9UMwXzn4fXiwe0hpz0UjJBCTnRtL44enyO1Mu84k/WIdQPkf+LzcRdd03I
+7OqafppnC2febRbGd7/Ut4e9elNVOaxN1ac1SOjoeq+RY+rUCuKSHmDfg3J8AQ0Z
+JYLHzJuuSGxot9VcDwxmdgKc4bO97PGe5dBqh6ofNBSs2IDMQLWRU/hyAbmmGA6Z
+/0j7u/0DDo7IRWjWr05ofjwYJHjj9g==
+=Ytvz
+-----END PGP SIGNATURE-----
+
+--Sig_/to3ae14.n114hFdfGdKn2D4--
