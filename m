@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F517C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbiBQX6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 18:58:07 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53990 "EHLO
+        id S229928AbiBQX6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 18:58:15 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbiBQX5i (ORCPT
+        with ESMTP id S230018AbiBQX6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 18:57:38 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F6941FB9;
-        Thu, 17 Feb 2022 15:57:13 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id x5so6814236wrg.13;
-        Thu, 17 Feb 2022 15:57:13 -0800 (PST)
+        Thu, 17 Feb 2022 18:58:05 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801F83E5EC;
+        Thu, 17 Feb 2022 15:57:35 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id l67-20020a1c2546000000b00353951c3f62so5176785wml.5;
+        Thu, 17 Feb 2022 15:57:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=v/5XpP2o4oras0yfl9rRpfS7wlw8o3QwJIwjKKbzGZY=;
-        b=B8XMvom0WsbQwAR5Ksu2mBaZrtdaAaDLk/mRLPLajgGpUXZplL7eV620pIrY0aNN8O
-         0fwHzvHufrTdzSq7QYyARav9Zt21UgAW0JTAXjFAnjGjXFg3FjGC8uXMdxXo06TauPdA
-         P23/Q/9pJNfBzkh7UkXWG6uTdBrs95xWGXrP+QO7WXtYRNsI8Zbs7VE2druKPimYY0+Y
-         yjZjw+pg8id5MBGi8fF5KvMiJiUt9jGt0jzbJZRIAeW5sDXFWr0aFpFbN9ywl6LcFXpp
-         ZDfvGFObHW1KdPlP+O36t+w1jIOXmtq7ZmpLYCM7hQ7VS5WQ4gfP4SKQrW7Q703Sz7cO
-         3+wQ==
+        bh=BZu919Ht8qcY64r+yFTBDeFPrzAizwLZFgHrPpz3SME=;
+        b=N2LHTsH2M0bumRGjP4bIJ6/lUhLMOfzcqcDNUOx9zvJ8J0DW9LuHi2m40C2tx2V1xV
+         CSL95dcnRN13NcLiXmE7d0oalvp4Ibnt74Qctre0VdZbn1AQIXHllCfEOEMT0juD21D3
+         cV7Y0696Wj3VAJl0H9mGj5ccOq0eID7Ic1gWrOYHEIyI84k81ejIzPVpCr08xBvQnsMW
+         qldntm6dZrEZG0ubS2xHBPyP3q+g+ImZM+D+NzYTnqSUrcf029K6mllwUo8JCYWXX5WA
+         4uqOifV2WI56ZnlgjPF4H8b33iepzAuYL6g7LAdW4XNgx4GcZRl5nLS06RKEImy8thSD
+         TcvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=v/5XpP2o4oras0yfl9rRpfS7wlw8o3QwJIwjKKbzGZY=;
-        b=nRVa+F0b8oY6LfsN1CPUs6jwHMqE2JVydJ8LFO1GJ8b7H5mk7714IwdmS6ZSfgtHVe
-         iAb2RNsBrSHrGWt9vk5jzCQAsptDNqqNX7+md+Q9V6jaQuqjBykvFS4zPBUp00LIt6KA
-         SpmyLir+cQ4JcUMZqXwDA4FzBq1PHGixJ3dxzE5lMok+EcPVy7jF2tvALF5nM6Df0pu9
-         u974RKwQxn4qhiffGjCtNyUcUxoG4wbJ5DkHbS7I7y/VOZfWvvTa2tc4rZKBZTRCYWi7
-         rMILT2rXsgEZ6kHUy9wFqQIVF4UGn6/2agxK2O3iaSDoCMf8Sn6z8FKrCvwGC0xOYA6U
-         WC9w==
-X-Gm-Message-State: AOAM531VL8PwwdwCIWxrHERqDLF1CtQt9qVEOhbIpto0E1QInHygAvdk
-        tKT0xLE5Gn+Iuogtv/whsrg=
-X-Google-Smtp-Source: ABdhPJxoaCVq2/xXwgrZl0Xo9LbuYrYYxbdj0AxfnoyWPBhLztPxCRgWYLKEURCxJ7OLKAPrks+EJQ==
-X-Received: by 2002:a5d:6b86:0:b0:1e3:2862:d5d9 with SMTP id n6-20020a5d6b86000000b001e32862d5d9mr3936167wrx.493.1645142231416;
-        Thu, 17 Feb 2022 15:57:11 -0800 (PST)
+        bh=BZu919Ht8qcY64r+yFTBDeFPrzAizwLZFgHrPpz3SME=;
+        b=uhb3HQCHpF97orc15jP23cOqqJGKIjjhFOpDu3+laAu6UgVtTC7ZEOEEz6ynlhH5Mb
+         +SAMds+3nKBW7DK7317h3j/+9hnBd58wNaD1ItV6xbu0BP0LjDYnM6mBUxL99xGs63Bz
+         +w0yOHgr6nhPmv8zJ7sd5FTVqtgBk3+F5wpqQt4AcdUsM+f8UcVp0Re0pGueNLy32/qA
+         5pbylUO02l3wFJhENfEDwA/ByzS9xYuY3SuelWDUx6QY/RDRyYbeaUreq3/HOOuP+Zos
+         QvBTptz6jMY3IwgutStPmzVLH4pxzo7F+DHhJlzrpv3d2QRVdbTSnYSgBpkqoVuSyrZ4
+         HALw==
+X-Gm-Message-State: AOAM531HxmnB6pFinSyWHXQhSwSibp2OxfYjnZGUVp3V18L+IhIBa2gr
+        rSV6DrK8sXMoZAMhF+/cKnUKLH/jsS8=
+X-Google-Smtp-Source: ABdhPJwC4DqZ7MbBZFwg+a1ZSohHjHYye175apzrVYTXBetGxljesQ3+Fq9zKwPohcir0gQty+Px7g==
+X-Received: by 2002:a05:600c:2552:b0:37b:c7dd:d376 with SMTP id e18-20020a05600c255200b0037bc7ddd376mr8045462wma.113.1645142234305;
+        Thu, 17 Feb 2022 15:57:14 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id r2sm3691694wmq.24.2022.02.17.15.57.10
+        by smtp.googlemail.com with ESMTPSA id r2sm3691694wmq.24.2022.02.17.15.57.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:57:11 -0800 (PST)
+        Thu, 17 Feb 2022 15:57:13 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 08/16] clk: qcom: gcc-ipq806x: add additional freq nss cores
-Date:   Fri, 18 Feb 2022 00:56:55 +0100
-Message-Id: <20220217235703.26641-9-ansuelsmth@gmail.com>
+Subject: [PATCH v4 10/16] clk: qcom: clk-rcg: add clk_rcg_floor_ops ops
+Date:   Fri, 18 Feb 2022 00:56:57 +0100
+Message-Id: <20220217235703.26641-11-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220217235703.26641-1-ansuelsmth@gmail.com>
 References: <20220217235703.26641-1-ansuelsmth@gmail.com>
@@ -71,38 +71,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ipq8065 SoC (an evolution of ipq8064 SoC) contains nss cores that can be
-clocked to 800MHz. Add these missing freq to the gcc driver.
+Add clk_rcg_floor_ops for clock that can't provide a stable freq and
+require to use a floor freq to provide the requested frequency.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/gcc-ipq806x.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/clk/qcom/clk-rcg.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
-index a4bf78fe8678..53a61860063d 100644
---- a/drivers/clk/qcom/gcc-ipq806x.c
-+++ b/drivers/clk/qcom/gcc-ipq806x.c
-@@ -232,7 +232,9 @@ static struct clk_regmap pll14_vote = {
+diff --git a/drivers/clk/qcom/clk-rcg.c b/drivers/clk/qcom/clk-rcg.c
+index a9d181d6be21..88845baa7f84 100644
+--- a/drivers/clk/qcom/clk-rcg.c
++++ b/drivers/clk/qcom/clk-rcg.c
+@@ -526,6 +526,19 @@ static int clk_rcg_set_rate(struct clk_hw *hw, unsigned long rate,
+ 	return __clk_rcg_set_rate(rcg, f);
+ }
  
- static struct pll_freq_tbl pll18_freq_tbl[] = {
- 	NSS_PLL_RATE(550000000, 44, 0, 1, 0x01495625),
-+	NSS_PLL_RATE(600000000, 48, 0, 1, 0x01495625),
- 	NSS_PLL_RATE(733000000, 58, 16, 25, 0x014b5625),
-+	NSS_PLL_RATE(800000000, 64, 0, 1, 0x01495625),
++static int clk_rcg_set_floor_rate(struct clk_hw *hw, unsigned long rate,
++				  unsigned long parent_rate)
++{
++	struct clk_rcg *rcg = to_clk_rcg(hw);
++	const struct freq_tbl *f;
++
++	f = qcom_find_freq_floor(rcg->freq_tbl, rate);
++	if (!f)
++		return -EINVAL;
++
++	return __clk_rcg_set_rate(rcg, f);
++}
++
+ static int clk_rcg_bypass_set_rate(struct clk_hw *hw, unsigned long rate,
+ 				unsigned long parent_rate)
+ {
+@@ -816,6 +829,17 @@ const struct clk_ops clk_rcg_ops = {
  };
+ EXPORT_SYMBOL_GPL(clk_rcg_ops);
  
- static struct clk_pll pll18 = {
-@@ -2702,7 +2704,9 @@ static const struct freq_tbl clk_tbl_nss[] = {
- 	{ 110000000, P_PLL18, 1, 1, 5 },
- 	{ 275000000, P_PLL18, 2, 0, 0 },
- 	{ 550000000, P_PLL18, 1, 0, 0 },
-+	{ 600000000, P_PLL18, 1, 0, 0 },
- 	{ 733000000, P_PLL18, 1, 0, 0 },
-+	{ 800000000, P_PLL18, 1, 0, 0 },
- 	{ }
- };
- 
++const struct clk_ops clk_rcg_floor_ops = {
++	.enable = clk_enable_regmap,
++	.disable = clk_disable_regmap,
++	.get_parent = clk_rcg_get_parent,
++	.set_parent = clk_rcg_set_parent,
++	.recalc_rate = clk_rcg_recalc_rate,
++	.determine_rate = clk_rcg_determine_rate,
++	.set_rate = clk_rcg_set_floor_rate,
++};
++EXPORT_SYMBOL_GPL(clk_rcg_floor_ops);
++
+ const struct clk_ops clk_rcg_bypass_ops = {
+ 	.enable = clk_enable_regmap,
+ 	.disable = clk_disable_regmap,
 -- 
 2.34.1
 
