@@ -2,55 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 516ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14328C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238134AbiBQIuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 03:50:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49622 "EHLO
+        id S238138AbiBQIue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 03:50:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238033AbiBQIu0 (ORCPT
+        with ESMTP id S238101AbiBQIu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 03:50:26 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170A62A2297;
-        Thu, 17 Feb 2022 00:50:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ddEn12nVNSTNC1o3mC2tsISdHyE4ufX5A0JgBRGn6Hc=; b=hTb/MVzaSsIzpKCz7EwezCtdcb
-        yt8/5ZxpZ4kq3WzSUN0fKPVq+Uy4b2I8TKMWa++lo+WavCts960AhW9H8LCWKBM6FIE5FbBj/IIMl
-        CAlRQAZAxX/P0155VRt0eSkG+cFycGlIIj8/yNLbedQOyEpqEcJoVSSQHYMrwLcJ8+4LrqpEmHYVa
-        yVlANlkasJ+yTaiVZPMEd9crcdo1tsPKNjBpsPDxuEVoDlq8SLe11NU4VhYqs/0ZsS3OK5BGjQrpY
-        cLBTjOy9127vkODf7FqqZyUGpULD7Y1CivCi9gHPuHqwza3PPd4UzF4vRObQmWgyHvlaSDaWO/Htq
-        wwYgCaig==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nKcUL-009ah5-Hn; Thu, 17 Feb 2022 08:50:09 +0000
-Date:   Thu, 17 Feb 2022 00:50:09 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     "Wang Jianchao (Kuaishou)" <jianchao.wan9@gmail.com>
-Cc:     Jens Axboe <axboe@kernel.dk>, Josef Bacik <jbacik@fb.com>,
-        Tejun Heo <tj@kernel.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC V4 2/6] blk-wbt: make wbt pluggable
-Message-ID: <Yg4MQSUZZu9D+qJu@infradead.org>
-References: <20220217031349.98561-1-jianchao.wan9@gmail.com>
- <20220217031349.98561-3-jianchao.wan9@gmail.com>
+        Thu, 17 Feb 2022 03:50:29 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090592A2297
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:50:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645087815; x=1676623815;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=66scgPRS6kRQoZ6YzjFqve8ZyUUdKt+n3VOjraBcZ9A=;
+  b=lghmDfAgXUCszQ2bgBpVuUBHZjqoSmbPIT0eaamD7TG8VRt+Inii7k1B
+   86UvrVG4HOpROoAnL99fx3odjxNP6NhILn76VIinqacpRWVXx92rUnh+i
+   UqDWANv4kuZcY20Bxmy+6SQ/3awTFCPjd3OgXSp/doXi95PuggzD1e1nR
+   c=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 17 Feb 2022 00:50:14 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 17 Feb 2022 00:50:13 -0800
+X-QCInternal: smtphost
+Received: from hu-pkumpatl-hyd.qualcomm.com (HELO hu-maiyas-hyd.qualcomm.com) ([10.213.109.81])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 17 Feb 2022 14:20:11 +0530
+Received: by hu-maiyas-hyd.qualcomm.com (Postfix, from userid 3914174)
+        id F1DB85001C2; Thu, 17 Feb 2022 14:20:10 +0530 (+0530)
+From:   Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+Subject: [PATCH v3] regmap-irq: Update interrupt clear register for proper reset
+Date:   Thu, 17 Feb 2022 14:20:07 +0530
+Message-Id: <20220217085007.30218-1-quic_pkumpatl@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217031349.98561-3-jianchao.wan9@gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +struct rq_qos *wbt_rq_qos(struct request_queue *q);
->  int wbt_init(struct request_queue *);
+With the existing logic where clear_ack is true (HW doesn’t support
+auto clear for ICR), interrupt clear register reset is not handled
+properly. Due to this only the first interrupts get processed properly
+and further interrupts are blocked due to not resetting interrupt
+clear register.
 
+Example for issue case where Invert_ack is false and clear_ack is true:
 
-Please move the wb_lat sysfs attribute into blk-wbt.c as well, which
-removes the need to expose these two functions.
+    Say Default ISR=0x00 & ICR=0x00 and ISR is triggered with 2
+    interrupts making ISR = 0x11.
+
+    Step 1: Say ISR is set 0x11 (store status_buff = ISR). ISR needs to
+            be cleared with the help of ICR once the Interrupt is processed.
+
+    Step 2: Write ICR = 0x11 (status_buff), this will clear the ISR to 0x00.
+
+    Step 3: Issue - In the existing code, ICR is written with ICR =
+            ~(status_buff) i.e ICR = 0xEE -> This will block all the interrupts
+            from raising except for interrupts 0 and 4. So expectation here is to
+            reset ICR, which will unblock all the interrupts.
+
+            if (chip->clear_ack) {
+                 if (chip->ack_invert && !ret)
+                  ........
+                 else if (!ret)
+                     ret = regmap_write(map, reg,
+                            ~data->status_buf[i]);
+
+So writing 0 and 0xff (when ack_invert is true) should have no effect, other
+than clearing the ACKs just set.
+
+Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
+Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+---
+ drivers/base/regmap/regmap-irq.c | 20 ++++++--------------
+ 1 file changed, 6 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+index d2656581a608..4a446259a184 100644
+--- a/drivers/base/regmap/regmap-irq.c
++++ b/drivers/base/regmap/regmap-irq.c
+@@ -189,11 +189,9 @@ static void regmap_irq_sync_unlock(struct irq_data *data)
+ 				ret = regmap_write(map, reg, d->mask_buf[i]);
+ 			if (d->chip->clear_ack) {
+ 				if (d->chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-							   d->mask_buf[i]);
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-							   ~d->mask_buf[i]);
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0)
+ 				dev_err(d->map->dev, "Failed to ack 0x%x: %d\n",
+@@ -556,11 +554,9 @@ static irqreturn_t regmap_irq_thread(int irq, void *d)
+ 						data->status_buf[i]);
+ 			if (chip->clear_ack) {
+ 				if (chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-							data->status_buf[i]);
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-							~data->status_buf[i]);
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0)
+ 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+@@ -817,13 +813,9 @@ int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
+ 					d->status_buf[i] & d->mask_buf[i]);
+ 			if (chip->clear_ack) {
+ 				if (chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-						(d->status_buf[i] &
+-						 d->mask_buf[i]));
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-						~(d->status_buf[i] &
+-						  d->mask_buf[i]));
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0) {
+ 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+-- 
+2.17.1
 
