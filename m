@@ -2,86 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5A6C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CBA1C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241800AbiBQOFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:05:53 -0500
+        id S241738AbiBQOFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:05:47 -0500
 Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241685AbiBQOFh (ORCPT
+        with ESMTP id S241610AbiBQOFg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:05:37 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17542177E69;
-        Thu, 17 Feb 2022 06:05:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645106723; x=1676642723;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JVXkGTgMk0f0BZi0vzDMp/6U04Z0YVjDjG523a9A54I=;
-  b=k7n1NVkgrT8E7qws0+BgxEVoOXRlQVwNTsiN+z6eOadcul1OTULWga6Z
-   MN/VDEe/n20zqErMkxkJaaoI5zaP+YF0xYoBfwYuwBYPCge7UtXjfIyL3
-   01TL39gI0PMKeG880Fe9p9Kc3F2odT0/im8q/RkVdS4wSX41SZEDshZ20
-   +hSVF7Olw7dMlMX08kwmm8jYYT+qA3hWTrCrN5vkSlB6S7W8Ns86fbgt5
-   XKJ2wAciS9tYj0pH8cChxfxntOuVnYVzDmSt7nXcgXbx7m8ujAx9sPKBh
-   SS37OvGEf/DYZu5ef0ZD7gWbUrk3a2QXBHv44FmFIR9uOnIcUqcN9HByr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="231501917"
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="231501917"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 06:05:22 -0800
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="530241404"
-Received: from lab-ah.igk.intel.com ([10.91.215.196])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 06:05:19 -0800
-From:   Andrzej Hajda <andrzej.hajda@intel.com>
-To:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, netdev <netdev@vger.kernel.org>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Chris Wilson <chris.p.wilson@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 8/9] drm/i915: Correct type of wakeref variable
-Date:   Thu, 17 Feb 2022 15:04:40 +0100
-Message-Id: <20220217140441.1218045-9-andrzej.hajda@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220217140441.1218045-1-andrzej.hajda@intel.com>
-References: <20220217140441.1218045-1-andrzej.hajda@intel.com>
+        Thu, 17 Feb 2022 09:05:36 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E28E145E06;
+        Thu, 17 Feb 2022 06:05:12 -0800 (PST)
+X-UUID: 13930417666347189e89e6836c68b0ee-20220217
+X-UUID: 13930417666347189e89e6836c68b0ee-20220217
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 197789904; Thu, 17 Feb 2022 22:05:09 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 17 Feb 2022 22:05:08 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Feb
+ 2022 22:05:08 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Feb 2022 22:05:07 +0800
+Message-ID: <62ad00889c7cf0e1f7501b9e5b3ab1b132639281.camel@mediatek.com>
+Subject: Re: [PATCH 05/15] ASoC: mediatek: mt8186: support hw gain in
+ platform driver
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <perex@perex.cz>,
+        <p.zabel@pengutronix.de>, <geert+renesas@glider.be>,
+        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
+        <zhangqilong3@huawei.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Thu, 17 Feb 2022 22:05:07 +0800
+In-Reply-To: <YgZ9gadN8RksWeWN@sirena.org.uk>
+References: <20220211103818.8266-1-jiaxin.yu@mediatek.com>
+         <20220211103818.8266-6-jiaxin.yu@mediatek.com>
+         <YgZ9gadN8RksWeWN@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wakeref has dedicated type. Assumption it will be int
-compatible forever is incorrect.
+On Fri, 2022-02-11 at 15:15 +0000, Mark Brown wrote:
+> On Fri, Feb 11, 2022 at 06:38:08PM +0800, Jiaxin Yu wrote:
+> 
+> Again, mostly looks good just some minor issues (I've not repeated
+> some
+> that applied to the prior code):
+> 
+> > +static const struct snd_kcontrol_new mtk_hw_gain2_in_ch1_mix[] = {
+> > +	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1", AFE_CONN15,
+> > +				    I_ADDA_UL_CH1, 1, 0),
+> > +};
+> 
+> These end up as regular user visible controls so should have standard
+> control names - in this case ending in Switch since it's a simple
+> on/off.  A similar issue was there in the earlier patches.
+Yes, I have corrected the control names in the other patches together.
 
-Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
----
- drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> > +static const struct snd_kcontrol_new mtk_hw_gain_controls[] = {
+> > +	SOC_SINGLE("HW Gain 1", AFE_GAIN1_CON1,
+> > +		   GAIN1_TARGET_SFT, GAIN1_TARGET_MASK, 0),
+> > +	SOC_SINGLE("HW Gain 2", AFE_GAIN2_CON1,
+> > +		   GAIN2_TARGET_SFT, GAIN2_TARGET_MASK, 0),
+> 
+> These should have standard names like "HW 1 Volume" so userspace has
+> a
+> better idea how to display them.
 
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
-index 7799939c38945..b308dd0866eaf 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
-@@ -2797,7 +2797,7 @@ static void destroyed_worker_func(struct work_struct *w)
- 	struct intel_guc *guc = container_of(w, struct intel_guc,
- 					     submission_state.destroyed_worker);
- 	struct intel_gt *gt = guc_to_gt(guc);
--	int tmp;
-+	intel_wakeref_t tmp;
- 
- 	with_intel_gt_pm(gt, tmp)
- 		deregister_destroyed_contexts(guc);
--- 
-2.25.1
+Ok, I see.
 
