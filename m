@@ -2,88 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C200C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A39C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:46:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243398AbiBQQol (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:44:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60592 "EHLO
+        id S243408AbiBQQqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:46:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242697AbiBQQog (ORCPT
+        with ESMTP id S239915AbiBQQqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:44:36 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA549AC;
-        Thu, 17 Feb 2022 08:44:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645116261; x=1676652261;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=XqrJSESx4co6rylkuJdM9NA+JNlPqfIB9lAf1Ua1BBA=;
-  b=IG1/OdJJG4CmrkH8uJ+hXfvapFyTqIXRmcbr1EbRLcqrzbGd+hj/phJk
-   2zddSoTlBaD8EiPuiilzq1XKShZjA4BQSEHZZ5vREOsNSObXiNndzEKxq
-   Efsu1vy23Zr4Ph2EEfabKjkgUtiGK7uB7HTR+GAUVebcEvFSaK4+fNPUU
-   vgm/EbgjJVHa5YxUYf3Mx8ZeqmlW32mH5TikpaqPVq7xuTWLsxzGiXdRZ
-   pZqs2Gs89wJaqcMps35jB6tPjY02/RuV7xF9ZQpkKYtA2um3e/pt0u6FF
-   jLjjKK5IL0EKfb/6H0oqePU+GUKniLzh+nLYdU5uL9DZKh5aYVM3xqOR5
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="314181323"
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="314181323"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 08:44:21 -0800
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="530351502"
-Received: from drichard-mobl2.amr.corp.intel.com (HELO [10.209.21.238]) ([10.209.21.238])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 08:44:21 -0800
-Message-ID: <dbe8b78e-bc55-c796-358f-a93e0eac87d1@intel.com>
-Date:   Thu, 17 Feb 2022 08:44:17 -0800
+        Thu, 17 Feb 2022 11:46:21 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA1D13E24
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:46:01 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id bt13so14311971ybb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:46:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Krbys4z1HiJYbO7ekpiHQnj69+zGpmG1n2OUUWl+mIM=;
+        b=Sum0eKi9lz9/AsHv7XUtUOTvCs8DBrKvEzLtHtvjJ2sq5smZHSfCSkdVPJaEVStXAY
+         DcmI8SFRd3HdnLNleqKe20e4PSC95CvEvqvYu6rU2zEccEMklpN+27lDiI7yK3QbX1Wm
+         6Svp0TrvotB+PBNZ7S0B4vJ66hAaAaHuKVy+CzM05vWtOo5rWM3fvTMy2LZjDr1OZzLL
+         BIOa3FMCLEEoJ2v5dYWygMcy70OTcnoVvwXs6Ptg3ViwGq8rMaLJ+7t225e+LvaBg5tw
+         mGl0JNL0W/CichfPjAiFqlGr7QrLznIBXXqJ/7G2fK71/mzetmBkZ8JJqt/5BU+RKEJt
+         RQew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Krbys4z1HiJYbO7ekpiHQnj69+zGpmG1n2OUUWl+mIM=;
+        b=c+wv/CArjULt5aMUqgXNKzkA4v9/zkM6k2A73Afkei8heqBoqrMLtcp+B45kBeGv3o
+         RIojXM72yGsFphL8kvz3IsdriuPTu2kVlBXl9oIG9igeZp1kK8lqKVMkNGFfCtxZ0BaI
+         bLoBZm6UOOML0AgbQkEv8iQoXzST+o4ordO6dFz8xfBncamfeBBcCubEJQeIwASx7Edf
+         dWtv7+wi4ZXZgQkH6u97Y0Ky9BtpfpGt5WNpsp6IZps/Y2TqpmDwehONI5e21IAKrweL
+         jszuoJ7qVa9LlK8tEE6DI041M9UGgkqFiXvN2QSprV9g7uuoyNswxoyBH0dk2qDdcfOR
+         ZBww==
+X-Gm-Message-State: AOAM531qn0+WtuiqdOPqFiuQN5VdWf589uGalPjXteoraEfa2xtbVHJX
+        0ip1/wr99/EfSbyM77oP55SdoNRw6HQN5Cu0cGBRAw==
+X-Google-Smtp-Source: ABdhPJw5fINJmYdUVixpISo4vuZIcCuYpLrgLsvboR0CRG5CjvLN3KssWhNmWvl/PhHbt09gQs/0BBLfo+qKLMyCbuQ=
+X-Received: by 2002:a25:bb8d:0:b0:61d:aca6:8aa0 with SMTP id
+ y13-20020a25bb8d000000b0061daca68aa0mr3232251ybg.609.1645116360251; Thu, 17
+ Feb 2022 08:46:00 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Brian Geffon <bgeffon@google.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Willis Kung <williskung@google.com>,
-        Guenter Roeck <groeck@google.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        "# v4 . 10+" <stable@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <543efc25-9b99-53cd-e305-d8b4d917b64b@intel.com>
- <20220215192233.8717-1-bgeffon@google.com> <YgwCuGcg6adXAXIz@kroah.com>
- <CADyq12wByWhsHNOnokrSwCDeEhPdyO6WNJNjpHE1ORgKwwwXgg@mail.gmail.com>
- <YgzMTrVMCVt+n7cE@kroah.com> <fc86d51c-7aa2-6379-5f26-ad533c762da3@intel.com>
- <CADyq12yGvqbb3+hp6f39RqyEM3Mu896yY6ik7Lh39W=o44bYbA@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH stable 5.4,5.10] x86/fpu: Correct pkru/xstate
- inconsistency
-In-Reply-To: <CADyq12yGvqbb3+hp6f39RqyEM3Mu896yY6ik7Lh39W=o44bYbA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1645114959-119064-1-git-send-email-john.garry@huawei.com>
+In-Reply-To: <1645114959-119064-1-git-send-email-john.garry@huawei.com>
+From:   Marco Elver <elver@google.com>
+Date:   Thu, 17 Feb 2022 17:45:49 +0100
+Message-ID: <CANpmjNOO6yxF+xXoatR==uvSaEwsWyZ=n7ExEM_=OJaDYBCeSw@mail.gmail.com>
+Subject: Re: [PATCH] perf test: Skip Sigtrap test for arm+aarch64
+To:     John Garry <john.garry@huawei.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, jolsa@kernel.org, namhyung@kernel.org,
+        leo.yan@linaro.org, dvyukov@google.com, will@kernel.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 05:31, Brian Geffon wrote:
-> How would you and Greg KH like to proceed with this? I'm happy to help
-> however I can.
+On Thu, 17 Feb 2022 at 17:28, John Garry <john.garry@huawei.com> wrote:
+>
+> Skip the Sigtrap test for arm + arm64, same as was done for s390 in
+> commit a840974e96fd ("perf test: Test 73 Sig_trap fails on s390").
+>
+> As described by Will at [0], in the test we get stuck in a loop of handling
+> the HW breakpoint exception and never making progress. GDB handles this
+> by stepping over the faulting instruction, but with perf the kernel is
+> expected to handle the step (which it doesn't for arm).
+>
+> Dmitry made an attempt to get this work, also mentioned in the same thread
+> as [0], which was appreciated. But the best thing to do is skip the test
+> for now.
+>
+> [0] https://lore.kernel.org/linux-perf-users/20220118124343.GC98966@leoy-ThinkPad-X240s/T/#m13b06c39d2a5100d340f009435df6f4d8ee57b5a
+>
+> Fixes: Fixes: 5504f67944484 ("perf test sigtrap: Add basic stress test for sigtrap handling")
+> Signed-off-by: John Garry <john.garry@huawei.com>
+>
+> diff --git a/tools/perf/tests/sigtrap.c b/tools/perf/tests/sigtrap.c
+> index 1f147fe6595f..3f0b5c1398b5 100644
+> --- a/tools/perf/tests/sigtrap.c
+> +++ b/tools/perf/tests/sigtrap.c
+> @@ -29,7 +29,8 @@
+>   * Just disable the test for these architectures until these issues are
+>   * resolved.
+>   */
+> -#if defined(__powerpc__) || defined(__s390x__)
+> +#if defined(__powerpc__) || defined(__s390x__) || \
+> +       defined(__arm__) || defined(__aarch64__)
+>  #define BP_ACCOUNT_IS_SUPPORTED 0
+>  #else
+>  #define BP_ACCOUNT_IS_SUPPORTED 1
 
-If I could wave a magic wand, I'd just apply the whole FPU rewrite to
-stable.
+This is now equivalent to BP_SIGNAL_IS_SUPPORTED
+tools/perf/tests/tests.h -- and different from the original
+BP_ACCOUNT_IS_SUPPORTED (and makes me wonder why
+BP_SIGNAL_IS_SUPPORTED wasn't just used from the beginning). Perhaps
+just use BP_SIGNAL_IS_SUPPORTED.
 
-My second choice would be to stop managing PKRU with XSAVE.
-x86_pkru_load() uses WRPKRU instead of XSAVE and keeps the task's PKRU
-in task->pkru instead of the XSAVE buffer.  Doing that will take some
-care, including pulling XFEATURE_PKRU out of the feature mask (RFBM) at
-XRSTOR.  I _think_ that can be done in a manageable set of patches which
- will keep stable close to mainline.  I recognize that more bugs might
-get introduced in the process which are unique to stable.
-
-If you give that a shot and realize that it's not feasible to do a
-subset, then we can fall back to the minimal fix.  I'm not asking for a
-multi-month engineering effort here.  Maybe an hour or two to see if
-it's really as scary as it looks.
+Thanks,
+-- Marco
