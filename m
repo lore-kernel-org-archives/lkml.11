@@ -2,116 +2,350 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4151DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 22:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F84C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 22:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343869AbiBQWcY (ORCPT
+        id S1343877AbiBQWdA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 17:32:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38494 "EHLO
+        Thu, 17 Feb 2022 17:33:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230527AbiBQWcX (ORCPT
+        with ESMTP id S230527AbiBQWc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 17:32:23 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8071688D2
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 14:32:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645137127; x=1676673127;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NISdFQeSYumSP1wtlba0+QY9T1xu+cd7/z8epP4hEME=;
-  b=Wt71WiyD0gQz6/7q10kLPSZMAk/HA54X8rY0DkDnAoCczmqxtVoKudDZ
-   3I9upELOHXzjONPtBS2RaIn0b0Ff+n6xs0DW0PIkXHDwWutnxrz3hcfNu
-   6yRImeUk0rEPwHgcQE2MCUcKgL9hZv5KLQ+tZaLtoJUcRQjP9BDLDHneH
-   ULpO/2nYZyrm7NDG83TUQ4n6L+4GlYgdAMdTE4I6opgSZpYLv7vgLxzRs
-   DJ0N0TPzQmDehyOWFiT4xIFXtbNZAPBWU0hhlwpeFtDDyZfQ3ejnMjoH5
-   H3pW2VFJy8XIwXQgqWq4a+JUc0v9mbDSGjQbCKC2Blqm2WWJk0VGcBpL+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="234522136"
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="234522136"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 14:32:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="503727001"
-Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 17 Feb 2022 14:32:05 -0800
-Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKpJl-0000hT-2A; Thu, 17 Feb 2022 22:32:05 +0000
-Date:   Fri, 18 Feb 2022 06:31:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [peterz-queue:x86/wip.ibt 23/24]
- arch/x86/kernel/alternative.c:757:48: error: expected ')' before
- 'ANNOTATE_NOENDBR'
-Message-ID: <202202180629.eWa6TvBL-lkp@intel.com>
+        Thu, 17 Feb 2022 17:32:58 -0500
+Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [IPv6:2001:4b7a:2000:18::171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC081688D7;
+        Thu, 17 Feb 2022 14:32:42 -0800 (PST)
+Received: from SoMainline.org (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id EB6B93F680;
+        Thu, 17 Feb 2022 23:32:40 +0100 (CET)
+Date:   Thu, 17 Feb 2022 23:32:39 +0100
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: Re: [REPOST PATCH v4 07/13] drm/msm/disp/dpu1: Add support for DSC
+ in encoder
+Message-ID: <20220217223239.2i256klkbjkogovz@SoMainline.org>
+References: <20220210103423.271016-1-vkoul@kernel.org>
+ <20220210103423.271016-8-vkoul@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220210103423.271016-8-vkoul@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
-head:   20f0cd68b8d42470e0a0459aa5db23d7dae8f83d
-commit: 55d18ec3a2c0a2b4890ed79db60259d5623a59ca [23/24] x86/ibt: fixes
-config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220218/202202180629.eWa6TvBL-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=55d18ec3a2c0a2b4890ed79db60259d5623a59ca
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue x86/wip.ibt
-        git checkout 55d18ec3a2c0a2b4890ed79db60259d5623a59ca
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On 2022-02-10 16:04:17, Vinod Koul wrote:
+> We need to configure the encoder for DSC configuration and calculate DSC
+> parameters for the given timing so this patch adds that support by
+> adding dpu_encoder_prep_dsc() which is invoked when DSC is enabled.
+> 
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> ---
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c   | 164 +++++++++++++++++-
+>  .../gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h  |   8 +
+>  2 files changed, 171 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> index 1e648db439f9..95a7bf362e81 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> @@ -21,6 +21,7 @@
+>  #include "dpu_hw_intf.h"
+>  #include "dpu_hw_ctl.h"
+>  #include "dpu_hw_dspp.h"
+> +#include "dpu_hw_dsc.h"
+>  #include "dpu_formats.h"
+>  #include "dpu_encoder_phys.h"
+>  #include "dpu_crtc.h"
+> @@ -136,6 +137,8 @@ enum dpu_enc_rc_states {
+>   * @cur_slave:		As above but for the slave encoder.
+>   * @hw_pp:		Handle to the pingpong blocks used for the display. No.
+>   *			pingpong blocks can be different than num_phys_encs.
+> + * @hw_dsc:		Handle to the DSC blocks used for the display.
+> + * @dsc_mask:		The bitmask of used DSC blocks.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+No need for "^The" prefix here.
 
-All errors (new ones prefixed by >>):
+>   * @intfs_swapped:	Whether or not the phys_enc interfaces have been swapped
+>   *			for partial update right-only cases, such as pingpong
+>   *			split where virtual pingpong does not generate IRQs
+> @@ -169,6 +172,7 @@ enum dpu_enc_rc_states {
+>   * @topology:                   topology of the display
+>   * @idle_timeout:		idle timeout duration in milliseconds
+>   * @dp:				msm_dp pointer, for DP encoders
+> + * @dsc:			msm_display_dsc_config pointer, for DSC-enabled encoders
+>   */
+>  struct dpu_encoder_virt {
+>  	struct drm_encoder base;
+> @@ -182,6 +186,9 @@ struct dpu_encoder_virt {
+>  	struct dpu_encoder_phys *cur_master;
+>  	struct dpu_encoder_phys *cur_slave;
+>  	struct dpu_hw_pingpong *hw_pp[MAX_CHANNELS_PER_ENC];
+> +	struct dpu_hw_dsc *hw_dsc[MAX_CHANNELS_PER_ENC];
+> +
+> +	unsigned int dsc_mask;
+>  
+>  	bool intfs_swapped;
+>  
+> @@ -209,6 +216,9 @@ struct dpu_encoder_virt {
+>  	u32 idle_timeout;
+>  
+>  	struct msm_dp *dp;
+> +
+> +	/* DSC configuration */
+> +	struct msm_display_dsc_config *dsc;
+>  };
+>  
+>  #define to_dpu_encoder_virt(x) container_of(x, struct dpu_encoder_virt, base)
+> @@ -972,7 +982,8 @@ static void dpu_encoder_virt_mode_set(struct drm_encoder *drm_enc,
+>  	struct dpu_hw_blk *hw_ctl[MAX_CHANNELS_PER_ENC];
+>  	struct dpu_hw_blk *hw_lm[MAX_CHANNELS_PER_ENC];
+>  	struct dpu_hw_blk *hw_dspp[MAX_CHANNELS_PER_ENC] = { NULL };
+> -	int num_lm, num_ctl, num_pp;
+> +	struct dpu_hw_blk *hw_dsc[MAX_CHANNELS_PER_ENC];
+> +	int num_lm, num_ctl, num_pp, num_dsc;
+>  	int i, j;
+>  
+>  	if (!drm_enc) {
+> @@ -1027,6 +1038,23 @@ static void dpu_encoder_virt_mode_set(struct drm_encoder *drm_enc,
+>  		dpu_enc->hw_pp[i] = i < num_pp ? to_dpu_hw_pingpong(hw_pp[i])
+>  						: NULL;
+>  
+> +	dpu_enc->dsc_mask = 0;
+> +
+> +	if (dpu_enc->dsc) {
+> +		unsigned int dsc_mask = 0;
 
->> arch/x86/kernel/alternative.c:757:48: error: expected ')' before 'ANNOTATE_NOENDBR'
-     757 | " .pushsection .init.text, \"ax\", @progbits\n"
-         |                                                ^
-         |                                                )
-   ......
-     760 |  ANNOTATE_NOENDBR
-         |  ~~~~~~~~~~~~~~~~                               
-   arch/x86/kernel/alternative.c:756:5: note: to match this '('
-     756 | asm (
-         |     ^
---
-   arch/x86/lib/retpoline.S: Assembler messages:
->> arch/x86/lib/retpoline.S:15: Error: no such instruction: `annotate_noendbr'
+Perhaps move this definition outside the if, and unconditionally
+perform:
 
+	dpu_enc->dsc_mask = dsc_mask;
 
-vim +757 arch/x86/kernel/alternative.c
+Below the if, instead of having to write it twice when ->dsc is truthy?
 
-ecc606103837b9 Peter Zijlstra 2019-07-08  755  
-ecc606103837b9 Peter Zijlstra 2019-07-08  756  asm (
-ecc606103837b9 Peter Zijlstra 2019-07-08 @757  "	.pushsection	.init.text, \"ax\", @progbits\n"
-ecc606103837b9 Peter Zijlstra 2019-07-08  758  "	.type		int3_magic, @function\n"
-ecc606103837b9 Peter Zijlstra 2019-07-08  759  "int3_magic:\n"
-55d18ec3a2c0a2 Peter Zijlstra 2022-02-17  760  	ANNOTATE_NOENDBR
-ecc606103837b9 Peter Zijlstra 2019-07-08  761  "	movl	$1, (%" _ASM_ARG1 ")\n"
-b17c2baa305ccc Peter Zijlstra 2021-12-04  762  	ASM_RET
-ecc606103837b9 Peter Zijlstra 2019-07-08  763  "	.size		int3_magic, .-int3_magic\n"
-ecc606103837b9 Peter Zijlstra 2019-07-08  764  "	.popsection\n"
-ecc606103837b9 Peter Zijlstra 2019-07-08  765  );
-7457c0da024b18 Peter Zijlstra 2019-05-03  766  
+> +
+> +		num_dsc = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
+> +							drm_enc->base.id, DPU_HW_BLK_DSC,
+> +							hw_dsc, ARRAY_SIZE(hw_dsc));
+> +		for (i = 0; i < MAX_CHANNELS_PER_ENC; i++)
+> +			dpu_enc->hw_dsc[i] = i < num_dsc ? to_dpu_hw_dsc(hw_dsc[i]) : NULL;
+> +
+> +		for (i = 0; i < num_dsc; i++)
+> +			dsc_mask |= BIT(dpu_enc->hw_dsc[i]->idx - DSC_0);
 
-:::::: The code at line 757 was first introduced by commit
-:::::: ecc606103837b98a2b665e8f14e533a6c72bbdc0 x86/alternatives: Fix int3_emulate_call() selftest stack corruption
+Perhaps you can merge these loops?  Assuming hw_dsc is already
+NULL-initialized, you only need to iterate to `i<num_dsc` once without
+extra conditional anyway?
 
-:::::: TO: Peter Zijlstra <peterz@infradead.org>
-:::::: CC: Thomas Gleixner <tglx@linutronix.de>
+> +
+> +		dpu_enc->dsc_mask = dsc_mask;
+> +	}
+> +
+>  	cstate = to_dpu_crtc_state(drm_crtc->state);
+>  
+>  	for (i = 0; i < num_lm; i++) {
+> @@ -1739,6 +1767,127 @@ static void dpu_encoder_vsync_event_work_handler(struct kthread_work *work)
+>  			nsecs_to_jiffies(ktime_to_ns(wakeup_time)));
+>  }
+>  
+> +static void
+> +dpu_encoder_dsc_pclk_param_calc(struct msm_display_dsc_config *dsc, u32 width)
+> +{
+> +	int slice_count, slice_per_intf;
+> +	int bytes_in_slice, total_bytes_per_intf;
+> +
+> +	if (!dsc || !dsc->drm->slice_width || !dsc->drm->slice_count) {
+> +		DPU_ERROR("Invalid DSC/slices\n");
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+What's the forward slash for?
+
+> +		return;
+> +	}
+> +
+> +	slice_count = dsc->drm->slice_count;
+> +	slice_per_intf = DIV_ROUND_UP(width, dsc->drm->slice_width);
+> +
+> +	/*
+> +	 * If slice_count is greater than slice_per_intf then default to 1.
+> +	 * This can happen during partial update.
+> +	 */
+> +	if (slice_count > slice_per_intf)
+> +		slice_count = 1;
+> +
+> +	bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width *
+> +				      dsc->drm->bits_per_pixel, 8);
+> +	total_bytes_per_intf = bytes_in_slice * slice_per_intf;
+> +
+> +	dsc->eol_byte_num = total_bytes_per_intf % 3;
+> +	dsc->pclk_per_line =  DIV_ROUND_UP(total_bytes_per_intf, 3);
+> +	dsc->bytes_in_slice = bytes_in_slice;
+> +	dsc->bytes_per_pkt = bytes_in_slice * slice_count;
+> +	dsc->pkt_per_line = slice_per_intf / slice_count;
+> +}
+
+I've seen the same calculations duplicated twice in dsi code.  Since the
+msm_display_dsc_config struct is available in a header, perhaps a single
+- easily reviewable and maintainable - calculation function should be
+available there too?
+
+- Marijn
+
+> +
+> +static void
+> +dpu_encoder_dsc_initial_line_calc(struct msm_display_dsc_config *dsc,
+> +				  u32 enc_ip_width)
+> +{
+> +	int ssm_delay, total_pixels, soft_slice_per_enc;
+> +
+> +	soft_slice_per_enc = enc_ip_width / dsc->drm->slice_width;
+> +
+> +	/*
+> +	 * minimum number of initial line pixels is a sum of:
+> +	 * 1. sub-stream multiplexer delay (83 groups for 8bpc,
+> +	 *    91 for 10 bpc) * 3
+> +	 * 2. for two soft slice cases, add extra sub-stream multiplexer * 3
+> +	 * 3. the initial xmit delay
+> +	 * 4. total pipeline delay through the "lock step" of encoder (47)
+> +	 * 5. 6 additional pixels as the output of the rate buffer is
+> +	 *    48 bits wide
+> +	 */
+> +	ssm_delay = ((dsc->drm->bits_per_component < 10) ? 84 : 92);
+> +	total_pixels = ssm_delay * 3 + dsc->drm->initial_xmit_delay + 47;
+> +	if (soft_slice_per_enc > 1)
+> +		total_pixels += (ssm_delay * 3);
+> +	dsc->initial_lines = DIV_ROUND_UP(total_pixels, dsc->drm->slice_width);
+> +}
+> +
+> +static void dpu_encoder_dsc_pipe_cfg(struct dpu_hw_dsc *hw_dsc,
+> +				     struct dpu_hw_pingpong *hw_pp,
+> +				     struct msm_display_dsc_config *dsc,
+> +				     u32 common_mode)
+> +{
+> +	if (hw_dsc->ops.dsc_config)
+> +		hw_dsc->ops.dsc_config(hw_dsc, dsc, common_mode);
+> +
+> +	if (hw_dsc->ops.dsc_config_thresh)
+> +		hw_dsc->ops.dsc_config_thresh(hw_dsc, dsc);
+> +
+> +	if (hw_pp->ops.setup_dsc)
+> +		hw_pp->ops.setup_dsc(hw_pp);
+> +
+> +	if (hw_pp->ops.enable_dsc)
+> +		hw_pp->ops.enable_dsc(hw_pp);
+> +}
+> +
+> +static void dpu_encoder_prep_dsc(struct dpu_encoder_virt *dpu_enc,
+> +				 struct msm_display_dsc_config *dsc)
+> +{
+> +	/* coding only for 2LM, 2enc, 1 dsc config */
+> +	struct dpu_encoder_phys *enc_master = dpu_enc->cur_master;
+> +	struct dpu_hw_dsc *hw_dsc[MAX_CHANNELS_PER_ENC];
+> +	struct dpu_hw_pingpong *hw_pp[MAX_CHANNELS_PER_ENC];
+> +	int this_frame_slices;
+> +	int intf_ip_w, enc_ip_w;
+> +	int dsc_common_mode;
+> +	int pic_width;
+> +	int i;
+> +
+> +	for (i = 0; i < MAX_CHANNELS_PER_ENC; i++) {
+> +		hw_pp[i] = dpu_enc->hw_pp[i];
+> +		hw_dsc[i] = dpu_enc->hw_dsc[i];
+> +
+> +		if (!hw_pp[i] || !hw_dsc[i]) {
+> +			DPU_ERROR_ENC(dpu_enc, "invalid params for DSC\n");
+> +			return;
+> +		}
+> +	}
+> +
+> +	dsc_common_mode = 0;
+> +	pic_width = dsc->drm->pic_width;
+> +
+> +	dsc_common_mode = DSC_MODE_MULTIPLEX | DSC_MODE_SPLIT_PANEL;
+> +	if (enc_master->intf_mode == INTF_MODE_VIDEO)
+> +		dsc_common_mode |= DSC_MODE_VIDEO;
+> +
+> +	this_frame_slices = pic_width / dsc->drm->slice_width;
+> +	intf_ip_w = this_frame_slices * dsc->drm->slice_width;
+> +
+> +	dpu_encoder_dsc_pclk_param_calc(dsc, intf_ip_w);
+> +
+> +	/*
+> +	 * dsc merge case: when using 2 encoders for the same stream,
+> +	 * no. of slices need to be same on both the encoders.
+> +	 */
+> +	enc_ip_w = intf_ip_w / 2;
+> +	dpu_encoder_dsc_initial_line_calc(dsc, enc_ip_w);
+> +
+> +	for (i = 0; i < MAX_CHANNELS_PER_ENC; i++)
+> +		dpu_encoder_dsc_pipe_cfg(hw_dsc[i], hw_pp[i], dsc, dsc_common_mode);
+> +}
+> +
+>  void dpu_encoder_prepare_for_kickoff(struct drm_encoder *drm_enc)
+>  {
+>  	struct dpu_encoder_virt *dpu_enc;
+> @@ -1770,6 +1919,9 @@ void dpu_encoder_prepare_for_kickoff(struct drm_encoder *drm_enc)
+>  			dpu_encoder_helper_hw_reset(dpu_enc->phys_encs[i]);
+>  		}
+>  	}
+> +
+> +	if (dpu_enc->dsc)
+> +		dpu_encoder_prep_dsc(dpu_enc, dpu_enc->dsc);
+>  }
+>  
+>  void dpu_encoder_kickoff(struct drm_encoder *drm_enc)
+> @@ -2015,6 +2167,8 @@ static int dpu_encoder_setup_display(struct dpu_encoder_virt *dpu_enc,
+>  		dpu_enc->idle_pc_supported =
+>  				dpu_kms->catalog->caps->has_idle_pc;
+>  
+> +	dpu_enc->dsc = disp_info->dsc;
+> +
+>  	mutex_lock(&dpu_enc->enc_lock);
+>  	for (i = 0; i < disp_info->num_of_h_tiles && !ret; i++) {
+>  		/*
+> @@ -2244,3 +2398,11 @@ enum dpu_intf_mode dpu_encoder_get_intf_mode(struct drm_encoder *encoder)
+>  
+>  	return INTF_MODE_NONE;
+>  }
+> +
+> +unsigned int dpu_encoder_helper_get_dsc(struct dpu_encoder_phys *phys_enc)
+> +{
+> +	struct drm_encoder *encoder = phys_enc->parent;
+> +	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(encoder);
+> +
+> +	return dpu_enc->dsc_mask;
+> +}
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
+> index e7270eb6b84b..7b90d644a41b 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
+> @@ -332,6 +332,14 @@ static inline enum dpu_3d_blend_mode dpu_encoder_helper_get_3d_blend_mode(
+>  	return BLEND_3D_NONE;
+>  }
+>  
+> +/**
+> + * dpu_encoder_helper_get_dsc - get DSC blocks mask for the DPU encoder
+> + *   This helper function is used by physical encoder to get DSC blocks mask
+> + *   used for this encoder.
+> + * @phys_enc: Pointer to physical encoder structure
+> + */
+> +unsigned int dpu_encoder_helper_get_dsc(struct dpu_encoder_phys *phys_enc);
+> +
+>  /**
+>   * dpu_encoder_helper_split_config - split display configuration helper function
+>   *	This helper function may be used by physical encoders to configure
+> -- 
+> 2.31.1
+> 
