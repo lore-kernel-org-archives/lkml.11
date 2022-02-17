@@ -2,107 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A510C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D444CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241000AbiBQNfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:35:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41984 "EHLO
+        id S240983AbiBQNg2 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:36:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240979AbiBQNfl (ORCPT
+        with ESMTP id S234508AbiBQNgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:35:41 -0500
-Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA232AED97;
-        Thu, 17 Feb 2022 05:35:26 -0800 (PST)
-Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
-        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 21HDZBBC023666
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 17 Feb 2022 05:35:11 -0800
-Received: from ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Thu, 17 Feb 2022 05:35:11 -0800
-Received: from ala-exchng01.corp.ad.wrs.com (147.11.82.252) by
- ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Feb 2022 05:35:10 -0800
-Received: from pek-lpd-ccm3.wrs.com (128.224.156.163) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server id
- 15.1.2242.12 via Frontend Transport; Thu, 17 Feb 2022 05:35:09 -0800
-From:   Yun Zhou <yun.zhou@windriver.com>
-To:     <broonie@kernel.org>, <yun.zhou@windriver.com>
-CC:     <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <ying.xue@windriver.com>, <richard.danter@windriver.com>
-Subject: [PATCH] spi: use specific last_cs instead of last_cs_enable
-Date:   Thu, 17 Feb 2022 21:35:08 +0800
-Message-ID: <20220217133508.69409-1-yun.zhou@windriver.com>
-X-Mailer: git-send-email 2.26.1
+        Thu, 17 Feb 2022 08:36:25 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 559902AF3C9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:36:10 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-180-DvoA-mOvMgWZ2EaaUyzgIQ-1; Thu, 17 Feb 2022 13:36:07 +0000
+X-MC-Unique: DvoA-mOvMgWZ2EaaUyzgIQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 17 Feb 2022 13:36:06 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 17 Feb 2022 13:36:06 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Masahiro Yamada" <yamada.masahiro@socionext.com>
+Subject: RE: [PATCH net v3] net: Force inlining of checksum functions in
+ net/checksum.h
+Thread-Topic: [PATCH net v3] net: Force inlining of checksum functions in
+ net/checksum.h
+Thread-Index: AQHYI/ioJk+yETn/QkyN152xjKaZ96yXvR4w
+Date:   Thu, 17 Feb 2022 13:36:06 +0000
+Message-ID: <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com>
+References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit d40f0b6f2e21 instroduced last_cs_enable to avoid setting
-chipselect if it's not necessary, but it also introduces a bug. The
-chipselect may not be set correctly on multi-device SPI busses. The
-reason is that we can't judge the chipselect by bool last_cs_enable,
-since chipselect may be modified after other devices were accessed.
+From: Christophe Leroy
+> Sent: 17 February 2022 12:19
+> 
+> All functions defined as static inline in net/checksum.h are
+> meant to be inlined for performance reason.
+> 
+> But since commit ac7c3e4ff401 ("compiler: enable
+> CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
+> uninline functions when it wants.
+> 
+> Fair enough in the general case, but for tiny performance critical
+> checksum helpers that's counter-productive.
 
-So we should record the specific state of chipselect in case of
-confusion.
+There isn't a real justification for allowing the compiler
+to 'not inline' functions in that commit.
 
-Signed-off-by: Yun Zhou <yun.zhou@windriver.com>
----
- drivers/spi/spi.c       | 4 ++--
- include/linux/spi/spi.h | 5 +++--
- 2 files changed, 5 insertions(+), 4 deletions(-)
+It rather seems backwards.
+The kernel sources don't really have anything marked 'inline'
+that shouldn't always be inlined.
+If there are any such functions they are few and far between.
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 4599b121d744..3114b8e5c954 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -936,13 +936,13 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
- 	 * Avoid calling into the driver (or doing delays) if the chip select
- 	 * isn't actually changing from the last time this was called.
- 	 */
--	if (!force && (spi->controller->last_cs_enable == enable) &&
-+	if (!force && (spi->controller->last_cs == spi->chip_select) &&
- 	    (spi->controller->last_cs_mode_high == (spi->mode & SPI_CS_HIGH)))
- 		return;
- 
- 	trace_spi_set_cs(spi, activate);
- 
--	spi->controller->last_cs_enable = enable;
-+	spi->controller->last_cs = enable ? spi->chip_select : -1;
- 	spi->controller->last_cs_mode_high = spi->mode & SPI_CS_HIGH;
- 
- 	if ((spi->cs_gpiod || gpio_is_valid(spi->cs_gpio) ||
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index 7ab3fed7b804..5a54ea354053 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -373,7 +373,8 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
-  * @cur_msg_prepared: spi_prepare_message was called for the currently
-  *                    in-flight message
-  * @cur_msg_mapped: message has been mapped for DMA
-- * @last_cs_enable: was enable true on the last call to set_cs.
-+ * @last_cs: the last chip_select that is recorded by set_cs, -1 on non chip
-+ *           selected
-  * @last_cs_mode_high: was (mode & SPI_CS_HIGH) true on the last call to set_cs.
-  * @xfer_completion: used by core transfer_one_message()
-  * @busy: message pump is busy
-@@ -611,7 +612,7 @@ struct spi_controller {
- 	bool				auto_runtime_pm;
- 	bool                            cur_msg_prepared;
- 	bool				cur_msg_mapped;
--	bool				last_cs_enable;
-+	char				last_cs;
- 	bool				last_cs_mode_high;
- 	bool                            fallback;
- 	struct completion               xfer_completion;
--- 
-2.26.1
+I've had enough trouble (elsewhere) getting gcc to inline
+static functions that are only called once.
+I ended up using 'always_inline'.
+(That is 4k of embedded object code that will be too slow
+if it ever spills a register to stack.)
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
