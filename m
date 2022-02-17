@@ -2,278 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 861E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F27C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 01:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbiBRBAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 20:00:03 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46974 "EHLO
+        id S231132AbiBRBBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 20:01:37 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbiBRA77 (ORCPT
+        with ESMTP id S230400AbiBRBBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 19:59:59 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6EADE8F;
-        Thu, 17 Feb 2022 16:59:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645145972; x=1676681972;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1Ukpy7fqUbU/7OJeycVek0Vy3fDNcYmELqt4zxST+04=;
-  b=Qcvtx3WxKN6ZSB3uipaURPdZzomvma7GNQ7WbqAszGq9R22ILniOduG0
-   4GLiW/EogU1l+lP4tTenWg6isVxl21f/wd78KGy658pm1uTwRoBCJXPts
-   Zymd0Whnp4lRCfkVFOoe4Bni11ToHBeJQXIfo9pEGOwwycjhjp5SW6hMo
-   +8oGo9sGt7tHtP+17TVNiKoHR60q4FtmN6fxC+SYLLepiAMLuplcssvOz
-   EBwj/iNNaxGodlK1MegmX7RPmePhtyjURFYyuZoGOOEL12NrgE0EaG2bf
-   UeKT+4pVEWeas73wcmgrCAz3+QEnLn0exqHyokMc03UJFJwcLnKESSZ/D
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="238422017"
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="238422017"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 16:58:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="637491633"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
-  by orsmga004.jf.intel.com with ESMTP; 17 Feb 2022 16:58:08 -0800
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>
-Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v6 11/11] iommu: Remove iommu group changes notifier
-Date:   Fri, 18 Feb 2022 08:55:21 +0800
-Message-Id: <20220218005521.172832-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220218005521.172832-1-baolu.lu@linux.intel.com>
-References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
+        Thu, 17 Feb 2022 20:01:34 -0500
+X-Greylist: delayed 492 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 17:01:03 PST
+Received: from mx0b-000eb902.pphosted.com (mx0b-000eb902.pphosted.com [205.220.177.212])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860CE17DBA5;
+        Thu, 17 Feb 2022 17:01:03 -0800 (PST)
+Received: from pps.filterd (m0220297.ppops.net [127.0.0.1])
+        by mx0a-000eb902.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21HMikKC001743;
+        Thu, 17 Feb 2022 17:41:26 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com; h=message-id : date :
+ mime-version : subject : from : to : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pps1;
+ bh=f58sBG5KoGCq2CcTuKpccxuX5pLC5MoafCJ+FTutn/o=;
+ b=zN7Y6fHRwfYVWP0aOtdHQFnLRl6aSF2rqUGPKzCECEVbr0/H32CvpfiNtkpiZzPsIuH+
+ ho3hkHdABuV9hGPX6/SItuR4uPgdlGFSx/+5T1U/xUzTulbGRYf8adl9Ol5lp6jGqAtm
+ 24oaZXViIDyuP1HTMs6uWWXbuiDU7e3e5nqDAIzu8gNlJ6O8kxMP4cKp2LynarEHEo3l
+ lz432bUVHqR3P98L/EsQ6jGFUB84rCc+KgU+mDm6pbJLGrqFJls/wnxK3TpPaVQON8aQ
+ rYIFSt7kzZAzCFiBNX56tT0uOfQe3svz+ND/8Zeeg5QWRbaQmRY+7Ga8T0Dbka5l2UQq Zw== 
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2170.outbound.protection.outlook.com [104.47.56.170])
+        by mx0a-000eb902.pphosted.com (PPS) with ESMTPS id 3e9n3196dk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 17:41:26 -0600
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gJ4pBMSu9Vlg+TwFTLxq4pB8+swmF5uxQwFTHj3iwkpIgiBBNxKoB2w8YIpIYk3Ya3d0u63GkbIfT/p9E38bt5jdbAJKogiVYsZfNwQg7tYOzqXyIO2k3FH9fbpwdKkgU5h6oEoqnjh/+nLDfx0UQdvfV1/2m3zRKQNI4eFrrqNWXNYrTiYkpzE0qQ3Uln0ehWKm72xYEP6M9qzIJJoUS0dw75cEXE77nNw6k/c1489sH6tm0G7M2tq9mgopSWjGe7bbn4f5M51SgvzRXl5L96MIYRWR4TiO6MxsSDAW7CGQAHevkB0nCenl7ZvRjQ32oKzdedmj/h38L62Md+IECw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f58sBG5KoGCq2CcTuKpccxuX5pLC5MoafCJ+FTutn/o=;
+ b=jT9vFZ89gngPRpWUVw5mR5wer8wYQXtzms6PGVj+4UhdMw5hJI1UVYqb27GX0Wp+E6OFyue+W294oL2hyeb0uVa5lwu5IcEo2hHzqs0aZimAGDS2mOvuEOPEiUrcP3NzsFR4GwjGqx9N/VXt21aADHHDiw3bPjj0Edj/ZLEzCo+hEt2THBui8ruWNFpf7N9D52skrKwW1nJ1PhWb6xkQU5l79i6SZaxEKHoR6KkI8M8MO9s2SJ3RMOOS+t2vEYMx9kINaqucuTDNV+3dHj9bhC87vk2rnQJVCc4N0ojIdADLGep6DbBlnll/JkAHQzPt9A8esDr6TF87mYdFUsqR8w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 204.77.163.244) smtp.rcpttodomain=gmail.com smtp.mailfrom=garmin.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=garmin.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f58sBG5KoGCq2CcTuKpccxuX5pLC5MoafCJ+FTutn/o=;
+ b=Dg75tt+PiZishQybQuaN+uNo97q+jLykXxn6DsLkcm+UsOqM6CixQc29Bh2mPIz0nqopBLjo72lSxCaAbGW4nUXedi9lVp9uDkuVt4VwcvE7wGtV3UBV0ofWEoJNdypYnpc6p1esgbiNKbBVCWWiQeVe1amhMLUicGyU0R8A9jJqvs0J623LkVIIy1+etnXx5TA8hatrbQMcND7p3x2CzugBK+eH1L69W0q02GHGIT2cj9DpvwydcElVuw4ggNPJpvujA1EAfOdeFVkhHclDeFCfRjW1LtkN4kPBrFc1Zs5QbSjK3ayIStGGYRuA+ZCXcz7ZiT0rPkBqNYCxnrIfQA==
+Received: from DM6PR08CA0010.namprd08.prod.outlook.com (2603:10b6:5:80::23) by
+ MN2PR04MB6319.namprd04.prod.outlook.com (2603:10b6:208:1aa::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Thu, 17 Feb
+ 2022 23:41:22 +0000
+Received: from DM6NAM10FT056.eop-nam10.prod.protection.outlook.com
+ (2603:10b6:5:80:cafe::55) by DM6PR08CA0010.outlook.office365.com
+ (2603:10b6:5:80::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14 via Frontend
+ Transport; Thu, 17 Feb 2022 23:41:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 204.77.163.244)
+ smtp.mailfrom=garmin.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=garmin.com;
+Received-SPF: Pass (protection.outlook.com: domain of garmin.com designates
+ 204.77.163.244 as permitted sender) receiver=protection.outlook.com;
+ client-ip=204.77.163.244; helo=edgetransport.garmin.com;
+Received: from edgetransport.garmin.com (204.77.163.244) by
+ DM6NAM10FT056.mail.protection.outlook.com (10.13.153.90) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4995.16 via Frontend Transport; Thu, 17 Feb 2022 23:41:21 +0000
+Received: from OLAWPA-EXMB12.ad.garmin.com (10.5.144.16) by
+ olawpa-edge4.garmin.com (10.60.4.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Thu, 17 Feb 2022 17:41:17 -0600
+Received: from [10.30.196.25] (10.5.209.17) by OLAWPA-EXMB12.ad.garmin.com
+ (10.5.144.16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 17 Feb
+ 2022 17:41:20 -0600
+Message-ID: <61696faf-848a-0a00-63c3-5dacfcc20972@garmin.com>
+Date:   Thu, 17 Feb 2022 17:41:20 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2] input: Add Marine Navigation Keycodes
+Content-Language: en-US
+From:   Shelby Heffron <Shelby.Heffron@garmin.com>
+To:     <dmitry.torokhov@gmail.com>, <linux-input@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20210622235708.8828-1-matthew.stephenson2@garmin.com>
+ <20220126211224.28590-1-Shelby.Heffron@garmin.com>
+ <d12b130d-4c79-25bd-36fc-3566bee37173@garmin.com>
+In-Reply-To: <d12b130d-4c79-25bd-36fc-3566bee37173@garmin.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: cv1wpa-exmb1.ad.garmin.com (10.5.144.71) To
+ OLAWPA-EXMB12.ad.garmin.com (10.5.144.16)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 99ca06d7-5442-4837-3608-08d9f26f00ed
+X-MS-TrafficTypeDiagnostic: MN2PR04MB6319:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR04MB63192C8AAED381B886D5E502F2369@MN2PR04MB6319.namprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FyT/ZeW/6LvWzQB3aww0A/IOKNfCwkxFjU3sNUcRMC8FvWkoqxDSvSFwMKpDe7AjIaw171khpr6tUl/1TIQLGuYzuWtMAgE20w4IUnfYcl1RdH4XAln3E2WQdAbUpMyfY43Nc2I5KHsbSDjnL9mCywc6N8IVkG7H+/Ju68iAyaJ116RuXtMYtIPrO/CvKOprz5mnbouV9ETPTutKr+2qmpr8/7K98sAIt8WllAeQu/upbif5c8SmUaa23CJc3znjxXDvKnUWuRbr0GA9xAIc9AhLYo+kylWKdNXxMZXd/ayRrpprzr1FTAQItoJYy6fZBcEDJTX27admFBwGO3k+jqgQ37CbzzEW35V8QaGTfQbobtLF/rZymcrskBuAVbqw/Si5iGCVrwOpjXP65iLFgLFA6bO1efiSsHfGc1+kM2yGfkbgiZHbN21bn5zNCJ55Hlb8+7GBI0qP/+4lmIYC+MMDMFCEokleUjE/jpcVE1r8E2tMzsxpMSnkP1JzI8RTdB/ieY4O6iB6VVQOMo36udh4w/C1W13GIANP0uUFt/XHzV9VwThOCdwOpX3TMjb9Ep2XfTlex5yN84ThbEvLC0xB+mBYSpiWCEQYlz77FiHxskCCcciyoxXL7JIUPT5cPr+Q7XzoZm9BxZhwvU1fBnFhJXzM9K1TWmfwL+CEEOJrfmZPllpOJCj3mSuHPxdyXI+fGM4YBulNO2tmQNl/Bg==
+X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFS:(13230001)(36840700001)(40470700004)(46966006)(2906002)(83380400001)(2616005)(336012)(36860700001)(26005)(316002)(82310400004)(47076005)(186003)(508600001)(426003)(40460700003)(7636003)(70206006)(36756003)(86362001)(8676002)(70586007)(110136005)(31686004)(558084003)(5660300002)(16576012)(356005)(8936002)(31696002)(43740500002);DIR:OUT;SFP:1102;
+X-OriginatorOrg: garmin.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2022 23:41:21.9535
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99ca06d7-5442-4837-3608-08d9f26f00ed
+X-MS-Exchange-CrossTenant-Id: 38d0d425-ba52-4c0a-a03e-2a65c8e82e2d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38d0d425-ba52-4c0a-a03e-2a65c8e82e2d;Ip=[204.77.163.244];Helo=[edgetransport.garmin.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM10FT056.eop-nam10.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR04MB6319
+X-Proofpoint-GUID: OEjFrRsj1P1f4YZEHhaSvOhCtfsgi1Ik
+X-Proofpoint-ORIG-GUID: OEjFrRsj1P1f4YZEHhaSvOhCtfsgi1Ik
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-17_09,2022-02-17_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 adultscore=0 mlxscore=0 bulkscore=0 phishscore=0
+ clxscore=1015 priorityscore=1501 spamscore=0 impostorscore=0
+ suspectscore=0 mlxlogscore=841 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202170113
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The iommu group changes notifer is not referenced in the tree. Remove it
-to avoid dead code.
+Hello,
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h | 23 -------------
- drivers/iommu/iommu.c | 75 -------------------------------------------
- 2 files changed, 98 deletions(-)
+Please let me know if you have any feedback or questions about this patch.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 77972ef978b5..6ef2df258673 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -407,13 +407,6 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 	return dev->iommu->iommu_dev->ops;
- }
- 
--#define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
--#define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
--#define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
--#define IOMMU_GROUP_NOTIFY_BOUND_DRIVER		4 /* Post Driver bind */
--#define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
--#define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
--
- extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern int bus_iommu_probe(struct bus_type *bus);
- extern bool iommu_present(struct bus_type *bus);
-@@ -478,10 +471,6 @@ extern int iommu_group_for_each_dev(struct iommu_group *group, void *data,
- extern struct iommu_group *iommu_group_get(struct device *dev);
- extern struct iommu_group *iommu_group_ref_get(struct iommu_group *group);
- extern void iommu_group_put(struct iommu_group *group);
--extern int iommu_group_register_notifier(struct iommu_group *group,
--					 struct notifier_block *nb);
--extern int iommu_group_unregister_notifier(struct iommu_group *group,
--					   struct notifier_block *nb);
- extern int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
- 					void *data);
-@@ -878,18 +867,6 @@ static inline void iommu_group_put(struct iommu_group *group)
- {
- }
- 
--static inline int iommu_group_register_notifier(struct iommu_group *group,
--						struct notifier_block *nb)
--{
--	return -ENODEV;
--}
--
--static inline int iommu_group_unregister_notifier(struct iommu_group *group,
--						  struct notifier_block *nb)
--{
--	return 0;
--}
--
- static inline
- int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4e2ad7124780..196358ed8c3d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -18,7 +18,6 @@
- #include <linux/errno.h>
- #include <linux/iommu.h>
- #include <linux/idr.h>
--#include <linux/notifier.h>
- #include <linux/err.h>
- #include <linux/pci.h>
- #include <linux/bitops.h>
-@@ -40,7 +39,6 @@ struct iommu_group {
- 	struct kobject *devices_kobj;
- 	struct list_head devices;
- 	struct mutex mutex;
--	struct blocking_notifier_head notifier;
- 	void *iommu_data;
- 	void (*iommu_data_release)(void *iommu_data);
- 	char *name;
-@@ -632,7 +630,6 @@ struct iommu_group *iommu_group_alloc(void)
- 	mutex_init(&group->mutex);
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
--	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
- 
- 	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
- 	if (ret < 0) {
-@@ -905,10 +902,6 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 	if (ret)
- 		goto err_put_group;
- 
--	/* Notify any listeners about change to group. */
--	blocking_notifier_call_chain(&group->notifier,
--				     IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
--
- 	trace_add_device_to_group(group->id, dev);
- 
- 	dev_info(dev, "Adding to iommu group %d\n", group->id);
-@@ -950,10 +943,6 @@ void iommu_group_remove_device(struct device *dev)
- 
- 	dev_info(dev, "Removing from iommu group %d\n", group->id);
- 
--	/* Pre-notify listeners that a device is being removed. */
--	blocking_notifier_call_chain(&group->notifier,
--				     IOMMU_GROUP_NOTIFY_DEL_DEVICE, dev);
--
- 	mutex_lock(&group->mutex);
- 	list_for_each_entry(tmp_device, &group->devices, list) {
- 		if (tmp_device->dev == dev) {
-@@ -1075,36 +1064,6 @@ void iommu_group_put(struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_group_put);
- 
--/**
-- * iommu_group_register_notifier - Register a notifier for group changes
-- * @group: the group to watch
-- * @nb: notifier block to signal
-- *
-- * This function allows iommu group users to track changes in a group.
-- * See include/linux/iommu.h for actions sent via this notifier.  Caller
-- * should hold a reference to the group throughout notifier registration.
-- */
--int iommu_group_register_notifier(struct iommu_group *group,
--				  struct notifier_block *nb)
--{
--	return blocking_notifier_chain_register(&group->notifier, nb);
--}
--EXPORT_SYMBOL_GPL(iommu_group_register_notifier);
--
--/**
-- * iommu_group_unregister_notifier - Unregister a notifier
-- * @group: the group to watch
-- * @nb: notifier block to signal
-- *
-- * Unregister a previously registered group notifier block.
-- */
--int iommu_group_unregister_notifier(struct iommu_group *group,
--				    struct notifier_block *nb)
--{
--	return blocking_notifier_chain_unregister(&group->notifier, nb);
--}
--EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
--
- /**
-  * iommu_register_device_fault_handler() - Register a device fault handler
-  * @dev: the device
-@@ -1650,14 +1609,8 @@ static int remove_iommu_group(struct device *dev, void *data)
- static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data)
- {
--	unsigned long group_action = 0;
- 	struct device *dev = data;
--	struct iommu_group *group;
- 
--	/*
--	 * ADD/DEL call into iommu driver ops if provided, which may
--	 * result in ADD/DEL notifiers to group->notifier
--	 */
- 	if (action == BUS_NOTIFY_ADD_DEVICE) {
- 		int ret;
- 
-@@ -1668,34 +1621,6 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 		return NOTIFY_OK;
- 	}
- 
--	/*
--	 * Remaining BUS_NOTIFYs get filtered and republished to the
--	 * group, if anyone is listening
--	 */
--	group = iommu_group_get(dev);
--	if (!group)
--		return 0;
--
--	switch (action) {
--	case BUS_NOTIFY_BIND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_BIND_DRIVER;
--		break;
--	case BUS_NOTIFY_BOUND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_BOUND_DRIVER;
--		break;
--	case BUS_NOTIFY_UNBIND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_UNBIND_DRIVER;
--		break;
--	case BUS_NOTIFY_UNBOUND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER;
--		break;
--	}
--
--	if (group_action)
--		blocking_notifier_call_chain(&group->notifier,
--					     group_action, dev);
--
--	iommu_group_put(group);
- 	return 0;
- }
- 
--- 
-2.25.1
-
+Thank you.
+Shelby
