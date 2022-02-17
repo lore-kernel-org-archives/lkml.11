@@ -2,155 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB294C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A60C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240611AbiBQNBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:01:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56342 "EHLO
+        id S240620AbiBQNDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:03:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiBQNBc (ORCPT
+        with ESMTP id S230093AbiBQNDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:01:32 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9A2284212;
-        Thu, 17 Feb 2022 05:01:17 -0800 (PST)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21H8Zf8e030645;
-        Thu, 17 Feb 2022 14:00:34 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=bhcz2SL/OhIaWwGW8NTZlL5jRPSdDOHNIjAM7cbOK4A=;
- b=QHcfZeBExAc57IHbvuBQmZsCFHSwq6cPvWhrxOsUWlam1/M2J/qu+EiznLHO36g0RXvm
- UErgjsApgGVetf8qOmnGyONej+o7Uvf44iVrZ5hdSPkWtl5rXaHCJOIy944wrrBJkZh6
- x/EYmuPLMLtyAUdlE2R8gIZauXKnx405TQyb1hQA6XSkj9AtoruX3UQHDyJ+R6KprjIm
- Gai9rok/OCQ8KW907x4n0vuG8sOoMfwayO7p53Dcfyw2o9Er97DxXabUhHpAhEunoTk3
- B8IHyqUGp4Dcu7/DliTMYhcDDz9gTZT9FbkagCmBtBd1qfRrC+7q+npq68caAwtidmz/ xw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e9k069hkc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 14:00:34 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A4228100034;
-        Thu, 17 Feb 2022 14:00:31 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 92D1821ED57;
-        Thu, 17 Feb 2022 14:00:31 +0100 (CET)
-Received: from [10.48.0.175] (10.75.127.49) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 17 Feb
- 2022 14:00:31 +0100
-Message-ID: <f601db90-4239-8b14-e8a5-e1f7c10c1e9f@foss.st.com>
-Date:   Thu, 17 Feb 2022 14:00:30 +0100
+        Thu, 17 Feb 2022 08:03:00 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE23F291F9A;
+        Thu, 17 Feb 2022 05:02:45 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id bx31so8264939ljb.0;
+        Thu, 17 Feb 2022 05:02:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e+QX15fh6AjTvjCx86bn1wO86yEMC2bkhF0fAWHNnUg=;
+        b=lut67Ponvp8shZTDWUe5Oj4AJ9ez1NfZDkmOcaExj54tgf/XNA2xehOZT6z8qFQ5Qn
+         Uh1MpB93m8zYjKvlxYvtkKzZcU3r4syprwi4hXVnU9V4VB7b+AVu2PXJOrI0rVt/35u4
+         xyw77JW2xXZDx1V8SiSXFMAK7lqk3zlw3Jb02TSWIMaeaSwNBx7WgQlPTN29ZQHeMkhU
+         CgwQGnvQ6KU1hclxRNAxrRVW7xLwxQzGjk3yZqBZ6RYPdBBhLSyOiZuLzeAfb3/hnIZR
+         jVC4UPKZ/uwf8nyIY6d7jtzWyTRPCeXx9n4+AZ0qfZTC6gi8ZOnNzQyd7B7ET0Df8riz
+         zu4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e+QX15fh6AjTvjCx86bn1wO86yEMC2bkhF0fAWHNnUg=;
+        b=QBh6M4uv8MTRtjI5mSQeteqPXJicRHPtEOcMwLzaGhAfmMZzGoXOat1iHUh0gc12O6
+         xbdTv0+ySTkhsXe3jbJFVAD6xiOyiv0NxJTjAVoWvvBi5xtjUxTp0HnpQzdxp0+My+W8
+         ayFOU284V+d8a9YASMv+tE5zgttg4/flmN4knF2STJuH0wx6bzu8EyHfPwLGEk2qRuIB
+         M9DqXvN/RH4+VSRWzxl3CK8dWgSdZ39i5LIDGoWDdf/22LX5eowYh26ac+1p50T7C964
+         EE6mtxN13qpe8xUu79UomRk50hAq+3W9eeD8GYm+RYTNPcDYx8WMui69wLiLy2RFSELw
+         ESSg==
+X-Gm-Message-State: AOAM531+DFwFZHqfuZQumW3nGu9zCnaUZgKk7t26zCXp7wNcftQvrvfw
+        OiuH+onRqZVvCwvcRABh298=
+X-Google-Smtp-Source: ABdhPJwX/PuQ1lPFpaK+K1l8a4th2eL+Z3ItLD4DvLo0qVQgfPzUUio4gMfEyTzB3/jRDrapP4xjYg==
+X-Received: by 2002:a05:651c:1797:b0:23a:18d7:1d39 with SMTP id bn23-20020a05651c179700b0023a18d71d39mr2134034ljb.470.1645102964126;
+        Thu, 17 Feb 2022 05:02:44 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id w8sm653052ljd.27.2022.02.17.05.02.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 05:02:43 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>, Tom Rini <trini@konsulko.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Ricardo Salveti <ricardo@foundries.io>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Jorge Ramirez-Ortiz <jorge@foundries.io>,
+        Sean Anderson <seanga2@gmail.com>, devicetree@vger.kernel.org,
+        u-boot@lists.denx.de, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH V2] dt-bindings: nvmem: add U-Boot environment variables binding
+Date:   Thu, 17 Feb 2022 14:02:35 +0100
+Message-Id: <20220217130235.7450-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 3/4] nvmem: core: Fix a conflict between MTD and NVMEM
- on wp-gpios property
-Content-Language: en-US
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <robh+dt@kernel.org>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <devicetree@vger.kernel.org>, <chenshumin86@sina.com>
-References: <20220131095755.8981-1-christophe.kerello@foss.st.com>
- <20220131095755.8981-4-christophe.kerello@foss.st.com>
- <1bd281d8-a576-26dc-79c3-b1a72a4a9691@linaro.org>
-From:   Christophe Kerello <christophe.kerello@foss.st.com>
-In-Reply-To: <1bd281d8-a576-26dc-79c3-b1a72a4a9691@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-17_04,2022-02-17_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Srinivas,
+From: Rafał Miłecki <rafal@milecki.pl>
 
-On 2/17/22 12:01, Srinivas Kandagatla wrote:
-> 
-> 
-> On 31/01/2022 09:57, Christophe Kerello wrote:
->> Wp-gpios property can be used on NVMEM nodes and the same property can
->> be also used on MTD NAND nodes. In case of the wp-gpios property is
->> defined at NAND level node, the GPIO management is done at NAND driver
->> level. Write protect is disabled when the driver is probed or resumed
->> and is enabled when the driver is released or suspended.
->>
->> When no partitions are defined in the NAND DT node, then the NAND DT node
->> will be passed to NVMEM framework. If wp-gpios property is defined in
->> this node, the GPIO resource is taken twice and the NAND controller
->> driver fails to probe.
->>
->> It would be possible to set config->wp_gpio at MTD level before calling
->> nvmem_register function but NVMEM framework will toggle this GPIO on
->> each write when this GPIO should only be controlled at NAND level driver
->> to ensure that the Write Protect has not been enabled.
->>
->> A way to fix this conflict is to add a new boolean flag in nvmem_config
->> named skip_wp_gpio. In case skip_wp_gpio is set, the GPIO resource will
->> be managed by the provider.
->>
->> Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
->> ---
->> Changes in v2:
->>   - rework the proposal done to fix a conflict between MTD and NVMEM on
->>     wp-gpios property.
->>
->>   drivers/nvmem/core.c           | 2 +-
->>   include/linux/nvmem-provider.h | 4 +++-
->>   2 files changed, 4 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
->> index 23a38dcf0fc4..cb40dca6a51d 100644
->> --- a/drivers/nvmem/core.c
->> +++ b/drivers/nvmem/core.c
->> @@ -771,7 +771,7 @@ struct nvmem_device *nvmem_register(const struct 
->> nvmem_config *config)
->>       if (config->wp_gpio)
->>           nvmem->wp_gpio = config->wp_gpio;
->> -    else
->> +    else if (!config->skip_wp_gpio)
->>           nvmem->wp_gpio = gpiod_get_optional(config->dev, "wp",
->>                               GPIOD_OUT_HIGH);
->>       if (IS_ERR(nvmem->wp_gpio)) {
->> diff --git a/include/linux/nvmem-provider.h 
->> b/include/linux/nvmem-provider.h
->> index 98efb7b5660d..4b480023c265 100644
->> --- a/include/linux/nvmem-provider.h
->> +++ b/include/linux/nvmem-provider.h
->> @@ -70,7 +70,8 @@ struct nvmem_keepout {
->>    * @word_size:    Minimum read/write access granularity.
->>    * @stride:    Minimum read/write access stride.
->>    * @priv:    User context passed to read/write callbacks.
->> - * @wp-gpio:   Write protect pin
->> + * @wp-gpio:    Write protect pin
->> + * @skip_wp_gpio: Write Protect pin is managed by the provider.
-> 
-> Can we rename this to ingore_wp as suggested by Miquel.
-> 
+U-Boot uses environment variables for storing device setup data. It
+usually needs to be accessed by a bootloader, kernel and often
+user-space.
 
-OK, It will be part of v3.
+This binding allows describing environment data located in a raw flash
+partition. It's treated as NVMEM device and can be reused later for
+other storage devices.
 
-Regards,
-Christophe Kerello.
+Using DT should be cleaner than hardcoding & duplicating such info in
+multiple places. Bootloader & kernel can share DTS and user-space can
+try reading it too or just have correct data exposed by a kernel.
 
-> --srini
-> 
->>    *
->>    * Note: A default "nvmem<id>" name will be assigned to the device if
->>    * no name is specified in its configuration. In such case "<id>" is
->> @@ -92,6 +93,7 @@ struct nvmem_config {
->>       enum nvmem_type        type;
->>       bool            read_only;
->>       bool            root_only;
->> +    bool            skip_wp_gpio;
->>       struct device_node    *of_node;
->>       bool            no_of_node;
->>       nvmem_reg_read_t    reg_read;
+A custom "compatible" string allows system to automatically load
+relevant NVMEM driver but phandle can be also used for reading raw
+location.
+
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+V2: Update descriptions to don't make this binding MTD (flash partition)
+    specific. Mention multiple possible storage ways.
+---
+ .../devicetree/bindings/nvmem/u-boot,env.yaml | 66 +++++++++++++++++++
+ MAINTAINERS                                   |  5 ++
+ 2 files changed, 71 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+
+diff --git a/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml b/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+new file mode 100644
+index 000000000000..a53e34152c97
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+@@ -0,0 +1,66 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/u-boot,env.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: U-Boot environment variables
++
++description: |
++  U-Boot uses environment variables to store device parameters and
++  configuration. They may be used for booting process, setup or keeping end user
++  info.
++
++  Data is stored using U-Boot specific formats (variant specific header and NUL
++  separated key-value pairs).
++
++  Environment data can be stored on various storage entities, e.g.:
++  1. Raw flash partition
++  2. UBI volume
++
++  This binding allows marking storage device (as containing env data) and
++  specifying used format.
++
++  Right now only flash partition case is covered but it may be extended to e.g.
++  UBI volumes in the future.
++
++maintainers:
++  - Rafał Miłecki <rafal@milecki.pl>
++
++allOf:
++  - $ref: nvmem.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - description: A standalone env data block
++        const: u-boot,env
++      - description: Two redundant blocks with active one flagged
++        const: u-boot,env-redundant-bool
++      - description: Two redundant blocks with active having higher counter
++        const: u-boot,env-redundant-count
++
++  reg:
++    maxItems: 1
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    partitions {
++        compatible = "fixed-partitions";
++        #address-cells = <1>;
++        #size-cells = <1>;
++
++        partition@0 {
++            reg = <0x0 0x40000>;
++            label = "u-boot";
++            read-only;
++        };
++
++        env: partition@40000 {
++            compatible = "u-boot,env";
++            reg = <0x40000 0x10000>;
++            label = "u-boot-env";
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 66aa3a589f6a..55c56ce82856 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19905,6 +19905,11 @@ W:	http://linuxtv.org
+ T:	git git://linuxtv.org/media_tree.git
+ F:	drivers/media/pci/tw686x/
+ 
++U-BOOT ENVIRONMENT VARIABLES
++M:	Rafał Miłecki <rafal@milecki.pl>
++S:	Maintained
++F:	Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
++
+ UACCE ACCELERATOR FRAMEWORK
+ M:	Zhangfei Gao <zhangfei.gao@linaro.org>
+ M:	Zhou Wang <wangzhou1@hisilicon.com>
+-- 
+2.34.1
+
