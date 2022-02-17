@@ -2,147 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F209C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240729AbiBQNOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:14:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59384 "EHLO
+        id S240714AbiBQNPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:15:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235285AbiBQNOb (ORCPT
+        with ESMTP id S231520AbiBQNPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:14:31 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619B92AE709
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:14:16 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id v8-20020a17090a634800b001bb78857ccdso7070548pjs.1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:14:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XdlLlJhbQL/yqDobMDic8Dhn/I5hCPeUob53KHF16Xk=;
-        b=iNfqKq5Vxb8wbnaxWGaMqh0FL8SDsPrenCAQIRZFrNIhQgqO7fJd4oIED5SBuhNT4Z
-         9dH1d/yANOaEj2VFyMvW7yc67AvmK1KaGey4bQaBOfdABU2J7i3s9CCNmQ60p/Hw6EAQ
-         40LySQYRZhvMBvWfdbeIz0DPmbMgH1flwovP7lOvs7a3CW/YGx0FuzdIqxvbhDTue6DJ
-         05+BzE0dWFyRgrRlAflUbq1EUiqzz04owQoNT3rKcOeJN7A8yga7IdbJNxNkyNleAt5d
-         AbExYnvudxCvxL6NKR12/3lT8OkgW8RUwDDra0zVqb96jm5iUOJrAHRKLXzC+CIu2dTw
-         b2HA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XdlLlJhbQL/yqDobMDic8Dhn/I5hCPeUob53KHF16Xk=;
-        b=djyShzkAp/fXRpMxWPT3W5ZB8p/BzEFEa3cj6GfSwdJ+QE4dgqRg3HKFE3TxgpYoYV
-         mXgGf6dHQ1p8yxLjHNspASw8WVlevlMiBZyTaovCEBmnMW9sH7TqTVuXgD5iY35vPrZ9
-         UYLpKnZLzlc0CYvaOYbLAGc5W9HiQhJu0Za9sASqkIMStYeLikGktxLnakcP+iqeiSfx
-         VSudZnofCZIXh9f33JJNqdHFVCq4MnYV8iPdX7OlRFqIBoE2IEYUo6g7Pc9xDICwSqDZ
-         OfHpfyWcv6152zZjQPcfszgSUMk/qThs1s59KKLUSnMOTQjpVecwtspMuByUXIH6beAk
-         lHPA==
-X-Gm-Message-State: AOAM532hKmskklFnRJ/Xb9jyv3xYyRtj526WD1UykVQU7JRQD/XyY9PG
-        qpAClO15IDyvB4kHQOm1HUTfBw==
-X-Google-Smtp-Source: ABdhPJw8TYbPnz7C3y/3QVqKwy7odJLtmW3d4Cz6rXdRkbxoSKc0+apSrVv411QxkKXEWWcCTBUuwg==
-X-Received: by 2002:a17:90a:7845:b0:1b9:159c:148e with SMTP id y5-20020a17090a784500b001b9159c148emr2978883pjl.136.1645103655886;
-        Thu, 17 Feb 2022 05:14:15 -0800 (PST)
-Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id l21sm48249804pfu.120.2022.02.17.05.14.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 17 Feb 2022 05:14:15 -0800 (PST)
-Date:   Thu, 17 Feb 2022 21:14:08 +0800
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] irqchip: Add Qualcomm MPM controller driver
-Message-ID: <20220217131407.GE31965@dragon>
-References: <20220216132830.32490-1-shawn.guo@linaro.org>
- <20220216132830.32490-4-shawn.guo@linaro.org>
- <0847c34b8c482e6f080ce6f44b02220d@kernel.org>
+        Thu, 17 Feb 2022 08:15:31 -0500
+Received: from outbound-smtp60.blacknight.com (outbound-smtp60.blacknight.com [46.22.136.244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AEF2AB52F
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:15:16 -0800 (PST)
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp60.blacknight.com (Postfix) with ESMTPS id D58EFFAF4D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:15:14 +0000 (GMT)
+Received: (qmail 28296 invoked from network); 17 Feb 2022 13:15:14 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.17.223])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 17 Feb 2022 13:15:14 -0000
+Date:   Thu, 17 Feb 2022 13:15:12 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     K Prateek Nayak <kprateek.nayak@amd.com>
+Cc:     peterz@infradead.org, aubrey.li@linux.intel.com, efault@gmx.de,
+        gautham.shenoy@amd.com, linux-kernel@vger.kernel.org,
+        mingo@kernel.org, song.bao.hua@hisilicon.com,
+        srikar@linux.vnet.ibm.com, valentin.schneider@arm.com,
+        vincent.guittot@linaro.org
+Subject: Re: [PATCH v4] sched/fair: Consider cpu affinity when allowing NUMA
+ imbalance in find_idlest_group
+Message-ID: <20220217131512.GW3366@techsingularity.net>
+References: <20220217055408.28151-1-kprateek.nayak@amd.com>
+ <20220217100523.GV3366@techsingularity.net>
+ <a57dbac2-1b8e-ea5c-8b6c-3a97ac186ad9@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <0847c34b8c482e6f080ce6f44b02220d@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <a57dbac2-1b8e-ea5c-8b6c-3a97ac186ad9@amd.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 03:48:42PM +0000, Marc Zyngier wrote:
-...
-> > +static irq_hw_number_t get_parent_hwirq(struct qcom_mpm_priv *priv, int
-> > pin)
-> > +{
-> > +	const struct mpm_gic_map *maps = priv->maps;
-> > +	int i;
-> > +
-> > +	for (i = 0; i < priv->map_cnt; i++) {
-> > +		if (maps[i].pin == pin)
-> > +			return maps[i].hwirq;
-> > +	}
-> > +
-> > +	return MPM_NO_PARENT_IRQ;
+On Thu, Feb 17, 2022 at 04:53:51PM +0530, K Prateek Nayak wrote:
+> Hello Mel,
 > 
-> I'd rather you change this helper to return a pointer to the mapping data,
-> and NULL on failure. This will avoid inventing magic values which may
-> or may not clash with an interrupt number in the future.
 > 
-> > +}
-> > +
-> > +static int qcom_mpm_alloc(struct irq_domain *domain, unsigned int virq,
-> > +			  unsigned int nr_irqs, void *data)
-> > +{
-> > +	struct qcom_mpm_priv *priv = domain->host_data;
-> > +	struct irq_fwspec *fwspec = data;
-> > +	struct irq_fwspec parent_fwspec;
-> > +	irq_hw_number_t parent_hwirq;
+> Thank you for looking into the patch.
 > 
-> Isn't this the pin number? If so, I'd rather you call it that.
-
-We use term 'pin' in the driver as hwirq of MPM, while the parent_hwirq
-here means hwirq of GIC.  But it will be dropped anyway as I'm following
-your suggestion to check mapping data instead of parent_hwirq.
-
-I will address all other review comments.  Thanks, Marc!
-
-Shawn
-
+> On 2/17/2022 3:35 PM, Mel Gorman wrote:
+> > Thanks Prateek,
+> >
+> > On Thu, Feb 17, 2022 at 11:24:08AM +0530, K Prateek Nayak wrote:
+> >> [..snip..]
+> >>
+> >> Eg: numactl -C 0,16,32,48,64,80,96,112 ./stream8
+> >>
+> > In this case the stream threads can use any CPU of the subset, presumably
+> > this is parallelised with OpenMP without specifying spread or bind
+> > directives.
+> Yes it is parallelized using OpenMP without specifying any directive.
+> > [..snip..]
+> > One concern I have is that we incur a cpumask setup and cpumask_weight
+> > cost on every clone whether a restricted CPU mask is used or not.  Peter,
+> > is it acceptable to avoid the cpumask check if there is no restrictions
+> > on allowed cpus like this?
+> >
+> > 	imb = sd->imb_numa_nr;
+> > 	if (p->nr_cpus_allowed != num_online_cpus())
+> > 		struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
+> >
+> > 		cpumask_and(cpus, sched_group_span(local), p->cpus_ptr);
+> > 		imb = min(cpumask_weight(cpus), imb);
+> > 	}
+> Can we optimize this further as:
 > 
-> > +	irq_hw_number_t hwirq;
-> > +	unsigned int type;
-> > +	int  ret;
-> > +
-> > +	ret = irq_domain_translate_twocell(domain, fwspec, &hwirq, &type);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = irq_domain_set_hwirq_and_chip(domain, virq, hwirq,
-> > +					    &qcom_mpm_chip, priv);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	parent_hwirq = get_parent_hwirq(priv, hwirq);
-> > +	if (parent_hwirq == MPM_NO_PARENT_IRQ)
-> > +		return irq_domain_disconnect_hierarchy(domain->parent, virq);
-> > +
-> > +	if (type & IRQ_TYPE_EDGE_BOTH)
-> > +		type = IRQ_TYPE_EDGE_RISING;
-> > +
-> > +	if (type & IRQ_TYPE_LEVEL_MASK)
-> > +		type = IRQ_TYPE_LEVEL_HIGH;
-> > +
-> > +	parent_fwspec.fwnode = domain->parent->fwnode;
-> > +	parent_fwspec.param_count = 3;
-> > +	parent_fwspec.param[0] = 0;
-> > +	parent_fwspec.param[1] = parent_hwirq;
-> > +	parent_fwspec.param[2] = type;
-> > +
-> > +	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
-> > +					    &parent_fwspec);
-> > +}
+> 	imb = sd->imb_numa_nr;
+> 	if (unlikely(p->nr_cpus_allowed != num_online_cpus()))
+> 		struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
+> 
+> 		cpumask_and(cpus, sched_group_span(local), p->cpus_ptr);
+> 		imb = min(cpumask_weight(cpus), imb);
+> 	}
+> 
+> As for most part, p->nr_cpus_allowed will be equal to num_online_cpus()
+> unless user has specifically pinned the task.
+> 
+
+I'm a little wary due to https://lwn.net/Articles/420019/ raising concerns
+from people that feel more strongly about likely/unlikely use. Whether that
+branch is likely true or not is specific to the deployment. On my desktop
+and most tests I run, the branch is very unlikely because most workloads
+I run are usually not CPU-constrained and not fork-intensive. Even those
+that are CPU contrained are generally not fork intensive. For a setup with
+lots of containers, virtual machines, locality-aware applications etc,
+the path is potentially very likely and harder to detect in the future.
+
+I don't object to the change but I would wonder if it's measurable for
+anything other than a fork-intensive microbenchmark given it's one branch
+in a relatively heavy operation.
+
+I think a relatively harmless micro-optimisation would be
+
+-		imb = min(cpumask_weight(cpus), imb);
++		imb = cpumask_weight(cpus);
+
+It assumes that the constrained cpus_allowed would have a lower imb
+than one calculated based on all cpus allowed which sounds like a safe
+assumption other than racing with hot-onlining a bunch of CPUs.
+
+I think both micro-optimisations are negligible in comparison to avoiding
+an unecessary cpumask_and cpumask_weight call. FWIW, I looked at my own
+use of likely/unlikely recently and it's
+
+c49c2c47dab6b8d45022b3fabf0642a0e62e3109 unlikely that memory hotplug operation is in progress
+3b12e7e97938424de2bb1b95ba0bd6a49bad39f9 hotplug active or machine booting
+df1acc856923c0a65c28b588585449106c316b71 memory isolated for hotplug or CMA attempt in progress
+56f0e661ea8c0178e80048df7166653a51ef2c3d memory isolated for hotplug or CMA attempt in progress
+b3b64ebd38225d8032b5db42938d969b602040c2 bulk allocation request with an array that already has pages
+
+Of those, the last one is the most marginal because it really depends
+on whether network core or NFS is the heavy user of the interface and
+I made a guess that high-speed networks are more common critical paths
+than NFS servers.
+
+-- 
+Mel Gorman
+SUSE Labs
