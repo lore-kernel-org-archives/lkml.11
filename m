@@ -2,166 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 22:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5862C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 22:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343842AbiBQWY2 (ORCPT
+        id S1343853AbiBQWYc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 17:24:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41732 "EHLO
+        Thu, 17 Feb 2022 17:24:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343749AbiBQWY0 (ORCPT
+        with ESMTP id S1343846AbiBQWY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 17:24:26 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB9028E33
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 14:24:11 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id c18so2921174ioc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 14:24:11 -0800 (PST)
+        Thu, 17 Feb 2022 17:24:29 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63282BB01
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 14:24:14 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id 4so1116805oil.11
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 14:24:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language;
-        bh=+UCLiLpbu9yxs/LUCntyXYgTWljHDkuh6IEZLpRrja4=;
-        b=BssYb1O3urXn2zOuev6luSlaImaAxmPUJYopHspymyl+8zkm/sUxCS9M6P83PMJlnh
-         czDDKdyT6wNpRgXioDXvqA2OjD97S4djhORmu9oFE/MCtJgu+egTWLwoSNsg9hcGVkKx
-         nxf21UDpTIswslxk886R4rpwN1uN0N3BnEz9I=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/neFhOJyXKG5xSPOlx3CJHDkEqEd9BRroYvm8Izt9PU=;
+        b=sYKcZLjYBIoEo8liVjK/NRa/cSfQMrW3EijXiy4Gakbj3BtmY1jTwBXZjgSm1KwYvw
+         EUbw9qFK1Vis7+Hn8aLBdvJXtLaqo/KtJudsA5aapscIzSc+eLy9CuN27UAerGmKiZvw
+         diOIyVr9vCMyCf+4jLgVKfUqhXcVfZg3t11inoh1V2nqpb0VyfiDWvz1qPUc7JjFhPj/
+         4OmoXMJb14GlZEAzFIoUVlJPpBLSMD6w4h29JdMio6mIafyrmJJfZNjMcS5XBhBm2dGe
+         ka6IbIduW9AfZdcOCpq1ckB9ClPUd8UBs8K3gmoB1UrDwBARBlw03epOB2JJQ/inDZ/D
+         vkfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language;
-        bh=+UCLiLpbu9yxs/LUCntyXYgTWljHDkuh6IEZLpRrja4=;
-        b=jPLX7X4yPmKP4YX+hL7clNfJVaFS2fRsC0I75p5NS5kxY9yBiwAteRKtf9hyu3pfcE
-         2rrsn5M/voL96xl/VituD2WlsPKoLVM0yFtGL+LeN3M7EEzZAMn1tkYNUT3GwH/DN6fg
-         e63jqwk/4l6lI9RQTO4OA58xpWB6q3OCv2Y7V5zg1BPpUywLKK34idhFdkEYdAxlCESf
-         MHQ8d2LeW8GFQyhl6Pvu+o7DjKxMTe4lJJIPF+ZC7MxCl5OuiWdQ6mkaxVEhVSipyKie
-         pq/yFzUDFa/FJJgf5YTbawRWYWDRS1uVQWYVk+A1uUl/M2kVKRB+R3b9R4HXzxTalWZF
-         3H2A==
-X-Gm-Message-State: AOAM5305o+LQ0KGJeZvg0dkhkv5u55hQJDniQT825DLwhUSQtooYq9lr
-        ktkLVmFTZieiVj9upV/Sjp5kRN9rgtMFFw==
-X-Google-Smtp-Source: ABdhPJxuO8OABRvc6Tf7zjz8V2OszbI+q8F37UB9WD7C8tVhf6wMGDTfhzAjjoKNYHAiCNimv3iE1A==
-X-Received: by 2002:a02:5b0a:0:b0:30f:60e4:b9ab with SMTP id g10-20020a025b0a000000b0030f60e4b9abmr3184609jab.189.1645136650188;
-        Thu, 17 Feb 2022 14:24:10 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id d2sm2842914iog.42.2022.02.17.14.24.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 14:24:09 -0800 (PST)
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Subject: [GIT PULL] Kselftest fixes update for Linux 5.17-rc5
-Message-ID: <1b759083-880e-8acc-239b-bba42ec09551@linuxfoundation.org>
-Date:   Thu, 17 Feb 2022 15:24:08 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/neFhOJyXKG5xSPOlx3CJHDkEqEd9BRroYvm8Izt9PU=;
+        b=6ZV+vMGadPY/TwhJLN5puCgdUXPjAlHRftL8En0DUFIgLUQL83jXFt8fQTVqkoeJvT
+         2RX5Z+mo2tpRQmON7fbWizLVq+ehBq3zpYR+O26vyDBXKWLImNvg7Zz18ny13ScFtVUI
+         KYch8MjEtOLC9E7LGgOykxpAAMERGpVmRxuAy8lEby3GU32AGU+OO76VdfRBEhcox6iV
+         LjbltUG108mIWqxKkIGBAS8UY/uXjmqIkcE8B6TCOVd3xs34Xd2NZHJBsyBbM7ZThMGY
+         K6i7TBq41ILzCYV3Gxt0j0nP3ENDxv54GsRwPF09deTKZANwUKn8+kbSq3xedCghVEbk
+         85TA==
+X-Gm-Message-State: AOAM533YTxcbfsg7gBBU1IJTnfTRVbn0azodsqTl61/m+jI0Q2hc0Sff
+        354QOBybiQYGqTLXGyQDJuUUlA==
+X-Google-Smtp-Source: ABdhPJyAHPTbyHfEMbFh3qbEs6lUXgioZ89TvaZDWuHOUNgl2HglyEel/rwjbbS0NIYVNx5zst55qw==
+X-Received: by 2002:a05:6808:238f:b0:2ce:df34:1812 with SMTP id bp15-20020a056808238f00b002cedf341812mr3789990oib.147.1645136653688;
+        Thu, 17 Feb 2022 14:24:13 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id w13sm545096ooj.5.2022.02.17.14.24.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 14:24:13 -0800 (PST)
+Date:   Thu, 17 Feb 2022 14:26:20 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>, mka@chromium.org,
+        swboyd@chromium.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, satya priya <skakit@codeaurora.org>
+Subject: Re: [PATCH V3 2/4] leds: Add pm8350c support to Qualcomm LPG driver
+Message-ID: <Yg7LjJFi51cmDUQr@ripper>
+References: <1635507893-25490-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1635507893-25490-3-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------04EEBBDFE8B4287E80F46078"
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1635507893-25490-3-git-send-email-quic_c_skakit@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------04EEBBDFE8B4287E80F46078
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On Fri 29 Oct 04:44 PDT 2021, Satya Priya wrote:
 
-Hi Linus,
+> From: satya priya <skakit@codeaurora.org>
+> 
+> Add pm8350c compatible and lpg_data to the driver.
+> 
+> Signed-off-by: satya priya <skakit@codeaurora.org>
 
-Please pull the following Kselftest fixes update for Linux 5.17-rc5.
+Sorry for the OCD, but I would really like for you to capitalize 's' and
+'p' in your name.
 
-This Kselftest fixes update for Linux 5.17-rc5 consists of fixes
-to ftrace, exec, and seccomp tests build, run-time and install
-bugs. These bugs are in the way of running the tests.
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
+> Changes in V2:
+>  - Added const for lpg_channel_data[] struct.
+> 
+> Changes in V3:
+>  - Correct the num_channels and add respective base addresses.
+> 
+>  drivers/leds/rgb/leds-qcom-lpg.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+> 
+> diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
+> index 45ef4ec..ad99a9b 100644
+> --- a/drivers/leds/rgb/leds-qcom-lpg.c
+> +++ b/drivers/leds/rgb/leds-qcom-lpg.c
+> @@ -1275,9 +1275,22 @@ static const struct lpg_data pm8150l_lpg_data = {
+>  	},
+>  };
+>  
+> +static const struct lpg_data pm8350c_pwm_data = {
+> +	.pwm_9bit_mask = BIT(2),
 
-diff is attached.
+As you might have seen in v12 I dropped pwm_9bit_mask.
 
-thanks,
--- Shuah
+> +
 
-----------------------------------------------------------------
-The following changes since commit 183f80fd72db42c9cc483aa7a5e8e881355d0b03:
+Afaict there's a tri-channel current sink in pm8350c as well, so you
+should have:
 
-   selftests/ir: fix build with ancient kernel headers (2022-02-04 13:14:41 -0700)
+        .triled_base = 0xef00,
 
-are available in the Git repository at:
+And then associated .triled_mask in the relevant channels.
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-fixes-5.17-rc5
+Regards,
+Bjorn
 
-for you to fetch changes up to 6fec1ab67f8d60704cc7de64abcfd389ab131542:
-
-   selftests/ftrace: Do not trace do_softirq because of PREEMPT_RT (2022-02-14 13:28:17 -0700)
-
-----------------------------------------------------------------
-linux-kselftest-fixes-5.17-rc5
-
-This Kselftest fixes update for Linux 5.17-rc5 consists of fixes
-to ftrace, exec, and seccomp tests build, run-time and install
-bugs. These bugs are in the way of running the tests.
-
-----------------------------------------------------------------
-Krzysztof Kozlowski (1):
-       selftests/ftrace: Do not trace do_softirq because of PREEMPT_RT
-
-Muhammad Usama Anjum (1):
-       selftests/exec: Add non-regular to TEST_GEN_PROGS
-
-Sherry Yang (1):
-       selftests/seccomp: Fix seccomp failure by adding missing headers
-
-  tools/testing/selftests/exec/Makefile                                | 4 ++--
-  tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc | 2 +-
-  tools/testing/selftests/seccomp/Makefile                             | 2 +-
-  3 files changed, 4 insertions(+), 4 deletions(-)
-----------------------------------------------------------------
-
---------------04EEBBDFE8B4287E80F46078
-Content-Type: text/x-patch; charset=UTF-8;
- name="linux-kselftest-fixes-5.17-rc5.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="linux-kselftest-fixes-5.17-rc5.diff"
-
-diff --git a/tools/testing/selftests/exec/Makefile b/tools/testing/selftests/exec/Makefile
-index 12c5e27d32c1..2d7fca446c7f 100644
---- a/tools/testing/selftests/exec/Makefile
-+++ b/tools/testing/selftests/exec/Makefile
-@@ -3,8 +3,8 @@ CFLAGS = -Wall
- CFLAGS += -Wno-nonnull
- CFLAGS += -D_GNU_SOURCE
- 
--TEST_PROGS := binfmt_script non-regular
--TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216
-+TEST_PROGS := binfmt_script
-+TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216 non-regular
- TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir
- # Makefile is a run-time dependency, since it's accessed by the execveat test
- TEST_FILES := Makefile
-diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-index e96e279e0533..25432b8cd5bd 100644
---- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-+++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-@@ -19,7 +19,7 @@ fail() { # mesg
- 
- FILTER=set_ftrace_filter
- FUNC1="schedule"
--FUNC2="do_softirq"
-+FUNC2="scheduler_tick"
- 
- ALL_FUNCS="#### all functions enabled ####"
- 
-diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
-index 0ebfe8b0e147..585f7a0c10cb 100644
---- a/tools/testing/selftests/seccomp/Makefile
-+++ b/tools/testing/selftests/seccomp/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--CFLAGS += -Wl,-no-as-needed -Wall
-+CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/
- LDFLAGS += -lpthread
- 
- TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
-
---------------04EEBBDFE8B4287E80F46078--
+> +	.num_channels = 4,
+> +	.channels = (const struct lpg_channel_data[]) {
+> +		{ .base = 0xe800 },
+> +		{ .base = 0xe900 },
+> +		{ .base = 0xea00 },
+> +		{ .base = 0xeb00 },
+> +	},
+> +};
+> +
+>  static const struct of_device_id lpg_of_table[] = {
+>  	{ .compatible = "qcom,pm8150b-lpg", .data = &pm8150b_lpg_data },
+>  	{ .compatible = "qcom,pm8150l-lpg", .data = &pm8150l_lpg_data },
+> +	{ .compatible = "qcom,pm8350c-pwm", .data = &pm8350c_pwm_data },
+>  	{ .compatible = "qcom,pm8916-pwm", .data = &pm8916_pwm_data },
+>  	{ .compatible = "qcom,pm8941-lpg", .data = &pm8941_lpg_data },
+>  	{ .compatible = "qcom,pm8994-lpg", .data = &pm8994_lpg_data },
+> -- 
+> 2.7.4
+> 
