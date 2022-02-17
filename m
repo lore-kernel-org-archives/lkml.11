@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E0BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 00:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBB9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 00:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229561AbiBQAXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 19:23:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37616 "EHLO
+        id S229578AbiBQAX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 19:23:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiBQAX0 (ORCPT
+        with ESMTP id S229525AbiBQAX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 19:23:26 -0500
-Received: from outbound-smtp47.blacknight.com (outbound-smtp47.blacknight.com [46.22.136.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5BD1390E2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 16:23:11 -0800 (PST)
+        Wed, 16 Feb 2022 19:23:56 -0500
+Received: from outbound-smtp59.blacknight.com (outbound-smtp59.blacknight.com [46.22.136.243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47D928B636
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 16:23:42 -0800 (PST)
 Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
-        by outbound-smtp47.blacknight.com (Postfix) with ESMTPS id C32E6FAE1A
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:23:09 +0000 (GMT)
-Received: (qmail 23170 invoked from network); 17 Feb 2022 00:23:09 -0000
+        by outbound-smtp59.blacknight.com (Postfix) with ESMTPS id 750C8FAE25
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:23:41 +0000 (GMT)
+Received: (qmail 24173 invoked from network); 17 Feb 2022 00:23:41 -0000
 Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.17.223])
-  by 81.17.254.9 with ESMTPA; 17 Feb 2022 00:23:09 -0000
+  by 81.17.254.9 with ESMTPA; 17 Feb 2022 00:23:41 -0000
 From:   Mel Gorman <mgorman@techsingularity.net>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Aaron Lu <aaron.lu@intel.com>,
@@ -31,9 +31,9 @@ Cc:     Aaron Lu <aaron.lu@intel.com>,
         LKML <linux-kernel@vger.kernel.org>,
         Linux-MM <linux-mm@kvack.org>,
         Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 3/6] mm/page_alloc: Simplify how many pages are selected per pcp list during bulk free
-Date:   Thu, 17 Feb 2022 00:22:24 +0000
-Message-Id: <20220217002227.5739-4-mgorman@techsingularity.net>
+Subject: [PATCH 6/6] mm/page_alloc: Limit number of high-order pages on PCP during bulk free
+Date:   Thu, 17 Feb 2022 00:22:27 +0000
+Message-Id: <20220217002227.5739-7-mgorman@techsingularity.net>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220217002227.5739-1-mgorman@techsingularity.net>
 References: <20220217002227.5739-1-mgorman@techsingularity.net>
@@ -43,115 +43,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-free_pcppages_bulk() selects pages to free by round-robining between
-lists. Originally this was to evenly shrink pages by migratetype
-but uneven freeing is inevitable due to high pages. Simplify list
-selection by starting with a list that definitely has pages on it in
-free_unref_page_commit() and for drain, it does not matter where draining
-starts as all pages are removed.
+When a PCP is mostly used for frees then high-order pages can exist on PCP
+lists for some time. This is problematic when the allocation pattern is all
+allocations from one CPU and all frees from another resulting in colder
+pages being used. When bulk freeing pages, limit the number of high-order
+pages that are stored on the PCP lists.
+
+Netperf running on localhost exhibits this pattern and while it does
+not matter for some machines, it does matter for others with smaller
+caches where cache misses cause problems due to reduced page reuse.
+Pages freed directly to the buddy list may be reused quickly while still
+cache hot where as storing on the PCP lists may be cold by the time
+free_pcppages_bulk() is called.
+
+Using perf kmem:mm_page_alloc, the 5 most used page frames were
+
+5.17-rc3
+  13041 pfn=0x111a30
+  13081 pfn=0x5814d0
+  13097 pfn=0x108258
+  13121 pfn=0x689598
+  13128 pfn=0x5814d8
+
+5.17-revert-highpcp
+ 192009 pfn=0x54c140
+ 195426 pfn=0x1081d0
+ 200908 pfn=0x61c808
+ 243515 pfn=0xa9dc20
+ 402523 pfn=0x222bb8
+
+5.17-full-series
+ 142693 pfn=0x346208
+ 162227 pfn=0x13bf08
+ 166413 pfn=0x2711e0
+ 166950 pfn=0x2702f8
+
+The spread is wider as there is still time before pages freed to one
+PCP get released with a tradeoff between fast reuse and reduced zone
+lock acquisition.
+
+From the machine used to gather the traces, the headline performance
+was equivalent.
+
+netperf-tcp
+                            5.17.0-rc3             5.17.0-rc3             5.17.0-rc3
+                               vanilla  mm-reverthighpcp-v1r1     mm-highpcplimit-v2
+Hmean     64         839.93 (   0.00%)      840.77 (   0.10%)      841.02 (   0.13%)
+Hmean     128       1614.22 (   0.00%)     1622.07 *   0.49%*     1636.41 *   1.37%*
+Hmean     256       2952.00 (   0.00%)     2953.19 (   0.04%)     2977.76 *   0.87%*
+Hmean     1024     10291.67 (   0.00%)    10239.17 (  -0.51%)    10434.41 *   1.39%*
+Hmean     2048     17335.08 (   0.00%)    17399.97 (   0.37%)    17134.81 *  -1.16%*
+Hmean     3312     22628.15 (   0.00%)    22471.97 (  -0.69%)    22422.78 (  -0.91%)
+Hmean     4096     25009.50 (   0.00%)    24752.83 *  -1.03%*    24740.41 (  -1.08%)
+Hmean     8192     32745.01 (   0.00%)    31682.63 *  -3.24%*    32153.50 *  -1.81%*
+Hmean     16384    39759.59 (   0.00%)    36805.78 *  -7.43%*    38948.13 *  -2.04%*
+
+From a 1-socket skylake machine with a small CPU cache that suffers
+more if cache misses are too high
+
+netperf-tcp
+                            5.17.0-rc3             5.17.0-rc3             5.17.0-rc3
+                               vanilla    mm-reverthighpcp-v1     mm-highpcplimit-v2
+Hmean     64         938.95 (   0.00%)      941.50 *   0.27%*      943.61 *   0.50%*
+Hmean     128       1843.10 (   0.00%)     1857.58 *   0.79%*     1861.09 *   0.98%*
+Hmean     256       3573.07 (   0.00%)     3667.45 *   2.64%*     3674.91 *   2.85%*
+Hmean     1024     13206.52 (   0.00%)    13487.80 *   2.13%*    13393.21 *   1.41%*
+Hmean     2048     22870.23 (   0.00%)    23337.96 *   2.05%*    23188.41 *   1.39%*
+Hmean     3312     31001.99 (   0.00%)    32206.50 *   3.89%*    31863.62 *   2.78%*
+Hmean     4096     35364.59 (   0.00%)    36490.96 *   3.19%*    36112.54 *   2.11%*
+Hmean     8192     48497.71 (   0.00%)    49954.05 *   3.00%*    49588.26 *   2.25%*
+Hmean     16384    58410.86 (   0.00%)    60839.80 *   4.16%*    62282.96 *   6.63%*
+
+Note that this was a machine that did not benefit from caching high-order
+pages and performance is almost restored with the series applied. It's not
+fully restored as cache misses are still higher. This is a trade-off
+between optimising for a workload that does all allocs on one CPU and frees
+on another or more general workloads that need high-order pages for SLUB
+and benefit from avoiding zone->lock for every SLUB refill/drain.
 
 Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 ---
- mm/page_alloc.c | 34 +++++++++++-----------------------
- 1 file changed, 11 insertions(+), 23 deletions(-)
+ mm/page_alloc.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 85cc1fe8bcc5..dfc347a58ea6 100644
+index 68e2132717c5..de9f072d23bd 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -1447,13 +1447,11 @@ static inline void prefetch_buddy(struct page *page, unsigned int order)
-  * count is the number of pages to free.
-  */
- static void free_pcppages_bulk(struct zone *zone, int count,
--					struct per_cpu_pages *pcp)
-+					struct per_cpu_pages *pcp,
-+					int pindex)
+@@ -3317,10 +3317,15 @@ static bool free_unref_page_prepare(struct page *page, unsigned long pfn,
+ 	return true;
+ }
+ 
+-static int nr_pcp_free(struct per_cpu_pages *pcp, int high, int batch)
++static int nr_pcp_free(struct per_cpu_pages *pcp, int high, int batch,
++		       bool free_high)
  {
--	int pindex = 0;
- 	int min_pindex = 0;
- 	int max_pindex = NR_PCP_LISTS - 1;
--	int batch_free = 0;
--	int nr_freed = 0;
- 	unsigned int order;
- 	int prefetch_nr = READ_ONCE(pcp->batch);
- 	bool isolated_pageblocks;
-@@ -1467,16 +1465,10 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 	count = min(pcp->count, count);
- 	while (count > 0) {
- 		struct list_head *list;
-+		int nr_pages;
+ 	int min_nr_free, max_nr_free;
  
--		/*
--		 * Remove pages from lists in a round-robin fashion. A
--		 * batch_free count is maintained that is incremented when an
--		 * empty list is encountered.  This is so more pages are freed
--		 * off fuller lists instead of spinning excessively around empty
--		 * lists
--		 */
-+		/* Remove pages from lists in a round-robin fashion. */
- 		do {
--			batch_free++;
- 			if (++pindex > max_pindex)
- 				pindex = min_pindex;
- 			list = &pcp->lists[pindex];
-@@ -1489,18 +1481,15 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 				min_pindex++;
- 		} while (1);
- 
--		/* This is the only non-empty list. Free them all. */
--		if (batch_free >= max_pindex - min_pindex)
--			batch_free = count;
--
- 		order = pindex_to_order(pindex);
-+		nr_pages = 1 << order;
- 		BUILD_BUG_ON(MAX_ORDER >= (1<<NR_PCP_ORDER_WIDTH));
- 		do {
- 			page = list_last_entry(list, struct page, lru);
- 			/* must delete to avoid corrupting pcp list */
- 			list_del(&page->lru);
--			nr_freed += 1 << order;
--			count -= 1 << order;
-+			count -= nr_pages;
-+			pcp->count -= nr_pages;
- 
- 			if (bulkfree_pcp_prepare(page))
- 				continue;
-@@ -1524,9 +1513,8 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 				prefetch_buddy(page, order);
- 				prefetch_nr--;
- 			}
--		} while (count > 0 && --batch_free && !list_empty(list));
-+		} while (count > 0 && !list_empty(list));
- 	}
--	pcp->count -= nr_freed;
- 
- 	/*
- 	 * local_lock_irq held so equivalent to spin_lock_irqsave for
-@@ -3095,7 +3083,7 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
- 	batch = READ_ONCE(pcp->batch);
- 	to_drain = min(pcp->count, batch);
- 	if (to_drain > 0)
--		free_pcppages_bulk(zone, to_drain, pcp);
-+		free_pcppages_bulk(zone, to_drain, pcp, 0);
- 	local_unlock_irqrestore(&pagesets.lock, flags);
++	/* Free everything if batch freeing high-order pages. */
++	if (unlikely(free_high))
++		return pcp->count;
++
+ 	/* Check for PCP disabled or boot pageset */
+ 	if (unlikely(high < batch))
+ 		return 1;
+@@ -3341,11 +3346,12 @@ static int nr_pcp_free(struct per_cpu_pages *pcp, int high, int batch)
+ 	return batch;
  }
- #endif
-@@ -3116,7 +3104,7 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
  
- 	pcp = per_cpu_ptr(zone->per_cpu_pageset, cpu);
- 	if (pcp->count)
--		free_pcppages_bulk(zone, pcp->count, pcp);
-+		free_pcppages_bulk(zone, pcp->count, pcp, 0);
+-static int nr_pcp_high(struct per_cpu_pages *pcp, struct zone *zone)
++static int nr_pcp_high(struct per_cpu_pages *pcp, struct zone *zone,
++		       bool free_high)
+ {
+ 	int high = READ_ONCE(pcp->high);
  
- 	local_unlock_irqrestore(&pagesets.lock, flags);
- }
-@@ -3397,7 +3385,7 @@ static void free_unref_page_commit(struct page *page, unsigned long pfn,
+-	if (unlikely(!high))
++	if (unlikely(!high || free_high))
+ 		return 0;
+ 
+ 	if (!test_bit(ZONE_RECLAIM_ACTIVE, &zone->flags))
+@@ -3365,17 +3371,27 @@ static void free_unref_page_commit(struct page *page, unsigned long pfn,
+ 	struct per_cpu_pages *pcp;
+ 	int high;
+ 	int pindex;
++	bool free_high;
+ 
+ 	__count_vm_event(PGFREE);
+ 	pcp = this_cpu_ptr(zone->per_cpu_pageset);
+ 	pindex = order_to_pindex(migratetype, order);
+ 	list_add(&page->lru, &pcp->lists[pindex]);
+ 	pcp->count += 1 << order;
+-	high = nr_pcp_high(pcp, zone);
++
++	/*
++	 * As high-order pages other than THP's stored on PCP can contribute
++	 * to fragmentation, limit the number stored when PCP is heavily
++	 * freeing without allocation. The remainder after bulk freeing
++	 * stops will be drained from vmstat refresh context.
++	 */
++	free_high = (pcp->free_factor && order && order <= PAGE_ALLOC_COSTLY_ORDER);
++
++	high = nr_pcp_high(pcp, zone, free_high);
  	if (pcp->count >= high) {
  		int batch = READ_ONCE(pcp->batch);
  
--		free_pcppages_bulk(zone, nr_pcp_free(pcp, high, batch), pcp);
-+		free_pcppages_bulk(zone, nr_pcp_free(pcp, high, batch), pcp, pindex);
+-		free_pcppages_bulk(zone, nr_pcp_free(pcp, high, batch), pcp, pindex);
++		free_pcppages_bulk(zone, nr_pcp_free(pcp, high, batch, free_high), pcp, pindex);
  	}
  }
  
