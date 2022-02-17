@@ -2,110 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0812C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08148C4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239397AbiBQKzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 05:55:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53200 "EHLO
+        id S239408AbiBQKzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 05:55:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236833AbiBQKzO (ORCPT
+        with ESMTP id S239436AbiBQKzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 05:55:14 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFC029413B
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 02:55:00 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id k60-20020a17090a4cc200b001b932781f3eso6109283pjh.0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 02:55:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Fnwcqhh2WiJm+E2KIQNPJuGkoPvnjSJ+UBtZWNW9CHc=;
-        b=Cesm3oQNnw/my6XDNUnTjVHK/VKYNXbSaAMCwD9OODC79yTE0JATBJuCuLdz2ZuMEX
-         vYjXEpoSoohhTuNzqszr9E3C2UdO5E3MT+sVktzQW6Rck54mkh3ZRqwUReS4qIbqPucV
-         GCySJJm6Rq90E0fBDJqc+OIAeX8yjgFzZnGhspsFZ2h1HAh+HOBqVGEPz4IWYWki4Sx3
-         /820XTBrj11tk1q6TS/E6QJYevrUBd04UquRaaU3N7NfVlX3GpbATqCCg4IHZDp1ECGR
-         HuVq+OIiaX2U4FJe7zashtP0fxAiYg93Y+jm12FQ7a0pXTeFegEAIu5vKBf4LbZxtYq3
-         ALxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Fnwcqhh2WiJm+E2KIQNPJuGkoPvnjSJ+UBtZWNW9CHc=;
-        b=1aEDtIOYyZv3szPbPOwfKKjfiJamA5u1lVimuYfP5SgzcDG4nmhuhJInYkByTyP+hF
-         6l0ODeB2C2q9LBOej8uc26X03ZtXWBxX5GyMAFyot2HGShZAriUBJASa7bf5Qd+SZZg+
-         nxQhzn/9US4j2CjO8RaHX/nljtRZain4NFVqKGbS1nAIj9PIK3hI5Sfd6TAL9H6KT6U/
-         fEsj/WefV4dUC/Kup+6q8DLYyDwyMoTjeCFjP4MTNI4lK1F6nrlK7zdNDkcBoXl1oGYD
-         Buhw+i4aDsKTRRSV3jALO4SscoQuIjd+11612mfatRFT73kS6Ny6/DTUNRh15H9bR9uH
-         2WRA==
-X-Gm-Message-State: AOAM531hMeYi8U/9m6Uf7fpiXK9CkUtsjv7SzVxRm6iCLix1xTHzNFqa
-        Xn1VHfmGCHyZeEL3l0U27WqIRQ==
-X-Google-Smtp-Source: ABdhPJyqYiv4ku/c/Cu0cd/Ah85FRKAie0Vzan4s13zN7vGnIECKh344pF3tvaNTHF8UA9ka3rVvIA==
-X-Received: by 2002:a17:90b:4c4a:b0:1b7:9c92:1cbe with SMTP id np10-20020a17090b4c4a00b001b79c921cbemr6604071pjb.229.1645095299834;
-        Thu, 17 Feb 2022 02:54:59 -0800 (PST)
-Received: from sunil-ThinkPad-T490 ([49.206.7.17])
-        by smtp.gmail.com with ESMTPSA id l8sm50606835pfc.187.2022.02.17.02.54.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 02:54:59 -0800 (PST)
-Date:   Thu, 17 Feb 2022 16:24:50 +0530
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Andreas Schwab <schwab@linux-m68k.org>
-Cc:     Heinrich Schuchardt <xypron.glpk@gmx.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@atishpatra.org>, linux-efi@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>, stable@vger.kernel.org
-Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return
- value
-Message-ID: <20220217105450.GA20183@sunil-ThinkPad-T490>
-References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
- <877d9xx14f.fsf@igel.home>
- <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de>
- <87tud1vjn4.fsf@igel.home>
- <49d3aeab-1fe6-8d17-bc83-78f3555109c7@gmx.de>
- <87pmnpvh66.fsf@igel.home>
+        Thu, 17 Feb 2022 05:55:50 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B58D02944C1;
+        Thu, 17 Feb 2022 02:55:36 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.41:52562.1081528680
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
+        by 189.cn (HERMES) with SMTP id 1449C100289;
+        Thu, 17 Feb 2022 18:55:34 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id 8a8205e1d4004262afb58ac25c14a5f1 for mripard@kernel.org;
+        Thu, 17 Feb 2022 18:55:36 CST
+X-Transaction-ID: 8a8205e1d4004262afb58ac25c14a5f1
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+From:   Sui Jingfeng <15330273260@189.cn>
+To:     Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH v9 2/4] MIPS: Loongson64: dts: update the display controller device node
+Date:   Thu, 17 Feb 2022 18:55:21 +0800
+Message-Id: <20220217105523.1525122-3-15330273260@189.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220217105523.1525122-1-15330273260@189.cn>
+References: <20220217105523.1525122-1-15330273260@189.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87pmnpvh66.fsf@igel.home>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 12:09:05PM +0100, Andreas Schwab wrote:
-> On Feb 14 2022, Heinrich Schuchardt wrote:
-> 
-> > On 2/14/22 11:15, Andreas Schwab wrote:
-> >> On Feb 14 2022, Heinrich Schuchardt wrote:
-> >>
-> >>> set_boot_hartid() implies that the caller can change the boot hart ID.
-> >>> As this is not a case this name obviously would be a misnomer.
-> >>
-> >> initialize_boot_hartid would fit better.
-> >>
-> >
-> > Another misnomer.
-> 
-> But the best fit so far.
+From: suijingfeng <suijingfeng@loongson.cn>
 
-Can we use the name init_boot_hartid_from_fdt()? While I understand
-Heinrich's point, I think since we have "_from_fdt", this may be fine.
+The display controller is a pci device, its PCI vendor id is 0x0014
+its PCI device id is 0x7a06.
 
-I didn't rename the function since it was not recommended to do multiple
-things in a "Fix" patch. If we can consider this as not very serious
-issue which needs a "Fix" patch, then I can combine this patch with the
-RISCV_EFI_BOOT_PROTOCOL patch series. 
+1) In order to let the driver to know chip which the DC is contained in,
+   the compatible string is updated according to the chip's name.
 
-Hi Ard, let me know your suggestion on how to proceed with this.
+2) Add display controller device node for ls2k1000 SoC
 
-Thanks
-Sunil
-> 
-> -- 
-> Andreas Schwab, schwab@linux-m68k.org
-> GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
-> "And now for something completely different."
+Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
+Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+---
+ arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi | 8 ++++++++
+ arch/mips/boot/dts/loongson/ls7a-pch.dtsi          | 7 ++-----
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+index 768cf2abcea3..af9cda540f9e 100644
+--- a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
++++ b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+@@ -209,6 +209,14 @@ gpu@5,0 {
+ 				interrupt-parent = <&liointc0>;
+ 			};
+ 
++			lsdc: display-controller@6,0 {
++				compatible = "loongson,ls2k1000-dc";
++
++				reg = <0x3000 0x0 0x0 0x0 0x0>;
++				interrupts = <28 IRQ_TYPE_LEVEL_LOW>;
++				interrupt-parent = <&liointc0>;
++			};
++
+ 			pci_bridge@9,0 {
+ 				compatible = "pci0014,7a19.0",
+ 						   "pci0014,7a19",
+diff --git a/arch/mips/boot/dts/loongson/ls7a-pch.dtsi b/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
+index 2f45fce2cdc4..ec35ea9b2fe8 100644
+--- a/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
++++ b/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
+@@ -160,11 +160,8 @@ gpu@6,0 {
+ 				interrupt-parent = <&pic>;
+ 			};
+ 
+-			dc@6,1 {
+-				compatible = "pci0014,7a06.0",
+-						   "pci0014,7a06",
+-						   "pciclass030000",
+-						   "pciclass0300";
++			lsdc: display-controller@6,1 {
++				compatible = "loongson,ls7a1000-dc";
+ 
+ 				reg = <0x3100 0x0 0x0 0x0 0x0>;
+ 				interrupts = <28 IRQ_TYPE_LEVEL_HIGH>;
+-- 
+2.25.1
+
