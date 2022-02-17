@@ -2,117 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59283C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 22:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF1BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 22:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343891AbiBQWdL (ORCPT
+        id S1343891AbiBQWez (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 17:33:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41484 "EHLO
+        Thu, 17 Feb 2022 17:34:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343879AbiBQWdH (ORCPT
+        with ESMTP id S232023AbiBQWex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 17:33:07 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE5C1688EA
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 14:32:52 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id f17so12266502edd.2
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 14:32:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=bzVS3GxQBLj2+ZoHNymWmW7fgxIcXLRqtnHSkBFdVIo=;
-        b=fYu1z8wdXTgQuGm083cZUw7N/B0Y+YjzhkPbVyYrvjpCB7OG1Jlwq4irqtPlNwlxF5
-         oupo5/AMfqd0Y9DTn8VtlJj7ivOTw91JToHP0pSrnIfUp14Dm5+qB8PxSha0Jx8h1vrm
-         76ZdMJcWbPU78mJS6ATFwleKjMn9WMswJA/XfJOTkyOvfmqshMJHPW/jIR0mvzDAllfU
-         uqpuHEniPhzvXYZ3iaiaInLz1By6gNH9ESuWUQL8QtW6VwxVA1DldtvbmcE26FkKlh8y
-         eDYYGlBGZ6twfpS1bzfI01e6YJ7OywisgT/QBPrr2z8pS6E5TXCS/urpRw0FghoqKak0
-         gsaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bzVS3GxQBLj2+ZoHNymWmW7fgxIcXLRqtnHSkBFdVIo=;
-        b=kORqU6t4ME4za+BIFrkGpaCkiQKG+1KJG8oN3LYD7/3LjCgdZDWrCrIFd0oAifR6tc
-         8/GvBnmCeyIcV9Rkx60G0QkXp7DmBxOqgjLBxBPIdBLU6I3o123ObCvfXdh83YzfOpO+
-         vUnEo8GMkiSOJD3VF9UwABYkHipJhp/tqbHdEBrKL6DHzMDVD38cSsgsJm+RGDL6Txt5
-         NSKfqwlPH8+W0PKDwRtwRZQjcWKZV5ESdsltF+hTmPyG4tosdVr4I6DxV8XtdGnvcoTv
-         TaXi3HkN2zXHjzBWM3nUUbVv03olZXfcGgBdP90welsAu2qBgRZm68L4zKxFvMZb0jsZ
-         F4hQ==
-X-Gm-Message-State: AOAM532/k1pmtuPUjaHHgEjsJ7g0ab38dJ45pvgiHZSBstdJWwnM7IRs
-        Oeh0ruA7Y6gPreIj9lTQBtStKTgYJN8gFtrpZcrN
-X-Google-Smtp-Source: ABdhPJzLADUccqBS7dHbAPwRxfeqZ9RsiV5nDqMSQfE7BDBfCv8Bo+Bd9MOqqWhYWUFl4mZ2cFv4XO0HaaAHRb5VYtw=
-X-Received: by 2002:a05:6402:3487:b0:40f:fa53:956c with SMTP id
- v7-20020a056402348700b0040ffa53956cmr5034224edc.22.1645137170677; Thu, 17 Feb
- 2022 14:32:50 -0800 (PST)
+        Thu, 17 Feb 2022 17:34:53 -0500
+Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [IPv6:2001:4b7a:2000:18::169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8331688E4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 14:34:37 -0800 (PST)
+Received: from SoMainline.org (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id B69B73F810;
+        Thu, 17 Feb 2022 23:34:35 +0100 (CET)
+Date:   Thu, 17 Feb 2022 23:34:34 +0100
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: Re: [REPOST PATCH v4 09/13] drm/msm: Add missing structure
+ documentation
+Message-ID: <20220217223434.ojcjgyhebyqt5npj@SoMainline.org>
+References: <20220210103423.271016-1-vkoul@kernel.org>
+ <20220210103423.271016-10-vkoul@kernel.org>
 MIME-Version: 1.0
-References: <20220125143304.34628-1-cgzones@googlemail.com>
- <CAHC9VhSdGeZ9x-0Hvk9mE=YMXbpk-tC5Ek+uGFGq5U+51qjChw@mail.gmail.com> <CAJ2a_DeAUcGTGm_fk8viVbeFXr6FLrJ-oLw-abwFND6Kv0u0gQ@mail.gmail.com>
-In-Reply-To: <CAJ2a_DeAUcGTGm_fk8viVbeFXr6FLrJ-oLw-abwFND6Kv0u0gQ@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 17 Feb 2022 17:32:39 -0500
-Message-ID: <CAHC9VhRRBrLVtvmbJSTZ7fOkD-8AN4iM0WRmeL4ND001d3viJg@mail.gmail.com>
-Subject: Re: [RFC PATCH] mm: create security context for memfd_secret inodes
-To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
-Cc:     SElinux list <selinux@vger.kernel.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        linux-security-module@vger.kernel.org,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210103423.271016-10-vkoul@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 9:24 AM Christian G=C3=B6ttsche
-<cgzones@googlemail.com> wrote:
-> On Thu, 27 Jan 2022 at 00:01, Paul Moore <paul@paul-moore.com> wrote:
-> > On Tue, Jan 25, 2022 at 9:33 AM Christian G=C3=B6ttsche
-> > <cgzones@googlemail.com> wrote:
-> > >
-> > > Create a security context for the inodes created by memfd_secret(2) v=
-ia
-> > > the LSM hook inode_init_security_anon to allow a fine grained control=
-.
-> > > As secret memory areas can affect hibernation and have a global share=
-d
-> > > limit access control might be desirable.
-> > >
-> > > Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
-> > > ---
-> > > An alternative way of checking memfd_secret(2) is to create a new LSM
-> > > hook and e.g. for SELinux check via a new process class permission.
-> > > ---
-> > >  mm/secretmem.c | 9 +++++++++
-> > >  1 file changed, 9 insertions(+)
-> >
-> > This seems reasonable to me, and I like the idea of labeling the anon
-> > inode as opposed to creating a new set of LSM hooks.  If we want to
-> > apply access control policy to the memfd_secret() fds we are going to
-> > need to attach some sort of LSM state to the inode, we might as well
-> > use the mechanism we already have instead of inventing another one.
->
-> Any further comments (on design or implementation)?
->
-> Should I resend a non-rfc?
+Replace "missing structure" with "missing num_dspp field" in the title?
 
-I personally would really like to see a selinux-testsuite for this so
-that we can verify it works not just now but in the future too.  I
-think having a test would also help demonstrate the usefulness of the
-additional LSM controls.
-
-> One naming question:
-> Should the anonymous inode class be named "[secretmem]", like
-> "[userfaultfd]", or "[secret_mem]" similar to "[io_uring]"?
-
-The pr_fmt() string in mm/secretmem.c uses "secretmem" so I would
-suggest sticking with "[secretmem]", although that is question best
-answered by the secretmem maintainer.
-
---=20
-paul-moore.com
+On 2022-02-10 16:04:19, Vinod Koul wrote:
+> Somehow documentation for dspp was missed, so add that
+> 
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> ---
+>  drivers/gpu/drm/msm/msm_drv.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+> index e7a312edfe67..6425a42e997c 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.h
+> +++ b/drivers/gpu/drm/msm/msm_drv.h
+> @@ -102,6 +102,7 @@ enum msm_event_wait {
+>   * @num_lm:       number of layer mixers used
+>   * @num_enc:      number of compression encoder blocks used
+>   * @num_intf:     number of interfaces the panel is mounted on
+> + * @num_dspp:     number of dspp blocks used
+>   */
+>  struct msm_display_topology {
+>  	u32 num_lm;
+> -- 
+> 2.31.1
+> 
