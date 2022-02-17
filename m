@@ -2,117 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:43:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 307EAC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239785AbiBQTnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:43:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37126 "EHLO
+        id S245395AbiBQTrW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:47:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231827AbiBQTnm (ORCPT
+        with ESMTP id S231135AbiBQTrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:43:42 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D492241FB1;
-        Thu, 17 Feb 2022 11:43:27 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id m17so11467196edc.13;
-        Thu, 17 Feb 2022 11:43:27 -0800 (PST)
+        Thu, 17 Feb 2022 14:47:20 -0500
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825A326549
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:47:03 -0800 (PST)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2d6923bca1aso34913267b3.9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:47:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+wgvtN1ZQc+diRsoquyOr2biiBOjENYGILhh+mveGGk=;
-        b=MMdX0VU2f6zUULyNzRYU0JwT0hCkCl5ZhwG4mPmWLugNGLY1WmUKENJnyLzGWjsEuR
-         AVqI20TT8TkXKt8Q3eMrvV0+3VjUK9duBRBPiTpRpp/8WreaiHMEvOiyJeqyAl2blXD/
-         WCODTJwM//2GGTx5B+xRHKT5axMJOQhx5tLuqjyMruNIT2VA6+KvvQOAMJaN0TdTD1IL
-         JP8vUJqQ3aRoU6hbv85qOSwOPocLHuTmSixEkGgH2EIIHX+xsragidbEWdr7LabZJJUn
-         xW4EcYpH2k2HxUQcMIlABqoLaDi3cBXroAWKEB8lJ77zuQuPSo9+uNi7rHfeD0zG1yK/
-         VAJA==
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oaFgdGApNlDvtZyiIfo82SRxAus8TF8HrqjXlvq9h8Y=;
+        b=SuxQdh+t5+fvwh5ODRCj4O0o5dFuhnXt8wycvDS/oc9U/RxDeBZ3bX5ZeesGn6+oJY
+         CgPo+r2zBBVKinwJc2jONuwupZkCPpbAswzez7svHTfufRM0UpnHc0JQysuQUpfg39SP
+         AhXLqSKJ8RK3c/iQgxWFs5sMqgai7dSUoqMso=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+wgvtN1ZQc+diRsoquyOr2biiBOjENYGILhh+mveGGk=;
-        b=VNMVFpg/m1GS9vUTnPHIgUXLrQFSS/SDTpDflmcu95FSNvfPo0nHRoXwTEMSp9QvlO
-         aFbQ5kbUvYwv63g/j6MRhNTp7bagN0g0uXY4C+mC/O3rBVipxj4t0pyTJpFyfH4/JH2E
-         J1UNC45gg+xRgpsvXkRkp+ae4Fd309clloh5hU5ALkxIbZ2tPVCcYNE5QI6EMhLUU0Jm
-         D+p/+yf9LWCRBqynnzgNnD5i9KpV8YjfAxkmKP1mpQR9xqMk1/tt0Fauu7m93Is5ECB/
-         DiHEd6AKvQWJSCFMpzqzONUCq6HmXE+eiTWXDfCG1gyFuwo2biFsRB2qPhqkx3Jq0yht
-         lGqA==
-X-Gm-Message-State: AOAM532FYplsveuwpguXQpJyXDs+titHhcnaoazKqse6P3bYF5E8P8Wt
-        OW3SRZyiQLeTL/X1n7b8YuACoytZqkQ=
-X-Google-Smtp-Source: ABdhPJyyBVWBdAUXDvSrh5BxAuXTnKmP9jEDL4E5JsMAwx0E1RbtDMwO234OqWUh3nrrZ2F4W2DSWg==
-X-Received: by 2002:a50:cd59:0:b0:410:ac25:e570 with SMTP id d25-20020a50cd59000000b00410ac25e570mr4302197edj.252.1645127006235;
-        Thu, 17 Feb 2022 11:43:26 -0800 (PST)
-Received: from tiger.museclub.art (p200300cf9f235800e668694710673d4b.dip0.t-ipconnect.de. [2003:cf:9f23:5800:e668:6947:1067:3d4b])
-        by smtp.googlemail.com with ESMTPSA id c11sm3950409edx.42.2022.02.17.11.43.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 11:43:25 -0800 (PST)
-From:   Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     Eugene Shalygin <eugene.shalygin@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] hwmon: (asus-ec-sensors) do not print from .probe()
-Date:   Thu, 17 Feb 2022 20:43:18 +0100
-Message-Id: <20220217194318.2960472-1-eugene.shalygin@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oaFgdGApNlDvtZyiIfo82SRxAus8TF8HrqjXlvq9h8Y=;
+        b=ropDwHzriT53P2XN4BMshlzuatgQ5ccSa0knnRtXmxtbhj4ChyS5Yp/CNGTKdNV7uT
+         igPkf0HKpqWkc2CaPrN+k50YwVNWpeyTPS6bGcjTCLtqKi65bmYMoEJfaLBb2DFQ5AAn
+         sNHrfe4ElVS50eZZ/xfdYk2scuYEszfgJupjD6pPfiuSHuCETvPs/aqxhjh5IqhcomHv
+         S2GpokAZufg8pWJY0+dyEyEdZ58EjxKKzzb5TB6pLWx3nt6uCt7BJmGnxVNZoHV/XCwy
+         6IHtLxgs/sISpVOpA/FTcShL1rKUFv5IV3T6dehTUehFtp19Wp9AL1vUVO0pQ29Nh45Q
+         +b5Q==
+X-Gm-Message-State: AOAM530jTQ3uqheFP7sIOehNw0s2I86YuG9Yy+wL6zGbkEbhXXmOco5M
+        ekwIHBDqzcUBn/E+ZaFp2V6bKL7EQi6CinPBuBmh
+X-Google-Smtp-Source: ABdhPJyYFJ0q/2SlA60syxammhFOBpSQhcIB9lrLmw/nIlWery9i8zrN9e9Vgg9W2i5AsrahmkX7VAebgSiqcHvfTL4=
+X-Received: by 2002:a81:924a:0:b0:2d6:b588:bd0e with SMTP id
+ j71-20020a81924a000000b002d6b588bd0emr2097858ywg.402.1645127222718; Thu, 17
+ Feb 2022 11:47:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
+ <877d9xx14f.fsf@igel.home> <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de>
+ <87tud1vjn4.fsf@igel.home> <49d3aeab-1fe6-8d17-bc83-78f3555109c7@gmx.de>
+ <87pmnpvh66.fsf@igel.home> <20220217105450.GA20183@sunil-ThinkPad-T490>
+In-Reply-To: <20220217105450.GA20183@sunil-ThinkPad-T490>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Thu, 17 Feb 2022 11:46:52 -0800
+Message-ID: <CAOnJCULWjCHCCS7wzTBVsYcPzWPpL9jmS7xx5LUFT2tRvAZk6w@mail.gmail.com>
+Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return value
+To:     Sunil V L <sunilvl@ventanamicro.com>
+Cc:     Andreas Schwab <schwab@linux-m68k.org>,
+        Heinrich Schuchardt <xypron.glpk@gmx.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Anup Patel <apatel@ventanamicro.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the call to dev_info() from the board detection function, which
-is called from probe(), not only to be in line with hwmon driver rules, but
-also because the message duplicates the error code returned from probe()
-for that case (ENODEV).
+On Thu, Feb 17, 2022 at 2:55 AM Sunil V L <sunilvl@ventanamicro.com> wrote:
+>
+> On Mon, Feb 14, 2022 at 12:09:05PM +0100, Andreas Schwab wrote:
+> > On Feb 14 2022, Heinrich Schuchardt wrote:
+> >
+> > > On 2/14/22 11:15, Andreas Schwab wrote:
+> > >> On Feb 14 2022, Heinrich Schuchardt wrote:
+> > >>
+> > >>> set_boot_hartid() implies that the caller can change the boot hart ID.
+> > >>> As this is not a case this name obviously would be a misnomer.
+> > >>
+> > >> initialize_boot_hartid would fit better.
+> > >>
+> > >
+> > > Another misnomer.
+> >
+> > But the best fit so far.
+>
+> Can we use the name init_boot_hartid_from_fdt()? While I understand
+> Heinrich's point, I think since we have "_from_fdt", this may be fine.
+>
 
-Changes in:
- - v2: add missing newline (style).
+init_boot_hartid_from_fdt or parse_boot_hartid_from_fdt
 
-Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
----
- drivers/hwmon/asus-ec-sensors.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+are definitely much better than the current one.
 
-diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
-index 0701ade16227..b5cf0136360c 100644
---- a/drivers/hwmon/asus-ec-sensors.c
-+++ b/drivers/hwmon/asus-ec-sensors.c
-@@ -597,18 +597,12 @@ static struct hwmon_chip_info asus_ec_chip_info = {
- 	.ops = &asus_ec_hwmon_ops,
- };
- 
--static unsigned long __init
--get_board_sensors(const struct device *dev)
-+static unsigned long __init get_board_sensors(void)
- {
--	const struct dmi_system_id *dmi_entry;
-+	const struct dmi_system_id *dmi_entry =
-+		dmi_first_match(asus_ec_dmi_table);
- 
--	dmi_entry = dmi_first_match(asus_ec_dmi_table);
--	if (!dmi_entry) {
--		dev_info(dev, "Unsupported board");
--		return 0;
--	}
--
--	return (unsigned long)dmi_entry->driver_data;
-+	return dmi_entry ? (unsigned long)dmi_entry->driver_data : 0;
- }
- 
- static int __init asus_ec_probe(struct platform_device *pdev)
-@@ -625,7 +619,7 @@ static int __init asus_ec_probe(struct platform_device *pdev)
- 	struct device *hwdev;
- 	unsigned int i;
- 
--	board_sensors = get_board_sensors(dev);
-+	board_sensors = get_board_sensors();
- 	if (!board_sensors)
- 		return -ENODEV;
- 
+> I didn't rename the function since it was not recommended to do multiple
+> things in a "Fix" patch. If we can consider this as not very serious
+> issue which needs a "Fix" patch, then I can combine this patch with the
+> RISCV_EFI_BOOT_PROTOCOL patch series.
+>
+
+IMHO, it is okay to include this in the RISCV_EFI_BOOT_PROTOCOL series
+as we are not going to have hartid U32_MAX in a few months :)
+
+
+> Hi Ard, let me know your suggestion on how to proceed with this.
+>
+> Thanks
+> Sunil
+> >
+> > --
+> > Andreas Schwab, schwab@linux-m68k.org
+> > GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+> > "And now for something completely different."
+
+
+
 -- 
-2.35.1
-
+Regards,
+Atish
