@@ -2,92 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4656AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B08C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243039AbiBQQWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:22:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37766 "EHLO
+        id S243065AbiBQQWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:22:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243041AbiBQQWT (ORCPT
+        with ESMTP id S243041AbiBQQWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:22:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B5B1738DD
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:22:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22620B8068E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94018C340E8;
-        Thu, 17 Feb 2022 16:21:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645114921;
-        bh=6AiVtQPZxKjZrUPjZF3U+Z3rpqKeUUYJFL49OuEmknk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IuG0zs9Z1yrsjh+2PL4JMjl6i6yz4LJMl9gf22KdCuuZqJVsczteN+kG56UjaEp2t
-         lMClIFgnmIhm0nn02Dv7DKHhJp9Dy2rBWo9MbU78+37qlGmitF/JG6tUp1JGKzra1u
-         ij0a7peN5leGXJmEnk5tpVjSGJFsj3Q0bsFTXTznvpa7UcIBQFzgqRgMg+lXw8g54R
-         8EEnWCntkKZwmcxTP3g7I0OhYZHvwoXoj7eib30CyOUwhzBF+woc/2CR+HXBDJUVma
-         rwRt8NX8bIpUp3zs2KQMUjkY7FJISSmLdbbcAO91WSioUchXt50dY8XwYG6SaDj7jY
-         GtN5ZlIFQ97jw==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>
-Cc:     Jonathan Kim <jonathan.kim@amd.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] drm/amdkfd: Use proper enum in pm_unmap_queues_v9()
-Date:   Thu, 17 Feb 2022 09:21:42 -0700
-Message-Id: <20220217162142.1828990-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 17 Feb 2022 11:22:37 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68103167F8D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:22:19 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id c4so93955pfl.7
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:22:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7xlrl9elM1qetAzeAOSNskPv8W23aPLNt6zInyIdm50=;
+        b=w7SMc3R1fI7qa+IHIfDsUjvRQbsv+GH4vWzV2Vr4aGDmOnjNv9NgNYe08/K1XqfKU+
+         PYRBRrU+jlnvrb7aZ627g7Z3Js5twNC3pq8YzjfYIIHcMDnOVqGHdU0JneUkdTr30TFf
+         IsasmebdnajMuWl94HTPWYxb9eaMG+Zyo6E0eWsLWl2WXCChdNZRlkD19i760V6jW7Qp
+         3JNT0lioiOMoq2EDBPs9JDvC7iOtGx4P+4rATFOOPigmwu+9nUUW8ZvA1zqXnoTPoE5x
+         9ipfirZLG0/SEZQMR/40uY0tPJDm+ggCI3Ik6E/ablZZnf7/hm6A7XbvNt+Groh1IeVT
+         rInw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7xlrl9elM1qetAzeAOSNskPv8W23aPLNt6zInyIdm50=;
+        b=7ni1MpnCBJeJXNUJSU9MDAhAk4x7h3cx+xLiM08MLp3/bXbSC4rv/yBVjwahD0U1km
+         d2xjG9V7luxjczxHFsStAqcJpv0+/zftta52R+3AH4T9qYRvnJ/sqQvHLatvISYucpGp
+         OnrXHi25KbggV0HH92rj99UyCMFPfUc4dcSm7JpKGhEzLf8VvPH8hGBKLXOheONtjObD
+         Q3fuHK/N4vGWfVIw6ViL2tAgnbbKfeGH60XDgOv3/+v+7gEFCe6dp8f+Rowy/L3eoqHp
+         I4B+3SMzdND64UbnYxUZsCmZIKbS6fzb/EzvOMhNUyQRjuAvhl78cSSbvbEnXPa2+aSf
+         mo3A==
+X-Gm-Message-State: AOAM531IhFHMEE2Ds/uueh++l9Rw2s0MujyQqnWF9BTnRmXysL8fXOoW
+        oE75hjR9aPs552ItFJtQS61aJChrt4adhtETEA2UaQ==
+X-Google-Smtp-Source: ABdhPJxi+glvreoGdGLbL3g+lsngHfQbV9GM+RnOiWmV7ag0TFGlFKkV8e6uuuKFvlBxOX5gnVs45jIEADyWK/l8M/s=
+X-Received: by 2002:a63:83c8:0:b0:36c:9413:8969 with SMTP id
+ h191-20020a6383c8000000b0036c94138969mr3018371pge.115.1645114938453; Thu, 17
+ Feb 2022 08:22:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220214213020.685-1-tharvey@gateworks.com> <9d5cff18-5493-f6dd-4bd6-9bafa2a503a7@camlingroup.com>
+ <CAJ+vNU0sWGsQa=YwLE9Ng34-DhJF=YR3oTV+q--KcgTMCjBa2w@mail.gmail.com> <378824ab-3cc9-dcf5-b9ea-5e49b57792a6@camlingroup.com>
+In-Reply-To: <378824ab-3cc9-dcf5-b9ea-5e49b57792a6@camlingroup.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Thu, 17 Feb 2022 08:22:07 -0800
+Message-ID: <CAJ+vNU2JbRm2SPQTPC7J-E0PGc0tuzd-9-=MFsRSWKEu8ti9aA@mail.gmail.com>
+Subject: Re: [PATCH] serial: imx: leave IRTS disabled if using modem-control CTS
+To:     =?UTF-8?Q?Tomasz_Mo=C5=84?= <tomasz.mon@camlingroup.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Sergey Organov <sorganov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang warns:
+On Tue, Feb 15, 2022 at 9:45 PM Tomasz Mo=C5=84 <tomasz.mon@camlingroup.com=
+> wrote:
+>
+> On 15.02.2022 18:26, Tim Harvey wrote:
+> > On Mon, Feb 14, 2022 at 10:03 PM Tomasz Mo=C5=84 <tomasz.mon@camlingrou=
+p.com> wrote:
+> >> This hardware flow control sounds quite limited. Once CTS becomes
+> >> inactive, the transmitter will still output all characters from TxFIFO=
+.
+> >> Transmitting whole TxFIFO already sounds quite bad, but that's the bes=
+t
+> >> case scenario where gpio interrupt is handled right away without any
+> >> delay (so more than TxFIFO characters can actually be transmitted).
+> >>
+> >> Does the internal RTS default to inactive when it's not pinmuxed to th=
+e
+> >> actual pin? If so, then controlling UCR2_IRTS based on CTS gpio could
+> >> halt the transmission when the TxFIFO is not empty.
+> >>> I agree that the increased latency makes using a GPIO for CTS
+> > (software controlled) not as good as one pinmuxed into the UART block
+> > directly (hardware controlled) but without this patch GPIO for CTS
+> > does not work at all because the internal RTS defaults to inactive
+> > when its not pinmuxed. For many applications the latency is not an
+> > issue.
+>
+> I think I didn't write the message clear enough. I agree, that the GPIO
+> handling time is something the user has to accept. Usually this part
+> alone is not that bad though, as many receivers are capable of receiving
+> more than one character after deasserting their RTS output (transmitter
+> CTS input).
+>
+> The general expectation is that the transmitter will output maximum one
+> more character *after* CTS GPIO change is handled by software. This is
+> not the case with current version of the patch.
+>
+> With current version of the patch, after CTS GPIO handler finishes, the
+> UART will continue to transmit up to 32 characters if not using DMA.
+> When DMA is active it is much worse, as it will keep transmitting all
+> data already submitted to dmaengine.
+>
+> As the internal RTS defaults to inactive when its not pinmuxed, the
+> software is able to freeze the TxFIFO (and thus DMA if enabled). To
+> freeze TxFIFO when using CTS GPIO, the software has to clear IRTS bit in
+> UCR2 register. Setting IRTS will thaw the TxFIFO.
+>
 
-  drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_packet_manager_v9.c:267:3:
-  error: implicit conversion from enumeration type 'enum
-  mes_map_queues_extended_engine_sel_enum' to different enumeration type
-  'enum mes_unmap_queues_extended_engine_sel_enum'
-  [-Werror,-Wenum-conversion]
-                  extended_engine_sel__mes_map_queues__sdma0_to_7_sel :
-                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  1 error generated.
+Tomasz,
 
-Use 'extended_engine_sel__mes_unmap_queues__sdma0_to_7_sel' to eliminate
-the warning, which is the same numeric value of the proper type.
+Ok - I understand what you are saying. Yes, I should be able to use
+IRTS to freeze/thaw the transmitter based on it being inactive when
+not pinmuxed. I will work on a v2.
 
-Fixes: 009e9a158505 ("drm/amdkfd: navi2x requires extended engines to map and unmap sdma queues")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1596
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for the explanation!
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c b/drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c
-index 806a03566a24..18250845a989 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_packet_manager_v9.c
-@@ -264,7 +264,7 @@ static int pm_unmap_queues_v9(struct packet_manager *pm, uint32_t *buffer,
- 					sizeof(struct pm4_mes_unmap_queues));
- 
- 	packet->bitfields2.extended_engine_sel = pm_use_ext_eng(pm->dqm->dev) ?
--		extended_engine_sel__mes_map_queues__sdma0_to_7_sel :
-+		extended_engine_sel__mes_unmap_queues__sdma0_to_7_sel :
- 		extended_engine_sel__mes_unmap_queues__legacy_engine_sel;
- 
- 	packet->bitfields2.engine_sel =
+Best Regards,
 
-base-commit: 3c30cf91b5ecc7272b3d2942ae0505dd8320b81c
--- 
-2.35.1
-
+Tim
