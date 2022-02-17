@@ -2,243 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 073C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DBCC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244067AbiBQSJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:09:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35246 "EHLO
+        id S244088AbiBQSJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:09:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244015AbiBQSIz (ORCPT
+        with ESMTP id S244023AbiBQSJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:08:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FC6415DB39
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:08:40 -0800 (PST)
+        Thu, 17 Feb 2022 13:09:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82FA915DDFC
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:08:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645121319;
+        s=mimecast20190719; t=1645121323;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=zjAY118aUTI2Zu5Wi9WrYYYaif8RSgIlzus2TiVzxU0=;
-        b=RWDotYAgfcG9vhJUaVeb5Qv2S46kpERfcUl7YS1d7z9vZ9Q0ETxG/8UhAo6QzNURlytKwD
-        BBtHllDSdPaz65jrz0q2zwuE4iFUBFgS/MKRWZRPDQR1AxIBGazqVyvslB+MfDucJw9Ev2
-        7tlGU8BJCTzWhCupy5cvTvb73VG8re8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=kdCG/BqRA3h3SSjWYFY12VvohzTJC0/2p0AbBe0FxJA=;
+        b=MLWxHYb0jUPyZmWayLKEHpH3D9tfrxgucyVl6XWkftXOlVAEqREVFpoPUrteYVqv+0AJFd
+        vvtuTYFYmeJTBFrssgeJwCIaD1ooKLwwQh7zmiOrF/riEO9VxiC59DdkvXtVDLEPgTOd9a
+        VCK240AuohjbX6bzcY0xCFDs96R8pFA=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-653-SEK67HXqOXmMec9UegEjyg-1; Thu, 17 Feb 2022 13:08:36 -0500
-X-MC-Unique: SEK67HXqOXmMec9UegEjyg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1AEE41808320;
-        Thu, 17 Feb 2022 18:08:35 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BFD5F8379A;
-        Thu, 17 Feb 2022 18:08:34 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com
-Subject: [PATCH v3 6/6] KVM: x86: allow defining return-0 static calls
-Date:   Thu, 17 Feb 2022 13:08:31 -0500
-Message-Id: <20220217180831.288210-7-pbonzini@redhat.com>
-In-Reply-To: <20220217180831.288210-1-pbonzini@redhat.com>
-References: <20220217180831.288210-1-pbonzini@redhat.com>
+ us-mta-664-gc2d0nn-PXy4zTtSteF8Bw-1; Thu, 17 Feb 2022 13:08:42 -0500
+X-MC-Unique: gc2d0nn-PXy4zTtSteF8Bw-1
+Received: by mail-lj1-f199.google.com with SMTP id b27-20020a2ebc1b000000b00246209c497dso187081ljf.11
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:08:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kdCG/BqRA3h3SSjWYFY12VvohzTJC0/2p0AbBe0FxJA=;
+        b=GOoqvERKeqA5PCjxEScro2ENyLCMwOCLCkyOYE1q2/tzohIrmOC7a1OaqFtdAOM60Y
+         DERZtZgBOxT0j6EUfljYgCbebpwQQXpXhvewvEKVzirsLX7hj2DJxxK5hvNQmq3+pHjR
+         McUm33NS0a1xcsDrt1xyunqO6vZB1OeCTuDoT7tQQ6l5+C/EedPQKMcjsIg6io8CDWv1
+         +wWMakOgv5VxGjjX5TXyJul/5zbTl2nHqrtjJDJpUqsnlHy2YHyqpip2I3tQlOH/Jm+L
+         sU9qBgK48h1JaTzMS2NjzW8m5KtBUNcOkJfQu5LVwZE5lPec+MfLkiB7eznTmQhUJVNy
+         0YtA==
+X-Gm-Message-State: AOAM533n5QsKpb18+vtcYTXLP4ws8X9MngGcShj8Hs17d7OEw7ajzIdU
+        3Jj2n8qsx+zIgcNv+mOPewgjg893lVP6y7HTZW2LXPK2QwlhqSrNn7IsZWxMSgNmDr7Jb2LXEuR
+        nRdAYNzQIXwvlK7+peGIqmsVu0kvLMZShtFKQHyac
+X-Received: by 2002:a05:6512:3d90:b0:437:73cb:8e76 with SMTP id k16-20020a0565123d9000b0043773cb8e76mr2969490lfv.187.1645121320970;
+        Thu, 17 Feb 2022 10:08:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzChZlQY5QTvjHbE0p1UCY0dO09MQJLQKaTJOmCopXmMEEUgU0MgdXhF+IltPwII3QUm9GQahgHm2UTwnG0wkw=
+X-Received: by 2002:a05:6512:3d90:b0:437:73cb:8e76 with SMTP id
+ k16-20020a0565123d9000b0043773cb8e76mr2969460lfv.187.1645121320667; Thu, 17
+ Feb 2022 10:08:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20220217053028.96432-1-leobras@redhat.com> <087309d0-f39c-d5d0-2b6a-2dd8595b06ea@redhat.com>
+In-Reply-To: <087309d0-f39c-d5d0-2b6a-2dd8595b06ea@redhat.com>
+From:   Leonardo Bras Soares Passos <leobras@redhat.com>
+Date:   Thu, 17 Feb 2022 15:08:29 -0300
+Message-ID: <CAJ6HWG66HZ7raAa+YK0UOGLF+4O3JnzbZ+a-0j8GNixOhLk9dA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/2] x86/kvm/fpu: Fix guest migration bugs that can
+ crash guest
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        David Gilbert <dgilbert@redhat.com>,
+        Peter Xu <peterx@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A few vendor callbacks are only used by VMX, but they return an integer
-or bool value.  Introduce KVM_X86_OP_OPTIONAL_RET0 for them: if a func is
-NULL in struct kvm_x86_ops, it will be changed to __static_call_return0
-when updating static calls.
+On Thu, Feb 17, 2022 at 11:52 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+> On 2/17/22 06:30, Leonardo Bras wrote:
+> > This patchset comes from a bug I found during qemu guest migration from a
+> > host with newer CPU to a host with an older version of this CPU, and thus
+> > having less FPU features.
+> >
+> > When the guests were created, the one with less features is used as
+> > config, so migration is possible.
+> >
+> > Patch 1 fix a bug that always happens during this migration, and is
+> > related to the fact that xsave saves all feature flags, but xrstor does
+> > not touch the PKRU flag. It also changes how fpstate->user_xfeatures
+> > is set, going from kvm_check_cpuid() to the later called
+> > kvm_vcpu_after_set_cpuid().
+> >
+> > Patch 2 removes kvm_vcpu_arch.guest_supported_xcr0 since it now
+> > duplicates guest_fpu.fpstate->user_xfeatures. Some wrappers were
+> > introduced in order to make it easier to read the replaced version.
+> >
+> > Patches were compile-tested, and could fix the bug found.
+>
+> Queued, thanks (for 5.17 of course)!  For patch 2, I renamed the
+> function to kvm_guest_supported_xcr0.
+>
+> Paolo
+>
 
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/include/asm/kvm-x86-ops.h | 15 +++++++++------
- arch/x86/include/asm/kvm_host.h    |  4 ++++
- arch/x86/kvm/svm/avic.c            |  5 -----
- arch/x86/kvm/svm/svm.c             | 20 --------------------
- arch/x86/kvm/x86.c                 |  2 +-
- kernel/static_call.c               |  1 +
- 6 files changed, 15 insertions(+), 32 deletions(-)
-
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index c0ec066a8599..29affccb353c 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -10,7 +10,9 @@ BUILD_BUG_ON(1)
-  *
-  * KVM_X86_OP_OPTIONAL() can be used for those functions that can have
-  * a NULL definition, for example if "static_call_cond()" will be used
-- * at the call sites.
-+ * at the call sites.  KVM_X86_OP_OPTIONAL_RET0() can be used likewise
-+ * to make a definition optional, but in this case the default will
-+ * be __static_call_return0.
-  */
- KVM_X86_OP(hardware_enable)
- KVM_X86_OP(hardware_disable)
-@@ -77,15 +79,15 @@ KVM_X86_OP(check_apicv_inhibit_reasons)
- KVM_X86_OP(refresh_apicv_exec_ctrl)
- KVM_X86_OP_OPTIONAL(hwapic_irr_update)
- KVM_X86_OP_OPTIONAL(hwapic_isr_update)
--KVM_X86_OP_OPTIONAL(guest_apic_has_interrupt)
-+KVM_X86_OP_OPTIONAL_RET0(guest_apic_has_interrupt)
- KVM_X86_OP_OPTIONAL(load_eoi_exitmap)
- KVM_X86_OP_OPTIONAL(set_virtual_apic_mode)
- KVM_X86_OP_OPTIONAL(set_apic_access_page_addr)
- KVM_X86_OP(deliver_interrupt)
- KVM_X86_OP_OPTIONAL(sync_pir_to_irr)
--KVM_X86_OP(set_tss_addr)
--KVM_X86_OP(set_identity_map_addr)
--KVM_X86_OP(get_mt_mask)
-+KVM_X86_OP_OPTIONAL_RET0(set_tss_addr)
-+KVM_X86_OP_OPTIONAL_RET0(set_identity_map_addr)
-+KVM_X86_OP_OPTIONAL_RET0(get_mt_mask)
- KVM_X86_OP(load_mmu_pgd)
- KVM_X86_OP(has_wbinvd_exit)
- KVM_X86_OP(get_l2_tsc_offset)
-@@ -103,7 +105,7 @@ KVM_X86_OP_OPTIONAL(vcpu_unblocking)
- KVM_X86_OP_OPTIONAL(pi_update_irte)
- KVM_X86_OP_OPTIONAL(pi_start_assignment)
- KVM_X86_OP_OPTIONAL(apicv_post_state_restore)
--KVM_X86_OP_OPTIONAL(dy_apicv_has_pending_interrupt)
-+KVM_X86_OP_OPTIONAL_RET0(dy_apicv_has_pending_interrupt)
- KVM_X86_OP_OPTIONAL(set_hv_timer)
- KVM_X86_OP_OPTIONAL(cancel_hv_timer)
- KVM_X86_OP(setup_mce)
-@@ -127,3 +129,4 @@ KVM_X86_OP(vcpu_deliver_sipi_vector)
- 
- #undef KVM_X86_OP
- #undef KVM_X86_OP_OPTIONAL
-+#undef KVM_X86_OP_OPTIONAL_RET0
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index a7e82fc1f1f3..8e512f25a930 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1541,6 +1541,7 @@ extern struct kvm_x86_ops kvm_x86_ops;
- #define KVM_X86_OP(func) \
- 	DECLARE_STATIC_CALL(kvm_x86_##func, *(((struct kvm_x86_ops *)0)->func));
- #define KVM_X86_OP_OPTIONAL KVM_X86_OP
-+#define KVM_X86_OP_OPTIONAL_RET0 KVM_X86_OP
- #include <asm/kvm-x86-ops.h>
- 
- static inline void kvm_ops_static_call_update(void)
-@@ -1550,6 +1551,9 @@ static inline void kvm_ops_static_call_update(void)
- #define KVM_X86_OP(func) \
- 	WARN_ON(!kvm_x86_ops.func); __KVM_X86_OP(func)
- #define KVM_X86_OP_OPTIONAL __KVM_X86_OP
-+#define KVM_X86_OP_OPTIONAL_RET0(func) \
-+	static_call_update(kvm_x86_##func, kvm_x86_ops.func ? : \
-+			   (void *) __static_call_return0);
- #include <asm/kvm-x86-ops.h>
- #undef __KVM_X86_OP
- }
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 4245cb99b497..d4fa8c4f3a9a 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -650,11 +650,6 @@ void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
- 	avic_set_pi_irte_mode(vcpu, activated);
- }
- 
--bool avic_dy_apicv_has_pending_interrupt(struct kvm_vcpu *vcpu)
--{
--	return false;
--}
--
- static void svm_ir_list_del(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
- {
- 	unsigned long flags;
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 3daca34020fa..7038c76fa841 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3528,16 +3528,6 @@ static void svm_enable_nmi_window(struct kvm_vcpu *vcpu)
- 	svm->vmcb->save.rflags |= (X86_EFLAGS_TF | X86_EFLAGS_RF);
- }
- 
--static int svm_set_tss_addr(struct kvm *kvm, unsigned int addr)
--{
--	return 0;
--}
--
--static int svm_set_identity_map_addr(struct kvm *kvm, u64 ident_addr)
--{
--	return 0;
--}
--
- static void svm_flush_tlb_current(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -3934,11 +3924,6 @@ static bool svm_has_emulated_msr(struct kvm *kvm, u32 index)
- 	return true;
- }
- 
--static u64 svm_get_mt_mask(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio)
--{
--	return 0;
--}
--
- static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -4593,10 +4578,6 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
- 	.apicv_post_state_restore = avic_apicv_post_state_restore,
- 
--	.set_tss_addr = svm_set_tss_addr,
--	.set_identity_map_addr = svm_set_identity_map_addr,
--	.get_mt_mask = svm_get_mt_mask,
--
- 	.get_exit_info = svm_get_exit_info,
- 
- 	.vcpu_after_set_cpuid = svm_vcpu_after_set_cpuid,
-@@ -4621,7 +4602,6 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.nested_ops = &svm_nested_ops,
- 
- 	.deliver_interrupt = svm_deliver_interrupt,
--	.dy_apicv_has_pending_interrupt = avic_dy_apicv_has_pending_interrupt,
- 	.pi_update_irte = avic_pi_update_irte,
- 	.setup_mce = svm_setup_mce,
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index ab1c4778824a..d3da64106685 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -131,6 +131,7 @@ struct kvm_x86_ops kvm_x86_ops __read_mostly;
- 	DEFINE_STATIC_CALL_NULL(kvm_x86_##func,			     \
- 				*(((struct kvm_x86_ops *)0)->func));
- #define KVM_X86_OP_OPTIONAL KVM_X86_OP
-+#define KVM_X86_OP_OPTIONAL_RET0 KVM_X86_OP
- #include <asm/kvm-x86-ops.h>
- EXPORT_STATIC_CALL_GPL(kvm_x86_get_cs_db_l_bits);
- EXPORT_STATIC_CALL_GPL(kvm_x86_cache_reg);
-@@ -12016,7 +12017,6 @@ void kvm_arch_flush_shadow_memslot(struct kvm *kvm,
- static inline bool kvm_guest_apic_has_interrupt(struct kvm_vcpu *vcpu)
- {
- 	return (is_guest_mode(vcpu) &&
--			kvm_x86_ops.guest_apic_has_interrupt &&
- 			static_call(kvm_x86_guest_apic_has_interrupt)(vcpu));
- }
- 
-diff --git a/kernel/static_call.c b/kernel/static_call.c
-index 43ba0b1e0edb..76abd46fe6ee 100644
---- a/kernel/static_call.c
-+++ b/kernel/static_call.c
-@@ -503,6 +503,7 @@ long __static_call_return0(void)
- {
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(__static_call_return0)
- 
- #ifdef CONFIG_STATIC_CALL_SELFTEST
- 
--- 
-2.31.1
+That's great!
+Thanks Paolo!
 
