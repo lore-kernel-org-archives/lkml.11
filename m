@@ -2,122 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A16B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241760AbiBQOM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:12:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46602 "EHLO
+        id S241115AbiBQONj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:13:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241353AbiBQOM4 (ORCPT
+        with ESMTP id S241762AbiBQONa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:12:56 -0500
-Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F922905BD;
-        Thu, 17 Feb 2022 06:12:40 -0800 (PST)
-Received: from mail.windriver.com (mail.wrs.com [147.11.1.11])
-        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 21HECbON027478
-        (version=TLSv1.1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
-        Thu, 17 Feb 2022 06:12:37 -0800
-Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
-        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 21HECbwB022537
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 17 Feb 2022 06:12:37 -0800 (PST)
-Received: from ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Thu, 17 Feb 2022 06:12:36 -0800
-Received: from ala-exchng01.corp.ad.wrs.com (147.11.82.252) by
- ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Feb 2022 06:12:36 -0800
-Received: from pek-lpd-ccm3.wrs.com (128.224.156.163) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server id
- 15.1.2242.12 via Frontend Transport; Thu, 17 Feb 2022 06:12:35 -0800
-From:   Yun Zhou <yun.zhou@windriver.com>
-To:     <broonie@kernel.org>, <yun.zhou@windriver.com>
-CC:     <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <ying.xue@windriver.com>, <richard.danter@windriver.com>
-Subject: [v2][PATCH] spi: use specific last_cs instead of last_cs_enable
-Date:   Thu, 17 Feb 2022 22:12:34 +0800
-Message-ID: <20220217141234.72737-1-yun.zhou@windriver.com>
-X-Mailer: git-send-email 2.26.1
+        Thu, 17 Feb 2022 09:13:30 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32B2291F99
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:13:14 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id y7so2296968oih.5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:13:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=digitalocean.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Qb7ol7cP6dS+SYaBDXsRKb9z2B7mLjMfAohF1xVujD4=;
+        b=LgFgBcySCIooM2tx8Y8RMWnEm10vFNWo9fDRqTf/WARg6vTADtA2R5LEfC6kL4iQMB
+         CbkHqBWLhgmjjf6rSgj9GnfA7x6Jv4UoWaGWithXmYhxWyHG2UY3P9Vgj6iHUIGleeQj
+         CktVPS0RyvKt2nbZNh4aGsEVo7gdeAyLprB6w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Qb7ol7cP6dS+SYaBDXsRKb9z2B7mLjMfAohF1xVujD4=;
+        b=TbkZDfAYZfWsevQ/+9PK+kth6/z7zZIum2QwTrDpu8tdNSJfXySHVwAE2BRj6rlJ59
+         DoYI6ZZG9oyOlrNdazEuOIIEXHc/M0FUMwmCKK8GsFdSepzmOSGWCxl2nXktqFjnPFAm
+         wFOwlgF2tJxl1KNxJal1pUmQGrzUR2u5ohkwWl4kGX2QNSIp5ky4nblIC5Ljtkx4S3XI
+         ijx161zRp057R54t7TzlVh0lwOUV/BMj32rm2zHXqAI4K+0gwvU0I96sXZ/RCK4ipG1/
+         aRpqozssJ1HpThIqj3q3/msT4TZRk3ZGSVFviEWfB2On+bYsg/AccxocgzZKr+ACOAJb
+         aKGg==
+X-Gm-Message-State: AOAM533/jMlxvAYKSoM0MDqKYuTFlAORUAV5SXWa9cs9Z4Ag0boz0e/z
+        GRJCtEp+GD1TrTY59o8ZCa8LzA==
+X-Google-Smtp-Source: ABdhPJyIjKB54xE5ZECSy5ei0Bc0imaBkjmgNgu7HW6oAwPwzRsHz/vweze7HAiuuftsYPi6KLmgFg==
+X-Received: by 2002:a05:6808:301e:b0:2ce:6a75:b880 with SMTP id ay30-20020a056808301e00b002ce6a75b880mr1142025oib.327.1645107193753;
+        Thu, 17 Feb 2022 06:13:13 -0800 (PST)
+Received: from localhost ([2605:a601:ac0f:820:e6fb:7a78:2789:5566])
+        by smtp.gmail.com with ESMTPSA id p22sm20481925oae.33.2022.02.17.06.13.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 06:13:13 -0800 (PST)
+From:   Seth Forshee <sforshee@digitalocean.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] vsock: remove vsock from connected table when connect is interrupted by a signal
+Date:   Thu, 17 Feb 2022 08:13:12 -0600
+Message-Id: <20220217141312.2297547-1-sforshee@digitalocean.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit d40f0b6f2e21 instroduced last_cs_enable to avoid setting
-chipselect if it's not necessary, but it also introduces a bug. The
-chipselect may not be set correctly on multi-device SPI busses. The
-reason is that we can't judge the chipselect by bool last_cs_enable,
-since chipselect may be modified after other devices were accessed.
+vsock_connect() expects that the socket could already be in the
+TCP_ESTABLISHED state when the connecting task wakes up with a signal
+pending. If this happens the socket will be in the connected table, and
+it is not removed when the socket state is reset. In this situation it's
+common for the process to retry connect(), and if the connection is
+successful the socket will be added to the connected table a second
+time, corrupting the list.
 
-So we should record the specific state of chipselect in case of
-confusion.
+Prevent this by calling vsock_remove_connected() if a signal is received
+while waiting for a connection. This is harmless if the socket is not in
+the connected table, and if it is in the table then removing it will
+prevent list corruption from a double add.
 
-Signed-off-by: Yun Zhou <yun.zhou@windriver.com>
+Note for backporting: this patch requires d5afa82c977e ("vsock: correct
+removal of socket from the list"), which is in all current stable trees
+except 4.9.y.
+
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
 ---
- drivers/spi/spi.c       | 8 ++++++--
- include/linux/spi/spi.h | 5 +++--
- 2 files changed, 9 insertions(+), 4 deletions(-)
+v2: Add Fixes tag and backporting notes.
+---
+ net/vmw_vsock/af_vsock.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 4599b121d744..d054229ffdda 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -936,13 +936,14 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
- 	 * Avoid calling into the driver (or doing delays) if the chip select
- 	 * isn't actually changing from the last time this was called.
- 	 */
--	if (!force && (spi->controller->last_cs_enable == enable) &&
-+	if (!force && ((enable && spi->controller->last_cs == spi->chip_select) ||
-+				(!enable && spi->controller->last_cs != spi->chip_select)) &&
- 	    (spi->controller->last_cs_mode_high == (spi->mode & SPI_CS_HIGH)))
- 		return;
- 
- 	trace_spi_set_cs(spi, activate);
- 
--	spi->controller->last_cs_enable = enable;
-+	spi->controller->last_cs = enable ? spi->chip_select : -1;
- 	spi->controller->last_cs_mode_high = spi->mode & SPI_CS_HIGH;
- 
- 	if ((spi->cs_gpiod || gpio_is_valid(spi->cs_gpio) ||
-@@ -2980,6 +2981,9 @@ int spi_register_controller(struct spi_controller *ctlr)
- 		goto free_bus_id;
- 	}
- 
-+	/* setting last_cs to -1 means no chip selected */
-+	ctlr->last_cs = -1;
-+
- 	status = device_add(&ctlr->dev);
- 	if (status < 0)
- 		goto free_bus_id;
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index 7ab3fed7b804..5a54ea354053 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -373,7 +373,8 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
-  * @cur_msg_prepared: spi_prepare_message was called for the currently
-  *                    in-flight message
-  * @cur_msg_mapped: message has been mapped for DMA
-- * @last_cs_enable: was enable true on the last call to set_cs.
-+ * @last_cs: the last chip_select that is recorded by set_cs, -1 on non chip
-+ *           selected
-  * @last_cs_mode_high: was (mode & SPI_CS_HIGH) true on the last call to set_cs.
-  * @xfer_completion: used by core transfer_one_message()
-  * @busy: message pump is busy
-@@ -611,7 +612,7 @@ struct spi_controller {
- 	bool				auto_runtime_pm;
- 	bool                            cur_msg_prepared;
- 	bool				cur_msg_mapped;
--	bool				last_cs_enable;
-+	char				last_cs;
- 	bool				last_cs_mode_high;
- 	bool                            fallback;
- 	struct completion               xfer_completion;
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 3235261f138d..38baeb189d4e 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1401,6 +1401,7 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+ 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+ 			sock->state = SS_UNCONNECTED;
+ 			vsock_transport_cancel_pkt(vsk);
++			vsock_remove_connected(vsk);
+ 			goto out_wait;
+ 		} else if (timeout == 0) {
+ 			err = -ETIMEDOUT;
 -- 
-2.26.1
+2.32.0
 
