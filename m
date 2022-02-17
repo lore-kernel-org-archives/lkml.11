@@ -2,126 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECE9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238449AbiBQQJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:09:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50342 "EHLO
+        id S239760AbiBQQJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:09:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiBQQJK (ORCPT
+        with ESMTP id S229447AbiBQQJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:09:10 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0491178BC1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:08:55 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id y18so4937530plb.11
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:08:55 -0800 (PST)
+        Thu, 17 Feb 2022 11:09:39 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AE3187458;
+        Thu, 17 Feb 2022 08:09:24 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id p15so8410918ejc.7;
+        Thu, 17 Feb 2022 08:09:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VD8H9XEccLJ1gEJ8HFd5QAYd/aMwLkrTq6BJhjDSisU=;
-        b=F2rnoQOUj5vrdaK05HWLiQ7Dayy2FS/VLwwppCjteGUtmVGphPSPL1yNlR/PsVhO4Q
-         SGeRoVRv5Uus+p4dn8QbXAGf80LP4h24IJAa0YKQc/bBrJA2mgvX6k6S+QaZhSinsQPe
-         o216cTDDHjXReLeUyM4oLkcXFtL1l/32drgLI8Q3Ol851JV0AFiUSkZYV96ZmH6yoaRz
-         AKOTAqvSoj03fN1c6IOu25o9+GmlKYmh8Tz/z/Z1zg3CfaJqHt1e0AWkINesw/Pf2V0l
-         g76JZRFDHXvhz1CCgn1/99do97O3lEyvZTQa1XyJAFrLSbwg3bv9oVKn+Ugr30Tfha1B
-         919w==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W6cqxl/ALNXLXDztiVLAO/QpWZwa8vitYwFUjYdClJU=;
+        b=Hbu1lkEXwbpzvl9171+9N/HTuhPnpZI7TN3IpHeBNZsEhhCm/aidYSQqNN8cfx1fPD
+         Cuocu4zsTZJYnSrRcyEeIVKrzLjE0HLv+JKoue/PW1tfCJt0kkvK7E7Cna8MeK6QYZ7m
+         mBG/QRHWL3WHYmh3YedqarS01z30Tx3TY6fe3GzGl221jMweHoZzy554ImF1KQ+ckfpP
+         FnYT91VSi4lGPbtzXV7fpRYljlpJFkInHFFM9Q2Snb/LMdHUNvKvquSqaWwFofHNmr4M
+         JDDrFNsF7tD/iLv1zt5pbAqvqnVeqcH1JxOJt+LRbcgRucduO8fXjYCU8TzZyKD9pYP1
+         K7LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VD8H9XEccLJ1gEJ8HFd5QAYd/aMwLkrTq6BJhjDSisU=;
-        b=AeNas6HpI7/8Ol9jzD8NRE9EfERTGfZgKyGebecNqQaM4Q8KE2kQM66vzx3INMCNqk
-         yby76lwD7DpOmbefErTqV4vvVTNSJ6XXWCiT21FqawklnGJ3PmYbET/Qwf/o4OLK+VNR
-         ZiYi7p5m2Av6DP4l7Pm272C8z7/wya0h1RFD8DOS9hXmlgcqnZQjzqINDpw00YNyXGBh
-         IRDfiCAKPmSjz/P74hRD9Z33k9ZUu7JjG+w19N5lNclGq9eOcWzS7YgRmHjg4orlLgN2
-         Phzzvu3Ltjce0PBnFUxDsiRSFpRKI6s88T3UMwhH5DJ79mh7YbFk23NaCGaVrYbr7cMK
-         V1PA==
-X-Gm-Message-State: AOAM533uM9Uek4MnatfVHpQLFKSqRHtNae8L5M9UTVd+f8E3/7NlT0BL
-        w6viVEPyEPNJMwXBF1+XTrTF/iUu7OKmaA==
-X-Google-Smtp-Source: ABdhPJyFsjmnJxcyI3zQL+VFCRE3os2dZrHdxY5v38ChREUHcE+PvGbETp2COJG44FjB8IEmuf5tZQ==
-X-Received: by 2002:a17:90a:4dc7:b0:1b9:ca2:311e with SMTP id r7-20020a17090a4dc700b001b90ca2311emr3717927pjl.175.1645114135171;
-        Thu, 17 Feb 2022 08:08:55 -0800 (PST)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id h9sm51611pfv.135.2022.02.17.08.08.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W6cqxl/ALNXLXDztiVLAO/QpWZwa8vitYwFUjYdClJU=;
+        b=LnwZ6kUL7DqHRI2/vs7v9J795REgJNGLMKVMIYv5FKB4EUADQ8cZXQ7rzAWre7xv/V
+         ykIL+9oDs2VUaDw0+ELSGH/xBas6olY9/C4D5Wmn4JKLPvZFSw686JkbY3nNpyE78xKX
+         8gaoQbv9kJnpt3fkWp+sPM8t//UexjtecgPtpjfLxMyd/0TUgBbpAoYLrCQrZPveEcC1
+         oSqft8zwXl9Nqsz6mgjRDlI2j9T6ctmKF5SlpAQzcxCv/NWK8uKMKXLZbH1llsT8GLn1
+         gUn0GT2FgIqV6CDvh61sm7Haa1ENYFkq847TDZln85BNqj5Wgah0BZ66U00TTnHwgvq7
+         8DiQ==
+X-Gm-Message-State: AOAM531ltGtI0EL0/wLJIK9sDZOk7MQFbRIc5vf3HirBhgYyJ9oCkapc
+        rY673i56OYro3vu8KWqhiZpvsfTDPFaawp1j
+X-Google-Smtp-Source: ABdhPJyBg9At4wkqSN22UCtVzUZWrJpalj/CPnarf0JykUkauxFwTqebb8N57hljQBXhxJgYfuyX+A==
+X-Received: by 2002:a17:906:cc8d:b0:6c9:6df1:7c55 with SMTP id oq13-20020a170906cc8d00b006c96df17c55mr2864041ejb.317.1645114162838;
+        Thu, 17 Feb 2022 08:09:22 -0800 (PST)
+Received: from hw-dev-vm01.evs.tv ([212.222.125.68])
+        by smtp.gmail.com with ESMTPSA id x14sm3568194edd.63.2022.02.17.08.09.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 08:08:53 -0800 (PST)
-Date:   Thu, 17 Feb 2022 09:08:51 -0700
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     bjorn.andersson@linaro.org, matthias.bgg@gmail.com,
-        pihsun@chromium.org, linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-Subject: Re: [PATCH] rpmsg: mtk_rpmsg: Fix circular locking dependency
-Message-ID: <20220217160851.GA474184@p14s>
-References: <20220114144737.375621-1-angelogioacchino.delregno@collabora.com>
- <b531eeca-40e8-d759-5579-59567eb5af84@collabora.com>
+        Thu, 17 Feb 2022 08:09:22 -0800 (PST)
+From:   Fred Lefranc <hardware.evs@gmail.com>
+Cc:     Fred Lefranc <hardware.evs@gmail.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] net/fsl: fman: Allow fm_max_frame_sz & rx_extra_headroom config from devicetree.
+Date:   Thu, 17 Feb 2022 17:05:26 +0100
+Message-Id: <20220217160528.2662513-1-hardware.evs@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b531eeca-40e8-d759-5579-59567eb5af84@collabora.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 05:06:22PM +0100, AngeloGioacchino Del Regno wrote:
-> Il 14/01/22 15:47, AngeloGioacchino Del Regno ha scritto:
-> > During execution of the worker that's used to register rpmsg devices
-> > we are safely locking the channels mutex but, when creating a new
-> > endpoint for such devices, we are registering a IPI on the SCP, which
-> > then makes the SCP to trigger an interrupt, lock its own mutex and in
-> > turn register more subdevices.
-> > This creates a circular locking dependency situation, as the mtk_rpmsg
-> > channels_lock will then depend on the SCP IPI lock.
-> > 
-> > [   18.014514]  Possible unsafe locking scenario:
-> > [   18.014515]        CPU0                    CPU1
-> > [   18.014517]        ----                    ----
-> > [   18.045467]   lock(&mtk_subdev->channels_lock);
-> > [   18.045474]                                lock(&scp->ipi_desc[i].lock);
-> > [   18.228399]                                lock(&mtk_subdev->channels_lock);
-> > [   18.228405]   lock(&scp->ipi_desc[i].lock);
-> > [   18.264405]
-> > 
-> > To solve this, simply unlock the channels_lock mutex before calling
-> > mtk_rpmsg_register_device() and relock it right after, as safety is
-> > still ensured by the locking mechanism that happens right after
-> > through SCP.
-> > Notably, mtk_rpmsg_register_device() does not even require locking.
-> > 
-> > Fixes: 7017996951fd ("rpmsg: add rpmsg support for mt8183 SCP.")
-> > Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> 
-> Friendly ping for an important fix... :)
->
+Allow modification of two additional Frame Manager parameters :
+- FM Max Frame Size : Can be changed to a value other than 1522
+  (ie support Jumbo Frames)
+- RX Extra Headroom
 
-This seems to have slipped through the cracks...  I will take a look later
-today.
+Signed-off-by: Fred Lefranc <hardware.evs@gmail.com>
+---
+ drivers/net/ethernet/freescale/fman/fman.c | 26 ++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-Thanks,
-Mathieu
+diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
+index 8f0db61cb1f6..bf4240eacf42 100644
+--- a/drivers/net/ethernet/freescale/fman/fman.c
++++ b/drivers/net/ethernet/freescale/fman/fman.c
+@@ -2862,6 +2862,32 @@ static struct fman *read_dts_node(struct platform_device *of_dev)
+ 		of_property_read_bool(fm_node, "fsl,erratum-a050385");
+ #endif
+ 
++	/* Get Max Frame Size */
++	err = of_property_read_u32(fm_node, "fsl,max-frm-sz", &val);
++	if (!err) {
++		if (val > FSL_FM_MAX_POSSIBLE_FRAME_SIZE)
++			fsl_fm_max_frm = FSL_FM_MAX_POSSIBLE_FRAME_SIZE;
++		else if (val < FSL_FM_MIN_POSSIBLE_FRAME_SIZE)
++			fsl_fm_max_frm = FSL_FM_MIN_POSSIBLE_FRAME_SIZE;
++		else
++			fsl_fm_max_frm = (int)val;
++	}
++	dev_dbg(&of_dev->dev, "Configured Max Frame Size: %d\n",
++		fsl_fm_max_frm);
++
++	/* Get RX Extra Headroom Value */
++	err = of_property_read_u32(fm_node, "fsl,rx-extra-headroom", &val);
++	if (!err) {
++		if (val > FSL_FM_RX_EXTRA_HEADROOM_MAX)
++			fsl_fm_rx_extra_headroom = FSL_FM_RX_EXTRA_HEADROOM_MAX;
++		else if (val < FSL_FM_RX_EXTRA_HEADROOM_MIN)
++			fsl_fm_rx_extra_headroom = FSL_FM_RX_EXTRA_HEADROOM_MIN;
++		else
++			fsl_fm_rx_extra_headroom = (int)val;
++	}
++	dev_dbg(&of_dev->dev, "Configured RX Extra Headroom: %d\n",
++		fsl_fm_rx_extra_headroom);
++
+ 	return fman;
+ 
+ fman_node_put:
+-- 
+2.25.1
 
-> > ---
-> >   drivers/rpmsg/mtk_rpmsg.c | 2 ++
-> >   1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/rpmsg/mtk_rpmsg.c b/drivers/rpmsg/mtk_rpmsg.c
-> > index 5b4404b8be4c..d1213c33da20 100644
-> > --- a/drivers/rpmsg/mtk_rpmsg.c
-> > +++ b/drivers/rpmsg/mtk_rpmsg.c
-> > @@ -234,7 +234,9 @@ static void mtk_register_device_work_function(struct work_struct *register_work)
-> >   		if (info->registered)
-> >   			continue;
-> > +		mutex_unlock(&subdev->channels_lock);
-> >   		ret = mtk_rpmsg_register_device(subdev, &info->info);
-> > +		mutex_lock(&subdev->channels_lock);
-> >   		if (ret) {
-> >   			dev_err(&pdev->dev, "Can't create rpmsg_device\n");
-> >   			continue;
-> 
-> 
