@@ -2,63 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A84C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241523AbiBQN6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:58:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52878 "EHLO
+        id S241531AbiBQN67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:58:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241519AbiBQN6S (ORCPT
+        with ESMTP id S240238AbiBQN6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:58:18 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBA3627B4BB;
-        Thu, 17 Feb 2022 05:58:03 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 8389B92009C; Thu, 17 Feb 2022 14:58:01 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 7CCD092009B;
-        Thu, 17 Feb 2022 13:58:01 +0000 (GMT)
-Date:   Thu, 17 Feb 2022 13:58:01 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MIPS: remove asm/war.h
-In-Reply-To: <20220217134630.42203-1-tsbogend@alpha.franken.de>
-Message-ID: <alpine.DEB.2.21.2202171352060.56785@angie.orcam.me.uk>
-References: <20220217134630.42203-1-tsbogend@alpha.franken.de>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 17 Feb 2022 08:58:55 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C568B2B04B1;
+        Thu, 17 Feb 2022 05:58:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645106319; x=1676642319;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HMHVBW5xJnQ6+rjm9f9+3MplRfX0nD0A6a0io82wM4o=;
+  b=vPUuOdxf0bou/vKMzw7nwvDM6GVzGnvSDrEZLrEBiXnB2TNfnWel2U0+
+   ZV+7dwWj0kVtUkmlorqfW1J2jVhcD52SQYKrougK7Kda9dtH1QBJ0xqk6
+   zpRhMvD78cAX5tOjq6ntCrPAxij2v2Ye/M79HdosO5Tn5nY/N85ldjlP7
+   G1RgbAr0fCcja7eBZfT3T8W/bHk26S+R5vQ/riwU9kh6+OrCxM7dPpr2r
+   4gJjh74BNmteTQAtmxpd0yQ5tRtq+nT53aJdJGszEKnD/CvxB4i9NphUX
+   KQ4Ur33RU7VcZh02AO4jNIKrK8J6PW6t6b9Aj9OqcsRwghc51CHYvr+9E
+   g==;
+IronPort-SDR: EPfv1I96D/dE2hg+4n9/eezvCI71KYdhRyT1KVRUSmgZQtDjyaT32uOIpxBvcJVbOtum6olWVz
+ 002UIosxZIrwhpM1pmFS7aEXoBv65S0CFoXmdXVWdlpjv+8uPKMAreLPVlvnPr0gN8UUzi5OrG
+ GzRzRkg8Oswg+/iEgxq9oqHh8beb0a96gMx8ZQ5AeaMwOxOQV+ZrR5ue7J5R/kLL3295R8VnU9
+ 20gRnLk9Baz6XR3FE2hz/D0UoD/fDUwU2uDjq6i+qJ64Tgd5RqBf54hbW5O8pYY18HPzLytzQX
+ vkiMSICta3MV5ZCa+b4O+gin
+X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
+   d="scan'208";a="86082200"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Feb 2022 06:58:22 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 17 Feb 2022 06:58:22 -0700
+Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 17 Feb 2022 06:58:01 -0700
+From:   Eugen Hristev <eugen.hristev@microchip.com>
+To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>,
+        <hverkuil-cisco@xs4all.nl>, <nicolas.ferre@microchip.com>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <claudiu.beznea@microchip.com>,
+        "Eugen Hristev" <eugen.hristev@microchip.com>
+Subject: [PATCH v5 03/13] media: atmel: atmel-isc: remove redundant comments
+Date:   Thu, 17 Feb 2022 15:56:35 +0200
+Message-ID: <20220217135645.1427466-4-eugen.hristev@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220217135645.1427466-1-eugen.hristev@microchip.com>
+References: <20220217135645.1427466-1-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022, Thomas Bogendoerfer wrote:
+Remove duplicate comments which are already in place before the struct
+definition.
 
-> diff --git a/arch/mips/kernel/r4k-bugs64.c b/arch/mips/kernel/r4k-bugs64.c
-> index 35729c9e6cfa..11392e40d034 100644
-> --- a/arch/mips/kernel/r4k-bugs64.c
-> +++ b/arch/mips/kernel/r4k-bugs64.c
-> @@ -163,7 +163,8 @@ static __always_inline __init void check_mult_sh(void)
->  	}
->  
->  	pr_cont("no.\n");
-> -	panic(bug64hit, !R4000_WAR ? r4kwar : nowar);
-> +	panic(bug64hit, !IS_ENABLED(CONFIG_CPU_R4000_WORKAROUNDS) ? r4kwar :
-> +								    nowar);
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ drivers/media/platform/atmel/atmel-isc.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
- I think it'll read better if formatted like this:
+diff --git a/drivers/media/platform/atmel/atmel-isc.h b/drivers/media/platform/atmel/atmel-isc.h
+index 07fa6dbf8460..f9ad7ec6bd13 100644
+--- a/drivers/media/platform/atmel/atmel-isc.h
++++ b/drivers/media/platform/atmel/atmel-isc.h
+@@ -272,7 +272,7 @@ struct isc_device {
+ 	struct video_device	video_dev;
+ 
+ 	struct vb2_queue	vb2_vidq;
+-	spinlock_t		dma_queue_lock; /* serialize access to dma queue */
++	spinlock_t		dma_queue_lock;
+ 	struct list_head	dma_queue;
+ 	struct isc_buffer	*cur_frm;
+ 	unsigned int		sequence;
+@@ -289,8 +289,8 @@ struct isc_device {
+ 	struct isc_ctrls	ctrls;
+ 	struct work_struct	awb_work;
+ 
+-	struct mutex		lock; /* serialize access to file operations */
+-	spinlock_t		awb_lock; /* serialize access to DMA buffers from awb work queue */
++	struct mutex		lock;
++	spinlock_t		awb_lock;
+ 
+ 	struct regmap_field	*pipeline[ISC_PIPE_LINE_NODE_NUM];
+ 
+-- 
+2.25.1
 
-	panic(bug64hit,
-	      !IS_ENABLED(CONFIG_CPU_R4000_WORKAROUNDS) ? r4kwar : nowar);
-
-or without the negation even:
-
-	panic(bug64hit,
-	      IS_ENABLED(CONFIG_CPU_R4000_WORKAROUNDS) ? nowar : r4kwar);
-
-Likewise throughout.
-
-  Maciej
