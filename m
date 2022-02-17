@@ -2,131 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D6E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:00:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E834CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbiBRAAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 19:00:50 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46242 "EHLO
+        id S229983AbiBRAAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 19:00:54 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiBRAAs (ORCPT
+        with ESMTP id S229959AbiBRAAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 19:00:48 -0500
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D43346B1E;
-        Thu, 17 Feb 2022 16:00:19 -0800 (PST)
-Received: by mail-pg1-f171.google.com with SMTP id h125so6370985pgc.3;
-        Thu, 17 Feb 2022 16:00:19 -0800 (PST)
+        Thu, 17 Feb 2022 19:00:50 -0500
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B09E43EDC;
+        Thu, 17 Feb 2022 16:00:21 -0800 (PST)
+Received: by mail-io1-f45.google.com with SMTP id c14so1940698ioa.12;
+        Thu, 17 Feb 2022 16:00:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=SoRwOTnJQj6kK0mSNjv2umu6XpU3nx+Y+EN/LPgrWOM=;
-        b=oAEH/A2SUmkuegDHSU+evXjiiRrYm7AJJRBw+6z/TXNww7IxnrM/8be8CT/tOuaZE9
-         82KJD2vn194/DdkQixDilMYSF51xQ9YjRrDKS2BZQH6BiumXMHWPANG3jTwtRPmmggqM
-         w9U+mmtP3vKswLOvGB3XEkJJfDVHgxrB9hO5+OT7Mh6Mahzv5+hpuAAdwN+T+CUX1TtD
-         tIe7D1klA4KrpFDHjOu81c6Q3YpiNpws5hQ9+Ak4Qc0UX01jZ3frQJJjrC6aYj0VHGfc
-         ZOL1cRf8bHa+fYzKyQvlx66iXXpA8JGR4uG2r5RkZkLF6h6kA86Wq3HM2dubhxexy0i/
-         xb1A==
-X-Gm-Message-State: AOAM53259reHT90rmIdVhN3a0QXp2hf8AjqZ5F/P46SDz3bK1TdVd1Ng
-        cenZ/J5i5E4njkC9MJkeLsCJC0hcvg==
-X-Google-Smtp-Source: ABdhPJw/kmEhnBfh2GFirjwVXPImHpsMauK1etqmp7WpKmzDJ+NCY4z+VfpN7NxiRwz0dTmGV2nSkw==
-X-Received: by 2002:a92:c610:0:b0:2bf:b493:3425 with SMTP id p16-20020a92c610000000b002bfb4933425mr3441704ilm.166.1645140240853;
-        Thu, 17 Feb 2022 15:24:00 -0800 (PST)
+        bh=Il/wZD+B4VL/ZBasXxovAwbatloL66gP+RpomVECt8w=;
+        b=RLCfaQ7GhScBtu0amYjmOjumkgXhe3+HavMRFl2ctgJ587vmZPrryPtwzETgxURMuR
+         bz2nj6BnZCsFC4K7kR4xzUlEI6sAfSgxX98DsRA6t9XBXCwD6amFZLN5K/b3Ze8XcEcv
+         OBCPaeui/tXfzfWljyyFseAO6zRvEHoN9+gyUZXxpAQ2xEwmNIH5N7ExvrS7Ck1bblvj
+         4kCFA+0FycN6sfm0/9WM7mKyX05fMkDNAD5YTpUGMaVfM3oQS0EnFQmifw560ozN9p5s
+         M7RAGDIzIhQrqGJUXOC/m5S2p7EDpy6ZL/dIkOy6Nf7jF/EgJEdyvcrv9auXUr1UaW3B
+         AHqA==
+X-Gm-Message-State: AOAM531Bv+dsZE2b64dISo/jl8RJllxbr18LmzcWU691I7X/jZqXaYzv
+        voV2x66sjm7b6nL6OMNeDbmNmL2w5Q==
+X-Google-Smtp-Source: ABdhPJzGwfUv+iWf5iBYNyH6g/xHd5+slKxLYGt8kOXzTx5aIOjksgpcxSoJSYHT0umAK410egSZFw==
+X-Received: by 2002:a02:a804:0:b0:30e:4778:559a with SMTP id f4-20020a02a804000000b0030e4778559amr3519947jaj.291.1645142363273;
+        Thu, 17 Feb 2022 15:59:23 -0800 (PST)
 Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id r13sm2810676ilb.35.2022.02.17.15.23.58
+        by smtp.gmail.com with ESMTPSA id q9sm2732858ilo.56.2022.02.17.15.59.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:24:00 -0800 (PST)
-Received: (nullmailer pid 3964338 invoked by uid 1000);
-        Thu, 17 Feb 2022 23:23:58 -0000
-Date:   Thu, 17 Feb 2022 17:23:58 -0600
+        Thu, 17 Feb 2022 15:59:22 -0800 (PST)
+Received: (nullmailer pid 4014766 invoked by uid 1000);
+        Thu, 17 Feb 2022 23:59:21 -0000
+Date:   Thu, 17 Feb 2022 17:59:21 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     jassisinghbrar@gmail.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski@canonical.com, daniel.baluta@nxp.com,
-        Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH V3 2/5] dt-bindings: mailbox: imx-mu: add i.MX93 S4 MU
- support
-Message-ID: <Yg7ZDoH1HBkOZvIH@robh.at.kernel.org>
-References: <20220211060301.1852772-1-peng.fan@oss.nxp.com>
- <20220211060301.1852772-3-peng.fan@oss.nxp.com>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     hvilleneuve@dimonoff.com, a.zummo@towertech.it,
+        alexandre.belloni@bootlin.com, linux-rtc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 14/14] dt-bindings: rtc: pcf2127: add PCF2131
+Message-ID: <Yg7hWRlxNY2zzg+B@robh.at.kernel.org>
+References: <20220211205029.3940756-1-hugo@hugovil.com>
+ <20220211205029.3940756-15-hugo@hugovil.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220211060301.1852772-3-peng.fan@oss.nxp.com>
+In-Reply-To: <20220211205029.3940756-15-hugo@hugovil.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 02:02:58PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On Fri, Feb 11, 2022 at 03:50:29PM -0500, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> Similar to i.MX8ULP S4 MU, i.MX93 MU is dedicated for communication
-> between Sentinel and Cortex-A cores from hardware design, it could not be
-> reused for other purpose.
+> Add support for new NXP RTC PCF2131.
 > 
-> However i.MX93 S4 MU use separate tx/rx interrupt, so update
-> interrupts and add interrupt-names property.
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > ---
->  .../devicetree/bindings/mailbox/fsl,mu.yaml   | 21 +++++++++++++++++++
->  1 file changed, 21 insertions(+)
+>  .../devicetree/bindings/rtc/nxp,pcf2127.yaml  | 19 ++++++++++++++++++-
+>  1 file changed, 18 insertions(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml b/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-> index 6d056d5e16bf..f0a7e693ebf8 100644
-> --- a/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-> +++ b/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-> @@ -29,6 +29,7 @@ properties:
->        - const: fsl,imx8ulp-mu
->        - const: fsl,imx8-mu-scu
->        - const: fsl,imx8-mu-seco
-> +      - const: fsl,imx93-mu-s4
->        - const: fsl,imx8ulp-mu-s4
->        - items:
->            - const: fsl,imx93-mu
-> @@ -57,6 +58,12 @@ properties:
->    interrupts:
+> diff --git a/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml b/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
+> index cde7b1675ead..57eb0a58afa3 100644
+> --- a/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
+> +++ b/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
+> @@ -14,7 +14,9 @@ maintainers:
+>  
+>  properties:
+>    compatible:
+> -    const: nxp,pcf2127
+> +    enum:
+> +      - nxp,pcf2127
+> +      - nxp,pcf2131
+>  
+>    reg:
 >      maxItems: 1
+> @@ -48,4 +50,19 @@ examples:
+>          };
+>      };
 >  
-> +  interrupt-names:
-> +    minItems: 1
-> +    items:
-> +      - const: txirq
-> +      - const: rxirq
-
-'irq' is redundant. Drop.
-
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
 > +
->    "#mbox-cells":
->      description: |
->        <&phandle type channel>
-> @@ -90,6 +97,20 @@ required:
->    - interrupts
->    - "#mbox-cells"
->  
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          enum:
-> +            - fsl,imx93-mu-s4
-> +    then:
-> +      properties:
-> +        interrupt-names:
-> +          minItems: 2
-> +          maxItems: 2
+> +        rtc@53 {
+> +            compatible = "nxp,pcf2131";
+> +            reg = <0x53>;
+> +            pinctrl-0 = <&rtc_nint_pins>;
+> +            interrupts-extended = <&gpio1 16 IRQ_TYPE_LEVEL_HIGH>;
+> +            reset-source;
+> +        };
+> +    };
 
-minItems is enough.
-
-> +        interrupts:
-> +          maxItems: 2
-
-You haven't tested this with 2 items. It will fail because the main 
-section has a limit of 1 item.
+Just a new compatible doesn't really justify another example.
 
 Rob
