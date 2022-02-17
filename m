@@ -2,129 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA6BC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBAE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243698AbiBQR1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 12:27:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50152 "EHLO
+        id S243706AbiBQR22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 12:28:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233104AbiBQR1b (ORCPT
+        with ESMTP id S233104AbiBQR2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 12:27:31 -0500
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0F218461B;
-        Thu, 17 Feb 2022 09:27:16 -0800 (PST)
-Received: by mail-qk1-x733.google.com with SMTP id j78so712627qke.2;
-        Thu, 17 Feb 2022 09:27:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5TBlHGHH+WgnstAw4WAM7waOCG5SUDRAM7hFFIagCrU=;
-        b=HLY4SPMBxh4NKJbgQKdTkOF1EKwda6K8LQMPuV36UURJxnp7c4cFUN7jKyV05Ha0JT
-         ubSD9THez92siIbroSve2L+60SunhnDrredJrG/kd8HxyGw1J6LhbEkgN3Lm+S0R8Dki
-         qwO6hj1XbpB6NkUgQ84Oy/OV+Sbji6p57xqSFrRNZ8us8dbQ8sXhvvJ8PjS6Q/dT1ksj
-         5rj3nmge7i+rX00ahzikCfer3Jv8T0UkehawWYdt12kZVJtj5akb4J+p2+UelxXYyfjI
-         SFbE5tkLerjDF+R1tj2kzFP4jmcyOL2S0NwaAgmE6YAtuO/MVsoxtyRUuV7hWoF/vyPQ
-         yzrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5TBlHGHH+WgnstAw4WAM7waOCG5SUDRAM7hFFIagCrU=;
-        b=PPvdBwa+oKJYS1FNHDC+SJLIxRjOiCzr5ntDpfSTTxRLtCNBPDdkl5Jq94XxH0LskZ
-         JWNCE/PMi9VpcDRkRqrq4SsBSkyQLtDrNFTHzjzZ9r5HbRi1CyqKCQHsAaUHLeIWaio7
-         i4VZpCYo5hNkKu634I5/LjEgZbjOzsILzA6VfHrpxb2bH9XroZk/JQL/MIAmKZKTJU8b
-         e2ReMuI1DGp4eVVoLTFS6KaQRfiZFNAwI2zV2RdFEpNaoXjpvUUN6S2y7kYyzY1zOhT0
-         SrKsEwBzzabyMx2w6UYMHNX2njI950lNyl6I5Gmpk/occ91FezVyRtjSY5zwMbyeyL2L
-         WgVw==
-X-Gm-Message-State: AOAM531V8tTMRaXWCDLlsd/YH8sEUMJD+UjCmrLp5GIJMzuEjNGlI+RW
-        RNFSRtOKOV3nyDX2XWtHtU8=
-X-Google-Smtp-Source: ABdhPJzA7isSR8GbbpDuUGZbNJH+0UydjEtjn1t9PHTbTZtMwobftpWsxxVxnjOdfRofyzr6m36xhw==
-X-Received: by 2002:a37:5345:0:b0:47b:e4b3:48ea with SMTP id h66-20020a375345000000b0047be4b348eamr2287957qkb.35.1645118835811;
-        Thu, 17 Feb 2022 09:27:15 -0800 (PST)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id o17sm11404887qtv.45.2022.02.17.09.27.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 09:27:15 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <ef1b1d99-6172-2b4d-9612-7ecbe8fc6c8b@roeck-us.net>
-Date:   Thu, 17 Feb 2022 09:27:11 -0800
+        Thu, 17 Feb 2022 12:28:25 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F52124CCF9;
+        Thu, 17 Feb 2022 09:28:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645118891; x=1676654891;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=R3RAa0snBFN25UYoIFfCG9a4yp7xLIu18JkBJbhdzeQ=;
+  b=FGRyJFo4LvwrxRM1ZhF12tPBiUfa2s0fiedcBnzAkFVmCD17POgzk61E
+   0cmvjZCCHPFAlA4HXoYOFiQI+XC44Sq2aoahB5ewWgnqYTHo8ATRtkvMv
+   y83zFePyIn8IjBL0ok2EDVratAbPa+Jt5SwCCJs2EhbGBubK45i9CwNa2
+   XiWcbvI5lTIQ5n64Hb4TIAJPHYPaGGG/kxcPyUfvLBZ6uFUt39DXsL/PU
+   nOBf6ldhb//WJYLBAqTEyPCGPcjqGlzLWrc73B8eEI4++rdSjKrXiqyKY
+   PaiyomSLWHCX5FhDeE7JE6rjXuB+AuUBk1IK5qvL110lauc+vJBImdQgX
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="314193666"
+X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
+   d="scan'208";a="314193666"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 09:28:10 -0800
+X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
+   d="scan'208";a="530382515"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.60])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 09:28:10 -0800
+Date:   Thu, 17 Feb 2022 09:28:09 -0800
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+Cc:     x86@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>
+Subject: Re: [RFC PATCH 1/2] x86/mce: Handle AMD threshold interrupt storms
+Message-ID: <Yg6FqR2cMZDwdBdi@agluck-desk3.sc.intel.com>
+References: <20220217141609.119453-1-Smita.KoralahalliChannabasappa@amd.com>
+ <20220217141609.119453-2-Smita.KoralahalliChannabasappa@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC V2 17/21] watchdog/dev: Add tracepoints
-Content-Language: en-US
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Peter.Enderborg@sony.com" <Peter.Enderborg@sony.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-trace-devel@vger.kernel.org" 
-        <linux-trace-devel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-References: <cover.1644830251.git.bristot@kernel.org>
- <e67874c8b676ea8dfe38679efa25363889bb1e76.1644830251.git.bristot@kernel.org>
- <96f418b4-0ba8-01fe-ead0-2028bfc42560@sony.com>
- <ba924008-c0ab-4800-aac4-d9d9ae930c32@kernel.org>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <ba924008-c0ab-4800-aac4-d9d9ae930c32@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217141609.119453-2-Smita.KoralahalliChannabasappa@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 08:27, Daniel Bristot de Oliveira wrote:
-> Hi Peter
+On Thu, Feb 17, 2022 at 08:16:08AM -0600, Smita Koralahalli wrote:
+> Extend the logic of handling CMCI storms to AMD threshold interrupts.
 > 
-> On 2/16/22 17:01, Peter.Enderborg@sony.com wrote:
->> On 2/14/22 11:45, Daniel Bristot de Oliveira wrote:
->>> Add a set of tracepoints, enabling the observability of the watchdog
->>> device interactions with user-space.
->>>
->>> The events are:
->>> 	watchdog:watchdog_open
->>> 	watchdog:watchdog_close
->>> 	watchdog:watchdog_start
->>> 	watchdog:watchdog_stop
->>> 	watchdog:watchdog_set_timeout
->>> 	watchdog:watchdog_ping
->>> 	watchdog:watchdog_nowayout
->>> 	watchdog:watchdog_set_keep_alive
->>> 	watchdog:watchdog_keep_alive
->>
->> Some watchdogs have a bark functionality, I think it should be event for that too.
->>
-> 
-> I understand. The problems is that I do not see the bark abstraction in the
-> watchdog_dev layer.
-> 
+> Similar to CMCI storm handling, keep track of the rate at which each
+> processor sees interrupts. If it exceeds threshold, disable interrupts
+> and switch to polling of machine check banks.
 
-I don't even know what "bark functionality" means. A new term for pretimeout ?
-Something else ?
+I've been sitting on some partially done patches to re-work
+storm handling for Intel ... which rips out all the existing
+storm bits and replaces with something all new. I'll post the
+2-part series as replies to this.
 
-Guenter
+Two-part motivation:
 
-> In the case I am investigating (the safety_monitor/safety_app) the bark is
-> outside of the "OS" view, it is an hardware action - like. shutdown.
-> 
-> Am I missing something? Thoughts?
-> 
-> -- Daniel
+1) Disabling CMCI globally is an overly big hammer (as you note
+in your patches which to a more gentle per-CPU disable.
 
+2) Intel signals some UNCORRECTED errors using CMCI (yes, turns
+out that was a poorly chosen name given the later evolution of
+the architecture). Since we don't want to miss those, the proposed
+storm code just bumps the threshold to (almost) maximum to mitigate,
+but not eliminate the storm. Note that the threshold only applies
+to corrected errors.
+
+-Tony
