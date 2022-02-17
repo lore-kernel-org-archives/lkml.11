@@ -2,245 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2012AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C06DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242011AbiBQOml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:42:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38304 "EHLO
+        id S242013AbiBQOnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:43:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241975AbiBQOmd (ORCPT
+        with ESMTP id S236241AbiBQOnK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:42:33 -0500
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 06:42:15 PST
-Received: from esa4.mentor.iphmx.com (esa4.mentor.iphmx.com [68.232.137.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C881EA710;
-        Thu, 17 Feb 2022 06:42:15 -0800 (PST)
-IronPort-SDR: mYI/ABF/DRwGmr1JDfW7M1EEflyDLpZ/u/DtTUwaTAhdB+IY4z1Iv0/4Q4eCyrZ0TEJ02MIMDk
- bT3ZfG29L6GIXSNvfhzHmTpvA+0OVmKLDV4uHE3MFTYvLgMqvi1I3IqY9a2qbp1E9VOec4niQO
- g1uqKshddxrdVRjTPlppkpc6fju1h36WJxRZwelxnlYFMP3mbnd7UnfgiuEM8ByYfVW0LHeh/q
- qagJPmN6avl2lPeNvEmUjrFD4qrgeV8Gv2IHFiRoXWCoMX1R0Rb7JqM1SBSXS7vXorEBKNFYX7
- mAJUz/FNyMnYqu2nOonSf820
-X-IronPort-AV: E=Sophos;i="5.88,376,1635235200"; 
-   d="scan'208";a="72081798"
-Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
-  by esa4.mentor.iphmx.com with ESMTP; 17 Feb 2022 06:41:12 -0800
-IronPort-SDR: 5vO35a3HQ31nmaqSObbk0ZxQamAwBV886ZZr/ckDFS4PvNtTl6wqfs1VyCVw4gV19AYTqWfRbN
- fIOS1bbxoDFnJs4ghqhVoIZOvwGLfvMXV1t6w5hr5J0WPI7IkZND3mUwtYMcM8m/nT+AXS0Ee+
- 55jiF0CzanTegedPQuVhZFc9pKILPVyEncZNNgPjiba9uCiul64Q/Ttj0iP6qbe4T6Viz6zjKM
- QTg6Ys0BmPc6ekxSjWj/GlLTGNilU+jzAxv41tcCMTkLldcCnN3gTPVASIZiVwTS1ufu7fBr3y
- TkY=
-From:   Andrew Gabbasov <andrew_gabbasov@mentor.com>
-To:     'Geert Uytterhoeven' <geert+renesas@glider.be>,
-        'Wolfram Sang' <wsa+renesas@sang-engineering.com>
-CC:     'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>,
-        'Linux I2C' <linux-i2c@vger.kernel.org>,
-        'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>,
-        "Surachari, Bhuvanesh" <Bhuvanesh_Surachari@mentor.com>
-References: <20210922160649.28449-1-andrew_gabbasov@mentor.com> <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>    
-In-Reply-To: 
-Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
-Date:   Thu, 17 Feb 2022 17:40:56 +0300
-Organization: Mentor Graphics Corporation
-Message-ID: <000001d8240c$65be7de0$313b79a0$@mentor.com>
+        Thu, 17 Feb 2022 09:43:10 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A421EC078
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:42:55 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id d23so10355477lfv.13
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:42:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ts6Q5aU6z5e843FkCdgAsd2jZ75V28LWR4qBK2HlY2M=;
+        b=x69GWspS+ZE02gF5g5h6YrJ5F9MOtGPAMM1aFNmmLzGQIPmxsxbzE+AEqnC7kCygvO
+         F8Ia5X3Y7Lcix98CFzbpUIeIdFEX/1NtKAFUsGNRPBhATJFDwdoCZQYKvoY4l2a1vT+Z
+         eVgNFOIp9ThT/Bffchaj5BIBM7MufXIbUQiN9bWZVan6tfpsbXXak1sj/VHeLP6OV+60
+         YgP622l5BWjozb6JAjI7X44jz23q1LSJdIcd5tbTn7n0zUAfUGhU1eJonI0NIPI0Dl+Q
+         REk0X5ye8LvInZCT0qnwbgMixmoDMNIdNi440nHFGr24GO3U242113B0OTIJmfZeAqvU
+         MRtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ts6Q5aU6z5e843FkCdgAsd2jZ75V28LWR4qBK2HlY2M=;
+        b=rFcL7TI/ZiGG7hpdPW/HMJny6uCdAcJWy2S0bWAcplEwPY6v5IPWxC+q3pzRGJUwJB
+         kVxn489ceeQb1u37EWRX8rC7v4767sE49EYNrdiGiKkbl459HpGgryK0+afanJwHz708
+         8v6exWCYlhet7AW22SeKr858EVv06mw5l0ORP8sN6quYIxVbeasaWr1Mx3dFA2qWCkbv
+         tM/N6aVC0XyQqx4AyCpQG7yBCapxJqiM1wDGz0GzflkHO0Y/F2/LAIVdJUVe9WOoVv/e
+         0wBRE9qMjIfhdexJolFwlG27FErpk51aRRbv2GgII1Do1EOYeJww6SBOjxB4LyauVY2B
+         QnQQ==
+X-Gm-Message-State: AOAM532AOZqXkWr+9IgTfszCZb7ydQyfzoNEYrB/A+fqn/3hJdEiyqcE
+        Y3cq0nkQwk1RCS/TTHRjKVUr+5p0rb6zrLVD370mmQ==
+X-Google-Smtp-Source: ABdhPJxCOV7PZ4CcfKf84sygNoWNsUkVRswd4yWyuMIsrE4HLPhKvH7e1QzsOofjNnZN240GhAnHQUqJiTKavlwY0YA=
+X-Received: by 2002:a05:6512:3604:b0:443:5d4b:3760 with SMTP id
+ f4-20020a056512360400b004435d4b3760mr2220527lfs.358.1645108973676; Thu, 17
+ Feb 2022 06:42:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQHXue1eCQdNXjaiK021FrevUeTu7qvGRbCQgEMVGxCAUkv+EIAYU0UAgCSk5iA=
-Content-Language: en-us
-X-Originating-IP: [137.202.0.90]
-X-ClientProxiedBy: svr-ies-mbx-11.mgc.mentorg.com (139.181.222.11) To
- svr-ies-mbx-02.mgc.mentorg.com (139.181.222.2)
+References: <3beef2c6ae4878eb31fdb16988a1fcedc7ee143c.camel@dd-wrt.com>
+In-Reply-To: <3beef2c6ae4878eb31fdb16988a1fcedc7ee143c.camel@dd-wrt.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 17 Feb 2022 15:42:17 +0100
+Message-ID: <CAPDyKFo5SLtcVWPuMOvhWFFYGEX8Q3PUvX-U_waX4TVjm=fEoA@mail.gmail.com>
+Subject: Re: Shutdown hang on Cavium thunderX eMMC
+To:     Daniel Danzberger <daniel@dd-wrt.com>
+Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alcooperx@gmail.com, adrian.hunter@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Geert, Wolfram,
+On Tue, 15 Feb 2022 at 10:52, Daniel Danzberger <daniel@dd-wrt.com> wrote:
+>
+> Hi,
+>
+> the below commit causes a shutodown hang on my octeontx platforms
+> (aarch64) with Cavium ThunderX eMMC
+>
+> --
+> commit 66c915d09b942fb3b2b0cb2f56562180901fba17
+> Author: Ulf Hansson <ulf.hansson@linaro.org>
+> Date:   Fri Dec 3 15:15:54 2021 +0100
+>
+>     mmc: core: Disable card detect during shutdown
+> --
+>
+> On shutdown, the __mmc_stop_host() call blocks by waiting for
+> mmc_detect() to complete, but it never does.
+> The second stack trace below shows it's been waiting forever for an
+> mmc_send_status() request to complete.
 
-Could you please let us know your opinion on this patch
-and further requirements, if any.
+Looks like the root to the problem is that the mmc_send_status()
+request is hanging the cavium mmc host driver.
 
-Thanks!
+Is that instance of the mmc host driver functional at all? I mean, it
+looks like the host driver is hanging already before the system is
+being shutdown, right?
 
-Best regards,
-Andrew
+Kind regards
+Uffe
 
-> -----Original Message-----
-> From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> Sent: Tuesday, January 25, 2022 9:46 AM
-> To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
-> Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux Kernel
-> Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
-> Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
-> 
-> Hello Geert, Wolfram,
-> 
-> Any feedback on the patch, please?
-> 
-> Thanks.
-> 
-> Best regards,
-> Andrew
-> 
-> > -----Original Message-----
-> > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> > Sent: Sunday, January 09, 2022 10:20 PM
-> > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
-> > Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux Kernel
-> > Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
-> > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
-> >
-> > Hello Geert, Wolfram,
-> >
-> > Could you please let me know your opinion on version 2 of this patch,
-> > that addressed your earlier review comments?
-> >
-> > https://lore.kernel.org/all/20211006182314.10585-1-andrew_gabbasov@mentor.com/
-> >
-> > Does it still need any further modifications or are you going to promote it further upstream?
-> >
-> > Thanks.
-> >
-> > Best regards,
-> > Andrew
-> >
-> > > -----Original Message-----
-> > > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> > > Sent: Thursday, November 18, 2021 1:35 PM
-> > > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
-> > > Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux
-> Kernel
-> > > Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
-> > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> > > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
-> > >
-> > > Hello Geert, Wolfram,
-> > >
-> > > Do you have any feedback on version 2 of this patch, that was submitted
-> > > after your review comments below?
-> > >
-> > > https://lore.kernel.org/all/20211006182314.10585-1-andrew_gabbasov@mentor.com/
-> > >
-> > > Thanks!
-> > >
-> > > Best regards,
-> > > Andrew
-> > >
-> > > > -----Original Message-----
-> > > > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> > > > Sent: Wednesday, October 06, 2021 9:12 PM
-> > > > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
-> > > > Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Linux I2C <linux-i2c@vger.kernel.org>; Linux Kernel
-> > > > Mailing List <linux-kernel@vger.kernel.org>; Wolfram Sang <wsa+renesas@sang-engineering.com>; Surachari,
-> > > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> > > > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
-> > > >
-> > > > Hi Geert,
-> > > >
-> > > > Thank you for your review!
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > > Sent: Tuesday, October 05, 2021 4:32 PM
-> > > > > To: Gabbasov, Andrew <Andrew_Gabbasov@mentor.com>
-> > > > > Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Linux I2C <linux-i2c@vger.kernel.org>; Linux
-> Kernel
-> > > > > Mailing List <linux-kernel@vger.kernel.org>; Wolfram Sang <wsa+renesas@sang-engineering.com>; Surachari,
-> > > > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> > > > > Subject: Re: [PATCH] i2c: rcar: add SMBus block read support
-> > > > >
-> > > > > Hi Andrew,
-> > > > >
-> > > > > On Wed, Sep 22, 2021 at 6:14 PM Andrew Gabbasov
-> > > > > <andrew_gabbasov@mentor.com> wrote:
-> > > > > > The smbus block read is not currently supported for rcar i2c devices.
-> > > > > > This patchset adds the support to rcar i2c bus so that blocks of data
-> > > > > > can be read using SMbus block reads.(using i2c_smbus_read_block_data()
-> > > > > > function from the i2c-core-smbus.c).
-> > > > > >
-> > > > > > Inspired by commit 8e8782c71595 ("i2c: imx: add SMBus block read support")
-> > > > > >
-> > > > > > This patch (adapted) was tested with v4.14, but due to lack of real
-> > > > > > hardware with SMBus block read operations support, using "simulation",
-> > > > > > that is manual analysis of data, read from plain I2C devices with
-> > > > > > SMBus block read request.
-> > > > > >
-> > > > > > Signed-off-by: Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>
-> > > > > > Signed-off-by: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> > > > >
-> > > > > Thanks for your patch!
-> > > > >
-> > > > > > --- a/drivers/i2c/busses/i2c-rcar.c
-> > > > > > +++ b/drivers/i2c/busses/i2c-rcar.c
-> > > > > > @@ -429,9 +431,16 @@ static bool rcar_i2c_dma(struct rcar_i2c_priv *priv)
-> > > > > >                 /*
-> > > > > >                  * The last two bytes needs to be fetched using PIO in
-> > > > > >                  * order for the STOP phase to work.
-> > > > > > +                *
-> > > > > > +                * For SMBus block read the first byte was received using PIO.
-> > > > >
-> > > > > So it might be easier to read, and more maintainable, to keep the
-> > > > > old assignments:
-> > > > >
-> > > > >     buf = priv->msg->buf;
-> > > > >     len = priv->msg->len - 2;
-> > > > >
-> > > > > and adjust them for SMBus afterwards:
-> > > > >
-> > > > >     if (block_data) {
-> > > > >             /* For SMBus block read the first byte was received using PIO */
-> > > > >             buf++;
-> > > > >             len--;
-> > > > >     }
-> > > > >
-> > > > > ?
-> > > > >
-> > > > > >                  */
-> > > > > > -               buf = priv->msg->buf;
-> > > > > > -               len = priv->msg->len - 2;
-> > > > > > +               if (block_data) {
-> > > > > > +                       buf = priv->msg->buf + 1;
-> > > > > > +                       len = priv->msg->len - 3;
-> > > > > > +               } else {
-> > > > > > +                       buf = priv->msg->buf;
-> > > > > > +                       len = priv->msg->len - 2;
-> > > > > > +               }
-> > > > > >         } else {
-> > > > > >                 /*
-> > > > > >                  * First byte in message was sent using PIO.
-> > > > >
-> > > > > And below we have another case handling buf and len :-(
-> > > > >
-> > > > > So perhaps:
-> > > > >
-> > > > >     buf = priv->msg->buf;
-> > > > >     len = priv->msg->len;
-> > > > >
-> > > > >     if (read) {
-> > > > >             /*
-> > > > >              * The last two bytes needs to be fetched using PIO in
-> > > > >              * order for the STOP phase to work.
-> > > > >              */
-> > > > >             len -= 2;
-> > > > >     }
-> > > > >     if (!read || block_data) {
-> > > > >             /* First byte in message was sent using PIO *
-> > > > >             buf++;
-> > > > >             len--;
-> > > > >     }
-> > > >
-> > > > Probably I was trying to minimize the changes ;-)
-> > > >
-> > > > However, I agree with you that the whole code fragment can be simplified
-> > > > and your variant indeed looks more clean and understandable.
-> > > > Thank you for your suggestion, I'll submit version 2 of the patch
-> > > > with this fragment changed.
-> > > >
-> > > > Thanks!
-> > > >
-> > > > Best regards,
-> > > > Andrew
-
+>
+>
+> [  394.251271] INFO: task procd:2715 blocked for more than 153 seconds.
+> [  394.257635]       Not tainted 5.10.96 #0
+> [  394.261552] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> disables this message.
+> [  394.269389] task:procd           state:D stack:    0 pid: 2715 ppid:
+> 1 flags:0x00000000
+> [  394.277749] dump_backtrace(regs = 0000000000000000 tsk =
+> 000000003cc20742)
+> [  394.284625] Call trace:
+> [  394.287069]  __switch_to+0x80/0xc0
+> [  394.290467]  __schedule+0x1f8/0x530
+> [  394.293961]  schedule+0x48/0xd0
+> [  394.297099]  schedule_timeout+0x98/0xd0
+> [  394.300931]  __wait_for_common+0xc4/0x1c4
+> [  394.304956]  wait_for_completion+0x20/0x2c
+> [  394.309050]  __flush_work.isra.0+0x184/0x31c
+> [  394.313329]  __cancel_work_timer+0xfc/0x170
+> [  394.317510]  cancel_delayed_work_sync+0x14/0x20
+> [  394.322038]  __mmc_stop_host+0x3c/0x50
+> [  394.325799]  mmc_host_classdev_shutdown+0x14/0x24
+> [  394.330500]  device_shutdown+0x120/0x250
+> [  394.334430]  __do_sys_reboot+0x1ec/0x290
+> [  394.338350]  __arm64_sys_reboot+0x24/0x30
+> [  394.342356]  do_el0_svc+0x74/0x120
+> [  394.345765]  el0_svc+0x14/0x20
+> [  394.348817]  el0_sync_handler+0xa4/0x140
+> [  394.352736]  el0_sync+0x164/0x180
+>
+>
+> [  735.262749] INFO: task kworker/0:0:5 blocked for more than 614
+> seconds.
+> [  735.269363]       Not tainted 5.10.96 #0
+> [  735.273296] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> disables this message.
+> [  735.281121] task:kworker/0:0     state:D stack:    0 pid:    5 ppid:
+> 2 flags:0x00000028
+> [  735.289490] Workqueue: events_freezable mmc_rescan
+> [  735.294288] Call trace:
+> [  735.296732]  __switch_to+0x80/0xc0
+> [  735.300131]  __schedule+0x1f8/0x530
+> [  735.303623]  schedule+0x48/0xd0
+> [  735.306761]  schedule_timeout+0x98/0xd0
+> [  735.310593]  __wait_for_common+0xc4/0x1c4
+> [  735.314606]  wait_for_completion+0x20/0x2c
+> [  735.318699]  mmc_wait_for_req_done+0x2c/0x100
+> [  735.323065]  mmc_wait_for_req+0xb0/0x100
+> [  735.326984]  mmc_wait_for_cmd+0x54/0x7c
+> [  735.330818]  mmc_send_status+0x5c/0x80
+> [  735.334573]  mmc_alive+0x18/0x24
+> [  735.337798]  _mmc_detect_card_removed+0x34/0x150
+> [  735.342412]  mmc_detect+0x28/0x90
+> [  735.345732]  mmc_rescan+0xd8/0x348
+> [  735.349132]  process_one_work+0x1d4/0x374
+> [  735.353147]  worker_thread+0x17c/0x4ec
+> [  735.356892]  kthread+0x124/0x12c
+> [  735.360117]  ret_from_fork+0x10/0x34
+>
+>
+>
+> I only could test this with 5.10.96 for now.
+>
+>
+> --
+> Regards
+>
+> Daniel Danzberger
+> embeDD GmbH, Alter Postplatz 2, CH-6370 Stans
