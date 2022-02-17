@@ -2,215 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240174AbiBQLkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 06:40:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56666 "EHLO
+        id S238205AbiBQLny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 06:43:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237599AbiBQLkX (ORCPT
+        with ESMTP id S232390AbiBQLnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 06:40:23 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F7E2AAB10;
-        Thu, 17 Feb 2022 03:40:05 -0800 (PST)
-X-UUID: c5e553f974f445b0a96fafc288093e60-20220217
-X-UUID: c5e553f974f445b0a96fafc288093e60-20220217
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 67241806; Thu, 17 Feb 2022 19:40:01 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 17 Feb 2022 19:40:00 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 19:39:58 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v5 30/34] iommu/mediatek: Change the domid to iova_region_id
-Date:   Thu, 17 Feb 2022 19:34:49 +0800
-Message-ID: <20220217113453.13658-31-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220217113453.13658-1-yong.wu@mediatek.com>
-References: <20220217113453.13658-1-yong.wu@mediatek.com>
+        Thu, 17 Feb 2022 06:43:52 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69106767C
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:43:36 -0800 (PST)
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 9E6BC3F1D0
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:43:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645098214;
+        bh=3aXOIs5DNsSKgW4lPlRH0E+Ngbbzp4EOvtZ59naGoig=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=cjQ6fzIwRzlwVd91PhJZeRn+6TBH9gUF1RtPgvZbSshGgFVuAJZRp85V+zIGK7Oz0
+         aVXnbrFLUe6ng6E9yKX4MBZ8EC5a6ZpxBW1zAbmWN4gL5rXdv4U5tLGOTE4YaNluqe
+         Kp6/c604HBSQ8uL1FgfXADdGN5ov6HyoOcHCQt6tl9QjX3N7P+yrgxH/k2V3amDoHl
+         76kWQGgf+rFNprIK14+X5e5njxkiS/SloRbbH9OoMl9IkCf0nJMOLJQDC0U3bpOfXV
+         +QVoo2atdlAKPO+1wq/wwc4WhWjMXFxyV3nsq2g7MB6EZKUw5AkgfwK1Uq8TBHyirT
+         NaMkgbrn5Yv2g==
+Received: by mail-ed1-f70.google.com with SMTP id dy17-20020a05640231f100b00412897682b4so1570212edb.18
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:43:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3aXOIs5DNsSKgW4lPlRH0E+Ngbbzp4EOvtZ59naGoig=;
+        b=uxflf3JC7hT04N7a+S+dFvhgwX2K9agHGIT0Ipkig0VjTiRiCtzo9U5IvNi2/EyBDn
+         dSSoI2wP5oMeUFekhBPSkG3FKhI2DJpUWMwuXG7jqZ1co39l9kMqIN7NlasVNn+NPxLh
+         XmscaIJYuDXzDxXPTuIyNNKVqrFp6QUYGVWCBFhUgUUsuMvZS83JsqVpQTNMsGK7/+gY
+         0h7adrQag1en/VMSscz21K/Ud6FW8WKnSClXfJh8/OgrV6DBgaGHBsLpdLJnqKifpjuQ
+         hrje//0TdURNl4nGeWZeZR1eATyGNxm7jYuF9yNan2DiRO84NPJI1TOMjHKSBSiMIXxW
+         r8Fg==
+X-Gm-Message-State: AOAM533Y89kR14KaBj3opa6DUJ9JgNnmFTZAId5Z/4oRJa877sZrYdL5
+        l6Zn5ydX//WWhBz1OiXojrx8+542bhyqWSgsY3lTyH/p5pd2FIA1WwmCe6+vsX0CIO8JkJieOdV
+        D8pvrTqKnxZmn8yMOC20amaNK0sTfjWHM+Iq8CHSHHQ==
+X-Received: by 2002:a17:906:6158:b0:6ce:61d6:f243 with SMTP id p24-20020a170906615800b006ce61d6f243mr1988830ejl.268.1645098214316;
+        Thu, 17 Feb 2022 03:43:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxnueVtVPrDA18T6no1BS6n/l07Q8n/Fr3Su2uWY+sD+U260MD/MJML+fbL+MqaXEB6RoP9ig==
+X-Received: by 2002:a17:906:6158:b0:6ce:61d6:f243 with SMTP id p24-20020a170906615800b006ce61d6f243mr1988803ejl.268.1645098214033;
+        Thu, 17 Feb 2022 03:43:34 -0800 (PST)
+Received: from [192.168.0.111] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id e27sm1130144ejm.18.2022.02.17.03.43.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 03:43:33 -0800 (PST)
+Message-ID: <4c1c1a36-2e6f-a061-5c2b-f2aac31b2d0e@canonical.com>
+Date:   Thu, 17 Feb 2022 12:43:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH 1/6] dt-bindings: display: imx: Add EPDC
+Content-Language: en-US
+To:     Andreas Kemnade <andreas@kemnade.info>
+Cc:     p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
+        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, alistair@alistair23.me,
+        samuel@sholland.org, josua.mayer@jm0.eu,
+        letux-kernel@openphoenux.org
+References: <20220206080016.796556-1-andreas@kemnade.info>
+ <20220206080016.796556-2-andreas@kemnade.info>
+ <36445c86-036e-0942-a9a4-919595886c67@canonical.com>
+ <20220217123112.3ba70000@aktux>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220217123112.3ba70000@aktux>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prepare for adding bankid, also no functional change.
+On 17/02/2022 12:31, Andreas Kemnade wrote:
+> On Thu, 17 Feb 2022 10:21:15 +0100
+> Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+> 
+>> On 06/02/2022 09:00, Andreas Kemnade wrote:
+>>> Add a binding for the Electrophoretic Display Controller found at least
+>>> in the i.MX6.
+>>> The timing subnode is directly here to avoid having display parameters
+>>> spread all over the plate.
+>>>
+>>> Supplies are organized the same way as in the fbdev driver in the
+>>> NXP/Freescale kernel forks. The regulators used for that purpose,
+>>> like the TPS65185, the SY7636A and MAX17135 have typically a single bit to
+>>> start a bunch of regulators of higher or negative voltage with a
+>>> well-defined timing. VCOM can be handled separately, but can also be
+>>> incorporated into that single bit.
+>>>
+>>> Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+>>> ---
+>>>  .../bindings/display/imx/fsl,mxc-epdc.yaml    | 159 ++++++++++++++++++
+>>>  1 file changed, 159 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/display/imx/fsl,mxc-epdc.yaml
+>>>
+> [..]
+> 
+>>> +
+>>> +  DISPLAY-supply:
+>>> +    description:
+>>> +      A couple of +/- voltages automatically powered on in a defintive order  
+>>
+>> Typo, definitive?
+>>
+> yes, of course.
+> 
+>>> +
+>>> +  VCOM-supply:
+>>> +    description: compensation voltage
+>>> +
+>>> +  V3P3-supply:  
+>>
+>> All of supplies names - lowercase.
+>>
+>>> +    description: V3P3 supply
+>>> +
+>>> +  epd-thermal-zone:
+>>> +    description:
+>>> +      Zone to get temperature of the EPD from, practically ambient temperature.  
+>>
+>> Is it a phandle?
+>>
+> a string used in
+>        of_property_read_string(priv->drm.dev->of_node,
+>                                 "epd-thermal-zone", &thermal);
+>         if (thermal) {
+>                 priv->thermal = thermal_zone_get_zone_by_name(thermal);
+>                 if (IS_ERR(priv->thermal))
+>                         return dev_err_probe(priv->drm.dev, PTR_ERR(priv->thermal),
+>                                              "unable to get thermal");
+>         }
 
-In the previous SoC, each a iova_region is a domain; In the multi-banks
-case, each a bank is a domain, then the original function name
-"mtk_iommu_get_domain_id" is not proper. Use "iova_region_id" instead of
-"domain_id".
+OK, then:
+$ref: /schemas/types.yaml#/definitions/string
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 46 +++++++++++++++++++--------------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+> 
+> [...]
+>>> +examples:
+>>> +  - |
+>>> +    #include <dt-bindings/clock/imx6sl-clock.h>
+>>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+>>> +
+>>> +    epdc: epdc@20f4000 {  
+>>
+>> Generic node name, e.g. display-controller
+>>
+> hmm, does IHMO not make too much sense here. E.g. in the imx6sll.dtsi
+> we have lcd-controller next to it. So having epd-controller? But that
+> is exactly what epdc stands for.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index a58c0dbefedf..86d235d22db1 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -478,8 +478,8 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static int mtk_iommu_get_domain_id(struct device *dev,
--				   const struct mtk_iommu_plat_data *plat_data)
-+static int mtk_iommu_get_iova_region_id(struct device *dev,
-+					const struct mtk_iommu_plat_data *plat_data)
- {
- 	const struct mtk_iommu_iova_region *rgn = plat_data->iova_region;
- 	const struct bus_dma_region *dma_rgn = dev->dma_range_map;
-@@ -509,7 +509,7 @@ static int mtk_iommu_get_domain_id(struct device *dev,
- }
- 
- static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
--			    bool enable, unsigned int domid)
-+			    bool enable, unsigned int regionid)
- {
- 	struct mtk_smi_larb_iommu    *larb_mmu;
- 	unsigned int                 larbid, portid;
-@@ -525,12 +525,12 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
- 		if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
- 			larb_mmu = &data->larb_imu[larbid];
- 
--			region = data->plat_data->iova_region + domid;
-+			region = data->plat_data->iova_region + regionid;
- 			larb_mmu->bank[portid] = upper_32_bits(region->iova_base);
- 
--			dev_dbg(dev, "%s iommu for larb(%s) port %d dom %d bank %d.\n",
-+			dev_dbg(dev, "%s iommu for larb(%s) port %d region %d rgn-bank %d.\n",
- 				enable ? "enable" : "disable", dev_name(larb_mmu->dev),
--				portid, domid, larb_mmu->bank[portid]);
-+				portid, regionid, larb_mmu->bank[portid]);
- 
- 			if (enable)
- 				larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
-@@ -556,7 +556,7 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
- 
- static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
- 				     struct mtk_iommu_data *data,
--				     unsigned int domid)
-+				     unsigned int region_id)
- {
- 	const struct mtk_iommu_iova_region *region;
- 	struct mtk_iommu_domain	*m4u_dom;
-@@ -595,7 +595,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
- 
- update_iova_region:
- 	/* Update the iova region for this domain */
--	region = data->plat_data->iova_region + domid;
-+	region = data->plat_data->iova_region + region_id;
- 	dom->domain.geometry.aperture_start = region->iova_base;
- 	dom->domain.geometry.aperture_end = region->iova_base + region->size - 1;
- 	dom->domain.geometry.force_aperture = true;
-@@ -631,18 +631,18 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 	struct device *m4udev = data->dev;
- 	struct mtk_iommu_bank_data *bank;
- 	unsigned int bankid = 0;
--	int ret, domid;
-+	int ret, region_id;
- 
--	domid = mtk_iommu_get_domain_id(dev, data->plat_data);
--	if (domid < 0)
--		return domid;
-+	region_id = mtk_iommu_get_iova_region_id(dev, data->plat_data);
-+	if (region_id < 0)
-+		return region_id;
- 
- 	mutex_lock(&dom->mutex);
- 	if (!dom->bank) {
- 		/* Data is in the frstdata in sharing pgtable case. */
- 		frstdata = mtk_iommu_get_frst_data(hw_list);
- 
--		ret = mtk_iommu_domain_finalise(dom, frstdata, domid);
-+		ret = mtk_iommu_domain_finalise(dom, frstdata, region_id);
- 		if (ret) {
- 			mutex_unlock(&dom->mutex);
- 			return -ENODEV;
-@@ -673,7 +673,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 	}
- 	mutex_unlock(&data->mutex);
- 
--	return mtk_iommu_config(data, dev, true, domid);
-+	return mtk_iommu_config(data, dev, true, region_id);
- 
- err_unlock:
- 	mutex_unlock(&data->mutex);
-@@ -813,22 +813,22 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 	struct mtk_iommu_data *c_data = dev_iommu_priv_get(dev), *data;
- 	struct list_head *hw_list = c_data->hw_list;
- 	struct iommu_group *group;
--	int domid;
-+	int regionid;
- 
- 	data = mtk_iommu_get_frst_data(hw_list);
- 	if (!data)
- 		return ERR_PTR(-ENODEV);
- 
--	domid = mtk_iommu_get_domain_id(dev, data->plat_data);
--	if (domid < 0)
--		return ERR_PTR(domid);
-+	regionid = mtk_iommu_get_iova_region_id(dev, data->plat_data);
-+	if (regionid < 0)
-+		return ERR_PTR(regionid);
- 
- 	mutex_lock(&data->mutex);
--	group = data->m4u_group[domid];
-+	group = data->m4u_group[regionid];
- 	if (!group) {
- 		group = iommu_group_alloc();
- 		if (!IS_ERR(group))
--			data->m4u_group[domid] = group;
-+			data->m4u_group[regionid] = group;
- 	} else {
- 		iommu_group_ref_get(group);
- 	}
-@@ -862,14 +862,14 @@ static void mtk_iommu_get_resv_regions(struct device *dev,
- 				       struct list_head *head)
- {
- 	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
--	unsigned int domid = mtk_iommu_get_domain_id(dev, data->plat_data), i;
-+	unsigned int regionid = mtk_iommu_get_iova_region_id(dev, data->plat_data), i;
- 	const struct mtk_iommu_iova_region *resv, *curdom;
- 	struct iommu_resv_region *region;
- 	int prot = IOMMU_WRITE | IOMMU_READ;
- 
--	if ((int)domid < 0)
-+	if ((int)regionid < 0)
- 		return;
--	curdom = data->plat_data->iova_region + domid;
-+	curdom = data->plat_data->iova_region + regionid;
- 	for (i = 0; i < data->plat_data->iova_region_nr; i++) {
- 		resv = data->plat_data->iova_region + i;
- 
--- 
-2.18.0
+Still we have "lcd-controller", not "lcdc". Since this is only for epd,
+then "epd-controller" seems reasonable. The same as we use
+"interrupt-controller" (not "ic"), "dma-controller" (not "dmac" or "dc")
+and so on. See also list of recommended generic names from DT specification.
 
+Best regards,
+Krzysztof
