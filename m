@@ -2,95 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F99FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A71C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244381AbiBQSdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:33:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59102 "EHLO
+        id S244493AbiBQSee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:34:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244490AbiBQSd3 (ORCPT
+        with ESMTP id S244498AbiBQSe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:33:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB0D38A0;
-        Thu, 17 Feb 2022 10:32:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C4A161B01;
-        Thu, 17 Feb 2022 18:32:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 266F8C340E8;
-        Thu, 17 Feb 2022 18:32:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645122748;
-        bh=8YextsepZgUr4+oe5f01LRtpOeJxsq+lsISRRrHwJn0=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=VNBraLvw8tzhp5HQKFZZQSD/eEBmA9GYmGDGvVdYGnsnSsO4hMlTzHp8ezULp/NLk
-         h7CPFgftAYTLPNyj3edHai5GLyuHYAjLYbMroo6G6AvP4gKXYxxSTkH2BQzpOX63/C
-         vuRkB0sdMBQOZRaBPa8ElUHxUVBxqAky1tvm1UkCt2YKRg0qCC3TEPT6v92SD0zqiy
-         OeCX8+5JHLVdBgIHsHtg+1e5Cfl1REQXfB018lH2tCaqMm6UAYDJrMAn5EW4TnhdV0
-         iUztK2QZBL6h8tvOPfVqOp03wTgeLulMk54ltLJV5eFFkPaVOztdyqnrducnSFHq0n
-         /Di2Lbd1EjYnQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     Jon Lin <jon.lin@rock-chips.com>
-Cc:     linux-spi@vger.kernel.org, heiko@sntech.de,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-In-Reply-To: <20220216014028.8123-1-jon.lin@rock-chips.com>
-References: <20220216014028.8123-1-jon.lin@rock-chips.com>
-Subject: Re: (subset) [PATCH v3 0/6] New support and problem adjustment of SPI rockchip
-Message-Id: <164512274685.3993181.4255845764381770585.b4-ty@kernel.org>
-Date:   Thu, 17 Feb 2022 18:32:26 +0000
+        Thu, 17 Feb 2022 13:34:26 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08912C138
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:32:55 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id 9so2206442ily.11
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:32:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5szz1MBv04IhvJQTuicCFg9n79Ee81Ajv+vxZc2S/PM=;
+        b=Ps04vo2SWQavePQsV73gJIC/NPh2WNLyzcfayq16ntkFlSX2GTe8l3tSz+/ZOQ9rwr
+         zjo01q4nEDnBnAhJlmw5sXQNDj2G1pcjNSlcwU7ttHkcHvmigK5ilr4BpG1+9IQPOz5g
+         78kgbQznhJGSMhqaf5gQWhN18EQZoyYiT7n6vBB1NslIhm3kX6QNzUpi9z4YP3tV5dfK
+         4eBktFr9Auh9VJDfwDeGIjXDGaKeCUpoPmXQdPIsXDrTo7wljGR1K0YRvfL8pIe6WcD+
+         Vg00xInx0qnd6EqlKxcFdmMFNd1MtCh9blhKdzrCGvgbv6W0sq3zhGc8LZruaHc47DWE
+         ZnPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5szz1MBv04IhvJQTuicCFg9n79Ee81Ajv+vxZc2S/PM=;
+        b=PqR7hbiIi9od0CGayeRe/5i7luZ08HEtuIDUuns+EnJxSdjlS3NYUM1oq2tmjujUpV
+         rUsHXKd8VHSFoGBu+K68huV0chWGII67v+SEcksfn3AInh1P24Qocxd5J0jb3JhIK2T+
+         81PWUgMp6Gt+Yv0xGZ7kR7b8cbVLLcRm9NfnhEyVHI+EO8dyttp7gjPcw8SzyvWdKFuB
+         7vSIRBxyZOZj8sVqh+CLU4c3HJH4Yuljswd6NMTnAj3CeK0h0nyU6T/l0u+CVNvX66sN
+         IADzKj4YUQBG+L5O6lnlXH15v98JZLs9G+3e1PGV8yKr0n9gwUPOhaKoPgfVW8ypykL4
+         V8+Q==
+X-Gm-Message-State: AOAM530X+zZ+60nxRD0z9U7Gyvu3wI+v174H/u0fkbjn3/ZMHryLCdww
+        YGAydi3A7OYcmrPRqsTS7v2WlmTiwpWh3kfEv8h3WA==
+X-Google-Smtp-Source: ABdhPJxQ+YQ+5rUSAu8FuSrPRvVUDrwPDiJ0gRVMwUHY6yjrAD08IqApzeUOhk0e4FuIDC6MRxrp88SyyUw6El+2EaI=
+X-Received: by 2002:a05:6e02:1c04:b0:2be:4c61:20f4 with SMTP id
+ l4-20020a056e021c0400b002be4c6120f4mr2814376ilh.245.1645122774541; Thu, 17
+ Feb 2022 10:32:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <00000000000073b3e805d7fed17e@google.com> <462fa505-25a8-fd3f-cc36-5860c6539664@iogearbox.net>
+ <CAPhsuW6rPx3JqpPdQVdZN-YtZp1SbuW1j+SVNs48UVEYv68s1A@mail.gmail.com>
+ <CAPhsuW5JhG07TYKKHRbNVtepOLjZ2ekibePyyqCwuzhH0YoP7Q@mail.gmail.com>
+ <CANp29Y64wUeARFUn8Z0fjk7duxaZ3bJM2uGuVug_0ZmhGG_UTA@mail.gmail.com> <CAPhsuW6YOv_xjvknt_FPGwDhuCuG5s=7Xt1t-xL2+F6UKsJf-w@mail.gmail.com>
+In-Reply-To: <CAPhsuW6YOv_xjvknt_FPGwDhuCuG5s=7Xt1t-xL2+F6UKsJf-w@mail.gmail.com>
+From:   Aleksandr Nogikh <nogikh@google.com>
+Date:   Thu, 17 Feb 2022 19:32:43 +0100
+Message-ID: <CANp29Y4YC_rSKAgkYTaPV1gcN4q4WeGMvs61P2wnMQEv=kiu8A@mail.gmail.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in bpf_jit_free
+To:     Song Liu <song@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        syzbot <syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Feb 2022 09:40:22 +0800, Jon Lin wrote:
-> Changes in v3:
-> - Support clear the bits of configure bits filed
-> 
-> Changes in v2:
-> - Fix patches should be at the start of the series
-> - Fix patches should be at the start of the series
-> - Delete useless messages
-> - Limit cs-high presetting to the chip select n <= 1
-> 
-> [...]
+Hi Song,
 
-Applied to
+On Wed, Feb 16, 2022 at 5:27 PM Song Liu <song@kernel.org> wrote:
+>
+> Hi Aleksandr,
+>
+> Thanks for your kind reply!
+>
+> On Wed, Feb 16, 2022 at 1:38 AM Aleksandr Nogikh <nogikh@google.com> wrote:
+> >
+> > Hi Song,
+> >
+> > Is syzkaller not doing something you expect it to do with this config?
+>
+> I fixed sshkey in the config, and added a suppression for hsr_node_get_first.
+> However, I haven't got a repro overnight.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+Oh, that's unfortunately not a very reliable thing. The bug has so far
+happened only once on syzbot, so it must be pretty rare. Maybe you'll
+have more luck with your local setup :)
 
-Thanks!
+You can try to run syz-repro on the log file that is available on the
+syzbot dashboard:
+https://github.com/google/syzkaller/blob/master/tools/syz-repro/repro.go
+Syzbot has already done it and apparently failed to succeed, but this
+is also somewhat probabilistic, especially when the bug is due to some
+rare race condition. So trying it several times might help.
 
-[3/6] spi: rockchip: Stop spi slave dma receiver when cs inactive
-      commit: 869f2c94db92f0f1d6acd0dff1c1ebb8160f5e29
-[4/6] spi: rockchip: Preset cs-high and clk polarity in setup progress
-      commit: 3a4bf922d42efa4e9a3dc803d1fd786d43e8a501
-[5/6] spi: rockchip: Suspend and resume the bus during NOIRQ_SYSTEM_SLEEP_PM ops
-      commit: e882575efc771f130a24322377dc1033551da11d
-[6/6] spi: rockchip: clear interrupt status in error handler
-      commit: 2fcdde56c44fe1cd13ce328128f509bbda2cdb41
+Also you might want to hack your local syzkaller copy a bit:
+https://github.com/google/syzkaller/blob/master/syz-manager/manager.go#L804
+Here you can drop the limit on the maximum number of repro attempts
+and make needLocalRepro only return true if crash.Title matches the
+title of this particular bug. With this change your local syzkaller
+instance won't waste time reproducing other bugs.
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+There's also a way to focus syzkaller on some specific kernel
+functions/source files:
+https://github.com/google/syzkaller/blob/master/pkg/mgrconfig/config.go#L125
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+--
+Best Regards,
+Aleksandr
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+>
+> >
+> > On Wed, Feb 16, 2022 at 2:38 AM Song Liu <song@kernel.org> wrote:
+> > >
+> > > On Mon, Feb 14, 2022 at 10:41 PM Song Liu <song@kernel.org> wrote:
+> > > >
+> > > > On Mon, Feb 14, 2022 at 3:52 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > > > >
+> > > > > Song, ptal.
+> > > > >
+> > > > > On 2/14/22 7:45 PM, syzbot wrote:
+> > > > > > Hello,
+> > > > > >
+> > > > > > syzbot found the following issue on:
+> > > > > >
+> > > > > > HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
+> > > > > > git tree:       bpf-next
+> > > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=10baced8700000
+> > > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
+> > > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=2f649ec6d2eea1495a8f
+> > >
+> > > How do I run the exact same syzkaller? I am doing something like
+> > >
+> > > ./bin/syz-manager -config qemu.cfg
+> > >
+> > > with the cfg file like:
+> > >
+> > > {
+> > >         "target": "linux/amd64",
+> > >         "http": ":56741",
+> > >         "workdir": "workdir",
+> > >         "kernel_obj": "linux",
+> > >         "image": "./pkg/mgrconfig/testdata/stretch.img",
+> >
+> > This image location looks suspicious - we store some dummy data for
+> > tests in that folder.
+> > Instances now run on buildroot-based images, generated with
+> > https://github.com/google/syzkaller/blob/master/tools/create-buildroot-image.sh
+>
+> Thanks for the information. I will give it a try.
+>
+> >
+> > >         "syzkaller": ".",
+> > >         "disable_syscalls": ["keyctl", "add_key", "request_key"],
+> >
+> > For our bpf instances, instead of disable_syscalls we use enable_syscalls:
+> >
+> > "enable_syscalls": [
+> > "bpf", "mkdir", "mount$bpf", "unlink", "close",
+> > "perf_event_open*", "ioctl$PERF*", "getpid", "gettid",
+> > "socketpair", "sendmsg", "recvmsg", "setsockopt$sock_attach_bpf",
+> > "socket$kcm", "ioctl$sock_kcm*", "syz_clone",
+> > "mkdirat$cgroup*", "openat$cgroup*", "write$cgroup*",
+> > "openat$tun", "write$tun", "ioctl$TUN*", "ioctl$SIOCSIFHWADDR",
+> > "openat$ppp", "syz_open_procfs$namespace"
+> > ]
+>
+> I will try with the same list. Thanks!
+>
+> Song
+>
+> >
+> > >         "suppressions": ["some known bug"],
+> > >         "procs": 8,
+> >
+> > We usually run with "procs": 6, but it's not that important.
+> >
+> > >         "type": "qemu",
+> > >         "vm": {
+> > >                 "count": 16,
+> > >                 "cpu": 2,
+> > >                 "mem": 2048,
+> > >                 "kernel": "linux/arch/x86/boot/bzImage"
+> > >         }
+> > > }
+> >
+> > Otherwise I don't see any really significant differences.
+> >
+> > --
+> > Best Regards
+> > Aleksandr
+> >
+> > >
+> > > Is this correct? I am using stretch.img from syzkaller site, and the
+> > > .config from
+> > > the link above.
+> > >
+> > > Thanks,
+> > > Song
+> > >
