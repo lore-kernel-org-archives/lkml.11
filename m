@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF032C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0205C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:22:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243078AbiBQQW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:22:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40214 "EHLO
+        id S243080AbiBQQXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:23:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243041AbiBQQWx (ORCPT
+        with ESMTP id S243079AbiBQQW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:22:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D62320ADBB;
-        Thu, 17 Feb 2022 08:22:38 -0800 (PST)
+        Thu, 17 Feb 2022 11:22:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F32225BD4D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:22:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43438B82362;
-        Thu, 17 Feb 2022 16:22:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61194C340E9;
-        Thu, 17 Feb 2022 16:22:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C2A860F2E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:22:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B331C340E9;
+        Thu, 17 Feb 2022 16:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645114956;
-        bh=wVvGcJR4l3gt7jdAyEG+jd928oSBFZz7g56i8F4aG9Y=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=j16fSdpSMjjHy8XkFnCr0a1GZiXYg4O8hyycv/1TbWR5V/1Hri+nd4MOq8QGeeoN8
-         gO5NsGLEs4WaqM5iPkBaadtA7HrasRZeqvZB2RY9Xw3ru3dR5TLWO6nNapYDefi0GE
-         9zCAaouf6ZYc2Toi9H1EDxMYfCG4sqc9dbXM0aR/qQY2ptk/uYhktwBRdKfTd/Kyoj
-         wq034nZhpQJlGSCY0ki1T+2/433xJJJN/j2UqczDa/Jv1DCtoJHaqlX069xwC3k6AD
-         ak7BCSnm1KnYGwNDH7oxJICR0fd0p2zpUKb9lfo/akW5Vj9+wKQ2x/NtkSB2HFYxit
-         mmwtD7WT8sP/g==
+        s=k20201202; t=1645114962;
+        bh=xfdhzSsjj/DTtlqONlbnm01z3Tz7AvHFA5SCuYuWvYw=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=QQbOk1qQ0tF9tKv+D3HjuPPNRu4RHLbTJC7w+LPZF0izCZdeU/QQyMvLakArAHRmT
+         hBgfF4BLtjqnW8AW0vvJJSfwca1xrlxXZnYsoSbxebt757v3EeP9q5ATonCPeK4oGC
+         s/2gIVZ5sEn+Osz6nXzCXDOOImTG5CfXrzPT5a//WIXQ4hi/03R7q34z1tLNpghaat
+         xwMOynTJ8mXbd91z3Hi4fkFLLRuK/I0ghHPWJfn+K+Xd0iqm01DzAumLIRdeMlBCih
+         uWkeFGV/VQ4cbZANR+1WxmPq9VWSKtxk52/EZ7g5QdpI224njNlodzh1eepFIYAOHL
+         LRaUv/YMaiA5g==
 From:   Mark Brown <broonie@kernel.org>
-To:     lgirdwood@gmail.com, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org, swboyd@chromium.org,
-        linux-arm-msm@vger.kernel.org, tiwai@suse.com,
-        bgoswami@codeaurora.org, judyhsiao@chromium.org,
-        bjorn.andersson@linaro.org, perex@perex.cz, rohitkr@codeaurora.org,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
-        srinivas.kandagatla@linaro.org, devicetree@vger.kernel.org
-Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-In-Reply-To: <1645017892-12522-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1645017892-12522-1-git-send-email-quic_srivasam@quicinc.com>
-Subject: Re: [PATCH] ASoC: codec: wcd938x: Update CTIA/OMTP switch control
-Message-Id: <164511495209.1843697.14605850089293661207.b4-ty@kernel.org>
-Date:   Thu, 17 Feb 2022 16:22:32 +0000
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Prasad Kumpatla <quic_pkumpatl@quicinc.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+In-Reply-To: <20220217085007.30218-1-quic_pkumpatl@quicinc.com>
+References: <20220217085007.30218-1-quic_pkumpatl@quicinc.com>
+Subject: Re: [PATCH v3] regmap-irq: Update interrupt clear register for proper reset
+Message-Id: <164511496093.1843761.5184860429642885960.b4-ty@kernel.org>
+Date:   Thu, 17 Feb 2022 16:22:40 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -54,22 +51,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Feb 2022 18:54:52 +0530, Srinivasa Rao Mandadapu wrote:
-> Convert gpio api's to gpio descriptor api's in CTIA/OMTP switch control.
-> Remove redundant NULL checks in swap_gnd_mic function.
+On Thu, 17 Feb 2022 14:20:07 +0530, Prasad Kumpatla wrote:
+> With the existing logic where clear_ack is true (HW doesn’t support
+> auto clear for ICR), interrupt clear register reset is not handled
+> properly. Due to this only the first interrupts get processed properly
+> and further interrupts are blocked due to not resetting interrupt
+> clear register.
 > 
-> Fixes: 013cc2aea0f6 ("ASoC: codec: wcd938x: Add switch control for selecting CTIA/OMTP Headset")
+> Example for issue case where Invert_ack is false and clear_ack is true:
 > 
-> 
+> [...]
 
 Applied to
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-linus
 
 Thanks!
 
-[1/1] ASoC: codec: wcd938x: Update CTIA/OMTP switch control
-      commit: db0b4aedfab396a6fe631f5c3bb34319770f0581
+[1/1] regmap-irq: Update interrupt clear register for proper reset
+      commit: d04ad245d67a3991dfea5e108e4c452c2ab39bac
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
