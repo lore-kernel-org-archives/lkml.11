@@ -2,83 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 192F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241353AbiBQNxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:53:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60104 "EHLO
+        id S241377AbiBQNyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:54:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241334AbiBQNxZ (ORCPT
+        with ESMTP id S235339AbiBQNyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:53:25 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A2523DCE6;
-        Thu, 17 Feb 2022 05:53:09 -0800 (PST)
-X-UUID: 7508a21f15cf42f68e8bd0d4720c2844-20220217
-X-UUID: 7508a21f15cf42f68e8bd0d4720c2844-20220217
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 553058100; Thu, 17 Feb 2022 21:53:04 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 17 Feb 2022 21:53:03 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 21:53:02 +0800
-Message-ID: <4958e2ad25f4940a0c0bbbf23ea027e7bdaf5ac7.camel@mediatek.com>
-Subject: Re: [PATCH 10/15] ASoC: mediatek: mt8186: add platform driver
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <perex@perex.cz>,
-        <p.zabel@pengutronix.de>, <geert+renesas@glider.be>,
-        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
-        <zhangqilong3@huawei.com>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Date:   Thu, 17 Feb 2022 21:51:57 +0800
-In-Reply-To: <YgaK4hiRjEJi9wQ4@sirena.org.uk>
-References: <20220211103818.8266-1-jiaxin.yu@mediatek.com>
-         <20220211103818.8266-11-jiaxin.yu@mediatek.com>
-         <YgaK4hiRjEJi9wQ4@sirena.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 17 Feb 2022 08:54:43 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0AC25B6F8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:54:28 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id d27so9190785wrb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:54:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uP+5oPN8/mDtxgUqziR9/1MjwO5GUIP5L5fmLtRSQ4o=;
+        b=Gcj1RiexcX8pUewnBho0N4a5ikx5JpddYFJh/Bi7rzju0Nh+ToYVE9x+P17o+LoQXL
+         3Tpvz1vnUBW0DU8omi+RP+m71x7Sta40Sa+agTzw+p6fpddcGExB8Ustrg83kKsn2RpL
+         YKudY2jUz48NWW6O3/ng0bHOu44NjZMo+7YD65Zx2qLdFuusJLFbKsJ+MFC1NTCGRzdY
+         U9iUweK1hcvaUQpS/QCOlE4wA1XplfAQOlqMiAboJgTdiZZXJIah8zHl+IW7Yl6Cfpu/
+         VAjVIy2QWXyk9ZxI3wL5lupEtGZs8WhToWXJqTcts6HkCw/jrO37ukHVJc2CBGR7Qnea
+         8gyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uP+5oPN8/mDtxgUqziR9/1MjwO5GUIP5L5fmLtRSQ4o=;
+        b=djS+RIIJzZ7ly0ne9S98w/PknlpOCCkppbYuwpjyIcc3LIFktCd8O/nxgTeGhDYDy2
+         vLWNhMNdz0GozZHZeWt5+p53MTr2fxqKoxc36YVntnmQBHWxSHh9u+rtC0NIESRBtIA8
+         Ah7qD6DP24YwcebXHl9z4iOUJh1HWw15in9YCAAV3vOZOQrsL3QvtO+9kGHMbSvMElpO
+         rlAtsFExZkDuZcogMCbYOEYIQDoruBMeBCYghO5Tk9NQhtRnLswNf3l2GwAQ8t3j02qr
+         7gztkhhPhq4XrzLyZZpCKs8d4/P6D1ZSndW6g3kQAGDK3D9xrkB1bYfHXg/cV9d8nGaG
+         eCUg==
+X-Gm-Message-State: AOAM530gkDKQ8gVFN/jV6xJ9xvXsT+bfUT8uc67pzynmAh/JLLQMfxz/
+        CyGWT+zr72AWpswAWgGtbjcbIREMQ6KqSA==
+X-Google-Smtp-Source: ABdhPJxSXalGp5VQGQ0D+CtQiADoEFjMZVVV2hxy/Nx1jW0FS3VHq+Z8neuG36hpDyuS/OWK961NaA==
+X-Received: by 2002:adf:f0c6:0:b0:1e7:13f7:74b9 with SMTP id x6-20020adff0c6000000b001e713f774b9mr2389857wro.361.1645106066837;
+        Thu, 17 Feb 2022 05:54:26 -0800 (PST)
+Received: from ?IPV6:2a01:e34:ed2f:f020:6165:d98a:b553:c3c1? ([2a01:e34:ed2f:f020:6165:d98a:b553:c3c1])
+        by smtp.googlemail.com with ESMTPSA id s7sm21864864wrw.71.2022.02.17.05.54.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 05:54:26 -0800 (PST)
+Message-ID: <cfbaefa5-fc7b-bd0f-e4ed-8f046de2a7cf@linaro.org>
+Date:   Thu, 17 Feb 2022 14:54:24 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 3/7] powercap/dtpm: Fixup kfree for virtual node
+Content-Language: en-US
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     rjw@rjwysocki.net, heiko@sntech.de, lukasz.luba@arm.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+References: <20220130210210.549877-1-daniel.lezcano@linaro.org>
+ <20220130210210.549877-3-daniel.lezcano@linaro.org>
+ <CAPDyKFqV++g63Asax8TNSEgujxJ=uM9XG2_Advu34JidYBCGtg@mail.gmail.com>
+ <e44b9c4b-2ac4-4ea4-c771-bde13943af5f@linaro.org>
+ <CAPDyKFr8Ycr2cbiD5MM9FSPc1qea+Yp9=cottcGAo7HmFR9Eaw@mail.gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <CAPDyKFr8Ycr2cbiD5MM9FSPc1qea+Yp9=cottcGAo7HmFR9Eaw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-11 at 16:12 +0000, Mark Brown wrote:
-> On Fri, Feb 11, 2022 at 06:38:13PM +0800, Jiaxin Yu wrote:
+On 17/02/2022 14:17, Ulf Hansson wrote:
+> On Wed, 16 Feb 2022 at 19:10, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+>>
+>> On 16/02/2022 17:22, Ulf Hansson wrote:
+>>> On Sun, 30 Jan 2022 at 22:02, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+>>>>
+>>>> When the node is virtual there is no release function associated which
+>>>> can free the memory.
+>>>>
+>>>> Free the memory when no 'ops' exists.
+>>>>
+>>>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+>>>> ---
+>>>>    drivers/powercap/dtpm.c | 4 ++--
+>>>>    1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/powercap/dtpm.c b/drivers/powercap/dtpm.c
+>>>> index 0b0121c37a1b..7bddd25a6767 100644
+>>>> --- a/drivers/powercap/dtpm.c
+>>>> +++ b/drivers/powercap/dtpm.c
+>>>> @@ -181,12 +181,12 @@ int dtpm_release_zone(struct powercap_zone *pcz)
+>>>>
+>>>>           if (dtpm->ops)
+>>>>                   dtpm->ops->release(dtpm);
+>>>> +       else
+>>>> +               kfree(dtpm);
+>>>>
+>>>
+>>> This doesn't look correct. Below you check dtpm against "root", which
+>>> may be after its memory has been freed.
+>>>
+>>> If the ->release() function should be responsible for freeing the
+>>> dtpm, it needs to be called after the check below.
+>>
+>> It is harmless, 'root' is not dereferenced but used as an ID
+>>
+>> Moreover, in the patch 5/7 it is moved out this function.
 > 
-> >  sound/soc/mediatek/Kconfig                    |   44 +
-> >  sound/soc/mediatek/Makefile                   |    1 +
-> >  sound/soc/mediatek/mt8186/Makefile            |   21 +
-> >  sound/soc/mediatek/mt8186/mt8186-afe-clk.c    |  719 ++++
-> >  sound/soc/mediatek/mt8186/mt8186-afe-clk.h    |  210 +
-> >  sound/soc/mediatek/mt8186/mt8186-afe-common.h |  245 ++
-> >  .../soc/mediatek/mt8186/mt8186-afe-control.c  |  262 ++
-> >  sound/soc/mediatek/mt8186/mt8186-afe-gpio.c   |  211 +
-> >  sound/soc/mediatek/mt8186/mt8186-afe-gpio.h   |   19 +
-> >  sound/soc/mediatek/mt8186/mt8186-afe-pcm.c    | 3030
-> > +++++++++++++++
-> >  .../mediatek/mt8186/mt8186-interconnection.h  |   69 +
-> >  .../soc/mediatek/mt8186/mt8186-misc-control.c | 1729 +++++++++
-> >  sound/soc/mediatek/mt8186/mt8186-reg.h        | 3433
-> > +++++++++++++++++
+> Right. It just looks a bit odd here.
 > 
-> I know it's already a long series but perhaps the clock and GPIO bits
-> could be split out into separate patches?  This one patch is over
-> 300K
-> which is a bit much in one go, especially when it's not just all big
-> tables.
+>>
+>>
+>>>>           if (root == dtpm)
+>>>>                   root = NULL;
+>>>>
+>>>> -       kfree(dtpm);
+> 
+> So then why doesn't this kfree do the job already?
+> 
+> kfree(NULL) works fine, if dtpm->ops->release(dtpm) already freed the data.
 
-Ok, I see. I've split them out into separate patches in v2 version.
+The description is confusing.
 
+Actually, there is a double kfree. When there is a ops->release, the 
+kfree is done there and again a few lines after.
+
+The issue was introduced with the change where dtpm had a private data 
+field to store the backend specific structure and was converted to a 
+backend specific structure containing a dtpm node [1].
+
+So this function was calling release from the dtpm backend which was 
+freeing the specific data in the dtpm->private and then here was freeing 
+the dtpm. Now, the backend frees the structure which contains the dtpm 
+structure, so when returning from ops->release(), dtpm is already free.
+
+I should change the description and add a Fixes tag to the change 
+described above.
+
+[1] 
+https://lore.kernel.org/r/20210312130411.29833-4-daniel.lezcano@linaro.org
+
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
