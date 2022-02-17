@@ -2,82 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF58C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5BAC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbiBRAEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 19:04:32 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41374 "EHLO
+        id S229754AbiBRAFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 19:05:16 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiBRAE3 (ORCPT
+        with ESMTP id S229559AbiBRAFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 19:04:29 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3924A93A;
-        Thu, 17 Feb 2022 16:04:11 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id z2so5677518iow.8;
-        Thu, 17 Feb 2022 16:04:11 -0800 (PST)
+        Thu, 17 Feb 2022 19:05:12 -0500
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4223E49697;
+        Thu, 17 Feb 2022 16:04:57 -0800 (PST)
+Received: by mail-io1-f50.google.com with SMTP id s1so5687482iob.9;
+        Thu, 17 Feb 2022 16:04:57 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ZLCyYoS9aJ9wXLhi8hxYqyvuriAYuRyIEnSfXpo5OxA=;
-        b=zEukcAuDrvdfy+Ec3l+bU7SZ5ejgWAwPISpUpTt6v7GTyQPNbZESvr+zPStIWD4gjX
-         3AS5JrTcRAGaI8tDGyBPKG46oXTDnNZhgms+6jVqsCfAUYPx0ekY8qSY/h4DxtnTvYHi
-         x730mWEM3nMUrZwKx4sw/x6TSLQh1OgQN0ncR8Z3Xgs4W3vhTGRnDrqHyQiTiuytrTLX
-         v2FMfKL675o0or4YJAwKn8/5rKBY5AWs8BYm51dVSVX9LPXYl335IAZKqu7Qr9PCK50q
-         a+dytrA92n+mn7Gpmt3LhUIAPqyepqHkU4/GCzQxN5VFiuI54ZxKQogaJSCM/bg+70io
-         vGoQ==
-X-Gm-Message-State: AOAM533MpECBSM2N1CwI8i9cxePYChWxFIFieP23n4iNTSumihYpKUrN
-        bX4/qkmeK/L8LmV3pGNZOg==
-X-Google-Smtp-Source: ABdhPJzHW1Fdru6iaeIHbAkYzs8aCRWR3e0vh+2ODhi0kFxLx2gcpAr1zc5BnU4CGAMTFw6TyRT6mg==
-X-Received: by 2002:a05:6602:73a:b0:640:3ded:e0bf with SMTP id g26-20020a056602073a00b006403dede0bfmr3570505iox.134.1645142311282;
-        Thu, 17 Feb 2022 15:58:31 -0800 (PST)
+        bh=B62giDPKCTM5nfuTzbayozzLbsilXdSpUvmPVSIuVUw=;
+        b=vh5STkQRsvrtW2+jvvpwjUm83EAI+Corlt9EQ+iH5SFe5PA3kRz0rTwENmF8qSLnIA
+         Ia1xAiWd9Q2X69Vs056qc1Mzbfn7FhO9DuOl5BKWdY8eYBWBoCLngomG0nyQqLqjJ8+a
+         jajPT74NDoxe/8jGXGawmOkN2apLCAUy5MtyZcvSVGX0Z+9LZDMQzE7BlrwVcXTJc691
+         cmM4MONjQvplPernHrF29eG31er49xWk6QwC086SARxT1ZJhVnfnmV9bXuq1QY5ehZQQ
+         z2ArFo+oJtqqGcUd0CCSwYH3wClodxWH9uOUzLO68S+Aq8rxx1VogyBABztADb4zA+Kt
+         uw9Q==
+X-Gm-Message-State: AOAM532D3KGycqLRR/3At717cyA3G0TktlHiaDq7NWFVefSlI+GowWU+
+        3XslXgRj058+OXbYM2yIKrfakefUog==
+X-Google-Smtp-Source: ABdhPJxbgnaEAywJ1ZC6r4ojBjLcbfkIz/Iex5l51UBfhJTLGPeeCYkkp47fEbu/9WnEl+mjIY36yA==
+X-Received: by 2002:a05:6e02:20e9:b0:2b9:64da:602c with SMTP id q9-20020a056e0220e900b002b964da602cmr3595363ilv.38.1645140765104;
+        Thu, 17 Feb 2022 15:32:45 -0800 (PST)
 Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id z13sm2970817iox.21.2022.02.17.15.58.29
+        by smtp.gmail.com with ESMTPSA id l16sm2694851ilc.54.2022.02.17.15.32.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:58:30 -0800 (PST)
-Received: (nullmailer pid 4013485 invoked by uid 1000);
-        Thu, 17 Feb 2022 23:58:29 -0000
-Date:   Thu, 17 Feb 2022 17:58:29 -0600
+        Thu, 17 Feb 2022 15:32:44 -0800 (PST)
+Received: (nullmailer pid 3977535 invoked by uid 1000);
+        Thu, 17 Feb 2022 23:32:41 -0000
+Date:   Thu, 17 Feb 2022 17:32:41 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     NXP Linux Team <linux-imx@nxp.com>, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: Re: [PATCH 1/2] dt-bindings: arm: imx: add imx8mm gw7903 support
-Message-ID: <Yg7hJa0XXBjVxRVb@robh.at.kernel.org>
-References: <20220211190418.11870-1-tharvey@gateworks.com>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     wim@linux-watchdog.org, krzysztof.kozlowski@canonical.com,
+        devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>, linux@roeck-us.net,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org
+Subject: Re: [PATCH v4] dt-bindings: watchdog: convert faraday,ftwdt010 to
+ yaml
+Message-ID: <Yg7bGU1A/GvtyN/z@robh.at.kernel.org>
+References: <20220211115528.3382374-1-clabbe@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220211190418.11870-1-tharvey@gateworks.com>
+In-Reply-To: <20220211115528.3382374-1-clabbe@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 11:04:17 -0800, Tim Harvey wrote:
-> The GW7903 is based on the i.MX 8M Mini SoC featuring:
->  - LPDDR4 DRAM
->  - eMMC FLASH
->  - microSD connector with UHS support
->  - LIS2DE12 3-axis accelerometer
->  - Gateworks System Controller
->  - IMX8M FEC
->  - software selectable RS232/RS485/RS422 serial transceiver
->  - PMIC
->  - 2x off-board bi-directional opto-isolated digital I/O
->  - 1x M.2 A-E Key Socket and 1x MiniPCIe socket with USB2.0 and PCIe
->  (resistor loading to route PCIe/USB2 between M.2 and MiniPCIe socket)
+On Fri, 11 Feb 2022 11:55:28 +0000, Corentin Labbe wrote:
+> Converts watchdog/faraday,ftwdt010.txt to yaml.
+> This permits to detect missing properties like clocks and resets or
+> compatible like moxa,moxart-watchdog.
 > 
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 > ---
->  Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> Changes since v1:
+> - Added myself as maintainer as requested by Linus
+> - Added $ref to watchdog.yaml
+> - Removed useless quotes
+> - Added blank lines between properties
+> - Removed timeout-secs as already provided by watchdog.yaml
+> 
+> Change since v2:
+> - rewrite compatible section
+> 
+> Changes since v3:
+> - Fix indent errors reported by yamllint
+> - Change additionalProperties to unevaluatedProperties
+> - Added timeout-secs in example
+> 
+>  .../bindings/watchdog/faraday,ftwdt010.txt    | 22 ------
+>  .../bindings/watchdog/faraday,ftwdt010.yaml   | 67 +++++++++++++++++++
+>  2 files changed, 67 insertions(+), 22 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
+>  create mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
