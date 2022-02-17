@@ -2,124 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40922C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244181AbiBQSVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:21:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48392 "EHLO
+        id S244186AbiBQSXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:23:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230344AbiBQSV3 (ORCPT
+        with ESMTP id S244211AbiBQSXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:21:29 -0500
-X-Greylist: delayed 1463 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 10:21:15 PST
-Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFAB1712AC
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:21:15 -0800 (PST)
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 7B20A9D0E80
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:56:52 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id Kl1QnOOMnHnotKl1QnIGXq; Thu, 17 Feb 2022 11:56:52 -0600
-X-Authority-Reason: nr=8
-Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:34154 helo=[10.0.0.45])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nKl1O-001Zrd-AE; Thu, 17 Feb 2022 11:56:50 -0600
-Message-ID: <ca674409-34bb-69b2-0df5-e01b6facee88@kernel.org>
-Date:   Thu, 17 Feb 2022 18:56:44 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC V2 17/21] watchdog/dev: Add tracepoints
-Content-Language: en-US
-To:     Gabriele Paoloni <gpaoloni@redhat.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Peter.Enderborg@sony.com" <Peter.Enderborg@sony.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
+        Thu, 17 Feb 2022 13:23:02 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01596E9C
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:22:33 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B4ED4113E;
+        Thu, 17 Feb 2022 10:22:33 -0800 (PST)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 83CC43F718;
+        Thu, 17 Feb 2022 10:22:31 -0800 (PST)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-trace-devel@vger.kernel.org" 
-        <linux-trace-devel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-References: <cover.1644830251.git.bristot@kernel.org>
- <e67874c8b676ea8dfe38679efa25363889bb1e76.1644830251.git.bristot@kernel.org>
- <96f418b4-0ba8-01fe-ead0-2028bfc42560@sony.com>
- <ba924008-c0ab-4800-aac4-d9d9ae930c32@kernel.org>
- <ef1b1d99-6172-2b4d-9612-7ecbe8fc6c8b@roeck-us.net>
- <6c6fc4fa-6464-2dbf-40da-e3c61f322d95@redhat.com>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <6c6fc4fa-6464-2dbf-40da-e3c61f322d95@redhat.com>
-Content-Type: text/plain; charset=UTF-8
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        Jamie Iles <jamie@nuviainc.com>,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com
+Subject: [PATCH v3 00/21] x86/resctrl: Make resctrl_arch_rmid_read() return values in bytes
+Date:   Thu, 17 Feb 2022 18:20:49 +0000
+Message-Id: <20220217182110.7176-1-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 95.232.30.176
-X-Source-L: No
-X-Exim-ID: 1nKl1O-001Zrd-AE
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:34154
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 3
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 18:49, Gabriele Paoloni wrote:
-> 
-> On 17/02/2022 18:27, Guenter Roeck wrote:
->> On 2/17/22 08:27, Daniel Bristot de Oliveira wrote:
->>> Hi Peter
->>>
->>> On 2/16/22 17:01, Peter.Enderborg@sony.com wrote:
->>>> On 2/14/22 11:45, Daniel Bristot de Oliveira wrote:
->>>>> Add a set of tracepoints, enabling the observability of the watchdog
->>>>> device interactions with user-space.
->>>>>
->>>>> The events are:
->>>>>     watchdog:watchdog_open
->>>>>     watchdog:watchdog_close
->>>>>     watchdog:watchdog_start
->>>>>     watchdog:watchdog_stop
->>>>>     watchdog:watchdog_set_timeout
->>>>>     watchdog:watchdog_ping
->>>>>     watchdog:watchdog_nowayout
->>>>>     watchdog:watchdog_set_keep_alive
->>>>>     watchdog:watchdog_keep_alive
->>>> Some watchdogs have a bark functionality, I think it should be event
->>>> for that too.
->>>>
->>> I understand. The problems is that I do not see the bark abstraction
->>> in the
->>> watchdog_dev layer.
->>>
->> I don't even know what "bark functionality" means. A new term for
->> pretimeout ?
->> Something else ?
-> From my understanding the bark timeout is actually the pretimeout
-> whereas the bite timeout is the actual timeout.
+Changes in this version? Expanded the commit message of patch 12, and
+made a few things static, as reported by the kbuild robot.
 
-So, what Peter wants is tracepoints for the pretimeout actions?
+---
+The aim of this series is to insert a split between the parts of the monitor
+code that the architecture must implement, and those that are part of the
+resctrl filesystem. The eventual aim is to move all filesystem parts out
+to live in /fs/resctrl, so that resctrl can be wired up for MPAM.
 
--- Daniel
+What's MPAM? See the cover letter of a previous series. [1]
+
+The series adds domain online/offline callbacks to allow the filesystem to
+manage some of its structures itself, then moves all the 'mba_sc' behaviour
+to be part of the filesystem.
+This means another architecture doesn't need to provide an mbps_val array.
+As its all software, the resctrl filesystem should be able to do this without
+any help from the architecture code.
+
+Finally __rmid_read() is refactored to be the API call that the architecture
+provides to read a counter value. All the hardware specific overflow detection,
+scaling and value correction should occur behind this helper.
+
+
+This series is based on v5.17-rc1, and can be retrieved from:
+git://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/resctrl_monitors_in_bytes/v3
+
+[0] git://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/resctrl_merge_cdp/v7
+[1] https://lore.kernel.org/lkml/20210728170637.25610-1-james.morse@arm.com/
+
+[v1] https://lore.kernel.org/lkml/20210729223610.29373-1-james.morse@arm.com/
+[v2] https://lore.kernel.org/lkml/20211001160302.31189-1-james.morse@arm.com/
+
+Thanks,
+
+James Morse (21):
+  x86/resctrl: Kill off alloc_enabled
+  x86/resctrl: Merge mon_capable and mon_enabled
+  x86/resctrl: Add domain online callback for resctrl work
+  x86/resctrl: Group struct rdt_hw_domain cleanup
+  x86/resctrl: Add domain offline callback for resctrl work
+  x86/resctrl: Remove set_mba_sc()s control array re-initialisation
+  x86/resctrl: Create mba_sc configuration in the rdt_domain
+  x86/resctrl: Switch over to the resctrl mbps_val list
+  x86/resctrl: Remove architecture copy of mbps_val
+  x86/resctrl: Abstract and use supports_mba_mbps()
+  x86/resctrl: Allow update_mba_bw() to update controls directly
+  x86/resctrl: Calculate bandwidth from the previous __mon_event_count()
+    chunks
+  x86/recstrl: Add per-rmid arch private storage for overflow and chunks
+  x86/recstrl: Allow per-rmid arch private storage to be reset
+  x86/resctrl: Abstract __rmid_read()
+  x86/resctrl: Pass the required parameters into
+    resctrl_arch_rmid_read()
+  x86/resctrl: Move mbm_overflow_count() into resctrl_arch_rmid_read()
+  x86/resctrl: Move get_corrected_mbm_count() into
+    resctrl_arch_rmid_read()
+  x86/resctrl: Rename and change the units of resctrl_cqm_threshold
+  x86/resctrl: Add resctrl_rmid_realloc_limit to abstract x86's
+    boot_cpu_data
+  x86/resctrl: Make resctrl_arch_rmid_read() return values in bytes
+
+ arch/x86/kernel/cpu/resctrl/core.c        | 117 ++++--------
+ arch/x86/kernel/cpu/resctrl/ctrlmondata.c |  75 +++++---
+ arch/x86/kernel/cpu/resctrl/internal.h    |  61 +++----
+ arch/x86/kernel/cpu/resctrl/monitor.c     | 211 ++++++++++++++--------
+ arch/x86/kernel/cpu/resctrl/pseudo_lock.c |   2 +-
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c    | 205 +++++++++++++++++----
+ include/linux/resctrl.h                   |  62 ++++++-
+ 7 files changed, 478 insertions(+), 255 deletions(-)
+
+-- 
+2.30.2
+
