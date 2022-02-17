@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AF2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243133AbiBQSud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:50:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45660 "EHLO
+        id S244736AbiBQSun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:50:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244632AbiBQSu0 (ORCPT
+        with ESMTP id S244651AbiBQSu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 13:50:26 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E60F527D1;
-        Thu, 17 Feb 2022 10:50:03 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id lw4so9368369ejb.12;
-        Thu, 17 Feb 2022 10:50:03 -0800 (PST)
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75325532D1;
+        Thu, 17 Feb 2022 10:50:05 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id c6so8586578edk.12;
+        Thu, 17 Feb 2022 10:50:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=s2EDUr3xcd5mXkWQmbeSTJkbyfBykW87kRKEwtU/qi4=;
-        b=KMhtZy1aw/g9aZk2dKJwQL+5I7qUzM9kmJTJZ67p5IR7ZCAUJ7h2I8tTGd3M/sknjm
-         gi7SEe6J+b6Gn1l6vIe752TXM860itvoV6U2b+XDuotIxetF7l9JyCUyY5N68O2V/HnV
-         LvBh5c1PFXGmkhWk2dHGOLbbFKdG+nlg302kC08igise0K2xFzjQe8pr/8GAgqsC/+tS
-         1n0KzDTkPdlJbP29JODQLNf75LgvBVLrrUh5KYmL5aUF0XE/eOn+LWW6+fiVLsaU0tzX
-         xWT1Wl7lg1sw0kNz/39GS03sETp0uIcZxWPbHEGEHz0HneUSxEZoKCjwRn4wBcGbhJur
-         w6bw==
+        bh=aWAz7ch1YbYjOBGYWOA+abErwDCwzis1Yy80ikg8D98=;
+        b=QMuA/YuZ0W74ytmZVJE4le6ip+JLNZSARf4bF7VHrDDsFsPKRVKoky7jQUbsW5VCkI
+         6mU8g2tqTCApm0uEH+kxh2dUOcqBfaeQTwwcNS9osxdvnKeLqM6OpoS7g0uBmBXF1piB
+         EIuB2gjllDeTUeDrju15WMiEvC5AvaAFl68paZrX8MWLb8yXID5HLhdYlPy8oxs6kVVg
+         LWrS2dEWLdcgMjUKTWeHwoLQlKUlIQGgmXA3QW4twc8qy18z3bMkBT/7ccH0Q19eG+uo
+         45Irv//5OACfVLFur0CvKTLUgDWFB72TxE28Ple+aC65+LnoEBmaDZRpOLMeckMwiaJ2
+         cjkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=s2EDUr3xcd5mXkWQmbeSTJkbyfBykW87kRKEwtU/qi4=;
-        b=CJI4MaEmBRDqflv3fxszJVDOfn0cVHQsI82vEpZs8cpkQuIA/Qx1PdlkvpiFVFfQcM
-         Oy+Z6w92ekudbtAWZfoT5OJ2QbJF/zYeTj51v9PNenhET2ZZbPHykXm7r3doWs3U7kAg
-         l4SQmwHh5nr+G032JWTwNdEiiBU3drislln95SGcvbSpc2VB9O7rYS1fLnuqXzYnzz5a
-         CKiVAStFXZU8YnsQtD0r8psevJfnrkPt0NijrY/Fe5y2Y3Wb+sWupNEun6xkX/zNuN6u
-         /6inRy8RMY71uIIlgQMqARiuBcg6kVPF3JUy52fnaUbNBz8lttzR7zD65XPmlJljBWbx
-         DglQ==
-X-Gm-Message-State: AOAM5323aYi7H4YlhuSy1Sh9ef6Uq1HKkNhDFtnuMk3UKfShucWcAucp
-        ZoEN4AZ0oYo6Fe4O8A/ns9I=
-X-Google-Smtp-Source: ABdhPJzTxZDIUqCgkh4rMHsmNsIMTp1nMdZ8ITZuVbR0PoJ9bbt1buiZMTtj+pfxqYHdC12tG5hM1A==
-X-Received: by 2002:a17:907:1256:b0:6b0:5b4c:d855 with SMTP id wc22-20020a170907125600b006b05b4cd855mr3727693ejb.458.1645123801867;
-        Thu, 17 Feb 2022 10:50:01 -0800 (PST)
+        bh=aWAz7ch1YbYjOBGYWOA+abErwDCwzis1Yy80ikg8D98=;
+        b=3fAEcTAnyaavys7W9blaDHZH5P09K/xQa1njN2qfrfqsN+B28vF2xzq5NqHzHmaXgQ
+         IW6aPdiJCLfK2hdN6csn+lC8YVk16LMtHp76bEog5woh4HzDrNC0IOnXxubjM6bFlDrS
+         WCRzANkNILtsWzGX6ugPVksuH7OK1+lVCnXqPuxIbcF7l8BH+xP3jBL34Ai4wSSuT/7s
+         efK8E9aN5dwNO3S7kVSzUpQFxs2E++SHmZu9FgoFtDcwgLC2rgzmABK7xB6vRgS9iuI4
+         vpaEVkBZx5BsbZ8X3Jq0J7rUoIUx7CiBdCXLmWxLWEYzdqbSiGI09CNik4sPrPFKFBSw
+         kYgA==
+X-Gm-Message-State: AOAM532Y0+RsEJkPaub7JYjTn/JMU+6wNK4oL+EW7cBFUVbI4y5HYXZw
+        giAXi5AR0weU1fOH1+OtsUw=
+X-Google-Smtp-Source: ABdhPJxL+kk5YSwPYn5msccPhV06gKGU69gSRSyODQVEtZA0itYwE3YS9fhTydgWYMYHPpG1FMU3TA==
+X-Received: by 2002:a05:6402:278b:b0:408:e865:45af with SMTP id b11-20020a056402278b00b00408e86545afmr3489783ede.44.1645123804097;
+        Thu, 17 Feb 2022 10:50:04 -0800 (PST)
 Received: from localhost.localdomain (dhcp-077-250-038-153.chello.nl. [77.250.38.153])
-        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.01
+        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 10:50:01 -0800 (PST)
+        Thu, 17 Feb 2022 10:50:03 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         linux-kernel@vger.kernel.org
@@ -63,9 +63,9 @@ Cc:     linux-arch@vger.kernel.org,
         Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [RFC PATCH 04/13] vfio/mdev: remove the usage of the list iterator after the loop
-Date:   Thu, 17 Feb 2022 19:48:20 +0100
-Message-Id: <20220217184829.1991035-5-jakobkoschel@gmail.com>
+Subject: [RFC PATCH 06/13] ARM: mmp: remove the usage of the list iterator after the loop
+Date:   Thu, 17 Feb 2022 19:48:22 +0100
+Message-Id: <20220217184829.1991035-7-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217184829.1991035-1-jakobkoschel@gmail.com>
 References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
@@ -75,43 +75,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is unsafe to assume that tmp != mdev can only evaluate to false
-if the break within the list iterator is hit.
+To introduce a speculative safe list iterator, the iterator variable
+will be set to NULL when the terminating condition of the loop is
+hit.
 
-When the break is not hit, tmp is set to an address derived from the
-head element. If mdev would match with that value of tmp it would allow
-continuing beyond the safety check even if mdev was never found within
-the list
+The code before assumed info would be derived from the head if
+the break did not hit, this assumption no longer holds.
+Once the speculative safe list iterator is merged the condition could
+be replace with if (!info) instead.
 
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/vfio/mdev/mdev_core.c | 7 +++++--
+ arch/arm/mach-mmp/sram.c | 7 +++++--
  1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
-index b314101237fe..e646ba5036f4 100644
---- a/drivers/vfio/mdev/mdev_core.c
-+++ b/drivers/vfio/mdev/mdev_core.c
-@@ -339,14 +339,17 @@ int mdev_device_remove(struct mdev_device *mdev)
+diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
+index 6794e2db1ad5..b163d2da53e7 100644
+--- a/arch/arm/mach-mmp/sram.c
++++ b/arch/arm/mach-mmp/sram.c
+@@ -39,6 +39,7 @@ static LIST_HEAD(sram_bank_list);
+ struct gen_pool *sram_get_gpool(char *pool_name)
  {
- 	struct mdev_device *tmp;
- 	struct mdev_parent *parent = mdev->type->parent;
+ 	struct sram_bank_info *info = NULL;
 +	bool found = false;
  
- 	mutex_lock(&mdev_list_lock);
- 	list_for_each_entry(tmp, &mdev_list, next) {
--		if (tmp == mdev)
-+		if (tmp == mdev) {
+ 	if (!pool_name)
+ 		return NULL;
+@@ -46,12 +47,14 @@ struct gen_pool *sram_get_gpool(char *pool_name)
+ 	mutex_lock(&sram_lock);
+ 
+ 	list_for_each_entry(info, &sram_bank_list, node)
+-		if (!strcmp(pool_name, info->pool_name))
++		if (!strcmp(pool_name, info->pool_name)) {
 +			found = true;
  			break;
 +		}
- 	}
  
--	if (tmp != mdev) {
-+	if (!found) {
- 		mutex_unlock(&mdev_list_lock);
- 		return -ENODEV;
- 	}
+ 	mutex_unlock(&sram_lock);
+ 
+-	if (&info->node == &sram_bank_list)
++	if (!found)
+ 		return NULL;
+ 
+ 	return info->gpool;
 -- 
 2.25.1
 
