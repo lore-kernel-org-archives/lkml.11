@@ -2,176 +2,355 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 454A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD28C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239600AbiBQOuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:50:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42870 "EHLO
+        id S242189AbiBQOu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:50:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234718AbiBQOuY (ORCPT
+        with ESMTP id S242126AbiBQOut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:50:24 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1DA29E94E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:50:09 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id s20so342363ioe.4
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:50:09 -0800 (PST)
+        Thu, 17 Feb 2022 09:50:49 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192CB29E957;
+        Thu, 17 Feb 2022 06:50:34 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id u18so10074738edt.6;
+        Thu, 17 Feb 2022 06:50:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=BB2sDvKYuJ4OLXpcVUGPxnotzFekLMPB3gl02E+RGsM=;
-        b=YiEwitx6YvoB2nLcFD8bvXs7jZb3EykcXZmD7fGnXJ62QfN2Yn6CVFt4RdwWssx2KC
-         dYoKA5BRbuFUaYUc0lWFTViyLS/tKHsiTwvaJTXxoqhp+UbIFWgR3DsuLjYujvXsK4+L
-         iYKOsW6iphIC3oCHcdqoTdJSeHmYt2TXAdZfJA3N8jEbmY4ngcKM1DtFQnGcQKbz/FTN
-         1SysA6Dqjq6au3OA26TkTt981TV/iENjZKyVxNnYikqzBDKKME3POcalIrzUemOIuP+F
-         wgLo0vnfYDHl2Dsd8ty/kO0axIPJ2hGoCIB8R6C0Bkjbn3xx7FuZfBEk149pUrr6YNyd
-         Nw1A==
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8I41jwLvAiCSwd4V/781omnso87v01pI1AY+lB5wImk=;
+        b=Iupq1Tbr6TrNZdw13BJ6EY0qW3jW8QcWqrMnVX0DfbwV9HN8X6F1VFaQ/Vt4JiwKuI
+         PKHeDAsE5jQo2oYFRH3qKrMg7Y7K10m0OisK4CQxgccvztoWVvEOVDbmSPyb1raXFLY6
+         o5nxC5aZSnG5edIofcjlhWKe4xkKLff54dudYJjGhfUtiRMhvaGqVm1r7MGHEDAXKahY
+         1G7DcLlAh6UPp9o/BEWcfQFzwTlY37PC9K7Ys9nIHgd5QmoP2TMvEHAReyoA4+aHzG4q
+         Y5jTggvJqH2wT2nDtKj7XpD5BO7aSbyi7sWvheo/WNRORQls+Wg9QAN+r091a++WqKJr
+         GsTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=BB2sDvKYuJ4OLXpcVUGPxnotzFekLMPB3gl02E+RGsM=;
-        b=GlavAWVP6ZDcH7lLvl9D+Dl8+YTlYa3RnBAHixWy1pwdR5fXo+EdLCIM59xN7WTEeC
-         7LYVzjUnAVvsLGqYrFIgn6WaMQZRUFno786SQAo/dkUD8stoBLjDGJ1HAJKNSn4IgBoQ
-         aRgxST4ct0sPMRP+qEx6Pi5Fa92NwcgPjJuCTvsktVLQbo/1qmdjrtNoHMkyRwFjxxzG
-         GfEzRCDXtfT5EHshfVHM3JVXu3SFpxSmz+Yf1TF7Xl7hYNaAO1Z+V/NvboM7F3KkAwpW
-         2/O+OwTZCIIqCYVcnZepHC3hzLls5GNfdHSy1T/HEK5eMBveosxUJWGmJU+d+7NrqNNM
-         Ny9g==
-X-Gm-Message-State: AOAM530f6+PB7tJqqpgOK3fd8H/Ujm5Fn6gpcNIuqZVLzNlqQYCdvIiI
-        p4dBoOhKfzsOlV1tFhThL1ULuZs964liuw0b
-X-Google-Smtp-Source: ABdhPJyMLeE45HvinoisFgWKSjp6PKe7sDpN4NNHmMEA8u9XTMVU1hPsnC7IB6GtHV9pPqbHeyxaCA==
-X-Received: by 2002:a05:6602:1485:b0:635:213f:abd2 with SMTP id a5-20020a056602148500b00635213fabd2mr2158395iow.8.1645109408688;
-        Thu, 17 Feb 2022 06:50:08 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id z23sm2016397iol.11.2022.02.17.06.50.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 06:50:08 -0800 (PST)
-Message-ID: <c0b89a9e-156c-c56a-c387-5d9ee2c83871@linaro.org>
-Date:   Thu, 17 Feb 2022 08:50:07 -0600
+        bh=8I41jwLvAiCSwd4V/781omnso87v01pI1AY+lB5wImk=;
+        b=ErvFcyuwCsaPWx3bnJD7oYy3GjZztkdKVGXba/4EFvyj3cVqGax/FTJ4UoorsFQrsQ
+         jLBTOcqnDDs2wfsUxoH7yKOHV/MZkoa8iduo/OLH1MmXtmbTxFOdzXUwC2DDLMW+5H71
+         0GwUvGy0NtWhVhQd5/xzVGXwy7uwO9D98WCTEGVMYMk1FAdrGFZ2ZNdsENK2ZOmnv22E
+         1twA4uPtXa+QtchCxVLAlyAYF7EJtGqKBQdpfkG1RdmFoP1uaONP0zt2/pLzAFUOh15u
+         7AQtsMCT9ONv5Db2zq11PUG/0v1mAZf1cZpn7/8iney9aXwYxwuokcQugTu1uThGTQw+
+         WMAA==
+X-Gm-Message-State: AOAM5311NsIe0WE6YovXlMRa7Wv17gEvvscPAg6iNqv78H8F/1KY8tyU
+        ULJauEKV57mxfgEUEIuGRRNeI7JvJ6QPHg==
+X-Google-Smtp-Source: ABdhPJxHWUoGbeHOtiGY24KhCoWJUu2GzbvuQ9rdb+BqJdqLvOi+M7qBX+pMk1LL7YH8WekmXc7HTw==
+X-Received: by 2002:a05:6402:168e:b0:410:d2a4:b0dd with SMTP id a14-20020a056402168e00b00410d2a4b0ddmr2908446edv.403.1645109432560;
+        Thu, 17 Feb 2022 06:50:32 -0800 (PST)
+Received: from debianHome.localdomain (dynamic-077-001-066-240.77.1.pool.telefonica.de. [77.1.66.240])
+        by smtp.gmail.com with ESMTPSA id c11sm3580270edx.42.2022.02.17.06.50.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 06:50:32 -0800 (PST)
+From:   =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>
+To:     selinux@vger.kernel.org
+Cc:     Jens Axboe <axboe@kernel.dk>, Hans Verkuil <hverkuil@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Serge Hallyn <serge@hallyn.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Du Cheng <ducheng2@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Rolf Eike Beer <eb@emlix.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Colin Cross <ccross@google.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Xiaofeng Cao <cxfcosmos@gmail.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alistair Delva <adelva@google.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, bpf@vger.kernel.org
+Subject: [RFC PATCH 2/2] capability: use new capable_or functionality
+Date:   Thu, 17 Feb 2022 15:49:54 +0100
+Message-Id: <20220217145003.78982-1-cgzones@googlemail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 09/25] bus: mhi: ep: Add support for registering MHI
- endpoint client drivers
-Content-Language: en-US
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        vinod.koul@linaro.org, bjorn.andersson@linaro.org,
-        dmitry.baryshkov@linaro.org, quic_vbadigan@quicinc.com,
-        quic_cang@quicinc.com, quic_skananth@quicinc.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
- <20220212182117.49438-10-manivannan.sadhasivam@linaro.org>
- <94abdf83-5749-14b1-7a57-ceceb1b27167@linaro.org>
- <20220217102038.GB11964@workstation>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <20220217102038.GB11964@workstation>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 4:20 AM, Manivannan Sadhasivam wrote:
-> On Tue, Feb 15, 2022 at 02:02:50PM -0600, Alex Elder wrote:
-> 
-> [...]
-> 
->>> +static int mhi_ep_driver_remove(struct device *dev)
->>> +{
->>> +	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
->>> +	struct mhi_ep_driver *mhi_drv = to_mhi_ep_driver(dev->driver);
->>> +	struct mhi_result result = {};
->>> +	struct mhi_ep_chan *mhi_chan;
->>> +	int dir;
->>> +
->>> +	/* Skip if it is a controller device */
->>> +	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
->>> +		return 0;
->>> +
->>
->> It would be my preference to encapsulate the body of the
->> following loop into a called function, then call that once
->> for the UL channel and once for the DL channel.
->>
-> 
-> This follows the host stack, so I'd like to keep it the same.
+Use the new added capable_or macro in appropriate cases, where a task
+is required to have any of two capabilities.
 
-I think you should change both, but I'll leave that up to you.
+Reorder CAP_SYS_ADMIN last.
 
->>> +	/* Disconnect the channels associated with the driver */
->>> +	for (dir = 0; dir < 2; dir++) {
->>> +		mhi_chan = dir ? mhi_dev->ul_chan : mhi_dev->dl_chan;
->>> +
->>> +		if (!mhi_chan)
->>> +			continue;
->>> +
->>> +		mutex_lock(&mhi_chan->lock);
->>> +		/* Send channel disconnect status to the client driver */
->>> +		if (mhi_chan->xfer_cb) {
->>> +			result.transaction_status = -ENOTCONN;
->>> +			result.bytes_xferd = 0;
->>> +			mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
->>
->> It appears the result is ignored here.  If so, can we
->> define the xfer_cb() function so that a NULL pointer may
->> be supplied by the caller in cases like this?
->>
-> 
-> result is not ignored, only the bytes_xfered. "transaction_status" will
-> be used by the client drivers for error handling.
+TODO: split into subsystem patches.
 
-Sorry, I was looking at the code *after* the call, and was
-ignoring that it was information being passed in...  My
-mistake.
+Fixes: 94c4b4fd25e6 ("block: Check ADMIN before NICE for IOPRIO_CLASS_RT")
 
->>> +		}
->>> +
->>> +		/* Set channel state to DISABLED */
->>
->> That comment is a little tautological.  Just omit it.
->>
->>> +		mhi_chan->state = MHI_CH_STATE_DISABLED;
->>> +		mhi_chan->xfer_cb = NULL;
->>> +		mutex_unlock(&mhi_chan->lock);
->>> +	}
->>> +
->>> +	/* Remove the client driver now */
->>> +	mhi_drv->remove(mhi_dev);
->>> +
->>> +	return 0;
->>> +}
-> 
-> [...]
-> 
->>> +struct mhi_ep_driver {
->>> +	const struct mhi_device_id *id_table;
->>> +	struct device_driver driver;
->>> +	int (*probe)(struct mhi_ep_device *mhi_ep,
->>> +		     const struct mhi_device_id *id);
->>> +	void (*remove)(struct mhi_ep_device *mhi_ep);
->>
->> I get confused by the "ul" versus "dl" naming scheme here.
->> Is "ul" from the perspective of the host, meaning upload
->> is from the host toward the WWAN network (and therefore
->> toward the SDX AP), and download is from the WWAN toward
->> the host?  Somewhere this should be stated clearly in
->> comments; maybe I just missed it.
->>
-> 
-> Yes UL and DL are as per host context. I didn't state this explicitly
-> since this is the MHI host stack behaviour but I'll add a comment for
-> clarity
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+---
+ block/ioprio.c                                   | 9 +--------
+ drivers/media/common/saa7146/saa7146_video.c     | 2 +-
+ drivers/media/pci/bt8xx/bttv-driver.c            | 3 +--
+ drivers/media/pci/saa7134/saa7134-video.c        | 3 +--
+ drivers/media/platform/fsl-viu.c                 | 2 +-
+ drivers/media/test-drivers/vivid/vivid-vid-cap.c | 2 +-
+ drivers/net/caif/caif_serial.c                   | 2 +-
+ drivers/s390/block/dasd_eckd.c                   | 2 +-
+ fs/pipe.c                                        | 2 +-
+ include/linux/capability.h                       | 4 ++--
+ kernel/bpf/syscall.c                             | 2 +-
+ kernel/fork.c                                    | 2 +-
+ kernel/sys.c                                     | 2 +-
+ net/caif/caif_socket.c                           | 2 +-
+ net/unix/scm.c                                   | 2 +-
+ 15 files changed, 16 insertions(+), 25 deletions(-)
 
-Sounds good, thanks.
-
-					-Alex
-
-> 
-> Thanks,
-> Mani
+diff --git a/block/ioprio.c b/block/ioprio.c
+index 2fe068fcaad5..52d5da286323 100644
+--- a/block/ioprio.c
++++ b/block/ioprio.c
+@@ -37,14 +37,7 @@ int ioprio_check_cap(int ioprio)
+ 
+ 	switch (class) {
+ 		case IOPRIO_CLASS_RT:
+-			/*
+-			 * Originally this only checked for CAP_SYS_ADMIN,
+-			 * which was implicitly allowed for pid 0 by security
+-			 * modules such as SELinux. Make sure we check
+-			 * CAP_SYS_ADMIN first to avoid a denial/avc for
+-			 * possibly missing CAP_SYS_NICE permission.
+-			 */
+-			if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_NICE))
++			if (!capable_or(CAP_SYS_NICE, CAP_SYS_ADMIN))
+ 				return -EPERM;
+ 			fallthrough;
+ 			/* rt has prio field too */
+diff --git a/drivers/media/common/saa7146/saa7146_video.c b/drivers/media/common/saa7146/saa7146_video.c
+index 66215d9106a4..5eabc2e77cc2 100644
+--- a/drivers/media/common/saa7146/saa7146_video.c
++++ b/drivers/media/common/saa7146/saa7146_video.c
+@@ -470,7 +470,7 @@ static int vidioc_s_fbuf(struct file *file, void *fh, const struct v4l2_framebuf
+ 
+ 	DEB_EE("VIDIOC_S_FBUF\n");
+ 
+-	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
++	if (!capable_or(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	/* check args */
+diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
+index 8cc9bec43688..c2437ff07246 100644
+--- a/drivers/media/pci/bt8xx/bttv-driver.c
++++ b/drivers/media/pci/bt8xx/bttv-driver.c
+@@ -2569,8 +2569,7 @@ static int bttv_s_fbuf(struct file *file, void *f,
+ 	const struct bttv_format *fmt;
+ 	int retval;
+ 
+-	if (!capable(CAP_SYS_ADMIN) &&
+-		!capable(CAP_SYS_RAWIO))
++	if (!capable_or(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	/* check args */
+diff --git a/drivers/media/pci/saa7134/saa7134-video.c b/drivers/media/pci/saa7134/saa7134-video.c
+index 374c8e1087de..356b77c16f87 100644
+--- a/drivers/media/pci/saa7134/saa7134-video.c
++++ b/drivers/media/pci/saa7134/saa7134-video.c
+@@ -1803,8 +1803,7 @@ static int saa7134_s_fbuf(struct file *file, void *f,
+ 	struct saa7134_dev *dev = video_drvdata(file);
+ 	struct saa7134_format *fmt;
+ 
+-	if (!capable(CAP_SYS_ADMIN) &&
+-	   !capable(CAP_SYS_RAWIO))
++	if (!capable_or(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	/* check args */
+diff --git a/drivers/media/platform/fsl-viu.c b/drivers/media/platform/fsl-viu.c
+index a4bfa70b49b2..925c34c2b1b3 100644
+--- a/drivers/media/platform/fsl-viu.c
++++ b/drivers/media/platform/fsl-viu.c
+@@ -803,7 +803,7 @@ static int vidioc_s_fbuf(struct file *file, void *priv, const struct v4l2_frameb
+ 	const struct v4l2_framebuffer *fb = arg;
+ 	struct viu_fmt *fmt;
+ 
+-	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
++	if (!capable_or(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	/* check args */
+diff --git a/drivers/media/test-drivers/vivid/vivid-vid-cap.c b/drivers/media/test-drivers/vivid/vivid-vid-cap.c
+index b9caa4b26209..a0cfcf6c22c4 100644
+--- a/drivers/media/test-drivers/vivid/vivid-vid-cap.c
++++ b/drivers/media/test-drivers/vivid/vivid-vid-cap.c
+@@ -1253,7 +1253,7 @@ int vivid_vid_cap_s_fbuf(struct file *file, void *fh,
+ 	if (dev->multiplanar)
+ 		return -ENOTTY;
+ 
+-	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
++	if (!capable_or(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	if (dev->overlay_cap_owner)
+diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+index 2a7af611d43a..245c30c469c2 100644
+--- a/drivers/net/caif/caif_serial.c
++++ b/drivers/net/caif/caif_serial.c
+@@ -326,7 +326,7 @@ static int ldisc_open(struct tty_struct *tty)
+ 	/* No write no play */
+ 	if (tty->ops->write == NULL)
+ 		return -EOPNOTSUPP;
+-	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_TTY_CONFIG))
++	if (!capable_or(CAP_SYS_TTY_CONFIG, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	/* release devices to avoid name collision */
+diff --git a/drivers/s390/block/dasd_eckd.c b/drivers/s390/block/dasd_eckd.c
+index 8410a25a65c1..9b5d22dd3e7b 100644
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
+@@ -5319,7 +5319,7 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
+ 	char psf0, psf1;
+ 	int rc;
+ 
+-	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
++	if (!capable_or(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+ 		return -EACCES;
+ 	psf0 = psf1 = 0;
+ 
+diff --git a/fs/pipe.c b/fs/pipe.c
+index cc28623a67b6..47dc9b59b7a5 100644
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -775,7 +775,7 @@ bool too_many_pipe_buffers_hard(unsigned long user_bufs)
+ 
+ bool pipe_is_unprivileged_user(void)
+ {
+-	return !capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN);
++	return !capable_or(CAP_SYS_RESOURCE, CAP_SYS_ADMIN);
+ }
+ 
+ struct pipe_inode_info *alloc_pipe_info(void)
+diff --git a/include/linux/capability.h b/include/linux/capability.h
+index 5c55687a9a05..5ed55b73cb62 100644
+--- a/include/linux/capability.h
++++ b/include/linux/capability.h
+@@ -262,12 +262,12 @@ extern bool file_ns_capable(const struct file *file, struct user_namespace *ns,
+ extern bool ptracer_capable(struct task_struct *tsk, struct user_namespace *ns);
+ static inline bool perfmon_capable(void)
+ {
+-	return capable(CAP_PERFMON) || capable(CAP_SYS_ADMIN);
++	return capable_or(CAP_PERFMON, CAP_SYS_ADMIN);
+ }
+ 
+ static inline bool bpf_capable(void)
+ {
+-	return capable(CAP_BPF) || capable(CAP_SYS_ADMIN);
++	return capable_or(CAP_BPF, CAP_SYS_ADMIN);
+ }
+ 
+ static inline bool checkpoint_restore_ns_capable(struct user_namespace *ns)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index fa4505f9b611..108dd09f978a 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2243,7 +2243,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
+ 	    !bpf_capable())
+ 		return -EPERM;
+ 
+-	if (is_net_admin_prog_type(type) && !capable(CAP_NET_ADMIN) && !capable(CAP_SYS_ADMIN))
++	if (is_net_admin_prog_type(type) && !capable_or(CAP_NET_ADMIN, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 	if (is_perfmon_prog_type(type) && !perfmon_capable())
+ 		return -EPERM;
+diff --git a/kernel/fork.c b/kernel/fork.c
+index d75a528f7b21..067702f2eb15 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -2024,7 +2024,7 @@ static __latent_entropy struct task_struct *copy_process(
+ 	retval = -EAGAIN;
+ 	if (is_ucounts_overlimit(task_ucounts(p), UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC))) {
+ 		if (p->real_cred->user != INIT_USER &&
+-		    !capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
++		    !capable_or(CAP_SYS_RESOURCE, CAP_SYS_ADMIN))
+ 			goto bad_fork_free;
+ 	}
+ 	current->flags &= ~PF_NPROC_EXCEEDED;
+diff --git a/kernel/sys.c b/kernel/sys.c
+index ecc4cf019242..9df6c5e77620 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -481,7 +481,7 @@ static int set_user(struct cred *new)
+ 	 */
+ 	if (is_ucounts_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
+ 			new_user != INIT_USER &&
+-			!capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
++			!capable_or(CAP_SYS_RESOURCE, CAP_SYS_ADMIN))
+ 		current->flags |= PF_NPROC_EXCEEDED;
+ 	else
+ 		current->flags &= ~PF_NPROC_EXCEEDED;
+diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
+index 2b8892d502f7..60498148126c 100644
+--- a/net/caif/caif_socket.c
++++ b/net/caif/caif_socket.c
+@@ -1036,7 +1036,7 @@ static int caif_create(struct net *net, struct socket *sock, int protocol,
+ 		.usersize = sizeof_field(struct caifsock, conn_req.param)
+ 	};
+ 
+-	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_NET_ADMIN))
++	if (!capable_or(CAP_NET_ADMIN, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 	/*
+ 	 * The sock->type specifies the socket type to use.
+diff --git a/net/unix/scm.c b/net/unix/scm.c
+index aa27a02478dc..821be80e6c85 100644
+--- a/net/unix/scm.c
++++ b/net/unix/scm.c
+@@ -99,7 +99,7 @@ static inline bool too_many_unix_fds(struct task_struct *p)
+ 	struct user_struct *user = current_user();
+ 
+ 	if (unlikely(user->unix_inflight > task_rlimit(p, RLIMIT_NOFILE)))
+-		return !capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN);
++		return !capable_or(CAP_SYS_RESOURCE, CAP_SYS_ADMIN);
+ 	return false;
+ }
+ 
+-- 
+2.35.1
 
