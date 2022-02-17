@@ -2,356 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EED7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239015AbiBQKLV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 05:11:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48444 "EHLO
+        id S239026AbiBQKL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 05:11:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238992AbiBQKLP (ORCPT
+        with ESMTP id S239013AbiBQKL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 05:11:15 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457C32AAB0D
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 02:11:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645092661; x=1676628661;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Epq83nTwFc5D59FrMj31oYxJG4cnVb1bPDeKpP2DoCA=;
-  b=TnB6zKc/ySZ5W1lHX1IxO32oVtQTrVu7JW1ALl4ynxASihKc+W14ptTO
-   lalWhtsI7oBTkiFBJl3MxhyRHF4tWo4uyHTGuU8q3uHRUyhugeLVERApM
-   ktIWVSBAuMc+LUsqh+FAR3wM47/t44Jf6GGUyi6IZWCtV4Mq99iK6xxB3
-   oa0SdVyvpwloh10vcBJteKXBSbgFdLS1QMhbUYtBLTEDMOq3CO3rh+W6c
-   vkZp6/GlRRy4E/TY/UCAH/si6gwsTzhjE0qWUY4PbwFuhvM5rSeIS8S13
-   irliO8Ct7vq75tsqUIjp93pOTdkJngTgizmYZq9FAyfQ5jIxYjlB06+ZC
-   w==;
-IronPort-SDR: YPx8B94FC8+1Pq9MbxH46nv+wcK2Na3/Ti9x+QXoynZtCYfjpDLh3bdn+TvlWJjREMvfcqF5kZ
- I6G9dIWUF06Km3ETBsaSDi2gb8Mf4Gpi2LG4BpQXiFwWwCnRfcTwf7S8ex03PHg2jM3KuUBsGE
- 2T+eoxahblQTVE9OF0YVLA1ugKMIc/BU7Rcs6eB/BfFIuXDIxpWC1Cbmy+BQqR1C0pVhFQHabk
- BZCOs8eqnBEJJ/dyKiFZOlQFjLOjg+f9XJUbgbeAm+F2cE3vH2oJuZko1HOPiF3+8tiC49U8yT
- kDFaVzJqZeL9KLCn2NqjANgm
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="153919241"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Feb 2022 03:11:00 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Feb 2022 03:11:00 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 17 Feb 2022 03:10:55 -0700
-From:   <conor.dooley@microchip.com>
-To:     <aou@eecs.berkeley.edu>, <paul.walmsley@sifive.com>,
-        <palmer@dabbelt.com>, <arnd@arndb.de>, <olof@lixom.net>,
-        <linux-riscv@lists.infradead.org>
-CC:     <robh+dt@kernel.org>, <cyril.jean@microchip.com>,
-        <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
-        <jassisinghbrar@gmail.com>, <j.neuschaefer@gmx.net>,
-        <sfr@canb.auug.org.au>, <damien.lemoal@wdc.com>,
-        <atishp@atishpatra.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>,
-        <claudiu.beznea@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Conor Dooley" <conor.dooley@microchip.com>
-Subject: [PATCH v4 1/1] soc: add microchip polarfire soc system controller
-Date:   Thu, 17 Feb 2022 10:13:50 +0000
-Message-ID: <20220217101349.2374873-2-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220217101349.2374873-1-conor.dooley@microchip.com>
-References: <20220217101349.2374873-1-conor.dooley@microchip.com>
+        Thu, 17 Feb 2022 05:11:28 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6507F2AAB3D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 02:11:14 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 23C581F383;
+        Thu, 17 Feb 2022 10:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645092673; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyUregw8hAXko0ZRmaRWn7Astnni7nXWdxjsvYQJs/4=;
+        b=e8i0Bm1Ax5TGlX4yqI0sNNIIXDYo1UGJuNGmPaHp9NVtUgjkBypLOsEtKUiGy5yP+ycgmS
+        yZRoaPG3syvfeyYSgDDI0/GNPj+ofGHW/MEKdjXYlTARN7xfE+m5xqgj4wFbR4agmxeLJa
+        gvT1HwNvuV09xG5RpqHUC0sET0wLGcU=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D75D9A3B87;
+        Thu, 17 Feb 2022 10:11:12 +0000 (UTC)
+Date:   Thu, 17 Feb 2022 11:11:12 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH printk v1 08/13] printk: add pr_flush()
+Message-ID: <Yg4fQHlli5L/zLQ6@alley>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-9-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207194323.273637-9-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Mon 2022-02-07 20:49:18, John Ogness wrote:
+> Provide a might-sleep function to allow waiting for threaded console
+> printers to catch up to the latest logged message.
+> 
+> Use pr_flush() whenever it is desirable to get buffered messages
+> printed before continuing: suspend_console(), resume_console(),
+> console_stop(), console_start(), console_unblank().
+> 
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index 02bde45c1149..1e80fd052bd5 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -2449,6 +2449,7 @@ void suspend_console(void)
+>  	if (!console_suspend_enabled)
+>  		return;
+>  	pr_info("Suspending console(s) (use no_console_suspend to debug)\n");
+> +	pr_flush(1000, true);
+>  	console_lock();
+>  	console_suspended = 1;
+>  	up_console_sem();
+> @@ -2461,6 +2462,7 @@ void resume_console(void)
+>  	down_console_sem();
+>  	console_suspended = 0;
+>  	console_unlock();
+> +	pr_flush(1000, true);
+>  }
+>  
+>  /**
+> @@ -2802,8 +2804,10 @@ void console_unblank(void)
+>  	if (oops_in_progress) {
+>  		if (down_trylock_console_sem() != 0)
+>  			return;
+> -	} else
+> +	} else {
+> +		pr_flush(1000, true);
 
-This driver provides an interface for other drivers to access the
-functions of the system controller on the Microchip PolarFire SoC.
+It would make more sense to flush the consoles after they are
+unblanked. I mean to move this to the end of the function.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/soc/Kconfig                         |   1 +
- drivers/soc/Makefile                        |   1 +
- drivers/soc/microchip/Kconfig               |  10 +
- drivers/soc/microchip/Makefile              |   1 +
- drivers/soc/microchip/mpfs-sys-controller.c | 194 ++++++++++++++++++++
- include/soc/microchip/mpfs.h                |   4 +-
- 6 files changed, 209 insertions(+), 2 deletions(-)
- create mode 100644 drivers/soc/microchip/Kconfig
- create mode 100644 drivers/soc/microchip/Makefile
- create mode 100644 drivers/soc/microchip/mpfs-sys-controller.c
+Also it is not obvious why this is not called when oops_in_progress
+is set. I guess that it is because trylock is needed in this case.
+It should be handled inside pr_flush().
 
-diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
-index a8562678c437..c5aae42673d3 100644
---- a/drivers/soc/Kconfig
-+++ b/drivers/soc/Kconfig
-@@ -13,6 +13,7 @@ source "drivers/soc/imx/Kconfig"
- source "drivers/soc/ixp4xx/Kconfig"
- source "drivers/soc/litex/Kconfig"
- source "drivers/soc/mediatek/Kconfig"
-+source "drivers/soc/microchip/Kconfig"
- source "drivers/soc/qcom/Kconfig"
- source "drivers/soc/renesas/Kconfig"
- source "drivers/soc/rockchip/Kconfig"
-diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
-index adb30c2d4fea..904eec2a7871 100644
---- a/drivers/soc/Makefile
-+++ b/drivers/soc/Makefile
-@@ -18,6 +18,7 @@ obj-y				+= ixp4xx/
- obj-$(CONFIG_SOC_XWAY)		+= lantiq/
- obj-$(CONFIG_LITEX_SOC_CONTROLLER) += litex/
- obj-y				+= mediatek/
-+obj-y				+= microchip/
- obj-y				+= amlogic/
- obj-y				+= qcom/
- obj-y				+= renesas/
-diff --git a/drivers/soc/microchip/Kconfig b/drivers/soc/microchip/Kconfig
-new file mode 100644
-index 000000000000..eb656b33156b
---- /dev/null
-+++ b/drivers/soc/microchip/Kconfig
-@@ -0,0 +1,10 @@
-+config POLARFIRE_SOC_SYS_CTRL
-+	tristate "POLARFIRE_SOC_SYS_CTRL"
-+	depends on POLARFIRE_SOC_MAILBOX
-+	help
-+	  This driver adds support for the PolarFire SoC (MPFS) system controller.
-+
-+	  To compile this driver as a module, choose M here. the
-+	  module will be called mpfs_system_controller.
-+
-+	  If unsure, say N.
-diff --git a/drivers/soc/microchip/Makefile b/drivers/soc/microchip/Makefile
-new file mode 100644
-index 000000000000..14489919fe4b
---- /dev/null
-+++ b/drivers/soc/microchip/Makefile
-@@ -0,0 +1 @@
-+obj-$(CONFIG_POLARFIRE_SOC_SYS_CTRL)	+= mpfs-sys-controller.o
-diff --git a/drivers/soc/microchip/mpfs-sys-controller.c b/drivers/soc/microchip/mpfs-sys-controller.c
-new file mode 100644
-index 000000000000..2f4535929762
---- /dev/null
-+++ b/drivers/soc/microchip/mpfs-sys-controller.c
-@@ -0,0 +1,194 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Microchip PolarFire SoC (MPFS) system controller driver
-+ *
-+ * Copyright (c) 2020-2021 Microchip Corporation. All rights reserved.
-+ *
-+ * Author: Conor Dooley <conor.dooley@microchip.com>
-+ *
-+ */
-+
-+#include <linux/slab.h>
-+#include <linux/kref.h>
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/of_platform.h>
-+#include <linux/mailbox_client.h>
-+#include <linux/platform_device.h>
-+#include <soc/microchip/mpfs.h>
-+
-+static DEFINE_MUTEX(transaction_lock);
-+
-+struct mpfs_sys_controller {
-+	struct mbox_client client;
-+	struct mbox_chan *chan;
-+	struct completion c;
-+	struct kref consumers;
-+};
-+
-+int mpfs_blocking_transaction(struct mpfs_sys_controller *sys_controller, struct mpfs_mss_msg *msg)
-+{
-+	int ret, err;
-+
-+	err = mutex_lock_interruptible(&transaction_lock);
-+	if (err)
-+		return err;
-+
-+	reinit_completion(&sys_controller->c);
-+
-+	ret = mbox_send_message(sys_controller->chan, msg);
-+	if (ret >= 0) {
-+		if (wait_for_completion_timeout(&sys_controller->c, HZ)) {
-+			ret = 0;
-+		} else {
-+			ret = -ETIMEDOUT;
-+			dev_warn(sys_controller->client.dev,
-+				 "MPFS sys controller transaction timeout\n");
-+		}
-+	} else {
-+		dev_err(sys_controller->client.dev,
-+			"mpfs sys controller transaction returned %d\n", ret);
-+	}
-+
-+	mutex_unlock(&transaction_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(mpfs_blocking_transaction);
-+
-+static void rx_callback(struct mbox_client *client, void *msg)
-+{
-+	struct mpfs_sys_controller *sys_controller =
-+		container_of(client, struct mpfs_sys_controller, client);
-+
-+	complete(&sys_controller->c);
-+}
-+
-+static void mpfs_sys_controller_delete(struct kref *kref)
-+{
-+	struct mpfs_sys_controller *sys_controller = container_of(kref, struct mpfs_sys_controller,
-+					       consumers);
-+
-+	mbox_free_channel(sys_controller->chan);
-+	kfree(sys_controller);
-+}
-+
-+void mpfs_sys_controller_put(void *data)
-+{
-+	struct mpfs_sys_controller *sys_controller = data;
-+
-+	kref_put(&sys_controller->consumers, mpfs_sys_controller_delete);
-+}
-+EXPORT_SYMBOL(mpfs_sys_controller_put);
-+
-+static struct platform_device subdevs[] = {
-+	{
-+		.name		= "mpfs-rng",
-+		.id		= -1,
-+	},
-+	{
-+		.name		= "mpfs-generic-service",
-+		.id		= -1,
-+	}
-+};
-+
-+static int mpfs_sys_controller_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mpfs_sys_controller *sys_controller;
-+	int i;
-+
-+	sys_controller = devm_kzalloc(dev, sizeof(*sys_controller), GFP_KERNEL);
-+	if (!sys_controller)
-+		return -ENOMEM;
-+
-+	sys_controller->client.dev = dev;
-+	sys_controller->client.rx_callback = rx_callback;
-+	sys_controller->client.tx_block = 1U;
-+
-+	sys_controller->chan = mbox_request_channel(&sys_controller->client, 0);
-+	if (IS_ERR(sys_controller->chan))
-+		return dev_err_probe(dev, PTR_ERR(sys_controller->chan),
-+				     "Failed to get mbox channel\n");
-+
-+	init_completion(&sys_controller->c);
-+	kref_init(&sys_controller->consumers);
-+
-+	platform_set_drvdata(pdev, sys_controller);
-+
-+	dev_info(&pdev->dev, "Registered MPFS system controller\n");
-+
-+	for (i = 0; i < ARRAY_SIZE(subdevs); i++) {
-+		subdevs[i].dev.parent = dev;
-+		if (platform_device_register(&subdevs[i]))
-+			dev_warn(dev, "Error registering sub device %s\n", subdevs[i].name);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mpfs_sys_controller_remove(struct platform_device *pdev)
-+{
-+	struct mpfs_sys_controller *sys_controller = platform_get_drvdata(pdev);
-+
-+	mpfs_sys_controller_put(sys_controller);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id mpfs_sys_controller_of_match[] = {
-+	{.compatible = "microchip,mpfs-sys-controller", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, mpfs_sys_controller_of_match);
-+
-+struct mpfs_sys_controller *mpfs_sys_controller_get(struct device *dev)
-+{
-+	const struct of_device_id *match;
-+	struct mpfs_sys_controller *sys_controller;
-+	int ret;
-+
-+	if (!dev->parent)
-+		goto err_no_device;
-+
-+	match = of_match_node(mpfs_sys_controller_of_match,  dev->parent->of_node);
-+	of_node_put(dev->parent->of_node);
-+	if (!match)
-+		goto err_no_device;
-+
-+	sys_controller = dev_get_drvdata(dev->parent);
-+	if (!sys_controller)
-+		goto err_bad_device;
-+
-+	if (!kref_get_unless_zero(&sys_controller->consumers))
-+		goto err_bad_device;
-+
-+	ret = devm_add_action_or_reset(dev, mpfs_sys_controller_put, sys_controller);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	return sys_controller;
-+
-+err_no_device:
-+	dev_dbg(dev, "Parent device was not an MPFS system controller\n");
-+	return ERR_PTR(-ENODEV);
-+
-+err_bad_device:
-+	dev_dbg(dev, "MPFS system controller found but could not register as a sub device\n");
-+	return ERR_PTR(-EPROBE_DEFER);
-+}
-+EXPORT_SYMBOL(mpfs_sys_controller_get);
-+
-+static struct platform_driver mpfs_sys_controller_driver = {
-+	.driver = {
-+		.name = "mpfs-sys-controller",
-+		.of_match_table = mpfs_sys_controller_of_match,
-+	},
-+	.probe = mpfs_sys_controller_probe,
-+	.remove = mpfs_sys_controller_remove,
-+};
-+module_platform_driver(mpfs_sys_controller_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Conor Dooley <conor.dooley@microchip.com>");
-+MODULE_DESCRIPTION("MPFS system controller driver");
-diff --git a/include/soc/microchip/mpfs.h b/include/soc/microchip/mpfs.h
-index 2b64c95f3be5..6466515262bd 100644
---- a/include/soc/microchip/mpfs.h
-+++ b/include/soc/microchip/mpfs.h
-@@ -34,9 +34,9 @@ struct mpfs_mss_response {
- 
- #if IS_ENABLED(CONFIG_POLARFIRE_SOC_SYS_CTRL)
- 
--int mpfs_blocking_transaction(struct mpfs_sys_controller *mpfs_client, void *msg);
-+int mpfs_blocking_transaction(struct mpfs_sys_controller *mpfs_client, struct mpfs_mss_msg *msg);
- 
--struct mpfs_sys_controller *mpfs_sys_controller_get(struct device_node *mailbox_node);
-+struct mpfs_sys_controller *mpfs_sys_controller_get(struct device *dev);
- 
- #endif /* if IS_ENABLED(CONFIG_POLARFIRE_SOC_SYS_CTRL) */
- 
--- 
-2.35.1
+I mean that pr_flush() should internally use trylock when
+@oops_in_progress is set. It will make it safe even in this
+mode.
 
+
+>  		console_lock();
+> +	}
+>  
+>  	console_locked = 1;
+>  	console_may_schedule = 0;
+> @@ -2869,6 +2873,7 @@ struct tty_driver *console_device(int *index)
+>   */
+>  void console_stop(struct console *console)
+>  {
+> +	pr_flush(1000, true);
+
+It would be enough to flush just the given @console.
+
+It might be possible to take over the job from the related
+kthread and flush it in this context. Well, I am not sure if
+it is a good idea.
+
+>  	console_lock();
+>  	console->flags &= ~CON_ENABLED;
+>  	console_unlock();
+> @@ -2880,6 +2885,7 @@ void console_start(struct console *console)
+>  	console_lock();
+>  	console->flags |= CON_ENABLED;
+>  	console_unlock();
+> +	pr_flush(1000, true);
+
+Same here.
+
+>  }
+>  EXPORT_SYMBOL(console_start);
+>  
+> @@ -3249,6 +3255,71 @@ static int __init printk_late_init(void)
+>  late_initcall(printk_late_init);
+>  
+>  #if defined CONFIG_PRINTK
+> +/**
+> + * pr_flush() - Wait for printing threads to catch up.
+> + *
+
+Alternative solution would be to take over the job from the kthreads
+and flush the consoles in this context. Well, I am not sure
+if it is a good idea or not.
+
+> + * @timeout_ms:        The maximum time (in ms) to wait.
+> + * @reset_on_progress: Reset the timeout if forward progress is seen.
+> + *
+> + * A value of 0 for @timeout_ms means no waiting will occur. A value of -1
+> + * represents infinite waiting.
+> + *
+> + * If @reset_on_progress is true, the timeout will be reset whenever any
+> + * printer has been seen to make some forward progress.
+> + *
+> + * Context: Process context. May sleep while acquiring console lock.
+> + * Return: true if all enabled printers are caught up.
+> + */
+> +bool pr_flush(int timeout_ms, bool reset_on_progress)
+> +{
+> +	int remaining = timeout_ms;
+> +	struct console *con;
+> +	u64 last_diff = 0;
+> +	u64 printk_seq;
+> +	u64 diff;
+> +	u64 seq;
+> +
+> +	might_sleep();
+> +
+> +	seq = prb_next_seq(prb);
+> +
+> +	for (;;) {
+> +		diff = 0;
+> +
+> +		console_lock();
+> +		for_each_console(con) {
+> +			if (!console_is_usable(con))
+> +				continue;
+> +			printk_seq = con->seq;
+> +			if (printk_seq < seq)
+> +				diff += seq - printk_seq;
+> +		}
+> +		console_unlock();
+> +
+> +		if (diff != last_diff && reset_on_progress)
+> +			remaining = timeout_ms;
+> +
+> +		if (diff == 0 || remaining == 0)
+> +			break;
+> +
+> +		if (remaining < 0) {
+> +			/* no timeout limit */
+> +			msleep(100);
+> +		} else if (remaining < 100) {
+> +			msleep(remaining);
+> +			remaining = 0;
+> +		} else {
+> +			msleep(100);
+> +			remaining -= 100;
+> +		}
+> +
+> +		last_diff = diff;
+> +	}
+> +
+> +	return (diff == 0);
+> +}
+> +EXPORT_SYMBOL(pr_flush);
+
+Summary:
+
+The pr_flush() API and the optional timeout look reasonable to me.
+
+Please, handle oops_in_progress in pr_flush() and make it safe in this
+mode. It will allow to move it at the end of console_unblank() where
+it makes more sense.
+
+I do not resist on flushing only the given consoles in console_stop()
+and console_start(). It is nice to have and can be done later.
+
+Also I do not resist on doing the flush in the context of the caller.
+I am not even sure if it is a good idea. We could play with it
+later when there are some problems with the current approach
+in practice.
+
+Best Regards,
+Petr
