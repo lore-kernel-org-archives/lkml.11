@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C33C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245527AbiBQTsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:48:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49426 "EHLO
+        id S245530AbiBQTsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:48:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245508AbiBQTsW (ORCPT
+        with ESMTP id S245490AbiBQTsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:48:22 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF9827FE9;
-        Thu, 17 Feb 2022 11:48:06 -0800 (PST)
+        Thu, 17 Feb 2022 14:48:38 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA8F27141;
+        Thu, 17 Feb 2022 11:48:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645127286; x=1676663286;
+  t=1645127298; x=1676663298;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=aaxSkQVousgo9mD1lX3qPH2hJ2uGtvOppUNnRDzJDOM=;
-  b=jIknxxW5ePocxq2VEF6kn6pfyrM56e2Meqwtl4+2RPzy5gZhStQ4vAri
-   Bs7DfsFMUzaCDSFYAxUF+f5d1McMr/neeWh6fnGXLtLGJHg1V5sTDcda2
-   Bop+5P9azD4mVD1ZGWJTmxkLvJC+W0Cb9JUU/esb296XaGLQmLXQIvgRU
-   arY+XCB6coYJwU05G1Ttq+6Ae4y4qUH9x6H3mkXQsE+UImyIOEpSZ9oBI
-   +wy+m/yRVQWkl4dGuAaNz0J3FJex3VyUhD4/ynEzvT7yAWSsVK2sUjUsS
-   rWWWZdgBfldsH1oIWaJrLLB25YWLneOc9JRNMKrBMkRTHEr8q0GyaF9qO
+  bh=46Ao89wMcgm6jN7Eq+CdMeAAf93pn4JVEULNHnEFEMY=;
+  b=RNfvLN9HHOmMFNJd8zoe75azhYolL5YDMrdv3HrlnIx4y5ue2/7AbOzg
+   IZwLNMYemYZSQmZNn2NXQd+LzqRv2oWUNDDXdtkXmMAMi3X00i8NcC+mR
+   sn0iB9owU7JB8soJ1OJm+aCmwmeAlfA/C+yfX5buHhaBD2sCHjJJ4/ee6
+   ZAeIrY/VBe3ObWIw11WFwrNb10unlIUE7n/rFtCJecTkTCPj0oOSx2hIp
+   jT0rlnksMFnTIJdSd2GSV0eGMpBBgJxKMMf9ml6DO3jPscPbpcbDAqPmr
+   5wuJgw1NsMFWpe1oC+WME//8ko+rzYs3eoZkiMraZMqoNBxQ4ZEwBG8xx
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="275553322"
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="311703355"
 X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="275553322"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 11:48:06 -0800
+   d="scan'208";a="311703355"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 11:48:12 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="503216448"
+   d="scan'208";a="774877289"
 Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 17 Feb 2022 11:48:01 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 17 Feb 2022 11:48:07 -0800
 Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nKmkz-0000XK-9r; Thu, 17 Feb 2022 19:48:01 +0000
-Date:   Fri, 18 Feb 2022 03:47:15 +0800
+        id 1nKmkz-0000Xa-E7; Thu, 17 Feb 2022 19:48:01 +0000
+Date:   Fri, 18 Feb 2022 03:47:09 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
         agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
@@ -51,12 +51,12 @@ To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
         linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         swboyd@chromium.org, judyhsiao@chromium.org
-Cc:     kbuild-all@lists.01.org,
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
         Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Subject: Re: [PATCH] ASoC: codecs: Add power domains support in digital macro
  codecs
-Message-ID: <202202180220.7Z94ouak-lkp@intel.com>
+Message-ID: <202202180153.WSEbQejW-lkp@intel.com>
 References: <1645108786-25990-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -80,8 +80,8 @@ https://git-scm.com/docs/git-format-patch]
 
 url:    https://github.com/0day-ci/linux/commits/Srinivasa-Rao-Mandadapu/ASoC-codecs-Add-power-domains-support-in-digital-macro-codecs/20220217-224032
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-config: csky-buildonly-randconfig-r001-20220217 (https://download.01.org/0day-ci/archive/20220218/202202180220.7Z94ouak-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
+config: hexagon-randconfig-r045-20220217 (https://download.01.org/0day-ci/archive/20220218/202202180153.WSEbQejW-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
@@ -91,17 +91,30 @@ reproduce (this is a W=1 build):
         git checkout a1e8b5e6a2baa8ce5b2373bfbdfce5a771132448
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+All errors (new ones prefixed by >>):
 
->> ERROR: modpost: "lpass_macro_pds_exit" [sound/soc/codecs/snd-soc-lpass-rx-macro.ko] undefined!
->> ERROR: modpost: "lpass_macro_pds_init" [sound/soc/codecs/snd-soc-lpass-rx-macro.ko] undefined!
->> ERROR: modpost: "lpass_macro_pds_exit" [sound/soc/codecs/snd-soc-lpass-va-macro.ko] undefined!
->> ERROR: modpost: "lpass_macro_pds_init" [sound/soc/codecs/snd-soc-lpass-va-macro.ko] undefined!
+>> ld.lld: error: undefined symbol: lpass_macro_pds_init
+   >>> referenced by lpass-rx-macro.c
+   >>> soc/codecs/lpass-rx-macro.o:(rx_macro_probe) in archive sound/built-in.a
+   >>> referenced by lpass-rx-macro.c
+   >>> soc/codecs/lpass-rx-macro.o:(rx_macro_probe) in archive sound/built-in.a
+   >>> referenced by lpass-tx-macro.c
+   >>> soc/codecs/lpass-tx-macro.o:(tx_macro_probe) in archive sound/built-in.a
+   >>> referenced 1 more times
+--
+>> ld.lld: error: undefined symbol: lpass_macro_pds_exit
+   >>> referenced by lpass-rx-macro.c
+   >>> soc/codecs/lpass-rx-macro.o:(rx_macro_remove) in archive sound/built-in.a
+   >>> referenced by lpass-rx-macro.c
+   >>> soc/codecs/lpass-rx-macro.o:(rx_macro_remove) in archive sound/built-in.a
+   >>> referenced by lpass-tx-macro.c
+   >>> soc/codecs/lpass-tx-macro.o:(tx_macro_remove) in archive sound/built-in.a
+   >>> referenced 1 more times
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
