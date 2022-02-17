@@ -2,284 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6700AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 03:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 895C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 03:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232586AbiBQDRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 22:17:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57624 "EHLO
+        id S232700AbiBQDRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 22:17:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232632AbiBQDPn (ORCPT
+        with ESMTP id S232518AbiBQDRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 22:15:43 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C3127828D;
-        Wed, 16 Feb 2022 19:15:28 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id z4so3799836pgh.12;
-        Wed, 16 Feb 2022 19:15:28 -0800 (PST)
+        Wed, 16 Feb 2022 22:17:43 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA341244655;
+        Wed, 16 Feb 2022 19:17:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=lCn1Z7Sr5pqXCxgIT7QgxabiSSMXF+4K1Vo1IntnwpI=;
-        b=ML3mk5Un18iBGf/QDqUJfoaccGD1gORVbfmF98z6KNGjyvndnVGRHLHVC7J8Ar73Dk
-         OXYCKcRAkiz8HGckgA7/K0WCdaB4dPRJgFtx99IB/nwBYJI1Cu2g42dlsS8rDtHVLzy+
-         ec9W7rTQNsoO5MJQq3gB2MR7RlmuFNzyTIQLfZfK4rXgGei39mxqog+RUFsnkYTahhix
-         sFCuuPnf239XZm/bfmwzLmZP9PklwhV8y6SEYS/sbVU7f78qMvH9IXUr6gYJJdTrRqyJ
-         cN5HOdwurUHBLa4JnqynAW7+iw5LVz2MLZ/MWFtx26zoVXv5fidx+v0o4852ihF9IFdu
-         nLKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=lCn1Z7Sr5pqXCxgIT7QgxabiSSMXF+4K1Vo1IntnwpI=;
-        b=4ktj5FnntElgyY8DnQRlDm72Jm53cB9RBEmOdV1nsG8S+hkX8SLImfqKFVrlbE0vX3
-         kAdVj9coux8ZP3ptXPxOKCDDhYFj1CZPV5NUwnGETbRjOIv89zLVbaD35bPwtXXnToh5
-         t3bS64wkaei96Utg3h2ZNxdkkl1OgFQGwW28nnIClPyw1Rin2W1gdiTEW9/FKtaBGwje
-         EjB2t9u1i6Y40AvCM1K87WcO9Kj7eEUrxWpDVaJpEbU5/tgvSaB/0NFIK1JgAaQmlgfL
-         R1VShQtck/cHqx4mxm3Ms4KPXwi5Ldici4KXPY5KF8A7/pkIY2dAzCGAm1Kva/VpbnNU
-         GSGQ==
-X-Gm-Message-State: AOAM533uLtXShu4UObdg9k+aKpeSV0VhD/mx9+lqPmHKCFQcW9tFM6Ei
-        Sc7jmwBAgB8HIwuUn6qmpYA=
-X-Google-Smtp-Source: ABdhPJww5bOq622E66KYDQvmiNFpVFN8B6QYiCCavjKpSEXd0UwOnRb6r9SXkHkNQdeoyqxf6HQCDg==
-X-Received: by 2002:a63:5c09:0:b0:370:6303:1464 with SMTP id q9-20020a635c09000000b0037063031464mr849049pgb.351.1645067728261;
-        Wed, 16 Feb 2022 19:15:28 -0800 (PST)
-Received: from localhost.localdomain ([162.219.34.248])
-        by smtp.gmail.com with ESMTPSA id cu21sm421018pjb.50.2022.02.16.19.15.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 19:15:27 -0800 (PST)
-From:   "Wang Jianchao (Kuaishou)" <jianchao.wan9@gmail.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Josef Bacik <jbacik@fb.com>, Tejun Heo <tj@kernel.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC V4 5/6] blk-ioprio: make ioprio pluggable and modular
-Date:   Thu, 17 Feb 2022 11:13:48 +0800
-Message-Id: <20220217031349.98561-6-jianchao.wan9@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220217031349.98561-1-jianchao.wan9@gmail.com>
-References: <20220217031349.98561-1-jianchao.wan9@gmail.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645067849; x=1676603849;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ltDwN4iGmvMN5UU3I6oxuEr6jl6hMOfWElYOFtFmTc0=;
+  b=ydN5N5SqwVyDR1WH7jVBSaWQDprdDqLRXwPjnsfxEtiyo0S5CA4YfSuo
+   CpJq1n6/UOp3LiA9ngyjgt17rco6+RImKHby7rlKcM9QQutkJ0tKdBupr
+   hOgGN+sbHIN63vHjx30OL333jYlgidKnj7BW4+Z3OZCjl92G2Pna/HGAB
+   U=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 Feb 2022 19:17:29 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 19:17:29 -0800
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 16 Feb 2022 19:17:28 -0800
+Received: from [10.111.174.92] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Wed, 16 Feb
+ 2022 19:17:25 -0800
+Message-ID: <f7c3f941-2fb8-e10a-bd5a-6031e6a52171@quicinc.com>
+Date:   Wed, 16 Feb 2022 19:17:23 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [REPOST PATCH v4 12/13] drm/msm/dsi: add mode valid callback for
+ dsi_mgr
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
+CC:     Jonathan Marek <jonathan@marek.ca>,
+        David Airlie <airlied@linux.ie>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Abhinav Kumar" <abhinavk@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        <dri-devel@lists.freedesktop.org>,
+        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>,
+        <freedreno@lists.freedesktop.org>
+References: <20220210103423.271016-1-vkoul@kernel.org>
+ <20220210103423.271016-13-vkoul@kernel.org>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <20220210103423.271016-13-vkoul@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make blk-ioprio pluggable and modular. Then we can close or open
-it through /sys/block/xxx/queue/qos and rmmod the module if we don't
-need it which can release one blkcg policy slot. The blk-ioprio.h
-is removed as we needn't to make blk_ioprio_init() external.
 
-Signed-off-by: Wang Jianchao (Kuaishou) <jianchao.wan9@gmail.com>
----
- block/Kconfig          |  2 +-
- block/blk-cgroup.c     |  5 -----
- block/blk-ioprio.c     | 51 ++++++++++++++++++++++++++++--------------
- block/blk-ioprio.h     | 19 ----------------
- block/blk-mq-debugfs.c |  4 ----
- block/blk-rq-qos.c     |  2 +-
- block/blk-rq-qos.h     |  2 +-
- 7 files changed, 37 insertions(+), 48 deletions(-)
- delete mode 100644 block/blk-ioprio.h
 
-diff --git a/block/Kconfig b/block/Kconfig
-index d5d4197b7ed2..9cc8e4688953 100644
---- a/block/Kconfig
-+++ b/block/Kconfig
-@@ -145,7 +145,7 @@ config BLK_CGROUP_IOCOST
- 	their share of the overall weight distribution.
- 
- config BLK_CGROUP_IOPRIO
--	bool "Cgroup I/O controller for assigning an I/O priority class"
-+	tristate "Cgroup I/O controller for assigning an I/O priority class"
- 	depends on BLK_CGROUP
- 	help
- 	Enable the .prio interface for assigning an I/O priority class to
-diff --git a/block/blk-cgroup.c b/block/blk-cgroup.c
-index 3ae2aa557aef..f617f7ba311d 100644
---- a/block/blk-cgroup.c
-+++ b/block/blk-cgroup.c
-@@ -32,7 +32,6 @@
- #include <linux/psi.h>
- #include <linux/part_stat.h>
- #include "blk.h"
--#include "blk-ioprio.h"
- #include "blk-throttle.h"
- 
- /*
-@@ -1195,10 +1194,6 @@ int blkcg_init_queue(struct request_queue *q)
- 	if (preloaded)
- 		radix_tree_preload_end();
- 
--	ret = blk_ioprio_init(q);
--	if (ret)
--		goto err_destroy_all;
--
- 	ret = blk_throtl_init(q);
- 	if (ret)
- 		goto err_destroy_all;
-diff --git a/block/blk-ioprio.c b/block/blk-ioprio.c
-index 2e7f10e1c03f..1ec56f617202 100644
---- a/block/blk-ioprio.c
-+++ b/block/blk-ioprio.c
-@@ -17,7 +17,6 @@
- #include <linux/blk_types.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
--#include "blk-ioprio.h"
- #include "blk-rq-qos.h"
- 
- /**
-@@ -216,15 +215,24 @@ static void blkcg_ioprio_exit(struct rq_qos *rqos)
- 		container_of(rqos, typeof(*blkioprio_blkg), rqos);
- 
- 	blkcg_deactivate_policy(rqos->q, &ioprio_policy);
-+	rq_qos_deactivate(rqos);
- 	kfree(blkioprio_blkg);
- }
- 
-+static int blk_ioprio_init(struct request_queue *q);
-+
- static struct rq_qos_ops blkcg_ioprio_ops = {
-+#if IS_MODULE(CONFIG_BLK_CGROUP_IOPRIO)
-+	.owner	= THIS_MODULE,
-+#endif
-+	.flags	= RQOS_FLAG_CGRP_POL,
-+	.name	= "blk-ioprio",
- 	.track	= blkcg_ioprio_track,
- 	.exit	= blkcg_ioprio_exit,
-+	.init	= blk_ioprio_init,
- };
- 
--int blk_ioprio_init(struct request_queue *q)
-+static int blk_ioprio_init(struct request_queue *q)
- {
- 	struct blk_ioprio *blkioprio_blkg;
- 	struct rq_qos *rqos;
-@@ -234,36 +242,45 @@ int blk_ioprio_init(struct request_queue *q)
- 	if (!blkioprio_blkg)
- 		return -ENOMEM;
- 
-+	/*
-+	 * No need to worry ioprio_blkcg_from_css return NULL as
-+	 * the queue is frozen right now.
-+	 */
-+	rqos = &blkioprio_blkg->rqos;
-+	rq_qos_activate(q, rqos, &blkcg_ioprio_ops);
-+
- 	ret = blkcg_activate_policy(q, &ioprio_policy);
- 	if (ret) {
-+		rq_qos_deactivate(rqos);
- 		kfree(blkioprio_blkg);
--		return ret;
- 	}
- 
--	rqos = &blkioprio_blkg->rqos;
--	rqos->id = RQ_QOS_IOPRIO;
--	rqos->ops = &blkcg_ioprio_ops;
--	rqos->q = q;
--
--	/*
--	 * Registering the rq-qos policy after activating the blk-cgroup
--	 * policy guarantees that ioprio_blkcg_from_bio(bio) != NULL in the
--	 * rq-qos callbacks.
--	 */
--	rq_qos_add(q, rqos);
--
--	return 0;
-+	return ret;
- }
- 
- static int __init ioprio_init(void)
- {
--	return blkcg_policy_register(&ioprio_policy);
-+	int ret;
-+
-+	ret = rq_qos_register(&blkcg_ioprio_ops);
-+	if (ret)
-+		return ret;
-+
-+	ret = blkcg_policy_register(&ioprio_policy);
-+	if (ret)
-+		rq_qos_unregister(&blkcg_ioprio_ops);
-+
-+	return ret;
- }
- 
- static void __exit ioprio_exit(void)
- {
- 	blkcg_policy_unregister(&ioprio_policy);
-+	rq_qos_unregister(&blkcg_ioprio_ops);
- }
- 
- module_init(ioprio_init);
- module_exit(ioprio_exit);
-+MODULE_AUTHOR("Bart Van Assche");
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Cgroup I/O controller for assigning an I/O priority class");
-diff --git a/block/blk-ioprio.h b/block/blk-ioprio.h
-deleted file mode 100644
-index a7785c2f1aea..000000000000
---- a/block/blk-ioprio.h
-+++ /dev/null
-@@ -1,19 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--
--#ifndef _BLK_IOPRIO_H_
--#define _BLK_IOPRIO_H_
--
--#include <linux/kconfig.h>
--
--struct request_queue;
--
--#ifdef CONFIG_BLK_CGROUP_IOPRIO
--int blk_ioprio_init(struct request_queue *q);
--#else
--static inline int blk_ioprio_init(struct request_queue *q)
--{
--	return 0;
--}
--#endif
--
--#endif /* _BLK_IOPRIO_H_ */
-diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
-index 45da42e9e242..cbbd668029a1 100644
---- a/block/blk-mq-debugfs.c
-+++ b/block/blk-mq-debugfs.c
-@@ -825,10 +825,6 @@ void blk_mq_debugfs_unregister_sched(struct request_queue *q)
- 
- static const char *rq_qos_id_to_name(enum rq_qos_id id)
- {
--	switch (id) {
--	case RQ_QOS_IOPRIO:
--		return "ioprio";
--	}
- 	return "unknown";
- }
- 
-diff --git a/block/blk-rq-qos.c b/block/blk-rq-qos.c
-index db13581ae878..23cb7a3fa9b2 100644
---- a/block/blk-rq-qos.c
-+++ b/block/blk-rq-qos.c
-@@ -452,7 +452,7 @@ int rq_qos_register(struct rq_qos_ops *ops)
- 		goto out;
- 	}
- 
--	start = RQ_QOS_IOPRIO + 1;
-+	start = 1;
- 	ret = ida_simple_get(&rq_qos_ida, start, INT_MAX, GFP_KERNEL);
- 	if (ret < 0)
- 		goto out;
-diff --git a/block/blk-rq-qos.h b/block/blk-rq-qos.h
-index 6d691527cb51..bba829bbb461 100644
---- a/block/blk-rq-qos.h
-+++ b/block/blk-rq-qos.h
-@@ -14,7 +14,7 @@
- struct blk_mq_debugfs_attr;
- 
- enum rq_qos_id {
--	RQ_QOS_IOPRIO,
-+	RQ_QOS_UNUSED,
- };
- 
- struct rq_wait {
--- 
-2.17.1
-
+On 2/10/2022 2:34 AM, Vinod Koul wrote:
+> Add a mode valid callback for dsi_mgr for checking mode being valid in
+> case of DSC. For DSC the height and width needs to be multiple of slice,
+> so we check that here
+> 
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> ---
+>   drivers/gpu/drm/msm/dsi/dsi.h         |  2 ++
+>   drivers/gpu/drm/msm/dsi/dsi_host.c    | 26 ++++++++++++++++++++++++++
+>   drivers/gpu/drm/msm/dsi/dsi_manager.c | 12 ++++++++++++
+>   3 files changed, 40 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
+> index 16cd9b2fce86..580a1e6358bf 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi.h
+> @@ -114,6 +114,8 @@ int msm_dsi_host_power_on(struct mipi_dsi_host *host,
+>   int msm_dsi_host_power_off(struct mipi_dsi_host *host);
+>   int msm_dsi_host_set_display_mode(struct mipi_dsi_host *host,
+>   				  const struct drm_display_mode *mode);
+> +enum drm_mode_status msm_dsi_host_check_dsc(struct mipi_dsi_host *host,
+> +					    const struct drm_display_mode *mode);
+>   struct drm_panel *msm_dsi_host_get_panel(struct mipi_dsi_host *host);
+>   unsigned long msm_dsi_host_get_mode_flags(struct mipi_dsi_host *host);
+>   struct drm_bridge *msm_dsi_host_get_bridge(struct mipi_dsi_host *host);
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+> index 7e9913eff724..438c80750682 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_host.c
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+> @@ -2552,6 +2552,32 @@ int msm_dsi_host_set_display_mode(struct mipi_dsi_host *host,
+>   	return 0;
+>   }
+>   
+> +enum drm_mode_status msm_dsi_host_check_dsc(struct mipi_dsi_host *host,
+> +					    const struct drm_display_mode *mode)
+> +{
+> +	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
+> +	struct msm_display_dsc_config *dsc = msm_host->dsc;
+> +	int pic_width = mode->hdisplay;
+> +	int pic_height = mode->vdisplay;
+> +
+> +	if (!msm_host->dsc)
+> +		return MODE_OK;
+> +
+> +	if (pic_width % dsc->drm->slice_width) {
+> +		pr_err("DSI: pic_width %d has to be multiple of slice %d\n",
+> +		       pic_width, dsc->drm->slice_width);
+> +		return MODE_H_ILLEGAL;
+> +	}
+> +
+> +	if (pic_height % dsc->drm->slice_height) {
+> +		pr_err("DSI: pic_height %d has to be multiple of slice %d\n",
+> +		       pic_height, dsc->drm->slice_height);
+> +		return MODE_V_ILLEGAL;
+> +	}
+> +
+> +	return MODE_OK;
+> +}
+> +
+>   struct drm_panel *msm_dsi_host_get_panel(struct mipi_dsi_host *host)
+>   {
+>   	return of_drm_find_panel(to_msm_dsi_host(host)->device_node);
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> index f19bae475c96..e7f6cc88f7a4 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> @@ -575,6 +575,17 @@ static void dsi_mgr_bridge_mode_set(struct drm_bridge *bridge,
+>   		msm_dsi_host_set_display_mode(other_dsi->host, adjusted_mode);
+>   }
+>   
+> +static enum drm_mode_status dsi_mgr_bridge_mode_valid(struct drm_bridge *bridge,
+> +						      const struct drm_display_info *info,
+> +						      const struct drm_display_mode *mode)
+> +{
+> +	int id = dsi_mgr_bridge_get_id(bridge);
+> +	struct msm_dsi *msm_dsi = dsi_mgr_get_dsi(id);
+> +	struct mipi_dsi_host *host = msm_dsi->host;
+> +
+> +	return msm_dsi_host_check_dsc(host, mode);
+> +}
+> +
+>   static const struct drm_connector_funcs dsi_mgr_connector_funcs = {
+>   	.detect = dsi_mgr_connector_detect,
+>   	.fill_modes = drm_helper_probe_single_connector_modes,
+> @@ -596,6 +607,7 @@ static const struct drm_bridge_funcs dsi_mgr_bridge_funcs = {
+>   	.disable = dsi_mgr_bridge_disable,
+>   	.post_disable = dsi_mgr_bridge_post_disable,
+>   	.mode_set = dsi_mgr_bridge_mode_set,
+> +	.mode_valid = dsi_mgr_bridge_mode_valid,
+>   };
+>   
+>   /* initialize connector when we're connected to a drm_panel */
