@@ -2,124 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4BC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245126AbiBQTY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:24:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35492 "EHLO
+        id S245152AbiBQTZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:25:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245120AbiBQTYz (ORCPT
+        with ESMTP id S243029AbiBQTZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:24:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2223F94D9;
-        Thu, 17 Feb 2022 11:24:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D9C161CC7;
-        Thu, 17 Feb 2022 19:24:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2D5AC340E8;
-        Thu, 17 Feb 2022 19:24:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645125879;
-        bh=r0FFFkQf0v+Vq0994D2RUjxFXog+gDvbX6KefPHK3dM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ny4nH9oRvZxO4sdirwRFEzdQyb+FedPG/TtZtia5tof0ulcZG7V7kVFVztg3KsQhn
-         q6nHNP8tHb3ERbAlhvHyR6BmIiOOUqU/RG1+TmbfXFnUyyDwpXnL5HrLjtUQtj+fbM
-         DPF5vGQUJsUFOvURAG2AgHzFd/yU8JGjnyQcD/qDxo3aw4aS0CPSmg8+KpgO4VeRwT
-         j81K1m0ilN1jHDGdUxp2ldSzyXp4BNJvOx4gLD8b0HETBykTK0b7FknOxuMiWocTIH
-         V/PsUIFUOMcKy7/YItFJ79f2PsGduZJk12mFQcKJmlYFSVk5p/ZnH0RYb8QjCLhcG+
-         uIdAs2bRZYfzA==
-Date:   Thu, 17 Feb 2022 19:24:35 +0000
-From:   Will Deacon <will@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Liam Howlett <liam.howlett@oracle.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the maple tree
-Message-ID: <20220217192434.GA11800@willie-the-truck>
-References: <20220217191857.6d9917c2@canb.auug.org.au>
+        Thu, 17 Feb 2022 14:25:46 -0500
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2150BF94D9;
+        Thu, 17 Feb 2022 11:25:32 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id h9so10320877qvm.0;
+        Thu, 17 Feb 2022 11:25:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=/WM3d+d6P+GlLRzeppghOHiUa2w7JBeq4LDjhr4En7U=;
+        b=kjizsqFv/9oBwihdSQeFIAD+OJ9Kw3pJSSfkKDQWqKKLi9nG2I14YulYAN4O2VCtQj
+         Chx8PsBd7EJiUKe0w7cGW1IVGYU9ldkPHukNdF+nRiB7Aur+rDZf8CSMZD6wzUl2B5/Y
+         ok91XKSgaK6PuA2nh1CbRLLEB0TWzP6QZimMBsmel0uLzllYlWBiagYS2ixCALv2BfQu
+         HwjQakopfMvn+gpa4m5hrN38U/DAUtU4FHfL3j+tvrm5KD7oUo5cY/FGzTeM3x4/HCVt
+         rvJjMQ1vRJ8JWTCWuNzE86PPPGn+Tc7G5csHc5wyLbEv1ByoCCjzCMry7g0CAzuVnl+d
+         pEdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=/WM3d+d6P+GlLRzeppghOHiUa2w7JBeq4LDjhr4En7U=;
+        b=L9bfFEJdcPK5L6VeJS9VWTVP8vA8T9ZPESKdSvFwgrCBt6rE7IWNsrTUKgZN+rvbOt
+         +ScU897daRUuEgBnc18ej69IAB8uOrVEi2bbvJkg2981Q54MdpfLDpl3PSZLoxZZSfwi
+         tf+ytiL/WlfL0fcvmXY91ANwR4tC3mlZCRjLNah6EPvCAb65gMUJKwHHroirDfAPc1DU
+         v7y6+9no3DMv5UzVSb2qBzsaJxxFBvHyHeTX9MfI2kWaB3rYMzaYR6RDJ0UqMNUqWBmo
+         ANn4BQtOhT21KA2u5ku95/p3+YZ5f9ywnrOspzYevknlsLyccroSL0o5WRBcTX9JEwLw
+         D/Hw==
+X-Gm-Message-State: AOAM532R89wQZa2nPByehwwVpQ6PNFrml1w3cJWpCqFCssI7zX+0mcJ0
+        WhU1zT2dq98r0gn2N3eFN5U=
+X-Google-Smtp-Source: ABdhPJww3RWBaldGY4hF3DwN5pm3E8izPdvrNGRQIk5/nvfAMVmR8XtzEBy2d0TygnEIyQ7rrm2olw==
+X-Received: by 2002:ad4:58af:0:b0:42c:2c20:c717 with SMTP id ea15-20020ad458af000000b0042c2c20c717mr3393103qvb.31.1645125931270;
+        Thu, 17 Feb 2022 11:25:31 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z17sm24079120qta.11.2022.02.17.11.25.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 11:25:30 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <aa82f347-1b1a-8c40-b5cb-9efe292ae0ec@roeck-us.net>
+Date:   Thu, 17 Feb 2022 11:25:28 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217191857.6d9917c2@canb.auug.org.au>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     sylv <sylv@sylv.io>, Jean Delvare <jdelvare@suse.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        linux-doc@vger.kernel.org
+References: <cover.1645108566.git.sylv@sylv.io>
+ <6103836f1116a045a25919ae3e5c18dfdc485902.1645108566.git.sylv@sylv.io>
+ <f1e13a4e-2e86-1d53-f34d-a04838e8e8f9@roeck-us.net>
+ <246de83631dd5e165f95904d7f1628502f030e02.camel@sylv.io>
+ <66d4ea0b-0377-c9ae-68eb-7303c32cf87e@roeck-us.net>
+ <7a567823d62b6ed00cbdc2ce239dc4a69e48b411.camel@sylv.io>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2 2/3] hwmon (xdpe12284): Add support for xdpe11280
+In-Reply-To: <7a567823d62b6ed00cbdc2ce239dc4a69e48b411.camel@sylv.io>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 07:18:57PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the maple tree, today's linux-next build (arm64 defconfig)
-> failed like this:
-> 
-> arch/arm64/kernel/elfcore.c: In function 'elf_core_extra_phdrs':
-> arch/arm64/kernel/elfcore.c:13:35: error: 'struct mm_struct' has no member named 'mmap'
->    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
->       |                                   ^~
-> arch/arm64/kernel/elfcore.c:69:9: note: in expansion of macro 'for_each_mte_vma'
->    69 |         for_each_mte_vma(current, vma)
->       |         ^~~~~~~~~~~~~~~~
-> arch/arm64/kernel/elfcore.c:13:57: error: 'struct vm_area_struct' has no member named 'vm_next'
->    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
->       |                                                         ^~
-> arch/arm64/kernel/elfcore.c:69:9: note: in expansion of macro 'for_each_mte_vma'
->    69 |         for_each_mte_vma(current, vma)
->       |         ^~~~~~~~~~~~~~~~
-> arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_phdrs':
-> arch/arm64/kernel/elfcore.c:13:35: error: 'struct mm_struct' has no member named 'mmap'
->    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
->       |                                   ^~
-> arch/arm64/kernel/elfcore.c:79:9: note: in expansion of macro 'for_each_mte_vma'
->    79 |         for_each_mte_vma(current, vma) {
->       |         ^~~~~~~~~~~~~~~~
-> arch/arm64/kernel/elfcore.c:13:57: error: 'struct vm_area_struct' has no member named 'vm_next'
->    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
->       |                                                         ^~
-> arch/arm64/kernel/elfcore.c:79:9: note: in expansion of macro 'for_each_mte_vma'
->    79 |         for_each_mte_vma(current, vma) {
->       |         ^~~~~~~~~~~~~~~~
-> arch/arm64/kernel/elfcore.c: In function 'elf_core_extra_data_size':
-> arch/arm64/kernel/elfcore.c:13:35: error: 'struct mm_struct' has no member named 'mmap'
->    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
->       |                                   ^~
-> arch/arm64/kernel/elfcore.c:104:9: note: in expansion of macro 'for_each_mte_vma'
->   104 |         for_each_mte_vma(current, vma)
->       |         ^~~~~~~~~~~~~~~~
-> arch/arm64/kernel/elfcore.c:13:57: error: 'struct vm_area_struct' has no member named 'vm_next'
->    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
->       |                                                         ^~
-> arch/arm64/kernel/elfcore.c:104:9: note: in expansion of macro 'for_each_mte_vma'
->   104 |         for_each_mte_vma(current, vma)
->       |         ^~~~~~~~~~~~~~~~
-> arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_data':
-> arch/arm64/kernel/elfcore.c:13:35: error: 'struct mm_struct' has no member named 'mmap'
->    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
->       |                                   ^~
-> arch/arm64/kernel/elfcore.c:114:9: note: in expansion of macro 'for_each_mte_vma'
->   114 |         for_each_mte_vma(current, vma) {
->       |         ^~~~~~~~~~~~~~~~
-> arch/arm64/kernel/elfcore.c:13:57: error: 'struct vm_area_struct' has no member named 'vm_next'
->    13 |                 for (vma = tsk->mm->mmap; vma; vma = vma->vm_next)      \
->       |                                                         ^~
-> arch/arm64/kernel/elfcore.c:114:9: note: in expansion of macro 'for_each_mte_vma'
->   114 |         for_each_mte_vma(current, vma) {
->       |         ^~~~~~~~~~~~~~~~
-> 
-> Caused by commit
-> 
->   b09e8361a4c3 ("mm: Remove the vma linked list")
-> 
-> interacting with commit
-> 
->   6dd8b1a0b6cb ("arm64: mte: Dump the MTE tags in the core file")
-> 
-> from the arm64 tree.
+On 2/17/22 10:38, sylv wrote:
+[ ... ]
 
-Yikes, this is quite a mess. Liam -- how would you like to resolve this?
+>>
+>> That makes me wonder if the chip needs to be added to this driver in
+>> the first
+>> place, or if it could be added to pmbus.c instead. Any idea ?
+> 
+> Oh, we did wrote a standalone driver too, and it works fine.
+> Maybe it's better to upsteam it instead. :)
 
-Will
+No, I meant if it would make sense to just add something like
+
+	{"xdpe11280", (kernel_ulong_t)&pmbus_info_one },
+
+to drivers/hwmon/pmbus/pmbus.c.
+
+You only really need a standalone driver if it does something
+special, such as a workaround for some register access (like
+the xdpe12284 driver), or if support for manufacturer specific
+registers is desired or needed. That would, for example, be useful
+if the xdpe11280 supports per-phase sensors.
+
+Thanks,
+Guenter
