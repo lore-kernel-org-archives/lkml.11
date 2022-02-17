@@ -2,132 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85817C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC99C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239269AbiBQKpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 05:45:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59858 "EHLO
+        id S239287AbiBQKq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 05:46:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237461AbiBQKpa (ORCPT
+        with ESMTP id S239270AbiBQKqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 05:45:30 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2060.outbound.protection.outlook.com [40.107.22.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C25294105;
-        Thu, 17 Feb 2022 02:45:16 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZKlkTkzPcQKS91gumc0MPylKH+sRENLYbjdj6Kd7BiuOAZlpJ3zbhYiIhsUpdngCuTdaew+BPtrT6FDUkMyRNa7uLWCBT3VCWrJpUEcsmTbPUHmNyg6x4lgEB6BlTIwTtWHj00prltAmNsMGnRJ3eKGaFZEUp6tquPyk1tzuNyL7ThPaiJHB1aobVYdhFDXL6cJjTovu55+/Qsg/O6H5VixjJXluRI6R/incu7Em4R+0BzhSHGDetgwGqaqhUFxwGN1uQuAgaWU4piMvh/B/w4t0oc3GsVyei/KZs0XtXim/dovWX6c5jEWFpQXcx5VZPRWXVDu2bVjVdkZPggJaMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AQEKmElfesErMmpzQbzrZ26b7KyTX6t/1T9DXboo1Gw=;
- b=n7QWV8WJrvnA/Z5PJh0yt32u4/Idol7nfedMIdDqxbo9lyxPcY/jusqnYFpSBhbQKm98z/oz52HsBPa1Bk624YXY0qd/D+HPk4JXHWMoxqszWy9G2n6D2bWD9on41FmBpBMtbyWwj1X9QMjJCP3r4GZJo5YajbU8RXUNIKpxpivzy2yv8l5JbiadKlUesSrF9aKtxhA/avKPmDn2uUrF6s0UPDYRPOVzXQAg3+12A5mpUeT0C2Ycs+Mcli1XNcLdlRNbCXaB2bHF2Xlhsh8WamTR1o5yvuzNEaVkzTQ4kb0mdzKEXTCB7dgOZErnn+srsW1WwV5x2w1exEEOCnstmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AQEKmElfesErMmpzQbzrZ26b7KyTX6t/1T9DXboo1Gw=;
- b=gZPTKo91rwH3jnG2aJpBSL7/pLirwry610x/3+1XkLUTseKZJUj5FTvayW5aye81t/I4ZJMOdEbiAxQrDw+13nqlWmnOLXXWNbC6KXUUcDIqj0Qz8XRmYPN8h/kHFmzKdP5n1M+2Mq+APTFCarqiC8egKtgQ64v7wnoCPMi/FDHHgLyuhsg3Ud/eo50cnBh8nso3kuCRFud09F1sjA8nv5bcRZrR9WPepDvBNrmV18DpG6qzMzftr4s1vEWSZsFiCVjjPQUq+hCzHi6OVQKZEOmuaObW5UBSOczLcnUUOnwkNx3U/2gLTY8bPOoS8aVjGw4h7yWAUB2lIA3lYf9EDQ==
-Received: from AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:200:98::12) by VI1PR10MB3309.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:803:13b::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Thu, 17 Feb
- 2022 10:45:14 +0000
-Received: from AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::f909:2310:3487:4150]) by AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::f909:2310:3487:4150%6]) with mapi id 15.20.4995.017; Thu, 17 Feb 2022
- 10:45:14 +0000
-From:   "Starke, Daniel" <daniel.starke@siemens.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/1] tty: n_gsm: fix encoding of control signal octet bit
- DV
-Thread-Topic: [PATCH 1/1] tty: n_gsm: fix encoding of control signal octet bit
- DV
-Thread-Index: Adgj6sm0fdOjTCg/QgK8Vejl3021pg==
-Date:   Thu, 17 Feb 2022 10:45:14 +0000
-Message-ID: <AM4PR1001MB1378023FB7411DD0E6A18CD3E0369@AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 05e419f5-4e9a-4ff6-d20b-08d9f2029466
-x-ms-traffictypediagnostic: VI1PR10MB3309:EE_
-x-microsoft-antispam-prvs: <VI1PR10MB33092F0151A068AF2FD21E14E0369@VI1PR10MB3309.EURPRD10.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SvMJGayQrKD8nhLaMMbvy26t0u+LBSZ/7DjyOeVqQlZ6uw0w0WH1w8iwL0eNofuw6An0ISe7IczZExQLBhLkbE1/qedIywDJ3Y1aXtxbFqz94CaD4Wt72RioINdxrgU4bH1KsJOfgZRH6j0VuYSXAxnuazBKZW1kVHYsKZz5n0JYIk6Rr8MNuCtYszW9JrxzJ2ePY1UgHvJn7Terw9AYV8OHmq1t7fNyJLXkHQiliPl7LrMKpDW1h8B8toKrg0ELGo/nCg3jSsvBZVrIz8eeWwp/fcpUBXAXzpfeKPqN2K+OZM8klLuAMxkTdjNMIuDQcqnAninyZZCQuJz1qqqV+2Mhl5hbwy6PJ4wB6MA8CYxKcoSUKb7FDmKd0rQ37igpypNz3uVtfIcz6ZVlV9H8wljNDud7UK2b3l7OeUvmUomJhiMy9Jq2BKeGW9CTnnwPOKgPqGb/Ha5qT8ZGkHrn/WjyzObuhqfp05UgTFaNZi5UzUuJugqbO80uBw1flnLo34xWfG+JGc7/BA6Zj5cALl0YCqIz2Odx6PC8L3HfT4698Bd3DTN0zynjxoey/y74jDkQ4lOxhrIogWwPsOm/4KBMagy7Syfa6LQBwfgMaAL1ZFsY59BcgsNIUWxgCSeSkOh1l0JgvUmQck89/4pF5KGoSsncG7cy47lhnzimlOx9U19/uP5CIBATHy+6EDzQ5lg7SXBknfNB/Q5AoCE/7g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52536014)(66556008)(66476007)(66446008)(76116006)(316002)(33656002)(8936002)(54906003)(64756008)(71200400001)(8676002)(6916009)(6506007)(7696005)(4326008)(66946007)(508600001)(86362001)(55016003)(186003)(26005)(9686003)(38100700002)(55236004)(5660300002)(4744005)(38070700005)(122000001)(82960400001)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OG10UkRsTkhaemFtM0JkOTJ5aW1CbFdGSFBqc0oybTk4eGY4T1VUNVpJWENh?=
- =?utf-8?B?c1c4eHMwL1R1eW1nNEwwdlNRUWFkb2J4eVZ6eHp5aVp4TnlXV3QxSzlJeitP?=
- =?utf-8?B?U1N3SURneWluMXJKOW1VL08weEI4ZzBzT1JVODZwNEwzY05MMzV3c0FIQTZJ?=
- =?utf-8?B?cThSWXZEYnZaWlZSM3VwOW85b2tZQ1NHSUdnM0VMK3dacEtENWxvaXhWWVFV?=
- =?utf-8?B?R1MzWjc5YkV3b3d6dVNkcE5ac0ZBVTVOYUpZMVNtYzVRRXZwZzdScmNzdGpZ?=
- =?utf-8?B?VnE0M3pXSXJJYmkvbGtWd2pMN0FtZFl0TnJJN3NIb3RRaWxjeGRibkEyM1BW?=
- =?utf-8?B?YVVKTFVaemJCc3RpWmhLSmpEeWQ3Qzh1Q1dkZDViZ2RMWGRwRk9SenBqWmdR?=
- =?utf-8?B?bDFBWlRFdHN4ZXZmVGFSUzVaQm9oMERrTzYzZlFlWWxWWjRFczg0clNyMS9U?=
- =?utf-8?B?NnJsT054QjcwdVNOWWFiVXRmL3VkWGZNazFFVEU3OFNYdi9lTUE0a3pSWE45?=
- =?utf-8?B?QWJWbEs2dFhaZ0RLZ3JlcFZkSndPN2ZKUkwxQ0dlWGtIS1ViTklESFRwYmVv?=
- =?utf-8?B?ZGQ2Y2NLbndQZDB2KzVGWXVEb3hYQTVtMEtyZUlxS0hYNTVOZkhLbWdOMGRF?=
- =?utf-8?B?YkU2OUlnUUIwQ2dFNUtKeUdyVVowYkYrWmZoZ1daS0kvSXR6OEdINDJkK3dJ?=
- =?utf-8?B?dnMydFkxenBIM0FuUURBRkV3YUVTc2JFSndYY0VuVEp1UlJ4RlU2di9IdG1j?=
- =?utf-8?B?WHpiU2hxQ2JXYkpXeTJKajNRaDlMOTRWTUg0OHlhVVkwa2ZZQzFXOWx6eGhp?=
- =?utf-8?B?ckZZQVZnMUx6dkVGYzZXeTFDN1ppSEoxbVVCR2t3RDFyWGtITW1uKy9Ha1BF?=
- =?utf-8?B?SzhRcitGNFpycUR5RG94T0pwVFJwR0l1UTg5SjNjcXllMHZhM1R3bDBoRUFv?=
- =?utf-8?B?OStRWEhXemZzZ2hxYWtBRW1EeFZIcnFlN0lPVUsxVmpLejBkTGszMG5qTGEx?=
- =?utf-8?B?blJZLzFMd20zMWN3YS93ZS9lT0Vybkl1YmhYdEFxbjZ3NnRENWRlbTNmK0tP?=
- =?utf-8?B?UmFWYWFYaVJkdWlza1BwYXJFdVZmSEtSRm5hVzJDaHROY2MzLzR4U1FHaXZh?=
- =?utf-8?B?TElQRlNQODh5SHJQTHFCZjdLZWpNR1FRNCsvbjJUdThDY1JPTUMwTjNPOUo3?=
- =?utf-8?B?SjFlRUIra3dlZlNEdS9kd1lWZUJTeFFNVHB0VW1mOFpUcjBGU1dibzg2LzM3?=
- =?utf-8?B?dE0yWlNVWmtxTW5scDZ0amlkNlZVS1lONWoyVDY4SjYxajcxQnQwYVYwK1Fi?=
- =?utf-8?B?NHcvS2FSbWpwVWt6V0FVUld2SFN5b3U0clhuVVRYU3NLOW12WGFiUzBOdkdk?=
- =?utf-8?B?RE13bWVEK1ZTVnpjakpmTk82eWZKUzdjbkgzN0NIRFBKUjNvekkrN3FYMTJh?=
- =?utf-8?B?UDRPdmlrbm5NQy91RFp5NUozSTVPUHUvOTlsNnU2NEtCOFNxeXJKemRwd3I3?=
- =?utf-8?B?c2JmSXNqcXZRb0gxK0JDTnlsNkpjb3JVSmcrTHArNFIwZjRRTlJQSFN0d3ZT?=
- =?utf-8?B?QjFVbFdFdkxDNFc1WjVBeFB3MzRKNzhCOUM3b1IrQ294OTJDM0I1MXdGQ1kz?=
- =?utf-8?B?TUZlNTgwNXYyYkpQS3I1L2h6T1BFVzNDb3dHbEpUcHhKU2xxV1RWSkhJT2kw?=
- =?utf-8?B?blFQU3JQTGdicmlneEJPRDBDNGRVMjNSVDJDL1RrVExzNVFuRUIzTUlyczBM?=
- =?utf-8?B?YkNadm1wOVFRTFhUZXZOemtObjdPUkJZL2xtMkt0SFYzYWZWR3VvMm82QlpG?=
- =?utf-8?B?OTg4aHg3bWJxVWNYNU9OMDk1YlphSzFhZHJxRDlhOXNJSWs3dEFiSHpiVWhC?=
- =?utf-8?B?ZWdNQmpjUnQ4Wi9DdU5IWXc5OXk0SkZoTWpGdE9OS0VOMVVPUSt3Z1N3TFAx?=
- =?utf-8?B?MVNpZ3BHSDJQT21kK1A4aExwZCsxbjBWeHgxR0hoaUsxckdCZm9mWkczcGZY?=
- =?utf-8?B?TXczTTJhdTIwd1dxVzBsZzE1a0NSTS9oMTJMR3NtNUUxS3owdWpoS240UjVG?=
- =?utf-8?B?QVJpeUdCcDQ1K3dINGVzWUNxYURya2hWc0UxMlh0VGV4L3VKckx5cnAwUk91?=
- =?utf-8?B?ZjZWeGpDMU5uQlZscjVHUkJVQkY4L2VhVC85eXNiaEs3N2ZvRUdzRjFSUVR4?=
- =?utf-8?B?b3k5dUNZcjdqbk5oQXlVSGU4K0FteTFsd1R5UWg1M1ZyTHlLLzgxR3NMNGFn?=
- =?utf-8?B?Nnh2YjdXbnBxSTdqU1I1c1lUbllBPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Thu, 17 Feb 2022 05:46:25 -0500
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A0729410F
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 02:46:10 -0800 (PST)
+Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id E2F3FB10;
+        Thu, 17 Feb 2022 02:46:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1645094770;
+        bh=k2uD7BYduSjipdEcL2Koh9IwXWlXmu34APxpIgOo/M0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ETB8cvRO/ymbjLAvw0i90ILe/BawTknLjnIdlNuS+l0LHklhq+EER5ANvTDfokZBP
+         DJmFLVZTD+CnF1S4y7NOr01Oitch4Ho5x3sFJOM4Vp8sKh5BHxo7+IpRKPwoexW9Sz
+         f4PXv2y5yy/WzxvILlg3isIO2A3PurYgpD73mFto=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+Cc:     Zev Weiss <zev@bewilderbeest.net>, openbmc@lists.ozlabs.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Subject: [PATCH 1/4] hwmon: (pmbus) Add get_error_flags support to regulator ops
+Date:   Thu, 17 Feb 2022 02:44:41 -0800
+Message-Id: <20220217104444.7695-2-zev@bewilderbeest.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220217104444.7695-1-zev@bewilderbeest.net>
+References: <20220217104444.7695-1-zev@bewilderbeest.net>
 MIME-Version: 1.0
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 05e419f5-4e9a-4ff6-d20b-08d9f2029466
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2022 10:45:14.2946
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QZSXMn80mAbjL9FzdV/txI+Lzi82A/TqyZAclaIiAoax/VFT9tS5regsvh5vWUrU0w6a3UZ8DK1CCwHYKmUrHHjD04fR/t+WnmsdHSp0Ll0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3309
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBBbGwgb2YgdGhlc2UgYXJlIHBhdGNoIDEvMSwgd2hpY2ggaXMgb2RkIDooDQo+IA0KPiBQbGVh
-c2UgcmVudW1iZXIgdGhlbSBwcm9wZXJseSBhbmQgcmVzZW5kLg0KDQpBbGwgdGhlc2UgcGF0Y2hl
-cyBhcmUgYmFzZWQgb24gdGhlIGN1cnJlbnQgdmVyc2lvbiBvZiB0dHktbmV4dCBhbmQgYXJlDQpj
-b21wbGV0ZWx5IGluZGVwZW5kZW50IGZyb20gZWFjaCBvdGhlci4gVGhlIG9ubHkgY29tbW9uIHBh
-cnQgaXMgdGhlIGZpbGUNCnRoZXkgYXBwbHkgdG8uIFRoZXJlZm9yZSwgdGhpcyBpcyBub3QgYSBw
-YXRjaCBzZXJpZXMuIFdvdWxkIHlvdSBzdGlsbA0Kc3VnZ2VzdCB0byBhcHBseSBhIGRpZmZlcmVu
-dCBudW1iZXJpbmc/DQoNCldpdGggYmVzdCByZWdhcmRzLA0KRGFuaWVsIFN0YXJrZQ0K
+The various PMBus status bits don't all map perfectly to the more
+limited set of REGULATOR_ERROR_* flags, but there's a reasonable
+number where they correspond well enough.
+
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+---
+ drivers/hwmon/pmbus/pmbus_core.c | 97 ++++++++++++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
+
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 776ee2237be2..a274e8e524a5 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2417,10 +2417,107 @@ static int pmbus_regulator_disable(struct regulator_dev *rdev)
+ 	return _pmbus_regulator_on_off(rdev, 0);
+ }
+ 
++/* A PMBus status flag and the corresponding REGULATOR_ERROR_* flag */
++struct pmbus_regulator_status_assoc {
++	int pflag, rflag;
++};
++
++/* PMBus->regulator bit mappings for a PMBus status register */
++struct pmbus_regulator_status_category {
++	int func;
++	int reg;
++	const struct pmbus_regulator_status_assoc *bits; /* zero-terminated */
++};
++
++static const struct pmbus_regulator_status_category pmbus_regulator_flag_map[] = {
++	{
++		.func = PMBUS_HAVE_STATUS_VOUT,
++		.reg = PMBUS_STATUS_VOUT,
++		.bits = (const struct pmbus_regulator_status_assoc[]) {
++			{ PB_VOLTAGE_UV_WARNING, REGULATOR_ERROR_UNDER_VOLTAGE_WARN },
++			{ PB_VOLTAGE_UV_FAULT,   REGULATOR_ERROR_UNDER_VOLTAGE },
++			{ PB_VOLTAGE_OV_WARNING, REGULATOR_ERROR_OVER_VOLTAGE_WARN },
++			{ PB_VOLTAGE_OV_FAULT,   REGULATOR_ERROR_REGULATION_OUT },
++			{ },
++		},
++	}, {
++		.func = PMBUS_HAVE_STATUS_IOUT,
++		.reg = PMBUS_STATUS_IOUT,
++		.bits = (const struct pmbus_regulator_status_assoc[]) {
++			{ PB_IOUT_OC_WARNING,    REGULATOR_ERROR_OVER_CURRENT_WARN },
++			{ PB_IOUT_OC_FAULT,      REGULATOR_ERROR_OVER_CURRENT },
++			{ PB_IOUT_OC_LV_FAULT,   REGULATOR_ERROR_OVER_CURRENT },
++			{ },
++		},
++	}, {
++		.func = PMBUS_HAVE_STATUS_TEMP,
++		.reg = PMBUS_STATUS_TEMPERATURE,
++		.bits = (const struct pmbus_regulator_status_assoc[]) {
++			{ PB_TEMP_OT_WARNING,    REGULATOR_ERROR_OVER_TEMP_WARN },
++			{ PB_TEMP_OT_FAULT,      REGULATOR_ERROR_OVER_TEMP },
++			{ },
++		},
++	},
++};
++
++static int pmbus_regulator_get_error_flags(struct regulator_dev *rdev, unsigned int *flags)
++{
++	int i, status, statusreg;
++	const struct pmbus_regulator_status_category *cat;
++	const struct pmbus_regulator_status_assoc *bit;
++	struct device *dev = rdev_get_dev(rdev);
++	struct i2c_client *client = to_i2c_client(dev->parent);
++	struct pmbus_data *data = i2c_get_clientdata(client);
++	u8 page = rdev_get_id(rdev);
++	int func = data->info->func[page];
++
++	*flags = 0;
++
++	for (i = 0; i < ARRAY_SIZE(pmbus_regulator_flag_map); i++) {
++		cat = &pmbus_regulator_flag_map[i];
++		if (!(func & cat->func))
++			continue;
++
++		status = pmbus_read_byte_data(client, page, cat->reg);
++		if (status < 0)
++			return status;
++
++		for (bit = cat->bits; bit->pflag; bit++) {
++			if (status & bit->pflag)
++				*flags |= bit->rflag;
++		}
++	}
++
++	/*
++	 * Map what bits of STATUS_{WORD,BYTE} we can to REGULATOR_ERROR_*
++	 * bits.  Some of the other bits are tempting (especially for cases
++	 * where we don't have the relevant PMBUS_HAVE_STATUS_*
++	 * functionality), but there's an unfortunate ambiguity in that
++	 * they're defined as indicating a fault *or* a warning, so we can't
++	 * easily determine whether to report REGULATOR_ERROR_<foo> or
++	 * REGULATOR_ERROR_<foo>_WARN.
++	 */
++	statusreg = data->has_status_word ? PMBUS_STATUS_WORD : PMBUS_STATUS_BYTE;
++	status = pmbus_get_status(client, page, statusreg);
++
++	if (status < 0)
++		return status;
++
++	if (pmbus_regulator_is_enabled(rdev) && (status & PB_STATUS_OFF))
++		*flags |= REGULATOR_ERROR_FAIL;
++	if (status & PB_STATUS_IOUT_OC)
++		*flags |= REGULATOR_ERROR_OVER_CURRENT;
++	if (status & PB_STATUS_VOUT_OV)
++		*flags |= REGULATOR_ERROR_REGULATION_OUT;
++
++	return 0;
++}
++
+ const struct regulator_ops pmbus_regulator_ops = {
+ 	.enable = pmbus_regulator_enable,
+ 	.disable = pmbus_regulator_disable,
+ 	.is_enabled = pmbus_regulator_is_enabled,
++	.get_error_flags = pmbus_regulator_get_error_flags,
+ };
+ EXPORT_SYMBOL_NS_GPL(pmbus_regulator_ops, PMBUS);
+ 
+-- 
+2.35.1
+
