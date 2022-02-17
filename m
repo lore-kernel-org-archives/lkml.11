@@ -2,101 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9B9C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6511EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244973AbiBQTGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:06:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40348 "EHLO
+        id S244978AbiBQTHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:07:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233331AbiBQTGh (ORCPT
+        with ESMTP id S244976AbiBQTG7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:06:37 -0500
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2218118D
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:06:22 -0800 (PST)
-Received: by mail-oo1-xc2e.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so690896oor.12
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:06:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0eT1lxfoq5qyDbp5eIAnsQwboX33oLO1Gz2b8VOV9eQ=;
-        b=piI/0gpwz6MmcTd1tH7GT+KhCfmXjeZWejCehWfMxd3GxACkkdyeFdtCc38MyaMz1F
-         v4spK69iBJM7RoH0lhLqBr7gJycoTylK4cLqx1R0wY7R72Q8x1R6NRv8PMzlN69v2arP
-         RSz8EyYI7sepd0OP8Efx20nT1hJx5EZ4/BSEMMA291KGWneP9sU38hgNORJEMtFYf+1z
-         MNTpoT0RFr/Q87ZJCYHxoztOoY6em6llwZ7lprlPMp0W2Had5rQUwtDSr5D4k68dR5l3
-         z30Uyie+549zmipggxcR3Q79WDaehA57h3NuDLc/hyaQzlcVdelcTNmc9jKp56Y7l35A
-         fCmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0eT1lxfoq5qyDbp5eIAnsQwboX33oLO1Gz2b8VOV9eQ=;
-        b=f8rr1acXjxmaWbys5or9xVPOaavL0OrhSADqr3TuPPFFuzrWD94FxOoElXJ8+/Mg/D
-         7oCSlhW0YBVNqBQrGTHb7trmF3dG5Av80I2mYR7bLa+c1vK7rGK4CSgDlfNu8K+2QvIv
-         12tSwP1SI4SUbXtaMJ+liv/kA/RMGo7ZhcvXMTGjCZk3xp89Y7m25H2KVe9uK0Xa+rbG
-         vt4aVdAYgslnpGIp9WYrtvMg70hIta7Ur7Yv0M0A6RjIi90YceYyDX2GfxTWLYbMcNhu
-         MmCK/kCfZ7grDbYraHZmtu+6TcsqxxB3LL7Qu1zbO76ugMCwQ0QS3ZL+koKn2l/Nwt7d
-         quVQ==
-X-Gm-Message-State: AOAM532bhOMhz1Y3BkhoWxFs5ykAfH1+cjL5hZOed3HTlJTV5kMJhNcS
-        6OTYSQBFgij8GOfeXavIyk3/+eQFfm8Pk5J2K50=
-X-Google-Smtp-Source: ABdhPJzTVo0BLlHY7QOaP5AWF+/HgAkv4O3cf3iw2UsClSnH35LOu7yMNCVBBMkTCxKrTWxKi1E4tGf81mwXJX3Csrw=
-X-Received: by 2002:a05:6870:b281:b0:d3:e9c:811d with SMTP id
- c1-20020a056870b28100b000d30e9c811dmr1565142oao.225.1645124781997; Thu, 17
- Feb 2022 11:06:21 -0800 (PST)
+        Thu, 17 Feb 2022 14:06:59 -0500
+X-Greylist: delayed 6358 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 11:06:43 PST
+Received: from msr9.hinet.net (msr9.hinet.net [168.95.4.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8632B254
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:06:43 -0800 (PST)
+Received: from laptop.lan (111-253-217-22.dynamic-ip.hinet.net [111.253.217.22])
+        by msr9.hinet.net (8.15.2/8.15.2) with ESMTP id 21HG6WIc096094;
+        Fri, 18 Feb 2022 00:06:32 +0800
+From:   "Lin, Meng-Bo" <linmengbo0689@protonmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-input@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        "Lin, Meng-Bo" <linmengbo0689@protonmail.com>, Lin@protonmail.com
+Subject: [PATCH] input: stmfts: #define STMFTS_RETRY_COUNT 3
+Date:   Fri, 18 Feb 2022 01:06:24 +0900
+Message-Id: <20220217160624.20936-1-linmengbo0689@protonmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220217153842.3252424-1-trix@redhat.com> <51018469-3bab-e56d-7407-b16170b5d74c@amd.com>
- <CADnq5_OGEURo76mzc4Sb2Jar465Xt4vkSMECDi5jCMH332zUAg@mail.gmail.com> <CAKwvOdnYTC7mku1=eVaDLGQFHdoN3u8Afoo582OAQ+ApJmfhQQ@mail.gmail.com>
-In-Reply-To: <CAKwvOdnYTC7mku1=eVaDLGQFHdoN3u8Afoo582OAQ+ApJmfhQQ@mail.gmail.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Thu, 17 Feb 2022 14:06:10 -0500
-Message-ID: <CADnq5_PniW+-8G5AhOSwuovESpfeMxL4r6P30b3F1coa_NmMEQ@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: fix amdgpu_ras_block_late_init error handler
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Luben Tuikov <luben.tuikov@amd.com>, Tom Rix <trix@redhat.com>,
-        "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        Dave Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        John Clements <john.clements@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        "Chai, Thomas" <YiPeng.Chai@amd.com>,
-        "Stanley.Yang" <Stanley.Yang@amd.com>,
-        Dennis Li <Dennis.Li@amd.com>,
-        "Joshi, Mukul" <mukul.joshi@amd.com>,
-        Nirmoy Das <nirmoy.das@amd.com>, llvm@lists.linux.dev,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.4 cv=Xvg/hXJ9 c=1 sm=1 tr=0 ts=620e728a
+        a=QmhVwYW7bC54/XG34QDJIg==:117 a=QmhVwYW7bC54/XG34QDJIg==:17
+        a=sfOm8-O8AAAA:8 a=fnsQhsnqeVFlupmvOtAA:9 a=TvTJqdcANYtsRzA46cdi:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 2:04 PM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Thu, Feb 17, 2022 at 8:16 AM Alex Deucher <alexdeucher@gmail.com> wrote:
-> >
-> > Applied.  Thanks!
-> >
-> > Alex
->
-> Alex,
-> Has AMD been able to set up clang builds, yet?
+Add #define STMFTS_RETRY_COUNT 3 to retry stmfts_command() 3 times.
+Without it, STMFTS_SYSTEM_RESET or STMFTS_SLEEP_OUT may return -110 to
+failed attempt due to no event received for completion.
 
-No.  I think some individual teams do, but it's never been integrated
-into our larger CI systems as of yet as far as I know.
+Signed-off-by: Lin, Meng-Bo <linmengbo0689@protonmail.com>
+---
+ drivers/input/touchscreen/stmfts.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-Alex
+diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
+index bc11203c9cf7..d36be85a980e 100644
+--- a/drivers/input/touchscreen/stmfts.c
++++ b/drivers/input/touchscreen/stmfts.c
+@@ -68,6 +68,7 @@
+ #define STMFTS_DATA_MAX_SIZE	(STMFTS_EVENT_SIZE * STMFTS_STACK_DEPTH)
+ #define STMFTS_MAX_FINGERS	10
+ #define STMFTS_DEV_NAME		"stmfts"
++#define STMFTS_RETRY_COUNT	3
+ 
+ enum stmfts_regulators {
+ 	STMFTS_REGULATOR_VDD,
+@@ -317,19 +318,20 @@ static irqreturn_t stmfts_irq_handler(int irq, void *dev)
+ 
+ static int stmfts_command(struct stmfts_data *sdata, const u8 cmd)
+ {
+-	int err;
++	int err, retry;
+ 
+ 	reinit_completion(&sdata->cmd_done);
+ 
+-	err = i2c_smbus_write_byte(sdata->client, cmd);
+-	if (err)
+-		return err;
+-
+-	if (!wait_for_completion_timeout(&sdata->cmd_done,
+-					 msecs_to_jiffies(1000)))
+-		return -ETIMEDOUT;
++	for (retry = 0; retry < STMFTS_RETRY_COUNT; retry++) {
++		err = i2c_smbus_write_byte(sdata->client, cmd);
++		if (err)
++			return err;
+ 
+-	return 0;
++		if (wait_for_completion_timeout(&sdata->cmd_done,
++						msecs_to_jiffies(1000)))
++			return 0;
++	}
++	return -ETIMEDOUT;
+ }
+ 
+ static int stmfts_input_open(struct input_dev *dev)
+-- 
+2.30.2
 
-
->
-> --
-> Thanks,
-> ~Nick Desaulniers
