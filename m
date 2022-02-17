@@ -2,98 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74545C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DECCCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242555AbiBQPgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:36:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50456 "EHLO
+        id S242561AbiBQPgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:36:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiBQPgX (ORCPT
+        with ESMTP id S229562AbiBQPgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:36:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF79D2B2C6F
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:36:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83672B8233C
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 15:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94420C340E8;
-        Thu, 17 Feb 2022 15:36:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645112166;
-        bh=Zx+rgR2hkDkUpjC2HrW0GPCmiJR+q3mTUymGonHF0Kg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yJOBxsu+z07yoINNUn7hTlhwrQx5S2OlmjLojEN1iNHSjTvb1OedtTRc/vf/JKU2a
-         fybEj/ZyQodudhdIEAXMOH9ilkmqHFoYKXblPRC3ZUhOwUk+Sbd3RGXuDKa61e1aaJ
-         0LsjrY/87AevrE2eakIbiGMMcKoZQzCoD1OWqUtM=
-Date:   Thu, 17 Feb 2022 16:36:03 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     xkernel.wang@foxmail.com
-Cc:     jerome.pouiller@silabs.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: wfx: fix the error handling in wfx_init_common()
-Message-ID: <Yg5rY3Qo7dPHbLI0@kroah.com>
-References: <tencent_A552D77F0E081BB36EAE11C720455D78BD06@qq.com>
+        Thu, 17 Feb 2022 10:36:46 -0500
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2B02B101C
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:36:31 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id e22so8897977qvf.9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:36:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=S0kEZ1PcPXY0dY9lx7emg7tGaAcpP8itSY0O7IB3Goo=;
+        b=eD8p3BY/kVw0x8m5jcMhSDZSIDPsTdFXLZJLeBpCNBRJ9N4DM/eB1xQPO1wsMp9mRZ
+         q3eO4q3KbpQbUCo1UHwLCRWyqdyhl+hFMJ5s/A/TLa9vpqPcuXNkTivqrTjjGSpjT5+j
+         DEbI+cOkhui5a0k18pS2FITnuwBQ5SCnU8DiZTOR9FH43tLngnGpiHf+4PwzYQQZnr10
+         vqgAc8Ki5j8ZBLDr+DO/8RP8DbYGIoa0tHWYA6OiGtrct2n6l0G8oatvjoxa2B0QdgRH
+         qMIfTUbk8y36KXaaz5R3plMZyXymliHsPnE/dBAOc61qTGz3Cf5uAZ68tld1GUI2DurK
+         bfgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=S0kEZ1PcPXY0dY9lx7emg7tGaAcpP8itSY0O7IB3Goo=;
+        b=eU4t0mlUWPnwLxSc3C5Hj1cNmiK4iMBrOqTxpfUiBBVp+6AhuZJCTS7dS8nsJ6k51U
+         ZMh5QEuOU8jhVHdc6GoKXGB4mX7ZknUEpaIMYm37wIAtDFGjm+QImpTKYIJiVy29vnte
+         8GN2M4XigepIKbYPQtAYZEkrSTLgfwLSt8wd/TAyRMY7Cp28EWLHu/YLf5+5Aqyyd7Da
+         OlJjxj/Kxg7Uhl34/siTHVtfTiHAKndsjgXonBdg1Zlubf7GGaC9zt1BB+dsCYF6U/w0
+         8EJtTWeta/8su0oFz7KnPLMv6lw3i2sAXPI+G0V8IQ5XjLRbfOBcZ62TC7oqOKUrv9qg
+         CpAg==
+X-Gm-Message-State: AOAM530kXOMEmmTgKvrfiqz87rN9PK6K4LjATVa12DQgQwjppt5Hvm71
+        jpu0dH/SMjbg/ykzDILe1Hl3jw==
+X-Google-Smtp-Source: ABdhPJzq04cDgGoCv5ORPqCmqMAJ+BXnYVdxg7c6zZvyT7eK2CdePx10wwqkEj1R7g2rHZMESwJJNw==
+X-Received: by 2002:a0c:aa9a:0:b0:412:91e0:3d8 with SMTP id f26-20020a0caa9a000000b0041291e003d8mr2542527qvb.87.1645112190993;
+        Thu, 17 Feb 2022 07:36:30 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id e16sm24236524qty.47.2022.02.17.07.36.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 07:36:29 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nKipY-0060Lv-Dc; Thu, 17 Feb 2022 11:36:28 -0400
+Date:   Thu, 17 Feb 2022 11:36:28 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Haakon Bugge <haakon.bugge@oracle.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        OFED mailing list <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH for-rc v2] IB/cma: Allow XRG INI QPs to set their local
+ ACK timeout
+Message-ID: <20220217153628.GB1037534@ziepe.ca>
+References: <1644421175-31943-1-git-send-email-haakon.bugge@oracle.com>
+ <Ygjx/XokZw/ZMDuT@unreal>
+ <E906DFE6-D7A9-463D-91A5-2753D1E0F8CE@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <tencent_A552D77F0E081BB36EAE11C720455D78BD06@qq.com>
+In-Reply-To: <E906DFE6-D7A9-463D-91A5-2753D1E0F8CE@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 11:29:06PM +0800, xkernel.wang@foxmail.com wrote:
-> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Thu, Feb 17, 2022 at 11:29:41AM +0000, Haakon Bugge wrote:
 > 
-> All the error handlers of wfx_init_common() return without calling
-> ieee80211_free_hw(hw), which may result in memory leak. So I add
-> one err label to unify the error handlers.
 > 
-> Suggested-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-> ---
->  drivers/staging/wfx/main.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
+> > On 13 Feb 2022, at 12:56, Leon Romanovsky <leon@kernel.org> wrote:
+> > 
+> > On Wed, Feb 09, 2022 at 04:39:35PM +0100, HÃ¥kon Bugge wrote:
+> >> XRC INI QPs should be able to adjust their local ACK timeout.
+> >> 
+> >> Fixes: 2c1619edef61 ("IB/cma: Define option to set ack timeout and pack tos_set")
+> >> Signed-off-by: HÃ¥kon Bugge <haakon.bugge@oracle.com>
+> >> Suggested-by: Avneesh Pant <avneesh.pant@oracle.com>
+> >> 
+> >> 
+> > 
+> > Thanks,
+> > Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 > 
-> diff --git a/drivers/staging/wfx/main.c b/drivers/staging/wfx/main.c
-> index 4b9fdf9..f83df9f 100644
-> --- a/drivers/staging/wfx/main.c
-> +++ b/drivers/staging/wfx/main.c
-> @@ -309,7 +309,8 @@ struct wfx_dev *wfx_init_common(struct device *dev,
->  	wdev->pdata.gpio_wakeup = devm_gpiod_get_optional(dev, "wakeup",
->  							  GPIOD_OUT_LOW);
->  	if (IS_ERR(wdev->pdata.gpio_wakeup))
-> -		return NULL;
-> +		goto err;
-> +
->  	if (wdev->pdata.gpio_wakeup)
->  		gpiod_set_consumer_name(wdev->pdata.gpio_wakeup, "wfx wakeup");
->  
-> @@ -325,9 +326,13 @@ struct wfx_dev *wfx_init_common(struct device *dev,
->  	wdev->force_ps_timeout = -1;
->  
->  	if (devm_add_action_or_reset(dev, wfx_free_common, wdev))
-> -		return NULL;
-> +		goto err;
->  
->  	return wdev;
-> +
-> +err:
-> +	ieee80211_free_hw(hw);
-> +	return NULL;
->  }
->  
->  int wfx_probe(struct wfx_dev *wdev)
-> -- 
+> Thanks Leon. I just saw that we need a s/XRG/XRC/ in $Subject. Shall I send a v3?
 
-Please make this a patch series, properly numbered, and not 2 individual
-and separate patches as the second one relies on this one, yet that it
-not conveyed to anyone at all :(
+I will fix it
 
-thanks,
-
-greg k-h
+Jason
