@@ -2,86 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E40BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 09:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 09:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238446AbiBQJHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 04:07:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42554 "EHLO
+        id S236082AbiBQJLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 04:11:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236272AbiBQJHT (ORCPT
+        with ESMTP id S229699AbiBQJLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 04:07:19 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEBF657AF;
-        Thu, 17 Feb 2022 01:07:04 -0800 (PST)
-Received: from mail-wr1-f41.google.com ([209.85.221.41]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MlO5j-1nzmaQ0Axx-00liYK; Thu, 17 Feb 2022 10:07:03 +0100
-Received: by mail-wr1-f41.google.com with SMTP id d27so7758079wrc.6;
-        Thu, 17 Feb 2022 01:07:02 -0800 (PST)
-X-Gm-Message-State: AOAM533yWynfJkNjeQ1FV7TSltwrEldlFJ+M9bVXT/yty9a60w/GGbkz
-        B5zbkdVGvrz7KLYmW0NHRzTvJeah7MTLaM3aQfM=
-X-Google-Smtp-Source: ABdhPJz1KVbjXinYSsuA5sj6zeOrKbgVgI7t2t1etmf7LJS/zyEgNWwFSyl60gguU+H2vuTgm0W9IGvJwW2VzR6X/ME=
-X-Received: by 2002:adf:ea01:0:b0:1e4:b3e6:1f52 with SMTP id
- q1-20020adfea01000000b001e4b3e61f52mr1337040wrm.317.1645085721351; Thu, 17
- Feb 2022 00:15:21 -0800 (PST)
+        Thu, 17 Feb 2022 04:11:22 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4872B26A2E6
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 01:11:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645089068; x=1676625068;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Nd30z+aiaEKas/jO+0CUoIZo9G0sH5DcAQ5cai9ydJU=;
+  b=FyllmIV1Jh/eluJM5KZgCVmZiLPSc6XWNgJkYS4cLeIMHeJznfONFDUN
+   qgHL9jO5eAXamzPIFS550VLqanTKt2OBu4I6BmYr/SKZRkWA4B+ocXwt7
+   CliVHYnEmxJcM6Ih1OCUIrr4YFtLBAkB/ywfC90tAob0Thp35EzKAOVrW
+   o4BMrGYxTe1bhCYW8lJoISquyyfqCIZFqHg+bAg13HFjLdXxAM1b4kXVQ
+   9XohBko/aevwcs+k+lgL7VhbNz+tqyk8l6jL0Oz7omXzqSp/wYsh7E9Hs
+   uVtG0wNZvvqA7s7EFcJewL52LN7rec2ivZu1xulbeyuJnbcVbVJfFxA8o
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="231455585"
+X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
+   d="scan'208";a="231455585"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 01:11:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
+   d="scan'208";a="625908595"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 17 Feb 2022 01:11:06 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKcoc-000BgG-4p; Thu, 17 Feb 2022 09:11:06 +0000
+Date:   Thu, 17 Feb 2022 17:10:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Rich Felker <dalias@libc.org>
+Subject: arch/sh/kernel/traps_32.c:574:9: sparse: sparse: incorrect type in
+ initializer (different address spaces)
+Message-ID: <202202171703.uSwiYZal-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220210021129.3386083-1-masahiroy@kernel.org>
- <CAK8P3a3uZJuf9naTerxMdUeW4CEuvfK0knC0JDTZteYHPqddTw@mail.gmail.com> <CAK7LNATPU6yc4i15i2XDCKDMEjwUK9H3TSYP9b8qkrhsuSRXLw@mail.gmail.com>
-In-Reply-To: <CAK7LNATPU6yc4i15i2XDCKDMEjwUK9H3TSYP9b8qkrhsuSRXLw@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 17 Feb 2022 09:15:05 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3WsyftXrKSeif2ycBMjN+q9BFj6AWg7Chn=Oa+ObpDAQ@mail.gmail.com>
-Message-ID: <CAK8P3a3WsyftXrKSeif2ycBMjN+q9BFj6AWg7Chn=Oa+ObpDAQ@mail.gmail.com>
-Subject: Re: [PATCH 0/6] Add more export headers to compile-test coverage
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:mjnUqCT/oKrQp45WCtx0Sd7S/cGyoKeoNty/4APwXDTe0RDC9Yo
- josKtshswUnml7u7VkjR3VoArDa9n6ACGtVKLPBdpYE1SuMCL43dohglyiqAc+zi9/6PiRt
- gb2q/RcIcoHVt8NdK5bAQrOP67FfzAOwcYr5+GZX9blAypnnHTRqT2grhOmfyhIT0e+51zD
- 0N984GMSk5ihvLy18U1qg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yJvV+w09HrA=:0UGhFXCfQ6fJbpSpAkJc4h
- gnt4otqNBFMua3lV5eeSGSnXxtk6RXkqHRxCLEBvzzgzPgEMyh6dPJKmJBAXaRe7HFSY8EqE7
- u+GGzq/XrjRoqDZrbFsPBSSmgKSXyB8LxPkWu0hpyEaefaojnTLmNRkSkBEeQ8u9XTcTHm7of
- YExBoLBLrRyGfr3jBGTXi5Eppo+KA7ykzOi3su3eLHK/iZVbYm90Kqr089qo1wlwTFMoGTut1
- T6zpQIWHz0brZl6U+paaSneu83HQqHrdPCTDA16T5qWxBaBrjE6Zu6t4t2/gQsIUg9U3D807g
- Mlk1oF+eqNCWNsVKoiofsroUOw6vnXJ8OsrjOyVjSay5LJK6glqd3kFtmh6AVcN/FvzjJTrPG
- GOGlsjOo3CBoJ4L5wDuVrUDi5WqtRK5MIP/JhehDDDZBw1CHbXDZoC7lLWDnhkaaktwtidBF7
- E33rkTzXxDTm57dj2Ihz+MDQdCs/4ZyDlp48ir4Gk/rtE5K1/GcrCpm1AvoyS7TISF1Et+5FC
- 5SKxXSDES02g4uICpsGmpr61gVNDv7gT4PJzU00OrWoh9uQUam48nvK7HId8ptu535NF3I95O
- WRGewiPBq5sDGYu86QPhs1MpRv+QGv+gY//aHW/SrZ/DI+sSatvZaObl/9dyh+TQckUPYFGOl
- jydw2xhxoRodMVHAVpUurbSn4Xze4i7MDkMLdiYeO0ospi162T8Y+fMkC8UNe5k0BFrZ8MNqz
- 8qPgD2Q0sTfqmyj/sOmPQf5azV4DpW1LeD3n1fIfy5EdN4CATbdNvAMomDQJ9AaCCOevF2Mlx
- DDECpvxEDJgA8O979sQTbkuBIE34NN4xjySgpfRL/yOrRfUWu8=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 6:23 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Thu, Feb 10, 2022 at 6:46 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > On Thu, Feb 10, 2022 at 3:11 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > > Masahiro Yamada (6):
-> > >   signal.h: add linux/signal.h and asm/signal.h to UAPI compile-test
-> > >     coverage
-> > >   shmbuf.h: add asm/shmbuf.h to UAPI compile-test coverage
-> > >   android/binder.h: add linux/android/binder(fs).h to UAPI compile-test
-> > >     coverage
-> > >   fsmap.h: add linux/fsmap.h to UAPI compile-test coverage
-> > >   kexec.h: add linux/kexec.h to UAPI compile-test coverage
-> > >   reiserfs_xattr.h: add linux/reiserfs_xattr.h to UAPI compile-test
-> > >     coverage
-> >
-> > Very nice! Should I pick these up into the asm-generic tree?
->
-> Yes, please.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   f71077a4d84bbe8c7b91b7db7c4ef815755ac5e3
+commit: ca42bc4b7bda7c6d68f1cc97c27fc8ff7385c4c7 sh: fix trivial misannotations
+date:   5 months ago
+config: sh-randconfig-s032-20220217 (https://download.01.org/0day-ci/archive/20220217/202202171703.uSwiYZal-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ca42bc4b7bda7c6d68f1cc97c27fc8ff7385c4c7
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout ca42bc4b7bda7c6d68f1cc97c27fc8ff7385c4c7
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sh SHELL=/bin/bash arch/sh/kernel/
 
-Done now.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-       Arnd
+
+sparse warnings: (new ones prefixed by >>)
+>> arch/sh/kernel/traps_32.c:574:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned short const [noderef] __user *__gu_addr @@     got unsigned short * @@
+   arch/sh/kernel/traps_32.c:574:9: sparse:     expected unsigned short const [noderef] __user *__gu_addr
+   arch/sh/kernel/traps_32.c:574:9: sparse:     got unsigned short *
+   arch/sh/kernel/traps_32.c:563:5: sparse: sparse: symbol 'is_dsp_inst' was not declared. Should it be static?
+
+vim +574 arch/sh/kernel/traps_32.c
+
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  558  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  559  #ifdef CONFIG_SH_DSP
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  560  /*
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  561   *	SH-DSP support gerg@snapgear.com.
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  562   */
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  563  int is_dsp_inst(struct pt_regs *regs)
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  564  {
+882c12c4e1a95e arch/sh/kernel/traps.c Paul Mundt     2007-05-14  565  	unsigned short inst = 0;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  566  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  567  	/*
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  568  	 * Safe guard if DSP mode is already enabled or we're lacking
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  569  	 * the DSP altogether.
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  570  	 */
+11c1965687b0a4 arch/sh/kernel/traps.c Paul Mundt     2006-12-25  571  	if (!(current_cpu_data.flags & CPU_HAS_DSP) || (regs->sr & SR_DSP))
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  572  		return 0;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  573  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16 @574  	get_user(inst, ((unsigned short *) regs->pc));
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  575  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  576  	inst &= 0xf000;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  577  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  578  	/* Check for any type of DSP or support instruction */
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  579  	if ((inst == 0xf000) || (inst == 0x4000))
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  580  		return 1;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  581  
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  582  	return 0;
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  583  }
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  584  #else
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  585  #define is_dsp_inst(regs)	(0)
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  586  #endif /* CONFIG_SH_DSP */
+^1da177e4c3f41 arch/sh/kernel/traps.c Linus Torvalds 2005-04-16  587  
+
+:::::: The code at line 574 was first introduced by commit
+:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
+
+:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
+:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
