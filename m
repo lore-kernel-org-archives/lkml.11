@@ -2,105 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C25EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 04:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D45C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 04:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234000AbiBQEv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 23:51:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38874 "EHLO
+        id S234027AbiBQExB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 23:53:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233052AbiBQEvy (ORCPT
+        with ESMTP id S230171AbiBQEw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 23:51:54 -0500
-X-Greylist: delayed 589 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 20:51:38 PST
-Received: from gw2.atmark-techno.com (gw2.atmark-techno.com [35.74.137.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2215D1D306
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 20:51:37 -0800 (PST)
-Received: from gw2.atmark-techno.com (localhost [127.0.0.1])
-        by gw2.atmark-techno.com (Postfix) with ESMTP id 54A0F20D68
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:41:48 +0900 (JST)
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
-        by gw2.atmark-techno.com (Postfix) with ESMTPS id 5716F20D5E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:41:47 +0900 (JST)
-Received: by mail-pl1-f199.google.com with SMTP id y3-20020a1709029b8300b0014c8bcb70a1so2021560plp.3
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 20:41:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BKsjr+x4bYzy8xFM4/3x570D+BJpN9nVsFl77PyeRNg=;
-        b=MbjQ3OiCzYS13uJeEGzKMv4vaR1N/O4Hw4D7s9VsPs/zDw3MraT6T9oB6x0INuqIWF
-         NtBIAmN+03ZVeAx5xSgeVhWGR6FCTiOURhNtrOuFv2jzKFtyTgkwZSYSFem6V5DHzc1P
-         UrEUUebK0bXeh0wBW6AHAio7X5mRDWLUnlQvYAVLJh7o3vayrzWQAo9JSWV7g/DUP7Gs
-         XJ5Mudao0E0i5aMs5V8EHs9di3Qis6RCOn+a9IwE1qWunmOOoDhwuR0IQvXRCGGACSpa
-         RbmV9Mt8boJW4m2NKbDkbV15AWuKjdwSEbxWGMrzrQumjT+tCjzdmx/HlrPle672kTk2
-         ri6Q==
-X-Gm-Message-State: AOAM533qKQLejF/91O7JE1XzyQUPpQy3XRwu2MZx1WE40CCkULHvP90J
-        moJ7fKf4amkD7nstBLQfREynMQJ7sOyxBwK0JunxcREOfHE9pJNDkS2e54eYcNfBI3+Iz/6KAjx
-        doSIRFsi+JDabkLsTq7Te7yxZvg==
-X-Received: by 2002:a17:902:9a8e:b0:14d:ae35:19f9 with SMTP id w14-20020a1709029a8e00b0014dae3519f9mr1269991plp.66.1645072906408;
-        Wed, 16 Feb 2022 20:41:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyYHbGg95GLg8jdxKJTeG6Rw5yCJLRLB3wzOYl/Ms2jX2K8wdo8xn1KWLpPl3U31H77CuOH3A==
-X-Received: by 2002:a17:902:9a8e:b0:14d:ae35:19f9 with SMTP id w14-20020a1709029a8e00b0014dae3519f9mr1269975plp.66.1645072906139;
-        Wed, 16 Feb 2022 20:41:46 -0800 (PST)
-Received: from pc-0115 (35.112.198.104.bc.googleusercontent.com. [104.198.112.35])
-        by smtp.gmail.com with ESMTPSA id j15sm48674401pfj.102.2022.02.16.20.41.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 16 Feb 2022 20:41:45 -0800 (PST)
-Received: from martinet by pc-0115 with local (Exim 4.95)
-        (envelope-from <martinet@pc-0115>)
-        id 1nKYbv-008JBg-6L;
-        Thu, 17 Feb 2022 13:41:43 +0900
-From:   Dominique Martinet <dominique.martinet@atmark-techno.com>
-To:     Oleksij Rempel <linux@rempel-privat.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Petr=20Bene=C5=A1?= <petr.benes@ysoft.com>,
-        Dominique Martinet <dominique.martinet@atmark-techno.com>
-Subject: [PATCH] thermal/drivers/imx: add missing pm_runtime_put on error path
-Date:   Thu, 17 Feb 2022 13:41:32 +0900
-Message-Id: <20220217044132.1980370-1-dominique.martinet@atmark-techno.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20211117103426.81813-1-o.rempel@pengutronix.de>
-References: <20211117103426.81813-1-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 16 Feb 2022 23:52:59 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE3661ED1DB
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 20:52:45 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79F6012FC;
+        Wed, 16 Feb 2022 20:52:45 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.47.200])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CC4AE3F66F;
+        Wed, 16 Feb 2022 20:52:43 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH V3] arm64/hugetlb: Define __hugetlb_valid_size()
+Date:   Thu, 17 Feb 2022 10:22:37 +0530
+Message-Id: <1645073557-6150-1-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We took a reference so need to put it back when imx_get_temp() returns
-EAGAIN.
+arch_hugetlb_valid_size() can be just factored out to create another helper
+to be used in arch_hugetlb_migration_supported() as well. This just defines
+__hugetlb_valid_size() for that purpose.
 
-Fixes: 4cf2ddf16e17 ("thermal/drivers/imx: Implement runtime PM support")
-Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 ---
-stumbled upon this merging our stable tree, but I don't actually use
-imx-thermal so haven't tested it.
+This applies on v5.17-rc4
 
- drivers/thermal/imx_thermal.c | 1 +
- 1 file changed, 1 insertion(+)
+Changes in V3:
 
-diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
-index 16663373b682..641f90f9c750 100644
---- a/drivers/thermal/imx_thermal.c
-+++ b/drivers/thermal/imx_thermal.c
-@@ -265,6 +265,7 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
+- Moved up __hugetlb_valid_size() avoiding forward declaration per Will
+
+Changes in V2:
+
+https://lore.kernel.org/all/1644491770-16108-1-git-send-email-anshuman.khandual@arm.com/
+
+- s/arm64_hugetlb_valid_size/__hugetlb_valid_size per Catalin
+- Restored back warning in arch_hugetlb_migration_supported() per Catalin
+- Updated the commit message subject line as required
+
+Changes in V1:
+
+https://lore.kernel.org/all/1644197468-26755-1-git-send-email-anshuman.khandual@arm.com/
+
+ arch/arm64/mm/hugetlbpage.c | 38 ++++++++++++++++++-------------------
+ 1 file changed, 18 insertions(+), 20 deletions(-)
+
+diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+index ffb9c229610a..a33aba91ad89 100644
+--- a/arch/arm64/mm/hugetlbpage.c
++++ b/arch/arm64/mm/hugetlbpage.c
+@@ -56,25 +56,34 @@ void __init arm64_hugetlb_cma_reserve(void)
+ }
+ #endif /* CONFIG_CMA */
  
- 	if ((val & soc_data->temp_valid_mask) == 0) {
- 		dev_dbg(&tz->device, "temp measurement never finished\n");
-+		pm_runtime_put(data->dev);
- 		return -EAGAIN;
+-#ifdef CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION
+-bool arch_hugetlb_migration_supported(struct hstate *h)
++static bool __hugetlb_valid_size(unsigned long size)
+ {
+-	size_t pagesize = huge_page_size(h);
+-
+-	switch (pagesize) {
++	switch (size) {
+ #ifndef __PAGETABLE_PMD_FOLDED
+ 	case PUD_SIZE:
+ 		return pud_sect_supported();
+ #endif
+-	case PMD_SIZE:
+ 	case CONT_PMD_SIZE:
++	case PMD_SIZE:
+ 	case CONT_PTE_SIZE:
+ 		return true;
  	}
+-	pr_warn("%s: unrecognized huge page size 0x%lx\n",
+-			__func__, pagesize);
++
+ 	return false;
+ }
++
++#ifdef CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION
++bool arch_hugetlb_migration_supported(struct hstate *h)
++{
++	size_t pagesize = huge_page_size(h);
++
++	if (!__hugetlb_valid_size(pagesize)) {
++		pr_warn("%s: unrecognized huge page size 0x%lx\n",
++			__func__, pagesize);
++		return false;
++	}
++	return true;
++}
+ #endif
  
+ int pmd_huge(pmd_t pmd)
+@@ -506,16 +515,5 @@ arch_initcall(hugetlbpage_init);
+ 
+ bool __init arch_hugetlb_valid_size(unsigned long size)
+ {
+-	switch (size) {
+-#ifndef __PAGETABLE_PMD_FOLDED
+-	case PUD_SIZE:
+-		return pud_sect_supported();
+-#endif
+-	case CONT_PMD_SIZE:
+-	case PMD_SIZE:
+-	case CONT_PTE_SIZE:
+-		return true;
+-	}
+-
+-	return false;
++	return __hugetlb_valid_size(size);
+ }
 -- 
-2.34.1
+2.20.1
 
