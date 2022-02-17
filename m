@@ -2,158 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57DC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1068CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245572AbiBQTv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:51:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38164 "EHLO
+        id S245520AbiBQTxC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 14:53:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245557AbiBQTvy (ORCPT
+        with ESMTP id S231487AbiBQTw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:51:54 -0500
-X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 11:51:38 PST
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6AB747544
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:51:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=PLV4LWdDj/u4ldrwNJYwwtOs/CoI
-        lUCOXcXS6q9IYUo=; b=fJL2ikFxTOLyTXIRNVEYrWc0XWEN34j1CyPK4lhiH+rY
-        /9XQ8S2Qp7qxN2GdupIvJ9LbAX7m59ina+JE/ZcEyS5CZF1Rn+mY3j966OJwrHW7
-        QrJ87kXFw2LIK0RqAefXtu3QnG5iYSKr1/gCLMZLk3dyVUK74zEoUh8h8SwMmuQ=
-Received: (qmail 507920 invoked from network); 17 Feb 2022 20:44:54 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 17 Feb 2022 20:44:54 +0100
-X-UD-Smtp-Session: l3s3148p1@9M/h/zvY1uogAQnoAFSyAKtB1T4Nf0Bd
-Date:   Thu, 17 Feb 2022 20:44:51 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Andrew Gabbasov <andrew_gabbasov@mentor.com>
-Cc:     linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>
-Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
-Message-ID: <Yg6ls0zyTDe7LQbK@kunai>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>
-References: <20210922160649.28449-1-andrew_gabbasov@mentor.com>
- <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>
- <000001d7badd$a8512d30$f8f38790$@mentor.com>
- <20211006182314.10585-1-andrew_gabbasov@mentor.com>
+        Thu, 17 Feb 2022 14:52:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3749F12E150;
+        Thu, 17 Feb 2022 11:52:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC6CC61D6F;
+        Thu, 17 Feb 2022 19:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 438EDC340F5;
+        Thu, 17 Feb 2022 19:52:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645127564;
+        bh=ZhQxF0tPXMlYqWyHKU+1EFwIzt/X85cBfMSyiNtLNwc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=N3q7ZHzEir/9IK/PGW+3dMKawSKM3KHTVB0REMnWpIEazeg1BTxuWepTpRprIRKPI
+         XmGpqTE40xrLD8tJkBKCJxDJFOHcr6iYvTnjlBsBBXMj3UbckzYkxN/7wU5Ygx5mrk
+         ETE3YbdvQqT8R06yoKVRu6kMzrbvehESqHsLVNuR42qsb7LAj9NnFT2oA+kvsCETGt
+         ox0NZV2AZw2DzmW07UuMa2RituDxee7maP037UT/LVLYS5cSaVkI4fklqI2IhpP5+V
+         klEOQqAFRD7lzuSKdAr9w41EjgBa5tjoYjjyu/4ZNQJCNIfaK81rkYX9NflqCMGKSz
+         ykTJRqwak3lzA==
+Received: by mail-wm1-f53.google.com with SMTP id k127-20020a1ca185000000b0037bc4be8713so7014976wme.3;
+        Thu, 17 Feb 2022 11:52:44 -0800 (PST)
+X-Gm-Message-State: AOAM532172Lvk3f61e6H4Kx+ki0RC9qGprFMPFkmCPjvClzyy/VJixoa
+        VlI5RHr/tjrzpsbppEDs3iZozS4McH4D8f4BAhk=
+X-Google-Smtp-Source: ABdhPJwiemEIjRKk4frN6QbDwgyUBnVeU/8bBRkvxFxBQULsWx/seWlsMA1hduXoxyV0dNHVRWvY1oHknvGbya8Zxyg=
+X-Received: by 2002:a05:600c:3d06:b0:37b:a5ea:a61b with SMTP id
+ bh6-20020a05600c3d0600b0037ba5eaa61bmr4183906wmb.32.1645127562557; Thu, 17
+ Feb 2022 11:52:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2acm5ptTzxcRBe88"
-Content-Disposition: inline
-In-Reply-To: <20211006182314.10585-1-andrew_gabbasov@mentor.com>
+References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
+ <877d9xx14f.fsf@igel.home> <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de>
+ <87tud1vjn4.fsf@igel.home> <49d3aeab-1fe6-8d17-bc83-78f3555109c7@gmx.de>
+ <87pmnpvh66.fsf@igel.home> <20220217105450.GA20183@sunil-ThinkPad-T490> <CAOnJCULWjCHCCS7wzTBVsYcPzWPpL9jmS7xx5LUFT2tRvAZk6w@mail.gmail.com>
+In-Reply-To: <CAOnJCULWjCHCCS7wzTBVsYcPzWPpL9jmS7xx5LUFT2tRvAZk6w@mail.gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 17 Feb 2022 20:52:30 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXFXu75cDo=rx4rG6WFwd=At+nMWRzq378EoLu7GuHU64w@mail.gmail.com>
+Message-ID: <CAMj1kXFXu75cDo=rx4rG6WFwd=At+nMWRzq378EoLu7GuHU64w@mail.gmail.com>
+Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return value
+To:     Atish Patra <atishp@atishpatra.org>
+Cc:     Sunil V L <sunilvl@ventanamicro.com>,
+        Andreas Schwab <schwab@linux-m68k.org>,
+        Heinrich Schuchardt <xypron.glpk@gmx.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Anup Patel <apatel@ventanamicro.com>,
+        "# 3.4.x" <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 17 Feb 2022 at 20:47, Atish Patra <atishp@atishpatra.org> wrote:
+>
+> On Thu, Feb 17, 2022 at 2:55 AM Sunil V L <sunilvl@ventanamicro.com> wrote:
+> >
+> > On Mon, Feb 14, 2022 at 12:09:05PM +0100, Andreas Schwab wrote:
+> > > On Feb 14 2022, Heinrich Schuchardt wrote:
+> > >
+> > > > On 2/14/22 11:15, Andreas Schwab wrote:
+> > > >> On Feb 14 2022, Heinrich Schuchardt wrote:
+> > > >>
+> > > >>> set_boot_hartid() implies that the caller can change the boot hart ID.
+> > > >>> As this is not a case this name obviously would be a misnomer.
+> > > >>
+> > > >> initialize_boot_hartid would fit better.
+> > > >>
+> > > >
+> > > > Another misnomer.
+> > >
+> > > But the best fit so far.
+> >
+> > Can we use the name init_boot_hartid_from_fdt()? While I understand
+> > Heinrich's point, I think since we have "_from_fdt", this may be fine.
+> >
+>
+> init_boot_hartid_from_fdt or parse_boot_hartid_from_fdt
+>
+> are definitely much better than the current one.
+>
+> > I didn't rename the function since it was not recommended to do multiple
+> > things in a "Fix" patch. If we can consider this as not very serious
+> > issue which needs a "Fix" patch, then I can combine this patch with the
+> > RISCV_EFI_BOOT_PROTOCOL patch series.
+> >
+>
+> IMHO, it is okay to include this in the RISCV_EFI_BOOT_PROTOCOL series
+> as we are not going to have hartid U32_MAX in a few months :)
+>
+>
+> > Hi Ard, let me know your suggestion on how to proceed with this.
+> >
 
---2acm5ptTzxcRBe88
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The patch is fine as it is. I agree that naming is important, but for
+a helper function that is only used a single time right in the same
+source file, it doesn't matter that much.
 
-Hi Andrew,
+I have queued this up now.
 
-first sorry that it took so long. The reason here is that my original
-plan was to add 256-byte support to RECV_LEN in the I2C core and enable
-it on R-Car afterwards. Sadly, I never found the time to drive this
-forward. So, all RECV_LEN things got stuck for a while :(
-
-> This patch (adapted) was tested with v4.14, but due to lack of real
-> hardware with SMBus block read operations support, using "simulation",
-> that is manual analysis of data, read from plain I2C devices with
-> SMBus block read request.
-
-You could wire up two R-Car I2C instances, set up one as an I2C slave
-handled by the I2C testunit and then use the other instance with
-SMBUS_BLOCK_PROC_CALL which also needs RECV_LEN. Check
-Documentation/i2c/slave-testunit-backend.rst for details.
-
-I wonder a bit about the complexity of your patch. In my WIP-branch for
-256-byte transfers, I have the following patch. It is only missing the
-range check for the received byte, but that it easy to add. Do you see
-anything else missing? If not, I prefer this simpler version because it
-is less intrusive and the state machine is a bit fragile (due to HW
-issues with old HW).
-
-=46rom: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Date: Sun, 2 Aug 2020 00:24:52 +0200
-Subject: [PATCH] i2c: rcar: add support for I2C_M_RECV_LEN
-
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- drivers/i2c/busses/i2c-rcar.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/i2c/busses/i2c-rcar.c b/drivers/i2c/busses/i2c-rcar.c
-index 217def2d7cb4..e473f5c0a708 100644
---- a/drivers/i2c/busses/i2c-rcar.c
-+++ b/drivers/i2c/busses/i2c-rcar.c
-@@ -528,6 +528,7 @@ static void rcar_i2c_irq_send(struct rcar_i2c_priv *pri=
-v, u32 msr)
- static void rcar_i2c_irq_recv(struct rcar_i2c_priv *priv, u32 msr)
- {
- 	struct i2c_msg *msg =3D priv->msg;
-+	bool recv_len_init =3D priv->pos =3D=3D 0 && msg->flags & I2C_M_RECV_LEN;
-=20
- 	/* FIXME: sometimes, unknown interrupt happened. Do nothing */
- 	if (!(msr & MDR))
-@@ -542,11 +543,13 @@ static void rcar_i2c_irq_recv(struct rcar_i2c_priv *p=
-riv, u32 msr)
- 	} else if (priv->pos < msg->len) {
- 		/* get received data */
- 		msg->buf[priv->pos] =3D rcar_i2c_read(priv, ICRXTX);
-+		if (recv_len_init)
-+			msg->len +=3D msg->buf[0];
- 		priv->pos++;
- 	}
-=20
- 	/* If next received data is the _LAST_, go to new phase. */
--	if (priv->pos + 1 =3D=3D msg->len) {
-+	if (priv->pos + 1 =3D=3D msg->len && !recv_len_init) {
- 		if (priv->flags & ID_LAST_MSG) {
- 			rcar_i2c_write(priv, ICMCR, RCAR_BUS_PHASE_STOP);
- 		} else {
-@@ -889,7 +892,7 @@ static u32 rcar_i2c_func(struct i2c_adapter *adap)
- 	 * I2C_M_IGNORE_NAK (automatically sends STOP after NAK)
- 	 */
- 	u32 func =3D I2C_FUNC_I2C | I2C_FUNC_SLAVE |
--		   (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK);
-+		   (I2C_FUNC_SMBUS_EMUL_ALL & ~I2C_FUNC_SMBUS_QUICK);
-=20
- 	if (priv->flags & ID_P_HOST_NOTIFY)
- 		func |=3D I2C_FUNC_SMBUS_HOST_NOTIFY;
-
-Happy hacking,
-
-   Wolfram
-
-
---2acm5ptTzxcRBe88
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIOpa8ACgkQFA3kzBSg
-KbbOpw/6AytfzBlrI+AZSPjgcsIAOV/p95TJu+PcUIgOeKtyleBeoMzd2r29bfuV
-1hrMdmU145BUZHmpiwGOqILZwihZa7TKoZvHB+ZZfSI/5qvCCv5jNyLEx3u8MiOX
-sl0CT5YcMPYCyfDO3AsPAN9Oxq0VdDTbpPv2TZ9MBycl62UDoFbGfYPHfxyKy3CQ
-Bp6QxT05cWiw1yRRK2hF89nGb4oeWeD1EV3ELIkJAIQtQSunJmu0lymr+lJJR8uz
-j03LeikTmgoU2hgW23Y6GLQJe85LyAiQZhGT6g2kXabsJQJv9Fu1YLTwJvcb5+Np
-wQ9daniG9wsqjTvpOkVlPzrAQCyoAZ0veQwkKd9FrCgZZ3K+hXdujkAMY/tHGmvC
-9/kW07yO6a0UlJ1S2QD86Byc5R8+t3WI9xU6y0fQgHKxcUoMfxrnapOMATLb0kEm
-w/Q5RQzgLKaj/71SGf/92/tc57D1Li1i+uG6rVmNLPHHGbqOfSInRDkut8Ac/TJh
-AUft/52hdAVQPgaj2vDXlw43gwfgfrouwBEwjn6thjJ27BQlp+onwkwjuThop8zP
-8erJycPp5fqqSh7hObVQSzZjBljVAuWNIyDM76/TcTtekR+s3AkHmt1D9Z9WeyJS
-+zRaqQD016MwwX/r/oKO03y47DzCDg+Vee3h3caQjAVXlLFWmtk=
-=QVKF
------END PGP SIGNATURE-----
-
---2acm5ptTzxcRBe88--
+Thanks,
+Ard.
