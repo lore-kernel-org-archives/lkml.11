@@ -2,150 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:05:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A71CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243984AbiBQSFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:05:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54496 "EHLO
+        id S243990AbiBQSI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:08:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240373AbiBQSFv (ORCPT
+        with ESMTP id S239522AbiBQSIZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:05:51 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3F3291F9A;
-        Thu, 17 Feb 2022 10:05:36 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id l12-20020a7bc34c000000b003467c58cbdfso6815238wmj.2;
-        Thu, 17 Feb 2022 10:05:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cwhqG4PjSxyhdk9byzTdeRpRASQMOOB/h+pJH2F1Kq8=;
-        b=mI91NydIzkJr/9KH744xMRolPpdWlzjEtP/2fNTiN8HHiXv84ojx5RPXGw/NqDtnAW
-         ZCKplfo4rI1K+8ISmP8YnOI8qSJXpC4zBiaRDO4iHqSMG8K9o0ZvNY+1KPbOZ/2oJyej
-         CbD5wuPYVSGfPAMbwFbKZ+NILx5iQsqMJ82MchbGTOy/XWHgu63T2ZdM4BvcFc7uSTpY
-         fGh6m+U2U/hXez1sUdlByHIDuhBKtkWsdeuacMAg4cAnf4YRzzEBJe9Zm2j6s8wzKTy6
-         odjxg1SG0edDnPl109MAwVmkIIRBcHwcOBX1KTYO0cH9A1F91bbSn1YYJx0QrS0zbOG4
-         UPnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cwhqG4PjSxyhdk9byzTdeRpRASQMOOB/h+pJH2F1Kq8=;
-        b=mgG6jrlgrFxB5DSc4qxXUOfd0b6fzC0rIC/m/m+CADQhYJzoj1V5VdyatgPFI2X+U9
-         7ksDuBSw2R0FowDj0uvpKCiXK3XTnd6HYHygPkv1F1G7yRU9KZmUusux7clOer/5rMZj
-         Nhyl6qPVkFWGrvgC1Mx8rKJxQIQGU4HJj5GiSM/lv2Ffh4HxkMOjy9oaOnNeOvah9ITu
-         gzH1GWWPuLGRNSSLPcLK73/yktQMqee2HemH1k0WkojIP5gc0v0qOpXcpvJMHu5/ZH2P
-         HPYEPRpL9YuzGkDGjq4Bquh6hBRhTG70vnFIcWtTlRnBsZcktiMggku1rAzD+nCPcIyg
-         8IuQ==
-X-Gm-Message-State: AOAM5316ghVGIgmIoNQ1Vb5Em8QZOpWOBeV6T8kXj6wznDsLCy2Kn+w3
-        rT+zicIetX4tkIl4cXnO+DE=
-X-Google-Smtp-Source: ABdhPJwn1QIrnHyMXL8TMdqKzqGKaJNhuLDgBAUXEvdBpoyu0KVG2M0M6Ms35TmBdJetxJ2PhOTReA==
-X-Received: by 2002:a05:600c:19ce:b0:37c:6fe:68b6 with SMTP id u14-20020a05600c19ce00b0037c06fe68b6mr7074209wmq.90.1645121135151;
-        Thu, 17 Feb 2022 10:05:35 -0800 (PST)
-Received: from leap.localnet (host-79-27-0-81.retail.telecomitalia.it. [79.27.0.81])
-        by smtp.gmail.com with ESMTPSA id d6sm38754441wrs.85.2022.02.17.10.05.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 10:05:34 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     jgg@ziepe.ca, liangwenpeng@huawei.com,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        liweihang@huawei.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Cc:     syzbot <syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com>
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in smc_pnet_apply_ib
-Date:   Thu, 17 Feb 2022 19:05:31 +0100
-Message-ID: <2691692.BEx9A2HvPv@leap>
-In-Reply-To: <000000000000b772b805d8396f14@google.com>
-References: <000000000000b772b805d8396f14@google.com>
+        Thu, 17 Feb 2022 13:08:25 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8418615DB28;
+        Thu, 17 Feb 2022 10:08:10 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21HFRgDa025670;
+        Thu, 17 Feb 2022 10:08:05 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=8jG0tqM0e9p6vsriO0mMsEIgAm5bCPAtrYKjjQkIC3k=;
+ b=Zid9lCd/kOQrOmDpisLc+w2PFH2QeAv8Vd4SNUiNfo8fiFmwksSRmbB2aMntUf74RopT
+ SEDsPihdy3HUhTN26iW60Ucgbc1nxj0jFCY9aUUtladXsz4E3Frgv2MNsovv8rhaQvFP
+ 2qdouLv2MruXJ5UrV5ePEJzq80hdYC0RYlatk+v6EMvTeTKiOYLlGB8YWeC9/8Td13it
+ 0vd/dQrlmV6RNE689ofz9ZribAosvjCRfDnYgtDqgaSenzUuFO1Lh3mi+0j/n3rED7bw
+ 0DIX3PXuAEWLpwpbCtr/wYWw+oNAmdcekKoM7kEl0l9lZdfMdAX0wJ0LIV+r+P55cOfm qg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3e9kktt4f1-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 10:08:05 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 17 Feb
+ 2022 10:08:03 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 17 Feb 2022 10:08:03 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 91E873F70F6;
+        Thu, 17 Feb 2022 10:05:02 -0800 (PST)
+From:   Rakesh Babu Saladi <rsaladi2@marvell.com>
+To:     <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Harman Kalra <hkalra@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>
+Subject: [net-next PATCH 1/3] octeontx2-af: Sending tsc value to the userspace
+Date:   Thu, 17 Feb 2022 23:34:48 +0530
+Message-ID: <20220217180450.21721-2-rsaladi2@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220217180450.21721-1-rsaladi2@marvell.com>
+References: <20220217180450.21721-1-rsaladi2@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: 7viX9QoLE_bdUrflCwdPygosvPotoUkO
+X-Proofpoint-GUID: 7viX9QoLE_bdUrflCwdPygosvPotoUkO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-17_06,2022-02-17_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On gioved=C3=AC 17 febbraio 2022 17:41:22 CET syzbot wrote:
-> Hello,
->=20
-> syzbot found the following issue on:
->=20
-> HEAD commit:    c832962ac972 net: bridge: multicast: notify switchdev dri=
-v..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D16b157bc700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D266de9da75c71=
-a45
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3D4f322a6d84e991c=
-38775
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binuti=
-ls for Debian) 2.35.2
->=20
-> Unfortunately, I don't have any reproducer for this issue yet.
->=20
-> IMPORTANT: if you fix the issue, please add the following tag to the comm=
-it:
-> Reported-by: syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
->=20
-> infiniband syz1: set down
-> infiniband syz1: added lo
-> RDS/IB: syz1: added
-> smc: adding ib device syz1 with port count 1
-> BUG: sleeping function called from invalid context at kernel/locking/mute=
-x.c:577
-> in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 17974, name: syz-e=
-xecutor.3
-> preempt_count: 1, expected: 0
-> RCU nest depth: 0, expected: 0
-> 6 locks held by syz-executor.3/17974:
->  #0: ffffffff90865838 (&rdma_nl_types[idx].sem){.+.+}-{3:3}, at: rdma_nl_=
-rcv_msg+0x161/0x690 drivers/infiniband/core/netlink.c:164
->  #1: ffffffff8d04edf0 (link_ops_rwsem){++++}-{3:3}, at: nldev_newlink+0x2=
-5d/0x560 drivers/infiniband/core/nldev.c:1707
->  #2: ffffffff8d03e650 (devices_rwsem){++++}-{3:3}, at: enable_device_and_=
-get+0xfc/0x3b0 drivers/infiniband/core/device.c:1321
->  #3: ffffffff8d03e510 (clients_rwsem){++++}-{3:3}, at: enable_device_and_=
-get+0x15b/0x3b0 drivers/infiniband/core/device.c:1329
->  #4: ffff8880482c85c0 (&device->client_data_rwsem){++++}-{3:3}, at: add_c=
-lient_context+0x3d0/0x5e0 drivers/infiniband/core/device.c:718
->  #5: ffff8880230a4118 (&pnettable->lock){++++}-{2:2}, at: smc_pnetid_by_t=
-able_ib+0x18c/0x470 net/smc/smc_pnet.c:1159
-> Preemption disabled at:
-> [<0000000000000000>] 0x0
-> CPU: 1 PID: 17974 Comm: syz-executor.3 Not tainted 5.17.0-rc3-syzkaller-0=
-0170-gc832962ac972 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS G=
-oogle 01/01/2011
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  __might_resched.cold+0x222/0x26b kernel/sched/core.c:9576
->  __mutex_lock_common kernel/locking/mutex.c:577 [inline]
->  __mutex_lock+0x9f/0x12f0 kernel/locking/mutex.c:733
->  smc_pnet_apply_ib+0x28/0x160 net/smc/smc_pnet.c:251
->  smc_pnetid_by_table_ib+0x2ae/0x470 net/smc/smc_pnet.c:1164
+From: Harman Kalra <hkalra@marvell.com>
 
-If I recall it well, read_lock() disables preemption.=20
+This patch updates the existing PTP_OP_GET_CLOCK mbox message to
+return timestamp counter value, tsc (cntvct_el0 or pmccntr_el0)
+along with the PTP HI clock value.
 
-smc_pnetid_by_table_ib() uses read_lock() and then it calls smc_pnet_apply_=
-ib()=20
-which, in turn, calls mutex_lock(&smc_ib_devices.mutex). Therefore the code=
-=20
-acquires a mutex while in atomic and we get a SAC bug.
+In some debugging scenarios user might need to read the PTP HI
+clock value in the fastpath, so as to know how many ticks have
+been spent till point from the reception of the packet, as packet
+reception tick value is already appended to the packet by CGX.
+If directly PTP_OP_GET_CLOCK mbox message is sent every time user
+wants to record PTP HI clock value, it will bring down the
+performance to a great extent as mbox is a very expensive process.
 
-Actually, even if my argument is correct(?), I don't know if the read_lock(=
-)=20
-in smc_pnetid_by_table_ib() can be converted to a sleeping lock like a mute=
-x or=20
-a semaphore.
+To handle this PTP HI clock can be derived from timestamp counter
+(tsc, which could be running at 100MHz or system freq) using two
+parameters freq multiplier (ratio of frequencies of PTP HI clock
+and tsc) and clock delta (by how much tsc is lagging from PTP HI
+clock). During configuration stage these parameters are calculated
+     freq_mult = (freq of PTP HI clock)/(freq of tsc counter)
+     clk_delta = (PTP_HI clock value / freq_mult) - (tsc val)
+   these PTP_HI val and tsc value are receieved by calling
+   PTP_OP_GET_CLOCK. Purpose of returing tsc at the same time
+   with PTP_HI value is to avoid mbox propagation delay.
 
-Any comment?=20
+Now whenever user wants to know PTP HI clock, it can be derived
+from tsc counter and returned:
+     PTP_HI val = (tsc value + clk_delta) * freq_mult
 
-Thanks,
+Signed-off-by: Harman Kalra <hkalra@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Signed-off-by: Rakesh Babu Saladi <rsaladi2@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  2 ++
+ .../net/ethernet/marvell/octeontx2/af/ptp.c   | 25 ++++++++++++++++---
+ 2 files changed, 24 insertions(+), 3 deletions(-)
 
-=46abio M. De Francesco
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 550cb11197bf..2be11062ec33 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -1451,12 +1451,14 @@ struct ptp_req {
+ 	struct mbox_msghdr hdr;
+ 	u8 op;
+ 	s64 scaled_ppm;
++	u8 is_pmu;
+ 	u64 thresh;
+ };
 
+ struct ptp_rsp {
+ 	struct mbox_msghdr hdr;
+ 	u64 clk;
++	u64 tsc;
+ };
 
+ struct set_vf_perm  {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+index e682b7bfde64..211c375446f4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+@@ -114,10 +114,28 @@ static int ptp_adjfine(struct ptp *ptp, long scaled_ppm)
+ 	return 0;
+ }
 
+-static int ptp_get_clock(struct ptp *ptp, u64 *clk)
++static inline u64 get_tsc(bool is_pmu)
++{
++#if defined(CONFIG_ARM64)
++	return is_pmu ? read_sysreg(pmccntr_el0) : read_sysreg(cntvct_el0);
++#else
++	return 0;
++#endif
++}
++
++static int ptp_get_clock(struct ptp *ptp, bool is_pmu, u64 *clk, u64 *tsc)
+ {
+ 	/* Return the current PTP clock */
+-	*clk = readq(ptp->reg_base + PTP_CLOCK_HI);
++	u64 end, start;
++	u8 retries = 0;
++
++	do {
++		start = get_tsc(0);
++		*tsc = get_tsc(is_pmu);
++		*clk = readq(ptp->reg_base + PTP_CLOCK_HI);
++		end = get_tsc(0);
++		retries++;
++	} while (((end - start) > 50) && retries < 5);
+
+ 	return 0;
+ }
+@@ -297,7 +315,8 @@ int rvu_mbox_handler_ptp_op(struct rvu *rvu, struct ptp_req *req,
+ 		err = ptp_adjfine(rvu->ptp, req->scaled_ppm);
+ 		break;
+ 	case PTP_OP_GET_CLOCK:
+-		err = ptp_get_clock(rvu->ptp, &rsp->clk);
++		err = ptp_get_clock(rvu->ptp, req->is_pmu, &rsp->clk,
++				    &rsp->tsc);
+ 		break;
+ 	case PTP_OP_GET_TSTMP:
+ 		err = ptp_get_tstmp(rvu->ptp, &rsp->clk);
+--
+2.17.1
