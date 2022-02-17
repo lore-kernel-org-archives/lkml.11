@@ -2,208 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239800AbiBQLeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 06:34:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34290 "EHLO
+        id S239807AbiBQLfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 06:35:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239782AbiBQLeQ (ORCPT
+        with ESMTP id S234597AbiBQLfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 06:34:16 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF68A278295
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:34:01 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id gb39so6560953ejc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:34:01 -0800 (PST)
+        Thu, 17 Feb 2022 06:35:05 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2092.outbound.protection.outlook.com [40.107.243.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4AF52A82E6;
+        Thu, 17 Feb 2022 03:34:50 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mXfvYGrVBaLB2hRJf/x8joP5WIpDgTngVgjnG6+lYrppBoLUaLHlHeLBfayKFDaQdFHRGRo2pyJGwhatitFv8ksxspMfAYka7npQq/Htq/Iplc++p3w8TkzN+n+QGKzDolGQKdXJOvXuGfPbqtjIornZ8SBcAXF7k4mbgKj6V+xlmFonQe/SXqwMESgxqwDMXcyJMXw3NzV8xgxuoiJUicrPpxVvwUeFoIKfKWcyV6RT2WWAVbB/tS9rztt8peHsmmBvMFEjyy574MHJshmNme2/v21b5etvGykiZjGvMUqCrOZuntrkSDOsyk3LPArsmTuYz+11uGwJZT4O9Pp7LA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ceIA2Tfzk1fhDQS5kD6O79l+mdNdij3XHAF2MqAvLwQ=;
+ b=KqDyA1otCzApzl48xCBY/2s29zPGL9LDX3g1q7iTrdFuhWbez7VxnR/2LsckFNCt1BM3yV/U4o2nSuzJYRNbrwHRR+Ixj6qIPMHRRbUcPCwRzM3MrHtOsnKz4z5IWyktSNnSvSTkt29RpfybT4F3kFgg2QJ0HzBzhysPRdw3FxmYtkkFJm55dZXAZWb9/ZM/SqVekZQEJ2ukVMr56S+5knZ/QWtEdniM/hgxKkUScr3KHzZs7Y7RFJJICmj4jt0EKrxdVpITIRuILqu/mhVWiQhXxj7V5xomFEvOKSr3qhrGUNU+w1Os74VZT2YtRbiQByoY8qCPA//OcxHBgs+AHQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LIJbkcpxWhEu+HDqv6mv/542M4vTfuWftkC1BaPuPbU=;
-        b=TbT4HVYGoCKKxlNKiPmpU3SWwZu5CDTjF38mWAh6T0DazaZgHk+5lHNO40yFFoCoTJ
-         IhX5v53CL1y0eY6Bdqq1t2Zih8HsaZ0p9WiMQHisl/7D5UNkZv20RitrLquvOEsp7uZ8
-         2UOrYUbwo+MkwjM2gosoNiJxw+R7zAXFc42lLSMGTafO8g3dSGIgRFgCj0kPS5WGaJmq
-         OGUcbMkoR6mS7EZ9CLLKNKC4g+4cwCCWM2lYGVH8WGBInhQkswKz3DmFM6AnpiEF4tr8
-         WalK7TefoPlqQBGrhd9NNSP8YyvXhC6UAYqJ2+qziFFn8PPn+bfEI9C2KIcYA2gBPfKA
-         5dKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LIJbkcpxWhEu+HDqv6mv/542M4vTfuWftkC1BaPuPbU=;
-        b=zBl0XgLIN6Iss1SfuKAsn7SU8zVSiUJgItjyEwRo4cxcUSoWZpPaJTtIkT//4CjG/+
-         AsB0jtJJ9bIpZLDKB5FEJFHq3aSnODvjN0ehsnUDq7lIjNCtGsVzz6HrMtUvuVpB0vKj
-         /eToNigWS0ZL/QS/NL8EangIVu6nSucqNInlU9X9R3w9UAua8JTBf7yZrmc3EmeGAmXA
-         3oewD5MLstlcvdQEKdlY4CuKm7Jn0JkMsmlV8TSbJ/CCasMCEvyefYBxVgOBcl928aLo
-         2zx7thsEU6lNFlD1edgLTz4mMZ2mdHSHyQ3fOKvnuckxUWsD1ShlLycgrlXu8TX1jVTh
-         /UVA==
-X-Gm-Message-State: AOAM532MWGlEWZAipWBiA2MzbwtRbX8GGx694926IrHcKg+rnSQlbfmg
-        PPJda1MmdHfHlkWJx67uZN6qTQ==
-X-Google-Smtp-Source: ABdhPJw4Erll/uCqjzTBT96QBBylhZa1svkxPBZvtY01p3v7Q1PQeyr8NcLtaKJsoJkrerC/ucp6eA==
-X-Received: by 2002:a17:906:b57:b0:6ce:e31a:524 with SMTP id v23-20020a1709060b5700b006cee31a0524mr1969824ejg.290.1645097640461;
-        Thu, 17 Feb 2022 03:34:00 -0800 (PST)
-Received: from [192.168.1.9] (hst-221-75.medicom.bg. [84.238.221.75])
-        by smtp.googlemail.com with ESMTPSA id u4sm1076625ejn.216.2022.02.17.03.33.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 03:33:59 -0800 (PST)
-Message-ID: <55dbdf8b-290c-85ff-235e-9e5649540b6e@linaro.org>
-Date:   Thu, 17 Feb 2022 13:33:58 +0200
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ceIA2Tfzk1fhDQS5kD6O79l+mdNdij3XHAF2MqAvLwQ=;
+ b=MeXlzWFYy6vrOhTm4kw+3SZtvKbhOAK8bRVsqtUoNhYAt4K99UNFTAmKsceI7JEDNA9FlbjfjfQxzvfnF4tQgWtR+0YzxV0kawxYh0c1UmqXj6SlNsOYQzlJHT9qABbKu/WvV2rJ1iPG3S5QTremCMtO5jtaO35oO1NwkRRTPho=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY5PR13MB3298.namprd13.prod.outlook.com (2603:10b6:a03:1a7::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.7; Thu, 17 Feb
+ 2022 11:34:47 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::7037:b9dc:923c:c20d]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::7037:b9dc:923c:c20d%7]) with mapi id 15.20.4995.015; Thu, 17 Feb 2022
+ 11:34:47 +0000
+Date:   Thu, 17 Feb 2022 12:34:39 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jianbo Liu <jianbol@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, olteanv@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
+        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
+        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        baowen.zheng@corigine.com, louis.peens@netronome.com,
+        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
+Subject: Re: [PATCH net-next v2 0/2] flow_offload: add tc police parameters
+Message-ID: <20220217113439.GE4665@corigine.com>
+References: <20220217082803.3881-1-jianbol@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217082803.3881-1-jianbol@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: AM0P190CA0002.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:208:190::12) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 5/6] venus: Add a handling of QC10C compressed format
-Content-Language: en-US
-To:     Nicolas Dufresne <nicolas@ndufresne.ca>,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org
-Cc:     hverkuil-cisco@xs4all.nl
-References: <20220117155559.234026-1-stanimir.varbanov@linaro.org>
- <20220117155559.234026-6-stanimir.varbanov@linaro.org>
- <4e1cc50854da4075fc7ebf71e24aa8372905c668.camel@ndufresne.ca>
-From:   Stanimir Varbanov <stanimir.varbanov@linaro.org>
-In-Reply-To: <4e1cc50854da4075fc7ebf71e24aa8372905c668.camel@ndufresne.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3c31dd49-e710-48cc-892d-08d9f209807e
+X-MS-TrafficTypeDiagnostic: BY5PR13MB3298:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR13MB329842292B7862AF0AE6FF4EE8369@BY5PR13MB3298.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JWOJfDa6wxLljJ/cE2KgjZUq76t/wP8Isd62sOHhaFv7yl7wrduEanjYfoj+LEVqMHm9D7p+WkR0FbCWtM7qKwKk7y5k5i1ncrQ64KguFzMythTl0aFyhtdyYnRnkV4pOCfiF8d6X12p7qWSvAOqxJC7AyseAb3tpMJWl2cTLrpcjlAlxlmIKfJ3yhz0YLOTYyIbVUnszP9LoOw6asVNudLk4ueiWnKAeAhd50Law4MLppNVaCSOyFkQ4aRC+VEENTJCKEwgksRAO8VlNQ8vqKn0IYKjhON9hkAu6bdYlsU+qcxkEjMkvGV/iJHAzJW5FFMCX3ZblX9Xg+J5yv4gDgSUgwtzpxmH62xhUJ0HfnjNZzx00ryVRbQkPpzrqNDKnFvwz4EwK+PGWH3BtsCMZJN3WwdQIVYMTKuMk6pNi+8x+XnTxvzn3n37Y3yFWmXo+/Fdf3syqndOtr7k5iLISLU/vW3UkIKCUiZXryqSoHOyC74+K5pYS6HDMj+2hfE4JL4X/OCKVNs/syAeBfHN55qHp5Us6v5u2ZwmCCp+Id4yMWVTjIOzRhmT3DwtPzkGxco1GKREZSk0c4CspOufnX40oaaBm0Nc1SOunBP8CMLvVllGgs3IpnNf9N0Ahvv6oDLgNWvp6N2Yk95D7BvevWW+UrRMOpx4I/9WWSyVuHa9smZ1oPkzM9qYuoZLAwKInzvpCa2CXej0uiZLnHGxfg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(136003)(346002)(376002)(396003)(366004)(39840400004)(83380400001)(8676002)(66476007)(6666004)(4326008)(8936002)(66556008)(2616005)(186003)(66946007)(7416002)(4744005)(52116002)(5660300002)(6506007)(44832011)(6512007)(2906002)(1076003)(36756003)(33656002)(38100700002)(86362001)(316002)(6486002)(6916009)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?an90PYvdUh6wyZ5KQ4W13cGZsFM12/05tU3J69o3p86NPfF+H66AKFXtm3XQ?=
+ =?us-ascii?Q?ATUk4TQ3e1tz4NDnpaZYu17uWZeO9CnL3SWj7xgJvU1GSjXqrhwqdoX3vik6?=
+ =?us-ascii?Q?uZP11HMGxl8F21+I6o8RnoniH8PM6HHGkp62NX0YFzCghT3o48rqO+fnRBmd?=
+ =?us-ascii?Q?hjDnyOh0jx7euoDM7b+jFKIPkUnrBRiAgSrtE3w5qX/KWMCCTahV2IepkBql?=
+ =?us-ascii?Q?YVcL7VB5wxCjOxeH9jnZ2iYcifZWTBoE9mIO9QE3AdyB21w/70lgNU6iMSzB?=
+ =?us-ascii?Q?TD5Z31Wqon5l4rirJjFE778m1LuiDVno+C+n86PhANeq64V3mRbBUdBc3C3I?=
+ =?us-ascii?Q?QJOi7N/7sw/XQ8EB1cIf6FeLKa9JdxgdAlWs26elCnOi2m0yTkr1w9wBvZwa?=
+ =?us-ascii?Q?iKVXExmiKHExMSBbErKnaaf96DvKz1BGiO5ailCsPPne7zG2c389JWWdHGFk?=
+ =?us-ascii?Q?DXgXrvu9SV/ZCYn61OT1YUBIwSBS1qOm9G0AI8BEL3L0ABwdKlGX6NShmsHr?=
+ =?us-ascii?Q?AiLhXyfZcWYTjyYfl8XEjRYP+dPK7wowFHiv1DyHAJlOjT0GOjvbMXa77rvO?=
+ =?us-ascii?Q?tHVlVfv2UTudT6C0oYSaotyrGok9iQlg0oO2JchD0Gpn9EYEPuSK6yyMOS2h?=
+ =?us-ascii?Q?TTrqS+J+NT6R9kCNJQlVE1mg3m+F6kQCdcRArqQWXrbDGpiMcwG6G8obbIzn?=
+ =?us-ascii?Q?pliGkMuJLzCjCbLsMNPJ9wEDQTm4Nnf3C9593zdPkpfSpYgvWwnHBL7KFozX?=
+ =?us-ascii?Q?Amm9hTfcCMY3CgLmXxL61pOEh9D0SJNq/C7fQ+SzcRdJ+ty4MNrtInl2UkzO?=
+ =?us-ascii?Q?sWN7024KhQPmdP+Wpfz5m2Ya2Yk9LLJkm2L2SZ/dcnYO0jEoTaWVYcQI0vKr?=
+ =?us-ascii?Q?zEupCOwRlM8UghcXq/Z/TZlh5exNNaaa8PS/qF7NqJ5yyeNSgJv1aAnNNnec?=
+ =?us-ascii?Q?BcLSgYl4GIKDSrwNt4e3ydWpjd851enmaU5BMllaTML0oiTU67wGdC2RJ6Vr?=
+ =?us-ascii?Q?Rddo/P7jJb8BnkmfhaAgTmSNG9c3Yo0wgbIQ94lcBWXRl2QLjXyHtYodZ5wF?=
+ =?us-ascii?Q?i46rGDISGWv9+/P8AJKTgMR+vmeMwmN2PeI4I35nMLpwhesVVuSieRqq/s51?=
+ =?us-ascii?Q?+x1YuOLFG6wxOdKnAENs3P7isqFUGLjuN8Ynx0I3Kk66Zsl9G7UuBSSYT3QX?=
+ =?us-ascii?Q?9hLgc0dHoVA0O54Z/VRDTVgL4W2MwNewOaPcB/yntb0OCXq3DQwMIVrlywfn?=
+ =?us-ascii?Q?/pFyyUo85URME9RLTXXT/T1YUrTpe92o5aHBVjmQmfn08sj2IUkuVUX4dPyZ?=
+ =?us-ascii?Q?2uM2E9ZdsYuzCihoesgTjvrzeS0YmfHCd0V8AL9ygK3br39gOfzhyfCKJ8tT?=
+ =?us-ascii?Q?PnCywi4n+rnEa/N0Jz+UWXIAc65PslHWf4EDPqL8tCvVfdoFcDNPTmI07e8t?=
+ =?us-ascii?Q?A43YjkosaB+5FWmH31nD7Zi+3lfKBNy1orThXmASFZ/lzN88S6+gKzNZrejH?=
+ =?us-ascii?Q?d/FOK5sOuQG8C11HPFGYIfMJ2RUN3KThEyjdXfbJ3p9cJ2tmJeNLQH88mA5/?=
+ =?us-ascii?Q?8znb8d/9LeSOJYUTn9UCZamB2/HO4I84CggEs3Lf+GM7AOtH1kzSO/fBgE7F?=
+ =?us-ascii?Q?o8TeAKnS4o1jYQHCQBXe7z1hs1+ecTRb29buFdq+vnES6z3cjdY8X2gVquFR?=
+ =?us-ascii?Q?iRDtAPjqWlFWjcgYD9YlEVzR4jOfrHME6gBB3KBorrtwEa2KbDwCjoZXW3Ok?=
+ =?us-ascii?Q?CdcsH13iwMAWxyPd3ByLvRN3OOLCuA4=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c31dd49-e710-48cc-892d-08d9f209807e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2022 11:34:47.5289
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bbL93b+Vg5VYv/AbDx5Zzp487bYnCWJOVa/4hROEDMUaXo1v7z/nmeD4rdcwpHyQKBZuUiyPKFxiRG9XMMGPKJ+hgtqiYgJVQBd6urWDx7o=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3298
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Feb 17, 2022 at 08:28:01AM +0000, Jianbo Liu wrote:
+> As a preparation for more advanced police offload in mlx5 (e.g.,
+> jumping to another chain when bandwidth is not exceeded), extend the
+> flow offload API with more tc-police parameters. Adjust existing
+> drivers to reject unsupported configurations.
 
+Hi,
 
-On 2/16/22 18:20, Nicolas Dufresne wrote:
-> Le lundi 17 janvier 2022 à 17:55 +0200, Stanimir Varbanov a écrit :
->> This adds QC10C compressed pixel format in the Venus driver, and
->> make it possible to discover from v4l2 clients.
->>
->> Note: The QC10C format shouldn't be possible to discpver by the
-> 
-> discpver -> discover
-> 
-> It is not super clear though, did you mean to say that it won't be enumerated
-> after the header have been parsed ?
+I have a concern that
+a) patch 1 introduces a facility that may break existing drivers; and
+b) patch 2 then fixes this
 
-The opposite. It will be enumerable by the client only after parsing the
-header.
+I'd slightly prefer if the series was rearranged to avoid this problem.
 
-> 
->> client if the decoded bitstream is not 10-bits.
->>
->> Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
->> ---
->>  drivers/media/platform/qcom/venus/helpers.c | 26 ++++-----------------
->>  drivers/media/platform/qcom/venus/vdec.c    | 19 ++++++++++++---
->>  2 files changed, 20 insertions(+), 25 deletions(-)
->>
->> diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
->> index adbfa4fbe139..69a9a9471a27 100644
->> --- a/drivers/media/platform/qcom/venus/helpers.c
->> +++ b/drivers/media/platform/qcom/venus/helpers.c
->> @@ -594,6 +594,8 @@ static u32 to_hfi_raw_fmt(u32 v4l2_fmt)
->>  		return HFI_COLOR_FORMAT_NV21;
->>  	case V4L2_PIX_FMT_QC08C:
->>  		return HFI_COLOR_FORMAT_NV12_UBWC;
->> +	case V4L2_PIX_FMT_QC10C:
->> +		return HFI_COLOR_FORMAT_YUV420_TP10_UBWC;
->>  	default:
->>  		break;
->>  	}
->> @@ -1176,7 +1178,8 @@ int venus_helper_set_format_constraints(struct venus_inst *inst)
->>  	if (!IS_V6(inst->core))
->>  		return 0;
->>  
->> -	if (inst->opb_fmt == HFI_COLOR_FORMAT_NV12_UBWC)
->> +	if (inst->opb_fmt == HFI_COLOR_FORMAT_NV12_UBWC ||
->> +	    inst->opb_fmt == HFI_COLOR_FORMAT_YUV420_TP10_UBWC)
->>  		return 0;
->>  
->>  	pconstraint.buffer_type = HFI_BUFFER_OUTPUT2;
->> @@ -1747,27 +1750,6 @@ int venus_helper_get_out_fmts(struct venus_inst *inst, u32 v4l2_fmt,
->>  	if (!caps)
->>  		return -EINVAL;
->>  
->> -	if (inst->bit_depth == VIDC_BITDEPTH_10 &&
->> -	    inst->session_type == VIDC_SESSION_TYPE_DEC) {
->> -		found_ubwc =
->> -			find_fmt_from_caps(caps, HFI_BUFFER_OUTPUT,
->> -					   HFI_COLOR_FORMAT_YUV420_TP10_UBWC);
->> -		found = find_fmt_from_caps(caps, HFI_BUFFER_OUTPUT2,
->> -					   HFI_COLOR_FORMAT_NV12);
->> -		if (found_ubwc && found) {
->> -			/*
->> -			 * Hard-code DPB buffers to be 10bit UBWC and decoder
->> -			 * output buffers in 8bit NV12 until V4L2 is able to
->> -			 * expose compressed/tiled formats to applications.
->> -			 */
->> -			*out_fmt = HFI_COLOR_FORMAT_YUV420_TP10_UBWC;
->> -			*out2_fmt = HFI_COLOR_FORMAT_NV12;
->> -			return 0;
->> -		}
->> -
->> -		return -EINVAL;
->> -	}
->> -
->>  	if (ubwc) {
->>  		ubwc_fmt = fmt | HFI_COLOR_FORMAT_UBWC_BASE;
->>  		found_ubwc = find_fmt_from_caps(caps, HFI_BUFFER_OUTPUT,
->> diff --git a/drivers/media/platform/qcom/venus/vdec.c b/drivers/media/platform/qcom/venus/vdec.c
->> index eb02e45a512b..c8261c6cb0fb 100644
->> --- a/drivers/media/platform/qcom/venus/vdec.c
->> +++ b/drivers/media/platform/qcom/venus/vdec.c
->> @@ -35,6 +35,10 @@ static const struct venus_format vdec_formats[] = {
->>  		.num_planes = 1,
->>  		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
->>  	}, {
->> +		.pixfmt = V4L2_PIX_FMT_QC10C,
->> +		.num_planes = 1,
->> +		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
->> +	},{
->>  		.pixfmt = V4L2_PIX_FMT_NV12,
->>  		.num_planes = 1,
->>  		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
->> @@ -114,6 +118,10 @@ find_format(struct venus_inst *inst, u32 pixfmt, u32 type)
->>  	    !venus_helper_check_format(inst, fmt[i].pixfmt))
->>  		return NULL;
->>  
->> +	if (V4L2_TYPE_IS_CAPTURE(type) && fmt[i].pixfmt == V4L2_PIX_FMT_QC10C &&
->> +	    !(inst->bit_depth == VIDC_BITDEPTH_10))
->> +		return NULL;
->> +
->>  	return &fmt[i];
->>  }
->>  
->> @@ -133,11 +141,16 @@ find_format_by_index(struct venus_inst *inst, unsigned int index, u32 type)
->>  		if (fmt[i].type != type)
->>  			continue;
->>  
->> -		if (V4L2_TYPE_IS_OUTPUT(type))
->> +		if (V4L2_TYPE_IS_OUTPUT(type)) {
->>  			valid = venus_helper_check_codec(inst, fmt[i].pixfmt);
->> -		else if (V4L2_TYPE_IS_CAPTURE(type))
->> +		} else if (V4L2_TYPE_IS_CAPTURE(type)) {
->>  			valid = venus_helper_check_format(inst, fmt[i].pixfmt);
->>  
->> +			if (fmt[i].pixfmt == V4L2_PIX_FMT_QC10C &&
->> +			    !(inst->bit_depth == VIDC_BITDEPTH_10))
->> +				valid = false;
->> +		}
->> +
->>  		if (k == index && valid)
->>  			break;
->>  		if (valid)
->> @@ -1537,7 +1550,7 @@ static const struct hfi_inst_ops vdec_hfi_ops = {
->>  static void vdec_inst_init(struct venus_inst *inst)
->>  {
->>  	inst->hfi_codec = HFI_VIDEO_CODEC_H264;
->> -	inst->fmt_out = &vdec_formats[7];
->> +	inst->fmt_out = &vdec_formats[8];
->>  	inst->fmt_cap = &vdec_formats[0];
->>  	inst->width = frame_width_min(inst);
->>  	inst->height = ALIGN(frame_height_min(inst), 32);
-> 
-
--- 
-regards,
-Stan
+...
