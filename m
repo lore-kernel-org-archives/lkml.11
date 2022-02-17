@@ -2,252 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D867C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242680AbiBQPog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:44:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46382 "EHLO
+        id S242690AbiBQPon (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:44:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242667AbiBQPoa (ORCPT
+        with ESMTP id S242677AbiBQPog (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:44:30 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFCCB23AD
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:44:15 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id 195so5356472pgc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:44:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=n+yvIhku4QXYZHCkM9HOGBC9iJm2wXLIAwkbGeymkbE=;
-        b=x2TiCPsdfRAzb4WvqNWpOV2WZEKxBwHKf9FVM14db4rWZ2wR+FLr9xtVNg946N1Npu
-         2PSrMbpQ8RuGuYWZuMIKFCgFrhIrjmsbwGB3XvQTWO0PTt8VrADoAkXE3qhf99C7IkOP
-         i0fxoySK/P1swY8R0nBZQNFl26Z5g8rIe8bW2NmC4FRwHoN5o+EpHs3who07tvuTEdHP
-         YAF/wKRZMl4nvF28QmKbPN8/u6HjN9PpLtU9vAuMP/A1DU/AUyUSDl8Izf2FJN9AejRF
-         hBk3QTb8nGjPZkRCIf7/G59JvOq2hQj+pzVQ9Dr729maoz6ZYNVUEchmhQwF1thWmCaB
-         TG2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=n+yvIhku4QXYZHCkM9HOGBC9iJm2wXLIAwkbGeymkbE=;
-        b=4f564W4uAvWrVDU87fSl3Qk4qLWnn6aHprQO3JPVck6k3pzU78uLIbX++He9npQwW1
-         skum1tKJSKXx6vVD+aJ0mzaNhaXSlqAy+nHrFqSH2JI6gB9Ts3HcQwosaQp9GH+jXVHd
-         qLhsix3Fdg0zl4QfThMDvH0qbMaQ+SRVrpGXK4YbRLMxYVt6Zbl+Hg/jBBHzkwOUAAGQ
-         OxeCpB2DfXjq7rwteF2a0mzZm9fjD3zUU0X6KoX4OGkntaLUBZEcKIUOWQxAxaMl9rdZ
-         kegYTkAxP9qhxR+SFdxWR8gr8pIOdaQXNAJHp2O2x2OgoZBPVhMxUl+EacbHINp2UAv+
-         gXtA==
-X-Gm-Message-State: AOAM530Rz0zbvLCEspSnZ2p2WHUCjVmnkzuwD9Xqpq0DNo+/ama6utlE
-        MxcbMjOsngBnsarFFvnM0rIgJw==
-X-Google-Smtp-Source: ABdhPJzUTv/+o1tgFeWYGOhx9y50utJ2NQ3B5/sPu3pXedj38tVjwYbgPpNXi3L9lFwzu4XKTOtZqg==
-X-Received: by 2002:a63:4f4d:0:b0:372:8724:8397 with SMTP id p13-20020a634f4d000000b0037287248397mr2865541pgl.598.1645112655058;
-        Thu, 17 Feb 2022 07:44:15 -0800 (PST)
-Received: from localhost.localdomain ([139.177.225.254])
-        by smtp.gmail.com with ESMTPSA id s6sm24108pfk.86.2022.02.17.07.44.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 17 Feb 2022 07:44:14 -0800 (PST)
-From:   Abel Wu <wuyun.abel@bytedance.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 1/5] sched/fair: record overloaded cpus
-Date:   Thu, 17 Feb 2022 23:43:57 +0800
-Message-Id: <20220217154403.6497-2-wuyun.abel@bytedance.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220217154403.6497-1-wuyun.abel@bytedance.com>
-References: <20220217154403.6497-1-wuyun.abel@bytedance.com>
+        Thu, 17 Feb 2022 10:44:36 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B9C2B1025;
+        Thu, 17 Feb 2022 07:44:21 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4Jzzdp0n13z9sSQ;
+        Thu, 17 Feb 2022 16:44:14 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id YORT1PJT__e6; Thu, 17 Feb 2022 16:44:14 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jzzdn72n8z9sQx;
+        Thu, 17 Feb 2022 16:44:13 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id D9A6A8B77C;
+        Thu, 17 Feb 2022 16:44:13 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id EOIxpR6cf71e; Thu, 17 Feb 2022 16:44:13 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.239])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id A8D7D8B763;
+        Thu, 17 Feb 2022 16:44:13 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21HFi4WD603563
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 16:44:04 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21HFi2uT603562;
+        Thu, 17 Feb 2022 16:44:02 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH net-next v1] net: Use csum_replace_... and csum_sub() helpers instead of opencoding
+Date:   Thu, 17 Feb 2022 16:43:55 +0100
+Message-Id: <fe60030b6f674d9bf41f56426a4b0a8a9db0d20f.1645112415.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645112634; l=1582; s=20211009; h=from:subject:message-id; bh=qDaGxyd/pqGG9s1E0j72Fi43hJ/XYgHZbSIbmrxq7S0=; b=aKRMITAt6QN7aUpMRIAs5kbGVOO1OkfwH/B12QUYMkgfwVp4huQwNbORsqVKepw3y6j8zXnWa9a9 9pHC23uNA0ruYXBUcQZ/+bEpYn3OqXO9TCCKlDT2+/gN74V6ylxF
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-An CFS runqueue is considered overloaded when there are
-more than one pullable non-idle tasks on it (since sched-
-idle cpus are treated as idle cpus). And idle tasks are
-counted towards rq->cfs.idle_h_nr_running, that is either
-assigned SCHED_IDLE policy or placed under idle cgroups.
+In a couple places, open coded calculation can be avoided
+and replaced by the equivalent csum_replace4() and
+csum_replace_by_diff().
 
-The overloaded cfs rqs can cause performance issues to
-both task types:
+There's also one place where csum_sub() should be used instead of
+csum_add().
 
-  - for latency critical tasks like SCHED_NORMAL,
-    time of waiting in the rq will increase and
-    result in higher pct99 latency, and
-
-  - batch tasks may not be able to make full use
-    of cpu capacity if sched-idle rq exists, thus
-    presents poorer throughput.
-
-The mask of overloaded cpus is updated in periodic tick
-and the idle path at the LLC domain basis. This cpumask
-will also be used in SIS as a filter, improving idle cpu
-searching.
-
-Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- include/linux/sched/topology.h | 10 ++++++++++
- kernel/sched/core.c            |  1 +
- kernel/sched/fair.c            | 43 ++++++++++++++++++++++++++++++++++++++++++
- kernel/sched/sched.h           |  6 ++++++
- kernel/sched/topology.c        |  4 +++-
- 5 files changed, 63 insertions(+), 1 deletion(-)
+ net/core/utils.c            | 4 ++--
+ net/netfilter/nft_payload.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
-index 56cffe42abbc..03c9c81dc886 100644
---- a/include/linux/sched/topology.h
-+++ b/include/linux/sched/topology.h
-@@ -81,6 +81,16 @@ struct sched_domain_shared {
- 	atomic_t	ref;
- 	atomic_t	nr_busy_cpus;
- 	int		has_idle_cores;
-+
-+	/*
-+	 * The above varibles are used in idle path and
-+	 * select_task_rq, and the following two are
-+	 * mainly updated in tick. They are all hot but
-+	 * for different usage, so start a new cacheline
-+	 * to avoid false sharing.
-+	 */
-+	atomic_t	nr_overloaded	____cacheline_aligned;
-+	unsigned long	overloaded[];	/* Must be last */
- };
- 
- struct sched_domain {
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1d863d7f6ad7..a6da2998ec49 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -9423,6 +9423,7 @@ void __init sched_init(void)
- 		rq->wake_stamp = jiffies;
- 		rq->wake_avg_idle = rq->avg_idle;
- 		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
-+		rq->overloaded = 0;
- 
- 		INIT_LIST_HEAD(&rq->cfs_tasks);
- 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 5c4bfffe8c2c..0a0438c3319b 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -6968,6 +6968,46 @@ balance_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
- 
- 	return newidle_balance(rq, rf) != 0;
- }
-+
-+static inline int cfs_rq_overloaded(struct rq *rq)
-+{
-+	return rq->cfs.h_nr_running - rq->cfs.idle_h_nr_running > 1;
-+}
-+
-+/* Must be called with rq locked */
-+static void update_overload_status(struct rq *rq)
-+{
-+	struct sched_domain_shared *sds;
-+	int overloaded = cfs_rq_overloaded(rq);
-+	int cpu = cpu_of(rq);
-+
-+	lockdep_assert_rq_held(rq);
-+
-+	if (rq->overloaded == overloaded)
-+		return;
-+
-+	rcu_read_lock();
-+	sds = rcu_dereference(per_cpu(sd_llc_shared, cpu));
-+	if (unlikely(!sds))
-+		goto unlock;
-+
-+	if (overloaded) {
-+		cpumask_set_cpu(cpu, sdo_mask(sds));
-+		atomic_inc(&sds->nr_overloaded);
-+	} else {
-+		cpumask_clear_cpu(cpu, sdo_mask(sds));
-+		atomic_dec(&sds->nr_overloaded);
-+	}
-+
-+	rq->overloaded = overloaded;
-+unlock:
-+	rcu_read_unlock();
-+}
-+
-+#else
-+
-+static inline void update_overload_status(struct rq *rq) { }
-+
- #endif /* CONFIG_SMP */
- 
- static unsigned long wakeup_gran(struct sched_entity *se)
-@@ -7315,6 +7355,8 @@ done: __maybe_unused;
- 	if (new_tasks > 0)
- 		goto again;
- 
-+	update_overload_status(rq);
-+
- 	/*
- 	 * rq is about to be idle, check if we need to update the
- 	 * lost_idle_time of clock_pelt
-@@ -11131,6 +11173,7 @@ static void task_tick_fair(struct rq *rq, struct task_struct *curr, int queued)
- 	if (static_branch_unlikely(&sched_numa_balancing))
- 		task_tick_numa(rq, curr);
- 
-+	update_overload_status(rq);
- 	update_misfit_status(curr, rq);
- 	update_overutilized_status(task_rq(curr));
- 
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 9b33ba9c3c42..c81a87082b8b 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1012,6 +1012,7 @@ struct rq {
- 
- 	unsigned char		nohz_idle_balance;
- 	unsigned char		idle_balance;
-+	unsigned char		overloaded;
- 
- 	unsigned long		misfit_task_load;
- 
-@@ -1762,6 +1763,11 @@ static inline struct sched_domain *lowest_flag_domain(int cpu, int flag)
- 	return sd;
- }
- 
-+static inline struct cpumask *sdo_mask(struct sched_domain_shared *sds)
-+{
-+	return to_cpumask(sds->overloaded);
-+}
-+
- DECLARE_PER_CPU(struct sched_domain __rcu *, sd_llc);
- DECLARE_PER_CPU(int, sd_llc_size);
- DECLARE_PER_CPU(int, sd_llc_id);
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index e6cd55951304..641f11415819 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1623,6 +1623,8 @@ sd_init(struct sched_domain_topology_level *tl,
- 		sd->shared = *per_cpu_ptr(sdd->sds, sd_id);
- 		atomic_inc(&sd->shared->ref);
- 		atomic_set(&sd->shared->nr_busy_cpus, sd_weight);
-+		atomic_set(&sd->shared->nr_overloaded, 0);
-+		cpumask_clear(sdo_mask(sd->shared));
+diff --git a/net/core/utils.c b/net/core/utils.c
+index 1f31a39236d5..938495bc1d34 100644
+--- a/net/core/utils.c
++++ b/net/core/utils.c
+@@ -476,9 +476,9 @@ void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
+ 				     __wsum diff, bool pseudohdr)
+ {
+ 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
+-		*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
++		csum_replace_by_diff(sum, diff);
+ 		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
+-			skb->csum = ~csum_add(diff, ~skb->csum);
++			skb->csum = ~csum_sub(diff, skb->csum);
+ 	} else if (pseudohdr) {
+ 		*sum = ~csum_fold(csum_add(diff, csum_unfold(*sum)));
  	}
+diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
+index 5cc06aef4345..b6cfd0759bc5 100644
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -557,7 +557,7 @@ const struct nft_expr_ops nft_payload_fast_ops = {
  
- 	sd->private = sdd;
-@@ -2050,7 +2052,7 @@ static int __sdt_alloc(const struct cpumask *cpu_map)
- 
- 			*per_cpu_ptr(sdd->sd, j) = sd;
- 
--			sds = kzalloc_node(sizeof(struct sched_domain_shared),
-+			sds = kzalloc_node(sizeof(struct sched_domain_shared) + cpumask_size(),
- 					GFP_KERNEL, cpu_to_node(j));
- 			if (!sds)
- 				return -ENOMEM;
+ static inline void nft_csum_replace(__sum16 *sum, __wsum fsum, __wsum tsum)
+ {
+-	*sum = csum_fold(csum_add(csum_sub(~csum_unfold(*sum), fsum), tsum));
++	csum_replace4(sum, fsum, tsum);
+ 	if (*sum == 0)
+ 		*sum = CSUM_MANGLED_0;
+ }
 -- 
-2.11.0
+2.34.1
 
