@@ -2,171 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA03C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C87C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238991AbiBQKKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 05:10:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48086 "EHLO
+        id S239010AbiBQKLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 05:11:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239001AbiBQKKw (ORCPT
+        with ESMTP id S238992AbiBQKKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 05:10:52 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC7A2AAB0C;
-        Thu, 17 Feb 2022 02:10:37 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id o2so9001969lfd.1;
-        Thu, 17 Feb 2022 02:10:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version;
-        bh=wsBm9GlF6QBk+ga6odvG4D+yJfesdCIhGI6Qr588TUo=;
-        b=TrKDmwEnnG2m5f31bp3dJe99wKxPtwM+R3St+7DDbnp8bsJwZvieAD4m6QSKUpDEvZ
-         3cSAg+gssaRQ/+Gw9D1aU9LRUhFdKboR/ANIhPzFX6OUcnMEbJIuzfPTmDgiJLBALBcl
-         JhqWI7VIFp0x4d1jgalEpySbMm+KnKatTU04d811m2kFqVa+LPYLtxwn91j21CokyUi+
-         qBwibqLLsfDxDfPZpyC1aXZbSAImySOYF597S9wxB6+dfZuwuL8QqV67Auq/8N2P7i7V
-         IyKcRQ16+nW3tY7Iu1bQ8/4yR4zGGguDqLSTRttHWyFbFoB+pNoi/QXafGKhGLjQcJGb
-         qFZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version;
-        bh=wsBm9GlF6QBk+ga6odvG4D+yJfesdCIhGI6Qr588TUo=;
-        b=SMVIaXYh5uVkkcR/XQQ4IoqsfqlT8rThv1OCtyqB73FcruiNxEhewFx1w53B3BNwcD
-         y6EobGRm8J8YYVAzT4Nbgwp2UxdqWpIsS+Dk1zpAo8gUxUg9JKiHn5xgqKHX26jCLBq5
-         5EmFIm+UQKhv3b/jmIL1BopgjUBNHgPBkX2WAFD2sGa7w4vqhcjh7YSYW9iUyXS6xOFI
-         cznyNUUF7CDEbXU3iOzrCxtO5f2pXIaI9pGLU9jwvrxpGJvSmey595NqfKHfXl6l1Jhy
-         W97PIPEjeAxCbNiotWi0oQAgzfZvZY0WziWj0L+I9ge7qiRP1YBLV3NnigYXthG2hnNa
-         VOsQ==
-X-Gm-Message-State: AOAM5329cFmRtPTV8Af9RiCxrh7PyGGtqD61HQs6OsbCTiAe2RKjjAUm
-        OPifvygZwRpF1D2m4omlc6U=
-X-Google-Smtp-Source: ABdhPJw6d1Xx03VBy4x0vM44wpr0/W0ibQpAYvHtY4+JhKJFclWHt/sAdUZmSM5sc0c5Qyto8ako3w==
-X-Received: by 2002:a05:6512:3710:b0:43a:12aa:cb68 with SMTP id z16-20020a056512371000b0043a12aacb68mr1622061lfr.280.1645092636121;
-        Thu, 17 Feb 2022 02:10:36 -0800 (PST)
-Received: from eldfell ([194.136.85.206])
-        by smtp.gmail.com with ESMTPSA id i3sm5094012lfj.144.2022.02.17.02.10.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 02:10:35 -0800 (PST)
-Date:   Thu, 17 Feb 2022 12:10:33 +0200
-From:   Pekka Paalanen <ppaalanen@gmail.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        linux-fbdev@vger.kernel.org, linux-m68k@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 8/8] drm/fourcc: Add DRM_FORMAT_D1
-Message-ID: <20220217121033.0fc7f6ba@eldfell>
-In-Reply-To: <20220215165226.2738568-9-geert@linux-m68k.org>
-References: <20220215165226.2738568-1-geert@linux-m68k.org>
-        <20220215165226.2738568-9-geert@linux-m68k.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 17 Feb 2022 05:10:55 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723382AAB0A;
+        Thu, 17 Feb 2022 02:10:39 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4JzrDt2Pclz9sT6;
+        Thu, 17 Feb 2022 11:10:38 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id praua7vPF23R; Thu, 17 Feb 2022 11:10:38 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4JzrDc04DCz9sT7;
+        Thu, 17 Feb 2022 11:10:24 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id EA7DB8B77A;
+        Thu, 17 Feb 2022 11:10:23 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id QPhJSFFg6W1H; Thu, 17 Feb 2022 11:10:23 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.225])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id ADC428B763;
+        Thu, 17 Feb 2022 11:10:23 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21HAAEIp395970
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 11:10:14 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21HAACu3395969;
+        Thu, 17 Feb 2022 11:10:12 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [PATCH] net: Force inlining of checksum functions in net/checksum.h
+Date:   Thu, 17 Feb 2022 11:10:05 +0100
+Message-Id: <8a1278500231505b5eaf8b207802ebc5bae1717b.1645092478.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/nO3MwzHd32JIR23_QdrLEwe";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645092604; l=7956; s=20211009; h=from:subject:message-id; bh=bPgs7KPwwbliZibxb/OK7E+BJYoJBOKMtwFreQoMAiQ=; b=ytxfObuW/eVbODboIgrI7UVjcxSetXta+cHKPTrRt1+pxi1qn6uA+yeSf3uzmzo+W83AGaoTEggj JgyuXJheCH9HYm/CsHuqtXhQz8Qufg0JPdWf3VZjMLfJ1ctLN4u/
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/nO3MwzHd32JIR23_QdrLEwe
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+All functions defined as static inline in net/checksum.h are
+meant to be inlined for performance reason.
 
-On Tue, 15 Feb 2022 17:52:26 +0100
-Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+But since commit ac7c3e4ff401 ("compiler: enable
+CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
+uninline functions when it wants.
 
-> Introduce a fourcc code for a single-channel frame buffer format with two
-> darkness levels.  This can be used for two-level dark-on-light displays.
->=20
-> As the number of bits per pixel is less than eight, this relies on
-> proper block handling for the calculation of bits per pixel and pitch.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
->  drivers/gpu/drm/drm_fourcc.c  | 2 ++
->  include/uapi/drm/drm_fourcc.h | 3 +++
->  2 files changed, 5 insertions(+)
->=20
-> diff --git a/drivers/gpu/drm/drm_fourcc.c b/drivers/gpu/drm/drm_fourcc.c
-> index c12e48ecb1ab8aad..d00ce5d8d1fb9dd3 100644
-> --- a/drivers/gpu/drm/drm_fourcc.c
-> +++ b/drivers/gpu/drm/drm_fourcc.c
-> @@ -151,6 +151,8 @@ const struct drm_format_info *__drm_format_info(u32 f=
-ormat)
->  		{ .format =3D DRM_FORMAT_C4,		.depth =3D 4,  .num_planes =3D 1,
->  		  .char_per_block =3D { 1, }, .block_w =3D { 2, }, .block_h =3D { 1, }=
-, .hsub =3D 1, .vsub =3D 1 },
->  		{ .format =3D DRM_FORMAT_C8,		.depth =3D 8,  .num_planes =3D 1, .cpp =
-=3D { 1, 0, 0 }, .hsub =3D 1, .vsub =3D 1 },
-> +		{ .format =3D DRM_FORMAT_D1,		.depth =3D 1,  .num_planes =3D 1,
-> +		  .char_per_block =3D { 1, }, .block_w =3D { 8, }, .block_h =3D { 1, }=
-, .hsub =3D 1, .vsub =3D 1 },
->  		{ .format =3D DRM_FORMAT_R1,		.depth =3D 1,  .num_planes =3D 1,
->  		  .char_per_block =3D { 1, }, .block_w =3D { 8, }, .block_h =3D { 1, }=
-, .hsub =3D 1, .vsub =3D 1 },
->  		{ .format =3D DRM_FORMAT_R2,		.depth =3D 2,  .num_planes =3D 1,
-> diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
-> index 8605a1acc6813e6c..c15c6efcc65e5827 100644
-> --- a/include/uapi/drm/drm_fourcc.h
-> +++ b/include/uapi/drm/drm_fourcc.h
-> @@ -104,6 +104,9 @@ extern "C" {
->  #define DRM_FORMAT_C4		fourcc_code('C', '4', ' ', ' ') /* [3:0] C */
->  #define DRM_FORMAT_C8		fourcc_code('C', '8', ' ', ' ') /* [7:0] C */
-> =20
-> +/* 1 bpp Darkness */
-> +#define DRM_FORMAT_D1		fourcc_code('D', '1', ' ', ' ') /* [0] D */
-> +
+Fair enough in the general case, but for tiny performance critical
+checksum helpers that's counter-productive.
 
-Hi Geert,
+The problem mainly arises when selecting CONFIG_CC_OPTIMISE_FOR_SIZE,
+Those helpers being 'static inline' in header files you suddenly find
+them duplicated many times in the resulting vmlinux.
 
-the same comment here as for C1 and R1 formats, need to specify pixel
-ordering inside a byte.
+Here is a typical exemple when building powerpc pmac32_defconfig
+with CONFIG_CC_OPTIMISE_FOR_SIZE. csum_sub() appears 4 times:
 
-I think it would also be good to explain the rationale why C1 and R1
-are not suitable for this case and we need yet another 1-bit format in
-the commit message.
+	c04a23cc <csum_sub>:
+	c04a23cc:	7c 84 20 f8 	not     r4,r4
+	c04a23d0:	7c 63 20 14 	addc    r3,r3,r4
+	c04a23d4:	7c 63 01 94 	addze   r3,r3
+	c04a23d8:	4e 80 00 20 	blr
+		...
+	c04a2ce8:	4b ff f6 e5 	bl      c04a23cc <csum_sub>
+		...
+	c04a2d2c:	4b ff f6 a1 	bl      c04a23cc <csum_sub>
+		...
+	c04a2d54:	4b ff f6 79 	bl      c04a23cc <csum_sub>
+		...
+	c04a754c <csum_sub>:
+	c04a754c:	7c 84 20 f8 	not     r4,r4
+	c04a7550:	7c 63 20 14 	addc    r3,r3,r4
+	c04a7554:	7c 63 01 94 	addze   r3,r3
+	c04a7558:	4e 80 00 20 	blr
+		...
+	c04ac930:	4b ff ac 1d 	bl      c04a754c <csum_sub>
+		...
+	c04ad264:	4b ff a2 e9 	bl      c04a754c <csum_sub>
+		...
+	c04e3b08 <csum_sub>:
+	c04e3b08:	7c 84 20 f8 	not     r4,r4
+	c04e3b0c:	7c 63 20 14 	addc    r3,r3,r4
+	c04e3b10:	7c 63 01 94 	addze   r3,r3
+	c04e3b14:	4e 80 00 20 	blr
+		...
+	c04e5788:	4b ff e3 81 	bl      c04e3b08 <csum_sub>
+		...
+	c04e65c8:	4b ff d5 41 	bl      c04e3b08 <csum_sub>
+		...
+	c0512d34 <csum_sub>:
+	c0512d34:	7c 84 20 f8 	not     r4,r4
+	c0512d38:	7c 63 20 14 	addc    r3,r3,r4
+	c0512d3c:	7c 63 01 94 	addze   r3,r3
+	c0512d40:	4e 80 00 20 	blr
+		...
+	c0512dfc:	4b ff ff 39 	bl      c0512d34 <csum_sub>
+		...
+	c05138bc:	4b ff f4 79 	bl      c0512d34 <csum_sub>
+		...
 
-For posterity, of course. I roughly remember the discussions.
+Restore the expected behaviour by using __always_inline for all
+functions defined in net/checksum.h
 
-I also wonder if anyone would actually use D1. Should it be added
-anyway? There is no rule that a pixel format must be used inside the
-kernel AFAIK, but is there even a prospective userspace wanting this?
+vmlinux size is even reduced by 256 bytes with this patch:
 
-Exposing R1 and inverting bits while copying to hardware might be
-enough?
+	   text	   data	    bss	    dec	    hex	filename
+	6980022	2515362	 194384	9689768	 93daa8	vmlinux.before
+	6979862	2515266	 194384	9689512	 93d9a8	vmlinux.now
 
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ include/net/checksum.h | 40 ++++++++++++++++++++--------------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
 
-Thanks,
-pq
+diff --git a/include/net/checksum.h b/include/net/checksum.h
+index 9badcd5532ef..2ad8ef6b0ce2 100644
+--- a/include/net/checksum.h
++++ b/include/net/checksum.h
+@@ -22,7 +22,7 @@
+ #include <asm/checksum.h>
+ 
+ #ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
+-static inline
++static __always_inline
+ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
+ 				      int len)
+ {
+@@ -33,7 +33,7 @@ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
+ #endif
+ 
+ #ifndef HAVE_CSUM_COPY_USER
+-static __inline__ __wsum csum_and_copy_to_user
++static __always_inline __wsum csum_and_copy_to_user
+ (const void *src, void __user *dst, int len)
+ {
+ 	__wsum sum = csum_partial(src, len, ~0U);
+@@ -45,7 +45,7 @@ static __inline__ __wsum csum_and_copy_to_user
+ #endif
+ 
+ #ifndef _HAVE_ARCH_CSUM_AND_COPY
+-static inline __wsum
++static __always_inline __wsum
+ csum_partial_copy_nocheck(const void *src, void *dst, int len)
+ {
+ 	memcpy(dst, src, len);
+@@ -54,7 +54,7 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len)
+ #endif
+ 
+ #ifndef HAVE_ARCH_CSUM_ADD
+-static inline __wsum csum_add(__wsum csum, __wsum addend)
++static __always_inline __wsum csum_add(__wsum csum, __wsum addend)
+ {
+ 	u32 res = (__force u32)csum;
+ 	res += (__force u32)addend;
+@@ -62,12 +62,12 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
+ }
+ #endif
+ 
+-static inline __wsum csum_sub(__wsum csum, __wsum addend)
++static __always_inline __wsum csum_sub(__wsum csum, __wsum addend)
+ {
+ 	return csum_add(csum, ~addend);
+ }
+ 
+-static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
++static __always_inline __sum16 csum16_add(__sum16 csum, __be16 addend)
+ {
+ 	u16 res = (__force u16)csum;
+ 
+@@ -75,53 +75,53 @@ static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
+ 	return (__force __sum16)(res + (res < (__force u16)addend));
+ }
+ 
+-static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
++static __always_inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
+ {
+ 	return csum16_add(csum, ~addend);
+ }
+ 
+-static inline __wsum csum_shift(__wsum sum, int offset)
++static __always_inline __wsum csum_shift(__wsum sum, int offset)
+ {
+ 	/* rotate sum to align it with a 16b boundary */
+ 	return (__force __wsum)rol32((__force u32)sum, (offset & 1) << 3);
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_add(__wsum csum, __wsum csum2, int offset)
+ {
+ 	return csum_add(csum, csum_shift(csum2, offset));
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_add_ext(__wsum csum, __wsum csum2, int offset, int len)
+ {
+ 	return csum_block_add(csum, csum2, offset);
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_sub(__wsum csum, __wsum csum2, int offset)
+ {
+ 	return csum_block_add(csum, ~csum2, offset);
+ }
+ 
+-static inline __wsum csum_unfold(__sum16 n)
++static __always_inline __wsum csum_unfold(__sum16 n)
+ {
+ 	return (__force __wsum)n;
+ }
+ 
+-static inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
++static __always_inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
+ {
+ 	return csum_partial(buff, len, sum);
+ }
+ 
+ #define CSUM_MANGLED_0 ((__force __sum16)0xffff)
+ 
+-static inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
++static __always_inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
+ {
+ 	*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
+ }
+ 
+-static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
++static __always_inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
+ {
+ 	__wsum tmp = csum_sub(~csum_unfold(*sum), (__force __wsum)from);
+ 
+@@ -134,7 +134,7 @@ static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
+  *  m : old value of a 16bit field
+  *  m' : new value of a 16bit field
+  */
+-static inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
++static __always_inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
+ {
+ 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
+ }
+@@ -148,7 +148,7 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
+ void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
+ 				     __wsum diff, bool pseudohdr);
+ 
+-static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
++static __always_inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
+ 					    __be16 from, __be16 to,
+ 					    bool pseudohdr)
+ {
+@@ -156,7 +156,7 @@ static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
+ 				 (__force __be32)to, pseudohdr);
+ }
+ 
+-static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
++static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
+ 				    int start, int offset)
+ {
+ 	__sum16 *psum = (__sum16 *)(ptr + offset);
+@@ -173,12 +173,12 @@ static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
+ 	return delta;
+ }
+ 
+-static inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
++static __always_inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
+ {
+ 	*psum = csum_fold(csum_sub(delta, (__force __wsum)*psum));
+ }
+ 
+-static inline __wsum wsum_negate(__wsum val)
++static __always_inline __wsum wsum_negate(__wsum val)
+ {
+ 	return (__force __wsum)-((__force u32)val);
+ }
+-- 
+2.34.1
 
->  /* 1 bpp Red */
->  #define DRM_FORMAT_R1		fourcc_code('R', '1', ' ', ' ') /* [0] R */
-> =20
-
-
---Sig_/nO3MwzHd32JIR23_QdrLEwe
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEJQjwWQChkWOYOIONI1/ltBGqqqcFAmIOHxkACgkQI1/ltBGq
-qqfxtQ//cB5PpnZOZOuy1vfa4m+SVmb/OfNz3ra6mqw9akiOfUbA4cT/0vTDCtGl
-KzNEJaKvg1zt27R+FxRqUupLRBX30d0sCm83/eMCziS7+2BmfBm2Q03nsJxo3zW6
-CJXfT/O+cOMiBsJWEAd0kefgH7e5Ea1s3H5yDvMWr/VKg8R58M+OzYhtMlDRto/e
-VSsL2RlTp+tPJfUvrWX0sqCtH8KKAJVvIRAILJBCN6CA+qp50INFTZNTJ1rs293p
-KGmErPfLWStT0KFQPdzdBE/fC18xsjS5jCORvRmQMtlrcFZRJq6q3UTg7K7SiVKx
-1nJCl7b4RG9zNaAnwIFh8e629NpVaPewzpT1aXfWQ6afCCgebYoqbK+aR7Q9E3zX
-2iR0GJRVOrm6Xe8nVgOPNjNkb8HwhREfLoE7AYxDUgX3/4nfKvu8ElrcaeKenbM/
-6EcD5u5CVO2PINa5Dp2qXcgiC4u+pS4nko8yc+a0Zr+gP0BwM5FiQ2/mbZeP+0Ka
-aqYIntktyOsK5ppgJDaCHPnIQmPoJNJp7/JN05Se7Gg6ZyEv/zKRvOsjpACxKwFL
-fc+R38/3nG94r2h9O01qC35vXxr1CYSBtxSD861Nwpg+omICPh4WzQ8JWevT4mch
-x4aulQlxkRJmqe+oRk6urYTjDvR9KsYPWDn5sKCgMdAAIFgpSdM=
-=5ycp
------END PGP SIGNATURE-----
-
---Sig_/nO3MwzHd32JIR23_QdrLEwe--
