@@ -2,119 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 454A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242155AbiBQOtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:49:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38936 "EHLO
+        id S239600AbiBQOuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:50:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242122AbiBQOtj (ORCPT
+        with ESMTP id S234718AbiBQOuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:49:39 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0145721FC69;
-        Thu, 17 Feb 2022 06:49:24 -0800 (PST)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21HBatfR010860;
-        Thu, 17 Feb 2022 15:49:03 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=uDBTaIhKiAzA8mTM+6OWIIjO0uszxvkCNaIBSKJuIPE=;
- b=cepx7Q01ybZURJgeAHcz2UECpj/Q9EsgWS4PVaF5dwaGrgoTsMzL7htjFyB8m5ejX1p8
- WYvFMuaT/HJ4DGehMlTtL2aL7b9uLABGuhnaOQKtTOFaEgfK3wCgcrmRv63SmM8M8X2+
- UBFI8SXObppvaFqdXNYtJFiUj0sxBOiaZTIcaiY/WuaszmB/Nz+ug0JikV48mz6xPDjX
- 9aVWlxV/5GxkL/GK41YpNhQVK9Fpwkjn2+rx8cyyaOwUvuyjwOt5lqc8Tkzwez3SgJJn
- T0pywHZdKhQeZZXieE7c5ZTGQWGFwLnW0pQLRJotZ/CnJ0LosPOU439bOoa3YfsGULWZ +Q== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e9hvgjmpp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 15:49:03 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 509B710002A;
-        Thu, 17 Feb 2022 15:49:03 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4722E2278A1;
-        Thu, 17 Feb 2022 15:49:03 +0100 (CET)
-Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 17 Feb 2022 15:49:02
- +0100
-From:   Christophe Kerello <christophe.kerello@foss.st.com>
-To:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <robh+dt@kernel.org>, <srinivas.kandagatla@linaro.org>,
-        <p.yadav@ti.com>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <devicetree@vger.kernel.org>, <chenshumin86@sina.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        <stable@vger.kernel.org>
-Subject: [PATCH v3 4/4] mtd: core: Fix a conflict between MTD and NVMEM on wp-gpios property
-Date:   Thu, 17 Feb 2022 15:47:55 +0100
-Message-ID: <20220217144755.270679-5-christophe.kerello@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220217144755.270679-1-christophe.kerello@foss.st.com>
-References: <20220217144755.270679-1-christophe.kerello@foss.st.com>
+        Thu, 17 Feb 2022 09:50:24 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1DA29E94E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:50:09 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id s20so342363ioe.4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:50:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=BB2sDvKYuJ4OLXpcVUGPxnotzFekLMPB3gl02E+RGsM=;
+        b=YiEwitx6YvoB2nLcFD8bvXs7jZb3EykcXZmD7fGnXJ62QfN2Yn6CVFt4RdwWssx2KC
+         dYoKA5BRbuFUaYUc0lWFTViyLS/tKHsiTwvaJTXxoqhp+UbIFWgR3DsuLjYujvXsK4+L
+         iYKOsW6iphIC3oCHcdqoTdJSeHmYt2TXAdZfJA3N8jEbmY4ngcKM1DtFQnGcQKbz/FTN
+         1SysA6Dqjq6au3OA26TkTt981TV/iENjZKyVxNnYikqzBDKKME3POcalIrzUemOIuP+F
+         wgLo0vnfYDHl2Dsd8ty/kO0axIPJ2hGoCIB8R6C0Bkjbn3xx7FuZfBEk149pUrr6YNyd
+         Nw1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=BB2sDvKYuJ4OLXpcVUGPxnotzFekLMPB3gl02E+RGsM=;
+        b=GlavAWVP6ZDcH7lLvl9D+Dl8+YTlYa3RnBAHixWy1pwdR5fXo+EdLCIM59xN7WTEeC
+         7LYVzjUnAVvsLGqYrFIgn6WaMQZRUFno786SQAo/dkUD8stoBLjDGJ1HAJKNSn4IgBoQ
+         aRgxST4ct0sPMRP+qEx6Pi5Fa92NwcgPjJuCTvsktVLQbo/1qmdjrtNoHMkyRwFjxxzG
+         GfEzRCDXtfT5EHshfVHM3JVXu3SFpxSmz+Yf1TF7Xl7hYNaAO1Z+V/NvboM7F3KkAwpW
+         2/O+OwTZCIIqCYVcnZepHC3hzLls5GNfdHSy1T/HEK5eMBveosxUJWGmJU+d+7NrqNNM
+         Ny9g==
+X-Gm-Message-State: AOAM530f6+PB7tJqqpgOK3fd8H/Ujm5Fn6gpcNIuqZVLzNlqQYCdvIiI
+        p4dBoOhKfzsOlV1tFhThL1ULuZs964liuw0b
+X-Google-Smtp-Source: ABdhPJyMLeE45HvinoisFgWKSjp6PKe7sDpN4NNHmMEA8u9XTMVU1hPsnC7IB6GtHV9pPqbHeyxaCA==
+X-Received: by 2002:a05:6602:1485:b0:635:213f:abd2 with SMTP id a5-20020a056602148500b00635213fabd2mr2158395iow.8.1645109408688;
+        Thu, 17 Feb 2022 06:50:08 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id z23sm2016397iol.11.2022.02.17.06.50.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 06:50:08 -0800 (PST)
+Message-ID: <c0b89a9e-156c-c56a-c387-5d9ee2c83871@linaro.org>
+Date:   Thu, 17 Feb 2022 08:50:07 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-17_05,2022-02-17_01,2021-12-02_01
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 09/25] bus: mhi: ep: Add support for registering MHI
+ endpoint client drivers
+Content-Language: en-US
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
+        vinod.koul@linaro.org, bjorn.andersson@linaro.org,
+        dmitry.baryshkov@linaro.org, quic_vbadigan@quicinc.com,
+        quic_cang@quicinc.com, quic_skananth@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
+ <20220212182117.49438-10-manivannan.sadhasivam@linaro.org>
+ <94abdf83-5749-14b1-7a57-ceceb1b27167@linaro.org>
+ <20220217102038.GB11964@workstation>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <20220217102038.GB11964@workstation>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wp-gpios property can be used on NVMEM nodes and the same property can
-be also used on MTD NAND nodes. In case of the wp-gpios property is
-defined at NAND level node, the GPIO management is done at NAND driver
-level. Write protect is disabled when the driver is probed or resumed
-and is enabled when the driver is released or suspended.
+On 2/17/22 4:20 AM, Manivannan Sadhasivam wrote:
+> On Tue, Feb 15, 2022 at 02:02:50PM -0600, Alex Elder wrote:
+> 
+> [...]
+> 
+>>> +static int mhi_ep_driver_remove(struct device *dev)
+>>> +{
+>>> +	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
+>>> +	struct mhi_ep_driver *mhi_drv = to_mhi_ep_driver(dev->driver);
+>>> +	struct mhi_result result = {};
+>>> +	struct mhi_ep_chan *mhi_chan;
+>>> +	int dir;
+>>> +
+>>> +	/* Skip if it is a controller device */
+>>> +	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
+>>> +		return 0;
+>>> +
+>>
+>> It would be my preference to encapsulate the body of the
+>> following loop into a called function, then call that once
+>> for the UL channel and once for the DL channel.
+>>
+> 
+> This follows the host stack, so I'd like to keep it the same.
 
-When no partitions are defined in the NAND DT node, then the NAND DT node
-will be passed to NVMEM framework. If wp-gpios property is defined in
-this node, the GPIO resource is taken twice and the NAND controller
-driver fails to probe.
+I think you should change both, but I'll leave that up to you.
 
-A new Boolean flag named ignore_wp has been added in nvmem_config.
-In case ignore_wp is set, it means that the GPIO is handled by the
-provider. Lets set this flag in MTD layer to avoid the conflict on
-wp_gpios property.
+>>> +	/* Disconnect the channels associated with the driver */
+>>> +	for (dir = 0; dir < 2; dir++) {
+>>> +		mhi_chan = dir ? mhi_dev->ul_chan : mhi_dev->dl_chan;
+>>> +
+>>> +		if (!mhi_chan)
+>>> +			continue;
+>>> +
+>>> +		mutex_lock(&mhi_chan->lock);
+>>> +		/* Send channel disconnect status to the client driver */
+>>> +		if (mhi_chan->xfer_cb) {
+>>> +			result.transaction_status = -ENOTCONN;
+>>> +			result.bytes_xferd = 0;
+>>> +			mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
+>>
+>> It appears the result is ignored here.  If so, can we
+>> define the xfer_cb() function so that a NULL pointer may
+>> be supplied by the caller in cases like this?
+>>
+> 
+> result is not ignored, only the bytes_xfered. "transaction_status" will
+> be used by the client drivers for error handling.
 
-Fixes: 2a127da461a9 ("nvmem: add support for the write-protect pin")
-Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
-Cc: stable@vger.kernel.org
----
-Changes in v3:
- - add a fixes tag
- - rename skip_wp_gpio by ignore_wp in nvmen_config.
+Sorry, I was looking at the code *after* the call, and was
+ignoring that it was information being passed in...  My
+mistake.
 
- drivers/mtd/mtdcore.c | 2 ++
- 1 file changed, 2 insertions(+)
+>>> +		}
+>>> +
+>>> +		/* Set channel state to DISABLED */
+>>
+>> That comment is a little tautological.  Just omit it.
+>>
+>>> +		mhi_chan->state = MHI_CH_STATE_DISABLED;
+>>> +		mhi_chan->xfer_cb = NULL;
+>>> +		mutex_unlock(&mhi_chan->lock);
+>>> +	}
+>>> +
+>>> +	/* Remove the client driver now */
+>>> +	mhi_drv->remove(mhi_dev);
+>>> +
+>>> +	return 0;
+>>> +}
+> 
+> [...]
+> 
+>>> +struct mhi_ep_driver {
+>>> +	const struct mhi_device_id *id_table;
+>>> +	struct device_driver driver;
+>>> +	int (*probe)(struct mhi_ep_device *mhi_ep,
+>>> +		     const struct mhi_device_id *id);
+>>> +	void (*remove)(struct mhi_ep_device *mhi_ep);
+>>
+>> I get confused by the "ul" versus "dl" naming scheme here.
+>> Is "ul" from the perspective of the host, meaning upload
+>> is from the host toward the WWAN network (and therefore
+>> toward the SDX AP), and download is from the WWAN toward
+>> the host?  Somewhere this should be stated clearly in
+>> comments; maybe I just missed it.
+>>
+> 
+> Yes UL and DL are as per host context. I didn't state this explicitly
+> since this is the MHI host stack behaviour but I'll add a comment for
+> clarity
 
-diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
-index 70f492dce158..eef87b28d6c8 100644
---- a/drivers/mtd/mtdcore.c
-+++ b/drivers/mtd/mtdcore.c
-@@ -546,6 +546,7 @@ static int mtd_nvmem_add(struct mtd_info *mtd)
- 	config.stride = 1;
- 	config.read_only = true;
- 	config.root_only = true;
-+	config.ignore_wp = true;
- 	config.no_of_node = !of_device_is_compatible(node, "nvmem-cells");
- 	config.priv = mtd;
- 
-@@ -833,6 +834,7 @@ static struct nvmem_device *mtd_otp_nvmem_register(struct mtd_info *mtd,
- 	config.owner = THIS_MODULE;
- 	config.type = NVMEM_TYPE_OTP;
- 	config.root_only = true;
-+	config.ignore_wp = true;
- 	config.reg_read = reg_read;
- 	config.size = size;
- 	config.of_node = np;
--- 
-2.25.1
+Sounds good, thanks.
+
+					-Alex
+
+> 
+> Thanks,
+> Mani
 
