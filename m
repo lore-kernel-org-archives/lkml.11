@@ -2,111 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DBCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:09:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F725C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244088AbiBQSJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:09:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35814 "EHLO
+        id S244015AbiBQSK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:10:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244023AbiBQSJD (ORCPT
+        with ESMTP id S236875AbiBQSK0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:09:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82FA915DDFC
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:08:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645121323;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kdCG/BqRA3h3SSjWYFY12VvohzTJC0/2p0AbBe0FxJA=;
-        b=MLWxHYb0jUPyZmWayLKEHpH3D9tfrxgucyVl6XWkftXOlVAEqREVFpoPUrteYVqv+0AJFd
-        vvtuTYFYmeJTBFrssgeJwCIaD1ooKLwwQh7zmiOrF/riEO9VxiC59DdkvXtVDLEPgTOd9a
-        VCK240AuohjbX6bzcY0xCFDs96R8pFA=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-664-gc2d0nn-PXy4zTtSteF8Bw-1; Thu, 17 Feb 2022 13:08:42 -0500
-X-MC-Unique: gc2d0nn-PXy4zTtSteF8Bw-1
-Received: by mail-lj1-f199.google.com with SMTP id b27-20020a2ebc1b000000b00246209c497dso187081ljf.11
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:08:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kdCG/BqRA3h3SSjWYFY12VvohzTJC0/2p0AbBe0FxJA=;
-        b=GOoqvERKeqA5PCjxEScro2ENyLCMwOCLCkyOYE1q2/tzohIrmOC7a1OaqFtdAOM60Y
-         DERZtZgBOxT0j6EUfljYgCbebpwQQXpXhvewvEKVzirsLX7hj2DJxxK5hvNQmq3+pHjR
-         McUm33NS0a1xcsDrt1xyunqO6vZB1OeCTuDoT7tQQ6l5+C/EedPQKMcjsIg6io8CDWv1
-         +wWMakOgv5VxGjjX5TXyJul/5zbTl2nHqrtjJDJpUqsnlHy2YHyqpip2I3tQlOH/Jm+L
-         sU9qBgK48h1JaTzMS2NjzW8m5KtBUNcOkJfQu5LVwZE5lPec+MfLkiB7eznTmQhUJVNy
-         0YtA==
-X-Gm-Message-State: AOAM533n5QsKpb18+vtcYTXLP4ws8X9MngGcShj8Hs17d7OEw7ajzIdU
-        3Jj2n8qsx+zIgcNv+mOPewgjg893lVP6y7HTZW2LXPK2QwlhqSrNn7IsZWxMSgNmDr7Jb2LXEuR
-        nRdAYNzQIXwvlK7+peGIqmsVu0kvLMZShtFKQHyac
-X-Received: by 2002:a05:6512:3d90:b0:437:73cb:8e76 with SMTP id k16-20020a0565123d9000b0043773cb8e76mr2969490lfv.187.1645121320970;
-        Thu, 17 Feb 2022 10:08:40 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzChZlQY5QTvjHbE0p1UCY0dO09MQJLQKaTJOmCopXmMEEUgU0MgdXhF+IltPwII3QUm9GQahgHm2UTwnG0wkw=
-X-Received: by 2002:a05:6512:3d90:b0:437:73cb:8e76 with SMTP id
- k16-20020a0565123d9000b0043773cb8e76mr2969460lfv.187.1645121320667; Thu, 17
- Feb 2022 10:08:40 -0800 (PST)
+        Thu, 17 Feb 2022 13:10:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13FE1728AE;
+        Thu, 17 Feb 2022 10:10:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47ADE61A0D;
+        Thu, 17 Feb 2022 18:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A3856C340ED;
+        Thu, 17 Feb 2022 18:10:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645121411;
+        bh=WZd206Q6M+236kpARfk6Nd2RbCGgBa5GJlk1ZQTn4WU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=m1AQeFTssf5h6LGCMQ3rxEVgvD7WFTpDOSDn2DPRipDNEJKcAQCpqDfGoGMyMThd3
+         HgqeotnPQQuK7MkEXVzYtqjRmyWvCl2uvBWZ52xtmb1uUxb8FM9+gjv5W/jqKfY9U0
+         AuaGwDpLN13eTcNK9FLslQLxiGBxuW+YY8pVdG5MqfqUNoZjM83KdyinQ3405D84HD
+         doG8pV/OrexmoN7V16GMiJzKw9WEtHCx1VkGNhQeoph5tcLnSzFFGL1/qRVFqbvMJk
+         6850iVnvi7SmR8gNz3s3gzSWtG0OG75qsR82pUJzBzEykxusJVc+o1aklNj1UkI2vt
+         /yyuKdnfXYgrQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F516E6D446;
+        Thu, 17 Feb 2022 18:10:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220217053028.96432-1-leobras@redhat.com> <087309d0-f39c-d5d0-2b6a-2dd8595b06ea@redhat.com>
-In-Reply-To: <087309d0-f39c-d5d0-2b6a-2dd8595b06ea@redhat.com>
-From:   Leonardo Bras Soares Passos <leobras@redhat.com>
-Date:   Thu, 17 Feb 2022 15:08:29 -0300
-Message-ID: <CAJ6HWG66HZ7raAa+YK0UOGLF+4O3JnzbZ+a-0j8GNixOhLk9dA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/2] x86/kvm/fpu: Fix guest migration bugs that can
- crash guest
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        David Gilbert <dgilbert@redhat.com>,
-        Peter Xu <peterx@redhat.com>, kvm@vger.kernel.org,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] net: dsa: lan9303: add VLAN IDs to master device
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164512141158.19163.7628868229359172313.git-patchwork-notify@kernel.org>
+Date:   Thu, 17 Feb 2022 18:10:11 +0000
+References: <20220216204818.28746-1-mans@mansr.com>
+In-Reply-To: <20220216204818.28746-1-mans@mansr.com>
+To:     Mans Rullgard <mans@mansr.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 11:52 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 2/17/22 06:30, Leonardo Bras wrote:
-> > This patchset comes from a bug I found during qemu guest migration from a
-> > host with newer CPU to a host with an older version of this CPU, and thus
-> > having less FPU features.
-> >
-> > When the guests were created, the one with less features is used as
-> > config, so migration is possible.
-> >
-> > Patch 1 fix a bug that always happens during this migration, and is
-> > related to the fact that xsave saves all feature flags, but xrstor does
-> > not touch the PKRU flag. It also changes how fpstate->user_xfeatures
-> > is set, going from kvm_check_cpuid() to the later called
-> > kvm_vcpu_after_set_cpuid().
-> >
-> > Patch 2 removes kvm_vcpu_arch.guest_supported_xcr0 since it now
-> > duplicates guest_fpu.fpstate->user_xfeatures. Some wrappers were
-> > introduced in order to make it easier to read the replaced version.
-> >
-> > Patches were compile-tested, and could fix the bug found.
->
-> Queued, thanks (for 5.17 of course)!  For patch 2, I renamed the
-> function to kvm_guest_supported_xcr0.
->
-> Paolo
->
+Hello:
 
-That's great!
-Thanks Paolo!
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 16 Feb 2022 20:48:18 +0000 you wrote:
+> If the master device does VLAN filtering, the IDs used by the switch
+> must be added for any frames to be received.  Do this in the
+> port_enable() function, and remove them in port_disable().
+> 
+> Signed-off-by: Mans Rullgard <mans@mansr.com>
+> ---
+> Changes:
+> - Fix dependency on VLAN_8021Q
+> - Add missing #include
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] net: dsa: lan9303: add VLAN IDs to master device
+    https://git.kernel.org/netdev/net/c/430065e26719
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
