@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3558C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78501C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244786AbiBQS5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:57:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38566 "EHLO
+        id S244746AbiBQS5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:57:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244691AbiBQS5E (ORCPT
+        with ESMTP id S244699AbiBQS5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:57:04 -0500
+        Thu, 17 Feb 2022 13:57:07 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 581B15D184;
-        Thu, 17 Feb 2022 10:56:49 -0800 (PST)
-Date:   Thu, 17 Feb 2022 18:56:46 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719445D1B1;
+        Thu, 17 Feb 2022 10:56:51 -0800 (PST)
+Date:   Thu, 17 Feb 2022 18:56:48 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645124207;
+        s=2020; t=1645124210;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7nUF53BsGHL+u33dBoU9ttT7k66xxkdNEHsP1HfU69c=;
-        b=bsliCJ24Hlg7P1oeGl8rySXZtM/rLcD6JZ3y2VBILQACKZAUYd6hj9U8PD7KP44Wp1e8D8
-        5BaWizVEIGyLPP9pmBpG4XBMuJFQmHHUd4prpz2n2MMPPMuzrlmD5LCF0zMCwNAawzZL+e
-        fQpDrE7vYQLo1woHyeZUgh9QPqSGWMZd4iJnBXe9KRX/qSbEEirmw4qe8yNl5bg60HwDpB
-        cltxxaEKUlsOATATMVXzpI3j/7FHg3AGSJAsmef8sMgk7iCetQ9Z1suWdXFCjzyFQ5Dhqv
-        UwdASno31YrdW50XMYqlkyctcm7ra1/B0M3X9bG+njul0uCZCFkoDbDXqF8LOA==
+        bh=vg14YJ56VGteBFg5eXdVUE8hpg4SnmX7rQz9Qjf0MIk=;
+        b=m3nKigkUAYR+caz/KwmSz/YSlCfwoMJiOl0J75wnKwJRzz3ic8FdvcgS/4tiaP+UY3vbQ3
+        35p3x7AOsiD2iPR8QUFZad7VQGziMyLGI4t+vEtBMKQvpxeK/jigFQITF3g4Tx0cCP1ZNs
+        S8jYjkMiXe1X3GmBnag+il6VnXC41RjM3hts8mrSwFmy0Ky3P8UHJAldh7xoNR0QateFow
+        QQqn0rQ6XJSlw2kAQpZVprkW5Vq+xUOZLXPfzhi5Uzy+AQSAg+kqYZluIS9xWfn04STTz/
+        +2x+4WTrYG97PqvMekKVzoADFigqCBIZiOM0AJGZGUTuswHmkh2qoCykK9fZXQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645124207;
+        s=2020e; t=1645124210;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7nUF53BsGHL+u33dBoU9ttT7k66xxkdNEHsP1HfU69c=;
-        b=a+Rni78vV6QhndPk0BCYn6fiuj5iQnQ6F4VNYGVAfH/8mFkwFDof5LMalQbo4A2oH30YSS
-        1Lj+g7x27YcIDEBQ==
+        bh=vg14YJ56VGteBFg5eXdVUE8hpg4SnmX7rQz9Qjf0MIk=;
+        b=JuNwX9c3+PAu9VVby3udGYYPS6P8vPXp5TQ3ZhlvOP6D2Xnbfp2aHSXBO8aoRjpxvX2rFU
+        uElNOOm04FSMquAg==
 From:   "tip-bot2 for Frederic Weisbecker" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/isolation: Consolidate check for housekeeping
- minimum service
+Subject: [tip: sched/core] net: Decouple HK_FLAG_WQ and HK_FLAG_DOMAIN cpumask fetch
 Cc:     Frederic Weisbecker <frederic@kernel.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Juri Lelli <juri.lelli@redhat.com>,
         Phil Auld <pauld@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220207155910.527133-6-frederic@kernel.org>
-References: <20220207155910.527133-6-frederic@kernel.org>
+In-Reply-To: <20220207155910.527133-4-frederic@kernel.org>
+References: <20220207155910.527133-4-frederic@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164512420688.16921.9890491331015314578.tip-bot2@tip-bot2>
+Message-ID: <164512420898.16921.9921602007161018305.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -64,89 +63,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     6367b600e31c6b211eadee7bf7f4ed8c755e9176
-Gitweb:        https://git.kernel.org/tip/6367b600e31c6b211eadee7bf7f4ed8c755e9176
+Commit-ID:     c8fb9f22ae22dbe06a43b77717299e1c3e632d5c
+Gitweb:        https://git.kernel.org/tip/c8fb9f22ae22dbe06a43b77717299e1c3e632d5c
 Author:        Frederic Weisbecker <frederic@kernel.org>
-AuthorDate:    Mon, 07 Feb 2022 16:59:07 +01:00
+AuthorDate:    Mon, 07 Feb 2022 16:59:05 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Wed, 16 Feb 2022 15:57:55 +01:00
+CommitterDate: Wed, 16 Feb 2022 15:57:54 +01:00
 
-sched/isolation: Consolidate check for housekeeping minimum service
+net: Decouple HK_FLAG_WQ and HK_FLAG_DOMAIN cpumask fetch
 
-There can be two subsequent calls to housekeeping_setup() due to
-"nohz_full=" and "isolcpus=" that can mix up.  The two passes each have
-their own way to deal with an empty housekeeping set of CPUs.
-Consolidate this part and remove the awful "tmp" based naming.
+To prepare for supporting each feature of the housekeeping cpumask
+toward cpuset, prepare each of the HK_FLAG_* entries to move to their
+own cpumask with enforcing to fetch them individually. The new
+constraint is that multiple HK_FLAG_* entries can't be mixed together
+anymore in a single call to housekeeping cpumask().
+
+This will later allow, for example, to runtime modify the cpulist passed
+through "isolcpus=", "nohz_full=" and "rcu_nocbs=" kernel boot
+parameters.
 
 Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
 Reviewed-by: Phil Auld <pauld@redhat.com>
-Link: https://lore.kernel.org/r/20220207155910.527133-6-frederic@kernel.org
+Link: https://lore.kernel.org/r/20220207155910.527133-4-frederic@kernel.org
 ---
- kernel/sched/isolation.c | 35 +++++++++++++++++------------------
- 1 file changed, 17 insertions(+), 18 deletions(-)
+ net/core/net-sysfs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-index a735d9e..23085e6 100644
---- a/kernel/sched/isolation.c
-+++ b/kernel/sched/isolation.c
-@@ -91,8 +91,7 @@ void __init housekeeping_init(void)
- 
- static int __init housekeeping_setup(char *str, enum hk_flags flags)
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 53ea262..ed8da7b 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -823,7 +823,7 @@ static ssize_t store_rps_map(struct netdev_rx_queue *queue,
  {
--	cpumask_var_t non_housekeeping_mask;
--	cpumask_var_t tmp;
-+	cpumask_var_t non_housekeeping_mask, housekeeping_staging;
+ 	struct rps_map *old_map, *map;
+ 	cpumask_var_t mask;
+-	int err, cpu, i, hk_flags;
++	int err, cpu, i;
+ 	static DEFINE_MUTEX(rps_map_mutex);
  
- 	alloc_bootmem_cpumask_var(&non_housekeeping_mask);
- 	if (cpulist_parse(str, non_housekeeping_mask) < 0) {
-@@ -101,32 +100,32 @@ static int __init housekeeping_setup(char *str, enum hk_flags flags)
- 		return 0;
+ 	if (!capable(CAP_NET_ADMIN))
+@@ -839,8 +839,8 @@ static ssize_t store_rps_map(struct netdev_rx_queue *queue,
  	}
  
--	alloc_bootmem_cpumask_var(&tmp);
--	if (!housekeeping_flags) {
--		alloc_bootmem_cpumask_var(&housekeeping_mask);
--		cpumask_andnot(housekeeping_mask,
--			       cpu_possible_mask, non_housekeeping_mask);
-+	alloc_bootmem_cpumask_var(&housekeeping_staging);
-+	cpumask_andnot(housekeeping_staging,
-+		       cpu_possible_mask, non_housekeeping_mask);
- 
--		cpumask_andnot(tmp, cpu_present_mask, non_housekeeping_mask);
--		if (cpumask_empty(tmp)) {
-+	if (!cpumask_intersects(cpu_present_mask, housekeeping_staging)) {
-+		__cpumask_set_cpu(smp_processor_id(), housekeeping_staging);
-+		__cpumask_clear_cpu(smp_processor_id(), non_housekeeping_mask);
-+		if (!housekeeping_flags) {
- 			pr_warn("Housekeeping: must include one present CPU, "
- 				"using boot CPU:%d\n", smp_processor_id());
--			__cpumask_set_cpu(smp_processor_id(), housekeeping_mask);
--			__cpumask_clear_cpu(smp_processor_id(), non_housekeeping_mask);
- 		}
-+	}
-+
-+	if (!housekeeping_flags) {
-+		alloc_bootmem_cpumask_var(&housekeeping_mask);
-+		cpumask_copy(housekeeping_mask, housekeeping_staging);
- 	} else {
--		cpumask_andnot(tmp, cpu_present_mask, non_housekeeping_mask);
--		if (cpumask_empty(tmp))
--			__cpumask_clear_cpu(smp_processor_id(), non_housekeeping_mask);
--		cpumask_andnot(tmp, cpu_possible_mask, non_housekeeping_mask);
--		if (!cpumask_equal(tmp, housekeeping_mask)) {
-+		if (!cpumask_equal(housekeeping_staging, housekeeping_mask)) {
- 			pr_warn("Housekeeping: nohz_full= must match isolcpus=\n");
--			free_bootmem_cpumask_var(tmp);
-+			free_bootmem_cpumask_var(housekeeping_staging);
- 			free_bootmem_cpumask_var(non_housekeeping_mask);
- 			return 0;
- 		}
- 	}
--	free_bootmem_cpumask_var(tmp);
-+
-+	free_bootmem_cpumask_var(housekeeping_staging);
- 
- 	if ((flags & HK_FLAG_TICK) && !(housekeeping_flags & HK_FLAG_TICK)) {
- 		if (IS_ENABLED(CONFIG_NO_HZ_FULL)) {
+ 	if (!cpumask_empty(mask)) {
+-		hk_flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
+-		cpumask_and(mask, mask, housekeeping_cpumask(hk_flags));
++		cpumask_and(mask, mask, housekeeping_cpumask(HK_FLAG_DOMAIN));
++		cpumask_and(mask, mask, housekeeping_cpumask(HK_FLAG_WQ));
+ 		if (cpumask_empty(mask)) {
+ 			free_cpumask_var(mask);
+ 			return -EINVAL;
