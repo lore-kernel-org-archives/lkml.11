@@ -2,35 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB19C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241329AbiBQNnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:43:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39988 "EHLO
+        id S233678AbiBQNni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:43:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241221AbiBQNmg (ORCPT
+        with ESMTP id S241142AbiBQNmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:42:36 -0500
+        Thu, 17 Feb 2022 08:42:49 -0500
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF6F1FA5F;
-        Thu, 17 Feb 2022 05:42:20 -0800 (PST)
-X-UUID: 696c4cc77560473d9d160aee5da49483-20220217
-X-UUID: 696c4cc77560473d9d160aee5da49483-20220217
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085BD17042;
+        Thu, 17 Feb 2022 05:42:32 -0800 (PST)
+X-UUID: 03dd1c59bbf744e980c3e8fc96e44ad7-20220217
+X-UUID: 03dd1c59bbf744e980c3e8fc96e44ad7-20220217
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
         (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 247258365; Thu, 17 Feb 2022 21:42:16 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 898657396; Thu, 17 Feb 2022 21:42:28 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 17 Feb 2022 21:42:15 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Feb
- 2022 21:42:15 +0800
+ Thu, 17 Feb 2022 21:42:27 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 21:42:14 +0800
+ Transport; Thu, 17 Feb 2022 21:42:26 +0800
 From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
 To:     <broonie@kernel.org>
 CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
@@ -42,9 +39,9 @@ CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, Jiaxin Yu <jiaxin.yu@mediatek.com>
-Subject: [v2 04/17] ASoC: mediatek: mt8186: support hostless in platform driver
-Date:   Thu, 17 Feb 2022 21:41:52 +0800
-Message-ID: <20220217134205.15400-5-jiaxin.yu@mediatek.com>
+Subject: [v2 14/17] ASoC: mediatek: mt8186: add machine driver with mt6366, da7219 and max98357
+Date:   Thu, 17 Feb 2022 21:42:02 +0800
+Message-ID: <20220217134205.15400-15-jiaxin.yu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
 References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
@@ -56,315 +53,930 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds mt8186 hostless dai driver.
+This patch adds support for mt8186 board with mt6366, da7219 and max98357.
 
 Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
 ---
- .../soc/mediatek/mt8186/mt8186-dai-hostless.c | 295 ++++++++++++++++++
- 1 file changed, 295 insertions(+)
- create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-hostless.c
+ .../mt8186/mt8186-mt6366-da7219-max98357.c    | 910 ++++++++++++++++++
+ 1 file changed, 910 insertions(+)
+ create mode 100644 sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
 
-diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-hostless.c b/sound/soc/mediatek/mt8186/mt8186-dai-hostless.c
+diff --git a/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c b/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
 new file mode 100644
-index 000000000000..37460a3acc93
+index 000000000000..6ba53b8d1e46
 --- /dev/null
-+++ b/sound/soc/mediatek/mt8186/mt8186-dai-hostless.c
-@@ -0,0 +1,295 @@
++++ b/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
+@@ -0,0 +1,910 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
-+// MediaTek ALSA SoC Audio DAI Hostless Control
++// mt8186-mt6366-da7219-max98357.c
++//	--  MT8186-MT6366-DA7219-MAX98357 ALSA SoC machine driver
 +//
 +// Copyright (c) 2022 MediaTek Inc.
 +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
++//
 +
++#include <linux/input.h>
++#include <linux/module.h>
++#include <linux/pm_runtime.h>
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
++
++#include "../../codecs/da7219-aad.h"
++#include "../../codecs/da7219.h"
++#include "../../codecs/mt6358.h"
++#include "../common/mtk-afe-platform-driver.h"
 +#include "mt8186-afe-common.h"
++#include "mt8186-afe-clk.h"
++#include "mt8186-afe-gpio.h"
 +
-+static const struct snd_pcm_hardware mt8186_hostless_hardware = {
-+	.info = (SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
-+		 SNDRV_PCM_INFO_MMAP_VALID),
-+	.period_bytes_min = 256,
-+	.period_bytes_max = 4 * 48 * 1024,
-+	.periods_min = 2,
-+	.periods_max = 256,
-+	.buffer_bytes_max = 4 * 48 * 1024,
-+	.fifo_size = 0,
++#define DA7219_CODEC_DAI "da7219-hifi"
++#define DA7219_DEV_NAME "da7219.5-001a"
++
++struct mt8186_mt6366_da7219_max98357_priv {
++	struct snd_soc_jack headset_jack, hdmi_jack;
 +};
 +
-+/* dai component */
-+static const struct snd_soc_dapm_route mtk_dai_hostless_routes[] = {
-+	/* Hostless ADDA Loopback */
-+	{"ADDA_DL_CH1", "ADDA_UL_CH1 Switch", "Hostless LPBK DL"},
-+	{"ADDA_DL_CH1", "ADDA_UL_CH2 Switch", "Hostless LPBK DL"},
-+	{"ADDA_DL_CH2", "ADDA_UL_CH1 Switch", "Hostless LPBK DL"},
-+	{"ADDA_DL_CH2", "ADDA_UL_CH2 Switch", "Hostless LPBK DL"},
-+	{"I2S1_CH1", "ADDA_UL_CH1 Switch", "Hostless LPBK DL"},
-+	{"I2S1_CH2", "ADDA_UL_CH2 Switch", "Hostless LPBK DL"},
-+	{"I2S3_CH1", "ADDA_UL_CH1 Switch", "Hostless LPBK DL"},
-+	{"I2S3_CH1", "ADDA_UL_CH2 Switch", "Hostless LPBK DL"},
-+	{"I2S3_CH2", "ADDA_UL_CH1 Switch", "Hostless LPBK DL"},
-+	{"I2S3_CH2", "ADDA_UL_CH2 Switch", "Hostless LPBK DL"},
-+	{"Hostless LPBK UL", NULL, "ADDA_UL_Mux"},
-+
-+	/* Hostelss FM */
-+	/* connsys_i2s to hw gain 1*/
-+	{"Hostless FM UL", NULL, "Connsys I2S"},
-+
-+	{"HW_GAIN1_IN_CH1", "CONNSYS_I2S_CH1 Switch", "Hostless FM DL"},
-+	{"HW_GAIN1_IN_CH2", "CONNSYS_I2S_CH2 Switch", "Hostless FM DL"},
-+	/* hw gain to adda dl */
-+	{"Hostless FM UL", NULL, "HW Gain 1 Out"},
-+
-+	{"ADDA_DL_CH1", "GAIN1_OUT_CH1 Switch", "Hostless FM DL"},
-+	{"ADDA_DL_CH2", "GAIN1_OUT_CH2 Switch", "Hostless FM DL"},
-+	/* hw gain to i2s3 */
-+	{"I2S3_CH1", "GAIN1_OUT_CH1 Switch", "Hostless FM DL"},
-+	{"I2S3_CH2", "GAIN1_OUT_CH2 Switch", "Hostless FM DL"},
-+	/* hw gain to i2s1 */
-+	{"I2S1_CH1", "GAIN1_OUT_CH1 Switch", "Hostless FM DL"},
-+	{"I2S1_CH2", "GAIN1_OUT_CH2 Switch", "Hostless FM DL"},
-+
-+	/* Hostless_SRC */
-+	{"ADDA_DL_CH1", "SRC_1_OUT_CH1 Switch", "Hostless_SRC_1_DL"},
-+	{"ADDA_DL_CH2", "SRC_1_OUT_CH2 Switch", "Hostless_SRC_1_DL"},
-+	{"I2S1_CH1", "SRC_1_OUT_CH1 Switch", "Hostless_SRC_1_DL"},
-+	{"I2S1_CH2", "SRC_1_OUT_CH2 Switch", "Hostless_SRC_1_DL"},
-+	{"I2S3_CH1", "SRC_1_OUT_CH1 Switch", "Hostless_SRC_1_DL"},
-+	{"I2S3_CH2", "SRC_1_OUT_CH2 Switch", "Hostless_SRC_1_DL"},
-+	{"Hostless_SRC_1_UL", NULL, "HW_SRC_1_Out"},
-+
-+	/* Hostless_SRC_bargein */
-+	{"HW_SRC_1_IN_CH1", "I2S0_CH1 Switch", "Hostless_SRC_Bargein_DL"},
-+	{"HW_SRC_1_IN_CH2", "I2S0_CH2 Switch", "Hostless_SRC_Bargein_DL"},
-+	{"Hostless_SRC_Bargein_UL", NULL, "I2S0"},
-+
-+	/* Hostless AAudio */
-+	{"Hostless HW Gain AAudio In", NULL, "HW Gain 2 In"},
-+	{"Hostless SRC AAudio UL", NULL, "HW Gain 2 Out"},
-+	{"HW_SRC_2_IN_CH1", "HW_GAIN2_OUT_CH1 Switch", "Hostless SRC AAudio DL"},
-+	{"HW_SRC_2_IN_CH2", "HW_GAIN2_OUT_CH2 Switch", "Hostless SRC AAudio DL"},
++static struct snd_soc_codec_conf mt6366_codec_conf[] = {
++	{
++		.dlc = COMP_CODEC_CONF("mt6358-sound"),
++		.name_prefix = "Mt6366",
++	},
 +};
 +
-+/* dai ops */
-+static int mtk_dai_hostless_startup(struct snd_pcm_substream *substream,
-+				    struct snd_soc_dai *dai)
++static int mt8186_da7219_init(struct snd_soc_pcm_runtime *rtd)
 +{
-+	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
-+	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct mt8186_mt6366_da7219_max98357_priv *priv =
++		snd_soc_card_get_drvdata(rtd->card);
++	struct snd_soc_jack *jack = &priv->headset_jack;
++	struct snd_soc_component *cmpnt_codec =
++		asoc_rtd_to_codec(rtd, 0)->component;
 +	int ret;
 +
-+	snd_soc_set_runtime_hwparams(substream, &mt8186_hostless_hardware);
++	/* Enable Headset and 4 Buttons Jack detection */
++	ret = snd_soc_card_jack_new(rtd->card, "Headset Jack",
++				    SND_JACK_HEADSET | SND_JACK_BTN_0 |
++				    SND_JACK_BTN_1 | SND_JACK_BTN_2 |
++				    SND_JACK_BTN_3 | SND_JACK_LINEOUT,
++				    jack, NULL, 0);
++	if (ret) {
++		dev_err(rtd->dev, "Headset Jack creation failed: %d\n", ret);
++		return ret;
++	}
 +
-+	ret = snd_pcm_hw_constraint_integer(runtime,
-+					    SNDRV_PCM_HW_PARAM_PERIODS);
-+	if (ret < 0)
-+		dev_info(afe->dev, "snd_pcm_hw_constraint_integer failed\n");
-+	return ret;
-+}
++	snd_jack_set_key(jack->jack, SND_JACK_BTN_0, KEY_PLAYPAUSE);
++	snd_jack_set_key(jack->jack, SND_JACK_BTN_1, KEY_VOLUMEUP);
++	snd_jack_set_key(jack->jack, SND_JACK_BTN_2, KEY_VOLUMEDOWN);
++	snd_jack_set_key(jack->jack, SND_JACK_BTN_3, KEY_VOICECOMMAND);
 +
-+static const struct snd_soc_dai_ops mtk_dai_hostless_ops = {
-+	.startup = mtk_dai_hostless_startup,
-+};
-+
-+/* dai driver */
-+#define MTK_HOSTLESS_RATES (SNDRV_PCM_RATE_8000_48000 |\
-+			   SNDRV_PCM_RATE_88200 |\
-+			   SNDRV_PCM_RATE_96000 |\
-+			   SNDRV_PCM_RATE_176400 |\
-+			   SNDRV_PCM_RATE_192000)
-+
-+#define MTK_HOSTLESS_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
-+			     SNDRV_PCM_FMTBIT_S24_LE |\
-+			     SNDRV_PCM_FMTBIT_S32_LE)
-+
-+static struct snd_soc_dai_driver mtk_dai_hostless_driver[] = {
-+	{
-+		.name = "Hostless LPBK DAI",
-+		.id = MT8186_DAI_HOSTLESS_LPBK,
-+		.playback = {
-+			.stream_name = "Hostless LPBK DL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.capture = {
-+			.stream_name = "Hostless LPBK UL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless FM DAI",
-+		.id = MT8186_DAI_HOSTLESS_FM,
-+		.playback = {
-+			.stream_name = "Hostless FM DL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.capture = {
-+			.stream_name = "Hostless FM UL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless_SRC_1_DAI",
-+		.id = MT8186_DAI_HOSTLESS_SRC_1,
-+		.playback = {
-+			.stream_name = "Hostless_SRC_1_DL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.capture = {
-+			.stream_name = "Hostless_SRC_1_UL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless_SRC_Bargein_DAI",
-+		.id = MT8186_DAI_HOSTLESS_SRC_BARGEIN,
-+		.playback = {
-+			.stream_name = "Hostless_SRC_Bargein_DL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.capture = {
-+			.stream_name = "Hostless_SRC_Bargein_UL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	/* BE dai */
-+	{
-+		.name = "Hostless_UL1 DAI",
-+		.id = MT8186_DAI_HOSTLESS_UL1,
-+		.capture = {
-+			.stream_name = "Hostless_UL1 UL",
-+			.channels_min = 1,
-+			.channels_max = 4,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless_UL2 DAI",
-+		.id = MT8186_DAI_HOSTLESS_UL2,
-+		.capture = {
-+			.stream_name = "Hostless_UL2 UL",
-+			.channels_min = 1,
-+			.channels_max = 4,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless_UL3 DAI",
-+		.id = MT8186_DAI_HOSTLESS_UL3,
-+		.capture = {
-+			.stream_name = "Hostless_UL3 UL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless_UL5 DAI",
-+		.id = MT8186_DAI_HOSTLESS_UL5,
-+		.capture = {
-+			.stream_name = "Hostless_UL5 UL",
-+			.channels_min = 1,
-+			.channels_max = 12,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless_UL6 DAI",
-+		.id = MT8186_DAI_HOSTLESS_UL6,
-+		.capture = {
-+			.stream_name = "Hostless_UL6 UL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless HW Gain AAudio DAI",
-+		.id = MT8186_DAI_HOSTLESS_HW_GAIN_AAUDIO,
-+		.capture = {
-+			.stream_name = "Hostless HW Gain AAudio In",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+	{
-+		.name = "Hostless SRC AAudio DAI",
-+		.id = MT8186_DAI_HOSTLESS_SRC_AAUDIO,
-+		.playback = {
-+			.stream_name = "Hostless SRC AAudio DL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.capture = {
-+			.stream_name = "Hostless SRC AAudio UL",
-+			.channels_min = 1,
-+			.channels_max = 2,
-+			.rates = MTK_HOSTLESS_RATES,
-+			.formats = MTK_HOSTLESS_FORMATS,
-+		},
-+		.ops = &mtk_dai_hostless_ops,
-+	},
-+};
-+
-+int mt8186_dai_hostless_register(struct mtk_base_afe *afe)
-+{
-+	struct mtk_base_afe_dai *dai;
-+
-+	dai = devm_kzalloc(afe->dev, sizeof(*dai), GFP_KERNEL);
-+	if (!dai)
-+		return -ENOMEM;
-+
-+	list_add(&dai->list, &afe->sub_dais);
-+
-+	dai->dai_drivers = mtk_dai_hostless_driver;
-+	dai->num_dai_drivers = ARRAY_SIZE(mtk_dai_hostless_driver);
-+
-+	dai->dapm_routes = mtk_dai_hostless_routes;
-+	dai->num_dapm_routes = ARRAY_SIZE(mtk_dai_hostless_routes);
++	da7219_aad_jack_det(cmpnt_codec, &priv->headset_jack);
 +
 +	return 0;
 +}
++
++static int mt8186_da7219_i2s_hw_params(struct snd_pcm_substream *substream,
++				       struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_soc_dai *codec_dai;
++	unsigned int rate = params_rate(params);
++	unsigned int mclk_fs_ratio = 256;
++	unsigned int mclk_fs = rate * mclk_fs_ratio;
++	unsigned int freq;
++	int ret = 0, j;
++
++	ret = snd_soc_dai_set_sysclk(asoc_rtd_to_cpu(rtd, 0), 0,
++				     mclk_fs, SND_SOC_CLOCK_OUT);
++	if (ret < 0)
++		dev_err(rtd->dev, "failed to set cpu dai sysclk\n");
++
++	for_each_rtd_codec_dais(rtd, j, codec_dai) {
++		if (!strcmp(codec_dai->component->name, DA7219_DEV_NAME)) {
++			ret = snd_soc_dai_set_sysclk(codec_dai,
++						     DA7219_CLKSRC_MCLK,
++						     mclk_fs,
++						     SND_SOC_CLOCK_IN);
++			if (ret < 0)
++				dev_err(rtd->dev, "failed to set sysclk\n");
++
++			if ((rate % 8000) == 0)
++				freq = DA7219_PLL_FREQ_OUT_98304;
++			else
++				freq = DA7219_PLL_FREQ_OUT_90316;
++
++			ret = snd_soc_dai_set_pll(codec_dai, 0,
++						  DA7219_SYSCLK_PLL_SRM,
++						  0, freq);
++			if (ret)
++				dev_err(rtd->dev, "failed to start PLL: %d\n",
++					ret);
++		}
++	}
++
++	return ret;
++}
++
++static int mt8186_da7219_i2s_hw_free(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_soc_dai *codec_dai;
++	int ret = 0, j;
++
++	for_each_rtd_codec_dais(rtd, j, codec_dai) {
++		if (!strcmp(codec_dai->component->name, DA7219_DEV_NAME)) {
++			ret = snd_soc_dai_set_pll(codec_dai,
++						  0, DA7219_SYSCLK_MCLK, 0, 0);
++			if (ret < 0) {
++				dev_err(rtd->dev, "failed to stop PLL: %d\n",
++					ret);
++				break;
++			}
++		}
++	}
++
++	return ret;
++}
++
++static const struct snd_soc_ops mt8186_da7219_i2s_ops = {
++	.hw_params = mt8186_da7219_i2s_hw_params,
++	.hw_free = mt8186_da7219_i2s_hw_free,
++};
++
++static int mt8186_mt6366_hdmi_init(struct snd_soc_pcm_runtime *rtd)
++{
++	struct snd_soc_component *cmpnt_codec =
++		asoc_rtd_to_codec(rtd, 0)->component;
++	struct mt8186_mt6366_da7219_max98357_priv *priv =
++		snd_soc_card_get_drvdata(rtd->card);
++	int ret;
++
++	ret = snd_soc_card_jack_new(rtd->card, "HDMI Jack", SND_JACK_LINEOUT,
++				    &priv->hdmi_jack, NULL, 0);
++	if (ret) {
++		dev_err(rtd->dev, "HDMI Jack creation failed: %d\n", ret);
++		return ret;
++	}
++
++	return snd_soc_component_set_jack(cmpnt_codec, &priv->hdmi_jack, NULL);
++}
++
++static int mt8186_mt6366_init(struct snd_soc_pcm_runtime *rtd)
++{
++	struct snd_soc_component *cmpnt_afe =
++		snd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);
++	struct snd_soc_component *cmpnt_codec =
++		asoc_rtd_to_codec(rtd, 0)->component;
++	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt_afe);
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
++	int ret;
++
++	/* set mtkaif protocol */
++	mt6358_set_mtkaif_protocol(cmpnt_codec,
++				   MT6358_MTKAIF_PROTOCOL_1);
++	afe_priv->mtkaif_protocol = MT6358_MTKAIF_PROTOCOL_1;
++
++	ret = snd_soc_dapm_sync(dapm);
++	if (ret) {
++		dev_info(rtd->dev, "failed to snd_soc_dapm_sync\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static int mt8186_i2s_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
++				      struct snd_pcm_hw_params *params)
++{
++	struct snd_interval *channels = hw_param_interval(params,
++		SNDRV_PCM_HW_PARAM_CHANNELS);
++	dev_info(rtd->dev, "%s(), fix format to 32bit\n", __func__);
++
++	/* fix BE i2s channel to 2 channel */
++	channels->min = 2;
++	channels->max = 2;
++
++	/* fix BE i2s format to S32_LE, clean param mask first */
++	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
++			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
++
++	params_set_format(params, SNDRV_PCM_FORMAT_S32_LE);
++
++	return 0;
++}
++
++static int mt8186_hdmi_i2s_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
++					   struct snd_pcm_hw_params *params)
++{
++	struct snd_interval *channels = hw_param_interval(params,
++		SNDRV_PCM_HW_PARAM_CHANNELS);
++	dev_info(rtd->dev, "%s(), fix format to 32bit\n", __func__);
++
++	/* fix BE i2s channel to 2 channel */
++	channels->min = 2;
++	channels->max = 2;
++
++	/* fix BE i2s format to S24_LE, clean param mask first */
++	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
++			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
++
++	params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
++
++	return 0;
++}
++
++/* FE */
++SND_SOC_DAILINK_DEFS(playback1,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL1")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(playback12,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL12")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(playback2,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL2")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(playback3,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL3")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(playback4,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL4")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(playback5,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL5")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(playback6,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL6")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(playback7,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL7")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(playback8,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL8")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(capture1,
++		     DAILINK_COMP_ARRAY(COMP_CPU("UL1")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(capture2,
++		     DAILINK_COMP_ARRAY(COMP_CPU("UL2")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(capture3,
++		     DAILINK_COMP_ARRAY(COMP_CPU("UL3")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(capture4,
++		     DAILINK_COMP_ARRAY(COMP_CPU("UL4")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(capture5,
++		     DAILINK_COMP_ARRAY(COMP_CPU("UL5")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(capture6,
++		     DAILINK_COMP_ARRAY(COMP_CPU("UL6")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++SND_SOC_DAILINK_DEFS(capture7,
++		     DAILINK_COMP_ARRAY(COMP_CPU("UL7")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++/* hostless */
++SND_SOC_DAILINK_DEFS(hostless_lpbk,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless LPBK DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_fm,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless FM DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_src1,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless_SRC_1_DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_src_bargein,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless_SRC_Bargein_DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++/* BE */
++SND_SOC_DAILINK_DEFS(adda,
++		     DAILINK_COMP_ARRAY(COMP_CPU("ADDA")),
++		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6358-sound",
++						   "mt6358-snd-codec-aif1"),
++					COMP_CODEC("dmic-codec",
++						   "dmic-hifi")),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(i2s0,
++		     DAILINK_COMP_ARRAY(COMP_CPU("I2S0")),
++		     DAILINK_COMP_ARRAY(COMP_CODEC(DA7219_DEV_NAME,
++						   DA7219_CODEC_DAI)),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(i2s1,
++		     DAILINK_COMP_ARRAY(COMP_CPU("I2S1")),
++		     DAILINK_COMP_ARRAY(COMP_CODEC(DA7219_DEV_NAME,
++						   DA7219_CODEC_DAI)),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(i2s2,
++		     DAILINK_COMP_ARRAY(COMP_CPU("I2S2")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(i2s3,
++		     DAILINK_COMP_ARRAY(COMP_CPU("I2S3")),
++		     DAILINK_COMP_ARRAY(COMP_CODEC(NULL, "i2s-hifi"),
++					COMP_CODEC("max98357a", "HiFi")),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hw_gain1,
++		     DAILINK_COMP_ARRAY(COMP_CPU("HW Gain 1")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hw_gain2,
++		     DAILINK_COMP_ARRAY(COMP_CPU("HW Gain 2")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hw_src1,
++		     DAILINK_COMP_ARRAY(COMP_CPU("HW_SRC_1")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hw_src2,
++		     DAILINK_COMP_ARRAY(COMP_CPU("HW_SRC_2")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(connsys_i2s,
++		     DAILINK_COMP_ARRAY(COMP_CPU("CONNSYS_I2S")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(pcm1,
++		     DAILINK_COMP_ARRAY(COMP_CPU("PCM 1")),
++		     DAILINK_COMP_ARRAY(COMP_CODEC("bt-sco", "bt-sco-pcm-wb")),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(tdm_in,
++		     DAILINK_COMP_ARRAY(COMP_CPU("TDM IN")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
++/* hostless */
++SND_SOC_DAILINK_DEFS(hostless_ul1,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless_UL1 DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_ul2,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless_UL2 DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_ul3,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless_UL3 DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_ul5,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless_UL5 DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_ul6,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless_UL6 DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_hw_gain_aaudio,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless HW Gain AAudio DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++SND_SOC_DAILINK_DEFS(hostless_src_aaudio,
++		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless SRC AAudio DAI")),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++#if IS_ENABLED(CONFIG_SND_SOC_MTK_BTCVSD)
++SND_SOC_DAILINK_DEFS(btcvsd,
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
++		     DAILINK_COMP_ARRAY(COMP_PLATFORM("18050000.mtk-btcvsd-snd")));
++#endif
++static struct snd_soc_dai_link mt8186_mt6366_da7219_max98357_dai_links[] = {
++	/* Front End DAI links */
++	{
++		.name = "Playback_1",
++		.stream_name = "Playback_1",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		.dpcm_merged_format = 1,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		SND_SOC_DAILINK_REG(playback1),
++	},
++	{
++		.name = "Playback_12",
++		.stream_name = "Playback_12",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		SND_SOC_DAILINK_REG(playback12),
++	},
++	{
++		.name = "Playback_2",
++		.stream_name = "Playback_2",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		.dpcm_merged_format = 1,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		SND_SOC_DAILINK_REG(playback2),
++	},
++	{
++		.name = "Playback_3",
++		.stream_name = "Playback_3",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		.dpcm_merged_format = 1,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		SND_SOC_DAILINK_REG(playback3),
++	},
++	{
++		.name = "Playback_4",
++		.stream_name = "Playback_4",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		SND_SOC_DAILINK_REG(playback4),
++	},
++	{
++		.name = "Playback_5",
++		.stream_name = "Playback_5",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		SND_SOC_DAILINK_REG(playback5),
++	},
++	{
++		.name = "Playback_6",
++		.stream_name = "Playback_6",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		SND_SOC_DAILINK_REG(playback6),
++	},
++	{
++		.name = "Playback_7",
++		.stream_name = "Playback_7",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		SND_SOC_DAILINK_REG(playback7),
++	},
++	{
++		.name = "Playback_8",
++		.stream_name = "Playback_8",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		SND_SOC_DAILINK_REG(playback8),
++	},
++	{
++		.name = "Capture_1",
++		.stream_name = "Capture_1",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_capture = 1,
++		SND_SOC_DAILINK_REG(capture1),
++	},
++	{
++		.name = "Capture_2",
++		.stream_name = "Capture_2",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_capture = 1,
++		.dpcm_merged_format = 1,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		SND_SOC_DAILINK_REG(capture2),
++	},
++	{
++		.name = "Capture_3",
++		.stream_name = "Capture_3",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_capture = 1,
++		SND_SOC_DAILINK_REG(capture3),
++	},
++	{
++		.name = "Capture_4",
++		.stream_name = "Capture_4",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_capture = 1,
++		.dpcm_merged_format = 1,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		SND_SOC_DAILINK_REG(capture4),
++	},
++	{
++		.name = "Capture_5",
++		.stream_name = "Capture_5",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_capture = 1,
++		SND_SOC_DAILINK_REG(capture5),
++	},
++	{
++		.name = "Capture_6",
++		.stream_name = "Capture_6",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_capture = 1,
++		.dpcm_merged_format = 1,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		SND_SOC_DAILINK_REG(capture6),
++	},
++	{
++		.name = "Capture_7",
++		.stream_name = "Capture_7",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_capture = 1,
++		SND_SOC_DAILINK_REG(capture7),
++	},
++	{
++		.name = "Hostless_LPBK",
++		.stream_name = "Hostless_LPBK",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_lpbk),
++	},
++	{
++		.name = "Hostless_FM",
++		.stream_name = "Hostless_FM",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_fm),
++	},
++	{
++		.name = "Hostless_SRC_1",
++		.stream_name = "Hostless_SRC_1",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_src1),
++	},
++	{
++		.name = "Hostless_SRC_Bargein",
++		.stream_name = "Hostless_SRC_Bargein",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_src_bargein),
++	},
++	{
++		.name = "Hostless_HW_Gain_AAudio",
++		.stream_name = "Hostless_HW_Gain_AAudio",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_hw_gain_aaudio),
++	},
++	{
++		.name = "Hostless_SRC_AAudio",
++		.stream_name = "Hostless_SRC_AAudio",
++		.trigger = {SND_SOC_DPCM_TRIGGER_PRE,
++			    SND_SOC_DPCM_TRIGGER_PRE},
++		.dynamic = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_src_aaudio),
++	},
++	/* BTCVSD */
++#if IS_ENABLED(CONFIG_SND_SOC_MTK_BTCVSD)
++	{
++		.name = "BTCVSD",
++		.stream_name = "BTCVSD",
++		SND_SOC_DAILINK_REG(btcvsd),
++	},
++#endif
++	/* Back End DAI links */
++	{
++		.name = "Primary Codec",
++		.no_pcm = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		.init = mt8186_mt6366_init,
++		SND_SOC_DAILINK_REG(adda),
++	},
++	{
++		.name = "I2S3",
++		.no_pcm = 1,
++		.dai_fmt = SND_SOC_DAIFMT_I2S |
++			   SND_SOC_DAIFMT_IB_NF |
++			   SND_SOC_DAIFMT_CBM_CFM,
++		.dpcm_playback = 1,
++		.ignore_suspend = 1,
++		.init = mt8186_mt6366_hdmi_init,
++		.be_hw_params_fixup = mt8186_hdmi_i2s_hw_params_fixup,
++		SND_SOC_DAILINK_REG(i2s3),
++	},
++	{
++		.name = "I2S0",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		.be_hw_params_fixup = mt8186_i2s_hw_params_fixup,
++		.ops = &mt8186_da7219_i2s_ops,
++		SND_SOC_DAILINK_REG(i2s0),
++	},
++	{
++		.name = "I2S1",
++		.no_pcm = 1,
++		.dpcm_playback = 1,
++		.ignore_suspend = 1,
++		.be_hw_params_fixup = mt8186_i2s_hw_params_fixup,
++		.init = mt8186_da7219_init,
++		.ops = &mt8186_da7219_i2s_ops,
++		SND_SOC_DAILINK_REG(i2s1),
++	},
++	{
++		.name = "I2S2",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		.be_hw_params_fixup = mt8186_i2s_hw_params_fixup,
++		SND_SOC_DAILINK_REG(i2s2),
++	},
++	{
++		.name = "HW Gain 1",
++		.no_pcm = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hw_gain1),
++	},
++	{
++		.name = "HW Gain 2",
++		.no_pcm = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hw_gain2),
++	},
++	{
++		.name = "HW_SRC_1",
++		.no_pcm = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hw_src1),
++	},
++	{
++		.name = "HW_SRC_2",
++		.no_pcm = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hw_src2),
++	},
++	{
++		.name = "CONNSYS_I2S",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(connsys_i2s),
++	},
++	{
++		.name = "PCM 1",
++		.dai_fmt = SND_SOC_DAIFMT_I2S |
++			   SND_SOC_DAIFMT_NB_IF,
++		.no_pcm = 1,
++		.dpcm_playback = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(pcm1),
++	},
++	{
++		.name = "TDM IN",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(tdm_in),
++	},
++	/* dummy BE for ul memif to record from dl memif */
++	{
++		.name = "Hostless_UL1",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_ul1),
++	},
++	{
++		.name = "Hostless_UL2",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_ul2),
++	},
++	{
++		.name = "Hostless_UL3",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_ul3),
++	},
++	{
++		.name = "Hostless_UL5",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_ul5),
++	},
++	{
++		.name = "Hostless_UL6",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		.ignore_suspend = 1,
++		SND_SOC_DAILINK_REG(hostless_ul6),
++	},
++};
++
++static const struct snd_soc_dapm_widget
++mt8186_mt6366_da7219_max98357_widgets[] = {
++	SND_SOC_DAPM_SPK("SPK Out", NULL),
++	SND_SOC_DAPM_OUTPUT("HDMI Out"),
++};
++
++static const struct snd_soc_dapm_route
++mt8186_mt6366_da7219_max98357_routes[] = {
++	/* SPK */
++	{ "SPK Out", NULL, "Speaker" },
++	/* HDMI */
++	{ "HDMI Out", NULL, "TX" },
++};
++
++static const struct snd_kcontrol_new
++mt8186_mt6366_da7219_max98357_controls[] = {
++	SOC_DAPM_PIN_SWITCH("SPK Out"),
++	SOC_DAPM_PIN_SWITCH("HDMI Out"),
++};
++
++static struct snd_soc_card mt8186_mt6366_da7219_max98357_soc_card = {
++	.name = "mt8186_mt6366_da7219_max98357",
++	.owner = THIS_MODULE,
++	.dai_link = mt8186_mt6366_da7219_max98357_dai_links,
++	.num_links = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_dai_links),
++	.controls = mt8186_mt6366_da7219_max98357_controls,
++	.num_controls = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_controls),
++	.dapm_widgets = mt8186_mt6366_da7219_max98357_widgets,
++	.num_dapm_widgets = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_widgets),
++	.dapm_routes = mt8186_mt6366_da7219_max98357_routes,
++	.num_dapm_routes = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_routes),
++	.codec_conf = mt6366_codec_conf,
++	.num_configs = ARRAY_SIZE(mt6366_codec_conf),
++};
++
++static int mt8186_mt6366_da7219_max98357_dev_probe(struct platform_device *pdev)
++{
++	struct snd_soc_card *card = &mt8186_mt6366_da7219_max98357_soc_card;
++	struct snd_soc_dai_link *dai_link;
++	struct mt8186_mt6366_da7219_max98357_priv *priv;
++	struct device_node *platform_node, *hdmi_codec;
++	int ret, i;
++
++	dev_info(&pdev->dev, "%s(), ++\n", __func__);
++
++	card->dev = &pdev->dev;
++
++	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	platform_node = of_parse_phandle(pdev->dev.of_node,
++					 "mediatek,platform", 0);
++	if (!platform_node) {
++		dev_info(&pdev->dev,
++			 "Property 'platform' missing or invalid\n");
++		return -EINVAL;
++	}
++
++	hdmi_codec = of_parse_phandle(pdev->dev.of_node,
++				      "mediatek,hdmi-codec", 0);
++	if (!hdmi_codec) {
++		dev_info(&pdev->dev,
++			 "Property 'hdmi' missing or invalid\n");
++		return -EINVAL;
++	}
++
++	for_each_card_prelinks(card, i, dai_link) {
++		if (dai_link->platforms->name)
++			continue;
++
++		if (hdmi_codec && strcmp(dai_link->name, "I2S3") == 0) {
++			dai_link->codecs->of_node = hdmi_codec;
++			dai_link->ignore = 0;
++		}
++
++		dai_link->platforms->of_node = platform_node;
++	}
++
++	snd_soc_card_set_drvdata(card, priv);
++
++	/* init gpio */
++	ret = mt8186_afe_gpio_init(&pdev->dev);
++	if (ret)
++		dev_info(&pdev->dev, "init gpio error\n");
++
++	dev_info(&pdev->dev, "%s(), devm_snd_soc_register_card\n", __func__);
++	ret = devm_snd_soc_register_card(&pdev->dev, card);
++	if (ret)
++		dev_info(&pdev->dev, "%s snd_soc_register_card fail %d\n",
++			 __func__, ret);
++	of_node_put(platform_node);
++	of_node_put(hdmi_codec);
++
++	return ret;
++}
++
++#if IS_ENABLED(CONFIG_OF)
++static const struct of_device_id mt8186_mt6366_da7219_max98357_dt_match[] = {
++	{.compatible = "mediatek,mt8186_mt6366_da7219_max98357_sound",},
++	{}
++};
++#endif
++
++static struct platform_driver mt8186_mt6366_da7219_max98357_driver = {
++	.driver = {
++		.name = "mt8186_mt6366_da7219_max98357",
++#if IS_ENABLED(CONFIG_OF)
++		.of_match_table = mt8186_mt6366_da7219_max98357_dt_match,
++#endif
++		.pm = &snd_soc_pm_ops,
++	},
++	.probe = mt8186_mt6366_da7219_max98357_dev_probe,
++};
++
++module_platform_driver(mt8186_mt6366_da7219_max98357_driver);
++
++/* Module information */
++MODULE_DESCRIPTION("MT8186-MT6366-DA7219-MAX98357 ALSA SoC machine driver");
++MODULE_AUTHOR("Jiaxin Yu <jiaxin.yu@mediatek.com>");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("mt8186_mt6366_da7219_max98357 soc card");
 -- 
 2.18.0
 
