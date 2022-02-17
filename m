@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E531C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D727C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231642AbiBQVEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:04:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38024 "EHLO
+        id S245243AbiBQVE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 16:04:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244111AbiBQVEH (ORCPT
+        with ESMTP id S244074AbiBQVEG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:04:07 -0500
+        Thu, 17 Feb 2022 16:04:06 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 13E69606C0
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD71C16041B
         for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:03:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645131831;
+        s=mimecast20190719; t=1645131830;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=azf3rzszlIQOlGktX/+DfnkIwBQlpFBhEAOhLBzgXWQ=;
-        b=X4d6+MXhUGLf3r15GKldvBj/YxAun/6nistxtQ8op6gID9IUoWyQppPSL69ZF19WnvfZO2
-        m5PC6R92Kdq73fgS1OuCDd7H5y0XhT26IA04Jn8maBqwpvF+EvSwmBJPXgaeY3x+SbNNO5
-        R3uKBXt0RunK+ohD7ck9lRdaJR15HTk=
+        bh=R9Q0pLb8P4BlDqpXLzpYKuId39pvX37TO7tEfEhTs28=;
+        b=Mt6hptAWDxEDt3K8nps3wBbYsfcKv58cHJrfuBrWq/cs9drOuKFU+HvbzHsSVSrRA9NMEJ
+        8XuIkIVtf5WEjzzRT+dTaI+TnEfDgXF6kO1XyIFWeK0F5ay7GvKzmMxk/i/tjkVvDkHwdu
+        LGx/GfPnlTmMdYGTNmkILckBTCVSZjw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-634-ddX2YMV7MyGwBM1sgv02bw-1; Thu, 17 Feb 2022 16:03:47 -0500
-X-MC-Unique: ddX2YMV7MyGwBM1sgv02bw-1
+ us-mta-646-WKyzD1ubNqOHwUg7aB2yxQ-1; Thu, 17 Feb 2022 16:03:49 -0500
+X-MC-Unique: WKyzD1ubNqOHwUg7aB2yxQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9F15B1091DA2;
-        Thu, 17 Feb 2022 21:03:46 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9C18F2F4D;
+        Thu, 17 Feb 2022 21:03:48 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2446C6AB90;
-        Thu, 17 Feb 2022 21:03:46 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4D2E36AB90;
+        Thu, 17 Feb 2022 21:03:48 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH v2 10/18] KVM: x86/mmu: load new PGD after the shadow MMU is initialized
-Date:   Thu, 17 Feb 2022 16:03:32 -0500
-Message-Id: <20220217210340.312449-11-pbonzini@redhat.com>
+Subject: [PATCH v2 15/18] KVM: x86/mmu: rename kvm_mmu_new_pgd, introduce variant that calls get_guest_pgd
+Date:   Thu, 17 Feb 2022 16:03:37 -0500
+Message-Id: <20220217210340.312449-16-pbonzini@redhat.com>
 In-Reply-To: <20220217210340.312449-1-pbonzini@redhat.com>
 References: <20220217210340.312449-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -53,128 +53,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that __kvm_mmu_new_pgd does not look at the MMU's root_level and
-shadow_root_level anymore, pull the PGD load after the initialization of
-the shadow MMUs.
+In the common case, the argument to kvm_mmu_new_pgd is already in
+vcpu->arch.cr3, but that does not work when the guest_mmu is in use.
+In that case, the root for L1 TDP tables needs to be retrieved via vendor
+code.  Besides, kvm_mmu_new_pgd is a bad name: it can be used also when
+the role bits change, not just when the PGD changes.
 
-Besides being more intuitive, this enables future simplifications
-and optimizations because it's not necessary anymore to compute the
-role outside kvm_init_mmu.  In particular, kvm_mmu_reset_context was not
-attempting to use a cached PGD to avoid having to figure out the new role.
-It will soon be able to follow what nested_{vmx,svm}_load_cr3 are doing,
-and avoid unloading all the cached roots.
+Kill two birds with one stone by renaming the old kvm_mmu_new_pgd
+to __kvm_mmu_update_root.  The non-__ version, kvm_mmu_update_root,
+covers the common case, including nested TDP, by calling the
+get_guest_pgd callback to retrieve the desired PGD pointer.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c    | 37 +++++++++++++++++--------------------
- arch/x86/kvm/svm/nested.c |  6 +++---
- arch/x86/kvm/vmx/nested.c |  6 +++---
- 3 files changed, 23 insertions(+), 26 deletions(-)
+ arch/x86/include/asm/kvm_host.h |  2 +-
+ arch/x86/kvm/mmu/mmu.c          | 15 +++++++++++----
+ arch/x86/kvm/svm/nested.c       |  2 +-
+ arch/x86/kvm/vmx/nested.c       |  2 +-
+ arch/x86/kvm/x86.c              |  2 +-
+ 5 files changed, 15 insertions(+), 8 deletions(-)
 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 79f37ccc8726..319ac0918aa2 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1808,7 +1808,7 @@ void kvm_mmu_invlpg(struct kvm_vcpu *vcpu, gva_t gva);
+ void kvm_mmu_invalidate_gva(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
+ 			    gva_t gva, hpa_t root_hpa);
+ void kvm_mmu_invpcid_gva(struct kvm_vcpu *vcpu, gva_t gva, unsigned long pcid);
+-void kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd);
++void kvm_mmu_update_root(struct kvm_vcpu *vcpu);
+ 
+ void kvm_configure_mmu(bool enable_tdp, int tdp_forced_root_level,
+ 		       int tdp_max_root_level, int tdp_huge_page_level);
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index da324a317000..906a9244ad28 100644
+index d422d0d2adf8..c44b5114f947 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4903,9 +4903,8 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
+@@ -4189,7 +4189,7 @@ static bool fast_pgd_switch(struct kvm *kvm, struct kvm_mmu *mmu,
+ 		return cached_root_find_without_current(kvm, mmu, new_pgd, new_role);
+ }
  
+-void kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd)
++static void __kvm_mmu_update_root(struct kvm_vcpu *vcpu, gpa_t new_pgd)
+ {
+ 	struct kvm_mmu *mmu = vcpu->arch.mmu;
+ 	union kvm_mmu_page_role new_role = mmu->mmu_role.base;
+@@ -4228,7 +4228,14 @@ void kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd)
+ 		__clear_sp_write_flooding_count(
+ 				to_shadow_page(vcpu->arch.mmu->root.hpa));
+ }
+-EXPORT_SYMBOL_GPL(kvm_mmu_new_pgd);
++
++void kvm_mmu_update_root(struct kvm_vcpu *vcpu)
++{
++	gpa_t new_pgd = kvm_mmu_get_guest_pgd(vcpu);
++
++	__kvm_mmu_update_root(vcpu, new_pgd);
++}
++EXPORT_SYMBOL_GPL(kvm_mmu_update_root);
+ 
+ static bool sync_mmio_spte(struct kvm_vcpu *vcpu, u64 *sptep, gfn_t gfn,
+ 			   unsigned int access)
+@@ -4892,7 +4899,7 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
  	new_role = kvm_calc_shadow_npt_root_page_role(vcpu, &regs);
  
--	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
--
  	shadow_mmu_init_context(vcpu, context, &regs, new_role);
-+	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
+-	kvm_mmu_new_pgd(vcpu, nested_cr3);
++	__kvm_mmu_update_root(vcpu, nested_cr3);
  }
  EXPORT_SYMBOL_GPL(kvm_init_shadow_npt_mmu);
  
-@@ -4943,27 +4942,25 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
- 		kvm_calc_shadow_ept_root_page_role(vcpu, accessed_dirty,
- 						   execonly, level);
+@@ -4948,7 +4955,7 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
+ 		reset_ept_shadow_zero_bits_mask(context, execonly);
+ 	}
  
--	__kvm_mmu_new_pgd(vcpu, new_eptp, new_role.base);
--
--	if (new_role.as_u64 == context->mmu_role.as_u64)
--		return;
--
--	context->mmu_role.as_u64 = new_role.as_u64;
-+	if (new_role.as_u64 != context->mmu_role.as_u64) {
-+		context->mmu_role.as_u64 = new_role.as_u64;
- 
--	context->shadow_root_level = level;
-+		context->shadow_root_level = level;
- 
--	context->ept_ad = accessed_dirty;
--	context->page_fault = ept_page_fault;
--	context->gva_to_gpa = ept_gva_to_gpa;
--	context->sync_page = ept_sync_page;
--	context->invlpg = ept_invlpg;
--	context->root_level = level;
--	context->direct_map = false;
-+		context->ept_ad = accessed_dirty;
-+		context->page_fault = ept_page_fault;
-+		context->gva_to_gpa = ept_gva_to_gpa;
-+		context->sync_page = ept_sync_page;
-+		context->invlpg = ept_invlpg;
-+		context->root_level = level;
-+		context->direct_map = false;
-+		update_permission_bitmask(context, true);
-+		context->pkru_mask = 0;
-+		reset_rsvds_bits_mask_ept(vcpu, context, execonly, huge_page_level);
-+		reset_ept_shadow_zero_bits_mask(context, execonly);
-+	}
- 
--	update_permission_bitmask(context, true);
--	context->pkru_mask = 0;
--	reset_rsvds_bits_mask_ept(vcpu, context, execonly, huge_page_level);
--	reset_ept_shadow_zero_bits_mask(context, execonly);
-+	__kvm_mmu_new_pgd(vcpu, new_eptp, new_role.base);
+-	kvm_mmu_new_pgd(vcpu, new_eptp);
++	__kvm_mmu_update_root(vcpu, new_eptp);
  }
  EXPORT_SYMBOL_GPL(kvm_init_shadow_ept_mmu);
  
 diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index f284e61451c8..96bab464967f 100644
+index 96bab464967f..2386fadae9ed 100644
 --- a/arch/x86/kvm/svm/nested.c
 +++ b/arch/x86/kvm/svm/nested.c
-@@ -492,14 +492,14 @@ static int nested_svm_load_cr3(struct kvm_vcpu *vcpu, unsigned long cr3,
- 	    CC(!load_pdptrs(vcpu, cr3)))
- 		return -EINVAL;
- 
--	if (!nested_npt)
--		kvm_mmu_new_pgd(vcpu, cr3);
--
- 	vcpu->arch.cr3 = cr3;
- 
- 	/* Re-initialize the MMU, e.g. to pick up CR4 MMU role changes. */
+@@ -498,7 +498,7 @@ static int nested_svm_load_cr3(struct kvm_vcpu *vcpu, unsigned long cr3,
  	kvm_init_mmu(vcpu);
  
-+	if (!nested_npt)
-+		kvm_mmu_new_pgd(vcpu, cr3);
-+
+ 	if (!nested_npt)
+-		kvm_mmu_new_pgd(vcpu, cr3);
++		kvm_mmu_update_root(vcpu);
+ 
  	return 0;
  }
- 
 diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index b7bc634d35e2..1dfe23963a9e 100644
+index 1dfe23963a9e..2dbd7a9ada84 100644
 --- a/arch/x86/kvm/vmx/nested.c
 +++ b/arch/x86/kvm/vmx/nested.c
-@@ -1126,15 +1126,15 @@ static int nested_vmx_load_cr3(struct kvm_vcpu *vcpu, unsigned long cr3,
- 		return -EINVAL;
- 	}
- 
--	if (!nested_ept)
--		kvm_mmu_new_pgd(vcpu, cr3);
--
- 	vcpu->arch.cr3 = cr3;
- 	kvm_register_mark_dirty(vcpu, VCPU_EXREG_CR3);
- 
- 	/* Re-initialize the MMU, e.g. to pick up CR4 MMU role changes. */
+@@ -1133,7 +1133,7 @@ static int nested_vmx_load_cr3(struct kvm_vcpu *vcpu, unsigned long cr3,
  	kvm_init_mmu(vcpu);
  
-+	if (!nested_ept)
-+		kvm_mmu_new_pgd(vcpu, cr3);
-+
+ 	if (!nested_ept)
+-		kvm_mmu_new_pgd(vcpu, cr3);
++		kvm_mmu_update_root(vcpu);
+ 
  	return 0;
  }
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index adcee7c305ca..9800c8883a48 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -1189,7 +1189,7 @@ int kvm_set_cr3(struct kvm_vcpu *vcpu, unsigned long cr3)
+ 		return 1;
  
+ 	if (cr3 != kvm_read_cr3(vcpu))
+-		kvm_mmu_new_pgd(vcpu, cr3);
++		kvm_mmu_update_root(vcpu);
+ 
+ 	vcpu->arch.cr3 = cr3;
+ 	kvm_register_mark_dirty(vcpu, VCPU_EXREG_CR3);
 -- 
 2.31.1
 
