@@ -2,149 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35255C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF66C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:48:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231863AbiBQPqj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:46:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49554 "EHLO
+        id S239174AbiBQPso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:48:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiBQPqi (ORCPT
+        with ESMTP id S232620AbiBQPsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:46:38 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21FB2B2FCC
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:46:22 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id b9so16034lfv.7
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:46:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6eOVkV0FfYDX4jKgH8lSa5gK8o29oEdERE0Byp3iJzE=;
-        b=MgWQ3005tz6UruAbexiTAQmjyE4/vGJjJ40YgZkKt5wgINq/cJdQZVusIwFmFpcPq+
-         O9LqsfoMX6zjowwT75eyH08ab9QC33ZquLLmyPmCDIYJ+gpq1u+FdgzSNuxhqOOl1vD5
-         0e1PqeAEKPZWjfpxvg1shY8rTmUAzC383tFnOWjZYTAzzhte8qWfgMECgj+3siboyhYx
-         Y4LLCOzaZ7CfeN+2LxKGcxaJ5natn80ZMTOeS0IOsMvOI7QFiYjP32bw9gpgBkch8jYj
-         1kpFGnzduqrkbBO8z5W+/g8S19Kt08yp2z+ERAhsZnqxReCcb01N+EYfhKwwk0AxANrT
-         FFPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6eOVkV0FfYDX4jKgH8lSa5gK8o29oEdERE0Byp3iJzE=;
-        b=mbKvkUZhy6oalVu7mO+ACxvJrkQDkTbQUKIwGmt2zHFVXZWSmRG/E/M+IpFGx0i1uJ
-         NbAI2fLGeeZSWzNo4tcDfT8KqAKhjFc/jmTyQWGkkPAkATPHZW6QVYAqDQ7lNu2Ee2wI
-         /+GX9u+R5aCvtHTsENJq2ZTBGJ3LlJcZDzmZcuVKkSpKwqbWDcGUEx4SXK8QuH8AdV+v
-         W5OND6fQVvS9YgpLXeqKk6e/ics2IRtorP9XlOWOhcVJ5ZavR9L8qqu5IjSqmNrQ3nVh
-         uMJRPGpAPoFSndM/oO7edXTOjcbar4QzqAw88SlPZmul491l4BYQzk7zgpl/QP4W4PIs
-         IK4w==
-X-Gm-Message-State: AOAM531n3hVVFu/GAfmLs7XZlwDlaLexPMDyCWOlQZuReSBqOMYQOysg
-        NBe3Za5U3X24Sf8oNostNYDMKqu4cp2SPHTiFLyrDg==
-X-Google-Smtp-Source: ABdhPJyrAwM7dg/qVHJUCprw1s1xE0huQn0o9suPK834G4SXUVGmelYLIWAXSWs2GYH/bT5EyszGK9bTD+Sf0I1eSA0=
-X-Received: by 2002:a05:6512:2241:b0:441:ce2b:18ef with SMTP id
- i1-20020a056512224100b00441ce2b18efmr2443065lfu.167.1645112779464; Thu, 17
- Feb 2022 07:46:19 -0800 (PST)
+        Thu, 17 Feb 2022 10:48:40 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835B8154703;
+        Thu, 17 Feb 2022 07:48:24 -0800 (PST)
+Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jzzk12yvBz67bBx;
+        Thu, 17 Feb 2022 23:47:53 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Feb 2022 16:48:21 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Feb 2022 15:48:17 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
+        <chenxiang66@hisilicon.com>, <damien.lemoal@opensource.wdc.com>,
+        <hch@lst.de>
+CC:     <Ajish.Koshy@microchip.com>, <yanaijie@huawei.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
+        <liuqi115@huawei.com>, <Viswas.G@microchip.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v2 00/18] scsi: libsas and users: Factor out LLDD TMF code
+Date:   Thu, 17 Feb 2022 23:42:28 +0800
+Message-ID: <1645112566-115804-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-References: <20220130210210.549877-1-daniel.lezcano@linaro.org>
- <20220130210210.549877-3-daniel.lezcano@linaro.org> <CAPDyKFqV++g63Asax8TNSEgujxJ=uM9XG2_Advu34JidYBCGtg@mail.gmail.com>
- <e44b9c4b-2ac4-4ea4-c771-bde13943af5f@linaro.org> <CAPDyKFr8Ycr2cbiD5MM9FSPc1qea+Yp9=cottcGAo7HmFR9Eaw@mail.gmail.com>
- <cfbaefa5-fc7b-bd0f-e4ed-8f046de2a7cf@linaro.org>
-In-Reply-To: <cfbaefa5-fc7b-bd0f-e4ed-8f046de2a7cf@linaro.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 17 Feb 2022 16:45:43 +0100
-Message-ID: <CAPDyKFoWq+i09Ts_+SAz9ctC2a7-cqC71buDmvb-LZFTVSH+DQ@mail.gmail.com>
-Subject: Re: [PATCH v1 3/7] powercap/dtpm: Fixup kfree for virtual node
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rjw@rjwysocki.net, heiko@sntech.de, lukasz.luba@arm.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 at 14:54, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
->
-> On 17/02/2022 14:17, Ulf Hansson wrote:
-> > On Wed, 16 Feb 2022 at 19:10, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
-> >>
-> >> On 16/02/2022 17:22, Ulf Hansson wrote:
-> >>> On Sun, 30 Jan 2022 at 22:02, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
-> >>>>
-> >>>> When the node is virtual there is no release function associated which
-> >>>> can free the memory.
-> >>>>
-> >>>> Free the memory when no 'ops' exists.
-> >>>>
-> >>>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> >>>> ---
-> >>>>    drivers/powercap/dtpm.c | 4 ++--
-> >>>>    1 file changed, 2 insertions(+), 2 deletions(-)
-> >>>>
-> >>>> diff --git a/drivers/powercap/dtpm.c b/drivers/powercap/dtpm.c
-> >>>> index 0b0121c37a1b..7bddd25a6767 100644
-> >>>> --- a/drivers/powercap/dtpm.c
-> >>>> +++ b/drivers/powercap/dtpm.c
-> >>>> @@ -181,12 +181,12 @@ int dtpm_release_zone(struct powercap_zone *pcz)
-> >>>>
-> >>>>           if (dtpm->ops)
-> >>>>                   dtpm->ops->release(dtpm);
-> >>>> +       else
-> >>>> +               kfree(dtpm);
-> >>>>
-> >>>
-> >>> This doesn't look correct. Below you check dtpm against "root", which
-> >>> may be after its memory has been freed.
-> >>>
-> >>> If the ->release() function should be responsible for freeing the
-> >>> dtpm, it needs to be called after the check below.
-> >>
-> >> It is harmless, 'root' is not dereferenced but used as an ID
-> >>
-> >> Moreover, in the patch 5/7 it is moved out this function.
-> >
-> > Right. It just looks a bit odd here.
-> >
-> >>
-> >>
-> >>>>           if (root == dtpm)
-> >>>>                   root = NULL;
-> >>>>
-> >>>> -       kfree(dtpm);
-> >
-> > So then why doesn't this kfree do the job already?
-> >
-> > kfree(NULL) works fine, if dtpm->ops->release(dtpm) already freed the data.
->
-> The description is confusing.
->
-> Actually, there is a double kfree. When there is a ops->release, the
-> kfree is done there and again a few lines after.
->
-> The issue was introduced with the change where dtpm had a private data
-> field to store the backend specific structure and was converted to a
-> backend specific structure containing a dtpm node [1].
->
-> So this function was calling release from the dtpm backend which was
-> freeing the specific data in the dtpm->private and then here was freeing
-> the dtpm. Now, the backend frees the structure which contains the dtpm
-> structure, so when returning from ops->release(), dtpm is already free.
->
-> I should change the description and add a Fixes tag to the change
-> described above.
+The LLDD TMF code is almost identical between hisi_sas, pm8001, and mvsas
+drivers.
 
-Does ops->release() also resets the "dtpm" pointer to NULL? If not,
-it's good practice that it should, right?
+This series factors out that code into libsas, thus reducing much
+duplication and giving a net reduction of ~350 LoC.
 
-In that case, we would be calling "kfree(NULL);" the second time,
-which is perfectly fine.
+There are some subtle differences between the core TMF handler and each
+of the LLDDs old implementation, so any review and testing is appreciated.
 
->
-> [1]
-> https://lore.kernel.org/r/20210312130411.29833-4-daniel.lezcano@linaro.org
->
+Some other minor patches are thrown in:
+- Delete unused macro in hisi_sas driver
+- Delete unused libsas callback
+- Delete unused SAS_SG_ERR
+- Add enum for response frame datapres field
+- Handle unrecognised errors in sas_scsi_find_task()
 
-Kind regards
-Uffe
+I have another follow-up series to factor out the internal abort code,
+which is common to hisi_sas and pm8001 drivers.
+
+Based on mkp-scsi 5.18 staging queue at commit ac2beb4e3bd7
+
+Differences to v1:
+- Add Reviewed-by and Tested-by tags (Thanks!)
+- Add SAS_SG_ERR patch
+- Add sas_scsi_find_task() patch
+- Use switch statement in sas_ssp_task_response()
+- Add DATAPRES enum in sas.h
+- Reword "Add struct sas_tmf_task" patch
+- Don't print TMF code in sas_execute_tmf()
+- Rebase
+
+John Garry (18):
+  scsi: libsas: Handle non-TMF codes in sas_scsi_find_task()
+  scsi: libsas: Use enum for response frame DATAPRES field
+  scsi: libsas: Delete lldd_clear_aca callback
+  scsi: libsas: Delete SAS_SG_ERR
+  scsi: hisi_sas: Delete unused I_T_NEXUS_RESET_PHYUP_TIMEOUT
+  scsi: libsas: Move SMP task handlers to core
+  scsi: libsas: Add struct sas_tmf_task
+  scsi: libsas: Add sas_task.tmf
+  scsi: libsas: Add sas_execute_tmf()
+  scsi: libsas: Add sas_execute_ssp_tmf()
+  scsi: libsas: Add TMF handler exec complete callback
+  scsi: libsas: Add TMF handler aborted callback
+  scsi: libsas: Add sas_abort_task_set()
+  scsi: libsas: Add sas_clear_task_set()
+  scsi: libsas: Add sas_lu_reset()
+  scsi: libsas: Add sas_query_task()
+  scsi: libsas: Add sas_abort_task()
+  scsi: libsas: Add sas_execute_ata_cmd()
+
+ Documentation/scsi/libsas.rst          |   2 -
+ drivers/scsi/aic94xx/aic94xx.h         |   1 -
+ drivers/scsi/aic94xx/aic94xx_init.c    |   1 -
+ drivers/scsi/aic94xx/aic94xx_tmf.c     |  11 +-
+ drivers/scsi/hisi_sas/hisi_sas.h       |   9 +-
+ drivers/scsi/hisi_sas/hisi_sas_main.c  | 227 ++++--------------------
+ drivers/scsi/hisi_sas/hisi_sas_v1_hw.c |   2 +-
+ drivers/scsi/hisi_sas/hisi_sas_v2_hw.c |   9 +-
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c |   2 +-
+ drivers/scsi/isci/init.c               |   1 -
+ drivers/scsi/isci/request.c            |   7 +-
+ drivers/scsi/isci/task.c               |  18 --
+ drivers/scsi/isci/task.h               |   4 -
+ drivers/scsi/libsas/sas_ata.c          |  10 +-
+ drivers/scsi/libsas/sas_expander.c     |  24 +--
+ drivers/scsi/libsas/sas_internal.h     |   6 +
+ drivers/scsi/libsas/sas_scsi_host.c    | 229 ++++++++++++++++++++++++-
+ drivers/scsi/libsas/sas_task.c         |  14 +-
+ drivers/scsi/mvsas/mv_defs.h           |   5 -
+ drivers/scsi/mvsas/mv_init.c           |   5 +-
+ drivers/scsi/mvsas/mv_sas.c            | 179 +------------------
+ drivers/scsi/mvsas/mv_sas.h            |   3 -
+ drivers/scsi/pm8001/pm8001_hwi.c       |   4 +-
+ drivers/scsi/pm8001/pm8001_init.c      |   5 +-
+ drivers/scsi/pm8001/pm8001_sas.c       | 194 ++++-----------------
+ drivers/scsi/pm8001/pm8001_sas.h       |  14 +-
+ include/scsi/libsas.h                  |  24 ++-
+ include/scsi/sas.h                     |   7 +
+ 28 files changed, 377 insertions(+), 640 deletions(-)
+
+-- 
+2.26.2
+
