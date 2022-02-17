@@ -2,111 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DCDFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F34FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242976AbiBQQJv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:09:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52724 "EHLO
+        id S242947AbiBQQMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:12:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242774AbiBQQJk (ORCPT
+        with ESMTP id S233970AbiBQQL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:09:40 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16A0184E47;
-        Thu, 17 Feb 2022 08:09:25 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id hw13so8391657ejc.9;
-        Thu, 17 Feb 2022 08:09:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ys6GvyIzdvZ2LM1dv7bCYtsjMt7DVaFxpDK/D/m+fNU=;
-        b=YDO2Cbqp2Xy7UnC16BUrgaQPd5JEadXK7LanbBRM5YeIKheT3amK7MoTd4JmC38IKB
-         z4rcD4YqFOifcMVee9ahjOLLL1eQOVledHublXzvHQ8XNFh46ZBesQGSNWjc38muCiWp
-         J1KUfC5yzWchQO4uPxrcgQzBaFlbI5Cx9sc2jQjSzBd+b4uRE2MJdXwnCzUO4vpsJub5
-         cSAya6YewswZpgAqpW2yQqqg6hkj/Nf2x2hQ9IB1QAuyGwRU8MT5EVeC2rKNFJKwMNPs
-         ZVBYpsk4SCYjroN7ax4cR20GELreh9yom4/fRE0Ls2lSkr9U3bDIqnw8YNMuhfvEIZqZ
-         VP9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ys6GvyIzdvZ2LM1dv7bCYtsjMt7DVaFxpDK/D/m+fNU=;
-        b=pCsKuq3F4isqdw1TYihzmHSp3YbA07PVd2xbe+mGgBHb0GEEtkWGqrbKZjpavfYBaE
-         175PxoSwljH0VFvnZRGKP0KAk3mv6xh0wbJ9MLYJxh0YALDvrrQrfzZAh76W0BOrVYVp
-         OB8aG6/nOndsXfmAj0u8p94YWmCxZxOJmQtSP3upO+UEuppKpDv/GqWCsdtkzZ6SwWH9
-         4npTskoNMo9bzyJf7OYAsWGDSvR+3L2BuPfiz+WHuKQAHFupS2uIzCO5A2iaIWCiVsUr
-         GIYGU1EWof90frgAzkXmEEa4/aVUhP4H6voxgoyZmtbTOU9IKLlkWSm/0Gb2CQJcD1Af
-         g+BQ==
-X-Gm-Message-State: AOAM531Q216dk9/gp+sSf1aGzH5rY8ryncSvcnBYrpt+ggftlotYHg8n
-        IvcnkJTQ+aiB//bMQzqx5Co=
-X-Google-Smtp-Source: ABdhPJwhJqSZriQ8pKdVyIFUxb22KfdZARIqPdmMVBQLpozLElaV3GDU7fVmun2Jej0brrbH76hIOg==
-X-Received: by 2002:a17:906:d0ce:b0:6cf:37f0:2718 with SMTP id bq14-20020a170906d0ce00b006cf37f02718mr2947116ejb.224.1645114164144;
-        Thu, 17 Feb 2022 08:09:24 -0800 (PST)
-Received: from hw-dev-vm01.evs.tv ([212.222.125.68])
-        by smtp.gmail.com with ESMTPSA id x14sm3568194edd.63.2022.02.17.08.09.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 08:09:23 -0800 (PST)
-From:   Fred Lefranc <hardware.evs@gmail.com>
-Cc:     Fred Lefranc <hardware.evs@gmail.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net/fsl: fman dt binding: add fsl,max-frm-sz & fsl,rx-extra-headroom properties.
-Date:   Thu, 17 Feb 2022 17:05:27 +0100
-Message-Id: <20220217160528.2662513-2-hardware.evs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220217160528.2662513-1-hardware.evs@gmail.com>
-References: <20220217160528.2662513-1-hardware.evs@gmail.com>
+        Thu, 17 Feb 2022 11:11:58 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CC1BF48;
+        Thu, 17 Feb 2022 08:11:40 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 6334F219A2;
+        Thu, 17 Feb 2022 16:11:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645114299; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=trkaAj42Qk58nzvh5xCn9D72uPJ0Goap4j9Xg6GQj54=;
+        b=dIt60ilvthbCzGmprCu9i0vdIACxkq2NIlLVQSHwrsUEUHqFlF7hbQprfIAEY7l2wMM/3W
+        PYS5RX+QIa3rGOFDU3MRy5wmcKBI6jB3NUXLFjp4KQRY9AwhYyciJ+tW0WGDSaausdAEir
+        hzOr+3+QNiRqmnreY2jgWr6606D4ZQs=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4360813C18;
+        Thu, 17 Feb 2022 16:11:39 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qnfcD7tzDmJ7cwAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Thu, 17 Feb 2022 16:11:39 +0000
+From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Masami Ichikawa <masami.ichikawa@cybertrust.co.jp>,
+        Tabitha Sable <tabitha.c.sable@gmail.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, stable@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] cgroup-v1: Correct privileges check in release_agent writes
+Date:   Thu, 17 Feb 2022 17:11:28 +0100
+Message-Id: <20220217161128.20291-1-mkoutny@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Describes two additional parameters that could be optionally added
-in devicetree.
+The idea is to check: a) the owning user_ns of cgroup_ns, b)
+capabilities in init_user_ns.
 
-Signed-off-by: Fred Lefranc <hardware.evs@gmail.com>
+The commit 24f600856418 ("cgroup-v1: Require capabilities to set
+release_agent") got this wrong in the write handler of release_agent
+since it checked user_ns of the opener (may be different from the owning
+user_ns of cgroup_ns).
+Secondly, to avoid possibly confused deputy, the capability of the
+opener must be checked.
+
+Fixes: 24f600856418 ("cgroup-v1: Require capabilities to set release_agent")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/stable/20220216121142.GB30035@blackbody.suse.cz/
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
 ---
- .../devicetree/bindings/net/fsl-fman.txt      | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ kernel/cgroup/cgroup-v1.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
-index 020337f3c05f..bcd0cf8ca9e9 100644
---- a/Documentation/devicetree/bindings/net/fsl-fman.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
-@@ -117,6 +117,26 @@ PROPERTIES
- 		erratum A050385 which indicates that DMA transactions that are
- 		split can result in a FMan lock.
+diff --git a/kernel/cgroup/cgroup-v1.c b/kernel/cgroup/cgroup-v1.c
+index 0e877dbcfeea..afc6c0e9c966 100644
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -546,6 +546,7 @@ static ssize_t cgroup_release_agent_write(struct kernfs_open_file *of,
+ 					  char *buf, size_t nbytes, loff_t off)
+ {
+ 	struct cgroup *cgrp;
++	struct cgroup_file_ctx *ctx;
  
-+- fsl,max-frm-sz
-+		Usage: optional
-+		Value type: <u32>
-+		Definition: Max frame size, across all interfaces.
-+ 		Must be large enough to accommodate the network MTU, but small enough
-+ 		to avoid wasting skb memory.
-+		1522 by default.
-+
-+- fsl,rx-extra-headroom
-+		Usage: optional
-+		Value type: <u32>
-+		Definition: Extra headroom for Rx buffers.
-+ 		FMan is instructed to allocate, on the Rx path, this amount of
-+		space at the beginning of a data buffer, beside the DPA private
-+		data area and the IC fields.
-+		Does not impact Tx buffer layout.
-+		64 by default, it's needed on
-+		particular forwarding scenarios that add extra headers to the
-+		forwarded frame.
-+
- =============================================================================
- FMan MURAM Node
+ 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
  
+@@ -553,8 +554,9 @@ static ssize_t cgroup_release_agent_write(struct kernfs_open_file *of,
+ 	 * Release agent gets called with all capabilities,
+ 	 * require capabilities to set release agent.
+ 	 */
+-	if ((of->file->f_cred->user_ns != &init_user_ns) ||
+-	    !capable(CAP_SYS_ADMIN))
++	ctx = of->priv;
++	if ((ctx->ns->user_ns != &init_user_ns) ||
++	    !file_ns_capable(of->file, &init_user_ns, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	cgrp = cgroup_kn_lock_live(of->kn, false);
 -- 
-2.25.1
+2.34.1
 
