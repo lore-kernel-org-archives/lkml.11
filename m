@@ -2,168 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE19C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiBQX5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 18:57:31 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51444 "EHLO
+        id S229769AbiBQXzj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 18:55:39 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiBQX5W (ORCPT
+        with ESMTP id S229713AbiBQXze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 18:57:22 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEDF41FB9;
-        Thu, 17 Feb 2022 15:57:06 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id e3so11733548wra.0;
-        Thu, 17 Feb 2022 15:57:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=CV06hFAyLzn/aD8fnpRK/3zrnOQF9gR6OQsK6DYukNA=;
-        b=V+lwvo1A5Egv+htx60kGvxcifdXTpIa5CBWkt0yJ2FrezM/e/ukiDDbz5qJLekP4zD
-         r7IDssYnvICkxaIvVe/8RBLdmr79Gm3aa0f4WybRMb6Uklz6ZZ0nPE1e5QV11CGmEW5N
-         hZYhccgSpQnYmsUx3C0jPjGteZjYcw0bivgEy7gN1hQJwUeBR7TQwy5t5MYc1mbsBhhE
-         DCBgxmqkyuM8gA7DrUfJ/WTbeZezYFxuj2mGoGTWr9uW71NmS6g6+uQ+DbE+HI+nOGGR
-         y7UoKvKKbC143NUVNwMhxgIPnb8h0uEJkpDvPAv6ZlsufR09MPkhpn/Svvxxp2XkaNe+
-         TobA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CV06hFAyLzn/aD8fnpRK/3zrnOQF9gR6OQsK6DYukNA=;
-        b=Ol6LGrjcg7/36aFQ6qafVa77hB4In0l24atGloydPSf8PMXHymiULcjez973UVTPsg
-         VE24N1GxBfJPJgDQtDxZpkpMDtIcem0JK8Ag+jJIhOqfXYNPmCQ1xcNVHBlr1Jrl7Gh3
-         tbqf9X3gwTinRDkwRVfXRp8WExHiF9zwpuM6tG9aft63K6EUUN5Wq53yR1PWoIwJ2Bvw
-         nzNXwr6roMJsb9wyx5f776CBBgaXNDGFOygGlb9LcKcRaRJUbVpOm5ijzqVqoxqI6otE
-         bkLGvjXfFUPEhxZRs/glm82syX72guvKzCwbTYxXMsewymoeWSyWG51hohyjV7WXbMa8
-         VwrQ==
-X-Gm-Message-State: AOAM5329k/9N+/R9SxlGSo8RM8LhkbXTjrfQn/kVBvt+Zs+C5WfQ+nmJ
-        N0XC8YgKC0/rW64fR9zDCTw=
-X-Google-Smtp-Source: ABdhPJy6VWta5jhRmRTHLGN5E72tk1P15lUWuXCDDZGvB502jEQ3R/2MXyMRsWOmkV/gQi6qn3GcWg==
-X-Received: by 2002:adf:f14e:0:b0:1e4:a64c:c1f8 with SMTP id y14-20020adff14e000000b001e4a64cc1f8mr4054929wro.512.1645142225355;
-        Thu, 17 Feb 2022 15:57:05 -0800 (PST)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id r2sm3691694wmq.24.2022.02.17.15.57.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:57:04 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Taniya Das <tdas@codeaurora.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 02/16] dt-bindings: clock: simplify qcom,gcc-apq8064 Documentation
-Date:   Fri, 18 Feb 2022 00:56:49 +0100
-Message-Id: <20220217235703.26641-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220217235703.26641-1-ansuelsmth@gmail.com>
-References: <20220217235703.26641-1-ansuelsmth@gmail.com>
+        Thu, 17 Feb 2022 18:55:34 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A91B850450
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 15:55:12 -0800 (PST)
+Received: from unknown (HELO lgemrelse7q.lge.com) (156.147.1.151)
+        by 156.147.23.52 with ESMTP; 18 Feb 2022 08:55:11 +0900
+X-Original-SENDERIP: 156.147.1.151
+X-Original-MAILFROM: byungchul.park@lge.com
+Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
+        by 156.147.1.151 with ESMTP; 18 Feb 2022 08:55:11 +0900
+X-Original-SENDERIP: 10.177.244.38
+X-Original-MAILFROM: byungchul.park@lge.com
+Date:   Fri, 18 Feb 2022 08:55:04 +0900
+From:   Byungchul Park <byungchul.park@lge.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        linux-ide@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Chris Wilson <chris@chris-wilson.co.uk>, duyuyang@gmail.com,
+        johannes.berg@intel.com, Tejun Heo <tj@kernel.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dave Chinner <david@fromorbit.com>,
+        Amir Goldstein <amir73il@gmail.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel-team@lge.com, Linux-MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Minchan Kim <minchan@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>, sj@kernel.org,
+        Jerome Glisse <jglisse@redhat.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, ngupta@vflare.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>, paolo.valente@linaro.org,
+        Josef Bacik <josef@toxicpanda.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>,
+        Jeff Layton <jlayton@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Dave Airlie <airlied@linux.ie>, rodrigosiqueiramelo@gmail.com,
+        melissa.srw@gmail.com, hamohammed.sa@gmail.com
+Subject: Re: Report in ata_scsi_port_error_handler()
+Message-ID: <20220217235504.GB20620@X58A-UD3R>
+References: <1644984747-26706-1-git-send-email-byungchul.park@lge.com>
+ <1644984964-28300-1-git-send-email-byungchul.park@lge.com>
+ <1644984964-28300-3-git-send-email-byungchul.park@lge.com>
+ <94b1cba2-0e78-bbc0-0321-8be70b2b3be2@opensource.wdc.com>
+ <CAHk-=wgfpfWuNQi2SjXQL1ir6iKCpUdBruJ+kmOQP1frH7Zdig@mail.gmail.com>
+ <20220216133318.204f36ac@gandalf.local.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216133318.204f36ac@gandalf.local.home>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify qcon,gcc-apq8064 Documentation by using qcom,gcc-common.yaml as a
-template and remove the compatible from qcom,gcc.yaml
+On Wed, Feb 16, 2022 at 01:33:18PM -0500, Steven Rostedt wrote:
+> On Wed, 16 Feb 2022 10:09:14 -0800
+> Linus Torvalds <torvalds@linux-foundation.org> wrote:
+> 
+> > Byungchul, could you fix those two issues? Some of your reports may
+> > well be entirely valid, but the hard-to-read hex offsets and the
+> > knowledge that at least some of them are confused about how
+> > prepare_to_wait -> wait actually works makes the motivation to look at
+> > the details much less..
+> 
+> Hi Byungchul,
+> 
+> I'm not sure what your tool is using to attach to the kernel to analyze the
+> events (perhaps tracepoints?). But you can have the prepare_to_wait event
+> just flag the task is about to wait, and then attach to the schedule
+> (sched_switch) event to denote that it actually waited.
+> 
+> Of course have the finish_wait() clear the flag.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../bindings/clock/qcom,gcc-apq8064.yaml      | 29 +++++--------------
- .../bindings/clock/qcom,gcc-other.yaml        |  3 --
- 2 files changed, 7 insertions(+), 25 deletions(-)
+(Sorry for late reply, which was because of my email client issue.)
 
-diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml
-index 8e2eac6cbfb9..97936411b6b4 100644
---- a/Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml
-@@ -6,6 +6,9 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Qualcomm Global Clock & Reset Controller Binding for APQ8064
- 
-+allOf:
-+  - $ref: qcom,gcc.yaml#
-+
- maintainers:
-   - Stephen Boyd <sboyd@kernel.org>
-   - Taniya Das <tdas@codeaurora.org>
-@@ -17,22 +20,12 @@ description: |
-   See also:
-   - dt-bindings/clock/qcom,gcc-msm8960.h
-   - dt-bindings/reset/qcom,gcc-msm8960.h
-+  - dt-bindings/clock/qcom,gcc-apq8084.h
-+  - dt-bindings/reset/qcom,gcc-apq8084.h
- 
- properties:
-   compatible:
--    const: qcom,gcc-apq8064
--
--  '#clock-cells':
--    const: 1
--
--  '#reset-cells':
--    const: 1
--
--  '#power-domain-cells':
--    const: 1
--
--  reg:
--    maxItems: 1
-+    const: qcom,gcc-apq8084
- 
-   nvmem-cells:
-     minItems: 1
-@@ -53,21 +46,13 @@ properties:
-   '#thermal-sensor-cells':
-     const: 1
- 
--  protected-clocks:
--    description:
--      Protected clock specifier list as per common clock binding.
--
- required:
-   - compatible
--  - reg
--  - '#clock-cells'
--  - '#reset-cells'
--  - '#power-domain-cells'
-   - nvmem-cells
-   - nvmem-cell-names
-   - '#thermal-sensor-cells'
- 
--additionalProperties: false
-+unevaluatedProperties: false
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-index 824d80530683..2703b53150d8 100644
---- a/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-@@ -15,8 +15,6 @@ description:
-   power domains.
- 
-   See also:
--  - dt-bindings/clock/qcom,gcc-apq8084.h
--  - dt-bindings/reset/qcom,gcc-apq8084.h
-   - dt-bindings/clock/qcom,gcc-ipq4019.h
-   - dt-bindings/clock/qcom,gcc-ipq6018.h
-   - dt-bindings/reset/qcom,gcc-ipq6018.h
-@@ -40,7 +38,6 @@ allOf:
- properties:
-   compatible:
-     enum:
--      - qcom,gcc-apq8084
-       - qcom,gcc-ipq4019
-       - qcom,gcc-ipq6018
-       - qcom,gcc-ipq8064
--- 
-2.34.1
+Thank you for the hint. However, unfortunately, I didn't use tracepoint
+for that. However, the key idea is the thing that I should take!
 
+Thanks a lot!
+
+Thanks,
+Byungchul
+
+> 
+> -- Steve
