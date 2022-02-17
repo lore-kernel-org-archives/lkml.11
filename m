@@ -2,178 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B371C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 10:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239333AbiBQKsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 05:48:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38694 "EHLO
+        id S239312AbiBQKsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 05:48:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233671AbiBQKsF (ORCPT
+        with ESMTP id S230033AbiBQKsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 05:48:05 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 818A229412E;
-        Thu, 17 Feb 2022 02:47:49 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 24854D6E;
-        Thu, 17 Feb 2022 02:47:49 -0800 (PST)
-Received: from [10.57.17.240] (unknown [10.57.17.240])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C0B5D3F66F;
-        Thu, 17 Feb 2022 02:47:46 -0800 (PST)
-Subject: Re: [PATCH 1/2] thermal: cooling: Check Energy Model type in
- cpufreq_cooling and devfreq_cooling
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        amit daniel kachhap <amit.kachhap@gmail.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Pierre.Gondois@arm.com, Stephen Boyd <swboyd@chromium.org>,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20220207073036.14901-1-lukasz.luba@arm.com>
- <20220207073036.14901-2-lukasz.luba@arm.com> <YgG+TmLrCSXX4Bvt@google.com>
- <4a7d4e94-1461-5bac-5798-29998af9793a@arm.com> <YgKnnFl7Gp8AS30X@google.com>
- <e4532f65-7f8a-7e89-97c1-85cc61462040@arm.com> <YgQ9XLcto9v0fyTf@google.com>
- <d120110a-7d01-0cfd-f7eb-d160e17ec2a8@arm.com>
- <CAD=FV=VntGw1_AzJPpdOk0zSpOVZRH2X1JNg84JX+zCeU1jvXg@mail.gmail.com>
- <7c059f4f-7439-0cad-c398-96dbde4e49c1@linaro.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-Message-ID: <5b8ca53e-3595-85fd-5ae9-a5e8285e8513@arm.com>
-Date:   Thu, 17 Feb 2022 10:47:44 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Thu, 17 Feb 2022 05:48:50 -0500
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505581ED1DB;
+        Thu, 17 Feb 2022 02:48:35 -0800 (PST)
+Received: from relay10.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::230])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 8FCBAC5625;
+        Thu, 17 Feb 2022 10:35:31 +0000 (UTC)
+Received: (Authenticated sender: hadess@hadess.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id 08D12240006;
+        Thu, 17 Feb 2022 10:35:24 +0000 (UTC)
+Message-ID: <93e5dc0bbeb0b44c9b225946b3ab81d3af3a1789.camel@hadess.net>
+Subject: Re: [PATCH] HID: Add mapping for KEY_APP_LAUNCHER
+From:   Bastien Nocera <hadess@hadess.net>
+To:     William Mahon <wmahon@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     William Mahon <wmahon@google.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>, linux-input@vger.kernel.org
+Date:   Thu, 17 Feb 2022 11:35:24 +0100
+In-Reply-To: <20220217053354.1.I3a7746ad05d270161a18334ae06e3b6db1a1d339@changeid>
+References: <20220217053354.1.I3a7746ad05d270161a18334ae06e3b6db1a1d339@changeid>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-In-Reply-To: <7c059f4f-7439-0cad-c398-96dbde4e49c1@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
-
-On 2/17/22 10:10 AM, Daniel Lezcano wrote:
-> On 16/02/2022 18:33, Doug Anderson wrote:
->> Hi,
->>
->> On Wed, Feb 16, 2022 at 7:35 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
->>>
->>> Hi Matthias,
->>>
->>> On 2/9/22 10:17 PM, Matthias Kaehlcke wrote:
->>>> On Wed, Feb 09, 2022 at 11:16:36AM +0000, Lukasz Luba wrote:
->>>>>
->>>>>
->>>>> On 2/8/22 5:25 PM, Matthias Kaehlcke wrote:
->>>>>> On Tue, Feb 08, 2022 at 09:32:28AM +0000, Lukasz Luba wrote:
->>>>>>>
->>>>>>>
->>>
->>> [snip]
->>>
->>>>>>> Could you point me to those devices please?
->>>>>>
->>>>>> arch/arm64/boot/dts/qcom/sc7180-trogdor-*
->>>>>>
->>>>>> Though as per above they shouldn't be impacted by your change, 
->>>>>> since the
->>>>>> CPUs always pretend to use milli-Watts.
->>>>>>
->>>>>> [skipped some questions/answers since sc7180 isn't actually 
->>>>>> impacted by
->>>>>>     the change]
->>>>>
->>>>> Thank you Matthias. I will investigate your setup to get better
->>>>> understanding.
->>>>
->>>> Thanks!
->>>>
->>>
->>> I've checked those DT files and related code.
->>> As you already said, this patch is safe for them.
->>> So we can apply it IMO.
->>>
->>>
->>> -------------Off-topic------------------
->>> Not in $subject comments:
->>>
->>> AFAICS based on two files which define thermal zones:
->>> sc7180-trogdor-homestar.dtsi
->>> sc7180-trogdor-coachz.dtsi
->>>
->>> only the 'big' cores are used as cooling devices in the
->>> 'skin_temp_thermal' - the CPU6 and CPU7.
->>>
->>> I assume you don't want to model at all the power usage
->>> from the Little cluster (which is quite big: 6 CPUs), do you?
->>> I can see that the Little CPUs have small dyn-power-coeff
->>> ~30% of the big and lower max freq, but still might be worth
->>> to add them to IPA. You might give them more 'weight', to
->>> make sure they receive more power during power split.
->>>
->>> You also don't have GPU cooling device in that thermal zone.
->>> Based on my experience if your GPU is a power hungry one,
->>> e.g. 2-4Watts, you might get better results when you model
->>> this 'hot' device (which impacts your temp sensor reported value).
->>
->> I think the two boards you point at (homestar and coachz) are just the
->> two that override the default defined in the SoC dtsi file. If you
->> look in sc7180.dtsi you'll see 'gpuss1-thermal' which has a cooling
->> map. You can also see the cooling maps for the littles.
->>
->> I guess we don't have a `dynamic-power-coefficient` for the GPU,
->> though? Seems like we should, but I haven't dug through all the code
->> here...
+On Thu, 2022-02-17 at 05:33 +0000, William Mahon wrote:
+> The App Launcher key is used to bring up the Launcher menu.
 > 
-> The dynamic-power-coefficient is available for OPPs which includes 
-> CPUfreq and devfreq. As the GPU is managed by devfreq, setting the 
-> dynamic-power-coefficient makes the energy model available for it.
+> This patch adds a new key definition KEY_APP_LAUNCHER and maps
+> 0x0c02a28
+ 
+Is this a typo? It's not the same format as in your other patch.
+
+KEY_DASHBOARD as used in the Mac keyboard drivers looks like a good
+match for KEY_APP_LAUNCHER. If not, it would be good to explain why in
+the commit message.
+
+See 437184ae8bd1ef923a40b009e37801deae66ad55 for the KEY_DASHBOARD
+addition.
+
+> usage code to this new keycode. Additionally hid-debug is adjusted to
+> recognize this new usage code as well.
 > 
-> However, the OPPs must define the frequency and the voltage. That is the 
-> case for most platforms except on QCom platform.
+> Signed-off-by: William Mahon <wmahon@google.com>
+> ---
 > 
-> That may not be specified as it uses a frequency index and the hardware 
-> does the voltage change in our back. The QCom cpufreq backend get the 
-> voltage table from a register (or whatever) and completes the voltage 
-> values for the OPPs, thus adding the information which is missing in the 
-> device tree. The energy model can then initializes itself and allows the 
-> usage of the Energy Aware Scheduler.
+>  drivers/hid/hid-debug.c                | 1 +
+>  drivers/hid/hid-input.c                | 2 ++
+>  include/uapi/linux/input-event-codes.h | 2 ++
+>  3 files changed, 5 insertions(+)
 > 
-> However this piece of code is missing for the GPU part.
-> 
+> diff --git a/drivers/hid/hid-debug.c b/drivers/hid/hid-debug.c
+> index 01135713e8f9..36a42ad3b7bc 100644
+> --- a/drivers/hid/hid-debug.c
+> +++ b/drivers/hid/hid-debug.c
+> @@ -930,6 +930,7 @@ static const char *keys[KEY_MAX + 1] = {
+>         [KEY_SCREENSAVER] = "ScreenSaver",
+>         [KEY_VOICECOMMAND] = "VoiceCommand",
+>         [KEY_EMOJI_PICKER] = "EmojiPicker",
+> +       [KEY_APP_LAUNCHER] = "AppLauncher",
+>         [KEY_BRIGHTNESS_MIN] = "BrightnessMin",
+>         [KEY_BRIGHTNESS_MAX] = "BrightnessMax",
+>         [KEY_BRIGHTNESS_AUTO] = "BrightnessAuto",
+> diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+> index eccd89b5ea9f..7c89260826b2 100644
+> --- a/drivers/hid/hid-input.c
+> +++ b/drivers/hid/hid-input.c
+> @@ -1162,6 +1162,8 @@ static void hidinput_configure_usage(struct
+> hid_input *hidinput, struct hid_fiel
+>  
+>                 case 0x29d:
+> map_key_clear(KEY_KBD_LAYOUT_NEXT); break;
+>  
+> +               case 0x2a2:
+> map_key_clear(KEY_APP_LAUNCHER);    break;
+> +
+>                 case 0x2c7:
+> map_key_clear(KEY_KBDINPUTASSIST_PREV);             break;
+>                 case 0x2c8:
+> map_key_clear(KEY_KBDINPUTASSIST_NEXT);             break;
+>                 case 0x2c9:
+> map_key_clear(KEY_KBDINPUTASSIST_PREVGROUP);                break;
+> diff --git a/include/uapi/linux/input-event-codes.h
+> b/include/uapi/linux/input-event-codes.h
+> index 311a57f3e01a..fdf43cf14125 100644
+> --- a/include/uapi/linux/input-event-codes.h
+> +++ b/include/uapi/linux/input-event-codes.h
+> @@ -651,6 +651,8 @@
+>  #define KEY_DATA                       0x277
+>  #define KEY_ONSCREEN_KEYBOARD          0x278
+>  
+> +#define KEY_APP_LAUNCHER               0x27c
+> +
+>  #define BTN_TRIGGER_HAPPY              0x2c0
+>  #define BTN_TRIGGER_HAPPY1             0x2c0
+>  #define BTN_TRIGGER_HAPPY2             0x2c1
 
-Thank you for joining the discussion. I don't know about that Qcom
-GPU voltage information is missing.
-
-If the voltage is not available (only the frequencies), there is
-another way. There is an 'advanced' EM which uses registration function:
-em_dev_register_perf_domain(). It uses a local driver callback to get
-power for each found frequency. It has benefit because there is no
-restriction to 'fit' into the math formula, instead just avg power
-values can be feed into EM. It's called 'advanced' EM [1].
-
-Now we hit (again) the DT & EM issue (it's an old one, IIRC Morten
-was proposing from ~2014 this upstream, but EAS wasn't merged back
-then):
-where to store these power-freq values, which are then used by the
-callback. We have the 'dynamic-power-coefficient' in DT, but
-it has limitations. It would be good to have this simple array
-attached to the GPU/CPU node. IMHO it meet the requirement of DT,
-it describes the HW (it would have HZ and Watts values).
-
-Doug, Matthias could you have a look at that function and its
-usage, please [1]?
-If you guys would support me in this, I would start, with an RFC
-proposal, a discussion on LKML.
-
-
-[1] 
-https://elixir.bootlin.com/linux/v5.17-rc4/source/Documentation/power/energy-model.rst#L87
