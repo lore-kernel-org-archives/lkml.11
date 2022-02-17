@@ -2,81 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47553C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29879C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242182AbiBQRA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 12:00:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44872 "EHLO
+        id S243522AbiBQRAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 12:00:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiBQRAZ (ORCPT
+        with ESMTP id S242085AbiBQRA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 12:00:25 -0500
+        Thu, 17 Feb 2022 12:00:28 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8361E1A340B;
-        Thu, 17 Feb 2022 09:00:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754511A340B;
+        Thu, 17 Feb 2022 09:00:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED236178A;
-        Thu, 17 Feb 2022 17:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 810F3C340EC;
-        Thu, 17 Feb 2022 17:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645117210;
-        bh=gueckinjtOEIjelF1xO+nt1DmFDCQUSBxCQCM9yYzWU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Qw72mNq/xXwGORKaRPncZHgA5VCcWV1OV2LEKwCS595ZOh9bzA37f8EztIvjQAbXc
-         wYEx8XjgCpopejKhsbnTdvz9eurbwyPO9Ry75NpjnwTLBv7clYIgWJyFgi76mArrMP
-         u4x5xOySTXqr3NQTchaOX6Z3D7dEmDAea+mHa4ktXzVjUxQQIDsL9eA6Z2hnWWcrsV
-         NIgIQMwYrxQ27rycA300TlatQWXN3/6G+s/ZWPiHE0eyYFLqOiV+Excvqjk09z2BVR
-         3mL53JZxfP1wJZRcmGNt+0RXqWiJ2hXqCbvWCXw7T2zMhqWOTGtHGtbUcB5eo6deQO
-         lKbdGxqEmoptw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 66BBFE6D446;
-        Thu, 17 Feb 2022 17:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 128226178A;
+        Thu, 17 Feb 2022 17:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA09C340E8;
+        Thu, 17 Feb 2022 17:00:06 +0000 (UTC)
+Date:   Thu, 17 Feb 2022 12:00:05 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     "Theodore Ts'o" <tytso@mit.edu>
+Cc:     Byungchul Park <byungchul.park@lge.com>,
+        torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
+        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, peterz@infradead.org,
+        will@kernel.org, tglx@linutronix.de, joel@joelfernandes.org,
+        sashal@kernel.org, daniel.vetter@ffwll.ch,
+        chris@chris-wilson.co.uk, duyuyang@gmail.com,
+        johannes.berg@intel.com, tj@kernel.org, willy@infradead.org,
+        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
+        gregkh@linuxfoundation.org, kernel-team@lge.com,
+        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
+        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
+        ngupta@vflare.org, linux-block@vger.kernel.org, axboe@kernel.dk,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
+        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com
+Subject: Re: [PATCH 00/16] DEPT(Dependency Tracker)
+Message-ID: <20220217120005.67f5ddf4@gandalf.local.home>
+In-Reply-To: <Yg5u7dzUxL3Vkncg@mit.edu>
+References: <1645095472-26530-1-git-send-email-byungchul.park@lge.com>
+        <Yg5u7dzUxL3Vkncg@mit.edu>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] Revert "net: ethernet: bgmac: Use
- devm_platform_ioremap_resource_byname"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164511721041.14515.4448188702966988874.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Feb 2022 17:00:10 +0000
-References: <20220216184634.2032460-1-f.fainelli@gmail.com>
-In-Reply-To: <20220216184634.2032460-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, jonas.gorski@gmail.com,
-        rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com,
-        davem@davemloft.net, kuba@kernel.org, yangyingliang@huawei.com,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Thu, 17 Feb 2022 10:51:09 -0500
+"Theodore Ts'o" <tytso@mit.edu> wrote:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+> I know that you're trying to help us, but this tool needs to be far
+> better than Lockdep before we should think about merging it.  Even if
+> it finds 5% more potential deadlocks, if it creates 95% more false
+> positive reports --- and the ones it finds are crazy things that
+> rarely actually happen in practice, are the costs worth the benefits?
+> And who is bearing the costs, and who is receiving the benefits?
 
-On Wed, 16 Feb 2022 10:46:34 -0800 you wrote:
-> From: Jonas Gorski <jonas.gorski@gmail.com>
-> 
-> This reverts commit 3710e80952cf2dc48257ac9f145b117b5f74e0a5.
-> 
-> Since idm_base and nicpm_base are still optional resources not present
-> on all platforms, this breaks the driver for everything except Northstar
-> 2 (which has both).
-> 
-> [...]
+I personally believe that there's potential that this can be helpful and we
+will want to merge it.
 
-Here is the summary with links:
-  - [net] Revert "net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname"
-    https://git.kernel.org/netdev/net/c/6aba04ee3263
+But, what I believe Ted is trying to say is, if you do not know if the
+report is a bug or not, please do not ask the maintainers to determine it
+for you. This is a good opportunity for you to look to see why your tool
+reported an issue, and learn that subsystem. Look at if this is really a
+bug or not, and investigate why.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The likely/unlikely tracing I do finds issues all over the kernel. But
+before I report anything, I look at the subsystem and determine *why* it's
+reporting what it does. In some cases, it's just a config issue. Where, I
+may submit a patch saying "this is 100% wrong in X config, and we should
+just remove the "unlikely". But I did the due diligence to find out exactly
+what the issue is, and why the tooling reported what it reported.
 
+I want to stress that your Dept tooling looks to have the potential of
+being something that will be worth while including. But the false positives
+needs to be down to the rate of lockdep false positives. As Ted said, if
+it's reporting 95% false positives, nobody is going to look at the 5% of
+real bugs that it finds.
 
+-- Steve
