@@ -2,208 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 955C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D69C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235819AbiBQGtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 01:49:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60748 "EHLO
+        id S235959AbiBQGzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 01:55:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235767AbiBQGtN (ORCPT
+        with ESMTP id S235843AbiBQGzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 01:49:13 -0500
-Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C10B25E5F9
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:48:59 -0800 (PST)
-Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
- (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Thu, 17 Feb 2022
- 14:33:54 +0800
-From:   Liang Yang <liang.yang@amlogic.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-mtd@lists.infradead.org>
-CC:     Liang Yang <liang.yang@amlogic.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v2 2/2] dt-bindings: nand: meson: refine Amlogic NAND controller driver
-Date:   Thu, 17 Feb 2022 14:33:46 +0800
-Message-ID: <20220217063346.21691-3-liang.yang@amlogic.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220217063346.21691-1-liang.yang@amlogic.com>
-References: <20220217063346.21691-1-liang.yang@amlogic.com>
+        Thu, 17 Feb 2022 01:55:13 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD99727F296
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:54:59 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id m7so4754912pjk.0
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:54:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=fbkjSAH5zzjT9bdkUEcfX+58XyqQCYr3PakKI23mckw=;
+        b=jCBnYGr0FwYAETE7VlgSz7COIhTuOqqXUvkcjf30rbfBPxuuk08YKvaOQPVYt4UgHb
+         FfNHWqxTe9rEjj3Qzmo5dVaJ9VS0shIflUfCiEbFtokKMjLM6qxMrkNcnR7AU50HiHxx
+         GP5KznxEUasfAj7zlqi0aMCfJ8H9WPHdB4/HalHPmbR0v4Ywo07XT2+LHLYOk3OotlmA
+         rZ+5JVE9CC4QqauK7OrfjE4N6aGvdyORyjg1WMtXhfMcIJeIElpgSoFGC5GR7ae4nlRr
+         eMizuvpnlNy1C8kSJaGVN1jJtgPa5P+RFPeYgpvdXqPLWJWVwdX/kadRBxOsAMOookYq
+         0aqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fbkjSAH5zzjT9bdkUEcfX+58XyqQCYr3PakKI23mckw=;
+        b=iakQWAMnzcKk/GEGxz926HV6tbPw92rKGpoVEDUReXFTo/5rENZSkCp/moNpWVdZF5
+         zOMucJ1JlVPoTeT6FNKsP7HLNBVtcMYRKBvwTJlE2l1g5Y7naOkvfR3RuEGD6+mY698a
+         69zk55gSpQRorHxdSCsR053WG2xpVN/tu+7N6RT6HySkakdIsMS8LosXtaYhCbLbCm4k
+         Gadpv+CRmfiNlz6kf9b0jzPZ0RKyNGlVckkzSCesQfjrROuoAV5ONjAT3f8ikrJnQVVr
+         umAzXEfaG6S2pAOvDPXm1Rjtu0C12t9OLQPImGlVaJnAaZVHjqVgpDe4Vqe9Hjo46eKv
+         G/qQ==
+X-Gm-Message-State: AOAM530FtAM6H7RAKz2Gqep7itQebioYrl0zdkDS08zOvXY0TyJ7RMI3
+        bmqccdr9xOc2kidqO9WnPQh5cQ==
+X-Google-Smtp-Source: ABdhPJyqT03tuQIizkw4NKuvMZCvYLmZOsIsuxvYN+JoBxu4Jal7bx4bH0PuqPgLP0/Oyt4zx3RGjw==
+X-Received: by 2002:a17:90b:360e:b0:1b9:d9f0:b37 with SMTP id ml14-20020a17090b360e00b001b9d9f00b37mr1634420pjb.111.1645080899225;
+        Wed, 16 Feb 2022 22:54:59 -0800 (PST)
+Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
+        by smtp.gmail.com with ESMTPSA id 8sm10115763pfl.164.2022.02.16.22.54.55
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 16 Feb 2022 22:54:58 -0800 (PST)
+Date:   Thu, 17 Feb 2022 14:54:51 +0800
+From:   Shawn Guo <shawn.guo@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v5 2/3] dt-bindings: interrupt-controller: Add Qualcomm
+ MPM support
+Message-ID: <20220217065447.GC31965@dragon>
+References: <20220216132830.32490-1-shawn.guo@linaro.org>
+ <20220216132830.32490-3-shawn.guo@linaro.org>
+ <1645070363.942246.2266021.nullmailer@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.28.8.21]
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1645070363.942246.2266021.nullmailer@robh.at.kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-convert txt to yaml and refine the meson NFC clock document.
+On Wed, Feb 16, 2022 at 09:59:23PM -0600, Rob Herring wrote:
+> On Wed, 16 Feb 2022 21:28:29 +0800, Shawn Guo wrote:
+> > It adds DT binding support for Qualcomm MPM interrupt controller.
+> > 
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> > ---
+> >  .../interrupt-controller/qcom,mpm.yaml        | 94 +++++++++++++++++++
+> >  1 file changed, 94 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml
+> > 
+> 
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Signed-off-by: Liang Yang <liang.yang@amlogic.com>
----
- .../bindings/mtd/amlogic,meson-nand.txt       | 60 ----------------
- .../bindings/mtd/amlogic,meson-nand.yaml      | 70 +++++++++++++++++++
- 2 files changed, 70 insertions(+), 60 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
- create mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
+I ran dt_binding_check without DT_CHECKER_FLAGS=-m.  Will re-test and
+fix.
 
-diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
-deleted file mode 100644
-index 5794ab1147c1..000000000000
---- a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
-+++ /dev/null
-@@ -1,60 +0,0 @@
--Amlogic NAND Flash Controller (NFC) for GXBB/GXL/AXG family SoCs
--
--This file documents the properties in addition to those available in
--the MTD NAND bindings.
--
--Required properties:
--- compatible : contains one of:
--  - "amlogic,meson-gxl-nfc"
--  - "amlogic,meson-axg-nfc"
--- clocks     :
--	A list of phandle + clock-specifier pairs for the clocks listed
--	in clock-names.
--
--- clock-names: Should contain the following:
--	"core" - NFC module gate clock
--	"device" - device clock from eMMC sub clock controller
--	"rx" - rx clock phase
--	"tx" - tx clock phase
--
--- amlogic,mmc-syscon	: Required for NAND clocks, it's shared with SD/eMMC
--				controller port C
--
--Optional children nodes:
--Children nodes represent the available nand chips.
--
--Other properties:
--see Documentation/devicetree/bindings/mtd/nand-controller.yaml for generic bindings.
--
--Example demonstrate on AXG SoC:
--
--	sd_emmc_c_clkc: mmc@7000 {
--		compatible = "amlogic,meson-axg-mmc-clkc", "syscon";
--		reg = <0x0 0x7000 0x0 0x800>;
--	};
--
--	nand-controller@7800 {
--		compatible = "amlogic,meson-axg-nfc";
--		reg = <0x0 0x7800 0x0 0x100>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--		interrupts = <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
--
--		clocks = <&clkc CLKID_SD_EMMC_C>,
--			<&sd_emmc_c_clkc CLKID_MMC_DIV>,
--			<&sd_emmc_c_clkc CLKID_MMC_PHASE_RX>,
--			<&sd_emmc_c_clkc CLKID_MMC_PHASE_TX>;
--		clock-names = "core", "device", "rx", "tx";
--		amlogic,mmc-syscon = <&sd_emmc_c_clkc>;
--
--		pinctrl-names = "default";
--		pinctrl-0 = <&nand_pins>;
--
--		nand@0 {
--			reg = <0>;
--			#address-cells = <1>;
--			#size-cells = <1>;
--
--			nand-on-flash-bbt;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
-new file mode 100644
-index 000000000000..671f0a8fdc7c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
-@@ -0,0 +1,70 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/amlogic,mmc-clkc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Amlogic NAND Flash Controller (NFC) for GXBB/GXL/AXG family SoCs
-+
-+maintainers:
-+  - liang.yang@amlogic.com
-+
-+properties:
-+  compatible:
-+    enum:
-+      - "amlogic,meson-gxl-nfc"
-+      - "amlogic,meson-axg-nfc"
-+
-+  reg:
-+    maxItems: 2
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: "core", "device"
-+
-+  "#clock-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - "#clock-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    nand-controller@7800 {
-+	compatible = "amlogic,meson-axg-nfc";
-+	reg = <0x0 0x7800 0x0 0x100>,
-+	      <0x0 0x7000 0x0 0x1>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	interrupts = <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
-+
-+	clocks = <&clkc CLKID_SD_EMMC_C>,
-+		<&clkc CLKID_FCLK_DIV2>;
-+	clock-names = "core", "device";
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&nand_pins>;
-+
-+	nand@0 {
-+		reg = <0>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+
-+		nand-on-flash-bbt;
-+	};
-+     };
-+
-+...
-\ No newline at end of file
--- 
-2.34.1
+Shawn
 
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml: properties:qcom,mpm-pin-count: 'oneOf' conditional failed, one must be fixed:
+> 	'type' is a required property
+> 		hint: A vendor boolean property can use "type: boolean"
+> 	Additional properties are not allowed ('maxItems' was unexpected)
+> 		hint: A vendor boolean property can use "type: boolean"
+> 	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml: properties:qcom,mpm-pin-count: 'oneOf' conditional failed, one must be fixed:
+> 		'enum' is a required property
+> 		'const' is a required property
+> 		hint: A vendor string property with exact values has an implicit type
+> 		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+> 	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml: properties:qcom,mpm-pin-count: 'oneOf' conditional failed, one must be fixed:
+> 		'$ref' is a required property
+> 		'allOf' is a required property
+> 		hint: A vendor property needs a $ref to types.yaml
+> 		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+> 	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+> 	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml: properties:qcom,mpm-pin-map: 'oneOf' conditional failed, one must be fixed:
+> 	'type' is a required property
+> 		hint: A vendor boolean property can use "type: boolean"
+> 	'description' is a required property
+> 		hint: A vendor boolean property can use "type: boolean"
+> 	Additional properties are not allowed ('$ref', 'items' were unexpected)
+> 		hint: A vendor boolean property can use "type: boolean"
+> 	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml: properties:qcom,mpm-pin-map: 'oneOf' conditional failed, one must be fixed:
+> 		'enum' is a required property
+> 		'const' is a required property
+> 		hint: A vendor string property with exact values has an implicit type
+> 		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+> 	'/schemas/types.yaml#/definitions/uint32-matrix' does not match '^#/(definitions|$defs)/'
+> 		hint: A vendor property can have a $ref to a a $defs schema
+> 	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+> 	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml: ignoring, error in schema: properties: qcom,mpm-pin-count
+> Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.example.dt.yaml:0:0: /example-0/interrupt-controller@45f01b8: failed to match any schema with compatible: ['qcom,qcm2290-mpm']
+> 
+> doc reference errors (make refcheckdocs):
+> 
+> See https://patchwork.ozlabs.org/patch/1593741
+> 
+> This check can fail if there are any dependencies. The base for a patch
+> series is generally the most recent rc1.
+> 
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> date:
+> 
+> pip3 install dtschema --upgrade
+> 
+> Please check and re-submit.
+> 
