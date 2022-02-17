@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4503C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 00:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3600C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 00:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229501AbiBQAXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 19:23:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36778 "EHLO
+        id S229576AbiBQAXo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 19:23:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiBQAXP (ORCPT
+        with ESMTP id S229471AbiBQAXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 19:23:15 -0500
-Received: from outbound-smtp15.blacknight.com (outbound-smtp15.blacknight.com [46.22.139.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5021137005
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 16:23:00 -0800 (PST)
+        Wed, 16 Feb 2022 19:23:34 -0500
+Received: from outbound-smtp42.blacknight.com (outbound-smtp42.blacknight.com [46.22.139.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52E5137005
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 16:23:21 -0800 (PST)
 Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
-        by outbound-smtp15.blacknight.com (Postfix) with ESMTPS id 3A38F1C424E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:22:59 +0000 (GMT)
-Received: (qmail 22882 invoked from network); 17 Feb 2022 00:22:58 -0000
+        by outbound-smtp42.blacknight.com (Postfix) with ESMTPS id 78F3720F2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:23:20 +0000 (GMT)
+Received: (qmail 23542 invoked from network); 17 Feb 2022 00:23:20 -0000
 Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.17.223])
-  by 81.17.254.9 with ESMTPA; 17 Feb 2022 00:22:58 -0000
+  by 81.17.254.9 with ESMTPA; 17 Feb 2022 00:23:20 -0000
 From:   Mel Gorman <mgorman@techsingularity.net>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Aaron Lu <aaron.lu@intel.com>,
@@ -31,9 +31,9 @@ Cc:     Aaron Lu <aaron.lu@intel.com>,
         LKML <linux-kernel@vger.kernel.org>,
         Linux-MM <linux-mm@kvack.org>,
         Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 2/6] mm/page_alloc: Track range of active PCP lists during bulk free
-Date:   Thu, 17 Feb 2022 00:22:23 +0000
-Message-Id: <20220217002227.5739-3-mgorman@techsingularity.net>
+Subject: [PATCH 4/6] mm/page_alloc: Drain the requested list first during bulk free
+Date:   Thu, 17 Feb 2022 00:22:25 +0000
+Message-Id: <20220217002227.5739-5-mgorman@techsingularity.net>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220217002227.5739-1-mgorman@techsingularity.net>
 References: <20220217002227.5739-1-mgorman@techsingularity.net>
@@ -43,55 +43,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-free_pcppages_bulk() frees pages in a round-robin fashion. Originally,
-this was dealing only with migratetypes but storing high-order pages
-means that there can be many more empty lists that are uselessly
-checked. Track the minimum and maximum active pindex to reduce the
-search space.
+Prior to the series, pindex 0 (order-0 MIGRATE_UNMOVABLE) was always
+skipped first and the precise reason is forgotten. A potential reason may
+have been to artificially preserve MIGRATE_UNMOVABLE but there is no reason
+why that would be optimal as it depends on the workload. The more likely
+reason is that it was less complicated to do a pre-increment instead of
+a post-increment in terms of overall code flow. As free_pcppages_bulk()
+now typically receives the pindex of the PCP list that exceeded high,
+always start draining that list.
 
 Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 ---
- mm/page_alloc.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ mm/page_alloc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 08de32cfd9bb..85cc1fe8bcc5 100644
+index dfc347a58ea6..635a4e0f70b4 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -1450,6 +1450,8 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 					struct per_cpu_pages *pcp)
- {
- 	int pindex = 0;
-+	int min_pindex = 0;
-+	int max_pindex = NR_PCP_LISTS - 1;
- 	int batch_free = 0;
- 	int nr_freed = 0;
- 	unsigned int order;
-@@ -1475,13 +1477,20 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 		 */
- 		do {
- 			batch_free++;
--			if (++pindex == NR_PCP_LISTS)
--				pindex = 0;
-+			if (++pindex > max_pindex)
-+				pindex = min_pindex;
- 			list = &pcp->lists[pindex];
--		} while (list_empty(list));
-+			if (!list_empty(list))
-+				break;
+@@ -1463,6 +1463,10 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+ 	 * below while (list_empty(list)) loop.
+ 	 */
+ 	count = min(pcp->count, count);
 +
-+			if (pindex == max_pindex)
-+				max_pindex--;
-+			if (pindex == min_pindex)
-+				min_pindex++;
-+		} while (1);
- 
- 		/* This is the only non-empty list. Free them all. */
--		if (batch_free == NR_PCP_LISTS)
-+		if (batch_free >= max_pindex - min_pindex)
- 			batch_free = count;
- 
- 		order = pindex_to_order(pindex);
++	/* Ensure requested pindex is drained first. */
++	pindex = pindex - 1;
++
+ 	while (count > 0) {
+ 		struct list_head *list;
+ 		int nr_pages;
 -- 
 2.31.1
 
