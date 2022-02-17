@@ -2,123 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D14C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 12:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5130EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 12:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240595AbiBQM5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 07:57:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49904 "EHLO
+        id S240603AbiBQM6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 07:58:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbiBQM5v (ORCPT
+        with ESMTP id S239565AbiBQM6M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 07:57:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C37273746
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 04:57:36 -0800 (PST)
+        Thu, 17 Feb 2022 07:58:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08E42838F2;
+        Thu, 17 Feb 2022 04:57:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 994A1B82176
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 12:57:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE58DC340E8;
-        Thu, 17 Feb 2022 12:57:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6574E61AFE;
+        Thu, 17 Feb 2022 12:57:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 319CEC340E8;
+        Thu, 17 Feb 2022 12:57:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645102654;
-        bh=kgjS5WxgVrvPzinoXteH3mXgOP0TCfzBtzDNqiGy1Eg=;
+        s=k20201202; t=1645102675;
+        bh=d7BtWolvXWXZKgrXrFp9Lu+XZhjHbvJjoDM+WOz/nfs=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TvrdZQFBn72v6oLTS1g5ytXiKTh95tIKNQZlXZ2P10HtrbAc2lpx/rdcUUe1xbkNG
-         ukX1M8e6U3zK1Fsdv7439Y6HsyLUjag80AEhMaYaw2ZnjmCIdT8h52X6FI5FN8d/A3
-         gCYELIsnagHOkwsj5gE/6YFBVvg3FS0ppr1WZ8k43gXNJKfux+jVpsPY47aYEY3MlJ
-         TMbrY+F3GrrQKuHh/0T/Z8jCEd/wxAexZSbPMvB7lMxS+tmZz0LUYRREvfthWT8pkh
-         LNiuTNT5M963ntdoV11HXHABnQZiiuJbuo+BPaNMn5SQBRVdUYLaFhTQkRJMfeo2q8
-         lZCE8Ss+H1UMw==
-Date:   Thu, 17 Feb 2022 13:57:31 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Aaron Tomlin <atomlin@redhat.com>
-Cc:     Phil Auld <pauld@redhat.com>, tglx@linutronix.de, mingo@kernel.org,
-        mingo@redhat.com, atomlin@atomlin.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
- idle tick was stopped too
-Message-ID: <20220217125731.GA744754@lothringen>
-References: <20220203214339.1889971-1-atomlin@redhat.com>
- <YfxVpEO+UJTC+a9e@lorien.usersys.redhat.com>
- <20220216143412.dwxjlkq4w2zeweld@ava.usersys.com>
+        b=lo6f3HSoiLX8WRtC3orTyi+8PFoKhNrQ64Z/ZCHF2gnv2FATdwdHJdpoYiXrQbFS2
+         4AdQNmgF2g5t0Kqo6UikU9lB3DlA73BQvQJLtB+YOh56fztaTeYB95wgRiirwJG8eE
+         rKeYhOS5soGzeXWuYNBpdlGZO1+7LoDVnsmt5gDW7TRj5VQZRFvkkpJ59436/4kpn3
+         g9eFn+DylY2ULa7i3SZv1YcRmHvafNDSKBGocW8DKdeQKx5FU9ydblPNBMXpuc3StM
+         gqEiVHNORJ5pdyhHti/yAxc7/xXUay7wUAFLaa443w2JPvpBF/Jr4SC3EvWMVObYne
+         0nNBuwzk+Fr2g==
+Date:   Thu, 17 Feb 2022 07:05:37 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Greg KH <greg@kroah.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Michael Straube <straube.linux@gmail.com>
+Subject: Re: linux-next: manual merge of the staging tree with the
+ kspp-gustavo tree
+Message-ID: <20220217130537.GA930267@embeddedor>
+References: <20220217141603.7a0ef4ed@canb.auug.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220216143412.dwxjlkq4w2zeweld@ava.usersys.com>
+In-Reply-To: <20220217141603.7a0ef4ed@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 02:34:12PM +0000, Aaron Tomlin wrote:
-> On Thu 2022-02-03 17:22 -0500, Phil Auld wrote:
-> > As I said earlier, I don't think you want to call quiet_vmstat()
-> > unconditionally. And I don't think this will catch the cases you are
-> > trying to fix. Once the tick is stopped tick_nohz_stop_tick should not be
-> > getting called again until it's been restarted.
+On Thu, Feb 17, 2022 at 02:16:03PM +1100, Stephen Rothwell wrote:
+> Hi all,
 > 
-> Phil,
+> Today's linux-next merge of the staging tree got a conflict in:
 > 
-> Sorry about the delay. If I understand correctly, I see a scenario by which
-> tick_nohz_stop_tick() can be called on transition/or exit from idle (e.g.
-> default_idle_call()):
+>   drivers/staging/r8188eu/include/ieee80211.h
 > 
-> 	1.	The idle/or scheduling-clock was previously
-> 		stopped
+> between commit:
 > 
-> 	2.	It is considered safe for the scheduling-clock
-> 	        tick to remain "stopped"/or omitted; no need to
-> 		reprogram and enable a periodic tick
-> 		(e.g. no queued/or expired pending timer)
+>   fbe9ccfe809d ("treewide: Replace zero-length arrays with flexible-array members")
 > 
-> 	  ...
->             do_idle
-> 	      cpuidle_idle_call
-> 	      {
+> from the kspp-gustavo tree and commit:
 > 
-> 		...
+>   6c36bcbfcef7 ("staging: r8188eu: remove unused structs from ieee80211.h")
 > 
-> 	.--     default_idle_call
-> 	|         arch_cpu_idle
-> 	|         goto exit_idle
->         |
->         |       exit_idle:
-> 	|         __current_set_polling()
->         |
-> 	|     }
->         |     tick_nohz_idle_exit()
->         |     {
->         |
->         |       tick_stopped = ts->tick_stopped
->         |
->         |       if (tick_stopped)
->         |         tick_nohz_idle_update_tick(ts, now)
->         |           if (tick_nohz_full_cpu(smp_processor_id()))
->         |             __tick_nohz_full_update_tick(ts, now)
->         |             {
->         |               int cpu = smp_processor_id()
->         |
->         |               if (can_stop_full_tick(cpu, ts))
->         |                 tick_nohz_stop_sched_tick(ts, cpu)
->         |                   if (tick_nohz_next_event(ts, cpu))
->         '--                   tick_nohz_stop_tick(ts, cpu)
->                       }
->               }
+> from the staging tree.
 > 
-> If I understand correctly, __tick_nohz_full_update_tick() can return with
-> no changes to the current tick (e.g. expire time == KTIME_MAX), no?
+> I fixed it up (the latter removed the structs updated by the former) and
+> can carry the fix as necessary. This is now fixed as far as linux-next
+> is concerned, but any non trivial conflicts should be mentioned to your
+> upstream maintainer when your tree is submitted for merging.  You may
+> also want to consider cooperating with the maintainer of the conflicting
+> tree to minimise any particularly complex conflicts.
 
-Hmm, but does it matter? The issue seem to be that we can enter in idle loop without
-flushing vmstat. Or am I missing something else?
+I just fixed this up in my -next tree.
 
-Thanks.
+Thanks for the report, Stephen.
+--
+Gustavo
 
-> 
-> 
-> Kind regards,
-> 
-> -- 
-> Aaron Tomlin
-> 
