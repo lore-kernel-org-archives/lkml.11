@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2920C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4189C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244360AbiBQSYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:24:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56852 "EHLO
+        id S244316AbiBQSYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:24:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244296AbiBQSX4 (ORCPT
+        with ESMTP id S244309AbiBQSX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:23:56 -0500
+        Thu, 17 Feb 2022 13:23:59 -0500
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFFCE3A5F8
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:23:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 353B239BA8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:23:44 -0800 (PST)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6C56215BE;
-        Thu, 17 Feb 2022 10:23:32 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E7A0715DB;
+        Thu, 17 Feb 2022 10:23:43 -0800 (PST)
 Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3CBD13F718;
-        Thu, 17 Feb 2022 10:23:30 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B83C43F718;
+        Thu, 17 Feb 2022 10:23:41 -0800 (PST)
 From:   James Morse <james.morse@arm.com>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -35,9 +35,9 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         D Scott Phillips OS <scott@os.amperecomputing.com>,
         lcherian@marvell.com, bobo.shaobowang@huawei.com,
         tan.shaopeng@fujitsu.com
-Subject: [PATCH v3 13/21] x86/recstrl: Add per-rmid arch private storage for overflow and chunks
-Date:   Thu, 17 Feb 2022 18:21:02 +0000
-Message-Id: <20220217182110.7176-14-james.morse@arm.com>
+Subject: [PATCH v3 17/21] x86/resctrl: Move mbm_overflow_count() into resctrl_arch_rmid_read()
+Date:   Thu, 17 Feb 2022 18:21:06 +0000
+Message-Id: <20220217182110.7176-18-james.morse@arm.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220217182110.7176-1-james.morse@arm.com>
 References: <20220217182110.7176-1-james.morse@arm.com>
@@ -47,133 +47,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A renamed __rmid_read() is intended as the function that an
+resctrl_arch_rmid_read() is intended as the function that an
 architecture agnostic resctrl filesystem driver can use to
 read a value in bytes from a counter. Currently the function returns
-the MBM values in chunks directly from hardware. For bandwidth
-counters the resctrl filesystem uses this to calculate the number of
-bytes ever seen.
+the MBM values in chunks directly from hardware. When reading a bandwidth
+counter, mbm_overflow_count() must be used to correct for any possible
+overflow.
 
-MPAM's scaling of counters can be changed at runtime, reducing the
-resolution but increasing the range. When this is changed the prev_msr
-values need to be converted by the architecture code.
+mbm_overflow_count() is architecture specific, its behaviour should
+be part of resctrl_arch_rmid_read().
 
-Add an array for per-rmid private storage. The prev_msr and chunks
-values will move here to allow resctrl_arch_rmid_read() to always
-return the number of bytes read by this counter without assistance
-from the filesystem. The values are moved in later patches when
-the overflow and correction calls are moved into __rmid_read().
+Move the mbm_overflow_count() calls into resctrl_arch_rmid_read().
+This allows the resctrl filesystems's prev_msr to be removed in
+favour of the architecture private version.
 
 Signed-off-by: James Morse <james.morse@arm.com>
-----
-Changes since v2:
- * Capitalisation
- * Use __rmid_read() as this patch is earlier in the series.
- * kfree() one array in arch_domain_mbm_alloc() when allocating the other
-   fails, instead of relying on domain_free().
- * Remove the documentation that domain_free() has to be called to cleanup
-   if this call fails.
 ---
- arch/x86/kernel/cpu/resctrl/core.c     | 35 ++++++++++++++++++++++++++
- arch/x86/kernel/cpu/resctrl/internal.h | 14 +++++++++++
- 2 files changed, 49 insertions(+)
+ arch/x86/kernel/cpu/resctrl/internal.h |  2 --
+ arch/x86/kernel/cpu/resctrl/monitor.c  | 35 +++++++++++++++-----------
+ 2 files changed, 20 insertions(+), 17 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
-index 90ebb7d71af2..de62b0b87ced 100644
---- a/arch/x86/kernel/cpu/resctrl/core.c
-+++ b/arch/x86/kernel/cpu/resctrl/core.c
-@@ -413,6 +413,8 @@ static void setup_default_ctrlval(struct rdt_resource *r, u32 *dc)
- 
- static void domain_free(struct rdt_hw_domain *hw_dom)
- {
-+	kfree(hw_dom->arch_mbm_total);
-+	kfree(hw_dom->arch_mbm_local);
- 	kfree(hw_dom->ctrl_val);
- 	kfree(hw_dom);
- }
-@@ -438,6 +440,34 @@ static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_domain *d)
- 	return 0;
- }
- 
-+/**
-+ * arch_domain_mbm_alloc() - Allocate arch private storage for the MBM counters
-+ * @num_rmid:	The size of the MBM counter array
-+ * @hw_dom:	The domain that owns the allocated arrays
-+ */
-+static int arch_domain_mbm_alloc(u32 num_rmid, struct rdt_hw_domain *hw_dom)
-+{
-+	size_t tsize;
-+
-+	if (is_mbm_total_enabled()) {
-+		tsize = sizeof(*hw_dom->arch_mbm_total);
-+		hw_dom->arch_mbm_total = kcalloc(num_rmid, tsize, GFP_KERNEL);
-+		if (!hw_dom->arch_mbm_total)
-+			return -ENOMEM;
-+	}
-+	if (is_mbm_local_enabled()) {
-+		tsize = sizeof(*hw_dom->arch_mbm_local);
-+		hw_dom->arch_mbm_local = kcalloc(num_rmid, tsize, GFP_KERNEL);
-+		if (!hw_dom->arch_mbm_local) {
-+			kfree(hw_dom->arch_mbm_total);
-+			hw_dom->arch_mbm_total = NULL;
-+			return -ENOMEM;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- /*
-  * domain_add_cpu - Add a cpu to a resource's domain list.
-  *
-@@ -487,6 +517,11 @@ static void domain_add_cpu(int cpu, struct rdt_resource *r)
- 		return;
- 	}
- 
-+	if (r->mon_capable && arch_domain_mbm_alloc(r->num_rmid, hw_dom)) {
-+		domain_free(hw_dom);
-+		return;
-+	}
-+
- 	list_add_tail(&d->list, add_pos);
- 
- 	err = resctrl_online_domain(r, d);
 diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index c50c8911ef59..156d526c6952 100644
+index e55d1774ce9c..5ab8b448fb7e 100644
 --- a/arch/x86/kernel/cpu/resctrl/internal.h
 +++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -303,17 +303,31 @@ struct mbm_state {
- 	bool	delta_comp;
- };
- 
-+/**
-+ * struct arch_mbm_state - values used to compute resctrl_arch_rmid_read()s
-+ *			   return value.
-+ * @prev_msr:	Value of IA32_QM_CTR last time it was read for the RMID used to
-+ *		find this struct.
-+ */
-+struct arch_mbm_state {
-+	u64	prev_msr;
-+};
-+
+@@ -281,7 +281,6 @@ struct rftype {
  /**
-  * struct rdt_hw_domain - Arch private attributes of a set of CPUs that share
-  *			  a resource
-  * @d_resctrl:	Properties exposed to the resctrl file system
-  * @ctrl_val:	array of cache or mem ctrl values (indexed by CLOSID)
-+ * @arch_mbm_total:	arch private state for MBM total bandwidth
-+ * @arch_mbm_local:	arch private state for MBM local bandwidth
-  *
-  * Members of this structure are accessed via helpers that provide abstraction.
+  * struct mbm_state - status for each MBM counter in each domain
+  * @chunks:	Total data moved (multiply by rdt_group.mon_scale to get bytes)
+- * @prev_msr:	Value of IA32_QM_CTR for this RMID last time we read it
+  * @prev_bw_chunks: Previous chunks value read when for bandwidth calculation
+  * @prev_bw:	The most recent bandwidth in MBps
+  * @delta_bw:	Difference between the current and previous bandwidth
+@@ -289,7 +288,6 @@ struct rftype {
   */
- struct rdt_hw_domain {
- 	struct rdt_domain		d_resctrl;
- 	u32				*ctrl_val;
-+	struct arch_mbm_state		*arch_mbm_total;
-+	struct arch_mbm_state		*arch_mbm_local;
- };
+ struct mbm_state {
+ 	u64	chunks;
+-	u64	prev_msr;
+ 	u64	prev_bw_chunks;
+ 	u32	prev_bw;
+ 	u32	delta_bw;
+diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+index 277c22f8c976..e04bc97c710d 100644
+--- a/arch/x86/kernel/cpu/resctrl/monitor.c
++++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+@@ -167,9 +167,20 @@ void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
+ 		memset(am, 0, sizeof(*am));
+ }
  
- static inline struct rdt_hw_domain *resctrl_to_arch_dom(struct rdt_domain *r)
++static u64 mbm_overflow_count(u64 prev_msr, u64 cur_msr, unsigned int width)
++{
++	u64 shift = 64 - width, chunks;
++
++	chunks = (cur_msr << shift) - (prev_msr << shift);
++	return chunks >> shift;
++}
++
+ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+ 			   u32 rmid, enum resctrl_event_id eventid, u64 *val)
+ {
++	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
++	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
++	struct arch_mbm_state *am;
+ 	u64 msr_val;
+ 
+ 	if (!cpumask_test_cpu(smp_processor_id(), &d->cpu_mask))
+@@ -191,7 +202,13 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+ 	if (msr_val & RMID_VAL_UNAVAIL)
+ 		return -EINVAL;
+ 
+-	*val = msr_val;
++	am = get_arch_mbm_state(hw_dom, rmid, eventid);
++	if (am) {
++		*val = mbm_overflow_count(am->prev_msr, msr_val, hw_res->mbm_width);
++		am->prev_msr = msr_val;
++	} else {
++		*val = msr_val;
++	}
+ 
+ 	return 0;
+ }
+@@ -322,19 +339,10 @@ void free_rmid(u32 rmid)
+ 		list_add_tail(&entry->list, &rmid_free_lru);
+ }
+ 
+-static u64 mbm_overflow_count(u64 prev_msr, u64 cur_msr, unsigned int width)
+-{
+-	u64 shift = 64 - width, chunks;
+-
+-	chunks = (cur_msr << shift) - (prev_msr << shift);
+-	return chunks >> shift;
+-}
+-
+ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+ {
+-	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
+ 	struct mbm_state *m;
+-	u64 chunks, tval = 0;
++	u64 tval = 0;
+ 
+ 	if (rr->first)
+ 		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
+@@ -363,13 +371,10 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+ 
+ 	if (rr->first) {
+ 		memset(m, 0, sizeof(struct mbm_state));
+-		m->prev_msr = tval;
+ 		return 0;
+ 	}
+ 
+-	chunks = mbm_overflow_count(m->prev_msr, tval, hw_res->mbm_width);
+-	m->chunks += chunks;
+-	m->prev_msr = tval;
++	m->chunks += tval;
+ 
+ 	rr->val += get_corrected_mbm_count(rmid, m->chunks);
+ 
 -- 
 2.30.2
 
