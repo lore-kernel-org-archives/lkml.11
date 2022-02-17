@@ -2,118 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D747DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB870C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245261AbiBQVeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:34:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57978 "EHLO
+        id S245566AbiBQVfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 16:35:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231585AbiBQVem (ORCPT
+        with ESMTP id S245444AbiBQVfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:34:42 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C872111109A;
-        Thu, 17 Feb 2022 13:34:26 -0800 (PST)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21HLCpqB029719;
-        Thu, 17 Feb 2022 21:33:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=1IknNosHkgrIItd4+fz82yY/ZudLplMKSRIl8wwtLPw=;
- b=pQQCjtZw5ATEiWRyDBMN/rgTp0SQvwwErpt1jC31LpWcXQ5vCFmBf8A+DlTJDKd7UkDc
- OMivn8AKW2kHSegw09cJVZIqllQDHdiQksEcU3kbpn1lrFD+i0z9KMQ3B6woq+V70gyS
- gViVQhsUsRkNhxxdiUy/LuPmp3qm45NdH2bB+ARfzjQ0AEdwxNs93oHRFq2x9apzv+qf
- iFCiPsFaU83KqHQGAdCMc6G7NQne5cF5ro52vbCf3iDTlpLbU788WQyWX7V53kgVgyed
- TyTwRxyAiUZx3boiEU8L9rOkFFGWJ6P0KJwPTSEyCEguEmNGZhMAJkIZbxyMSCj4MsGR gA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e9w6chfva-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 21:33:06 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21HLRFsa024521;
-        Thu, 17 Feb 2022 21:33:05 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e9w6chfun-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 21:33:05 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21HLDgYZ010027;
-        Thu, 17 Feb 2022 21:33:03 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06fra.de.ibm.com with ESMTP id 3e645kbguk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 21:33:03 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21HLX0cF37749028
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Feb 2022 21:33:00 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E83ADA405F;
-        Thu, 17 Feb 2022 21:32:59 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A8213A4054;
-        Thu, 17 Feb 2022 21:32:57 +0000 (GMT)
-Received: from sig-9-65-72-122.ibm.com (unknown [9.65.72.122])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 17 Feb 2022 21:32:57 +0000 (GMT)
-Message-ID: <d2528ee025956683574775ed9f1bb37665cdfb47.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 13/27] ima: Only accept AUDIT rules for
- non-init_ima_ns namespaces for now
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        Christian Brauner <brauner@kernel.org>
-Date:   Thu, 17 Feb 2022 16:32:52 -0500
-In-Reply-To: <20220201203735.164593-14-stefanb@linux.ibm.com>
-References: <20220201203735.164593-1-stefanb@linux.ibm.com>
-         <20220201203735.164593-14-stefanb@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: zWXwygVsiLw7IdaxqGaPgAy1c5bNdkYl
-X-Proofpoint-ORIG-GUID: UGRkoEBLXim_aJhJGwR-23yVWmY0xS0B
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-17_08,2022-02-17_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- impostorscore=0 mlxlogscore=999 spamscore=0 priorityscore=1501 mlxscore=0
- adultscore=0 suspectscore=0 malwarescore=0 phishscore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202170102
+        Thu, 17 Feb 2022 16:35:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A32313CEC4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:34:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7D1CB824AA
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 21:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 66AA0C340E8;
+        Thu, 17 Feb 2022 21:34:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645133688;
+        bh=qbafOEf/uBHmpli3QQAfd8aj1cX2r3aA252P+JKq++Q=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=EmQu1pH8GOKz+XJk5++vIXOPg6J2QabIfw1e1IaLn00uGkp0rW0tjuqYbXmCtujA7
+         Roku1ZWYkkvwAcPF+k+06MQ+2QYcWfsCPXulcqAzzxWRBPXn+sVupVALG0ovNTb34t
+         FKx7g7m6vq64ExnUm/Aqr5QnBWWnCDzDgf8QYY+QFEC3K2k5f/4cCUjsTEz3xh81j0
+         aOV9pfFLaZrmmtPd8B/kbulsqbe2iumOqmsYonPoow4kq24ziiP4EkwP2QKmOh+RSq
+         feVvQ9TQyKbe+v6roZZFvmghsp7E36FnTCVGDxpcM5gKcuT/gj4IqMTcziTPtDv8o4
+         1chMWOhWVxacA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 55967E6D446;
+        Thu, 17 Feb 2022 21:34:48 +0000 (UTC)
+Subject: Re: [git pull] drm fixes for 5.17-rc5
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAPM=9txai3TyGC3KHjkjLi6UMC-vKRoPJ8p+UpNKXy6Km=1jNQ@mail.gmail.com>
+References: <CAPM=9txai3TyGC3KHjkjLi6UMC-vKRoPJ8p+UpNKXy6Km=1jNQ@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAPM=9txai3TyGC3KHjkjLi6UMC-vKRoPJ8p+UpNKXy6Km=1jNQ@mail.gmail.com>
+X-PR-Tracked-Remote: git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-02-18
+X-PR-Tracked-Commit-Id: 5666b610194705587807a1078753eadc007b9d79
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: b3d971ec25346d6890e9e8f05b63f758cfcef8c5
+Message-Id: <164513368834.29727.9550946484573068640.pr-tracker-bot@kernel.org>
+Date:   Thu, 17 Feb 2022 21:34:48 +0000
+To:     Dave Airlie <airlied@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
+The pull request you sent on Fri, 18 Feb 2022 06:02:24 +1000:
 
-> Only accept AUDIT rules for non-init_ima_ns namespaces rejecting all rules
-> that require support for measuring, appraisal, and hashing.
+> git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-02-18
 
-It's probably obvious, but adding the words "for now" somewhere in the
-above line makes it clear this is temporary.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/b3d971ec25346d6890e9e8f05b63f758cfcef8c5
 
-> 
-> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> Acked-by: Christian Brauner <brauner@kernel.org>
-
-Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+Thank you!
 
 -- 
-thanks,
-
-Mimi
-
-
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
