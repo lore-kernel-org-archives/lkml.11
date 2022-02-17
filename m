@@ -2,310 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89162C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243297AbiBQQbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:31:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50212 "EHLO
+        id S243280AbiBQQbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:31:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238237AbiBQQbZ (ORCPT
+        with ESMTP id S241988AbiBQQb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:31:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320FF1B8925;
+        Thu, 17 Feb 2022 11:31:26 -0500
+Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020018.outbound.protection.outlook.com [52.101.61.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006101B8FC4;
         Thu, 17 Feb 2022 08:31:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BECD6B821AE;
-        Thu, 17 Feb 2022 16:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBE7EC340E9;
-        Thu, 17 Feb 2022 16:31:04 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="dbNpSV7Q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645115463;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=2QY2mZgOV60Kbrn2Y05ZSmgIZIkCZL9pkjx2/BQNMMo=;
-        b=dbNpSV7Q3uSu9oKOeH1MLqEJknYhhjA6o4ycxcxMcK7Sy8v2cUv/tQX2gz+9xMKeAqUq1c
-        xIcbU/vGMq2X/5W+dP5BXNkNdnPXuRcFE9latLb6OY0Nntyuw7jJo+5qFjqIZruiaPBksJ
-        BMwnnzWeFsTEk+dHhaPe+Tfx/J0BpFQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4b2b80a7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 17 Feb 2022 16:31:02 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-arch@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Nick Hu <nickhu@andestech.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Michal Simek <monstr@monstr.eu>,
-        Borislav Petkov <bp@alien8.de>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Joshua Kinard <kumba@gentoo.org>,
-        David Laight <David.Laight@aculab.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH v1] random: block in /dev/urandom
-Date:   Thu, 17 Feb 2022 17:28:48 +0100
-Message-Id: <20220217162848.303601-1-Jason@zx2c4.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xp6WmgCov+awzE60vmhb2gBTC1xUOTsADq+Ah6TuowcQYVYPMKVGn33yS7cgmuuzQMU/Qqv9ztNbnCw7nqNe+zHrENU+O+B9+2ZDM85Zun83mZubcNtmLrqBO+q4QPGzj6J24MiVs0yw3VPyzgedr3LZ1mLdKXMYceQGfJuiQ2UaoaViwMlk5tsfFqB9mj4+DtyAFOAtYu4aevgXwQIVMQfjk55fPRow1WGqYAsg+On5CrU1/I1h1kgpGII2kVyCqgYNOHt7xg7ANHfZoLkEU/XG8PtJ05nZlQtPWbV1CJGNcCmeGilRIKCbP8M0lvBXIKR0uU6GYQeP7BlJKrr3/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=niHaUGbF/u2h6/sKFuKMndxkP3L0H1QlUim0D2jWTmI=;
+ b=Q2gko82YOGNPGyJbsqNY3nrpkEWPpnEliGOGJEOke11nGidHKr3b4tUdoz524vkttlaiDTG9X6aK7uVC09MmXMGFDimD3ymGgsXRJ7goU24ansGuCvOFWa5MrZOU6GxEIUgZ1yzPoXq64R8igHA/KoqwbRbmzTJgHfziHD2spHt7FP8OWN8C7Ge2j4Dv8k8Sua4ZmeDB+PnDpjpWZz3s+LDJsyamsQN1o5xl1IxC1MgF6UV6HkG5+itjGbB7om7FKQTwKoaNMGFpWdUiEDIOPlMIbI1zVPzNhQOnlSZMHW9QKxJDw0X3l6DAxfUAa/BoX+wrTAur0EtsLeA27h3SFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=niHaUGbF/u2h6/sKFuKMndxkP3L0H1QlUim0D2jWTmI=;
+ b=PYDLgd2Y+TJWz+7dGb1wE4GG4/DTz+bJSU2aoVCUpAsRPl+BCwLL36SxnX9KGA7F825U8v3sDELHW/fk0KKQErGJ/i4AoMuBEmxy9BLHaTTk+aBiJbFF24a5T0oDouxqGmMYmdRaQ3tUJqxfM8NoLUcFFsE+edumIwH7TIXQRcM=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MW2PR2101MB1833.namprd21.prod.outlook.com (2603:10b6:302:8::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.7; Thu, 17 Feb
+ 2022 16:31:06 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::ad12:1420:5435:34e4]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::ad12:1420:5435:34e4%5]) with mapi id 15.20.5017.009; Thu, 17 Feb 2022
+ 16:31:06 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     Boqun Feng <boqun.feng@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Wei Liu <wei.liu@kernel.org>
+CC:     Sunil Muthuswamy <sunilmut@linux.microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Rob Herring <robh@kernel.org>,
+        =?iso-8859-2?Q?Krzysztof_Wilczy=F1ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [RFC PATCH v2] PCI: hv: Avoid the retarget interrupt hypercall in
+ irq_unmask() on ARM64
+Thread-Topic: [RFC PATCH v2] PCI: hv: Avoid the retarget interrupt hypercall
+ in irq_unmask() on ARM64
+Thread-Index: AQHYI7D6XgWM06oOwkGkqfFHgzPdiKyX79sw
+Date:   Thu, 17 Feb 2022 16:31:06 +0000
+Message-ID: <MWHPR21MB1593A265118977A57FF3B329D7369@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20220217034525.1687678-1-boqun.feng@gmail.com>
+In-Reply-To: <20220217034525.1687678-1-boqun.feng@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=0d0f789c-7683-40ca-89ac-e1281906cbf6;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-02-17T16:30:05Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e2676352-6a39-4355-2f8d-08d9f232e581
+x-ms-traffictypediagnostic: MW2PR2101MB1833:EE_
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <MW2PR2101MB1833E274AB387DF6703A7563D7369@MW2PR2101MB1833.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jYi83PT35Ho3yWFYuXz/0YZn8eqG9/bX6IMweP2RkhaTrHT3C/dsG2MJAHYuId7zWiHbkCn/HQsYoGYs6NDLxxjNeuqbh/iKUX5V7BCnEMkJ2CCC0PYL6e4zfnAXG5EEEg6mmebzGSb9KMZrtgGw2JbjUeViSbGX/C566+l42XFksFzf1vYuHCTxPLovQ0MbN0OHEu/XuaQYiN27a5EExkZssEG2a/JV3PhCwCNQig1esXhvkKKMiGxRQ40a1ypG3BBnvIv9pX5n1qNK6oCTPUHuyokrR2YB2eLYPR+CwPBX3y0BgOFoPmzi3N76g5fxz6SG2oW+S1ygYO5CM9MC2+CmErr1pYMT3C1fnRyspqxAvpIekl1K/jjo74OMDty5nvLP7JnoYBZ4oA6tFlUaJHWy6wIwKv94h5f6TA8oeUBG2G3ABCG4z5P30HSi6hym8aN1QgQyRzXAtS4EX626J57F8LU6kleKk8RfEf4oNBy+TpicZFuQmpjCj9Mkmp1nZlSxPn7ReSgN676l8Sfia2A6H38ztyY99lqFv0nxbgRPolEejdTk+YmI/HLIUs1B2DDy/9vC1BjXvOQXjyZvlI8W5mj2P3P9K+0C729j0w/l7AcY66vFvXsZnkuHDNuP/X6KMZo9DpYOkR4F9n3c5pz5XFjl8UKRkX9L4tiAPMuNruam87Oi/U+dwlD4oSrFPQAqXG5QDFw4cdZWq+9BXiqeqwbWfQurN0tRdLGSg8oEfSxpRAqgFoFxM7Ziwz3a
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(76116006)(55016003)(186003)(6506007)(9686003)(26005)(508600001)(122000001)(110136005)(2906002)(5660300002)(52536014)(82950400001)(54906003)(66946007)(71200400001)(33656002)(38100700002)(4744005)(10290500003)(66446008)(38070700005)(64756008)(83380400001)(316002)(66476007)(8936002)(4326008)(7696005)(8676002)(86362001)(8990500004)(82960400001)(66556008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-2?Q?unMZg/3z1nhlkTwriMpKgQ+WFbKEqpU7Ymtdc3pxqUiBXY8XCYUNjVAX1S?=
+ =?iso-8859-2?Q?Sa83zAXEC5rCcMokkEQzFgSJEYWJ47mya/g7cV3O6SaKpM9dLM7369prNT?=
+ =?iso-8859-2?Q?IYJQFfOkQ9vUN4AT9/g1MLUFAEOpHTe6ph/NcjenzJ4GYKW/AhfYaQc+TZ?=
+ =?iso-8859-2?Q?f05ubaqENIHRt5ZE5z2+Tm+HVS0+Zma85PbF6L6Lh17V7ZA3uZDpZpMWuw?=
+ =?iso-8859-2?Q?zP7XGiAfedqJZqqZ3RT4GssloVXIlQRbLiiJ/eUvZkvjHZ1/1jQXaAxI/T?=
+ =?iso-8859-2?Q?0nKRmhvTg2IZL47/IBYj3fPNTaun80ZcGxM3ljhkPw9sNCLGogjdFFhUnM?=
+ =?iso-8859-2?Q?ayMNGnVAmtkIAZ49VUClS7e+QFBViRDqF3O5CRP/Qz3nx7KR5KVqe5ZAj4?=
+ =?iso-8859-2?Q?AHeND9yahOehLN6R1zh0uExPLPDBkRBEdzU+754bz39sYdEWx8nlKKn4UH?=
+ =?iso-8859-2?Q?FtY1cQeyNn1EyNP7RuCthc2LadsiP+rbzTSd8k1q9tQpT/CVGV2j6HNdCq?=
+ =?iso-8859-2?Q?aSRKqpHgiLVhU0YMqyMs1T1bg4JLYl7cnIpflRvDYzCzqe+q9pFHzkF/uv?=
+ =?iso-8859-2?Q?RJqFjj2R16MLe9f7uMSqSQa3+KOZ9h6TXeztkIf8GVT+LLr4qH7i9MjntS?=
+ =?iso-8859-2?Q?MfqXU5fyPYxcMs9qjmW62DsZynXOEEzbTiYlI/tHZSVfTudwoLf3mv0jqo?=
+ =?iso-8859-2?Q?ZBjwcwB1c603AHyPMIH1Clho/udgeMEdb2yu15gN/A9phyQ2hJys/aOdGZ?=
+ =?iso-8859-2?Q?6SNYdr+zShPNO8Byy4zFRFycxSt5T5PByKM1xStMR7oMI8Yyg7q211ttwr?=
+ =?iso-8859-2?Q?cy5TfKFfTYyUFhYTZR/XcW0FFfy8pB1NAqO26gAdizUdr5iAFKqzQbozWO?=
+ =?iso-8859-2?Q?IzM+kOB//HUAwUU1YwJkgYwC/PbB5Fv3rHP3u5NAlVMCq9AXD/odKF2Ifv?=
+ =?iso-8859-2?Q?lUjiJjxMYntBx6HEwKrthuUccsKQoeJiwjN1rsf7aQ6d2Ti+t7HBz586zx?=
+ =?iso-8859-2?Q?3zULgHjPpIx+LwHKUsd3UOUnVp57MmUz8LhO+lcFh/olQqieqoa4rqGi9P?=
+ =?iso-8859-2?Q?K7RubffPOLS8L+ixV7bbHvqOKHgSU1mVcBRK6XuVKpkiDxpU8mvvDw5TkA?=
+ =?iso-8859-2?Q?PTz7/tUR/v6d1EfsJep5ikF223hLJOyZSE2vbFv6DcDQYTb0Ojni2aJdjj?=
+ =?iso-8859-2?Q?GTuWdb48ZjCHEgbbKd/9WQ1Nk/iOeQjy3fSaiv97NRlgRewGIEUstTeTAw?=
+ =?iso-8859-2?Q?t7pNUjuGJ36x2FXAk5Bzs6XNLh6s11m0NoNr679y6yVgak5q97S/VuvQR9?=
+ =?iso-8859-2?Q?w8/9xtTgbaMY5cRyF/YOo59VjQ+hazrlVdz46JJmBLiIzhqRuYO6uog035?=
+ =?iso-8859-2?Q?5+8WcxY1MayhfJYYRlDTgkqbkfHvGcBPvjsu2XyfImcWDuPUJyV8M2x6UW?=
+ =?iso-8859-2?Q?KZJCDGR6Ot63/oQMjVjmVG61ZmeHFRgmrxB1xbp110FvzT/+cQa/xPFlxJ?=
+ =?iso-8859-2?Q?a7j/r7fUpzh8KIGJXW06gQ3NVDh94YFBQdRL2m/YmEuOKCr5RMU+yN6O3r?=
+ =?iso-8859-2?Q?sKLMt+Qcng7fgOGKl7kPSpkHBzYuPyzocLvCRHSBg1v57Zc7fJi9QlI/Zb?=
+ =?iso-8859-2?Q?+KV2iepUK16A96hDci1NVK2A1xrHgWLbvRmg/XQtbInFNAew0x7XdUezvS?=
+ =?iso-8859-2?Q?mNkSshtoxk1ueH7G4QI3AX+Iw9FGu6uHp+8BH1LiAjmE+89t8DlwaCmEIA?=
+ =?iso-8859-2?Q?kkNA=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2676352-6a39-4355-2f8d-08d9f232e581
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2022 16:31:06.0571
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OaUGNW6ZXyuVZFCkbOtvqAi7bm2mk+9EeG7IM6BkLV0Hij/Fb3jyXM3JZ7DIFFQj0fpySb9Zsh7P3ai0TL5dbPfCqBdmB7uBbT24gBMzowc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1833
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This topic has come up countless times, and usually doesn't go anywhere.
-This time I thought I'd bring it up with a slightly narrower focus,
-updated for some developments over the last three years: we finally can
-make /dev/urandom always secure, in light of the fact that our RNG is
-now always seeded.
+From: Boqun Feng <boqun.feng@gmail.com> Sent: Wednesday, February 16, 2022 =
+7:45 PM
+>=20
+> On ARM64 Hyper-V guests, SPIs are used for the interrupts of virtual PCI
+> devices, and SPIs can be managed directly via GICD registers. Therefore
+> the retarget interrupt hypercall is not needed on ARM64.
+>=20
+> An arch-specific interface hv_arch_irq_unmask() is introduced to handle
+> the architecture level differences on this. For x86, the behavior
+> remains unchanged, while for ARM64 no hypercall is invoked when
+> unmasking an irq for virtual PCI devices.
+>=20
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> ---
+> v1 -> v2:
+>=20
+> *	Introduce arch-specific interface hv_arch_irq_unmask() as
+> 	suggested by Bjorn
+>=20
+>  drivers/pci/controller/pci-hyperv.c | 233 +++++++++++++++-------------
+>  1 file changed, 122 insertions(+), 111 deletions(-)
 
-Ever since Linus' 50ee7529ec45 ("random: try to actively add entropy
-rather than passively wait for it"), the RNG does a haveged-style jitter
-dance around the scheduler, in order to produce entropy (and credit it)
-for the case when we're stuck in wait_for_random_bytes(). How ever you
-feel about the Linus Jitter Dance is beside the point: it's been there
-for three years and usually gets the RNG initialized in a second or so.
-
-As a matter of fact, this is what happens currently when people use
-getrandom(). It's already there and working, and most people have been
-using it for years without realizing.
-
-So, given that the kernel has grown this mechanism for seeding itself
-from nothing, and that this procedure happens pretty fast, maybe there's
-no point any longer in having /dev/urandom give insecure bytes. In the
-past we didn't want the boot process to deadlock, which was
-understandable. But now, in the worst case, a second goes by, and the
-problem is resolved. It seems like maybe we're finally at a point when
-we can get rid of the infamous "urandom read hole".
-
-The one slight drawback is that the Linus Jitter Dance relies on random_
-get_entropy() being implemented. The first lines of try_to_generate_
-entropy() are:
-
-	stack.now = random_get_entropy();
-	if (stack.now == random_get_entropy())
-		return;
-
-On most platforms, random_get_entropy() is simply aliased to get_cycles().
-The number of machines without a cycle counter or some other
-implementation of random_get_entropy() in 2022, which can also run a
-mainline kernel, and at the same time have a both broken and out of date
-userspace that relies on /dev/urandom never blocking at boot is thought
-to be exceedingly low. And to be clear: those museum pieces without
-cycle counters will continue to run Linux just fine, and even
-/dev/urandom will be operable just like before; the RNG just needs to be
-seeded first through the usual means, which should already be the case
-now.
-
-On systems that really do want unseeded randomness, we already offer
-getrandom(GRND_INSECURE), which is in use by, e.g., systemd for seeding
-their hash tables at boot. Nothing in this commit would affect
-GRND_INSECURE, and it remains the means of getting those types of random
-numbers.
-
-This patch goes a long way toward eliminating a long overdue userspace
-crypto footgun. After several decades of endless user confusion, we will
-finally be able to say, "use any single one of our random interfaces and
-you'll be fine. They're all the same. It doesn't matter." And that, I
-think, is really something. Finally all of those blog posts and
-disagreeing forums and contradictory articles will all become correct
-about whatever they happened to recommend, and along with it, a whole
-class of vulnerabilities eliminated.
-
-With very minimal downside, we're finally in a position where we can
-make this change.
-
-Cc: Dinh Nguyen <dinguyen@kernel.org>
-Cc: Nick Hu <nickhu@andestech.com>
-Cc: Max Filippov <jcmvbkbc@gmail.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: Michal Simek <monstr@monstr.eu>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Guo Ren <guoren@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Joshua Kinard <kumba@gentoo.org>
-Cc: David Laight <David.Laight@aculab.com>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Eric Biggers <ebiggers@google.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Lennart Poettering <mzxreary@0pointer.de>
-Cc: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Having learned that MIPS32 isn't affected by this (initially my largest
-worry), and then heartened today upon reading LWN's summary of our
-previous discussion ("it would seem there are no huge barriers to
-removing the final distinction between /dev/random and /dev/urandom"), I
-figured I'd go ahead and submit a v1 of this. It seems at least worth
-trying and seeing if somebody arrives with legitimate complaints. To
-that end I've also widened the CC list quite a bit.
-
-Changes v0->v1:
-- We no longer touch GRND_INSECURE at all, in anyway. Lennart (and to an
-  extent, Andy) pointed out that getting insecure numbers immediately at
-  boot is still something that has legitimate use cases, so this patch
-  no longer touches that code.
-
- drivers/char/mem.c     |  2 +-
- drivers/char/random.c  | 51 ++++++------------------------------------
- include/linux/random.h |  2 +-
- 3 files changed, 9 insertions(+), 46 deletions(-)
-
-diff --git a/drivers/char/mem.c b/drivers/char/mem.c
-index cc296f0823bd..9f586025dbe6 100644
---- a/drivers/char/mem.c
-+++ b/drivers/char/mem.c
-@@ -707,7 +707,7 @@ static const struct memdev {
- 	 [5] = { "zero", 0666, &zero_fops, FMODE_NOWAIT },
- 	 [7] = { "full", 0666, &full_fops, 0 },
- 	 [8] = { "random", 0666, &random_fops, 0 },
--	 [9] = { "urandom", 0666, &urandom_fops, 0 },
-+	 [9] = { "urandom", 0666, &random_fops, 0 },
- #ifdef CONFIG_PRINTK
- 	[11] = { "kmsg", 0644, &kmsg_fops, 0 },
- #endif
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 8d5abeefcc4f..fda5182d655d 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -89,8 +89,6 @@ static LIST_HEAD(random_ready_list);
- /* Control how we warn userspace. */
- static struct ratelimit_state unseeded_warning =
- 	RATELIMIT_STATE_INIT("warn_unseeded_randomness", HZ, 3);
--static struct ratelimit_state urandom_warning =
--	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
- static int ratelimit_disable __read_mostly;
- module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
- MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
-@@ -336,11 +334,6 @@ static void crng_reseed(void)
- 				  unseeded_warning.missed);
- 			unseeded_warning.missed = 0;
- 		}
--		if (urandom_warning.missed) {
--			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
--				  urandom_warning.missed);
--			urandom_warning.missed = 0;
--		}
- 	}
- }
- 
-@@ -993,10 +986,8 @@ int __init rand_initialize(void)
- 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
- 	}
- 
--	if (ratelimit_disable) {
--		urandom_warning.interval = 0;
-+	if (ratelimit_disable)
- 		unseeded_warning.interval = 0;
--	}
- 	return 0;
- }
- 
-@@ -1382,20 +1373,16 @@ static void try_to_generate_entropy(void)
-  * getrandom(2) is the primary modern interface into the RNG and should
-  * be used in preference to anything else.
-  *
-- * Reading from /dev/random has the same functionality as calling
-- * getrandom(2) with flags=0. In earlier versions, however, it had
-- * vastly different semantics and should therefore be avoided, to
-- * prevent backwards compatibility issues.
-- *
-- * Reading from /dev/urandom has the same functionality as calling
-- * getrandom(2) with flags=GRND_INSECURE. Because it does not block
-- * waiting for the RNG to be ready, it should not be used.
-+ * Reading from /dev/random and /dev/urandom both have the same effect
-+ * as calling getrandom(2) with flags=0. (In earlier versions, however,
-+ * they each had different semantics.)
-  *
-  * Writing to either /dev/random or /dev/urandom adds entropy to
-  * the input pool but does not credit it.
-  *
-- * Polling on /dev/random indicates when the RNG is initialized, on
-- * the read side, and when it wants new entropy, on the write side.
-+ * Polling on /dev/random or /dev/urandom indicates when the RNG
-+ * is initialized, on the read side, and when it wants new entropy,
-+ * on the write side.
-  *
-  * Both /dev/random and /dev/urandom have the same set of ioctls for
-  * adding entropy, getting the entropy count, zeroing the count, and
-@@ -1480,21 +1467,6 @@ static ssize_t random_write(struct file *file, const char __user *buffer,
- 	return (ssize_t)count;
- }
- 
--static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
--			    loff_t *ppos)
--{
--	static int maxwarn = 10;
--
--	if (!crng_ready() && maxwarn > 0) {
--		maxwarn--;
--		if (__ratelimit(&urandom_warning))
--			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
--				  current->comm, nbytes);
--	}
--
--	return get_random_bytes_user(buf, nbytes);
--}
--
- static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
- 			   loff_t *ppos)
- {
-@@ -1581,15 +1553,6 @@ const struct file_operations random_fops = {
- 	.llseek = noop_llseek,
- };
- 
--const struct file_operations urandom_fops = {
--	.read = urandom_read,
--	.write = random_write,
--	.unlocked_ioctl = random_ioctl,
--	.compat_ioctl = compat_ptr_ioctl,
--	.fasync = random_fasync,
--	.llseek = noop_llseek,
--};
--
- 
- /********************************************************************
-  *
-diff --git a/include/linux/random.h b/include/linux/random.h
-index d7354de9351e..38ff777aad19 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -44,7 +44,7 @@ extern void del_random_ready_callback(struct random_ready_callback *rdy);
- extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
- 
- #ifndef MODULE
--extern const struct file_operations random_fops, urandom_fops;
-+extern const struct file_operations random_fops;
- #endif
- 
- u32 get_random_u32(void);
--- 
-2.35.0
-
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
