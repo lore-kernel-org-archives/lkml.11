@@ -2,160 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9014FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 676D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240747AbiBQNLV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:11:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48902 "EHLO
+        id S240711AbiBQNNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:13:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232797AbiBQNLT (ORCPT
+        with ESMTP id S229812AbiBQNNS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:11:19 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EBA2AE285;
-        Thu, 17 Feb 2022 05:11:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645103465; x=1676639465;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=3j1F15BrCbKN2Xpg8Gu2Cb+UfX7fWFXHLd+x9nlgm/s=;
-  b=B4TkHEmt5MSPJ9UQlPQXluKIH+UFiTk4m0rIdL97p2J6nuLfZvS56Nmb
-   hdjxUa7riYQJUN+PMZyFpGNTrbHsMecQ6ibTEnPpDVvhqxcyh5uMTXHew
-   f7c/5nxA/tw8mO+n2e2VAAu/wi3ExIXP5kSHDK4ACJiF6o9aW4qxZjPOv
-   kFId2eP8ZfSdZ9yJg4iB9FRtWD0DS8DyMABtoPrRTtZlXUZESnvOnsyPj
-   CJuOi4twDnwGOJ4uYyu3KIzi4ej1Qev3b0BYnXuhtu32NTlucr2cnXj8v
-   VyKy/U6porYWldpuFxumskQ6Uam2+o6LbY1coH4FWyL2D+5BwZoCpArbJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="248465322"
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="248465322"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 05:11:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="704791747"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by orsmga005.jf.intel.com with ESMTP; 17 Feb 2022 05:10:57 -0800
-Date:   Thu, 17 Feb 2022 21:10:36 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        qemu-devel@nongnu.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v4 04/12] mm/shmem: Support memfile_notifier
-Message-ID: <20220217131036.GC32679@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <20220118132121.31388-5-chao.p.peng@linux.intel.com>
- <YgK2pDB34AsqCHd0@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgK2pDB34AsqCHd0@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        Thu, 17 Feb 2022 08:13:18 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5342929E956;
+        Thu, 17 Feb 2022 05:13:03 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DDCC1515;
+        Thu, 17 Feb 2022 05:13:00 -0800 (PST)
+Received: from e120937-lin.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 362F03F66F;
+        Thu, 17 Feb 2022 05:12:58 -0800 (PST)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
+        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
+        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
+        igor.skalkin@opensynergy.com, cristian.marussi@arm.com,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v5 4/8] dt-bindings: firmware: arm,scmi: Add atomic-threshold-us optional property
+Date:   Thu, 17 Feb 2022 13:12:30 +0000
+Message-Id: <20220217131234.50328-5-cristian.marussi@arm.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220217131234.50328-1-cristian.marussi@arm.com>
+References: <20220217131234.50328-1-cristian.marussi@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 08:29:56PM +0200, Mike Rapoport wrote:
-> Hi,
-> 
-> On Tue, Jan 18, 2022 at 09:21:13PM +0800, Chao Peng wrote:
-> > It maintains a memfile_notifier list in shmem_inode_info structure and
-> > implements memfile_pfn_ops callbacks defined by memfile_notifier. It
-> > then exposes them to memfile_notifier via
-> > shmem_get_memfile_notifier_info.
-> > 
-> > We use SGP_NOALLOC in shmem_get_lock_pfn since the pages should be
-> > allocated by userspace for private memory. If there is no pages
-> > allocated at the offset then error should be returned so KVM knows that
-> > the memory is not private memory.
-> > 
-> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > ---
-> >  include/linux/shmem_fs.h |  4 ++
-> >  mm/memfile_notifier.c    | 12 +++++-
-> >  mm/shmem.c               | 81 ++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 96 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
-> > index 166158b6e917..461633587eaf 100644
-> > --- a/include/linux/shmem_fs.h
-> > +++ b/include/linux/shmem_fs.h
-> > @@ -9,6 +9,7 @@
-> >  #include <linux/percpu_counter.h>
-> >  #include <linux/xattr.h>
-> >  #include <linux/fs_parser.h>
-> > +#include <linux/memfile_notifier.h>
-> >  
-> >  /* inode in-kernel data */
-> >  
-> > @@ -24,6 +25,9 @@ struct shmem_inode_info {
-> >  	struct shared_policy	policy;		/* NUMA memory alloc policy */
-> >  	struct simple_xattrs	xattrs;		/* list of xattrs */
-> >  	atomic_t		stop_eviction;	/* hold when working on inode */
-> > +#ifdef CONFIG_MEMFILE_NOTIFIER
-> > +	struct memfile_notifier_list memfile_notifiers;
-> > +#endif
-> >  	struct inode		vfs_inode;
-> >  };
-> >  
-> > diff --git a/mm/memfile_notifier.c b/mm/memfile_notifier.c
-> > index 8171d4601a04..b4699cbf629e 100644
-> > --- a/mm/memfile_notifier.c
-> > +++ b/mm/memfile_notifier.c
-> > @@ -41,11 +41,21 @@ void memfile_notifier_fallocate(struct memfile_notifier_list *list,
-> >  	srcu_read_unlock(&srcu, id);
-> >  }
-> >  
-> > +#ifdef CONFIG_SHMEM
-> > +extern int shmem_get_memfile_notifier_info(struct inode *inode,
-> > +					struct memfile_notifier_list **list,
-> > +					struct memfile_pfn_ops **ops);
-> > +#endif
-> > +
-> >  static int memfile_get_notifier_info(struct inode *inode,
-> >  				     struct memfile_notifier_list **list,
-> >  				     struct memfile_pfn_ops **ops)
-> >  {
-> > -	return -EOPNOTSUPP;
-> > +	int ret = -EOPNOTSUPP;
-> > +#ifdef CONFIG_SHMEM
-> > +	ret = shmem_get_memfile_notifier_info(inode, list, ops);
-> > +#endif
-> 
-> This looks backwards. Can we have some register method for memory backing
-> store and call it from shmem.c?
+SCMI protocols in the platform can optionally signal to the OSPM agent
+the expected execution latency for a specific resource/operation pair.
 
-Agreed. That would be clearer.
+Introduce an SCMI system wide optional property to describe a global time
+threshold which can be configured on a per-platform base to determine the
+opportunity, or not, for an SCMI command advertised to have a higher
+latency than the threshold, to be considered for atomic operations:
+high-latency SCMI synchronous commands should be preferably issued in the
+usual non-atomic mode.
 
-Chao
-> 
-> > +	return ret;
-> >  }
-> >  
-> >  int memfile_register_notifier(struct inode *inode,
-> 
-> -- 
-> Sincerely yours,
-> Mike.
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+---
+v4 --> v5:
+- fixed example and removed dtschema warnings/errors :
+  arm,scmi.yaml: properties:atomic-threshold-us:
+  	'$ref' should not be valid under {'const': '$ref'}
+- added default: 0 clause
+v3 --> v4
+- renamed property to atomic-threshold-us
+v1 --> v2
+- rephrased the property description
+---
+ .../devicetree/bindings/firmware/arm,scmi.yaml         | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+index eae15df36eef..590743883802 100644
+--- a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
++++ b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+@@ -81,6 +81,14 @@ properties:
+   '#size-cells':
+     const: 0
+ 
++  atomic-threshold-us:
++    description:
++      An optional time value, expressed in microseconds, representing, on this
++      platform, the threshold above which any SCMI command, advertised to have
++      an higher-than-threshold execution latency, should not be considered for
++      atomic mode of operation, even if requested.
++    default: 0
++
+   arm,smc-id:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     description:
+@@ -264,6 +272,8 @@ examples:
+             #address-cells = <1>;
+             #size-cells = <0>;
+ 
++            atomic-threshold-us = <10000>;
++
+             scmi_devpd: protocol@11 {
+                 reg = <0x11>;
+                 #power-domain-cells = <1>;
+-- 
+2.17.1
+
