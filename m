@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F51DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 441AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245566AbiBQVFJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:05:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37798 "EHLO
+        id S245093AbiBQVFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 16:05:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243962AbiBQVEF (ORCPT
+        with ESMTP id S243934AbiBQVEF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 16:04:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47CF3163D7A
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E2FD6164D07
         for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:03:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1645131828;
@@ -21,29 +21,29 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=chHThbB+KzWgmw4HoFBqJADpSy+ftlKTRk5i/1W7I4o=;
-        b=hMfLiDgw17IjWQCXKRDb7CzsG2+weWvYYs+6kEF2BmgfdyAst22e/5ovIQ+t88iiEIaY0B
-        Fxb84pRzPIXvp9z5XqhSeS7PbdVICNgYuepGwV4xRcmsXCuBl6vDDw4Bi2WF+b5r2oVctk
-        k6zvtq5zOhaAOdCWh5U1m+lTGtBq1Hc=
+        bh=cowP525RDo3JvSn3YZ8N95snotZ2rMBxu2rrsrRfihc=;
+        b=SHjf0SJ9gcm6XfYKPnHuYTXV+bOkzFiSyyeqvFbRM0K/+2zjRXNNdvYYFwBPQExmoFanNC
+        dlZ9fVNMkadbBOW0lAT+0uBrpJCA7EG2tw7t9LGdehjKhaJiPcule0WxYK7fQm3QfhX7ri
+        1lRcEmgVWAXDpbsR6prpIAlPSK6+OTU=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-562-BMktKajQPiayVxLofW7GIg-1; Thu, 17 Feb 2022 16:03:44 -0500
-X-MC-Unique: BMktKajQPiayVxLofW7GIg-1
+ us-mta-605-fuAT82pXN1aZLabKrQq08w-1; Thu, 17 Feb 2022 16:03:46 -0500
+X-MC-Unique: fuAT82pXN1aZLabKrQq08w-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B66101006AA3;
-        Thu, 17 Feb 2022 21:03:43 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4DCCA801AC5;
+        Thu, 17 Feb 2022 21:03:45 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 68F7046982;
-        Thu, 17 Feb 2022 21:03:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C9A7B46982;
+        Thu, 17 Feb 2022 21:03:44 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH v2 05/18] KVM: x86/mmu: use struct kvm_mmu_root_info for mmu->root
-Date:   Thu, 17 Feb 2022 16:03:27 -0500
-Message-Id: <20220217210340.312449-6-pbonzini@redhat.com>
+Subject: [PATCH v2 08/18] KVM: x86/mmu: do not pass vcpu to root freeing functions
+Date:   Thu, 17 Feb 2022 16:03:30 -0500
+Message-Id: <20220217210340.312449-9-pbonzini@redhat.com>
 In-Reply-To: <20220217210340.312449-1-pbonzini@redhat.com>
 References: <20220217210340.312449-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -53,392 +53,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The root_hpa and root_pgd fields form essentially a struct kvm_mmu_root_info.
-Use the struct to have more consistency between mmu->root and
-mmu->prev_roots.
+These functions only operate on a given MMU, of which there are two in a vCPU.
+They also need a struct kvm in order to lock the mmu_lock, but they do not
+needed anything else in the struct kvm_vcpu.  So, pass the vcpu->kvm directly
+to them.
 
-The patch is entirely search and replace except for cached_root_available,
-which does not need a temporary struct kvm_mmu_root_info anymore.
-
-Reviewed-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +-
- arch/x86/kvm/mmu.h              |  4 +-
- arch/x86/kvm/mmu/mmu.c          | 69 +++++++++++++++------------------
- arch/x86/kvm/mmu/mmu_audit.c    |  4 +-
- arch/x86/kvm/mmu/paging_tmpl.h  |  2 +-
- arch/x86/kvm/mmu/tdp_mmu.c      |  2 +-
- arch/x86/kvm/mmu/tdp_mmu.h      |  2 +-
- arch/x86/kvm/vmx/nested.c       |  2 +-
- arch/x86/kvm/vmx/vmx.c          |  2 +-
- arch/x86/kvm/x86.c              |  2 +-
- 10 files changed, 42 insertions(+), 50 deletions(-)
+ arch/x86/include/asm/kvm_host.h |  4 ++--
+ arch/x86/kvm/mmu/mmu.c          | 21 +++++++++++----------
+ arch/x86/kvm/vmx/nested.c       |  8 ++++----
+ arch/x86/kvm/x86.c              |  4 ++--
+ 4 files changed, 19 insertions(+), 18 deletions(-)
 
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 8e512f25a930..6442facfd5c0 100644
+index 6442facfd5c0..79f37ccc8726 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -432,8 +432,7 @@ struct kvm_mmu {
- 	int (*sync_page)(struct kvm_vcpu *vcpu,
- 			 struct kvm_mmu_page *sp);
- 	void (*invlpg)(struct kvm_vcpu *vcpu, gva_t gva, hpa_t root_hpa);
--	hpa_t root_hpa;
--	gpa_t root_pgd;
-+	struct kvm_mmu_root_info root;
- 	union kvm_mmu_role mmu_role;
- 	u8 root_level;
- 	u8 shadow_root_level;
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index a5a50cfeffff..1d0c1904d69a 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -85,7 +85,7 @@ void kvm_mmu_sync_prev_roots(struct kvm_vcpu *vcpu);
+@@ -1780,9 +1780,9 @@ void kvm_inject_nmi(struct kvm_vcpu *vcpu);
+ void kvm_update_dr7(struct kvm_vcpu *vcpu);
  
- static inline int kvm_mmu_reload(struct kvm_vcpu *vcpu)
- {
--	if (likely(vcpu->arch.mmu->root_hpa != INVALID_PAGE))
-+	if (likely(vcpu->arch.mmu->root.hpa != INVALID_PAGE))
- 		return 0;
- 
- 	return kvm_mmu_load(vcpu);
-@@ -107,7 +107,7 @@ static inline unsigned long kvm_get_active_pcid(struct kvm_vcpu *vcpu)
- 
- static inline void kvm_mmu_load_pgd(struct kvm_vcpu *vcpu)
- {
--	u64 root_hpa = vcpu->arch.mmu->root_hpa;
-+	u64 root_hpa = vcpu->arch.mmu->root.hpa;
- 
- 	if (!VALID_PAGE(root_hpa))
- 		return;
+ int kvm_mmu_unprotect_page(struct kvm *kvm, gfn_t gfn);
+-void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
++void kvm_mmu_free_roots(struct kvm *kvm, struct kvm_mmu *mmu,
+ 			ulong roots_to_free);
+-void kvm_mmu_free_guest_mode_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu);
++void kvm_mmu_free_guest_mode_roots(struct kvm *kvm, struct kvm_mmu *mmu);
+ gpa_t kvm_mmu_gva_to_gpa_read(struct kvm_vcpu *vcpu, gva_t gva,
+ 			      struct x86_exception *exception);
+ gpa_t kvm_mmu_gva_to_gpa_fetch(struct kvm_vcpu *vcpu, gva_t gva,
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 6ea423b00824..a478667d7561 100644
+index e1578f71feae..0f2de811e871 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2162,7 +2162,7 @@ static void shadow_walk_init_using_root(struct kvm_shadow_walk_iterator *iterato
- 		 * prev_root is currently only used for 64-bit hosts. So only
- 		 * the active root_hpa is valid here.
- 		 */
--		BUG_ON(root != vcpu->arch.mmu->root_hpa);
-+		BUG_ON(root != vcpu->arch.mmu->root.hpa);
- 
- 		iterator->shadow_addr
- 			= vcpu->arch.mmu->pae_root[(addr >> 30) & 3];
-@@ -2176,7 +2176,7 @@ static void shadow_walk_init_using_root(struct kvm_shadow_walk_iterator *iterato
- static void shadow_walk_init(struct kvm_shadow_walk_iterator *iterator,
- 			     struct kvm_vcpu *vcpu, u64 addr)
- {
--	shadow_walk_init_using_root(iterator, vcpu, vcpu->arch.mmu->root_hpa,
-+	shadow_walk_init_using_root(iterator, vcpu, vcpu->arch.mmu->root.hpa,
- 				    addr);
+@@ -3234,10 +3234,9 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
  }
  
-@@ -3245,7 +3245,7 @@ void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
- 	BUILD_BUG_ON(KVM_MMU_NUM_PREV_ROOTS >= BITS_PER_LONG);
+ /* roots_to_free must be some combination of the KVM_MMU_ROOT_* flags */
+-void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
++void kvm_mmu_free_roots(struct kvm *kvm, struct kvm_mmu *mmu,
+ 			ulong roots_to_free)
+ {
+-	struct kvm *kvm = vcpu->kvm;
+ 	int i;
+ 	LIST_HEAD(invalid_list);
+ 	bool free_active_root;
+@@ -3287,7 +3286,7 @@ void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
+ }
+ EXPORT_SYMBOL_GPL(kvm_mmu_free_roots);
  
- 	/* Before acquiring the MMU lock, see if we need to do any real work. */
--	if (!(free_active_root && VALID_PAGE(mmu->root_hpa))) {
-+	if (!(free_active_root && VALID_PAGE(mmu->root.hpa))) {
- 		for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++)
- 			if ((roots_to_free & KVM_MMU_ROOT_PREVIOUS(i)) &&
- 			    VALID_PAGE(mmu->prev_roots[i].hpa))
-@@ -3265,7 +3265,7 @@ void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
- 	if (free_active_root) {
- 		if (mmu->shadow_root_level >= PT64_ROOT_4LEVEL &&
- 		    (mmu->root_level >= PT64_ROOT_4LEVEL || mmu->direct_map)) {
--			mmu_free_root_page(kvm, &mmu->root_hpa, &invalid_list);
-+			mmu_free_root_page(kvm, &mmu->root.hpa, &invalid_list);
- 		} else if (mmu->pae_root) {
- 			for (i = 0; i < 4; ++i) {
- 				if (!IS_VALID_PAE_ROOT(mmu->pae_root[i]))
-@@ -3276,8 +3276,8 @@ void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
- 				mmu->pae_root[i] = INVALID_PAE_ROOT;
- 			}
- 		}
--		mmu->root_hpa = INVALID_PAGE;
--		mmu->root_pgd = 0;
-+		mmu->root.hpa = INVALID_PAGE;
-+		mmu->root.pgd = 0;
+-void kvm_mmu_free_guest_mode_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
++void kvm_mmu_free_guest_mode_roots(struct kvm *kvm, struct kvm_mmu *mmu)
+ {
+ 	unsigned long roots_to_free = 0;
+ 	hpa_t root_hpa;
+@@ -3309,7 +3308,7 @@ void kvm_mmu_free_guest_mode_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
+ 			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
  	}
  
- 	kvm_mmu_commit_zap_page(kvm, &invalid_list);
-@@ -3350,10 +3350,10 @@ static int mmu_alloc_direct_roots(struct kvm_vcpu *vcpu)
+-	kvm_mmu_free_roots(vcpu, mmu, roots_to_free);
++	kvm_mmu_free_roots(kvm, mmu, roots_to_free);
+ }
+ EXPORT_SYMBOL_GPL(kvm_mmu_free_guest_mode_roots);
  
- 	if (is_tdp_mmu_enabled(vcpu->kvm)) {
- 		root = kvm_tdp_mmu_get_vcpu_root_hpa(vcpu);
--		mmu->root_hpa = root;
-+		mmu->root.hpa = root;
- 	} else if (shadow_root_level >= PT64_ROOT_4LEVEL) {
- 		root = mmu_alloc_root(vcpu, 0, 0, shadow_root_level, true);
--		mmu->root_hpa = root;
-+		mmu->root.hpa = root;
- 	} else if (shadow_root_level == PT32E_ROOT_LEVEL) {
- 		if (WARN_ON_ONCE(!mmu->pae_root)) {
- 			r = -EIO;
-@@ -3368,15 +3368,15 @@ static int mmu_alloc_direct_roots(struct kvm_vcpu *vcpu)
- 			mmu->pae_root[i] = root | PT_PRESENT_MASK |
- 					   shadow_me_mask;
- 		}
--		mmu->root_hpa = __pa(mmu->pae_root);
-+		mmu->root.hpa = __pa(mmu->pae_root);
- 	} else {
- 		WARN_ONCE(1, "Bad TDP root level = %d\n", shadow_root_level);
- 		r = -EIO;
- 		goto out_unlock;
+@@ -3710,7 +3709,7 @@ void kvm_mmu_sync_prev_roots(struct kvm_vcpu *vcpu)
+ 			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
+ 
+ 	/* sync prev_roots by simply freeing them */
+-	kvm_mmu_free_roots(vcpu, vcpu->arch.mmu, roots_to_free);
++	kvm_mmu_free_roots(vcpu->kvm, vcpu->arch.mmu, roots_to_free);
+ }
+ 
+ static gpa_t nonpaging_gva_to_gpa(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
+@@ -4159,8 +4158,10 @@ static bool fast_pgd_switch(struct kvm_vcpu *vcpu, gpa_t new_pgd,
+ static void __kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd,
+ 			      union kvm_mmu_page_role new_role)
+ {
++	struct kvm_mmu *mmu = vcpu->arch.mmu;
++
+ 	if (!fast_pgd_switch(vcpu, new_pgd, new_role)) {
+-		kvm_mmu_free_roots(vcpu, vcpu->arch.mmu, KVM_MMU_ROOT_CURRENT);
++		kvm_mmu_free_roots(vcpu->kvm, mmu, KVM_MMU_ROOT_CURRENT);
+ 		return;
  	}
  
--	/* root_pgd is ignored for direct MMUs. */
--	mmu->root_pgd = 0;
-+	/* root.pgd is ignored for direct MMUs. */
-+	mmu->root.pgd = 0;
- out_unlock:
- 	write_unlock(&vcpu->kvm->mmu_lock);
+@@ -5083,10 +5084,10 @@ int kvm_mmu_load(struct kvm_vcpu *vcpu)
  	return r;
-@@ -3489,7 +3489,7 @@ static int mmu_alloc_shadow_roots(struct kvm_vcpu *vcpu)
- 	if (mmu->root_level >= PT64_ROOT_4LEVEL) {
- 		root = mmu_alloc_root(vcpu, root_gfn, 0,
- 				      mmu->shadow_root_level, false);
--		mmu->root_hpa = root;
-+		mmu->root.hpa = root;
- 		goto set_root_pgd;
- 	}
- 
-@@ -3539,14 +3539,14 @@ static int mmu_alloc_shadow_roots(struct kvm_vcpu *vcpu)
- 	}
- 
- 	if (mmu->shadow_root_level == PT64_ROOT_5LEVEL)
--		mmu->root_hpa = __pa(mmu->pml5_root);
-+		mmu->root.hpa = __pa(mmu->pml5_root);
- 	else if (mmu->shadow_root_level == PT64_ROOT_4LEVEL)
--		mmu->root_hpa = __pa(mmu->pml4_root);
-+		mmu->root.hpa = __pa(mmu->pml4_root);
- 	else
--		mmu->root_hpa = __pa(mmu->pae_root);
-+		mmu->root.hpa = __pa(mmu->pae_root);
- 
- set_root_pgd:
--	mmu->root_pgd = root_pgd;
-+	mmu->root.pgd = root_pgd;
- out_unlock:
- 	write_unlock(&vcpu->kvm->mmu_lock);
- 
-@@ -3659,13 +3659,13 @@ void kvm_mmu_sync_roots(struct kvm_vcpu *vcpu)
- 	if (vcpu->arch.mmu->direct_map)
- 		return;
- 
--	if (!VALID_PAGE(vcpu->arch.mmu->root_hpa))
-+	if (!VALID_PAGE(vcpu->arch.mmu->root.hpa))
- 		return;
- 
- 	vcpu_clear_mmio_info(vcpu, MMIO_GVA_ANY);
- 
- 	if (vcpu->arch.mmu->root_level >= PT64_ROOT_4LEVEL) {
--		hpa_t root = vcpu->arch.mmu->root_hpa;
-+		hpa_t root = vcpu->arch.mmu->root.hpa;
- 		sp = to_shadow_page(root);
- 
- 		if (!is_unsync_root(root))
-@@ -3956,7 +3956,7 @@ static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
- static bool is_page_fault_stale(struct kvm_vcpu *vcpu,
- 				struct kvm_page_fault *fault, int mmu_seq)
- {
--	struct kvm_mmu_page *sp = to_shadow_page(vcpu->arch.mmu->root_hpa);
-+	struct kvm_mmu_page *sp = to_shadow_page(vcpu->arch.mmu->root.hpa);
- 
- 	/* Special roots, e.g. pae_root, are not backed by shadow pages. */
- 	if (sp && is_obsolete_sp(vcpu->kvm, sp))
-@@ -4113,34 +4113,27 @@ static inline bool is_root_usable(struct kvm_mmu_root_info *root, gpa_t pgd,
- /*
-  * Find out if a previously cached root matching the new pgd/role is available.
-  * The current root is also inserted into the cache.
-- * If a matching root was found, it is assigned to kvm_mmu->root_hpa and true is
-+ * If a matching root was found, it is assigned to kvm_mmu->root.hpa and true is
-  * returned.
-- * Otherwise, the LRU root from the cache is assigned to kvm_mmu->root_hpa and
-+ * Otherwise, the LRU root from the cache is assigned to kvm_mmu->root.hpa and
-  * false is returned. This root should now be freed by the caller.
-  */
- static bool cached_root_available(struct kvm_vcpu *vcpu, gpa_t new_pgd,
- 				  union kvm_mmu_page_role new_role)
- {
- 	uint i;
--	struct kvm_mmu_root_info root;
- 	struct kvm_mmu *mmu = vcpu->arch.mmu;
- 
--	root.pgd = mmu->root_pgd;
--	root.hpa = mmu->root_hpa;
--
--	if (is_root_usable(&root, new_pgd, new_role))
-+	if (is_root_usable(&mmu->root, new_pgd, new_role))
- 		return true;
- 
- 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
--		swap(root, mmu->prev_roots[i]);
-+		swap(mmu->root, mmu->prev_roots[i]);
- 
--		if (is_root_usable(&root, new_pgd, new_role))
-+		if (is_root_usable(&mmu->root, new_pgd, new_role))
- 			break;
- 	}
- 
--	mmu->root_hpa = root.hpa;
--	mmu->root_pgd = root.pgd;
--
- 	return i < KVM_MMU_NUM_PREV_ROOTS;
  }
  
-@@ -4196,7 +4189,7 @@ static void __kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd,
- 	 */
- 	if (!new_role.direct)
- 		__clear_sp_write_flooding_count(
--				to_shadow_page(vcpu->arch.mmu->root_hpa));
-+				to_shadow_page(vcpu->arch.mmu->root.hpa));
- }
- 
- void kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd)
-@@ -5092,7 +5085,7 @@ static void __kvm_mmu_unload(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
+-static void __kvm_mmu_unload(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
++static void __kvm_mmu_unload(struct kvm *kvm, struct kvm_mmu *mmu)
  {
  	int i;
- 	kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOTS_ALL);
--	WARN_ON(VALID_PAGE(mmu->root_hpa));
-+	WARN_ON(VALID_PAGE(mmu->root.hpa));
+-	kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOTS_ALL);
++	kvm_mmu_free_roots(kvm, mmu, KVM_MMU_ROOTS_ALL);
+ 	WARN_ON(VALID_PAGE(mmu->root.hpa));
  	if (mmu->pae_root) {
  		for (i = 0; i < 4; ++i)
- 			WARN_ON(IS_VALID_PAE_ROOT(mmu->pae_root[i]));
-@@ -5287,7 +5280,7 @@ int kvm_mmu_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa, u64 error_code,
- 	int r, emulation_type = EMULTYPE_PF;
- 	bool direct = vcpu->arch.mmu->direct_map;
+@@ -5096,8 +5097,8 @@ static void __kvm_mmu_unload(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
  
--	if (WARN_ON(!VALID_PAGE(vcpu->arch.mmu->root_hpa)))
-+	if (WARN_ON(!VALID_PAGE(vcpu->arch.mmu->root.hpa)))
- 		return RET_PF_RETRY;
- 
- 	r = RET_PF_INVALID;
-@@ -5359,7 +5352,7 @@ void kvm_mmu_invalidate_gva(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
- 		return;
- 
- 	if (root_hpa == INVALID_PAGE) {
--		mmu->invlpg(vcpu, gva, mmu->root_hpa);
-+		mmu->invlpg(vcpu, gva, mmu->root.hpa);
- 
- 		/*
- 		 * INVLPG is required to invalidate any global mappings for the VA,
-@@ -5395,7 +5388,7 @@ void kvm_mmu_invpcid_gva(struct kvm_vcpu *vcpu, gva_t gva, unsigned long pcid)
- 	uint i;
- 
- 	if (pcid == kvm_get_active_pcid(vcpu)) {
--		mmu->invlpg(vcpu, gva, mmu->root_hpa);
-+		mmu->invlpg(vcpu, gva, mmu->root.hpa);
- 		tlb_flush = true;
- 	}
- 
-@@ -5508,8 +5501,8 @@ static int __kvm_mmu_create(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
- 	struct page *page;
- 	int i;
- 
--	mmu->root_hpa = INVALID_PAGE;
--	mmu->root_pgd = 0;
-+	mmu->root.hpa = INVALID_PAGE;
-+	mmu->root.pgd = 0;
- 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++)
- 		mmu->prev_roots[i] = KVM_MMU_ROOT_INFO_INVALID;
- 
-diff --git a/arch/x86/kvm/mmu/mmu_audit.c b/arch/x86/kvm/mmu/mmu_audit.c
-index f31fdb874f1f..3e5d62a25350 100644
---- a/arch/x86/kvm/mmu/mmu_audit.c
-+++ b/arch/x86/kvm/mmu/mmu_audit.c
-@@ -56,11 +56,11 @@ static void mmu_spte_walk(struct kvm_vcpu *vcpu, inspect_spte_fn fn)
- 	int i;
- 	struct kvm_mmu_page *sp;
- 
--	if (!VALID_PAGE(vcpu->arch.mmu->root_hpa))
-+	if (!VALID_PAGE(vcpu->arch.mmu->root.hpa))
- 		return;
- 
- 	if (vcpu->arch.mmu->root_level >= PT64_ROOT_4LEVEL) {
--		hpa_t root = vcpu->arch.mmu->root_hpa;
-+		hpa_t root = vcpu->arch.mmu->root.hpa;
- 
- 		sp = to_shadow_page(root);
- 		__mmu_spte_walk(vcpu, sp, fn, vcpu->arch.mmu->root_level);
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 5b5bdac97c7b..346f3bad3cb9 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -668,7 +668,7 @@ static int FNAME(fetch)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
- 	if (FNAME(gpte_changed)(vcpu, gw, top_level))
- 		goto out_gpte_changed;
- 
--	if (WARN_ON(!VALID_PAGE(vcpu->arch.mmu->root_hpa)))
-+	if (WARN_ON(!VALID_PAGE(vcpu->arch.mmu->root.hpa)))
- 		goto out_gpte_changed;
- 
- 	for (shadow_walk_init(&it, vcpu, fault->addr);
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 8def8f810cb0..debf08212f12 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -657,7 +657,7 @@ static inline void tdp_mmu_set_spte_no_dirty_log(struct kvm *kvm,
- 		else
- 
- #define tdp_mmu_for_each_pte(_iter, _mmu, _start, _end)		\
--	for_each_tdp_pte(_iter, to_shadow_page(_mmu->root_hpa), _start, _end)
-+	for_each_tdp_pte(_iter, to_shadow_page(_mmu->root.hpa), _start, _end)
- 
- /*
-  * Yield if the MMU lock is contended or this thread needs to return control
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
-index 3f987785702a..57c73d8f76ce 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.h
-+++ b/arch/x86/kvm/mmu/tdp_mmu.h
-@@ -95,7 +95,7 @@ static inline bool is_tdp_mmu_page(struct kvm_mmu_page *sp) { return sp->tdp_mmu
- static inline bool is_tdp_mmu(struct kvm_mmu *mmu)
+ void kvm_mmu_unload(struct kvm_vcpu *vcpu)
  {
- 	struct kvm_mmu_page *sp;
--	hpa_t hpa = mmu->root_hpa;
-+	hpa_t hpa = mmu->root.hpa;
+-	__kvm_mmu_unload(vcpu, &vcpu->arch.root_mmu);
+-	__kvm_mmu_unload(vcpu, &vcpu->arch.guest_mmu);
++	__kvm_mmu_unload(vcpu->kvm, &vcpu->arch.root_mmu);
++	__kvm_mmu_unload(vcpu->kvm, &vcpu->arch.guest_mmu);
+ }
  
- 	if (WARN_ON(!VALID_PAGE(hpa)))
- 		return false;
+ static bool need_remote_flush(u64 old, u64 new)
 diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index c73e4d938ddc..29289ecca223 100644
+index 29289ecca223..b7bc634d35e2 100644
 --- a/arch/x86/kvm/vmx/nested.c
 +++ b/arch/x86/kvm/vmx/nested.c
-@@ -5466,7 +5466,7 @@ static int handle_invept(struct kvm_vcpu *vcpu)
- 				VMXERR_INVALID_OPERAND_TO_INVEPT_INVVPID);
+@@ -321,7 +321,7 @@ static void free_nested(struct kvm_vcpu *vcpu)
+ 	kvm_vcpu_unmap(vcpu, &vmx->nested.pi_desc_map, true);
+ 	vmx->nested.pi_desc = NULL;
  
- 		roots_to_free = 0;
--		if (nested_ept_root_matches(mmu->root_hpa, mmu->root_pgd,
-+		if (nested_ept_root_matches(mmu->root.hpa, mmu->root.pgd,
- 					    operand.eptp))
- 			roots_to_free |= KVM_MMU_ROOT_CURRENT;
+-	kvm_mmu_free_roots(vcpu, &vcpu->arch.guest_mmu, KVM_MMU_ROOTS_ALL);
++	kvm_mmu_free_roots(vcpu->kvm, &vcpu->arch.guest_mmu, KVM_MMU_ROOTS_ALL);
  
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index d8547144d3b7..b183dfc41d74 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -2952,7 +2952,7 @@ static inline int vmx_get_current_vpid(struct kvm_vcpu *vcpu)
- static void vmx_flush_tlb_current(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_mmu *mmu = vcpu->arch.mmu;
--	u64 root_hpa = mmu->root_hpa;
-+	u64 root_hpa = mmu->root.hpa;
+ 	nested_release_evmcs(vcpu);
  
- 	/* No flush required if the current context is invalid. */
- 	if (!VALID_PAGE(root_hpa))
+@@ -5007,7 +5007,7 @@ static inline void nested_release_vmcs12(struct kvm_vcpu *vcpu)
+ 				  vmx->nested.current_vmptr >> PAGE_SHIFT,
+ 				  vmx->nested.cached_vmcs12, 0, VMCS12_SIZE);
+ 
+-	kvm_mmu_free_roots(vcpu, &vcpu->arch.guest_mmu, KVM_MMU_ROOTS_ALL);
++	kvm_mmu_free_roots(vcpu->kvm, &vcpu->arch.guest_mmu, KVM_MMU_ROOTS_ALL);
+ 
+ 	vmx->nested.current_vmptr = INVALID_GPA;
+ }
+@@ -5486,7 +5486,7 @@ static int handle_invept(struct kvm_vcpu *vcpu)
+ 	}
+ 
+ 	if (roots_to_free)
+-		kvm_mmu_free_roots(vcpu, mmu, roots_to_free);
++		kvm_mmu_free_roots(vcpu->kvm, mmu, roots_to_free);
+ 
+ 	return nested_vmx_succeed(vcpu);
+ }
+@@ -5575,7 +5575,7 @@ static int handle_invvpid(struct kvm_vcpu *vcpu)
+ 	 * TODO: sync only the affected SPTEs for INVDIVIDUAL_ADDR.
+ 	 */
+ 	if (!enable_ept)
+-		kvm_mmu_free_guest_mode_roots(vcpu, &vcpu->arch.root_mmu);
++		kvm_mmu_free_guest_mode_roots(vcpu->kvm, &vcpu->arch.root_mmu);
+ 
+ 	return nested_vmx_succeed(vcpu);
+ }
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index b912eef5dc1a..c0d7256e3a78 100644
+index c0d7256e3a78..6aefd7ac7039 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -762,7 +762,7 @@ bool kvm_inject_emulated_page_fault(struct kvm_vcpu *vcpu,
- 	if ((fault->error_code & PFERR_PRESENT_MASK) &&
- 	    !(fault->error_code & PFERR_RSVD_MASK))
- 		kvm_mmu_invalidate_gva(vcpu, fault_mmu, fault->address,
--				       fault_mmu->root_hpa);
-+				       fault_mmu->root.hpa);
+@@ -855,7 +855,7 @@ int load_pdptrs(struct kvm_vcpu *vcpu, unsigned long cr3)
+ 	 * Shadow page roots need to be reconstructed instead.
+ 	 */
+ 	if (!tdp_enabled && memcmp(mmu->pdptrs, pdpte, sizeof(mmu->pdptrs)))
+-		kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOT_CURRENT);
++		kvm_mmu_free_roots(vcpu->kvm, mmu, KVM_MMU_ROOT_CURRENT);
  
- 	fault_mmu->inject_page_fault(vcpu, fault);
- 	return fault->nested_page_fault;
+ 	memcpy(mmu->pdptrs, pdpte, sizeof(mmu->pdptrs));
+ 	kvm_register_mark_dirty(vcpu, VCPU_EXREG_PDPTR);
+@@ -1156,7 +1156,7 @@ static void kvm_invalidate_pcid(struct kvm_vcpu *vcpu, unsigned long pcid)
+ 		if (kvm_get_pcid(vcpu, mmu->prev_roots[i].pgd) == pcid)
+ 			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
+ 
+-	kvm_mmu_free_roots(vcpu, mmu, roots_to_free);
++	kvm_mmu_free_roots(vcpu->kvm, mmu, roots_to_free);
+ }
+ 
+ int kvm_set_cr3(struct kvm_vcpu *vcpu, unsigned long cr3)
 -- 
 2.31.1
 
