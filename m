@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 069FEC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A668C4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244839AbiBQSuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:50:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45656 "EHLO
+        id S244872AbiBQSuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:50:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244656AbiBQSu0 (ORCPT
+        with ESMTP id S244649AbiBQSu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 13:50:26 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266D1532E3;
-        Thu, 17 Feb 2022 10:50:08 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id hw13so9370984ejc.9;
-        Thu, 17 Feb 2022 10:50:08 -0800 (PST)
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6775522F1;
+        Thu, 17 Feb 2022 10:50:11 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id p9so9428087ejd.6;
+        Thu, 17 Feb 2022 10:50:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FpBWiiaR04aEkFVsFIobErPGGU69qIWZRAZ0zLpDwAk=;
-        b=c2asecRRx+vL9d/KAaw+7Qk8bKQr682XQKiP5ncBROE8yBceEkrg0vF+KZLEYtf+pX
-         48yxCW7KEp60jqF3eLYktmaWDbJJWD95L2rkthySbEBpvfi1kfKxXAfK8jqMd8d3Vu12
-         2B8E4S5QY9CT2EAc0EIXFSqZWiqkeN7ySwzW8EuBtyQh3/xeRTgWs+/etLtCKQWvgZ/+
-         Hfn4wDSW4QsCU8X2IfzlBqaCUq+B+Y/L4MzXxcQfqhYoQuGk0gxYPnIJOIZ3FNd9KGWE
-         LtEswyev4pT+5dHSMcW3T0dT7zsjsAzP3T4SAfXdnVi2dVVB77Yyn+F8O5dYZgUnqILe
-         IpDw==
+        bh=zM+Hp2WVjXIaMPVWa2mQUV9ISK0HqYCrHac37DPF8pw=;
+        b=BolWhcpS/6HTOxCBDIDuBl/h5hPvE9JkG/muCPtASmFx6+y5sndVaFYhkOPuPssfkn
+         N+WkOdD+19aO763ei3Eu2WU9ftQN1kp2LK8+YjHnTP+d1bzQRvVcFvzir84VaaZy28qh
+         snuYfFYT79MuLmapUWJYpxEHds4dVHjeyRv0d+6T2s9RwEDKe+ZQu7lgo9gpCtIbQU/4
+         3A+2aUTEa797Akyg/0hLzZ8eZn+p9LnYhoJV8TN3b6tuVbcogD/UXwv+tlWJ9SDzZCrg
+         +P8c0Giv0WWtwBFlUZ0Oq0JXsY7DLui47NCMGSowRFKP1k4VtDZGpz5Ldv6bL7JB4BA9
+         14Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FpBWiiaR04aEkFVsFIobErPGGU69qIWZRAZ0zLpDwAk=;
-        b=tORuIJ3pxf9q14Xj8tVi3bdLhV113jC5rngIKXoQ9JwkptKI9abO+Tsz+0jFmlt7vm
-         j3t09bQu1REak2V1JmW5JfIJfFK2bntaTVBZTeyQiiB5MLwq/inTMtZq4BldbqFmD1rf
-         IgoLJ7JpsYKLvsvAa8up5yCKItgxQgQ4/mxzlozwpF17PnwPEuzC6F1iEsju8vEFqh8j
-         ZwWfdTX7Sp/jW5a5PsSOmg59v82w3t+Huqh6RXec1/dVLZe255WRxml749LckDBuDKZE
-         g+ki82JHm5QjtU7xHYze1lDN3N7fg7Cof3pXl+wrgN5aIYu4Os198rPNgi0XRxIo9ht+
-         6gHQ==
-X-Gm-Message-State: AOAM531pbyKExd0CM07tet4UTGR7qCn5L3efatm3Jz7gsKCCl4/gafKo
-        oBGzKPjhujA4PqJt706ILRY=
-X-Google-Smtp-Source: ABdhPJw7pGHg63Wd6YbBVyy9xUXridLW6IguhuGjOhd6bVObozVss8jPIV3gNzSSkSPXYpbSgDgcqg==
-X-Received: by 2002:a17:906:3bcb:b0:6cf:cf86:28d7 with SMTP id v11-20020a1709063bcb00b006cfcf8628d7mr3441587ejf.274.1645123806736;
-        Thu, 17 Feb 2022 10:50:06 -0800 (PST)
+        bh=zM+Hp2WVjXIaMPVWa2mQUV9ISK0HqYCrHac37DPF8pw=;
+        b=lAJM+uUNMVavKbvgr28gZUaExTKc9uT1rHYnMG69Fhw0oJBm7L2q0ivNkcFybxExHh
+         LR4uRJTpQNdFOtvUDnIzrj0AmoyICsyE4ChUrbm9fOeeEQTE+lUG2eYRJzRnVb6ft14j
+         SucmcA9lwClWjVtJw92O1ayd7gx8UTeuuU8Ak9sitMhooQHeP1rDGwBtfmhWpB8GS0z3
+         M8IRzh937gDGCMla1rYyEr2LDXWvXICDZcKbdbPihNsTHUjtuNd5wBV53rJ3wkVBQo3K
+         7Gx1P+82R7x3kx5yWnYIVcnUOQ84zkhnC6rCZwOE+DDZ8QRQ53i4JhD1IFtbC9s+oWU+
+         DLKQ==
+X-Gm-Message-State: AOAM533hD4jvIIYgmzjWvGha5J/zTEofD4EJhVCDlgGJulOfsyK9ykFh
+        QSZ209r1ahSqWVAniECldU32OKfK9Aj1Ok0bZmrk0Q==
+X-Google-Smtp-Source: ABdhPJxAa77nD+43PdtywudpGPQcktl4VzQxfGah+xpGfQDtyZvDMsYlyiTUJn8yQjbvV3UEVOkWiA==
+X-Received: by 2002:a17:906:82c4:b0:6b7:e0fc:c9e0 with SMTP id a4-20020a17090682c400b006b7e0fcc9e0mr3507573ejy.555.1645123810477;
+        Thu, 17 Feb 2022 10:50:10 -0800 (PST)
 Received: from localhost.localdomain (dhcp-077-250-038-153.chello.nl. [77.250.38.153])
-        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.05
+        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 10:50:06 -0800 (PST)
+        Thu, 17 Feb 2022 10:50:10 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         linux-kernel@vger.kernel.org
@@ -63,9 +63,9 @@ Cc:     linux-arch@vger.kernel.org,
         Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [RFC PATCH 09/13] drbd: future proof usage of list iterator after the loop
-Date:   Thu, 17 Feb 2022 19:48:25 +0100
-Message-Id: <20220217184829.1991035-10-jakobkoschel@gmail.com>
+Subject: [RFC PATCH 13/13] scsi: mpt3sas: comment about invalid usage of the list iterator
+Date:   Thu, 17 Feb 2022 19:48:29 +0100
+Message-Id: <20220217184829.1991035-14-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217184829.1991035-1-jakobkoschel@gmail.com>
 References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
@@ -75,28 +75,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the speculative safe version of the list iterator req will be NULL
-if the terminating condition was hit and needs to be reset to req
-derived from the head, before calling list_for_each_entry_safe_from().
+Since the list iteration never exists early, reply_q is guaranteed to
+be an invalid variable and should not be used within
+_base_process_reply_queue(). Since I'm not sure what this code was
+supposed to do, I just marked this with this comment.
 
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/block/drbd/drbd_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/scsi/mpt3sas/mpt3sas_base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 6f450816c4fa..d98205b46f59 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -227,6 +227,8 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 	list_for_each_entry(req, &connection->transfer_log, tl_requests)
- 		if (req->epoch == expect_epoch)
- 			break;
-+	if (!req)
-+		req = list_entry(req, &connection->transfer_log, tl_requests);
- 	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
- 		if (req->epoch != expect_epoch)
- 			break;
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
+index 511726f92d9a..a6746e124226 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_base.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
+@@ -2013,7 +2013,7 @@ mpt3sas_base_sync_reply_irqs(struct MPT3SAS_ADAPTER *ioc, u8 poll)
+ 		}
+ 	}
+ 	if (poll)
+-		_base_process_reply_queue(reply_q);
++		_base_process_reply_queue(reply_q); // COMMENT
+ }
+ 
+ /**
 -- 
 2.25.1
 
