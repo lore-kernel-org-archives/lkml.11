@@ -2,35 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB69C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 044BAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232440AbiBQNnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:43:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40864 "EHLO
+        id S241361AbiBQNnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:43:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240345AbiBQNms (ORCPT
+        with ESMTP id S241153AbiBQNmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:42:48 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F04EBD;
-        Thu, 17 Feb 2022 05:42:33 -0800 (PST)
-X-UUID: 251eaa28228148ebb545c06581072677-20220217
-X-UUID: 251eaa28228148ebb545c06581072677-20220217
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        Thu, 17 Feb 2022 08:42:50 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23D819C14;
+        Thu, 17 Feb 2022 05:42:35 -0800 (PST)
+X-UUID: cbe6935b7f414503a3df4dfbc2669e95-20220217
+X-UUID: cbe6935b7f414503a3df4dfbc2669e95-20220217
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
         (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 204204764; Thu, 17 Feb 2022 21:42:30 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 17 Feb 2022 21:42:29 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Feb
- 2022 21:42:28 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1751469062; Thu, 17 Feb 2022 21:42:32 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 17 Feb 2022 21:42:31 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Feb
+ 2022 21:42:31 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 21:42:27 +0800
+ Transport; Thu, 17 Feb 2022 21:42:29 +0800
 From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
 To:     <broonie@kernel.org>
 CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
@@ -42,9 +41,9 @@ CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, Jiaxin Yu <jiaxin.yu@mediatek.com>
-Subject: [v2 15/17] dt-bindings: mediatek: mt8186: add mt8186-mt6366-da7219-max98357 document
-Date:   Thu, 17 Feb 2022 21:42:03 +0800
-Message-ID: <20220217134205.15400-16-jiaxin.yu@mediatek.com>
+Subject: [v2 17/17] dt-bindings: mediatek: mt8186: add mt8186-mt6366-rt1019-rt5682s document
+Date:   Thu, 17 Feb 2022 21:42:05 +0800
+Message-ID: <20220217134205.15400-18-jiaxin.yu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
 References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
@@ -56,27 +55,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds document for mt8186 board with mt6366, da7219 and max98357.
+This patch adds document for mt8186 board with mt6366, rt1019 and rt5682s.
 
 Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
 ---
- .../sound/mt8186-mt6366-da7219-max98357.yaml  | 47 +++++++++++++++++++
+ .../sound/mt8186-mt6366-rt1019-rt5682s.yaml   | 47 +++++++++++++++++++
  1 file changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
+ create mode 100644 Documentation/devicetree/bindings/sound/mt8186-mt6366-rt1019-rt5682s.yaml
 
-diff --git a/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml b/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
+diff --git a/Documentation/devicetree/bindings/sound/mt8186-mt6366-rt1019-rt5682s.yaml b/Documentation/devicetree/bindings/sound/mt8186-mt6366-rt1019-rt5682s.yaml
 new file mode 100644
-index 000000000000..adef16a4630c
+index 000000000000..9280a26038f3
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
++++ b/Documentation/devicetree/bindings/sound/mt8186-mt6366-rt1019-rt5682s.yaml
 @@ -0,0 +1,47 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/sound/mt8186-mt6366-da7219-max98357.yaml#
++$id: http://devicetree.org/schemas/sound/mt8186-mt6366-rt1019-rt5682s.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Mediatek MT8186 with MT6366, DA7219 and MAX98357 ASoC sound card driver
++title: Mediatek MT8186 with MT6366, RT1019 and RT5682S ASoC sound card driver
 +
 +maintainers:
 +  - Jiaxin Yu <jiaxin.yu@mediatek.com>
@@ -87,7 +86,7 @@ index 000000000000..adef16a4630c
 +properties:
 +  compatible:
 +    enum:
-+      - mediatek,mt8186_mt6366_da7219_max98357_sound
++      - mediatek,mt8186_mt6366_rt1019_rt5682s_sound
 +
 +  mediatek,platform:
 +    $ref: "/schemas/types.yaml#/definitions/phandle"
@@ -106,10 +105,10 @@ index 000000000000..adef16a4630c
 +examples:
 +  - |
 +
-+    sound: mt8192-sound {
-+        compatible = "mediatek,mt8186_mt6366_da7219_max98357_sound";
++    sound: mt8186-sound {
++        compatible = "mediatek,mt8186_mt6366_rt1019_rt5682s_sound";
 +        mediatek,platform = <&afe>;
-+        mediatek,hdmi-codec = <&anx_bridge_dp>;
++        mediatek,hdmi-codec = <&it6505dptx>;
 +        pinctrl-names = "aud_clk_mosi_off",
 +                        "aud_clk_mosi_on";
 +        pinctrl-0 = <&aud_clk_mosi_off>;
