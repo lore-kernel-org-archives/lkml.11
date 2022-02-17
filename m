@@ -2,98 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0578CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:22:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82EFFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237476AbiBQIW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 03:22:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40722 "EHLO
+        id S237476AbiBQIZO convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 03:25:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235577AbiBQIW4 (ORCPT
+        with ESMTP id S232546AbiBQIZM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 03:22:56 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8304B1EB425
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:22:42 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id om7so4866704pjb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:22:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0zytHf9FkJ/PPPieoPlaB6am9Dki6g+U3R/IZo38jLU=;
-        b=auYbTr3bUun55c3vBXt7qY9ZrmwpIs78nu5pz18cj7v0siiy6+G4aRNbk/2LLcvodS
-         asUmF3hxOd6ZBy+ihtNE6oN8R9cn1ymyRv9UHjqnbDk+q41MxMNbtxf/MMEUbPKEYXA/
-         dhm2coht7GKbfTxGOJDbdrBGoDbRdjO0iSzxw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0zytHf9FkJ/PPPieoPlaB6am9Dki6g+U3R/IZo38jLU=;
-        b=tBihTjw5Dj9c3n2y7kfYy/SjLdxc4Jmox4/r1HWcQlG8toASOlqHc85vExNie2pmlz
-         newY6rtWkpJ/k6+zC/fS2c28UZDJGSmKMDEtjlFX7Y0ZFEysn8EfUtGYhPon6k1MkKk4
-         6cALejdBFg+92N9ahkGZiXCV7aKqXSD6dOB5gCas9Vprhgl4ZMcHynmRNuqXnUIi8MbD
-         r237WAX6sAOqyrNRIRWySTzyNTYaDdRDa5NSmC/EvF3i9bmEfrNw2/85z9hFa6BgDXab
-         WzWKOxo2PvLhmCgt2WVfJV1pI1TkvG+0ClR9aq2l9kHhRDtwdKCaDJDA7L93I+twlzjk
-         UugA==
-X-Gm-Message-State: AOAM531WfwLjHayxNESvP3E0LZ4598L+EazKtYtlW/MbclM1JFyzMM4N
-        0Rhj3aZno7zVj0qTBhBsUDNffgDIeasGsQ==
-X-Google-Smtp-Source: ABdhPJzkyaeJpICrlVtn3FjTPp3zOJJq42VV/eJRldL/wDp5OS70ij2lPbhKBr0CbkwHJR5GBhSQ+Q==
-X-Received: by 2002:a17:90a:9408:b0:1b5:3908:d3d1 with SMTP id r8-20020a17090a940800b001b53908d3d1mr1948242pjo.188.1645086161956;
-        Thu, 17 Feb 2022 00:22:41 -0800 (PST)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:cdb:2c0b:b1f8:e426])
-        by smtp.gmail.com with ESMTPSA id m8sm1545449pgb.0.2022.02.17.00.22.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 00:22:41 -0800 (PST)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Xin Ji <xji@analogixsemi.com>, Robert Foss <robert.foss@linaro.org>
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Andrzej Hajda <andrzej.hajda@intel.com>
-Subject: [PATCH v2] drm/bridge: Clear the DP_AUX_I2C_MOT bit passed in aux read command.
-Date:   Thu, 17 Feb 2022 16:22:25 +0800
-Message-Id: <20220217082224.1823916-1-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+        Thu, 17 Feb 2022 03:25:12 -0500
+X-Greylist: delayed 560 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 00:24:56 PST
+Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1594297237
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:24:56 -0800 (PST)
+Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1.emlix.com (Postfix) with ESMTPS id 9372D60196;
+        Thu, 17 Feb 2022 09:15:34 +0100 (CET)
+From:   Rolf Eike Beer <eb@emlix.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] locking/rwsem: mark down_(read|write)_trylock() as  __must_check
+Date:   Thu, 17 Feb 2022 09:15:33 +0100
+Message-ID: <15670760.jIsrciUiTQ@mobilepool36.emlix.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the previous transfer didn't end with a command without DP_AUX_I2C_MOT,
-the next read trasnfer will miss the first byte. But if the command in
-previous transfer is requested with length 0, it's a no-op to anx7625
-since it can't process this command. anx7625 requires the last command
-to be read command with length > 0.
+When you don't look at the return code you can't know if you actually got
+the lock.
 
-It's observed that if we clear the DP_AUX_I2C_MOT in read transfer, we
-can still get correct data. Clear the read commands with DP_AUX_I2C_MOT
-bit to fix this issue.
-
-Fixes: adca62ec370c ("drm/bridge: anx7625: Support reading edid through aux channel")
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Signed-off-by: Rolf Eike Beer <eb@emlix.com>
 ---
-v1->v2: Offline discussed with Xin Ji, it's better to clear the bit on
-read commands only.
----
- drivers/gpu/drm/bridge/analogix/anx7625.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/rwsem.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 633618bafd75d3..2805e9bed2c2f4 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -253,6 +253,8 @@ static int anx7625_aux_trans(struct anx7625_data *ctx, u8 op, u32 address,
- 	addrm = (address >> 8) & 0xFF;
- 	addrh = (address >> 16) & 0xFF;
+diff --git a/include/linux/rwsem.h b/include/linux/rwsem.h
+index f9348769e558..f62fa3ec95de 100644
+--- a/include/linux/rwsem.h
++++ b/include/linux/rwsem.h
+@@ -178,7 +178,7 @@ extern int __must_check down_read_killable(struct rw_semaphore *sem);
+ /*
+  * trylock for reading -- returns 1 if successful, 0 if contention
+  */
+-extern int down_read_trylock(struct rw_semaphore *sem);
++extern int __must_check down_read_trylock(struct rw_semaphore *sem);
  
-+	if (!is_write)
-+		op &= ~DP_AUX_I2C_MOT;
- 	cmd = DPCD_CMD(len, op);
+ /*
+  * lock for writing
+@@ -189,7 +189,7 @@ extern int __must_check down_write_killable(struct rw_semaphore *sem);
+ /*
+  * trylock for writing -- returns 1 if successful, 0 if contention
+  */
+-extern int down_write_trylock(struct rw_semaphore *sem);
++extern int __must_check down_write_trylock(struct rw_semaphore *sem);
  
- 	/* Set command and length */
+ /*
+  * release a read lock
 -- 
-2.35.1.265.g69c8d7142f-goog
+2.35.1
+
+-- 
+Rolf Eike Beer, emlix GmbH, https://www.emlix.com
+Fon +49 551 30664-0, Fax +49 551 30664-11
+Gothaer Platz 3, 37083 Göttingen, Germany
+Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
+Geschäftsführung: Heike Jordan, Dr. Uwe Kracke – Ust-IdNr.: DE 205 198 055
+
+emlix - smart embedded open source
+
 
