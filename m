@@ -2,75 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3AD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 09:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06413C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 09:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238808AbiBQJmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 04:42:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47536 "EHLO
+        id S238812AbiBQJmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 04:42:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238797AbiBQJmG (ORCPT
+        with ESMTP id S237910AbiBQJmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 04:42:06 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C991704A;
-        Thu, 17 Feb 2022 01:41:48 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id D02991F45872
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645090907;
-        bh=2au26a2pUUKO9XqAr3U0rSJiLwbbAivsU5W+9bDSiT0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=VMCg3wVBo5/cDjYCSAZaXU+iTi1rSSmSg0GY+5dmWH/sPjr7oHhFBuwVl8PwCGvra
-         hZTn0pQzhKE1qe9AsqDiHXfS7TVv6eL9RM2UAMUIdyTjH8uCgsv98EHcCIhLWGhK9C
-         4ybY4grpadFXTBsLr8p7EVNHtISarntW8d+dtEwejEmt8mShJv7rlGXkaO563J/DFc
-         YCZ5+dJDp2nkREk1upnv5ZKIxbEcshWZfvxzBjkySJZ5SMzNxG9jvZ6L6ugHzkscNw
-         u8V8SXn9pb2eOclaBeP/MKK4MvS+7DHa/LJDhN5X3ubQLQKQOCPgx8cbMjpjCd5cQO
-         Nf/iRt2HZgDLQ==
-Message-ID: <f510614b-8e64-52cb-7f7d-5cc07de7d5a6@collabora.com>
-Date:   Thu, 17 Feb 2022 10:41:44 +0100
+        Thu, 17 Feb 2022 04:42:24 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BED13CF9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 01:42:10 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 78EEF2198B;
+        Thu, 17 Feb 2022 09:42:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645090929; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wmVL2GYDhN1VFmtx9IfL5/C+kz1evNxXCS6Kv/s4HgU=;
+        b=ZHdJNthK2g0RPIYnVRM/p3Q5ZMW83LBt0jMHt8WtevyBS1WEKFwfKsAOgcYtqDUHm6Rnio
+        GnNa1qBidJqRr6FM7RGkv1J5Q5PJs/lQTQ5MKt4UrwzRpNDIQUWJJOaNblUVeFR/rDojyw
+        20EPCAEwrQWv/MIluN8mAo96Dr3dqjk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645090929;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wmVL2GYDhN1VFmtx9IfL5/C+kz1evNxXCS6Kv/s4HgU=;
+        b=m5plmMifhjqXPOqwW0ysI7NX//dFVlmox3Iba58D5g0v1RSHNuLv2p3lczJbTMAPYI4egg
+        yZEUpKn2PsawZlBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5901813BBF;
+        Thu, 17 Feb 2022 09:42:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id zd8ZFXEYDmJdKQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 17 Feb 2022 09:42:09 +0000
+Message-ID: <25381c82-36b6-e62b-de20-db438bc85adb@suse.cz>
+Date:   Thu, 17 Feb 2022 10:42:09 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [v6 1/3] dt-bindings: mediatek: convert mtk jpeg decoder/encoder
- to yaml
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 4/6] mm/page_alloc: Drain the requested list first during
+ bulk free
 Content-Language: en-US
-To:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-media@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        yong.wu@mediatek.com
-References: <20211206130425.184420-1-hsinyi@chromium.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20211206130425.184420-1-hsinyi@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Aaron Lu <aaron.lu@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+References: <20220217002227.5739-1-mgorman@techsingularity.net>
+ <20220217002227.5739-5-mgorman@techsingularity.net>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220217002227.5739-5-mgorman@techsingularity.net>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 06/12/21 14:04, Hsin-Yi Wang ha scritto:
-> Convert mediatek jpeg decoder and encoder bindings to yaml.
+On 2/17/22 01:22, Mel Gorman wrote:
+> Prior to the series, pindex 0 (order-0 MIGRATE_UNMOVABLE) was always
+> skipped first and the precise reason is forgotten. A potential reason may
+> have been to artificially preserve MIGRATE_UNMOVABLE but there is no reason
+> why that would be optimal as it depends on the workload. The more likely
+> reason is that it was less complicated to do a pre-increment instead of
+> a post-increment in terms of overall code flow. As free_pcppages_bulk()
+> now typically receives the pindex of the PCP list that exceeded high,
+> always start draining that list.
 > 
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Tested-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
 > ---
-> v5->v6: no change, rebase to latest linux-next
-> ---
->   .../bindings/media/mediatek-jpeg-decoder.txt  | 38 --------
->   .../bindings/media/mediatek-jpeg-decoder.yaml | 89 +++++++++++++++++++
->   .../bindings/media/mediatek-jpeg-encoder.txt  | 35 --------
->   .../bindings/media/mediatek-jpeg-encoder.yaml | 80 +++++++++++++++++
->   4 files changed, 169 insertions(+), 73 deletions(-)
->   delete mode 100644 Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.txt
->   create mode 100644 Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.yaml
->   delete mode 100644 Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.txt
->   create mode 100644 Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
+>  mm/page_alloc.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index dfc347a58ea6..635a4e0f70b4 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -1463,6 +1463,10 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+>  	 * below while (list_empty(list)) loop.
+>  	 */
+>  	count = min(pcp->count, count);
+> +
+> +	/* Ensure requested pindex is drained first. */
+> +	pindex = pindex - 1;
+> +
+>  	while (count > 0) {
+>  		struct list_head *list;
+>  		int nr_pages;
+
