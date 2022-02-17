@@ -2,112 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5664C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC588C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 17:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243714AbiBQR2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 12:28:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54902 "EHLO
+        id S243716AbiBQR3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 12:29:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233104AbiBQR2f (ORCPT
+        with ESMTP id S232550AbiBQR3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 12:28:35 -0500
-X-Greylist: delayed 4194 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 09:28:20 PST
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63B1255798;
-        Thu, 17 Feb 2022 09:28:19 -0800 (PST)
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 21HHRuww006618;
-        Fri, 18 Feb 2022 02:27:57 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 21HHRuww006618
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1645118877;
-        bh=l1TyzWfQ0jAdhokclSQdnzp8UboMTXXAhan3iI6BUk4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=hvNZ4ikLbPjFV/y7ChTE5b8OQBL4g8ZAbtTOwQUZywEnlNF2G/aTi0H1hOhjyGN1C
-         NHEvmztYFCF9Dc6V+hJ5X/wHyELb7nkaACM0wtDbd1+6U7R7+rDFLUXLtZq0w84U3W
-         BVfybmzISX6N+vJbJd360lhJt+4BjRbSdwMcbxAFVXLN1dvr/KzBnHTTvkMEwi2rGw
-         1F0F3DqlPQseUBPJmjskaAJFRh4BWjbcpSq8s9JNDIlKwAPaNXW3e3v/K/zuxd+7Vj
-         l04cKXOH+QyAL/gsJtSNW0MqjhMRjyrIRZpPCWh9tKNIq0WeSu5TcRpw/ib8raCV+x
-         uk3hly0CQ39pQ==
-X-Nifty-SrcIP: [209.85.215.171]
-Received: by mail-pg1-f171.google.com with SMTP id q132so5607076pgq.7;
-        Thu, 17 Feb 2022 09:27:57 -0800 (PST)
-X-Gm-Message-State: AOAM531kh4fpiuOKOs30sCiauRibhY7cr78lCmaAEcXo9f7aMZXkKJir
-        g3WL8JHK2Mg4ZvUu6o6py3dA384kSBA95+sR4ik=
-X-Google-Smtp-Source: ABdhPJxBWdwy+sIqV6zpRtht5DZ0OmlC41IapWVAe36IX2cFMRgSnZS9d19h+BtDYudfRbxf5PEvVUO6wlOp73L12Wo=
-X-Received: by 2002:a05:6a00:a01:b0:4cc:61e5:c548 with SMTP id
- p1-20020a056a000a0100b004cc61e5c548mr4081108pfh.68.1645118876247; Thu, 17 Feb
- 2022 09:27:56 -0800 (PST)
+        Thu, 17 Feb 2022 12:29:32 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93E226A2C9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 09:29:16 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id w20so5104785plq.12
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 09:29:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=GGqa2dUUjBxrMHhzGOK6UxPbD0noYUoQJRB1vqXsV8Q=;
+        b=BvptpOqFENbCnYy2v0SFJ3RtUpZRORi7aifdATrLbrZ/tFc7pqTsYmbttEpgguIZ0u
+         jZMfrZJzdCiUm1MYvf32LwQcrqEetXjYXRpbJi+iUc+0++vnSlP6W2Pkm51Mjpbhct0U
+         cbxyaoqYxK/d9S/gQrgG+RsyCQWU/rZOV4l+E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=GGqa2dUUjBxrMHhzGOK6UxPbD0noYUoQJRB1vqXsV8Q=;
+        b=N31Ta8SKp5Da9EZGfvzpWWwL5fyA9ZYxUlgNbaKGCmWOQyDv8vlC5gY0gnew1nZU1v
+         /sroiXZMWR5udIWRDcUekdfJplHMgqxWnh0dNAnkQLPTL05vM6Tod1YmlMtBsBBRGtm1
+         z5mHLG0mjWhFndw91pDE3Pm1tyrFH7KLC52FDvg5suMaWAHUsdC0OKcoViK5cAd9m+58
+         Trr4kz7S52rjJNsR3pI2hWSPKCIbgTyZ8Yct6/9ICDPyISum9ZW7PwNy3hNFxKOX42sO
+         TOeA6Qz2c7chsn93jg3Dg2JsxRkJYaaZnyQ3+ksGsmMGd0BHfLfeydIVihGNCkwpykt8
+         EqVA==
+X-Gm-Message-State: AOAM531zd3lfi4qvVP8/PmjF/Jo48lb7YyHlGxCSxthMc8RDy+0ubOK/
+        nKoo/gaJ3a9HXGYdwu3324xd8Q==
+X-Google-Smtp-Source: ABdhPJyJQiP7APGWLovv/1NEYmHF6Vt3hq6S6WQdSy5kF3kArgSgJhYGCOtQO/pSPyyQKpqMAmzySA==
+X-Received: by 2002:a17:90a:d243:b0:1b9:cbac:a775 with SMTP id o3-20020a17090ad24300b001b9cbaca775mr4155225pjw.196.1645118956169;
+        Thu, 17 Feb 2022 09:29:16 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 16sm8894041pgz.76.2022.02.17.09.29.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 09:29:15 -0800 (PST)
+Date:   Thu, 17 Feb 2022 09:29:14 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     David Gow <davidgow@google.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Al Viro <viro@zeniv.linux.org.uk>, x86@kernel.org,
+        linux-um@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] um: Cleanup syscall_handler_t definition/cast, fix
+ warning
+Message-ID: <202202170928.F02D6F41@keescook>
+References: <20220210034353.1065703-1-davidgow@google.com>
 MIME-Version: 1.0
-References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
- <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com> <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu>
- <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu> <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com>
- <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com> <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com>
-In-Reply-To: <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 18 Feb 2022 02:27:16 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASvBLLWMa+kb5eGJ6vpSqob_dBUxwCnpHZfL-spzRG7qA@mail.gmail.com>
-Message-ID: <CAK7LNASvBLLWMa+kb5eGJ6vpSqob_dBUxwCnpHZfL-spzRG7qA@mail.gmail.com>
-Subject: Re: [PATCH net v3] net: Force inlining of checksum functions in net/checksum.h
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220210034353.1065703-1-davidgow@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 1:49 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Masahiro Yamada
-> > Sent: 17 February 2022 16:17
-> ...
-> > No.  Not that one.
-> >
-> > The commit you presumably want to revert is:
-> >
-> > a771f2b82aa2 ("[PATCH] Add a section about inlining to
-> > Documentation/CodingStyle")
-> >
-> > This is now referred to as "__always_inline disease", though.
->
-> That description is largely fine.
->
-> Inappropriate 'inline' ought to be removed.
-> Then 'inline' means - 'really do inline this'.
+On Thu, Feb 10, 2022 at 11:43:53AM +0800, David Gow wrote:
+> The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
+> but always cast to 'long (*)(long, long, long, long, long, long)' before
+> use. This now triggers a warning (see below).
+> 
+> Define syscall_handler_t as the latter instead, and remove the cast.
+> This simplifies the code, and fixes the warning.
+> 
+> Warning:
+> In file included from ../arch/um/include/asm/processor-generic.h:13
+>                  from ../arch/x86/um/asm/processor.h:41
+>                  from ../include/linux/rcupdate.h:30
+>                  from ../include/linux/rculist.h:11
+>                  from ../include/linux/pid.h:5
+>                  from ../include/linux/sched.h:14
+>                  from ../include/linux/ptrace.h:6
+>                  from ../arch/um/kernel/skas/syscall.c:7:
+> ../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
+> ../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
+> -Wcast-function-type]
+>    18 |         (((long (*)(long, long, long, long, long, long)) \
+>       |           ^
+> ../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
+>    36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
+>       |                                                              ^~~
+> ../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
+>    46 |                                 EXECUTE_SYSCALL(syscall, regs));
+>       |                                 ^~~~~~~~~~~~~~~
+> 
+> Signed-off-by: David Gow <davidgow@google.com>
 
+Thanks for this! I was just about to go figure this out too. :)
 
-You cannot change "static inline" to "static"
-in header files.
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Tested-by: Kees Cook <keescook@chromium.org>
 
-If  "static inline" meant __always_inline,
-there would be no way to negate it.
-That's why we need both inline and __always_inline.
-
-
-
-
-> Anyone remember massive 100+ line #defines being
-> used to get code inlined 'to make it faster'.
-> Sometimes being expanded several times in succession.
-> May have helped a 68020, but likely to be a loss on
-> modern cpu with large I-cache and slow memory.
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-
-
---
-Best Regards
-Masahiro Yamada
+-- 
+Kees Cook
