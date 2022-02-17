@@ -2,250 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D42C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB52C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242866AbiBQQUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:20:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59528 "EHLO
+        id S243004AbiBQQUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:20:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiBQQUD (ORCPT
+        with ESMTP id S242990AbiBQQUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:20:03 -0500
+        Thu, 17 Feb 2022 11:20:04 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0FE27019C
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:19:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1171D273741
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:19:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9129B8068E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:19:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B78BC340E8;
-        Thu, 17 Feb 2022 16:19:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD78CB8235B
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:19:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A67C340EC;
+        Thu, 17 Feb 2022 16:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645114785;
-        bh=xRpSRW/NxZIB5tKXptMtP6Y4M91PvC3Uxhmzl6GwJ6s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Fxr33xJon8uAnaxViuAz6dyW9NPO/maV1BqLbEarP9CmwaaFgULoD9/nhGT3RFSkD
-         Z8OlkZbRI7fUkuSJg07xN4Fxfk1q/I4AhwXr0dyp3hwirbxUYbmWLka17If4JwI3Q4
-         5KyBftpi0UDyZZhQEHU+Bia3cza3Im2pddj3o7I8jyrbMFbuA5GXEvjya0yf5E+ILe
-         OTllDVHwH2qVZ0l0GE4m30jHgC3M1urfX6jvLWmtERSO58LvKvGcviqPRtGJqiE2Kk
-         9OtaqFJss0STmrxqeMtl3mGPisPHkwsYO2oCauCJhHtsWsGDPhzm9ulMERLNTZMd98
-         d0EaHtx5dp92Q==
+        s=k20201202; t=1645114787;
+        bh=P6kUoPILhYhj1H1ifaqC4pebGTsEc9wuH7gl6nlprR0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V1o9wlMo51/L2Ub2in/MXvW7QvA5HncVdVd9OnlEDQPukvom+zickh53AgQj7UPXE
+         L79GqSD0lEoH9wJ6l5DL8q8mrrO/j3pUm1xuGhIrmn7Brhu7l5nB2EkZzNtmurxvC6
+         PYPDC3oGWXHZmd9+slxhFJ174enwgLZs7Bq9RVigY/LlDqADZ8zpfPZnXA0jDVEh4J
+         r45nLVx+keh8Ss8PRQuHC7vOgD4W4KdmEzHJqu8/Nq9gUqbrXYtUgi1XBpa9dCEwvP
+         wna1wZ211U6q72OcpV7n+x0Ve7dLU9ya+PjJYX0snfsapeAAdGn6rISb00KDcfUQbY
+         tlb8DP3cTxOVg==
 From:   SeongJae Park <sj@kernel.org>
 To:     akpm@linux-foundation.org
 Cc:     rientjes@google.com, xhao@linux.alibaba.com,
         linux-damon@amazon.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [RFC PATCH 0/4] Introduce DAMON sysfs interface
-Date:   Thu, 17 Feb 2022 16:19:34 +0000
-Message-Id: <20220217161938.8874-1-sj@kernel.org>
+Subject: [RFC PATCH 2/4] mm/damon/core: Allow non-exclusive DAMON start/stop
+Date:   Thu, 17 Feb 2022 16:19:36 +0000
+Message-Id: <20220217161938.8874-3-sj@kernel.org>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220217161938.8874-1-sj@kernel.org>
+References: <20220217161938.8874-1-sj@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DAMON's debugfs-based user interface served very well, so far.  However, it
-unnecessarily depends on debugfs, while DAMON is not aimed to be used for only
-debugging.  Also, the interface receives multiple values via one file.  For
-example, schemes file receives 18 values.  As a result, it is not only hard to
-be used, but also difficult to be extended.  Especially, keeping backward
-compatibility of user space tools is getting only challenging.  It would be
-better to implement another reliable and flexible interface and deprecate the
-debugfs interface in long term.
+To avoid interference between DAMON users, current start/stop functions
+of DAMON allows only exclusive groups.  This makes use of DAMON a little
+bit restrictive.  Meanwhile, admins could somehow aware each DAMON usage
+and therefore could address the interference on their own.  This commit
+hence allows callers of the functions to specify if the contexts should
+run in an exclusive mode or not.
 
-For the reason, this patchset introduces a sysfs-based new user interface of
-DAMON.  The idea of the new interface is, using directory hierarchies and
-making one file for one value.  For a short example, users can do the virtual
-address monitoring via the interface as below:
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ include/linux/damon.h |  2 +-
+ mm/damon/core.c       | 22 ++++++++++++++++------
+ mm/damon/dbgfs.c      |  2 +-
+ mm/damon/reclaim.c    |  2 +-
+ 4 files changed, 19 insertions(+), 9 deletions(-)
 
-    # cd /sys/kernel/mm/damon/admin/
-    # echo 1 > kdamonds/nr
-    # echo 1 > kdamonds/0/contexts/nr
-    # echo vaddr > kdamonds/0/contexts/0/damon_type
-    # echo 1 > kdamonds/0/contexts/0/targets/nr
-    # echo $(pidof <workload>) > kdamonds/0/contexts/0/targets/0/pid
-    # echo on > kdamonds/0/state
-
-Changes that will be made for dropping RFC tag
-----------------------------------------------
-
-As the RFC tag means, this is not for merged in the mainline but only for early
-comments.  Therefore, this version is not implementing all the features of
-DAMON debugfs interface but only basic virtual address space monitoring.  The
-official version of the patchset will provide all the features that DAMON
-debugfs interface is providing.  Also, this RFC patchset lacks formal
-documentation.  It will be a part of the official version.
-
-Future plan of DAMON debugfs interface deprecation
---------------------------------------------------
-
-Once the official version of this patchset is merged, DAMON debugfs interface
-development will be frozen.  That is, we will keep the interface works as is
-now, but it will not provide any new feature of DAMON.  The support will be
-continued only until next LTS release.  After that, we will drop DAMON debugfs
-interface.  Changes to the documentation for explicitly announcing the
-deprecation plan would be a part of the official version of this patchset.
-
-Main difference between DAMON_DBGFS and DAMON_SYSFS
----------------------------------------------------
-
-DAMON debugfs interface allows multiple monitoring contexts, but it asks users
-to turn those all on and off at once.  It's not a big problem but makes the
-operation a little bit complex.  DAMON_SYSFS allows users to turn on and off
-monitoring contexts individually.
-
-The Hierarchy
-=============
-
-In a glance, the files hierarchy of the sysfs interface is as below.
-
-    /sys/kernel/mm/damon/admin
-    │ kdamonds
-    │ │ nr
-    │ │ 0/
-    │ │ │ state,pid
-    │ │ │ contexts
-    │ │ │ │ nr
-    │ │ │ │ 0/
-    │ │ │ │ │ damon_type
-    │ │ │ │ │ monitoring_attrs/
-    │ │ │ │ │ │ intervals/sample_us,aggr_us,update_us
-    │ │ │ │ │ │ nr_regions/min,max
-    │ │ │ │ │ targets/
-    │ │ │ │ │ │ nr
-    │ │ │ │ │ │ 0/
-    │ │ │ │ │ │ │ pid
-    │ │ │ │ │ │ │ regions/
-    │ │ │ │ │ │ │ │ nr
-    │ │ │ │ │ │ │ │ 0/
-    │ │ │ │ │ │ │ │ │ start,end
-    │ │ │ │ │ │ │ │ ...
-    │ │ │ │ │ │ ...
-    │ │ │ │ │ ...
-    │ │ ...
-
-Root
-----
-
-The root of the DAMON sysfs is /sys/kernel/mm/damon/, and it has one directory
-named 'admin'.  The directory contains the interface for privileged user space
-programs.  User space tools or deamons having root permission could use this
-directory.  In a future, sibling directories for non-root user space tools or
-deamons (we could allow them to do monitong of their own virtual address space)
-or control of in-kernel DAMON-based deamons could be created.
-
-kdamonds/
----------
-
-The monitoring-related information including request specifications and results
-are called DAMON context.  DAMON executes a set of the contexts with a kernel
-thread called kdamond (for now, only one context per kdamond is supported), and
-multiple kdamonds could run in parallel.  This directory has files for
-controlling the kdamonds.
-
-In the beginning, this directory has only one file, 'nr'.  Writing a number
-(`N`) to the file creates the number of child directories named `0` to `N-1`.
-Each directory represents each kdamond.
-
-kdamonds/<N>/
--------------
-
-In each kdamond directory, two files (`state` and `pid`) and one directory
-(`contexts`) reside.
-
-Reading `state` returns `on` if the kdamond is currently running, or `off` if
-it is not running.  Writing `on` or `off` makes the kdamond be in the state.
-If the state is `on`, reading `pid` shows the pid of the kdamond thread.
-
-`contexts` directory resembles `kdamonds`.  It contains files for controlling
-the monitoring contexts that this kdamond will execute.
-
-kdamonds/<N>/contexts/
-----------------------
-
-In the beginning, this directory has only one file, 'nr'.  Writing a number
-(`N`) to the file creates the number of child directories named as `0` to
-`N-1`.  Each directory represents each monitoring context.  At the moment, only
-one context per kdamond is supported, so only `0` or `1` can be written to the
-file.
-
-contexts/<N>/
--------------
-
-In each context directory, one file (`operations`) and two directories
-(`monitoring_attrs` and `targets`) reside.
-
-DAMON supports multiple types of monitoring operations, including those for
-virtual address space and physical address space.  You can set and show what
-type of monitoring operations you want to use with the context by writing one
-of below keywords to, and reading the file.
-
-- vaddr: Monitor virtual address spaces of specific processes
-
-Files for specifying attributes of the monitoring including required quality
-and efficiency of the monitoring are in `monitoring_attrs` directory, while
-files for specifying to what memory regions the monitoring should be done are
-in `targets` directory.
-
-contexts/<N>/monitoring_attrs/
-------------------------------
-
-In this directory, you can show two directories, `intervals` and `nr_regions`.
-
-Under `intervals` directory, three files for DAMON's sampling interval
-(`sample_us`), aggregation interval (`aggr_us`) and update interval
-(`update_us`) exist.  You can set and get the values by writing to and reading
-from the files.
-
-Under `nr_regions` directory, two files for the lower-bound and upper-bound of
-DAMON's monitoring regions (`min` and `max`, respectively), which controls the
-monitoring overhead, reside.  You can set and get the values by writing to and
-rading from the files.
-
-For more details about the intervals and monitoring regions range, please read
-the Design document[1].
-
-[1] https://docs.kernel.org/vm/damon/design.html
-
-contexts/<N>/targets/
----------------------
-
-In the beginning, this directory has only one file, 'nr'.  Writing a number
-(`N`) to the file creates the number of child directories named `0` to `N-1`.
-Each directory represents each monitoring target.
-
-targets/<N>/
-------------
-
-In each target directory, one file (`pid`) exists.
-
-You can make the context to monitor the virtual address space of a process by
-writing the pid of the process to the file, and show what process's virtual
-address space the context is set to monitor by reading the file.
-
-SeongJae Park (4):
-  mm/damon: Implement a sysfs-based DAMON user interface
-  mm/damon/core: Allow non-exclusive DAMON start/stop
-  mm/damon/sysfs: Link DAMON to 'state' file read/write functions
-  selftests/damon: Add a test for DAMON sysfs interface
-
- include/linux/damon.h                  |    2 +-
- mm/damon/Kconfig                       |    7 +
- mm/damon/Makefile                      |    1 +
- mm/damon/core.c                        |   22 +-
- mm/damon/dbgfs.c                       |    2 +-
- mm/damon/reclaim.c                     |    2 +-
- mm/damon/sysfs.c                       | 1258 ++++++++++++++++++++++++
- tools/testing/selftests/damon/Makefile |    1 +
- tools/testing/selftests/damon/sysfs.sh |  200 ++++
- 9 files changed, 1486 insertions(+), 9 deletions(-)
- create mode 100644 mm/damon/sysfs.c
- create mode 100755 tools/testing/selftests/damon/sysfs.sh
-
+diff --git a/include/linux/damon.h b/include/linux/damon.h
+index 49c4a11ecf20..f8e99e47d747 100644
+--- a/include/linux/damon.h
++++ b/include/linux/damon.h
+@@ -508,7 +508,7 @@ int damon_nr_running_ctxs(void);
+ int damon_register_ops(struct damon_operations *ops);
+ int damon_select_ops(struct damon_ctx *ctx, enum damon_ops_id id);
+ 
+-int damon_start(struct damon_ctx **ctxs, int nr_ctxs);
++int damon_start(struct damon_ctx **ctxs, int nr_ctxs, bool exclusive);
+ int damon_stop(struct damon_ctx **ctxs, int nr_ctxs);
+ 
+ #endif	/* CONFIG_DAMON */
+diff --git a/mm/damon/core.c b/mm/damon/core.c
+index 82e0a4620c4f..08c5e4dd2ed9 100644
+--- a/mm/damon/core.c
++++ b/mm/damon/core.c
+@@ -24,6 +24,7 @@
+ 
+ static DEFINE_MUTEX(damon_lock);
+ static int nr_running_ctxs;
++static bool running_exclusive_ctxs;
+ 
+ static DEFINE_MUTEX(damon_ops_lock);
+ static struct damon_operations damon_registered_ops[NR_DAMON_OPS];
+@@ -434,22 +435,25 @@ static int __damon_start(struct damon_ctx *ctx)
+  * damon_start() - Starts the monitorings for a given group of contexts.
+  * @ctxs:	an array of the pointers for contexts to start monitoring
+  * @nr_ctxs:	size of @ctxs
++ * @exclusive:	exclusiveness of this contexts group
+  *
+  * This function starts a group of monitoring threads for a group of monitoring
+  * contexts.  One thread per each context is created and run in parallel.  The
+- * caller should handle synchronization between the threads by itself.  If a
+- * group of threads that created by other 'damon_start()' call is currently
+- * running, this function does nothing but returns -EBUSY.
++ * caller should handle synchronization between the threads by itself.  If
++ * @exclusive is true and a group of threads that created by other
++ * 'damon_start()' call is currently running, this function does nothing but
++ * returns -EBUSY.
+  *
+  * Return: 0 on success, negative error code otherwise.
+  */
+-int damon_start(struct damon_ctx **ctxs, int nr_ctxs)
++int damon_start(struct damon_ctx **ctxs, int nr_ctxs, bool exclusive)
+ {
+ 	int i;
+ 	int err = 0;
+ 
+ 	mutex_lock(&damon_lock);
+-	if (nr_running_ctxs) {
++	if ((exclusive && nr_running_ctxs) ||
++			(!exclusive && running_exclusive_ctxs)) {
+ 		mutex_unlock(&damon_lock);
+ 		return -EBUSY;
+ 	}
+@@ -460,13 +464,15 @@ int damon_start(struct damon_ctx **ctxs, int nr_ctxs)
+ 			break;
+ 		nr_running_ctxs++;
+ 	}
++	if (exclusive && nr_running_ctxs)
++		running_exclusive_ctxs = true;
+ 	mutex_unlock(&damon_lock);
+ 
+ 	return err;
+ }
+ 
+ /*
+- * __damon_stop() - Stops monitoring of given context.
++ * __damon_stop() - Stops monitoring of a given context.
+  * @ctx:	monitoring context
+  *
+  * Return: 0 on success, negative error code otherwise.
+@@ -506,6 +512,10 @@ int damon_stop(struct damon_ctx **ctxs, int nr_ctxs)
+ 		if (err)
+ 			return err;
+ 	}
++	mutex_lock(&damon_lock);
++	if (!nr_running_ctxs && running_exclusive_ctxs)
++		running_exclusive_ctxs = false;
++	mutex_unlock(&damon_lock);
+ 
+ 	return err;
+ }
+diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
+index 05b574cbcea8..a0dab8b5e45f 100644
+--- a/mm/damon/dbgfs.c
++++ b/mm/damon/dbgfs.c
+@@ -967,7 +967,7 @@ static ssize_t dbgfs_monitor_on_write(struct file *file,
+ 				return -EINVAL;
+ 			}
+ 		}
+-		ret = damon_start(dbgfs_ctxs, dbgfs_nr_ctxs);
++		ret = damon_start(dbgfs_ctxs, dbgfs_nr_ctxs, true);
+ 	} else if (!strncmp(kbuf, "off", count)) {
+ 		ret = damon_stop(dbgfs_ctxs, dbgfs_nr_ctxs);
+ 	} else {
+diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
+index b53d9c22fad1..e34c4d0c4d93 100644
+--- a/mm/damon/reclaim.c
++++ b/mm/damon/reclaim.c
+@@ -330,7 +330,7 @@ static int damon_reclaim_turn(bool on)
+ 	if (err)
+ 		goto free_scheme_out;
+ 
+-	err = damon_start(&ctx, 1);
++	err = damon_start(&ctx, 1, true);
+ 	if (!err) {
+ 		kdamond_pid = ctx->kdamond->pid;
+ 		return 0;
 -- 
 2.17.1
 
