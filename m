@@ -2,315 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A228C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 02:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC04DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 02:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231695AbiBQC3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 21:29:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56238 "EHLO
+        id S231715AbiBQCcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 21:32:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231661AbiBQC3r (ORCPT
+        with ESMTP id S231495AbiBQCci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 21:29:47 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFD229E96E;
-        Wed, 16 Feb 2022 18:29:32 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=kanie@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V4g3TNa_1645064966;
-Received: from localhost(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0V4g3TNa_1645064966)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 17 Feb 2022 10:29:30 +0800
-From:   Guixin Liu <kanie@linux.alibaba.com>
-To:     gregkh@linuxfoundation.org, bostroesser@gmail.com,
-        martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xiaoguang.wang@linux.alibaba.com,
-        xlpang@linux.alibaba.com
-Subject: [PATCH 2/2] scsi:target:tcmu: reduce once copy by using uio ioctl
-Date:   Thu, 17 Feb 2022 10:29:22 +0800
-Message-Id: <1645064962-94123-2-git-send-email-kanie@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1645064962-94123-1-git-send-email-kanie@linux.alibaba.com>
-References: <1645064962-94123-1-git-send-email-kanie@linux.alibaba.com>
+        Wed, 16 Feb 2022 21:32:38 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2094.outbound.protection.outlook.com [40.107.96.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D7B15C192;
+        Wed, 16 Feb 2022 18:32:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a7HlqdUcKYklO8dD2dCg92RGhzbK/C6Yieow+jzfoUyZ6rpqc0CtK5T+vAB2vbqE4QESXgC2aTSALVO4GEzLzNmddpOvUNUPVOtwTHHpLExkZDk4u84IpoCp1K6hGzz8tiyK3CdUTo8xKPrIzLNIMQb7lDeNAvniGN+fJjAxSkdK4xa0U8HCKrvINPCD1iA7VjsO5TttOCeH8qSl63iu/USL3sxQATpXsIXKtili+IbhuEsVzNopV/+M+7fl6qIFONAAGBfT01HpUDTWIYkTUG+zn8Vm0YaYu5l6/c/7km9pTb4rRWO+f526McgUf59lspGTu26lKaScsYr+hl5j4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MzByQNjLupfr+w2BeTn612ThC0fcwAAaQoMEZgmDT6k=;
+ b=aWN5ZMZasGKipBDuXissokPPSoNeFrOR2Tggh+pbHh9opyuCRbiJiDoD9MtnPhgOQFM+VYJSoATgszvxAdsWc/PBa+Nnh2n+/fc0myibUZ6WJ6JQiJJJ1LPbs0PFRMq5rxNFtajciQIE1U/JMOz4XsdxFGAyU7j9q3GxbPQyhlSSIWFJ8UDddyui5QkmQEIUZfU9SN2HnRBtIrQ8sqsrT+xSU+fxFiW5Vjp/iT+amg266aR8xe2HYA3ski1IRIojFm8K8hxL6fTnmk/FkUZFAGNQdtJppgiKKm0/Y6XgHa5rZUAQdteQX+YALmU4mwWcRaKfrmAmq9a8TXl/wHxZDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MzByQNjLupfr+w2BeTn612ThC0fcwAAaQoMEZgmDT6k=;
+ b=mdZe/KoMH9qgSzWaywDK/RmXvD2dTpFDh4cOYozBb8eob7YKDSISon9SNBEW+HtYWYzBqaoYtRRdEU4d61C+dXc2+0hIG3zZCEKKmZMC0vzNm1YW2+wgxOIkxfaB48rJ/Ir6cDuvDuM/YLyQDty6OZJKVNzeDK660UsY7mAtLOo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from DM8PR01MB6824.prod.exchangelabs.com (2603:10b6:8:23::24) by
+ MW4PR01MB6307.prod.exchangelabs.com (2603:10b6:303:74::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4995.14; Thu, 17 Feb 2022 02:32:19 +0000
+Received: from DM8PR01MB6824.prod.exchangelabs.com
+ ([fe80::7ddf:e242:b5d5:9fe4]) by DM8PR01MB6824.prod.exchangelabs.com
+ ([fe80::7ddf:e242:b5d5:9fe4%7]) with mapi id 15.20.4995.017; Thu, 17 Feb 2022
+ 02:32:19 +0000
+Date:   Thu, 17 Feb 2022 10:29:25 +0000
+From:   Huang Shijie <shijie@os.amperecomputing.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     catalin.marinas@arm.com, bhe@redhat.com, vgoyal@redhat.com,
+        dyoung@redhat.com, corbet@lwn.net, kexec@lists.infradead.org,
+        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, zwang@amperecomputing.com,
+        patches@amperecomputing.com, darren@os.amperecomputing.com,
+        k-hagio-ab@nec.com, lijiang@redhat.com
+Subject: Re: [PATCH] arm64: crash_core: Export MODULES, VMALLOC, and VMEMMAP
+ ranges
+Message-ID: <Yg4jhWnfYIGYBLs/@hsj>
+References: <20220209092642.9181-1-shijie@os.amperecomputing.com>
+ <20220215164423.GB8458@willie-the-truck>
+ <YgzD0ZfZF34u6whJ@hsj>
+ <20220216124026.GB9949@willie-the-truck>
+ <Yg4dDZGEyRzWcGH1@hsj>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yg4dDZGEyRzWcGH1@hsj>
+X-ClientProxiedBy: CH2PR20CA0023.namprd20.prod.outlook.com
+ (2603:10b6:610:58::33) To DM8PR01MB6824.prod.exchangelabs.com
+ (2603:10b6:8:23::24)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 52615af5-2348-43d9-a1e0-08d9f1bdb771
+X-MS-TrafficTypeDiagnostic: MW4PR01MB6307:EE_
+X-Microsoft-Antispam-PRVS: <MW4PR01MB63075DBBE1084A8BEFD65AA8ED369@MW4PR01MB6307.prod.exchangelabs.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:989;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FuOEo/Ku/borLGwKST7BlnUwKMqUMyoI9tqrxPgsjA8kfaUt1GMG8p8fuohW7iVYIkhj/Z/zce8MYtHIevd0OVO9tJeqD38rwZNoPas4iCSSq8+JSqwCLLN179h8YEjoFIoUb6ds3eA6ts5Be7YN22EBAGJyzwBxVBEl19WnvkETRnGTOhXT7giOavrlsY+YxB8ynK/9uklkSVXZK8fcGmb6oDFkCDIfiEGFNVrSyIEMjNHKgtRqiL+uOTKDMqw0VwhyC5lvStiwjikYKYaP9RRBoVZBsMI6RfkmSMyReGS87saPxovGgeyHKBhE5bnvuBTPqBhKK5sxV8I3y2qWxgzZWUL+VM+/zSOPysZMjiQhZ8yMFiJ0b742GZBAl51KJLYKz4TDm2QISbmotCxF6XFx8Kd7rZFOi9X/oRK1VlmPyyBXVhyQiKfxAzk7Zyed9QSz2fmRYwlnfYF4II2IpeLLMeu2zKKjxFaBDDaDn8sFpVs0i1z2qke5yIovhsbguiiFfCH+WX3rlavXJ3T6px1iSUIBa44HKI3Zj1/XZVJifLkTzrNcYjKmVIHzBBXs87B/RaVVWcxJIT2Id8R7OLtRt/UPL4jD0eSY9/Nf7oHZzn3n3L7+JDRsG3eSHjIs/u0c5buG+KB0mpOx9O5YZ8BmFFV5E/Cn5AYCVjXrYO7/tbBB7zThYJXoE0zmpRxAhMzx91AG7l3zD/TN9kikxA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR01MB6824.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(4744005)(4326008)(8936002)(66556008)(5660300002)(7416002)(66946007)(8676002)(66476007)(83380400001)(6486002)(26005)(38350700002)(6916009)(316002)(38100700002)(52116002)(186003)(6666004)(33716001)(6512007)(9686003)(2906002)(6506007)(86362001)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aV9apwh90EBNkS+LZHJjC320ImCqRid7YuO5mxlJHd+HS56o3ZFFgB4HrtfG?=
+ =?us-ascii?Q?NIudzOtauizHbZcvCX+hsFfCLvuGovZxE5rkcVYPmt6CSnlIU6f81by8hjwf?=
+ =?us-ascii?Q?LdVnwO5tQn12z3b2PVb6BALXBBCwtV8bSd9FOGwkK/ZpDTa05Czaa46i2Ov2?=
+ =?us-ascii?Q?S7zDzzCUPcwj/aYMhTLwKAwQTNN+zBApdmCD36+4k0697+bl9Tul099guYMW?=
+ =?us-ascii?Q?uzhV9gkMwCuKm/OTnEcjwqrHlgFknuPV19dHQR3xoMx79ggss8FHAsamb2C7?=
+ =?us-ascii?Q?2rCK/Duk9vnZfWKyKw0ApBFslqqf1pwRFNlOlDuW5nmJxqa0HfqC3U+anJVM?=
+ =?us-ascii?Q?feU/oDNWTfp2r+EbOZ59wg06xIJGpf2ce74mvQxOmG3YQ3cQVMZALIQ5lSx8?=
+ =?us-ascii?Q?vM+4PCIgE4ioxpwUUyGixU0Lx0NoAzRBM1+QG7npp2Y1Vtua9mMyjxT1H3EH?=
+ =?us-ascii?Q?qyVHpDL9hx97OpmCPuQkiY1DYgLyUiqKOyqY4/qIxoId2rT2a6UwLoZ9x/TG?=
+ =?us-ascii?Q?1nQyXNtwZPEUBMULKo+MxKY6EezQu+IT5Oh9hY+auKkKwmEvlmpOHMaMiTp8?=
+ =?us-ascii?Q?1YmV15rYATXWZsFmqs2EhQJ27h/P9A4/uXL737Zdlx3I++LaWvvujZ7wG/9y?=
+ =?us-ascii?Q?+EYBGDfwT8hqs9ud54hKTNb9WZPsItXf8crTPz3GRMpZEghhGhRodHW7G+Pe?=
+ =?us-ascii?Q?S93Z89G68RIWxQFNEv39KiGaEzr3MewZqJUWX5z0p/LRYK1owjUiHMTi1MAs?=
+ =?us-ascii?Q?v4fNYutezdqPsSZCE13bnnO4rqoEgSmS2ovQfmnL4g6zBRvGytM9CKTlRJRJ?=
+ =?us-ascii?Q?WGccXmh/jzIgK7jUqVks7i89y/EiWLytMr10b8HrvD9AOmsiyN1sEAQBQ78p?=
+ =?us-ascii?Q?KV0wAlyf/37oC3U/Hcwjh6bpMYz1bHhTXxBrWV5rM53RCKbSUgmBqbyuKVs/?=
+ =?us-ascii?Q?F7LbovJBsRQiYqZiKn3XESTU1CcCrrnF6291Vd0izdUFXwmVAr4DcHsPNe8M?=
+ =?us-ascii?Q?TX1z8Bq6kFz5zuyQftZvH/0W3v9/9xvknWCo38ni3md4Rmvu8208qcHMOp5b?=
+ =?us-ascii?Q?e659kt6RSVbLA6Vco+LzdfxtjLDEYUNzZ/36ZTHHWrrv8Z+aBoe1ZrRbIirq?=
+ =?us-ascii?Q?tTEZZ2cuLcNMPRcClfX31CTnX7PZZkSZxjydX1BczxU3ySpXNT4BAqRbGX15?=
+ =?us-ascii?Q?qKKMGbukjqYUc2BYb097ZKLluBA17jCTvKpMeL9ixsqdidcPl8esVMFYZn2k?=
+ =?us-ascii?Q?99LSBh/gZFI+WxPn+6NWwolFR5H/2U6L50ESlUtoryj8vOb5ZycYhfXOXstA?=
+ =?us-ascii?Q?aadkVJy94MPHZGIdLhhTY9lvE01XWhj7Czh6QgWtdqAN+DOR5HMloWVTKcef?=
+ =?us-ascii?Q?TJAQXWUU4Wx6q3a56hDta0T5una4wlLFr75bfHiP3lriQxjcaaxt6oK6kJDi?=
+ =?us-ascii?Q?RkQcJB32yCjj0QFxR1yw04azb5HKfjVvpUF3TZjWA5IYM9Uc2XhQW2w60/CZ?=
+ =?us-ascii?Q?YCWpSzdwyI3b8iigKMMBK/muraYRhepwGXtE3y/aaEMTeG8BcADjBlkmcODa?=
+ =?us-ascii?Q?uD2Lz/soaHY8BB/DhqNm3HzKJDGHXeMEnsuVZmqP35Fv0RQz9aI4kIMGABuC?=
+ =?us-ascii?Q?62fnf4B/189MRJRSJ1TcpB3AxhjGmJaVfS9mz7uFQni3u3e/xcHu02mU7RUw?=
+ =?us-ascii?Q?MGcG5lo7RVJzP82XNKaMnBRDLuXbtYZAMeq7StgLsj1N2ymwL3VlXiarqX2t?=
+ =?us-ascii?Q?e8PPv4tHJw=3D=3D?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 52615af5-2348-43d9-a1e0-08d9f1bdb771
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR01MB6824.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2022 02:32:18.7623
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZL6nDod9zYAQfigdWqeoiHEp1dTtfJJk5hseRERi2Onqzr2JZV2cLkXKT5Vjvwy6t32QgiFSj8iOfFCaiZvwyX+zR/Ig+h7Fv6SvKrf1kjSHUhinUkHjsIcCMwfNFzR0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR01MB6307
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the data needs to be copied twice between sg, tcmu data area and
-userspace buffer if backstore holds its own userspace buffer, then we can
-use uio ioctl to copy data between sg and userspace buffer directly to
-bypass data area to improve performance.
+On Thu, Feb 17, 2022 at 10:02:03AM +0000, Huang Shijie wrote:
+> > Thanks for digging up all of the kernel memory map changes and taking the
+> > time to explain the macros. However, all I'm really after is something in
+> > the commit message of the patch which explains what is broken without this
+> This kernel patch does not break anything.
+I mean this kernel patch is not a bugfix, it is just make the ARM64 ecosystem
+(including the Crash) a little better..
 
-Use tcm_loop and tcmu(backstore is file) to evaluate performance,
-fio job: fio -filename=/dev/sdb  -direct=1 -size=2G -name=1 -thread
--runtime=60 -time_based -rw=randread -numjobs=16 -iodepth=16 -bs=128k
+The Crash can just parse out the MODULES/VMALLOC/VMALLOC ranges from the vmcore file,
+no need to calculate them in a very _hard_ way. 
 
-Without this patch:
-    READ: bw=3539MiB/s (3711MB/s), 207MiB/s-233MiB/s (217MB/s-244MB/s),
-io=104GiB (111GB), run=30001-30002msec
-
-With this patch:
-    READ: bw=4420MiB/s (4634MB/s), 274MiB/s-278MiB/s (287MB/s-291MB/s),
-io=259GiB (278GB), run=60001-60002msec
-
-Reviewed-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
----
- drivers/target/target_core_user.c     | 171 +++++++++++++++++++++++++++++-----
- include/uapi/linux/target_core_user.h |   9 ++
- 2 files changed, 157 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
-index 7b2a89a..afea088 100644
---- a/drivers/target/target_core_user.c
-+++ b/drivers/target/target_core_user.c
-@@ -122,6 +122,7 @@ struct tcmu_dev {
- #define TCMU_DEV_BIT_BLOCKED 2
- #define TCMU_DEV_BIT_TMR_NOTIFY 3
- #define TCMU_DEV_BIT_PLUGGED 4
-+#define TCMU_DEV_BIT_BYPASS_DATA_AREA 5
- 	unsigned long flags;
- 
- 	struct uio_info uio_info;
-@@ -642,12 +643,17 @@ static struct tcmu_cmd *tcmu_alloc_cmd(struct se_cmd *se_cmd)
- 	tcmu_cmd->se_cmd = se_cmd;
- 	tcmu_cmd->tcmu_dev = udev;
- 
--	tcmu_cmd_set_block_cnts(tcmu_cmd);
--	tcmu_cmd->dbi = kcalloc(tcmu_cmd->dbi_cnt, sizeof(uint32_t),
--				GFP_NOIO);
--	if (!tcmu_cmd->dbi) {
--		kmem_cache_free(tcmu_cmd_cache, tcmu_cmd);
--		return NULL;
-+	if (!test_bit(TCMU_DEV_BIT_BYPASS_DATA_AREA, &udev->flags)) {
-+		tcmu_cmd_set_block_cnts(tcmu_cmd);
-+		tcmu_cmd->dbi = kcalloc(tcmu_cmd->dbi_cnt, sizeof(uint32_t),
-+					GFP_NOIO);
-+		if (!tcmu_cmd->dbi) {
-+			kmem_cache_free(tcmu_cmd_cache, tcmu_cmd);
-+			return NULL;
-+		}
-+	} else {
-+		tcmu_cmd->dbi_cnt = 0;
-+		tcmu_cmd->dbi = NULL;
- 	}
- 
- 	return tcmu_cmd;
-@@ -1093,16 +1099,18 @@ static int queue_cmd_ring(struct tcmu_cmd *tcmu_cmd, sense_reason_t *scsi_err)
- 	tcmu_cmd_reset_dbi_cur(tcmu_cmd);
- 	iov = &entry->req.iov[0];
- 
--	if (se_cmd->data_direction == DMA_TO_DEVICE ||
--	    se_cmd->se_cmd_flags & SCF_BIDI)
--		scatter_data_area(udev, tcmu_cmd, &iov);
--	else
--		tcmu_setup_iovs(udev, tcmu_cmd, &iov, se_cmd->data_length);
--
-+	if (!test_bit(TCMU_DEV_BIT_BYPASS_DATA_AREA, &udev->flags)) {
-+		if (se_cmd->data_direction == DMA_TO_DEVICE ||
-+		se_cmd->se_cmd_flags & SCF_BIDI)
-+			scatter_data_area(udev, tcmu_cmd, &iov);
-+		else
-+			tcmu_setup_iovs(udev, tcmu_cmd, &iov, se_cmd->data_length);
-+	}
- 	entry->req.iov_cnt = iov_cnt - iov_bidi_cnt;
- 
- 	/* Handle BIDI commands */
--	if (se_cmd->se_cmd_flags & SCF_BIDI) {
-+	if ((se_cmd->se_cmd_flags & SCF_BIDI)
-+		&& !test_bit(TCMU_DEV_BIT_BYPASS_DATA_AREA, &udev->flags)) {
- 		iov++;
- 		tcmu_setup_iovs(udev, tcmu_cmd, &iov, tcmu_cmd->data_len_bidi);
- 		entry->req.iov_bidi_cnt = iov_bidi_cnt;
-@@ -1366,16 +1374,19 @@ static bool tcmu_handle_completion(struct tcmu_cmd *cmd,
- 		else
- 			se_cmd->se_cmd_flags |= SCF_TREAT_READ_AS_NORMAL;
- 	}
--	if (se_cmd->se_cmd_flags & SCF_BIDI) {
--		/* Get Data-In buffer before clean up */
--		gather_data_area(udev, cmd, true, read_len);
--	} else if (se_cmd->data_direction == DMA_FROM_DEVICE) {
--		gather_data_area(udev, cmd, false, read_len);
--	} else if (se_cmd->data_direction == DMA_TO_DEVICE) {
--		/* TODO: */
--	} else if (se_cmd->data_direction != DMA_NONE) {
--		pr_warn("TCMU: data direction was %d!\n",
--			se_cmd->data_direction);
-+
-+	if (!test_bit(TCMU_DEV_BIT_BYPASS_DATA_AREA, &udev->flags)) {
-+		if (se_cmd->se_cmd_flags & SCF_BIDI) {
-+			/* Get Data-In buffer before clean up */
-+			gather_data_area(udev, cmd, true, read_len);
-+		} else if (se_cmd->data_direction == DMA_FROM_DEVICE) {
-+			gather_data_area(udev, cmd, false, read_len);
-+		} else if (se_cmd->data_direction == DMA_TO_DEVICE) {
-+			/* TODO: */
-+		} else if (se_cmd->data_direction != DMA_NONE) {
-+			pr_warn("TCMU: data direction was %d!\n",
-+				se_cmd->data_direction);
-+		}
- 	}
- 
- done:
-@@ -1973,6 +1984,84 @@ static int tcmu_release(struct uio_info *info, struct inode *inode)
- 	return 0;
- }
- 
-+long tcmu_ioctl_copy_between_sgl_and_iovec(struct tcmu_cmd *tcmu_cmd,
-+			struct iovec __user *uiovec,
-+			unsigned long vcnt,
-+			bool is_copy_to_sgl)
-+{
-+	struct iovec iovstack[UIO_FASTIOV];
-+	struct iovec *iov = iovstack;
-+	struct iov_iter iter;
-+	ssize_t ret;
-+	struct se_cmd *se_cmd = tcmu_cmd->se_cmd;
-+	struct scatterlist *data_sg, *sg;
-+	int i;
-+	unsigned int data_nents;
-+	long copy_ret = 0;
-+
-+	if (se_cmd->se_cmd_flags & SCF_BIDI) {
-+		data_sg = se_cmd->t_bidi_data_sg;
-+		data_nents = se_cmd->t_bidi_data_nents;
-+	} else {
-+		data_sg = se_cmd->t_data_sg;
-+		data_nents = se_cmd->t_data_nents;
-+	}
-+
-+	ret = import_iovec(READ, uiovec, vcnt, ARRAY_SIZE(iovstack), &iov, &iter);
-+	if (ret < 0) {
-+		pr_err("import iovec failed.\n");
-+		return -EFAULT;
-+	}
-+
-+	for_each_sg(data_sg, sg, data_nents, i) {
-+		if (is_copy_to_sgl)
-+			ret = copy_page_from_iter(sg_page(sg), sg->offset, sg->length, &iter);
-+		else
-+			ret = copy_page_to_iter(sg_page(sg), sg->offset, sg->length, &iter);
-+		if (ret < 0) {
-+			pr_err("copy failed.\n");
-+			copy_ret = -EFAULT;
-+			break;
-+		}
-+	}
-+	kfree(iov);
-+	return copy_ret;
-+}
-+
-+long tcmu_ioctl(struct uio_info *info, unsigned int cmd, unsigned long arg)
-+{
-+	struct tcmu_dev *udev = container_of(info, struct tcmu_dev, uio_info);
-+	struct tcmu_data_xfer __user *uxfer = (struct tcmu_data_xfer __user *)arg;
-+	struct tcmu_data_xfer xfer;
-+	struct tcmu_cmd *tcmu_cmd;
-+
-+	if (!test_bit(TCMU_DEV_BIT_BYPASS_DATA_AREA, &udev->flags))
-+		return -EINVAL;
-+
-+	if (copy_from_user(&xfer, uxfer, sizeof(xfer)))
-+		return -EFAULT;
-+
-+	tcmu_cmd = xa_load(&udev->commands, xfer.cmd_id);
-+	if (!tcmu_cmd) {
-+		set_bit(TCMU_DEV_BIT_BROKEN, &udev->flags);
-+		return -EFAULT;
-+	}
-+
-+	if (test_bit(TCMU_CMD_BIT_EXPIRED, &tcmu_cmd->flags))
-+		return -EFAULT;
-+
-+	switch (cmd) {
-+	case TCMU_IOCTL_CMD_COPY_TO_SGL:
-+		return tcmu_ioctl_copy_between_sgl_and_iovec(tcmu_cmd, xfer.iovec,
-+							     xfer.iov_cnt, true);
-+	case TCMU_IOCTL_CMD_COPY_FROM_SGL:
-+		return tcmu_ioctl_copy_between_sgl_and_iovec(tcmu_cmd, xfer.iovec,
-+							     xfer.iov_cnt, false);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static int tcmu_init_genl_cmd_reply(struct tcmu_dev *udev, int cmd)
- {
- 	struct tcmu_nl_cmd *nl_cmd = &udev->curr_nl_cmd;
-@@ -2230,6 +2319,7 @@ static int tcmu_configure_device(struct se_device *dev)
- 	info->mmap = tcmu_mmap;
- 	info->open = tcmu_open;
- 	info->release = tcmu_release;
-+	info->ioctl = tcmu_ioctl;
- 
- 	ret = uio_register_device(tcmu_root_device, info);
- 	if (ret)
-@@ -2838,6 +2928,40 @@ static ssize_t tcmu_nl_reply_supported_store(struct config_item *item,
- }
- CONFIGFS_ATTR(tcmu_, nl_reply_supported);
- 
-+static ssize_t tcmu_bypass_data_area_show(struct config_item *item, char *page)
-+{
-+	struct se_dev_attrib *da = container_of(to_config_group(item),
-+						struct se_dev_attrib, da_group);
-+	struct tcmu_dev *udev = TCMU_DEV(da->da_dev);
-+
-+	if (test_bit(TCMU_DEV_BIT_BYPASS_DATA_AREA, &udev->flags))
-+		return snprintf(page, PAGE_SIZE, "%s\n", "true");
-+	else
-+		return snprintf(page, PAGE_SIZE, "%s\n", "false");
-+}
-+
-+static ssize_t tcmu_bypass_data_area_store(struct config_item *item, const char *page,
-+					    size_t count)
-+{
-+	struct se_dev_attrib *da = container_of(to_config_group(item),
-+						struct se_dev_attrib, da_group);
-+	struct tcmu_dev *udev = TCMU_DEV(da->da_dev);
-+	bool bypass_data_area;
-+	int ret;
-+
-+	ret = strtobool(page, &bypass_data_area);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (bypass_data_area)
-+		set_bit(TCMU_DEV_BIT_BYPASS_DATA_AREA, &udev->flags);
-+	else
-+		clear_bit(TCMU_DEV_BIT_BYPASS_DATA_AREA, &udev->flags);
-+
-+	return count;
-+}
-+CONFIGFS_ATTR(tcmu_, bypass_data_area);
-+
- static ssize_t tcmu_emulate_write_cache_show(struct config_item *item,
- 					     char *page)
- {
-@@ -3069,6 +3193,7 @@ static ssize_t tcmu_free_kept_buf_store(struct config_item *item, const char *pa
- 	&tcmu_attr_emulate_write_cache,
- 	&tcmu_attr_tmr_notification,
- 	&tcmu_attr_nl_reply_supported,
-+	&tcmu_attr_bypass_data_area,
- 	NULL,
- };
- 
-diff --git a/include/uapi/linux/target_core_user.h b/include/uapi/linux/target_core_user.h
-index 27ace51..c02a45e 100644
---- a/include/uapi/linux/target_core_user.h
-+++ b/include/uapi/linux/target_core_user.h
-@@ -185,4 +185,13 @@ enum tcmu_genl_attr {
- };
- #define TCMU_ATTR_MAX (__TCMU_ATTR_MAX - 1)
- 
-+struct tcmu_data_xfer {
-+	unsigned short cmd_id;
-+	unsigned long iov_cnt;
-+	struct iovec __user *iovec;
-+};
-+
-+#define TCMU_IOCTL_CMD_COPY_TO_SGL      _IOW('T', 0xe0, struct tcmu_data_xfer)
-+#define TCMU_IOCTL_CMD_COPY_FROM_SGL    _IOW('T', 0xe1, struct tcmu_data_xfer)
-+
- #endif
--- 
-1.8.3.1
-
+Thanks
+Huang Shijie
