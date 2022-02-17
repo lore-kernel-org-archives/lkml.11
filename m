@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA2B7C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5A6C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241719AbiBQOFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:05:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55914 "EHLO
+        id S241800AbiBQOFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:05:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241582AbiBQOFg (ORCPT
+        with ESMTP id S241685AbiBQOFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:05:36 -0500
+        Thu, 17 Feb 2022 09:05:37 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E016145AFD;
-        Thu, 17 Feb 2022 06:05:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17542177E69;
+        Thu, 17 Feb 2022 06:05:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645106712; x=1676642712;
+  t=1645106723; x=1676642723;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mmcVCbEg/LT9UwII2j+BYuiQo6K4SH6OPf0Nj6nyyHk=;
-  b=iCQnksXymfbJUZ7jW4zQzHayV0Ygi5d7F0IeHcVmMHFpVzviYs6sK09m
-   tBYMPyV961rvEvXBN+jWIVNg/+42OhufmXGZgDFA9s4mMP0DLeASRECXs
-   fh02kd0E/QeYbbLgOhGuc6ggQdoNhKNBaIRL369z1Jdymlq17c3K2iDTI
-   W3i0ic4b9JI7tagmwNNeGhRn8DyuTInPdTqLZYALJEa93KmC7Id3tZoNH
-   vLayiKooRtWhRsysRWQGiR+OjqmzsObCQhcmTtcrh8Z+Gf61bnI6eJOXY
-   fV707aqhjGPeTFq2vtfKFGv0XSmz2Cneq6F82ZCL9Fuj53NUJ0QdvrvXk
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="231501882"
+  bh=JVXkGTgMk0f0BZi0vzDMp/6U04Z0YVjDjG523a9A54I=;
+  b=k7n1NVkgrT8E7qws0+BgxEVoOXRlQVwNTsiN+z6eOadcul1OTULWga6Z
+   MN/VDEe/n20zqErMkxkJaaoI5zaP+YF0xYoBfwYuwBYPCge7UtXjfIyL3
+   01TL39gI0PMKeG880Fe9p9Kc3F2odT0/im8q/RkVdS4wSX41SZEDshZ20
+   +hSVF7Olw7dMlMX08kwmm8jYYT+qA3hWTrCrN5vkSlB6S7W8Ns86fbgt5
+   XKJ2wAciS9tYj0pH8cChxfxntOuVnYVzDmSt7nXcgXbx7m8ujAx9sPKBh
+   SS37OvGEf/DYZu5ef0ZD7gWbUrk3a2QXBHv44FmFIR9uOnIcUqcN9HByr
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="231501917"
 X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="231501882"
+   d="scan'208";a="231501917"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 06:05:12 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 06:05:22 -0800
 X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="530241277"
+   d="scan'208";a="530241404"
 Received: from lab-ah.igk.intel.com ([10.91.215.196])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 06:05:09 -0800
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 06:05:19 -0800
 From:   Andrzej Hajda <andrzej.hajda@intel.com>
 To:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, netdev <netdev@vger.kernel.org>
@@ -48,9 +48,9 @@ Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Eric Dumazet <edumazet@google.com>,
         Dmitry Vyukov <dvyukov@google.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5/9] lib/ref_tracker: improve allocation flags
-Date:   Thu, 17 Feb 2022 15:04:37 +0100
-Message-Id: <20220217140441.1218045-6-andrzej.hajda@intel.com>
+Subject: [PATCH 8/9] drm/i915: Correct type of wakeref variable
+Date:   Thu, 17 Feb 2022 15:04:40 +0100
+Message-Id: <20220217140441.1218045-9-andrzej.hajda@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217140441.1218045-1-andrzej.hajda@intel.com>
 References: <20220217140441.1218045-1-andrzej.hajda@intel.com>
@@ -61,53 +61,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Library can be called in non-sleeping context, so it should not use
-__GFP_NOFAIL. Instead it should calmly handle allocation fails, for
-this __GFP_NOWARN has been added as well.
+Wakeref has dedicated type. Assumption it will be int
+compatible forever is incorrect.
 
 Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
 ---
- lib/ref_tracker.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
-index 7b00bca300043..c8441ffbb058a 100644
---- a/lib/ref_tracker.c
-+++ b/lib/ref_tracker.c
-@@ -59,7 +59,7 @@ __ref_tracker_dir_pr_ostream(struct ref_tracker_dir *dir,
- 	if (list_empty(&dir->list))
- 		return;
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
+index 7799939c38945..b308dd0866eaf 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
++++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
+@@ -2797,7 +2797,7 @@ static void destroyed_worker_func(struct work_struct *w)
+ 	struct intel_guc *guc = container_of(w, struct intel_guc,
+ 					     submission_state.destroyed_worker);
+ 	struct intel_gt *gt = guc_to_gt(guc);
+-	int tmp;
++	intel_wakeref_t tmp;
  
--	sbuf = kmalloc(STACK_BUF_SIZE, GFP_NOWAIT);
-+	sbuf = kmalloc(STACK_BUF_SIZE, GFP_NOWAIT | __GFP_NOWARN);
- 
- 	list_for_each_entry(tracker, &dir->list, head)
- 		++total;
-@@ -154,11 +154,11 @@ int ref_tracker_alloc(struct ref_tracker_dir *dir,
- 	unsigned long entries[REF_TRACKER_STACK_ENTRIES];
- 	struct ref_tracker *tracker;
- 	unsigned int nr_entries;
--	gfp_t gfp_mask = gfp;
-+	gfp_t gfp_mask;
- 	unsigned long flags;
- 
--	if (gfp & __GFP_DIRECT_RECLAIM)
--		gfp_mask |= __GFP_NOFAIL;
-+	gfp |= __GFP_NOWARN;
-+	gfp_mask = (gfp & __GFP_DIRECT_RECLAIM) ? (gfp | __GFP_NOFAIL) : gfp;
- 	*trackerp = tracker = kzalloc(sizeof(*tracker), gfp_mask);
- 	if (unlikely(!tracker)) {
- 		pr_err_once("memory allocation failure, unreliable refcount tracker.\n");
-@@ -191,7 +191,8 @@ int ref_tracker_free(struct ref_tracker_dir *dir,
- 	}
- 	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
- 	nr_entries = filter_irq_stacks(entries, nr_entries);
--	stack_handle = stack_depot_save(entries, nr_entries, GFP_ATOMIC);
-+	stack_handle = stack_depot_save(entries, nr_entries,
-+					GFP_NOWAIT | __GFP_NOWARN);
- 
- 	spin_lock_irqsave(&dir->lock, flags);
- 	if (tracker->dead) {
+ 	with_intel_gt_pm(gt, tmp)
+ 		deregister_destroyed_contexts(guc);
 -- 
 2.25.1
 
