@@ -2,32 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 303EDC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F83C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241115AbiBQNms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:42:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39866 "EHLO
+        id S241168AbiBQNmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:42:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241205AbiBQNme (ORCPT
+        with ESMTP id S241216AbiBQNmg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:42:34 -0500
+        Thu, 17 Feb 2022 08:42:36 -0500
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742661D301;
-        Thu, 17 Feb 2022 05:42:18 -0800 (PST)
-X-UUID: 96ef20eeb10948dca2d1da79474d56a7-20220217
-X-UUID: 96ef20eeb10948dca2d1da79474d56a7-20220217
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725A722519;
+        Thu, 17 Feb 2022 05:42:21 -0800 (PST)
+X-UUID: 056c4476161f41e086b8a445839ec408-20220217
+X-UUID: 056c4476161f41e086b8a445839ec408-20220217
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
         (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 193631586; Thu, 17 Feb 2022 21:42:14 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 17 Feb 2022 21:42:12 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 2062616248; Thu, 17 Feb 2022 21:42:18 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 17 Feb 2022 21:42:16 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Feb
+ 2022 21:42:16 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 21:42:11 +0800
+ Transport; Thu, 17 Feb 2022 21:42:15 +0800
 From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
 To:     <broonie@kernel.org>
 CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
@@ -39,9 +41,9 @@ CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, Jiaxin Yu <jiaxin.yu@mediatek.com>
-Subject: [v2 02/17] ASoC: mediatek: mt8186: support audsys clock control
-Date:   Thu, 17 Feb 2022 21:41:50 +0800
-Message-ID: <20220217134205.15400-3-jiaxin.yu@mediatek.com>
+Subject: [v2 05/17] ASoC: mediatek: mt8186: support hw gain in platform driver
+Date:   Thu, 17 Feb 2022 21:41:53 +0800
+Message-ID: <20220217134205.15400-6-jiaxin.yu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
 References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
@@ -53,248 +55,265 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds mt8186 audio cg control.
-Audio clock gates are registered to CCF for reference count and
-clock parent management.
+This path adds mt8186 hw gain dai driver.
 
 Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
 ---
- sound/soc/mediatek/mt8186/mt8186-audsys-clk.c | 150 ++++++++++++++++++
- sound/soc/mediatek/mt8186/mt8186-audsys-clk.h |  15 ++
- .../soc/mediatek/mt8186/mt8186-audsys-clkid.h |  45 ++++++
- 3 files changed, 210 insertions(+)
- create mode 100644 sound/soc/mediatek/mt8186/mt8186-audsys-clk.c
- create mode 100644 sound/soc/mediatek/mt8186/mt8186-audsys-clk.h
- create mode 100644 sound/soc/mediatek/mt8186/mt8186-audsys-clkid.h
+ .../soc/mediatek/mt8186/mt8186-dai-hw-gain.c  | 245 ++++++++++++++++++
+ 1 file changed, 245 insertions(+)
+ create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-hw-gain.c
 
-diff --git a/sound/soc/mediatek/mt8186/mt8186-audsys-clk.c b/sound/soc/mediatek/mt8186/mt8186-audsys-clk.c
+diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-hw-gain.c b/sound/soc/mediatek/mt8186/mt8186-dai-hw-gain.c
 new file mode 100644
-index 000000000000..578969ca91c8
+index 000000000000..796878989727
 --- /dev/null
-+++ b/sound/soc/mediatek/mt8186/mt8186-audsys-clk.c
-@@ -0,0 +1,150 @@
++++ b/sound/soc/mediatek/mt8186/mt8186-dai-hw-gain.c
+@@ -0,0 +1,245 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
-+// mt8186-audsys-clk.h  --  Mediatek 8186 audsys clock control
++// MediaTek ALSA SoC Audio DAI HW Gain Control
 +//
 +// Copyright (c) 2022 MediaTek Inc.
 +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
 +
-+#include <linux/clk.h>
-+#include <linux/clk-provider.h>
-+#include <linux/clkdev.h>
++#include <linux/regmap.h>
 +#include "mt8186-afe-common.h"
-+#include "mt8186-audsys-clk.h"
-+#include "mt8186-audsys-clkid.h"
-+#include "mt8186-reg.h"
++#include "mt8186-interconnection.h"
 +
-+struct afe_gate {
-+	int id;
-+	const char *name;
-+	const char *parent_name;
-+	int reg;
-+	u8 bit;
-+	const struct clk_ops *ops;
-+	unsigned long flags;
-+	u8 cg_flags;
++#define HW_GAIN_1_EN_W_NAME "HW GAIN 1 Enable"
++#define HW_GAIN_2_EN_W_NAME "HW GAIN 2 Enable"
++
++/* dai component */
++static const struct snd_kcontrol_new mtk_hw_gain1_in_ch1_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("CONNSYS_I2S_CH1 Switch", AFE_CONN13_1,
++				    I_CONNSYS_I2S_CH1, 1, 0),
 +};
 +
-+#define GATE_AFE_FLAGS(_id, _name, _parent, _reg, _bit, _flags, _cgflags) {\
-+		.id = _id,					\
-+		.name = _name,					\
-+		.parent_name = _parent,				\
-+		.reg = _reg,					\
-+		.bit = _bit,					\
-+		.flags = _flags,				\
-+		.cg_flags = _cgflags,				\
-+	}
-+
-+#define GATE_AFE(_id, _name, _parent, _reg, _bit)		\
-+	GATE_AFE_FLAGS(_id, _name, _parent, _reg, _bit,		\
-+		       CLK_SET_RATE_PARENT, CLK_GATE_SET_TO_DISABLE)
-+
-+#define GATE_AUD0(_id, _name, _parent, _bit)			\
-+	GATE_AFE(_id, _name, _parent, AUDIO_TOP_CON0, _bit)
-+
-+#define GATE_AUD1(_id, _name, _parent, _bit)			\
-+	GATE_AFE(_id, _name, _parent, AUDIO_TOP_CON1, _bit)
-+
-+#define GATE_AUD2(_id, _name, _parent, _bit)			\
-+	GATE_AFE(_id, _name, _parent, AUDIO_TOP_CON2, _bit)
-+
-+static const struct afe_gate aud_clks[CLK_AUD_NR_CLK] = {
-+	/* AUD0 */
-+	GATE_AUD0(CLK_AUD_AFE, "aud_afe_clk", "top_audio", 2),
-+	GATE_AUD0(CLK_AUD_22M, "aud_apll22m_clk", "top_aud_engen1", 8),
-+	GATE_AUD0(CLK_AUD_24M, "aud_apll24m_clk", "top_aud_engen2", 9),
-+	GATE_AUD0(CLK_AUD_APLL2_TUNER, "aud_apll2_tuner_clk", "top_aud_engen2", 18),
-+	GATE_AUD0(CLK_AUD_APLL_TUNER, "aud_apll_tuner_clk", "top_aud_engen1", 19),
-+	GATE_AUD0(CLK_AUD_TDM, "aud_tdm_clk", "top_aud_1", 20),
-+	GATE_AUD0(CLK_AUD_ADC, "aud_adc_clk", "top_audio", 24),
-+	GATE_AUD0(CLK_AUD_DAC, "aud_dac_clk", "top_audio", 25),
-+	GATE_AUD0(CLK_AUD_DAC_PREDIS, "aud_dac_predis_clk", "top_audio", 26),
-+	GATE_AUD0(CLK_AUD_TML, "aud_tml_clk", "top_audio", 27),
-+	GATE_AUD0(CLK_AUD_NLE, "aud_nle_clk", "top_audio", 28),
-+
-+	/* AUD1 */
-+	GATE_AUD1(CLK_AUD_I2S1_BCLK, "aud_i2s1_bclk", "top_audio", 4),
-+	GATE_AUD1(CLK_AUD_I2S2_BCLK, "aud_i2s2_bclk", "top_audio", 5),
-+	GATE_AUD1(CLK_AUD_I2S3_BCLK, "aud_i2s3_bclk", "top_audio", 6),
-+	GATE_AUD1(CLK_AUD_I2S4_BCLK, "aud_i2s4_bclk", "top_audio", 7),
-+	GATE_AUD1(CLK_AUD_CONNSYS_I2S_ASRC, "aud_connsys_i2s_asrc", "top_audio", 12),
-+	GATE_AUD1(CLK_AUD_GENERAL1_ASRC, "aud_general1_asrc", "top_audio", 13),
-+	GATE_AUD1(CLK_AUD_GENERAL2_ASRC, "aud_general2_asrc", "top_audio", 14),
-+	GATE_AUD1(CLK_AUD_DAC_HIRES, "aud_dac_hires_clk", "top_audio_h", 15),
-+	GATE_AUD1(CLK_AUD_ADC_HIRES, "aud_adc_hires_clk", "top_audio_h", 16),
-+	GATE_AUD1(CLK_AUD_ADC_HIRES_TML, "aud_adc_hires_tml", "top_audio_h", 17),
-+	GATE_AUD1(CLK_AUD_ADDA6_ADC, "aud_adda6_adc", "top_audio", 20),
-+	GATE_AUD1(CLK_AUD_ADDA6_ADC_HIRES, "aud_adda6_adc_hires", "top_audio_h", 21),
-+	GATE_AUD1(CLK_AUD_3RD_DAC, "aud_3rd_dac", "top_audio", 28),
-+	GATE_AUD1(CLK_AUD_3RD_DAC_PREDIS, "aud_3rd_dac_predis", "top_audio", 29),
-+	GATE_AUD1(CLK_AUD_3RD_DAC_TML, "aud_3rd_dac_tml", "top_audio", 30),
-+	GATE_AUD1(CLK_AUD_3RD_DAC_HIRES, "aud_3rd_dac_hires", "top_audio_h", 31),
-+
-+	/* AUD2 */
-+	GATE_AUD2(CLK_AUD_ETDM_IN1_BCLK, "aud_etdm_in1_bclk", "top_audio", 23),
-+	GATE_AUD2(CLK_AUD_ETDM_OUT1_BCLK, "aud_etdm_out1_bclk", "top_audio", 24),
++static const struct snd_kcontrol_new mtk_hw_gain1_in_ch2_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("CONNSYS_I2S_CH2 Switch", AFE_CONN14_1,
++				    I_CONNSYS_I2S_CH2, 1, 0),
 +};
 +
-+int mt8186_audsys_clk_register(struct mtk_base_afe *afe)
++static const struct snd_kcontrol_new mtk_hw_gain2_in_ch1_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1 Switch", AFE_CONN15,
++				    I_ADDA_UL_CH1, 1, 0),
++};
++
++static const struct snd_kcontrol_new mtk_hw_gain2_in_ch2_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH2 Switch", AFE_CONN16,
++				    I_ADDA_UL_CH2, 1, 0),
++};
++
++static int mtk_hw_gain_event(struct snd_soc_dapm_widget *w,
++			     struct snd_kcontrol *kcontrol,
++			     int event)
 +{
-+	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-+	struct clk *clk;
-+	struct clk_lookup *cl;
-+	int i;
++	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
++	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
++	unsigned int gain_cur;
++	unsigned int gain_con1;
 +
-+	afe_priv->lookup = devm_kcalloc(afe->dev, CLK_AUD_NR_CLK,
-+					sizeof(*afe_priv->lookup),
-+					GFP_KERNEL);
++	dev_dbg(cmpnt->dev, "%s(), name %s, event 0x%x\n",
++		__func__, w->name, event);
 +
-+	if (!afe_priv->lookup)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < ARRAY_SIZE(aud_clks); i++) {
-+		const struct afe_gate *gate = &aud_clks[i];
-+
-+		clk = clk_register_gate(afe->dev, gate->name, gate->parent_name,
-+					gate->flags, afe->base_addr + gate->reg,
-+					gate->bit, gate->cg_flags, NULL);
-+
-+		if (IS_ERR(clk)) {
-+			dev_err(afe->dev, "Failed to register clk %s: %ld\n",
-+				gate->name, PTR_ERR(clk));
-+			continue;
++	switch (event) {
++	case SND_SOC_DAPM_PRE_PMU:
++		if (strcmp(w->name, HW_GAIN_1_EN_W_NAME) == 0) {
++			gain_cur = AFE_GAIN1_CUR;
++			gain_con1 = AFE_GAIN1_CON1;
++		} else {
++			gain_cur = AFE_GAIN2_CUR;
++			gain_con1 = AFE_GAIN2_CON1;
 +		}
 +
-+		/* add clk_lookup for devm_clk_get(SND_SOC_DAPM_CLOCK_SUPPLY) */
-+		cl = kzalloc(sizeof(*cl), GFP_KERNEL);
-+		if (!cl)
-+			return -ENOMEM;
++		/* let hw gain ramp up, set cur gain to 0 */
++		regmap_update_bits(afe->regmap,
++				   gain_cur,
++				   AFE_GAIN1_CUR_MASK_SFT,
++				   0);
 +
-+		cl->clk = clk;
-+		cl->con_id = gate->name;
-+		cl->dev_id = dev_name(afe->dev);
-+		clkdev_add(cl);
-+
-+		afe_priv->lookup[i] = cl;
++		/* set target gain to 0 */
++		regmap_update_bits(afe->regmap,
++				   gain_con1,
++				   GAIN1_TARGET_MASK_SFT,
++				   0);
++		break;
++	default:
++		break;
 +	}
 +
 +	return 0;
 +}
 +
-+void mt8186_audsys_clk_unregister(struct mtk_base_afe *afe)
-+{
-+	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-+	struct clk *clk;
-+	struct clk_lookup *cl;
-+	int i;
++static const struct snd_soc_dapm_widget mtk_dai_hw_gain_widgets[] = {
++	/* inter-connections */
++	SND_SOC_DAPM_MIXER("HW_GAIN1_IN_CH1", SND_SOC_NOPM, 0, 0,
++			   mtk_hw_gain1_in_ch1_mix,
++			   ARRAY_SIZE(mtk_hw_gain1_in_ch1_mix)),
++	SND_SOC_DAPM_MIXER("HW_GAIN1_IN_CH2", SND_SOC_NOPM, 0, 0,
++			   mtk_hw_gain1_in_ch2_mix,
++			   ARRAY_SIZE(mtk_hw_gain1_in_ch2_mix)),
++	SND_SOC_DAPM_MIXER("HW_GAIN2_IN_CH1", SND_SOC_NOPM, 0, 0,
++			   mtk_hw_gain2_in_ch1_mix,
++			   ARRAY_SIZE(mtk_hw_gain2_in_ch1_mix)),
++	SND_SOC_DAPM_MIXER("HW_GAIN2_IN_CH2", SND_SOC_NOPM, 0, 0,
++			   mtk_hw_gain2_in_ch2_mix,
++			   ARRAY_SIZE(mtk_hw_gain2_in_ch2_mix)),
 +
-+	if (!afe_priv)
-+		return;
++	SND_SOC_DAPM_SUPPLY(HW_GAIN_1_EN_W_NAME,
++			    AFE_GAIN1_CON0, GAIN1_ON_SFT, 0,
++			    mtk_hw_gain_event,
++			    SND_SOC_DAPM_PRE_PMU),
 +
-+	for (i = 0; i < CLK_AUD_NR_CLK; i++) {
-+		cl = afe_priv->lookup[i];
-+		if (!cl)
-+			continue;
++	SND_SOC_DAPM_SUPPLY(HW_GAIN_2_EN_W_NAME,
++			    AFE_GAIN2_CON0, GAIN2_ON_SFT, 0,
++			    mtk_hw_gain_event,
++			    SND_SOC_DAPM_PRE_PMU),
 +
-+		clk = cl->clk;
-+		clk_unregister_gate(clk);
-+
-+		clkdev_drop(cl);
-+	}
-+}
-diff --git a/sound/soc/mediatek/mt8186/mt8186-audsys-clk.h b/sound/soc/mediatek/mt8186/mt8186-audsys-clk.h
-new file mode 100644
-index 000000000000..b8d6a06e11e8
---- /dev/null
-+++ b/sound/soc/mediatek/mt8186/mt8186-audsys-clk.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ *
-+ * mt8186-audsys-clk.h  --  Mediatek 8186 audsys clock definition
-+ *
-+ * Copyright (c) 2022 MediaTek Inc.
-+ * Author: Trevor Wu <trevor.wu@mediatek.com>
-+ */
-+
-+#ifndef _MT8186_AUDSYS_CLK_H_
-+#define _MT8186_AUDSYS_CLK_H_
-+
-+int mt8186_audsys_clk_register(struct mtk_base_afe *afe);
-+void mt8186_audsys_clk_unregister(struct mtk_base_afe *afe);
-+
-+#endif
-diff --git a/sound/soc/mediatek/mt8186/mt8186-audsys-clkid.h b/sound/soc/mediatek/mt8186/mt8186-audsys-clkid.h
-new file mode 100644
-index 000000000000..3ce5937c1823
---- /dev/null
-+++ b/sound/soc/mediatek/mt8186/mt8186-audsys-clkid.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ *
-+ * mt8186-audsys-clkid.h  --  Mediatek 8186 audsys clock id definition
-+ *
-+ * Copyright (c) 2022 MediaTek Inc.
-+ * Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
-+ */
-+
-+#ifndef _MT8186_AUDSYS_CLKID_H_
-+#define _MT8186_AUDSYS_CLKID_H_
-+
-+enum{
-+	CLK_AUD_AFE,
-+	CLK_AUD_22M,
-+	CLK_AUD_24M,
-+	CLK_AUD_APLL2_TUNER,
-+	CLK_AUD_APLL_TUNER,
-+	CLK_AUD_TDM,
-+	CLK_AUD_ADC,
-+	CLK_AUD_DAC,
-+	CLK_AUD_DAC_PREDIS,
-+	CLK_AUD_TML,
-+	CLK_AUD_NLE,
-+	CLK_AUD_I2S1_BCLK,
-+	CLK_AUD_I2S2_BCLK,
-+	CLK_AUD_I2S3_BCLK,
-+	CLK_AUD_I2S4_BCLK,
-+	CLK_AUD_CONNSYS_I2S_ASRC,
-+	CLK_AUD_GENERAL1_ASRC,
-+	CLK_AUD_GENERAL2_ASRC,
-+	CLK_AUD_DAC_HIRES,
-+	CLK_AUD_ADC_HIRES,
-+	CLK_AUD_ADC_HIRES_TML,
-+	CLK_AUD_ADDA6_ADC,
-+	CLK_AUD_ADDA6_ADC_HIRES,
-+	CLK_AUD_3RD_DAC,
-+	CLK_AUD_3RD_DAC_PREDIS,
-+	CLK_AUD_3RD_DAC_TML,
-+	CLK_AUD_3RD_DAC_HIRES,
-+	CLK_AUD_ETDM_IN1_BCLK,
-+	CLK_AUD_ETDM_OUT1_BCLK,
-+	CLK_AUD_NR_CLK,
++	SND_SOC_DAPM_INPUT("HW Gain 1 Out Endpoint"),
++	SND_SOC_DAPM_INPUT("HW Gain 2 Out Endpoint"),
++	SND_SOC_DAPM_OUTPUT("HW Gain 1 In Endpoint"),
 +};
 +
-+#endif
++static const struct snd_soc_dapm_route mtk_dai_hw_gain_routes[] = {
++	{"HW Gain 1 In", NULL, "HW_GAIN1_IN_CH1"},
++	{"HW Gain 1 In", NULL, "HW_GAIN1_IN_CH2"},
++	{"HW Gain 2 In", NULL, "HW_GAIN2_IN_CH1"},
++	{"HW Gain 2 In", NULL, "HW_GAIN2_IN_CH2"},
++
++	{"HW Gain 1 In", NULL, HW_GAIN_1_EN_W_NAME},
++	{"HW Gain 1 Out", NULL, HW_GAIN_1_EN_W_NAME},
++	{"HW Gain 2 In", NULL, HW_GAIN_2_EN_W_NAME},
++	{"HW Gain 2 Out", NULL, HW_GAIN_2_EN_W_NAME},
++
++	{"HW Gain 1 In Endpoint", NULL, "HW Gain 1 In"},
++	{"HW Gain 1 Out", NULL, "HW Gain 1 Out Endpoint"},
++	{"HW Gain 2 Out", NULL, "HW Gain 2 Out Endpoint"},
++};
++
++static const struct snd_kcontrol_new mtk_hw_gain_controls[] = {
++	SOC_SINGLE("HW Gain 1 Volume", AFE_GAIN1_CON1,
++		   GAIN1_TARGET_SFT, GAIN1_TARGET_MASK, 0),
++	SOC_SINGLE("HW Gain 2 Volume", AFE_GAIN2_CON1,
++		   GAIN2_TARGET_SFT, GAIN2_TARGET_MASK, 0),
++};
++
++/* dai ops */
++static int mtk_dai_gain_hw_params(struct snd_pcm_substream *substream,
++				  struct snd_pcm_hw_params *params,
++				  struct snd_soc_dai *dai)
++{
++	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
++	unsigned int rate = params_rate(params);
++	unsigned int rate_reg = mt8186_rate_transform(afe->dev, rate, dai->id);
++
++	dev_info(afe->dev, "%s(), id %d, stream %d, rate %d\n",
++		 __func__,
++		 dai->id,
++		 substream->stream,
++		 rate);
++
++	/* rate */
++	regmap_update_bits(afe->regmap,
++			   dai->id == MT8186_DAI_HW_GAIN_1 ?
++			   AFE_GAIN1_CON0 : AFE_GAIN2_CON0,
++			   GAIN1_MODE_MASK_SFT,
++			   rate_reg << GAIN1_MODE_SFT);
++
++	/* sample per step */
++	regmap_update_bits(afe->regmap,
++			   dai->id == MT8186_DAI_HW_GAIN_1 ?
++			   AFE_GAIN1_CON0 : AFE_GAIN2_CON0,
++			   GAIN1_SAMPLE_PER_STEP_MASK_SFT,
++			   (dai->id == MT8186_DAI_HW_GAIN_1 ? 0x40 : 0x0) <<
++			   GAIN1_SAMPLE_PER_STEP_SFT);
++
++	return 0;
++}
++
++static const struct snd_soc_dai_ops mtk_dai_gain_ops = {
++	.hw_params = mtk_dai_gain_hw_params,
++};
++
++/* dai driver */
++#define MTK_HW_GAIN_RATES (SNDRV_PCM_RATE_8000_48000 |\
++			   SNDRV_PCM_RATE_88200 |\
++			   SNDRV_PCM_RATE_96000 |\
++			   SNDRV_PCM_RATE_176400 |\
++			   SNDRV_PCM_RATE_192000)
++
++#define MTK_HW_GAIN_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
++			     SNDRV_PCM_FMTBIT_S24_LE |\
++			     SNDRV_PCM_FMTBIT_S32_LE)
++
++static struct snd_soc_dai_driver mtk_dai_gain_driver[] = {
++	{
++		.name = "HW Gain 1",
++		.id = MT8186_DAI_HW_GAIN_1,
++		.playback = {
++			.stream_name = "HW Gain 1 In",
++			.channels_min = 1,
++			.channels_max = 2,
++			.rates = MTK_HW_GAIN_RATES,
++			.formats = MTK_HW_GAIN_FORMATS,
++		},
++		.capture = {
++			.stream_name = "HW Gain 1 Out",
++			.channels_min = 1,
++			.channels_max = 2,
++			.rates = MTK_HW_GAIN_RATES,
++			.formats = MTK_HW_GAIN_FORMATS,
++		},
++		.ops = &mtk_dai_gain_ops,
++		.symmetric_rate = 1,
++		.symmetric_channels = 1,
++		.symmetric_sample_bits = 1,
++	},
++	{
++		.name = "HW Gain 2",
++		.id = MT8186_DAI_HW_GAIN_2,
++		.playback = {
++			.stream_name = "HW Gain 2 In",
++			.channels_min = 1,
++			.channels_max = 2,
++			.rates = MTK_HW_GAIN_RATES,
++			.formats = MTK_HW_GAIN_FORMATS,
++		},
++		.capture = {
++			.stream_name = "HW Gain 2 Out",
++			.channels_min = 1,
++			.channels_max = 2,
++			.rates = MTK_HW_GAIN_RATES,
++			.formats = MTK_HW_GAIN_FORMATS,
++		},
++		.ops = &mtk_dai_gain_ops,
++		.symmetric_rate = 1,
++		.symmetric_channels = 1,
++		.symmetric_sample_bits = 1,
++	},
++};
++
++int mt8186_dai_hw_gain_register(struct mtk_base_afe *afe)
++{
++	struct mtk_base_afe_dai *dai;
++
++	dai = devm_kzalloc(afe->dev, sizeof(*dai), GFP_KERNEL);
++	if (!dai)
++		return -ENOMEM;
++
++	list_add(&dai->list, &afe->sub_dais);
++
++	dai->dai_drivers = mtk_dai_gain_driver;
++	dai->num_dai_drivers = ARRAY_SIZE(mtk_dai_gain_driver);
++
++	dai->controls = mtk_hw_gain_controls;
++	dai->num_controls = ARRAY_SIZE(mtk_hw_gain_controls);
++	dai->dapm_widgets = mtk_dai_hw_gain_widgets;
++	dai->num_dapm_widgets = ARRAY_SIZE(mtk_dai_hw_gain_widgets);
++	dai->dapm_routes = mtk_dai_hw_gain_routes;
++	dai->num_dapm_routes = ARRAY_SIZE(mtk_dai_hw_gain_routes);
++	return 0;
++}
 -- 
 2.18.0
 
