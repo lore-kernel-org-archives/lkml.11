@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B361AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C5CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240794AbiBQNNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:13:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57452 "EHLO
+        id S240799AbiBQNNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:13:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240721AbiBQNNW (ORCPT
+        with ESMTP id S240729AbiBQNNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:13:22 -0500
+        Thu, 17 Feb 2022 08:13:23 -0500
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12E3929E956;
-        Thu, 17 Feb 2022 05:13:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A3412AE285
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:13:09 -0800 (PST)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CCA391515;
-        Thu, 17 Feb 2022 05:13:07 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BCAD11396;
+        Thu, 17 Feb 2022 05:12:53 -0800 (PST)
 Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CAD163F66F;
-        Thu, 17 Feb 2022 05:13:05 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E4E8F3F66F;
+        Thu, 17 Feb 2022 05:12:51 -0800 (PST)
 From:   Cristian Marussi <cristian.marussi@arm.com>
 To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
@@ -28,11 +28,11 @@ Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
         etienne.carriere@linaro.org, vincent.guittot@linaro.org,
         souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
         igor.skalkin@opensynergy.com, cristian.marussi@arm.com,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org
-Subject: [PATCH v5 8/8] clk: scmi: Support atomic clock enable/disable API
-Date:   Thu, 17 Feb 2022 13:12:34 +0000
-Message-Id: <20220217131234.50328-9-cristian.marussi@arm.com>
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH v5 1/8] firmware: arm_scmi: Add a virtio channel refcount
+Date:   Thu, 17 Feb 2022 13:12:27 +0000
+Message-Id: <20220217131234.50328-2-cristian.marussi@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220217131234.50328-1-cristian.marussi@arm.com>
 References: <20220217131234.50328-1-cristian.marussi@arm.com>
@@ -40,157 +40,301 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support also atomic enable/disable clk_ops beside the bare non-atomic one
-(prepare/unprepare) when the underlying SCMI transport is configured to
-support atomic transactions for synchronous commands.
+Currently SCMI VirtIO channels are marked with a ready flag and related
+lock to track channel lifetime and support proper synchronization at
+shutdown when virtqueues have to be stopped.
 
-Compare the SCMI system-wide configured atomic threshold latency time and
-the per-clock advertised enable latency (if any) to choose whether to
-provide sleeping prepare/unprepare vs atomic enable/disable.
+This leads to some extended spinlocked sections with IRQs off on the RX
+path to keep hold of the ready flag and does not scale well especially when
+SCMI VirtIO polling mode will be introduced.
 
-Cc: Michael Turquette <mturquette@baylibre.com>
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: linux-clk@vger.kernel.org
+Add an SCMI VirtIO channel dedicated refcount to track active users on both
+the TX and the RX path and properly enforce synchronization and cleanup at
+shutdown, inhibiting further usage of the channel once freed.
+
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Igor Skalkin <igor.skalkin@opensynergy.com>
+Cc: Peter Hilber <peter.hilber@opensynergy.com>
+Cc: virtualization@lists.linux-foundation.org
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
+v4 --> v5
+- removed unneeded virtqueue re-enable when fail to acquire channel in
+  complete_cb
 v2 --> v3
-- removed RFC tag
+- Break virtio device at shutdown while cleaning up SCMI channel
 ---
- drivers/clk/clk-scmi.c | 71 +++++++++++++++++++++++++++++++++++-------
- 1 file changed, 60 insertions(+), 11 deletions(-)
+ drivers/firmware/arm_scmi/virtio.c | 143 +++++++++++++++++++----------
+ 1 file changed, 92 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/clk/clk-scmi.c b/drivers/clk/clk-scmi.c
-index 1e357d364ca2..2c7a830ce308 100644
---- a/drivers/clk/clk-scmi.c
-+++ b/drivers/clk/clk-scmi.c
-@@ -2,7 +2,7 @@
- /*
-  * System Control and Power Interface (SCMI) Protocol based clock driver
-  *
-- * Copyright (C) 2018-2021 ARM Ltd.
-+ * Copyright (C) 2018-2022 ARM Ltd.
+diff --git a/drivers/firmware/arm_scmi/virtio.c b/drivers/firmware/arm_scmi/virtio.c
+index fd0f6f91fc0b..ed00b072e981 100644
+--- a/drivers/firmware/arm_scmi/virtio.c
++++ b/drivers/firmware/arm_scmi/virtio.c
+@@ -17,7 +17,9 @@
+  * virtqueue. Access to each virtqueue is protected by spinlocks.
   */
  
- #include <linux/clk-provider.h>
-@@ -88,21 +88,51 @@ static void scmi_clk_disable(struct clk_hw *hw)
- 	scmi_proto_clk_ops->disable(clk->ph, clk->id);
- }
++#include <linux/completion.h>
+ #include <linux/errno.h>
++#include <linux/refcount.h>
+ #include <linux/slab.h>
+ #include <linux/virtio.h>
+ #include <linux/virtio_config.h>
+@@ -27,6 +29,7 @@
  
-+static int scmi_clk_atomic_enable(struct clk_hw *hw)
-+{
-+	struct scmi_clk *clk = to_scmi_clk(hw);
-+
-+	return scmi_proto_clk_ops->enable_atomic(clk->ph, clk->id);
-+}
-+
-+static void scmi_clk_atomic_disable(struct clk_hw *hw)
-+{
-+	struct scmi_clk *clk = to_scmi_clk(hw);
-+
-+	scmi_proto_clk_ops->disable_atomic(clk->ph, clk->id);
-+}
-+
-+/*
-+ * We can provide enable/disable atomic callbacks only if the underlying SCMI
-+ * transport for an SCMI instance is configured to handle SCMI commands in an
-+ * atomic manner.
-+ *
-+ * When no SCMI atomic transport support is available we instead provide only
-+ * the prepare/unprepare API, as allowed by the clock framework when atomic
-+ * calls are not available.
-+ *
-+ * Two distinct sets of clk_ops are provided since we could have multiple SCMI
-+ * instances with different underlying transport quality, so they cannot be
-+ * shared.
-+ */
- static const struct clk_ops scmi_clk_ops = {
- 	.recalc_rate = scmi_clk_recalc_rate,
- 	.round_rate = scmi_clk_round_rate,
- 	.set_rate = scmi_clk_set_rate,
--	/*
--	 * We can't provide enable/disable callback as we can't perform the same
--	 * in atomic context. Since the clock framework provides standard API
--	 * clk_prepare_enable that helps cases using clk_enable in non-atomic
--	 * context, it should be fine providing prepare/unprepare.
--	 */
- 	.prepare = scmi_clk_enable,
- 	.unprepare = scmi_clk_disable,
+ #include "common.h"
+ 
++#define VIRTIO_MAX_RX_TIMEOUT_MS	60000
+ #define VIRTIO_SCMI_MAX_MSG_SIZE 128 /* Value may be increased. */
+ #define VIRTIO_SCMI_MAX_PDU_SIZE \
+ 	(VIRTIO_SCMI_MAX_MSG_SIZE + SCMI_MSG_MAX_PROT_OVERHEAD)
+@@ -39,23 +42,21 @@
+  * @cinfo: SCMI Tx or Rx channel
+  * @free_list: List of unused scmi_vio_msg, maintained for Tx channels only
+  * @is_rx: Whether channel is an Rx channel
+- * @ready: Whether transport user is ready to hear about channel
+  * @max_msg: Maximum number of pending messages for this channel.
+- * @lock: Protects access to all members except ready.
+- * @ready_lock: Protects access to ready. If required, it must be taken before
+- *              lock.
++ * @lock: Protects access to all members except users.
++ * @shutdown_done: A reference to a completion used when freeing this channel.
++ * @users: A reference count to currently active users of this channel.
+  */
+ struct scmi_vio_channel {
+ 	struct virtqueue *vqueue;
+ 	struct scmi_chan_info *cinfo;
+ 	struct list_head free_list;
+ 	bool is_rx;
+-	bool ready;
+ 	unsigned int max_msg;
+-	/* lock to protect access to all members except ready. */
++	/* lock to protect access to all members except users. */
+ 	spinlock_t lock;
+-	/* lock to rotects access to ready flag. */
+-	spinlock_t ready_lock;
++	struct completion *shutdown_done;
++	refcount_t users;
  };
  
--static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
-+static const struct clk_ops scmi_atomic_clk_ops = {
-+	.recalc_rate = scmi_clk_recalc_rate,
-+	.round_rate = scmi_clk_round_rate,
-+	.set_rate = scmi_clk_set_rate,
-+	.enable = scmi_clk_atomic_enable,
-+	.disable = scmi_clk_atomic_disable,
-+};
+ /**
+@@ -76,6 +77,63 @@ struct scmi_vio_msg {
+ /* Only one SCMI VirtIO device can possibly exist */
+ static struct virtio_device *scmi_vdev;
+ 
++static void scmi_vio_channel_ready(struct scmi_vio_channel *vioch,
++				   struct scmi_chan_info *cinfo)
++{
++	unsigned long flags;
 +
-+static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk,
-+			     const struct clk_ops *scmi_ops)
++	spin_lock_irqsave(&vioch->lock, flags);
++	cinfo->transport_info = vioch;
++	/* Indirectly setting channel not available any more */
++	vioch->cinfo = cinfo;
++	spin_unlock_irqrestore(&vioch->lock, flags);
++
++	refcount_set(&vioch->users, 1);
++}
++
++static inline bool scmi_vio_channel_acquire(struct scmi_vio_channel *vioch)
++{
++	return refcount_inc_not_zero(&vioch->users);
++}
++
++static inline void scmi_vio_channel_release(struct scmi_vio_channel *vioch)
++{
++	if (refcount_dec_and_test(&vioch->users)) {
++		unsigned long flags;
++
++		spin_lock_irqsave(&vioch->lock, flags);
++		if (vioch->shutdown_done) {
++			vioch->cinfo = NULL;
++			complete(vioch->shutdown_done);
++		}
++		spin_unlock_irqrestore(&vioch->lock, flags);
++	}
++}
++
++static void scmi_vio_channel_cleanup_sync(struct scmi_vio_channel *vioch)
++{
++	unsigned long flags;
++	DECLARE_COMPLETION_ONSTACK(vioch_shutdown_done);
++
++	/*
++	 * Prepare to wait for the last release if not already released
++	 * or in progress.
++	 */
++	spin_lock_irqsave(&vioch->lock, flags);
++	if (!vioch->cinfo || vioch->shutdown_done) {
++		spin_unlock_irqrestore(&vioch->lock, flags);
++		return;
++	}
++	vioch->shutdown_done = &vioch_shutdown_done;
++	virtio_break_device(vioch->vqueue->vdev);
++	spin_unlock_irqrestore(&vioch->lock, flags);
++
++	scmi_vio_channel_release(vioch);
++
++	/* Let any possibly concurrent RX path release the channel */
++	wait_for_completion(vioch->shutdown_done);
++}
++
+ static bool scmi_vio_have_vq_rx(struct virtio_device *vdev)
  {
- 	int ret;
- 	unsigned long min_rate, max_rate;
-@@ -110,7 +140,7 @@ static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
- 	struct clk_init_data init = {
- 		.flags = CLK_GET_RATE_NOCACHE,
- 		.num_parents = 0,
--		.ops = &scmi_clk_ops,
-+		.ops = scmi_ops,
- 		.name = sclk->info->name,
- 	};
+ 	return virtio_has_feature(vdev, VIRTIO_SCMI_F_P2A_CHANNELS);
+@@ -119,7 +177,7 @@ static void scmi_finalize_message(struct scmi_vio_channel *vioch,
  
-@@ -139,6 +169,8 @@ static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
- static int scmi_clocks_probe(struct scmi_device *sdev)
+ static void scmi_vio_complete_cb(struct virtqueue *vqueue)
  {
- 	int idx, count, err;
-+	unsigned int atomic_threshold;
-+	bool is_atomic;
- 	struct clk_hw **hws;
- 	struct clk_hw_onecell_data *clk_data;
- 	struct device *dev = &sdev->dev;
-@@ -168,8 +200,11 @@ static int scmi_clocks_probe(struct scmi_device *sdev)
- 	clk_data->num = count;
- 	hws = clk_data->hws;
+-	unsigned long ready_flags;
++	unsigned long flags;
+ 	unsigned int length;
+ 	struct scmi_vio_channel *vioch;
+ 	struct scmi_vio_msg *msg;
+@@ -130,27 +188,24 @@ static void scmi_vio_complete_cb(struct virtqueue *vqueue)
+ 	vioch = &((struct scmi_vio_channel *)vqueue->vdev->priv)[vqueue->index];
  
-+	is_atomic = handle->is_transport_atomic(handle, &atomic_threshold);
-+
- 	for (idx = 0; idx < count; idx++) {
- 		struct scmi_clk *sclk;
-+		const struct clk_ops *scmi_ops;
+ 	for (;;) {
+-		spin_lock_irqsave(&vioch->ready_lock, ready_flags);
+-
+-		if (!vioch->ready) {
+-			if (!cb_enabled)
+-				(void)virtqueue_enable_cb(vqueue);
+-			goto unlock_ready_out;
+-		}
++		if (!scmi_vio_channel_acquire(vioch))
++			return;
  
- 		sclk = devm_kzalloc(dev, sizeof(*sclk), GFP_KERNEL);
- 		if (!sclk)
-@@ -184,13 +219,27 @@ static int scmi_clocks_probe(struct scmi_device *sdev)
- 		sclk->id = idx;
- 		sclk->ph = ph;
+-		/* IRQs already disabled here no need to irqsave */
+-		spin_lock(&vioch->lock);
++		spin_lock_irqsave(&vioch->lock, flags);
+ 		if (cb_enabled) {
+ 			virtqueue_disable_cb(vqueue);
+ 			cb_enabled = false;
+ 		}
+ 		msg = virtqueue_get_buf(vqueue, &length);
+ 		if (!msg) {
+-			if (virtqueue_enable_cb(vqueue))
+-				goto unlock_out;
++			if (virtqueue_enable_cb(vqueue)) {
++				spin_unlock_irqrestore(&vioch->lock, flags);
++				scmi_vio_channel_release(vioch);
++				return;
++			}
+ 			cb_enabled = true;
+ 		}
+-		spin_unlock(&vioch->lock);
++		spin_unlock_irqrestore(&vioch->lock, flags);
  
--		err = scmi_clk_ops_init(dev, sclk);
-+		/*
-+		 * Note that when transport is atomic but SCMI protocol did not
-+		 * specify (or support) an enable_latency associated with a
-+		 * clock, we default to use atomic operations mode.
-+		 */
-+		if (is_atomic &&
-+		    sclk->info->enable_latency <= atomic_threshold)
-+			scmi_ops = &scmi_atomic_clk_ops;
-+		else
-+			scmi_ops = &scmi_clk_ops;
-+
-+		err = scmi_clk_ops_init(dev, sclk, scmi_ops);
- 		if (err) {
- 			dev_err(dev, "failed to register clock %d\n", idx);
- 			devm_kfree(dev, sclk);
- 			hws[idx] = NULL;
- 		} else {
--			dev_dbg(dev, "Registered clock:%s\n", sclk->info->name);
-+			dev_dbg(dev, "Registered clock:%s%s\n",
-+				sclk->info->name,
-+				scmi_ops == &scmi_atomic_clk_ops ?
-+				" (atomic ops)" : "");
- 			hws[idx] = &sclk->hw;
+ 		if (msg) {
+ 			msg->rx_len = length;
+@@ -161,19 +216,14 @@ static void scmi_vio_complete_cb(struct virtqueue *vqueue)
+ 		}
+ 
+ 		/*
+-		 * Release ready_lock and re-enable IRQs between loop iterations
+-		 * to allow virtio_chan_free() to possibly kick in and set the
+-		 * flag vioch->ready to false even in between processing of
+-		 * messages, so as to force outstanding messages to be ignored
+-		 * when system is shutting down.
++		 * Release vio channel between loop iterations to allow
++		 * virtio_chan_free() to eventually fully release it when
++		 * shutting down; in such a case, any outstanding message will
++		 * be ignored since this loop will bail out at the next
++		 * iteration.
+ 		 */
+-		spin_unlock_irqrestore(&vioch->ready_lock, ready_flags);
++		scmi_vio_channel_release(vioch);
+ 	}
+-
+-unlock_out:
+-	spin_unlock(&vioch->lock);
+-unlock_ready_out:
+-	spin_unlock_irqrestore(&vioch->ready_lock, ready_flags);
+ }
+ 
+ static const char *const scmi_vio_vqueue_names[] = { "tx", "rx" };
+@@ -273,35 +323,20 @@ static int virtio_chan_setup(struct scmi_chan_info *cinfo, struct device *dev,
  		}
  	}
+ 
+-	spin_lock_irqsave(&vioch->lock, flags);
+-	cinfo->transport_info = vioch;
+-	/* Indirectly setting channel not available any more */
+-	vioch->cinfo = cinfo;
+-	spin_unlock_irqrestore(&vioch->lock, flags);
+-
+-	spin_lock_irqsave(&vioch->ready_lock, flags);
+-	vioch->ready = true;
+-	spin_unlock_irqrestore(&vioch->ready_lock, flags);
++	scmi_vio_channel_ready(vioch, cinfo);
+ 
+ 	return 0;
+ }
+ 
+ static int virtio_chan_free(int id, void *p, void *data)
+ {
+-	unsigned long flags;
+ 	struct scmi_chan_info *cinfo = p;
+ 	struct scmi_vio_channel *vioch = cinfo->transport_info;
+ 
+-	spin_lock_irqsave(&vioch->ready_lock, flags);
+-	vioch->ready = false;
+-	spin_unlock_irqrestore(&vioch->ready_lock, flags);
++	scmi_vio_channel_cleanup_sync(vioch);
+ 
+ 	scmi_free_channel(cinfo, data, id);
+ 
+-	spin_lock_irqsave(&vioch->lock, flags);
+-	vioch->cinfo = NULL;
+-	spin_unlock_irqrestore(&vioch->lock, flags);
+-
+ 	return 0;
+ }
+ 
+@@ -316,10 +351,14 @@ static int virtio_send_message(struct scmi_chan_info *cinfo,
+ 	int rc;
+ 	struct scmi_vio_msg *msg;
+ 
++	if (!scmi_vio_channel_acquire(vioch))
++		return -EINVAL;
++
+ 	spin_lock_irqsave(&vioch->lock, flags);
+ 
+ 	if (list_empty(&vioch->free_list)) {
+ 		spin_unlock_irqrestore(&vioch->lock, flags);
++		scmi_vio_channel_release(vioch);
+ 		return -EBUSY;
+ 	}
+ 
+@@ -342,6 +381,8 @@ static int virtio_send_message(struct scmi_chan_info *cinfo,
+ 
+ 	spin_unlock_irqrestore(&vioch->lock, flags);
+ 
++	scmi_vio_channel_release(vioch);
++
+ 	return rc;
+ }
+ 
+@@ -416,7 +457,6 @@ static int scmi_vio_probe(struct virtio_device *vdev)
+ 		unsigned int sz;
+ 
+ 		spin_lock_init(&channels[i].lock);
+-		spin_lock_init(&channels[i].ready_lock);
+ 		INIT_LIST_HEAD(&channels[i].free_list);
+ 		channels[i].vqueue = vqs[i];
+ 
+@@ -503,7 +543,8 @@ const struct scmi_desc scmi_virtio_desc = {
+ 	.transport_init = virtio_scmi_init,
+ 	.transport_exit = virtio_scmi_exit,
+ 	.ops = &scmi_virtio_ops,
+-	.max_rx_timeout_ms = 60000, /* for non-realtime virtio devices */
++	/* for non-realtime virtio devices */
++	.max_rx_timeout_ms = VIRTIO_MAX_RX_TIMEOUT_MS,
+ 	.max_msg = 0, /* overridden by virtio_get_max_msg() */
+ 	.max_msg_size = VIRTIO_SCMI_MAX_MSG_SIZE,
+ };
 -- 
 2.17.1
 
