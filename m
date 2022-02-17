@@ -2,247 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A53C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:59:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 604EEC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:00:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241563AbiBQN74 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:59:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59938 "EHLO
+        id S241575AbiBQOBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:01:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240394AbiBQN7v (ORCPT
+        with ESMTP id S241661AbiBQOA6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:59:51 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA8C2B0B06;
-        Thu, 17 Feb 2022 05:59:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645106377; x=1676642377;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=inbCfOApjHcZj6rPnStLuoDA+QTiQF8O+NIL6iLwJf0=;
-  b=gS2xgvHuwxPghenft8uY1RPFw7CY6xHc7DNwZvOX2HQ1hU15Iq4yt0qz
-   jHgVesy48N+TP1JO6Xsw1+hFN8NFsA4V/YXRi6TViFbbierLfBF5e1/18
-   yQ0hTLGWxta0eqWeyOL8LeCZvN4B/7wW7Q4SGZ+a9taxb5PnQqIK/sg2/
-   WHT48nv/GsY3D7aOPYmtzEPUEMiUBR/i3t2/aaNW61fCNIBZGdv2Nqbzj
-   mrpMaldp5npjsXjVXezmUDxIV5dYq/BfzBPT3yoEGnJbk2IjPoqo6UZo2
-   K8sqGUONjUses/2B8aK1X8o/IOStSlkiz+cOXfdF5VbRdYcEgllJGOuhl
-   g==;
-IronPort-SDR: vA1LO23cUspxTA9+vKKxFGXby8p3yhvA0tehHzhbW2r0jfWqs/PvAWhbNbaJtUp7huL7pdtylr
- bFCV8UABV18wmjRqlP4Kw4m+w1YkerAGEn2mYsnSiFHsWQxOwgC+a+MGx/UnfgEGu6yOYEo5il
- hwZc+UPtKq01vcODfaxsStK8dVO41gxiZcxBKfYhccr3YxdQtaqCnjwfPmFdaLnBTQhlRQOxbf
- JT8midOO8GGtFgWbK1WXYsLwDF9b1eTxE4PzLgOpeLUN8qRmVjlFVSrcyIB/QfooSqcyWL1nBS
- eblsYAZygTk9wNd1U6uiolLz
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="149064309"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Feb 2022 06:59:36 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Feb 2022 06:59:35 -0700
-Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 17 Feb 2022 06:59:09 -0700
-From:   Eugen Hristev <eugen.hristev@microchip.com>
-To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>,
-        <hverkuil-cisco@xs4all.nl>, <nicolas.ferre@microchip.com>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Thu, 17 Feb 2022 09:00:58 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B91E2B1671;
+        Thu, 17 Feb 2022 06:00:20 -0800 (PST)
+X-UUID: 334b4836794847bbb0e77f7a0a234c33-20220217
+X-UUID: 334b4836794847bbb0e77f7a0a234c33-20220217
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 205135712; Thu, 17 Feb 2022 22:00:17 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 17 Feb 2022 22:00:16 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Feb 2022 22:00:15 +0800
+Message-ID: <a912ed83c8d959fc3bb0a08f00b3fd036beee270.camel@mediatek.com>
+Subject: Re: [PATCH 09/15] ASoC: mediatek: mt8186: support tdm in platform
+ driver
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <perex@perex.cz>,
+        <p.zabel@pengutronix.de>, <geert+renesas@glider.be>,
+        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
+        <zhangqilong3@huawei.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <claudiu.beznea@microchip.com>,
-        "Eugen Hristev" <eugen.hristev@microchip.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>
-Subject: [PATCH v5 07/13] media: atmel: atmel-isc: compact the controller formats list
-Date:   Thu, 17 Feb 2022 15:56:39 +0200
-Message-ID: <20220217135645.1427466-8-eugen.hristev@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220217135645.1427466-1-eugen.hristev@microchip.com>
-References: <20220217135645.1427466-1-eugen.hristev@microchip.com>
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Thu, 17 Feb 2022 21:59:43 +0800
+In-Reply-To: <YgZ/pzrJqvcAuzmE@sirena.org.uk>
+References: <20220211103818.8266-1-jiaxin.yu@mediatek.com>
+         <20220211103818.8266-10-jiaxin.yu@mediatek.com>
+         <YgZ/pzrJqvcAuzmE@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Compact the list array to be more readable.
-No other changes, only cosmetic.
+On Fri, 2022-02-11 at 15:24 +0000, Mark Brown wrote:
+> On Fri, Feb 11, 2022 at 06:38:12PM +0800, Jiaxin Yu wrote:
+> 
+> Again, mostly looks good just fairly small and easily fixable issues:
+> 
+> > +static int mtk_tdm_hd_en_event(struct snd_soc_dapm_widget *w,
+> > +			       struct snd_kcontrol *kcontrol,
+> > +			       int event)
+> > +{
+> > +	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w-
+> > >dapm);
+> > +
+> > +	dev_info(cmpnt->dev, "%s(), name %s, event 0x%x\n",
+> > +		 __func__, w->name, event);
+> > +
+> > +	return 0;
+> > +}
+> 
+> This does nothing, you can just remove it.
 
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
----
- .../media/platform/atmel/atmel-sama5d2-isc.c  | 51 ++++++----------
- .../media/platform/atmel/atmel-sama7g5-isc.c  | 60 +++++++------------
- 2 files changed, 37 insertions(+), 74 deletions(-)
+Yes, this is readlly useless, removed it in the v2 version.
 
-diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-index 025c3e8a7e95..d96ee3373889 100644
---- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-@@ -60,56 +60,39 @@
- static const struct isc_format sama5d2_controller_formats[] = {
- 	{
- 		.fourcc		= V4L2_PIX_FMT_ARGB444,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_ARGB555,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_RGB565,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_ABGR32,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_XBGR32,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUV420,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUYV,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUV422P,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_GREY,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_Y10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SBGGR8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGBRG8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGRBG8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SRGGB8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SBGGR10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGBRG10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGRBG10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SRGGB10,
- 	},
- };
-diff --git a/drivers/media/platform/atmel/atmel-sama7g5-isc.c b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-index 9dc75eed0098..e07ae188c15f 100644
---- a/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-@@ -63,65 +63,45 @@
- static const struct isc_format sama7g5_controller_formats[] = {
- 	{
- 		.fourcc		= V4L2_PIX_FMT_ARGB444,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_ARGB555,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_RGB565,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_ABGR32,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_XBGR32,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUV420,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_UYVY,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_VYUY,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUYV,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUV422P,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_GREY,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_Y10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_Y16,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SBGGR8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGBRG8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGRBG8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SRGGB8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SBGGR10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGBRG10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGRBG10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SRGGB10,
- 	},
- };
--- 
-2.25.1
+> 
+> > +	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
+> > +	case SND_SOC_DAIFMT_NB_NF:
+> > +		tdm_priv->bck_invert = TDM_BCK_NON_INV;
+> > +		tdm_priv->lck_invert = TDM_LCK_NON_INV;
+> > +		break;
+> > +	case SND_SOC_DAIFMT_NB_IF:
+> > +		tdm_priv->bck_invert = TDM_BCK_NON_INV;
+> > +		tdm_priv->lck_invert = TDM_LCK_INV;
+> > +		break;
+> > +	case SND_SOC_DAIFMT_IB_NF:
+> > +		tdm_priv->bck_invert = TDM_BCK_INV;
+> > +		tdm_priv->lck_invert = TDM_LCK_NON_INV;
+> > +		break;
+> > +	case SND_SOC_DAIFMT_IB_IF:
+> > +	default:
+> > +		tdm_priv->bck_invert = TDM_BCK_INV;
+> > +		tdm_priv->lck_invert = TDM_LCK_INV;
+> 
+> You should return an error in the default case rather than just
+> picking
+> one of the behaviours to help spot any configuration errors.
+
+Done in the v2 version.
+
+> 
+> > +	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
+> > +	case SND_SOC_DAIFMT_CBM_CFM:
+> > +		tdm_priv->slave_mode = false;
+> > +		break;
+> > +	case SND_SOC_DAIFMT_CBS_CFS:
+> > +		tdm_priv->slave_mode = true;
+> 
+> We're trying to move away from these defines and the master/slave
+> terminology to talk about clock providers instead - the new defines
+> are
+> _PROVIDER_MASK, _DAIFMT_CBP_CFP and _DAIFMT_CBC_CFC.
+
+Done in the v2 version.
 
