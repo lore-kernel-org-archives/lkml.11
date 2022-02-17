@@ -2,215 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 00:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 00:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiBQAZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 19:25:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38926 "EHLO
+        id S229701AbiBQAZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 19:25:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiBQAXs (ORCPT
+        with ESMTP id S229658AbiBQAZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 19:23:48 -0500
-Received: from outbound-smtp52.blacknight.com (outbound-smtp52.blacknight.com [46.22.136.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4384717972C
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 16:23:32 -0800 (PST)
-Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
-        by outbound-smtp52.blacknight.com (Postfix) with ESMTPS id E6BC6FAE23
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:23:30 +0000 (GMT)
-Received: (qmail 23898 invoked from network); 17 Feb 2022 00:23:30 -0000
-Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.17.223])
-  by 81.17.254.9 with ESMTPA; 17 Feb 2022 00:23:30 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Aaron Lu <aaron.lu@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 5/6] mm/page_alloc: Free pages in a single pass during bulk free
-Date:   Thu, 17 Feb 2022 00:22:26 +0000
-Message-Id: <20220217002227.5739-6-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220217002227.5739-1-mgorman@techsingularity.net>
-References: <20220217002227.5739-1-mgorman@techsingularity.net>
+        Wed, 16 Feb 2022 19:25:47 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B8D2A97F0;
+        Wed, 16 Feb 2022 16:25:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645057534; x=1676593534;
+  h=message-id:date:subject:from:to:cc:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=rRjlcPERtLemxZTi9AJk2v2IBH9SHhB+1lWgjIcQnBA=;
+  b=VAjCw1JwywntnjOHoP3rUsTPDIxMMSEFu5fOvo9dVJSn52VT2extNGue
+   GOjVGDiCuHulb6I2wCpnzh79XWuuBqH1+A75R29BnffyOleGyZoTu5oYS
+   KdamITvg/AUE/WFhNbCDSmWKeZrB3Erwam+5E7Tpp3YuXt1N4rI4IOey6
+   LBgKjMXNwt8lqSzUnY5SNGWjVwDOmz3eiUhhUMJsrWhaQl/tJqmbzx74b
+   EuVpFX54OjcU27NWdBFuS5mGUuEQn3xnscrxUy+OQI+TGsFnBeOwuKe2o
+   0hBTVTHAFO6qp4mVcVLC+PHey0Nv3r5Sg8auq7v6zqyHvshJMvR//HMCx
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="314025499"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="314025499"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 16:25:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="503267009"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga002.jf.intel.com with ESMTP; 16 Feb 2022 16:25:33 -0800
+Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 16 Feb 2022 16:25:33 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Wed, 16 Feb 2022 16:25:33 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.171)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Wed, 16 Feb 2022 16:25:32 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nL8kiwH9bEgQHEydG07bOP0JjmH3e3h3a3BbVjYMAcvUn2KcSX+oPniv7AtEnHG+HQEULY5QiJ5bTgz3Xp6laZf9YrX+sigADJR8i2RZf38nm6v8LM9tR58M3skE8Ae/tMf1VfLsDZ6teb+ZEFalKDQQxZPmoSsVsLyoIGihlYNZtx9aTSbr8DapICtSvoo/JhGZcbsvrHqDr/+D9TgN95krf0bmRvNyssRcv+pvsywbufofSWRh/7gBtWl4oPWrAkKVwTbgefdk6Lc5D703yZPErgt/SdTUz9/Wu0Vc3EiISTViazsQvSiCKGOFH/OnwDemk4NX0QTQI2FDn4VN2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZvjUK4emAV5ict3ckYulZnbFRkfgSY0Dmd+MLkMbcP8=;
+ b=OT2OZX7WqTbh+WhmxAlOg0CECB6h5q3xssy7NXh0kp25awfgau7X/POSmU7uEsyEFln+RnqWSSweSXWhwo2F3zBlkHN4VjuGP8HiV/2biJn+uVBS331LAnrneyYg5jEUiFAQsmvHstcCthcvMTkSNIbdDdQW16Qgmqmw0kkcWA1m9yH+Gn8t10HWVLllzPosrl0BlTRcCQJEaneAqM4gdrGyjTBMiDEGaaJIA8/zwynrclXEUW57RwKToE+YTa9fnN8raj2xaUWRro7xojNRSGU/b8x6XvEl0Wy3SiMiHHAOUcU+o3AUx3ZNEdrKTs4TRfz76Ouk8EXLCumfplAuwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
+ by CH0PR11MB5313.namprd11.prod.outlook.com (2603:10b6:610:bc::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 17 Feb
+ 2022 00:25:29 +0000
+Received: from BN0PR11MB5744.namprd11.prod.outlook.com
+ ([fe80::55e4:9a32:8e6f:4774]) by BN0PR11MB5744.namprd11.prod.outlook.com
+ ([fe80::55e4:9a32:8e6f:4774%4]) with mapi id 15.20.4995.016; Thu, 17 Feb 2022
+ 00:25:29 +0000
+Message-ID: <91fd3b35-b791-af37-6663-9c37055f339e@intel.com>
+Date:   Wed, 16 Feb 2022 16:25:24 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.6.0
+Subject: Re: [PATCH V3] x86/sgx: Add poison handling to reclaimer
+Content-Language: en-US
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     <tony.luck@intel.com>, <dave.hansen@linux.intel.com>,
+        <jarkko@kernel.org>, <tglx@linutronix.de>, <bp@alien8.de>,
+        <luto@kernel.org>, <mingo@redhat.com>, <linux-sgx@vger.kernel.org>,
+        <x86@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>
+References: <dcc95eb2aaefb042527ac50d0a50738c7c160dac.1643830353.git.reinette.chatre@intel.com>
+In-Reply-To: <dcc95eb2aaefb042527ac50d0a50738c7c160dac.1643830353.git.reinette.chatre@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CO2PR07CA0048.namprd07.prod.outlook.com (2603:10b6:100::16)
+ To BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: db2f4473-9bd8-4332-65ad-08d9f1ac0007
+X-MS-TrafficTypeDiagnostic: CH0PR11MB5313:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <CH0PR11MB53130846591E18C92717FE4DF8369@CH0PR11MB5313.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zJ6HAiFCnUqR+v+TiHTuYvtOflaCVnMNKNnjoKV8iPg1IGKcjDrn00QQbELiSPt4pTzbSjl6fm0pUBTomt5klZOofvdf29oH6Kq07nIvra3qwHHCXvM9NPFlXbIeOvk9Mhqwn0ezfaVx4ymNjSX5PcAmV27G0mhPFUOCS1Z5EYuVm2GvDeQnA3Kp5VjoAvhWHkpAe4kXISY9QYBKIBi5OwieE7xUrtrNw41pnylVyaAr9+URkk9bzq9/pn78XU42PALdxZDjdny5lxzIDkKBpzcyFUbPbP6xYObq3T+UP+zIwHhEjXwLQCMZucQQk4sMa0CQOzS5BHwkBpL7fH0QbBdftPfgJLVo+ywwgXKELenwfSB29o64AmNXQuLVlhA9kAjo/cXLXyy6azIxF5dFRey7RqdbIuV3O6oBqQvDQrkU3ipCZmP/tsbZ9Qfd72yx859wwnQJiRbSIfTeXPi8R4EaVip/3YEhmPMgtY7n6zQ/HgZK6ncduNpWR5tB3eJjPD7p69kyX1wyNZUQr7pj4GVmXx+rKDakSpjC+6lGDIrvtP2RNCjHV7cI/dMqT03PYB3s+2UMSEGSQ+G/42ekyF63/Kj4qpMFoPsZqQLgpTffXpnkrF3eWeNTsskjVRrcQzR5trrXDJnCOSs0LfIur4o0TB39dlDLhcwGT//cKpmLsudDzo7tX0efksIgrNGBYaei1Pt88/3cwxKicAdTwb41IKkjmFv0BRaQsqw0hrxUeM1PRxAKnw1DJnKwGdFg
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR11MB5744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8676002)(66476007)(2616005)(66946007)(44832011)(38100700002)(6486002)(66556008)(2906002)(6512007)(508600001)(4326008)(26005)(186003)(82960400001)(316002)(6506007)(31696002)(31686004)(53546011)(6666004)(83380400001)(5660300002)(86362001)(8936002)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R0p2QmQ1L0NWL2pwUkhJTFJsZVIxRTdTUjNhUjNrbXVwT3pUQVBTSE1TWVJG?=
+ =?utf-8?B?RWVWY1Z6MFVPVzFlV0RoODRnZHVhaXBVa2FUUG1lUlRWcHFYeFN3V0RZM09W?=
+ =?utf-8?B?TEx2aUZCQnArcllobkI5SVVLWUlXdGhXSHNvc0JnMzFSclFKdWNhdmY2UUww?=
+ =?utf-8?B?TkdIcUNmSnIwRjZqaGlrb1VSSlo0SXVnMWJvczRCL2FvYk10ZEJHa3k2REFR?=
+ =?utf-8?B?NTJrUVlWSG5oMElzL1FENm9CREhUc1FibDRYMUY3aFhUeEZDWXV0bGxHVW51?=
+ =?utf-8?B?amR2VVFBQ05laDNsSVN2cG9kTlNpZFRlSWZYcDZBS0Rzd25UQ2IySVJYVkts?=
+ =?utf-8?B?TElydCtjQy9Ka2Ztb2d1dFhPVmNFKzJnUEVNMmpTZGEvU2tNME5mMnJwUEJD?=
+ =?utf-8?B?MENSdFlnN0Z6YWRYcHNjL0JHWHdYODlkam13cXV5dllCeGd1bkhNeWlvNW8y?=
+ =?utf-8?B?aE94TDBLVTVxTU84ZmlnYnpaZXhqQVhGMkFibUxNUFN6QnRFZmJtRSs2UVg2?=
+ =?utf-8?B?M3VJbGpnazdGUUtQVU1KN0N0YmEwMHVmQ0NSaUo4YVpMd0NxcHo1ODdUOTdO?=
+ =?utf-8?B?UytiSXpXQkNKcm8vUVVjeFlrNTlaYXh1LzFqb00vaGZOSHlTRG4yVitkVUZJ?=
+ =?utf-8?B?QUFQbVFRajNwQUZab0FsY0lGTDBiUUsweHh3aERiNXFqY09PVWJpUjJEaUts?=
+ =?utf-8?B?aGoraWFOR000YzBaMzg4Rk1NVElNK0JoOG4xdFM1Z0picWh2NmRWNENGbWky?=
+ =?utf-8?B?K3FuWnZxZ1AyMVd6TWxPNStRZk5zQTRtNzdVTUVOdU5GWDR2ZmVXZlI3dlFv?=
+ =?utf-8?B?UUdhY3prUU9nckwvWm8xb1JUdnNiQlBGMUYxQTJKczl0dmtvTS8wZWs2T2xB?=
+ =?utf-8?B?UEZNd25rQTJRR1JxVmRlYUppQ3JNZ2FoeERhSlNRV2RNY1M1WEJtZDVxNUV1?=
+ =?utf-8?B?Y3FuTlN0d0t0Q1JieXp4Yld4d0o3U3FrMGpnb0dYbVBYdkR3d0JVVUR5NVln?=
+ =?utf-8?B?ckQ2TDFmaVpoQ3BoWnFyejBDN1hjeEtrY1FyTWtmMDV1c1paYmg5WVFjN1pr?=
+ =?utf-8?B?b2xjUWxqTUw3TStYTDV1UGJid2UvMlFERk1vd1p5Tnhycks3SG9XNVd6c3lM?=
+ =?utf-8?B?a0FzeU50YUlvYWYxbEVTZTBiTEVVZEFRaGJVZjRYMi9EMWRMRW5pTGluc2Jv?=
+ =?utf-8?B?TDZRaHBmMUtsSkVFakxyc2taTlBpWjB2K0xUbGZQQi9PeEIxM1ZVQ2R1SXZn?=
+ =?utf-8?B?NnI5WGpFdnFTTWJVcVU5Vm9IVDJUZGNTb2YvbTVsSW0reGRIRzRDdGp3TUQ3?=
+ =?utf-8?B?cWRBRERCZzFxQVVNSnBYNEVvTzcxTWxUcllzck43SEx5VytCdTl5anBlcVlX?=
+ =?utf-8?B?Mnl2SXpJS1lmQ29sazRTREZyTnh2ak9KazFxajN5T0ZsYkZDQ0VCVk1qNGJR?=
+ =?utf-8?B?SWRkQmRKM3RoTThDdWNQSkJGSUhHTDU0RVlDeHhCQk42YmN4N1VvUnJmUHU0?=
+ =?utf-8?B?T2c4cit4biszUWYycDRMQ1QzNkdHdkZyZWMxNm1kYnNlL2x1NEFHK2FrcTJG?=
+ =?utf-8?B?U05pNTFIa3RFeXpSeVgwQk5xNmtwT3JpaEtFYm45d2Z2UWVPbkU5Y3Zmc1lw?=
+ =?utf-8?B?ekdZd0hnT0txdzhTMmxRWGhLaVVsRm1VelBWZUgzcGRhcWxKZW9IL1J6VGNj?=
+ =?utf-8?B?Nkc1RzAzQ0hoQ0dRcWNBSEgzRVN3WFNFZFBkT0hjWkkyMHRUazBMN1I4djNP?=
+ =?utf-8?B?NWhrK0IyMG5VQUFhSjl6N2V0cmYveTQyb3FCZEhGTVVRaFk4Z3VLVmlYUTg0?=
+ =?utf-8?B?SmJNM0ZDc2RtTmtJN2JQN2ZnUmhrMTZYZjRpOUh2ZmlxR1F1NkVwajM3SE1K?=
+ =?utf-8?B?VnNVZy92ZGtLa0pubzhLS1lFRjBTT2JuN1NGUTl4ZGZocGdXOG10a2Fpbmla?=
+ =?utf-8?B?Q3dFNW1vZVMvc1hoT0tXdVZZQ2Zqd2JubzEwcTVjSytzc2dEcEowOUs1cHV1?=
+ =?utf-8?B?Tnp6Smd2dlg5RmJMWXE4QWVuWEpPWTcxdUw2ekRkYkJ5VEh4TnZRdk56M1d4?=
+ =?utf-8?B?M2s4d0tDSmxDTGtuaWJocW1lK3VEd1VRUDMvRThBVXZGSGhHdFpjSHNMTDYv?=
+ =?utf-8?B?Zm0zazFhK1JnN2FDYjR6TUJuMjRMbXJJQTVMeHpkREVaQm15b2hES1orM3E0?=
+ =?utf-8?B?YzZ3dWlaSnBzV29CMzZPNmM5QmFhVStUQnExSTljc2hLaTd3N0ljaVNURjVI?=
+ =?utf-8?Q?MeKoWHYyj0kyfNpi7cQFUuZY5iz23PbT7GisSZOBhI=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: db2f4473-9bd8-4332-65ad-08d9f1ac0007
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR11MB5744.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2022 00:25:29.2257
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: H4Z9ilhr8a6Vh2mMifPa810oPljheVedt+PeEyFw25CCZrmz0B+EuhjJOJnkCJUTJbJHjjuXqpZ7sYgvcwBLOrz7oFwSOSxxTeGqe6KgKuk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5313
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-free_pcppages_bulk() has taken two passes through the pcp lists since
-commit 0a5f4e5b4562 ("mm/free_pcppages_bulk: do not hold lock when picking
-pages to free") due to deferring the cost of selecting PCP lists until
-the zone lock is held. Now that list selection is simplier, the main
-cost during selection is bulkfree_pcp_prepare() which in the normal case
-is a simple check and prefetching. As the list manipulations have cost
-in itself, go back to freeing pages in a single pass.
+Dear Maintainers,
 
-The series up to this point was evaulated using a trunc microbenchmark
-that is truncating sparse files stored in page cache (mmtests config
-config-io-trunc). Sparse files were used to limit filesystem interaction.
-The results versus a revert of storing high-order pages in the PCP lists is
+On 2/2/2022 11:41 AM, Reinette Chatre wrote:
+> The SGX reclaimer code lacks page poison handling in its main
+> free path. This can lead to avoidable machine checks if a
+> poisoned page is freed and reallocated instead of being
+> isolated.
+> 
+> A troublesome scenario is:
+>  1. Machine check (#MC) occurs (asynchronous, !MF_ACTION_REQUIRED)
+>  2. arch_memory_failure() is eventually called
+>  3. (SGX) page->poison set to 1
+>  4. Page is reclaimed
+>  5. Page added to normal free lists by sgx_reclaim_pages()
+>     ^ This is the bug (poison pages should be isolated on the
+>     sgx_poison_page_list instead)
+>  6. Page is reallocated by some innocent enclave, a second (synchronous)
+>     in-kernel #MC is induced, probably during EADD instruction.
+>     ^ This is the fallout from the bug
+> 
+> (6) is unfortunate and can be avoided by replacing the open coded
+> enclave page freeing code in the reclaimer with sgx_free_epc_page()
+> to obtain support for poison page handling that includes placing the
+> poisoned page on the correct list.
+> 
+> Fixes: d6d261bded8a ("x86/sgx: Add new sgx_epc_page flag bit to mark free pages")
+> Fixes: 992801ae9243 ("x86/sgx: Initial poison handling for dirty and free pages")
+> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 
-1-socket Skylake
-                              5.17.0-rc3             5.17.0-rc3             5.17.0-rc3
-                                 vanilla      mm-reverthighpcp-v1     mm-highpcpopt-v2
-Min       elapsed      540.00 (   0.00%)      530.00 (   1.85%)      530.00 (   1.85%)
-Amean     elapsed      543.00 (   0.00%)      530.00 *   2.39%*      530.00 *   2.39%*
-Stddev    elapsed        4.83 (   0.00%)        0.00 ( 100.00%)        0.00 ( 100.00%)
-CoeffVar  elapsed        0.89 (   0.00%)        0.00 ( 100.00%)        0.00 ( 100.00%)
-Max       elapsed      550.00 (   0.00%)      530.00 (   3.64%)      530.00 (   3.64%)
-BAmean-50 elapsed      540.00 (   0.00%)      530.00 (   1.85%)      530.00 (   1.85%)
-BAmean-95 elapsed      542.22 (   0.00%)      530.00 (   2.25%)      530.00 (   2.25%)
-BAmean-99 elapsed      542.22 (   0.00%)      530.00 (   2.25%)      530.00 (   2.25%)
+Could you please consider this fix for inclusion?
 
-2-socket CascadeLake
-                              5.17.0-rc3             5.17.0-rc3             5.17.0-rc3
-                                 vanilla    mm-reverthighpcp-v1       mm-highpcpopt-v2
-Min       elapsed      510.00 (   0.00%)      500.00 (   1.96%)      500.00 (   1.96%)
-Amean     elapsed      529.00 (   0.00%)      521.00 (   1.51%)      510.00 *   3.59%*
-Stddev    elapsed       16.63 (   0.00%)       12.87 (  22.64%)       11.55 (  30.58%)
-CoeffVar  elapsed        3.14 (   0.00%)        2.47 (  21.46%)        2.26 (  27.99%)
-Max       elapsed      550.00 (   0.00%)      540.00 (   1.82%)      530.00 (   3.64%)
-BAmean-50 elapsed      516.00 (   0.00%)      512.00 (   0.78%)      500.00 (   3.10%)
-BAmean-95 elapsed      526.67 (   0.00%)      518.89 (   1.48%)      507.78 (   3.59%)
-BAmean-99 elapsed      526.67 (   0.00%)      518.89 (   1.48%)      507.78 (   3.59%)
+Thank you very much
 
-The original motivation for multi-passes was will-it-scale page_fault1
-using $nr_cpu processes.
-
-2-socket CascadeLake (40 cores, 80 CPUs HT enabled)
-                                                    5.17.0-rc3                 5.17.0-rc3
-                                                       vanilla           mm-highpcpopt-v2
-Hmean     page_fault1-processes-2        2694662.26 (   0.00%)      2695780.35 (   0.04%)
-Hmean     page_fault1-processes-5        6425819.34 (   0.00%)      6435544.57 *   0.15%*
-Hmean     page_fault1-processes-8        9642169.10 (   0.00%)      9658962.39 (   0.17%)
-Hmean     page_fault1-processes-12      12167502.10 (   0.00%)     12190163.79 (   0.19%)
-Hmean     page_fault1-processes-21      15636859.03 (   0.00%)     15612447.26 (  -0.16%)
-Hmean     page_fault1-processes-30      25157348.61 (   0.00%)     25169456.65 (   0.05%)
-Hmean     page_fault1-processes-48      27694013.85 (   0.00%)     27671111.46 (  -0.08%)
-Hmean     page_fault1-processes-79      25928742.64 (   0.00%)     25934202.02 (   0.02%) <--
-Hmean     page_fault1-processes-110     25730869.75 (   0.00%)     25671880.65 *  -0.23%*
-Hmean     page_fault1-processes-141     25626992.42 (   0.00%)     25629551.61 (   0.01%)
-Hmean     page_fault1-processes-172     25611651.35 (   0.00%)     25614927.99 (   0.01%)
-Hmean     page_fault1-processes-203     25577298.75 (   0.00%)     25583445.59 (   0.02%)
-Hmean     page_fault1-processes-234     25580686.07 (   0.00%)     25608240.71 (   0.11%)
-Hmean     page_fault1-processes-265     25570215.47 (   0.00%)     25568647.58 (  -0.01%)
-Hmean     page_fault1-processes-296     25549488.62 (   0.00%)     25543935.00 (  -0.02%)
-Hmean     page_fault1-processes-320     25555149.05 (   0.00%)     25575696.74 (   0.08%)
-
-The differences are mostly within the noise and the difference close to
-$nr_cpus is negligible.
-
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
----
- mm/page_alloc.c | 56 +++++++++++++++++++------------------------------
- 1 file changed, 21 insertions(+), 35 deletions(-)
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 635a4e0f70b4..68e2132717c5 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1455,8 +1455,7 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 	unsigned int order;
- 	int prefetch_nr = READ_ONCE(pcp->batch);
- 	bool isolated_pageblocks;
--	struct page *page, *tmp;
--	LIST_HEAD(head);
-+	struct page *page;
- 
- 	/*
- 	 * Ensure proper count is passed which otherwise would stuck in the
-@@ -1467,6 +1466,13 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 	/* Ensure requested pindex is drained first. */
- 	pindex = pindex - 1;
- 
-+	/*
-+	 * local_lock_irq held so equivalent to spin_lock_irqsave for
-+	 * both PREEMPT_RT and non-PREEMPT_RT configurations.
-+	 */
-+	spin_lock(&zone->lock);
-+	isolated_pageblocks = has_isolate_pageblock(zone);
-+
- 	while (count > 0) {
- 		struct list_head *list;
- 		int nr_pages;
-@@ -1489,7 +1495,11 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 		nr_pages = 1 << order;
- 		BUILD_BUG_ON(MAX_ORDER >= (1<<NR_PCP_ORDER_WIDTH));
- 		do {
-+			int mt;
-+
- 			page = list_last_entry(list, struct page, lru);
-+			mt = get_pcppage_migratetype(page);
-+
- 			/* must delete to avoid corrupting pcp list */
- 			list_del(&page->lru);
- 			count -= nr_pages;
-@@ -1498,12 +1508,6 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 			if (bulkfree_pcp_prepare(page))
- 				continue;
- 
--			/* Encode order with the migratetype */
--			page->index <<= NR_PCP_ORDER_WIDTH;
--			page->index |= order;
--
--			list_add_tail(&page->lru, &head);
--
- 			/*
- 			 * We are going to put the page back to the global
- 			 * pool, prefetch its buddy to speed up later access
-@@ -1517,36 +1521,18 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 				prefetch_buddy(page, order);
- 				prefetch_nr--;
- 			}
--		} while (count > 0 && !list_empty(list));
--	}
- 
--	/*
--	 * local_lock_irq held so equivalent to spin_lock_irqsave for
--	 * both PREEMPT_RT and non-PREEMPT_RT configurations.
--	 */
--	spin_lock(&zone->lock);
--	isolated_pageblocks = has_isolate_pageblock(zone);
-+			/* MIGRATE_ISOLATE page should not go to pcplists */
-+			VM_BUG_ON_PAGE(is_migrate_isolate(mt), page);
-+			/* Pageblock could have been isolated meanwhile */
-+			if (unlikely(isolated_pageblocks))
-+				mt = get_pageblock_migratetype(page);
- 
--	/*
--	 * Use safe version since after __free_one_page(),
--	 * page->lru.next will not point to original list.
--	 */
--	list_for_each_entry_safe(page, tmp, &head, lru) {
--		int mt = get_pcppage_migratetype(page);
--
--		/* mt has been encoded with the order (see above) */
--		order = mt & NR_PCP_ORDER_MASK;
--		mt >>= NR_PCP_ORDER_WIDTH;
--
--		/* MIGRATE_ISOLATE page should not go to pcplists */
--		VM_BUG_ON_PAGE(is_migrate_isolate(mt), page);
--		/* Pageblock could have been isolated meanwhile */
--		if (unlikely(isolated_pageblocks))
--			mt = get_pageblock_migratetype(page);
--
--		__free_one_page(page, page_to_pfn(page), zone, order, mt, FPI_NONE);
--		trace_mm_page_pcpu_drain(page, order, mt);
-+			__free_one_page(page, page_to_pfn(page), zone, order, mt, FPI_NONE);
-+			trace_mm_page_pcpu_drain(page, order, mt);
-+		} while (count > 0 && !list_empty(list));
- 	}
-+
- 	spin_unlock(&zone->lock);
- }
- 
--- 
-2.31.1
-
+Reinette
