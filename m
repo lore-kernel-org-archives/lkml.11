@@ -2,156 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F02DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244212AbiBQSXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:23:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53400 "EHLO
+        id S244222AbiBQSXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:23:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244198AbiBQSXQ (ORCPT
+        with ESMTP id S244189AbiBQSXR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:23:16 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5616C1EC44
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:23:01 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC5C71480;
-        Thu, 17 Feb 2022 10:23:00 -0800 (PST)
-Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id ACE813F718;
-        Thu, 17 Feb 2022 10:22:58 -0800 (PST)
-From:   James Morse <james.morse@arm.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        James Morse <james.morse@arm.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        Jamie Iles <jamie@nuviainc.com>,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com
-Subject: [PATCH v3 02/21] x86/resctrl: Merge mon_capable and mon_enabled
-Date:   Thu, 17 Feb 2022 18:20:51 +0000
-Message-Id: <20220217182110.7176-3-james.morse@arm.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220217182110.7176-1-james.morse@arm.com>
-References: <20220217182110.7176-1-james.morse@arm.com>
+        Thu, 17 Feb 2022 13:23:17 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A538220196;
+        Thu, 17 Feb 2022 10:23:02 -0800 (PST)
+Date:   Thu, 17 Feb 2022 18:22:59 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1645122181;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NQfR/4Bh3Na8ZE2qdjeZClIZpmTHDnvnT8L0QQMwGfg=;
+        b=AOZz+GNDbSJLpHnoP5mVaNbFNgVNidgsGep+JcXXWBcBzvhi9HQBXYmp1KyWry5z5RUYDx
+        tOzuKvGL86bu9b0Y1gT5CnzDattNQI4YTTGvcfhOHQBT682mhlu1TTHpxnMz2KrZJNk1i9
+        6lXhXuw1r00nO68SI8szSarklUkpUEPHJUPPYbWbpctLXA17RE0sNRO3q2U5/hv9AuzIp4
+        fE6617uahQ3x3a3aAqZGRyaQgSX5TCnNaVaSq8P1Jb3bZhgYqNylMxsU+4GDkyBDyj6QpC
+        Egln65X3RF7p+VnS7/Jb3J+36+4yfVt3S8MGKs24mLpSE8JDoG6WazNEOAD+lA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1645122181;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NQfR/4Bh3Na8ZE2qdjeZClIZpmTHDnvnT8L0QQMwGfg=;
+        b=YraBV9jHzeqPwWyEVejDv2H6MT9QO/tLW8wrNxMXuSQrS/hFQpOAoknZYxmucsa2jPt5Cy
+        muHisMgVx1eLlFCg==
+From:   "tip-bot2 for Reinette Chatre" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/sgx: Add poison handling to reclaimer
+Cc:     Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: =?utf-8?q?=3Cdcc95eb2aaefb042527ac50d0a50738c7c160dac=2E16438?=
+ =?utf-8?q?30353=2Egit=2Ereinette=2Echatre=40intel=2Ecom=3E?=
+References: =?utf-8?q?=3Cdcc95eb2aaefb042527ac50d0a50738c7c160dac=2E164383?=
+ =?utf-8?q?0353=2Egit=2Ereinette=2Echatre=40intel=2Ecom=3E?=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164512217993.16921.1720244213113719560.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mon_enabled and mon_capable are always set as a pair by
-rdt_get_mon_l3_config().
+The following commit has been merged into the x86/urgent branch of tip:
 
-There is no point having two values.
+Commit-ID:     f4b2a4606a14ab0b697a4e21754c9ad19d39f8ca
+Gitweb:        https://git.kernel.org/tip/f4b2a4606a14ab0b697a4e21754c9ad19d39f8ca
+Author:        Reinette Chatre <reinette.chatre@intel.com>
+AuthorDate:    Wed, 02 Feb 2022 11:41:12 -08:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Thu, 17 Feb 2022 09:12:04 -08:00
 
-Merge them together.
+x86/sgx: Add poison handling to reclaimer
 
-Signed-off-by: James Morse <james.morse@arm.com>
+The SGX reclaimer code lacks page poison handling in its main
+free path. This can lead to avoidable machine checks if a
+poisoned page is freed and reallocated instead of being
+isolated.
+
+A troublesome scenario is:
+ 1. Machine check (#MC) occurs (asynchronous, !MF_ACTION_REQUIRED)
+ 2. arch_memory_failure() is eventually called
+ 3. (SGX) page->poison set to 1
+ 4. Page is reclaimed
+ 5. Page added to normal free lists by sgx_reclaim_pages()
+    ^ This is the bug (poison pages should be isolated on the
+    sgx_poison_page_list instead)
+ 6. Page is reallocated by some innocent enclave, a second (synchronous)
+    in-kernel #MC is induced, probably during EADD instruction.
+    ^ This is the fallout from the bug
+
+(6) is unfortunate and can be avoided by replacing the open coded
+enclave page freeing code in the reclaimer with sgx_free_epc_page()
+to obtain support for poison page handling that includes placing the
+poisoned page on the correct list.
+
+Fixes: d6d261bded8a ("x86/sgx: Add new sgx_epc_page flag bit to mark free pages")
+Fixes: 992801ae9243 ("x86/sgx: Initial poison handling for dirty and free pages")
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Link: https://lkml.kernel.org/r/dcc95eb2aaefb042527ac50d0a50738c7c160dac.1643830353.git.reinette.chatre@intel.com
 ---
-Changes since v1:
- * Removed stray cdp_capable changes.
----
- arch/x86/kernel/cpu/resctrl/internal.h | 4 ----
- arch/x86/kernel/cpu/resctrl/monitor.c  | 1 -
- arch/x86/kernel/cpu/resctrl/rdtgroup.c | 8 ++++----
- include/linux/resctrl.h                | 2 --
- 4 files changed, 4 insertions(+), 11 deletions(-)
+ arch/x86/kernel/cpu/sgx/main.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index 53f3d275a98f..8828b5c1b6d2 100644
---- a/arch/x86/kernel/cpu/resctrl/internal.h
-+++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -459,10 +459,6 @@ int resctrl_arch_set_cdp_enabled(enum resctrl_res_level l, bool enable);
- 	for_each_rdt_resource(r)					      \
- 		if (r->mon_capable)
+diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
+index 4b41efc..8e4bc64 100644
+--- a/arch/x86/kernel/cpu/sgx/main.c
++++ b/arch/x86/kernel/cpu/sgx/main.c
+@@ -344,10 +344,8 @@ static void sgx_reclaim_pages(void)
+ {
+ 	struct sgx_epc_page *chunk[SGX_NR_TO_SCAN];
+ 	struct sgx_backing backing[SGX_NR_TO_SCAN];
+-	struct sgx_epc_section *section;
+ 	struct sgx_encl_page *encl_page;
+ 	struct sgx_epc_page *epc_page;
+-	struct sgx_numa_node *node;
+ 	pgoff_t page_index;
+ 	int cnt = 0;
+ 	int ret;
+@@ -418,13 +416,7 @@ skip:
+ 		kref_put(&encl_page->encl->refcount, sgx_encl_release);
+ 		epc_page->flags &= ~SGX_EPC_PAGE_RECLAIMER_TRACKED;
  
--#define for_each_mon_enabled_rdt_resource(r)				      \
--	for_each_rdt_resource(r)					      \
--		if (r->mon_enabled)
+-		section = &sgx_epc_sections[epc_page->section];
+-		node = section->node;
 -
- /* CPUID.(EAX=10H, ECX=ResID=1).EAX */
- union cpuid_0x10_1_eax {
- 	struct {
-diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index eaf25a234ff5..497cadf3285d 100644
---- a/arch/x86/kernel/cpu/resctrl/monitor.c
-+++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -717,7 +717,6 @@ int rdt_get_mon_l3_config(struct rdt_resource *r)
- 	l3_mon_evt_init(r);
- 
- 	r->mon_capable = true;
--	r->mon_enabled = true;
- 
- 	return 0;
- }
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index e327f8d1c8a3..e243c7d15b81 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -1765,7 +1765,7 @@ static int rdtgroup_create_info_dir(struct kernfs_node *parent_kn)
- 			goto out_destroy;
+-		spin_lock(&node->lock);
+-		list_add_tail(&epc_page->list, &node->free_page_list);
+-		spin_unlock(&node->lock);
+-		atomic_long_inc(&sgx_nr_free_pages);
++		sgx_free_epc_page(epc_page);
  	}
+ }
  
--	for_each_mon_enabled_rdt_resource(r) {
-+	for_each_mon_capable_rdt_resource(r) {
- 		fflags =  r->fflags | RF_MON_INFO;
- 		sprintf(name, "%s_MON", r->name);
- 		ret = rdtgroup_mkdir_info_resdir(r, name, fflags);
-@@ -2504,7 +2504,7 @@ void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r, unsigned int dom_id)
- 	struct rdtgroup *prgrp, *crgrp;
- 	char name[32];
- 
--	if (!r->mon_enabled)
-+	if (!r->mon_capable)
- 		return;
- 
- 	list_for_each_entry(prgrp, &rdt_all_groups, rdtgroup_list) {
-@@ -2572,7 +2572,7 @@ void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
- 	struct rdtgroup *prgrp, *crgrp;
- 	struct list_head *head;
- 
--	if (!r->mon_enabled)
-+	if (!r->mon_capable)
- 		return;
- 
- 	list_for_each_entry(prgrp, &rdt_all_groups, rdtgroup_list) {
-@@ -2642,7 +2642,7 @@ static int mkdir_mondata_all(struct kernfs_node *parent_kn,
- 	 * Create the subdirectories for each domain. Note that all events
- 	 * in a domain like L3 are grouped into a resource whose domain is L3
- 	 */
--	for_each_mon_enabled_rdt_resource(r) {
-+	for_each_mon_capable_rdt_resource(r) {
- 		ret = mkdir_mondata_subdir_alldom(kn, r, prgrp);
- 		if (ret)
- 			goto out_destroy;
-diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index 386ab3a41500..8180c539800d 100644
---- a/include/linux/resctrl.h
-+++ b/include/linux/resctrl.h
-@@ -130,7 +130,6 @@ struct resctrl_schema;
- /**
-  * struct rdt_resource - attributes of a resctrl resource
-  * @rid:		The index of the resource
-- * @mon_enabled:	Is monitoring enabled for this feature
-  * @alloc_capable:	Is allocation available on this machine
-  * @mon_capable:	Is monitor feature available on this machine
-  * @num_rmid:		Number of RMIDs available
-@@ -149,7 +148,6 @@ struct resctrl_schema;
-  */
- struct rdt_resource {
- 	int			rid;
--	bool			mon_enabled;
- 	bool			alloc_capable;
- 	bool			mon_capable;
- 	int			num_rmid;
--- 
-2.30.2
-
