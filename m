@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC42CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A06AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234855AbiBQGId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 01:08:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46366 "EHLO
+        id S234885AbiBQGIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 01:08:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234842AbiBQGI2 (ORCPT
+        with ESMTP id S234859AbiBQGId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 01:08:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 755E4C7D6A
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:08:14 -0800 (PST)
+        Thu, 17 Feb 2022 01:08:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D457C7D49
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:08:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645078093;
+        s=mimecast20190719; t=1645078098;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=A1vbZxsyzMifaaJqgkhHlizU7SHJnrILT5bLrmNnzMQ=;
-        b=OZMeYcVqlq4pNdvhAGzBxH81Z0YZ8+d6IYZV24ocHZ7Da+Ei2ODTIySnJH9ejfvXEWeTOb
-        erv/7vRGIBBaFZuPJ0ntq/Lu/NLHn9jLMmlGGnx1Zq1b6mFIVU50MHR8IwP5w85IaEFUtd
-        v5yarUhFHMP68iqiJ82SF/HqprOoJ2s=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=7Iw+/fHKv6eLf6uybneXrBCZa8a9WBXNMPZFyFhXGnU=;
+        b=aj62FZAwnNoQM7MT1S59Cu1sOXe9PJSCKkSa8DToRtUAwFKxl9E/H08yd7qbCjmWtoQU3k
+        dWGLcu5F6JIlIKWSmeE/rAiE0gtW1qFx/0v5MdMruyA4dEoCvPKuMrtf2kp51HRUZwTW9f
+        EyFaZVjTxNqdB73mlRIS195yZXAvyKM=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-410-6hXjHtCtP9m5i4wAPwLTrQ-1; Thu, 17 Feb 2022 01:08:12 -0500
-X-MC-Unique: 6hXjHtCtP9m5i4wAPwLTrQ-1
-Received: by mail-pj1-f69.google.com with SMTP id t16-20020a17090b019000b001b8af627800so5834347pjs.8
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:08:12 -0800 (PST)
+ us-mta-97-0i0WF9IRNh-o2wmz3Xw2FQ-1; Thu, 17 Feb 2022 01:08:17 -0500
+X-MC-Unique: 0i0WF9IRNh-o2wmz3Xw2FQ-1
+Received: by mail-pg1-f198.google.com with SMTP id 27-20020a63135b000000b0036285f54b6aso2454416pgt.19
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:08:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=A1vbZxsyzMifaaJqgkhHlizU7SHJnrILT5bLrmNnzMQ=;
-        b=RDqX5W1HfxEsFd6wALKoXkkQnePEZfiwMeie367FvX7C3f90AsyT+Htrl/a6QxYUOd
-         kH6GMdw2HoS0jujOw5HgEHT1p5gQUyLXMwJnPLqTDNfxNWJmqiUySjM1477szH/dr5IV
-         Gsjza/BdHlWErIhZn3dgnvfcPI/DOD2fe4Ekv/irzevNm5uqk89ctpjwnyTT7Fk7ARZm
-         fS6E4CuPhCI7yPaaV8nPi4MxtKmlSxYuk1TG25TpIj+tUc4ciNhJ6y/COKr1AaMzdG1I
-         IHcUIz4Bpgy5OPchit+8A+P7DifJMctSlNlpW5gglwhuf9C+DZwFMnBq0z40zF3ED4qz
-         WB6Q==
-X-Gm-Message-State: AOAM5322qqQCaYn0mHHO+znNhfqbI1dclt2bbJGoKGqkS+0jyh5unfN3
-        JkE7am+E6w4Vwffo9fKUxUnEdhFn300THW+7uxKVJK+QRKsT3wk3tcbyovdcrzfkTxG+elg7PN/
-        Xfxb7bAm18i0ZAu+A/CdmzjFa
-X-Received: by 2002:a17:90a:ec10:b0:1b8:9da7:3d13 with SMTP id l16-20020a17090aec1000b001b89da73d13mr1531870pjy.194.1645078091161;
-        Wed, 16 Feb 2022 22:08:11 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxJ+MRoSejjpjSfq3CLN/Ow3BCwyndgoRTeQRVbvX65z98rR9y1roji3xMcenHn/prKAwWNxg==
-X-Received: by 2002:a17:90a:ec10:b0:1b8:9da7:3d13 with SMTP id l16-20020a17090aec1000b001b89da73d13mr1531852pjy.194.1645078090846;
-        Wed, 16 Feb 2022 22:08:10 -0800 (PST)
+        bh=7Iw+/fHKv6eLf6uybneXrBCZa8a9WBXNMPZFyFhXGnU=;
+        b=iuhVDMAzkJRt7FHL3cKFhwJU8kPejt7TT1wMiXuQ7tzien8Kxl4iYD1TwPAhWFzKLR
+         vMsBgnDSlvevLxxkyGV9GlTzG6EE9BIohrnqJ+QO0TCmlflJeem/MOvJP86QaEe5Fm/h
+         dFoHnzPNANUbIIqphT6Sn/1VtzqbSWCNAJljOD6mBDQ+AOwZLUdEJpoBUsf+ShOoUP9+
+         nBjfdcDdDSTrigz8zSdchm1nR8NdaDFvg6oXEQTdpHXdi+eMmSd28eIBrC3BwPzkanM7
+         LMAd439OeT6+aSu5vxrUJ2H/2ViPy7DYoU2MiWjtwWm5l6G5HdExzJ5wYvxaETbOzyyM
+         u3nA==
+X-Gm-Message-State: AOAM532JFJPP3+FAQ2idN5EVc4YT8hJAnWnobDaDp3fO8BuBHCt4Nlhr
+        rYWUJCwFdjkSL/+MrfIAhBkP/N+UfLMK9rCUV3sI0Jf1mdmUeW0ufWdRmHmSY48McaSFUXtC5oi
+        2cH4n47MgTYOARlJsFvfbg3wL
+X-Received: by 2002:a05:6a00:8c5:b0:4c7:f9a5:ebc6 with SMTP id s5-20020a056a0008c500b004c7f9a5ebc6mr1690177pfu.34.1645078096100;
+        Wed, 16 Feb 2022 22:08:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzJq01ZMuxcXHBVvWHdhve6h2WPzO7RXn4GgLcncsq4yBWdeLBav4ZSIjD78cJP8QrYAxhIEQ==
+X-Received: by 2002:a05:6a00:8c5:b0:4c7:f9a5:ebc6 with SMTP id s5-20020a056a0008c500b004c7f9a5ebc6mr1690157pfu.34.1645078095837;
+        Wed, 16 Feb 2022 22:08:15 -0800 (PST)
 Received: from localhost.localdomain ([94.177.118.126])
-        by smtp.gmail.com with ESMTPSA id j8sm224230pjc.11.2022.02.16.22.08.06
+        by smtp.gmail.com with ESMTPSA id j8sm224230pjc.11.2022.02.16.22.08.11
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 16 Feb 2022 22:08:10 -0800 (PST)
+        Wed, 16 Feb 2022 22:08:15 -0800 (PST)
 From:   Peter Xu <peterx@redhat.com>
 To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
 Cc:     Alistair Popple <apopple@nvidia.com>,
@@ -67,9 +67,9 @@ Cc:     Alistair Popple <apopple@nvidia.com>,
         John Hubbard <jhubbard@nvidia.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         "Kirill A . Shutemov" <kirill@shutemov.name>
-Subject: [PATCH v5 3/4] mm: Change zap_details.zap_mapping into even_cows
-Date:   Thu, 17 Feb 2022 14:07:45 +0800
-Message-Id: <20220217060746.71256-4-peterx@redhat.com>
+Subject: [PATCH v5 4/4] mm: Rework swap handling of zap_pte_range
+Date:   Thu, 17 Feb 2022 14:07:46 +0800
+Message-Id: <20220217060746.71256-5-peterx@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220217060746.71256-1-peterx@redhat.com>
 References: <20220217060746.71256-1-peterx@redhat.com>
@@ -79,100 +79,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently we have a zap_mapping pointer maintained in zap_details, when it
-is specified we only want to zap the pages that has the same mapping with
-what the caller has specified.
+Clean the code up by merging the device private/exclusive swap entry
+handling with the rest, then we merge the pte clear operation too.
 
-But what we want to do is actually simpler: we want to skip zapping
-private (COW-ed) pages in some cases.  It comes from unmap_mapping_pages()
-where we could have passed in different even_cows values.  The other user
-is unmap_mapping_folio() where we always want to skip private pages.
+struct* page is defined in multiple places in the function, move it upward.
 
-According to Hugh, we used a mapping pointer for historical reason, as
-explained here:
+free_swap_and_cache() is only useful for !non_swap_entry() case, put it
+into the condition.
 
-  https://lore.kernel.org/lkml/391aa58d-ce84-9d4-d68d-d98a9c533255@google.com/
+No functional change intended.
 
-Quoting partly from Hugh:
-
-  Which raises the question again of why I did not just use a boolean flag
-  there originally: aah, I think I've found why.  In those days there was a
-  horrible "optimization", for better performance on some benchmark I
-  guess, which when you read from /dev/zero into a private mapping, would
-  map the zero page there (look up read_zero_pagealigned() and
-  zeromap_page_range() if you dare).  So there was another category of page
-  to be skipped along with the anon COWs, and I didn't want multiple tests
-  in the zap loop, so checking check_mapping against page->mapping did
-  both.  I think nowadays you could do it by checking for PageAnon page (or
-  genuine swap entry) instead.
-
-This patch replaced the zap_details.zap_mapping pointer into the even_cows
-boolean, then we check it against PageAnon.
-
-Suggested-by: Hugh Dickins <hughd@google.com>
 Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 Signed-off-by: Peter Xu <peterx@redhat.com>
 ---
- mm/memory.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ mm/memory.c | 21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
 diff --git a/mm/memory.c b/mm/memory.c
-index 3728632ea993..c2defe8a1472 100644
+index c2defe8a1472..6aa51ee2a307 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -1309,8 +1309,8 @@ copy_page_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma)
-  * Parameter block passed down to zap_pte_range in exceptional cases.
-  */
- struct zap_details {
--	struct address_space *zap_mapping;	/* Check page->mapping if set */
- 	struct folio *single_folio;	/* Locked folio to be unmapped */
-+	bool even_cows;			/* Zap COWed private pages too? */
- };
+@@ -1361,6 +1361,8 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
+ 	arch_enter_lazy_mmu_mode();
+ 	do {
+ 		pte_t ptent = *pte;
++		struct page *page;
++
+ 		if (pte_none(ptent))
+ 			continue;
  
- /* Whether we should zap all COWed (private) pages too */
-@@ -1321,13 +1321,10 @@ static inline bool should_zap_cows(struct zap_details *details)
- 		return true;
+@@ -1368,8 +1370,6 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
+ 			break;
  
- 	/* Or, we zap COWed pages only if the caller wants to */
--	return !details->zap_mapping;
-+	return details->even_cows;
- }
- 
--/*
-- * We set details->zap_mapping when we want to unmap shared but keep private
-- * pages. Return true if we should zap this page, false otherwise.
-- */
-+/* Decides whether we should zap this page with the page pointer specified */
- static inline bool should_zap_page(struct zap_details *details, struct page *page)
- {
- 	/* If we can make a decision without *page.. */
-@@ -1338,7 +1335,8 @@ static inline bool should_zap_page(struct zap_details *details, struct page *pag
- 	if (!page)
- 		return true;
- 
--	return details->zap_mapping == page_rmapping(page);
-+	/* Otherwise we should only zap non-anon pages */
-+	return !PageAnon(page);
- }
- 
- static unsigned long zap_pte_range(struct mmu_gather *tlb,
-@@ -3398,7 +3396,7 @@ void unmap_mapping_folio(struct folio *folio)
- 	first_index = folio->index;
- 	last_index = folio->index + folio_nr_pages(folio) - 1;
- 
--	details.zap_mapping = mapping;
-+	details.even_cows = false;
- 	details.single_folio = folio;
- 
- 	i_mmap_lock_write(mapping);
-@@ -3427,7 +3425,7 @@ void unmap_mapping_pages(struct address_space *mapping, pgoff_t start,
- 	pgoff_t	first_index = start;
- 	pgoff_t	last_index = start + nr - 1;
- 
--	details.zap_mapping = even_cows ? NULL : mapping;
-+	details.even_cows = even_cows;
- 	if (last_index < first_index)
- 		last_index = ULONG_MAX;
+ 		if (pte_present(ptent)) {
+-			struct page *page;
+-
+ 			page = vm_normal_page(vma, addr, ptent);
+ 			if (unlikely(!should_zap_page(details, page)))
+ 				continue;
+@@ -1403,28 +1403,21 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
+ 		entry = pte_to_swp_entry(ptent);
+ 		if (is_device_private_entry(entry) ||
+ 		    is_device_exclusive_entry(entry)) {
+-			struct page *page = pfn_swap_entry_to_page(entry);
+-
++			page = pfn_swap_entry_to_page(entry);
+ 			if (unlikely(!should_zap_page(details, page)))
+ 				continue;
+-			pte_clear_not_present_full(mm, addr, pte, tlb->fullmm);
+ 			rss[mm_counter(page)]--;
+-
+ 			if (is_device_private_entry(entry))
+ 				page_remove_rmap(page, false);
+-
+ 			put_page(page);
+-			continue;
+-		}
+-
+-		if (!non_swap_entry(entry)) {
++		} else if (!non_swap_entry(entry)) {
+ 			/* Genuine swap entry, hence a private anon page */
+ 			if (!should_zap_cows(details))
+ 				continue;
+ 			rss[MM_SWAPENTS]--;
++			if (unlikely(!free_swap_and_cache(entry)))
++				print_bad_pte(vma, addr, ptent, NULL);
+ 		} else if (is_migration_entry(entry)) {
+-			struct page *page;
+-
+ 			page = pfn_swap_entry_to_page(entry);
+ 			if (!should_zap_page(details, page))
+ 				continue;
+@@ -1436,8 +1429,6 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
+ 			/* We should have covered all the swap entry types */
+ 			WARN_ON_ONCE(1);
+ 		}
+-		if (unlikely(!free_swap_and_cache(entry)))
+-			print_bad_pte(vma, addr, ptent, NULL);
+ 		pte_clear_not_present_full(mm, addr, pte, tlb->fullmm);
+ 	} while (pte++, addr += PAGE_SIZE, addr != end);
  
 -- 
 2.32.0
