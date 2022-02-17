@@ -2,170 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9014C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE397C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242070AbiBQOsl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:48:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34034 "EHLO
+        id S242082AbiBQOso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:48:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242060AbiBQOsj (ORCPT
+        with ESMTP id S242061AbiBQOsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 09:48:39 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2D415FCA9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:48:23 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id i11so3467009lfu.3
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:48:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u0qkqahd0/p8FvMJz9YcyualPcbc2ZoH0R2SSF/QpRI=;
-        b=yP0OgBV5rLu/uNXcRUhS8k1WmSl9KAnmwvv+bRInzq0GnIgKbLqGYRXHXLJfj8LBpv
-         z0iJbEgB96kJ5lYHe15d78gQfKJjpPRtYEQROuwKp7AtbvGx0AzBI0HAIj2gzbGI0+1A
-         1LO4Hxfh2NErovKRen1xEBYm6rCkeamjQq5VIaavjNCC10IXLZ7bP/K71gsonI3TkFcM
-         lOeZbw3AjpZugD7u5a8O75KgLh1VzGPkIqXOTPESInyfODmqMskse+nRRQUVs3SsopFa
-         D0pDGk7eEyg551Fy9aMfGiY+AjbJgUjWgiYA/NmPQinE6uvqvgYnSQSsxUjrAG+g2CZ/
-         ZJKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u0qkqahd0/p8FvMJz9YcyualPcbc2ZoH0R2SSF/QpRI=;
-        b=vHJLfbr1U+E3sKBCxGNIvi9ngJIY4jIBf0uqrV0fv9T0hoBVf9Z34/KLUbKuHQP289
-         Ke5j6xbXVA/lQXzZCir5z2KckLRXFHrLqNyg6gyBJuq1fe9JabIGsHAqsDniC0g97crw
-         yiEgutWvjSOCV02aRnnYqVATo5yigFhtsXtIY5PBECHAxGNafrvHH8R5/f5nJTZqLhTN
-         gMXTNseOyj8/2w6WzVBV0Sg3FC+knhFZkgGe0ONsR2Ikp4059PziWJKK9aO4fW0aKv11
-         qdkRKYYVZWhA3Bg2MD0+PusYwKUdHU1/+m/KDTYrjR7QoCxcNJx7EyfHEdx11xxccPMc
-         k4rw==
-X-Gm-Message-State: AOAM533cqGGq9amgHS3yvkVW4YFCwx20aWhOZfvZomcMNPYVaDUYIhYI
-        xvRQWaQDN8X0VuaAcOInTR1N7YFVHoenb/NFIr0X8Q==
-X-Google-Smtp-Source: ABdhPJy28JJUJGeljs6z7H1ghvQOOOdMlLSmN003wNureuUOeYRdwTYw3DraXaoYEWq0tOcWCsdLz3x1txNKD5fRSHw=
-X-Received: by 2002:a05:6512:2241:b0:441:ce2b:18ef with SMTP id
- i1-20020a056512224100b00441ce2b18efmr2285745lfu.167.1645109301857; Thu, 17
- Feb 2022 06:48:21 -0800 (PST)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE7A160FDE;
+        Thu, 17 Feb 2022 06:48:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645109304; x=1676645304;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=/a6kPOmK1R4gkycE4EvBWHz/vCQFwiKnu48Rd4yVAA0=;
+  b=jWvXhL/tYb5RneHsiRe+5oH5OXHrywj/8+8/8+dn8J4/zL7gdN0tlFMT
+   wB/J1oROE8H67ZgfLknjFU6/8xGnaTCPhAL/Yov66tbzcTWP11i6SVuKQ
+   Tc67vsgaGcOPVWzdDW6IMNqzmpv63XbgGgoLP6lOts8hpWmKLXe2pJU47
+   4Wo0ggmJxfBZADNqfkj1j00tQGTocHoLQLU1G1+0xx9hVFYz8nJ1bwERQ
+   x2msxu/jQrVQwZgFPUtvA1HayXhYw9pdFJLysytBSLxswxKbR/cugR+jm
+   6wVFm/27Y2YeweFM8Qg01LZe4xdZaPcXVaqg+ow+8WQzVCFoKLkJuLCrC
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="249722768"
+X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
+   d="scan'208";a="249722768"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 06:48:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
+   d="scan'208";a="502480195"
+Received: from stinkpipe.fi.intel.com (HELO stinkbox) ([10.237.72.151])
+  by orsmga006.jf.intel.com with SMTP; 17 Feb 2022 06:48:06 -0800
+Received: by stinkbox (sSMTP sendmail emulation); Thu, 17 Feb 2022 16:48:05 +0200
+Date:   Thu, 17 Feb 2022 16:48:05 +0200
+From:   Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+To:     Andrzej Hajda <andrzej.hajda@intel.com>
+Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, netdev <netdev@vger.kernel.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>
+Subject: Re: [Intel-gfx] [PATCH 6/9] drm/i915: Separate wakeref tracking
+Message-ID: <Yg5gJfSJCCaY5JYs@intel.com>
+References: <20220217140441.1218045-1-andrzej.hajda@intel.com>
+ <20220217140441.1218045-7-andrzej.hajda@intel.com>
 MIME-Version: 1.0
-References: <3beef2c6ae4878eb31fdb16988a1fcedc7ee143c.camel@dd-wrt.com> <CAPDyKFo5SLtcVWPuMOvhWFFYGEX8Q3PUvX-U_waX4TVjm=fEoA@mail.gmail.com>
-In-Reply-To: <CAPDyKFo5SLtcVWPuMOvhWFFYGEX8Q3PUvX-U_waX4TVjm=fEoA@mail.gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 17 Feb 2022 15:47:45 +0100
-Message-ID: <CAPDyKFrGctjqu1fW09-np0NOO6Rgoi_yTtu6SD56qhBEQ-wqEw@mail.gmail.com>
-Subject: Re: Shutdown hang on Cavium thunderX eMMC
-To:     Daniel Danzberger <daniel@dd-wrt.com>,
-        Jan Glauber <jan.glauber@gmail.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Robert Richter <rric@kernel.org>
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alcooperx@gmail.com, adrian.hunter@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220217140441.1218045-7-andrzej.hajda@intel.com>
+X-Patchwork-Hint: comment
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- + Jan Glauber,  Kevin Hao, Robert Richter
+On Thu, Feb 17, 2022 at 03:04:38PM +0100, Andrzej Hajda wrote:
+> -static noinline depot_stack_handle_t
+> +static intel_wakeref_t
+>  track_intel_runtime_pm_wakeref(struct intel_runtime_pm *rpm)
+>  {
+> -	depot_stack_handle_t stack, *stacks;
+> -	unsigned long flags;
+> -
+> -	if (rpm->no_wakeref_tracking)
+> -		return -1;
+> -
+> -	stack = __save_depot_stack();
+> -	if (!stack)
+> +	if (!rpm->available)
+>  		return -1;
 
-Looping some of the Cavium developers/maintainers too, let's see if
-they have an idea of what goes wrong.
+no_wakeref_tracking != available
 
-On Thu, 17 Feb 2022 at 15:42, Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> On Tue, 15 Feb 2022 at 10:52, Daniel Danzberger <daniel@dd-wrt.com> wrote:
-> >
-> > Hi,
-> >
-> > the below commit causes a shutodown hang on my octeontx platforms
-> > (aarch64) with Cavium ThunderX eMMC
-> >
-> > --
-> > commit 66c915d09b942fb3b2b0cb2f56562180901fba17
-> > Author: Ulf Hansson <ulf.hansson@linaro.org>
-> > Date:   Fri Dec 3 15:15:54 2021 +0100
-> >
-> >     mmc: core: Disable card detect during shutdown
-> > --
-> >
-> > On shutdown, the __mmc_stop_host() call blocks by waiting for
-> > mmc_detect() to complete, but it never does.
-> > The second stack trace below shows it's been waiting forever for an
-> > mmc_send_status() request to complete.
->
-> Looks like the root to the problem is that the mmc_send_status()
-> request is hanging the cavium mmc host driver.
->
-> Is that instance of the mmc host driver functional at all? I mean, it
-> looks like the host driver is hanging already before the system is
-> being shutdown, right?
->
-> Kind regards
-> Uffe
->
-> >
-> >
-> > [  394.251271] INFO: task procd:2715 blocked for more than 153 seconds.
-> > [  394.257635]       Not tainted 5.10.96 #0
-> > [  394.261552] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
-> > disables this message.
-> > [  394.269389] task:procd           state:D stack:    0 pid: 2715 ppid:
-> > 1 flags:0x00000000
-> > [  394.277749] dump_backtrace(regs = 0000000000000000 tsk =
-> > 000000003cc20742)
-> > [  394.284625] Call trace:
-> > [  394.287069]  __switch_to+0x80/0xc0
-> > [  394.290467]  __schedule+0x1f8/0x530
-> > [  394.293961]  schedule+0x48/0xd0
-> > [  394.297099]  schedule_timeout+0x98/0xd0
-> > [  394.300931]  __wait_for_common+0xc4/0x1c4
-> > [  394.304956]  wait_for_completion+0x20/0x2c
-> > [  394.309050]  __flush_work.isra.0+0x184/0x31c
-> > [  394.313329]  __cancel_work_timer+0xfc/0x170
-> > [  394.317510]  cancel_delayed_work_sync+0x14/0x20
-> > [  394.322038]  __mmc_stop_host+0x3c/0x50
-> > [  394.325799]  mmc_host_classdev_shutdown+0x14/0x24
-> > [  394.330500]  device_shutdown+0x120/0x250
-> > [  394.334430]  __do_sys_reboot+0x1ec/0x290
-> > [  394.338350]  __arm64_sys_reboot+0x24/0x30
-> > [  394.342356]  do_el0_svc+0x74/0x120
-> > [  394.345765]  el0_svc+0x14/0x20
-> > [  394.348817]  el0_sync_handler+0xa4/0x140
-> > [  394.352736]  el0_sync+0x164/0x180
-> >
-> >
-> > [  735.262749] INFO: task kworker/0:0:5 blocked for more than 614
-> > seconds.
-> > [  735.269363]       Not tainted 5.10.96 #0
-> > [  735.273296] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
-> > disables this message.
-> > [  735.281121] task:kworker/0:0     state:D stack:    0 pid:    5 ppid:
-> > 2 flags:0x00000028
-> > [  735.289490] Workqueue: events_freezable mmc_rescan
-> > [  735.294288] Call trace:
-> > [  735.296732]  __switch_to+0x80/0xc0
-> > [  735.300131]  __schedule+0x1f8/0x530
-> > [  735.303623]  schedule+0x48/0xd0
-> > [  735.306761]  schedule_timeout+0x98/0xd0
-> > [  735.310593]  __wait_for_common+0xc4/0x1c4
-> > [  735.314606]  wait_for_completion+0x20/0x2c
-> > [  735.318699]  mmc_wait_for_req_done+0x2c/0x100
-> > [  735.323065]  mmc_wait_for_req+0xb0/0x100
-> > [  735.326984]  mmc_wait_for_cmd+0x54/0x7c
-> > [  735.330818]  mmc_send_status+0x5c/0x80
-> > [  735.334573]  mmc_alive+0x18/0x24
-> > [  735.337798]  _mmc_detect_card_removed+0x34/0x150
-> > [  735.342412]  mmc_detect+0x28/0x90
-> > [  735.345732]  mmc_rescan+0xd8/0x348
-> > [  735.349132]  process_one_work+0x1d4/0x374
-> > [  735.353147]  worker_thread+0x17c/0x4ec
-> > [  735.356892]  kthread+0x124/0x12c
-> > [  735.360117]  ret_from_fork+0x10/0x34
-> >
-> >
-> >
-> > I only could test this with 5.10.96 for now.
-> >
-> >
-> > --
-> > Regards
-> >
-> > Daniel Danzberger
-> > embeDD GmbH, Alter Postplatz 2, CH-6370 Stans
+-- 
+Ville Syrjälä
+Intel
