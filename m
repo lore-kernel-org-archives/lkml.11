@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A668C4167D
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244872AbiBQSuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:50:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45700 "EHLO
+        id S244766AbiBQSup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:50:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244649AbiBQSu0 (ORCPT
+        with ESMTP id S244654AbiBQSu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 13:50:26 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6775522F1;
-        Thu, 17 Feb 2022 10:50:11 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id p9so9428087ejd.6;
-        Thu, 17 Feb 2022 10:50:11 -0800 (PST)
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E77532D9;
+        Thu, 17 Feb 2022 10:50:06 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id qk11so9473224ejb.2;
+        Thu, 17 Feb 2022 10:50:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zM+Hp2WVjXIaMPVWa2mQUV9ISK0HqYCrHac37DPF8pw=;
-        b=BolWhcpS/6HTOxCBDIDuBl/h5hPvE9JkG/muCPtASmFx6+y5sndVaFYhkOPuPssfkn
-         N+WkOdD+19aO763ei3Eu2WU9ftQN1kp2LK8+YjHnTP+d1bzQRvVcFvzir84VaaZy28qh
-         snuYfFYT79MuLmapUWJYpxEHds4dVHjeyRv0d+6T2s9RwEDKe+ZQu7lgo9gpCtIbQU/4
-         3A+2aUTEa797Akyg/0hLzZ8eZn+p9LnYhoJV8TN3b6tuVbcogD/UXwv+tlWJ9SDzZCrg
-         +P8c0Giv0WWtwBFlUZ0Oq0JXsY7DLui47NCMGSowRFKP1k4VtDZGpz5Ldv6bL7JB4BA9
-         14Uw==
+        bh=QtTQzoKh6SHELhVbK7UgiDGo5+sChsVz7qZ/mZQ4wRk=;
+        b=LfG5Bww0Oy3sfjvyo7UZik9CTOze3VJSleCGeTzqBYFQBb7GCb81WoeNFCcwMDHAf2
+         6KDyRC9FbU54q681hajrooEUs1aUj1/X/WjuVoV3omcO+G34AxBIxo5VUbbH/vgctNu5
+         1nPnBsA8HLXrB09j1Wal4ffV2IdeaqW/EDGtqMw6CEptfUVX/9wu9p6LShOkI46d0IfV
+         f3qb+rqVCZPlnikjHQsgKr/voCZUNSLcpsDDevv90CtSx//A6/d3IEgX3w+q0SNjp1ng
+         d7OUNelVCif/q3zsuV5zwuSk4/D/XArrjWCtU6hHhewjLLju4BupSa/6nftUykdH73+X
+         JYSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zM+Hp2WVjXIaMPVWa2mQUV9ISK0HqYCrHac37DPF8pw=;
-        b=lAJM+uUNMVavKbvgr28gZUaExTKc9uT1rHYnMG69Fhw0oJBm7L2q0ivNkcFybxExHh
-         LR4uRJTpQNdFOtvUDnIzrj0AmoyICsyE4ChUrbm9fOeeEQTE+lUG2eYRJzRnVb6ft14j
-         SucmcA9lwClWjVtJw92O1ayd7gx8UTeuuU8Ak9sitMhooQHeP1rDGwBtfmhWpB8GS0z3
-         M8IRzh937gDGCMla1rYyEr2LDXWvXICDZcKbdbPihNsTHUjtuNd5wBV53rJ3wkVBQo3K
-         7Gx1P+82R7x3kx5yWnYIVcnUOQ84zkhnC6rCZwOE+DDZ8QRQ53i4JhD1IFtbC9s+oWU+
-         DLKQ==
-X-Gm-Message-State: AOAM533hD4jvIIYgmzjWvGha5J/zTEofD4EJhVCDlgGJulOfsyK9ykFh
-        QSZ209r1ahSqWVAniECldU32OKfK9Aj1Ok0bZmrk0Q==
-X-Google-Smtp-Source: ABdhPJxAa77nD+43PdtywudpGPQcktl4VzQxfGah+xpGfQDtyZvDMsYlyiTUJn8yQjbvV3UEVOkWiA==
-X-Received: by 2002:a17:906:82c4:b0:6b7:e0fc:c9e0 with SMTP id a4-20020a17090682c400b006b7e0fcc9e0mr3507573ejy.555.1645123810477;
-        Thu, 17 Feb 2022 10:50:10 -0800 (PST)
+        bh=QtTQzoKh6SHELhVbK7UgiDGo5+sChsVz7qZ/mZQ4wRk=;
+        b=wn0sqvOmQxI0h5noPo+XCYO52Gj+7O66j323rHL6/4f68W/mx2ECsONeQmrqgkfHpr
+         YYHTRCYJkYfXopX70g4jKzeW/3Ag6kOgfufGkKgKdtjfP8TOMn92JBpwBOVg5sZtavwk
+         USFwyFisy8Efj/OoErFXyrN/uU/EC8xMuf3bcwHVceQq63vwygpRsvhL2AE7R8uYCva8
+         9VeFJ0W1f3cD607iOPjvHHVGwhzdFIL9xxPS8FqH8AAcGX0kPdtL4+LWBQOXD+tW3YWU
+         wnClr9WQMBekTCu8lU2RJtIBG0j6x4qufWkPl+818hxJHwwz6iU9Gp+gUlltc41zZ8Vy
+         ZRlw==
+X-Gm-Message-State: AOAM530xyLyQNaDStFYAEKpaZViBoEdHdmG9A9PVLH52kb5ZnhAvMDCL
+        q6iqQfSzOzpaIyFAgdzpOWk=
+X-Google-Smtp-Source: ABdhPJwmtpAYY/5eTeVCIMOnvNGpPiD0a5ljZK65FIzDqh88/jSCNF3UR1fL3OrGOhT7yseUT8jxJw==
+X-Received: by 2002:a17:906:284b:b0:6ae:9d05:e904 with SMTP id s11-20020a170906284b00b006ae9d05e904mr3341561ejc.345.1645123804953;
+        Thu, 17 Feb 2022 10:50:04 -0800 (PST)
 Received: from localhost.localdomain (dhcp-077-250-038-153.chello.nl. [77.250.38.153])
-        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.09
+        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 10:50:10 -0800 (PST)
+        Thu, 17 Feb 2022 10:50:04 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         linux-kernel@vger.kernel.org
@@ -63,9 +63,9 @@ Cc:     linux-arch@vger.kernel.org,
         Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [RFC PATCH 13/13] scsi: mpt3sas: comment about invalid usage of the list iterator
-Date:   Thu, 17 Feb 2022 19:48:29 +0100
-Message-Id: <20220217184829.1991035-14-jakobkoschel@gmail.com>
+Subject: [RFC PATCH 07/13] udp_tunnel: remove the usage of the list iterator after the loop
+Date:   Thu, 17 Feb 2022 19:48:23 +0100
+Message-Id: <20220217184829.1991035-8-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217184829.1991035-1-jakobkoschel@gmail.com>
 References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
@@ -75,29 +75,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the list iteration never exists early, reply_q is guaranteed to
-be an invalid variable and should not be used within
-_base_process_reply_queue(). Since I'm not sure what this code was
-supposed to do, I just marked this with this comment.
+The usage of node->dev after the loop body is a legitimate type
+confusion if the break was not hit. It will compare an undefined
+memory location with dev that could potentially be equal. The value
+of node->dev in this case could either be a random struct member of the
+head element or an out-of-bounds value.
+
+Therefore it is more safe to use the found variable. With the
+introduction of speculative safe list iterator this check could be
+replaced with if (!node).
 
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/scsi/mpt3sas/mpt3sas_base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/udp_tunnel_nic.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index 511726f92d9a..a6746e124226 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -2013,7 +2013,7 @@ mpt3sas_base_sync_reply_irqs(struct MPT3SAS_ADAPTER *ioc, u8 poll)
- 		}
- 	}
- 	if (poll)
--		_base_process_reply_queue(reply_q);
-+		_base_process_reply_queue(reply_q); // COMMENT
- }
+diff --git a/net/ipv4/udp_tunnel_nic.c b/net/ipv4/udp_tunnel_nic.c
+index b91003538d87..c47f9fb36d29 100644
+--- a/net/ipv4/udp_tunnel_nic.c
++++ b/net/ipv4/udp_tunnel_nic.c
+@@ -842,11 +842,14 @@ udp_tunnel_nic_unregister(struct net_device *dev, struct udp_tunnel_nic *utn)
+ 	 */
+ 	if (info->shared) {
+ 		struct udp_tunnel_nic_shared_node *node, *first;
++		bool found = false;
  
- /**
+ 		list_for_each_entry(node, &info->shared->devices, list)
+-			if (node->dev == dev)
++			if (node->dev == dev) {
++				found = true;
+ 				break;
+-		if (node->dev != dev)
++			}
++		if (!found)
+ 			return;
+ 
+ 		list_del(&node->list);
 -- 
 2.25.1
 
