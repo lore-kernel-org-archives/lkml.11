@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5EE5C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0802C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244801AbiBQSut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:50:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45660 "EHLO
+        id S244709AbiBQSuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:50:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244659AbiBQSu0 (ORCPT
+        with ESMTP id S244638AbiBQSu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Feb 2022 13:50:26 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BA2532E5;
-        Thu, 17 Feb 2022 10:50:09 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id z22so11335916edd.1;
-        Thu, 17 Feb 2022 10:50:08 -0800 (PST)
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D57527F3;
+        Thu, 17 Feb 2022 10:50:04 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id m3so5339901eda.10;
+        Thu, 17 Feb 2022 10:50:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/E7vDJlr3ShCmm14rXXbmLyiW36foVXBUCP88CYbZEQ=;
-        b=UZNPaJbQTUyjcPbr/PNBbpLXQRT7b7gb4jnh8EQAYcDSaxNcnhmHXvL8dFXa4HwFff
-         ZBW0wACsTlHyQ5wWSmgJ8NQFgE5BWKRMrVIO+2Pt7/v71HX2bJUwn/ThGTRtJRQHdq8b
-         1CXkbmgbaAqofVAMOW6tWeegzhzQWbcwr/6PAhz4+hoaT4+ZNlG+l3+M2wVNdBZP+yxJ
-         EPKctpk/bEedKWCtPMie0yZpg3BEuwbXeUSp+anEzwJcDIs5yfUJlRgncigJx+4Hvwvj
-         Hdf6JRkQMBsA8wZmeLAYbs1SdpbRoq57z/xUVZA3zyOh3BM/9cPhu72bRO+3bwX8a0+h
-         Xu3w==
+        bh=/mv9B9kxz/tt3t/iKJDekMmwgu1k+2+Z11dWvEyqL7k=;
+        b=av0CaKWg58n1u8l2MX25kTvxriQU1FjdWcRy3ytXNxDPTdn6WlupCBzzE3n7vKJqSt
+         IhsjEAeZPT/42YQY3xgbSqtx4HJNHEQxtDd3esD4RvaqbYZOf7fi1L7DyjBtpz4sW0td
+         sdX0tvcndQudy/z90Ixcr4VVEKOy9cpCSieLUgMZ3xgHQxcc6N0DdT5tyBPowZxvruEo
+         M888EBYjCyS6er67ljHe0C/33gdlHGweJ//8owWNohAwU3EW4FXcdVcnVFlm+8G8tpzm
+         SgyVdyS+gfbPNM00S0W/eT7S2WBdrU3UQPdq1pcOHLI9JEUEwPE4So0jVFe6AzrJkJ8X
+         0k5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/E7vDJlr3ShCmm14rXXbmLyiW36foVXBUCP88CYbZEQ=;
-        b=sFsDuocLH5gct/BUFdeHOd28HsemhTgH6PEQDXRNnR8FJaAf8/nZ1ZCsNz4Q/b76m4
-         r+XRFzxWxMdm4l9XrOX8aJsnbPoEakH2QBE0Yb9k9Kua4XRpjPWM2RCd+9YYopOzh3Yd
-         LLjmYC6NtCLfLJGemUmsNDaIOBw/YOVEe06kPeVtCooSECGzM6g+eyLjXKl3amG1dAmq
-         ntXHap80y1UIDxjHR3KQ/xh+HHKDmslcYDIC5RwQrBiWRCNjpAFfzzvBeEqaAcOFzTkM
-         viOvMmBmYXR11ccTuYLTKrjtgzHBAf69pBjEtnHfbul8b5ZLWrJ8c55hsTQCc4AvHm9I
-         DVlw==
-X-Gm-Message-State: AOAM532d7r7sM3ISFLGLOgg7U/MX6fNW6kugBPrdqIasGXmeaO1ywLxg
-        1TaOqWRbX5pv4N/A4KwMv6SsCEsj8SiRxEgC3GJMoQ==
-X-Google-Smtp-Source: ABdhPJwohka0Px+31wNalaj/bE14nYoTr+UZeDUWbd8NMqNlF11xv6t6hTAYV4SuzQfXhziq5TgK/g==
-X-Received: by 2002:aa7:cc12:0:b0:410:cb7b:a9ba with SMTP id q18-20020aa7cc12000000b00410cb7ba9bamr4125709edt.196.1645123807668;
-        Thu, 17 Feb 2022 10:50:07 -0800 (PST)
+        bh=/mv9B9kxz/tt3t/iKJDekMmwgu1k+2+Z11dWvEyqL7k=;
+        b=2cEosemwdVmJCbiummqbMkF9OqYVA2X8QqHcrtzKrv4q+dTXxginKE+e4zkVXUSaYT
+         z0UUQo8v5qC7wRljI+I3H67GfAXt+kV53sxZxpXkyh/skNgyw6dA0+406sxBjaO0bGVO
+         GS4he+oAGU3eL15EUDHGZcOJmfL4m12yaM8CVplE6Tv5CQMAeZ104kVTtjLkjOMNm7ve
+         mA6mPq53LKbsfSZQ2RuqwtB6D1T+P3EB3o6XExZpl38cy6Mn/Z0toQndlIwVmxKM5Z3h
+         uBNncX/deotCJ2EbzA8MNiK2yn0+dCnLXK3ExOa+7G+nxmxSvczbM6Q7ZulqVjyGWWv5
+         DYAw==
+X-Gm-Message-State: AOAM53051kUtthWz1Slsd4ufYN4rUSPKGaHx6pWTzFLpAP1olzOZXDcD
+        cVgP08cy7zh/AyqMtP4zh8A=
+X-Google-Smtp-Source: ABdhPJzemAhA0rQEUpJoQjey9TRCNS6UoffyAf+yvFAIbn8s6zmCTPE3XwgpAURBlOBHcOsTJ5YheA==
+X-Received: by 2002:aa7:c612:0:b0:40f:2a41:bddb with SMTP id h18-20020aa7c612000000b0040f2a41bddbmr4120824edq.291.1645123803138;
+        Thu, 17 Feb 2022 10:50:03 -0800 (PST)
 Received: from localhost.localdomain (dhcp-077-250-038-153.chello.nl. [77.250.38.153])
-        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.06
+        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 10:50:07 -0800 (PST)
+        Thu, 17 Feb 2022 10:50:02 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         linux-kernel@vger.kernel.org
@@ -63,9 +63,9 @@ Cc:     linux-arch@vger.kernel.org,
         Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [RFC PATCH 10/13] powerpc/spufs: future proof usage of list iterator after the loop
-Date:   Thu, 17 Feb 2022 19:48:26 +0100
-Message-Id: <20220217184829.1991035-11-jakobkoschel@gmail.com>
+Subject: [RFC PATCH 05/13] drivers/perf: remove the usage of the list iterator after the loop
+Date:   Thu, 17 Feb 2022 19:48:21 +0100
+Message-Id: <20220217184829.1991035-6-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220217184829.1991035-1-jakobkoschel@gmail.com>
 References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
@@ -75,28 +75,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the speculative safe version of the list iterator spu will be NULL
-if the terminating condition was hit and needs to be reset to spu
-derived from the head, before returning spu.
+To introduce a speculative safe list iterator, the iterator variable will
+be set to NULL when the terminating condition of the loop is hit.
+
+The code before assumed rentry would only be NULL if the break is
+hit, this assumption no longer holds. Once the speculative safe list
+iterator is merged the condition could be replace with if (!entry)
+instead.
 
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- arch/powerpc/platforms/cell/spufs/sched.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/perf/xgene_pmu.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/cell/spufs/sched.c b/arch/powerpc/platforms/cell/spufs/sched.c
-index 369206489895..5b2afda1653d 100644
---- a/arch/powerpc/platforms/cell/spufs/sched.c
-+++ b/arch/powerpc/platforms/cell/spufs/sched.c
-@@ -384,6 +384,8 @@ static struct spu *ctx_location(struct spu *ref, int offset, int node)
+diff --git a/drivers/perf/xgene_pmu.c b/drivers/perf/xgene_pmu.c
+index 2b6d476bd213..523ff5c53103 100644
+--- a/drivers/perf/xgene_pmu.c
++++ b/drivers/perf/xgene_pmu.c
+@@ -1463,6 +1463,7 @@ xgene_pmu_dev_ctx *acpi_get_pmu_hw_inf(struct xgene_pmu *xgene_pmu,
+ 	struct resource_entry *rentry;
+ 	int enable_bit;
+ 	int rc;
++	bool found = false;
+ 
+ 	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
+ 	if (!ctx)
+@@ -1478,13 +1479,13 @@ xgene_pmu_dev_ctx *acpi_get_pmu_hw_inf(struct xgene_pmu *xgene_pmu,
+ 	list_for_each_entry(rentry, &resource_list, node) {
+ 		if (resource_type(rentry->res) == IORESOURCE_MEM) {
+ 			res = *rentry->res;
+-			rentry = NULL;
++			found = true;
+ 			break;
  		}
  	}
+ 	acpi_dev_free_resource_list(&resource_list);
  
-+	if (!spu)
-+		spu = list_entry(spu, ref->aff_list.prev, aff_list);
- 	return spu;
- }
- 
+-	if (rentry) {
++	if (!found) {
+ 		dev_err(dev, "PMU type %d: No memory resource found\n", type);
+ 		return NULL;
+ 	}
 -- 
 2.25.1
 
