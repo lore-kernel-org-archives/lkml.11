@@ -2,139 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F57C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 05:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AB3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 05:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234507AbiBQFwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 00:52:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48276 "EHLO
+        id S234530AbiBQFwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 00:52:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbiBQFwh (ORCPT
+        with ESMTP id S229831AbiBQFwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 00:52:37 -0500
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7B91CFDA;
-        Wed, 16 Feb 2022 21:52:22 -0800 (PST)
-Received: from HP-EliteBook-840-G7.. (1-171-236-200.dynamic-ip.hinet.net [1.171.236.200])
+        Thu, 17 Feb 2022 00:52:39 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3A81CFDA;
+        Wed, 16 Feb 2022 21:52:26 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id D564C3FD17;
-        Thu, 17 Feb 2022 05:52:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645077140;
-        bh=IY+TPVDWwB1jLM1grLCv7XrZucC3ulJ/hC4gDmeTBYc=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=KnD1jW1u/h9BvA6IG+V9nhwqr92+fzcBXtWru4+sto9k+K4IRfgkTd+Rt1k7hkojg
-         GKhWzEA+TPSn5JLtET89AqJH4i8AWl4NTnkJhVEKBDGsbgQ4KaWPR9knwRSwXNcqed
-         loQ65EDzrqiywP78q8C5xiC2TYQeC6s8I26C+pQo2LGFaJZi09QIiTYCleKemVxqET
-         TYak/qf32XcF1dfu5ekkcSvc+ORlvb1sW+w3Kte95pzieve/bx/4byvA4VXHqXcMzd
-         WFbyOJaq891vsXTUut5ctKX+W8kBQ9OtYAfLK4y+VU6VLt0p6yDHWMhkfGPTbgaXO5
-         oqAcXHYyGPj5g==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org
-Cc:     andy.shevchenko@gmail.com,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4] iio: accel: adxl345: Add ACPI HID table
-Date:   Thu, 17 Feb 2022 13:52:07 +0800
-Message-Id: <20220217055208.2388929-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JzkVw4LpDz4xZ2;
+        Thu, 17 Feb 2022 16:52:24 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1645077144;
+        bh=pYqR6MZOlwSVLHFEQwNKC03gUA+C9Ql2XFR3NjHECGc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=a+uc7txYQa0BMIK7Mb7B07yS1LYgz8KNggtkYnT1hYJsFyhAkZq9akGuwBLop8Za9
+         PVbeRCiftRoSXVjXmP+SUSJ3Pw6QVxcCarQC8aCbZt9mTals+z4Scoo0BnXUI7sfL6
+         rKROvAY3ve2ygmD8j/DqfnBkJeugBwHlJMLy3AsSp4GY4FOD3y2hi3EzHrsElEittT
+         bZzMiOTKQQ6plOB+KPy4etlE6Swx0jk7eZNU7f/j/THWRJoYhxiMxw7q+nzlp6D03w
+         TuONgT0R4bxzUO+3yN0Y62eX4qOFG3QRZQm4JjMqOI+RGGrLorE1RRo7CWD5JhOCNn
+         nQ9zqyJ6dy1gA==
+Date:   Thu, 17 Feb 2022 16:52:23 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Liam Howlett <liam.howlett@oracle.com>,
+        Matthew Wilcox <willy@infradead.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the maple tree with the folio tree
+Message-ID: <20220217165223.6313b475@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/ROit3T/DQjpbnLjwG_wOyrr";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-x86 boards may use ACPI HID "ADS0345" for adxl345 device.
+--Sig_/ROit3T/DQjpbnLjwG_wOyrr
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Analog replied:
-"ADS034X is not a valid PNP ID. ADS0345 would be.
-I'm not aware that this ID is already taken.
-Feel free to submit a mainline Linux input mailing list patch."
+Hi all,
 
-So add an ACPI match table for that accordingly.
+Today's linux-next merge of the maple tree got a conflict in:
 
-Since ACPI device may not match to any I2C ID, use the name and type
-directly from ACPI ID table in absence of I2C ID.
+  mm/internal.h
 
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v4:
- - Drop "ADS0345:00" and use driver_date from ACPI table directly.
+between commit:
 
-v3:
- - Convert the driver from input to iio.
+  a02f3052febe ("mm: Turn page_anon_vma() into folio_anon_vma()")
 
-v2:
- - Drop ACPI_PTR()
- - Drop redundant empty line and comma
- - Add info from vendor
+from the folio tree and commits:
 
- drivers/iio/accel/adxl345_i2c.c | 29 ++++++++++++++++++++++++-----
- 1 file changed, 24 insertions(+), 5 deletions(-)
+  93a635efa606 ("mm: Start tracking VMAs with maple tree")
+  b09e8361a4c3 ("mm: Remove the vma linked list")
 
-diff --git a/drivers/iio/accel/adxl345_i2c.c b/drivers/iio/accel/adxl345_i2c.c
-index a431cba216e69..cdcc3ef1f1d33 100644
---- a/drivers/iio/accel/adxl345_i2c.c
-+++ b/drivers/iio/accel/adxl345_i2c.c
-@@ -22,20 +22,32 @@ static const struct regmap_config adxl345_i2c_regmap_config = {
- static int adxl345_i2c_probe(struct i2c_client *client,
- 			     const struct i2c_device_id *id)
- {
-+	struct device *dev = &client->dev;
-+	const struct acpi_device_id *acpi_id;
-+	enum adxl345_device_type type;
-+	const char *name;
- 	struct regmap *regmap;
- 
--	if (!id)
--		return -ENODEV;
-+	if (id) {
-+		type = id->driver_data;
-+		name = id->name;
-+	} else {
-+		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
-+		if (acpi_id) {
-+			type = acpi_id->driver_data;
-+			name = acpi_id->id;
-+		} else
-+			return -ENODEV;
-+	}
- 
- 	regmap = devm_regmap_init_i2c(client, &adxl345_i2c_regmap_config);
- 	if (IS_ERR(regmap)) {
--		dev_err(&client->dev, "Error initializing i2c regmap: %ld\n",
-+		dev_err(dev, "Error initializing i2c regmap: %ld\n",
- 			PTR_ERR(regmap));
- 		return PTR_ERR(regmap);
- 	}
- 
--	return adxl345_core_probe(&client->dev, regmap, id->driver_data,
--				  id->name);
-+	return adxl345_core_probe(&client->dev, regmap, type, name);
- }
- 
- static const struct i2c_device_id adxl345_i2c_id[] = {
-@@ -54,10 +66,17 @@ static const struct of_device_id adxl345_of_match[] = {
- 
- MODULE_DEVICE_TABLE(of, adxl345_of_match);
- 
-+static const struct acpi_device_id adxl345_acpi_match[] = {
-+	{ "ADS0345", ADXL345 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(acpi, adxl345_acpi_match);
-+
- static struct i2c_driver adxl345_i2c_driver = {
- 	.driver = {
- 		.name	= "adxl345_i2c",
- 		.of_match_table = adxl345_of_match,
-+		.acpi_match_table = adxl345_acpi_match,
- 	},
- 	.probe		= adxl345_i2c_probe,
- 	.id_table	= adxl345_i2c_id,
--- 
-2.34.1
+from the maple tree.
 
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc mm/internal.h
+index f0e4dfac0264,2d3ede05cd7b..000000000000
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@@ -67,12 -66,17 +67,13 @@@ static inline void wake_throttle_isolat
+  vm_fault_t do_swap_page(struct vm_fault *vmf);
+  void folio_rotate_reclaimable(struct folio *folio);
+  bool __folio_end_writeback(struct folio *folio);
+ +void deactivate_file_folio(struct folio *folio);
+ =20
+- void free_pgtables(struct mmu_gather *tlb, struct vm_area_struct *start_v=
+ma,
+- 		unsigned long floor, unsigned long ceiling);
++ void free_pgtables(struct mmu_gather *tlb, struct maple_tree *mt,
++ 		   struct vm_area_struct *start_vma, unsigned long floor,
++ 		   unsigned long ceiling);
+  void pmd_install(struct mm_struct *mm, pmd_t *pmd, pgtable_t *pte);
+ =20
+ -static inline bool can_madv_lru_vma(struct vm_area_struct *vma)
+ -{
+ -	return !(vma->vm_flags & (VM_LOCKED|VM_HUGETLB|VM_PFNMAP));
+ -}
+ -
+  struct zap_details;
+  void unmap_page_range(struct mmu_gather *tlb,
+  			     struct vm_area_struct *vma,
+@@@ -388,12 -387,76 +389,78 @@@ static inline bool is_data_mapping(vm_f
+  	return (flags & (VM_WRITE | VM_SHARED | VM_STACK)) =3D=3D VM_WRITE;
+  }
+ =20
+- /* mm/util.c */
+- void __vma_link_list(struct mm_struct *mm, struct vm_area_struct *vma,
+- 		struct vm_area_struct *prev);
+- void __vma_unlink_list(struct mm_struct *mm, struct vm_area_struct *vma);
++ /* Maple tree operations using VMAs */
++ /*
++  * vma_mas_store() - Store a VMA in the maple tree.
++  * @vma: The vm_area_struct
++  * @mas: The maple state
++  *
++  * Efficient way to store a VMA in the maple tree when the @mas has alrea=
+dy
++  * walked to the correct location.
++  *
++  * Note: the end address is inclusive in the maple tree.
++  */
++ static inline int vma_mas_store(struct vm_area_struct *vma, struct ma_sta=
+te *mas)
++ {
++ #ifdef CONFIG_DEBUG_VM_MAPLE_TREE
++ 	/* Make sure no VMAs are about to be lost. */
++ 	MA_STATE(test, mas->tree, vma->vm_start, vma->vm_end - 1);
++ 	struct vm_area_struct *vma_mas;
++ 	int count =3D 0;
++=20
++ 	mas_for_each(&test, vma_mas, vma->vm_end - 1) {
++ 		/* Rule out vma_expand */
++ 		if ((vma->vm_start !=3D vma_mas->vm_start) &&
++ 		    (vma->vm_end !=3D vma_mas->vm_end))
++ 			count++;
++ 	}
++=20
++ 	/* vma adjust may overwrite a partial entry or remove one */
++ 	BUG_ON(count > 1);
++=20
++ 	BUG_ON(mas->min > vma->vm_start);
++ 	BUG_ON(mas->index > vma->vm_start);
++ #endif
++ 	mas->index =3D vma->vm_start;
++ 	mas->last =3D vma->vm_end - 1;
++ 	return mas_store_gfp(mas, vma, GFP_KERNEL);
++ }
++=20
++ /*
++  * vma_mas_remove() - Remove a VMA from the maple tree.
++  * @vma: The vm_area_struct
++  * @mas: The maple state
++  *
++  * Efficient way to remove a VMA from the maple tree when the @mas has al=
+ready
++  * been established and points to the correct location.
++  * Note: the end address is inclusive in the maple tree.
++  */
++ static inline int vma_mas_remove(struct vm_area_struct *vma, struct ma_st=
+ate *mas)
++ {
++ 	int ret;
++=20
++ #ifdef CONFIG_DEBUG_VM_MAPLE_TREE
++ 	/* Make sure no VMAs are about to be lost. */
++ 	MA_STATE(test, mas->tree, vma->vm_start, vma->vm_end - 1);
++ 	struct vm_area_struct *vma_mas;
++ 	int count =3D 0;
++=20
++ 	mas_for_each(&test, vma_mas, vma->vm_end - 1)
++ 		count++;
++=20
++ 	BUG_ON(count !=3D 1);
++=20
++ 	BUG_ON(mas->min > vma->vm_start);
++ 	BUG_ON(mas->min > mas->index);
++ #endif
++ 	mas->index =3D vma->vm_start;
++ 	mas->last =3D vma->vm_end - 1;
++ 	ret =3D mas_store_gfp(mas, NULL, GFP_KERNEL);
++ 	return ret;
++ }
++=20
+ +struct anon_vma *folio_anon_vma(struct folio *folio);
+ +
+  #ifdef CONFIG_MMU
+  void unmap_mapping_folio(struct folio *folio);
+  extern long populate_vma_page_range(struct vm_area_struct *vma,
+
+--Sig_/ROit3T/DQjpbnLjwG_wOyrr
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIN4pcACgkQAVBC80lX
+0Gytqwf/f85ixpn20VV84DIf5nvUnwxtisHxuxOtvONTKVP64aKQSf8WOK9wwijf
+ehe3wgMO+Mku8WrWSsFykgXbwrKlODHnpdoWjz6nbKIC75QvJdZVuY4iMFj45iWy
+fj2lav6Ffo3IRZTXYVGvJIXp7u9KVrJuCJLTtpBwNO2QRorF70KTWl12B5zGYkXO
+6k6mJMqHoK4l5C2r6kl6GCWgekfUEa2+9Hjuu8ryq5+H42g5A/oKCi9rexDL9dHh
+QQbg4iJbvF12bob7BU9u3No0iA7yCT+wQdPAnOBctBBJVG8H++5oou7x/3Dd5uCm
++txYSPRu/nICoIdDSYXJEQhTJVID8Q==
+=/O6k
+-----END PGP SIGNATURE-----
+
+--Sig_/ROit3T/DQjpbnLjwG_wOyrr--
