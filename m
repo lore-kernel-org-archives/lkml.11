@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA783C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:58:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F38C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229975AbiBQX6S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 18:58:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56648 "EHLO
+        id S229997AbiBQX62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 18:58:28 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiBQX6E (ORCPT
+        with ESMTP id S229976AbiBQX60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 18:58:04 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D8A42EC8;
-        Thu, 17 Feb 2022 15:57:26 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id x5so6814292wrg.13;
-        Thu, 17 Feb 2022 15:57:26 -0800 (PST)
+        Thu, 17 Feb 2022 18:58:26 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAB03CFC9;
+        Thu, 17 Feb 2022 15:57:52 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id l12-20020a7bc34c000000b003467c58cbdfso7371508wmj.2;
+        Thu, 17 Feb 2022 15:57:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=FZYn4dDcPjXeJZV6gh5sYOUK3nuBBshuULLNYbagtWM=;
-        b=p2fZr2bEOFZ/lxAQQKPqKjiMYkPzb1hgQZy8IGivHanoZ5/5wENheWCpskLXpFxdUi
-         VuWY8j4FWnmGmKq96o25bC0M7Q69mFKLt4JXZnjd3uY16nvwHwloYSkc1oNqL3Fr10UX
-         iqrO8oSL3IjkuIm/AfjVV6D69HWhjsPJiLI6WVeBlqVgQ3IAo9SzG+F7KP+Ynpg17PaH
-         +N1Ledd3PARh4ehvXt4bb2glRfcYI1ibXDFObYLbZpJVn9/Ty8p3T+kBsaUWLkiY7xZb
-         3Cqkvh90ZjfMHtSjTnD3jVKYGmdPt3N3j+PtRmS/oJvpGO5NP1CXA5WNyYOTJ3vsc/dP
-         TFbQ==
+        bh=Ouu8iFl9UmHYXMl1PXSnG6kCU3E9ZCC3IhbJ5iz0c18=;
+        b=DEF2qP0N7yseisFAarOe7CX5oi1e6oxYKx1hsQ2iGI6+M4bLJ4IFz1ZAZyNyAoQeLz
+         tfLg4Bj2ljLGV+IgAoiYDFIS6EoAbZDKuuuVIX05qBEqqBcA61L3LOQfRdqukwqE5JTQ
+         bOY/lp1fNW88R60ArJ1PobPcCMdxyCb+6B/DkvBsUAaIvISAURVWc3S0v5JTTIq/3YH0
+         04iKBKabTGAXuasv63tzdAKhW/M2UxM4QZWLJK8AZzdf8qAsqoLMA/GM/A7ac81KTWe4
+         3RB9I9VEBHSj4EcOezyRryT8+G8zTYeILgs+ntrV/xY6aeOSWANQeeLPNGgkGcWjlTLK
+         ipVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FZYn4dDcPjXeJZV6gh5sYOUK3nuBBshuULLNYbagtWM=;
-        b=rUcvCp33AAMxv3tHPypXvB8hHNEX3EV8pKyT+8L0V+NJ2A2BEAu5FWoZU6y3NPm+DW
-         UhNYUeiEptlZ5QsJAJIEomZ6BrBlByFnXlNKinpd7oi9pp9UL+KJPWljaeu/88JMtmLt
-         w+hkxQ5L2gLIVXu5QpCiy3snMGJTh53OA6D1eg73PaZ8wDYUTqmtn9VxeBw0H4nDG3Dx
-         j2GOGk+vsuZjnyLPnt8GJKb3bPuSI2+YnLBz8IfSSit9fDMgHBB5FCaF9N9R0Fhp1P9/
-         T7lBd44A1Nbkj0CY1lUzTFBPPz+P/WDR/HUkhpg3r7OHdzTzUnXA3ScmuB2paOsZAXds
-         D7jQ==
-X-Gm-Message-State: AOAM532Rc61eVGciK95nFkDmhrqgyRniXyg0vB1Rhs83Ra2+GuBLvMLd
-        fLz3pIlcJtNCc/zuUH5FW0o=
-X-Google-Smtp-Source: ABdhPJwU5YMC2StsQVw15/v4ARdP1QkUCzJvBv66hk2TXNWNy+VkJG+FacLTb2zLCMC/I6/YzEJaEA==
-X-Received: by 2002:a5d:4e03:0:b0:1e3:3a59:48ae with SMTP id p3-20020a5d4e03000000b001e33a5948aemr3981917wrt.634.1645142232538;
-        Thu, 17 Feb 2022 15:57:12 -0800 (PST)
+        bh=Ouu8iFl9UmHYXMl1PXSnG6kCU3E9ZCC3IhbJ5iz0c18=;
+        b=7g/qFgdz87rFNv71MRVQu2/snUeU/JVn3VmGdhqU07rgHKp5Qe6MwNOCXCnzl7MVx3
+         VEPl/WWXzaL6yxVQQUbEZu2pUjritX5HuyhDAhQ1esuAEx7josUIlUeYkVEGaPc/h+Uc
+         4ZPb0NY8fojocD3ysMYT0qb86TDVm61JyZKwEkA92mQOXFHYif9zAHyz6DxDvNlcjAfJ
+         g/KdIbmrMx635rbUuaQMlG+nyliuUPUicmQNS8NlRJyVAP26ZAGGW4NFNwdZkz766Ben
+         TDEljpZq5SMeVf9VIpXpo3tblns7s9aLL5ijsHe9B4Aawj3JMmaUCA3zb5U5P3RdwvsF
+         EfNA==
+X-Gm-Message-State: AOAM530nonLJdaClDPaqd9Dnn/5eHZ3ITSjhDkec7Zc0ZDTkYLceTqZC
+        eUZyMLvnVNlvMyy+q6+CH3k=
+X-Google-Smtp-Source: ABdhPJxaEJA1wDg3bxEJZR1L1T8P6nBDGe97+klkGQ73jibFd//ZTF3cTWOxFnH1ddLkDdQkRvmvLw==
+X-Received: by 2002:a7b:cd91:0:b0:37c:f44b:9c93 with SMTP id y17-20020a7bcd91000000b0037cf44b9c93mr8228136wmj.106.1645142235303;
+        Thu, 17 Feb 2022 15:57:15 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id r2sm3691694wmq.24.2022.02.17.15.57.11
+        by smtp.googlemail.com with ESMTPSA id r2sm3691694wmq.24.2022.02.17.15.57.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:57:12 -0800 (PST)
+        Thu, 17 Feb 2022 15:57:15 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 09/16] clk: qcom: gcc-ipq806x: add unusued flag for critical clock
-Date:   Fri, 18 Feb 2022 00:56:56 +0100
-Message-Id: <20220217235703.26641-10-ansuelsmth@gmail.com>
+Subject: [PATCH v4 11/16] clk: qcom: gcc-ipq806x: add additional freq for sdc table
+Date:   Fri, 18 Feb 2022 00:56:58 +0100
+Message-Id: <20220217235703.26641-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220217235703.26641-1-ansuelsmth@gmail.com>
 References: <20220217235703.26641-1-ansuelsmth@gmail.com>
@@ -71,63 +71,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some clocks are used by other devices present on the SoC. For example
-the gsbi4_h_clk is used by RPM and is if disabled cause the RPM to
-reject any regulator change command. These clock should never be
-disabled.
+Add additional freq supported for the sdc table. The ops are changed to
+the floor_ops to handle a freq request of 52kHz where we need to provide
+a freq of 51.2kHz instead for stability reason.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/gcc-ipq806x.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/clk/qcom/gcc-ipq806x.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
-index 53a61860063d..77bc3d94f580 100644
+index 77bc3d94f580..0912abc3af32 100644
 --- a/drivers/clk/qcom/gcc-ipq806x.c
 +++ b/drivers/clk/qcom/gcc-ipq806x.c
-@@ -798,7 +798,7 @@ static struct clk_rcg gsbi4_qup_src = {
+@@ -1292,6 +1292,7 @@ static const struct freq_tbl clk_tbl_sdc[] = {
+ 	{  20210000, P_PLL8,  1, 1,  19 },
+ 	{  24000000, P_PLL8,  4, 1,   4 },
+ 	{  48000000, P_PLL8,  4, 1,   2 },
++	{  51200000, P_PLL8,  1, 2,  15 },
+ 	{  64000000, P_PLL8,  3, 1,   2 },
+ 	{  96000000, P_PLL8,  4, 0,   0 },
+ 	{ 192000000, P_PLL8,  2, 0,   0 },
+@@ -1325,7 +1326,7 @@ static struct clk_rcg sdc1_src = {
+ 			.name = "sdc1_src",
  			.parent_data = gcc_pxo_pll8,
  			.num_parents = ARRAY_SIZE(gcc_pxo_pll8),
- 			.ops = &clk_rcg_ops,
--			.flags = CLK_SET_PARENT_GATE,
-+			.flags = CLK_SET_PARENT_GATE | CLK_IGNORE_UNUSED,
+-			.ops = &clk_rcg_ops,
++			.ops = &clk_rcg_floor_ops,
  		},
- 	},
- };
-@@ -816,7 +816,7 @@ static struct clk_branch gsbi4_qup_clk = {
- 			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
--			.flags = CLK_SET_RATE_PARENT,
-+			.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
- 		},
- 	},
- };
-@@ -900,7 +900,7 @@ static struct clk_rcg gsbi6_qup_src = {
- 			.parent_data = gcc_pxo_pll8,
- 			.num_parents = ARRAY_SIZE(gcc_pxo_pll8),
- 			.ops = &clk_rcg_ops,
--			.flags = CLK_SET_PARENT_GATE,
-+			.flags = CLK_SET_PARENT_GATE | CLK_IGNORE_UNUSED,
- 		},
- 	},
- };
-@@ -969,7 +969,7 @@ static struct clk_branch gsbi7_qup_clk = {
- 			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
--			.flags = CLK_SET_RATE_PARENT,
-+			.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
- 		},
- 	},
- };
-@@ -1015,6 +1015,7 @@ static struct clk_branch gsbi4_h_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gsbi4_h_clk",
- 			.ops = &clk_branch_ops,
-+			.flags = CLK_IGNORE_UNUSED,
- 		},
- 	},
+ 	}
  };
 -- 
 2.34.1
