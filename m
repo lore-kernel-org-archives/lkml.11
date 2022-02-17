@@ -2,102 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A43C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:50:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85895C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229643AbiBQXuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 18:50:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46034 "EHLO
+        id S229644AbiBQXvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 18:51:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbiBQXuQ (ORCPT
+        with ESMTP id S229614AbiBQXvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 18:50:16 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1B639813
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 15:49:58 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id gb39so10978081ejc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 15:49:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IgGbzOlUTHOWKPpui7MHtfG8jNNY4bniwC/YrreyLuI=;
-        b=IhdrQsZx8xawrXEakDHV3a9kOZ8U9S9uUunE5nfMVHp+ZBvfxF1mHvbyZG0jMTuTnG
-         +/3fdRSqXEn7uwXzF9F3GkCNY4oC7rJDO48HhEuxRPWaU133PgRgpP39DJ7b6cPyP5cC
-         s6paU9KqyRAUfYfpmBrnMSZ3Ip5spynzdF2+Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IgGbzOlUTHOWKPpui7MHtfG8jNNY4bniwC/YrreyLuI=;
-        b=Uf7etFKgd4wV1qVZt+eqngqtV75KSiIz8GtMELnOlqbGrIu/QIPahulTFpfIYoYNB3
-         s1TF6ARGcTNGakbmKS/BElhka4MJmL/Ljy1kVIKX/vaIZW//Huxkcc1CtsRzC135+AxQ
-         1fG9dpqh8lAjgKdHRJLC/+XUpP+qvRr4X1d0fihcAbofHQD+cpHE3rV6pDjnntKoK5tP
-         SqnJvWZvTKAbjbtNni59z5n0a6L75ojzec9sUGqYFZVI1rK+/KDsFpEHf6CA/ur2hBnO
-         xGJ7MUeqDGSLIpc0kIUSz1FD8D9XyDw8AZFvXitnHJaJaAYYLL97ZjxpTbmQf6GHTlqR
-         UccQ==
-X-Gm-Message-State: AOAM532Uvd+Jl3vo7Nhcf2PZj9YkIbt5qcZBIJLbqCnd42Qq8QvqQcnI
-        XDnjXgLzS290wpWFznj4Vs8HU91APXkHjLBd1bo=
-X-Google-Smtp-Source: ABdhPJz2nZv/3wiK8DbHckgGFHjSpY8OUIk13kX/moLxvNGkI7NaRUVR9Jo1X4t30ZuJlA9BALISXA==
-X-Received: by 2002:a17:907:2087:b0:6cf:e170:171 with SMTP id pv7-20020a170907208700b006cfe1700171mr4442084ejb.163.1645141796973;
-        Thu, 17 Feb 2022 15:49:56 -0800 (PST)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id 5sm1645813ejl.211.2022.02.17.15.49.55
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 15:49:56 -0800 (PST)
-Received: by mail-wr1-f54.google.com with SMTP id e3so11714581wra.0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 15:49:55 -0800 (PST)
-X-Received: by 2002:adf:ef07:0:b0:1e3:333f:a101 with SMTP id
- e7-20020adfef07000000b001e3333fa101mr4100610wro.301.1645141795187; Thu, 17
- Feb 2022 15:49:55 -0800 (PST)
-MIME-Version: 1.0
-References: <1644494255-6632-1-git-send-email-quic_sbillaka@quicinc.com> <1644494255-6632-3-git-send-email-quic_sbillaka@quicinc.com>
-In-Reply-To: <1644494255-6632-3-git-send-email-quic_sbillaka@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 17 Feb 2022 15:49:36 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=U9v40Ld1N5VsEbny7BBtSWuC5rNxWqcuLQocS1bxLcoQ@mail.gmail.com>
-Message-ID: <CAD=FV=U9v40Ld1N5VsEbny7BBtSWuC5rNxWqcuLQocS1bxLcoQ@mail.gmail.com>
-Subject: Re: [PATCH v4 2/5] arm64: dts: qcom: sc7280: Add support for eDP
- panel on CRD
-To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, quic_kalyant@quicinc.com,
-        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
-        quic_mkrishn@quicinc.com, quic_vproddut@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 17 Feb 2022 18:51:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0017427F2;
+        Thu, 17 Feb 2022 15:50:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FAE4618CA;
+        Thu, 17 Feb 2022 23:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C72ADC340E8;
+        Thu, 17 Feb 2022 23:50:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645141846;
+        bh=NpSQ0OTxSO0IrfQSnUyXG5N76XbEGxyx9JaG+Bcbz8g=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=DblQE/Lk5nnxWSAfXcIyV4FAD6GY6pkrLhMVeXd6GlwOqDB78Ry0rVGe0xUAr6PYn
+         P4QffThLC3iZivz+4jD/2DlOnuMp9+8ywgCzZUGtBM+W48pnqSanfIU+/ITzleWBnf
+         LHUj24BxQbUrQAENP5c5LKX7ATKmYqJ3QnJdQ8q9ogq/3HwZGwuOBOSlKSeO7GLqut
+         zhl9hf2hI7oQmW7iB+BzbxgcHxCoiejbCpbDDh/2ezW4hK6tywblyGoweFXZdVTDkk
+         RInODZd4r2ek5xN2EBeQ4w2v5lnIde9B1phxpuVp0HNqKgK5P2cxkYnT1OPYyti2Md
+         AQpW/OJ7DBtpA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B6266E6D447;
+        Thu, 17 Feb 2022 23:50:46 +0000 (UTC)
+Subject: Re: [GIT PULL] Kselftest fixes update for Linux 5.17-rc5
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <1b759083-880e-8acc-239b-bba42ec09551@linuxfoundation.org>
+References: <1b759083-880e-8acc-239b-bba42ec09551@linuxfoundation.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <1b759083-880e-8acc-239b-bba42ec09551@linuxfoundation.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-fixes-5.17-rc5
+X-PR-Tracked-Commit-Id: 6fec1ab67f8d60704cc7de64abcfd389ab131542
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 9195e5e0adbb8a9a5ee9ef0f9dedf6340d827405
+Message-Id: <164514184673.26956.9171883239443079951.pr-tracker-bot@kernel.org>
+Date:   Thu, 17 Feb 2022 23:50:46 +0000
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The pull request you sent on Thu, 17 Feb 2022 15:24:08 -0700:
 
-On Thu, Feb 10, 2022 at 3:58 AM Sankeerth Billakanti
-<quic_sbillaka@quicinc.com> wrote:
->
-> +&pm8350c_gpios {
-> +       edp_bl_power: edp-bl-power {
-> +               pins = "gpio7";
-> +               function = "normal";
-> +               qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
+> git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-fixes-5.17-rc5
 
-As far as I can tell you're lacking:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/9195e5e0adbb8a9a5ee9ef0f9dedf6340d827405
 
-#include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+Thank you!
 
-...which is needed to use PMIC_GPIO_STRENGTH_LOW. I'm curious how
-you're compiling?
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
