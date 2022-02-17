@@ -2,116 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E91C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 19:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 20:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245596AbiBQT7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 14:59:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39790 "EHLO
+        id S245604AbiBQUAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 15:00:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245590AbiBQT7U (ORCPT
+        with ESMTP id S242729AbiBQUAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 14:59:20 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487C528E35
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:59:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645127945; x=1676663945;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=T/dy5bFV0hFt5PA339JCU431TnB8St9YIJsJ095SE54=;
-  b=OKLJG2k2ZLmkG6z8A0kanEytjHmDGjFNKa+ateshcAI4GAB70UXRmO2K
-   CKv3ix+fR9FaNQj2tJgChyixMv5enTidi4Ok/9uu68F3/kb3lLIpVNPFT
-   7cguxlN84J484noDBtWPZWkGOWu5OsRgZxcyw5OunxL8OmwlBXjjrEZsD
-   2RPsJ3G61tU5tLUakoe7wLTAEjsIHKhAyDUQUIJ6o+xTosJGftpffMGrI
-   sue0dKkUryEAK+dtLcpUeSrgy0MJ9+yRzo9VZ7S+5ZKrYiYWZaqeIk+Xv
-   vN2uB4jM/bJsw1mJ00U1qEXJ536KalsX4WviVt99SvzeJpGtCa7G5DcLm
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="250704140"
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="250704140"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 11:59:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="488646551"
-Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 17 Feb 2022 11:59:02 -0800
-Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKmvd-0000aO-W2; Thu, 17 Feb 2022 19:59:01 +0000
-Date:   Fri, 18 Feb 2022 03:58:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [ulfh-mmc:next 20/24] drivers/memstick/core/ms_block.c:158:6: error:
- implicit declaration of function 'bitmap_weight_eq'
-Message-ID: <202202180327.nT5gZudK-lkp@intel.com>
+        Thu, 17 Feb 2022 15:00:10 -0500
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BBD29CBA;
+        Thu, 17 Feb 2022 11:59:55 -0800 (PST)
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-2d07ae0b1c4so44194027b3.11;
+        Thu, 17 Feb 2022 11:59:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ibo+ljOZltOHxbfiowmfbU4E0+eJxT2hqrSRwf9WFds=;
+        b=8QZY6lI3jXqcmpyxtXp6jocIXp+NaqQEOdv82LkssGAMEw33X5Xb1fBc9U7Ou9MwG5
+         L+PO0aAH9NNHqQ8igYgC+8x/sU4mVB3dwiNnptt39uQCSlqOrODomZBc61dMe2+taNa/
+         QzHmVoMu9S3EEopnFpBp9TIcNLbRcpVuN/Yoa9eV1vWCxm9fTo0S8AaURnpG6K72SFKF
+         YpxQB+s4RRI0Ae0hK8mL8/tbBmP8ZIs+j0g2WeBMJwNg49FkNcoEYr5y38PhvINNWGhH
+         qcqBGIpH042TRKsR3HFNGaL22FX3F8a/ry+xwJWFRwg5lcw5/eERA4y4z8M1cG65SbJa
+         D/xg==
+X-Gm-Message-State: AOAM530Wmm/qm4FgcZzPd6Wv0rRtwjQop4Bzh7zB2nXDqy7teYYZXKKa
+        fY98kaWUZYOnU5sf2glz4a3fjK1oJdKJ2zeI98Q=
+X-Google-Smtp-Source: ABdhPJwlk5R6MoRUjz/JC7Tw0qXkBl+ocvndg0AZSGM/zqGcn1E5R+qvJ84SwxiZUzksJsAeR9TK1MS/AgCsiy5JmKk=
+X-Received: by 2002:a81:1cd8:0:b0:2d6:b74b:5b55 with SMTP id
+ c207-20020a811cd8000000b002d6b74b5b55mr1649314ywc.149.1645127994670; Thu, 17
+ Feb 2022 11:59:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220215035553.102315-1-ilkka@os.amperecomputing.com> <20220215035553.102315-2-ilkka@os.amperecomputing.com>
+In-Reply-To: <20220215035553.102315-2-ilkka@os.amperecomputing.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 17 Feb 2022 20:59:43 +0100
+Message-ID: <CAJZ5v0h7hCQLQP7-uF+Zh6Yx11AxxYK3rjLS17XHfA17z8fR0Q@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] ACPI: tables: Add AGDI to the list of known table signatures
+To:     Ilkka Koskinen <ilkka@os.amperecomputing.com>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Len Brown <lenb@kernel.org>,
+        Robert Moore <robert.moore@intel.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        patches@amperecomputing.com, scott@os.amperecomputing.com,
+        darren@os.amperecomputing.com, James Morse <james.morse@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git next
-head:   4b67100bafbb3f60e6eecf87631e4d400d9b6f17
-commit: 5f8d171cd8a93ff425556e7fde5d59fefc677bf7 [20/24] memstick: replace bitmap_weight with bitmap_weight_eq where appropriate
-config: hexagon-randconfig-r045-20220217 (https://download.01.org/0day-ci/archive/20220218/202202180327.nT5gZudK-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git/commit/?id=5f8d171cd8a93ff425556e7fde5d59fefc677bf7
-        git remote add ulfh-mmc git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git
-        git fetch --no-tags ulfh-mmc next
-        git checkout 5f8d171cd8a93ff425556e7fde5d59fefc677bf7
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/memstick/core/
+On Tue, Feb 15, 2022 at 4:56 AM Ilkka Koskinen
+<ilkka@os.amperecomputing.com> wrote:
+>
+> Add AGDI to the list of known ACPI table signatures to allow the
+> kernel to recognize it when upgrading tables via initrd.
+>
+> Signed-off-by: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+> Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This is fine with me and please route the series through arm64.  Thanks!
 
-All errors (new ones prefixed by >>):
-
->> drivers/memstick/core/ms_block.c:158:6: error: implicit declaration of function 'bitmap_weight_eq' [-Werror,-Wimplicit-function-declaration]
-           if (bitmap_weight_eq(msb->used_blocks_bitmap, msb->block_count,
-               ^
-   drivers/memstick/core/ms_block.c:158:6: note: did you mean 'bitmap_weight'?
-   include/linux/bitmap.h:399:28: note: 'bitmap_weight' declared here
-   static __always_inline int bitmap_weight(const unsigned long *src, unsigned int nbits)
-                              ^
-   1 error generated.
-
-
-vim +/bitmap_weight_eq +158 drivers/memstick/core/ms_block.c
-
-   145	
-   146	/* Debug test to validate free block counts */
-   147	static int msb_validate_used_block_bitmap(struct msb_data *msb)
-   148	{
-   149		int total_free_blocks = 0;
-   150		int i;
-   151	
-   152		if (!debug)
-   153			return 0;
-   154	
-   155		for (i = 0; i < msb->zone_count; i++)
-   156			total_free_blocks += msb->free_block_count[i];
-   157	
- > 158		if (bitmap_weight_eq(msb->used_blocks_bitmap, msb->block_count,
-   159					msb->block_count - total_free_blocks))
-   160			return 0;
-   161	
-   162		pr_err("BUG: free block counts don't match the bitmap");
-   163		msb->read_only = true;
-   164		return -EINVAL;
-   165	}
-   166	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> ---
+>  drivers/acpi/tables.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/acpi/tables.c b/drivers/acpi/tables.c
+> index 2d7ed7126faa..ae29b13b8774 100644
+> --- a/drivers/acpi/tables.c
+> +++ b/drivers/acpi/tables.c
+> @@ -545,7 +545,7 @@ static const char table_sigs[][ACPI_NAMESEG_SIZE] __initconst = {
+>         ACPI_SIG_WDDT, ACPI_SIG_WDRT, ACPI_SIG_DSDT, ACPI_SIG_FADT,
+>         ACPI_SIG_PSDT, ACPI_SIG_RSDT, ACPI_SIG_XSDT, ACPI_SIG_SSDT,
+>         ACPI_SIG_IORT, ACPI_SIG_NFIT, ACPI_SIG_HMAT, ACPI_SIG_PPTT,
+> -       ACPI_SIG_NHLT, ACPI_SIG_AEST, ACPI_SIG_CEDT };
+> +       ACPI_SIG_NHLT, ACPI_SIG_AEST, ACPI_SIG_CEDT, ACPI_SIG_AGDI };
+>
+>  #define ACPI_HEADER_SIZE sizeof(struct acpi_table_header)
+>
+> --
+> 2.17.1
+>
