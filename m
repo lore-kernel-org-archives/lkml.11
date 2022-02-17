@@ -2,319 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 073E5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69530C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241003AbiBQNgf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:36:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44020 "EHLO
+        id S241004AbiBQNh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:37:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240979AbiBQNgd (ORCPT
+        with ESMTP id S234678AbiBQNhZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:36:33 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF1B2AF901;
-        Thu, 17 Feb 2022 05:36:16 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Jzwp64hKWz9sST;
-        Thu, 17 Feb 2022 14:36:14 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id bdsLnYI5f0-W; Thu, 17 Feb 2022 14:36:14 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jzwp63jSCz9sSQ;
-        Thu, 17 Feb 2022 14:36:14 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3F7E68B77C;
-        Thu, 17 Feb 2022 14:36:14 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id gmNETUs1Pp2y; Thu, 17 Feb 2022 14:36:14 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.225])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id F3FE98B763;
-        Thu, 17 Feb 2022 14:36:13 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21HDa4xv407928
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 14:36:04 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21HDa2lE407925;
-        Thu, 17 Feb 2022 14:36:02 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH net v4] net: Force inlining of checksum functions in net/checksum.h
-Date:   Thu, 17 Feb 2022 14:35:49 +0100
-Message-Id: <4c4e276f6491d127c61b627c9ff13f0a71dab092.1645104881.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
+        Thu, 17 Feb 2022 08:37:25 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E7915F089
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:37:10 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so5417776pjh.3
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:37:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=02nHroSlazasbyOohrNnb8vU7M/55jk3Ml13ncR5Bag=;
+        b=IdYYavNv07RNisGgu/TXShEnKyrJWR/is6EclNeBTQgiqCnQNJXa+3MiniP9HimypK
+         mB7edwXnVvvhTHlX4v3bGJ16oBym1g52ArkErSQ0ldoiXVaD8osB7Gtnx0MxzJjbks72
+         9Jvv2pQYzQ9YtNQBVw8xseXTcMagltFGxgXla/VyJF0RmwWRjKlA6LXOImiWnbowrMaf
+         Kk2jhWX5YHB6w79I2t8V38z7SCSBlTROy+qYpOJeichB7oiXMiCbLxx1KGc+LGuhksj1
+         q0bGFZ444N21gtrGXPXouFw7tK+DJ6tRWT3GldzBS37A0m6Ckm0O43+sXktPKuMk/mmk
+         X9mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=02nHroSlazasbyOohrNnb8vU7M/55jk3Ml13ncR5Bag=;
+        b=UTP6gQMeac1hEv/d0z5e9jWXiOxD9TfK14I7/nomtc+8Ke5oRqhemXJElLP2ZaOQa4
+         JCYIwqpx/9YSDM6WZK7xz7ch1oCP/K25sQLhZV1ti+Cm6ihTHlbBYJ3n9xstswsObHGM
+         GmFKfkrRl+2gz6HRhlHeQxiSrBuJwtpXDdkF63Zv8T29uZ54KvscwIqhU/P8O5K27bXm
+         9dZWXgGFsboCA1qRrMdMGl9CrQrTszr2v5bOeE9tBeDKSWuPMtFUTsoWhQb27hcigde7
+         WLKuHz6K/+XSmmyOC59tBANMYBHa6rG+K6HtobExJmgYog6XcJLUrRzEPLf8/Zsn94lW
+         0nkA==
+X-Gm-Message-State: AOAM532lLcyIQ1ZE0iMYgDs1o9C614oqHAPzDXtkjlY5Gx0I4DBX5k4R
+        xQFq4d45tpiZH/nuDY+lFZS8Lw==
+X-Google-Smtp-Source: ABdhPJwcWuETHUESiM4/nhBPmTEObKuQt3H+aAYmKUzy7lA2D749ZekIREMcr4wZ4L7fDlyvhEijUQ==
+X-Received: by 2002:a17:90b:4a4f:b0:1b8:7240:1a47 with SMTP id lb15-20020a17090b4a4f00b001b872401a47mr7457883pjb.84.1645105030366;
+        Thu, 17 Feb 2022 05:37:10 -0800 (PST)
+Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
+        by smtp.gmail.com with ESMTPSA id s19sm46943518pfu.34.2022.02.17.05.37.06
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 17 Feb 2022 05:37:09 -0800 (PST)
+Date:   Thu, 17 Feb 2022 21:37:03 +0800
+From:   Shawn Guo <shawn.guo@linaro.org>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/3] cpuidle: psci: Call cpu_cluster_pm_enter() on the
+ last CPU
+Message-ID: <20220217133702.GF31965@dragon>
+References: <20220216132830.32490-1-shawn.guo@linaro.org>
+ <20220216132830.32490-2-shawn.guo@linaro.org>
+ <20220216144937.znsba7zbdenl7427@bogus>
+ <9bda65e5bb85b00eaca71d95ad78e93b@kernel.org>
+ <20220217073130.GD31965@dragon>
+ <875ypd50z0.wl-maz@kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645104947; l=8482; s=20211009; h=from:subject:message-id; bh=nLoTS03q6niZXTFFFgpm8ElmTrYEQmex7BJzqocdnLo=; b=k1qawNxGrW4us7WMJL9HYnNhC4Z7yjlNzEdHHr+o9yaJDLvn3rxivCgirLbPCTrs/008V1VD04De k6ZMSd3gDqJsS9qk4rtlRa60VNMVbO9ycGKilX8dFQLK5b9wttgN
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <875ypd50z0.wl-maz@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All functions defined as static inline in net/checksum.h are
-meant to be inlined for performance reason.
+On Thu, Feb 17, 2022 at 08:52:35AM +0000, Marc Zyngier wrote:
+> On Thu, 17 Feb 2022 07:31:32 +0000,
+> Shawn Guo <shawn.guo@linaro.org> wrote:
+> > 
+> > On Wed, Feb 16, 2022 at 03:58:41PM +0000, Marc Zyngier wrote:
+> > > On 2022-02-16 14:49, Sudeep Holla wrote:
+> > > > +Ulf (as you he is the author of cpuidle-psci-domains.c and can help you
+> > > > with that if you require)
+> > 
+> > Thanks, Sudeep!
+> > 
+> > > > 
+> > > > On Wed, Feb 16, 2022 at 09:28:28PM +0800, Shawn Guo wrote:
+> > > > > Make a call to cpu_cluster_pm_enter() on the last CPU going to low
+> > > > > power
+> > > > > state (and cpu_cluster_pm_exit() on the firt CPU coming back), so that
+> > > > > platforms can be notified to set up hardware for getting into the
+> > > > > cluster
+> > > > > low power state.
+> > > > > 
+> > > > 
+> > > > NACK. We are not getting the notion of CPU cluster back to cpuidle
+> > > > again.
+> > > > That must die. Remember the cluster doesn't map to idle states
+> > > > especially
+> > > > in the DSU systems where HMP CPUs are in the same cluster but can be in
+> > > > different power domains.
+> > 
+> > The 'cluster' in cpu_cluster_pm_enter() doesn't necessarily means
+> > a physical CPU cluster.  I think the documentation of the function has a
+> > better description.
+> > 
+> >  * Notifies listeners that all cpus in a power domain are entering a low power
+> >  * state that may cause some blocks in the same power domain to reset.
+> > 
+> > So cpu_domain_pm_enter() might be a better name?  Anyways ...
+> > 
+> > > > 
+> > > > You need to decide which PSCI CPU_SUSPEND mode you want to use first. If
+> > > > it is
+> > > > Platform Co-ordinated(PC), then you need not notify anything to the
+> > > > platform.
+> > > > Just request the desired idle state on each CPU and platform will take
+> > > > care
+> > > > from there.
+> > > > 
+> > > > If for whatever reason you have chosen OS initiated mode(OSI), then
+> > > > specify
+> > > > the PSCI power domains correctly in the DT which will make use of the
+> > > > cpuidle-psci-domains and handle the so called "cluster" state correctly.
+> > 
+> > Yes, I'm running a Qualcomm platform that has OSI supported in PSCI.
+> > 
+> > > 
+> > > My understanding is that what Shawn is after is a way to detect the "last
+> > > man standing" on the system to kick off some funky wake-up controller that
+> > > really should be handled by the power controller (because only that guy
+> > > knows for sure who is the last CPU on the block).
+> > > 
+> > > There was previously some really funky stuff (copy pasted from the existing
+> > > rpmh_rsc_cpu_pm_callback()), which I totally objected to having hidden in
+> > > an irqchip driver.
+> > > 
+> > > My ask was that if we needed such information, and assuming that it is
+> > > possible to obtain it in a reliable way, this should come from the core
+> > > code, and not be invented by random drivers.
+> > 
+> > Thanks Marc for explain my problem!
+> > 
+> > Right, all I need is a notification in MPM irqchip driver when the CPU
+> > domain/cluster is about to enter low power state.  As cpu_pm -
+> > kernel/cpu_pm.c, already has helper cpu_cluster_pm_enter() sending
+> > CPU_CLUSTER_PM_ENTER event, I just need to find a caller to this cpu_pm
+> > helper.  
+> > 
+> > Is .power_off hook of generic_pm_domain a better place for calling the
+> > helper?
+> 
+> I really don't understand why you want a cluster PM event generated by
+> the idle driver.  Specially considering that you are not after a
+> *cluster* PM event, but after some sort of system-wide event (last man
+> standing).
 
-But since commit ac7c3e4ff401 ("compiler: enable
-CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
-uninline functions when it wants.
+That's primarily because MPM driver is used in the idle context, either
+s2idle or cpuidle, and idle driver already has some infrastructure that
+could help trigger the event.
 
-Fair enough in the general case, but for tiny performance critical
-checksum helpers that's counter-productive.
+> It looks to me that having a predicate that can be called from a PM
+> notifier event to find out whether you're the last in line would be
+> better suited, and could further be used to remove the crap from the
+> rpmh-rsc driver.
 
-The problem mainly arises when selecting CONFIG_CC_OPTIMISE_FOR_SIZE,
-Those helpers being 'static inline' in header files you suddenly find
-them duplicated many times in the resulting vmlinux.
+I will see if I can come up with a patch for discussion.
 
-Here is a typical exemple when building powerpc pmac32_defconfig
-with CONFIG_CC_OPTIMISE_FOR_SIZE. csum_sub() appears 4 times:
-
-	c04a23cc <csum_sub>:
-	c04a23cc:	7c 84 20 f8 	not     r4,r4
-	c04a23d0:	7c 63 20 14 	addc    r3,r3,r4
-	c04a23d4:	7c 63 01 94 	addze   r3,r3
-	c04a23d8:	4e 80 00 20 	blr
-		...
-	c04a2ce8:	4b ff f6 e5 	bl      c04a23cc <csum_sub>
-		...
-	c04a2d2c:	4b ff f6 a1 	bl      c04a23cc <csum_sub>
-		...
-	c04a2d54:	4b ff f6 79 	bl      c04a23cc <csum_sub>
-		...
-	c04a754c <csum_sub>:
-	c04a754c:	7c 84 20 f8 	not     r4,r4
-	c04a7550:	7c 63 20 14 	addc    r3,r3,r4
-	c04a7554:	7c 63 01 94 	addze   r3,r3
-	c04a7558:	4e 80 00 20 	blr
-		...
-	c04ac930:	4b ff ac 1d 	bl      c04a754c <csum_sub>
-		...
-	c04ad264:	4b ff a2 e9 	bl      c04a754c <csum_sub>
-		...
-	c04e3b08 <csum_sub>:
-	c04e3b08:	7c 84 20 f8 	not     r4,r4
-	c04e3b0c:	7c 63 20 14 	addc    r3,r3,r4
-	c04e3b10:	7c 63 01 94 	addze   r3,r3
-	c04e3b14:	4e 80 00 20 	blr
-		...
-	c04e5788:	4b ff e3 81 	bl      c04e3b08 <csum_sub>
-		...
-	c04e65c8:	4b ff d5 41 	bl      c04e3b08 <csum_sub>
-		...
-	c0512d34 <csum_sub>:
-	c0512d34:	7c 84 20 f8 	not     r4,r4
-	c0512d38:	7c 63 20 14 	addc    r3,r3,r4
-	c0512d3c:	7c 63 01 94 	addze   r3,r3
-	c0512d40:	4e 80 00 20 	blr
-		...
-	c0512dfc:	4b ff ff 39 	bl      c0512d34 <csum_sub>
-		...
-	c05138bc:	4b ff f4 79 	bl      c0512d34 <csum_sub>
-		...
-
-Restore the expected behaviour by using __always_inline for all
-functions defined in net/checksum.h
-
-vmlinux size is even reduced by 256 bytes with this patch:
-
-	   text	   data	    bss	    dec	    hex	filename
-	6980022	2515362	 194384	9689768	 93daa8	vmlinux.before
-	6979862	2515266	 194384	9689512	 93d9a8	vmlinux.now
-
-Fixes: ac7c3e4ff401 ("compiler: enable CONFIG_OPTIMIZE_INLINING forcibly")
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
-v4: Added Cc: as complained by netdev patchwork and handled checkpatch checks. (Sorry for the noise, I'm not used to netdev process)
-
-v3: Added fixes tag and handled checkpatch warning about length of lines.
-
-v2: Rebased on net tree
----
- include/net/checksum.h | 47 +++++++++++++++++++++---------------------
- 1 file changed, 24 insertions(+), 23 deletions(-)
-
-diff --git a/include/net/checksum.h b/include/net/checksum.h
-index 5218041e5c8f..02d0c2d01014 100644
---- a/include/net/checksum.h
-+++ b/include/net/checksum.h
-@@ -22,7 +22,7 @@
- #include <asm/checksum.h>
- 
- #ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
--static inline
-+static __always_inline
- __wsum csum_and_copy_from_user (const void __user *src, void *dst,
- 				      int len)
- {
-@@ -33,7 +33,7 @@ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
- #endif
- 
- #ifndef HAVE_CSUM_COPY_USER
--static __inline__ __wsum csum_and_copy_to_user
-+static __always_inline __wsum csum_and_copy_to_user
- (const void *src, void __user *dst, int len)
- {
- 	__wsum sum = csum_partial(src, len, ~0U);
-@@ -45,7 +45,7 @@ static __inline__ __wsum csum_and_copy_to_user
- #endif
- 
- #ifndef _HAVE_ARCH_CSUM_AND_COPY
--static inline __wsum
-+static __always_inline __wsum
- csum_partial_copy_nocheck(const void *src, void *dst, int len)
- {
- 	memcpy(dst, src, len);
-@@ -54,7 +54,7 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len)
- #endif
- 
- #ifndef HAVE_ARCH_CSUM_ADD
--static inline __wsum csum_add(__wsum csum, __wsum addend)
-+static __always_inline __wsum csum_add(__wsum csum, __wsum addend)
- {
- 	u32 res = (__force u32)csum;
- 	res += (__force u32)addend;
-@@ -62,12 +62,12 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
- }
- #endif
- 
--static inline __wsum csum_sub(__wsum csum, __wsum addend)
-+static __always_inline __wsum csum_sub(__wsum csum, __wsum addend)
- {
- 	return csum_add(csum, ~addend);
- }
- 
--static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
-+static __always_inline __sum16 csum16_add(__sum16 csum, __be16 addend)
- {
- 	u16 res = (__force u16)csum;
- 
-@@ -75,12 +75,12 @@ static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
- 	return (__force __sum16)(res + (res < (__force u16)addend));
- }
- 
--static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
-+static __always_inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
- {
- 	return csum16_add(csum, ~addend);
- }
- 
--static inline __wsum csum_shift(__wsum sum, int offset)
-+static __always_inline __wsum csum_shift(__wsum sum, int offset)
- {
- 	/* rotate sum to align it with a 16b boundary */
- 	if (offset & 1)
-@@ -88,42 +88,43 @@ static inline __wsum csum_shift(__wsum sum, int offset)
- 	return sum;
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_add(__wsum csum, __wsum csum2, int offset)
- {
- 	return csum_add(csum, csum_shift(csum2, offset));
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_add_ext(__wsum csum, __wsum csum2, int offset, int len)
- {
- 	return csum_block_add(csum, csum2, offset);
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_sub(__wsum csum, __wsum csum2, int offset)
- {
- 	return csum_block_add(csum, ~csum2, offset);
- }
- 
--static inline __wsum csum_unfold(__sum16 n)
-+static __always_inline __wsum csum_unfold(__sum16 n)
- {
- 	return (__force __wsum)n;
- }
- 
--static inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
-+static __always_inline
-+__wsum csum_partial_ext(const void *buff, int len, __wsum sum)
- {
- 	return csum_partial(buff, len, sum);
- }
- 
- #define CSUM_MANGLED_0 ((__force __sum16)0xffff)
- 
--static inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
-+static __always_inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
- {
- 	*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
- }
- 
--static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
-+static __always_inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
- {
- 	__wsum tmp = csum_sub(~csum_unfold(*sum), (__force __wsum)from);
- 
-@@ -136,7 +137,7 @@ static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
-  *  m : old value of a 16bit field
-  *  m' : new value of a 16bit field
-  */
--static inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
-+static __always_inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
- {
- 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
- }
-@@ -150,16 +151,16 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
- void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
- 				     __wsum diff, bool pseudohdr);
- 
--static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
--					    __be16 from, __be16 to,
--					    bool pseudohdr)
-+static __always_inline
-+void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
-+			      __be16 from, __be16 to, bool pseudohdr)
- {
- 	inet_proto_csum_replace4(sum, skb, (__force __be32)from,
- 				 (__force __be32)to, pseudohdr);
- }
- 
--static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
--				    int start, int offset)
-+static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
-+					     int start, int offset)
- {
- 	__sum16 *psum = (__sum16 *)(ptr + offset);
- 	__wsum delta;
-@@ -175,12 +176,12 @@ static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
- 	return delta;
- }
- 
--static inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
-+static __always_inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
- {
- 	*psum = csum_fold(csum_sub(delta, (__force __wsum)*psum));
- }
- 
--static inline __wsum wsum_negate(__wsum val)
-+static __always_inline __wsum wsum_negate(__wsum val)
- {
- 	return (__force __wsum)-((__force u32)val);
- }
--- 
-2.34.1
-
+Shawn
