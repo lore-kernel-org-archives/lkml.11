@@ -2,80 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 152E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:08:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E643C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241197AbiBQOIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:08:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40126 "EHLO
+        id S241729AbiBQOJS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:09:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiBQOIw (ORCPT
+        with ESMTP id S230104AbiBQOJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:08:52 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4421BBF42
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:08:38 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JzxV913MBzbnbd;
-        Thu, 17 Feb 2022 22:07:29 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Feb
- 2022 22:08:35 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <rppt@kernel.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] memblock: remove unneeded local variable nid
-Date:   Thu, 17 Feb 2022 22:07:54 +0800
-Message-ID: <20220217140754.1026-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Thu, 17 Feb 2022 09:09:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8909F2B1657;
+        Thu, 17 Feb 2022 06:08:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BE06B821B0;
+        Thu, 17 Feb 2022 14:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F949C340E8;
+        Thu, 17 Feb 2022 14:08:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645106936;
+        bh=VoulgDqx/o2S+UIto0WbQUhu6IyrEAGb9gidP9e2DWg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ctzj9qYXdaQqbnjHcUtT4/xgomJoaerH3oPclUjUHgFE6y3Jp0H88nII3odRZR7Q4
+         w+vcJmdliwGCG4C4gZ7JcPUwXOhakozb0nf2N5rLmT1uKiVlVBJOIOWpka4yWKuo90
+         /FfzdK0m90xQ+hdrted09EQMLDqfnBjOqcd4nCIw=
+Date:   Thu, 17 Feb 2022 15:08:54 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-usb@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Sven Peter <sven@svenpeter.dev>
+Subject: Re: [PATCH] tps6598x: clear int mask on probe failure
+Message-ID: <Yg5W9iLejXtJm0BP@kroah.com>
+References: <e6b80669-20f3-06e7-9ed5-8951a9c6db6f@kernel.dk>
+ <Yg4HwO2SKGDvOASz@kuha.fi.intel.com>
+ <b6bf2ab5-031d-8be8-e9e7-ba04f39ef35e@kernel.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b6bf2ab5-031d-8be8-e9e7-ba04f39ef35e@kernel.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The nid is only used to act as output parameter of __next_mem_range.
-Since NULL can be passed to __next_mem_range as out_nid, we can thus
-remove nid by passing NULL here.
+On Thu, Feb 17, 2022 at 06:51:27AM -0700, Jens Axboe wrote:
+> On 2/17/22 1:30 AM, Heikki Krogerus wrote:
+> > On Tue, Feb 15, 2022 at 11:22:04AM -0700, Jens Axboe wrote:
+> >> The interrupt mask is enabled before any potential failure points in
+> >> the driver, which can leave a failure path where we exit with
+> >> interrupts enabled but the device not live. This causes an infinite
+> >> stream of interrupts on an Apple M1 Pro laptop on USB-C.
+> >>
+> >> Add a failure label that's used post enabling interrupts, where we
+> >> mask them again before returning an error.
+> >>
+> >> Suggested-by: Sven Peter <sven@svenpeter.dev>
+> >> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> > 
+> > Should this be marked as a fix?
+> 
+> Maybe, I can try and dig out the offending commit. From some quick
+> checking, it didn't come in with recent fixes, so it's probably been
+> there since support got added. Maybe we just mark it stable?
+> 
+> > Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> 
+> Thanks! Greg, will you pick this up?
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/memblock.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Will do, thanks.
 
-diff --git a/mm/memblock.c b/mm/memblock.c
-index 1018e50566f3..11561bbff8f5 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -1278,11 +1278,10 @@ __next_mem_pfn_range_in_zone(u64 *idx, struct zone *zone,
- {
- 	int zone_nid = zone_to_nid(zone);
- 	phys_addr_t spa, epa;
--	int nid;
- 
- 	__next_mem_range(idx, zone_nid, MEMBLOCK_NONE,
- 			 &memblock.memory, &memblock.reserved,
--			 &spa, &epa, &nid);
-+			 &spa, &epa, NULL);
- 
- 	while (*idx != U64_MAX) {
- 		unsigned long epfn = PFN_DOWN(epa);
-@@ -1309,7 +1308,7 @@ __next_mem_pfn_range_in_zone(u64 *idx, struct zone *zone,
- 
- 		__next_mem_range(idx, zone_nid, MEMBLOCK_NONE,
- 				 &memblock.memory, &memblock.reserved,
--				 &spa, &epa, &nid);
-+				 &spa, &epa, NULL);
- 	}
- 
- 	/* signal end of iteration */
--- 
-2.23.0
-
+greg k-h
