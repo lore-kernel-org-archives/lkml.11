@@ -2,115 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C98F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D48EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244766AbiBQSup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:50:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45684 "EHLO
+        id S237455AbiBQSz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:55:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244654AbiBQSu0 (ORCPT
+        with ESMTP id S244807AbiBQSzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:50:26 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E77532D9;
-        Thu, 17 Feb 2022 10:50:06 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id qk11so9473224ejb.2;
-        Thu, 17 Feb 2022 10:50:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QtTQzoKh6SHELhVbK7UgiDGo5+sChsVz7qZ/mZQ4wRk=;
-        b=LfG5Bww0Oy3sfjvyo7UZik9CTOze3VJSleCGeTzqBYFQBb7GCb81WoeNFCcwMDHAf2
-         6KDyRC9FbU54q681hajrooEUs1aUj1/X/WjuVoV3omcO+G34AxBIxo5VUbbH/vgctNu5
-         1nPnBsA8HLXrB09j1Wal4ffV2IdeaqW/EDGtqMw6CEptfUVX/9wu9p6LShOkI46d0IfV
-         f3qb+rqVCZPlnikjHQsgKr/voCZUNSLcpsDDevv90CtSx//A6/d3IEgX3w+q0SNjp1ng
-         d7OUNelVCif/q3zsuV5zwuSk4/D/XArrjWCtU6hHhewjLLju4BupSa/6nftUykdH73+X
-         JYSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QtTQzoKh6SHELhVbK7UgiDGo5+sChsVz7qZ/mZQ4wRk=;
-        b=wn0sqvOmQxI0h5noPo+XCYO52Gj+7O66j323rHL6/4f68W/mx2ECsONeQmrqgkfHpr
-         YYHTRCYJkYfXopX70g4jKzeW/3Ag6kOgfufGkKgKdtjfP8TOMn92JBpwBOVg5sZtavwk
-         USFwyFisy8Efj/OoErFXyrN/uU/EC8xMuf3bcwHVceQq63vwygpRsvhL2AE7R8uYCva8
-         9VeFJ0W1f3cD607iOPjvHHVGwhzdFIL9xxPS8FqH8AAcGX0kPdtL4+LWBQOXD+tW3YWU
-         wnClr9WQMBekTCu8lU2RJtIBG0j6x4qufWkPl+818hxJHwwz6iU9Gp+gUlltc41zZ8Vy
-         ZRlw==
-X-Gm-Message-State: AOAM530xyLyQNaDStFYAEKpaZViBoEdHdmG9A9PVLH52kb5ZnhAvMDCL
-        q6iqQfSzOzpaIyFAgdzpOWk=
-X-Google-Smtp-Source: ABdhPJwmtpAYY/5eTeVCIMOnvNGpPiD0a5ljZK65FIzDqh88/jSCNF3UR1fL3OrGOhT7yseUT8jxJw==
-X-Received: by 2002:a17:906:284b:b0:6ae:9d05:e904 with SMTP id s11-20020a170906284b00b006ae9d05e904mr3341561ejc.345.1645123804953;
-        Thu, 17 Feb 2022 10:50:04 -0800 (PST)
-Received: from localhost.localdomain (dhcp-077-250-038-153.chello.nl. [77.250.38.153])
-        by smtp.googlemail.com with ESMTPSA id q7sm3493268edv.93.2022.02.17.10.50.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 10:50:04 -0800 (PST)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-arch@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergman <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [RFC PATCH 07/13] udp_tunnel: remove the usage of the list iterator after the loop
-Date:   Thu, 17 Feb 2022 19:48:23 +0100
-Message-Id: <20220217184829.1991035-8-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220217184829.1991035-1-jakobkoschel@gmail.com>
-References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
+        Thu, 17 Feb 2022 13:55:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8655035DD7;
+        Thu, 17 Feb 2022 10:54:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DB9561BA2;
+        Thu, 17 Feb 2022 18:54:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C209C340E8;
+        Thu, 17 Feb 2022 18:54:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645124044;
+        bh=MbQrC0DuaWykssEif2K4UqZMoBje0xkc2CHA1AW/mCQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NjSS2Q5EN57kgvz4emp31Dem8VSFUDRlJbHR0ti3/oFEUsBIeMZvaqtXfrmtKxtvL
+         /iDhzP9teLQ/OyQsD0/BRt6wdmeZT6As3aJKyWMuHqHXlqDrZXE8MS+5CCiLhCKsPP
+         QPA2K4/9E5TNxWY3B/SONimiUDq1p2kZ62jUB5+kXmsmpI7S+HDI1TLTpnMaydEHgB
+         T4VHNAOD8W6wWRAR8YZSpO4IP5q+HFUvcGGlWKYbtuquILJ5zUTxburt6tb5YFwdq8
+         gmt7e647ISqChh7af6TPp0QuC4g2c6SBegOQWxeMVA1KomMkfP0f6Na1ukFJMnOzt3
+         zA0AJhgSr3vXQ==
+Date:   Thu, 17 Feb 2022 10:54:02 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>
+Subject: Re: [PATCH net-next v1] net: Use csum_replace_... and csum_sub()
+ helpers instead of opencoding
+Message-ID: <20220217105402.302a2d20@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a7fe3817-a9ed-fb48-c3ab-1d17e8961e7f@csgroup.eu>
+References: <fe60030b6f674d9bf41f56426a4b0a8a9db0d20f.1645112415.git.christophe.leroy@csgroup.eu>
+        <20220217092442.4948b48c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <13805dc8-4f96-9621-3b8b-4ec5ea6aeffe@csgroup.eu>
+        <20220217101442.0a2805b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a7fe3817-a9ed-fb48-c3ab-1d17e8961e7f@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The usage of node->dev after the loop body is a legitimate type
-confusion if the break was not hit. It will compare an undefined
-memory location with dev that could potentially be equal. The value
-of node->dev in this case could either be a random struct member of the
-head element or an out-of-bounds value.
+On Thu, 17 Feb 2022 18:39:07 +0000 Christophe Leroy wrote:
+> Le 17/02/2022 =C3=A0 19:14, Jakub Kicinski a =C3=A9crit=C2=A0:
+> > On Thu, 17 Feb 2022 18:11:58 +0000 Christophe Leroy wrote: =20
+> >> Looks like csum_replace4() expects __be32 inputs, I'll look at it but
+> >> I'm not inclined at adding force cast, so will probably leave
+> >> nft_csum_replace() as is. =20
+> >=20
+> > That may imply also leaving it in your tree.. =20
+>=20
+> By "leave as is" I meant I'll drop the change.
+>=20
+> I'll send v2 without this hunk.
 
-Therefore it is more safe to use the found variable. With the
-introduction of speculative safe list iterator this check could be
-replaced with if (!node).
-
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- net/ipv4/udp_tunnel_nic.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/udp_tunnel_nic.c b/net/ipv4/udp_tunnel_nic.c
-index b91003538d87..c47f9fb36d29 100644
---- a/net/ipv4/udp_tunnel_nic.c
-+++ b/net/ipv4/udp_tunnel_nic.c
-@@ -842,11 +842,14 @@ udp_tunnel_nic_unregister(struct net_device *dev, struct udp_tunnel_nic *utn)
- 	 */
- 	if (info->shared) {
- 		struct udp_tunnel_nic_shared_node *node, *first;
-+		bool found = false;
- 
- 		list_for_each_entry(node, &info->shared->devices, list)
--			if (node->dev == dev)
-+			if (node->dev == dev) {
-+				found = true;
- 				break;
--		if (node->dev != dev)
-+			}
-+		if (!found)
- 			return;
- 
- 		list_del(&node->list);
--- 
-2.25.1
-
+Thanks, sorry for the snarky comment, I read it as "take it or leave
+it". I've heard too many of those lately.
