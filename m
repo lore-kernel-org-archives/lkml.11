@@ -2,92 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91404C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B26BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231858AbiBQGFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 01:05:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37318 "EHLO
+        id S234664AbiBQGIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 01:08:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229942AbiBQGFS (ORCPT
+        with ESMTP id S234667AbiBQGIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 01:05:18 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32452295FC2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:05:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645077905; x=1676613905;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zygUgPf43rBuaeOOUEfw172EFYT3eiqn7l95DhRFbO4=;
-  b=FWFmccdHjHaftRt71C6Y8QrK/m8U9a449NMAeX5Z9N3L4keWXkp4ugAs
-   bh53Po/bskd9+kSdLovvqZfBUDiiEtiX9CtsPWiaQXqCMd2ZQR36uuVHR
-   Tor9c27BmtsBYtqNLUGChCapTMMZQY1ef22ODSGv3cjoAGI4jvtTeN86O
-   uW2+q00cCgHjlCpsq23tY24CQV1gg+obkxRyKuoqSjYJoOLvba10KDd2u
-   EDwIxtE7Wihh3+ayhwD2dFQpaOJLEBKFFtvt/G+I3bgygpimkh/0N4ZQg
-   Hc3RP0wg4dEAQv9+qx7FJxQMqoljiA0hQqxj1TOyTm4JeDMKqGCR1ja98
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="275390114"
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="275390114"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 22:05:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="636912964"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 16 Feb 2022 22:05:03 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKZuY-000BW0-BG; Thu, 17 Feb 2022 06:05:02 +0000
-Date:   Thu, 17 Feb 2022 14:04:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rick Edgecombe <rick.p.edgecombe@intel.com>
-Cc:     kbuild-all@lists.01.org, Mike Rapoport <rppt@kernel.org>,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>
-Subject: [rppt:cet/kvm 32/49] <stdin>:1565:2: warning: #warning syscall
- map_shadow_stack not implemented
-Message-ID: <202202171454.SfEDJ0Yv-lkp@intel.com>
+        Thu, 17 Feb 2022 01:08:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39F9BC7E83
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:08:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645078080;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=58IcYQPt3ZhNcNyChh1IrLVEmd4Lcb+cUPGc2UbHCU0=;
+        b=Fu3BPmk3vMduARoGZXUgfjw/IrYWZyMmWwF49TpOlCxuWb+bbfY2AXlWKjLmS/5FKr9x9z
+        Lodi73d3VDEC6SCcgY05o40Kxokh6oQQdCxmYhKGc2VpYoxxwo2EgvWQVf3eW3mfA/jX0L
+        w9tlwoZKVjskGOLL5EXpcIZt9cgq3F8=
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
+ [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-657-Unw5HHG-PKWF1H9mHTV5nw-1; Thu, 17 Feb 2022 01:07:56 -0500
+X-MC-Unique: Unw5HHG-PKWF1H9mHTV5nw-1
+Received: by mail-pf1-f200.google.com with SMTP id n135-20020a628f8d000000b004e16d5bdcdbso2653608pfd.20
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:07:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=58IcYQPt3ZhNcNyChh1IrLVEmd4Lcb+cUPGc2UbHCU0=;
+        b=1ASWeapVwVlIk/Bqw/bmPMpQvrR1/bi0+BP9TIPVo2/WcYGELgEGOHNbwp3l+iu9gn
+         +S2W5vk0vdCJknxRksiA4VSXvM/ZzjnBCfQ9lzqGwmiDDNpssJiiSi7UhwrwlZ1f3UGm
+         el8RHBClUD3mhP5SeQELfMuAneDsmtMAGNFrU66jJ5/Ef0LBWI4k4Kr9pN16NYSH6vj4
+         AH1Hc3ss3JCeGLYr7bLaTznjKDkf2nOFKCZwyr0IQIed7zP5uIhvzzpOJIRq+vsVy02I
+         eaSc59HDUZ8BhX1ipiPCMbU2NwxUrGJs4gTH2BeXNoBSYx72yqHDmoroDMn7CGnxCtWU
+         25fQ==
+X-Gm-Message-State: AOAM532nQSaVQwxM90FRJxrstGXjXOGjPTIrfTUUzXdn+s7WUloAUSrr
+        PCE6Ls1bSuy7qZRBebvJlcfzdKDS/FSDjq5sWhg0sJ/XaS9dYmBiqCcdVB/7+4xXfgtlflsNRFJ
+        5MtBtyrt+Eyej40AJt6laa8fC
+X-Received: by 2002:a17:902:fe83:b0:14d:6e55:eea3 with SMTP id x3-20020a170902fe8300b0014d6e55eea3mr1415394plm.104.1645078075584;
+        Wed, 16 Feb 2022 22:07:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzzKtPr2kwyIYGum1Q09mgsPZ2ioQRfmHyRjvcp1K2tM0GogiQwyeAoUhJIKwFJRBmXDX8QrQ==
+X-Received: by 2002:a17:902:fe83:b0:14d:6e55:eea3 with SMTP id x3-20020a170902fe8300b0014d6e55eea3mr1415382plm.104.1645078075270;
+        Wed, 16 Feb 2022 22:07:55 -0800 (PST)
+Received: from localhost.localdomain ([94.177.118.126])
+        by smtp.gmail.com with ESMTPSA id j8sm224230pjc.11.2022.02.16.22.07.50
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Wed, 16 Feb 2022 22:07:55 -0800 (PST)
+From:   Peter Xu <peterx@redhat.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     Alistair Popple <apopple@nvidia.com>,
+        Matthew Wilcox <willy@infradead.org>, peterx@redhat.com,
+        David Hildenbrand <david@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>
+Subject: [PATCH v5 0/4] mm: Rework zap ptes on swap entries
+Date:   Thu, 17 Feb 2022 14:07:42 +0800
+Message-Id: <20220217060746.71256-1-peterx@redhat.com>
+X-Mailer: git-send-email 2.32.0
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git cet/kvm
-head:   e2f9808bd7530f44cd5d95332036bb660b66b8db
-commit: 987299ad58376fc09a3bc884b55c07c2e5d80245 [32/49] x86/cet/shstk: Introduce map_shadow_stack syscall
-config: sh-randconfig-m031-20220217 (https://download.01.org/0day-ci/archive/20220217/202202171454.SfEDJ0Yv-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git/commit/?id=987299ad58376fc09a3bc884b55c07c2e5d80245
-        git remote add rppt https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git
-        git fetch --no-tags rppt cet/kvm
-        git checkout 987299ad58376fc09a3bc884b55c07c2e5d80245
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sh prepare
+v5:
+- Patch 1:
+  - A few comment fixups in patch 1 [John]
+  - Tweak commit message (s/user/caller/) [Andrew]
+- Add r-bs for John
+- Reindent commit messages to 75 columns [John]
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+RFC V1: https://lore.kernel.org/lkml/20211110082952.19266-1-peterx@redhat.com
+RFC V2: https://lore.kernel.org/lkml/20211115134951.85286-1-peterx@redhat.com
+V3:     https://lore.kernel.org/lkml/20220128045412.18695-1-peterx@redhat.com
+V4:     https://lore.kernel.org/lkml/20220216094810.60572-1-peterx@redhat.com
 
-All warnings (new ones prefixed by >>):
+Patch 1 should fix a long standing bug for zap_pte_range() on zap_details
+usage.  The risk is we could have some swap entries skipped while we should
+have zapped them.
 
-   <stdin>:1517:2: warning: #warning syscall clone3 not implemented [-Wcpp]
->> <stdin>:1565:2: warning: #warning syscall map_shadow_stack not implemented [-Wcpp]
---
-   <stdin>:1517:2: warning: #warning syscall clone3 not implemented [-Wcpp]
->> <stdin>:1565:2: warning: #warning syscall map_shadow_stack not implemented [-Wcpp]
---
-   scripts/genksyms/parse.y: warning: 9 shift/reduce conflicts [-Wconflicts-sr]
-   scripts/genksyms/parse.y: warning: 5 reduce/reduce conflicts [-Wconflicts-rr]
-   <stdin>:1517:2: warning: #warning syscall clone3 not implemented [-Wcpp]
->> <stdin>:1565:2: warning: #warning syscall map_shadow_stack not implemented [-Wcpp]
+Migration entries are not the major concern because file backed memory always
+zap in the pattern that "first time without page lock, then re-zap with page
+lock" hence the 2nd zap will always make sure all migration entries are already
+recovered.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+However there can be issues with real swap entries got skipped errornoously.
+There's a reproducer provided in commit message of patch 1 for that.
+
+Patch 2-4 are cleanups that are based on patch 1.  After the whole patchset
+applied, we should have a very clean view of zap_pte_range().
+
+Only patch 1 needs to be backported to stable if necessary.
+
+Please review, thanks.
+
+Peter Xu (4):
+  mm: Don't skip swap entry even if zap_details specified
+  mm: Rename zap_skip_check_mapping() to should_zap_page()
+  mm: Change zap_details.zap_mapping into even_cows
+  mm: Rework swap handling of zap_pte_range
+
+ mm/memory.c | 80 ++++++++++++++++++++++++++++++-----------------------
+ 1 file changed, 45 insertions(+), 35 deletions(-)
+
+-- 
+2.32.0
+
