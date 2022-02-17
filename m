@@ -2,232 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28311C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C76C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 13:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241011AbiBQNiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 08:38:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52030 "EHLO
+        id S241073AbiBQNlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 08:41:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241000AbiBQNiV (ORCPT
+        with ESMTP id S236309AbiBQNlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 08:38:21 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E2115E6EB
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 05:38:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645105086; x=1676641086;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=sG7JVp6thBdfzLc9RXJr4KwIPgLVdLfwW5g5pnYJyqM=;
-  b=IqBmR/uJIM5T6iU3U/7qlCeT9xxKA9xLQBZHHykoDZl3plUCyb6I8Nt6
-   rOccb2CTMH6Wo0oFOIFb8BC5ylatcqHI8yi70tlMicJAn5VTLe2Mj5/wb
-   tNDOV/QiBJaE2nKhsysmix9Sg1+gRqBeYgVuVvKA6E1sQNiVJ9hthdh6c
-   hQ3Q8YCfWikHqRwrK9oL3cTQMhCmPZUwD3jE1js5gML1zuh/fOrNJKWnm
-   tEVg8URtHUYPZ1aAij3yF3UnpQ7o2wxPOJpeZLUITRQvYidJ0Q0hKkIVf
-   CYjOOBYyC6GrJFNUydKibEpMq4aQQcIinJJOkYNL9LZfLbD9sqkhxHxzA
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="248469859"
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="248469859"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 05:37:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,375,1635231600"; 
-   d="scan'208";a="604952283"
-Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Feb 2022 05:37:50 -0800
-Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKgyj-0000ES-Rk; Thu, 17 Feb 2022 13:37:49 +0000
-Date:   Thu, 17 Feb 2022 21:37:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.02.14a] BUILD SUCCESS
- 1a4f308b3b3841ef10043fe6c3dd12fc872b0400
-Message-ID: <620e4f94.1PfvCJJs6s7k1/nv%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 17 Feb 2022 08:41:02 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47052AF939;
+        Thu, 17 Feb 2022 05:40:36 -0800 (PST)
+X-UUID: de127025cc724384ab29a0e33f730f5c-20220217
+X-UUID: de127025cc724384ab29a0e33f730f5c-20220217
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 159377177; Thu, 17 Feb 2022 21:40:31 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 17 Feb 2022 21:40:29 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Feb 2022 21:40:29 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        --to=Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        "Chen-Yu Tsai" <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH 00/17] Add driver nodes for MT8192 SoC 
+Date:   Thu, 17 Feb 2022 21:40:18 +0800
+Message-ID: <20220217134027.508-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.02.14a
-branch HEAD: 1a4f308b3b3841ef10043fe6c3dd12fc872b0400  squash! rcu/nocb: Move rcu_nocb_is_setup to rcu_state
+This series are based on tag: next-20220216, linux-next/master
+and apply the below patch
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220207094024.22674-1-allen-kh.cheng@mediatek.com/
 
-elapsed time: 803m
+Allen-KH Cheng (17):
+  arm64: dts: mt8192: Add power domains controller
+  arm64: dts: mt8192: add pwrap node
+  arm64: dts: mt8192: add spmi node
+  arm64: dts: mt8192: Add gce node
+  arm64: dts: mt8192: Add SCP node
+  arm64: dts: mt8192: Add xhci node
+  arm64: dts: mt8192: Add audio-related nodes
+  arm64: dts: mt8192: Add PCIe node
+  arm64: dts: mt8192: Correct nor_flash status of mt8192
+  arm64: dts: mt8192: Add efuse node
+  arm64: dts: mt8192: add mmc device nodes
+  arm64: dts: mt8192: Add infracfg_rst node
+  arm64: dts: mt8192: Add mipi_tx node
+  arm64: dts: mt8192: Add m4u and smi nodes
+  arm64: dts: mt8192: Add H264 venc device node
+  arm64: dts: mt8192: Add vcodec lat and core node.
+  arm64: dts: mt8192: Add dpi node
 
-configs tested: 154
-configs skipped: 4
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 801 ++++++++++++++++++++++-
+ 1 file changed, 790 insertions(+), 11 deletions(-)
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+-- 
+2.18.0
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                          randconfig-c001
-arm                        cerfcube_defconfig
-arm                          exynos_defconfig
-arc                          axs103_defconfig
-arm                           corgi_defconfig
-powerpc                      ep88xc_defconfig
-sh                ecovec24-romimage_defconfig
-sh                        dreamcast_defconfig
-powerpc                 mpc85xx_cds_defconfig
-xtensa                generic_kc705_defconfig
-arc                      axs103_smp_defconfig
-m68k                          hp300_defconfig
-powerpc                      cm5200_defconfig
-powerpc                      makalu_defconfig
-powerpc                    amigaone_defconfig
-sh                               alldefconfig
-sh                          r7780mp_defconfig
-powerpc                 mpc834x_mds_defconfig
-powerpc                  iss476-smp_defconfig
-arc                 nsimosci_hs_smp_defconfig
-mips                  maltasmvp_eva_defconfig
-ia64                      gensparse_defconfig
-sh                            migor_defconfig
-xtensa                  audio_kc705_defconfig
-arm                           h5000_defconfig
-xtensa                       common_defconfig
-powerpc                     stx_gp3_defconfig
-ia64                             alldefconfig
-nios2                            alldefconfig
-sh                  sh7785lcr_32bit_defconfig
-m68k                          sun3x_defconfig
-sh                           se7619_defconfig
-mips                         mpc30x_defconfig
-sh                        sh7785lcr_defconfig
-arm                         nhk8815_defconfig
-mips                    maltaup_xpa_defconfig
-arc                           tb10x_defconfig
-arm                           viper_defconfig
-mips                           gcw0_defconfig
-openrisc                  or1klitex_defconfig
-arc                          axs101_defconfig
-sh                            shmin_defconfig
-ia64                         bigsur_defconfig
-powerpc64                        alldefconfig
-m68k                            q40_defconfig
-h8300                            alldefconfig
-s390                       zfcpdump_defconfig
-mips                           jazz_defconfig
-sparc                       sparc32_defconfig
-powerpc                 canyonlands_defconfig
-m68k                        stmark2_defconfig
-sh                 kfr2r09-romimage_defconfig
-sh                   sh7724_generic_defconfig
-sh                           se7712_defconfig
-arm                  randconfig-c002-20220217
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-s390                 randconfig-r044-20220216
-riscv                randconfig-r042-20220216
-arc                  randconfig-r043-20220216
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-
-clang tested configs:
-riscv                randconfig-c006-20220217
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220217
-arm                  randconfig-c002-20220217
-i386                          randconfig-c001
-mips                 randconfig-c004-20220217
-mips                           ip27_defconfig
-mips                     loongson1c_defconfig
-arm                          ixp4xx_defconfig
-arm                        neponset_defconfig
-mips                          malta_defconfig
-arm                     davinci_all_defconfig
-mips                        workpad_defconfig
-mips                     loongson2k_defconfig
-powerpc                 mpc8315_rdb_defconfig
-powerpc                      ppc44x_defconfig
-x86_64                           allyesconfig
-powerpc                     ppa8548_defconfig
-mips                           ip22_defconfig
-arm                          imote2_defconfig
-arm                       aspeed_g4_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-hexagon              randconfig-r045-20220217
-hexagon              randconfig-r041-20220217
-riscv                randconfig-r042-20220217
-hexagon              randconfig-r045-20220216
-hexagon              randconfig-r041-20220216
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
