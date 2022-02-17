@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3484C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244125AbiBQVEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:04:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37706 "EHLO
+        id S244303AbiBQVEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 16:04:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243866AbiBQVED (ORCPT
+        with ESMTP id S243853AbiBQVEC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:04:03 -0500
+        Thu, 17 Feb 2022 16:04:02 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B59D411109A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76EDAD1080
         for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:03:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1645131826;
@@ -21,29 +21,29 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=G/CPDOAT8bzl2lNB0wAlIxIvLWdbJ2Gig5UCTwUtGwg=;
-        b=bjBEYqrN8rWMqIyI2kXyxQbeqtpz8VkdP2VIvQ/f73tw3knsm+6bb4U6+BbxNo9mFMewYp
-        vMzgk6grvFnvEByxuJtw8gVcmMaXe+Bo3++O2zMgyT5q186poZVI76aEGhl2w8tJ12LhUB
-        OeCffyc9LUbxbEZ/Cz9paJqTrfACxR0=
+        bh=9EeiJmrNVxBypIUwOEl5IfkA+kYU2Kz2k4uxn3ETf0w=;
+        b=YqGKDyE8iXtUsZ9BEeUDOWvWdvQmLI3dbGuRWlY1EzPlPMJ3A52Z92ksGgSyTjZLVO3Wlx
+        YvJMHoTEyIrEnk59Rq3qxZFRIRNSqLFfvDM2qvWAjvKk8JJVQ8++T3BZeDN98y8asci4jC
+        sSZHB3M5IpeOuXGoi4hmH92sxcR8KBM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-18-f527QjhrOGCw6lnX8liIuA-1; Thu, 17 Feb 2022 16:03:43 -0500
-X-MC-Unique: f527QjhrOGCw6lnX8liIuA-1
+ us-mta-302-B0NOLb-tO5uPcypCRKhefw-1; Thu, 17 Feb 2022 16:03:45 -0500
+X-MC-Unique: B0NOLb-tO5uPcypCRKhefw-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A0672F4A;
-        Thu, 17 Feb 2022 21:03:42 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 29F671006AA4;
+        Thu, 17 Feb 2022 21:03:44 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A148546982;
-        Thu, 17 Feb 2022 21:03:41 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D0D2346982;
+        Thu, 17 Feb 2022 21:03:43 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, stable@vger.kernel.org
-Subject: [PATCH v2 01/18] KVM: x86: host-initiated EFER.LME write affects the MMU
-Date:   Thu, 17 Feb 2022 16:03:23 -0500
-Message-Id: <20220217210340.312449-2-pbonzini@redhat.com>
+Cc:     seanjc@google.com
+Subject: [PATCH v2 06/18] KVM: x86/mmu: do not consult levels when freeing roots
+Date:   Thu, 17 Feb 2022 16:03:28 -0500
+Message-Id: <20220217210340.312449-7-pbonzini@redhat.com>
 In-Reply-To: <20220217210340.312449-1-pbonzini@redhat.com>
 References: <20220217210340.312449-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -53,44 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While the guest runs, EFER.LME cannot change unless CR0.PG is clear, and therefore
-EFER.NX is the only bit that can affect the MMU role.  However, set_efer accepts
-a host-initiated change to EFER.LME even with CR0.PG=1.  In that case, the
-MMU has to be reset.
+Right now, PGD caching requires a complicated dance of first computing
+the MMU role and passing it to __kvm_mmu_new_pgd(), and then separately calling
+kvm_init_mmu().
 
-Fixes: 11988499e62b ("KVM: x86: Skip EFER vs. guest CPUID checks for host-initiated writes")
-Cc: stable@vger.kernel.org
+Part of this is due to kvm_mmu_free_roots using mmu->root_level and
+mmu->shadow_root_level to distinguish whether the page table uses a single
+root or 4 PAE roots.  Because kvm_init_mmu() can overwrite mmu->root_level,
+kvm_mmu_free_roots() must be called before kvm_init_mmu().
+
+However, even after kvm_init_mmu() there is a way to detect whether the
+page table may hold PAE roots, as root.hpa isn't backed by a shadow when
+it points at PAE roots.  Using this method results in simpler code, and
+is one less obstacle in moving all calls to __kvm_mmu_new_pgd() after the
+MMU has been initialized.
+
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu.h | 1 +
- arch/x86/kvm/x86.c | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/mmu/mmu.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index 51faa2c76ca5..a5a50cfeffff 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -48,6 +48,7 @@
- 			       X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE)
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index a478667d7561..e1578f71feae 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3240,12 +3240,15 @@ void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
+ 	struct kvm *kvm = vcpu->kvm;
+ 	int i;
+ 	LIST_HEAD(invalid_list);
+-	bool free_active_root = roots_to_free & KVM_MMU_ROOT_CURRENT;
++	bool free_active_root;
  
- #define KVM_MMU_CR0_ROLE_BITS (X86_CR0_PG | X86_CR0_WP)
-+#define KVM_MMU_EFER_ROLE_BITS (EFER_LME | EFER_NX)
+ 	BUILD_BUG_ON(KVM_MMU_NUM_PREV_ROOTS >= BITS_PER_LONG);
  
- static __always_inline u64 rsvd_bits(int s, int e)
- {
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index d3da64106685..99a58c25f5c2 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1647,7 +1647,7 @@ static int set_efer(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	}
+ 	/* Before acquiring the MMU lock, see if we need to do any real work. */
+-	if (!(free_active_root && VALID_PAGE(mmu->root.hpa))) {
++	free_active_root = (roots_to_free & KVM_MMU_ROOT_CURRENT)
++		&& VALID_PAGE(mmu->root.hpa);
++
++	if (!free_active_root) {
+ 		for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++)
+ 			if ((roots_to_free & KVM_MMU_ROOT_PREVIOUS(i)) &&
+ 			    VALID_PAGE(mmu->prev_roots[i].hpa))
+@@ -3263,8 +3266,7 @@ void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
+ 					   &invalid_list);
  
- 	/* Update reserved bits */
--	if ((efer ^ old_efer) & EFER_NX)
-+	if ((efer ^ old_efer) & KVM_MMU_EFER_ROLE_BITS)
- 		kvm_mmu_reset_context(vcpu);
- 
- 	return 0;
+ 	if (free_active_root) {
+-		if (mmu->shadow_root_level >= PT64_ROOT_4LEVEL &&
+-		    (mmu->root_level >= PT64_ROOT_4LEVEL || mmu->direct_map)) {
++		if (to_shadow_page(mmu->root.hpa)) {
+ 			mmu_free_root_page(kvm, &mmu->root.hpa, &invalid_list);
+ 		} else if (mmu->pae_root) {
+ 			for (i = 0; i < 4; ++i) {
 -- 
 2.31.1
 
