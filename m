@@ -2,84 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD03C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241956AbiBQOlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:41:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34896 "EHLO
+        id S241960AbiBQOmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:42:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233259AbiBQOlA (ORCPT
+        with ESMTP id S233259AbiBQOmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:41:00 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6408F2B1A92;
-        Thu, 17 Feb 2022 06:40:45 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 0380C1F4598A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645108843;
-        bh=o7M37NRjUzyT1SEEw8QEv+OQorYXKUUvT1lprkZEPDY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=lyfIa822zgsumKInOeSFVIxYdBA40JLhTin+IhAc/pXMOJljeoF4s+oOZlSYJ/eSH
-         /7KTlL4yml3t32SDDDsx953Ml+vQKZKiSQWkSqV6RjGDbqS7uIoyMHT0E4Psfedxik
-         m3rw9y/x3NgRNL4mElYjdClK+j9he4LBZtu5deC4zQk7PsHTAFQ+kpt7zggPZiU0nq
-         sIWYFrhr4jsIScQbwVHrQLoquXWAI4qRIpzYnGfESrYe4N9xNRBRtsvX93GGg4F12G
-         /74tbymUv6mYvH3kM2Ptz4mcLg8LnS8nxsUFRIROrVUJ/yMt/qOZmQFvWSL+1/2n6R
-         zGhyMssm2PqWg==
-Message-ID: <10a101b4-293e-19c8-d241-5357a947acef@collabora.com>
-Date:   Thu, 17 Feb 2022 15:40:40 +0100
+        Thu, 17 Feb 2022 09:42:23 -0500
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB061EA710;
+        Thu, 17 Feb 2022 06:42:08 -0800 (PST)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:105:465:1:3:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4JzyG60XHQz9sWB;
+        Thu, 17 Feb 2022 15:42:06 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
+        t=1645108923;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gpf50Zv3BHRX4hF0cZ15cmgZdclv11k5Xc52gVV7KaE=;
+        b=QiwCXvJlJPBqK0impV023JvyJdC9kHqWKrrMRvStqP2uZ4y8E6I5jq8hAxtn8SwFy/Zxut
+        ruaJpewA8a0MNYY5Fp41X6EckDgPEUDAfcc5/8Spyk6zA37HJoSwwZgBn6XRMX2pOcetgH
+        iJOwMYVvUraj4pThLV7FNTD4pdsOom9KtwTbRnpbqNxR5Zkg+Kg89F4EcqFhRSrmw27+9y
+        TEnToN13IKEJ3ycSkiZNJXJuyBRkEpI2u47bTWJDHHjBysucqdArgQBiAx+P25q06clZSB
+        IoQ7CXuNGYK7XDrAtWLbuSDSAOGyAC7112z4zXTbTQgLhPPOwY/m8OK7MDgzSg==
+From:   Marcello Sylvester Bauer <sylv@sylv.io>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Marcello Sylvester Bauer <sylv@sylv.io>
+Subject: [PATCH v2 0/3] Support XDPE112
+Date:   Thu, 17 Feb 2022 15:41:32 +0100
+Message-Id: <cover.1645108566.git.sylv@sylv.io>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] dt-bindings: phy: Add compatible for Mediatek MT8192
-Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Min Guo <Min.Guo@mediatek.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
-References: <20220217135620.10559-1-allen-kh.cheng@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220217135620.10559-1-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 17/02/22 14:56, Allen-KH Cheng ha scritto:
-> This commit adds dt-binding documentation of T-Phy for Mediatek MT8192 SoC
-> Platform.
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Add support for Infineon Multi-phase XDPE112 family regulator. The main
+difference to the XDPE122 family is it uses a different format for
+voltage out. Add the required logic to the existing  xdpe12284 driver
+accordingly.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Changes in v2:
+- Rebase on current hwmon-next branch
 
-> ---
->   Documentation/devicetree/bindings/phy/mediatek,tphy.yaml | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> index d279ba222316..7b2e1bc119be 100644
-> --- a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> +++ b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> @@ -81,6 +81,7 @@ properties:
->                 - mediatek,mt7629-tphy
->                 - mediatek,mt8183-tphy
->                 - mediatek,mt8186-tphy
-> +              - mediatek,mt8192-tphy
->             - const: mediatek,generic-tphy-v2
->         - items:
->             - enum:
-> 
+Marcello Sylvester Bauer (3):
+  dt-bindings: trivial-devices: Add xdpe11280
+  hwmon (xdpe12284): Add support for xdpe11280
+  hwmon (xdpe12284): Add regulator support
+
+ .../devicetree/bindings/trivial-devices.yaml  |  2 ++
+ Documentation/hwmon/xdpe12284.rst             | 10 +++++--
+ drivers/hwmon/pmbus/Kconfig                   |  6 ++++
+ drivers/hwmon/pmbus/xdpe12284.c               | 28 ++++++++++++++++++-
+ 4 files changed, 42 insertions(+), 4 deletions(-)
+
+-- 
+2.34.1
 
