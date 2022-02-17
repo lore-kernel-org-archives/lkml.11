@@ -2,143 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD803C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 246C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 23:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbiBQXvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 18:51:12 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50646 "EHLO
+        id S229582AbiBQXwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 18:52:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiBQXvJ (ORCPT
+        with ESMTP id S229455AbiBQXwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 18:51:09 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC5F345070
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 15:50:50 -0800 (PST)
-Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
-        by 156.147.23.52 with ESMTP; 18 Feb 2022 08:50:49 +0900
-X-Original-SENDERIP: 156.147.1.125
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
-        by 156.147.1.125 with ESMTP; 18 Feb 2022 08:50:49 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-Date:   Fri, 18 Feb 2022 08:50:42 +0900
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        torvalds@linux-foundation.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
-        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jlayton@kernel.org, dan.j.williams@intel.com,
-        hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: Re: Report in unix_stream_read_generic()
-Message-ID: <20220217235042.GA20620@X58A-UD3R>
-References: <1644984767-26886-1-git-send-email-byungchul.park@lge.com>
- <1644985024-28757-1-git-send-email-byungchul.park@lge.com>
- <Ygx+pRo1+b1RBLJg@casper.infradead.org>
+        Thu, 17 Feb 2022 18:52:03 -0500
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051C53151E;
+        Thu, 17 Feb 2022 15:51:48 -0800 (PST)
+Received: by mail-io1-f45.google.com with SMTP id r7so235899iot.3;
+        Thu, 17 Feb 2022 15:51:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VPqLTBNPDYhEbgZt/YdvKKlTQpPFS9QLFLj/eqQJfu0=;
+        b=lX8Zljn9mAPbtcGw+jIEjRcYIFbfBHiGjlKHdvzlmk7E7n92Zc7UUk00oFCS4Th3Kn
+         IbwauIKUzQb1eOpZqIjYN29SxdLskI7L7nQQd+rgpTZujSUtONpJkF1PiHMwz1PbhKya
+         LGHrWcwd2qXGLlBp+AnHOMs5F3xhJS80HlzH6UgETRXWUyI6Agd8yh2QcjleSZPHHxkq
+         bwp3q8w2O5GoI8hgZO/4t/Ob1Apg6gDwisJ7yp9FYZaofls54G8YEhfeYNWLfN3/OIao
+         MOEwx/oTtDGg9Zxa/otQs9Z8+p/CFjGcHoNVZeyOYdDFh6wS3Ut0K6jpINiBUsB0Eqn4
+         pEdg==
+X-Gm-Message-State: AOAM530TFvO5Z1UfIvkbupdg+eZ4eQb+MI4Ex8BTA2qMnpfdQq3TFQB0
+        yekfI7Q1Aey4hFUkboM8Td5mfDJrXQ==
+X-Google-Smtp-Source: ABdhPJxnkBwBCsnctqo57J95u71yi9llEbgOjpOUuIN18GpsnSf52LyI6k4cwm2+E3jtbV1xtG/w0g==
+X-Received: by 2002:a02:c953:0:b0:314:3463:f725 with SMTP id u19-20020a02c953000000b003143463f725mr3395005jao.275.1645141101018;
+        Thu, 17 Feb 2022 15:38:21 -0800 (PST)
+Received: from robh.at.kernel.org ([64.188.179.250])
+        by smtp.gmail.com with ESMTPSA id h8sm2542911ile.22.2022.02.17.15.38.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 15:38:20 -0800 (PST)
+Received: (nullmailer pid 3985592 invoked by uid 1000);
+        Thu, 17 Feb 2022 23:38:17 -0000
+Date:   Thu, 17 Feb 2022 17:38:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Maxime Ripard <mripard@kernel.org>,
+        linux-kernel@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Ondrej Jirman <megous@megous.com>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Chen-Yu Tsai <wens@csie.org>, devicetree@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v10 11/18] dt-bindings: usb: Add H616 compatible string
+Message-ID: <Yg7cadPGUwbiOk/K@robh.at.kernel.org>
+References: <20220211122643.1343315-1-andre.przywara@arm.com>
+ <20220211122643.1343315-12-andre.przywara@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ygx+pRo1+b1RBLJg@casper.infradead.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20220211122643.1343315-12-andre.przywara@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 04:33:41AM +0000, Matthew Wilcox wrote:
-> On Wed, Feb 16, 2022 at 01:17:03PM +0900, Byungchul Park wrote:
-> > [    7.013330] ===================================================
-> > [    7.013331] DEPT: Circular dependency has been detected.
-> > [    7.013332] 5.17.0-rc1-00014-gcf3441bb2012 #2 Tainted: G        W        
-> > [    7.013333] ---------------------------------------------------
-> > [    7.013334] summary
-> > [    7.013334] ---------------------------------------------------
-> > [    7.013335] *** DEADLOCK ***
-> > [    7.013335] 
-> > [    7.013335] context A
-> > [    7.013336]     [S] (unknown)(&(&ei->socket.wq.wait)->dmap:0)
-> > [    7.013337]     [W] __mutex_lock_common(&u->iolock:0)
-> > [    7.013338]     [E] event(&(&ei->socket.wq.wait)->dmap:0)
-> > [    7.013340] 
-> > [    7.013340] context B
-> > [    7.013341]     [S] __raw_spin_lock(&u->lock:0)
-> > [    7.013342]     [W] wait(&(&ei->socket.wq.wait)->dmap:0)
-> > [    7.013343]     [E] spin_unlock(&u->lock:0)
+On Fri, 11 Feb 2022 12:26:36 +0000, Andre Przywara wrote:
+> The Allwinner H616 contains four fully OHCI/EHCI compatible USB host
+> controllers, so just add their compatible strings to the list of
+> generic OHCI/EHCI controllers.
 > 
-> This seems unlikely to be real.  We're surely not actually waiting
-> while holding a spinlock; existing debug checks would catch it.
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> ---
+>  Documentation/devicetree/bindings/usb/generic-ehci.yaml | 1 +
+>  Documentation/devicetree/bindings/usb/generic-ohci.yaml | 1 +
+>  2 files changed, 2 insertions(+)
 > 
-> > [    7.013407] ---------------------------------------------------
-> > [    7.013407] context B's detail
-> > [    7.013408] ---------------------------------------------------
-> > [    7.013408] context B
-> > [    7.013409]     [S] __raw_spin_lock(&u->lock:0)
-> > [    7.013410]     [W] wait(&(&ei->socket.wq.wait)->dmap:0)
-> > [    7.013411]     [E] spin_unlock(&u->lock:0)
-> > [    7.013412] 
-> > [    7.013412] [S] __raw_spin_lock(&u->lock:0):
-> > [    7.013413] [<ffffffff81aa451f>] unix_stream_read_generic+0x6bf/0xb60
-> > [    7.013416] stacktrace:
-> > [    7.013416]       _raw_spin_lock+0x6e/0x90
-> > [    7.013418]       unix_stream_read_generic+0x6bf/0xb60
-> 
-> It would be helpful if you'd run this through scripts/decode_stacktrace.sh
 
-(Sorry for late reply, which was because of my email client issue.)
-
-It was big help. Thank you very much.
-
-> so we could see line numbers instead of hex offsets (which arene't much
-> use without the binary kernel).
-> 
-> > [    7.013420]       unix_stream_recvmsg+0x40/0x50
-> > [    7.013422]       sock_read_iter+0x85/0xd0
-> > [    7.013424]       new_sync_read+0x162/0x180
-> > [    7.013426]       vfs_read+0xf3/0x190
-> > [    7.013428]       ksys_read+0xa6/0xc0
-> > [    7.013429]       do_syscall_64+0x3a/0x90
-> > [    7.013431]       entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > [    7.013433] 
-> > [    7.013434] [W] wait(&(&ei->socket.wq.wait)->dmap:0):
-> > [    7.013434] [<ffffffff810bb017>] prepare_to_wait+0x47/0xd0
-> 
-> ... this may be the source of confusion.  Just because we prepare to
-> wait doesn't mean we end up actually waiting.  For example, look at
-> unix_wait_for_peer():
-> 
->         prepare_to_wait_exclusive(&u->peer_wait, &wait, TASK_INTERRUPTIBLE);
-> 
->         sched = !sock_flag(other, SOCK_DEAD) &&
->                 !(other->sk_shutdown & RCV_SHUTDOWN) &&
->                 unix_recvq_full(other);
-> 
->         unix_state_unlock(other);
-> 
->         if (sched)
->                 timeo = schedule_timeout(timeo);
-> 
->         finish_wait(&u->peer_wait, &wait);
-> 
-> We *prepare* to wait, *then* drop the lock, then actually schedule.
-
-Big help, too. I checked some samples for the usage, but where it's
-almost "prepare == wait" :-(. Thanks a lot!
-
-Thanks,
-Byungchul
+Acked-by: Rob Herring <robh@kernel.org>
