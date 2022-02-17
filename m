@@ -2,65 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36655C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D541EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242058AbiBQOsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:48:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59130 "EHLO
+        id S242059AbiBQOsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:48:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242049AbiBQOsA (ORCPT
+        with ESMTP id S240369AbiBQOsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:48:00 -0500
-X-Greylist: delayed 137 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 06:47:43 PST
-Received: from p3plsmtpa11-04.prod.phx3.secureserver.net (p3plsmtpa11-04.prod.phx3.secureserver.net [68.178.252.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D630615E6E3
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:47:43 -0800 (PST)
-Received: from localhost ([82.17.115.212])
-        by :SMTPAUTH: with ESMTPA
-        id Ki28n316uQeWgKi2AnNP8p; Thu, 17 Feb 2022 07:45:26 -0700
-X-CMAE-Analysis: v=2.4 cv=Fa7yeLy6 c=1 sm=1 tr=0 ts=620e5f86
- a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
- a=IkcTkHD0fZMA:10 a=r5m66G8ZfA9aYF3hFTkA:9 a=QEXdDO2ut3YA:10
-X-SECURESERVER-ACCT: atomlin@atomlin.com
-Date:   Thu, 17 Feb 2022 14:45:24 +0000
-From:   Aaron Tomlin <atomlin@atomlin.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     Aaron Tomlin <atomlin@redhat.com>, Phil Auld <pauld@redhat.com>,
-        tglx@linutronix.de, mingo@kernel.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
- idle tick was stopped too
-Message-ID: <20220217144524.el7lwi45hwsf3ef2@ava.usersys.com>
-References: <20220203214339.1889971-1-atomlin@redhat.com>
- <YfxVpEO+UJTC+a9e@lorien.usersys.redhat.com>
- <20220216143412.dwxjlkq4w2zeweld@ava.usersys.com>
- <20220217125731.GA744754@lothringen>
+        Thu, 17 Feb 2022 09:48:35 -0500
+X-Greylist: delayed 4777 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 06:48:18 PST
+Received: from 2.mo575.mail-out.ovh.net (2.mo575.mail-out.ovh.net [46.105.52.162])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72360160439
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 06:48:18 -0800 (PST)
+Received: from player715.ha.ovh.net (unknown [10.110.208.99])
+        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 185A521852
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:28:39 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player715.ha.ovh.net (Postfix) with ESMTPSA id 427C6275AA832;
+        Thu, 17 Feb 2022 13:28:26 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-105G006e63af0f4-c81f-4ba4-8116-8bbaba4cb0a8,
+                    22612CF5F7DCE3600E782894758BDCCEF4E309CF) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        sound-open-firmware@alsa-project.org, Stephen Kitt <steve@sk2.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>
+Subject: [PATCH] ASoC: SOF: Replace zero-length array with flexible-array member
+Date:   Thu, 17 Feb 2022 14:27:55 +0100
+Message-Id: <20220217132755.1786130-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220217125731.GA744754@lothringen>
-X-CMAE-Envelope: MS4xfLkWofOShUPdAv6/WMzdpwZTNw5VpOKWtXuAJawWtOZ7Rms7HwLXEwraAp/eqA7/7AcSC81edXfGXBhmpxJxyhkrNwi8JMZRHFXhuQv1hiJ/0kYhTy/s
- +aiknQJNXvx3+KiX+0CNIC/8IxRsRwn304CHwtTt4ve0Ibe1yRsLxlw4Mq6OsaJdpiaY6f8B+8sbtlGF22V+TvCV4CzAQkJj3TnbwLk0nhdYAFHZZPR9WK+/
- tiZMQtciczwUoiGX9bs7RT+SyHqtzqIM/3VGnGDM2rGT71izV3WzdTE8queJ5ZTEC8jZ/U00jUXQHehO8cMl+D7czfcG74hFNh1Yw601RSWoNNsI8DNa8Z5D
- trS24NvvmF28cVGHalXRjNIOPWrVQvANrFO/vZf4VAALog3qGeM=
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 5586152390832588312
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrjeekgdehvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepleekieffleegledvfffhkeehleejfedtgeeuiedvleduffetfeetgeffudffkeevnecuffhomhgrihhnpeifihhkihhpvgguihgrrdhorhhgpdhkvghrnhgvlhdrohhrghdpghhithhhuhgsrdgtohhmnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeduhedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-02-17 13:57 +0100, Frederic Weisbecker wrote:
-> Hmm, but does it matter? The issue seem to be that we can enter in idle loop without
-> flushing vmstat. Or am I missing something else?
-Frederic,
+There is a regular need in the kernel to provide a way to declare having
+a dynamically sized set of trailing elements in a structure. Kernel code
+should always use "flexible array members"[1] for these cases. The older
+style of one-element or zero-length arrays should no longer be used[2].
 
-Yes, this is indeed the concern. So, the idea I had was to invoke
-quiet_vmstat() regardless if the tick was stopped or not. If I understand
-correctly, this should resolve the issue. Furthermore, folding of all
-outstanding differentials will only occur when required. Thus performance
-should be negligible.
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
 
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
 
-Kind regards,
+Link: https://github.com/KSPP/linux/issues/78
+Link: https://github.com/KSPP/linux/issues/180
+Suggested-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ include/sound/sof/topology.h | 2 +-
+ sound/soc/sof/topology.c     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/include/sound/sof/topology.h b/include/sound/sof/topology.h
+index d12736e14b69..adee6afd1490 100644
+--- a/include/sound/sof/topology.h
++++ b/include/sound/sof/topology.h
+@@ -237,7 +237,7 @@ struct sof_ipc_comp_process {
+ 	/* reserved for future use */
+ 	uint32_t reserved[7];
+ 
+-	uint8_t data[0];
++	uint8_t data[];
+ } __packed;
+ 
+ /* frees components, buffers and pipelines
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index e72dcae5e7ee..1d119d1dd69d 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2164,7 +2164,7 @@ static int sof_process_load(struct snd_soc_component *scomp, int index,
+ 	 */
+ 	if (ipc_data_size) {
+ 		for (i = 0; i < widget->num_kcontrols; i++) {
+-			memcpy(&process->data + offset,
++			memcpy(&process->data[offset],
+ 			       wdata[i].pdata->data,
+ 			       wdata[i].pdata->size);
+ 			offset += wdata[i].pdata->size;
+
+base-commit: f71077a4d84bbe8c7b91b7db7c4ef815755ac5e3
 -- 
-Aaron Tomlin
+2.27.0
+
