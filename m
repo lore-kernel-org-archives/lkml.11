@@ -2,117 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B3AC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B156C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 16:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243306AbiBQQhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 11:37:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43514 "EHLO
+        id S243319AbiBQQiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 11:38:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241477AbiBQQhd (ORCPT
+        with ESMTP id S243039AbiBQQiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 11:37:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9FE1DA0EE;
-        Thu, 17 Feb 2022 08:37:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38AB06169D;
-        Thu, 17 Feb 2022 16:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 790FAC340E8;
-        Thu, 17 Feb 2022 16:37:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645115837;
-        bh=Uh7SxgDiyle9Pt/1uKaz13Cdta+fG3LaUxSIrP3UDS4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oEfugztLGZ7KhKwtqEn9223T5MTF3xJxhO3dM2rtP9knaPDX97ekj22/Z1Ab70pBN
-         4YNpm1mvWitXZ54ygxOgXm4QD0J1YXv3SX5zTMAws+LvFC99vaz3nRr3GjzFrsAqSZ
-         /RpkNgGF8xxDs1g4J1ziT97ggzP23ySrpk5wwnGzl2eutVtCIZIDVyqvwyvfd6EuML
-         TxPJ3n2XK3XEwexOe24bDRnFFV9jvNSNLPW8QiMAQiVG9KlwkTWiAsItK8E4chdWRH
-         tzV+xyCwVuO1ULuUZkMv2495aU5ht22ip6UyTRrMOKgsp3VuD1nKzReRfrAqum4E9y
-         pgosy2BeSWmeg==
-Date:   Thu, 17 Feb 2022 10:44:58 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        sound-open-firmware@alsa-project.org,
-        linux-hardening@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH] ASoC: SOF: Replace zero-length array with flexible-array
- member
-Message-ID: <20220217164458.GA932472@embeddedor>
-References: <20220217132755.1786130-1-steve@sk2.org>
+        Thu, 17 Feb 2022 11:38:15 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1402B3191
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:38:00 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id q17so10715844edd.4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:38:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UONcOwfoMw9pDe0rAm3joCYRBAlJSecwdegwEBnOH94=;
+        b=BtDO6RRgSUv6ucKn+TGhcqPblYqbEYF7TwKvQNAFwkl2M7GjGv8hef8O/yBTGEHQPq
+         P/sbxxp3UcCm26QbSnlduFWQh7o0rjHbP6Y3novYM+F8S6LDHRWACDrnYUcNJfsOAFQa
+         KqvWJsy8MTLOwCtpGXPEDjeAQUGhIaQqPHS2Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UONcOwfoMw9pDe0rAm3joCYRBAlJSecwdegwEBnOH94=;
+        b=kpSbz/aJ0MMIjChbc1HgJc60Sc+C8yTU/63fU30IEEUh7kbAFQNTbZhfhA4Jh32ktB
+         squgh4+GjEKVJFsbUDLIFM6xVB9bJFB7Ugp7sAzqNr5YHJdqzLEuY5me4wt0yRVdV/LL
+         AokyOaVYUGIUO1ghT+YWZj3ZRrMItX2/8iKfAKDpU++M/OKEcc816DhaqRvfywcK+Q/q
+         sUSvi9TA6XYc/8I4NYure+0Th5lc5ZAXbhC6htHq6rF9/LPIfpLkV8m0YAJA9eX1xqIp
+         RxNj8y3Mny322psCSiWa6GAeMulrQH9y92ntyuClHII3dvqPheTnDZkR9gzHjn6iH7av
+         sC/A==
+X-Gm-Message-State: AOAM533r7/hR2KrwidGUDtfVr9c3nCf7nNnSRXOYpWWHUgamynBA3K80
+        bmMz7mD1dOWrgtJrai60ZFN87zAoyI/x9eBD2Mc=
+X-Google-Smtp-Source: ABdhPJwuLbin9B5YUBaqDf7f2+n8dqbSHTNQeP21b6HVA6hyQyZjp76AwlwUNJl0/dgf2qJ6pBQCJg==
+X-Received: by 2002:a05:6402:1d49:b0:412:8cf5:73fa with SMTP id dz9-20020a0564021d4900b004128cf573famr3563338edb.334.1645115878720;
+        Thu, 17 Feb 2022 08:37:58 -0800 (PST)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id f22sm1361112ejl.46.2022.02.17.08.37.55
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 08:37:56 -0800 (PST)
+Received: by mail-wr1-f49.google.com with SMTP id w11so10049815wra.4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 08:37:55 -0800 (PST)
+X-Received: by 2002:a5d:4c48:0:b0:1e4:aeab:c77e with SMTP id
+ n8-20020a5d4c48000000b001e4aeabc77emr2927222wrt.342.1645115875087; Thu, 17
+ Feb 2022 08:37:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217132755.1786130-1-steve@sk2.org>
+References: <20220207073036.14901-1-lukasz.luba@arm.com> <20220207073036.14901-2-lukasz.luba@arm.com>
+ <YgG+TmLrCSXX4Bvt@google.com> <4a7d4e94-1461-5bac-5798-29998af9793a@arm.com>
+ <YgKnnFl7Gp8AS30X@google.com> <e4532f65-7f8a-7e89-97c1-85cc61462040@arm.com>
+ <YgQ9XLcto9v0fyTf@google.com> <d120110a-7d01-0cfd-f7eb-d160e17ec2a8@arm.com>
+ <CAD=FV=VntGw1_AzJPpdOk0zSpOVZRH2X1JNg84JX+zCeU1jvXg@mail.gmail.com>
+ <7c059f4f-7439-0cad-c398-96dbde4e49c1@linaro.org> <5b8ca53e-3595-85fd-5ae9-a5e8285e8513@arm.com>
+In-Reply-To: <5b8ca53e-3595-85fd-5ae9-a5e8285e8513@arm.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 17 Feb 2022 08:37:39 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=WMaMP84YLZxBZbj4DJSgcDLVkSHf4QdDwtFfp8UbyE7A@mail.gmail.com>
+Message-ID: <CAD=FV=WMaMP84YLZxBZbj4DJSgcDLVkSHf4QdDwtFfp8UbyE7A@mail.gmail.com>
+Subject: Re: [PATCH 1/2] thermal: cooling: Check Energy Model type in
+ cpufreq_cooling and devfreq_cooling
+To:     Lukasz Luba <lukasz.luba@arm.com>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        amit daniel kachhap <amit.kachhap@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Pierre.Gondois@arm.com, Stephen Boyd <swboyd@chromium.org>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        jorcrous@amazon.com, Rob Clark <robdclark@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 02:27:55PM +0100, Stephen Kitt wrote:
-> There is a regular need in the kernel to provide a way to declare having
-> a dynamically sized set of trailing elements in a structure. Kernel code
-> should always use "flexible array members"[1] for these cases. The older
-> style of one-element or zero-length arrays should no longer be used[2].
-> 
-> This helps with the ongoing efforts to globally enable -Warray-bounds
-> and get us closer to being able to tighten the FORTIFY_SOURCE routines
-> on memcpy().
-> 
-> [1] https://en.wikipedia.org/wiki/Flexible_array_member
-> [2] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
-> 
-> Link: https://github.com/KSPP/linux/issues/78
-> Link: https://github.com/KSPP/linux/issues/180
-> Suggested-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
+Hi,
 
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+On Thu, Feb 17, 2022 at 2:47 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
+>
+> Hi Daniel,
+>
+> On 2/17/22 10:10 AM, Daniel Lezcano wrote:
+> > On 16/02/2022 18:33, Doug Anderson wrote:
+> >> Hi,
+> >>
+> >> On Wed, Feb 16, 2022 at 7:35 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
+> >>>
+> >>> Hi Matthias,
+> >>>
+> >>> On 2/9/22 10:17 PM, Matthias Kaehlcke wrote:
+> >>>> On Wed, Feb 09, 2022 at 11:16:36AM +0000, Lukasz Luba wrote:
+> >>>>>
+> >>>>>
+> >>>>> On 2/8/22 5:25 PM, Matthias Kaehlcke wrote:
+> >>>>>> On Tue, Feb 08, 2022 at 09:32:28AM +0000, Lukasz Luba wrote:
+> >>>>>>>
+> >>>>>>>
+> >>>
+> >>> [snip]
+> >>>
+> >>>>>>> Could you point me to those devices please?
+> >>>>>>
+> >>>>>> arch/arm64/boot/dts/qcom/sc7180-trogdor-*
+> >>>>>>
+> >>>>>> Though as per above they shouldn't be impacted by your change,
+> >>>>>> since the
+> >>>>>> CPUs always pretend to use milli-Watts.
+> >>>>>>
+> >>>>>> [skipped some questions/answers since sc7180 isn't actually
+> >>>>>> impacted by
+> >>>>>>     the change]
+> >>>>>
+> >>>>> Thank you Matthias. I will investigate your setup to get better
+> >>>>> understanding.
+> >>>>
+> >>>> Thanks!
+> >>>>
+> >>>
+> >>> I've checked those DT files and related code.
+> >>> As you already said, this patch is safe for them.
+> >>> So we can apply it IMO.
+> >>>
+> >>>
+> >>> -------------Off-topic------------------
+> >>> Not in $subject comments:
+> >>>
+> >>> AFAICS based on two files which define thermal zones:
+> >>> sc7180-trogdor-homestar.dtsi
+> >>> sc7180-trogdor-coachz.dtsi
+> >>>
+> >>> only the 'big' cores are used as cooling devices in the
+> >>> 'skin_temp_thermal' - the CPU6 and CPU7.
+> >>>
+> >>> I assume you don't want to model at all the power usage
+> >>> from the Little cluster (which is quite big: 6 CPUs), do you?
+> >>> I can see that the Little CPUs have small dyn-power-coeff
+> >>> ~30% of the big and lower max freq, but still might be worth
+> >>> to add them to IPA. You might give them more 'weight', to
+> >>> make sure they receive more power during power split.
+> >>>
+> >>> You also don't have GPU cooling device in that thermal zone.
+> >>> Based on my experience if your GPU is a power hungry one,
+> >>> e.g. 2-4Watts, you might get better results when you model
+> >>> this 'hot' device (which impacts your temp sensor reported value).
+> >>
+> >> I think the two boards you point at (homestar and coachz) are just the
+> >> two that override the default defined in the SoC dtsi file. If you
+> >> look in sc7180.dtsi you'll see 'gpuss1-thermal' which has a cooling
+> >> map. You can also see the cooling maps for the littles.
+> >>
+> >> I guess we don't have a `dynamic-power-coefficient` for the GPU,
+> >> though? Seems like we should, but I haven't dug through all the code
+> >> here...
+> >
+> > The dynamic-power-coefficient is available for OPPs which includes
+> > CPUfreq and devfreq. As the GPU is managed by devfreq, setting the
+> > dynamic-power-coefficient makes the energy model available for it.
+> >
+> > However, the OPPs must define the frequency and the voltage. That is the
+> > case for most platforms except on QCom platform.
+> >
+> > That may not be specified as it uses a frequency index and the hardware
+> > does the voltage change in our back. The QCom cpufreq backend get the
+> > voltage table from a register (or whatever) and completes the voltage
+> > values for the OPPs, thus adding the information which is missing in the
+> > device tree. The energy model can then initializes itself and allows the
+> > usage of the Energy Aware Scheduler.
+> >
+> > However this piece of code is missing for the GPU part.
+> >
+>
+> Thank you for joining the discussion. I don't know about that Qcom
+> GPU voltage information is missing.
+>
+> If the voltage is not available (only the frequencies), there is
+> another way. There is an 'advanced' EM which uses registration function:
+> em_dev_register_perf_domain(). It uses a local driver callback to get
+> power for each found frequency. It has benefit because there is no
+> restriction to 'fit' into the math formula, instead just avg power
+> values can be feed into EM. It's called 'advanced' EM [1].
 
-Thanks!
---
-Gustavo
+It seems like there _should_ be a way to get the voltage out for GPU
+operating points, like is done with cpufreq in
+qcom_cpufreq_hw_read_lut(), but it might need someone with Qualcomm
+documentation to help with it. Maybe Rajendra would be able to help?
+Adding Jordon and Rob to this conversation in case they're aware of
+anything.
 
-> ---
->  include/sound/sof/topology.h | 2 +-
->  sound/soc/sof/topology.c     | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/sound/sof/topology.h b/include/sound/sof/topology.h
-> index d12736e14b69..adee6afd1490 100644
-> --- a/include/sound/sof/topology.h
-> +++ b/include/sound/sof/topology.h
-> @@ -237,7 +237,7 @@ struct sof_ipc_comp_process {
->  	/* reserved for future use */
->  	uint32_t reserved[7];
->  
-> -	uint8_t data[0];
-> +	uint8_t data[];
->  } __packed;
->  
->  /* frees components, buffers and pipelines
-> diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-> index e72dcae5e7ee..1d119d1dd69d 100644
-> --- a/sound/soc/sof/topology.c
-> +++ b/sound/soc/sof/topology.c
-> @@ -2164,7 +2164,7 @@ static int sof_process_load(struct snd_soc_component *scomp, int index,
->  	 */
->  	if (ipc_data_size) {
->  		for (i = 0; i < widget->num_kcontrols; i++) {
-> -			memcpy(&process->data + offset,
-> +			memcpy(&process->data[offset],
->  			       wdata[i].pdata->data,
->  			       wdata[i].pdata->size);
->  			offset += wdata[i].pdata->size;
-> 
-> base-commit: f71077a4d84bbe8c7b91b7db7c4ef815755ac5e3
-> -- 
-> 2.27.0
-> 
+As you said, we could just list a power for each frequency, though.
+
+I'm actually not sure which one would be more accurate across a range
+of devices with different "corners": specifying a dynamic power
+coefficient used for all "corners" and then using the actual voltage
+and doing the math, or specifying a power number for each frequency
+and ignoring the actual voltage used. In any case we're trying to get
+ballpark numbers and not every device will be exactly the same, so
+probably it doesn't matter that much.
+
+
+> Now we hit (again) the DT & EM issue (it's an old one, IIRC Morten
+> was proposing from ~2014 this upstream, but EAS wasn't merged back
+> then):
+> where to store these power-freq values, which are then used by the
+> callback. We have the 'dynamic-power-coefficient' in DT, but
+> it has limitations. It would be good to have this simple array
+> attached to the GPU/CPU node. IMHO it meet the requirement of DT,
+> it describes the HW (it would have HZ and Watts values).
+>
+> Doug, Matthias could you have a look at that function and its
+> usage, please [1]?
+> If you guys would support me in this, I would start, with an RFC
+> proposal, a discussion on LKML.
+>
+> [1]
+> https://elixir.bootlin.com/linux/v5.17-rc4/source/Documentation/power/energy-model.rst#L87
+
+Matthias: I think you've spent more time on the thermal stuff than me
+so I'll assume you'll follow-up here. If not then please yell!
+
+Ideally, though, someone from Qualcomm would jump in an own this.
+Basically it allows more intelligently throttling the GPU and CPU
+together in tandem instead of treating them separately IIUC, right?
+
+-Doug
