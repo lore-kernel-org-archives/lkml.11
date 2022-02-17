@@ -2,278 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EED8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4446C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 11:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238668AbiBQLDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 06:03:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38190 "EHLO
+        id S236357AbiBQLEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 06:04:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239688AbiBQLDY (ORCPT
+        with ESMTP id S230221AbiBQLE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 06:03:24 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638612B3579
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:00:27 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id u1so8275978wrg.11
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:00:27 -0800 (PST)
+        Thu, 17 Feb 2022 06:04:29 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DA02AC8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:04:15 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id hw13so6271115ejc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 03:04:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=e+JsVIdNvQlf4UWykFf5AIi0gPc4LX18FWl4ZaqpWts=;
-        b=T9TJc4T59W3hiOUSJVoF9vBUetFsMyja5FUnfSOVHAR/We+JTlpvvPYU6CgGfSSfVO
-         Fa5dQGH0C9Ib3VltN5Yl2wKwtcudlUE7/jUiSCYfMNgqii3uj00ymDnFqZEcYemVZ+lm
-         YIH+bUxJy0wqsfVf6Nf5pqkymMa0QZjapdbRCidqXd22hky1V72duSURTuQkEDx4AyyL
-         JT+GppffQh3Asi+0yY7tEk+E30TI+Pw2JD7McG9EQyCRJyHXY1ZFbVcnckz+PawRKFoJ
-         RIDHfJ+WQfVIHTfmwkbvhUb2Oi/e95JyN38wdp8wvuvkNg9uKdxrDVrVLe4r/jyWHzdW
-         3EkA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i9OOHv94Xd7neCD450gXYCpsHR7VGmBdVUV3cKCEacA=;
+        b=eDkNAQpKtVWiaXI4ukhGqjxOXlpU7KaMoDBzKQFGJW1xqgjxZ24eBVtsMvBh8/Xb8A
+         fumIUauj8FJRju29Gs7tyetRzuiHS2MBfV1z90EVPkntNpl8oDki1XMH/y/Ki5kbn5Oj
+         Ih5i/hankt94SPdkMq0hvnA15sa64WnJyJC0uoRa5C/WSEyDE2X4ey2hhZCNMpCOIfNx
+         wzvCGtdBVraW9JB0vDR2oQuT3DM6M5acIMJHE7q3nndCb2Z3MNkNaLEqgfHnTy+eVKI/
+         xnBvCO3IilH3scc+klKrksioH5LZIDXLRgDILwQMcCJlyMmCZhNecG3h4KvolQfRz3jD
+         C6vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=e+JsVIdNvQlf4UWykFf5AIi0gPc4LX18FWl4ZaqpWts=;
-        b=8A5ABJooai6Dk/ylFlbjtiGgc7XFX5VoXg2Z372uKspcT6DnzDIjloZCOWmZAMLdkj
-         6d8R5yhdph784WG98M2xiNHxmbagnxvJ+3LHgSPMpWVqL69aFED8ykP36DVbTr23zzr8
-         fRh/CORwEO2XM3wsFTjpXKcUOy28ujhClZe/1+8udrkTfvzi8M/vOeiyp13EjryNpQ9I
-         svtLq84vDqitbqh2fncJyYrzJpVQGBtkLk+YavEOm6fbulrhyQdW4Mtr6IoZyfhUv1St
-         nkyhpyHYokP/7PoAqDKCy0S5TuY3OqiR9loFP5jghcz4stCLIo9lqZKlJH37f6qpS8M8
-         sa6g==
-X-Gm-Message-State: AOAM531keEMP18Uqmfv3rjj+HM6e/P7HDLMx6NIFbfYv9RSs5ZtVe4IY
-        uapTEe+uSkSElxXbMxRhyyW97Q==
-X-Google-Smtp-Source: ABdhPJyMV/QoPazDJt55rGaaRBQnwi7tDPAel46/q7DzmnJQb+mE7mYy9oKetYZ4DvqseVwQLV+AIw==
-X-Received: by 2002:adf:80a4:0:b0:1e6:db9f:a8c4 with SMTP id 33-20020adf80a4000000b001e6db9fa8c4mr1831392wrl.345.1645095626387;
-        Thu, 17 Feb 2022 03:00:26 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id q2sm37046070wrw.14.2022.02.17.03.00.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Feb 2022 03:00:25 -0800 (PST)
-Message-ID: <8ae6faa4-a46e-bb72-799c-b4a04513b3e4@linaro.org>
-Date:   Thu, 17 Feb 2022 11:00:23 +0000
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i9OOHv94Xd7neCD450gXYCpsHR7VGmBdVUV3cKCEacA=;
+        b=b1yqVzWZn8mxMa/FAXNalKQAWDA1MxsyZ8lobpgnXVnGciCyR384VvlztP2dOp4x1L
+         jnHfRrbW3fWLlwpo1u0DSWGreto587Aj6S0P45y+pn8lqm+u8iVzR3xtmx1KttZEpYqG
+         UTAqn3LQnHCBnPN8hO63p0ErNE1mzCDMqh9K7Ey3+DRaqiQtgcVKPitkHOf+cWDjEnqx
+         neThHW0lSUu4/187i8PLF3Tb6arOuGGzGGIKsD+1WDJA+7cK0vGPA3QpIxXwBRF0iwMJ
+         F/x9OQab6xoBVXtTMXfdPlpN61dBJozJdzAlWStqT1xqys7fPsA2gnoiLDibEQQgsEfi
+         ag+Q==
+X-Gm-Message-State: AOAM5333sPyHJxKam+0qNxU6bIdMlKiZK6cBtLVRMBt9I+fGMrFOIMZR
+        nTYMY2v6ZQpsIY7onBakXmlmVw==
+X-Google-Smtp-Source: ABdhPJyDTUq5Ysv2KOy33196hjwWg9hdzis5uUBMswvU59JESphRbM6qToR/CwxsQl0q+Ofm0SyEUA==
+X-Received: by 2002:a17:906:2a92:b0:6cd:4349:dc1a with SMTP id l18-20020a1709062a9200b006cd4349dc1amr1871563eje.648.1645095853808;
+        Thu, 17 Feb 2022 03:04:13 -0800 (PST)
+Received: from leoy-ThinkPad-X240s ([104.245.96.223])
+        by smtp.gmail.com with ESMTPSA id gq1sm1061733ejb.58.2022.02.17.03.04.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 03:04:13 -0800 (PST)
+Date:   Thu, 17 Feb 2022 19:04:07 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     John Garry <john.garry@huawei.com>
+Cc:     Dmitry Vyukov <dvyukov@google.com>, Will Deacon <will@kernel.org>,
+        Marco Elver <elver@google.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, svens@linux.ibm.com, gor@linux.ibm.com,
+        sumanthk@linux.ibm.com, hca@linux.ibm.com,
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: Test 73 Sig_trap fails on arm64 (was Re: [PATCH] perf test: Test
+ 73 Sig_trap fails on s390)
+Message-ID: <20220217110407.GA784778@leoy-ThinkPad-X240s>
+References: <20220118091827.GA98966@leoy-ThinkPad-X240s>
+ <CANpmjNMPoU+1b1fKFuYDYwisW2YfjQHxGt5hgLp1tioG7C2jmg@mail.gmail.com>
+ <20220118124343.GC98966@leoy-ThinkPad-X240s>
+ <bfa0af18-04ac-857d-d3d8-ad9290f912c8@huawei.com>
+ <06412caf-42e4-5c4b-c9b3-9691075405bd@huawei.com>
+ <20220215143459.GB7592@willie-the-truck>
+ <8c582e45-0954-a2ea-764a-4dd78a464988@huawei.com>
+ <CACT4Y+Z8pKXw=8nwVtdo2W=hu_rBk1ws-Q=7-tBkLGTcD85NaA@mail.gmail.com>
+ <20220216131306.GA56419@leoy-ThinkPad-X240s>
+ <be4afed9-9739-26cb-b1d5-0529e0f74221@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 4/4] mtd: core: Fix a conflict between MTD and NVMEM on
- wp-gpios property
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Christophe Kerello <christophe.kerello@foss.st.com>,
-        Pratyush Yadav <p.yadav@ti.com>, richard@nod.at,
-        vigneshr@ti.com, robh+dt@kernel.org, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        devicetree@vger.kernel.org, chenshumin86@sina.com,
-        Tudor Ambarus <Tudor.Ambarus@microchip.com>,
-        Khouloud Touil <ktouil@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-References: <20220131095755.8981-1-christophe.kerello@foss.st.com>
- <20220131095755.8981-5-christophe.kerello@foss.st.com>
- <20220131144309.0ffe7cc8@xps13> <20220201104727.7xvcyexf3yucegcb@ti.com>
- <eebfa629-ead2-d63f-9cfb-4cafc1534678@foss.st.com>
- <20220202115327.53oqg5n7tx6b6q7u@ti.com>
- <f6687807-607c-f672-2394-ad463735d597@foss.st.com>
- <d1000482-5385-c6f1-d10e-e5396218e0ea@linaro.org>
- <20220217094819.2548a25e@xps13>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <20220217094819.2548a25e@xps13>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be4afed9-9739-26cb-b1d5-0529e0f74221@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 17/02/2022 08:48, Miquel Raynal wrote:
-> Hi Srinivas,
+On Thu, Feb 17, 2022 at 09:53:23AM +0000, John Garry wrote:
+> On 16/02/2022 13:13, Leo Yan wrote:
+> > > It does and fwiw I am just trying to use it. Things work only on x86 so far.
+> > So here we have agreement to disable the cases for Arm64/Arm.
+> > 
+> > John, since you put much efforts to follow up the issue, I'd like to
+> > leave decision to you if you want to proceed for patches?  Otherwise,
+> > I will send patches to disable cases in perf.
 > 
-> srinivas.kandagatla@linaro.org wrote on Wed, 16 Feb 2022 09:24:29 +0000:
+> Hi Leo,
 > 
->> On 16/02/2022 08:46, Christophe Kerello wrote:
->>> Hi Miquel, Pratyush, Srinivas,
->>>
->>> On 2/2/22 12:53, Pratyush Yadav wrote:
->>>> + Khouloud, Linus, Bartosz
->>>>
->>>> On 02/02/22 11:44AM, Christophe Kerello wrote:
->>>>> Hi,
->>>>>
->>>>> On 2/1/22 11:47, Pratyush Yadav wrote:
->>>>>> On 31/01/22 02:43PM, Miquel Raynal wrote:
->>>>>>> Hi Vignesh, Tudory, Pratyush,
->>>>>>>
->>>>>>> + Tudor and Pratyush
->>>>>>>
->>>>>>> christophe.kerello@foss.st.com wrote on Mon, 31 Jan 2022 10:57:55 >>>>> +0100:
->>>>>>>   
->>>>>>>> Wp-gpios property can be used on NVMEM nodes and the same property >>>>>> can
->>>>>>>> be also used on MTD NAND nodes. In case of the wp-gpios property is
->>>>>>>> defined at NAND level node, the GPIO management is done at NAND >>>>>> driver
->>>>>>>> level. Write protect is disabled when the driver is probed or resumed
->>>>>>>> and is enabled when the driver is released or suspended.
->>>>>>>>
->>>>>>>> When no partitions are defined in the NAND DT node, then the NAND >>>>>> DT node
->>>>>>>> will be passed to NVMEM framework. If wp-gpios property is defined in
->>>>>>>> this node, the GPIO resource is taken twice and the NAND controller
->>>>>>>> driver fails to probe.
->>>>>>>>
->>>>>>>> A new Boolean flag named skip_wp_gpio has been added in nvmem_config.
->>>>>>>> In case skip_wp_gpio is set, it means that the GPIO is handled by the
->>>>>>>> provider. Lets set this flag in MTD layer to avoid the conflict on
->>>>>>>> wp_gpios property.
->>>>>>>>
->>>>>>>> Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
->>>>>>>> ---
->>>>>>>>     drivers/mtd/mtdcore.c | 2 ++
->>>>>>>>     1 file changed, 2 insertions(+)
->>>>>>>>
->>>>>>>> diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
->>>>>>>> index 70f492dce158..e6d251594def 100644
->>>>>>>> --- a/drivers/mtd/mtdcore.c
->>>>>>>> +++ b/drivers/mtd/mtdcore.c
->>>>>>>> @@ -546,6 +546,7 @@ static int mtd_nvmem_add(struct mtd_info *mtd)
->>>>>>>>         config.stride = 1;
->>>>>>>>         config.read_only = true;
->>>>>>>>         config.root_only = true;
->>>>>>>> +    config.skip_wp_gpio = true;
->>>>>>>>         config.no_of_node = !of_device_is_compatible(node, >>>>>> "nvmem-cells");
->>>>>>>>         config.priv = mtd;
->>>>>>>> @@ -833,6 +834,7 @@ static struct nvmem_device >>>>>> *mtd_otp_nvmem_register(struct mtd_info *mtd,
->>>>>>>>         config.owner = THIS_MODULE;
->>>>>>>>         config.type = NVMEM_TYPE_OTP;
->>>>>>>>         config.root_only = true;
->>>>>>>> +    config.skip_wp_gpio = true;
->>>>>>>>         config.reg_read = reg_read;
->>>>>>>>         config.size = size;
->>>>>>>>         config.of_node = np;
->>>>>>>
->>>>>>> TLDR: There is a conflict between MTD and NVMEM, who should handle the
->>>>>>> WP pin when there is one? At least for raw NAND devices, I don't want
->>>>>>> the NVMEM core to handle the wp pin. So we've introduced this
->>>>>>> skip_wp_gpio nvmem config option. But there are two places where this
->>>>>>> boolean can be set and one of these is for otp regions (see above). In
->>>>>>> this case, I don't know if it is safe or if CFI/SPI-NOR rely on the
->>>>>>> nvmem protection. Please tell us if you think this is fine for you.
->>>>>>
->>>>>> Why does NVMEM touch hardware write protection in the first place? The
->>>>>> purpose of the framework is to provide a way to retrieve config stored
->>>>>> in memory. It has no business dealing with details of the chip like the
->>>>>> WP line. That should be MTD's job (which it should delegate to SPI NOR,
->>>>>> SPI NAND, etc.). If you want to write protect a cell then do it in
->>>>>> software. I don't see why NVMEM should be dealing with hardware >>>> directly
->>>>>> at all.
->>>>>>
->>>>>> That is my mental model of how things _should_ work. I have not spent
->>>>>> much time digging into how things actually work currently.
->>>>>>   
->>>>>
->>>>> Wp-gpios property management was added in MVMEM framework in January >>> 2020 =>
->>>>> sha1: 2a127da461a9d8d97782d6e82b227041393eb4d2
->>>>> "
->>>>>       nvmem: add support for the write-protect pin
->>>>>
->>>>>       The write-protect pin handling looks like a standard property that
->>>>>       could benefit other users if available in the core nvmem framework.
->>>>>
->>>>>       Instead of modifying all the memory drivers to check this pin, make
->>>>>       the NVMEM subsystem check if the write-protect GPIO being passed
->>>>>       through the nvmem_config or defined in the device tree and pull it
->>>>>       low whenever writing to the memory.
->>>>> "
->>>>>
->>>>> And this modification was done for EEPROMs flashes => sha1:
->>>>> 1c89074bf85068d1b86f2e0f0c2110fdd9b83c9f
->>>>> "
->>>>>       eeprom: at24: remove the write-protect pin support
->>>>>
->>>>>       NVMEM framework is an interface for the at24 EEPROMs as well as for
->>>>>       other drivers, instead of passing the wp-gpios over the different
->>>>>       drivers each time, it would be better to pass it over the NVMEM
->>>>>       subsystem once and for all.
->>>>>
->>>>>       Removing the support for the write-protect pin after adding it to
->>>>>       the NVMEM subsystem.
->>>>> "
->>>>>
->>>>> Current NVMEM framework implementation toggles the WP GPIO when >>> reg_write
->>>>> nvmem_config API is defined. In case of MTD framework, reg_write is not
->>>>> defined in nvmem_config.
->>>>
->>>> Thanks for digging these up. I think this was the wrong decision to
->>>> make. NVMEM should just provide the APIs for handling read/write, and
->>>> leave the rest to the drivers.
->>>>
->>>> It might be convenient for some drivers to put the WP GPIO handling to
->>>> NVMEM core but I just don't think it is the job of the framework to deal
->>>> with this, and it just does not know enough about the device to deal
->>>> with correctly and completely anyway. For example, wp-gpio is only one
->>>> of the ways to write protect a chip. SPI NOR flashes have a WP# pin that
->>>> is often toggled via the SPI controller. There could also be registers
->>>> that do the write protection.
->>>>
->>>> One would have to make strong justifications for making nvmem directly
->>>> deal with hardware level details to convince me it is a good idea. IMHO
->>>> if AT24 EEPROM is the only driver relying on this as of now then we
->>>> should just revert the patches and not have to deal with the
->>>> skip_wp_gpio hackery.
->>>>   
->>>
->>> Based on the  bindings documentation, AT24 EEPROM driver is not the only
->>> driver relying on this implementation. At least, AT25 EEPROM driver will
->>> have to be modified to handle the Write Protect management, and there is
->>> probably others drivers relying on this implementation.
->>>
->>> So, should we keep the legacy and apply the proposal patch to fix this
->>> conflict (I can send a V3 with a fixes tag on patch 3 and 4 as
->>> recommended by Miquel)?
->>> Or should we revert the Write Protect management in NVMEM framework
->>> but in this case I will not be able to handle such modifications (I am
->>> not able to test those drivers).
->>
->> Firstly sorry for such a long delay to reply this thread as I was in travel.
->>
->> I agree with comments from Pratyush but I see no harm in handling simple usecases of write-protect gpio in nvmem core. In fact wp-gpios and read-only are part of nvmem provider bindings.
->>
->> But usecases like the ones described in this patch series which do not want nvmem core to deal with this pin should set this new flag. I think this is a balanced choice.
->>
->> reverting the wp-gpio patch is going to break other providers that are using this bindings.
-> 
-> I am always puzzled when the community deeply cares about non-mainline
-> drivers.
-> 
-> On one side I can understand that creating a 'grab-the-wp-line'
-> flag would immediately break all external users but this is, as
-> reported by Pratyush, the more logical approach IMHO. However we might
-> possibly miss situations where the flag is necessary and break these
-> devices.
-> 
-> Otherwise the 'ignore-wp' flag is more conservative, it does not
+> I'll send later today.
 
-ingore-wp seems to be more sensible flag than skip_wp_gpio flag.
+Cool, thanks a lot!
 
-
-> break the existing users but would just address the MTD case for now, we
-> might have other in-tree subsystem that are affected.
-> 
-> I'm fine either way TBH :-) I would just like this patchset to go in
-
-Am okay either way too, It is just that ingore-wp seems a balanced 
-choice in the current situation :-).
-
-> through the next merge window.
-Sure.
-
-I can Ack nvmem patch if you wish to carry it via mtd tree.
-
-or
-
-nvmem patches go via Greg's char-misc tree. I can take 4/4 if you ack it 
-once V3 is sent
-
-
---srini
-> 
-> Thanks,
-> Miquèl
+Leo
