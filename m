@@ -2,166 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3656BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B70CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 21:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245490AbiBQVFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:05:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38384 "EHLO
+        id S239523AbiBQVL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 16:11:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244255AbiBQVEL (ORCPT
+        with ESMTP id S231852AbiBQVLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:04:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF7A51017EF
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 13:03:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645131834;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NX/p+3ovzAsh1RMwMjnRGHxJsp1FvXTx8d19l00fGLI=;
-        b=WkHleUe/TbcMKTnGo0WPjIFPZBc7Peqd3z2aBcYxY1dCWJdmQFmi6VAwHqMfTBxqxysX8E
-        PTgNbGICrmjt+954CWAwvGuBU6uOZnRwRta/ESRsAUWKDoJVKdB8Y3FER9HjiEYnWZWDGJ
-        O+/mJL+cC8xo3VRm/X6VoiAa13kLqkk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-569-at2ZsQzxN1-8gbUmI3ucJw-1; Thu, 17 Feb 2022 16:03:50 -0500
-X-MC-Unique: at2ZsQzxN1-8gbUmI3ucJw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 17 Feb 2022 16:11:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9A310FF4;
+        Thu, 17 Feb 2022 13:11:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B661814245;
-        Thu, 17 Feb 2022 21:03:49 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C82F6AB90;
-        Thu, 17 Feb 2022 21:03:49 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com
-Subject: [PATCH v2 17/18] KVM: x86: flush TLB separately from MMU reset
-Date:   Thu, 17 Feb 2022 16:03:39 -0500
-Message-Id: <20220217210340.312449-18-pbonzini@redhat.com>
-In-Reply-To: <20220217210340.312449-1-pbonzini@redhat.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BBB9B824C4;
+        Thu, 17 Feb 2022 21:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBEAEC340E8;
+        Thu, 17 Feb 2022 21:11:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645132296;
+        bh=CzdKQukUPaQ8IcMbLnou9OTW4H72Tf7SKjxZcmHGj9E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=a3BHLJELWH/c1d0oC/ubykhYkMmGYhinD4mFYBoruFJ5Yz7VJcf++0Jf9P8gvrUSt
+         cpWHAB/yNlPC0EBatdEtekOEW9BLmahyBElhmjqhnbsTPaAhZJyFIZOs1u2CmTGBIS
+         o78u91m/r3NNqpEqrIiGfTMUKLDtIALkH8ps6oGMIDOpD90PzZjA50nZ0ct97sWtgT
+         dDkpHwu3RQYN8UcvjhYbE0SL1HqA5zeX+pMFWaduOSsKZm/K9JE1+3FWu+/IrZ//fW
+         UaDVMNGNOBswwhUHwKHGxIQWNzMOXA7gV4uSV5RfSO3u4uHemKwSJJVRieCMn0g2dL
+         Fc7KrPYZWFyAQ==
+Date:   Thu, 17 Feb 2022 15:11:34 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH v2 1/2] PCI: Add defines for normal and
+ subtractive PCI bridges
+Message-ID: <20220217211134.GA305475@bhelgaas>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20220214114109.26809-1-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For both CR0 and CR4, disassociate the TLB flush logic from the
-MMU role logic.  Instead  of relying on kvm_mmu_reset_context() being
-a superset of various TLB flushes (which is not necessarily going to
-be the case in the future), always call it if the role changes
-but also set the various TLB flush requests according to what is
-in the manual.
+On Mon, Feb 14, 2022 at 12:41:08PM +0100, Pali Rohár wrote:
+> Add following two new PCI class codes defines into pci_ids.h include file:
+> 
+>   PCI_CLASS_BRIDGE_PCI_NORMAL
+>   PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE
+> 
+> And use these defines in all kernel code for describing PCI class codes for
+> normal and subtractive PCI bridges.
 
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/kvm/x86.c | 58 ++++++++++++++++++++++++++++++++--------------
- 1 file changed, 40 insertions(+), 18 deletions(-)
+Looks good; is this another case?
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 9043548e6baf..2b4663dfcd8d 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -871,6 +871,13 @@ void kvm_post_set_cr0(struct kvm_vcpu *vcpu, unsigned long old_cr0, unsigned lon
- 	if ((cr0 ^ old_cr0) & X86_CR0_PG) {
- 		kvm_clear_async_pf_completion_queue(vcpu);
- 		kvm_async_pf_hash_reset(vcpu);
-+
-+		/*
-+		 * Clearing CR0.PG is defined to flush the TLB from the guest's
-+		 * perspective.
-+		 */
-+		if (!(cr0 & X86_CR0_PG))
-+			kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
- 	}
- 
- 	if ((cr0 ^ old_cr0) & KVM_MMU_CR0_ROLE_BITS)
-@@ -1057,28 +1064,41 @@ EXPORT_SYMBOL_GPL(kvm_is_valid_cr4);
- 
- void kvm_post_set_cr4(struct kvm_vcpu *vcpu, unsigned long old_cr4, unsigned long cr4)
- {
-+	if ((cr4 ^ old_cr4) & KVM_MMU_CR4_ROLE_BITS)
-+		kvm_mmu_reset_context(vcpu);
-+
- 	/*
--	 * If any role bit is changed, the MMU needs to be reset.
--	 *
--	 * If CR4.PCIDE is changed 1 -> 0, the guest TLB must be flushed.
- 	 * If CR4.PCIDE is changed 0 -> 1, there is no need to flush the TLB
- 	 * according to the SDM; however, stale prev_roots could be reused
- 	 * incorrectly in the future after a MOV to CR3 with NOFLUSH=1, so we
--	 * free them all.  KVM_REQ_MMU_RELOAD is fit for the both cases; it
--	 * is slow, but changing CR4.PCIDE is a rare case.
--	 *
--	 * If CR4.PGE is changed, the guest TLB must be flushed.
--	 *
--	 * Note: resetting MMU is a superset of KVM_REQ_MMU_RELOAD and
--	 * KVM_REQ_MMU_RELOAD is a superset of KVM_REQ_TLB_FLUSH_GUEST, hence
--	 * the usage of "else if".
-+	 * free them all.  This is *not* a superset of KVM_REQ_TLB_FLUSH_GUEST
-+	 * or KVM_REQ_TLB_FLUSH_CURRENT, because the hardware TLB is not flushed,
-+	 * so fall through.
- 	 */
--	if ((cr4 ^ old_cr4) & KVM_MMU_CR4_ROLE_BITS)
--		kvm_mmu_reset_context(vcpu);
--	else if ((cr4 ^ old_cr4) & X86_CR4_PCIDE)
-+	if (!tdp_enabled &&
-+	    (cr4 & X86_CR4_PCIDE) && !(old_cr4 & X86_CR4_PCIDE))
- 		kvm_make_request(KVM_REQ_MMU_RELOAD, vcpu);
--	else if ((cr4 ^ old_cr4) & X86_CR4_PGE)
--		kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
-+
-+	/*
-+	 * The TLB has to be flushed for all PCIDs on:
-+	 * - CR4.PCIDE changed from 1 to 0
-+	 * - any change to CR4.PGE
-+	 *
-+	 * This is a superset of KVM_REQ_TLB_FLUSH_CURRENT.
-+	 */
-+	if (((cr4 ^ old_cr4) & X86_CR4_PGE) ||
-+	    (!(cr4 & X86_CR4_PCIDE) && (old_cr4 & X86_CR4_PCIDE)))
-+		 kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
-+
-+	/*
-+	 * The TLB has to be flushed for the current PCID on:
-+	 * - CR4.SMEP changed from 0 to 1
-+	 * - any change to CR4.PAE
-+	 */
-+	else if (((cr4 ^ old_cr4) & X86_CR4_PAE) ||
-+		 ((cr4 & X86_CR4_SMEP) && !(old_cr4 & X86_CR4_SMEP)))
-+		 kvm_make_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu);
-+
- }
- EXPORT_SYMBOL_GPL(kvm_post_set_cr4);
- 
-@@ -11323,15 +11343,17 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
- 	static_call(kvm_x86_update_exception_bitmap)(vcpu);
- 
- 	/*
--	 * Reset the MMU context if paging was enabled prior to INIT (which is
-+	 * A TLB flush is needed if paging was enabled prior to INIT (which is
- 	 * implied if CR0.PG=1 as CR0 will be '0' prior to RESET).  Unlike the
- 	 * standard CR0/CR4/EFER modification paths, only CR0.PG needs to be
- 	 * checked because it is unconditionally cleared on INIT and all other
- 	 * paging related bits are ignored if paging is disabled, i.e. CR0.WP,
- 	 * CR4, and EFER changes are all irrelevant if CR0.PG was '0'.
- 	 */
--	if (old_cr0 & X86_CR0_PG)
-+	if (old_cr0 & X86_CR0_PG) {
-+		kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
- 		kvm_mmu_reset_context(vcpu);
-+	}
- 
- 	/*
- 	 * Intel's SDM states that all TLB entries are flushed on INIT.  AMD's
--- 
-2.31.1
+  drivers/pci/controller/pci-mvebu.c:     dev_rev |= (PCI_CLASS_BRIDGE_PCI << 8) << 8;
 
-
+>  static void quirk_sb1250_ht(struct pci_dev *dev)
+>  {
+> -	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
+> +	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
