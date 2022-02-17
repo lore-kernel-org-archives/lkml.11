@@ -2,86 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21146C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 794F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242074AbiBQOtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:49:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36410 "EHLO
+        id S242085AbiBQOtY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 09:49:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239719AbiBQOtJ (ORCPT
+        with ESMTP id S242077AbiBQOtW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:49:09 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88008165C02;
-        Thu, 17 Feb 2022 06:48:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645109335; x=1676645335;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KJwcvMoVWYzSvXk8gggEbeaq4OR5k43plCA9oRGkcUE=;
-  b=n/jWqSN7Wkj97X26J0b4lm6BKYhdMUSq+B7pvWmORtY2ZVzXvU/Cyr/4
-   4uecPGT4PodbSOf2id/UCHTD72Ox9hzpBH/MGGQupNrDGznJ1SR/j9HiX
-   HWWrfzY3ZAIGFwG7pTPDdX7fw6nLdN5/n2p9TrXKjDn51w35BqmH+qLtX
-   P3lEfgDA2bfnUILaBihEFZT9FE2On4cDkSW32fEpM5ZpIsExy+1D86KN9
-   O9u8jgTAnTz42Vkmi2e8IX+dPSQumznY1wwmmSkAeVPmOB8fC3ysEJa/7
-   w21XHZlSgbTHa89gp0XfEqiD71ZMcwZLW//ZQIz9tzalaFOLFJtBe7tZc
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="275477578"
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="275477578"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 06:48:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,376,1635231600"; 
-   d="scan'208";a="545641327"
-Received: from mylly.fi.intel.com (HELO [10.237.72.51]) ([10.237.72.51])
-  by orsmga008.jf.intel.com with ESMTP; 17 Feb 2022 06:48:51 -0800
-Message-ID: <b9099ac3-a5fa-1aba-92a3-05a7212525ab@linux.intel.com>
-Date:   Thu, 17 Feb 2022 16:48:50 +0200
+        Thu, 17 Feb 2022 09:49:22 -0500
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CECD1AF6E9;
+        Thu, 17 Feb 2022 06:49:06 -0800 (PST)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21HDWGou030634;
+        Thu, 17 Feb 2022 15:48:46 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=K9MokaFQtygzcbXppLJ7tFspICKX7gd0wQACWAjKNl4=;
+ b=dTqmL9bvvhzqzivf+1XK3Pwbg/5YgFSToXeKGNzWkyOebaz4LqykTnMQm86I/ljuiA4g
+ Jrg6jm37OrjQKUZjxQUNCFR0Y/9vgGNdtWvMZxryNKCPTi/87atNCb8/thFqCTX2GCm1
+ /Dm2UfWVhPVKzjNxaGDdZyzyb3UI+EQw0sAij5LI46irzTKlw4wsnSQmy0VDm4w+5gVQ
+ 1NIe+pjcsQnepl8C5cvmApr41NIdsHnVyzyYp/vxXfMD4xnBgmrtvuY89ANTmyZCfT/W
+ 17d9wgkVtEUxmSbHS/yprUirP3q+8U7lB2b8e3mnK8p0yk12fQc5M4jp2/ylTpGsGaGn 7g== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e9k06a45f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 15:48:46 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5701C10002A;
+        Thu, 17 Feb 2022 15:48:45 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4E2C22278AB;
+        Thu, 17 Feb 2022 15:48:45 +0100 (CET)
+Received: from localhost (10.75.127.49) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 17 Feb 2022 15:48:44
+ +0100
+From:   Christophe Kerello <christophe.kerello@foss.st.com>
+To:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
+        <robh+dt@kernel.org>, <srinivas.kandagatla@linaro.org>,
+        <p.yadav@ti.com>
+CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <devicetree@vger.kernel.org>, <chenshumin86@sina.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>
+Subject: [PATCH v3 0/4] mtd: rawnand: stm32_fmc2: Add NAND Write Protect support
+Date:   Thu, 17 Feb 2022 15:47:51 +0100
+Message-ID: <20220217144755.270679-1-christophe.kerello@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.1
-Subject: Re: [PATCH] counter: Stop using dev_get_drvdata() to get the counter
- device
-Content-Language: en-US
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Jonathan Cameron <jic23@kernel.org>
-References: <YfzPcyusGwAOkys6@shinobu>
- <20220204082556.370348-1-u.kleine-koenig@pengutronix.de>
- <YgHKekl9rJ2jH5j4@shinobu>
-From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
-In-Reply-To: <YgHKekl9rJ2jH5j4@shinobu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-17_05,2022-02-17_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+This patchset adds the management of the WP# signal in FMC2 driver.
+WP will be disabled in probe/resume callbacks and will be enabled
+in remove/suspend callbacks.
 
-On 2/8/22 03:42, William Breathitt Gray wrote:
-> On Fri, Feb 04, 2022 at 09:25:56AM +0100, Uwe Kleine-König wrote:
->> dev_get_drvdata() returns NULL since commit b56346ddbd82 ("counter: Use
->> container_of instead of drvdata to track counter_device") which wrongly
->> claimed there were no users of drvdata. Convert to container_of() to
->> fix a null pointer dereference.
->>
->> Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
->> Fixes: b56346ddbd82 ("counter: Use container_of instead of drvdata to track counter_device")
->> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> 
-> I'll pick this up and apply it to my tree.
-> 
-Perhaps late but I hit this same issue, patch here fixes it and I wanted 
-to confirm it.
+This patchset also fixes a conflict on wp-gpios property between
+MTD and NVMEM.
 
-Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Changes in v3:
+ - add a fixes tag in patches 3 and 4.
+ - rename skip_wp_gpio by ignore_wp in nvmen_config.
+
+Changes in v2:
+ - add Rob Acked-by for the bindings part.
+ - rework the proposal done to fix a conflict between MTD and NVMEM on
+   wp-gpios property.
+
+Christophe Kerello (4):
+  dt-binding: mtd: nand: Document the wp-gpios property
+  mtd: rawnand: stm32_fmc2: Add NAND Write Protect support
+  nvmem: core: Fix a conflict between MTD and NVMEM on wp-gpios property
+  mtd: core: Fix a conflict between MTD and NVMEM on wp-gpios property
+
+ .../bindings/mtd/nand-controller.yaml         |  7 ++++
+ drivers/mtd/mtdcore.c                         |  2 +
+ drivers/mtd/nand/raw/stm32_fmc2_nand.c        | 40 ++++++++++++++++++-
+ drivers/nvmem/core.c                          |  2 +-
+ include/linux/nvmem-provider.h                |  4 +-
+ 5 files changed, 52 insertions(+), 3 deletions(-)
+
+-- 
+2.25.1
+
