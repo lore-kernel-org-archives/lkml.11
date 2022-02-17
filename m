@@ -2,163 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A06AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:08:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DEA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 06:08:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234885AbiBQGIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 01:08:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46804 "EHLO
+        id S234930AbiBQGI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 01:08:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234859AbiBQGId (ORCPT
+        with ESMTP id S234859AbiBQGIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 01:08:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D457C7D49
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:08:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645078098;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7Iw+/fHKv6eLf6uybneXrBCZa8a9WBXNMPZFyFhXGnU=;
-        b=aj62FZAwnNoQM7MT1S59Cu1sOXe9PJSCKkSa8DToRtUAwFKxl9E/H08yd7qbCjmWtoQU3k
-        dWGLcu5F6JIlIKWSmeE/rAiE0gtW1qFx/0v5MdMruyA4dEoCvPKuMrtf2kp51HRUZwTW9f
-        EyFaZVjTxNqdB73mlRIS195yZXAvyKM=
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
- [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-97-0i0WF9IRNh-o2wmz3Xw2FQ-1; Thu, 17 Feb 2022 01:08:17 -0500
-X-MC-Unique: 0i0WF9IRNh-o2wmz3Xw2FQ-1
-Received: by mail-pg1-f198.google.com with SMTP id 27-20020a63135b000000b0036285f54b6aso2454416pgt.19
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 22:08:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7Iw+/fHKv6eLf6uybneXrBCZa8a9WBXNMPZFyFhXGnU=;
-        b=iuhVDMAzkJRt7FHL3cKFhwJU8kPejt7TT1wMiXuQ7tzien8Kxl4iYD1TwPAhWFzKLR
-         vMsBgnDSlvevLxxkyGV9GlTzG6EE9BIohrnqJ+QO0TCmlflJeem/MOvJP86QaEe5Fm/h
-         dFoHnzPNANUbIIqphT6Sn/1VtzqbSWCNAJljOD6mBDQ+AOwZLUdEJpoBUsf+ShOoUP9+
-         nBjfdcDdDSTrigz8zSdchm1nR8NdaDFvg6oXEQTdpHXdi+eMmSd28eIBrC3BwPzkanM7
-         LMAd439OeT6+aSu5vxrUJ2H/2ViPy7DYoU2MiWjtwWm5l6G5HdExzJ5wYvxaETbOzyyM
-         u3nA==
-X-Gm-Message-State: AOAM532JFJPP3+FAQ2idN5EVc4YT8hJAnWnobDaDp3fO8BuBHCt4Nlhr
-        rYWUJCwFdjkSL/+MrfIAhBkP/N+UfLMK9rCUV3sI0Jf1mdmUeW0ufWdRmHmSY48McaSFUXtC5oi
-        2cH4n47MgTYOARlJsFvfbg3wL
-X-Received: by 2002:a05:6a00:8c5:b0:4c7:f9a5:ebc6 with SMTP id s5-20020a056a0008c500b004c7f9a5ebc6mr1690177pfu.34.1645078096100;
-        Wed, 16 Feb 2022 22:08:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzJq01ZMuxcXHBVvWHdhve6h2WPzO7RXn4GgLcncsq4yBWdeLBav4ZSIjD78cJP8QrYAxhIEQ==
-X-Received: by 2002:a05:6a00:8c5:b0:4c7:f9a5:ebc6 with SMTP id s5-20020a056a0008c500b004c7f9a5ebc6mr1690157pfu.34.1645078095837;
-        Wed, 16 Feb 2022 22:08:15 -0800 (PST)
-Received: from localhost.localdomain ([94.177.118.126])
-        by smtp.gmail.com with ESMTPSA id j8sm224230pjc.11.2022.02.16.22.08.11
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 16 Feb 2022 22:08:15 -0800 (PST)
-From:   Peter Xu <peterx@redhat.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     Alistair Popple <apopple@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>, peterx@redhat.com,
-        David Hildenbrand <david@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>
-Subject: [PATCH v5 4/4] mm: Rework swap handling of zap_pte_range
-Date:   Thu, 17 Feb 2022 14:07:46 +0800
-Message-Id: <20220217060746.71256-5-peterx@redhat.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220217060746.71256-1-peterx@redhat.com>
-References: <20220217060746.71256-1-peterx@redhat.com>
+        Thu, 17 Feb 2022 01:08:54 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B3AC7D49;
+        Wed, 16 Feb 2022 22:08:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645078121; x=1676614121;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=n2g+52Mf0BmgpwBL96nY3BEsYRnC6C1I5ruB2Zqy098=;
+  b=a3q0p5BiQ/bMBNA2h4MieYsjYF/Eslxl/zP6wA37LUeknDOiXLDIow1G
+   knTCKb0FXQ2E+ZUmQjn4GOsnCuFydCa+9KcDJZuiI8d9N/JCmVKwz8LIs
+   tJtj4a/oAhJ/DdH/lZ5bwbN3KJkj7L61gdUx9c/8BdIbDcCH0E7xmaEur
+   g=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 Feb 2022 22:08:40 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 22:08:40 -0800
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 16 Feb 2022 22:08:40 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 16 Feb 2022 22:08:34 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v14 00/10] Add support for audio on SC7280 based targets
+Date:   Thu, 17 Feb 2022 11:37:36 +0530
+Message-ID: <1645078066-9365-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean the code up by merging the device private/exclusive swap entry
-handling with the rest, then we merge the pte clear operation too.
+This patch set is to add support for Audio over wcd codec,
+digital mics, through digital codecs and without ADSP.
 
-struct* page is defined in multiple places in the function, move it upward.
+Changes Since V13:
+    -- Change bulk cdc clock voting to individual clock voting.
+    -- Remove redundant code, conditional check and prints.
+    -- Fix typo errors.
+Changes Since V12:
+    -- Fix arguments type mismatch.
+Changes Since V11:
+    -- Fix kernel robot issue on arguments type mismatch.
+Changes Since V10:
+    -- Split bulk clock voting to individual clock voting as per use case in cdc-dma driver.
+    -- Add missing codec dma clocks.
+    -- Update rxtx lpm buffer size.
+Changes Since V9:
+    -- Change individual clock voting to bulk clock voting of lpass-sc7280 platform driver.
+    -- Remove redundant clocks in lpass variant structure.
+    -- Add mclk for MI2S based headset path.
+    -- Remove unused lpass variant structure members in lpass header.
+Changes Since V8:
+    -- Fix errors in sc7280 lpass cpu dt-bindings.
+    -- Move to quicinc domain email id's.
+Changes Since V7:
+    -- Fix indentation errors.
+    -- Bisect patches to avoid interdependency.
+Changes Since V6:
+    -- Split cdc dma regmap config macros.
+    -- Add write dma reg fields for i2s path.
+    -- Add helper function to distinguish rxtx and va dma ports.
+    -- Optimizing clock and reg name in cpu dt-bindings.
+    -- Update buffer management for cdc dma path.
+    -- Remove Kconfig fields of machine driver.
+Changes Since V5:
+    -- Include MI2S primary node to snd_soc_dai_driver in lpass-sc7280 platform driver.
+    -- Move dependency patch list to corresponding patch.
+    -- Add support for missing cdc-dma ports.
+    -- Change if/else conditional statements to switch cases.
+    -- Add missing error handlings.
+    -- Typo errors fix.
+Changes Since V4:
+    -- Remove unused variable in lpass-sc7280 platform driver.
+Changes Since V3:
+    -- Remove redundant power domain controls. As power domains can be configured from dtsi.
+Changes Since V2:
+    -- Split lpass sc7280 cpu driver patch and create regmap config patch.
+    -- Create patches based on latest kernel tip.
+    -- Add helper function to get dma control and lpaif handle.
+    -- Remove unused variables.
+Changes Since V1:
+    -- Typo errors fix
+    -- CPU driver readable/writable apis optimization.
+    -- Add Missing config patch
+    -- Add Common api for repeated dmactl initialization.
 
-free_swap_and_cache() is only useful for !non_swap_entry() case, put it
-into the condition.
+Srinivasa Rao Mandadapu (10):
+  ASoC: qcom: SC7280: Update config for building codec dma drivers
+  ASoC: qcom: Move lpass_pcm_data structure to lpass header
+  ASoC: qcom: lpass: Add dma fields for codec dma lpass interface
+  ASoC: qcom: Add helper function to get dma control and lpaif handle
+  ASoC: qcom: Add register definition for codec rddma and wrdma
+  ASoC: qcom: Add regmap config support for codec dma driver
+  ASoC: qcom: Add support for codec dma driver
+  ASoC: qcom: Add lpass CPU driver for codec dma control
+  ASoC: dt-bindings: Add SC7280 lpass cpu bindings
+  ASoC: qcom: lpass-sc7280: Add platform driver for lpass audio
 
-No functional change intended.
+ .../devicetree/bindings/sound/qcom,lpass-cpu.yaml  |  75 ++-
+ sound/soc/qcom/Kconfig                             |  11 +
+ sound/soc/qcom/Makefile                            |   4 +
+ sound/soc/qcom/lpass-cdc-dma.c                     | 305 +++++++++++
+ sound/soc/qcom/lpass-cpu.c                         | 252 ++++++++-
+ sound/soc/qcom/lpass-lpaif-reg.h                   | 127 ++++-
+ sound/soc/qcom/lpass-platform.c                    | 601 ++++++++++++++++++---
+ sound/soc/qcom/lpass-sc7280.c                      | 447 +++++++++++++++
+ sound/soc/qcom/lpass.h                             | 143 +++++
+ 9 files changed, 1881 insertions(+), 84 deletions(-)
+ create mode 100644 sound/soc/qcom/lpass-cdc-dma.c
+ create mode 100644 sound/soc/qcom/lpass-sc7280.c
 
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Signed-off-by: Peter Xu <peterx@redhat.com>
----
- mm/memory.c | 21 ++++++---------------
- 1 file changed, 6 insertions(+), 15 deletions(-)
-
-diff --git a/mm/memory.c b/mm/memory.c
-index c2defe8a1472..6aa51ee2a307 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -1361,6 +1361,8 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 	arch_enter_lazy_mmu_mode();
- 	do {
- 		pte_t ptent = *pte;
-+		struct page *page;
-+
- 		if (pte_none(ptent))
- 			continue;
- 
-@@ -1368,8 +1370,6 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 			break;
- 
- 		if (pte_present(ptent)) {
--			struct page *page;
--
- 			page = vm_normal_page(vma, addr, ptent);
- 			if (unlikely(!should_zap_page(details, page)))
- 				continue;
-@@ -1403,28 +1403,21 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 		entry = pte_to_swp_entry(ptent);
- 		if (is_device_private_entry(entry) ||
- 		    is_device_exclusive_entry(entry)) {
--			struct page *page = pfn_swap_entry_to_page(entry);
--
-+			page = pfn_swap_entry_to_page(entry);
- 			if (unlikely(!should_zap_page(details, page)))
- 				continue;
--			pte_clear_not_present_full(mm, addr, pte, tlb->fullmm);
- 			rss[mm_counter(page)]--;
--
- 			if (is_device_private_entry(entry))
- 				page_remove_rmap(page, false);
--
- 			put_page(page);
--			continue;
--		}
--
--		if (!non_swap_entry(entry)) {
-+		} else if (!non_swap_entry(entry)) {
- 			/* Genuine swap entry, hence a private anon page */
- 			if (!should_zap_cows(details))
- 				continue;
- 			rss[MM_SWAPENTS]--;
-+			if (unlikely(!free_swap_and_cache(entry)))
-+				print_bad_pte(vma, addr, ptent, NULL);
- 		} else if (is_migration_entry(entry)) {
--			struct page *page;
--
- 			page = pfn_swap_entry_to_page(entry);
- 			if (!should_zap_page(details, page))
- 				continue;
-@@ -1436,8 +1429,6 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 			/* We should have covered all the swap entry types */
- 			WARN_ON_ONCE(1);
- 		}
--		if (unlikely(!free_swap_and_cache(entry)))
--			print_bad_pte(vma, addr, ptent, NULL);
- 		pte_clear_not_present_full(mm, addr, pte, tlb->fullmm);
- 	} while (pte++, addr += PAGE_SIZE, addr != end);
- 
 -- 
-2.32.0
+2.7.4
 
