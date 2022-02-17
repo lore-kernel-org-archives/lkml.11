@@ -2,123 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:37:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC02C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 08:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237864AbiBQIhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 03:37:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37458 "EHLO
+        id S236720AbiBQIiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 03:38:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235282AbiBQIhw (ORCPT
+        with ESMTP id S229653AbiBQIiM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 03:37:52 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF241FCBC4
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:37:38 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jzp8F1fDtzbncn;
-        Thu, 17 Feb 2022 16:36:29 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Feb
- 2022 16:37:35 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <david@redhat.com>,
-        <dan.j.williams@intel.com>, <apopple@nvidia.com>
-CC:     <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH] kernel/resource: fix kfree() of bootmem memory again
-Date:   Thu, 17 Feb 2022 16:36:19 +0800
-Message-ID: <20220217083619.19305-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Thu, 17 Feb 2022 03:38:12 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AEE71FCBC4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 00:37:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1645087074;
+        bh=4mhqX1evkQ31sV+XbtD3eomF6rseIEg3D3FtMSelXhc=;
+        h=X-UI-Sender-Class:Date:To:From:Subject;
+        b=VpEWqqm9NurKDw8bRdEeBK+lpb3bBon+7hRLdWMMFhKRFK1phEsm7fdX49DQi2WLx
+         YScQjvgHdj610sRFszN2DlR+/VFuxSSE3yJRNnpdDAzNXm0RbogsAgEcEX9n61ORSx
+         9eEQ0LfqqbPKZFukGoHthlxqt2wLCX05lLqYbEm4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.net (mrgmx005
+ [212.227.17.184]) with ESMTPSA (Nemesis) id 1Mel3n-1nt8AW065t-00akQ1; Thu, 17
+ Feb 2022 09:37:53 +0100
+Message-ID: <85bfe02c-9432-c5b0-04e0-8096adf37b93@gmx.com>
+Date:   Thu, 17 Feb 2022 16:37:49 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Content-Language: en-US
+To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nick Terrell <terrelln@fb.com>
+From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
+Subject: v5.17-rc3 compile failure on aarch64
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:s0tc8KYPnkKgjOezLzbEi5WUCje+CbW1vcyMNQDiZx3oO58OXbO
+ rhHS5Dx0345kL0vGiY91JGUtGnskAXnS40FArZx2jErx9eO1f8Z+8ZX6695cnlQ7hihnrW2
+ LKrBsl4S1dt2T1uIupZ+nHQVDVe+U8g7uI7T2uKvzjwo1JK/hUnosJQ5JvHU0uo7LNzRfQU
+ uqHmYGZrxss16kDaLyGIQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+TgRwgr3BIk=:1LNpqw630lMB6ajaHvKhfk
+ zzcRPupr92TqatyPodSU97pBjQrJAiMcBLmpmT0UVxuwPL3HrEm+CcvNgPWzmdSUSoDGFNDbt
+ ShpxVLymuPr3DI9gRzwpR7hnitRDjY1K19pBKYZxrvTdaPZHaWXf28cGdvFoI6tm+4Ox0GPSG
+ elJVWqgo2QQRUwjQ1AtM8mgh1T1UFpdTalJf/P7jw1hskXppQe/ZnMe9IsO7bPc2slZpEajse
+ RZ0s029ihQXfikfRPX8RRQjFNSrW3EEAh1maH3VwBY66WxgHHwwcQGo6Vk+TkaJHLh04aSgqL
+ u6yIPV9Cx9/e0JePQoQ6pQ7N3CUpcMdXDyDcdg8RwGLgrxuRDvrILPZE44cqgodCs7HpalYgb
+ nLlKzLGc8gwAcqSnJGi2BGb+Gs7hAK6Cz4OaKFuy18ga+XdhahzcUt/tC8GNCN9MUhYoT+r1r
+ j7SCkOc5rv1jQ9cuHY+PkFkaf9QIU5Fzoau/2FIaqfMYzZWRXanilVNW9EUjOuHoVY/SYlRiH
+ g1Se8vOj/Qv6/5veEaoYuJjsJ2OPK56Z/ZgwvGZa9eO3azxBv/toTPS9LMP5BNlUE6zBxkM4G
+ B+Ld8Nuls4ZJZroG8BOzCcN5UjUMB99dKlb7jPAbWNk7EGNiL4MhGy2XfcifGXtEd6Wu16V5l
+ PCgOXOlrP2Z5hYQtll64DaLW0m2TOqAoDKTKYmMHmgrSEyh57YZ1bdj9W3xu1Ec5gUdHXvsdF
+ yakngkgWtxPAzqY+nrGAYETG8DqyY4MlAyQq8sCrfct31kZ90lU5GB1jVSx1l7r00wRwZkz22
+ yrepvzugKeBlY0hNLk13c9pKnsIHdXfFWOf4Pkc6YDO9GaFgQq5PJxU3dtkcxMOVLM41EsOnM
+ r4jY3mnUdEdOhQqDaGE5Hf3BrY3Hd8T/4hyq61P4orkdZruR5lYvqW6QYZ9VjtbRQ/JqK6anh
+ hW+eAmS0duQvRqAVn4jiblmLFhzklcxf+aufrDqt4VihK9QxJLh7QmhCPEwVDGPrm1e6EYr+c
+ i2ITb/5rlmRsoswLiEDX1HUk5Kx9A2Yl/PytoQ7y9nGRvPUrsX3IJQ80WsahqMv//ag76dRvd
+ eROwho5e9iDjz8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit ebff7d8f270d ("mem hotunplug: fix kfree() of bootmem memory"),
-we could get a resource allocated during boot via alloc_resource(). And
-it's required to release the resource using free_resource(). Howerver,
-many people use kfree directly which will result in kernel BUG. In order
-to fix this without fixing every call site, just leak a couple of bytes
-in such corner case.
+Hi,
 
-Suggested-by: David Hildenbrand <david@redhat.com>
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Fixes: ebff7d8f270d ("mem hotunplug: fix kfree() of bootmem memory")
----
- kernel/resource.c | 41 ++++++++---------------------------------
- 1 file changed, 8 insertions(+), 33 deletions(-)
+Recently I found v5.17-rc3 kernel failed to compile on my aarch64 setup,
+it failed with the following error messages:
 
-diff --git a/kernel/resource.c b/kernel/resource.c
-index 9c08d6e9eef2..34eaee179689 100644
---- a/kernel/resource.c
-+++ b/kernel/resource.c
-@@ -56,14 +56,6 @@ struct resource_constraint {
- 
- static DEFINE_RWLOCK(resource_lock);
- 
--/*
-- * For memory hotplug, there is no way to free resource entries allocated
-- * by boot mem after the system is up. So for reusing the resource entry
-- * we need to remember the resource.
-- */
--static struct resource *bootmem_resource_free;
--static DEFINE_SPINLOCK(bootmem_resource_lock);
--
- static struct resource *next_resource(struct resource *p)
- {
- 	if (p->child)
-@@ -160,36 +152,19 @@ __initcall(ioresources_init);
- 
- static void free_resource(struct resource *res)
- {
--	if (!res)
--		return;
--
--	if (!PageSlab(virt_to_head_page(res))) {
--		spin_lock(&bootmem_resource_lock);
--		res->sibling = bootmem_resource_free;
--		bootmem_resource_free = res;
--		spin_unlock(&bootmem_resource_lock);
--	} else {
-+	/**
-+	 * If the resource was allocated using memblock early during boot
-+	 * we'll leak it here: we can only return full pages back to the
-+	 * buddy and trying to be smart and reusing them eventually in
-+	 * alloc_resource() overcomplicates resource handling.
-+	 */
-+	if (res && PageSlab(virt_to_head_page(res)))
- 		kfree(res);
--	}
- }
- 
- static struct resource *alloc_resource(gfp_t flags)
- {
--	struct resource *res = NULL;
--
--	spin_lock(&bootmem_resource_lock);
--	if (bootmem_resource_free) {
--		res = bootmem_resource_free;
--		bootmem_resource_free = res->sibling;
--	}
--	spin_unlock(&bootmem_resource_lock);
--
--	if (res)
--		memset(res, 0, sizeof(struct resource));
--	else
--		res = kzalloc(sizeof(struct resource), flags);
--
--	return res;
-+	return kzalloc(sizeof(struct resource), flags);
- }
- 
- /* Return the conflict entry if you can't request it */
--- 
-2.23.0
+   AR      lib/zstd/built-in.a
+   LD [M]  lib/zstd/zstd_compress.o
+ld: __patchable_function_entries has both ordered
+[`__patchable_function_entries' in lib/zstd/common/entropy_common.o] and
+unordered [`__patchable_function_entries' in
+lib/zstd/common/error_private.o] sections
+ld: final link failed: bad value
+make[2]: *** [scripts/Makefile.build:484: lib/zstd/zstd_compress.o] Error =
+1
+make[1]: *** [scripts/Makefile.build:550: lib/zstd] Error 2
+make: *** [Makefile:1831: lib] Error 2
+make: *** Waiting for unfinished jobs....
 
+But the same code base compiles fine inside my x86_64 VM.
+
+The aarch64 environment is an VM running on RockPro64 or RPI CM4.
+
+With a little older gcc (v10.2.0) and bintuils (2.35).
+
+While for my x86_64 VM it has newer gcc (11.1.0) and binutiles (2.36.1)
+
+I'm super happy to upgrade my tool chain for my aarch64 VM, but I'm a
+little concerned if there is something worthy fixed.
+
+Thanks,
+Qu
