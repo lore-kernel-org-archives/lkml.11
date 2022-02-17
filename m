@@ -2,92 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 076D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 18:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244152AbiBQSUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 13:20:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47312 "EHLO
+        id S244181AbiBQSVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 13:21:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244180AbiBQSUu (ORCPT
+        with ESMTP id S230344AbiBQSV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 13:20:50 -0500
-Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C392B2FEE
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:20:34 -0800 (PST)
-Received: from [192.168.1.18] ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id KlOInzYku0Z1CKlOInhbZ2; Thu, 17 Feb 2022 19:20:32 +0100
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Thu, 17 Feb 2022 19:20:32 +0100
-X-ME-IP: 90.126.236.122
-Message-ID: <01035905-61f5-da02-36d5-92831e1da184@wanadoo.fr>
-Date:   Thu, 17 Feb 2022 19:20:30 +0100
+        Thu, 17 Feb 2022 13:21:29 -0500
+X-Greylist: delayed 1463 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 10:21:15 PST
+Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.164])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFAB1712AC
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 10:21:15 -0800 (PST)
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 7B20A9D0E80
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 11:56:52 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id Kl1QnOOMnHnotKl1QnIGXq; Thu, 17 Feb 2022 11:56:52 -0600
+X-Authority-Reason: nr=8
+Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:34154 helo=[10.0.0.45])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nKl1O-001Zrd-AE; Thu, 17 Feb 2022 11:56:50 -0600
+Message-ID: <ca674409-34bb-69b2-0df5-e01b6facee88@kernel.org>
+Date:   Thu, 17 Feb 2022 18:56:44 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/2] nfp: flower: Fix a potential leak in
- nfp_tunnel_add_shared_mac()
+Subject: Re: [RFC V2 17/21] watchdog/dev: Add tracepoints
 Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        John Hurley <john.hurley@netronome.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        oss-drivers@corigine.com, netdev@vger.kernel.org
-References: <4acb805751f2cf5de8d69e9602a88ec39feff9fc.1644532467.git.christophe.jaillet@wanadoo.fr>
- <20220211165356.1927a81b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20220217075940.GA4665@corigine.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220217075940.GA4665@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Gabriele Paoloni <gpaoloni@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Peter.Enderborg@sony.com" <Peter.Enderborg@sony.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-trace-devel@vger.kernel.org" 
+        <linux-trace-devel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+References: <cover.1644830251.git.bristot@kernel.org>
+ <e67874c8b676ea8dfe38679efa25363889bb1e76.1644830251.git.bristot@kernel.org>
+ <96f418b4-0ba8-01fe-ead0-2028bfc42560@sony.com>
+ <ba924008-c0ab-4800-aac4-d9d9ae930c32@kernel.org>
+ <ef1b1d99-6172-2b4d-9612-7ecbe8fc6c8b@roeck-us.net>
+ <6c6fc4fa-6464-2dbf-40da-e3c61f322d95@redhat.com>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <6c6fc4fa-6464-2dbf-40da-e3c61f322d95@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 95.232.30.176
+X-Source-L: No
+X-Exim-ID: 1nKl1O-001Zrd-AE
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:34154
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 3
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 17/02/2022 à 08:59, Simon Horman a écrit :
-> On Fri, Feb 11, 2022 at 04:53:56PM -0800, Jakub Kicinski wrote:
->> On Thu, 10 Feb 2022 23:34:52 +0100 Christophe JAILLET wrote:
->>> ida_simple_get() returns an id between min (0) and max (NFP_MAX_MAC_INDEX)
->>> inclusive.
->>> So NFP_MAX_MAC_INDEX (0xff) is a valid id.
->>>
->>> In order for the error handling path to work correctly, the 'invalid'
->>> value for 'ida_idx' should not be in the 0..NFP_MAX_MAC_INDEX range,
->>> inclusive.
->>>
->>> So set it to -1.
->>>
->>> Fixes: 20cce8865098 ("nfp: flower: enable MAC address sharing for offloadable devs")
->>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->>
->> This patch is a fix and the other one is refactoring. They can't be
->> in the same series because they need to go to different trees. Please
->> repost the former with [PATCH net] and ~one week later the latter with
->> [PATCH net-next].
+On 2/17/22 18:49, Gabriele Paoloni wrote:
 > 
-> Thanks Jakub.
-> 
-> Christophe, please let me know if you'd like me to handle reposting
-> the patches as described by Jakub.
-> 
-Hi,
+> On 17/02/2022 18:27, Guenter Roeck wrote:
+>> On 2/17/22 08:27, Daniel Bristot de Oliveira wrote:
+>>> Hi Peter
+>>>
+>>> On 2/16/22 17:01, Peter.Enderborg@sony.com wrote:
+>>>> On 2/14/22 11:45, Daniel Bristot de Oliveira wrote:
+>>>>> Add a set of tracepoints, enabling the observability of the watchdog
+>>>>> device interactions with user-space.
+>>>>>
+>>>>> The events are:
+>>>>>     watchdog:watchdog_open
+>>>>>     watchdog:watchdog_close
+>>>>>     watchdog:watchdog_start
+>>>>>     watchdog:watchdog_stop
+>>>>>     watchdog:watchdog_set_timeout
+>>>>>     watchdog:watchdog_ping
+>>>>>     watchdog:watchdog_nowayout
+>>>>>     watchdog:watchdog_set_keep_alive
+>>>>>     watchdog:watchdog_keep_alive
+>>>> Some watchdogs have a bark functionality, I think it should be event
+>>>> for that too.
+>>>>
+>>> I understand. The problems is that I do not see the bark abstraction
+>>> in the
+>>> watchdog_dev layer.
+>>>
+>> I don't even know what "bark functionality" means. A new term for
+>> pretimeout ?
+>> Something else ?
+> From my understanding the bark timeout is actually the pretimeout
+> whereas the bite timeout is the actual timeout.
 
-If you can, it's fine for me.
+So, what Peter wants is tracepoints for the pretimeout actions?
 
-I must admit that what I consider, as an hobbyist, too much bureaucracy 
-is sometimes discouraging.
-
-I do understand the need for maintainers to have things the way they 
-need, but, well, maybe sometimes it is too much.
-
-In this particular case, maybe patch 1/2 could be applied to net as-is, 
-and 2/2 just dropped because not really useful.
-
-
-(Just the thoughts of a tired man after a long day at work, don't worry, 
-tomorrow, I'll be in a better mood)
-
-CJ
+-- Daniel
