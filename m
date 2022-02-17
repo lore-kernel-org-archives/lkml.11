@@ -2,106 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8318CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 15:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242496AbiBQP3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 10:29:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38706 "EHLO
+        id S242501AbiBQPaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 10:30:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242461AbiBQP3T (ORCPT
+        with ESMTP id S239673AbiBQPaB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 10:29:19 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CAA2B103D
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:29:05 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id c4so5234032pfl.7
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 07:29:05 -0800 (PST)
+        Thu, 17 Feb 2022 10:30:01 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98FD2B0B2D;
+        Thu, 17 Feb 2022 07:29:46 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id p14so8094884ejf.11;
+        Thu, 17 Feb 2022 07:29:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=v3PZTYCZtAw5vPUwO4Uq8xdQCoMiI5xDnErBT8ttkLk=;
-        b=TQ/dBtFIbcKmtvuPVxScTZxmhDqYbufa0jGlagp21kUsyB694jxg6WQagCAVZI2TGA
-         zYGAIOV6IMgCd7GpMgwmdJsNLdAdXnrqQ504wI5Xee6OQEXgWHSPw27oPTetGLUufW5u
-         vA2H7uVuXzXa73Z/0Nu4L3t0WiwWK83IhTIlEYTr0fEMD1QcAI/ZrhboHIPgFu4Z7l3E
-         mMG1dp6dmGSIpVmVblZ04mY03B3jVmxL2t3cHDftbPce7XqBNVGDlYSoN3S+GY3i3iFw
-         u//+gKc1/PM/sw1darf0UguaEhe38/P/NEGw1EzPUiTOLSW532B32OOjDjDmv7cODxPl
-         A7fw==
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SdNsn33s2vqrmQrJpjzrM9XwN56LeRJmp4LOd8dZoak=;
+        b=pJzLECZFS8HAu/ThmLu9FQj6w/XVV4XVVP7YvND/CgvqTXm4hInd7wvi3fxO6g7xpr
+         tsuC1drjCzzSg44Ibmg3jjQYJyuOhmPQIZX0mIGbs79SLIMXOR8eqRPYPFr6FlT0vcpc
+         MN0G6gKuBAFe9mvEc6uUiRwol7N0WYkJT8o4BiaM0qbIod5sPtOhvs3T4cZ2hqhTAQiO
+         aHXI9w0WGCOHhfAMZy/wRNsef5Tfa5yC5PtRrx9OdC9VHstzOgMIGx/HXn62mdHbR5Ix
+         kpV6aliPf40QaM0Qn0chv+tOW6sCVdB0y0zEKzvz+NHzK5n+B3xl+8qYWP3OcdcJy2y2
+         Kq5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v3PZTYCZtAw5vPUwO4Uq8xdQCoMiI5xDnErBT8ttkLk=;
-        b=S3jqZ0ORB5lmcecUKMFpCRdUVbjcuoDtO+WheTLM48vSVejFCkcqllFComnn8R7K36
-         Aj3iuS4Y83GThMTdykBqSgVefnRuH2JXbqVZpdT/rkHBGAt+1bymzTtrAfkI1HKRj8Dd
-         7sZd5iMo4EezwX2JgcHpdsjpqu0jplhh+X14DmXh3RNHDlJ5mgBAzypGZzCbguYubKms
-         Db3jw8BeplxGcrCCMqQSpLfHWYoG1PSS2z0HCAcgxc8agzzGCwGfTKJ3Wknw73fBR2HG
-         keFI9jGs+0dzQ+TKVta3EUMiETOXyK6rPaLT6q79mJy2SNG2MgMjnIfo0nDa8smW2vdq
-         GHrg==
-X-Gm-Message-State: AOAM533C9Crf1eWsujuCoCyYsi+T6WByyVTTLlWkKp7kauFqXokY8l4s
-        9usNoEqZKUSRSmYlA5zUZC2cvA==
-X-Google-Smtp-Source: ABdhPJzG+UEGctEp/dAIN2I+Mwgu+h36V/CqR71UBm6VYavQqzvx+n2gMw4CaFEs2mvncaNmZJnJlg==
-X-Received: by 2002:a63:6441:0:b0:372:c9d1:ea90 with SMTP id y62-20020a636441000000b00372c9d1ea90mr2850128pgb.249.1645111744467;
-        Thu, 17 Feb 2022 07:29:04 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id q94sm2070913pja.27.2022.02.17.07.29.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 07:29:03 -0800 (PST)
-Date:   Thu, 17 Feb 2022 15:29:00 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Kai Huang <kai.huang@intel.com>, tglx@linutronix.de,
-        mingo@redhat.com, dave.hansen@intel.com, luto@kernel.org,
-        peterz@infradead.org, sathyanarayanan.kuppuswamy@linux.intel.com,
-        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        david@redhat.com, hpa@zytor.com, jgross@suse.com,
-        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
-        knsathya@kernel.org, pbonzini@redhat.com, sdeep@vmware.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCHv2 00/29] TDX Guest: TDX core support
-Message-ID: <Yg5pvO1nXo6qQP9C@google.com>
-References: <20220210003033.e57c2925b69bab5cfabf7292@intel.com>
- <YgOoId+vyd1VhIqQ@zn.tnic>
- <20220210004831.03dea501738bee060003d040@intel.com>
- <YgOr6tZjsooJgAi9@zn.tnic>
- <YgPwwI2+16/7jQC4@google.com>
- <YgQR/S67Fqz9PanR@zn.tnic>
- <YgQfGKXOemtXnFau@google.com>
- <YgQl6Uk9rONgv9+F@zn.tnic>
- <20220216154809.w27bt6oi3ql4ssip@black.fi.intel.com>
- <Yg5nh1RknPRwIrb8@zn.tnic>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SdNsn33s2vqrmQrJpjzrM9XwN56LeRJmp4LOd8dZoak=;
+        b=Y8Z9eu7bVpWraDBkanjrEQtR/SrPKEnYoHjPTi+oO4JsuLF+U8C2XHCeSeEyQ+w+OW
+         tNkdXDfLVu6I7MOK+7GFm0CWEkFPLcALrVwKfAMuOEUd38kcsyGblzFvMe34w5YwsgCl
+         bn3Hq+QdD2Ut5NKjrTlEJsmTsfv4Vu5UzHbGbOxkJKuQNczQTSE4cgW2P7TjsjDZBK5g
+         lBiNpolo6eOSGXX91wITWDOShLOabsegPG4dZRzU2RL2FGL6cvq9rrHgFcRNoaBS3PDh
+         4SUgzPuGopbz8rJKq39QmvIWgJh3HPN+bNycEWzKeIyxZUMo77Pk4qGc/zdpoxrm9Icy
+         QOyg==
+X-Gm-Message-State: AOAM533/yMe5a3zyjsiJ+4wq3qy8+aP0dxjLW9URwJnCNOHbnipqabEy
+        /CYtUpsOodxgTg8esVyul/58ByM7oik=
+X-Google-Smtp-Source: ABdhPJzZoqfXTR8DJX7/ovMs2z7Mq6EmglzQJrdy+1mfwhhenI60YKJCUMhDS5dDRiRHNtrl1MTkuQ==
+X-Received: by 2002:a17:906:1b12:b0:6cc:fd05:a553 with SMTP id o18-20020a1709061b1200b006ccfd05a553mr2708579ejg.445.1645111785419;
+        Thu, 17 Feb 2022 07:29:45 -0800 (PST)
+Received: from [192.168.1.10] ([46.249.74.23])
+        by smtp.googlemail.com with ESMTPSA id g6sm1300780ejz.170.2022.02.17.07.29.44
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 17 Feb 2022 07:29:45 -0800 (PST)
+Subject: Re: [PATCH 3/3] drm: omapdrm: Do no allocate non-scanout GEMs through
+ DMM/TILER
+To:     Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, tomba@kernel.org,
+        airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, merlijn@wizzup.org, tony@atomide.com
+References: <1642587791-13222-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <1642587791-13222-4-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <5b6d3e7f-c638-fdc7-5080-44d34abed610@ideasonboard.com>
+From:   Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Message-ID: <a3ed3a2c-86ce-1c85-e8aa-c08b54ad1a43@gmail.com>
+Date:   Thu, 17 Feb 2022 17:29:39 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Firefox/60.0 Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yg5nh1RknPRwIrb8@zn.tnic>
+In-Reply-To: <5b6d3e7f-c638-fdc7-5080-44d34abed610@ideasonboard.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022, Borislav Petkov wrote:
-> On Wed, Feb 16, 2022 at 06:48:09PM +0300, Kirill A. Shutemov wrote:
-> > So, any conclusion?
+
+
+On 17.02.22 г. 14:46 ч., Tomi Valkeinen wrote:
+> Hi,
 > 
-> Lemme type the whole thing here again so that we have it all summed up
-> in one place - I think we all agree by now:
+> On 19/01/2022 12:23, Ivaylo Dimitrov wrote:
+>> On devices with DMM, all allocations are done through either DMM or 
+>> TILER.
+>> DMM/TILER being a limited resource means that such allocations will start
+>> to fail before actual free memory is exhausted. What is even worse is 
+>> that
+>> with time DMM/TILER space gets fragmented to the point that even if we 
+>> have
+>> enough free DMM/TILER space and free memory, allocation fails because 
+>> there
+>> is no big enough free block in DMM/TILER space.
+>>
+>> Such failures can be easily observed with OMAP xorg DDX, for example -
+>> starting few GUI applications (so buffers for their windows are 
+>> allocated)
+>> and then rotating landscape<->portrait while closing and opening new
+>> windows soon results in allocation failures.
+>>
+>> Fix that by mapping buffers through DMM/TILER only when really needed,
+>> like, for scanout buffers.
 > 
-> - confidential computing guest stuff: arch/x86/coco/{sev,tdx}
-> - generic host virtualization stuff: arch/x86/virt/
-> - coco host stuff: arch/x86/virt/vmx/{tdx,vmx}.c and arch/x86/virt/svm/sev*.c
+> Doesn't this break users that get a buffer from omapdrm and expect it to 
+> be contiguous?
+> 
 
-LGTM
+If you mean dumb buffer, then no, this does not break users as dumb 
+buffers are allocated as scanout:
 
-> New stuff goes to the new paths - i.e., TDX guest, host, etc - old stuff
-> - AMD SEV/SNP will get moved gradually so that development doesn't get
-> disrupted. Or we can do a flag day, right before -rc1 or so, and move it
-> all so in one go. We'll see.
+https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/omapdrm/omap_gem.c#L603
 
-FWIW, I don't think there's much existing SEV host virtualization stuff that can
-be moved without first extracting and decoupling it from KVM, which will be
-non-trivial.  I do want to do that some day, but it definitely shouldn't hold up
-merging SNP.
+If you mean omap_bo allocated buffers, then if users want 
+linear(scanout) buffer, then they request it explicitly by passing 
+OMAP_BO_SCANOUT.
+
+Ivo
