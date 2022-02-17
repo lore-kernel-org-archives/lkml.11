@@ -2,193 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 794E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 02:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F988C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 02:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231474AbiBQCFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Feb 2022 21:05:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39346 "EHLO
+        id S231495AbiBQCLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Feb 2022 21:11:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiBQCE7 (ORCPT
+        with ESMTP id S229925AbiBQCLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Feb 2022 21:04:59 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2105.outbound.protection.outlook.com [40.107.96.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208A51FE52B;
-        Wed, 16 Feb 2022 18:04:46 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C3PlRxCqhZfQHppAEdheNQ12Fm50kBSnA5AnFsrB5PuSBfb2rp20AwLzLDEJhNvE/gtT/FSgbUUCgOfZ7n56SUeMWB2Kl0XOhH4KiYOYmC14OrFNRHPzyrqd0smaOchpja4v5QYCMr38PdiAwSqgQje2Rp1VzUMkQ2Bk44MCuhL6FVHFsNIa7fffl9/4NQdoSITJ+SHvPKC1+7xi51pkZYFiRP8Scl48LRUAbfFtShhPc/iVrxeJP3uEAKiS3vN4KhEZkQaNQPR5PDQ3/N8b6/9j8EkNsbOZeh6yt84tLSRp69Y6qUjXSFuszamT9gacyJ5i3enUei9lcX5wl8T8tw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E2Gj2mWhnqiNajbj+Ng3b39UbLrtqnfcIXtYMrHTW+M=;
- b=lhgKXejWgh9I1DIokGKfguLJyLrLpsBfW6Wt3fxF2/zoDFeSRooBXVSJyZjMtmLkHafE8JKy79n2i/o32c3q7LD2qHqgDjzwMKnA2Tonx9oHLy9hLVoqbouSGKpzggEOcuAekyWaaATrtFXKT5Fv0PhdSBMYCq8Svc4rWYnmlBZ7fTbwCLT8E80ifvxoh0pWaF2FDtbYtTkW0RerKCSGioKwri/Ltnx/BBKMlbmDWNN4p/AtSjS7L0dbLzZ9we8yPgNsTglRmXnkfJrGDgDV1JgiktkxlVJEsEmiT/pG7umzfx9MRmyW1oQD1i5ua2p2hFqSmxk6yk7VBDah3BmnuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E2Gj2mWhnqiNajbj+Ng3b39UbLrtqnfcIXtYMrHTW+M=;
- b=NagV/qpasChipJitpNovgfdV27ARWlnQqY2GLNMLahBilqroKuxdvWpo5skGSc/AcgZV0MUa+rVDjFzrBmAHcO9OgnKTnCUYnh8XSURBfcQZaA07OPrhx16+K0tcPq557BUmSrOk1ew1Gj4XvqHGSOR7tZVkVnyRaHG5qU1J7Cs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from CH0PR01MB6826.prod.exchangelabs.com (2603:10b6:610:ed::18) by
- SN6PR01MB4045.prod.exchangelabs.com (2603:10b6:805:a3::26) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4975.18; Thu, 17 Feb 2022 02:04:42 +0000
-Received: from CH0PR01MB6826.prod.exchangelabs.com ([fe80::58f:eec5:66b:f82c])
- by CH0PR01MB6826.prod.exchangelabs.com ([fe80::58f:eec5:66b:f82c%9]) with
- mapi id 15.20.4975.017; Thu, 17 Feb 2022 02:04:42 +0000
-Date:   Thu, 17 Feb 2022 10:01:49 +0000
-From:   Huang Shijie <shijie@os.amperecomputing.com>
-To:     Will Deacon <will@kernel.org>
-Cc:     catalin.marinas@arm.com, bhe@redhat.com, vgoyal@redhat.com,
-        dyoung@redhat.com, corbet@lwn.net, kexec@lists.infradead.org,
-        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, zwang@amperecomputing.com,
-        patches@amperecomputing.com, darren@os.amperecomputing.com,
-        k-hagio-ab@nec.com, lijiang@redhat.com
-Subject: Re: [PATCH] arm64: crash_core: Export MODULES, VMALLOC, and VMEMMAP
- ranges
-Message-ID: <Yg4dDZGEyRzWcGH1@hsj>
-References: <20220209092642.9181-1-shijie@os.amperecomputing.com>
- <20220215164423.GB8458@willie-the-truck>
- <YgzD0ZfZF34u6whJ@hsj>
- <20220216124026.GB9949@willie-the-truck>
+        Wed, 16 Feb 2022 21:11:11 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F2F27AA24
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Feb 2022 18:10:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645063857; x=1676599857;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=nITptgXpuhXyOJm3BD4dZdDkSkJedyIZl3ZF/x2QsiY=;
+  b=ZfA27pwdSocG+6qgbIPwJ8o7mfpbIv1Yz74RbJ5m+vok2drk6SJ/7o2e
+   wb+nDMX9AodGfowYa2/ISy9e5+HPtVzs5lwCEq2lxCr5Y4H0DxZlV3FG8
+   jUjhyfPU70G4ru47n1ucKK/qO8eqyRabcr56bu7O88VSk2qtLBSrcjOk8
+   AWgB15NqkHctw4SQJUSJHlAcsCEtMizSFKI6VbIclAt/3EAbGAkj4DVyH
+   KD1kg+vlj1AqdoycLGx3tEJoOHMGcv6SDIkFXOZKFbJS/8Me5bsfWcIfo
+   RWGQEl7QTX0pj43GK+3pTaKCUtZpyxhYve+P9FI1h1QXruFft9o7ofKbC
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="337212886"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="337212886"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 18:10:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="776790974"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 16 Feb 2022 18:10:56 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKWFz-000BJs-Kg; Thu, 17 Feb 2022 02:10:55 +0000
+Date:   Thu, 17 Feb 2022 10:10:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 29/42]
+ fs/netfs/buffered_write.c:28:26: warning: comparison of distinct pointer
+ types ('typeof (((1UL) << 12) - offset) *' (aka 'unsigned long *') and
+ 'typeof (size) *' (aka 'unsigned int *'))
+Message-ID: <202202171009.cJVDSV3U-lkp@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220216124026.GB9949@willie-the-truck>
-X-ClientProxiedBy: CH0PR07CA0012.namprd07.prod.outlook.com
- (2603:10b6:610:32::17) To CH0PR01MB6826.prod.exchangelabs.com
- (2603:10b6:610:ed::18)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 019b3796-a4c3-414b-34df-08d9f1b9dcaf
-X-MS-TrafficTypeDiagnostic: SN6PR01MB4045:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR01MB40450BB2E3EE943755BEE690ED369@SN6PR01MB4045.prod.exchangelabs.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lbRHQ7bORDNsMp9luhMnMth2EQCO+ogarLGCSCN2B6aSvhmOeyYwPaqC7Y4a31bHwfxR10AzviFsrv/U1hd2vvoNfE897nIHWY162VwYyi3C+gnyn6hzpw5PWzXCurLpDAjgRtOhVyd6vw4DsukhH74a6Xw4qMDILCKjIGiGmO2ek46ki/Cu1YyGQaiQZ+B3ttirXQUCZSzayFAMAoUcXg+1KvGGnYTZECe0HIR3VIQMehGtCR4mqF03r72i645KLWDkTZmd8AQwEE+gbuNDNWZ7UgTU4wjrczKoZGOJ8qFF21TEv2GeQMKmSdmCcN9HOVUx917q/+R5i/QDKIDGjlXwLuxNWmHRbvpsb2qHo/mEHjj454gStKaADtpGNqW/FvPDFFt8XHuvUxoO8uKYVK8KYbg23umBJMAZg/YgQVSrxOpiXLOwuVtxv+RNc3/L+ENk9AGzaI+LpYF2FtMJ8MqVdT3yurGlrWhzkrzNXZ7n7j+uckemVhpWHiKfz+IBMcENwGmxsgKcDGaqkbesDNHmZSsa8CKTKDZuwwQ7gmrekWkifGjZdrQ1nogeX5RiyG4IbFVhJCPioWtT4aYKos9TALy1rpyCvY01SCTx+/3l18UUA+ITfgdKaygiQb/sz8ueLMEK5MI3WGoczdq0avFp+3SNuPZ2PajlQ/xn7tqcCFnE6f/Y4HQbjvQ7OLRD7b0fsO3xDANWEgZF5D1tRvHoU5FGUHBuTR3McI2ICWVvoRtEv6GdjuvJPVY+W0lx06PFV/X25FiE+YmUMeT184D1p15nrXxPrQQReS0cd90=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR01MB6826.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(6916009)(316002)(38100700002)(966005)(86362001)(6486002)(6512007)(6506007)(33716001)(508600001)(5660300002)(2906002)(9686003)(8936002)(66476007)(8676002)(66556008)(4326008)(52116002)(66946007)(38350700002)(26005)(7416002)(83380400001)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Mpn+cGG+PglsLgoUNhZxdBGdMPf43UZXgKCX6TtyPf9YV0VB1zatcYz9szn4?=
- =?us-ascii?Q?Va1szWcSflCGjAVw8tfrGiJGeyutcVTZfyDJN2UXZ3AYVf2I1Q4/pasZDkT/?=
- =?us-ascii?Q?0eooj1QCbT6nx40RrDZ+2FrpLsTKIdDLOK1QZVVJBkBFEPf7Vnb1+BT6woBQ?=
- =?us-ascii?Q?AF1Q4H/HCjsvKGKUeLwfPxHPLyrlFbbrMChyf1XMqmx1IUBCq4BIEm671pYk?=
- =?us-ascii?Q?mp3MGzXZbiAahnIql74/KoNd1ycMXNPggQWeQWYy3tJYl46XwMwBtWItcD0V?=
- =?us-ascii?Q?fKysfHp1CXNJPtqz/jqW5OXgUWoOA0+Jxr1HWLEwTEx1kguX1n7/ptnikVKE?=
- =?us-ascii?Q?Bapdwq9MdSH7vlq0IhFyaisvaopoDjJUp74y7wDgQoKj5wRzrfXVjPj8joZ6?=
- =?us-ascii?Q?P4ln8yvf04oDHUfN0KXtuPk6YXTKkcDId8NLoK6ZDh9ks7evcNtdGwd3ylJG?=
- =?us-ascii?Q?nhqHFx0fcMOxV2ic/yaHx131r/y2F2jH/8J3Y5vYta2K+DkeS40Ih+ImfE2F?=
- =?us-ascii?Q?bxRCqHx5xFN+2rLAFkBM67pFYc7AY7m4DVHTvNlTqSnstHxa5oaHgtXMdc2D?=
- =?us-ascii?Q?ZhvUDUse4ny4JKOsiHSyEzbU1vPPt7WWpi9U/46rgKXZ/VtR+cn3Z9GxKAPi?=
- =?us-ascii?Q?GQDQisG52Fbl2zq1dWtEFUQ1px32yDxxRYMHdWrzRb3eSonK9DxQGTQ2y8pt?=
- =?us-ascii?Q?HDxdzIoh4ucxBiVOlXKKjuIiLclisHy67WoxEzNg3xDZIiLUzmd+osEq3LSg?=
- =?us-ascii?Q?vpZQ3HcLWoXuSiD2S65IT0RfxqTc047171BtiFFUNDw7Ntb7N3TURhycY8LO?=
- =?us-ascii?Q?N6Z321VyuMPLl4MHeE9Qc8UzBVydh20anUCDZ8FQv4xsKH2GCLpV+Tvipv1S?=
- =?us-ascii?Q?mUz4lWY/sWh+ifuebyal65W+ZY9wZMEqfIIV/puUDbLaF0o7uvXUrka9jCAk?=
- =?us-ascii?Q?clHOSkR+Q/mpIzerRykRvcE7pg4bYHkgndjpHpRLfLCRtnYM4iN/iyZSb7AN?=
- =?us-ascii?Q?FjNG+wvravkO1DsXEmUVgOoTWSx4AqpOm1t0oi2hMhTSqxb364gX/vSkY1kU?=
- =?us-ascii?Q?6XVhzAuIEQhQ5Gti/luR/XnWhbsFaj2aOu7+Wm+YmJNiBq1+XZJ3X0Z9u3Km?=
- =?us-ascii?Q?xDiQa5k/rljCLbRiHpTy/mImekoEHPrquh9FwLJ2iOemrr+pFhJ9yJQP7W9o?=
- =?us-ascii?Q?ovrVPLS+nFw+YE/PqrZC31ldVG3jYlodIf3IIi41tugKqPk2cfBOX1HAny8p?=
- =?us-ascii?Q?0iAO4Z5u4lnW9GLt/Ek1DjOWo8Gooy2QyIFdCMky1nRCox1MXKo956eXn4bJ?=
- =?us-ascii?Q?DDIL9GK/nHk2ZyqR7gfL9ZEDHTaap2QZNb+tqie7IA1f1gTk/m44RCPt6jHW?=
- =?us-ascii?Q?XdCSBVBDiJe/gj9X4RVy8iXF/4r2immeF66p78RT+TH/l0DXzuqvuYdNnBWp?=
- =?us-ascii?Q?ZEYrj1Hke/vILIuttMIxmp0lSFnSuntpD5MlTuQbRfSC/AfDtlveHOP3sZqc?=
- =?us-ascii?Q?1+hfhlmcXdoIi0sWtTDDzT4Tr6ZOLiElj/HlB3Kzk3gWuNTqr8UYTgYoOwIC?=
- =?us-ascii?Q?1xNO09gcrv7TUPhn1yQHxXvWS31+iBH5hS6zlpEgyFyeTL/j30oNn8BucG6+?=
- =?us-ascii?Q?u2ZktTgOS5aDsDbcTd+LWpOGU41VMyBcgCdOJAuB8WkuB5cyxlzN24ney8qQ?=
- =?us-ascii?Q?MnNPL/Zj46KqnugsCKVxGY2OS21dg5LqkDhu6V/8Ql4AFybpv6TlzTcfTQHK?=
- =?us-ascii?Q?SUwMdAsD2g=3D=3D?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 019b3796-a4c3-414b-34df-08d9f1b9dcaf
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR01MB6826.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2022 02:04:42.6785
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m/KDHQdW59guuwrnk97rKOgHO82w3YJyvj6asw+TheWrv1LplpRQ6f47Klql5aSVckQESjpC45Pk4+n5QNX9i3nbxfmuEVLeoFmKYdt2M7h8u2rqeqzV7vPdPGdDqFY3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR01MB4045
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Will,
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   5cb7f190822d09757b30cd9539e57eef72552d1f
+commit: 261cd621bd0477d43de460dea6c7bf7fa81824be [29/42] netfs: Implement buffered writes through netfs_file_write_iter()
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220217/202202171009.cJVDSV3U-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0bad7cb56526f2572c74449fcf97c1fcda42b41d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/261cd621bd0477d43de460dea6c7bf7fa81824be
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout 261cd621bd0477d43de460dea6c7bf7fa81824be
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/netfs/
 
-CC Kazu and Lianbo.
-On Wed, Feb 16, 2022 at 12:40:27PM +0000, Will Deacon wrote:
-> On Wed, Feb 16, 2022 at 09:28:49AM +0000, Huang Shijie wrote:
-> > Hi Will,
-> > On Tue, Feb 15, 2022 at 04:44:23PM +0000, Will Deacon wrote:
-> > > On Wed, Feb 09, 2022 at 09:26:42AM +0000, Huang Shijie wrote:
-> > > > The following interrelated ranges are needed by the kdump crash tool:
-> > > > 	MODULES_VADDR ~ MODULES_END,
-> > > > 	VMALLOC_START ~ VMALLOC_END,
-> > > > 	VMEMMAP_START ~ VMEMMAP_END
-> > > > 
-> > > > Since these values change from time to time, it is preferable to export
-> > > > them via vmcoreinfo than to change the crash's code frequently.
-> > > 
-> > > Please can you explain _why_ they are needed?
-> > 
-> > The current Crash code is still based at kernel v4.9.
-> >    The virtual memory layout looks like this:
-> >    +--------------------------------------------------------------------+
-> >    |    KASAN     |   MODULE   |   VMALLOC   | .... |     VMEMMAP       |
-> >    +--------------------------------------------------------------------+
-> > 
-> > The Crash uses MODULES range to set the VMALLOC ranges.
-> > If the ranges are wrong, Crash will _NOT_ works well for some latest kernel
-> > ,such as v5.11 later. (Please correct me if I am wrong).
-> > It seems the VMEMMAP range is less important.
-> 
-> [...]
-> 
-> > 5.) In the kernel v5.16, after the patch
-> >       "b89ddf4cca43 arm64/bpf: Remove 128MB limit for BPF JIT programs"
-> >     the virtual memory layout looks like this:
-> > 
-> >    +--------------------------------------------------------------------+
-> >    |      MODULE     |   VMALLOC   |     ....     |      VMEMMAP        |
-> >    +--------------------------------------------------------------------+
-> > 
-> >     The macros are:
-> >     #define MODULES_VADDR	(_PAGE_END(VA_BITS_MIN))
-> >     #define MODULES_END		(MODULES_VADDR + MODULES_VSIZE)
-> > 
-> >     #define VMALLOC_START	(MODULES_END)
-> >     #define VMALLOC_END		(VMEMMAP_START - SZ_256M)
-> > 
-> >     #define VMEMMAP_START	(-(UL(1) << (VA_BITS - VMEMMAP_SHIFT)))
-> >     #define VMEMMAP_END		(VMEMMAP_START + VMEMMAP_SIZE)
-> > 
-> > 
-> > BTW:I am currently coding a patch for the Crash to update all the ranges to
-> > the latest kernel version v5.17-rc4.
-> 
-> Thanks for digging up all of the kernel memory map changes and taking the
-> time to explain the macros. However, all I'm really after is something in
-> the commit message of the patch which explains what is broken without this
-This kernel patch does not break anything.
-It just makes the Crash easy to maintain.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> patch. What does crash use this information for, and what doesn't work at
-> the moment?
-I know two cases now:
-	1.) The Crash uses MODULES/VMALLOC/VMEMMAP ranges in
-            arm64_IS_VMALLOC_ADDR():
-		https://github.com/crash-utility/crash/blob/master/arm64.c#L4104
+All warnings (new ones prefixed by >>):
 
-	    If arm64_IS_VMALLOC_ADDR() does not work correctly, the internal
-	    code may get wrong results. 
+>> fs/netfs/buffered_write.c:28:26: warning: comparison of distinct pointer types ('typeof (((1UL) << 12) - offset) *' (aka 'unsigned long *') and 'typeof (size) *' (aka 'unsigned int *')) [-Wcompare-distinct-pointer-types]
+                   unsigned int psize   = min(PAGE_SIZE - offset, size);
+                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:45:19: note: expanded from macro 'min'
+   #define min(x, y)       __careful_cmp(x, y, <)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+   fs/netfs/buffered_write.c:95:18: warning: comparison of distinct pointer types ('typeof (target->from) *' (aka 'unsigned long long *') and 'typeof (folio_pos(folio) + offset) *' (aka 'long long *')) [-Wcompare-distinct-pointer-types]
+           target->from  = min(target->from, folio_pos(folio) + offset);
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:45:19: note: expanded from macro 'min'
+   #define min(x, y)       __careful_cmp(x, y, <)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+   fs/netfs/buffered_write.c:96:18: warning: comparison of distinct pointer types ('typeof (target->to) *' (aka 'unsigned long long *') and 'typeof (folio_pos(folio) + offset + len) *' (aka 'long long *')) [-Wcompare-distinct-pointer-types]
+           target->to    = max(target->to,   folio_pos(folio) + offset + len);
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:52:19: note: expanded from macro 'max'
+   #define max(x, y)       __careful_cmp(x, y, >)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+   3 warnings generated.
 
-	2.) The "help -m" gets wrong output about MODULES/VMALLOC/VMEMMAP ranges.
-	    The guy who use the Use the Crash to debug a vmcore, will get the wrong
-	    information of the kernel panic.
 
-Thanks
-Huang Shijie
+vim +28 fs/netfs/buffered_write.c
+
+    18	
+    19	static size_t copy_folio_from_iter_atomic(struct folio *folio,
+    20						  unsigned int offset, size_t size,
+    21						  struct iov_iter *i)
+    22	{
+    23		size_t copied = 0, n;
+    24	
+    25		do {
+    26			unsigned int index   = offset / PAGE_SIZE;
+    27			unsigned int poffset = offset % PAGE_SIZE;
+  > 28			unsigned int psize   = min(PAGE_SIZE - offset, size);
+    29	
+    30			n = copy_page_from_iter_atomic(folio_file_page(folio, index),
+    31						       poffset, psize, i);
+    32			copied += n;
+    33			if (n < psize)
+    34				break;
+    35			size -= n;
+    36		} while (size);
+    37		return copied;
+    38	}
+    39	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
