@@ -2,86 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86040C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D00C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233033AbiBRJCA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:02:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55574 "EHLO
+        id S233053AbiBRJCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:02:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233000AbiBRJB4 (ORCPT
+        with ESMTP id S233038AbiBRJCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:01:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7110E51331;
-        Fri, 18 Feb 2022 01:01:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 330FFB825AE;
-        Fri, 18 Feb 2022 09:01:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5989DC340E9;
-        Fri, 18 Feb 2022 09:01:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645174898;
-        bh=xVrAIrahrueaW9ffryAhmcNWxZJXZm/2LO+7/0W/VI4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FL1t7Ns7A9wwzcfynYdLqp6eEE/kIcInmdRwHMHElX0Nz2PKz7Ae5s3Q1mAm4cDjD
-         gavbfz53KfYdOU3bzajaAbZKubcC0Y+RXatjm1k2CRIJs5lkNtOz1Q4uQRPy/oB9Ay
-         +RWkY0Tcz+Op0N3UKrcUCSMK7CZKrd2pn2yTIij4=
-Date:   Fri, 18 Feb 2022 10:01:35 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>
-Subject: Re: arm64 ftrace fixes for v5.4.y
-Message-ID: <Yg9gb4qXyPVyE60W@kroah.com>
-References: <CAE-0n53cOFJFOOV-YOc0MzbiLr9FvaJw=ucs2SNNGOeznYzVLw@mail.gmail.com>
+        Fri, 18 Feb 2022 04:02:00 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73843522FF
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:01:44 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id r7so1338327iot.3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:01:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U8AEdmITUIDJSI02jf8n1UdQu5Z2kTq1rYcS4yrbyjQ=;
+        b=g10Pv4nLzUwZQKqmdv9zn0DbJnh7QDler3SfEmWHSCPPNMePstfRf6EIz8T9g1k3q5
+         Y2fDM52ypuGLRKkJmSK8e8XuD77uA4DFttbqXAc/496wXFtVCXCxiWmyT03EMukXyZBS
+         3Bz6lISNM4D11i14X4GbTJlF6wTstAeoWVTls=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U8AEdmITUIDJSI02jf8n1UdQu5Z2kTq1rYcS4yrbyjQ=;
+        b=MzGp7D3Q/TFePrF8qYnINQ9McClVHkBvXWRkuesiS5KHJW8sge/o5lV4PpcFL1DP5A
+         rdQwsiPGU2YYfoxp5D80zHyQoUKEOjWeob4iHG+zNWuSE3hJp7SGM2pqLLTp0L5cj1iu
+         I6S89wHCVWmtxFfuhdlqQ2Kx0Di4kMXXJD9T+rRHnhUdWyQcP2NTL3XtMj/AiWJVkeXH
+         U6pb5/7Uz8bxl6IGfv/VEw7dF5ykJ9gR36BeLE5MKNce3Q3SGpVmdhbWGNFhb0xzyllO
+         XcCTrpBHbqj4nUZ1WJZ/G6YOcDWo0X5iCiNIMpimsgmMQEkQWExxm9EZvcJcAvjenwAk
+         tfNw==
+X-Gm-Message-State: AOAM532n9K6WVYXQnprBjiWBQvHLWKGhBWwOBmo6SCvrKmFcjPvHV5e/
+        mKI1nnhVgAeTfFn2D3CQTfXubhb+LOfdioNf2jNNIA==
+X-Google-Smtp-Source: ABdhPJwkHQMn7rS7t8JjEUIDpKt6F6hXh8261rU+mdXf4Nr0q63mzDPdxRNHBcKlGfW12wJ7ty3/ZQUDZVuxWVb6Ol8=
+X-Received: by 2002:a05:6602:29cb:b0:638:d53c:d212 with SMTP id
+ z11-20020a05660229cb00b00638d53cd212mr4869652ioq.167.1645174903774; Fri, 18
+ Feb 2022 01:01:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAE-0n53cOFJFOOV-YOc0MzbiLr9FvaJw=ucs2SNNGOeznYzVLw@mail.gmail.com>
+References: <20220218063610.1530630-1-rexnie3@gmail.com>
+In-Reply-To: <20220218063610.1530630-1-rexnie3@gmail.com>
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Fri, 18 Feb 2022 17:01:17 +0800
+Message-ID: <CAJMQK-gz5ha232M22+wEY8Bid4oHOESJPk3vRXDU_dzAeiaEQA@mail.gmail.com>
+Subject: Re: [PATCH] drm/panel: Add panel-edp: add lcd innolux,n140hca-eac
+To:     Rex Nie <rexnie3@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org, thierry.reding@gmail.com,
+        sam@ravnborg.org, airlied@linux.ie, daniel@ffwll.ch,
+        robh+dt@kernel.org, spanda@codeaurora.org, dianders@chromium.org,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 05:27:33PM -0800, Stephen Boyd wrote:
-> Hi stable maintainers,
-> 
-> I recently ran into an issue where trying to load a module with jump
-> table entries crashes the system when function tracing is enabled. The
-> crash happens because ftrace is modifying the code and then marking it
-> as read-only too early. ftrace_make_call() calls module_enable_ro(mod,
-> true) before module init is over because ftrace_module_enable() calls
-> __ftrace_replace_code() which does FTRACE_UPDATE_MAKE_CALL. All this
-> code is gone now upstream but is still present on v5.4 stable kernels. I
-> picked this set of patches to v5.4 and it fixed it for me.
-> 
-> fbf6c73c5b26 ftrace: add ftrace_init_nop()
-> a1326b17ac03 module/ftrace: handle patchable-function-entry
-> bd8b21d3dd66 arm64: module: rework special section handling
-> f1a54ae9af0d arm64: module/ftrace: intialize PLT at load time
+On Fri, Feb 18, 2022 at 2:36 PM Rex Nie <rexnie3@gmail.com> wrote:
+>
+> innolux,n140hca-eac is a eDP-based LCD panel. This panel has 1920x1080
+> resolution in 14-inch TFT panel.
+>
+> Signed-off-by: Rex Nie <rexnie3@gmail.com>
+> ---
+>  .../display/panel/innolux,n140hca-eac.yaml    | 43 +++++++++++++++++++
+>  drivers/gpu/drm/panel/panel-edp.c             | 26 +++++++++++
+>  2 files changed, 69 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/panel/innolux,n140hca-eac.yaml
+>
+Hi Rex,
 
-These all apply just fine, thanks.
+Please split yaml and driver into different patches.
+You don't need to create a new binding for innolux,n140hca-eac.yaml.
+You can add the compatible into panel-simple.yaml. Check
+innolux,n125hce-gn1 for example.
 
-> after doing that I ran into another issue because I'm using clang. Would
-> it be possible to pick two more patches to the stable tree to silence
-> this module warning from sysfs complaining about
-> /module/<modname>/sections/__patchable_function_entries being
-> duplicated?
-> 
-> dd2776222abb kbuild: lto: merge module sections
-> 6a3193cdd5e5 kbuild: lto: Merge module sections if and only if
-> CONFIG_LTO_CLANG is enabled
-
-These two do not apply to the 5.4.y branch, as the file they touch is
-not present in 5.4.y.  They do apply to 5.10.y, so I've queued them up
-there, but I think you need to provide a working backport please.
-
-thanks,
-
-greg k-h
+> diff --git a/Documentation/devicetree/bindings/display/panel/innolux,n140hca-eac.yaml b/Documentation/devicetree/bindings/display/panel/innolux,n140hca-eac.yaml
+> new file mode 100644
+> index 000000000000..5493e383c97c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/display/panel/innolux,n140hca-eac.yaml
+> @@ -0,0 +1,43 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/display/panel/innolux,n140hca-eac.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Innolux N140HCA-EAC 14 inch eDP 1080p display panel
+> +
+> +maintainers:
+> +  - Sandeep Panda <spanda@codeaurora.org>
+> +  - Douglas Anderson <dianders@chromium.org>
+> +
+> +allOf:
+> +  - $ref: panel-common.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: innolux,n140hca-eac
+> +
+> +  enable-gpios: true
+> +  power-supply: true
+> +  backlight: true
+> +  no-hpd: true
+> +
+> +required:
+> +  - compatible
+> +  - power-supply
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    panel_edp: panel-edp {
+> +        compatible = "innolux,n140hca-eac";
+> +        enable-gpios = <&pio 96 GPIO_ACTIVE_HIGH>;
+> +        power-supply = <&pp3300_disp_x>;
+> +        backlight = <&backlight_lcd0>;
+> +        no-hpd;
+> +    };
+> +
+> +...
+> diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
+> index f7bfcf63d48e..f5f9c9cb26ba 100644
+> --- a/drivers/gpu/drm/panel/panel-edp.c
+> +++ b/drivers/gpu/drm/panel/panel-edp.c
+> @@ -1330,6 +1330,29 @@ static const struct panel_desc innolux_n125hce_gn1 = {
+>         },
+>  };
+>
+> +static const struct display_timing innolux_n140hca_eac_timing = {
+> +       .pixelclock = { 72600000, 76420000, 80240000 },
+> +       .hactive = { 1920, 1920, 1920 },
+> +       .hfront_porch = { 80, 80, 80 },
+> +       .hback_porch = { 190, 190, 190 },
+> +       .hsync_len = { 60, 60, 60 },
+> +       .vactive = { 1080, 1080, 1080 },
+> +       .vfront_porch = { 6, 6, 6 },
+> +       .vback_porch = { 38, 38, 38 },
+> +       .vsync_len = { 8, 8, 8 },
+> +       .flags = DISPLAY_FLAGS_VSYNC_LOW | DISPLAY_FLAGS_HSYNC_LOW,
+> +};
+> +
+> +static const struct panel_desc innolux_n140hca_eac = {
+> +       .timings = &innolux_n140hca_eac_timing,
+> +       .num_timings = 1,
+> +       .bpc = 6,
+> +       .size = {
+> +               .width = 309,
+> +               .height = 174,
+> +       },
+> +};
+> +
+>  static const struct drm_display_mode innolux_p120zdg_bf1_mode = {
+>         .clock = 206016,
+>         .hdisplay = 2160,
+> @@ -1750,6 +1773,9 @@ static const struct of_device_id platform_of_match[] = {
+>         }, {
+>                 .compatible = "innolux,n125hce-gn1",
+>                 .data = &innolux_n125hce_gn1,
+> +       }, {
+> +               .compatible = "innolux,n140hca-eac",
+> +               .data = &innolux_n140hca_eac,
+>         }, {
+>                 .compatible = "innolux,p120zdg-bf1",
+>                 .data = &innolux_p120zdg_bf1,
+> --
+> 2.25.1
+>
