@@ -2,360 +2,367 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39355C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 348E7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbiBRALW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 19:11:22 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47910 "EHLO
+        id S229619AbiBRAN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 19:13:26 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbiBRALS (ORCPT
+        with ESMTP id S229753AbiBRANX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 19:11:18 -0500
-Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [IPv6:2001:4b7a:2000:18::167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A67593A0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:10:55 -0800 (PST)
-Received: from localhost.localdomain (abxk63.neoplus.adsl.tpnet.pl [83.9.4.63])
-        by m-r2.th.seeweb.it (Postfix) with ESMTPA id D98143F825;
-        Fri, 18 Feb 2022 00:24:12 +0100 (CET)
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-To:     ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] clk: qcom: gcc-msm8994: Remove NoC clocks
-Date:   Fri, 18 Feb 2022 00:24:08 +0100
-Message-Id: <20220217232408.78932-1-konrad.dybcio@somainline.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 17 Feb 2022 19:13:23 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222C25B892
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:13:07 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id o2so2313243lfd.1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:13:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OP5QK+CcrWBVeRF/jSxS+WC/kWaYTAIsiPiOXeHxvRk=;
+        b=nEa3AFKSSUtqCtrcCJ1xMGF5xOWTsu2Nk3FsOCdEaSALGalQkqZl0eQveyfDqxpqMs
+         HgXvOzQTcBfksSsivZ7nTg33m3/zavkeQaQSy1mc+hwCwzTvjQ4ryWMW9BG286zs9Fuh
+         vEomEfhJOT4d0VkQcAg31d0cEqnDIs7OqCv2+0N/Q3Unu1EKskkwoEYNMlFxQ+wpcCXP
+         yujPmy+vJG7C3lQkCrhMF7kL0J640u/2iRbeJ0Xbs8MI9P0B2ZEOIcEfyEQSNcoCWIbU
+         ibp0IF89KGg5SEz7JG3dglsRuW+oFIPtiV/LHep5v5sUQ1iY4Mz8NGoglU2spOMnutYY
+         d05g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OP5QK+CcrWBVeRF/jSxS+WC/kWaYTAIsiPiOXeHxvRk=;
+        b=6nt5nCj10eDIPydYAboazQHXu9oC3z2lclkqx92uZDDmyhdmurFetDmlmBj2w2KTAs
+         4T5h6Fhi78HPQA5xFYUReDC21IY+81FLzuSKIlm+W/UJsWomIm+aWW9C2l72DWcaUnq9
+         7a2tsxv/tTzZLhIjpP7o9qeHC4AJwT3R7zY3X3Spgd4WFcihXOsjd9yqL11RPml628lO
+         +rp8ZBdP8bCZ9r35h+IZkM5rXnZfUHrT5+Jqi8eCm6TDcJuJdZhiCt16MrHlU632kcva
+         TXpvt43+aXEbrnlTeAIvGJY0amFZ2Q5f6VQl6l8asvEePsbfGzd32GLv+N285Npx7Xt/
+         vu/g==
+X-Gm-Message-State: AOAM531elcVFOvEneU3WKrX/spqlr90qOoZ8j/tdRhm1dbWU+6cirTHc
+        tXiv+XsF4+7Kt1XJdvaZ5hf1+g==
+X-Google-Smtp-Source: ABdhPJwIwVUM8NHjVSRJYbPdyQyNlD/oM0bEd7VesWIW4JJWuC6XwHWeRi4rE95xYsEjV4TqcaYqmQ==
+X-Received: by 2002:a05:6512:4017:b0:443:b9ee:2a3d with SMTP id br23-20020a056512401700b00443b9ee2a3dmr311042lfb.593.1645143185318;
+        Thu, 17 Feb 2022 16:13:05 -0800 (PST)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id t30sm96285lfp.222.2022.02.17.16.13.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 16:13:04 -0800 (PST)
+Message-ID: <9c010dcf-94e4-247b-3233-27320a646812@linaro.org>
+Date:   Fri, 18 Feb 2022 03:13:04 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2 2/2] drm/msm/dpu: Add SC8180x to hw catalog
+Content-Language: en-GB
+To:     Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        freedreno@lists.freedesktop.org
+References: <20220215043353.1256754-1-bjorn.andersson@linaro.org>
+ <20220215043353.1256754-2-bjorn.andersson@linaro.org>
+ <be397e2e-05ab-5c18-8e2d-16c443f0a6d1@quicinc.com>
+ <Ygvisfhi0SY6XdAz@builder.lan>
+ <6a3ef247-b26b-d505-cd85-92fb277163dd@quicinc.com>
+ <CAA8EJprCaiPW=Kk0B69RNNwAk0xcqaxQA031sfR0ky+BfzcWKQ@mail.gmail.com>
+ <ceb861e5-b1c8-d33e-c0b0-bea0b4cc0b66@quicinc.com>
+ <CAA8EJppj+OBPVUgvefO38zp1RHpJw5pL0-4DCkgn3iAcPH-ptA@mail.gmail.com>
+ <d0cac12e-7c03-2ba3-fb8d-aee09b72a1b1@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <d0cac12e-7c03-2ba3-fb8d-aee09b72a1b1@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just like in commit 05cf3ec00d460b50088d421fb878a0f83f57e262
-("clk: qcom: gcc-msm8996: Drop (again) gcc_aggre1_pnoc_ahb_clk")
-adding NoC clocks turned out to be a huge mistake, as they cause a lot of
-issues at little benefit (basically letting Linux know about their
-children's frequencies), especially when mishandled or misconfigured.
+On 16/02/2022 04:34, Abhinav Kumar wrote:
+> 
+> 
+> On 2/15/2022 4:20 PM, Dmitry Baryshkov wrote:
+>> On Tue, 15 Feb 2022 at 23:21, Abhinav Kumar 
+>> <quic_abhinavk@quicinc.com> wrote:
+>>> On 2/15/2022 10:42 AM, Dmitry Baryshkov wrote:
+>>>> On Tue, 15 Feb 2022 at 20:42, Abhinav Kumar 
+>>>> <quic_abhinavk@quicinc.com> wrote:
+>>>>> On 2/15/2022 9:28 AM, Bjorn Andersson wrote:
+>>>>>> On Tue 15 Feb 11:14 CST 2022, Abhinav Kumar wrote:
+>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> On 2/14/2022 8:33 PM, Bjorn Andersson wrote:
+>>>>>>>> From: Rob Clark <robdclark@chromium.org>
+>>>>>>>>
+>>>>>>>> Add SC8180x to the hardware catalog, for initial support for the
+>>>>>>>> platform. Due to limitations in the DP driver only one of the 
+>>>>>>>> four DP
+>>>>>>>> interfaces is left enabled.
+>>>>>>>>
+>>>>>>>> The SC8180x platform supports the newly added DPU_INTF_WIDEBUS 
+>>>>>>>> flag and
+>>>>>>>> the Windows-on-Snapdragon bootloader leaves the widebus bit set, 
+>>>>>>>> so this
+>>>>>>>> is flagged appropriately to ensure widebus is disabled - for now.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Rob Clark <robdclark@chromium.org>
+>>>>>>>> [bjorn: Reworked intf and irq definitions]
+>>>>>>>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+>>>>>>>> ---
+>>>>>>>>
+>>>>>>>> Changes since v1:
+>>>>>>>> - Dropped widebus flag
+>>>>>>>>
+>>>>>>>>      .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c    | 129 
+>>>>>>>> ++++++++++++++++++
+>>>>>>>>      .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h    |   1 +
+>>>>>>>>      drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |   1 +
+>>>>>>>>      drivers/gpu/drm/msm/msm_drv.c                 |   1 +
+>>>>>>>>      4 files changed, 132 insertions(+)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c 
+>>>>>>>> b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>>>>>>>> index aa75991903a6..7ac0fe32df49 100644
+>>>>>>>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>>>>>>>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>>>>>>>> @@ -90,6 +90,17 @@
+>>>>>>>>                        BIT(MDP_INTF3_INTR) | \
+>>>>>>>>                        BIT(MDP_INTF4_INTR))
+>>>>>>>> +#define IRQ_SC8180X_MASK (BIT(MDP_SSPP_TOP0_INTR) | \
+>>>>>>>> +                     BIT(MDP_SSPP_TOP0_INTR2) | \
+>>>>>>>> +                     BIT(MDP_SSPP_TOP0_HIST_INTR) | \
+>>>>>>>> +                     BIT(MDP_INTF0_INTR) | \
+>>>>>>>> +                     BIT(MDP_INTF1_INTR) | \
+>>>>>>>> +                     BIT(MDP_INTF2_INTR) | \
+>>>>>>>> +                     BIT(MDP_INTF3_INTR) | \
+>>>>>>>> +                     BIT(MDP_INTF4_INTR) | \
+>>>>>>>> +                     BIT(MDP_INTF5_INTR) | \
+>>>>>>>> +                     BIT(MDP_AD4_0_INTR) | \
+>>>>>>>> +                     BIT(MDP_AD4_1_INTR))
+>>>>>>>>      #define DEFAULT_PIXEL_RAM_SIZE           (50 * 1024)
+>>>>>>>>      #define DEFAULT_DPU_LINE_WIDTH           2048
+>>>>>>>> @@ -225,6 +236,22 @@ static const struct dpu_caps 
+>>>>>>>> sm8150_dpu_caps = {
+>>>>>>>>       .max_vdeci_exp = MAX_VERT_DECIMATION,
+>>>>>>>>      };
+>>>>>>>> +static const struct dpu_caps sc8180x_dpu_caps = {
+>>>>>>>> +   .max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
+>>>>>>>> +   .max_mixer_blendstages = 0xb,
+>>>>>>>> +   .qseed_type = DPU_SSPP_SCALER_QSEED3,
+>>>>>>>> +   .smart_dma_rev = DPU_SSPP_SMART_DMA_V2, /* TODO: v2.5 */
+>>>>>>>> +   .ubwc_version = DPU_HW_UBWC_VER_30,
+>>>>>>>> +   .has_src_split = true,
+>>>>>>>> +   .has_dim_layer = true,
+>>>>>>>> +   .has_idle_pc = true,
+>>>>>>>> +   .has_3d_merge = true,
+>>>>>>>> +   .max_linewidth = 4096,
+>>>>>>>> +   .pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
+>>>>>>>> +   .max_hdeci_exp = MAX_HORZ_DECIMATION,
+>>>>>>>> +   .max_vdeci_exp = MAX_VERT_DECIMATION,
+>>>>>>>> +};
+>>>>>>>> +
+>>>>>>>>      static const struct dpu_caps sm8250_dpu_caps = {
+>>>>>>>>       .max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
+>>>>>>>>       .max_mixer_blendstages = 0xb,
+>>>>>>>> @@ -293,6 +320,31 @@ static const struct dpu_mdp_cfg 
+>>>>>>>> sc7180_mdp[] = {
+>>>>>>>>       },
+>>>>>>>>      };
+>>>>>>>> +static const struct dpu_mdp_cfg sc8180x_mdp[] = {
+>>>>>>>> +   {
+>>>>>>>> +   .name = "top_0", .id = MDP_TOP,
+>>>>>>>> +   .base = 0x0, .len = 0x45C,
+>>>>>>>> +   .features = 0,
+>>>>>>>> +   .highest_bank_bit = 0x3,
+>>>>>>>> +   .clk_ctrls[DPU_CLK_CTRL_VIG0] = {
+>>>>>>>> +                   .reg_off = 0x2AC, .bit_off = 0},
+>>>>>>>> +   .clk_ctrls[DPU_CLK_CTRL_VIG1] = {
+>>>>>>>> +                   .reg_off = 0x2B4, .bit_off = 0},
+>>>>>>>> +   .clk_ctrls[DPU_CLK_CTRL_VIG2] = {
+>>>>>>>> +                   .reg_off = 0x2BC, .bit_off = 0},
+>>>>>>>> +   .clk_ctrls[DPU_CLK_CTRL_VIG3] = {
+>>>>>>>> +                   .reg_off = 0x2C4, .bit_off = 0},
+>>>>>>>> +   .clk_ctrls[DPU_CLK_CTRL_DMA0] = {
+>>>>>>>> +                   .reg_off = 0x2AC, .bit_off = 8},
+>>>>>>>> +   .clk_ctrls[DPU_CLK_CTRL_DMA1] = {
+>>>>>>>> +                   .reg_off = 0x2B4, .bit_off = 8},
+>>>>>>>> +   .clk_ctrls[DPU_CLK_CTRL_CURSOR0] = {
+>>>>>>>> +                   .reg_off = 0x2BC, .bit_off = 8},
+>>>>>>>> +   .clk_ctrls[DPU_CLK_CTRL_CURSOR1] = {
+>>>>>>>> +                   .reg_off = 0x2C4, .bit_off = 8},
+>>>>>>>> +   },
+>>>>>>>> +};
+>>>>>>>> +
+>>>>>>>>      static const struct dpu_mdp_cfg sm8250_mdp[] = {
+>>>>>>>>       {
+>>>>>>>>       .name = "top_0", .id = MDP_TOP,
+>>>>>>>> @@ -861,6 +913,16 @@ static const struct dpu_intf_cfg 
+>>>>>>>> sc7280_intf[] = {
+>>>>>>>>       INTF_BLK("intf_5", INTF_5, 0x39000, INTF_DP, 
+>>>>>>>> MSM_DP_CONTROLLER_1, 24, INTF_SC7280_MASK, MDP_SSPP_TOP0_INTR, 
+>>>>>>>> 22, 23),
+>>>>>>>>      };
+>>>>>>>> +static const struct dpu_intf_cfg sc8180x_intf[] = {
+>>>>>>>> +   INTF_BLK("intf_0", INTF_0, 0x6A000, INTF_DP, 
+>>>>>>>> MSM_DP_CONTROLLER_0, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 
+>>>>>>>> 24, 25),
+>>>>>>>> +   INTF_BLK("intf_1", INTF_1, 0x6A800, INTF_DSI, 0, 24, 
+>>>>>>>> INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 26, 27),
+>>>>>>>> +   INTF_BLK("intf_2", INTF_2, 0x6B000, INTF_DSI, 1, 24, 
+>>>>>>>> INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 28, 29),
+>>>>>>>> +   /* INTF_3 is for MST, wired to INTF_DP 0 and 1, use dummy 
+>>>>>>>> index until this is supported */
+>>>>>>>> +   INTF_BLK("intf_3", INTF_3, 0x6B800, INTF_DP, 999, 24, 
+>>>>>>>> INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 30, 31),
+>>>>>>>> +   INTF_BLK("intf_4", INTF_4, 0x6C000, INTF_DP, 
+>>>>>>>> MSM_DP_CONTROLLER_1, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 
+>>>>>>>> 20, 21),
+>>>>>>>> +   INTF_BLK("intf_5", INTF_5, 0x6C800, INTF_DP, 
+>>>>>>>> MSM_DP_CONTROLLER_2, 24, INTF_SC7180_MASK, MDP_SSPP_TOP0_INTR, 
+>>>>>>>> 22, 23),
+>>>>>>>
+>>>>>>> This is a continued discussion from
+>>>>>>> https://patchwork.freedesktop.org/patch/474179/.
+>>>>>>>
+>>>>>>> Shouldnt INTF_5 be marked as INTF_eDP?
+>>>>>>>
+>>>>>>
+>>>>>> Might be, I didn't even know we had an INTF_EDP define...
+>>>>>>
+>>>>>> Is there any reason to distinguish DP and EDP in the DPU?  I see 
+>>>>>> sc7280
+>>>>>> doesn't distinguish the DP and EDP interfaces.
+>>>>>>
+>>>>>> Regards,
+>>>>>> Bjorn
+>>>>>>
+>>>>>
+>>>>> Like I have mentioned in the other patch, I think we have enough
+>>>>> confusion between eDP and DP with the common driver. Since DPU does 
+>>>>> have
+>>>>> separate interfaces I think we should fix that.
+>>>>>
+>>>>> Regarding sc7280 using INTF_DP, I synced up with Sankeerth. He 
+>>>>> referred
+>>>>> to your change
+>>>>> https://patchwork.freedesktop.org/patch/457776/?series=92992&rev=5 
+>>>>> as it
+>>>>> was posted earlier and ended up using the same INTF_DP macro. So its
+>>>>> turning out to be a cyclical error.
+>>>>>
+>>>>> I think we should fix both.
+>>>>
+>>>> So, what is the value for DPU to distinguish between eDP and DP 
+>>>> interfaces?
+>>>> Would we get anything except the (intf_type == INTF_EDP || intf_type
+>>>> == INTF_DP) instead of (intf_type == INTF_DP) in all the cases where
+>>>> the type is checked?
+>>>
+>>> There are only two places currently where I am seeing this OR condition
+>>> between INTF_DP and INTF_eDP. I do not have an example to give you today
+>>> of where we would need to distinguish eDP and DP but I cannot guarantee
+>>> we will not have such a case.
+>>>
+>>>> (thus leading us to cases when someone would forget to add INTF_EDP
+>>>> next to INTF_DP)
+>>>>
+>>>> Also, if we are switching from INTF_DP to INTF_EDP, should we stop
+>>>> using end-to-end numbering (like MSM_DP_CONTROLLER_2 for INTF_5) and
+>>>> add a separate numbering scheme for INTF_EDP?
+>>>>
+>>> We should change the controller ID to match what it actually is.
+>>>
+>>> Now that you pointed this out, this looks even more confusing to me to
+>>> say that  MSM_DP_CONTROLLER_2 is actually a EDP controller because
+>>> fundamentally and even hardware block wise they are different.
+>>
+>> So, do we split msm_priv->dp too? It's indexed using
+>> MSM_DP_CONTROLLER_n entries.
+>> Do we want to teach drm/msm/dp code that there are priv->dp[] and
+>> priv->edp arrays?
+> 
+> ok so now priv->dp and priv->edp arrays are also in the picture here :)
+> 
+> Actually all these questions should have probably come when we were 
+> figuring out how best to re-use eDP and DP driver.
+> 
+> Either way atleast, its good we are documenting all these questions on 
+> this thread so that anyone can refer this to know what all was missed 
+> out :)
+> 
+> priv->dp is of type msm_dp. When re-using DP driver for eDP and since
+> struct msm_dp is the shared struct between dpu and the msm/dp, I get 
+> your point of re-using MSM_DP_CONTROLLER_* as thats being use to index.
+> 
+> So MSM_DP_CONTROLLER_* is more of an index into the DP driver and not 
+> really a hardware indexing scheme.
+> 
+> If we split into two arrays, we need more changes to dpu_encoder too.
+> 
+> Too instrusive a change at this point, even though probably correct.
+> 
+> But are you seeing more changes required even if we just change INTF_DP 
+> to INTF_eDP for the eDP entries? What are the challenges there?
+> 
+>>
+>>> Why do we want to keep building something on top of this confusing
+>>> terminology knowing that it can be corrected when its fairly in the
+>>> development stage rather than realizing later it will break.
+>>>
+>>> We have only been discussing that eDP and DP are treated equally in the
+>>> DPU code and hence why do we need to distinguish.
+>>>
+>>> As per current code yes, but I cannot and probably noone else can
+>>> guarantee that in future there can be cases were we want to distinguish
+>>> the two for something.
+>>
+>> Me too. For now I see INTF_DP as a useful abstraction for 'the
+>> interface that's handled by drm/msm/dp and shares common timing
+>> requirements'.
+> 
+> struct msm_dp is the useful abstraction already for drm/msm/dp.
+> Not INTF_DP.
+> 
+>>
+>> At this moment I estimate that splitting it properly into INTF_DP and
+>> INTF_EDP can bring more troubles than possible future cases.
+> 
+> Can you please elaborate why changing INTF_DP to INTF_eDP is more 
+> trouble if we leave the MSM_DP_CONTROLLER_* intact?
+> 
+>> If at some point we were to distinguish DP and eDP usecases of
+>> INTF_DP, I would suggest adding is_embedded property rather than
+>> splitting away INTF_EDP.
+>>
+> 
+> Can you please elaborate on this is_embedded idea?
 
-Adding these ones broke SDCC approx 99 out of 100 times, but that somehow
-went unnoticed. To prevent further issues like this one, remove them.
+If we need to distinguish DP and eDP behind the INTF_DP we can 
+explicitly ask msm_dp_is_embedded_dp().
 
-This commit is effectively a revert of 74a33fac3aab77558ca0d80c9935
-(clk: qcom: gcc-msm8994: Add missing NoC clocks) with ABI preservation.
+> 
+>> It's good to think about future cases and expansions.
+>> But it's too easy to create a monstruosos constructs supporting all
+>> possible features that no one can understand, grok and maintain.
+>> Been there, created several of them, refactored others.
+>>
+>> Let me throw in yet-another-possible-if: if at some point the hardware
+>> supported iDP using the same DP block, would you split INTF_iDP? >
+>>> Thats the overally consensus within our team.
+>>>
+>>> So if this going to work smoothly by just fixing two entries in the hw
+>>> catalog I would rather do that now rather than realizing this down the
+>>> line again just to save usage of one more enum.
+>>>
+>>>> With all that in mind I'd suggest to:
+>>>> - use INTF_DP for both DP and new eDP interfaces
+>>>> - remove INTF_EDP usage from the dpu1 driver
+>>>> - add a note that INTF_EDP corresponds to older eDP blocks (found on 
+>>>> 8x74/8x84)
 
-Fixes: 74a33fac3aab ("clk: qcom: gcc-msm8994: Add missing NoC clocks")
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
----
- drivers/clk/qcom/gcc-msm8994.c | 106 +++------------------------------
- 1 file changed, 9 insertions(+), 97 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
-index 702a9bdc0559..5df9f1ead48e 100644
---- a/drivers/clk/qcom/gcc-msm8994.c
-+++ b/drivers/clk/qcom/gcc-msm8994.c
-@@ -107,42 +107,6 @@ static const struct clk_parent_data gcc_xo_gpll0_gpll4[] = {
- 	{ .hw = &gpll4.clkr.hw },
- };
- 
--static struct clk_rcg2 system_noc_clk_src = {
--	.cmd_rcgr = 0x0120,
--	.hid_width = 5,
--	.parent_map = gcc_xo_gpll0_map,
--	.clkr.hw.init = &(struct clk_init_data){
--		.name = "system_noc_clk_src",
--		.parent_data = gcc_xo_gpll0,
--		.num_parents = ARRAY_SIZE(gcc_xo_gpll0),
--		.ops = &clk_rcg2_ops,
--	},
--};
--
--static struct clk_rcg2 config_noc_clk_src = {
--	.cmd_rcgr = 0x0150,
--	.hid_width = 5,
--	.parent_map = gcc_xo_gpll0_map,
--	.clkr.hw.init = &(struct clk_init_data){
--		.name = "config_noc_clk_src",
--		.parent_data = gcc_xo_gpll0,
--		.num_parents = ARRAY_SIZE(gcc_xo_gpll0),
--		.ops = &clk_rcg2_ops,
--	},
--};
--
--static struct clk_rcg2 periph_noc_clk_src = {
--	.cmd_rcgr = 0x0190,
--	.hid_width = 5,
--	.parent_map = gcc_xo_gpll0_map,
--	.clkr.hw.init = &(struct clk_init_data){
--		.name = "periph_noc_clk_src",
--		.parent_data = gcc_xo_gpll0,
--		.num_parents = ARRAY_SIZE(gcc_xo_gpll0),
--		.ops = &clk_rcg2_ops,
--	},
--};
--
- static struct freq_tbl ftbl_ufs_axi_clk_src[] = {
- 	F(50000000, P_GPLL0, 12, 0, 0),
- 	F(100000000, P_GPLL0, 6, 0, 0),
-@@ -1149,8 +1113,6 @@ static struct clk_branch gcc_blsp1_ahb_clk = {
- 		.enable_mask = BIT(17),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_blsp1_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1434,8 +1396,6 @@ static struct clk_branch gcc_blsp2_ahb_clk = {
- 		.enable_mask = BIT(15),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_blsp2_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1763,8 +1723,6 @@ static struct clk_branch gcc_lpass_q6_axi_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_lpass_q6_axi_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1777,8 +1735,6 @@ static struct clk_branch gcc_mss_q6_bimc_axi_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_mss_q6_bimc_axi_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1806,9 +1762,6 @@ static struct clk_branch gcc_pcie_0_cfg_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_pcie_0_cfg_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &config_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1821,9 +1774,6 @@ static struct clk_branch gcc_pcie_0_mstr_axi_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_pcie_0_mstr_axi_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1853,9 +1803,6 @@ static struct clk_branch gcc_pcie_0_slv_axi_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_pcie_0_slv_axi_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1883,9 +1830,6 @@ static struct clk_branch gcc_pcie_1_cfg_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_pcie_1_cfg_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &config_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1898,9 +1842,6 @@ static struct clk_branch gcc_pcie_1_mstr_axi_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_pcie_1_mstr_axi_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1929,9 +1870,6 @@ static struct clk_branch gcc_pcie_1_slv_axi_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_pcie_1_slv_axi_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1959,8 +1897,6 @@ static struct clk_branch gcc_pdm_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_pdm_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -1988,9 +1924,6 @@ static struct clk_branch gcc_sdcc1_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_sdcc1_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2003,9 +1936,6 @@ static struct clk_branch gcc_sdcc2_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_sdcc2_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2033,9 +1963,6 @@ static struct clk_branch gcc_sdcc3_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_sdcc3_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2063,9 +1990,6 @@ static struct clk_branch gcc_sdcc4_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_sdcc4_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
--			.flags = CLK_SET_RATE_PARENT,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2123,8 +2047,6 @@ static struct clk_branch gcc_tsif_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_tsif_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2152,8 +2074,6 @@ static struct clk_branch gcc_ufs_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_ufs_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &config_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2197,8 +2117,6 @@ static struct clk_branch gcc_ufs_rx_symbol_0_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_ufs_rx_symbol_0_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2212,8 +2130,6 @@ static struct clk_branch gcc_ufs_rx_symbol_1_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_ufs_rx_symbol_1_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2242,8 +2158,6 @@ static struct clk_branch gcc_ufs_tx_symbol_0_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_ufs_tx_symbol_0_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2257,8 +2171,6 @@ static struct clk_branch gcc_ufs_tx_symbol_1_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_ufs_tx_symbol_1_clk",
--			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2363,8 +2275,6 @@ static struct clk_branch gcc_usb_hs_ahb_clk = {
- 		.enable_mask = BIT(0),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_usb_hs_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2487,8 +2397,6 @@ static struct clk_branch gcc_boot_rom_ahb_clk = {
- 		.enable_mask = BIT(10),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_boot_rom_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &config_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2502,8 +2410,6 @@ static struct clk_branch gcc_prng_ahb_clk = {
- 		.enable_mask = BIT(13),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_prng_ahb_clk",
--			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
--			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
- 		},
- 	},
-@@ -2546,9 +2452,6 @@ static struct clk_regmap *gcc_msm8994_clocks[] = {
- 	[GPLL0] = &gpll0.clkr,
- 	[GPLL4_EARLY] = &gpll4_early.clkr,
- 	[GPLL4] = &gpll4.clkr,
--	[CONFIG_NOC_CLK_SRC] = &config_noc_clk_src.clkr,
--	[PERIPH_NOC_CLK_SRC] = &periph_noc_clk_src.clkr,
--	[SYSTEM_NOC_CLK_SRC] = &system_noc_clk_src.clkr,
- 	[UFS_AXI_CLK_SRC] = &ufs_axi_clk_src.clkr,
- 	[USB30_MASTER_CLK_SRC] = &usb30_master_clk_src.clkr,
- 	[BLSP1_QUP1_I2C_APPS_CLK_SRC] = &blsp1_qup1_i2c_apps_clk_src.clkr,
-@@ -2695,6 +2598,15 @@ static struct clk_regmap *gcc_msm8994_clocks[] = {
- 	[USB_SS_PHY_LDO] = &usb_ss_phy_ldo.clkr,
- 	[GCC_BOOT_ROM_AHB_CLK] = &gcc_boot_rom_ahb_clk.clkr,
- 	[GCC_PRNG_AHB_CLK] = &gcc_prng_ahb_clk.clkr,
-+
-+	/*
-+	 * The following clocks should NOT be managed by this driver, but they once were
-+	 * mistakengly added. Now they are only here to indicate that they are not defined
-+	 * on purpose, even though the names will stay in the header file (for ABI sanity).
-+	 */
-+	[CONFIG_NOC_CLK_SRC] = NULL,
-+	[PERIPH_NOC_CLK_SRC] = NULL,
-+	[SYSTEM_NOC_CLK_SRC] = NULL,
- };
- 
- static struct gdsc *gcc_msm8994_gdscs[] = {
+
 -- 
-2.35.1
-
+With best wishes
+Dmitry
