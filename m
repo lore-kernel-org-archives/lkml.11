@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C3B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D560C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233156AbiBRJDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:03:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58232 "EHLO
+        id S233112AbiBRJDO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:03:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233086AbiBRJCb (ORCPT
+        with ESMTP id S233083AbiBRJCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 04:02:31 -0500
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D475622F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7902B56235
         for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:02:12 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K0QZK1Mv9zZfW3;
-        Fri, 18 Feb 2022 16:57:45 +0800 (CST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K0Qf65KW3zdZLy;
+        Fri, 18 Feb 2022 17:01:02 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Feb
- 2022 17:02:09 +0800
+ 2022 17:02:10 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH v3 5/8] mm/memory-failure.c: remove PageSlab check in hwpoison_filter_dev
-Date:   Fri, 18 Feb 2022 17:01:15 +0800
-Message-ID: <20220218090118.1105-6-linmiaohe@huawei.com>
+Subject: [PATCH v3 7/8] mm/memory-failure.c: remove obsolete comment in __soft_offline_page
+Date:   Fri, 18 Feb 2022 17:01:17 +0800
+Message-ID: <20220218090118.1105-8-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220218090118.1105-1-linmiaohe@huawei.com>
 References: <20220218090118.1105-1-linmiaohe@huawei.com>
@@ -43,33 +43,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 03e5ac2fc3bf ("mm: fix crash when using XFS on loopback"),
-page_mapping() can handle the Slab pages. So remove this unnecessary
-PageSlab check and obsolete comment.
+Since commit add05cecef80 ("mm: soft-offline: don't free target page in
+successful page migration"), set_migratetype_isolate logic is removed.
+Remove this obsolete comment.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
 ---
- mm/memory-failure.c | 6 ------
- 1 file changed, 6 deletions(-)
+ mm/memory-failure.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 2ca50cfa601f..a6f6fdf708ae 100644
+index 365384c41da1..6bd555f12972 100644
 --- a/mm/memory-failure.c
 +++ b/mm/memory-failure.c
-@@ -130,12 +130,6 @@ static int hwpoison_filter_dev(struct page *p)
- 	    hwpoison_filter_dev_minor == ~0U)
- 		return 0;
+@@ -2171,10 +2171,6 @@ static int __soft_offline_page(struct page *page)
+ 		ret = invalidate_inode_page(page);
+ 	unlock_page(page);
  
 -	/*
--	 * page_mapping() does not accept slab pages.
+-	 * RED-PEN would be better to keep it isolated here, but we
+-	 * would need to fix isolation locking first.
 -	 */
--	if (PageSlab(p))
--		return -EINVAL;
--
- 	mapping = page_mapping(p);
- 	if (mapping == NULL || mapping->host == NULL)
- 		return -EINVAL;
+ 	if (ret) {
+ 		pr_info("soft_offline: %#lx: invalidated\n", pfn);
+ 		page_handle_poison(page, false, true);
 -- 
 2.23.0
 
