@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36ED0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 488C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234639AbiBRLgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:36:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44064 "EHLO
+        id S232138AbiBRLgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:36:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234559AbiBRLgh (ORCPT
+        with ESMTP id S234560AbiBRLgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 06:36:37 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25802B0B38
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538582B102C
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:17 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 096EC223F0;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8A6F1223F7;
         Fri, 18 Feb 2022 12:36:15 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
         t=1645184175;
@@ -27,10 +27,10 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail20160613
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UD6+0Z6yibRsOdt8zn1BhQmKZUwO1fab/PtnzMpVPlk=;
-        b=qlEhJUbrs65qllmKyx6mDETOJaPX+DBHXUK++Ig6cSbTKlWgbs3J4QhYou+sPHMdijHgWN
-        syNvrjECpgE7frCMOR45mCrOFnYf/WqUTzjKhJMquzgFKAXhfw/Cgd2SKg9v432Qm/NWyu
-        bsTBiQsawtEa3xp59T/URB4XjA0dkDg=
+        bh=mCboYF2SsSwR+fiVXOGx/OmbS97AWmo5FY5yos1xu8s=;
+        b=lrZXtSwF7GPJIStf4kmx+wXh/pbisjkjkL0K9wBTjfUcXDblkeKvUCOw9D+GVUo0Qkpt6i
+        G0xJ43KEp0fYUDEaQ5TUj0bJsRUb/gG66Y4Z4ApS4MPLWOE5UkMEkMG70mvDSQl8MG0hvP
+        BF1m23Kr+dfiLYKB6K3VWWfpCuoqVTk=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 02/32] mtd: spi-nor: catalyst: unify function names
-Date:   Fri, 18 Feb 2022 12:35:37 +0100
-Message-Id: <20220218113607.1360020-3-michael@walle.cc>
+Subject: [PATCH v2 04/32] mtd: spi-nor: esmt: unify function names
+Date:   Fri, 18 Feb 2022 12:35:39 +0100
+Message-Id: <20220218113607.1360020-5-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218113607.1360020-1-michael@walle.cc>
 References: <20220218113607.1360020-1-michael@walle.cc>
@@ -61,30 +61,30 @@ There are no functional changes.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/mtd/spi-nor/catalyst.c | 6 +++---
+ drivers/mtd/spi-nor/esmt.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/catalyst.c b/drivers/mtd/spi-nor/catalyst.c
-index ae4d67e01bb3..6d310815fb12 100644
---- a/drivers/mtd/spi-nor/catalyst.c
-+++ b/drivers/mtd/spi-nor/catalyst.c
+diff --git a/drivers/mtd/spi-nor/esmt.c b/drivers/mtd/spi-nor/esmt.c
+index ace1da221566..79e2408f4998 100644
+--- a/drivers/mtd/spi-nor/esmt.c
++++ b/drivers/mtd/spi-nor/esmt.c
 @@ -8,7 +8,7 @@
  
  #include "core.h"
  
--static const struct flash_info catalyst_parts[] = {
-+static const struct flash_info catalyst_nor_parts[] = {
- 	/* Catalyst / On Semiconductor -- non-JEDEC */
- 	{ "cat25c11", CAT25_INFO(16, 8, 16, 1) },
- 	{ "cat25c03", CAT25_INFO(32, 8, 16, 2) },
-@@ -19,6 +19,6 @@ static const struct flash_info catalyst_parts[] = {
+-static const struct flash_info esmt_parts[] = {
++static const struct flash_info esmt_nor_parts[] = {
+ 	/* ESMT */
+ 	{ "f25l32pa", INFO(0x8c2016, 0, 64 * 1024, 64)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+@@ -23,6 +23,6 @@ static const struct flash_info esmt_parts[] = {
  
- const struct spi_nor_manufacturer spi_nor_catalyst = {
- 	.name = "catalyst",
--	.parts = catalyst_parts,
--	.nparts = ARRAY_SIZE(catalyst_parts),
-+	.parts = catalyst_nor_parts,
-+	.nparts = ARRAY_SIZE(catalyst_nor_parts),
+ const struct spi_nor_manufacturer spi_nor_esmt = {
+ 	.name = "esmt",
+-	.parts = esmt_parts,
+-	.nparts = ARRAY_SIZE(esmt_parts),
++	.parts = esmt_nor_parts,
++	.nparts = ARRAY_SIZE(esmt_nor_parts),
  };
 -- 
 2.30.2
