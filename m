@@ -2,317 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FFBC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237295AbiBRPxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 10:53:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47896 "EHLO
+        id S236559AbiBRPyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 10:54:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237287AbiBRPxu (ORCPT
+        with ESMTP id S231990AbiBRPys (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 10:53:50 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7160C2B31B5;
-        Fri, 18 Feb 2022 07:53:30 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id o9so4952806ljq.4;
-        Fri, 18 Feb 2022 07:53:30 -0800 (PST)
+        Fri, 18 Feb 2022 10:54:48 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9136220D34E;
+        Fri, 18 Feb 2022 07:54:31 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so3991190ooi.2;
+        Fri, 18 Feb 2022 07:54:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=+Mu8RvBnev8GXTejYsZPejfoz1EIMAndo1iFiCzGtfU=;
-        b=Ne7ve291QC1Ba2C/uEJ1kQrM/HEA0BtP4jUbz3fW5Zi43QXrH90M4ADD9g/D9y1sq2
-         4nDJo9rkkksFdRJVWv6+MS2HY08pNJvc9HxJfrYhVvV9PPWrroL8CWUBq6hrSm38/rRm
-         rV/i42qonsEW7yMLJAzRVLHwFn8/KWEk1RcnscyahJaWwLDDgXR9WLSVYhtPBdFyTxay
-         AXHj/yWPjSKpxqLvNaSYskfyqH6a3zBZkYGujTNkKkfkcBIiWJe07mo7RUMo8RonwzyL
-         87F7hwllYfSa5jvOSIQAL1+CIwjUDVc+JFce5Bp+Oe2LWfap7oj2nhK9djtyVILWGtOa
-         fYxg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QQJnGEvj1IWlzn/kQU3xNdCOUk3mjEmKlzY4/R3+WQI=;
+        b=TNwwv5eZMYbFtrgVKrARlarq8w8wALPJqQI5N6JlSz/H2LztXDQbUGRUntS5NXl9vW
+         ir3mzNqNOWkGdrrFqsuH9HlzFZ9U2bDym6d1oBn+Amhs89BzlCziudAdOK95f3sHMOze
+         8nGeIDsNK0LF7P1NwGyO5I3DNGPk7DRj+kmNHqFOoJssyPr0luIY0KDZZQAGfu/jkHGD
+         sMXGXQZPTmxAFQlkkmvluTXy1JUZC6mzV0aXS5IqLTARe3VDOyvwd+Of5jNsdXfDU+Ir
+         KgZd53astXMwxGQHcdZgviLNRZLJDBK7gZFTsvf2ygKNykpEaPYYaoWBqwd3cizATuAe
+         1y3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=+Mu8RvBnev8GXTejYsZPejfoz1EIMAndo1iFiCzGtfU=;
-        b=wSaNkuxJIs4z/gP3R7vm6HkKCBHd10qiQmT2XOKpLRpNtRfa47ELq2cmRxm3+QznwV
-         Tpokdf2zJqovkW2rOoQvb7TMsWlRUc3juf3OC/iRVtm+zBedkoK/lx2twdbBfStzVS5b
-         zvH2JaM0SMv2rJaFiLDzJhKIvEVRhb9O0SPpwk7EDjLd28zkynmqUDuqiX5dA1c3SEL9
-         thzqpRagp1BeAOXkE8XQZS2v/PXcB5kLJdLyxJfIogw+3c9t6SDU/Zgjxl9nWFBq+vfp
-         TM1mr0fSoTaINFyFUgWRrK2vpitd/nGHrqzu1WOlDeCrNlNAdj2Eu7au+oI3Vskx74UU
-         vfqA==
-X-Gm-Message-State: AOAM531y0uW26vcMJwO8xiQjKrO+8UZ1V3nKTdoLEN/SwotKnhdYoft+
-        /rlODLTO5AIieS+yfPuQpLk=
-X-Google-Smtp-Source: ABdhPJxlzT3gBFdCoywzClFF8dDbeFMFzORMD607SdJ3lZizRUrVvz9NSMNSjqfnZ1Mc3OoijizKEw==
-X-Received: by 2002:a2e:90c9:0:b0:244:2f8a:7aca with SMTP id o9-20020a2e90c9000000b002442f8a7acamr6152453ljg.129.1645199608751;
-        Fri, 18 Feb 2022 07:53:28 -0800 (PST)
-Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id v11sm295453lfr.3.2022.02.18.07.53.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 07:53:28 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next v3 5/5] selftests: forwarding: tests of locked port feature
-Date:   Fri, 18 Feb 2022 16:51:48 +0100
-Message-Id: <20220218155148.2329797-6-schultz.hans+netdev@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
-References: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QQJnGEvj1IWlzn/kQU3xNdCOUk3mjEmKlzY4/R3+WQI=;
+        b=kEpixGN4BKx6yw3W+FuoCi9jHSDbher/w+7ee/jJtfb4YNab/TFG9sQP/QFL+ATBNn
+         /o2gASLQCc9/1bXKVl3767EVhka6nvNoBCFuaiXxj5iZ1wbXvBnl7LWtMXo0i+nydq7B
+         28XS5vhZ9tNv46eWif+ZFgvw3W1/BfgE8A+L3+xA1Fu1+D3mZTYWqVc2ZX8l1C1NFCZ3
+         yrA+5zibkotYs5/9JCbCaW9P2XeTdEhL09V6UxGP6h9T43uXBahl8tJJy9evVMVKY/QE
+         WcCNzyGgzDKiGHvYGFCxROk2lOieCrZrGX0F7LCfdNVDB12nZYt1vSnV5jPRj40OlkeP
+         ShaQ==
+X-Gm-Message-State: AOAM532wwGHCJzAjoPJnOmTRgHk2GC0nlPu/cBZHXYk7azls7puzAnRx
+        WgyVB4LEGslvYG6xft4/kCJD84VX+gU3cQuwz1A=
+X-Google-Smtp-Source: ABdhPJxGsbPPh2j3tUTqSAM9h/ZqCs4rSFX4Vk4DD34Y7lIhBx+wmR81nznW19bZa8bsAbjakZMVT9mAGlHVYnsLW8c=
+X-Received: by 2002:a05:6870:912c:b0:d3:44be:7256 with SMTP id
+ o44-20020a056870912c00b000d344be7256mr3246887oae.73.1645199670906; Fri, 18
+ Feb 2022 07:54:30 -0800 (PST)
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
+References: <20220208084234.1684930-1-hsinyi@chromium.org> <CACvgo53u01BK_D0ZssV+gCepjxSz23Nr5Dy1qXeaAoJuu6VCFQ@mail.gmail.com>
+ <KW6DNh6IRRgVJx9DfOFBnEqc4a0x-AnDXEbMxwpfEbk8dOn_KGVzAfo-slJWq-4nWW728Uc-OVpFh2w4fDE4-bxfkDuz1hFILRVvbcuXqaw=@emersion.fr>
+ <CACvgo532-pC+7DLFCo=DWTX-OnJEJvSoTmQnt3_qLhiT4cqEMg@mail.gmail.com>
+ <GYG6EVT1MqtmfKiPpMhDG9mpuATnmwVDq2PuE_dpDat5oQW_t1tUfm39lSWHj32D5r7mrog27sL4dkgdMYQ5BN830TfVOrgQ4Ts8LcO8Hcs=@emersion.fr>
+ <CACvgo52+o9_ETC+1RKzqKkyw3ZJ28RjH0BqC9DfmNAKqByud8Q@mail.gmail.com>
+ <d3f0cc20-d226-ee42-cc98-b469949cec9e@redhat.com> <YV87l-2XXzmZ2i6GuGd__uf85s2JQkbXt_qTQDYlbBh1kW2COJoNLUDinmLCokKyy-_0ZnIMUcZeW0GdJ8zF690iYi4ThKrjc09omNMe-0g=@emersion.fr>
+ <d4f5e101-3dd5-2f3a-6c14-6b32ee37c223@redhat.com> <DM7TzJ-fZEHjoGXvMG8XLfJ2VxohRxotL40_0Vb4cAUvrELgV9BvPGbK6HAwOYOBCx8qXtY2LQ0xnZ-nlH_IVCyne7tMKfvkqxtoWI6MkTw=@emersion.fr>
+In-Reply-To: <DM7TzJ-fZEHjoGXvMG8XLfJ2VxohRxotL40_0Vb4cAUvrELgV9BvPGbK6HAwOYOBCx8qXtY2LQ0xnZ-nlH_IVCyne7tMKfvkqxtoWI6MkTw=@emersion.fr>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Fri, 18 Feb 2022 10:54:19 -0500
+Message-ID: <CADnq5_N6zqn59VH0nTx34gcfXbCvQAvRjmQZCgc9DDGxhYOS4Q@mail.gmail.com>
+Subject: Re: [Intel-gfx] [PATCH v8 1/3] gpu: drm: separate panel orientation
+ property creating and value setting
+To:     Simon Ser <contact@emersion.fr>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        ML dri-devel <dri-devel@lists.freedesktop.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        amd-gfx mailing list <amd-gfx@lists.freedesktop.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        LAKML <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These tests check that the basic locked port feature works, so that no 'host'
-can communicate (ping) through a locked port unless the MAC address of the
-'host' interface is in the forwarding database of the bridge.
+On Fri, Feb 18, 2022 at 7:13 AM Simon Ser <contact@emersion.fr> wrote:
+>
+> On Friday, February 18th, 2022 at 12:54, Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> > On 2/18/22 12:39, Simon Ser wrote:
+> > > On Friday, February 18th, 2022 at 11:38, Hans de Goede <hdegoede@redhat.com> wrote:
+> > >
+> > >> What I'm reading in the above is that it is being considered to allow
+> > >> changing the panel-orientation value after the connector has been made
+> > >> available to userspace; and let userspace know about this through a uevent.
+> > >>
+> > >> I believe that this is a bad idea, it is important to keep in mind here
+> > >> what userspace (e.g. plymouth) uses this prorty for. This property is
+> > >> used to rotate the image being rendered / shown on the framebuffer to
+> > >> adjust for the panel orientation.
+> > >>
+> > >> So now lets assume we apply the correct upside-down orientation later
+> > >> on a device with an upside-down mounted LCD panel. Then on boot the
+> > >> following could happen:
+> > >>
+> > >> 1. amdgpu exports a connector for the LCD panel to userspace without
+> > >> setting panel-orient=upside-down
+> > >> 2. plymouth sees this and renders its splash normally, but since the
+> > >> panel is upside-down it will now actually show upside-down
+> > >
+> > > At this point amdgpu hasn't probed the connector yet. So the connector
+> > > will be marked as disconnected, and plymouth shouldn't render anything.
+> >
+> > If before the initial probe of the connector there is a /dev/dri/card0
+> > which plymouth can access, then plymouth may at this point decide
+> > to disable any seemingly unused crtcs, which will make the screen go black...
+> >
+> > I'm not sure if plymouth will actually do this, but AFAICT this would
+> > not be invalid behavior for a userspace kms consumer to do and I
+> > believe it is likely that mutter will disable unused crtcs.
+> >
+> > IMHO it is just a bad idea to register /dev/dri/card0 with userspace
+> > before the initial connector probe is done. Nothing good can come
+> > of that.
+> >
+> > If all the exposed connectors initially are going to show up as
+> > disconnected anyways what is the value in registering /dev/dri/card0
+> > with userspace early ?
+>
+> OK. I'm still unsure how I feel about this, but I think I agree with
+> you. That said, the amdgpu architecture is quite involved with multiple
+> abstraction levels, so I don't think I'm equipped to write a patch to
+> fix this...
+>
+> cc Daniel Vetter: can you confirm probing all connectors is a good thing
+> to do on driver module load?
 
-Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
----
- .../testing/selftests/net/forwarding/Makefile |   1 +
- .../net/forwarding/bridge_locked_port.sh      | 174 ++++++++++++++++++
- tools/testing/selftests/net/forwarding/lib.sh |  16 ++
- 3 files changed, 191 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+I don't think it's a big deal to change, but at least my
+understanding, albeit this was back in the early KMS days, was that
+probing was driven by things outside of the driver.  I.e., there is no
+need to probe displays if nothing is going to use them.  If you want
+to use the displays, you'd call probe first before trying to use them
+so you know what is available.
 
-diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
-index 72ee644d47bf..8fa97ae9af9e 100644
---- a/tools/testing/selftests/net/forwarding/Makefile
-+++ b/tools/testing/selftests/net/forwarding/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0+ OR MIT
- 
- TEST_PROGS = bridge_igmp.sh \
-+	bridge_locked_port.sh \
- 	bridge_port_isolation.sh \
- 	bridge_sticky_fdb.sh \
- 	bridge_vlan_aware.sh \
-diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-new file mode 100755
-index 000000000000..d2805441b325
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-@@ -0,0 +1,174 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
-+NUM_NETIFS=4
-+CHECK_TC="no"
-+source lib.sh
-+
-+h1_create()
-+{
-+	simple_if_init $h1 192.0.2.1/24 2001:db8:1::1/64
-+	vrf_create "vrf-vlan-h1"
-+        ip link set dev vrf-vlan-h1 up
-+        vlan_create $h1 100 vrf-vlan-h1 192.0.3.1/24 2001:db8:3::1/64
-+}
-+
-+h1_destroy()
-+{
-+	vlan_destroy $h1 100
-+	simple_if_fini $h1 192.0.2.1/24 2001:db8:1::1/64
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 192.0.2.2/24 2001:db8:1::2/64
-+	vrf_create "vrf-vlan-h2"
-+	ip link set dev vrf-vlan-h2 up
-+	vlan_create $h2 100 vrf-vlan-h2 192.0.3.2/24 2001:db8:3::2/64
-+}
-+
-+h2_destroy()
-+{
-+	vlan_destroy $h2 100
-+	simple_if_fini $h2 192.0.2.2/24 2001:db8:1::2/64
-+}
-+
-+switch_create()
-+{
-+	ip link add dev br0 type bridge vlan_filtering 1
-+
-+	ip link set dev $swp1 master br0
-+	ip link set dev $swp2 master br0
-+
-+	ip link set dev br0 up
-+	ip link set dev $swp1 up
-+	ip link set dev $swp2 up
-+
-+	bridge link set dev $swp1 learning off
-+}
-+
-+switch_destroy()
-+{
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+
-+	ip link del dev br0
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	swp1=${NETIFS[p2]}
-+
-+	swp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+
-+	switch_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	switch_destroy
-+
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+}
-+
-+ifaddr()
-+{
-+	ip -br link show dev "$1" | awk '{ print($3); }'
-+}
-+
-+locked_port_ipv4()
-+{
-+	RET=0
-+
-+	check_locked_port_support || return 0
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "Ping didn't work when it should have"
-+
-+	bridge link set dev $swp1 locked on
-+
-+	ping_do $h1 192.0.2.2
-+	check_fail $? "Ping worked when it should not have"
-+
-+	bridge fdb add `ifaddr $h1` dev $swp1 master static
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "Ping didn't work when it should have"
-+
-+	bridge link set dev $swp1 locked off
-+	bridge fdb del `ifaddr $h1` dev $swp1 master static
-+	log_test "Locked port ipv4"
-+}
-+
-+locked_port_vlan()
-+{
-+	RET=0
-+
-+	check_locked_port_support || return 0
-+	check_vlan_filtering_support || return 0
-+
-+	bridge vlan add vid 100 dev $swp1 tagged
-+	bridge vlan add vid 100 dev $swp2 tagged
-+
-+	ping_do $h1.100 192.0.3.2
-+	check_err $? "Ping didn't work when it should have"
-+
-+	bridge link set dev $swp1 locked on
-+	ping_do $h1.100 192.0.3.2
-+	check_fail $? "Ping worked when it should not have"
-+
-+	bridge fdb add `ifaddr $h1` dev $swp1 vlan 100 master static
-+
-+	ping_do $h1.100 192.0.3.2
-+	check_err $? "Ping didn't work when it should have"
-+
-+	bridge link set dev $swp1 locked off
-+	bridge vlan del vid 100 dev $swp1
-+	bridge vlan del vid 100 dev $swp2
-+	bridge fdb del `ifaddr $h1` dev $swp1 vlan 100 master static
-+	log_test "Locked port vlan"
-+}
-+
-+locked_port_ipv6()
-+{
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	ping6_do $h1 2001:db8:1::2
-+	check_err $? "Ping6 didn't work when it should have"
-+
-+	bridge link set dev $swp1 locked on
-+
-+	ping6_do $h1 2001:db8:1::2
-+	check_fail $? "Ping worked when it should not have"
-+
-+	bridge fdb add `ifaddr $h1` dev $swp1 master static
-+	ping6_do $h1 2001:db8:1::2
-+	check_err $? "Ping didn't work when it should have"
-+
-+	bridge link set dev $swp1 locked off
-+	bridge fdb del `ifaddr $h1` dev $swp1 master static
-+	log_test "Locked port ipv6"
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 7da783d6f453..9ded90f17ead 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -125,6 +125,22 @@ check_ethtool_lanes_support()
- 	fi
- }
- 
-+check_locked_port_support()
-+{
-+        if ! bridge -d link show | grep -q " locked"; then
-+                echo "SKIP: iproute2 too old; Locked port feature not supported."
-+                return $ksft_skip
-+        fi
-+}
-+
-+check_vlan_filtering_support()
-+{
-+	if ! bridge -d vlan show | grep -q "state forwarding"; then
-+		echo "SKIP: vlan filtering not supported."
-+		return $ksft_skip
-+	fi
-+}
-+
- if [[ "$(id -u)" -ne 0 ]]; then
- 	echo "SKIP: need root privileges"
- 	exit $ksft_skip
--- 
-2.30.2
+Alex
 
+>
+> > >> I guess the initial modeline is inherited from the video-bios, but
+> > >> what about the physical size? Note that you cannot just change the
+> > >> physical size later either, that gets used to determine the hidpi
+> > >> scaling factor in the bootsplash, and changing that after the initial
+> > >> bootsplash dislay will also look ugly
+> > >>
+> > >> b) Why you need the edid for the panel-orientation property at all,
+> > >> typically the edid prom is part of the panel and the panel does not
+> > >> know that it is mounted e.g. upside down at all, that is a property
+> > >> of the system as a whole not of the panel as a standalone unit so
+> > >> in my experience getting panel-orient info is something which comes
+> > >> from the firmware /video-bios not from edid ?
+> > >
+> > > This is an internal DRM thing. The orientation quirks logic uses the
+> > > mode size advertised by the EDID.
+> >
+> > The DMI based quirking does, yes. But e.g. the quirk code directly
+> > reading this from the Intel VBT does not rely on the mode.
+> >
+> > But if you are planning on using a DMI based quirk for the steamdeck
+> > then yes that needs the mode.
+> >
+> > Thee mode check is there for 2 reasons:
+> >
+> > 1. To avoid also applying the quirk to external displays, but
+> > I think that that is also solved in most drivers by only checking for
+> > a quirk at all on the eDP connector
+> >
+> > 2. Some laptop models ship with different panels in different badges
+> > some of these are portrait (so need a panel-orient) setting and others
+> > are landscape.
+>
+> That makes sense. So yeah the EDID mode based matching logic needs to
+> stay to accomodate for these cases.
+>
+> > > I agree that at least in the Steam
+> > > Deck case it may not make a lot of sense to use any info from the
+> > > EDID, but that's needed for the current status quo.
+> >
+> > We could extend the DMI quirk mechanism to allow quirks which don't
+> > do the mode check, for use on devices where we can guarantee neither
+> > 1 nor 2 happens, then amdgpu could call the quirk code early simply
+> > passing 0x0 as resolution.
+>
+> Yeah. But per the above amdgpu should maybe probe connectors on module
+> load. If/when amdgpu is fixed to do this, then we don't need to disable
+> the mode matching logic in panel-orientation quirks anymore.
