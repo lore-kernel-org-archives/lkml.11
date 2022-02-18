@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C977FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238244AbiBRRPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:15:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43220 "EHLO
+        id S238252AbiBRRPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:15:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238202AbiBRRPO (ORCPT
+        with ESMTP id S238201AbiBRRPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 12:15:14 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29024C78A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710054C42A
         for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:14:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=cLs5KwDBeXI4YaK2Xyaf/MdILlBcETZiDFFGNwB8et0=; b=R2suKUv3sInwTfAwzo2rVF7yik
-        DNxMroDw+EnwocNFNGwDgOczTatcKEZP7mmcxl0ctMb0MJ70uK5QmSgBvBq7G77lQBba16b4+jHKG
-        F3BZdAEzHjNACldznDRdhdQkaIuIplc3rmfRGShYl1/1360aTHtBRtTPQtxh3AyICAtsSHq2nsnt3
-        HWpDZKbocUdE0/zfcBureATCTbFYJJQjJj7wKnrpI5jB1FbTOx5Q4Wv7S/LRNQNuBlf8CcxwPG+43
-        50GrWBn66tpx7/NSJNeRYJSe+xttUOUtpb1CYmzeGtgFQuN8Hs3s8k3PwdrjVHzMG3FXHhDDSyb3q
-        pvPkMZ+g==;
+        bh=HL7fchLHOUn1lU/xbyxdwpFAdDeltvtUJ5iRLeT0/Ss=; b=j9JMA7UR84F9NElKXsIRaoJNlv
+        RDnz8RQeKKmoB1RShzmROUzfSfhZFRS6mO6isaMc0Q2asFDL1QFTABGRJ2dKtZgS0KCiFy41VFXGM
+        csLbjaSn+MLlwpjfDR+kTe0EfU/1okHcZD81uE3x4wQDpk/mBD9TFW5QXq43hPZZL2HDbJENOZO+x
+        Z+l512gUh/iBBuCqZbvEBs6xjmhQjQYmRbj3J1gQci/SvmWH3KUv3cYX7bsh8qX2KCY0AjlcNY00p
+        0H3qgpgZEreB/cweCSknUshemwUEnqweOMZN3N+zj7T3hl8mCwJtONgZjHany6dtWWML2GfGoeLHG
+        LGhi+79Q==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nL6qB-00AsBn-2U; Fri, 18 Feb 2022 17:14:43 +0000
+        id 1nL6qA-00AsBX-D1; Fri, 18 Feb 2022 17:14:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D7054302A1E;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C2816300EEF;
         Fri, 18 Feb 2022 18:14:39 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 69BE72B09FA68; Fri, 18 Feb 2022 18:14:39 +0100 (CET)
-Message-ID: <20220218171409.990016403@infradead.org>
+        id 3094D206D2385; Fri, 18 Feb 2022 18:14:39 +0100 (CET)
+Message-ID: <20220218171409.219284012@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 18 Feb 2022 17:49:26 +0100
+Date:   Fri, 18 Feb 2022 17:49:13 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -46,7 +46,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         ndesaulniers@google.com, keescook@chromium.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com
-Subject: [PATCH 24/29] x86/text-patching: Make text_gen_insn() IBT aware
+Subject: [PATCH 11/29] x86/ibt,crypto: Add ENDBR for the jump-table entries
 References: <20220218164902.008644515@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,35 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure we don't generate direct JMP/CALL instructions to an ENDBR
-instruction (which might be poison).
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/include/asm/text-patching.h |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/crypto/crc32c-pcl-intel-asm_64.S |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/x86/include/asm/text-patching.h
-+++ b/arch/x86/include/asm/text-patching.h
-@@ -5,6 +5,7 @@
- #include <linux/types.h>
- #include <linux/stddef.h>
- #include <asm/ptrace.h>
-+#include <asm/ibt.h>
+--- a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
++++ b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
+@@ -195,6 +195,7 @@ SYM_FUNC_START(crc_pcl)
+ .altmacro
+ LABEL crc_ %i
+ .noaltmacro
++	ENDBR
+ 	crc32q   -i*8(block_0), crc_init
+ 	crc32q   -i*8(block_1), crc1
+ 	crc32q   -i*8(block_2), crc2
+@@ -203,6 +204,7 @@ LABEL crc_ %i
  
- struct paravirt_patch_site;
- #ifdef CONFIG_PARAVIRT
-@@ -101,6 +102,11 @@ void *text_gen_insn(u8 opcode, const voi
- 	static union text_poke_insn insn; /* per instance */
- 	int size = text_opcode_size(opcode);
+ .altmacro
+ LABEL crc_ %i
++	ENDBR
+ .noaltmacro
+ 	crc32q   -i*8(block_0), crc_init
+ 	crc32q   -i*8(block_1), crc1
+@@ -237,6 +239,7 @@ LABEL crc_ %i
+ 	################################################################
  
-+#ifdef CONFIG_X86_IBT
-+	if (is_endbr(dest))
-+		dest += 4;
-+#endif
-+
- 	insn.opcode = opcode;
- 
- 	if (size > 1) {
+ LABEL crc_ 0
++	ENDBR
+ 	mov     tmp, len
+ 	cmp     $128*24, tmp
+ 	jae     full_block
 
 
