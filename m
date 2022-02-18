@@ -2,130 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4180EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFFBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238618AbiBRRcO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:32:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41752 "EHLO
+        id S238637AbiBRRdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:33:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236830AbiBRRcJ (ORCPT
+        with ESMTP id S238631AbiBRRdi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:32:09 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7453C5C87A
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:31:51 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id j8-20020a056830014800b005ad00ef6d5dso2467167otp.0
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:31:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=nebMkmur+LCxBFBdQ4EXcYnlngkdDHM11vfdWfCglsQ=;
-        b=qOv30FszpMXxedCYqw7Wlk3PgAiJh6cKSD3NQ7aJFQyHEdlXr13TAv3jxhrAWun9sO
-         YKvcPV8jrrIF/QJEAYVnBOnyEdF1iCqU+rHIVvS4VFGPyAf3gDFsqsBU6+DZxonWYQcE
-         6N0xBLSI5cD6TXX/dSD2bA3g7id7/dnJaTN4QkJGJZvTvL3WJ0beg+N8Tg+UcJPZ1b4E
-         Vdy054NfIH5ql9x01R86PI3sjjb5Gf0u9uqo6E2keDLxW5SdFy+qrIB8Aft1WCxC+Zyr
-         2BCpWFj3rQdi7WtkjEIGgKatb4JD5Jx8axCFz7I8+zyr0564OtCpQ+wIIvX9uy7nUq93
-         0nTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=nebMkmur+LCxBFBdQ4EXcYnlngkdDHM11vfdWfCglsQ=;
-        b=Y9WfoMwHEdTEkRyE7JWwKY7nZ+tH/yPk3DMaEJ5VpdM1sBua9x+ns8cmtuHNskCY7/
-         4GIFKGIDrD0Saujd1VWh5Ugg0JBu1WCuUy8aNFR33PNlitJ2dBeQBX/Qcc4JZ5FrguTr
-         oL+jCcs5SZKPO+6jEDRy7uegg5yyIobbYL6uAM+CyhRZ/EiotHEIDZ7zBCm9imq98bF+
-         Wk4mjQrc2OMgko/LAJCzSpt3dlGRZQ1GpGUdbrAgvZ0Lds/p+4lAnbAp17zv0wGNS8Lr
-         VnI9TijJO1kEwfxj0wzCyY8Ddy5hqs5HAEbhXDJ16bmfOll9xSK1ZrznVWDScxuBEdFI
-         NYgA==
-X-Gm-Message-State: AOAM531NrN++A5tl1VNYA3aednty1/X9PbB9FsuK3XOpaS3oXlhxZ5oX
-        9IUX4y2PNb+wf3bMZ1LwrWHMWTrJoa+KApQtAapYoA==
-X-Google-Smtp-Source: ABdhPJwHuglG3+2+j2XRYDFvOYqQuaKHBnuw+/dO3Bw5z0CIdEYLx0tl4quY7Mc68D/E3dWCqQGvzAzwhhXj3decPis=
-X-Received: by 2002:a9d:27e8:0:b0:599:976a:c873 with SMTP id
- c95-20020a9d27e8000000b00599976ac873mr2843690otb.305.1645205510543; Fri, 18
- Feb 2022 09:31:50 -0800 (PST)
+        Fri, 18 Feb 2022 12:33:38 -0500
+Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B28D2B5B8A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:33:20 -0800 (PST)
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id L789nW7orFTgbL789niAWH; Fri, 18 Feb 2022 18:33:19 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 18 Feb 2022 18:33:19 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Purism Kernel Team <kernel@puri.sm>,
+        Sebastian Reichel <sre@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-pm@vger.kernel.org
+Subject: [PATCH] power: supply: max17042_battery: Use devm_delayed_work_autocancel()
+Date:   Fri, 18 Feb 2022 18:33:15 +0100
+Message-Id: <670ef51366f96035f49852cd17325af10ffa07ea.1645205558.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220217142133.72205-1-cgzones@googlemail.com> <20220217142133.72205-4-cgzones@googlemail.com>
-In-Reply-To: <20220217142133.72205-4-cgzones@googlemail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 18 Feb 2022 09:31:39 -0800
-Message-ID: <CAKwvOdkNZ3W9amcQKHOEfQLbdWC=4VDtrBdbOVHtWruipQnyKg@mail.gmail.com>
-Subject: Re: [PATCH 5/5] selinux: drop unnecessary NULL check
-To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
-Cc:     selinux@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Austin Kim <austin.kim@lge.com>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 6:22 AM Christian G=C3=B6ttsche
-<cgzones@googlemail.com> wrote:
->
-> Commit e3489f8974e1 ("selinux: kill selinux_sb_get_mnt_opts()")
-> introduced a NULL check on the context after a successful call to
-> security_sid_to_context().  This is on the one hand redundant after
-> checking for success and on the other hand insufficient on an actual
-> NULL pointer, since the context is passed to seq_escape() leading to a
-> call of strlen() on it.
->
-> Reported by Clang analyzer:
->
->     In file included from security/selinux/hooks.c:28:
->     In file included from ./include/linux/tracehook.h:50:
->     In file included from ./include/linux/memcontrol.h:13:
->     In file included from ./include/linux/cgroup.h:18:
->     ./include/linux/seq_file.h:136:25: warning: Null pointer passed as 1s=
-t argument to string length function [unix.cstring.NullArg]
->             seq_escape_mem(m, src, strlen(src), flags, esc);
->                                    ^~~~~~~~~~~
+Use devm_delayed_work_autocancel() instead of hand-writing it.
+This saves a few lines of code.
 
-I'm guessing there was more to this trace for this instance of this warning=
-?
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/power/supply/max17042_battery.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
->
-> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
-> ---
->  security/selinux/hooks.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> index 1e69f88eb326..ac802b99d36c 100644
-> --- a/security/selinux/hooks.c
-> +++ b/security/selinux/hooks.c
-> @@ -1020,7 +1020,7 @@ static int show_sid(struct seq_file *m, u32 sid)
->         rc =3D security_sid_to_context(&selinux_state, sid,
->                                              &context, &len);
->         if (!rc) {
+diff --git a/drivers/power/supply/max17042_battery.c b/drivers/power/supply/max17042_battery.c
+index 87128cf0d577..ab031bbfbe78 100644
+--- a/drivers/power/supply/max17042_battery.c
++++ b/drivers/power/supply/max17042_battery.c
+@@ -9,6 +9,7 @@
+ // This driver is based on max17040_battery.c
+ 
+ #include <linux/acpi.h>
++#include <linux/devm-helpers.h>
+ #include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
+@@ -1030,13 +1031,6 @@ static const struct power_supply_desc max17042_no_current_sense_psy_desc = {
+ 	.num_properties	= ARRAY_SIZE(max17042_battery_props) - 2,
+ };
+ 
+-static void max17042_stop_work(void *data)
+-{
+-	struct max17042_chip *chip = data;
+-
+-	cancel_work_sync(&chip->work);
+-}
+-
+ static int max17042_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+@@ -1142,8 +1136,8 @@ static int max17042_probe(struct i2c_client *client,
+ 
+ 	regmap_read(chip->regmap, MAX17042_STATUS, &val);
+ 	if (val & STATUS_POR_BIT) {
+-		INIT_WORK(&chip->work, max17042_init_worker);
+-		ret = devm_add_action(&client->dev, max17042_stop_work, chip);
++		ret = devm_work_autocancel(&client->dev, &chip->work,
++					   max17042_init_worker);
+ 		if (ret)
+ 			return ret;
+ 		schedule_work(&chip->work);
+-- 
+2.32.0
 
-^ perhaps changing this condition to:
-
-if (!rc && context) {
-
-It might be nice to retain the null ptr check should the semantics of
-security_sid_to_context ever change.
-
-> -               bool has_comma =3D context && strchr(context, ',');
-> +               bool has_comma =3D strchr(context, ',');
->
->                 seq_putc(m, '=3D');
->                 if (has_comma)
-> --
-> 2.35.1
->
-
-
---=20
-Thanks,
-~Nick Desaulniers
