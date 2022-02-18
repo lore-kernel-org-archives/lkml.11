@@ -2,237 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7280C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B820AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235162AbiBRM0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:26:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35070 "EHLO
+        id S235177AbiBRM1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:27:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233158AbiBRM0A (ORCPT
+        with ESMTP id S233158AbiBRM1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:26:00 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94871FEBC8;
-        Fri, 18 Feb 2022 04:25:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E8589CE322D;
-        Fri, 18 Feb 2022 12:25:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 856EEC340E9;
-        Fri, 18 Feb 2022 12:25:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645187140;
-        bh=hCw/QzW+metfpvnUJhYJxq5jHUUp3oRC3CxANUSCPqo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=K57EV/CZWYVTFjJ2okmja32aJOfPyGqkh6ffprwvNM4WgG5QjEZQSa6x0dav0nxF5
-         lTGS2pi+FZl3RTTN9/c00xm+/GxPjXDCukfaYxrgJ82e++kacq3nX6SbxLX3GCJIpd
-         PUa/wuwpgTN3z3SioeFOM5gFkF8jBkrrXdGp+0yHj8VV5KSobYKYDdvhRKw2PYnMUn
-         cSIsTe4FdWnfbnm9LvVf20DLsalP5Bv7THSPsO/8tHls01QhDwYYnlQMcnjscNi03Q
-         h/P3WhzLj7IqkvtDHMGXShd4yzLCX1VaIRw+D0C/pU6cdAHOh4m3Q7PX7f8/zG+dLj
-         0KVyK+u2OwDbw==
-Date:   Fri, 18 Feb 2022 12:32:28 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     lars@metafoo.de, andy.shevchenko@gmail.com, sst@poczta.fm,
-        robh+dt@kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/6] iio: potentiometer: Add support for Maxim DS3502
-Message-ID: <20220218123228.6ad125cc@jic23-huawei>
-In-Reply-To: <20220218042038.15176-6-jagathjog1996@gmail.com>
-References: <20220218042038.15176-1-jagathjog1996@gmail.com>
-        <20220218042038.15176-6-jagathjog1996@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 18 Feb 2022 07:27:15 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B330220F6F;
+        Fri, 18 Feb 2022 04:26:58 -0800 (PST)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IAHhvi009210;
+        Fri, 18 Feb 2022 12:26:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=ZQoLSGRcl3CdiH6Oq/9zlDrwoM66f1ImRi8z4uxe/Iw=;
+ b=xMag2PJD979vPrQo9suuIW4zzQFLbXf+dzzQFRFhzG1oL+1Lb0l9lP6K5hhe75vvZkoB
+ 9n1IkjiwYV3DrUUeCsNILVsuULGXsO0z1mVFrxzY6FsJaciRixqX8D2ErDIRy02HNQvW
+ uFqT7LldFTul1NPSP/tIOGiXnezIH85arRlg7LsG3h3ZC6Ez9d37oAxB//a+5s2dg7+e
+ b2cZXlsrZepIThABxKUBwW9KbdW/8d4hk5NlQN7udezXVC1kXDNqukVn+7PqRNYwDHEv
+ vzRu37pXNxFAl+8+YrIrDJZi+C0p1RYLXoWiZie9cR8Wbnx4qFHlu+S0/tja8CWJy+jM jw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e8n3e1byb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Feb 2022 12:26:43 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21ICGdK4163948;
+        Fri, 18 Feb 2022 12:26:40 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
+        by aserp3030.oracle.com with ESMTP id 3e9brdqq15-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Feb 2022 12:26:40 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EP/xS7ZOEXywaDnFrZY7kBWy+GjqElx3MS/IwQoWooY46slUY8m4KzMB17GhZ0172jtO0fX3u+Ox8+0A5dYLQjThRh1agTHLzwxFR7qzhLhgKRvl8FF+CTaSjjVDB8qdDmiasKLIfCEMZUvxBlB1Z6fPgdlRJnf5cCA1bo2XiHi0zE5lNlnzgDzr0fGNj4Be/8HOA+rtmiJLZ58w9enVKZAN1Q5Kx2fYA+lmlsfb2DUvNgaEROk7q/dAzFRATa+i5HB9kMabXNx0Evfqty9VBLuLATGfkAhOvW/HhxT71odxIYV7k60wB1SfP2/CciKw8HWBMlEqcpOZHSobE/NYSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZQoLSGRcl3CdiH6Oq/9zlDrwoM66f1ImRi8z4uxe/Iw=;
+ b=Nzjrx07sPTrXDUtE5vEbUnWt9unV9Use1/5GHs+q1tiwjcLMg0RDjNri3nSTaNYhhA9HGPW86WRDHV9RDspzT1YAlBgUhKGu/t2x9z/Kerz2lKYsMeD+E27aM/RltdSDuPLatPU3Yt47zFYpQd9glLtuPZMecLLMY4kn+fRw3mJwks1O9ZYWtYWGdEcLbMZCAdpsfbGp0duE7xwgFaCxSkOFkdaQqNqVSxW3kStFN8eak7zWAdI1edzZ8BSZMvBAVZXfwSuG2izwYLFO3CZixpQLllZDHI+VfhAJDWGEq5G1Vg7liSymWxuKqWSmCkIDsG+z9/mnueXi3i5e+lajfA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZQoLSGRcl3CdiH6Oq/9zlDrwoM66f1ImRi8z4uxe/Iw=;
+ b=zYgUtWMnfomsrsF/2e2kKp45t7IhKfOSgg2NQm73aLBo6eCJiE4V6Al1XSihHKBbsMT7J+3I1Brc2rCUocNp5vQhtaDxsWpHm2ee3SkKSY7VK33i+8Fgn2qyNqEjqyJ74Z/vkda72pnJnrXG42cpBMyJs22bsWh4XUkQKOcYrMU=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BY5PR10MB3955.namprd10.prod.outlook.com
+ (2603:10b6:a03:1f7::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Fri, 18 Feb
+ 2022 12:26:38 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5%3]) with mapi id 15.20.4975.019; Fri, 18 Feb 2022
+ 12:26:38 +0000
+Date:   Fri, 18 Feb 2022 15:26:20 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Andy Walls <awalls@md.metrocast.net>,
+        kernel-janitors@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/9] media: cx18: use GFP_KERNEL
+Message-ID: <20220218122620.GI2407@kadam>
+References: <20220210204223.104181-1-Julia.Lawall@inria.fr>
+ <20220210204223.104181-3-Julia.Lawall@inria.fr>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210204223.104181-3-Julia.Lawall@inria.fr>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0030.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4d::21)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c8370562-d51c-43bc-c8be-08d9f2d9e8fe
+X-MS-TrafficTypeDiagnostic: BY5PR10MB3955:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR10MB3955887FE64A35457C890B638E379@BY5PR10MB3955.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2150;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8GsYq/pccMCsEC+sksSxtfQPgP/WLoNKUrvzEZjRBG+ZjQWYD08KcJZ6jSm8mVl9KJvPsi9rvNy9/qFm5pfwioxPG1CHo9AEMT1sMc62ZlR0jGxNWbNSkxR4FedQ2EPLKqXQUohDsH+MugyHmx3YsMq7/cVuqn1aVUAKx3POCDrrT0VtCXO4+Pl9cnmzyy8tEzIVfvOpvsxBbPlKmSST/CD4dFOKLK6ij9ttSzg1OpL+Bd6gUCwkRYTEGfp2VCgwWo8flUiJkBIhstSOwkgoxssBqrol4ehWLH4abYORFyL9sR3JJfCx9NSNx7Z4gQTmfrYkKTvN79FiwM4JcWKSnw5GrjpYLJG9QpQZjoL5zxuvg6i4yswhBIj8cxNTgmKustoVsNFdxgy5GsURAcVQrYMNVzrGQ/yr91Ns61FtwO9CJrexBAJTiLq1gxt4pZe536Cfjl+6ryCLZB8fNPC8MpsC9MBY9i+FVDKirtEZ4J7gXUdbzL/3YlvM1dFddNOvUqlKk1uhymzbZHGxjGqBJIRBxi8mkLjxgyp3dKwJwYJFifbY1W9S4ngfgS2zi6AaEbAiuRgeokt5aXvmEXv0Ky6Hsc/0+HRgLDCSLWg8hJE1e0Rfgdqh/IWQvirGuFXB70ifW0nlZODfEZ+8fj5+sDHO2pDV5fvO3s7kg/+BFLebz6ZCB7C0d3N699qi6dY6q6widPy46C6ZzodZbl3iBw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(1076003)(44832011)(33716001)(4744005)(52116002)(6506007)(9686003)(6512007)(86362001)(4326008)(5660300002)(6666004)(66946007)(66476007)(8676002)(186003)(26005)(66556008)(2906002)(6486002)(8936002)(38350700002)(38100700002)(83380400001)(316002)(33656002)(54906003)(6916009)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RP/1v4TBzgibNtxP891pAJTujPUFo5Qarcm1LQI8bn099g6iwDQ0mbnMRf50?=
+ =?us-ascii?Q?FR10hnX9FFU4YV6b98zj/hlPHisXpaDdGwgaPhCuV8g7CxORXbcEmE1WkbF4?=
+ =?us-ascii?Q?9MLRsiylg7kNC8bEydUHE7ihaZLBLp2SNbapsDTIAswjlmL9kKmor06fFgaa?=
+ =?us-ascii?Q?BQrLbA602i3KbFvU9aC8NA43ZYRHhX8Pq3ZZDBd2OCL0VIilTpz9CwoTmf2w?=
+ =?us-ascii?Q?8rEiQtU3mUW8YEKfakzvDrH9axvczxTe/+5HXaaV34eVrOWI/4Ll/+ZYP3fm?=
+ =?us-ascii?Q?QP/FiA+CUk1IpMbRnr5WsGhhHI7RDIh1sHUAEyY6Ky1zGbGk3HlnQOlTUE4V?=
+ =?us-ascii?Q?HI9d9GxFqe/4Gwf+HH+UTTnSrOZimlE57gibcCDYy/pJPJsRUk9TN99FOqLS?=
+ =?us-ascii?Q?0Wrdfji62Bca4lUNg0zO7p4M6AymKLholfzwZ/rsaL9NKY4fH49qyLCrMosM?=
+ =?us-ascii?Q?soj1zkV8PCzNNC6NNfYJvs01ziXegNLtEQjeX0E1B+vwOLcAgfOYaY/mstKj?=
+ =?us-ascii?Q?nh6gLyQh0rqc6dMVMDyMcnqWTiZ9MLEAVmAC7rRAUGWjzf59chkOtx4Zk4pO?=
+ =?us-ascii?Q?rpZtciaE8Fo8GBTdP506iE0L3iSOg+IF212K/wLJ14dkqJfqeYeiwbxb8oZ3?=
+ =?us-ascii?Q?T+AhftFuhvvvc901a79T7hPuOmDrSmGroLd7jvkPF8Fc4oUQtw2ICZE6jPmR?=
+ =?us-ascii?Q?h3hhKSWTu62i5CGcTDxukbUUKvsOfQmbwrg45x6rb3ft2zXWB3y0v7IruxWK?=
+ =?us-ascii?Q?4xJapapT2owlrbRsLKqE7mixI3Ii9/KwmKw/LkfwcDvRxay28NK51hqhRoyO?=
+ =?us-ascii?Q?imePZK3aIGWRZOHbUvuSUErkz5jkKWw4klLGa5V1vqxkJ/nPgT7O4xo0UgLj?=
+ =?us-ascii?Q?lLLQlh0fB2SUIfBSTxNh1mCstbRT/DI1CgmWDM46IfYGkpZCoKvJSfkzXBt7?=
+ =?us-ascii?Q?QIolz4SvN3ty44t/lNO6lZrVx2YQW/iVpBHIVFPaqYUBMYcutEIeDj+VMU8U?=
+ =?us-ascii?Q?3tlm6g7XHmknrhCHC6EqJIqIcCSe28DVWrsIA3ISg873/paHh4CfbtuYNF9j?=
+ =?us-ascii?Q?XugTaXHA7euAGy+w3RwE52zdeUZQ/8nNDo8QuXrQSabZFRPi9uV2BoUNhMif?=
+ =?us-ascii?Q?sg5Ozla57wrgMlHRxVnR6vTEURGmhqe0q+nawSQIaOKr5cfi/2g27rDLeeXI?=
+ =?us-ascii?Q?PfBe1p34/F9vloHTpCt+cZiZcp1ISNPp9TbfUbKdHPMScqr9vvPgTcUxwX2a?=
+ =?us-ascii?Q?InuPaZVOronvkdWreFwf83OsA7dpKCXJC+PVQhmfJqHZUICNO3L4vQTRUKKk?=
+ =?us-ascii?Q?4ButHO/4KcfEQ3J99WueRhqNW5NgEM7nA32Embtwcys+WUq6H2Ac2FeT3kg/?=
+ =?us-ascii?Q?vW1tZ/nK6OdYshxWAKbcXxs1Gsgxr5hP/7JbRIoAQxlW7gR5sp0WR73E+VqB?=
+ =?us-ascii?Q?iQadG9SIpQb0G7F93cmMYbcBFnlCi5AgpIBzvLnTEXtmFZFo6Aa1DVBVESfq?=
+ =?us-ascii?Q?jTVHWnph4maDqxNB82Nj7bvUx8oMjSSunEoe87MvBQ8sM892tBVRTtj2UUxl?=
+ =?us-ascii?Q?/qCX+QnkREl0b2uUjmWLvWMfLHflBAWTshMTEkRPQ2n4TyDvsqH8x0PUldrT?=
+ =?us-ascii?Q?uvIRsOKacxYcnwGaIkxPD/U8vCpUY0PHfzQQtE6HPk3ilgQ9evF4Chn9Vedj?=
+ =?us-ascii?Q?Dt4C2w=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8370562-d51c-43bc-c8be-08d9f2d9e8fe
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 12:26:38.2347
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: If4Gs/g+cdaEdoVkuGJWAGObyL+dsnx+WrTf0mRJF1PgZrOaZ315/xoEVDN2aI+G8LpcgX7bjhJQkZIfeAdFz7LyFmkychi8+QB4Qvg0lG0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB3955
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10261 signatures=677564
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 phishscore=0
+ suspectscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202180080
+X-Proofpoint-ORIG-GUID: zxVd4KgjDj3ry9JwRbxPi4ozAmLRnJua
+X-Proofpoint-GUID: zxVd4KgjDj3ry9JwRbxPi4ozAmLRnJua
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Feb 2022 09:50:37 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
-
-> The DS3502 is a 7-bit, nonvolatile digital potentiometer featuring
-> an output voltage range of up to 15.5V.
-> DS3502 support is implemented into existing DS1803 driver.
-> Datasheet: https://datasheets.maximintegrated.com/en/ds/DS3502.pdf
+On Thu, Feb 10, 2022 at 09:42:16PM +0100, Julia Lawall wrote:
+> Pci_driver probe functions aren't called with locks held
+> and thus don't need GFP_ATOMIC. Use GFP_KERNEL instead.
 > 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-
-Hi Jagath,
-
-One suggestion from my review of v2.  Instead of putting the enum
-for type in the per chip type cfg structure, use a function pointer
-and break out the device specific bits of the read_raw() into
-separate functions accessed via that function pointer.
-
-Thanks,
-
-Jonathan
-
+> Problem found with Coccinelle.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+> 
 > ---
->  drivers/iio/potentiometer/Kconfig  |  6 ++--
->  drivers/iio/potentiometer/ds1803.c | 46 ++++++++++++++++++++++++------
->  2 files changed, 41 insertions(+), 11 deletions(-)
+>  drivers/media/pci/cx18/cx18-driver.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-> index 832df8da2bc6..79c524640196 100644
-> --- a/drivers/iio/potentiometer/Kconfig
-> +++ b/drivers/iio/potentiometer/Kconfig
-> @@ -27,11 +27,11 @@ config AD5272
->  	  module will be called ad5272.
->  
->  config DS1803
-> -	tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
-> +	tristate "Maxim Integrated DS1803 and similar Digital Potentiometer driver"
->  	depends on I2C
->  	help
-> -	  Say yes here to build support for the Maxim Integrated DS1803
-> -	  digital potentiometer chip.
-> +	  Say yes here to build support for the Maxim Integrated Devices DS1803 and
-> +	  DS3502 digital potentiometer chip.
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ds1803.
-> diff --git a/drivers/iio/potentiometer/ds1803.c b/drivers/iio/potentiometer/ds1803.c
-> index ca28ad147402..ca903e9c2816 100644
-> --- a/drivers/iio/potentiometer/ds1803.c
-> +++ b/drivers/iio/potentiometer/ds1803.c
-> @@ -1,12 +1,15 @@
->  // SPDX-License-Identifier: GPL-2.0-only
->  /*
-> - * Maxim Integrated DS1803 digital potentiometer driver
-> + * Maxim Integrated DS1803 and similar digital potentiometer driver
->   * Copyright (c) 2016 Slawomir Stepien
-> + * Copyright (c) 2022 Jagath Jog J
->   *
->   * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
-> + * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS3502.pdf
->   *
->   * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
->   * ds1803	2	256		10, 50, 100		0101xxx
-> + * ds3502	1	128		10			01010xx
->   */
->  
->  #include <linux/err.h>
-> @@ -18,11 +21,13 @@
->  
->  #define DS1803_WIPER_0         0xA9
->  #define DS1803_WIPER_1         0xAA
-> +#define DS3502_WR_IVR          0x00
->  
->  enum ds1803_type {
->  	DS1803_010,
->  	DS1803_050,
->  	DS1803_100,
-> +	DS3502,
->  };
->  
->  struct ds1803_cfg {
-> @@ -36,6 +41,7 @@ struct ds1803_cfg {
->  struct ds1803_data {
->  	struct i2c_client *client;
->  	const struct ds1803_cfg *cfg;
-> +	enum ds1803_type chip_type;
+> diff --git a/drivers/media/pci/cx18/cx18-driver.c b/drivers/media/pci/cx18/cx18-driver.c
+> index 59497ba6bf1f..1be9672ae9d4 100644
+> --- a/drivers/media/pci/cx18/cx18-driver.c
+> +++ b/drivers/media/pci/cx18/cx18-driver.c
+> @@ -899,7 +899,7 @@ static int cx18_probe(struct pci_dev *pci_dev,
+>  		return -ENOMEM;
 
-Hmm. I'm not that keen on this backwards reference (effectively).
-Consider using a read() function pointer in here instead.
+Unrelated to your patch but every error path in this function ought to
+call atomic_dec(&cx18_instance);
 
->  };
->  
->  #define DS1803_CHANNEL(ch, addr) {					\
-> @@ -54,6 +60,10 @@ static const struct iio_chan_spec ds1803_channels[] = {
->  	DS1803_CHANNEL(1, DS1803_WIPER_1),
->  };
->  
-> +static const struct iio_chan_spec ds3502_channels[] = {
-> +	DS1803_CHANNEL(0, DS3502_WR_IVR),
-> +};
-> +
->  static const struct ds1803_cfg ds1803_cfg[] = {
->  	[DS1803_010] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  10,
->  			 .channels = ds1803_channels,
-> @@ -64,6 +74,9 @@ static const struct ds1803_cfg ds1803_cfg[] = {
->  	[DS1803_100] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms = 100,
->  			 .channels = ds1803_channels,
->  			 .num_channels = ARRAY_SIZE(ds1803_channels) },
-> +	[DS3502] =     { .wipers = 1, .avail = { 0, 1, 127 }, .kohms =  10,
-> +			 .channels = ds3502_channels,
-> +			 .num_channels = ARRAY_SIZE(ds3502_channels) },
->  };
->  
->  static int ds1803_read_raw(struct iio_dev *indio_dev,
-> @@ -77,13 +90,26 @@ static int ds1803_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> -		ret = i2c_master_recv(data->client, result,
-> -				      indio_dev->num_channels);
-> -		if (ret < 0)
-> -			return ret;
-> -
-> -		*val = result[pot];
-> -		return IIO_VAL_INT;
-> +		switch (data->chip_type) {
-> +		case DS1803_010:
-> +		case DS1803_050:
-> +		case DS1803_100:
-
-This block can become
-			ret = data->read(indio_dev, chan, val);
-or something along those lines and you can remove the switch statement
-as it's a simple lookup.
-
-> +			ret = i2c_master_recv(data->client, result,
-> +					      indio_dev->num_channels);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = result[pot];
-> +			return IIO_VAL_INT;
-> +		case DS3502:
-> +			ret = i2c_smbus_read_byte_data(data->client,
-> +						       chan->address);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = ret;
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
->  
->  	case IIO_CHAN_INFO_SCALE:
->  		*val = 1000 * data->cfg->kohms;
-> @@ -156,6 +182,7 @@ static int ds1803_probe(struct i2c_client *client, const struct i2c_device_id *i
->  	if (!data->cfg)
->  		data->cfg = &ds1803_cfg[id->driver_data];
->  
-> +	data->chip_type = id->driver_data;
->  	indio_dev->info = &ds1803_info;
->  	indio_dev->channels = data->cfg->channels;
->  	indio_dev->num_channels = data->cfg->num_channels;
-> @@ -168,6 +195,7 @@ static const struct of_device_id ds1803_dt_ids[] = {
->  	{ .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
->  	{ .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
->  	{ .compatible = "maxim,ds1803-100", .data = &ds1803_cfg[DS1803_100] },
-> +	{ .compatible = "maxim,ds3502", .data = &ds1803_cfg[DS3502] },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, ds1803_dt_ids);
-> @@ -176,6 +204,7 @@ static const struct i2c_device_id ds1803_id[] = {
->  	{ "ds1803-010", DS1803_010 },
->  	{ "ds1803-050", DS1803_050 },
->  	{ "ds1803-100", DS1803_100 },
-> +	{ "ds3502", DS3502 },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(i2c, ds1803_id);
-> @@ -192,5 +221,6 @@ static struct i2c_driver ds1803_driver = {
->  module_i2c_driver(ds1803_driver);
->  
->  MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
-> +MODULE_AUTHOR("Jagath Jog J <jagathjog1996@gmail.com>");
->  MODULE_DESCRIPTION("DS1803 digital potentiometer");
->  MODULE_LICENSE("GPL v2");
+regards,
+dan carpenter
 
