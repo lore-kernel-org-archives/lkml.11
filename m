@@ -2,88 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3023AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA52C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236628AbiBRPBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 10:01:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51378 "EHLO
+        id S236646AbiBRPCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 10:02:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236753AbiBRPAY (ORCPT
+        with ESMTP id S235966AbiBRPCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 10:00:24 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564FDE3886;
-        Fri, 18 Feb 2022 06:59:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645196348; x=1676732348;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=oPl3hd9ujCsquNcCi9as7ggff9q2Exrkg2DKeD9fC0s=;
-  b=neLiYy2Ylbctla9wT6H0P9dAW8toyICV3SCUy2SZnzNJsm/MqzaSvQun
-   NIJK6FgeI1Bz4iD325oQytbVGqbV4cnP+MKHyWCvNE4WU/FhDHWEoXddz
-   MK8x/ea3srLm6XJEqC3L74RbqjyXlJPBPEXh8+cOBDcBG/Bmzwc39wBJv
-   FIX4aFMk8PnTcircSNNdXD1M+nlWpVVwIvqWmnLw3bsyqOKYfDbFUeC4x
-   o90sjBqg4ipkcJxs6D3d0ded13/H8i80y9WhHi0UImmT786zYN2cfE9iw
-   Cw7/nVOCJvYRgcT88+WxGePo1SAQdti2erfi4+7fFsZLmbDJif8aaRATO
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="162788983"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2022 07:59:05 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 18 Feb 2022 07:59:05 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 18 Feb 2022 07:59:01 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <p.yadav@ti.com>, <michael@walle.cc>, <broonie@kernel.org>
-CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <nicolas.ferre@microchip.com>,
-        <zhengxunli@mxic.com.tw>, <jaimeliao@mxic.com.tw>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH 0/4] spi-mem: Allow specifying the byte order in DTR mode
-Date:   Fri, 18 Feb 2022 16:58:56 +0200
-Message-ID: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 18 Feb 2022 10:02:13 -0500
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD27D18C2F5
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:01:54 -0800 (PST)
+Received: by mail-qv1-xf2d.google.com with SMTP id fh9so15260183qvb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:01:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qQOuPloDj1FDvrT18I7yp3YumR1JEJ9ojjlV/rcHoPw=;
+        b=RoS0gyblqR/tsGfQ7lArc8WXX3kNZMvPTfZET3nsnl+Rr8n361EoMRIfa1S+T8g8oc
+         NmAlJEUUOZ5XHaM5YrjNSr5VsFbJTayGS5be9bu+8ZuTGnnxnkPavDlHAMpATFRtc11K
+         fiKwKgEOqF+51vJxLCJG62RY8EQ2KpYmP7mAntkiGoPgLp6RQG9Lz93DB55QoyA5iy4K
+         jD0aW9yE0JKDtqB8vCY2rRZ02xMADfrBesx1EB/DYj+qq78BrufP6AkXF4xsqmELAlVq
+         1FXz/tX3UyRzucAxKzmHRYKSZZAyzlWABCgkRcxEK/GH/tUhjJjJ7pXdKtahQ8czEgJj
+         SqpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qQOuPloDj1FDvrT18I7yp3YumR1JEJ9ojjlV/rcHoPw=;
+        b=bN9Ibrr9pu9pI1GYti8+qPEE1cGOT/nW+An0HT87O0wr1N/KZ4rUTC/x/gGwlqWQRm
+         kWDArUe4M9C3vkz9XvF4Yw6r1dgyHBVnz8qeNMeyDc0b0mTKWHFVuC5KLVfZwmpMw4AN
+         E2tALQ/pEgEeagkPGQW4/wpm2BaYwicNLYFXk+eZ9zAn9qbn7wO0diz1DZXIFZwyHhBW
+         FEOqbCLkB58Nhinl8DbvMwVuh3iJxg7/4LnoR3TBhnd/8F8qCJCMaXZtIuaeFv/84EGM
+         aiKfv0jc6ioTMbwPaRiAFpcSN1iTFVxyzQRiY7oGVvoZYy6E/R30sSucUWjaqLQi+Pb9
+         ACog==
+X-Gm-Message-State: AOAM532flVbZurO/rflQvG3Drw+6e97C8syoK6NtO6J3AW5n8dn+haWu
+        FZtIM1ehfKY5Cv/zLGNx+I2kbHI9uW/dVg==
+X-Google-Smtp-Source: ABdhPJxj9yyCZvW5c4Ugzq0ieNoelSzlHZ5AUX07DsgnGoll6g+QZTPyJ2Fq/jgnUxsgsAq5KC011A==
+X-Received: by 2002:ac8:7fd5:0:b0:2cf:93ff:5638 with SMTP id b21-20020ac87fd5000000b002cf93ff5638mr7063274qtk.435.1645196514006;
+        Fri, 18 Feb 2022 07:01:54 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id s4sm23008395qko.113.2022.02.18.07.01.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 07:01:52 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nL4lb-006cts-Vr; Fri, 18 Feb 2022 11:01:51 -0400
+Date:   Fri, 18 Feb 2022 11:01:51 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     David Gow <davidgow@google.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-um@lists.infradead.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, linux-rdma@vger.kernel.org,
+        x86@kernel.org, felix.kuehling@amd.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] kunit: tool: Disable broken options for --alltests
+Message-ID: <20220218150151.GD1037534@ziepe.ca>
+References: <20220218075727.2737623-1-davidgow@google.com>
+ <20220218075727.2737623-5-davidgow@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218075727.2737623-5-davidgow@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are NOR flashes (Macronix) that swap the bytes on a 16-bit boundary
-when configured in DTR mode. The byte order of 16-bit words is swapped
-when read or written in Double Transfer Rate (DTR) mode compared to
-Single Transfer Rate (STR) mode. If one writes D0 D1 D2 D3 bytes using
-1-1-1 mode, and uses 8D-8D-8D SPI mode for reading, it will read back
-D1 D0 D3 D2. Swapping the bytes may introduce some endianness problems.
-It can affect the boot sequence if the entire boot sequence is not handled
-in either 8D-8D-8D mode or 1-1-1 mode. Fortunately there are controllers
-that can swap back the bytes at runtime, fixing the endiannesses. Provide
-a way for the upper layers to specify the byte order in DTR mode.
+On Fri, Feb 18, 2022 at 03:57:27PM +0800, David Gow wrote:
+> There are a number of Kconfig options which break compilation under UML with
+> allyesconfig.  As kunit_tool's --alltests option is based on allyesconfig and
+> UML, we need to update the list of broken options to make --alltests build
+> again.
+> 
+> Note that, while this does build again, it still segfaults on startup,
+> so more work remains to be done.
+> 
+> They are:
+> - CONFIG_VFIO_PCI: Needs ioport_map/ioport_unmap.
+> - CONFIG_INFINIBAND_RDMAVT: Needs cpuinfo_x86 and __copy_user_nocache
 
-Tested with atmel-quadspi and mx66lm1g45g.
+It doesn't make sense to patch qib and then turn this option off, it
+is required to build qib.
 
-Tudor Ambarus (4):
-  spi: spi-mem: Allow specifying the byte order in DTR mode
-  mtd: spi-nor: core: Allow specifying the byte order in DTR mode
-  mtd: spi-nor: sfdp: Get the 8D-8D-8D byte order from BFPT
-  mtd: spi-nor: core: Introduce SPI_NOR_DTR_BSWAP16 no_sfdp_flag
-
- drivers/mtd/spi-nor/core.c  | 36 +++++++++++++++++++++++++++++-------
- drivers/mtd/spi-nor/core.h  |  6 +++++-
- drivers/mtd/spi-nor/sfdp.c  |  3 +++
- drivers/mtd/spi-nor/sfdp.h  |  1 +
- include/linux/mtd/spi-nor.h | 17 +++++++++++++++++
- include/linux/spi/spi-mem.h |  3 +++
- 6 files changed, 58 insertions(+), 8 deletions(-)
-
--- 
-2.25.1
-
+Jason
