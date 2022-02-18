@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D14C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50FF3C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237237AbiBRSRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 13:17:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53566 "EHLO
+        id S238510AbiBRSRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 13:17:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239075AbiBRSRE (ORCPT
+        with ESMTP id S239066AbiBRSRC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 13:17:04 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF2612A85;
-        Fri, 18 Feb 2022 10:16:47 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id d27so15932267wrc.6;
-        Fri, 18 Feb 2022 10:16:47 -0800 (PST)
+        Fri, 18 Feb 2022 13:17:02 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDC4E46;
+        Fri, 18 Feb 2022 10:16:45 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id x5so11077970wrg.13;
+        Fri, 18 Feb 2022 10:16:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wo5NvcwHFFtStXDoiS+t0v8LcaxRXSvFfszKiww2PfQ=;
-        b=GfWkT0p66agfM59hEUjlXkfOQ9Whc+0BMoWQBJHgcPyWAzecHSbFDTEedwgPtZulln
-         n3tQyPqiTJL7jZBrR5e+QjRyP5v1txZ9H7ZYeI7C9k0CFzrZK0vyR7Ke5AAMUydQBmBm
-         d+v3PuHISGVVzWfI8dd4KAbZu660+WQ+M9MocgWUchazcf2C+a47A9XFNKVn7FDNnRra
-         buctkZkCDHeBIsva7fyXRD+vSeOzBkbB12yaDfzFeHDICuWD48LTXUuvQwipNTQNyjkR
-         8MUR5DNXXeFDLFZvaO5CmFhs8mK+DO0x5cX+T96M4Q94qW3CpgTzGZ8x6/Gax1wL35JU
-         JyCg==
+        bh=4uog9y8e2uGEDe7ul64TEQZKDjtI1qlVaFMwkdOVDqo=;
+        b=BcRgIjpCjdKsmD1hifDCxyFo7H8M+pelERGXldq/KXqEHk6EkcL0zFiu1G2aBagFdw
+         Ycm5NTRmPepuel/RcIcGgKLiU63n4TeV+wyDXRQ74M4FfpY9yra8PkRUVI48MD9yG7X6
+         LEsAaWL5q0YdJq3jali0uTa0KMBZOxnI4jQ0urGcoSyxmBiv1rsDzRtPxxxklKpUyb5r
+         6z2rnXkWYoN+Lq2hCHKajRhJNEvXBF0jL8vhdiFU+GuxEe07eDxUGJB/iZCbZtRv9xPD
+         VxRiKf2hf3QCBy1JgYQi+77olsvbVEeYpN76PCxKMuPZsDn552gH3dfHts44S+phhn0Z
+         0BtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wo5NvcwHFFtStXDoiS+t0v8LcaxRXSvFfszKiww2PfQ=;
-        b=r7N5j9x4BA/WwUCWucNOvPqeuGfGXpmKr3mhbOy2lxyCtV6wmFhQYSJEfiMnDFbape
-         R84iSMU9xtSwlo5wiWq74Qqfn5uFKw5RHkHwZRSvRK2/RBR/OlLB0KEoWAVvav3dq1uh
-         Yw8Tlu9Qho21CGuNOljmWG5e81SjB2OLBl4n1+YhOsLBDt1+d4znmi/xUeDy0OE6bdwJ
-         U1K89G4LXOXfopjJGW7bQZKZYOdspwJrYexWzTHY1PWDmUdIilfJGkclDu5/odL0a1Fc
-         WJKWfS2EaJf39N6TmMS0BG9tQwGBMPygus8K9vPZzgTxBRapVn8TWKpixSoEuxsrMLvN
-         xITw==
-X-Gm-Message-State: AOAM533fDSPeXWjAGz/kiigsgM90uwzORZakYPVBkYd/QfQbD332PO1z
-        OIaN48PTIc1m5qrUdk/399SRgErOyL7Efg==
-X-Google-Smtp-Source: ABdhPJyvtVQCat2Gzd6TH1LkB71Yv/+tQBWH7sJ6gcZtJJ/rLkoMyyvOTZPTpogGcmYApiITz7VlXA==
-X-Received: by 2002:a05:6000:c5:b0:1e3:2a0d:fe6 with SMTP id q5-20020a05600000c500b001e32a0d0fe6mr7009551wrx.421.1645208205886;
-        Fri, 18 Feb 2022 10:16:45 -0800 (PST)
+        bh=4uog9y8e2uGEDe7ul64TEQZKDjtI1qlVaFMwkdOVDqo=;
+        b=qEWj5OruEeRwzOxjV3rWIeBfi7mCh6EC0UTc4Tk5UnLy4i8VaE7bHpbHTBWOqplZCj
+         jnbk8Qgc2GiZ7ApgbKbDIrK33h6o+jg+16/2cLmLq9fXlUJn31v1PQwP5qp7PGcp8lWO
+         HuQF6EJ/46I0OgdTwaMFTpTVFJvungvzmgLSy1LQsaX7UOrkNzr2fN6W2C1djleJQ5zf
+         8D1vBZseh3RlHCoIpEcAk8v18RcmeHsZ7ND6wM8oBchtq+F/8r7JC2ROGUqcT2fhM5U6
+         0YsK44OZ3UhsUqLEgPl4kK7kUsi3gmNO494QDvdxMCOM+qqU2aOz5+hYg5wKmHOW1Spg
+         ZRcg==
+X-Gm-Message-State: AOAM531b1vjpGhxhEjY9B/txsPrETQAZ1VYQbdLiM47q5Ako3jApNnI6
+        8Gktm/b8NYa7z0dv+FXn91M=
+X-Google-Smtp-Source: ABdhPJwoGAqCnTbH6+8pCXavYOeKOon6tieBJ1Aoa51OqKaHWYhCdLMszt/uM6Vdcl8otOgbgFTMUQ==
+X-Received: by 2002:a05:6000:144c:b0:1e8:50e5:fec1 with SMTP id v12-20020a056000144c00b001e850e5fec1mr7113263wrx.648.1645208203688;
+        Fri, 18 Feb 2022 10:16:43 -0800 (PST)
 Received: from fuji.fritz.box (ip-89-161-76-237.tel.tkb.net.pl. [89.161.76.237])
-        by smtp.gmail.com with ESMTPSA id b2sm20978639wri.35.2022.02.18.10.16.45
+        by smtp.gmail.com with ESMTPSA id b2sm20978639wri.35.2022.02.18.10.16.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 10:16:45 -0800 (PST)
+        Fri, 18 Feb 2022 10:16:43 -0800 (PST)
 From:   =?UTF-8?q?Tomasz=20Warnie=C5=82=C5=82o?= 
         <tomasz.warniello@gmail.com>
 To:     corbet@lwn.net
 Cc:     =?UTF-8?q?Tomasz=20Warnie=C5=82=C5=82o?= 
         <tomasz.warniello@gmail.com>, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 06/11] scripts: kernel-doc: Translate the "Output selection" subsection of OPTIONS
-Date:   Fri, 18 Feb 2022 19:16:23 +0100
-Message-Id: <20220218181628.1411551-7-tomasz.warniello@gmail.com>
+Subject: [PATCH v4 04/11] scripts: kernel-doc: Translate the "Output format selection" subsection of OPTIONS
+Date:   Fri, 18 Feb 2022 19:16:21 +0100
+Message-Id: <20220218181628.1411551-5-tomasz.warniello@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218181628.1411551-1-tomasz.warniello@gmail.com>
 References: <20220218181628.1411551-1-tomasz.warniello@gmail.com>
@@ -67,80 +67,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Aim: unified POD, user more satisfied, script better structured
+Another step in the direction of a uniform POD documentation, which will
+make users happier.
 
-The plurals in -function and -nosymbol are corrected to singulars.
-That's how the script works now. I think this describes the syntax better.
-The plurar suggests multiple FILE arguments might be possible. So this
-seems more coherent.
+Options land at the end of the script, not to clutter the file top.
 
-Other notes:
-- paragraphing correction
-- article correction
+The default output format is corrected to rst. That's what it is now.
+
+A POD delimiting comment is added to the script head, which improves
+the script logical structure.
 
 Signed-off-by: Tomasz Warniełło <tomasz.warniello@gmail.com>
 ---
- scripts/kernel-doc | 42 +++++++++++++++++++++++++++++-------------
- 1 file changed, 29 insertions(+), 13 deletions(-)
+ scripts/kernel-doc | 31 ++++++++++++++++++++++++++-----
+ 1 file changed, 26 insertions(+), 5 deletions(-)
 
 diff --git a/scripts/kernel-doc b/scripts/kernel-doc
-index b926faa16b00..e49cdb307a35 100755
+index e4203f13fa93..18eca172c4b5 100755
 --- a/scripts/kernel-doc
 +++ b/scripts/kernel-doc
-@@ -83,19 +83,6 @@ sub usage {
+@@ -52,6 +52,8 @@ See Documentation/doc-guide/kernel-doc.rst for the documentation comment syntax.
+ 
+ =cut
+ 
++# more perldoc at the end of the file
++
+ # 18/01/2001 - 	Cleanups
+ # 		Functions prototyped as foo(void) same as foo()
+ # 		Stop eval'ing where we don't need to.
+@@ -81,11 +83,6 @@ sub usage {
      my $message = <<"EOF";
  Usage: $0 [OPTION ...] FILE ...
  
--Output selection (mutually exclusive):
--  -export		Only output documentation for symbols that have been
--			exported using EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL()
--                        in any input FILE or -export-file FILE.
--  -internal		Only output documentation for symbols that have NOT been
--			exported using EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL()
--                        in any input FILE or -export-file FILE.
--  -function NAME	Only output documentation for the given function(s)
--			or DOC: section title(s). All other functions and DOC:
--			sections are ignored. May be specified multiple times.
--  -nosymbol NAME	Exclude the specified symbols from the output
--		        documentation. May be specified multiple times.
+-Output format selection (mutually exclusive):
+-  -man			Output troff manual page format. This is the default.
+-  -rst			Output reStructuredText format.
+-  -none			Do not output documentation, only warnings.
 -
- Output selection modifiers:
-   -no-doc-sections	Do not output DOC: sections.
-   -enable-lineno        Enable output of #define LINENO lines. Only works with
-@@ -2591,4 +2578,33 @@ found on PATH.
+ Output format selection modifier (affects only ReST output):
  
- =back
- 
-+=head2 Output selection (mutually exclusive):
+   -sphinx-version	Use the ReST C domain dialect compatible with an
+@@ -2563,3 +2560,27 @@ if ($Werror && $warnings) {
+ } else {
+     exit($output_mode eq "none" ? 0 : $errors)
+ }
++
++__END__
++
++=head1 OPTIONS
++
++=head2 Output format selection (mutually exclusive):
 +
 +=over 8
 +
-+=item -export
++=item -man
 +
-+Only output documentation for the symbols that have been exported using
-+EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL() in any input FILE or -export-file FILE.
++Output troff manual page format.
 +
-+=item -internal
++=item -rst
 +
-+Only output documentation for the symbols that have NOT been exported using
-+EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL() in any input FILE or -export-file FILE.
++Output reStructuredText format. This is the default.
 +
-+=item -function NAME
++=item -none
 +
-+Only output documentation for the given function or DOC: section title.
-+All other functions and DOC: sections are ignored.
-+
-+May be specified multiple times.
-+
-+=item -nosymbol NAME
-+
-+Exclude the specified symbol from the output documentation.
-+
-+May be specified multiple times.
++Do not output documentation, only warnings.
 +
 +=back
 +
- =cut
++=cut
 -- 
 2.30.2
 
