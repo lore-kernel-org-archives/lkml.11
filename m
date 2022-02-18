@@ -2,176 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A941BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0594C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233813AbiBRJvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:51:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50486 "EHLO
+        id S233819AbiBRJ5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:57:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233429AbiBRJvE (ORCPT
+        with ESMTP id S229993AbiBRJ5w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:51:04 -0500
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140130.outbound.protection.outlook.com [40.107.14.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9F4269ABF;
-        Fri, 18 Feb 2022 01:50:47 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e6UIyP94rbq4c3nZRUlNWJIQP6+tY8a0j30n9xYU5mCIGVtfv1WzxQTnavJJws8irHvieik3+jOLKQqOEHgoB7tOPYdjjtWXw32s6CB4yINhpsS4fzFBW0//l8EA/SyvLXB+ryrT4jTeybZhD0UevZ46OUjV+abJv2nOPthg13OUU0nDVEpR69sL5MhgKMlvJrEWmijLTaYW45/yk9ECNq3It+tEUYpJahIOvdCPHk7gHA2NSh+s1gFneMhMWUjbeot+AAGbYK7b4EsGL1huvw7L/iaqXaM6sw0wzDVP4vDUo+tKSq0IhD5ToRC0imT5+b/Op5gt4OynMPisnEDCzg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7o8mLb3UDVaR5BmFEz3LPuK2Mxac9KLVZX1QwE+i/ps=;
- b=E9OXa7hfMpXYbnuc/F0cHC+il8CwwAU3eOgEZcONdSl/JjDG98dwGyqKP4LfJJ2s80YBbji0lHFn2sbUUjXvkUPhdHTYmRvw4tb8GznfJJpalHd/Em6OlxnWJZY4oml42ntM7yakcSWl2dRcqIYego4qSf/zY7lke/FQffmivfvzNRIg/kAGusoyh8PI9cKnufQTJYcy3H41zQ6Qt7ugYwgps7Rt7UFiVCVOADyTAwvRHI6sz6UtYSayVdwaD338CCFyDJvvxoUbx8v3MAaiVXKs33z8FGnBQWhEBpVY99bdMKU8QLC229aLiyfZXr/amW1U+vYWwpOgiAdNM2o6/g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7o8mLb3UDVaR5BmFEz3LPuK2Mxac9KLVZX1QwE+i/ps=;
- b=r6Vm0RonM1QyCstzGt6YLlbQlrGLOki5OVV04B38doZ+eYuQNlnCoq3y86OshBS1dL87r6mEd089TNXtpvmK+a7QFaZKAGnVarAr7bgXrtu/VXKThPl7cseWpUXwE2WFb1CQAqxbWE11A8yIOQs9W/lDSybfSIKIi0pzIXIBbfA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nokia.com;
-Received: from AM7PR07MB6916.eurprd07.prod.outlook.com (2603:10a6:20b:1b4::19)
- by VI1PR0701MB7054.eurprd07.prod.outlook.com (2603:10a6:800:195::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.7; Fri, 18 Feb
- 2022 09:50:45 +0000
-Received: from AM7PR07MB6916.eurprd07.prod.outlook.com
- ([fe80::594:fa1f:92c5:e546]) by AM7PR07MB6916.eurprd07.prod.outlook.com
- ([fe80::594:fa1f:92c5:e546%5]) with mapi id 15.20.5017.012; Fri, 18 Feb 2022
- 09:50:45 +0000
-Message-ID: <bb9d1f78-7f4d-a865-922e-ebf7362f6b64@nokia.com>
-Date:   Fri, 18 Feb 2022 10:50:43 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v4 2/2] hwmon: Add driver for Texas Instruments TMP464 and
- TMP468
-Content-Language: fr
-To:     Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org
-Cc:     Jean Delvare <jdelvare@suse.com>, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Adamski <krzysztof.adamski@nokia.com>
-References: <20220218065856.1899086-1-linux@roeck-us.net>
- <20220218065856.1899086-2-linux@roeck-us.net>
-From:   Agathe Porte <agathe.porte@nokia.com>
-In-Reply-To: <20220218065856.1899086-2-linux@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PR1P264CA0016.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:102:19e::21) To AM7PR07MB6916.eurprd07.prod.outlook.com
- (2603:10a6:20b:1b4::19)
+        Fri, 18 Feb 2022 04:57:52 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FBF2ABD0B;
+        Fri, 18 Feb 2022 01:57:35 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 31DFF1F383;
+        Fri, 18 Feb 2022 09:57:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645178254; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=meHXPrizPyCIEzFx7pcREbA6tkmm7SE3B2g/xsTKkOA=;
+        b=bfr91BoF3RgLC/XuIYXAKcQZvo/5W4/c9b+O/QthcAZIti5QY4vMFWoI6q/NvPJrrW5P68
+        aa5N1ZGskApJH6hGZiKneH1RJhoF7pGy7ABe95hi65yPZjfZgGwcaT7cgcSEcGUt2pnvSk
+        JPtX4uhfTRywZT/dJBZqzrZBqHrwcYM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645178254;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=meHXPrizPyCIEzFx7pcREbA6tkmm7SE3B2g/xsTKkOA=;
+        b=2okevh2hNmK62/Hpzu0J2NWSA1jn6WRze/gKWdqn7IsOYoMXH+CAb/3zTlMW6MotAX6gzL
+        bye2d8F61V9rS3Aw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BEB7B13C53;
+        Fri, 18 Feb 2022 09:57:33 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 9V+DLY1tD2LAeAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Fri, 18 Feb 2022 09:57:33 +0000
+Message-ID: <4c6e1d15-3bb3-5a69-972f-592cc33ac0cd@suse.de>
+Date:   Fri, 18 Feb 2022 10:57:33 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 435598b3-e794-461a-75d6-08d9f2c42217
-X-MS-TrafficTypeDiagnostic: VI1PR0701MB7054:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0701MB705411BB20472B55768764139B379@VI1PR0701MB7054.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zdwbbBVO3XI651uBz3Gjq185hFG5Q3LmDy3O5Nkq4wYpQ1ujdN8FN+UDBERydRgj3xHK8TJKm+g+sZDPT5CxYKcCd6jufnPNvrmRXrmaqNEPORS0LMPAoeDX1k8gczTQWctD9TD841I+CA1jC11we5Rem834YY0Za03O7HDp8E7DezF/SAadBD4opQMbko12M4k/HVYpGata9DjumkubwIVub4sTK8teLmcoRaUM8YGkmXPuZFgeSUxq4AyPHYg13+ykQAWKOYiqJX4FCt0Sp4G4mpkQDiIGo9VSCWm22PUqCavpmZ4JUA372H5U8m0Bb14SY/13TD6gLDOOU28a9DsaQXJkWNkl/yzjEj+YzNRsIbJJaHqkBz8jAO3qlVrfzrgzwjRB/ssBSnmyR/YmM3KeN//JbvNhJCpbelpiYqQ0g+uJT+/0UqR2uVzlkzwly+hQMjn2p3kQIEuyyWiiX5+eF+YV8TuPcvoAGaydyCg7dUcziTe+ZKRJLi5tU2xeAHkCqDTVovaI3faf2H5QcLBdgvckg5MW7jSqrqiPj5ttCmMgFjm5xgB5PAU1ownsQJRsa+IuisHZA+E9bNg0ADKKHGuP/DKnsWgtKb8WOFq7/XwGka8F9nE4FWpUkBMvGHg+UxHo5fM06HJk5JCf8BEFfYH8LuTLbGLyNG2upMliq+ZFirfchXdRv02CdxH70At+E6qxWa8DrtlZdVIp2vUzBIsXig7kbr+kuaCYFXtEHkCyeI02TNQ9dBoPdtmj
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR07MB6916.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(107886003)(4000180100002)(82960400001)(36756003)(66556008)(8936002)(6486002)(186003)(2616005)(44832011)(26005)(508600001)(54906003)(86362001)(8676002)(4326008)(5660300002)(6512007)(2906002)(316002)(6506007)(66476007)(66946007)(31696002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S090SCtXbzNnU0xIZFlPeFBBUmZSQzhRYXdJWjVnQjBRcTdvaVVnSkc4TXNk?=
- =?utf-8?B?c0NUR2h5TUZhUGlqcXJDem9sTmViS0luMW41WTkyS2ViTE15SHRQNE5Cempo?=
- =?utf-8?B?ejNpdjEwKzFubUpWSHNvTjlwZkc3eWxmRUVkb2dVbm5zRGd0Z3gzbXl6OUlE?=
- =?utf-8?B?YUc3Yk5VS3hJU2F6c21vSlNvM0JOcXptdFVFMU9zeVNwSVpmTWJDTDM3NG42?=
- =?utf-8?B?d09VUHBRaVJTYnZXK2ZQekRSbVhJTTJFUExXQmxYbzZTUzN6c1h6amdZV3M5?=
- =?utf-8?B?ODUySk5BcHl2ajU4cGxEYnF5aHQ4MDJHZWdCaEFjbHo1dWtGYzJNeUJEaFdR?=
- =?utf-8?B?aTFPWnZZaHVoZ0daT0MzOVhYQVQ0ZW5rMk84ZEtDajV4Z1o0OWlscWs5cE9Q?=
- =?utf-8?B?bWRqamxqMmtEZVc4NDNKNTR4RjAram5wMkY0YUFWWHFKSDB0MC9pYkhuQk1t?=
- =?utf-8?B?ODltREk4elRKMlFwU281Wk4vQzZYd3pCMWJHWWJmMTV2RnRtTVp4WFhsVWRH?=
- =?utf-8?B?UlpVMGpJYVA1Zk5GdXJQRTlXL0hxbThDdzRyRjFQN09JQ2pydURIYklvY3BG?=
- =?utf-8?B?U1Z4aU9JSDhjdVBCMk1jVmFTQUlnZkY5SzRVUENzRUM4ZVlaTGxWWjU2cDZo?=
- =?utf-8?B?ZUcrcW9BU2g3ZEh0VC9tbnljN1lWNnNaUUg0bTVONmdKdjNTdG5vdVRlb3kv?=
- =?utf-8?B?a3EyaFFYRlhoM01Cd2gvS0xNTFMrcFg2aG5sQVZ6RityM0NOYmdOVVZDMFJu?=
- =?utf-8?B?T0pDeldTUTl3Y1Bxd1BtSHpqdktBaHhPY1dURHg1UE9MM1M0aDloVzBneEZS?=
- =?utf-8?B?MUlmSlBnV0Z6cVgyVFdBOE1KZWg4OG8wb1hmaWJHbG40Y3haa1pDc0t4em1w?=
- =?utf-8?B?V1VFelJ5SlVkL2xjN3BOd2xxcmlBS2pwaTlRQ1dCZmdKUTBNWVdmQnJNalBo?=
- =?utf-8?B?MTQ3ZG5EZklDSjE5bExCcWkyMlJHK3VHaFBUL1VRbWlGVGdOU3dEM1h1Q0gx?=
- =?utf-8?B?UzFZb0RYWkJWQ0pVcVR6eldVZDB1Ny9yaXVYVVI2cjNGWEt6QzVMTDRwbmc2?=
- =?utf-8?B?OUw4OU9Cc09UYTE1ZGx6SGtjVklNYUo0dzRoNExmZHAvUHJKS2lPMVhPYVFQ?=
- =?utf-8?B?cDNZdlJjeGoyZVFVUmxoOHhTUWZWa2RUQVhBd0Nmd0wzOXFMakhZbGVZZmJ0?=
- =?utf-8?B?VVhiNE5xMjhNRXFPTU5WSVVPbWJIcjJJajBDYndnaFE1Y0Z2WHlHZXMwNlRV?=
- =?utf-8?B?ZU92MnJBN21nYTlQd0FCa2ZRS0FnRVFPQzFYOHZBZnVOazRCYzR2YkJ6TzNp?=
- =?utf-8?B?SlRjRmtmWU9tYVpTYnNTR0REbkV3TGlIbDVtaWxlcXhpdnpvUWtXVXNFUFFa?=
- =?utf-8?B?SU5jTVJBUWJUWFJhUmlITmRTSmkwSytxUzAranJ2TkVYTDBPWjI2TXluUy9T?=
- =?utf-8?B?VEIwckEvOHFjcmRndXdBT1ovY0N2NWs5SG9LcE9xUFhZTzQ1aUpUZUxobzg3?=
- =?utf-8?B?bWZZTkRXTXI4ZTBkVnNQYWZKSmdqMEp0WkpaRThMYTN0MTdBSGthNy9qMGRo?=
- =?utf-8?B?Z1VjKzRsbm5xREI1QWt4cFRZMkpCZU9OUHcrNjlYbjJHUFIrWHRuUjBIemMv?=
- =?utf-8?B?L21OODBJd1NMeFc3NDVKeDlnY2JlbC82eFQyb1ZyYlFVOEF2dURtaEpGdXZ6?=
- =?utf-8?B?M0NIK0Y3Q01sZUdPUFpzdFBqbXVUR21XRnViMEgzV3BLMjZ4dmFTUFdORGNj?=
- =?utf-8?B?WkNZZTZEbWJJUkU0MmJwdDkrOEZCUWxVY2pnTTd1c3hQSXUvQUUvTVM1Tm5J?=
- =?utf-8?B?SzB1UlpiaS9ma09ZdGEvQmd1Mm1mWFY5c2RpSUw0WjJyeG9XamlwUC9BUENh?=
- =?utf-8?B?S0laNEh6ak5OZkdLOVBqUkhzVS9jNnJaUXFjVHRxYmZwamtrRlE3bFFPLzBB?=
- =?utf-8?B?c0RXaGdZK3pxblBzMS9MdzhQZzZ2MlJHdGtsc0RQWEZQK0pWL0F3Lzkybldj?=
- =?utf-8?B?TWYxdEdtWjg5cElPNDF4M3hKdmtxZytpVlVxUWxOOUNaSXowOFgvQWpSaXpi?=
- =?utf-8?B?eE9Wa0t1QkxCL0xuNzd0RXpnUk5jT0lGMS9SeTNnd2lNQTRoT0djazVpQVFv?=
- =?utf-8?B?ZWZoSHFmTW9JcC8zQWFvbWdvMzcrdHdqWGMyQ1JYUExXREJhL3NSZEYwQjVt?=
- =?utf-8?Q?GbFmUtVIgRQlT2NDhaVZMhU=3D?=
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 435598b3-e794-461a-75d6-08d9f2c42217
-X-MS-Exchange-CrossTenant-AuthSource: AM7PR07MB6916.eurprd07.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 09:50:45.0672
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FfOLPvXQeHONiMb1iiLuOfhLmuTHmPvfi8uSWZ+VfIQbcaPwrPvPEaTQGGurzdIyCF8rAgK2dUtjWqpQNXPOuA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0701MB7054
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
+Content-Language: en-US
+To:     Michal Suchanek <msuchanek@suse.de>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Cc:     David Airlie <airlied@linux.ie>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Sam Ravnborg <sam@ravnborg.org>,
+        Helge Deller <deller@gmx.de>, x86@kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+        linux-video@atrey.karlin.mff.cuni.cz,
+        Daniel Mack <daniel@zonque.org>
+References: <20220218093334.24830-1-msuchanek@suse.de>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220218093334.24830-1-msuchanek@suse.de>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------JYUW0XBHt0CzH6KJ0KeaIqyV"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guenter,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------JYUW0XBHt0CzH6KJ0KeaIqyV
+Content-Type: multipart/mixed; boundary="------------6m9UmIRdykpjFkIQiBQka1kg";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Michal Suchanek <msuchanek@suse.de>, dri-devel@lists.freedesktop.org,
+ linux-fbdev@vger.kernel.org
+Cc: David Airlie <airlied@linux.ie>, Dave Hansen
+ <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>,
+ x86@kernel.org, Javier Martinez Canillas <javierm@redhat.com>,
+ Ingo Molnar <mingo@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+ Borislav Petkov <bp@alien8.de>, Maxime Ripard <maxime@cerno.tech>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+ linux-video@atrey.karlin.mff.cuni.cz, Daniel Mack <daniel@zonque.org>
+Message-ID: <4c6e1d15-3bb3-5a69-972f-592cc33ac0cd@suse.de>
+Subject: Re: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
+References: <20220218093334.24830-1-msuchanek@suse.de>
+In-Reply-To: <20220218093334.24830-1-msuchanek@suse.de>
 
-Le 18/02/2022 à 07:58, Guenter Roeck a écrit :
-> Add support for Texas Instruments TMP464 and TMP468 temperature sensor
-> ICs.
->
-> TI's TMP464 is an I2C temperature sensor chip. This chip is similar
-> to TI's TMP421 chip, but with 16bit-wide registers (instead of
-> 8bit-wide registers). The chip has one local sensor and four remote
-> sensors. TMP468 is similar to TMP464 but has one local and eight
-> remote sensors.
->
-> Originally-from: Agathe Porte <agathe.porte@nokia.com>
-> Cc: Agathe Porte <agathe.porte@nokia.com>
-> Cc: Krzysztof Adamski <krzysztof.adamski@nokia.com>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> ---
-> v4:
-> - Fixed reading n-factor information from devicetree
->    [Use of_property_read_u8 instead of of_property_read_s32 to read the
->     property value, and write n-factor value into the upper 8 bit of the
->     n-factor register]
+--------------6m9UmIRdykpjFkIQiBQka1kg
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Changing n-factor with DT seems to work:
+SGkgTWljaGFsDQoNCkFtIDE4LjAyLjIyIHVtIDEwOjMzIHNjaHJpZWIgTWljaGFsIFN1Y2hh
+bmVrOg0KPiBTaW5jZSBzd2l0Y2ggdG8gc2ltcGxlZHJtIFZFU0EgZ3JhcGhpYyBtb2RlcyBh
+cmUgbm8gbG9uZ2VyIGF2YWlsYWJsZQ0KPiB3aXRoIGxlZ2FjeSBCSU9TLg0KPiANCj4gVGhl
+IHg4NiByZWFsbW9kZSBib290IGNvZGUgZW5hYmxlcyB0aGUgVkVTQSBncmFwaGljIG1vZGVz
+IHdoZW4gb3B0aW9uDQo+IEZCX0JPT1RfVkVTQV9TVVBQT1JUIGlzIGVuYWJsZWQuDQo+IA0K
+PiBUbyBlbmFibGUgdXNlIG9mIFZFU0EgbW9kZXMgd2l0aCBzaW1wbGVkcm0gaW4gbGVnYWN5
+IEJJT1MgYm9vdCBtb2RlIGRyb3ANCj4gZGVwZW5kZW5jeSBvZiBCT09UX1ZFU0FfU1VQUE9S
+VCBvbiBGQiwgYWxzbyBkcm9wIHRoZSBGQl8gcHJlZml4LCBhbmQNCj4gc2VsZWN0IHRoZSBv
+cHRpb24gd2hlbiBzaW1wbGVkcm0gaXMgYnVpbHQtaW4gb24geDg2Lg0KDQpUaGFua3MgZm9y
+IHNlbmRpbmcgdGhlIHBhdGNoLg0KDQpJIHRlc3RlZCBzaW1wbGVkcm0gb24gYSBWRVNBLWJh
+c2VkIHN5c3RlbXMgYW5kIGl0IHdvcmsuIERvIHlvdSBoYXZlIGEgDQpjb25jcmV0ZSBleGFt
+cGxlIG9mIGEgbW9kZSB0aGF0IGRvZXNuJ3Qgd29yayBhbnkgbG9uZ2VyPw0KDQo+IA0KPiBG
+aXhlczogMTFlOGY1ZmQyMjNiICgiZHJtOiBBZGQgc2ltcGxlZHJtIGRyaXZlciIpDQo+IFNp
+Z25lZC1vZmYtYnk6IE1pY2hhbCBTdWNoYW5layA8bXN1Y2hhbmVrQHN1c2UuZGU+DQo+IC0t
+LQ0KPiAgIGFyY2gveDg2L2Jvb3QvdmlkZW8tdmVzYS5jICAgfCA0ICsrLS0NCj4gICBkcml2
+ZXJzL2dwdS9kcm0vdGlueS9LY29uZmlnIHwgMSArDQo+ICAgZHJpdmVycy92aWRlby9mYmRl
+di9LY29uZmlnICB8IDkgKysrKy0tLS0tDQo+ICAgMyBmaWxlcyBjaGFuZ2VkLCA3IGluc2Vy
+dGlvbnMoKyksIDcgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC94ODYv
+Ym9vdC92aWRlby12ZXNhLmMgYi9hcmNoL3g4Ni9ib290L3ZpZGVvLXZlc2EuYw0KPiBpbmRl
+eCA3ZTE4NTk3N2E5ODQuLmMyYzZkMzVlM2E0MyAxMDA2NDQNCj4gLS0tIGEvYXJjaC94ODYv
+Ym9vdC92aWRlby12ZXNhLmMNCj4gKysrIGIvYXJjaC94ODYvYm9vdC92aWRlby12ZXNhLmMN
+Cj4gQEAgLTgzLDcgKzgzLDcgQEAgc3RhdGljIGludCB2ZXNhX3Byb2JlKHZvaWQpDQo+ICAg
+CQkJICAgKHZtaW5mby5tZW1vcnlfbGF5b3V0ID09IDQgfHwNCj4gICAJCQkgICAgdm1pbmZv
+Lm1lbW9yeV9sYXlvdXQgPT0gNikgJiYNCj4gICAJCQkgICB2bWluZm8ubWVtb3J5X3BsYW5l
+cyA9PSAxKSB7DQo+IC0jaWZkZWYgQ09ORklHX0ZCX0JPT1RfVkVTQV9TVVBQT1JUDQo+ICsj
+aWZkZWYgQ09ORklHX0JPT1RfVkVTQV9TVVBQT1JUDQo+ICAgCQkJLyogR3JhcGhpY3MgbW9k
+ZSwgY29sb3IsIGxpbmVhciBmcmFtZSBidWZmZXINCj4gICAJCQkgICBzdXBwb3J0ZWQuICBP
+bmx5IHJlZ2lzdGVyIHRoZSBtb2RlIGlmDQo+ICAgCQkJICAgaWYgZnJhbWVidWZmZXIgaXMg
+Y29uZmlndXJlZCwgaG93ZXZlciwNCj4gQEAgLTEyMSw3ICsxMjEsNyBAQCBzdGF0aWMgaW50
+IHZlc2Ffc2V0X21vZGUoc3RydWN0IG1vZGVfaW5mbyAqbW9kZSkNCj4gICAJaWYgKCh2bWlu
+Zm8ubW9kZV9hdHRyICYgMHgxNSkgPT0gMHgwNSkgew0KPiAgIAkJLyogSXQncyBhIHN1cHBv
+cnRlZCB0ZXh0IG1vZGUgKi8NCj4gICAJCWlzX2dyYXBoaWMgPSAwOw0KPiAtI2lmZGVmIENP
+TkZJR19GQl9CT09UX1ZFU0FfU1VQUE9SVA0KPiArI2lmZGVmIENPTkZJR19CT09UX1ZFU0Ff
+U1VQUE9SVA0KPiAgIAl9IGVsc2UgaWYgKCh2bWluZm8ubW9kZV9hdHRyICYgMHg5OSkgPT0g
+MHg5OSkgew0KPiAgIAkJLyogSXQncyBhIGdyYXBoaWNzIG1vZGUgd2l0aCBsaW5lYXIgZnJh
+bWUgYnVmZmVyICovDQo+ICAgCQlpc19ncmFwaGljID0gMTsNCj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvZ3B1L2RybS90aW55L0tjb25maWcgYi9kcml2ZXJzL2dwdS9kcm0vdGlueS9LY29u
+ZmlnDQo+IGluZGV4IDcxMmUwMDA0ZTk2ZS4uMWJjMzBjNjRlZDE1IDEwMDY0NA0KPiAtLS0g
+YS9kcml2ZXJzL2dwdS9kcm0vdGlueS9LY29uZmlnDQo+ICsrKyBiL2RyaXZlcnMvZ3B1L2Ry
+bS90aW55L0tjb25maWcNCj4gQEAgLTU0LDYgKzU0LDcgQEAgY29uZmlnIERSTV9HTTEyVTMy
+MA0KPiAgIGNvbmZpZyBEUk1fU0lNUExFRFJNDQo+ICAgCXRyaXN0YXRlICJTaW1wbGUgZnJh
+bWVidWZmZXIgZHJpdmVyIg0KPiAgIAlkZXBlbmRzIG9uIERSTSAmJiBNTVUNCj4gKwlzZWxl
+Y3QgQk9PVF9WRVNBX1NVUFBPUlQgaWYgWDg2ICYmIERSTV9TSU1QTEVEUk0gPSB5DQoNCldl
+IHNob3VsZG4ndCBzZWxlY3QgdGhpcyBvcHRpb24gaW4gZHJpdmVycyBJTUhPLiBTaW1wbGUt
+ZnJhbWVidWZmZXIgDQpkZXZpY2VzIHdpdGggVkVTQSBhcmUgZW5hYmxlZCB3aXRoIFsxXSBh
+bmQgdGhhdCBzaG91bGQgYWxzbyBzZWxlY3QgdGhlIA0KQk9PVF9WRVNBX1NVUFBPUlQuDQoN
+CkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNClsxXSANCmh0dHBzOi8vZWxpeGlyLmJvb3RsaW4u
+Y29tL2xpbnV4L3Y1LjE2LjEwL3NvdXJjZS9kcml2ZXJzL2Zpcm13YXJlL0tjb25maWcjTDIy
+NA0KDQo+ICAgCXNlbGVjdCBEUk1fR0VNX1NITUVNX0hFTFBFUg0KPiAgIAlzZWxlY3QgRFJN
+X0tNU19IRUxQRVINCj4gICAJaGVscA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy92aWRlby9m
+YmRldi9LY29uZmlnIGIvZHJpdmVycy92aWRlby9mYmRldi9LY29uZmlnDQo+IGluZGV4IDZl
+ZDVlNjA4ZGQwNC4uNGYzYmU5YjdhNTIwIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3ZpZGVv
+L2ZiZGV2L0tjb25maWcNCj4gKysrIGIvZHJpdmVycy92aWRlby9mYmRldi9LY29uZmlnDQo+
+IEBAIC02Niw5ICs2Niw4IEBAIGNvbmZpZyBGQl9EREMNCj4gICAJc2VsZWN0IEkyQ19BTEdP
+QklUDQo+ICAgCXNlbGVjdCBJMkMNCj4gICANCj4gLWNvbmZpZyBGQl9CT09UX1ZFU0FfU1VQ
+UE9SVA0KPiArY29uZmlnIEJPT1RfVkVTQV9TVVBQT1JUDQo+ICAgCWJvb2wNCj4gLQlkZXBl
+bmRzIG9uIEZCDQo+ICAgCWhlbHANCj4gICAJICBJZiB0cnVlLCBhdCBsZWFzdCBvbmUgc2Vs
+ZWN0ZWQgZnJhbWVidWZmZXIgZHJpdmVyIGNhbiB0YWtlIGFkdmFudGFnZQ0KPiAgIAkgIG9m
+IFZFU0EgdmlkZW8gbW9kZXMgc2V0IGF0IGFuIGVhcmx5IGJvb3Qgc3RhZ2UgdmlhIHRoZSB2
+Z2E9IHBhcmFtZXRlci4NCj4gQEAgLTYyNyw3ICs2MjYsNyBAQCBjb25maWcgRkJfVkVTQQ0K
+PiAgIAlzZWxlY3QgRkJfQ0ZCX0ZJTExSRUNUDQo+ICAgCXNlbGVjdCBGQl9DRkJfQ09QWUFS
+RUENCj4gICAJc2VsZWN0IEZCX0NGQl9JTUFHRUJMSVQNCj4gLQlzZWxlY3QgRkJfQk9PVF9W
+RVNBX1NVUFBPUlQNCj4gKwlzZWxlY3QgQk9PVF9WRVNBX1NVUFBPUlQNCj4gICAJaGVscA0K
+PiAgIAkgIFRoaXMgaXMgdGhlIGZyYW1lIGJ1ZmZlciBkZXZpY2UgZHJpdmVyIGZvciBnZW5l
+cmljIFZFU0EgMi4wDQo+ICAgCSAgY29tcGxpYW50IGdyYXBoaWMgY2FyZHMuIFRoZSBvbGRl
+ciBWRVNBIDEuMiBjYXJkcyBhcmUgbm90IHN1cHBvcnRlZC4NCj4gQEAgLTEwNTEsNyArMTA1
+MCw3IEBAIGNvbmZpZyBGQl9JTlRFTA0KPiAgIAlzZWxlY3QgRkJfQ0ZCX0ZJTExSRUNUDQo+
+ICAgCXNlbGVjdCBGQl9DRkJfQ09QWUFSRUENCj4gICAJc2VsZWN0IEZCX0NGQl9JTUFHRUJM
+SVQNCj4gLQlzZWxlY3QgRkJfQk9PVF9WRVNBX1NVUFBPUlQgaWYgRkJfSU5URUwgPSB5DQo+
+ICsJc2VsZWN0IEJPT1RfVkVTQV9TVVBQT1JUIGlmIEZCX0lOVEVMID0geQ0KPiAgIAlkZXBl
+bmRzIG9uICFEUk1fSTkxNQ0KPiAgIAloZWxwDQo+ICAgCSAgVGhpcyBkcml2ZXIgc3VwcG9y
+dHMgdGhlIG9uLWJvYXJkIGdyYXBoaWNzIGJ1aWx0IGluIHRvIHRoZSBJbnRlbA0KPiBAQCAt
+MTM3OCw3ICsxMzc3LDcgQEAgY29uZmlnIEZCX1NJUw0KPiAgIAlzZWxlY3QgRkJfQ0ZCX0ZJ
+TExSRUNUDQo+ICAgCXNlbGVjdCBGQl9DRkJfQ09QWUFSRUENCj4gICAJc2VsZWN0IEZCX0NG
+Ql9JTUFHRUJMSVQNCj4gLQlzZWxlY3QgRkJfQk9PVF9WRVNBX1NVUFBPUlQgaWYgRkJfU0lT
+ID0geQ0KPiArCXNlbGVjdCBCT09UX1ZFU0FfU1VQUE9SVCBpZiBGQl9TSVMgPSB5DQo+ICAg
+CXNlbGVjdCBGQl9TSVNfMzAwIGlmICFGQl9TSVNfMzE1DQo+ICAgCWhlbHANCj4gICAJICBU
+aGlzIGlzIHRoZSBmcmFtZSBidWZmZXIgZGV2aWNlIGRyaXZlciBmb3IgdGhlIFNpUyAzMDAs
+IDMxNSwgMzMwDQoNCi0tIA0KVGhvbWFzIFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBE
+ZXZlbG9wZXINClNVU0UgU29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0KTWF4ZmVs
+ZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJnLCBHZXJtYW55DQooSFJCIDM2ODA5LCBBRyBOw7xy
+bmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJlcjogSXZvIFRvdGV2DQo=
 
-temp2_input=38500 (nfactor=10)
-temp2_input=35500 (nfactor=-10)
+--------------6m9UmIRdykpjFkIQiBQka1kg--
 
-Driver probes just fine with this attribute set.
+--------------JYUW0XBHt0CzH6KJ0KeaIqyV
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-> +static int tmp464_probe_child_from_dt(struct device *dev,
-> +				      struct device_node *child,
-> +				      struct tmp464_data *data)
-> +
-> +{
-> +	struct regmap *regmap = data->regmap;
-> +	u32 channel;
-> +	u8 nfactor;
-> +	s32 val;
+-----BEGIN PGP SIGNATURE-----
 
-val is not used according to the compiler, and thus should be removed 
-(module does not compile with -Werror)
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIPbY0FAwAAAAAACgkQlh/E3EQov+Bn
+2BAAjAwq+emgN48PSmawYbRBCYumLASLcliK2o74cowEUlmTldLrEiGiUcMfFD5dHEUbbs9KOkbw
+6pekDAoYR0IrDYl0DLKFUiYYP+n0ikZJPj7YhUytfHmEi2/Eict1rK13PNQZx3uI9ROUrIOnlhVM
+O9O/VVQw9ssEODyEkPnNN6wSM+2cmncMahXoffje3S8pl7ug2Blw+vYOnTWMXA5WPk9dYmyNTSTM
+HuUUAC16qvtSpbSGWDx/Ga27ySY1u7Fpq/cW319iSm7thrMsGYWb3yqZoK4p5F4GEMn5M2JuU2Q0
+vkyBOGcYBfnbQuNIxZHsMoPUmCGnLP3ixhT1uYaNDt6UuSwz5B3i3yxkg+7Heu0T836efpznGBjf
+j8SqVxFRCD1cK5h2gyMsiAc/axD+N6OH6n7ZHMr99mCg9Th4VTmN8853mwxjQZOdZC0kBWun0JM2
+7J62hCYcFd4yt7o3FhQtAhHXeyyDWnXOCyKakMoa1yJci8iFSYQVDRAbwKjvtrSh2U7QBNe7MbLo
+dnU08NZ3ch8U3nIIMobv5fWzXm1leJkN9JdIooHMIy9TC0GKgFV1k++zyvxXT1AdaYoAerPb1p6V
+IahTXTiMNtRFJPfJ31NRtXcwTncAQUa5HC+veTbY2skpGuU29tknU+nH6NYknLf9bExXYIGXlNqM
+dyM=
+=X4vd
+-----END PGP SIGNATURE-----
 
-PS: TMP464 samples will be sent by DHL today and should arrive to you on 
-Feb, 23rd.
-
-Best regards,
-
-Agathe.
-
+--------------JYUW0XBHt0CzH6KJ0KeaIqyV--
