@@ -2,130 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8935DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:17:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF469C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235739AbiBRRR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:17:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47696 "EHLO
+        id S238476AbiBRRR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:17:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238471AbiBRRRA (ORCPT
+        with ESMTP id S238508AbiBRRRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:17:00 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086162B7615;
-        Fri, 18 Feb 2022 09:16:01 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Fri, 18 Feb 2022 12:17:01 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5552B8ADB
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:16:03 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 9EBD8219A4;
-        Fri, 18 Feb 2022 17:15:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645204559; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8zpVTMN5crc6K1MF78ftYrPJFMOci1TdJrt+hVPeq/w=;
-        b=AsIMLeva+P0GlDGnDCf06J1i2KnXl+5nAmZgGIujgukrWdYIBDgdf/mq3I4M5VFzd4D85B
-        W2s21/X3770XiMfAyPtEt183uB3cqgDmQvXAFWuJgQBnhoS74aYEYH/08CfnLgwOI+PoCp
-        ilCITaX5bktqFSC0gKzll2tHQHeAC6w=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645204559;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8zpVTMN5crc6K1MF78ftYrPJFMOci1TdJrt+hVPeq/w=;
-        b=BlzL7u0HyzyzyKkOmqAUVW78roUbpkvRBvQYkZkUyV0AN4k6LkgMUPs2TM2jYoRRLgIcCI
-        FLPOuApZD1L/bJBA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 545C813CBE;
-        Fri, 18 Feb 2022 17:15:59 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id oclrE0/UD2IhVQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 18 Feb 2022 17:15:59 +0000
-Message-ID: <a5ab4496-8190-6221-72c7-d1ff2e6cf1d4@suse.cz>
-Date:   Fri, 18 Feb 2022 18:14:55 +0100
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5650F1EC0304;
+        Fri, 18 Feb 2022 18:15:57 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645204557;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=SwNBtYXWJ8xiYRb8tX389TEN1/KTpft305R1guyh4Rg=;
+        b=HEND9/BS0oJ+LlJZKY72NIJltRz8k1VKVsnwXtG8WtQwT3M+tPyNBD+n0D2FIl6MOFucH8
+        lCqIHoXJuQoRZSDukk2xSsnoWFOtWMVwQDeCDbmLAZy/APHak5P6PN3LisZ8Qw2JPj+3xu
+        BzIEgPNmQUQSZTjoLmt4OvG8iuyjNxw=
+Date:   Fri, 18 Feb 2022 18:16:00 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Jue Wang <juew@google.com>
+Cc:     Tony Luck <tony.luck@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [PATCH v2] x86/mce: work around an erratum on fast string copy
+ instructions.
+Message-ID: <Yg/UUHuVvd9AOJ94@zn.tnic>
+References: <Yg54nse5qNQO3sbW@zn.tnic>
+ <20220218013209.2436006-1-juew@google.com>
+ <Yg+2Hc78nfSRmh/j@zn.tnic>
+ <CAPcxDJ4c3eGXTB9UPJmZ8dzyCNPW4Lv9s1QSeoCWq_LdNWTrJw@mail.gmail.com>
+ <Yg/FyrvLWhZHB/UC@zn.tnic>
+ <CAPcxDJ72dMOpbKXxyb__OeMaEyjYSPtsL_ubVsKOuRXefAQ3_w@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] slab: remove __alloc_size attribute from
- __kmalloc_track_caller
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable <stable@vger.kernel.org>, Kees Cook <keescook@chromium.org>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nathan Chancellor <nathan@kernel.org>, linux-mm@kvack.org,
-        llvm@lists.linux.dev
-References: <20220218131358.3032912-1-gregkh@linuxfoundation.org>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220218131358.3032912-1-gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAPcxDJ72dMOpbKXxyb__OeMaEyjYSPtsL_ubVsKOuRXefAQ3_w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/18/22 14:13, Greg Kroah-Hartman wrote:
-> Commit c37495d6254c ("slab: add __alloc_size attributes for better
-> bounds checking") added __alloc_size attributes to a bunch of kmalloc
-> function prototypes.  Unfortunately the change to __kmalloc_track_caller
-> seems to cause clang to generate broken code and the first time this is
-> called when booting, the box will crash.
-> 
-> While the compiler problems are being reworked and attempted to be
-> solved, let's just drop the attribute to solve the issue now.  Once it
-> is resolved it can be added back.
+On Fri, Feb 18, 2022 at 08:21:36AM -0800, Jue Wang wrote:
+> My concern was that here returns 0 instead the value read from the msr.
 
-Could we instead wrap it in some #ifdef that' only true for clang build?
-That would make the workaround more precise and self-documented. Even
-better if it can trigger using clang version range and once a fixed
-clang version is here, it can be updated to stay true for older clangs.
+You'd walk into that code only if you're doing MCE injections. In that
+case, it won't read or write MSR_IA32_MISC_ENABLE because the injection
+code writes into the injection mce struct only.
 
-> Fixes: c37495d6254c ("slab: add __alloc_size attributes for better bounds checking")
-> Cc: stable <stable@vger.kernel.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Daniel Micay <danielmicay@gmail.com>
-> Cc: Nick Desaulniers <ndesaulniers@google.com>
-> Cc: Christoph Lameter <cl@linux.com>
-> Cc: Pekka Enberg <penberg@kernel.org>
-> Cc: David Rientjes <rientjes@google.com>
-> Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Vlastimil Babka <vbabka@suse.cz>
-> Cc: Nathan Chancellor <nathan@kernel.org>
-> Cc: linux-mm@kvack.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: llvm@lists.linux.dev
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  include/linux/slab.h | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/slab.h b/include/linux/slab.h
-> index 37bde99b74af..5b6193fd8bd9 100644
-> --- a/include/linux/slab.h
-> +++ b/include/linux/slab.h
-> @@ -660,8 +660,7 @@ static inline __alloc_size(1, 2) void *kcalloc(size_t n, size_t size, gfp_t flag
->   * allocator where we care about the real place the memory allocation
->   * request comes from.
->   */
-> -extern void *__kmalloc_track_caller(size_t size, gfp_t flags, unsigned long caller)
-> -				   __alloc_size(1);
-> +extern void *__kmalloc_track_caller(size_t size, gfp_t flags, unsigned long caller);
->  #define kmalloc_track_caller(size, flags) \
->  	__kmalloc_track_caller(size, flags, _RET_IP_)
->  
+So it won't disable fast strings when you manage to inject the exact
+error type which triggers this erratum.
 
+I think that's actually a good thing - you don't want to disable fast
+strings just because you injected a particular MCE type.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
