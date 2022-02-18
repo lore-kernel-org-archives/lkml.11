@@ -2,144 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA90C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238184AbiBRRMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:12:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33370 "EHLO
+        id S238232AbiBRRPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:15:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237701AbiBRRMx (ORCPT
+        with ESMTP id S238174AbiBRRPM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:12:53 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E49A44757
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:12:36 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so9125311pjm.2
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:12:36 -0800 (PST)
+        Fri, 18 Feb 2022 12:15:12 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAEE4B850
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:14:55 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so9105727pjh.3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:14:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=rd+L0NpmRxP51ahSRBwjzexi22gynEtFgPMfpz+PHPs=;
-        b=prBseZC8s7hyert8XERbcfz8EHA2o71yywYUTEjxu4j9Ivbs6v1skghyF7DDGFNV5o
-         57X8r4gXyL9U1EPPQBKXZUFoCOxmuOyOTGCElTlCYf+CO0A2pYMvewfCZ75DK79ILJj0
-         3htK9GmOFOFA4l7iQ/gopJG7UCSW38MVDgn9EYaiIcKGxwmOZPdDQ1Ky21E0C72QsSA2
-         KnUkkzGWgdGcR3a9VXSkpiW1nf0vt8vCiuO4RF05ekKXZ06DI+gdAi6fvUX5/ySfnSi/
-         MDZ/A8e/jYEVOdm8ISDM7xGsJIvoFGHWdttT9R0w22Kn+HlrqOznv3vw0+bCyPGqATGh
-         9nWw==
+        bh=xH/IlepHKMPyzwGE0aHvfUnRRSRkxlsVgqDXZENsWF4=;
+        b=CCZJEx6wJo54CRJ1nw52S3756+GgvbkbG4fFiUiKvWxfwo3MAxnvlqtWClKtKtJhBR
+         rAlT6HU9MUCOUOWOB/f+bl21qmDRIi2eShXVQuQB4QooVixEMhz9TMdgMO2+H9q0djig
+         QSzuZrCKSTBBPSM0GNZenFIkkaY9EbveT+FpSAmKoN2B8A3YeTLtptVHTaTz4Zwc4GZ/
+         Bz6MbtsB1jEqlTbzVmeTMH+B8mMJM9A8re+zHSmQGH7YpupplZdGb3VfwbIMf87lBjcA
+         /z0B5whNJpDv3VA31g5ARfkabFqCYKAdZIwjZCZanyTeUF64kKRqOspmZmOvrs2pu/K+
+         uf3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=rd+L0NpmRxP51ahSRBwjzexi22gynEtFgPMfpz+PHPs=;
-        b=Xp5rj0a0oK09D8hLuAY64T4k+lgbs7QUf33qvvmjWhDc8a/fn1nItW2ZfiJJEuReUl
-         z+jUtvgp0G2WSokywiaGSBK1kfjabdineC/lnioDF7oNseIsMB8RIPA10Ns4KkV45uFS
-         IbfXnfingkP8Upu2EfVIr1GEz2xKhyAfZ/ot8cBehPnZzZ+rZvGvqJIUO1iU4gjz/2do
-         32P28PMJwKw10BG8dT7AMLP3ivZadexuPcSPmw9Es8MsgE3wyKYVk53RGySQ0iR6403d
-         /dca4S3FeXDIMCNYTtqrT1yK+G8efj+U5L3v7jjGZbD/PDxIoZb/dEIuRVS3nkx0rRs0
-         qRzg==
-X-Gm-Message-State: AOAM5309cNBOfCZaSJXOJ87rGdbo1+2uIuu6UxTCcFDV7ZSnewCCkzEB
-        j301MYZPuj/jVY+I/3oM4bA5ZL+ZSzeE8w==
-X-Google-Smtp-Source: ABdhPJxV01IOK0zmveWvz0Pf3rMMYWygqKCKGQFx6UZHOGJPkfjikkqEDRu7xOTasteNzl8+tJp8hA==
-X-Received: by 2002:a17:90b:4b92:b0:1b7:aca7:b2f3 with SMTP id lr18-20020a17090b4b9200b001b7aca7b2f3mr13764585pjb.169.1645204355709;
-        Fri, 18 Feb 2022 09:12:35 -0800 (PST)
+        bh=xH/IlepHKMPyzwGE0aHvfUnRRSRkxlsVgqDXZENsWF4=;
+        b=WHgV/YY6VgFzWWoSyxfesnoIZIPd6CVzKwxAkkpaR6VGIHceN51aSP0kr+i/pWrsgY
+         wjr/BFFxkSu05xb4JGIryrJA2tM5+eVGmUtbhDfh0+YckvGX7gp4613YcL+YR/L7R1sw
+         ExH3axUE5F08C5DAkqiZSrsVf3X4inC00jJ3EO9zKPET+GuLngI7gZ/UIdC3BwMKzK6t
+         dRrNtT+WdI/DSgyy0kmvkIX+g8zpbYaUn059vGs+0MiQykDgm5vk7kLzmMM0nnm3OMts
+         /3esQywC5xewY+tZX2ID4VZdFRZtSujKxeIL8y6mWn2r+qPEqUVKEuVcTb1Qt+/TYPey
+         IElw==
+X-Gm-Message-State: AOAM531AYTOxeE+TUpszSQSm435+9vQl491YTtv1DZn7BA5OS36i7r+t
+        VLdHuW+WkwFo+yQV2IbFf3j74qP4QKkMxg==
+X-Google-Smtp-Source: ABdhPJyIt9N0yCc8Xc8p3SzO2o/LXgdOK3B0rha1X07eij+FvPTnQ1VvSItUKF7LOU8F+RELqJdHMg==
+X-Received: by 2002:a17:902:6aca:b0:14d:5b32:eb0e with SMTP id i10-20020a1709026aca00b0014d5b32eb0emr8030672plt.31.1645204494478;
+        Fri, 18 Feb 2022 09:14:54 -0800 (PST)
 Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id c14sm3561166pfm.169.2022.02.18.09.12.34
+        by smtp.gmail.com with ESMTPSA id 19sm3447140pfz.153.2022.02.18.09.14.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 09:12:35 -0800 (PST)
-Date:   Fri, 18 Feb 2022 17:12:31 +0000
+        Fri, 18 Feb 2022 09:14:53 -0800 (PST)
+Date:   Fri, 18 Feb 2022 17:14:49 +0000
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH v2 02/18] KVM: x86: do not deliver asynchronous page
- faults if CR0.PG=0
-Message-ID: <Yg/Tf520avCvMuXj@google.com>
+Subject: Re: [PATCH v2 03/18] KVM: x86/mmu: WARN if PAE roots linger after
+ kvm_mmu_unload
+Message-ID: <Yg/UCQggoKQ27pVm@google.com>
 References: <20220217210340.312449-1-pbonzini@redhat.com>
- <20220217210340.312449-3-pbonzini@redhat.com>
+ <20220217210340.312449-4-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220217210340.312449-3-pbonzini@redhat.com>
+In-Reply-To: <20220217210340.312449-4-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Thu, Feb 17, 2022, Paolo Bonzini wrote:
-> Enabling async page faults is nonsensical if paging is disabled, but
-> it is allowed because CR0.PG=0 does not clear the async page fault
-> MSR.  Just ignore them and only use the artificial halt state,
-> similar to what happens in guest mode if async #PF vmexits are disabled.
-> 
-> Given the increasingly complex logic, and the nicer code if the new
-> "if" is placed last, opportunistically change the "||" into a chain
-> of "if (...) return false" statements.
-> 
 > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 > ---
-
-Comment nits aside,
-
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-
->  arch/x86/kvm/x86.c | 22 ++++++++++++++++++----
->  1 file changed, 18 insertions(+), 4 deletions(-)
+>  arch/x86/kvm/mmu/mmu.c | 17 +++++++++++++----
+>  1 file changed, 13 insertions(+), 4 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 99a58c25f5c2..b912eef5dc1a 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -12270,14 +12270,28 @@ static inline bool apf_pageready_slot_free(struct kvm_vcpu *vcpu)
->  
->  static bool kvm_can_deliver_async_pf(struct kvm_vcpu *vcpu)
->  {
-> -	if (!vcpu->arch.apf.delivery_as_pf_vmexit && is_guest_mode(vcpu))
-> +
-> +	if (!kvm_pv_async_pf_enabled(vcpu))
->  		return false;
->  
-> -	if (!kvm_pv_async_pf_enabled(vcpu) ||
-> -	    (vcpu->arch.apf.send_user_only && static_call(kvm_x86_get_cpl)(vcpu) == 0))
-> +	if (vcpu->arch.apf.send_user_only &&
-> +	    static_call(kvm_x86_get_cpl)(vcpu) == 0)
->  		return false;
->  
-> -	return true;
-> +	if (is_guest_mode(vcpu)) {
-> +		/*
-> +		 * L1 needs to opt into the special #PF vmexits that are
-> +		 * used to deliver async page faults.
-
-Wrap at 80 chars.
-
-> +		 */
-> +		return vcpu->arch.apf.delivery_as_pf_vmexit;
-> +	} else {
-> +		/*
-> +		 * Play it safe in case the guest does a quick real mode
-> +		 * foray.  The real mode IDT is unlikely to have a #PF
-> +		 * exception setup.
-
-I actually like the comment, but it's slightly confusing because based on the
-"real mode" stuff, I would expect:
-
-		return is_protmode(vcpu);
-
-Maybe tweak it to:
-
-
-		/*
-		 * Play it safe in case the guest temporarily disables paging.
-		 * The real mode IDT in particular is unlikely to have a #PF
-		 * exception setup.
-		 */
-
-> +		 */
-> +		return is_paging(vcpu);
-> +	}
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 296f8723f9ae..a67071ac80f3 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -5086,12 +5086,21 @@ int kvm_mmu_load(struct kvm_vcpu *vcpu)
+>  	return r;
 >  }
 >  
->  bool kvm_can_do_async_pf(struct kvm_vcpu *vcpu)
+> +static void __kvm_mmu_unload(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
+> +{
+> +	int i;
+> +	kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOTS_ALL);
+> +	WARN_ON(VALID_PAGE(mmu->root_hpa));
+> +	if (mmu->pae_root) {
+> +		for (i = 0; i < 4; ++i)
+> +			WARN_ON(IS_VALID_PAE_ROOT(mmu->pae_root[i]));
+> +	}
+> +}
+> +
+>  void kvm_mmu_unload(struct kvm_vcpu *vcpu)
+>  {
+> -	kvm_mmu_free_roots(vcpu, &vcpu->arch.root_mmu, KVM_MMU_ROOTS_ALL);
+> -	WARN_ON(VALID_PAGE(vcpu->arch.root_mmu.root_hpa));
+> -	kvm_mmu_free_roots(vcpu, &vcpu->arch.guest_mmu, KVM_MMU_ROOTS_ALL);
+> -	WARN_ON(VALID_PAGE(vcpu->arch.guest_mmu.root_hpa));
+> +	__kvm_mmu_unload(vcpu, &vcpu->arch.root_mmu);
+> +	__kvm_mmu_unload(vcpu, &vcpu->arch.guest_mmu);
+
+Can we just drop this one?  Checkpatch doesn't like it, and IMO the existing asserts
+are unnecessary.  IIRC you said this one never actually fired?
+
+WARNING: Missing commit description - Add an appropriate one
+
+WARNING: Missing a blank line after declarations
+#22: FILE: arch/x86/kvm/mmu/mmu.c:5092:
++	int i;
++	kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOTS_ALL);
+
+
+>  }
+>  
+>  static bool need_remote_flush(u64 old, u64 new)
 > -- 
 > 2.31.1
 > 
