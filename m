@@ -2,134 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE4FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234629AbiBRLj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:39:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45624 "EHLO
+        id S234708AbiBRLkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:40:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234836AbiBRLjA (ORCPT
+        with ESMTP id S234997AbiBRLk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 06:39:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8385131351
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:37:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645184253;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kRz2HhmPOJqUdEguD6ineI0jgT8YXoXhvMfK4d0/iRk=;
-        b=iZ8JXWnJegYuprPViiFj2S44PQ5iqRXJGJHJRk8YfDqhz7va0cVkg6kWlG4cwcBN6x2pCA
-        9fazozbtoSl1s2Rhbqr0EH5/lxR42g1nYTgNTZkz85TOWE3VsRg/zbtTgvTKxOBhsXjZgi
-        V3ZipINj24mTyr6QYckhe1LKrV7RcMo=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-460-jfc7Aa6qMPSA7UniXMQkBQ-1; Fri, 18 Feb 2022 06:37:32 -0500
-X-MC-Unique: jfc7Aa6qMPSA7UniXMQkBQ-1
-Received: by mail-ed1-f72.google.com with SMTP id y13-20020aa7c24d000000b00411925b7829so5197921edo.22
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:37:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kRz2HhmPOJqUdEguD6ineI0jgT8YXoXhvMfK4d0/iRk=;
-        b=mPIwmHW/s1pghskw65RyJLZZaTWNU7Fyh0tvhe5za6dRd+AdAW7OEnhoRygIyyf1vm
-         DjORshlYNPV1ekahSQKNZPlbnT48BrfvzrBfTfAi4DwTNXi9NHm2D0BdlieVqIkQYMSd
-         xPEZmTV0UBRPb5UxEZar/j+nTlskRnXfn//6Anzd2og1y3ramYXzjkRH+kEJMETt9yOC
-         wytTe7kLVSkutyZaKa7C2HZQBlSwjMPzRbhSTIFnzPZiZo69xZESOnIdmt4xnD4o+XVI
-         yAuNONFZu8dhOtm6pNtVcCj7zOr7yjHrTIf6nNdZbvH/oJtV7ZQaoT6TGSTUx8tFTp2l
-         n7KA==
-X-Gm-Message-State: AOAM531BpVapV+v9t2sE3f/xvRx1sppLYAdibL42gCKLNVlYHZGnDZSO
-        utxJ/q9PUSZ42t1Ylg3n+gWp7/sJtuAzXm4WeDgBZ7hICc1DjyhzQGTCCDdjkAkBqOYRoQU6+K9
-        opGlNA8Osxk86bfdJF90tsJes
-X-Received: by 2002:a17:906:f293:b0:6b6:bc93:f01f with SMTP id gu19-20020a170906f29300b006b6bc93f01fmr5656030ejb.743.1645184251241;
-        Fri, 18 Feb 2022 03:37:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyumwEeTQqcko1h2tOqCFdEjZvTGldy8JfDmmW/0pXvLQMU7H6ovgQWyZGrpbpB4r5tpsNPFQ==
-X-Received: by 2002:a17:906:f293:b0:6b6:bc93:f01f with SMTP id gu19-20020a170906f29300b006b6bc93f01fmr5656019ejb.743.1645184251001;
-        Fri, 18 Feb 2022 03:37:31 -0800 (PST)
-Received: from redhat.com ([2.55.156.211])
-        by smtp.gmail.com with ESMTPSA id z18sm2209291ejl.78.2022.02.18.03.37.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 03:37:30 -0800 (PST)
-Date:   Fri, 18 Feb 2022 06:37:26 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>
-Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
-Message-ID: <20220218063352-mutt-send-email-mst@kernel.org>
-References: <00000000000070ac6505d7d9f7a8@google.com>
- <0000000000003b07b305d840b30f@google.com>
+        Fri, 18 Feb 2022 06:40:28 -0500
+Received: from mail-4317.proton.ch (mail-4317.proton.ch [185.70.43.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BE3101F
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:39:59 -0800 (PST)
+Date:   Fri, 18 Feb 2022 11:39:55 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
+        s=protonmail2; t=1645184396;
+        bh=SoHk44i+hSrhGCWSov+A62f5mQ4gQxdPxK6xjt+fVz8=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+         Message-ID;
+        b=ChUDHjrsfiukE7xWvak5fl+9SyIK7pibGyeOyRknvdnWxOVzG99VSWcQsJSiPUt6f
+         9grvADHYFpp6DuC3gpQxTA69WdKAKyR7Mo/nwEB5QUyrC/dx+/CtDZF2YWNhQPW2Tl
+         6+PnGc7RYTUjB1yibcvsbposFqs/0AkGQWJQfO//UxykAiqHXBvIPFzDz0UEkfa/fp
+         MPDl3GjdqU9eTZAdYmjZdoFqdVxzIO9C1MOXcv02MRUgupJ5WQim3ZWvjshZxNREVr
+         Dea5zfYRhicyLTflwxZeX0A1AFnYhkSLuejA6v53Ic38Uw3A/A2lg1P0Tvxx56g9q5
+         bAYyZ4KyBzgvQ==
+To:     Hans de Goede <hdegoede@redhat.com>
+From:   Simon Ser <contact@emersion.fr>
+Cc:     Emil Velikov <emil.l.velikov@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        devicetree <devicetree@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        amd-gfx mailing list <amd-gfx@lists.freedesktop.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        ML dri-devel <dri-devel@lists.freedesktop.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        LAKML <linux-arm-kernel@lists.infradead.org>
+Reply-To: Simon Ser <contact@emersion.fr>
+Subject: Re: [Intel-gfx] [PATCH v8 1/3] gpu: drm: separate panel orientation property creating and value setting
+Message-ID: <YV87l-2XXzmZ2i6GuGd__uf85s2JQkbXt_qTQDYlbBh1kW2COJoNLUDinmLCokKyy-_0ZnIMUcZeW0GdJ8zF690iYi4ThKrjc09omNMe-0g=@emersion.fr>
+In-Reply-To: <d3f0cc20-d226-ee42-cc98-b469949cec9e@redhat.com>
+References: <20220208084234.1684930-1-hsinyi@chromium.org> <CACvgo53u01BK_D0ZssV+gCepjxSz23Nr5Dy1qXeaAoJuu6VCFQ@mail.gmail.com> <KW6DNh6IRRgVJx9DfOFBnEqc4a0x-AnDXEbMxwpfEbk8dOn_KGVzAfo-slJWq-4nWW728Uc-OVpFh2w4fDE4-bxfkDuz1hFILRVvbcuXqaw=@emersion.fr> <CACvgo532-pC+7DLFCo=DWTX-OnJEJvSoTmQnt3_qLhiT4cqEMg@mail.gmail.com> <GYG6EVT1MqtmfKiPpMhDG9mpuATnmwVDq2PuE_dpDat5oQW_t1tUfm39lSWHj32D5r7mrog27sL4dkgdMYQ5BN830TfVOrgQ4Ts8LcO8Hcs=@emersion.fr> <CACvgo52+o9_ETC+1RKzqKkyw3ZJ28RjH0BqC9DfmNAKqByud8Q@mail.gmail.com> <d3f0cc20-d226-ee42-cc98-b469949cec9e@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000003b07b305d840b30f@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 05:21:20PM -0800, syzbot wrote:
-> syzbot has found a reproducer for the following issue on:
-> 
-> HEAD commit:    f71077a4d84b Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=104c04ca700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1362e232700000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11373a6c700000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
-> 
-> ------------[ cut here ]------------
-> kernel BUG at drivers/vhost/vhost.c:2335!
-> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 1 PID: 3597 Comm: vhost-3596 Not tainted 5.17.0-rc4-syzkaller-00054-gf71077a4d84b #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:vhost_get_vq_desc+0x1d43/0x22c0 drivers/vhost/vhost.c:2335
-> Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 b7 59 28 fd e9 74 ff ff ff e8 5d c8 a1 fa <0f> 0b e8 56 c8 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
-> RSP: 0018:ffffc90001d1fb88 EFLAGS: 00010293
-> RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-> RDX: ffff8880234b0000 RSI: ffffffff86d715c3 RDI: 0000000000000003
-> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-> R10: ffffffff86d706bc R11: 0000000000000000 R12: ffff888072c24d68
-> R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888072c24bb0
-> FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000002 CR3: 000000007902c000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  vhost_vsock_handle_tx_kick+0x277/0xa20 drivers/vhost/vsock.c:522
->  vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
->  kthread+0x2e9/0x3a0 kernel/kthread.c:377
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+On Friday, February 18th, 2022 at 11:38, Hans de Goede <hdegoede@redhat.com=
+> wrote:
 
-I don't see how this can trigger normally so I'm assuming
-another case of use after free.
+> What I'm reading in the above is that it is being considered to allow
+> changing the panel-orientation value after the connector has been made
+> available to userspace; and let userspace know about this through a ueven=
+t.
+>
+> I believe that this is a bad idea, it is important to keep in mind here
+> what userspace (e.g. plymouth) uses this prorty for. This property is
+> used to rotate the image being rendered / shown on the framebuffer to
+> adjust for the panel orientation.
+>
+> So now lets assume we apply the correct upside-down orientation later
+> on a device with an upside-down mounted LCD panel. Then on boot the
+> following could happen:
+>
+> 1. amdgpu exports a connector for the LCD panel to userspace without
+> setting panel-orient=3Dupside-down
+> 2. plymouth sees this and renders its splash normally, but since the
+> panel is upside-down it will now actually show upside-down
 
->  </TASK>
-> Modules linked in:
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:vhost_get_vq_desc+0x1d43/0x22c0 drivers/vhost/vhost.c:2335
-> Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 b7 59 28 fd e9 74 ff ff ff e8 5d c8 a1 fa <0f> 0b e8 56 c8 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
-> RSP: 0018:ffffc90001d1fb88 EFLAGS: 00010293
-> RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-> RDX: ffff8880234b0000 RSI: ffffffff86d715c3 RDI: 0000000000000003
-> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-> R10: ffffffff86d706bc R11: 0000000000000000 R12: ffff888072c24d68
-> R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888072c24bb0
-> FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000002 CR3: 000000007902c000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+At this point amdgpu hasn't probed the connector yet. So the connector
+will be marked as disconnected, and plymouth shouldn't render anything.
 
+> 3. amdgpu adjusts the panel-orient prop to upside-down, sends out
+> uevents
+
+That's when amdgpu marks the connector as connected. So everything
+should be fine I believe, no bad frame.
+
+> 4. Lets assume plymouth handles this well (i) and now adjust its
+> rendering and renders the next frame of the bootsplash 180=C2=B0 rotated
+> to compensate for the panel being upside down. Then from now on
+> the user will see the splash normally
+>
+> So this means that the user will briefly see the bootsplash rendered
+> upside down which IMHO is not acceptable behavior. Also see my footnote
+> about how I seriously doubt plymouth will see the panel-orient change
+> at all.
+>
+> I'm also a bit unsure about:
+>
+> a) How you can register the panel connector with userspace before
+> reading the edid, don't you need the edid to give the physical size +
+> modeline to userspace, which you cannot just leave out ?
+
+Yup. The KMS EDID property is created before the EDID is read, and is set
+to zero (NULL blob). The width/height in mm and other info are also zero.
+You can try inspecting the state printed by drm_info on any disconnected
+connector to see for yourself.
+
+> I guess the initial modeline is inherited from the video-bios, but
+> what about the physical size? Note that you cannot just change the
+> physical size later either, that gets used to determine the hidpi
+> scaling factor in the bootsplash, and changing that after the initial
+> bootsplash dislay will also look ugly
+>
+> b) Why you need the edid for the panel-orientation property at all,
+> typically the edid prom is part of the panel and the panel does not
+> know that it is mounted e.g. upside down at all, that is a property
+> of the system as a whole not of the panel as a standalone unit so
+> in my experience getting panel-orient info is something which comes
+> from the firmware /video-bios not from edid ?
+
+This is an internal DRM thing. The orientation quirks logic uses the
+mode size advertised by the EDID. I agree that at least in the Steam
+Deck case it may not make a lot of sense to use any info from the
+EDID, but that's needed for the current status quo.
+
+Also note, DisplayID has a bit to indicate the panel orientation IIRC.
+Would be nice to support parsing this at some point.
