@@ -2,280 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC70CC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FAC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236834AbiBRPHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 10:07:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38640 "EHLO
+        id S236842AbiBRPI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 10:08:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236795AbiBRPHx (ORCPT
+        with ESMTP id S236689AbiBRPI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 10:07:53 -0500
-X-Greylist: delayed 67 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Feb 2022 07:07:35 PST
-Received: from re-prd-fep-049.btinternet.com (mailomta29-re.btinternet.com [213.120.69.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA4A2AB51E;
-        Fri, 18 Feb 2022 07:07:34 -0800 (PST)
-Received: from re-prd-rgout-004.btmx-prd.synchronoss.net ([10.2.54.7])
-          by re-prd-fep-044.btinternet.com with ESMTP
-          id <20220218150626.FLN28912.re-prd-fep-044.btinternet.com@re-prd-rgout-004.btmx-prd.synchronoss.net>;
-          Fri, 18 Feb 2022 15:06:26 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=btinternet.com; s=btmx201904; t=1645196786; 
-        bh=+Ak4ML+qQ76pLQtqvO6PXTN+WfGHPGynmgWZY/K4xxI=;
-        h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:MIME-Version;
-        b=DgOVoE7nzhDfkMbn8jjsd0Jvo7ZDpgWOaglJ+5F7dVYknVfsSWG487dy8/gUd/Ihe8rXmBsJDQSsFJ8nyNBjgKlcKWwFPRd4SsnehtPHJmHW6wYmkG5NJ9rA/8Fp3jagWlSol/FvtI9xA3qJrugFa5cjDklg+Ny/WODn0qOw5dW7benHCEVY+etQY/VZL/KFxoNWg/oXy4hFr2zF3A+0NcCKNgTkget95C/mIn/dPM+ZpA2LeMas/9XaQ5Q10zdiLKh/bdtqAK/czdbmx3R3DxxtSKyzN5lJtKOsSW+jjI5DdHYILvFLtA8E1Uhbcdji6v+T5lxeMdyXH2x4SwhAyw==
-Authentication-Results: btinternet.com;
-    auth=pass (LOGIN) smtp.auth=richard_c_haines@btinternet.com;
-    bimi=skipped
-X-SNCR-Rigid: 613A901C151EEBFE
-X-Originating-IP: [86.183.97.183]
-X-OWM-Source-IP: 86.183.97.183 (GB)
-X-OWM-Env-Sender: richard_c_haines@btinternet.com
-X-VadeSecure-score: verdict=clean score=0/300, class=clean
-X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvvddrkedtgdejudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemuceutffkvffkuffjvffgnffgvefqofdpqfgfvfenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkffuhffvffgjfhgtfggggfesthekredttderjeenucfhrhhomheptfhitghhrghrugcujfgrihhnvghsuceorhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomheqnecuggftrfgrthhtvghrnheptdefkeefudffheegueffuddtveehheduheekudekvdegjeduhfeghfdvhffhuedtnecuffhomhgrihhnpehsvghlihhnuhigphhrohhjvggtthdrohhrghdprghnughrohhiugdrtghomhenucfkphepkeeirddukeefrdeljedrudekfeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudelkegnpdhinhgvthepkeeirddukeefrdeljedrudekfedpmhgrihhlfhhrohhmpehrihgthhgrrhgupggtpghhrghinhgvshessghtihhnthgvrhhnvghtrdgtohhmpdhnsggprhgtphhtthhopeduuddprhgtphhtthhopegsihhllhdrtgdrrhhosggvrhhtshesghhmrghilhdrtghomhdprhgtphhtthhopegthhhpvggsvghniheslhhinhhugidrmhhitghrohhsohhfthdrtghomhdprhgtphhtthhopeguvghmihhosggvnhhouhhrsehgmhgrihhlrdgt
-        ohhmpdhrtghpthhtohepughomhhinhhitghkrdhgrhhifhhtseguvghfvghnshgvtgdrnhhlpdhrtghpthhtohepvghprghrihhssehprghrihhsphhlrggtvgdrohhrghdprhgtphhtthhopehjvghffhhvsehgohhoghhlvgdrtghomhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehprghulhesphgruhhlqdhmohhorhgvrdgtohhmpdhrtghpthhtohepshgvlhhinhhugidqrhgvfhhpohhlihgthiesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehsvghlihhnuhigsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepshhtvghphhgvnhdrshhmrghllhgvhidrfihorhhksehgmhgrihhlrdgtohhm
-X-RazorGate-Vade-Verdict: clean 0
-X-RazorGate-Vade-Classification: clean
-X-SNCR-hdrdom: btinternet.com
-Received: from [192.168.1.198] (86.183.97.183) by re-prd-rgout-004.btmx-prd.synchronoss.net (5.8.716.04) (authenticated as richard_c_haines@btinternet.com)
-        id 613A901C151EEBFE; Fri, 18 Feb 2022 15:06:25 +0000
-Message-ID: <847acf98ac223ccb3bc34b3d38c1389c12ca27d8.camel@btinternet.com>
-Subject: Re: [PATCH] SELinux: Always allow FIOCLEX and FIONCLEX
-From:   Richard Haines <richard_c_haines@btinternet.com>
-To:     Demi Marie Obenour <demiobenour@gmail.com>,
-        Paul Moore <paul@paul-moore.com>
-Cc:     William Roberts <bill.c.roberts@gmail.com>,
-        Dominick Grift <dominick.grift@defensec.nl>,
-        Chris PeBenito <chpebeni@linux.microsoft.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        SElinux list <selinux@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        selinux-refpolicy@vger.kernel.org,
-        Jeffrey Vander Stoep <jeffv@google.com>
-Date:   Fri, 18 Feb 2022 15:06:20 +0000
-In-Reply-To: <aca4f2d6-5e1a-8c20-bfde-17e436b7e9d8@gmail.com>
-References: <4df50e95-6173-4ed1-9d08-3c1c4abab23f@gmail.com>
-         <CAHC9VhSjTqT-4TMxBnQOQHkj+djONihfeoPVyy1egrZY2t10XA@mail.gmail.com>
-         <c8a616e4-26a6-af51-212c-31dca0e265cd@gmail.com>
-         <CAHC9VhQTZdeNOx3AXdoc9LXUzDk5n7wyGBX-tV-ZaovhPAdWwQ@mail.gmail.com>
-         <e85dd38b-ef7b-ed7e-882e-124cdf942c44@gmail.com>
-         <CAHC9VhROuJtvNHuVaR6pEekNFacH3Tywx58_hn1f5Mwk+kjC8g@mail.gmail.com>
-         <b7e55304-d114-bcbe-08d2-b54828121a01@gmail.com>
-         <CAHC9VhSdgD4Nfaxbnnn4r-OK8koSZ7+zQoPShDbGi9PvkJFpng@mail.gmail.com>
-         <478e1651-a383-05ff-d011-6dda771b8ce8@linux.microsoft.com>
-         <875ypt5zmz.fsf@defensec.nl>
-         <CAFftDdo9JmbyPzPWRjOYgZBOS9b5d+OGKKf8egS8_ysbbWW87Q@mail.gmail.com>
-         <CABXk95Az0V0qWyB0Cp9D+MaCKNBfcdk4=bvXRdm5EXzHdjXJJg@mail.gmail.com>
-         <CAHC9VhQKuQuR1pJfa0h2Y5dCjmrpiYaGpymwxxE1sa6jR3h-bA@mail.gmail.com>
-         <aca4f2d6-5e1a-8c20-bfde-17e436b7e9d8@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Fri, 18 Feb 2022 10:08:27 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737D067346
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:08:10 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id d3so4833249ilr.10
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:08:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0WAY4GVsgjaO40pd4PC+o5Qrkod87XgfNtjMligfgoY=;
+        b=k0fc5rFlb0nYvtjo4+yOGOzoacZjWtAHBTbCbMc7Q25WPenvdId6aWq+y6Rdb+00Dq
+         aOaQ218/pbphHfK1eH91BX8+P0n48dqdTw2zXtA+iPrZ1D3/fyQW8/DtgREA0pJKvUj6
+         Lp3X/6UpSCjLaud6YFWBrPpbWCOZpWE2/WLzSzX0WdLKV9qwvctPYZ60VTz33cAFUw2H
+         ipn17iIMIdUWIB+10TVBgomrK5cedM2iYJRHZjXO/1y0/Lu4+/ZN9IN9pabjQMn7Gx6n
+         qpN+ALnPW/fafYsm5bvSbyI2r+q53/Kf+9VFoS0l84yOd5GtMAbo2c69nY8gVvEJjEaB
+         R64A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0WAY4GVsgjaO40pd4PC+o5Qrkod87XgfNtjMligfgoY=;
+        b=aEoeumAeVil8ElhNQKr8SRY2fkoAhnVVOEbLM00MsHGWc4xaLdjh1KiceTZ7O0D44K
+         4hICThDJ3oCcyokVo5YbZFeXO7PXI3/B8C/jx3ggb4PxMTZWqylqwRWFs9L/I00z83u0
+         9ZSUWeou+1EAO5yKFgbwxGahIJWtMbZ2oGKxRmoxoXgj2RIvnXc9zWTOxL3vzjkL3Egu
+         OVEAbeEx00wTEUiqqlIPoMZbDsIEDHGg98R2eGfxFywT5jHd1iyP33X3elWjAP/SzLKm
+         JAV79CRTXF+7w49kLna1VMxAaje7bM5UMkVQnLBi7m5QVwkap0IxjpV+9hCb7z5Ze16o
+         cAkg==
+X-Gm-Message-State: AOAM532rA+BMXW0igiB/XvSZFYb1DWx9eJDmGnOW5+eIjT2UZqcXPJ3O
+        +ePDJG8JqMMxPXToezMzgqxhoIq6piREqVYloao=
+X-Google-Smtp-Source: ABdhPJzMnq7hK9D6lNRhKVIGRl8EXyxXzDy7SCwE7CO0ADTREL9Si+pDygSfUleL+W61anVYscsBJdjjvZkJ28zIcZ4=
+X-Received: by 2002:a05:6e02:1905:b0:2c1:e164:76eb with SMTP id
+ w5-20020a056e02190500b002c1e16476ebmr982921ilu.28.1645196889849; Fri, 18 Feb
+ 2022 07:08:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <5b120f7cadcc0e0d8d5f41fd0cff35981b3f7f3a.1645038022.git.andreyknvl@google.com>
+ <Yg44yQJ9tQMgmiZq@lakrids>
+In-Reply-To: <Yg44yQJ9tQMgmiZq@lakrids>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Fri, 18 Feb 2022 16:07:58 +0100
+Message-ID: <CA+fCnZfAwSJQp7zE+qHChaSvy1uEL6xi0JiHtMi6iq29Fk3tRw@mail.gmail.com>
+Subject: Re: [PATCH mm] kasan: print virtual mapping info in reports
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-17 at 18:55 -0500, Demi Marie Obenour wrote:
-> On 2/15/22 15:34, Paul Moore wrote:
-> > On Mon, Feb 14, 2022 at 2:11 AM Jeffrey Vander Stoep
-> > <jeffv@google.com> wrote:
-> > > On Tue, Feb 8, 2022 at 3:18 PM William Roberts
-> > > <bill.c.roberts@gmail.com> wrote:
-> > > > 
-> > > > <snip>
-> > > > 
-> > > > This is getting too long for me.
-> > > > 
-> > > > > > 
-> > > > > > I don't have a strong opinion either way.  If one were to
-> > > > > > allow this
-> > > > > > using a policy rule, it would result in a major policy
-> > > > > > breakage.  The
-> > > > > > rule would turn on extended perm checks across the entire
-> > > > > > system,
-> > > > > > which the SELinux Reference Policy isn't written for.  I
-> > > > > > can't speak
-> > > > > > to the Android policy, but I would imagine it would be the
-> > > > > > similar
-> > > > > > problem there too.
-> > > > > 
-> > > > > Excuse me if I am wrong but AFAIK adding a xperm rule does
-> > > > > not turn on
-> > > > > xperm checks across the entire system.
-> > > > 
-> > > > It doesn't as you state below its target + class.
-> > > > 
-> > > > > 
-> > > > > If i am not mistaken it will turn on xperm checks only for
-> > > > > the
-> > > > > operations that have the same source and target/target class.
-> > > > 
-> > > > That's correct.
-> > > > 
-> > > > > 
-> > > > > This is also why i don't (with the exception TIOSCTI for
-> > > > > termdev
-> > > > > chr_file) use xperms by default.
-> > > > > 
-> > > > > 1. it is really easy to selectively filter ioctls by adding
-> > > > > xperm rules
-> > > > > for end users (and since ioctls are often device/driver
-> > > > > specific they
-> > > > > know best what is needed and what not)
-> > > > 
-> > > > > > > > and FIONCLEX can be trivially bypassed unless
-> > > > > > > > fcntl(F_SETFD)
-> > > > > 
-> > > > > 2. if you filter ioctls in upstream policy for example like i
-> > > > > do with
-> > > > > TIOSCTI using for example (allowx foo bar (ioctl chr_file
-> > > > > (not
-> > > > > (0xXXXX)))) then you cannot easily exclude additional ioctls
-> > > > > later where source is
-> > > > > foo and target/tclass is bar/chr_file because there is
-> > > > > already a rule in
-> > > > > place allowing the ioctl (and you cannot add rules)
-> > > > 
-> > > > Currently, fcntl flag F_SETFD is never checked, it's silently
-> > > > allowed, but
-> > > > the equivalent FIONCLEX and FIOCLEX are checked. So if you
-> > > > wrote policy
-> > > > to block the FIO*CLEX flags, it would be bypassable through
-> > > > F_SETFD and
-> > > > FD_CLOEXEC. So the patch proposed makes the FIO flags behave
-> > > > like
-> > > > F_SETFD. Which means upstream policy users could drop this
-> > > > allow, which
-> > > > could then remove the target/class rule and allow all icotls.
-> > > > Which is easy
-> > > > to prevent and fix you could be a rule in to allowx 0 as
-> > > > documented in the
-> > > > wiki: https://selinuxproject.org/page/XpermRules
-> > > > 
-> > > > The questions I think we have here are:
-> > > > 1. Do we agree that the behavior between SETFD and the FIO
-> > > > flags are equivalent?
-> > > >   I think they are.
-> > > > 2. Do we want the interfaces to behave the same?
-> > > >   I think they should.
-> > > > 3. Do upstream users of the policy construct care?
-> > > >   The patch is backwards compat, but I don't want their to be
-> > > > cruft
-> > > > floating around with extra allowxperm rules.
-> > > 
-> > > I think this proposed change is fine from Android's perspective.
-> > > It
-> > > implements in the kernel what we've already already put in place
-> > > in
-> > > our policy - that all domains are allowed to use these IOCLTs.
-> > > https://cs.android.com/android/platform/superproject/+/master:system/sepolicy/public/domain.te;l=312
-> > > 
-> > > It'll be a few years before we can clean up our policy since we
-> > > need
-> > > to support older kernels, but that's fine.
-> > 
-> > Thanks for the discussion everyone, it sounds like everybody is
-> > okay
-> > with the change - that's good.  However, as I said earlier in this
-> > thread I think we need to put this behind a policy capability, how
-> > does POLICYDB_CAPABILITY_IOCTL_CLOEXEC/"ioctl_skip_cloexec" sound
-> > to
-> > everyone?
-> > 
-> > Demi, are you able to respin this patch with policy capability
-> > changes?
-> 
-> I can try, but this is something I am doing in my spare time and I
-> have no idea what adding a policy capability would involve.  While I
-> have written several policies myself, I believe this is the first
-> time
-> I have dealt with policy capabilities outside of kernel log output.
-> So it will be a while before I can make a patch.  You would probably
-> be
-> able to write a patch far more quickly and easily.
+On Thu, Feb 17, 2022 at 1:00 PM Mark Rutland <mark.rutland@arm.com> wrote:
+>
+> On Wed, Feb 16, 2022 at 08:01:37PM +0100, andrey.konovalov@linux.dev wrote:
+> > From: Andrey Konovalov <andreyknvl@google.com>
+> >
+> > Print virtual mapping range and its creator in reports affecting virtual
+> > mappings.
+> >
+> > Also get physical page pointer for such mappings, so page information
+> > gets printed as well.
+> >
+> > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> >
+> > ---
+> >
+> > Note: no need to merge this patch into any of the KASAN vmalloc patches
+> > that are already in mm, better to keep it separate.
+> > ---
+> >  mm/kasan/report.c | 12 +++++++++++-
+> >  1 file changed, 11 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+> > index 137c2c0b09db..8002fb3c417d 100644
+> > --- a/mm/kasan/report.c
+> > +++ b/mm/kasan/report.c
+> > @@ -260,8 +260,18 @@ static void print_address_description(void *addr, u8 tag)
+> >               pr_err(" %pS\n", addr);
+> >       }
+> >
+> > +     if (is_vmalloc_addr(addr)) {
+> > +             struct vm_struct *va = find_vm_area(addr);
+> > +
+> > +             pr_err("The buggy address belongs to the virtual mapping at\n"
+> > +                    " [%px, %px) created by:\n"
+> > +                    " %pS\n", va->addr, va->addr + va->size, va->caller);
+>
+> The return value of find_vm_area() needs a NULL check here;
+> is_vmalloc_addr(addr) just checks that `addr` is within the vmalloc VA
+> range, and doesn't guarantee that there is a vmap_area associated with
+> that `addr`.
+>
+> Without the NULL-check, we'll blow up on the `va->addr` dereference and
+> will fail to make the report, which would be unfortunate.
 
-This should help:
-
-# Adding A New Policy Capability
-
-- [Kernel Updates](#kernel-updates)
-- [Reference Policy Updates](#reference-policy-updates)
-
-## Kernel Updates
-
-In kernel source update the following three files with the new
-capability:
-
-***security/selinux/include/policycap_names.h***
-
-Add new entry at end of this list:
-
-```
-/* Policy capability names */
-const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
-	...
-	"genfs_seclabel_symlinks",
-	"new_polcap_name"
-};
-```
-
-***security/selinux/include/policycap.h***
-
-Add new entry at end of this list:
-
-```
-/* Policy capabilities */
-enum {
-	...
-	POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS,
-	POLICYDB_CAPABILITY_NEW_POLCAP_NAME,
-	__POLICYDB_CAPABILITY_MAX
-};
-```
-
-***security/selinux/include/security.h***
-
-Add a new entry that will initialise the new capability:
-
-```
-static inline bool selinux_policycap_new_name(void)
-{
-	struct selinux_state *state = &selinux_state;
-
-	return READ_ONCE(state-
->policycap[POLICYDB_CAPABILITY_NEW_POLCAP_NAME]);
-}
-```
-
-Finally in the updated code that utilises the new policy capabilty do
-something like this:
-
-```
-if (selinux_policycap_new_name())
-	do this;
-else
-	do that;
-```
-
-## Reference Policy Updates
-
-The new policy capability entry is then added to the Reference Policy
-file:
-
-***policy/policy_capabilities***
-
-An example entry that enables the capability in policy is:
-
-```
-# A description of the capability
-policycap new_polcap_name;
-```
-To disable the capability in policy comment out the entry:
-
-```
-# A description of the capability
-#policycap new_polcap_name;
-```
-
+Indeed. Will fix in v2. Thanks, Mark!
