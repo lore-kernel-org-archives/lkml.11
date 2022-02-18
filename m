@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1507EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:19:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38861C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237906AbiBRQTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:19:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44144 "EHLO
+        id S237908AbiBRQTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:19:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237716AbiBRQSC (ORCPT
+        with ESMTP id S237748AbiBRQSK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:18:02 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFFF3A5F1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:45 -0800 (PST)
+        Fri, 18 Feb 2022 11:18:10 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7772B522C
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645201065; x=1676737065;
+  t=1645201070; x=1676737070;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XeiDSHDhSk1ZAnWl9C35VO6F89iKjoQMuwzkA1dSo5A=;
-  b=ec/x21q49yR3xXkV1rg+h7mSQbDHlXh3ZTDnWULLt4M7FJ0x9NZw59bc
-   6m3SwFiYbCTkseE1yTX8Roz/nhwR3WF0aNpJaxkLV0+AnLsBVf0BcpRwL
-   QV9pULGkexFE9riqt1ZH7ofV0QwOEBX3aW3v+W1ECTk2ZXABnsLMR3AFL
-   eJEa+uMMTm1PC3pk0ht89ySNMxQi/Gj44XvcWxDsbWDV2P7MF74ekIMa3
-   p1dlUiA/eKiOwqR/lr46y61w9g89OgrbqiOv2kwC5yyhiDSuVpjSCaN6c
-   Yic2421eBG63NbhiTJzQ0MZLk8W3vUWt8hsDSYRZMKAyjOkcAPJe6rlWn
+  bh=nADhV0lVzgeE1XCdwSRouFO3nFpiweiQ2noYmHhR8jI=;
+  b=LRdSNpC83d9OCv9wSvV4aa/sYNJzu1wlZ77QFJmxUGcemVzjaDPsYjsz
+   e3aMM+VN3zTWi7Oxds78oXgCFrZ8RsZtnIMykgOmuwAJoBkmqskOJrjvZ
+   ubtoPRHq3uGn4YkK0ERezEZbzYIxb3wYkh6OJEdee6ftd2XYlzTHCN7Lr
+   +3Res8VGDZ93FXsMQVvuEvxFXqO8D22uhvDWCSIqRPg90H3yjzItH7oN2
+   pAztlh2dPwHdnw37qcsCuw26ttvzazncmES4rQq987ijlBMw0K1WC9W6y
+   71GMjInvf6lemyQb/cz1cRmAPc/+UooKgwZNpnDdI9ynxkn1xfO+3ElND
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="275753730"
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="251098348"
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="275753730"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:26 -0800
+   d="scan'208";a="251098348"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:26 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="605590602"
+   d="scan'208";a="637782187"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 18 Feb 2022 08:17:20 -0800
+  by orsmga004.jf.intel.com with ESMTP; 18 Feb 2022 08:17:20 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 2F36CD50; Fri, 18 Feb 2022 18:17:23 +0200 (EET)
+        id 64942EC2; Fri, 18 Feb 2022 18:17:23 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -50,102 +50,225 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 23/32] x86/boot: Set CR0.NE early and keep it set during the boot
-Date:   Fri, 18 Feb 2022 19:17:09 +0300
-Message-Id: <20220218161718.67148-24-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: [PATCHv3 27/32] x86/mm/cpa: Generailize __set_memory_enc_pgtable()
+Date:   Fri, 18 Feb 2022 19:17:13 +0300
+Message-Id: <20220218161718.67148-28-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TDX guest requires CR0.NE to be set. Clearing the bit triggers #GP(0).
+TDX steals a bit from the physical address and uses it to indicate
+whether the page is private to the guest (bit set 0) or unprotected
+and shared with the VMM (bit set 1).
 
-If CR0.NE is 0, the MS-DOS compatibility mode for handling floating-point
-exceptions is selected. In this mode, the software exception handler for
-floating-point exceptions is invoked externally using the processor’s
-FERR#, INTR, and IGNNE# pins.
+AMD SEV uses a similar scheme, repurposing a bit from the physical address
+to indicate encrypted or decrypted pages.
 
-Using FERR# and IGNNE# to handle floating-point exception is deprecated.
-CR0.NE=0 also limits newer processors to operate with one logical
-processor active.
+The kernel already has the infrastructure to deal with encrypted/decrypted
+pages for AMD SEV, but TDX requires few tweaks:
 
-Kernel uses CR0_STATE constant to initialize CR0. It has NE bit set.
-But during early boot kernel has more ad-hoc approach to setting bit
-in the register.
+ - TDX and SEV have different requirements to the cache and tlb
+   flushing.
 
-Make CR0 initialization consistent, deriving the initial value of CR0
-from CR0_STATE.
+ - TDX has own routine to notify VMM about page encryption status change.
+
+Modify __set_memory_enc_pgtable() and make it flexible enough to cover
+both AMD SEV and Intel TDX. The AMD-specific behaviour is isolated in
+callback under x86_platform.cc. TDX will provide own version of the
+callbacks.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
 ---
- arch/x86/boot/compressed/head_64.S   | 7 ++++---
- arch/x86/realmode/rm/trampoline_64.S | 8 ++++----
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ arch/x86/include/asm/set_memory.h |  1 -
+ arch/x86/include/asm/x86_init.h   |  7 ++++
+ arch/x86/mm/mem_encrypt_amd.c     | 65 ++++++++++++++++++++-----------
+ arch/x86/mm/pat/set_memory.c      | 10 ++---
+ 4 files changed, 54 insertions(+), 29 deletions(-)
 
-diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
-index fd9441f40457..d0c3d33f3542 100644
---- a/arch/x86/boot/compressed/head_64.S
-+++ b/arch/x86/boot/compressed/head_64.S
-@@ -289,7 +289,7 @@ SYM_FUNC_START(startup_32)
- 	pushl	%eax
+diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
+index ff0f2d90338a..ce8dd215f5b3 100644
+--- a/arch/x86/include/asm/set_memory.h
++++ b/arch/x86/include/asm/set_memory.h
+@@ -84,7 +84,6 @@ int set_pages_rw(struct page *page, int numpages);
+ int set_direct_map_invalid_noflush(struct page *page);
+ int set_direct_map_default_noflush(struct page *page);
+ bool kernel_page_present(struct page *page);
+-void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc);
  
- 	/* Enter paged protected Mode, activating Long Mode */
--	movl	$(X86_CR0_PG | X86_CR0_PE), %eax /* Enable Paging and Protected mode */
-+	movl	$CR0_STATE, %eax
- 	movl	%eax, %cr0
+ extern int kernel_set_to_readonly;
  
- 	/* Jump from 32bit compatibility mode into 64bit mode. */
-@@ -662,8 +662,9 @@ SYM_CODE_START(trampoline_32bit_src)
- 	pushl	$__KERNEL_CS
- 	pushl	%eax
+diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
+index 22b7412c08f6..d38c253cc222 100644
+--- a/arch/x86/include/asm/x86_init.h
++++ b/arch/x86/include/asm/x86_init.h
+@@ -251,6 +251,12 @@ struct x86_hyper_runtime {
+ 	bool (*sev_es_hcall_finish)(struct ghcb *ghcb, struct pt_regs *regs);
+ };
  
--	/* Enable paging again */
--	movl	$(X86_CR0_PG | X86_CR0_PE), %eax
-+	/* Enable paging again. */
-+	movl	%cr0, %eax
-+	btsl	$X86_CR0_PG_BIT, %eax
- 	movl	%eax, %cr0
++struct x86_cc_runtime {
++	int (*enc_status_changed)(unsigned long vaddr, int numpages, bool enc);
++	bool (*enc_tlb_flush_required)(bool enc);
++	bool (*enc_cache_flush_required)(void);
++};
++
+ /**
+  * struct x86_platform_ops - platform specific runtime functions
+  * @calibrate_cpu:		calibrate CPU
+@@ -287,6 +293,7 @@ struct x86_platform_ops {
+ 	struct x86_legacy_features legacy;
+ 	void (*set_legacy_features)(void);
+ 	struct x86_hyper_runtime hyper;
++	const struct x86_cc_runtime *cc;
+ };
  
- 	lret
-diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
-index ae112a91592f..d380f2d1fd23 100644
---- a/arch/x86/realmode/rm/trampoline_64.S
-+++ b/arch/x86/realmode/rm/trampoline_64.S
-@@ -70,7 +70,7 @@ SYM_CODE_START(trampoline_start)
- 	movw	$__KERNEL_DS, %dx	# Data segment descriptor
+ struct x86_apic_ops {
+diff --git a/arch/x86/mm/mem_encrypt_amd.c b/arch/x86/mm/mem_encrypt_amd.c
+index 2b2d018ea345..3fe746be8d90 100644
+--- a/arch/x86/mm/mem_encrypt_amd.c
++++ b/arch/x86/mm/mem_encrypt_amd.c
+@@ -177,25 +177,6 @@ void __init sme_map_bootdata(char *real_mode_data)
+ 	__sme_early_map_unmap_mem(__va(cmdline_paddr), COMMAND_LINE_SIZE, true);
+ }
  
- 	# Enable protected mode
--	movl	$X86_CR0_PE, %eax	# protected mode (PE) bit
-+	movl	$(CR0_STATE & ~X86_CR0_PG), %eax
- 	movl	%eax, %cr0		# into protected mode
+-void __init sme_early_init(void)
+-{
+-	unsigned int i;
+-
+-	if (!sme_me_mask)
+-		return;
+-
+-	early_pmd_flags = __sme_set(early_pmd_flags);
+-
+-	__supported_pte_mask = __sme_set(__supported_pte_mask);
+-
+-	/* Update the protection map with memory encryption mask */
+-	for (i = 0; i < ARRAY_SIZE(protection_map); i++)
+-		protection_map[i] = pgprot_encrypted(protection_map[i]);
+-
+-	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+-		swiotlb_force = SWIOTLB_FORCE;
+-}
+-
+ void __init sev_setup_arch(void)
+ {
+ 	phys_addr_t total_mem = memblock_phys_mem_size();
+@@ -256,7 +237,7 @@ static unsigned long pg_level_to_pfn(int level, pte_t *kpte, pgprot_t *ret_prot)
+ 	return pfn;
+ }
  
- 	# flush prefetch and jump to startup_32
-@@ -148,8 +148,8 @@ SYM_CODE_START(startup_32)
- 	movl	$MSR_EFER, %ecx
- 	wrmsr
+-void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
++static int amd_enc_status_changed(unsigned long vaddr, int npages, bool enc)
+ {
+ #ifdef CONFIG_PARAVIRT
+ 	unsigned long sz = npages << PAGE_SHIFT;
+@@ -270,7 +251,7 @@ void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
+ 		kpte = lookup_address(vaddr, &level);
+ 		if (!kpte || pte_none(*kpte)) {
+ 			WARN_ONCE(1, "kpte lookup for vaddr\n");
+-			return;
++			return 0;
+ 		}
  
--	# Enable paging and in turn activate Long Mode
--	movl	$(X86_CR0_PG | X86_CR0_WP | X86_CR0_PE), %eax
-+	# Enable paging and in turn activate Long Mode.
-+	movl	$CR0_STATE, %eax
- 	movl	%eax, %cr0
+ 		pfn = pg_level_to_pfn(level, kpte, NULL);
+@@ -285,6 +266,44 @@ void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
+ 		vaddr = (vaddr & pmask) + psize;
+ 	}
+ #endif
++	return 0;
++}
++
++static bool amd_enc_tlb_flush_required(bool enc)
++{
++	return true;
++}
++
++static bool amd_enc_cache_flush_required(void)
++{
++	return this_cpu_has(X86_FEATURE_SME_COHERENT);
++}
++
++static const struct x86_cc_runtime amd_cc_runtime = {
++	.enc_status_changed = amd_enc_status_changed,
++	.enc_tlb_flush_required = amd_enc_tlb_flush_required,
++	.enc_cache_flush_required = amd_enc_cache_flush_required,
++};
++
++void __init sme_early_init(void)
++{
++	unsigned int i;
++
++	if (!sme_me_mask)
++		return;
++
++	early_pmd_flags = __sme_set(early_pmd_flags);
++
++	__supported_pte_mask = __sme_set(__supported_pte_mask);
++
++	/* Update the protection map with memory encryption mask */
++	for (i = 0; i < ARRAY_SIZE(protection_map); i++)
++		protection_map[i] = pgprot_encrypted(protection_map[i]);
++
++	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
++		swiotlb_force = SWIOTLB_FORCE;
++
++	x86_platform.cc = &amd_cc_runtime;
+ }
  
- 	/*
-@@ -169,7 +169,7 @@ SYM_CODE_START(pa_trampoline_compat)
- 	movl	$rm_stack_end, %esp
- 	movw	$__KERNEL_DS, %dx
+ static void __init __set_clr_pte_enc(pte_t *kpte, int level, bool enc)
+@@ -392,7 +411,7 @@ static int __init early_set_memory_enc_dec(unsigned long vaddr,
  
--	movl	$X86_CR0_PE, %eax
-+	movl	$(CR0_STATE & ~X86_CR0_PG), %eax
- 	movl	%eax, %cr0
- 	ljmpl   $__KERNEL32_CS, $pa_startup_32
- SYM_CODE_END(pa_trampoline_compat)
+ 	ret = 0;
+ 
+-	notify_range_enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
++	x86_platform.cc->enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
+ out:
+ 	__flush_tlb_all();
+ 	return ret;
+@@ -410,7 +429,7 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size)
+ 
+ void __init early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages, bool enc)
+ {
+-	notify_range_enc_status_changed(vaddr, npages, enc);
++	x86_platform.cc->enc_status_changed(vaddr, npages, enc);
+ }
+ 
+ void __init mem_encrypt_free_decrypted_mem(void)
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index e79366b8a9da..65a27dec095f 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -2007,10 +2007,9 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+ 	kmap_flush_unused();
+ 	vm_unmap_aliases();
+ 
+-	/*
+-	 * Before changing the encryption attribute, we need to flush caches.
+-	 */
+-	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
++	/* Flush caches as needed before changing the encryption attribute. */
++	if (x86_platform.cc->enc_tlb_flush_required(enc))
++		cpa_flush(&cpa, x86_platform.cc->enc_cache_flush_required());
+ 
+ 	ret = __change_page_attr_set_clr(&cpa, 1);
+ 
+@@ -2027,7 +2026,8 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+ 	 * Notify hypervisor that a given memory range is mapped encrypted
+ 	 * or decrypted.
+ 	 */
+-	notify_range_enc_status_changed(addr, numpages, enc);
++	if (!ret)
++		ret = x86_platform.cc->enc_status_changed(addr, numpages, enc);
+ 
+ 	return ret;
+ }
 -- 
 2.34.1
 
