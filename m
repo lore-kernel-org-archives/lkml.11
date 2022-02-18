@@ -2,92 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B739C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABE7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235607AbiBRM5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:57:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35414 "EHLO
+        id S235712AbiBRM6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:58:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235643AbiBRM5L (ORCPT
+        with ESMTP id S235686AbiBRM5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:57:11 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E9C27FCC;
-        Fri, 18 Feb 2022 04:56:37 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id EF41A1F4241F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645188996;
-        bh=zFUQjy3wezXzoLPL7LBwuGlQGw/lZcvr6zcFJ77F9Y0=;
-        h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-        b=hH/5CMbuPz1k5AETD3XwiFw9SHm8qfwGOZWGg4/nk0OmbrmxTpDyZC7YC4NxWxR68
-         FDoKPS/3WZel7kDE7sPXTQSuCh4GdBiL9v/AoFzffvmhR7RiVVV1Tu8t9s47uP0VnQ
-         uCK5PODLJOVyj+Gekic5v4Ula1sik3HKcM7UMFxY55XvNVsrQ4WCxzGXdWUOyj+vhu
-         9nYkiVhSeXh95SFkkNzIzp8hEEvOCZ+T+Zm/JynWLdzrLQi+hYWiCi9EXxZjRKSGZ+
-         ieGUFb2sPsv7DVXsDZ2T+00dwfSWDvsgobmCZfGl7508oVjQb3gb9a0s+TzcCPkLXJ
-         EfDkUiNZxYUYA==
-Message-ID: <b28ca906-efa8-9f6e-8364-b053c1fead2e@collabora.com>
-Date:   Fri, 18 Feb 2022 13:56:33 +0100
+        Fri, 18 Feb 2022 07:57:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99DE33363;
+        Fri, 18 Feb 2022 04:57:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12A5B60AFD;
+        Fri, 18 Feb 2022 12:57:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 465C5C340E9;
+        Fri, 18 Feb 2022 12:57:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645189020;
+        bh=rUxvNFgonoAuLA33gOMyiOrfFD2DvpL2w4FzX9GKdIo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=niE6ZUuTmbQ7TRwS9gYorjiGlxQb8rljzceGARLh7tGeLXTs9TFaUCJkWCoU1Sma7
+         l+nBaT/VqiXvGcYTiRGpzA4pb5QN5k+Cz5Arb8I1bMj1711KbWeLmURFw42Mdz40Ox
+         wF9ziwHlVac83VEZzG0Q5neclS3ps67WoM3lhGa5HzgkhGsLWTSs07Y+zPzyipyp3B
+         h7A0+VGFoNUw9IWI77Ixu4nkZpGxHHHS2CCjqScsbS+j8LEKB5/GXN9UUN7N+Ti1nY
+         +t/RSApmUFCIcul8JFJpbmCrvuFk9Dhm7ELlh9ukrLNeF0r1YKaxSI77TCww+ht3fv
+         vrm89y0ZMIbYQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 1C7D4400FE; Fri, 18 Feb 2022 09:56:58 -0300 (-03)
+Date:   Fri, 18 Feb 2022 09:56:58 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     John Garry <john.garry@huawei.com>, peterz@infradead.org,
+        mingo@redhat.com, mark.rutland@arm.com, jolsa@kernel.org,
+        namhyung@kernel.org, elver@google.com, dvyukov@google.com,
+        will@kernel.org, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux@armlinux.org.uk, tmricht@linux.ibm.com, irogers@google.com
+Subject: Re: [PATCH v2] perf test: Skip Sigtrap test for arm+aarch64
+Message-ID: <Yg+Xmt27POS2y2LI@kernel.org>
+References: <1645176813-202756-1-git-send-email-john.garry@huawei.com>
+ <20220218104611.GD56419@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v2 23/23] arm64: dts: mt8192: Add pwm node
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        --to=Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>
-References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
- <20220218091633.9368-24-allen-kh.cheng@mediatek.com>
-Content-Language: en-US
-In-Reply-To: <20220218091633.9368-24-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218104611.GD56419@leoy-ThinkPad-X240s>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 18/02/22 10:16, Allen-KH Cheng ha scritto:
-> Add pwm node for mt8192 SoC.
+Em Fri, Feb 18, 2022 at 06:46:11PM +0800, Leo Yan escreveu:
+> On Fri, Feb 18, 2022 at 05:33:33PM +0800, John Garry wrote:
+> > Skip the Sigtrap test for arm + arm64, same as was done for s390 in
+> > commit a840974e96fd ("perf test: Test 73 Sig_trap fails on s390"). For
+> > this, reuse BP_SIGNAL_IS_SUPPORTED - meaning that the arch can use BP to
+> > generate signals - instead of BP_ACCOUNT_IS_SUPPORTED, which is
+> > appropriate.
+> > 
+> > As described by Will at [0], in the test we get stuck in a loop of handling
+> > the HW breakpoint exception and never making progress. GDB handles this
+> > by stepping over the faulting instruction, but with perf the kernel is
+> > expected to handle the step (which it doesn't for arm).
+> > 
+> > Dmitry made an attempt to get this work, also mentioned in the same thread
+> > as [0], which was appreciated. But the best thing to do is skip the test
+> > for now.
+> > 
+> > [0] https://lore.kernel.org/linux-perf-users/20220118124343.GC98966@leoy-ThinkPad-X240s/T/#m13b06c39d2a5100d340f009435df6f4d8ee57b5a
+> > 
+> > Fixes: Fixes: 5504f67944484 ("perf test sigtrap: Add basic stress test for sigtrap handling")
+> > Signed-off-by: John Garry <john.garry@huawei.com>
 > 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 10 ++++++++++
->   1 file changed, 10 insertions(+)
+> I tested this patch on my Juno board:
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index df884c48669e..c0fc723fdf0a 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -642,6 +642,16 @@
->   			status = "disabled";
->   		};
->   
-> +		pwm0: pwm@1100e000 {
-> +			compatible = "mediatek,mt8183-disp-pwm";
-> +			reg = <0 0x1100e000 0 0x1000>;
-> +			interrupts = <GIC_SPI 171 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			#pwm-cells = <2>;
-> +			clocks = <&topckgen CLK_TOP_DISP_PWM_SEL>,
-> +				 <&infracfg CLK_INFRA_DISP_PWM>;
-> +			clock-names = "main", "mm";
-
-Depending on the machine, some displays may not be using this PWM node, so:
-
-			status = "disabled";
-
-> +		};
-> +
->   		spi1: spi@11010000 {
->   			compatible = "mediatek,mt8192-spi",
->   				     "mediatek,mt6765-spi";
+> root@Juno:# ./perf test 73
+>  73: Sigtrap                                                         : Skip
 > 
+> Tested-by: Leo Yan <leo.yan@linaro.org>
+
+Thanks, applied.
+
+- Arnaldo
 
