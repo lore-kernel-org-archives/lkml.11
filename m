@@ -2,71 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E28C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 06:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20814C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 06:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231269AbiBRGOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 01:14:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40332 "EHLO
+        id S231279AbiBRGRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 01:17:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230354AbiBRGOf (ORCPT
+        with ESMTP id S229993AbiBRGRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 01:14:35 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075A14474B
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 22:14:18 -0800 (PST)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K0Lrc6tsGzZfjP;
-        Fri, 18 Feb 2022 14:09:52 +0800 (CST)
-Received: from [10.174.177.174] (10.174.177.174) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Feb 2022 14:14:16 +0800
-Subject: Re: [PATCH -next v3 0/2] jffs2: fix two memory leak when mount jffs2
-To:     <richard@nod.at>, <dwmw2@infradead.org>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     <yukuai3@huawei.com>, Baokun Li <libaokun1@huawei.com>
-References: <20220114102854.3399585-1-libaokun1@huawei.com>
-From:   "libaokun (A)" <libaokun1@huawei.com>
-Message-ID: <807c22e0-4d0d-c658-87f7-06689833e578@huawei.com>
-Date:   Fri, 18 Feb 2022 14:14:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
-MIME-Version: 1.0
-In-Reply-To: <20220114102854.3399585-1-libaokun1@huawei.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.174]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
+        Fri, 18 Feb 2022 01:17:07 -0500
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFBF237FE;
+        Thu, 17 Feb 2022 22:16:49 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V4ngyTv_1645165006;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0V4ngyTv_1645165006)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 18 Feb 2022 14:16:47 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     bcrl@kvack.org, viro@zeniv.linux.org.uk
+Cc:     linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: [PATCH] aio: make io return value more readable
+Date:   Fri, 18 Feb 2022 14:16:40 +0800
+Message-Id: <20220218061640.444038-1-xianting.tian@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ÔÚ 2022/1/14 18:28, Baokun Li Ð´µÀ:
+We may need to enable the debug prints in aio_complete when met io error
+issue. We got below prints, fffffffffffffffb means the io err is EIO(-5),
+but it's not readable.
+[   33.304182] aio_complete: 00000000b3c70ea0[17]: 00000000cd131d11: 0000000023803e77 3fc2b160f0 fffffffffffffffb 0
 
-ping
+Below prints are more readable, the value(-5) matches the errno defined
+in include/uapi/asm-generic/errno-base.h,
+[   98.187270] aio_complete: 00000000220ae523[10]: 00000000045ed171: 000000004c334ae4 3fc211a330 -5 0
 
-> V1->V2:
-> 	In jffs2_scan_medium,
-> 	if s = kzalloc(sizeof(struct jffs2_summary), GFP_KERNEL);
-> 	returns error, go to "out" to do clear. Null pointer dereference
-> 	occurs when if (s->sum_list_head) is executed in "out".
->
-> V2->V3:
-> 	Sorry for the noise, but there seems to be a more elegant way to
-> 	fix the memory leak in jffs2_scan_medium. When memory allocation
-> 	fails or CONFIG_JFFS2_SUMMARY is N, s is NULL.For the former case,
-> 	add the new tag "out_buf" to avoid it.In the latter case,
-> 	jffs2_sum_reset_collected is also an empty function and does nothing.
->
-> Baokun Li (2):
->    jffs2: fix memory leak in jffs2_do_mount_fs
->    jffs2: fix memory leak in jffs2_scan_medium
->
->   fs/jffs2/build.c | 4 +++-
->   fs/jffs2/scan.c  | 6 ++++--
->   2 files changed, 7 insertions(+), 3 deletions(-)
->
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+---
+ fs/aio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/aio.c b/fs/aio.c
+index 4ceba13a7..45a9ff3d2 100644
+--- a/fs/aio.c
++++ b/fs/aio.c
+@@ -1140,7 +1140,7 @@ static void aio_complete(struct aio_kiocb *iocb)
+ 	kunmap_atomic(ev_page);
+ 	flush_dcache_page(ctx->ring_pages[pos / AIO_EVENTS_PER_PAGE]);
+ 
+-	pr_debug("%p[%u]: %p: %p %Lx %Lx %Lx\n", ctx, tail, iocb,
++	pr_debug("%p[%u]: %p: %p %Lx %Ld %Ld\n", ctx, tail, iocb,
+ 		 (void __user *)(unsigned long)iocb->ki_res.obj,
+ 		 iocb->ki_res.data, iocb->ki_res.res, iocb->ki_res.res2);
+ 
+-- 
+2.17.1
 
