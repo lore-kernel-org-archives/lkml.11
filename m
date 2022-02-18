@@ -2,229 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D240C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234555AbiBRLgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:36:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43550 "EHLO
+        id S233725AbiBRLgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:36:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231401AbiBRLg3 (ORCPT
+        with ESMTP id S231401AbiBRLgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 06:36:29 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7192B0B09;
-        Fri, 18 Feb 2022 03:36:12 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        Fri, 18 Feb 2022 06:36:35 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8292B0B09
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:16 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 28C461F37E;
-        Fri, 18 Feb 2022 11:36:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1645184171; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HtVRqY5mj+1ot6ask8ypWEFapCcKpgqxAJN0KSyFo0Q=;
-        b=KPjfiGUuLLS6qB9u9JEdcyKuiCyidhQnmCyuPuS60KGQzD8Ky8pVwiX9mBSrMWWRQ5yZdM
-        d5JspTCKqBgCtcSmIME3aObYf6WaG0nHdKS+UY+vhx23w60HOfXvLMiNHSjwEQrc9Ef7F3
-        zW6cw+BUIznkjnLQRbUQ9j2kaPTL8Kg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1645184171;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HtVRqY5mj+1ot6ask8ypWEFapCcKpgqxAJN0KSyFo0Q=;
-        b=p8v97HL5hFor8+Q8KRm9ohou73TDGhO5SeRh809NQy17UVgEjwHp5LrmXTYvY2i7G4kWrZ
-        CfMj/jrIH7kKY1Dw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A4CA613C7A;
-        Fri, 18 Feb 2022 11:36:10 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id GTs1J6qED2J/LQAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Fri, 18 Feb 2022 11:36:10 +0000
-Message-ID: <a789e375-a23e-6988-33bc-1410eb5d974f@suse.de>
-Date:   Fri, 18 Feb 2022 12:36:10 +0100
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5AD9A22239;
+        Fri, 18 Feb 2022 12:36:13 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645184174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9TlnQxnR88dBx+W0DgIZNYVu/Pyuax2FALjMy5Y26hA=;
+        b=fKlNwt/jYJrztVEeI5/UTMOCNQbgUyqv6daQaEtdYPHx7VJXfnkPUjmtfDEEhvcK92uoXK
+        w5m0T1mOTNqiLV+veF9sllwGLfl9Us35dcM++Y4Uhoj/J67fZRSDIIyIk8ReubJ2vAyR5a
+        uSCYNgWgOl7DrcfNp3AsAwZwz6mXcsg=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH v2 00/32] mtd: spi-nor: move vendor specific code into vendor modules
+Date:   Fri, 18 Feb 2022 12:35:35 +0100
+Message-Id: <20220218113607.1360020-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] simplefb: Enable boot time VESA graphic mode
- selection.
-Content-Language: en-US
-To:     Michal Suchanek <msuchanek@suse.de>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Cc:     Martin Mares <mj@ucw.cz>, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Helge Deller <deller@gmx.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Simon Trimmer <simont@opensource.cirrus.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Rob Herring <robh@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Herrmann <dh.herrmann@gmail.com>,
-        linux-video@atrey.karlin.mff.cuni.cz, linux-kernel@vger.kernel.org
-References: <14dd85f1-21b1-2ff7-3491-466c077210e6@suse.de>
- <20220218105138.5384-1-msuchanek@suse.de>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <20220218105138.5384-1-msuchanek@suse.de>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------BwkCJlWNQzpiHXpoHWQCjojT"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------BwkCJlWNQzpiHXpoHWQCjojT
-Content-Type: multipart/mixed; boundary="------------TJ5YGH0xpLn944Ddd26O6o90";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Michal Suchanek <msuchanek@suse.de>, dri-devel@lists.freedesktop.org,
- linux-fbdev@vger.kernel.org
-Cc: Martin Mares <mj@ucw.cz>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>, Helge Deller <deller@gmx.de>,
- Daniel Vetter <daniel.vetter@ffwll.ch>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Sudeep Holla <sudeep.holla@arm.com>,
- Javier Martinez Canillas <javierm@redhat.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Simon Trimmer <simont@opensource.cirrus.com>, Arnd Bergmann <arnd@arndb.de>,
- Cristian Marussi <cristian.marussi@arm.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Rob Herring <robh@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- David Herrmann <dh.herrmann@gmail.com>,
- linux-video@atrey.karlin.mff.cuni.cz, linux-kernel@vger.kernel.org
-Message-ID: <a789e375-a23e-6988-33bc-1410eb5d974f@suse.de>
-Subject: Re: [PATCH v2] simplefb: Enable boot time VESA graphic mode
- selection.
-References: <14dd85f1-21b1-2ff7-3491-466c077210e6@suse.de>
- <20220218105138.5384-1-msuchanek@suse.de>
-In-Reply-To: <20220218105138.5384-1-msuchanek@suse.de>
+It turns out that most of the special status register handling is
+specific for a particular vendor. I.e. Xilinx has some different
+opcodes for the status register read, Micron has an additional FSR
+register and Spansion has these flags integrated into the SR.
 
---------------TJ5YGH0xpLn944Ddd26O6o90
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Create a callback to ready() where a flash chip can register its
+own function. This will let us move all the vendor specific stuff
+out of the core into the vendor modules.
 
-SGkNCg0KQW0gMTguMDIuMjIgdW0gMTE6NTEgc2NocmllYiBNaWNoYWwgU3VjaGFuZWs6DQo+
-IFNpbmNlIHN3aXRjaCB0byBzaW1wbGVmYi9zaW1wbGVkcm0gVkVTQSBncmFwaGljIG1vZGVz
-IGFyZSBubyBsb25nZXINCj4gYXZhaWxhYmxlIHdpdGggbGVnYWN5IEJJT1MuDQo+IA0KPiBU
-aGUgeDg2IHJlYWxtb2RlIGJvb3QgY29kZSBlbmFibGVzIHRoZSBWRVNBIGdyYXBoaWMgbW9k
-ZXMgd2hlbiBvcHRpb24NCj4gRkJfQk9PVF9WRVNBX1NVUFBPUlQgaXMgZW5hYmxlZC4NCj4g
-DQo+IFRvIGVuYWJsZSB1c2Ugb2YgVkVTQSBtb2RlcyB3aXRoIHNpbXBsZWRybSBpbiBsZWdh
-Y3kgQklPUyBib290IG1vZGUgZHJvcA0KPiBkZXBlbmRlbmN5IG9mIEJPT1RfVkVTQV9TVVBQ
-T1JUIG9uIEZCLCBhbHNvIGRyb3AgdGhlIEZCXyBwcmVmaXgsIGFuZA0KPiBzZWxlY3QgdGhl
-IG9wdGlvbiB3aGVuIHNpbXBsZWRybSBpcyBidWlsdC1pbiBvbiB4ODYuDQo+IA0KPiBGaXhl
-czogZTMyNjNhYjM4OWE3ICgieDg2OiBwcm92aWRlIHBsYXRmb3JtLWRldmljZXMgZm9yIGJv
-b3QtZnJhbWVidWZmZXJzIikNCj4gU2lnbmVkLW9mZi1ieTogTWljaGFsIFN1Y2hhbmVrIDxt
-c3VjaGFuZWtAc3VzZS5kZT4NCj4gLS0tDQo+IHYyOiBTZWxlY3QgQk9PVF9WRVNBX1NVUFBP
-UlQgZnJvbSBzaW1wbGVmYiByYXRoZXIgdGhhbiBzaW1wbGVkcm0uIFRoZQ0KPiBzaW1wbGVk
-cm0gZHJpdmVyIHVzZXMgdGhlIGZpcm13YXJlIHByb3ZpZGVkIHZpZGVvIG1vZGVzIG9ubHkg
-aW5kaXJlY3RseQ0KPiB0aHJvdWdoIHNpbXBsZWZiLCBhbmQgYm90aCBjYW4gYmUgZW5hYmxl
-ZCBpbmRlcGVuZGVudGx5Lg0KPiAtLS0NCj4gICBhcmNoL3g4Ni9ib290L3ZpZGVvLXZlc2Eu
-YyAgfCA0ICsrLS0NCj4gICBkcml2ZXJzL2Zpcm13YXJlL0tjb25maWcgICAgfCAxICsNCj4g
-ICBkcml2ZXJzL3ZpZGVvL2ZiZGV2L0tjb25maWcgfCA5ICsrKystLS0tLQ0KPiAgIDMgZmls
-ZXMgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlm
-ZiAtLWdpdCBhL2FyY2gveDg2L2Jvb3QvdmlkZW8tdmVzYS5jIGIvYXJjaC94ODYvYm9vdC92
-aWRlby12ZXNhLmMNCj4gaW5kZXggN2UxODU5NzdhOTg0Li5jMmM2ZDM1ZTNhNDMgMTAwNjQ0
-DQo+IC0tLSBhL2FyY2gveDg2L2Jvb3QvdmlkZW8tdmVzYS5jDQo+ICsrKyBiL2FyY2gveDg2
-L2Jvb3QvdmlkZW8tdmVzYS5jDQo+IEBAIC04Myw3ICs4Myw3IEBAIHN0YXRpYyBpbnQgdmVz
-YV9wcm9iZSh2b2lkKQ0KPiAgIAkJCSAgICh2bWluZm8ubWVtb3J5X2xheW91dCA9PSA0IHx8
-DQo+ICAgCQkJICAgIHZtaW5mby5tZW1vcnlfbGF5b3V0ID09IDYpICYmDQo+ICAgCQkJICAg
-dm1pbmZvLm1lbW9yeV9wbGFuZXMgPT0gMSkgew0KPiAtI2lmZGVmIENPTkZJR19GQl9CT09U
-X1ZFU0FfU1VQUE9SVA0KPiArI2lmZGVmIENPTkZJR19CT09UX1ZFU0FfU1VQUE9SVA0KPiAg
-IAkJCS8qIEdyYXBoaWNzIG1vZGUsIGNvbG9yLCBsaW5lYXIgZnJhbWUgYnVmZmVyDQo+ICAg
-CQkJICAgc3VwcG9ydGVkLiAgT25seSByZWdpc3RlciB0aGUgbW9kZSBpZg0KPiAgIAkJCSAg
-IGlmIGZyYW1lYnVmZmVyIGlzIGNvbmZpZ3VyZWQsIGhvd2V2ZXIsDQo+IEBAIC0xMjEsNyAr
-MTIxLDcgQEAgc3RhdGljIGludCB2ZXNhX3NldF9tb2RlKHN0cnVjdCBtb2RlX2luZm8gKm1v
-ZGUpDQo+ICAgCWlmICgodm1pbmZvLm1vZGVfYXR0ciAmIDB4MTUpID09IDB4MDUpIHsNCj4g
-ICAJCS8qIEl0J3MgYSBzdXBwb3J0ZWQgdGV4dCBtb2RlICovDQo+ICAgCQlpc19ncmFwaGlj
-ID0gMDsNCj4gLSNpZmRlZiBDT05GSUdfRkJfQk9PVF9WRVNBX1NVUFBPUlQNCj4gKyNpZmRl
-ZiBDT05GSUdfQk9PVF9WRVNBX1NVUFBPUlQNCj4gICAJfSBlbHNlIGlmICgodm1pbmZvLm1v
-ZGVfYXR0ciAmIDB4OTkpID09IDB4OTkpIHsNCj4gICAJCS8qIEl0J3MgYSBncmFwaGljcyBt
-b2RlIHdpdGggbGluZWFyIGZyYW1lIGJ1ZmZlciAqLw0KPiAgIAkJaXNfZ3JhcGhpYyA9IDE7
-DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2Zpcm13YXJlL0tjb25maWcgYi9kcml2ZXJzL2Zp
-cm13YXJlL0tjb25maWcNCj4gaW5kZXggNzVjYjkxMDU1YzE3Li44MDUzYzc1Yjg2NDUgMTAw
-NjQ0DQo+IC0tLSBhL2RyaXZlcnMvZmlybXdhcmUvS2NvbmZpZw0KPiArKysgYi9kcml2ZXJz
-L2Zpcm13YXJlL0tjb25maWcNCj4gQEAgLTIyNCw2ICsyMjQsNyBAQCBjb25maWcgU1lTRkIN
-Cj4gICBjb25maWcgU1lTRkJfU0lNUExFRkINCj4gICAJYm9vbCAiTWFyayBWR0EvVkJFL0VG
-SSBGQiBhcyBnZW5lcmljIHN5c3RlbSBmcmFtZWJ1ZmZlciINCj4gICAJZGVwZW5kcyBvbiBT
-WVNGQg0KPiArCXNlbGVjdCBCT09UX1ZFU0FfU1VQUE9SVCBpZiBYODYNCj4gICAJaGVscA0K
-PiAgIAkgIEZpcm13YXJlcyBvZnRlbiBwcm92aWRlIGluaXRpYWwgZ3JhcGhpY3MgZnJhbWVi
-dWZmZXJzIHNvIHRoZSBCSU9TLA0KPiAgIAkgIGJvb3Rsb2FkZXIgb3Iga2VybmVsIGNhbiBz
-aG93IGJhc2ljIHZpZGVvLW91dHB1dCBkdXJpbmcgYm9vdCBmb3INCj4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvdmlkZW8vZmJkZXYvS2NvbmZpZyBiL2RyaXZlcnMvdmlkZW8vZmJkZXYvS2Nv
-bmZpZw0KPiBpbmRleCA2ZWQ1ZTYwOGRkMDQuLjRmM2JlOWI3YTUyMCAxMDA2NDQNCj4gLS0t
-IGEvZHJpdmVycy92aWRlby9mYmRldi9LY29uZmlnDQo+ICsrKyBiL2RyaXZlcnMvdmlkZW8v
-ZmJkZXYvS2NvbmZpZw0KPiBAQCAtNjYsOSArNjYsOCBAQCBjb25maWcgRkJfRERDDQo+ICAg
-CXNlbGVjdCBJMkNfQUxHT0JJVA0KPiAgIAlzZWxlY3QgSTJDDQo+ICAgDQo+IC1jb25maWcg
-RkJfQk9PVF9WRVNBX1NVUFBPUlQNCj4gK2NvbmZpZyBCT09UX1ZFU0FfU1VQUE9SVA0KPiAg
-IAlib29sDQo+IC0JZGVwZW5kcyBvbiBGQg0KPiAgIAloZWxwDQo+ICAgCSAgSWYgdHJ1ZSwg
-YXQgbGVhc3Qgb25lIHNlbGVjdGVkIGZyYW1lYnVmZmVyIGRyaXZlciBjYW4gdGFrZSBhZHZh
-bnRhZ2UNCj4gICAJICBvZiBWRVNBIHZpZGVvIG1vZGVzIHNldCBhdCBhbiBlYXJseSBib290
-IHN0YWdlIHZpYSB0aGUgdmdhPSBwYXJhbWV0ZXIuDQoNClRoaXMgaXNuJ3QgYW4gZmIgb3B0
-aW9uIGFueSBsb25nZXIuIFNob3VsZCB3ZSBtb3ZlIHRoaXMgaW50byANCmFyY2gveDg2L0tj
-b25maWcgPw0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQo+IEBAIC02MjcsNyArNjI2LDcg
-QEAgY29uZmlnIEZCX1ZFU0ENCj4gICAJc2VsZWN0IEZCX0NGQl9GSUxMUkVDVA0KPiAgIAlz
-ZWxlY3QgRkJfQ0ZCX0NPUFlBUkVBDQo+ICAgCXNlbGVjdCBGQl9DRkJfSU1BR0VCTElUDQo+
-IC0Jc2VsZWN0IEZCX0JPT1RfVkVTQV9TVVBQT1JUDQo+ICsJc2VsZWN0IEJPT1RfVkVTQV9T
-VVBQT1JUDQo+ICAgCWhlbHANCj4gICAJICBUaGlzIGlzIHRoZSBmcmFtZSBidWZmZXIgZGV2
-aWNlIGRyaXZlciBmb3IgZ2VuZXJpYyBWRVNBIDIuMA0KPiAgIAkgIGNvbXBsaWFudCBncmFw
-aGljIGNhcmRzLiBUaGUgb2xkZXIgVkVTQSAxLjIgY2FyZHMgYXJlIG5vdCBzdXBwb3J0ZWQu
-DQo+IEBAIC0xMDUxLDcgKzEwNTAsNyBAQCBjb25maWcgRkJfSU5URUwNCj4gICAJc2VsZWN0
-IEZCX0NGQl9GSUxMUkVDVA0KPiAgIAlzZWxlY3QgRkJfQ0ZCX0NPUFlBUkVBDQo+ICAgCXNl
-bGVjdCBGQl9DRkJfSU1BR0VCTElUDQo+IC0Jc2VsZWN0IEZCX0JPT1RfVkVTQV9TVVBQT1JU
-IGlmIEZCX0lOVEVMID0geQ0KPiArCXNlbGVjdCBCT09UX1ZFU0FfU1VQUE9SVCBpZiBGQl9J
-TlRFTCA9IHkNCj4gICAJZGVwZW5kcyBvbiAhRFJNX0k5MTUNCj4gICAJaGVscA0KPiAgIAkg
-IFRoaXMgZHJpdmVyIHN1cHBvcnRzIHRoZSBvbi1ib2FyZCBncmFwaGljcyBidWlsdCBpbiB0
-byB0aGUgSW50ZWwNCj4gQEAgLTEzNzgsNyArMTM3Nyw3IEBAIGNvbmZpZyBGQl9TSVMNCj4g
-ICAJc2VsZWN0IEZCX0NGQl9GSUxMUkVDVA0KPiAgIAlzZWxlY3QgRkJfQ0ZCX0NPUFlBUkVB
-DQo+ICAgCXNlbGVjdCBGQl9DRkJfSU1BR0VCTElUDQo+IC0Jc2VsZWN0IEZCX0JPT1RfVkVT
-QV9TVVBQT1JUIGlmIEZCX1NJUyA9IHkNCj4gKwlzZWxlY3QgQk9PVF9WRVNBX1NVUFBPUlQg
-aWYgRkJfU0lTID0geQ0KPiAgIAlzZWxlY3QgRkJfU0lTXzMwMCBpZiAhRkJfU0lTXzMxNQ0K
-PiAgIAloZWxwDQo+ICAgCSAgVGhpcyBpcyB0aGUgZnJhbWUgYnVmZmVyIGRldmljZSBkcml2
-ZXIgZm9yIHRoZSBTaVMgMzAwLCAzMTUsIDMzMA0KDQotLSANClRob21hcyBaaW1tZXJtYW5u
-DQpHcmFwaGljcyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9ucyBH
-ZXJtYW55IEdtYkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFueQ0K
-KEhSQiAzNjgwOSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBUb3Rl
-dg0K
+As a preparation step, unify all function and object names in the
+vendor modules. For the sake of consistency and better readability
+of the code flow, I also converted the setup() callback to be
+optional.
 
---------------TJ5YGH0xpLn944Ddd26O6o90--
+Please note that this is only compile-time tested.
 
---------------BwkCJlWNQzpiHXpoHWQCjojT
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+Changes since v1:
+ - rename/unify function names inside the vendor modules.
+ - make local functions static
+ - fix function doc typo
+ - use late_init hook to set fsr_ready op
+ - Use uppercase and period in comments
+ - Add comments for the vendor flags
+ - move coding style change in spi_nor_sr_ready() into own patch
+ - new patch to add missing parenthesis in S3AN_INFO()
+ - add missing function prefix rename patch for the spansion module
 
------BEGIN PGP SIGNATURE-----
+Michael Walle (32):
+  mtd: spi-nor: atmel: unify function names
+  mtd: spi-nor: catalyst: unify function names
+  mtd: spi-nor: eon: unify function names
+  mtd: spi-nor: esmt: unify function names
+  mtd: spi-nor: everspin: unify function names
+  mtd: spi-nor: fujitsu: unify function names
+  mtd: spi-nor: gigadevice: unify function names
+  mtd: spi-nor: intel: unify function names
+  mtd: spi-nor: issi: unify function names
+  mtd: spi-nor: macronix: unify function names
+  mtd: spi-nor: micron-st: unify function names
+  mtd: spi-nor: spansion: unify function names
+  mtd: spi-nor: sst: unify function names
+  mtd: spi-nor: winbond: unify function names
+  mtd: spi-nor: xilinx: unify function names
+  mtd: spi-nor: xmc: unify function names
+  mtd: spi-nor: slightly refactor the spi_nor_setup()
+  mtd: spi-nor: allow a flash to define its own ready() function
+  mtd: spi-nor: export more function to be used in vendor modules
+  mtd: spi-nor: guard _page_size parameter in S3AN_INFO()
+  mtd: spi-nor: move all xilinx specifics into xilinx.c
+  mtd: spi-nor: xilinx: rename vendor specific functions and defines
+  mtd: spi-nor: xilinx: correct the debug message
+  mtd: spi-nor: move all micron-st specifics into micron-st.c
+  mtd: spi-nor: micron-st: convert USE_FSR to a manufacturer flag
+  mtd: spi-nor: micron-st: rename vendor specific functions and defines
+  mtd: spi-nor: spansion: slightly rework control flow in late_init()
+  mtd: spi-nor: move all spansion specifics into spansion.c
+  mtd: spi-nor: spansion: convert USE_CLSR to a manufacturer flag
+  mtd: spi-nor: spansion: rename vendor specific functions and defines
+  mtd: spi-nor: slightly change code style in spi_nor_sr_ready()
+  mtd: spi-nor: renumber flags
 
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIPhKoFAwAAAAAACgkQlh/E3EQov+DS
-ThAAonZ6Axq6Cit8sPLPVSbu37hyat9FxIRHCQPvN4kIlIpHxiBdwbGKZDzjgFsKl2MRTUfePnJp
-0zdP0ZtPLyzJydpkO3aqrHZ6e3y8CLjMmOApjtlx+38kcB8N3lZRLbttwvvDJSEL6wd0GcWNl59R
-wMjh01sekxt3Pmfo2cprNchSshsnemmHCYHwTiOtk8wTBlqQejcy7Zyp79uoAYwoCQutjTZ9L+OW
-9lD7MAeJk7+OT4hqxGwtui5xgBI6ccH8EaxnVoexhUS5nJu0IBpB+ewZDLFfEeguwImROYqxAcGY
-xIZBexNRaGB8GwtRS2HntXbiqbJ6HLoNIiR31wAM9ALiHe6WEKmbIDs6TnSEo7pIQMIUajUS7kW5
-XPY14wjvIOSAz9qC3H3PuhBYQDcXNwLYO6mrBephph8iZVKql3W2vXrqSmA8rOoRBHcbJzGFajtk
-fJE2qN/KB8s3nS+oRtl8oy/ZD+vnSpQO2uOpdFIr+u0yfe+BmVBNZKy2FYHuTawQcBn5WfLvKxaw
-VLe0lGOc9jUePTrpTvhi2a5a0WssY/xC8BHuU5Z2wBRKFbxhBjvfirVH/z7neeSFLS/1rEHV/PRl
-0zBx7IFm5RSayIybvqKery+6tFO+rf1ojKClF93/H6VY8jDJv8td7z8+H6rwl5CaiW7NGPnSKPM8
-Zgg=
-=4fyI
------END PGP SIGNATURE-----
+ drivers/mtd/spi-nor/atmel.c      |  81 +++++-----
+ drivers/mtd/spi-nor/catalyst.c   |   6 +-
+ drivers/mtd/spi-nor/core.c       | 265 ++-----------------------------
+ drivers/mtd/spi-nor/core.h       |  70 ++++----
+ drivers/mtd/spi-nor/eon.c        |   6 +-
+ drivers/mtd/spi-nor/esmt.c       |   6 +-
+ drivers/mtd/spi-nor/everspin.c   |   6 +-
+ drivers/mtd/spi-nor/fujitsu.c    |   6 +-
+ drivers/mtd/spi-nor/gigadevice.c |   6 +-
+ drivers/mtd/spi-nor/intel.c      |   6 +-
+ drivers/mtd/spi-nor/issi.c       |  10 +-
+ drivers/mtd/spi-nor/macronix.c   |  14 +-
+ drivers/mtd/spi-nor/micron-st.c  | 258 ++++++++++++++++++++++++------
+ drivers/mtd/spi-nor/spansion.c   | 154 +++++++++++++-----
+ drivers/mtd/spi-nor/sst.c        |  20 +--
+ drivers/mtd/spi-nor/winbond.c    |  26 +--
+ drivers/mtd/spi-nor/xilinx.c     |  93 +++++++++--
+ drivers/mtd/spi-nor/xmc.c        |   6 +-
+ include/linux/mtd/spi-nor.h      |  18 ---
+ 19 files changed, 555 insertions(+), 502 deletions(-)
 
---------------BwkCJlWNQzpiHXpoHWQCjojT--
+-- 
+2.30.2
+
