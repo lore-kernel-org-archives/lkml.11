@@ -2,81 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1671DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 20:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4458AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 20:28:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239457AbiBRU2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 15:28:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46698 "EHLO
+        id S239468AbiBRU2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 15:28:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232178AbiBRU2l (ORCPT
+        with ESMTP id S232178AbiBRU2n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 15:28:41 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50236207564
+        Fri, 18 Feb 2022 15:28:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E978621D0A4
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 12:28:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645216106;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GNaUEreaifOp/OglB8GJSgfLwiBjVBu/cwnxKYI2cd8=;
+        b=esZiUYThHK6XVdsAcw1v7Mb/7D4AL9uoqkL/rCFlAF5wuHU22eLCF0Ef0F3EbBfImqCs6u
+        351VTKNDeoX26mpAe0WV65tWMleKZTWkraS6oxxgxKqSIvmArZhkW3WT9U+sOnDFeBWg+W
+        aOXxmEnE/Nk8BuvE/sc2qwC4sVvMP5k=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-271-XR1IhEs3NUOW0IZo1rqXvA-1; Fri, 18 Feb 2022 15:28:24 -0500
+X-MC-Unique: XR1IhEs3NUOW0IZo1rqXvA-1
+Received: by mail-qk1-f197.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so8380544qkb.23
         for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 12:28:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645216104; x=1676752104;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=FEyHDEeiGITgQ5C1kGhGtXe6uQjqnf5Jir8+Rthta+8=;
-  b=CjDUwhhBADF1wW4WvASPUOfrhqVEn6kPG/HuLGUZuNwzGI8HsElaQA77
-   PSRT7nhGrpGjsxhzvHPWDn2+/I0GRDBwpKrJJ9mvEimjPDptdvppiWwEq
-   YF4yDg/UZKGR0j160KQGKCEhL9UacshYPqQBX7upAGjhPvkEX2GJ+gofu
-   Ic+bqtEz0iQCxspnkHAN+iFeOcyavVQZocwFlnb2DMNlCkZP5lf9yJnb3
-   8gepLjGfdKo/2AiH90duAehkDuA+UGBjrzq1tJUsRPUcYg9VhDu2XQ/rv
-   qBPgipqGi3UBvHgcSCBWN+mwc1AHYDDtDaczi9MRAkmeaVn6p8aW9+4ww
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10262"; a="234749830"
-X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="234749830"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 12:28:23 -0800
-X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="546459085"
-Received: from jabonill-mobl1.amr.corp.intel.com (HELO [10.251.27.55]) ([10.251.27.55])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 12:25:23 -0800
-Message-ID: <edb6706a-6e06-2510-3bbc-84da97b8cd52@intel.com>
-Date:   Fri, 18 Feb 2022 12:20:58 -0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GNaUEreaifOp/OglB8GJSgfLwiBjVBu/cwnxKYI2cd8=;
+        b=K7CydGTncgU1R3JZjARIReIgAVNZSu45TkPtkliq/FEAd5L5hlITAVbVLf+8ImWBsc
+         0tpls3WcbOWlIWCi0wM858OZHobOqCn4W2WmgcW8o/Xuiam9El59sIE14ik/U6ZpdHE4
+         Grs46rDMOs7pmd653Ktd6VPAaJR/aV0F5a6jvExXJyUwTdm774M/LSK8H1Bmk3OJfWh+
+         zpCwUiMhw35Cshuy1vQz7tbiUUF9qRlfX0QCLMm+8PTM/uI197mEEwvbgJJekCzL7bi8
+         VvpPII6uGAnyNUYXGwUozG+tQrdZfgaalXJTP+WLhJXh7kJhvK8a+j60fjjJrYiz/FhW
+         jjlg==
+X-Gm-Message-State: AOAM533y085ydnM88j4Gfe0CbX3YzJGYoIdVeJU5huDQ5kz18Kg9ORqR
+        arsQkTr4TdT0q8B2iytALXPr/BEliNQyqk0iMolANnrM43xETFa8i1badT2F0UxjD6NdgSwXO4g
+        nc2G8m/uOih8Ht3NTZyDboB4C
+X-Received: by 2002:ac8:4e51:0:b0:2dd:53e9:6c14 with SMTP id e17-20020ac84e51000000b002dd53e96c14mr7314966qtw.673.1645216104222;
+        Fri, 18 Feb 2022 12:28:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxniQmFIzkrLcfHl2hy/x0o/5qpoUVyvMeEHjF76JH0Ipx2ay7glvX+6BCr/2T4UQBNO9GAdQ==
+X-Received: by 2002:ac8:4e51:0:b0:2dd:53e9:6c14 with SMTP id e17-20020ac84e51000000b002dd53e96c14mr7314950qtw.673.1645216104002;
+        Fri, 18 Feb 2022 12:28:24 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id c2sm18333613qkp.0.2022.02.18.12.28.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 12:28:23 -0800 (PST)
+Date:   Fri, 18 Feb 2022 12:28:20 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, Juergen Gross <jgross@suse.com>
+Subject: Re: [PATCH 02/29] x86/module: Fix the paravirt vs alternative order
+Message-ID: <20220218202820.7tvwxytkyqtngiks@treble>
+References: <20220218164902.008644515@infradead.org>
+ <20220218171408.691941184@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Yu, Fenghua" <fenghua.yu@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-27-ira.weiny@intel.com>
- <2a919d9ed8ed874f8b89014c0b42cbadb44d837b.camel@intel.com>
- <Yg82L5ibjbn15AHO@iweiny-desk3>
- <d94be5f21bf18c844d7088a96ae35aa209a0ef4e.camel@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH V8 26/44] x86/fault: Print PKS MSR on fault
-In-Reply-To: <d94be5f21bf18c844d7088a96ae35aa209a0ef4e.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220218171408.691941184@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/18/22 09:28, Edgecombe, Rick P wrote:
-> On Thu, 2022-02-17 at 22:01 -0800, Ira Weiny wrote:
->> Are you suggesting the PKRU should be printed instead or in addition
->> to the
->> PKS?
-> Well I was just thinking that PKRS should only be printed if it's an
-> access via a supervisor pte.
+On Fri, Feb 18, 2022 at 05:49:04PM +0100, Peter Zijlstra wrote:
+> Ever since commit 4e6292114c741 ("x86/paravirt: Add new features for
+> paravirt patching") there is an ordering dependency between patching
+> paravirt ops and patching alternatives, the module loader still
+> violates this.
+> 
+> Fixes: 4e6292114c741 ("x86/paravirt: Add new features for paravirt patching")
+> Cc: Juergen Gross <jgross@suse.com>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-That's not *wrong* per se, but it's not what we do for PKU:
+Probably a good idea to put the 'para' and 'alt' clauses next to each
+other and add a comment that the ordering is necessary.
 
-        if (cpu_feature_enabled(X86_FEATURE_OSPKE))
-                printk("%sPKRU: %08x\n", log_lvl, read_pkru());
+> ---
+>  arch/x86/kernel/module.c |    9 ++++-----
+>  1 file changed, 4 insertions(+), 5 deletions(-)
+> 
+> --- a/arch/x86/kernel/module.c
+> +++ b/arch/x86/kernel/module.c
+> @@ -272,6 +272,10 @@ int module_finalize(const Elf_Ehdr *hdr,
+>  			retpolines = s;
+>  	}
+>  
+> +	if (para) {
+> +		void *pseg = (void *)para->sh_addr;
+> +		apply_paravirt(pseg, pseg + para->sh_size);
+> +	}
+>  	if (retpolines) {
+>  		void *rseg = (void *)retpolines->sh_addr;
+>  		apply_retpolines(rseg, rseg + retpolines->sh_size);
+> @@ -289,11 +293,6 @@ int module_finalize(const Elf_Ehdr *hdr,
+>  					    tseg, tseg + text->sh_size);
+>  	}
+>  
+> -	if (para) {
+> -		void *pseg = (void *)para->sh_addr;
+> -		apply_paravirt(pseg, pseg + para->sh_size);
+> -	}
+> -
+>  	/* make jump label nops */
+>  	jump_label_apply_nops(me);
+>  
+> 
+> 
 
-If the feature is enabled, we print the register.  We don't try to be
-fancy and decide if it's relevant to the oops.  Why don't you just stick
-PKRS on the same line as PKRU whenever it's supported?
+-- 
+Josh
+
