@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D712CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237825AbiBRQTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:19:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43144 "EHLO
+        id S237900AbiBRQTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:19:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237540AbiBRQRk (ORCPT
+        with ESMTP id S237181AbiBRQSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:17:40 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36951237E8
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:20 -0800 (PST)
+        Fri, 18 Feb 2022 11:18:00 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6881B30F4B
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645201040; x=1676737040;
+  t=1645201063; x=1676737063;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8v0I9pHgXAdnuKlkjsaVyyJSgZQ1dGCPAKIgxCKzdiU=;
-  b=iVsmATutpDI0/TsVnEcGuomataMT78c6+aedujlhKb3n4pglrVgZCbbC
-   0Cv9ZLod7bLwV+I36/jVVcOwiDrD0z6M/4sIoDoYS2E+dUSxJfmodPDMu
-   wY9AxT/p7+sRz/FnXIs4d7amcQQN/o+hCDbZzOmg4o7foiEPISeNvU1Mp
-   vQ55jm6BNZK7R5E9XLJ/fnu3ueZpKkQgphKxE0pwNX69mNRorB4P+FsbS
-   aLimihVICAPCCdL0f3gbZodxopi2NY5kboNMhEOushtTrWaOmyqGNfuLL
-   hYf9oksM4CvuT1J29u4vUj3WeryPMSv3MiGiWH3gXA8xD2qUWlUr950j3
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="248752949"
+  bh=q+/r8F1XDpTWhhoX3MZMSCevaK2OCR1Drl1YYmHJWuo=;
+  b=Hkmn1bHTVSBAU3+mSm/qLiiCQpsVPiJPfF9bOxOGMDf26LeuBFR13kxo
+   xUmmLxy7Tc8abSYFE9z3CUFv/cXsIuXcvNDm8ojSlzRSShCPrsy2ss/KM
+   UNCfz+t4MiRwpZDaCOJTqExMvoa9/WJ9VJNQe+g7R9JpgquGfbK3R6dnR
+   GKe6z/3ZPbagjl/laShnaqodUHrMt9Z4p8fNADStEF2p/iX0UM/wGLVgy
+   WxafJyXvUPzc6PSzpcOyDXbtv74IGFl/nzfgXYUYEUbykirumRtZcqigr
+   v1sQLqJBjI+I0MJ2rQ4EMsMWN6d+Ck0cZRZd/SwleMGI9TH3EX8dGzk9O
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="275753721"
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="248752949"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:19 -0800
+   d="scan'208";a="275753721"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:25 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="637782164"
+   d="scan'208";a="605590600"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 18 Feb 2022 08:17:13 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 18 Feb 2022 08:17:19 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 8FB22954; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
+        id BB5C9A8C; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,9 +51,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 11/32] x86/tdx: Handle CPUID via #VE
-Date:   Fri, 18 Feb 2022 19:16:57 +0300
-Message-Id: <20220218161718.67148-12-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 15/32] x86: Consolidate port I/O helpers
+Date:   Fri, 18 Feb 2022 19:17:01 +0300
+Message-Id: <20220218161718.67148-16-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
@@ -63,91 +63,187 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In TDX guests, most CPUID leaf/sub-leaf combinations are virtualized
-by the TDX module while some trigger #VE.
+There are two implementations of port I/O helpers: one in the kernel and
+one in the boot stub.
 
-Implement the #VE handling for EXIT_REASON_CPUID by handing it through
-the hypercall, which in turn lets the TDX module handle it by invoking
-the host VMM.
+Move the helpers required for both to <asm/shared/io.h> and use the one
+implementation everywhere.
 
-More details on CPUID Virtualization can be found in the TDX module
-specification, the section titled "CPUID Virtualization".
-
-Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/coco/tdx.c | 41 +++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 39 insertions(+), 2 deletions(-)
+ arch/x86/boot/boot.h             | 35 +-------------------------------
+ arch/x86/boot/compressed/misc.h  |  2 +-
+ arch/x86/include/asm/io.h        | 22 ++------------------
+ arch/x86/include/asm/shared/io.h | 34 +++++++++++++++++++++++++++++++
+ 4 files changed, 38 insertions(+), 55 deletions(-)
+ create mode 100644 arch/x86/include/asm/shared/io.h
 
-diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-index c0549dce2588..83cbc94b30d0 100644
---- a/arch/x86/coco/tdx.c
-+++ b/arch/x86/coco/tdx.c
-@@ -154,6 +154,36 @@ static bool write_msr(struct pt_regs *regs)
- 	return !__tdx_hypercall(&args, 0);
- }
+diff --git a/arch/x86/boot/boot.h b/arch/x86/boot/boot.h
+index 34c9dbb6a47d..22a474c5b3e8 100644
+--- a/arch/x86/boot/boot.h
++++ b/arch/x86/boot/boot.h
+@@ -23,6 +23,7 @@
+ #include <linux/edd.h>
+ #include <asm/setup.h>
+ #include <asm/asm.h>
++#include <asm/shared/io.h>
+ #include "bitops.h"
+ #include "ctype.h"
+ #include "cpuflags.h"
+@@ -35,40 +36,6 @@ extern struct boot_params boot_params;
  
-+static bool handle_cpuid(struct pt_regs *regs)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = EXIT_REASON_CPUID,
-+		.r12 = regs->ax,
-+		.r13 = regs->cx,
-+	};
+ #define cpu_relax()	asm volatile("rep; nop")
+ 
+-/* Basic port I/O */
+-static inline void outb(u8 v, u16 port)
+-{
+-	asm volatile("outb %0,%1" : : "a" (v), "dN" (port));
+-}
+-static inline u8 inb(u16 port)
+-{
+-	u8 v;
+-	asm volatile("inb %1,%0" : "=a" (v) : "dN" (port));
+-	return v;
+-}
+-
+-static inline void outw(u16 v, u16 port)
+-{
+-	asm volatile("outw %0,%1" : : "a" (v), "dN" (port));
+-}
+-static inline u16 inw(u16 port)
+-{
+-	u16 v;
+-	asm volatile("inw %1,%0" : "=a" (v) : "dN" (port));
+-	return v;
+-}
+-
+-static inline void outl(u32 v, u16 port)
+-{
+-	asm volatile("outl %0,%1" : : "a" (v), "dN" (port));
+-}
+-static inline u32 inl(u16 port)
+-{
+-	u32 v;
+-	asm volatile("inl %1,%0" : "=a" (v) : "dN" (port));
+-	return v;
+-}
+-
+ static inline void io_delay(void)
+ {
+ 	const u16 DELAY_PORT = 0x80;
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index 0d8e275a9d96..8a253e85f990 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -22,11 +22,11 @@
+ #include <linux/linkage.h>
+ #include <linux/screen_info.h>
+ #include <linux/elf.h>
+-#include <linux/io.h>
+ #include <asm/page.h>
+ #include <asm/boot.h>
+ #include <asm/bootparam.h>
+ #include <asm/desc_defs.h>
++#include <asm/shared/io.h>
+ 
+ #include "tdx.h"
+ 
+diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
+index 638c1a2a82e0..a1eb218a49f8 100644
+--- a/arch/x86/include/asm/io.h
++++ b/arch/x86/include/asm/io.h
+@@ -44,6 +44,7 @@
+ #include <asm/page.h>
+ #include <asm/early_ioremap.h>
+ #include <asm/pgtable_types.h>
++#include <asm/shared/io.h>
+ 
+ #define build_mmio_read(name, size, type, reg, barrier) \
+ static inline type name(const volatile void __iomem *addr) \
+@@ -258,20 +259,6 @@ static inline void slow_down_io(void)
+ #endif
+ 
+ #define BUILDIO(bwl, bw, type)						\
+-static inline void out##bwl(type value, u16 port)			\
+-{									\
+-	asm volatile("out" #bwl " %" #bw "0, %w1"			\
+-		     : : "a"(value), "Nd"(port));			\
+-}									\
+-									\
+-static inline type in##bwl(u16 port)					\
+-{									\
+-	type value;							\
+-	asm volatile("in" #bwl " %w1, %" #bw "0"			\
+-		     : "=a"(value) : "Nd"(port));			\
+-	return value;							\
+-}									\
+-									\
+ static inline void out##bwl##_p(type value, u16 port)			\
+ {									\
+ 	out##bwl(value, port);						\
+@@ -320,10 +307,8 @@ static inline void ins##bwl(u16 port, void *addr, unsigned long count)	\
+ BUILDIO(b, b, u8)
+ BUILDIO(w, w, u16)
+ BUILDIO(l,  , u32)
++#undef BUILDIO
+ 
+-#define inb inb
+-#define inw inw
+-#define inl inl
+ #define inb_p inb_p
+ #define inw_p inw_p
+ #define inl_p inl_p
+@@ -331,9 +316,6 @@ BUILDIO(l,  , u32)
+ #define insw insw
+ #define insl insl
+ 
+-#define outb outb
+-#define outw outw
+-#define outl outl
+ #define outb_p outb_p
+ #define outw_p outw_p
+ #define outl_p outl_p
+diff --git a/arch/x86/include/asm/shared/io.h b/arch/x86/include/asm/shared/io.h
+new file mode 100644
+index 000000000000..6707cd555f0c
+--- /dev/null
++++ b/arch/x86/include/asm/shared/io.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_SHARED_IO_H
++#define _ASM_X86_SHARED_IO_H
 +
-+	/*
-+	 * Emulate the CPUID instruction via a hypercall. More info about
-+	 * ABI can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI), section titled "VP.VMCALL<Instruction.CPUID>".
-+	 */
-+	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
-+		return false;
++#include <linux/types.h>
 +
-+	/*
-+	 * As per TDX GHCI CPUID ABI, r12-r15 registers contain contents of
-+	 * EAX, EBX, ECX, EDX registers after the CPUID instruction execution.
-+	 * So copy the register contents back to pt_regs.
-+	 */
-+	regs->ax = args.r12;
-+	regs->bx = args.r13;
-+	regs->cx = args.r14;
-+	regs->dx = args.r15;
-+
-+	return true;
++#define BUILDIO(bwl, bw, type)						\
++static inline void out##bwl(type value, u16 port)			\
++{									\
++	asm volatile("out" #bwl " %" #bw "0, %w1"			\
++		     : : "a"(value), "Nd"(port));			\
++}									\
++									\
++static inline type in##bwl(u16 port)					\
++{									\
++	type value;							\
++	asm volatile("in" #bwl " %w1, %" #bw "0"			\
++		     : "=a"(value) : "Nd"(port));			\
++	return value;							\
 +}
 +
- void tdx_get_ve_info(struct ve_info *ve)
- {
- 	struct tdx_module_output out;
-@@ -186,8 +216,13 @@ void tdx_get_ve_info(struct ve_info *ve)
-  */
- static bool virt_exception_user(struct pt_regs *regs, struct ve_info *ve)
- {
--	pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
--	return false;
-+	switch (ve->exit_reason) {
-+	case EXIT_REASON_CPUID:
-+		return handle_cpuid(regs);
-+	default:
-+		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
-+		return false;
-+	}
- }
- 
- /* Handle the kernel #VE */
-@@ -200,6 +235,8 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- 		return read_msr(regs);
- 	case EXIT_REASON_MSR_WRITE:
- 		return write_msr(regs);
-+	case EXIT_REASON_CPUID:
-+		return handle_cpuid(regs);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
- 		return false;
++BUILDIO(b, b, u8)
++BUILDIO(w, w, u16)
++BUILDIO(l,  , u32)
++#undef BUILDIO
++
++#define inb inb
++#define inw inw
++#define inl inl
++#define outb outb
++#define outw outw
++#define outl outl
++
++#endif
 -- 
 2.34.1
 
