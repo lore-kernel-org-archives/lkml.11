@@ -2,70 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A70C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE7AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239145AbiBRSW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 13:22:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44872 "EHLO
+        id S239168AbiBRSWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 13:22:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236189AbiBRSWY (ORCPT
+        with ESMTP id S239148AbiBRSWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 13:22:24 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AEA43BBE3;
-        Fri, 18 Feb 2022 10:22:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=m+5LEIPzvpW/ZP5xSqR3hrDOfDmhLm4QKQDmOWUd7Bw=; b=3o+0/fYLnSfHYG6jw6Yxf0C6I6
-        pqepEaZSs/WKBvDo7w1i94mVnUGiiIgiwlf3Pe4/sJ9b19vKTSGwlaLCCVk8KMtXZMH+z0bs7mCBS
-        qQ3Ty2VSIB750PZmBfU51rw8tyU+mZJE/R/l5ZlV3Vk2SB8hs+ytVn+Rp/ri/8BsjUmfZBvYM8J6C
-        gEHpH6tmeAZ/asQDec3w6xn169M1i/4SIwoCi0Ve24PrcLyp36Yi/dU0N2p0mQWs2zbO7TJyzrKf+
-        F++mkDEyzgoS4V17b9bsCJp5p+3bOU2T2zq048+tfwfQ5CMI8xlOjilgAsNdI3jpjc8YymPSE/o1A
-        KO5OEosQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nL7tE-00FUba-GR; Fri, 18 Feb 2022 18:21:56 +0000
-Date:   Fri, 18 Feb 2022 10:21:56 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>, peterz@infradead.org
-Cc:     Zhen Ni <nizhen@uniontech.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, keescook@chromium.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        tangmeng <tangmeng@uniontech.com>
-Subject: Re: [PATCH v3 0/8] sched: Move a series of sysctls starting with
- sys/kernel/sched_*
-Message-ID: <Yg/jxFqiuyR/xB2s@bombadil.infradead.org>
-References: <20220215114604.25772-1-nizhen@uniontech.com>
- <Yg3+bAQKVX+Dj317@bombadil.infradead.org>
- <20220217185238.802a7e2dd1980fee87be736c@linux-foundation.org>
+        Fri, 18 Feb 2022 13:22:44 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1BA40913;
+        Fri, 18 Feb 2022 10:22:26 -0800 (PST)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IHcG7X015339;
+        Fri, 18 Feb 2022 18:22:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=ZxRY0B/GLKI+WQEXdWRioyRd2m5GmW9+c13u4WU9w7o=;
+ b=miYyaBHkWSM57bWSJwCHTAKjr3pHfFBUqzPPJbwy4vXddNUHjhP/Wg1tHVtpSpR7udPn
+ KmlCw59knDFAyX9CoMniGp6QL5OHiLB5Keq1jPBiWjO8PxKPC0sw2hMDmClDLUrETo9u
+ a41FuLwxJEWf4UyD+tXWdV+foov1THsi1R7iEpKQbCbvvIK5LrzPmxYoDHwxwyT+2vX8
+ Q+QsI70VhLcrSqymPJ8rLI3ul29Tr8kAWDt7cIcPq1v7YT4GZ/oCz/vQ5vi1q9iZqg1v
+ bEsrfZAoArpKH/gwsxK6p47+psh/01BxOhCF9+UxlY0t5JY6c/oYKpKhbi9MHBQfXsyD 3Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eaersu2pq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 18:22:25 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21IIDlel017760;
+        Fri, 18 Feb 2022 18:22:24 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eaersu2p7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 18:22:24 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21IIHuTE000939;
+        Fri, 18 Feb 2022 18:22:23 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e645kkxvk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 18:22:22 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21IIMJuI44630520
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Feb 2022 18:22:19 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CBA3EA405F;
+        Fri, 18 Feb 2022 18:22:19 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2AD5EA405B;
+        Fri, 18 Feb 2022 18:22:19 +0000 (GMT)
+Received: from [9.171.4.84] (unknown [9.171.4.84])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 18 Feb 2022 18:22:19 +0000 (GMT)
+Message-ID: <580e5da7-f731-417f-0cc2-baf2313ac6d6@linux.ibm.com>
+Date:   Fri, 18 Feb 2022 19:24:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217185238.802a7e2dd1980fee87be736c@linux-foundation.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v7 1/1] s390x: KVM: guest support for topology function
+Content-Language: en-US
+From:   Pierre Morel <pmorel@linux.ibm.com>
+To:     Janosch Frank <frankja@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, cohuck@redhat.com, david@redhat.com,
+        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com
+References: <20220217095923.114489-1-pmorel@linux.ibm.com>
+ <20220217095923.114489-2-pmorel@linux.ibm.com>
+ <f0bf737abf480d6d16af6e5335bb195061f3d076.camel@linux.ibm.com>
+ <97af6268-ff7a-cfb6-5ea4-217b5162cfe7@linux.ibm.com>
+ <b9828696-f5d4-dd72-9b0e-a27b1480b799@linux.ibm.com>
+ <aecc2b93-3e07-be78-81a2-594d2bc6b64a@linux.ibm.com>
+In-Reply-To: <aecc2b93-3e07-be78-81a2-594d2bc6b64a@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: wBtQQMj0DrEulaK-91_HsNRfwYcRC_bw
+X-Proofpoint-GUID: OPxhDUnk60sPFMSrTooknocCRU3OZUW4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-18_07,2022-02-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ spamscore=0 clxscore=1015 bulkscore=0 lowpriorityscore=0 impostorscore=0
+ suspectscore=0 priorityscore=1501 malwarescore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202180111
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 06:52:38PM -0800, Andrew Morton wrote:
-> On Wed, 16 Feb 2022 23:51:08 -0800 Luis Chamberlain <mcgrof@kernel.org> wrote:
+
+
+On 2/18/22 18:27, Pierre Morel wrote:
 > 
-> > Are you folks OK if say Stephen adds a sysctl-next for linux-next so
-> > we can beat on these there too?
 > 
-> Sure.  I just sent you a couple which I've collected.
+> On 2/18/22 15:28, Janosch Frank wrote:
+>> On 2/18/22 14:13, Pierre Morel wrote:
+>>>
+>>>
+>>> On 2/17/22 18:17, Nico Boehr wrote:
+>>>> On Thu, 2022-02-17 at 10:59 +0100, Pierre Morel wrote:
+>>>> [...]
+>>>>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+>>>>> index 2296b1ff1e02..af7ea8488fa2 100644
+>>>>> --- a/arch/s390/kvm/kvm-s390.c
+>>>>> +++ b/arch/s390/kvm/kvm-s390.c
+>>>> [...]
+>>
+>> Why is there no interface to clear the SCA_UTILITY_MTCR on a subsystem 
+>> reset?
+> 
+> Right, I had one in my first version based on interception but I forgot 
+> to implement an equivalent for KVM as I modified the implementation for 
+> interpretation.
+> I will add this.
+> 
+>>
+>>
+>>>>> -void kvm_arch_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+>>>>> +/**
+>>>>> + * kvm_s390_vcpu_set_mtcr
+>>>>> + * @vcp: the virtual CPU
+>>>>> + *
+>>>>> + * Is only relevant if the topology facility is present.
+>>>>> + *
+>>>>> + * Updates the Multiprocessor Topology-Change-Report to signal
+>>>>> + * the guest with a topology change.
+>>>>> + */
+>>>>> +static void kvm_s390_vcpu_set_mtcr(struct kvm_vcpu *vcpu)
+>>>>>    {
+>>>>> +       struct esca_block *esca = vcpu->kvm->arch.sca;
+>>>>
+>>>> utility is at the same offset for the bsca and the esca, still
+>>>> wondering whether it is a good idea to assume esca here...
+>>>
+>>> We can take bsca to be coherent with the include file where we define
+>>> ESCA_UTILITY_MTCR inside the bsca.
+>>> And we can rename the define to SCA_UTILITY_MTCR as it is common for
+>>> both BSCA and ESCA the (E) is too much.
+>>
+>> Yes and maybe add a comment that it's at the same offset for esca so 
+>> there won't come up further questions in the future.
+> 
+> OK
+> 
+>>
+>>>
+>>>>
+>>>> [...]
+>>>>> diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
+>>>>> index 098831e815e6..af04ffbfd587 100644
+>>>>> --- a/arch/s390/kvm/kvm-s390.h
+>>>>> +++ b/arch/s390/kvm/kvm-s390.h
+>>>>> @@ -503,4 +503,29 @@ void kvm_s390_vcpu_crypto_reset_all(struct kvm
+>>>>> *kvm);
+>>>>>     */
+>>>>>    extern unsigned int diag9c_forwarding_hz;
+>>>>> +#define S390_KVM_TOPOLOGY_NEW_CPU -1
+>>>>> +/**
+>>>>> + * kvm_s390_topology_changed
+>>>>> + * @vcpu: the virtual CPU
+>>>>> + *
+>>>>> + * If the topology facility is present, checks if the CPU toplogy
+>>>>> + * viewed by the guest changed due to load balancing or CPU hotplug.
+>>>>> + */
+>>>>> +static inline bool kvm_s390_topology_changed(struct kvm_vcpu *vcpu)
+>>>>> +{
+>>>>> +       if (!test_kvm_facility(vcpu->kvm, 11))
+>>>>> +               return false;
+>>>>> +
+>>>>> +       /* A new vCPU has been hotplugged */
+>>>>> +       if (vcpu->arch.prev_cpu == S390_KVM_TOPOLOGY_NEW_CPU)
+>>>>> +               return true;
+>>>>> +
+>>>>> +       /* The real CPU backing up the vCPU moved to another socket
+>>>>> */
+>>>>> +       if (topology_physical_package_id(vcpu->cpu) !=
+>>>>> +           topology_physical_package_id(vcpu->arch.prev_cpu))
+>>>>> +               return true;
+>>>>
+>>>> Why is it OK to look just at the physical package ID here? What if the
+>>>> vcpu for example moves to a different book, which has a core with the
+>>>> same physical package ID?
+>>
+>> I'll need to look up stsi 15* output to understand this.
+>> But the architecture states that any change to the stsi 15 output sets 
+>> the change bit so I'd guess Nico is correct.
+>>
+> 
+> Yes, Nico is correct, as I already answered, however it is not any 
+> change of stsi(15) but a change of stsi(15.1.2) output which sets the 
+> change bit.
 
-OK thanks! I've merged those into sysctl-next [0]
+hum, that is what the POP says but in fact you are right a change of 
+topology that changes the output of any STSI(15) sets the topology 
+change report bit as the output of STSI(15.1.2) would be changed too 
+obviously.
 
-Stephen,
+Regards,
+Pierre
 
-Can you add it to the set of trees you pull? I'll send a patch to add
-this to MAINTAINERS too then.
-
-[0] git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git sysctl-next
-
-  Luis
+-- 
+Pierre Morel
+IBM Lab Boeblingen
