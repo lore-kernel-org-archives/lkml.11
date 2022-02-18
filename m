@@ -2,78 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A26DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DCD0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234604AbiBRRRn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:17:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45104 "EHLO
+        id S238310AbiBRRS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:18:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238344AbiBRRPr (ORCPT
+        with ESMTP id S238570AbiBRRSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:15:47 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030E32B5230
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:15:27 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso12976635pjg.0
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:15:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5DBNroUKPfQERghwahUfBWjvAkNxMqGLB1PH+8DKuNc=;
-        b=sHg3ObPWzkeC9xEO0V7DReNTB+4arPdrOPPDTmavWb5B9DZkREfKPq+3FpWBa403Lw
-         Y5t53RaSluKTmLmNHRyur9hYMmHAGLgLMMAI9ZZbiNy8UlIbW/ZGkYCdPgABD0AC2T9u
-         wKWYtt0XeXFY2WfwMfoSkvlcdhLyHj997+0tCVf6DE+moJBJXVSuJPlhu9L6zFceEp+Y
-         hfaDc1XmVEbolMObbXCG6QURvbRe+kHph+8PAKn1JulfgmdoCvc2Ohn3pIQm1ymvmIn+
-         13SIsdwC8zCLIm2zZwwsnzRC2s0H8azX8RkjbmF9uEIa/dkiSNanBcJyBfZMtoNe3gS/
-         xzLw==
+        Fri, 18 Feb 2022 12:18:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEEA65D1AB
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:17:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645204675;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7dZcSV2Uv5l2PGNp5lATuM06Bp3rDpiylATyLlFeY84=;
+        b=IIA4/RZNWcLcz/+Yc2+bl8SIqI0+UIbtu4WuvyN9Ag55jkAn2TxtPnYoL7rHbZTP+G5YkH
+        o+XJvS6hDOVJZFEGI1X+ObG99x1DjvzEGDxBYWTcwfBpACcIvKGXp6tZo5awVjRAbouopW
+        7anPoi2k9svb7XyKZh3+h8xaEe51jWU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-552-gzjJMq4vNpamBWwmLVqlVA-1; Fri, 18 Feb 2022 12:17:53 -0500
+X-MC-Unique: gzjJMq4vNpamBWwmLVqlVA-1
+Received: by mail-wm1-f70.google.com with SMTP id p24-20020a05600c1d9800b0037be98d03a1so6229087wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:17:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5DBNroUKPfQERghwahUfBWjvAkNxMqGLB1PH+8DKuNc=;
-        b=oWIvzhmeL1hhKux0Vrz5m2KmNxA9e+UEp6elN+kA5j4gnSImLO9iMsJ5ejzEVMbbfo
-         RaMpWsdwoCXwoFGN8uxaPI8C1j886hXOsJ+aE5y50NrgdOtU3NRhoqlm6VcG/E7UlvBp
-         KOh1eS+ocT6yaZKT0Qae4Ic768k7iAFVG2MIO/F/LL8e6wGNwrgRXm+r9xYS3PuVsxRc
-         0R4MT7ltA07w71qDooFqr7AJyaC+jiFlCCoEyJgEe/X+5lwRA2T5yOdy6fOmmFSf282o
-         WyjDw0zauX+cfiPq13/RwhyXKrBv4IjBZ//cm0reJAZPK28uNo5z28JQd0fLKr7xep0Y
-         Noyg==
-X-Gm-Message-State: AOAM530Gmkqy3MxkZRwd2zvEaLbLhevs18N8SJbCrviBOw6Ls+G3vB+m
-        l8FTiUqV64euJTensPFm5VIbxw==
-X-Google-Smtp-Source: ABdhPJzlvWoSjWwc9M5oN1R7z8trnYPRzDDfCSzYbcFXbOyMmf/dsym7BNfiUqYWis5pQSn1bh/9ww==
-X-Received: by 2002:a17:90a:6809:b0:1b9:bc46:fdd7 with SMTP id p9-20020a17090a680900b001b9bc46fdd7mr13616473pjj.148.1645204526362;
-        Fri, 18 Feb 2022 09:15:26 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id gm6-20020a17090b100600b001b8b502d18bsm6838pjb.19.2022.02.18.09.15.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 09:15:25 -0800 (PST)
-Date:   Fri, 18 Feb 2022 17:15:22 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH v2 04/18] KVM: x86/mmu: avoid NULL-pointer dereference on
- page freeing bugs
-Message-ID: <Yg/UKrihA/56EN8S@google.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
- <20220217210340.312449-5-pbonzini@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7dZcSV2Uv5l2PGNp5lATuM06Bp3rDpiylATyLlFeY84=;
+        b=4WakLS0jl2J1KW6AIX4a8Ort1ajf5G6WfFB9NQlnV86AnvipHZizEN49rJzGV/O0Vx
+         f7MXDrIQf5nH50c/o0bgaEsOyhBF2L3hiIGG2Unn20enfHnwmCpo/evV3N53rkQ+T/Bu
+         5JaMTxdASJmRwKZpGFBkz13UESFcho9q7zswrgoP/CFvcNYQGi6qLjS0ijq18nf2En5x
+         udDjsj9ueTz4D8wBJheV5FY1W12DrEf++g2CG4L386g5rEeo6LHvh43Wu3eSH/a1udW7
+         Mz7vj9qMcfzvdRSbu87lWoz2d2cl/Nok+nVH4JxpdQyXQ0Yw8Apu/BF6ZavHYvqEwmIf
+         /imw==
+X-Gm-Message-State: AOAM530aLvmIQUJSUbi7V7p1X+de+ka+0XxzvWJz3Sswwr7MTYY2o7ic
+        f4fQTITIHYbvn9BAKRAGeuDuhBNnVFrkkfSizH1RR/1eW7M5Nw2MRwcKNzRV2garyi0bbzaJdE5
+        1xQyigCNcGW66XsbxH71cDa0U
+X-Received: by 2002:a05:6000:18c8:b0:1e4:b8f4:da8f with SMTP id w8-20020a05600018c800b001e4b8f4da8fmr6969524wrq.199.1645204671852;
+        Fri, 18 Feb 2022 09:17:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyY5FTYmJEwXfkrd2Ezeeyz/sLJDt8iOSxwKTt+YEJIOAC62rZBIt4qJftKdXphpHZFmYhoGg==
+X-Received: by 2002:a05:6000:18c8:b0:1e4:b8f4:da8f with SMTP id w8-20020a05600018c800b001e4b8f4da8fmr6969512wrq.199.1645204671607;
+        Fri, 18 Feb 2022 09:17:51 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id n15sm13833015wri.33.2022.02.18.09.17.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 09:17:50 -0800 (PST)
+Message-ID: <eff2543a-10ab-611a-28e2-18999d21ddd8@redhat.com>
+Date:   Fri, 18 Feb 2022 18:17:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217210340.312449-5-pbonzini@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 5/6] KVM: x86: make several AVIC callbacks optional
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20220217180831.288210-1-pbonzini@redhat.com>
+ <20220217180831.288210-6-pbonzini@redhat.com> <Yg/IGUFqqS2r98II@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Yg/IGUFqqS2r98II@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022, Paolo Bonzini wrote:
-> WARN and bail if KVM attempts to free a root that isn't backed by a shadow
-> page.  KVM allocates a bare page for "special" roots, e.g. when using PAE
-> paging or shadowing 2/3/4-level page tables with 4/5-level, and so root_hpa
-> will be valid but won't be backed by a shadow page.  It's all too easy to
-> blindly call mmu_free_root_page() on root_hpa, be nice and WARN instead of
-> crashing KVM and possibly the kernel.
-> 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
+On 2/18/22 17:23, Sean Christopherson wrote:
+> The "AVIC" callbacks are being deleted, not
+> made optional, it's kvm_x86_ops' APICv hooks that are becoming optional.
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
+Maybe "make several APIC virtualization callbacks optional".
+
+>> +KVM_X86_OP_OPTIONAL(apicv_post_state_restore)
+>
+> apicv_post_state_restore() isn't conditional, it's implemented and wired up
+> unconditionally by both VMX and SVM.
+
+True, on the other hand there's no reason why a hypothetical third 
+vendor would have to support it.  The call is conditional to 
+apicv_active being true.
+
+Paolo
+
