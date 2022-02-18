@@ -2,110 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50CBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 03:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 648F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 03:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229511AbiBRDlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 22:41:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42612 "EHLO
+        id S229478AbiBRDnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 22:43:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiBRDlp (ORCPT
+        with ESMTP id S229436AbiBRDnQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 22:41:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6722910FFA
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 19:41:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645155686;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=hArr4mJlPZnwAWrYBTIVC2/1c3VQ46oZ6y6rsQQSe+k=;
-        b=e2PDR2R23RT312eTFtcxpKYXtW1Om/lr4MO29SvFRa7+VrCqJ7+Ruu1oTu5UZfYnnNCXUw
-        bEeQrgsGfe91zksgEXS+HFoBspvVhuxpIPGJsjXVWAYz/AfF0WLOvunDWb22dULTojyDtJ
-        Y61y9bHncYGTgm8R5YCcWpsevY2nkK8=
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
- [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-563-WW-JRKYQNxyl1A7It435vg-1; Thu, 17 Feb 2022 22:41:25 -0500
-X-MC-Unique: WW-JRKYQNxyl1A7It435vg-1
-Received: by mail-oi1-f200.google.com with SMTP id o4-20020aca5a04000000b002d3a5cc05b9so909917oib.6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 19:41:25 -0800 (PST)
+        Thu, 17 Feb 2022 22:43:16 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B8558E5A;
+        Thu, 17 Feb 2022 19:43:00 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id u12so6137972plf.13;
+        Thu, 17 Feb 2022 19:43:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lMBr67ZFYuTMoFmjD03o7/90AyuzJI9pjLQ2HUN5D4M=;
+        b=lye2+ag+4YvOXqbivMwXuUQ4c6ctCAWFusWXq0iBYWwHe/rWDHNSNK5ank1hLvXsDb
+         9Z3mLSBQIc5VQewS3n2mTR3S+GhjAh5DUmDqN2htoiOVwcWgqY17wNd1tvjxT/eJS9ku
+         18fIiXF1IPnF9LjRWMbPsJ97b1jSZib9Pe1Su/3K+TDz2WsM6QbG4vw2BTj6WXeARbPd
+         wLUgSRX4wsOyS9QsvSj+x/9gt/Sh9i6ztzGSnfBRpBkfy0HfCGNDUFON/uHXU9j41O3C
+         CFoT5YvMLGkATaneQylHAPSCZmjb8AjVU8Xi/beoWGFosaP40rtuI6oIjPZrXfdfz4M1
+         tkVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=hArr4mJlPZnwAWrYBTIVC2/1c3VQ46oZ6y6rsQQSe+k=;
-        b=Gu52sT0coMtRv+IM7o8AFCyiBrtVWjr7swVV+iQkk43o43qMQiRY95GCahQtBkvA/G
-         eMA+pDYGqWjQa8sCFQFjoU6dh0viXVXD71tI4ePHRibcVnmXIoSFPIRX31OD+jvPu+04
-         Jw2zJGc95U3APNtQ8AVrXh4rVKV2LQeJfKsQ2JFb339IRhjj4r/4w6EFUHykkmxXHHrU
-         qGuojvNCbf5jnH2mO6mj8UHILMjF+5ddIbt9lZgI+K35qBDg3AhiciAGd53t6ypbFbZd
-         5AF6rLBMvYc40BTH+vZJB7wg9EXAFLm6yZe5+04QRb3NWQtxy4CmK6YWXQV0i7ztcz5L
-         c8XA==
-X-Gm-Message-State: AOAM530ESbPWFAxeJWVKYh6usiDdgVVZvRqBvcLEeZAKXuevqEa8PeUX
-        9aybXUrbRc3qlk+VT3PdZpCzqudTeLR4A51yzfvLOlVIX8xMBodqtyLao5/SqUb7ay6W+5fqn4t
-        /6G0IHzBWHBxzYosN0MTjqF7j
-X-Received: by 2002:a9d:2c8:0:b0:59e:bea0:a9f4 with SMTP id 66-20020a9d02c8000000b0059ebea0a9f4mr1930282otl.221.1645155684415;
-        Thu, 17 Feb 2022 19:41:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz0+GdnkfLgkCWNJkBfsRH9CCeWqV4vimJP6tkia4RuKX0EWc/0JV/P6rzXwl8ah+7NPZFpXw==
-X-Received: by 2002:a9d:2c8:0:b0:59e:bea0:a9f4 with SMTP id 66-20020a9d02c8000000b0059ebea0a9f4mr1930266otl.221.1645155684208;
-        Thu, 17 Feb 2022 19:41:24 -0800 (PST)
-Received: from localhost.localdomain ([2804:431:c7f1:c12c:38a3:24a6:f679:3afd])
-        by smtp.gmail.com with ESMTPSA id 189sm694698ooi.9.2022.02.17.19.41.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 19:41:23 -0800 (PST)
-From:   Leonardo Bras <leobras@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>
-Cc:     Leonardo Bras <leobras@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [PATCH v1 1/1] x86/kvm: Fix compilation warning in non-x86_64 builds
-Date:   Fri, 18 Feb 2022 00:41:00 -0300
-Message-Id: <20220218034100.115702-1-leobras@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        bh=lMBr67ZFYuTMoFmjD03o7/90AyuzJI9pjLQ2HUN5D4M=;
+        b=JJV2GSRDA3kNmmDKAEoSj/JCQJT4hJ7SM7yq/loH0vrTC9Y7Et2aKdhq13XmZVc97t
+         qQDBTTnav2vMBcZlMqm3Nmvnf/e+5HOTfBc0tSZ1sRuC08rWLEHoBZ9lNS5Ar7rvtTeR
+         dL9+8HkHmdevj4iRWynPrQg3R5JcmHjwLM/L6PFfp/+r5kMH5hCzvl4ybQaYZ6OMETfY
+         AEkulshyu36f/u7k0wHN/cyIsUU4ZQLMOYOhniZjBJsXa+pABugmcIatQLa8ATeXfhjl
+         pagH/lUE3bYfPhJRfe62BlUrJkQdu65Au0mDAvTCPIkOB81t/szYHaHm+3zFNIJpUD7Z
+         eABw==
+X-Gm-Message-State: AOAM533Y6EGsEyRvd1afJMxMgMnwI0wKuv7d0GEDxJtsaioFMcdDdO8i
+        IEx8bEW7M3wpe8eHSzK9Gww+N6IFKhW6jERg
+X-Google-Smtp-Source: ABdhPJz5KOgutHfcFMNxiG5XHetial16Kg0zUgMiqR0Acr5/95ZnA14BG4HFzd21PSNlhfN3nEKbCQ==
+X-Received: by 2002:a17:90a:6943:b0:1b9:e285:e4a3 with SMTP id j3-20020a17090a694300b001b9e285e4a3mr6432247pjm.153.1645155780534;
+        Thu, 17 Feb 2022 19:43:00 -0800 (PST)
+Received: from [172.20.119.15] ([61.16.102.70])
+        by smtp.gmail.com with ESMTPSA id m8sm3424656pgb.0.2022.02.17.19.42.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 19:43:00 -0800 (PST)
+Message-ID: <0dcd9016-5ef9-bbb7-60b7-3261a81635c5@gmail.com>
+Date:   Fri, 18 Feb 2022 11:42:56 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [RFC V4 3/6] blk-iolatency: make iolatency pluggable
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Jens Axboe <axboe@kernel.dk>, Josef Bacik <jbacik@fb.com>,
+        Tejun Heo <tj@kernel.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220217031349.98561-1-jianchao.wan9@gmail.com>
+ <20220217031349.98561-4-jianchao.wan9@gmail.com>
+ <Yg4MnC3JydI4WmLC@infradead.org>
+From:   Wang Jianchao <jianchao.wan9@gmail.com>
+In-Reply-To: <Yg4MnC3JydI4WmLC@infradead.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On non-x86_64 builds, the helper gtod_is_based_on_tsc() is defined but
-never used, which results in an warning with -Wunused-function, and
-becomes an error if -Werror is present.
 
-Add #ifdef so gtod_is_based_on_tsc() is only defined in x86_64 builds.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Leonardo Bras <leobras@redhat.com>
----
- arch/x86/kvm/x86.c | 2 ++
- 1 file changed, 2 insertions(+)
+On 2022/2/17 4:51 下午, Christoph Hellwig wrote:
+>> +static inline struct rq_qos *blkcg_rq_qos(struct request_queue *q)
+>> +{
+>> +	return rq_qos_by_id(q, blkcg_iolatency_ops.id);
+>> +}
+> 
+> This just has a single user, so open code it.
+> 
+>> +static int blk_iolatency_init(struct request_queue *q);
+>> +
+>>  static struct rq_qos_ops blkcg_iolatency_ops = {
+>> +	.name = "blk-iolat",
+>> +	.flags = RQOS_FLAG_CGRP_POL,
+>>  	.throttle = blkcg_iolatency_throttle,
+>>  	.done_bio = blkcg_iolatency_done_bio,
+>>  	.exit = blkcg_iolatency_exit,
+>> +	.init = blk_iolatency_init,
+>>  };
+> 
+> I'd move this structure below blk_iolatency_init to avoid the forward
+> declaration of blk_iolatency_init
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index ca0fae020961..b389517aa6ed 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -2363,10 +2363,12 @@ static u64 compute_guest_tsc(struct kvm_vcpu *vcpu, s64 kernel_ns)
- 	return tsc;
- }
- 
-+#ifdef CONFIG_X86_64
- static inline int gtod_is_based_on_tsc(int mode)
- {
- 	return mode == VDSO_CLOCKMODE_TSC || mode == VDSO_CLOCKMODE_HVCLOCK;
- }
-+#endif
- 
- static void kvm_track_tsc_matching(struct kvm_vcpu *vcpu)
- {
--- 
-2.35.1
+Got it
 
+Thanks
+Jianchao
