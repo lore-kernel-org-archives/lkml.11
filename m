@@ -2,107 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB580C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238782AbiBRVGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:06:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38300 "EHLO
+        id S239609AbiBRVHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:07:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231464AbiBRVGw (ORCPT
+        with ESMTP id S231464AbiBRVHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:06:52 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3CB261F;
-        Fri, 18 Feb 2022 13:06:33 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nLASV-002pya-10; Fri, 18 Feb 2022 21:06:31 +0000
-Date:   Fri, 18 Feb 2022 21:06:31 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Rik van Riel <riel@surriel.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        linux-fsdevel@vger.kernel.org, paulmck@kernel.org,
-        gscrivan@redhat.com, Eric Biederman <ebiederm@xmission.com>,
-        Chris Mason <clm@fb.com>
-Subject: Re: [PATCH 1/2] vfs: free vfsmount through rcu work from kern_unmount
-Message-ID: <YhAKV5cjXEz2JTBB@zeniv-ca.linux.org.uk>
-References: <20220218183114.2867528-1-riel@surriel.com>
- <20220218183114.2867528-2-riel@surriel.com>
- <Yg/y6qv6dZ2fc5z1@zeniv-ca.linux.org.uk>
- <5f442a7770fe4ac06b2837e4f937d559f5d17b8b.camel@surriel.com>
- <Yg/273dWmTKDW5Mu@zeniv-ca.linux.org.uk>
- <YhAAaU5wSoFdMsQf@zeniv-ca.linux.org.uk>
+        Fri, 18 Feb 2022 16:07:36 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB1D10FD3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:07:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645218439; x=1676754439;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=ky/sFQgO7G6Nqidx2wlMpJdnhLfeu8rxJY8dSggBnjY=;
+  b=lc486d1Wnx/de476iln/+sDYX/k4OHk3lMf02TUZBaG9uHCM+ZNrJoqq
+   YkYUoEeiA0Aks54LX65Cqha5SCdHD10KWhnfeflSFX+QrHHof/sRoFHfN
+   hCHkg+7wsWWPZXpuoooq0m82022STcCTw5cVZr89I3ABJHL2jIIZ/Krj6
+   +EVuMzhzdaOP2CBvFA+DMLs42M0XRhTf/CgHzfgmN3xaAKTFtB8o9hAKD
+   TeoTioqlPtx04VpEAworo0hliC2tBqmj7fJz8JFVYdd8l+awIN+oivkVF
+   yGHUJWOlGiW+sa9yd2vALYgIAHnfkx5yyxazzJzRii2cN3698NREB30if
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10262"; a="275807313"
+X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
+   d="scan'208";a="275807313"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 13:07:18 -0800
+X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
+   d="scan'208";a="682613294"
+Received: from jabonill-mobl1.amr.corp.intel.com (HELO [10.251.27.55]) ([10.251.27.55])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 13:07:17 -0800
+Message-ID: <5252a906-41e7-ec92-3b99-4a8d5cff4f0f@intel.com>
+Date:   Fri, 18 Feb 2022 13:07:11 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YhAAaU5wSoFdMsQf@zeniv-ca.linux.org.uk>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
+ <20220218161718.67148-4-kirill.shutemov@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv3 03/32] x86/tdx: Detect running as a TDX guest in early
+ boot
+In-Reply-To: <20220218161718.67148-4-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 08:24:09PM +0000, Al Viro wrote:
-> On Fri, Feb 18, 2022 at 07:43:43PM +0000, Al Viro wrote:
-> > On Fri, Feb 18, 2022 at 02:33:31PM -0500, Rik van Riel wrote:
-> > > On Fri, 2022-02-18 at 19:26 +0000, Al Viro wrote:
-> > > > On Fri, Feb 18, 2022 at 01:31:13PM -0500, Rik van Riel wrote:
-> > > > > After kern_unmount returns, callers can no longer access the
-> > > > > vfsmount structure. However, the vfsmount structure does need
-> > > > > to be kept around until the end of the RCU grace period, to
-> > > > > make sure other accesses have all gone away too.
-> > > > > 
-> > > > > This can be accomplished by either gating each kern_unmount
-> > > > > on synchronize_rcu (the comment in the code says it all), or
-> > > > > by deferring the freeing until the next grace period, where
-> > > > > it needs to be handled in a workqueue due to the locking in
-> > > > > mntput_no_expire().
-> > > > 
-> > > > NAK.  There's code that relies upon kern_unmount() being
-> > > > synchronous.  That's precisely the reason why MNT_INTERNAL
-> > > > is treated that way in mntput_no_expire().
-> > > 
-> > > Fair enough. Should I make a kern_unmount_rcu() version
-> > > that gets called just from mq_put_mnt()?
-> > 
-> > Umm...  I'm not sure you can afford having struct ipc_namespace
-> > freed and reused before the mqueue superblock gets at least to
-> > deactivate_locked_super().
+On 2/18/22 08:16, Kirill A. Shutemov wrote:
+> From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 > 
-> BTW, that's a good demonstration of the problems with making those
-> beasts async.  struct mount is *not* accessed past kern_unmount(),
-> but the objects used by the superblock might very well be - in
-> this case they (struct ipc_namespace, pointed to by s->s_fs_data)
-> are freed by the caller after kern_unmount() returns.  And possibly
-> reused.  Now note that they are used as search keys by
-> mqueue_get_tree() and it becomes very fishy.
-> 
-> If you want to go that way, make it something like
-> 
-> void put_ipc_ns(struct ipc_namespace *ns)
-> {
->         if (refcount_dec_and_lock(&ns->ns.count, &mq_lock)) {
-> 		mq_clear_sbinfo(ns);
-> 		spin_unlock(&mq_lock);
-> 		kern_unmount_rcu(ns->mq_mnt);
-> 	}
-> }
-> 
-> and give mqueue this for ->kill_sb():
-> 
-> static void mqueue_kill_super(struct super_block *sb)
-> {
-> 	struct ipc_namespace *ns = sb->s_fs_info;
-> 	kill_litter_super(sb);
-> 	do the rest of free_ipc_ns();
-> }
-> 
-> One thing: kern_unmount_rcu() needs a very big warning about
-> the caution needed from its callers.  It's really not safe
-> for general use, and it will be a temptation for folks with
-> scalability problems like this one to just use it instead of
-> kern_unmount() and declare the problem solved.
+> cc_platform_has() API is used in the kernel to enable confidential
+> computing features. Since TDX guest is a confidential computing
+> platform, it also needs to use this API.
 
-FWIW, that won't work correctly wrt failure exits.  I'm digging
-through the lifetime rules in there right now, will post when
-I'm done.
+I'm struggling to connect the relevance of this paragraph to the patch
+below.
+
+I went through the whole series and I don't see any modifications to
+cc_platform_has() or checks for X86_FEATURE_TDX_GUEST that seem like
+they influence cc_platform_has().
+
+What the heck am I missing?
+
+> In preparation of extending cc_platform_has() API to support TDX guest,
+> use CPUID instruction to detect support for TDX guests in the early
+> boot code (via tdx_early_init()). Since copy_bootdata() is the first
+> user of cc_platform_has() API, detect the TDX guest status before it.
+
+This is good.  It tells us *why* it is initialized in that location.
+
+> Since cc_plaform_has() API will be used frequently across the boot
+> code, instead of repeatedly detecting the TDX guest status using the
+> CPUID instruction, detect once and cache the result.
+
+Isn't this a remnant of an old implementation where there was a separate
+'tdx_enabled' variable in addition to X86_FEATURE_TDX_GUEST?
+
+Does this "caching" refer to X86_FEATURE_TDX_GUEST or the old thing?
+
+> Define a synthetic feature flag (X86_FEATURE_TDX_GUEST) and set this
+> bit in a valid TDX guest platform.
+
+
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 391c4cac8958..ea4190c53db6 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -880,6 +880,18 @@ config ACRN_GUEST
+>  	  IOT with small footprint and real-time features. More details can be
+>  	  found in https://projectacrn.org/.
+>  
+> +config INTEL_TDX_GUEST
+> +	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
+> +	depends on X86_64 && CPU_SUP_INTEL
+> +	depends on X86_X2APIC
+> +	help
+> +	  Support running as a guest under Intel TDX.  Without this support,
+> +	  the guest kernel can not boot or run under TDX.
+> +	  TDX includes memory encryption and integrity capabilities
+> +	  which protect the confidentiality and integrity of guest
+> +	  memory contents and CPU state. TDX guests are protected from
+> +	  potential attacks from the VMM.
+
+Nit: I don't think "potential" is the right word there.  "some" might
+work better.
