@@ -2,494 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9842BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:55:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235368AbiBRMyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:54:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56102 "EHLO
+        id S235372AbiBRMzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:55:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234170AbiBRMys (ORCPT
+        with ESMTP id S232574AbiBRMzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:54:48 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3B32B3545
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 04:54:30 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id k41so5204726wms.0
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 04:54:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ObrogwrsHsxgebV9FG+uqStBwkgeAFcG8F17qvQ//uw=;
-        b=P4LAq13fI2QJBjmLmqssElpG59/p2cpKhsgKBHgpv34PM/2Z+A7Gz+fGAXr1RngVdL
-         XLkgfGykT0di4EDCzwSOFrUkcQ8Zw7fOfYf1MYaZKWhZJHPHxtd8eqGr7U0uo9JK1udW
-         5Zm5zsb8ZvPMPvkBMlF1+gNbl6e009YZWnxiDuoENG+grwYfT9sr3pLshGMUuS/PgD5S
-         6DmCAW5HQZ+yV306V2ujqevROdARLjYwnzCKwUnySjCfhuD5p6DXynUAqc6bVFVNCoxx
-         qQScNqvUV6a5bf3L1mnS4RqgsoNQhlmILVv82wR0hKr4S6Z5VzVX/BK8kktrV0sqPFrY
-         nzlw==
+        Fri, 18 Feb 2022 07:55:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E583F2B3565
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 04:55:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645188899;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=88nBv9CM5sW4ELGVD1fgBUk+sSiPdeBM/3xxb6Xhxvg=;
+        b=ZRXIydv8OCZimQhVRlQ02s+0jlqnLAKcoU+LxNXt8zDy2ixHvM8ZFZy7zudTSLkyceqize
+        FCvkb0xMPKdzsivY7mkjgLDkIlXjd+KYcCsDZQYgpiUSy96bL4c8P6wPzX03r/AG3nSi3L
+        NpJJMyq3XXMGvFmVzyxYkXDNElGUOXw=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-106-T3SH6EUPPH6doJFDoewwXw-1; Fri, 18 Feb 2022 07:54:58 -0500
+X-MC-Unique: T3SH6EUPPH6doJFDoewwXw-1
+Received: by mail-wm1-f71.google.com with SMTP id t2-20020a7bc3c2000000b003528fe59cb9so2810830wmj.5
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 04:54:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ObrogwrsHsxgebV9FG+uqStBwkgeAFcG8F17qvQ//uw=;
-        b=FapKxQ+3EBeWIICmUY4bTfRqmJYa0ELumQPEtGrDktBsHgBg1vwwgxQmaN/PIzsh4+
-         vnvw625l4WTq+4Pnj3yTLr+zyMWm6xHO6jBFfibFLUyyVkReI9o6tDx0xpQ6a494Nnr5
-         H0jKf1vMffee33W8JfsMebtRNotcsINSgw09ZglgDKFqOQVvsvsV3MBOyp77xIKBcWou
-         3nVqEKA4uCDlMIxZ2bKftxYyR4d9iXn/5H7G+mX3vm1cfFfZijnExs82azyPHNGHEVeN
-         jGP/HHG3dDLOm8MLayqyGZ2hxtSh9DN1ydiD/Oxa2wYJnll2y3nm26bKB8ZJSBFssayQ
-         sEhg==
-X-Gm-Message-State: AOAM531GVL0RVV+JeN/b0Rak4TmCR4Kn2bsxl8qeuVSsocYtflV8sJ8Q
-        RgoRsLnSyATFBCMSHCXYvHvldw==
-X-Google-Smtp-Source: ABdhPJy/M8MHWvgQqY3Zg0pwpPHG0cvYALBNmZ4ntJvwy1fgD7h7lJrdKXH4E3kneOIY4LhD/vu7tg==
-X-Received: by 2002:a05:600c:ad0:b0:37b:b989:faaf with SMTP id c16-20020a05600c0ad000b0037bb989faafmr10446441wmr.167.1645188869298;
-        Fri, 18 Feb 2022 04:54:29 -0800 (PST)
-Received: from localhost.localdomain ([2a01:e34:ed2f:f020:5828:300b:5226:ef02])
-        by smtp.gmail.com with ESMTPSA id p7sm17034011wrr.95.2022.02.18.04.54.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=88nBv9CM5sW4ELGVD1fgBUk+sSiPdeBM/3xxb6Xhxvg=;
+        b=e3VoFVMbhlvuSJ9XmZxTecOHoBw+2lGMEuTdViIWr9kH6TcMI0Id7epx4gDZJRgJus
+         x6gFKt2hOgjU69iAYX252ld15pGOueZMknY/jftfr+/I51JkpG1I7+fC/BrSjW5XdMZu
+         L9bgjlWeNrBKaP+ND8XO+HY1Ill0uKw4PlHHYVj6j0MiZzR70Aa7hHsclY3HjVaotEnk
+         qygFDTzMqoS0Eujxl+4V1NuakXYnE4S41vasv3I8SfndrKuyvWs9H7Cw55PV9n27GBqU
+         H+3IGIS72oNlr2KYMG0uYcUn75cqK2H44tX/tEfbwAnzEmx3ybcp7hSTgF5bZ0HruaXu
+         7G5Q==
+X-Gm-Message-State: AOAM530ezccxSNWCOvJMkzMrQN2BP0cgEcQWfMnKbigSIoPK+UQet76S
+        CsGWm90zV67+5XEg2zS020+GZRMlyEHLSktDYuMSWzw/zKuZ7fRbhyees7WFvnN9ngxqrHICvxD
+        zuc55Gf2m+NgO8Cj7Hi9+SxA=
+X-Received: by 2002:a7b:ce90:0:b0:37d:1e50:1b60 with SMTP id q16-20020a7bce90000000b0037d1e501b60mr10447194wmj.185.1645188897183;
+        Fri, 18 Feb 2022 04:54:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxNQX5GfcDKh9eOaiz+k0HYtIt1SQne0UO0m6TJ2xtgaBH5ARpEgHOHXEcjA/E1em14nrjSqA==
+X-Received: by 2002:a7b:ce90:0:b0:37d:1e50:1b60 with SMTP id q16-20020a7bce90000000b0037d1e501b60mr10447170wmj.185.1645188896948;
+        Fri, 18 Feb 2022 04:54:56 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id t4sm4168545wmj.10.2022.02.18.04.54.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 04:54:28 -0800 (PST)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     srinivas.pandruvada@linux.intel.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v1 4/4] tools/thermal: Add thermal daemon skeleton
-Date:   Fri, 18 Feb 2022 13:53:34 +0100
-Message-Id: <20220218125334.995447-5-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220218125334.995447-1-daniel.lezcano@linaro.org>
-References: <20220218125334.995447-1-daniel.lezcano@linaro.org>
+        Fri, 18 Feb 2022 04:54:56 -0800 (PST)
+Date:   Fri, 18 Feb 2022 12:54:54 +0000
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     Aaron Tomlin <atomlin@atomlin.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Christoph Lameter <cl@linux.com>, tglx@linutronix.de,
+        mingo@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Phil Auld <pauld@redhat.com>
+Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
+ idle tick was stopped too
+Message-ID: <20220218125454.utlgmuhijklzr3if@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220203214339.1889971-1-atomlin@redhat.com>
+ <20220217124729.GA743618@lothringen>
+ <20220217142615.xqtiydixvnumyvei@ava.usersys.com>
+ <20220217163205.GA748087@lothringen>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220217163205.GA748087@lothringen>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change provides a simple daemon skeleton. It provides an example
-of how to use the thermal library.
+On Thu 2022-02-17 17:32 +0100, Frederic Weisbecker wrote:
+> > If I understand correctly, in the context of nohz_full, since such work is
+> > deferred, it will only be handled in a scenario when the periodic/or
+> > scheduling-clock tick is enabled i.e. the timer was reprogrammed on exit
+> > from idle.
+> 
+> Oh I see, it's a deferrable delayed work...
+> Then I can see two other issues:
+> 
+> 1) Can an interrupt in idle modify the vmstat and thus trigger the need to
+>    flush it? I believe it's the case and then the problem goes beyond nohz_full
+>    because if the idle interrupt fired while the tick is stopped and didn't set
+>    TIF_RESCHED, we go back to sleep without calling quiet_vmstat().
 
-The goal of this skeleton is to give a base brick for anyone
-interested in writing its own thermal engine.
+Yes: e.g. a nohz_full CPU, in idle code, could indeed receive a reschedule
+IPI; re-enable local IRQs and generic idle code sees the TIF_NEED_RESCHED
+flag against the idle task. Additionally, the selected task could
+indirectly released a few pages [to satisfy a low-memory condition] and
+modify CPU-specific vmstat data i.e. vm_stat_diff[NR_FREE_PAGES].
 
-In the future, it will evolve with more features.
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
----
- tools/Makefile                                |  16 +-
- tools/thermal/thermal-engine/Build            |   2 +
- tools/thermal/thermal-engine/Makefile         |  27 ++
- tools/thermal/thermal-engine/thermal-engine.c | 287 ++++++++++++++++++
- 4 files changed, 329 insertions(+), 3 deletions(-)
- create mode 100644 tools/thermal/thermal-engine/Build
- create mode 100644 tools/thermal/thermal-engine/Makefile
- create mode 100644 tools/thermal/thermal-engine/thermal-engine.c
+> 2) What if we are running task A in kernel mode while the tick is stopped
+>    (nohz_full). Task A modifies the vmstat and goes to userspace for a long
+>    while.
+> Your patch fixes case 1) but not case 2). The problem is that TIMER_DEFERRABLE
+> should really be about dynticks-idle only and not dynticks-full. I've always
+> been afraid about enforcing that rule though because that would break old
+> noise-free setups. But perhaps I should...
 
-diff --git a/tools/Makefile b/tools/Makefile
-index 78615f8cb463..b71cf39d3c08 100644
---- a/tools/Makefile
-+++ b/tools/Makefile
-@@ -32,6 +32,7 @@ help:
- 	@echo '  spi                    - spi tools'
- 	@echo '  tmon                   - thermal monitoring and tuning tool'
- 	@echo '  thermometer            - temperature capture tool'
-+	@echo '  thermal-engine         - thermal monitoring tool'
- 	@echo '  thermal                - thermal library'
- 	@echo '  tracing                - misc tracing tools'
- 	@echo '  turbostat              - Intel CPU idle stats and freq reporting tool'
-@@ -99,6 +100,9 @@ tmon: FORCE
- thermometer: FORCE
- 	$(call descend,thermal/$@)
- 
-+thermal-engine: FORCE thermal
-+	$(call descend,thermal/$@)
-+
- freefall: FORCE
- 	$(call descend,laptop/$@)
- 
-@@ -109,7 +113,7 @@ all: acpi cgroup counter cpupower gpio hv firewire \
- 		perf selftests bootconfig spi turbostat usb \
- 		virtio vm bpf x86_energy_perf_policy \
- 		tmon freefall iio objtool kvm_stat wmi \
--		pci debugging tracing thermal thermometer
-+		pci debugging tracing thermal thermometer thermal-engine
- 
- acpi_install:
- 	$(call descend,power/$(@:_install=),install)
-@@ -135,6 +139,9 @@ tmon_install:
- thermometer_install:
- 	$(call descend,thermal/$(@:_install=),install)
- 
-+thermal-engine_install:
-+	$(call descend,thermal/$(@:_install=),install)
-+
- freefall_install:
- 	$(call descend,laptop/$(@:_install=),install)
- 
-@@ -147,7 +154,7 @@ install: acpi_install cgroup_install counter_install cpupower_install gpio_insta
- 		virtio_install vm_install bpf_install x86_energy_perf_policy_install \
- 		tmon_install freefall_install objtool_install kvm_stat_install \
- 		wmi_install pci_install debugging_install intel-speed-select_install \
--		tracing_install thermometer_install
-+		tracing_install thermometer_install thermal-engine_install
- 
- acpi_clean:
- 	$(call descend,power/acpi,clean)
-@@ -183,6 +190,9 @@ turbostat_clean x86_energy_perf_policy_clean intel-speed-select_clean:
- thermometer_clean:
- 	$(call descend,thermal/thermometer,clean)
- 
-+thermal-engine_clean:
-+	$(call descend,thermal/thermal-engine,clean)
-+
- tmon_clean:
- 	$(call descend,thermal/tmon,clean)
- 
-@@ -197,6 +207,6 @@ clean: acpi_clean cgroup_clean counter_clean cpupower_clean hv_clean firewire_cl
- 		vm_clean bpf_clean iio_clean x86_energy_perf_policy_clean tmon_clean \
- 		freefall_clean build_clean libbpf_clean libsubcmd_clean \
- 		gpio_clean objtool_clean leds_clean wmi_clean pci_clean firmware_clean debugging_clean \
--		intel-speed-select_clean tracing_clean thermal_clean thermometer_clean
-+		intel-speed-select_clean tracing_clean thermal_clean thermometer_clean thermal-engine_clean
- 
- .PHONY: FORCE
-diff --git a/tools/thermal/thermal-engine/Build b/tools/thermal/thermal-engine/Build
-new file mode 100644
-index 000000000000..0c8b65248c80
---- /dev/null
-+++ b/tools/thermal/thermal-engine/Build
-@@ -0,0 +1,2 @@
-+thermal-engine-y += thermal-engine.o
-+
-diff --git a/tools/thermal/thermal-engine/Makefile b/tools/thermal/thermal-engine/Makefile
-new file mode 100644
-index 000000000000..d4296a331377
---- /dev/null
-+++ b/tools/thermal/thermal-engine/Makefile
-@@ -0,0 +1,27 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Makefile for thermal tools
-+
-+ifeq ($(srctree),)
-+srctree := $(patsubst %/,%,$(dir $(CURDIR)))
-+srctree := $(patsubst %/,%,$(dir $(srctree)))
-+srctree := $(patsubst %/,%,$(dir $(srctree)))
-+# $(info Determined 'srctree' to be $(srctree))
-+endif
-+
-+CFLAGS = -Wall -Wextra
-+CFLAGS += -I$(srctree)/tools/thermal/lib
-+CFLAGS += -I$(srctree)/tools/lib/thermal/include
-+
-+LDFLAGS = -L$(srctree)/tools/thermal/lib
-+LDFLAGS += -L$(srctree)/tools/lib/thermal
-+LDFLAGS += -lthermal_tools
-+LDFLAGS += -lthermal
-+LDFLAGS += -lconfig
-+LDFLAGS += -lnl-genl-3 -lnl-3
-+
-+all: thermal-engine
-+%: %.c
-+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-+
-+clean:
-+	$(RM) thermal-engine
-diff --git a/tools/thermal/thermal-engine/thermal-engine.c b/tools/thermal/thermal-engine/thermal-engine.c
-new file mode 100644
-index 000000000000..dc468278bb49
---- /dev/null
-+++ b/tools/thermal/thermal-engine/thermal-engine.c
-@@ -0,0 +1,287 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Thermal monitoring tool based on the thermal netlink events.
-+ *
-+ * Copyright (C) 2022 Linaro Ltd.
-+ *
-+ * Author: Daniel Lezcano <daniel.lezcano@kernel.org>
-+ */
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <libgen.h>
-+#include <limits.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <signal.h>
-+#include <unistd.h>
-+
-+#include <syslog.h>
-+
-+#include <sys/epoll.h>
-+#include <sys/stat.h>
-+#include <sys/types.h>
-+
-+#include <thermal.h>
-+#include "thermal-tools.h"
-+
-+struct options {
-+	int loglevel;
-+	int logopt;
-+	int interactive;
-+};
-+
-+struct thermal_data {
-+	struct thermal_zone *tz;
-+	struct thermal_handler *th;
-+};
-+
-+static int show_trip(struct thermal_trip *tt, __maybe_unused void *arg)
-+{
-+	INFO("trip id=%d, type=%d, temp=%d, hyst=%d\n",
-+	     tt->id, tt->type, tt->temp, tt->hyst);
-+
-+	return 0;
-+}		
-+
-+static int show_temp(struct thermal_zone *tz, __maybe_unused void *arg)
-+{
-+	thermal_cmd_get_temp(arg, tz);
-+
-+	INFO("temperature: %d\n", tz->temp);
-+
-+	return 0;
-+}
-+
-+static int show_governor(struct thermal_zone *tz, __maybe_unused void *arg)
-+{
-+	thermal_cmd_get_governor(arg, tz);
-+
-+	INFO("governor: '%s'\n", tz->governor);
-+	
-+	return 0;
-+}
-+
-+static int show_tz(struct thermal_zone *tz, __maybe_unused void *arg)
-+{
-+	INFO("thermal zone '%s', id=%d\n", tz->name, tz->id);
-+
-+	for_each_thermal_trip(tz->trip, show_trip, NULL);
-+
-+	show_temp(tz, arg);
-+	
-+	show_governor(tz, arg);
-+	
-+	return 0;
-+}
-+
-+static int tz_create(const char *name, int tz_id, __maybe_unused void *arg)
-+{
-+	INFO("Thermal zone '%s'/%d created\n", name, tz_id);
-+
-+	return 0;
-+}
-+
-+static int tz_delete(int tz_id, __maybe_unused void *arg)
-+{
-+	INFO("Thermal zone %d deleted\n", tz_id);
-+
-+	return 0;
-+}
-+
-+static int tz_disable(int tz_id, void *arg)
-+{
-+	struct thermal_data *td = arg;
-+	struct thermal_zone *tz = thermal_zone_find_by_id(td->tz, tz_id);
-+
-+	INFO("Thermal zone %d ('%s') disabled\n", tz_id, tz->name);
-+
-+	return 0;
-+}
-+
-+static int tz_enable(int tz_id, void *arg)
-+{
-+	struct thermal_data *td = arg;
-+	struct thermal_zone *tz = thermal_zone_find_by_id(td->tz, tz_id);
-+
-+	INFO("Thermal zone %d ('%s') enabled\n", tz_id, tz->name);
-+
-+	return 0;
-+}
-+
-+static int trip_high(int tz_id, int trip_id, int temp, void *arg)
-+{
-+	struct thermal_data *td = arg;
-+	struct thermal_zone *tz = thermal_zone_find_by_id(td->tz, tz_id);
-+
-+	INFO("Thermal zone %d ('%s'): trip point %d crossed way up with %d °C\n",
-+	     tz_id, tz->name, trip_id, temp);
-+
-+	return 0;
-+}
-+
-+static int trip_low(int tz_id, int trip_id, int temp, void *arg)
-+{
-+	struct thermal_data *td = arg;
-+	struct thermal_zone *tz = thermal_zone_find_by_id(td->tz, tz_id);
-+
-+	INFO("Thermal zone %d ('%s'): trip point %d crossed way down with %d °C\n",
-+	     tz_id, tz->name, trip_id, temp);
-+
-+	return 0;
-+}
-+
-+static int trip_add(int tz_id, int trip_id, int type, int temp, int hyst, __maybe_unused void *arg)
-+{
-+	INFO("Trip point added %d: id=%d, type=%d, temp=%d, hyst=%d\n",
-+	     tz_id, trip_id, type, temp, hyst);
-+
-+	return 0;
-+}
-+
-+static int trip_delete(int tz_id, int trip_id, __maybe_unused void *arg)
-+{
-+	INFO("Trip point deleted %d: id=%d\n", tz_id, trip_id);
-+
-+	return 0;
-+}
-+
-+static int trip_change(int tz_id, int trip_id, int type, int temp, int hyst, __maybe_unused void *arg)
-+{
-+	struct thermal_data *td = arg;
-+	struct thermal_zone *tz = thermal_zone_find_by_id(td->tz, tz_id);
-+
-+	INFO("Trip point changed %d: id=%d, type=%d, temp=%d, hyst=%d\n",
-+	     tz_id, trip_id, type, temp, hyst);
-+
-+	tz->trip[trip_id].type = type;
-+	tz->trip[trip_id].temp = temp;
-+	tz->trip[trip_id].hyst = hyst;
-+
-+	return 0;
-+}
-+
-+static int cdev_add(const char *name, int cdev_id, int max_state, __maybe_unused void *arg)
-+{
-+	INFO("Cooling device '%s'/%d (max state=%d) added\n", name, cdev_id, max_state);
-+
-+	return 0;
-+}
-+
-+static int cdev_delete(int cdev_id, __maybe_unused void *arg)
-+{
-+	INFO("Cooling device %d deleted", cdev_id);
-+
-+	return 0;
-+}
-+
-+static int cdev_update(int cdev_id, int cur_state, __maybe_unused void *arg)
-+{
-+	INFO("cdev:%d state:%d\n", cdev_id, cur_state);
-+
-+	return 0;
-+}
-+
-+static int gov_change(int tz_id, const char *name, __maybe_unused void *arg)
-+{
-+	struct thermal_data *td = arg;
-+	struct thermal_zone *tz = thermal_zone_find_by_id(td->tz, tz_id);
-+
-+	INFO("%s: governor changed %s -> %s\n", tz->name, tz->governor, name);
-+
-+	strcpy(tz->governor, name);
-+
-+	return 0;
-+}
-+
-+static struct thermal_ops ops = {
-+	.events.tz_create	= tz_create,
-+	.events.tz_delete	= tz_delete,
-+	.events.tz_disable	= tz_disable,
-+	.events.tz_enable	= tz_enable,
-+	.events.trip_high	= trip_high,
-+	.events.trip_low	= trip_low,
-+	.events.trip_add	= trip_add,
-+	.events.trip_delete	= trip_delete,
-+	.events.trip_change	= trip_change,
-+	.events.cdev_add	= cdev_add,
-+	.events.cdev_delete	= cdev_delete,
-+	.events.cdev_update	= cdev_update,
-+	.events.gov_change	= gov_change
-+};
-+
-+static int thermal_event(__maybe_unused int fd, __maybe_unused void *arg)
-+{
-+	struct thermal_data *td = arg;
-+
-+	return thermal_events_handle(td->th, td);
-+}
-+
-+static int options_init(int argc, char *argv[], struct options *options)
-+{
-+	int opt;
-+	
-+	while ((opt = getopt(argc, argv, "sl:")) != -1) {
-+               switch (opt) {
-+	       case 'l':
-+		       options->loglevel = log_str2level(optarg);
-+		       break;
-+	       case 's':
-+		       options->logopt |= TO_STDOUT;
-+		       break;
-+               default: /* '?' */
-+		       ERROR("Usage: %s \n", argv[0]);
-+		       return -1;
-+               }
-+	}
-+
-+	return 0;
-+}
-+
-+enum {
-+	THERMAL_ENGINE_SUCCESS = 0,
-+	THERMAL_ENGINE_OPTION_ERROR,
-+	THERMAL_ENGINE_DAEMON_ERROR,
-+	THERMAL_ENGINE_LOG_ERROR,
-+	THERMAL_ENGINE_THERMAL_ERROR,
-+	THERMAL_ENGINE_MAINLOOP_ERROR,
-+};
-+
-+int main(int argc, char *argv[])
-+{
-+	struct thermal_data td;
-+	struct options options = {
-+		.loglevel = LOG_DEBUG,
-+		.logopt = LOG_SYSLOG
-+	};
-+
-+	if (options_init(argc, argv, &options))
-+		return THERMAL_ENGINE_OPTION_ERROR;
-+
-+	if (!(options.logopt & TO_STDOUT) && daemon(0, 0))
-+		return THERMAL_ENGINE_DAEMON_ERROR;
-+	
-+	if (log_init(options.loglevel, basename(argv[0]), options.logopt))
-+		return THERMAL_ENGINE_LOG_ERROR;
-+
-+	td.th = thermal_init(&ops);
-+	if (!td.th)
-+		return THERMAL_ENGINE_THERMAL_ERROR;
-+
-+	td.tz = thermal_zone_discover(td.th);
-+	if (!td.tz)
-+		return THERMAL_ENGINE_THERMAL_ERROR;
-+
-+	for_each_thermal_zone(td.tz, show_tz, td.th);
-+	
-+	if (mainloop_init())
-+		return THERMAL_ENGINE_MAINLOOP_ERROR;
-+
-+	if (mainloop_add(thermal_events_fd(td.th), thermal_event, &td))
-+		return THERMAL_ENGINE_MAINLOOP_ERROR;
-+
-+	if (mainloop(-1))
-+		return THERMAL_ENGINE_MAINLOOP_ERROR;
-+
-+	return THERMAL_ENGINE_SUCCESS;
-+}
+If I understand correctly, I agree. For the latter case, nothing can be
+done unfortunately since the scheduling-clock tick is stopped.
+
+
+Kind regards,
+
 -- 
-2.25.1
+Aaron Tomlin
 
