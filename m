@@ -2,57 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E319C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 13:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4752CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235895AbiBRN5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 08:57:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57614 "EHLO
+        id S235907AbiBROAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 09:00:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233052AbiBRN4y (ORCPT
+        with ESMTP id S232314AbiBROAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 08:56:54 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04ED025D6
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 05:56:36 -0800 (PST)
-Received: from martin by viti.kaiser.cx with local (Exim 4.89)
-        (envelope-from <martin@viti.kaiser.cx>)
-        id 1nL3kM-0007k1-Hu; Fri, 18 Feb 2022 14:56:30 +0100
-Date:   Fri, 18 Feb 2022 14:56:30 +0100
-From:   Martin Kaiser <lists@kaiser.cx>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC] staging: r8188eu: comment about the chip's packet
- format
-Message-ID: <20220218135630.hodcdxnvcavk54jn@viti.kaiser.cx>
-References: <20220218092252.853807-1-martin@kaiser.cx>
- <20220218102227.GE2407@kadam>
+        Fri, 18 Feb 2022 09:00:35 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D749D2B04B1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:00:17 -0800 (PST)
+Received: (Authenticated sender: alex@ghiti.fr)
+        by mail.gandi.net (Postfix) with ESMTPSA id E214810001E;
+        Fri, 18 Feb 2022 14:00:11 +0000 (UTC)
+Message-ID: <5d36edd4-39ff-bc52-0b40-6f909a510b9e@ghiti.fr>
+Date:   Fri, 18 Feb 2022 15:00:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218102227.GE2407@kadam>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Sender: Martin Kaiser <martin@viti.kaiser.cx>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] riscv: mm: remove the BUG_ON check of mapping the last 4K
+ bytes of memory
+Content-Language: en-US
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     jszhang@kernel.org, Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <mhng-790fdd34-b20e-4c0a-b36d-eb91b16a3e44@palmer-ri-x1c9>
+From:   Alexandre Ghiti <alex@ghiti.fr>
+In-Reply-To: <mhng-790fdd34-b20e-4c0a-b36d-eb91b16a3e44@palmer-ri-x1c9>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thus wrote Dan Carpenter (dan.carpenter@oracle.com):
+Hi Palmer,
 
-> On Fri, Feb 18, 2022 at 10:22:53AM +0100, Martin Kaiser wrote:
+On 2/15/22 00:41, Palmer Dabbelt wrote:
+> On Tue, 25 Jan 2022 08:10:41 PST (-0800), alex@ghiti.fr wrote:
+>>
+>> On 1/25/22 16:55, Jisheng Zhang wrote:
+>>> remove the BUG_ON check of mapping the last 4K bytes of the addressable
+>>> memory since "this is true for every kernel actually" as pointed out
+>>> by Alexandre.
+>>>
+>>> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+>>> Reviewed-by: Alexandre Ghiti <alex@ghiti.fr>
+>>> ---
+>>>   arch/riscv/mm/init.c | 8 --------
+>>>   1 file changed, 8 deletions(-)
+>>>
+>>> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+>>> index cf4d018b7d66..8347d0fda8cd 100644
+>>> --- a/arch/riscv/mm/init.c
+>>> +++ b/arch/riscv/mm/init.c
+>>> @@ -811,14 +811,6 @@ asmlinkage void __init setup_vm(uintptr_t dtb_pa)
+>>>       BUG_ON((PAGE_OFFSET % PGDIR_SIZE) != 0);
+>>>       BUG_ON((kernel_map.phys_addr % PMD_SIZE) != 0);
+>>>
+>>> -#ifdef CONFIG_64BIT
+>>> -    /*
+>>> -     * The last 4K bytes of the addressable memory can not be 
+>>> mapped because
+>>> -     * of IS_ERR_VALUE macro.
+>>> -     */
+>>> -    BUG_ON((kernel_map.virt_addr + kernel_map.size) > 
+>>> ADDRESS_SPACE_END - SZ_4K);
+>>> -#endif
+>>
+>>
+>> This BUG_ON seems pretty legit to me: I re-read the exchanges we had,
+>> and I see that I didn't notice that in your v2, you actually removed the
+>> BUG_ON. So that's my bad, what I meant in the first place was that the
+>> BUG_ON is true for 32-bit and 64-bit kernels actually.
+>
+> There's actually an ifndef 64BIT above that sort of handles this case 
+> (though I didn't check to see if we're getting the limits correct, so 
+> it may not work properly).  That's shrinking the memory, rather than 
+> just firing a BUG, and it's not really any more code so we should go 
+> that way for both.  I could see leaving a BUG in there, maybe just 
+> explicitly using IS_ERR_VALUE as that's really what we're checking for 
+> (though if that's not 4K a bunch of stuff will break, so maybe it just 
+> doesn't matter).
 
-> > Would it make sense to add a word of warning to prevent others from
-> > repeating this exercise?
 
-> Just the fact that these structs are endian means they're from the
-> firmware or the network.
+I think you're talking about:
 
-> If a struct has a pointer in it, then it's rarely part of the UAPI but
-> if it has endian data then it probably is.
+memory_limit = KERN_VIRT_SIZE - (IS_ENABLED(CONFIG_64BIT) ? SZ_4G : 0);
 
-ah, these are useful criteria, thanks. I see that the comment isn't
-really necessary...
+If yes, that's shrinking the available physical memory we can map in the 
+linear mapping, whereas the BUG_ON here is triggered if the kernel 
+mapping is very (very) large and overlaps the last *4K* of the address 
+space, so I still think the BUG_ON is legit although very unlikely.
+
+However, I'm wondering if the shrinking still holds with the recent move 
+of KASAN, I may be back with a fix for that.
+
+Alex
+
+
+>
+>> Sorry my RB was not right on this one :(
+>>
+>> Alex
+>>
+>>
+>>> -
+>>>       pt_ops_set_early();
+>>>
+>>>       /* Setup early PGD for fixmap */
