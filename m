@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B66C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237721AbiBRQSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:18:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44008 "EHLO
+        id S237782AbiBRQSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:18:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235195AbiBRQR4 (ORCPT
+        with ESMTP id S237582AbiBRQRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:17:56 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B93A32993
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:22 -0800 (PST)
+        Fri, 18 Feb 2022 11:17:40 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95C02AE32
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645201043; x=1676737043;
+  t=1645201040; x=1676737040;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Zb3ePNBkz1uHPAeLFkoKkKv3zNQDq7nBwyws1psNs2I=;
-  b=nQbTZ2KVHnOZNwYs/kpdTHl29knUwm72qca7e68bc8G+sictTQIEyXDd
-   LIxEglm/+7ovXBOlfhEwczRWTa+zmQlatTW+D35PvvJM9fDDd4h5x6s1W
-   LLqIGi6mDO4UH1ifEk0Xj42HThgE+PSNWVohF3q5MsGrsQqTtUF5EC1sg
-   spwIBuX4ayx9NbECgqqxwaQUQleIDWisdnj/KF83TcsosdGDegwgDoUUZ
-   H1DfcLEdyiohUYwWzu5zFqwpP9Nyitg7sfe3AHQM5q5keJGeKBJNnc22k
-   odRmm7y4FuSakZN6MJPRj/bUG1bp2jr/46wyAZaNuCv+QdiCoAv+RPwmg
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="337599800"
+  bh=YLRcyqnwpgSRCqcWi/554Dc1Exapi/lSv6TTC7rFRfU=;
+  b=dHEnAqdapHgtH0W1wZMGipY/ezP32/ZI+jZahZdP+mTHi6ZTN8FsE0Zi
+   PjSj2GHy0tM4wmv+HLF0QK1BS1nKrJPDceQGtN1KNfRMdPuzcXuzls4Nf
+   OwTX56g4VA6e6tPj6lW6R8pue5gqYt7PWkb2FsekVEZZyFcBrE3ucpAj5
+   HPACfEtsIATjcchi7NIe04Yw5Gihcm/GkGLABgKJeKKqyEYkq6DIGo387
+   HsYezYY1TGLIHIpp6crlSvYQbfS3E8sYD8jWAYNsc24WgmWtjbliXMEpd
+   QxW3rO5k3wBuMNQt2rQNg+exqF0vab/2QWRagiJCy5ZiukDCL3kzYEWTs
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="238559698"
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="337599800"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:20 -0800
+   d="scan'208";a="238559698"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:19 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="489549194"
+   d="scan'208";a="626675640"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 18 Feb 2022 08:17:13 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 18 Feb 2022 08:17:13 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 79DB08E3; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
+        id B11ACA30; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,9 +51,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 09/32] x86/tdx: Add HLT support for TDX guests
-Date:   Fri, 18 Feb 2022 19:16:55 +0300
-Message-Id: <20220218161718.67148-10-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 14/32] x86: Adjust types used in port I/O helpers
+Date:   Fri, 18 Feb 2022 19:17:00 +0300
+Message-Id: <20220218161718.67148-15-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
@@ -63,206 +63,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The HLT instruction is a privileged instruction, executing it stops
-instruction execution and places the processor in a HALT state. It
-is used in kernel for cases like reboot, idle loop and exception fixup
-handlers. For the idle case, interrupts will be enabled (using STI)
-before the HLT instruction (this is also called safe_halt()).
+Change port I/O helpers to use u8/u16/u32 instead of unsigned
+char/short/int for values. Use u16 instead of int for port number.
 
-To support the HLT instruction in TDX guests, it needs to be emulated
-using TDVMCALL (hypercall to VMM). More details about it can be found
-in Intel Trust Domain Extensions (Intel TDX) Guest-Host-Communication
-Interface (GHCI) specification, section TDVMCALL[Instruction.HLT].
+It aligns the helpers with implementation in boot stub in preparation
+for consolidation.
 
-In TDX guests, executing HLT instruction will generate a #VE, which is
-used to emulate the HLT instruction. But #VE based emulation will not
-work for the safe_halt() flavor, because it requires STI instruction to
-be executed just before the TDCALL. Since idle loop is the only user of
-safe_halt() variant, handle it as a special case.
-
-To avoid *safe_halt() call in the idle function, define the
-tdx_guest_idle() and use it to override the "x86_idle" function pointer
-for a valid TDX guest.
-
-Alternative choices like PV ops have been considered for adding
-safe_halt() support. But it was rejected because HLT paravirt calls
-only exist under PARAVIRT_XXL, and enabling it in TDX guest just for
-safe_halt() use case is not worth the cost.
-
-Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/coco/tdcall.S     | 13 ++++++++
- arch/x86/coco/tdx.c        | 66 ++++++++++++++++++++++++++++++++++++--
- arch/x86/include/asm/tdx.h |  4 +++
- arch/x86/kernel/process.c  |  4 +++
- 4 files changed, 85 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/io.h | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/coco/tdcall.S b/arch/x86/coco/tdcall.S
-index c4dd9468e7d9..3c35a056974d 100644
---- a/arch/x86/coco/tdcall.S
-+++ b/arch/x86/coco/tdcall.S
-@@ -138,6 +138,19 @@ SYM_FUNC_START(__tdx_hypercall)
+diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
+index f6d91ecb8026..638c1a2a82e0 100644
+--- a/arch/x86/include/asm/io.h
++++ b/arch/x86/include/asm/io.h
+@@ -258,37 +258,37 @@ static inline void slow_down_io(void)
+ #endif
  
- 	movl $TDVMCALL_EXPOSE_REGS_MASK, %ecx
- 
-+	/*
-+	 * For the idle loop STI needs to be called directly before the TDCALL
-+	 * that enters idle (EXIT_REASON_HLT case). STI instruction enables
-+	 * interrupts only one instruction later. If there is a window between
-+	 * STI and the instruction that emulates the HALT state, there is a
-+	 * chance for interrupts to happen in this window, which can delay the
-+	 * HLT operation indefinitely. Since this is the not the desired
-+	 * result, conditionally call STI before TDCALL.
-+	 */
-+	testq $TDX_HCALL_ISSUE_STI, %rsi
-+	jz .Lskip_sti
-+	sti
-+.Lskip_sti:
- 	tdcall
- 
- 	/*
-diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-index de7a02e634c2..8adc759961f3 100644
---- a/arch/x86/coco/tdx.c
-+++ b/arch/x86/coco/tdx.c
-@@ -7,6 +7,7 @@
- #include <linux/cpufeature.h>
- #include <asm/coco.h>
- #include <asm/tdx.h>
-+#include <asm/vmx.h>
- 
- /* TDX module Call Leaf IDs */
- #define TDX_GET_INFO			1
-@@ -59,6 +60,62 @@ static void get_info(void)
- 	td_info.attributes = out.rdx;
+ #define BUILDIO(bwl, bw, type)						\
+-static inline void out##bwl(unsigned type value, int port)		\
++static inline void out##bwl(type value, u16 port)			\
+ {									\
+ 	asm volatile("out" #bwl " %" #bw "0, %w1"			\
+ 		     : : "a"(value), "Nd"(port));			\
+ }									\
+ 									\
+-static inline unsigned type in##bwl(int port)				\
++static inline type in##bwl(u16 port)					\
+ {									\
+-	unsigned type value;						\
++	type value;							\
+ 	asm volatile("in" #bwl " %w1, %" #bw "0"			\
+ 		     : "=a"(value) : "Nd"(port));			\
+ 	return value;							\
+ }									\
+ 									\
+-static inline void out##bwl##_p(unsigned type value, int port)		\
++static inline void out##bwl##_p(type value, u16 port)			\
+ {									\
+ 	out##bwl(value, port);						\
+ 	slow_down_io();							\
+ }									\
+ 									\
+-static inline unsigned type in##bwl##_p(int port)			\
++static inline type in##bwl##_p(u16 port)				\
+ {									\
+-	unsigned type value = in##bwl(port);				\
++	type value = in##bwl(port);					\
+ 	slow_down_io();							\
+ 	return value;							\
+ }									\
+ 									\
+-static inline void outs##bwl(int port, const void *addr, unsigned long count) \
++static inline void outs##bwl(u16 port, const void *addr, unsigned long count) \
+ {									\
+ 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
+-		unsigned type *value = (unsigned type *)addr;		\
++		type *value = (type *)addr;				\
+ 		while (count) {						\
+ 			out##bwl(*value, port);				\
+ 			value++;					\
+@@ -301,10 +301,10 @@ static inline void outs##bwl(int port, const void *addr, unsigned long count) \
+ 	}								\
+ }									\
+ 									\
+-static inline void ins##bwl(int port, void *addr, unsigned long count)	\
++static inline void ins##bwl(u16 port, void *addr, unsigned long count)	\
+ {									\
+ 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
+-		unsigned type *value = (unsigned type *)addr;		\
++		type *value = (type *)addr;				\
+ 		while (count) {						\
+ 			*value = in##bwl(port);				\
+ 			value++;					\
+@@ -317,9 +317,9 @@ static inline void ins##bwl(int port, void *addr, unsigned long count)	\
+ 	}								\
  }
  
-+static u64 __cpuidle __halt(const bool irq_disabled, const bool do_sti)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = EXIT_REASON_HLT,
-+		.r12 = irq_disabled,
-+	};
-+
-+	/*
-+	 * Emulate HLT operation via hypercall. More info about ABI
-+	 * can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI), section 3.8 TDG.VP.VMCALL<Instruction.HLT>.
-+	 *
-+	 * The VMM uses the "IRQ disabled" param to understand IRQ
-+	 * enabled status (RFLAGS.IF) of the TD guest and to determine
-+	 * whether or not it should schedule the halted vCPU if an
-+	 * IRQ becomes pending. E.g. if IRQs are disabled, the VMM
-+	 * can keep the vCPU in virtual HLT, even if an IRQ is
-+	 * pending, without hanging/breaking the guest.
-+	 */
-+	return __tdx_hypercall(&args, do_sti ? TDX_HCALL_ISSUE_STI : 0);
-+}
-+
-+static bool handle_halt(void)
-+{
-+	/*
-+	 * Since non safe halt is mainly used in CPU offlining
-+	 * and the guest will always stay in the halt state, don't
-+	 * call the STI instruction (set do_sti as false).
-+	 */
-+	const bool irq_disabled = irqs_disabled();
-+	const bool do_sti = false;
-+
-+	if (__halt(irq_disabled, do_sti))
-+		return false;
-+
-+	return true;
-+}
-+
-+void __cpuidle tdx_safe_halt(void)
-+{
-+	 /*
-+	  * For do_sti=true case, __tdx_hypercall() function enables
-+	  * interrupts using the STI instruction before the TDCALL. So
-+	  * set irq_disabled as false.
-+	  */
-+	const bool irq_disabled = false;
-+	const bool do_sti = true;
-+
-+	/*
-+	 * Use WARN_ONCE() to report the failure.
-+	 */
-+	if (__halt(irq_disabled, do_sti))
-+		WARN_ONCE(1, "HLT instruction emulation failed\n");
-+}
-+
- void tdx_get_ve_info(struct ve_info *ve)
- {
- 	struct tdx_module_output out;
-@@ -98,8 +155,13 @@ static bool virt_exception_user(struct pt_regs *regs, struct ve_info *ve)
- /* Handle the kernel #VE */
- static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- {
--	pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
--	return false;
-+	switch (ve->exit_reason) {
-+	case EXIT_REASON_HLT:
-+		return handle_halt();
-+	default:
-+		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
-+		return false;
-+	}
- }
+-BUILDIO(b, b, char)
+-BUILDIO(w, w, short)
+-BUILDIO(l, , int)
++BUILDIO(b, b, u8)
++BUILDIO(w, w, u16)
++BUILDIO(l,  , u32)
  
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index 34cf998ad534..e6e23ade53a6 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -13,6 +13,7 @@
- #define TDX_HYPERCALL_STANDARD  0
- 
- #define TDX_HCALL_HAS_OUTPUT	BIT(0)
-+#define TDX_HCALL_ISSUE_STI	BIT(1)
- 
- #define TDX_SEAMCALL_VMFAILINVALID     0x8000FF00FFFF0000ULL
- 
-@@ -79,9 +80,12 @@ void tdx_get_ve_info(struct ve_info *ve);
- 
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
- 
-+void tdx_safe_halt(void);
-+
- #else
- 
- static inline void tdx_early_init(void) { };
-+static inline void tdx_safe_halt(void) { };
- 
- #endif /* CONFIG_INTEL_TDX_GUEST */
- 
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 81d8ef036637..71aa12082370 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -46,6 +46,7 @@
- #include <asm/proto.h>
- #include <asm/frame.h>
- #include <asm/unwind.h>
-+#include <asm/tdx.h>
- 
- #include "process.h"
- 
-@@ -870,6 +871,9 @@ void select_idle_routine(const struct cpuinfo_x86 *c)
- 	} else if (prefer_mwait_c1_over_halt(c)) {
- 		pr_info("using mwait in idle threads\n");
- 		x86_idle = mwait_idle;
-+	} else if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
-+		pr_info("using TDX aware idle routine\n");
-+		x86_idle = tdx_safe_halt;
- 	} else
- 		x86_idle = default_idle;
- }
+ #define inb inb
+ #define inw inw
 -- 
 2.34.1
 
