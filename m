@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38861C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237908AbiBRQTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:19:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43148 "EHLO
+        id S231697AbiBRQTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:19:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237748AbiBRQSK (ORCPT
+        with ESMTP id S237744AbiBRQSK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 11:18:10 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7772B522C
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3837D2AD66C
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645201070; x=1676737070;
+  t=1645201068; x=1676737068;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nADhV0lVzgeE1XCdwSRouFO3nFpiweiQ2noYmHhR8jI=;
-  b=LRdSNpC83d9OCv9wSvV4aa/sYNJzu1wlZ77QFJmxUGcemVzjaDPsYjsz
-   e3aMM+VN3zTWi7Oxds78oXgCFrZ8RsZtnIMykgOmuwAJoBkmqskOJrjvZ
-   ubtoPRHq3uGn4YkK0ERezEZbzYIxb3wYkh6OJEdee6ftd2XYlzTHCN7Lr
-   +3Res8VGDZ93FXsMQVvuEvxFXqO8D22uhvDWCSIqRPg90H3yjzItH7oN2
-   pAztlh2dPwHdnw37qcsCuw26ttvzazncmES4rQq987ijlBMw0K1WC9W6y
-   71GMjInvf6lemyQb/cz1cRmAPc/+UooKgwZNpnDdI9ynxkn1xfO+3ElND
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="251098348"
+  bh=rvGoQhf1AAFFJIhc09uvI0V9j/8BuIi7JOVKvROWGcM=;
+  b=JUhTZeoESeQSixcFCm0Za7qF4J9obHsW3Bx9vxx7KkiFZiKXdR89M36g
+   H+EV8uglS4D6lQItRjCqTmH+SVOZTP5UrYS7aPs1biiC9440h02MghfTc
+   7upsuQmbj51x/1n52Bwun6dbUIVcWH2RH/uSEmiCp2rVARD7ceewf26cS
+   Qtec6OCOzdSLsOccMn8YRniuwJhkiBif5/MEUHnuQC1Y01pBDkuSJ9kON
+   pCLxKSs928vCeVg6lcjv5l4vc4c/t2DTTSFfIEZ8DdsKbMzTQ1Tafdo2w
+   jZ/hmJcFIc3yUnLlTDBwvvkzf3WGJtj+geISkUi8BcaYY/0OMwLYVyn4w
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="251098333"
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="251098348"
+   d="scan'208";a="251098333"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:26 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:25 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="637782187"
+   d="scan'208";a="637782184"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 18 Feb 2022 08:17:20 -0800
+  by orsmga004.jf.intel.com with ESMTP; 18 Feb 2022 08:17:19 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 64942EC2; Fri, 18 Feb 2022 18:17:23 +0200 (EET)
+        id D17A9AC1; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -50,11 +50,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: [PATCHv3 27/32] x86/mm/cpa: Generailize __set_memory_enc_pgtable()
-Date:   Fri, 18 Feb 2022 19:17:13 +0300
-Message-Id: <20220218161718.67148-28-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 17/32] x86/boot/compressed: Support TDX guest port I/O at decompression time
+Date:   Fri, 18 Feb 2022 19:17:03 +0300
+Message-Id: <20220218161718.67148-18-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
@@ -64,211 +63,235 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TDX steals a bit from the physical address and uses it to indicate
-whether the page is private to the guest (bit set 0) or unprotected
-and shared with the VMM (bit set 1).
+Port I/O instructions trigger #VE in the TDX environment. In response to
+the exception, kernel emulates these instructions using hypercalls.
 
-AMD SEV uses a similar scheme, repurposing a bit from the physical address
-to indicate encrypted or decrypted pages.
+But during early boot, on the decompression stage, it is cumbersome to
+deal with #VE. It is cleaner to go to hypercalls directly, bypassing #VE
+handling.
 
-The kernel already has the infrastructure to deal with encrypted/decrypted
-pages for AMD SEV, but TDX requires few tweaks:
-
- - TDX and SEV have different requirements to the cache and tlb
-   flushing.
-
- - TDX has own routine to notify VMM about page encryption status change.
-
-Modify __set_memory_enc_pgtable() and make it flexible enough to cover
-both AMD SEV and Intel TDX. The AMD-specific behaviour is isolated in
-callback under x86_platform.cc. TDX will provide own version of the
-callbacks.
+Hook up TDX-specific port I/O helpers if booting in TDX environment.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
 ---
- arch/x86/include/asm/set_memory.h |  1 -
- arch/x86/include/asm/x86_init.h   |  7 ++++
- arch/x86/mm/mem_encrypt_amd.c     | 65 ++++++++++++++++++++-----------
- arch/x86/mm/pat/set_memory.c      | 10 ++---
- 4 files changed, 54 insertions(+), 29 deletions(-)
+ arch/x86/boot/compressed/Makefile |  2 +-
+ arch/x86/boot/compressed/tdcall.S |  3 ++
+ arch/x86/boot/compressed/tdx.c    | 71 +++++++++++++++++++++++++++++++
+ arch/x86/include/asm/shared/tdx.h | 29 +++++++++++++
+ arch/x86/include/asm/tdx.h        | 24 -----------
+ 5 files changed, 104 insertions(+), 25 deletions(-)
+ create mode 100644 arch/x86/boot/compressed/tdcall.S
 
-diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
-index ff0f2d90338a..ce8dd215f5b3 100644
---- a/arch/x86/include/asm/set_memory.h
-+++ b/arch/x86/include/asm/set_memory.h
-@@ -84,7 +84,6 @@ int set_pages_rw(struct page *page, int numpages);
- int set_direct_map_invalid_noflush(struct page *page);
- int set_direct_map_default_noflush(struct page *page);
- bool kernel_page_present(struct page *page);
--void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc);
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 732f6b21ecbd..8fd0e6ae2e1f 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -101,7 +101,7 @@ ifdef CONFIG_X86_64
+ endif
  
- extern int kernel_set_to_readonly;
+ vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
+-vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o
++vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o $(obj)/tdcall.o
  
-diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
-index 22b7412c08f6..d38c253cc222 100644
---- a/arch/x86/include/asm/x86_init.h
-+++ b/arch/x86/include/asm/x86_init.h
-@@ -251,6 +251,12 @@ struct x86_hyper_runtime {
- 	bool (*sev_es_hcall_finish)(struct ghcb *ghcb, struct pt_regs *regs);
- };
+ vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
+ efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
+diff --git a/arch/x86/boot/compressed/tdcall.S b/arch/x86/boot/compressed/tdcall.S
+new file mode 100644
+index 000000000000..59b80ab6b41c
+--- /dev/null
++++ b/arch/x86/boot/compressed/tdcall.S
+@@ -0,0 +1,3 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#include "../../coco/tdcall.S"
+diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
+index 8a72ce2e880f..6e6f3d6d09b0 100644
+--- a/arch/x86/boot/compressed/tdx.c
++++ b/arch/x86/boot/compressed/tdx.c
+@@ -2,6 +2,10 @@
  
-+struct x86_cc_runtime {
-+	int (*enc_status_changed)(unsigned long vaddr, int numpages, bool enc);
-+	bool (*enc_tlb_flush_required)(bool enc);
-+	bool (*enc_cache_flush_required)(void);
+ #include "../cpuflags.h"
+ #include "../string.h"
++#include "../io.h"
++
++#include <vdso/limits.h>
++#include <uapi/asm/vmx.h>
+ 
+ #include <asm/shared/tdx.h>
+ 
+@@ -12,6 +16,66 @@ bool early_is_tdx_guest(void)
+ 	return tdx_guest_detected;
+ }
+ 
++static inline unsigned int tdx_io_in(int size, u16 port)
++{
++	struct tdx_hypercall_args args = {
++		.r10 = TDX_HYPERCALL_STANDARD,
++		.r11 = EXIT_REASON_IO_INSTRUCTION,
++		.r12 = size,
++		.r13  = 0,
++		.r14 = port,
++	};
++
++	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
++		return UINT_MAX;
++
++	return args.r11;
++}
++
++static inline void tdx_io_out(int size, u16 port, u32 value)
++{
++	struct tdx_hypercall_args args = {
++		.r10 = TDX_HYPERCALL_STANDARD,
++		.r11 = EXIT_REASON_IO_INSTRUCTION,
++		.r12 = size,
++		.r13  = 1,
++		.r14 = port,
++		.r15 = value,
++	};
++
++	__tdx_hypercall(&args, 0);
++}
++
++static inline u8 tdx_inb(u16 port)
++{
++	return tdx_io_in(1, port);
++}
++
++static inline u16 tdx_inw(u16 port)
++{
++	return tdx_io_in(2, port);
++}
++
++static inline u32 tdx_inl(u16 port)
++{
++	return tdx_io_in(4, port);
++}
++
++static inline void tdx_outb(u8 value, u16 port)
++{
++	tdx_io_out(1, port, value);
++}
++
++static inline void tdx_outw(u16 value, u16 port)
++{
++	tdx_io_out(2, port, value);
++}
++
++static inline void tdx_outl(u32 value, u16 port)
++{
++	tdx_io_out(4, port, value);
++}
++
+ void early_tdx_detect(void)
+ {
+ 	u32 eax, sig[3];
+@@ -23,4 +87,11 @@ void early_tdx_detect(void)
+ 
+ 	/* Cache TDX guest feature status */
+ 	tdx_guest_detected = true;
++
++	pio_ops.inb = tdx_inb;
++	pio_ops.inw = tdx_inw;
++	pio_ops.inl = tdx_inl;
++	pio_ops.outb = tdx_outb;
++	pio_ops.outw = tdx_outw;
++	pio_ops.outl = tdx_outl;
+ }
+diff --git a/arch/x86/include/asm/shared/tdx.h b/arch/x86/include/asm/shared/tdx.h
+index 8209ba9ffe1a..51bce6351124 100644
+--- a/arch/x86/include/asm/shared/tdx.h
++++ b/arch/x86/include/asm/shared/tdx.h
+@@ -2,7 +2,36 @@
+ #ifndef _ASM_X86_SHARED_TDX_H
+ #define _ASM_X86_SHARED_TDX_H
+ 
++#include <linux/bits.h>
++#include <linux/types.h>
++
++#define TDX_HYPERCALL_STANDARD  0
++
++#define TDX_HCALL_HAS_OUTPUT	BIT(0)
++#define TDX_HCALL_ISSUE_STI	BIT(1)
++
+ #define TDX_CPUID_LEAF_ID	0x21
+ #define TDX_IDENT		"IntelTDX    "
+ 
++#ifndef __ASSEMBLY__
++
++/*
++ * Used in __tdx_hypercall() to pass down and get back registers' values of
++ * the TDCALL instruction when requesting services from the VMM.
++ *
++ * This is a software only structure and not part of the TDX module/VMM ABI.
++ */
++struct tdx_hypercall_args {
++	u64 r10;
++	u64 r11;
++	u64 r12;
++	u64 r13;
++	u64 r14;
++	u64 r15;
 +};
 +
- /**
-  * struct x86_platform_ops - platform specific runtime functions
-  * @calibrate_cpu:		calibrate CPU
-@@ -287,6 +293,7 @@ struct x86_platform_ops {
- 	struct x86_legacy_features legacy;
- 	void (*set_legacy_features)(void);
- 	struct x86_hyper_runtime hyper;
-+	const struct x86_cc_runtime *cc;
++/* Used to request services from the VMM */
++u64 __tdx_hypercall(struct tdx_hypercall_args *args, unsigned long flags);
++
++#endif /* !__ASSEMBLY__ */
+ #endif /* _ASM_X86_SHARED_TDX_H */
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index d4c28b9f2fbc..54803cb6ccf5 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -3,16 +3,10 @@
+ #ifndef _ASM_X86_TDX_H
+ #define _ASM_X86_TDX_H
+ 
+-#include <linux/bits.h>
+ #include <linux/init.h>
+ #include <asm/ptrace.h>
+ #include <asm/shared/tdx.h>
+ 
+-#define TDX_HYPERCALL_STANDARD  0
+-
+-#define TDX_HCALL_HAS_OUTPUT	BIT(0)
+-#define TDX_HCALL_ISSUE_STI	BIT(1)
+-
+ #define TDX_SEAMCALL_VMFAILINVALID     0x8000FF00FFFF0000ULL
+ 
+ #ifndef __ASSEMBLY__
+@@ -32,21 +26,6 @@ struct tdx_module_output {
+ 	u64 r11;
  };
  
- struct x86_apic_ops {
-diff --git a/arch/x86/mm/mem_encrypt_amd.c b/arch/x86/mm/mem_encrypt_amd.c
-index 2b2d018ea345..3fe746be8d90 100644
---- a/arch/x86/mm/mem_encrypt_amd.c
-+++ b/arch/x86/mm/mem_encrypt_amd.c
-@@ -177,25 +177,6 @@ void __init sme_map_bootdata(char *real_mode_data)
- 	__sme_early_map_unmap_mem(__va(cmdline_paddr), COMMAND_LINE_SIZE, true);
- }
- 
--void __init sme_early_init(void)
--{
--	unsigned int i;
+-/*
+- * Used in __tdx_hypercall() to pass down and get back registers' values of
+- * the TDCALL instruction when requesting services from the VMM.
+- *
+- * This is a software only structure and not part of the TDX module/VMM ABI.
+- */
+-struct tdx_hypercall_args {
+-	u64 r10;
+-	u64 r11;
+-	u64 r12;
+-	u64 r13;
+-	u64 r14;
+-	u64 r15;
+-};
 -
--	if (!sme_me_mask)
--		return;
+ /*
+  * Used by the #VE exception handler to gather the #VE exception
+  * info from the TDX module. This is a software only structure
+@@ -71,9 +50,6 @@ void __init tdx_early_init(void);
+ u64 __tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+ 		      struct tdx_module_output *out);
+ 
+-/* Used to request services from the VMM */
+-u64 __tdx_hypercall(struct tdx_hypercall_args *args, unsigned long flags);
 -
--	early_pmd_flags = __sme_set(early_pmd_flags);
--
--	__supported_pte_mask = __sme_set(__supported_pte_mask);
--
--	/* Update the protection map with memory encryption mask */
--	for (i = 0; i < ARRAY_SIZE(protection_map); i++)
--		protection_map[i] = pgprot_encrypted(protection_map[i]);
--
--	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
--		swiotlb_force = SWIOTLB_FORCE;
--}
--
- void __init sev_setup_arch(void)
- {
- 	phys_addr_t total_mem = memblock_phys_mem_size();
-@@ -256,7 +237,7 @@ static unsigned long pg_level_to_pfn(int level, pte_t *kpte, pgprot_t *ret_prot)
- 	return pfn;
- }
+ void tdx_get_ve_info(struct ve_info *ve);
  
--void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
-+static int amd_enc_status_changed(unsigned long vaddr, int npages, bool enc)
- {
- #ifdef CONFIG_PARAVIRT
- 	unsigned long sz = npages << PAGE_SHIFT;
-@@ -270,7 +251,7 @@ void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
- 		kpte = lookup_address(vaddr, &level);
- 		if (!kpte || pte_none(*kpte)) {
- 			WARN_ONCE(1, "kpte lookup for vaddr\n");
--			return;
-+			return 0;
- 		}
- 
- 		pfn = pg_level_to_pfn(level, kpte, NULL);
-@@ -285,6 +266,44 @@ void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
- 		vaddr = (vaddr & pmask) + psize;
- 	}
- #endif
-+	return 0;
-+}
-+
-+static bool amd_enc_tlb_flush_required(bool enc)
-+{
-+	return true;
-+}
-+
-+static bool amd_enc_cache_flush_required(void)
-+{
-+	return this_cpu_has(X86_FEATURE_SME_COHERENT);
-+}
-+
-+static const struct x86_cc_runtime amd_cc_runtime = {
-+	.enc_status_changed = amd_enc_status_changed,
-+	.enc_tlb_flush_required = amd_enc_tlb_flush_required,
-+	.enc_cache_flush_required = amd_enc_cache_flush_required,
-+};
-+
-+void __init sme_early_init(void)
-+{
-+	unsigned int i;
-+
-+	if (!sme_me_mask)
-+		return;
-+
-+	early_pmd_flags = __sme_set(early_pmd_flags);
-+
-+	__supported_pte_mask = __sme_set(__supported_pte_mask);
-+
-+	/* Update the protection map with memory encryption mask */
-+	for (i = 0; i < ARRAY_SIZE(protection_map); i++)
-+		protection_map[i] = pgprot_encrypted(protection_map[i]);
-+
-+	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
-+		swiotlb_force = SWIOTLB_FORCE;
-+
-+	x86_platform.cc = &amd_cc_runtime;
- }
- 
- static void __init __set_clr_pte_enc(pte_t *kpte, int level, bool enc)
-@@ -392,7 +411,7 @@ static int __init early_set_memory_enc_dec(unsigned long vaddr,
- 
- 	ret = 0;
- 
--	notify_range_enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
-+	x86_platform.cc->enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
- out:
- 	__flush_tlb_all();
- 	return ret;
-@@ -410,7 +429,7 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size)
- 
- void __init early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages, bool enc)
- {
--	notify_range_enc_status_changed(vaddr, npages, enc);
-+	x86_platform.cc->enc_status_changed(vaddr, npages, enc);
- }
- 
- void __init mem_encrypt_free_decrypted_mem(void)
-diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-index e79366b8a9da..65a27dec095f 100644
---- a/arch/x86/mm/pat/set_memory.c
-+++ b/arch/x86/mm/pat/set_memory.c
-@@ -2007,10 +2007,9 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
- 	kmap_flush_unused();
- 	vm_unmap_aliases();
- 
--	/*
--	 * Before changing the encryption attribute, we need to flush caches.
--	 */
--	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
-+	/* Flush caches as needed before changing the encryption attribute. */
-+	if (x86_platform.cc->enc_tlb_flush_required(enc))
-+		cpa_flush(&cpa, x86_platform.cc->enc_cache_flush_required());
- 
- 	ret = __change_page_attr_set_clr(&cpa, 1);
- 
-@@ -2027,7 +2026,8 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
- 	 * Notify hypervisor that a given memory range is mapped encrypted
- 	 * or decrypted.
- 	 */
--	notify_range_enc_status_changed(addr, numpages, enc);
-+	if (!ret)
-+		ret = x86_platform.cc->enc_status_changed(addr, numpages, enc);
- 
- 	return ret;
- }
+ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
 -- 
 2.34.1
 
