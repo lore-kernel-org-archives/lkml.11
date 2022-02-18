@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 554ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233598AbiBRJbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:31:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37080 "EHLO
+        id S233599AbiBRJbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:31:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233580AbiBRJbB (ORCPT
+        with ESMTP id S233569AbiBRJbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 04:31:01 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BE425038B
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:30:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D2F253BDA
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:30:45 -0800 (PST)
 Received: from dslb-178-004-174-047.178.004.pools.vodafone-ip.de ([178.4.174.47] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nKzb8-0005VT-8O; Fri, 18 Feb 2022 10:30:42 +0100
+        id 1nKzb7-0005VT-9z; Fri, 18 Feb 2022 10:30:41 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,9 +27,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 3/4] staging: r8188eu: NumQryPhyStatusCCK is set but not used
-Date:   Fri, 18 Feb 2022 10:30:33 +0100
-Message-Id: <20220218093034.854049-4-martin@kaiser.cx>
+Subject: [PATCH 2/4] staging: r8188eu: RxSNR is set but not used
+Date:   Fri, 18 Feb 2022 10:30:32 +0100
+Message-Id: <20220218093034.854049-3-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218093034.854049-1-martin@kaiser.cx>
 References: <20220218093034.854049-1-martin@kaiser.cx>
@@ -39,39 +39,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NumQryPhyStatusCCK in struct odm_phy_dbg_info is set but not used.
+The RxSNR array in struct phy_info is set but not used.
 Remove it.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
  drivers/staging/r8188eu/hal/odm_HWConfig.c | 1 -
- drivers/staging/r8188eu/include/odm.h      | 1 -
+ drivers/staging/r8188eu/include/rtw_recv.h | 1 -
  2 files changed, 2 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/odm_HWConfig.c b/drivers/staging/r8188eu/hal/odm_HWConfig.c
-index 7d47ecd53757..833c8fd7fb0c 100644
+index 8ebcd3050892..7d47ecd53757 100644
 --- a/drivers/staging/r8188eu/hal/odm_HWConfig.c
 +++ b/drivers/staging/r8188eu/hal/odm_HWConfig.c
-@@ -70,7 +70,6 @@ static void odm_RxPhyStatus92CSeries_Parsing(struct odm_dm_struct *dm_odm,
- 	if (isCCKrate) {
- 		u8 cck_agc_rpt;
+@@ -171,7 +171,6 @@ static void odm_RxPhyStatus92CSeries_Parsing(struct odm_dm_struct *dm_odm,
+ 			pPhyInfo->RxMIMOSignalStrength[i] = (u8)RSSI;
  
--		dm_odm->PhyDbgInfo.NumQryPhyStatusCCK++;
- 		/*  (1)Hardware does not provide RSSI for CCK */
+ 			/* Get Rx snr value in DB */
+-			pPhyInfo->RxSNR[i] = (s32)(pPhyStaRpt->path_rxsnr[i] / 2);
+ 			dm_odm->PhyDbgInfo.RxSNRdB[i] = (s32)(pPhyStaRpt->path_rxsnr[i] / 2);
+ 		}
  		/*  (2)PWDB, Average PWDB cacluated by hardware (for rate adaptive) */
+diff --git a/drivers/staging/r8188eu/include/rtw_recv.h b/drivers/staging/r8188eu/include/rtw_recv.h
+index f82a26a675c0..5e65cf6b87bc 100644
+--- a/drivers/staging/r8188eu/include/rtw_recv.h
++++ b/drivers/staging/r8188eu/include/rtw_recv.h
+@@ -79,7 +79,6 @@ struct phy_info {
+ 	s8	recvpower;
+ 	u8	SignalStrength; /*  in 0-100 index. */
+ 	u8	RxPwr[MAX_PATH_NUM_92CS];/* per-path's pwdb */
+-	u8	RxSNR[MAX_PATH_NUM_92CS];/* per-path's SNR */
+ };
  
-diff --git a/drivers/staging/r8188eu/include/odm.h b/drivers/staging/r8188eu/include/odm.h
-index 9fb09e0a0df9..66b5413b6846 100644
---- a/drivers/staging/r8188eu/include/odm.h
-+++ b/drivers/staging/r8188eu/include/odm.h
-@@ -86,7 +86,6 @@ struct odm_phy_dbg_info {
- 	/* ODM Write,debug info */
- 	s8	RxSNRdB[MAX_PATH_NUM_92CS];
- 	u64	NumQryPhyStatus;
--	u64	NumQryPhyStatusCCK;
- 	u64	NumQryPhyStatusOFDM;
- 	/* Others */
- 	s32	RxEVM[MAX_PATH_NUM_92CS];
+ struct rx_pkt_attrib {
 -- 
 2.30.2
 
