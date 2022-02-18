@@ -2,144 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B20F2C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235190AbiBRM2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:28:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41720 "EHLO
+        id S235196AbiBRM2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:28:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235169AbiBRM2M (ORCPT
+        with ESMTP id S235195AbiBRM2a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:28:12 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58F32B267;
-        Fri, 18 Feb 2022 04:27:54 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id a8so14659893ejc.8;
-        Fri, 18 Feb 2022 04:27:54 -0800 (PST)
+        Fri, 18 Feb 2022 07:28:30 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACD23335A;
+        Fri, 18 Feb 2022 04:28:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645187293; x=1676723293;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=rH8+2i2sqtVp1LhueITK9rAPR4aRVvv1C2qMq82jYNU=;
+  b=fMCkhR62iRLVd+MtSyRvNAgnN2+GgruetW5IZhSgTeTvmI4qRnl3HcPM
+   8Ir59EATXSCC1HMn5nkkUCYoJCtEUc7gZEd//YxP6fGpI4AUzKvOD6Bql
+   MbI0xcsYK+IpLPfph53onbl/tDGqRN8M/15n2/4loq50WQtMuihlZnseu
+   AWx91/jQaePD4lXzMqpH8uedCpnZElq7XxMUIJ1L8evbbgTpT9DK4zZ+F
+   DxK9owvB+8G0zJOEkA7twVRgzMPsgE7IWbTZj6zusFpfHK19jJ7pIZSpd
+   YKjtGEd+W5uXD4ec3YIIHDlL1fwli6LK3xHgB0NSIEuMz03shGbaQTWLL
+   w==;
+X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
+   d="scan'208";a="162776744"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2022 05:28:13 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 18 Feb 2022 05:28:12 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Fri, 18 Feb 2022 05:28:12 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MMMq3WW/FbZm1wo/qNee36pmvsLtORxgD92CWPwxRHYy9ptb/0WTRsa9ngRqSLG0mXGfpxISAiFyyXcM9gbUpwKTMMNMN8HbEq6OxG9Ulpz01gBdxdWsLmi0NbmhWvqizT/p2ZSqY3HhEOPZjLgGMoyWplDdAV3V7rfGeUFYzRkwXIg5ZPVjqWKbAahVjf3/sbC/EbpnLzL3Jz9D1sDTJi46J/yh0uN8HUWfA0eEYFQF7wBFTPyxT38rR+a14OXL1yaszLPL8/xsPg4UfB4X4RNqnBYwLjRp/YrI1NZw3Xh7qq4nLMiuFDFzM/4lpVp7Zlq1Mr19DKLivqqKCmJ/Jw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qCqomZN606Qvux2Ju5g4p35oZEm65XiXLCAGKjl0b+I=;
+ b=Q8X7+9JQu1tuPUsISf296jhh8OqGqSDqtYOmjRHmKp2M66tM8TFFs/a4P+75GFXd6eUKEaxsHFbXRYra7YeGLHRVHdjer1SoY+77Gt26FCyKXyeAFqdhUBHm+N8UB5BxvfIZOO2yJNU+8p1otLUzwZ0wAnaffRVU/d0AUZ/7oQ7ioqVIYjw0R9zKzmrsEoxEwGVu+4FLD0YnvQ0wD3DlmaJpmTpYVDp6EnP3jCcyyNzMyThtEAO219M/k8RXSebQzq2Ni3vgY01FypIDf/IM1iV0+yr1nMjiz2ZtRG6+6qK8IjjeWQRHmtKr/NClxaM88b51rl4U7Z4naij5tpV2UA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=iPb78P3cqG/5JcH44Mpn0ycJuuynvsj5Ss8VpDQPK9I=;
-        b=TwDVTkAZ8SfYmVdyLtAvlFgsUHoUXW/BG9tzx+JaeB7RnLE81imVoYVMV3RO6SNNC8
-         nRPE8WorJTMsjvbiHTs/m0EfZIQEfZhGN+R3fji9bKz2FHTSqF+d0nKqrobgtSuP4d5n
-         IBbWoJ+jr1kCzNaxOb/8Wl61oQuEl8Nd1DjqpWW6PiL/8yMaljrQgsIDbKQJOXkRtBA9
-         R33fyTw28URzSd6QuZfbeHJGC0ojZHZsZ3T7oQfxYd7cw57FY8VlvI8Uvfg9oHg36Blz
-         n80I4Vix49I69DUuPO0w2bKO8Z4jUmfQFryQ7ALiWs1KHWFWIwTMLbwP5TqVu2/HHeRk
-         GkiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=iPb78P3cqG/5JcH44Mpn0ycJuuynvsj5Ss8VpDQPK9I=;
-        b=GGG8ODCbDPMmpa00HCH3DbHwuXi4mvKcD/ACZDH+IjJgH7JKRbPAKplnM6sfWcTvky
-         ikZoz5qXpxq30bwWudTy3VlMphnTJuW1hDpn/hYZZqsHIw4jeGHkul6JyLT4RsJGYX62
-         oTi4/+URnjKburUE/NZMZc6pCtHjRLGOwz7xNfnLQVKnowQXS8GXJQ3ClqWC4FkLR9Fm
-         jmBRTUWAtFbHz0W/0sU2AKZ47aqrYJsGAQAnDBV8U59e9mL0GBP1c3d2oFTcZH5pqvc9
-         egp6yxe/pzuMNHUYe69akxj6WpuTVZ6yC18q4i/rUGl2HmUxw1xNKoIs7I3ki2cu5Xsl
-         pRsA==
-X-Gm-Message-State: AOAM533BtP9zwPLTHEWRTj7dAXV/DBcSfcLwiFuitJcWh5YJW676fPt6
-        NyE12F8GS+N0LBh1UERaENsD843Ii7h1sVN6U0Q=
-X-Google-Smtp-Source: ABdhPJy4l1IftTvBpL9CZodl5fjFko/+IPYWSFBdkXUBM/kDIpGma2HukCJfivOUSCpBdA+i1ExzYBPtfYqvF79ufpY=
-X-Received: by 2002:a17:907:6e01:b0:6d0:562c:e389 with SMTP id
- sd1-20020a1709076e0100b006d0562ce389mr6288828ejc.497.1645187273159; Fri, 18
- Feb 2022 04:27:53 -0800 (PST)
-MIME-Version: 1.0
-References: <20220217055208.2388929-1-kai.heng.feng@canonical.com>
- <CAHp75VfFGw3b_ZtQir0AfTfXfQ7fi_LKLsY-7ww=4+MMBR8BAQ@mail.gmail.com>
- <CAAd53p7O7joFa7MH0s+rw-59WQkigvjKBf1bpO9e2gX9ddjF-A@mail.gmail.com>
- <CAHp75Vf4pjyJJDLKWTjq2ny1xkF9fSCSPb_8q5yk69DjV9EUAg@mail.gmail.com> <20220218121017.32bbdef9@jic23-huawei>
-In-Reply-To: <20220218121017.32bbdef9@jic23-huawei>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 18 Feb 2022 13:27:17 +0100
-Message-ID: <CAHp75Vdja-9tjXDiR_aMFP3twNuTXtC3w1mkPo81pdM6dRya6Q@mail.gmail.com>
-Subject: Re: [PATCH v4] iio: accel: adxl345: Add ACPI HID table
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qCqomZN606Qvux2Ju5g4p35oZEm65XiXLCAGKjl0b+I=;
+ b=N5S/GI10jeX2nfhhg81W0fe7LDH5PPRUAaNRfZug0s0zi7xFBtA10VzcEwzc0haELAB+fcfv3mwQy1Mz4nBmjiH85Jn/TDDL0G4nigmUU5lWpCXz9q+KyCoTauj3GEL70R2UljWggkU/zU3YJeufI09hOgnDbRTLa4OGP0/WuSY=
+Received: from CO1PR11MB4865.namprd11.prod.outlook.com (2603:10b6:303:9c::9)
+ by MWHPR11MB1774.namprd11.prod.outlook.com (2603:10b6:300:10a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.22; Fri, 18 Feb
+ 2022 12:28:06 +0000
+Received: from CO1PR11MB4865.namprd11.prod.outlook.com
+ ([fe80::25bd:b3c9:a714:cdce]) by CO1PR11MB4865.namprd11.prod.outlook.com
+ ([fe80::25bd:b3c9:a714:cdce%6]) with mapi id 15.20.4995.016; Fri, 18 Feb 2022
+ 12:28:06 +0000
+From:   <Kavyasree.Kotagiri@microchip.com>
+To:     <michael@walle.cc>
+CC:     <Manohar.Puri@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <arnd@arndb.de>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <Nicolas.Ferre@microchip.com>,
+        <olof@lixom.net>, <robh+dt@kernel.org>, <soc@kernel.org>
+Subject: RE: [PATCH v4] ARM: dts: add DT for lan966 SoC and 2-port board
+ pcb8291
+Thread-Topic: [PATCH v4] ARM: dts: add DT for lan966 SoC and 2-port board
+ pcb8291
+Thread-Index: AQHYHaYU1qtS5sG/10aA2sqGSWL+96yLj0MAgAD4oLCAAAQRgIAAFAoQgAARrQCADJaDQA==
+Date:   Fri, 18 Feb 2022 12:28:06 +0000
+Message-ID: <CO1PR11MB4865B205DF4490D37E96524792379@CO1PR11MB4865.namprd11.prod.outlook.com>
+References: <20220209111318.21112-1-kavyasree.kotagiri@microchip.com>
+ <20220209184600.1230365-1-michael@walle.cc>
+ <CO1PR11MB486534A2987684CC7402CE06922F9@CO1PR11MB4865.namprd11.prod.outlook.com>
+ <97bcfa4417d5f8c41cc6aa1e411c8747@walle.cc>
+ <CO1PR11MB4865E913D083C1D80D4E1F80922F9@CO1PR11MB4865.namprd11.prod.outlook.com>
+ <b98f40575f88a0bbf205d628f73cccac@walle.cc>
+In-Reply-To: <b98f40575f88a0bbf205d628f73cccac@walle.cc>
+Accept-Language: en-IN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0d88acbc-0273-40e7-a85b-08d9f2da1da4
+x-ms-traffictypediagnostic: MWHPR11MB1774:EE_
+x-microsoft-antispam-prvs: <MWHPR11MB1774F113F4E00FD2F4F8D2F092379@MWHPR11MB1774.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +gLKep4+XGuBcpmW9RaAaPAxNoyeL8d6aaycmDicoNf+Pfert8dBA8RbnZB+F/cYPOmYFBkqPcf1RCuvG5eu3iT7Z8gCL6+0Nw5D7q6cWluhEbLxjF+5avnbXAEAlBGb1eHMKiY/ju2kaqUSijzRc5hiYyFS0i7osLto8ERPleeqt7jqKzDqTVJ6luXFxixoSpBuH5XiIaGYfOp4OE16QkpsXLxdXEfMNrSLmGkuOxouUaVOfCcWF3yrMC9RPgNAqN+xjSSIEhr5/lKwMQzwCC6mLRuU9vDNOMx2c+xEl3g+ctqunSjxfNDrF+c/mB6c4bY0YHur/cbjMUScxXPNDoEogabu6jvos+s7kMHusHKWQ/tTarMCC5+kg35WeiBw9JIBbAA3C3o7CjTRFjOJ/VdpW2mxD2hmye8PYXg/UJGxOU8w0FmksUMPcm/zlVSWcmeAF0vYAhNz8XiqqSobob7iBs0cm+4cd2v7xMl0YJsJnVuZDcycHHe0QJz2//sc9d007bwTmHPRsTmvvLC5yn873gNT9nxj3jkbXH6efO8c3uGt456aKo5dN6Dvigbx57xYD6Lqwpf6XsmWKcLAJhAWSPlUBDQbyVZDHBz9HBJfjfvuwwAYhwyeqk9/1TQMV9keik/IFip9jJHId16ze6y4+9oRzJYxewl2HHhi1BVy7tRMmza9nYEhnHEb3K6+zMgPWCjfg+fBnA/9aTRFaA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4865.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(508600001)(55016003)(83380400001)(122000001)(26005)(9686003)(6916009)(38100700002)(54906003)(33656002)(316002)(7696005)(38070700005)(6506007)(5660300002)(86362001)(2906002)(52536014)(71200400001)(8936002)(4326008)(8676002)(66556008)(64756008)(66476007)(66446008)(76116006)(66946007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?90xxLg6iNzQpxCTehte42yVhZC0KgCsCBe+JmjnhPAdrrNt6h6fxn7BO1Z50?=
+ =?us-ascii?Q?IL9M5l+HsyHOHBuaqBAfDqzDEy399TeUMJLAhqADA3NP5++KTWR19+5cXWBB?=
+ =?us-ascii?Q?3Au2JjgOds1qUKNQK8gymJ+6zqil43QRJ2VkZ/u+s18WCgsn32GD2ZREGfyB?=
+ =?us-ascii?Q?e8oYTYk4BwFlL8mtF1Udx9toPltOXPzfIUcaEdOPn4s0OXiW4Eu7mee2zKR/?=
+ =?us-ascii?Q?d3CSMVSYRkTzT22KNnadW+CR0ygq0WcDJ8dcVbtrRi+XRz7O7nKVPASjpWg2?=
+ =?us-ascii?Q?IPB2yE8OUmdydoot/j/hIFKPCUUfVwc5ik1nxFzIXKNc+zlrsHBc+pPrdXf2?=
+ =?us-ascii?Q?dIZdVo6vBi4Qj8+shPumQ+5g9yCdYyuIg+UZ3w6sVFPtjlGvNC09S4Mhf7m4?=
+ =?us-ascii?Q?70afHkWi15CuDDRhzrgiACmEB4IR6wfbpwXfgcTg9pQMtl4SdIKaHdHLa3Eb?=
+ =?us-ascii?Q?IFyvPNbc4LPn07NSaM1Ix0gDQ3cEyymgjeA84zc5D4zRtGVgrhyKdtB7BK23?=
+ =?us-ascii?Q?/MIR0N9terrnCxpLU3u+Y1ZONH7G8duzzLIgqeBJ9BbWIhKZp/Is2Y87vFS4?=
+ =?us-ascii?Q?Bk2L0+3MdExPcgEURArmeyEJsZ8UQpWMVvpBSCWhHI1pAFRZVaP/tvddUSoo?=
+ =?us-ascii?Q?5pJ3X0A0cq60Y6F2F4wMC3RSs7yChGdb5/XihR/ZbjG2BSaBBx7rLdtsuwHe?=
+ =?us-ascii?Q?niN5xsbKOYpb8O5W5lubo/0stXZRCE/E27Ax47ej9k/gH9jwFo/SrXyg6/vf?=
+ =?us-ascii?Q?qBRsbKcYq9V+8V26KU0dLclXQC3Z94f4ZluYmGJPMvUEByuxJXP7k8iZaAwu?=
+ =?us-ascii?Q?Acb+UhQX/9iSANYLGiEU3PluQkKoa977AkYqg7jjSO53DkgSV7vFT0H31gh8?=
+ =?us-ascii?Q?MIv6kyd2otmrSo9ARCC5rIYrTTJpkDT3rHwII+HyEHBGDG4LyMcqVayXquF+?=
+ =?us-ascii?Q?N1kXIOLHax0DUYJtGpLkgc6TOkWLWu1MyRDSLdrRQRzIJxVy+0sVhcZCzBk9?=
+ =?us-ascii?Q?aGMzlxGf69zjYcCeyKF7sfKJG8jGdVHr93lmKVKE40beYxKa6qsR8x3j0L01?=
+ =?us-ascii?Q?f9E/QbrBXMVOU0xzzZFvrACJDztPs2T2Lt4flDmoCIcC+4s06vhlXDs2Xfgf?=
+ =?us-ascii?Q?AI7mtZ2yFh7v3wRij/sMOl4g1tKqU8dGnXofaXWxYWscfV+x3ljkCVxoji5T?=
+ =?us-ascii?Q?n6Na4bJzAqb11P3/ptC3WTibs66bd8Vi4ddDEenAnA9XnFZhhd30+4eG4R2F?=
+ =?us-ascii?Q?I7aHRpKg7nOR9aSsypjGbHPMsa6aOcLhuEPBpT+fN20hhzCISvYFlL9Dv7je?=
+ =?us-ascii?Q?cu4OGuXja25NCeH7qGcbYtf5wseJZiIl2s3Y/0rfWpeGWBrw3dv+Vgw8iWvP?=
+ =?us-ascii?Q?yxi3okIpRF03mhSEL/laNe4ZlVxYyQrStV3G17iH9sahPV50wd/8ynqPdVjM?=
+ =?us-ascii?Q?KbKKYB1el30ro/CwO7keoTZ/4+PfmidZ6poIdXCEjhrOx9TMv94PyPfFY01v?=
+ =?us-ascii?Q?nh13Mr9wXD9iMt83mTSUNhUofou/9NnWmcOOB8MKl5pMr/LR+qfFjeAVmxUm?=
+ =?us-ascii?Q?E0Lz5ByWHOe17yRLss2xiMljo8GjSErFvVzw0o0BSCueOQ2xzds6ncrX9YAz?=
+ =?us-ascii?Q?0aYl1j6fGdbRVBbd9lzFBMXDDXAaKBHmPwaJEuGMtudKDnBMMAHKcXYkEli1?=
+ =?us-ascii?Q?HRYnvLslzoNkNshsN0wX2TQ/j7vDsxpyJP+5IMVwVnzqQbBI?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4865.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d88acbc-0273-40e7-a85b-08d9f2da1da4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2022 12:28:06.2821
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mDlrhxyFumXh4yranC41nIK9MCMRZI41QKqxIjkBp20sQsMkvh/m0RBWmswbb58VyQDfQb9xe5yggHFUh2j3uqYBYiDRIjCPVneElRtx4WEMXBR/6gD+XnHysOAaGnBy
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1774
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 1:03 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> On Fri, 18 Feb 2022 09:39:14 +0100
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Fri, Feb 18, 2022 at 4:46 AM Kai-Heng Feng
-> > <kai.heng.feng@canonical.com> wrote:
-> > > On Thu, Feb 17, 2022 at 6:57 PM Andy Shevchenko
-> > > <andy.shevchenko@gmail.com> wrote:
-> > > > On Thursday, February 17, 2022, Kai-Heng Feng <kai.heng.feng@canoni=
-cal.com> wrote:
-> >
-> > ...
-> >
-> > > >> +               acpi_id =3D acpi_match_device(dev->driver->acpi_ma=
-tch_table, dev);
-> > > >> +               if (acpi_id) {
-> > > >> +                       type =3D acpi_id->driver_data;
-> > > >> +                       name =3D acpi_id->id;
-> > > >> +               } else
-> > > >> +                       return -ENODEV;
-> > > >
-> > > > Thanks, but can we do this in ACPI agnostic way?
-> > > >
-> > > > Can be as simple as
-> > > >
-> > > > if (id)
-> > > >   ...
-> > > > else {
-> > > >   match =3D device_get_match_data(dev);
-> > > >   if (!match)
-> > > >     return -ENODEV;
-> > > > }
-> > > >
-> > > > Note, it might require to reconsider what is put in the driver data=
- (either convert to pointers, or be sure that valid type is never a 0/NULL)=
-.
-> > >
-> > > Unlike acpi_match_device(), device_get_match_data() only get
-> > > driver_data, so we need a new struct to provide both name and type.
-> >
-> > It's unfortunate. Let me think about it a bit more.
-> Usual solution is just to add that name to a per device type structure.
-> In this particular case there isn't one so far though and an enum is used
-> in the one place we might otherwise have used a part number specific stru=
-cture.
->
-> Probably the easiest thing to do is use the enum to do a lookup in an arr=
-ay
-> of structures and have the string there.
->
-> >
-> > > > Also note, in both cases using ID name for name us fragile. Probabl=
-y we have to fix that first. Let me check today=E2=80=99s evening.
-> > >
-> > > Can you please explain more on this? How does ID name make it fragile=
-?
-> >
-> > I thought this one is used somehow by userspace to distinguish the
-> > instance of the device, but looking into the rest of the IIO drivers
-> > it seems more or less  a field for part number. That said, the ID is
-> > okay to use. I hope Jonathan may correct me.
-> >
-> Should be part number.  Instances are distinguished via label rather than
-> name (or via the device parent on older kernels where we didn't have
-> label).
->
-> There are a few places where we accidentally let though IDs that aren't
-> always simply the part number and they became part of the ABI so we
-> couldn't really fix them after the event.
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+> Am 2022-02-10 12:52, schrieb Kavyasree.Kotagiri@microchip.com:
+> >> EXTERNAL EMAIL: Do not click links or open attachments unless you know
+> >> the
+> >> content is safe
+> >>
+> >> Am 2022-02-10 10:40, schrieb Kavyasree.Kotagiri@microchip.com:
+> >> >> EXTERNAL EMAIL: Do not click links or open attachments unless you
+> know
+> >> >> the
+> >> >> content is safe
+> >>
+> >> >> > +     clocks {
+> >> >> [..]
+> >> >> > +
+> >> >> > +             nic_clk: nic_clk {
+> >> >>
+> >> >> What does nic_clk stand for? If I had to guess, it
+> >> >> has something to do with network. But..
+> >> >>
+> >> > NIC clock is the clock used by AXI, AHB fabric and APB bridges which
+> >> > connects all the peripherals.
+> >> > It is named so because the AXI fabric is based on NIC400 IP from ARM
+> >>
+> >> Ok, thanks for clarification.
+> >>
+> >>
+> >> >> > +             watchdog: watchdog@e0090000 {
+> >> >> > +                     compatible =3D "snps,dw-wdt";
+> >> >> > +                     reg =3D <0xe0090000 0x1000>;
+> >> >> > +                     interrupts =3D <GIC_SPI 38 IRQ_TYPE_LEVEL_H=
+IGH>;
+> >> >> > +                     clocks =3D <&nic_clk>;
+> >> >>
+> >> >> Btw. can we disable all nodes by default and enable them
+> >> >> in the board dts files?
+> >> > I would like to have only board specific nodes enabled in dts files
+> >> > and rest of them in dtsi file
+> >>
+> >> And how do you know which ones are board specific? E.g. I would like
+> >> to add our board which is also based on the lan9668. Maybe I don't
+> >> want a watchdog (or whatever node). Of course I could use
+> >>
+> >> &watchdog {
+> >>    status =3D "disabled";
+> >> };
+> >>
+> >> But IMHO opt-in is better. At least thats what we are doing for
+> >> the layerscape over on arm64.
+> >>
+> > Basically, I am disabling only the nodes which have pinctrl settings
+> > in dtsi file
+> > and enable in dts to make sure there are no conflicts on pins on the
+> > board.
+>=20
+> Thats not what I'm asking. I would like to see *optional* nodes
+> disabled by default. Whether the watchdog is optional might be
+> debatable, but what about the usb controller and the qspi
+> controller? They don't have shared pins AFAIK, so according
+> to your rule, they will be enabled by default and each board
+> which doesn't have anything connected on these pins would have
+> to disabled it.
+>=20
+> Please keep in mind that this .dtsi will also be used by boards
+> not manufactured by microchip.
+>=20
+I agree with you - "disabling optional nodes in dtsi"
+I have gone through all the nodes.
+Confirmed and moved enabling optional node watchdog
+to dts file.
 
-Thanks for chiming in.
-So, can we simply use dev_name() then? Or would it be too bad to have
-the device instance name there?
-
---=20
-With Best Regards,
-Andy Shevchenko
+> -michael
