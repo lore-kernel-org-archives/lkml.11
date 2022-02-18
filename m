@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16699C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C343C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233577AbiBRLhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:37:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44278 "EHLO
+        id S234733AbiBRLhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:37:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234577AbiBRLgk (ORCPT
+        with ESMTP id S234574AbiBRLgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 06:36:40 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2373A2B1A92
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238D42B1A95
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:22 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 9EB512244E;
-        Fri, 18 Feb 2022 12:36:16 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 2338E22450;
+        Fri, 18 Feb 2022 12:36:17 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645184176;
+        t=1645184177;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DvTwO/d5q8PM9u/lLrOXBuccah4W7HSyVD2GJr3f7lQ=;
-        b=XDl6lxtCVyKnGj0DTdsfpAhoPHFTbnDLHXb/ynWzXKIkSWq+8gJWybASJTjLJmhypzwBm3
-        8skDhTEqYzewTR/5Rh56oyVOsKeQbBGnGnJdJZgqeojo0WV3Gvrj278803aCZNgDRRHINL
-        i8+yj3455Xz2ptTV6KpxQwsbIC6d8kQ=
+        bh=7MTuzFpCvHrYsDEsSy+Lrt3U2XF9QJpNBVrsBXeBWII=;
+        b=Ux2ShD0Vt0l2V7Ay4nNe3a8VrhpqY8kLv6O9ZhcbGILSDcP9f9EATTG0k/wdXw7h06/HeQ
+        dh9qY2g6nQeDgk7Ekd+92oAglnNgcK2aINo1YnxdTgylKYIoU2Jj1aLhLggaFaCarzYd8Z
+        89NO7AELgyteQV+5UB64PxzxkLLfT+o=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 08/32] mtd: spi-nor: intel: unify function names
-Date:   Fri, 18 Feb 2022 12:35:43 +0100
-Message-Id: <20220218113607.1360020-9-michael@walle.cc>
+Subject: [PATCH v2 10/32] mtd: spi-nor: macronix: unify function names
+Date:   Fri, 18 Feb 2022 12:35:45 +0100
+Message-Id: <20220218113607.1360020-11-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218113607.1360020-1-michael@walle.cc>
 References: <20220218113607.1360020-1-michael@walle.cc>
@@ -61,30 +61,47 @@ There are no functional changes.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/mtd/spi-nor/intel.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/mtd/spi-nor/macronix.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/intel.c b/drivers/mtd/spi-nor/intel.c
-index d64e114e9fb4..9179f2d09cba 100644
---- a/drivers/mtd/spi-nor/intel.c
-+++ b/drivers/mtd/spi-nor/intel.c
-@@ -8,7 +8,7 @@
+diff --git a/drivers/mtd/spi-nor/macronix.c b/drivers/mtd/spi-nor/macronix.c
+index 97dba1ae7fb1..d81a4cb2812b 100644
+--- a/drivers/mtd/spi-nor/macronix.c
++++ b/drivers/mtd/spi-nor/macronix.c
+@@ -32,7 +32,7 @@ static const struct spi_nor_fixups mx25l25635_fixups = {
+ 	.post_bfpt = mx25l25635_post_bfpt_fixups,
+ };
  
- #include "core.h"
+-static const struct flash_info macronix_parts[] = {
++static const struct flash_info macronix_nor_parts[] = {
+ 	/* Macronix */
+ 	{ "mx25l512e",   INFO(0xc22010, 0, 64 * 1024,   1)
+ 		NO_SFDP_FLAGS(SECT_4K) },
+@@ -102,19 +102,19 @@ static const struct flash_info macronix_parts[] = {
+ 		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
+ };
  
--static const struct flash_info intel_parts[] = {
-+static const struct flash_info intel_nor_parts[] = {
- 	/* Intel/Numonyx -- xxxs33b */
- 	{ "160s33b",  INFO(0x898911, 0, 64 * 1024,  32)
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE) },
-@@ -20,6 +20,6 @@ static const struct flash_info intel_parts[] = {
+-static void macronix_default_init(struct spi_nor *nor)
++static void macronix_nor_default_init(struct spi_nor *nor)
+ {
+ 	nor->params->quad_enable = spi_nor_sr1_bit6_quad_enable;
+ 	nor->params->set_4byte_addr_mode = spi_nor_set_4byte_addr_mode;
+ }
  
- const struct spi_nor_manufacturer spi_nor_intel = {
- 	.name = "intel",
--	.parts = intel_parts,
--	.nparts = ARRAY_SIZE(intel_parts),
-+	.parts = intel_nor_parts,
-+	.nparts = ARRAY_SIZE(intel_nor_parts),
+-static const struct spi_nor_fixups macronix_fixups = {
+-	.default_init = macronix_default_init,
++static const struct spi_nor_fixups macronix_nor_fixups = {
++	.default_init = macronix_nor_default_init,
+ };
+ 
+ const struct spi_nor_manufacturer spi_nor_macronix = {
+ 	.name = "macronix",
+-	.parts = macronix_parts,
+-	.nparts = ARRAY_SIZE(macronix_parts),
+-	.fixups = &macronix_fixups,
++	.parts = macronix_nor_parts,
++	.nparts = ARRAY_SIZE(macronix_nor_parts),
++	.fixups = &macronix_nor_fixups,
  };
 -- 
 2.30.2
