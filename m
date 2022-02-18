@@ -2,122 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1087C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 07:06:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B635C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 07:07:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbiBRHGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 02:06:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37432 "EHLO
+        id S231804AbiBRHIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 02:08:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230436AbiBRHGr (ORCPT
+        with ESMTP id S231493AbiBRHIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 02:06:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9853C9024B;
-        Thu, 17 Feb 2022 23:06:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B932B82486;
-        Fri, 18 Feb 2022 07:06:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A1CC340E9;
-        Fri, 18 Feb 2022 07:06:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645167986;
-        bh=QJPbN3zuIFj6R/D7I1HLXCBbU2fB00n1t4O0aal5Tc0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cgrIS+wndLdGLfD5FJUJai7yFBfhaBwN+0AEv07k2WFCbvJ6IeU8OytKUMI3CLV6A
-         EvmQG6RIat5X0C6GoXlqLy6zOLnfztj/dYTQQPPNPpUyawE8pK568arYvU6kS62xLk
-         svcpJoqDxDQGkfxeSdUKZ/U2ZBCm1aTxIaN0ZcjY8m/dc/hekCgtz2YDiLtH42gdYG
-         J+F2GuqmNr09DQ5h7glj/TUxqMuvUkoBWZyxYnnXMMxoJTj/OTE5g+0m+mSuX+sS9h
-         yZqQSWr8CG83DXDv3bQ4MXyzILyupI9KB+R/nvlNvXyYdJj8HQmxAoqmqJZZGkGTSL
-         sSfd6gTQO9qIg==
-Date:   Fri, 18 Feb 2022 12:36:22 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>, linux-arm-msm@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexey Minnekhanov <alexeymin@postmarketos.org>
-Subject: Re: [PATCH v5] i2c: qcom-geni: Add support for GPI DMA
-Message-ID: <Yg9Fbh//iSe+VAiT@matsya>
-References: <20220131120403.2481995-1-vkoul@kernel.org>
- <CAA8EJpoqCJbYgOUpEhcoae3=Mivp8c7PZU8XO78EMZMR+NQQKw@mail.gmail.com>
+        Fri, 18 Feb 2022 02:08:06 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCF21BA334;
+        Thu, 17 Feb 2022 23:07:49 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id m14so3651225lfu.4;
+        Thu, 17 Feb 2022 23:07:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=P+bxWvATPkNOJhL/LdCmA0xomBxVYCMbyohvhLg0UcI=;
+        b=cAviAy5J3oRRudjP5AIgmmBkwBZSkZpaCf7XKJkXx2jN9biGtrzmrz1tMLxXvk7Wqx
+         +h5moiMM/uORfgGLhJOEyTGdAJkC7C1wCdlzfxxndxKWM9ImTphOcHmpfmmX298P5BRi
+         GsFGEsDyhD76/KpyY71L9oz8AjUIb9DlzLyH0Bbslvn2A0OaVI1lbUxzHSsuj29RC7q/
+         N9WI03NxUi3RQT4duuhWdbcYDjZgYBQlBvfs6zwd6PLX4Kn2y2RmnViVwzSW4Y/TS6ki
+         AHywcxA2maR2tyUnWnT5KrLXvXp+eFzxQjxm/gVxroIE8X4lAY8+EsFM00QV9VhTWAmP
+         tjUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=P+bxWvATPkNOJhL/LdCmA0xomBxVYCMbyohvhLg0UcI=;
+        b=0zKtz52Gkd/RDs8WabUE2U2sTeFm2kwLD47yW5Aw6+NtKTwspcu49EKMqrvPqUU2dL
+         ey8AH+YGsIVJ6wV+yyP6y1CjbBEz8vgg7D6kIpQyCpa7xv2AK93MyIIM6EAgfstdWUkU
+         D0gEh2h6axulcqF4PO3cGldHte6qWz1Mo7JEDLrFkf+35BDu3lXWGKgspQxQQ5eiNvGm
+         bmazirHrON50/gdaqnJteucB4XXqah1IlZpVriHXK1MXqCKkAhCfG+sr7PgFCRNziSiA
+         UZo/j1Q1ubNC4/gtmWOSfBxjBZSeI42LHYye0ak4btTZK6/Ohndh+YocnjJL4IpSkN5L
+         oO9g==
+X-Gm-Message-State: AOAM533aRAJYRE+VYRhowOADsy3E8ktFV/lQsVourFenY8FQuz3Iitim
+        AnzjJ3BX4xiv1LfePuC8wxs=
+X-Google-Smtp-Source: ABdhPJxOVs8gipD3+lXvLpzGAJAUN72tLwtRCdCU2mNHxQTEFevcefrvr5xFCYLginqNQACcLpA4Nw==
+X-Received: by 2002:a05:6512:1529:b0:432:2c53:f9e7 with SMTP id bq41-20020a056512152900b004322c53f9e7mr4464499lfb.139.1645168067679;
+        Thu, 17 Feb 2022 23:07:47 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id f2sm216321ljn.11.2022.02.17.23.07.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 23:07:47 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH V3 1/3] dt-bindings: nvmem: make "reg" property optional
+Date:   Fri, 18 Feb 2022 08:07:27 +0100
+Message-Id: <20220218070729.3256-2-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220218070729.3256-1-zajec5@gmail.com>
+References: <20220124160300.25131-1-zajec5@gmail.com>
+ <20220218070729.3256-1-zajec5@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAA8EJpoqCJbYgOUpEhcoae3=Mivp8c7PZU8XO78EMZMR+NQQKw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17-02-22, 20:51, Dmitry Baryshkov wrote:
-> On Mon, 31 Jan 2022 at 15:04, Vinod Koul <vkoul@kernel.org> wrote:
+From: Rafał Miłecki <rafal@milecki.pl>
 
-> > +static int geni_i2c_fifo_xfer(struct geni_i2c_dev *gi2c,
-> > +                             struct i2c_msg msgs[], int num)
-> > +{
-> > +       int i, ret = 0;
-> > +
-> > +       for (i = 0; i < num; i++) {
-> > +               u32 m_param = i < (num - 1) ? STOP_STRETCH : 0;
-> > +
-> > +               m_param |= ((msgs[i].addr << SLV_ADDR_SHFT) & SLV_ADDR_MSK);
-> > +
-> > +               gi2c->cur = &msgs[i];
-> > +               if (msgs[i].flags & I2C_M_RD)
-> > +                       ret = geni_i2c_rx_one_msg(gi2c, &msgs[i], m_param);
-> > +               else
-> > +                       ret = geni_i2c_tx_one_msg(gi2c, &msgs[i], m_param);
-> > +
-> > +               if (ret)
-> > +                       break;
-> 
-> I'd suggest to 'return ret' here and change the return line to 'return num'.
+Most NVMEM providers have cells at hardcoded addresses however there are
+some exceptions. Some devices store cells layout in internal structs
+using custom formats.
 
-Done
+It's important to allow NVMEM consumers to still reference such NVMEM
+cells. Making "reg" optional allows defining NVMEM cells by their names
+only and using them with phandles.
 
-> >  static int geni_i2c_xfer(struct i2c_adapter *adap,
-> >                          struct i2c_msg msgs[],
-> >                          int num)
-> >  {
-> >         struct geni_i2c_dev *gi2c = i2c_get_adapdata(adap);
-> > -       int i, ret;
-> > +       int ret;
-> >
-> >         gi2c->err = 0;
-> >         reinit_completion(&gi2c->done);
-> > @@ -475,22 +670,11 @@ static int geni_i2c_xfer(struct i2c_adapter *adap,
-> >         }
-> >
-> >         qcom_geni_i2c_conf(gi2c);
-> > -       for (i = 0; i < num; i++) {
-> > -               u32 m_param = i < (num - 1) ? STOP_STRETCH : 0;
-> > -
-> > -               m_param |= ((msgs[i].addr << SLV_ADDR_SHFT) & SLV_ADDR_MSK);
-> > -
-> > -               gi2c->cur = &msgs[i];
-> > -               if (msgs[i].flags & I2C_M_RD)
-> > -                       ret = geni_i2c_rx_one_msg(gi2c, &msgs[i], m_param);
-> > -               else
-> > -                       ret = geni_i2c_tx_one_msg(gi2c, &msgs[i], m_param);
-> >
-> > -               if (ret)
-> > -                       break;
-> > -       }
-> > -       if (ret == 0)
-> > -               ret = num;
-> > +       if (gi2c->gpi_mode)
-> > +               ret = geni_i2c_gpi_xfer(gi2c, msgs, num);
-> > +       else
-> > +               ret = geni_i2c_fifo_xfer(gi2c, msgs, num);
-> 
-> We should return num if ret is 0 here (or in
-> geni_i2c_fifo_xfer()/geni_i2c_gpi_xfer()).
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/nvmem/nvmem.yaml | 3 ---
+ 1 file changed, 3 deletions(-)
 
-I have picked your fix for that!
+diff --git a/Documentation/devicetree/bindings/nvmem/nvmem.yaml b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+index 43ed7e32e5ac..3bb349c634cb 100644
+--- a/Documentation/devicetree/bindings/nvmem/nvmem.yaml
++++ b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+@@ -60,9 +60,6 @@ patternProperties:
+             description:
+               Size in bit within the address range specified by reg.
+ 
+-    required:
+-      - reg
+-
+ additionalProperties: true
+ 
+ examples:
 -- 
-~Vinod
+2.34.1
+
