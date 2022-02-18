@@ -2,190 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB066C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 10:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C30C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 10:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234045AbiBRKX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 05:23:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52776 "EHLO
+        id S234056AbiBRKZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 05:25:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiBRKXX (ORCPT
+        with ESMTP id S230098AbiBRKY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 05:23:23 -0500
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424B52B1AA1;
-        Fri, 18 Feb 2022 02:23:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1645179787;
-  x=1676715787;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0t0ig3q6Sp2mvoezO0JaagGhH+DGXuT456KDBH79FZ0=;
-  b=pHI6jFzvxoi0j3ne7wO34lrazDpzu6REhaVP5x9nJ/IpQKNqL3FS4GKH
-   rf/wpDyUIngYpdO87FBPTLInPxtDaQO/tCBvjvr7L0/JxybMwot6yZqJa
-   KmhKeD3ttWqwp5B0BSf/ip0MKs8h1l1yU6/Z/SZlngGwHVjwmQ+SrYJd6
-   uKfIZ9wdMECVwEmXyL3lBipUF6zMQC1KZdm1o7h/RBynLF5iH3HFP+dlS
-   UZiUFrZ+MPLmYGI+x3DEqLhBf3DyQVoPZ3b3Bwe6U17rxSi624TbfVLW+
-   uE5Ca0jqMRc1VuoWPj4MMZLfpLkFvuKJGsMlJiSEJG0Fti4ytTI6fBfC3
-   g==;
-Date:   Fri, 18 Feb 2022 11:23:03 +0100
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        kernel <kernel@axis.com>, Lars Persson <Lars.Persson@axis.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: stmmac: Enable NAPI before interrupts go live
-Message-ID: <20220218102303.GA21458@axis.com>
-References: <20220217145527.2696444-1-vincent.whitchurch@axis.com>
- <20220217203604.39e318d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Fri, 18 Feb 2022 05:24:58 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461842B1AA8;
+        Fri, 18 Feb 2022 02:24:42 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id EF51A219A4;
+        Fri, 18 Feb 2022 10:24:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645179880; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pEW6tURx/EzwxI4FUVurCKiPgw0jrsrJlPXVlnXp/HE=;
+        b=SeoCtDNR2wsBLJTj900OTN3n7fC0g/p+HrcnzV651Qw3Pas8MIHw+vT5WvcTm8cLyvPUB4
+        pZ3+tmcKMwEhG3y8TeMQq2Q5Mq08k+tIGoZ6RDCRfv5KLQaOKU+X2GPFB77h7e+fayDkW9
+        DfTgYnjOlJcVmQOmBEJTunTHBHmr7lQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645179880;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pEW6tURx/EzwxI4FUVurCKiPgw0jrsrJlPXVlnXp/HE=;
+        b=gZ6C1Ocahxs4eYt0MvA84lXhjcbaOMrU+ICWDeayObwpAJxjPofiuEeRLkIFUO7dEhbQ+F
+        3goJdrfmlLmkMCAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8B4F913C47;
+        Fri, 18 Feb 2022 10:24:40 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id zuG3IOhzD2LxCAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Fri, 18 Feb 2022 10:24:40 +0000
+Message-ID: <14dd85f1-21b1-2ff7-3491-466c077210e6@suse.de>
+Date:   Fri, 18 Feb 2022 11:24:39 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220217203604.39e318d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Sam Ravnborg <sam@ravnborg.org>,
+        Helge Deller <deller@gmx.de>, x86@kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+        linux-video@atrey.karlin.mff.cuni.cz,
+        Daniel Mack <daniel@zonque.org>
+References: <20220218093334.24830-1-msuchanek@suse.de>
+ <4c6e1d15-3bb3-5a69-972f-592cc33ac0cd@suse.de>
+ <20220218100841.GV3113@kunlun.suse.cz>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220218100841.GV3113@kunlun.suse.cz>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------LTgM6u0q34vOjsOnn7OEejJ0"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 05:36:04AM +0100, Jakub Kicinski wrote:
-> On Thu, 17 Feb 2022 15:55:26 +0100 Vincent Whitchurch wrote:
-> > The stmmac_open function has a race window between enabling the RX
-> > path and its interrupt to the point where napi_enabled is called.
-> > 
-> > A chatty network with plenty of broadcast/multicast traffic has the
-> > potential to completely fill the RX ring before the interrupt handler
-> > is installed. In this scenario the single interrupt taken will find
-> > napi disabled and the RX ring will not be processed. No further RX
-> > interrupt will be delivered because the ring is full.
-> > 
-> > The RX stall could eventually clear because the TX path will trigger a
-> > DMA interrupt once the tx_coal_frames threshold is reached and then
-> > NAPI becomes scheduled.
-> 
-> LGTM, although now the ndo_open and ndo_stop paths are not symmetrical.
-> Is there no way to mask the IRQs so that they don't fire immediately?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------LTgM6u0q34vOjsOnn7OEejJ0
+Content-Type: multipart/mixed; boundary="------------TPm4NPg2Cxx7x1oIMonTxg69";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>
+Cc: dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+ David Airlie <airlied@linux.ie>, Dave Hansen <dave.hansen@linux.intel.com>,
+ "H. Peter Anvin" <hpa@zytor.com>, Sam Ravnborg <sam@ravnborg.org>,
+ Helge Deller <deller@gmx.de>, x86@kernel.org,
+ Javier Martinez Canillas <javierm@redhat.com>, Ingo Molnar
+ <mingo@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+ Borislav Petkov <bp@alien8.de>, Maxime Ripard <maxime@cerno.tech>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+ linux-video@atrey.karlin.mff.cuni.cz, Daniel Mack <daniel@zonque.org>
+Message-ID: <14dd85f1-21b1-2ff7-3491-466c077210e6@suse.de>
+Subject: Re: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
+References: <20220218093334.24830-1-msuchanek@suse.de>
+ <4c6e1d15-3bb3-5a69-972f-592cc33ac0cd@suse.de>
+ <20220218100841.GV3113@kunlun.suse.cz>
+In-Reply-To: <20220218100841.GV3113@kunlun.suse.cz>
 
-The initial enabling of the DMA irqs is done as part of the
-->init_chan() callback inside the various variants.  We could use the
-->disable_dma_irq() callback to to disable the DMA irqs and only enable
-them at the end of the init sequence with a stmmac_enable_all_dma_irq().
+--------------TPm4NPg2Cxx7x1oIMonTxg69
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-This avoids having to change all the variants and there should be no
-problem in calling ->disable_dma_irq() after the interrupts have been
-momentarily enabled in ->stmmac_init_chan() since the DMA is reset
-before these calls and not started until later.
+SGkNCg0KQW0gMTguMDIuMjIgdW0gMTE6MDggc2NocmllYiBNaWNoYWwgU3VjaMOhbmVrOg0K
+PiBIZWxsbywNCj4gDQo+IE9uIEZyaSwgRmViIDE4LCAyMDIyIGF0IDEwOjU3OjMzQU0gKzAx
+MDAsIFRob21hcyBaaW1tZXJtYW5uIHdyb3RlOg0KPj4gSGkgTWljaGFsDQo+Pg0KPj4gQW0g
+MTguMDIuMjIgdW0gMTA6MzMgc2NocmllYiBNaWNoYWwgU3VjaGFuZWs6DQo+Pj4gU2luY2Ug
+c3dpdGNoIHRvIHNpbXBsZWRybSBWRVNBIGdyYXBoaWMgbW9kZXMgYXJlIG5vIGxvbmdlciBh
+dmFpbGFibGUNCj4+PiB3aXRoIGxlZ2FjeSBCSU9TLg0KPj4+DQo+Pj4gVGhlIHg4NiByZWFs
+bW9kZSBib290IGNvZGUgZW5hYmxlcyB0aGUgVkVTQSBncmFwaGljIG1vZGVzIHdoZW4gb3B0
+aW9uDQo+Pj4gRkJfQk9PVF9WRVNBX1NVUFBPUlQgaXMgZW5hYmxlZC4NCj4+Pg0KPj4+IFRv
+IGVuYWJsZSB1c2Ugb2YgVkVTQSBtb2RlcyB3aXRoIHNpbXBsZWRybSBpbiBsZWdhY3kgQklP
+UyBib290IG1vZGUgZHJvcA0KPj4+IGRlcGVuZGVuY3kgb2YgQk9PVF9WRVNBX1NVUFBPUlQg
+b24gRkIsIGFsc28gZHJvcCB0aGUgRkJfIHByZWZpeCwgYW5kDQo+Pj4gc2VsZWN0IHRoZSBv
+cHRpb24gd2hlbiBzaW1wbGVkcm0gaXMgYnVpbHQtaW4gb24geDg2Lg0KPj4NCj4+IFRoYW5r
+cyBmb3Igc2VuZGluZyB0aGUgcGF0Y2guDQo+Pg0KPj4gSSB0ZXN0ZWQgc2ltcGxlZHJtIG9u
+IGEgVkVTQS1iYXNlZCBzeXN0ZW1zIGFuZCBpdCB3b3JrLiBEbyB5b3UgaGF2ZSBhDQo+IA0K
+PiBJbiBFRkkgb3IgbGVnYWN5IG1vZGU/DQoNCkl0IHdhcyBhIDMyLWJpdCBBdGhsb25YUC4g
+U28gYXMgbGVnYWN5IGFzIGl0IGdldHMuDQoNCj4gDQo+PiBjb25jcmV0ZSBleGFtcGxlIG9m
+IGEgbW9kZSB0aGF0IGRvZXNuJ3Qgd29yayBhbnkgbG9uZ2VyPw0KPiANCj4gQXMgcGVyIGRp
+c2N1c3Npb24gaW4NCj4gaHR0cHM6Ly9idWd6aWxsYS5vcGVuc3VzZS5vcmcvc2hvd19idWcu
+Y2dpP2lkPTExOTMyNTAgdmdhPTc5MSBkb2VzIG5vdC4NCg0KSSB3b25kZXIgaWYgdGhpcyBm
+aXhlcyBhIGZldyBtb3JlIG9mIHRoZSBjb21wbGFpbnMgd2UndmUgc2VlbiBhYm91dCANCm1p
+c3NpbmcgcmVzb2x1dGlvbnMuDQoNCj4gDQo+IEFsc28gaXQgaXMgY2xlYXIgZXhhbWluaWcg
+dGhlIHJlYWxtb2RlIGNvZGUgdGhhdCB0aGlzIG9wdGlvbiBpcyBuZWVkZWQNCj4gdG8gZW5h
+YmxlIGdyYXBoaWMgbW9kZSBzZWxlY3Rpb24uDQo+IA0KPiBJIGRvbid0IGhhdmUgYSBzeXN0
+ZW0gd2l0aCBsZWdhY3kgQklPUyBhdCBoYW5kIGJ1dCBmcm9tIHVzZXIgdGVzdGluZw0KPiB0
+aGlzIGltcHJvdmVzIHRoZSBzaXR1YXRpb24gLSBrZXJuZWwgZG9lcyBub3QgcmVlamVjdCB0
+aGUgdmlkZW9tb2RlDQo+IGFyZ3VtZW50LCBhbmQgc2ltcGxlZHJtIGlzIGluaXRpYWxpemVk
+IGR1cmluZyBib290Lg0KDQpObyBkb3VidCBhYm91dCB0aGF0Lg0KDQpCZXN0IHJlZ2FyZHMN
+ClRob21hcw0KDQo+IA0KPiBUaGFua3MNCj4gDQo+IE1pY2hhbA0KPiANCj4+DQo+Pj4NCj4+
+PiBGaXhlczogMTFlOGY1ZmQyMjNiICgiZHJtOiBBZGQgc2ltcGxlZHJtIGRyaXZlciIpDQo+
+Pj4gU2lnbmVkLW9mZi1ieTogTWljaGFsIFN1Y2hhbmVrIDxtc3VjaGFuZWtAc3VzZS5kZT4N
+Cj4+PiAtLS0NCj4+PiAgICBhcmNoL3g4Ni9ib290L3ZpZGVvLXZlc2EuYyAgIHwgNCArKy0t
+DQo+Pj4gICAgZHJpdmVycy9ncHUvZHJtL3RpbnkvS2NvbmZpZyB8IDEgKw0KPj4+ICAgIGRy
+aXZlcnMvdmlkZW8vZmJkZXYvS2NvbmZpZyAgfCA5ICsrKystLS0tLQ0KPj4+ICAgIDMgZmls
+ZXMgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPj4+DQo+Pj4g
+ZGlmZiAtLWdpdCBhL2FyY2gveDg2L2Jvb3QvdmlkZW8tdmVzYS5jIGIvYXJjaC94ODYvYm9v
+dC92aWRlby12ZXNhLmMNCj4+PiBpbmRleCA3ZTE4NTk3N2E5ODQuLmMyYzZkMzVlM2E0MyAx
+MDA2NDQNCj4+PiAtLS0gYS9hcmNoL3g4Ni9ib290L3ZpZGVvLXZlc2EuYw0KPj4+ICsrKyBi
+L2FyY2gveDg2L2Jvb3QvdmlkZW8tdmVzYS5jDQo+Pj4gQEAgLTgzLDcgKzgzLDcgQEAgc3Rh
+dGljIGludCB2ZXNhX3Byb2JlKHZvaWQpDQo+Pj4gICAgCQkJICAgKHZtaW5mby5tZW1vcnlf
+bGF5b3V0ID09IDQgfHwNCj4+PiAgICAJCQkgICAgdm1pbmZvLm1lbW9yeV9sYXlvdXQgPT0g
+NikgJiYNCj4+PiAgICAJCQkgICB2bWluZm8ubWVtb3J5X3BsYW5lcyA9PSAxKSB7DQo+Pj4g
+LSNpZmRlZiBDT05GSUdfRkJfQk9PVF9WRVNBX1NVUFBPUlQNCj4+PiArI2lmZGVmIENPTkZJ
+R19CT09UX1ZFU0FfU1VQUE9SVA0KPj4+ICAgIAkJCS8qIEdyYXBoaWNzIG1vZGUsIGNvbG9y
+LCBsaW5lYXIgZnJhbWUgYnVmZmVyDQo+Pj4gICAgCQkJICAgc3VwcG9ydGVkLiAgT25seSBy
+ZWdpc3RlciB0aGUgbW9kZSBpZg0KPj4+ICAgIAkJCSAgIGlmIGZyYW1lYnVmZmVyIGlzIGNv
+bmZpZ3VyZWQsIGhvd2V2ZXIsDQo+Pj4gQEAgLTEyMSw3ICsxMjEsNyBAQCBzdGF0aWMgaW50
+IHZlc2Ffc2V0X21vZGUoc3RydWN0IG1vZGVfaW5mbyAqbW9kZSkNCj4+PiAgICAJaWYgKCh2
+bWluZm8ubW9kZV9hdHRyICYgMHgxNSkgPT0gMHgwNSkgew0KPj4+ICAgIAkJLyogSXQncyBh
+IHN1cHBvcnRlZCB0ZXh0IG1vZGUgKi8NCj4+PiAgICAJCWlzX2dyYXBoaWMgPSAwOw0KPj4+
+IC0jaWZkZWYgQ09ORklHX0ZCX0JPT1RfVkVTQV9TVVBQT1JUDQo+Pj4gKyNpZmRlZiBDT05G
+SUdfQk9PVF9WRVNBX1NVUFBPUlQNCj4+PiAgICAJfSBlbHNlIGlmICgodm1pbmZvLm1vZGVf
+YXR0ciAmIDB4OTkpID09IDB4OTkpIHsNCj4+PiAgICAJCS8qIEl0J3MgYSBncmFwaGljcyBt
+b2RlIHdpdGggbGluZWFyIGZyYW1lIGJ1ZmZlciAqLw0KPj4+ICAgIAkJaXNfZ3JhcGhpYyA9
+IDE7DQo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS90aW55L0tjb25maWcgYi9k
+cml2ZXJzL2dwdS9kcm0vdGlueS9LY29uZmlnDQo+Pj4gaW5kZXggNzEyZTAwMDRlOTZlLi4x
+YmMzMGM2NGVkMTUgMTAwNjQ0DQo+Pj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL3RpbnkvS2Nv
+bmZpZw0KPj4+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS90aW55L0tjb25maWcNCj4+PiBAQCAt
+NTQsNiArNTQsNyBAQCBjb25maWcgRFJNX0dNMTJVMzIwDQo+Pj4gICAgY29uZmlnIERSTV9T
+SU1QTEVEUk0NCj4+PiAgICAJdHJpc3RhdGUgIlNpbXBsZSBmcmFtZWJ1ZmZlciBkcml2ZXIi
+DQo+Pj4gICAgCWRlcGVuZHMgb24gRFJNICYmIE1NVQ0KPj4+ICsJc2VsZWN0IEJPT1RfVkVT
+QV9TVVBQT1JUIGlmIFg4NiAmJiBEUk1fU0lNUExFRFJNID0geQ0KPj4NCj4+IFdlIHNob3Vs
+ZG4ndCBzZWxlY3QgdGhpcyBvcHRpb24gaW4gZHJpdmVycyBJTUhPLiBTaW1wbGUtZnJhbWVi
+dWZmZXIgZGV2aWNlcw0KPj4gd2l0aCBWRVNBIGFyZSBlbmFibGVkIHdpdGggWzFdIGFuZCB0
+aGF0IHNob3VsZCBhbHNvIHNlbGVjdCB0aGUNCj4+IEJPT1RfVkVTQV9TVVBQT1JULg0KPiAN
+Cj4gU291bmRzIG9rIHRvIHNlbGVjdCBmcm9tIHRoZXJlLCBpdCBzaG91bGQgYWxzbyBjb3Zl
+ciBzaW1wbGVmYiB0aGVuLg0KPiANCj4gVGhhbmtzDQo+IA0KPiBNaWNoYWwNCg0KLS0gDQpU
+aG9tYXMgWmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0
+d2FyZSBTb2x1dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xy
+bmJlcmcsIEdlcm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNm
+w7xocmVyOiBJdm8gVG90ZXYNCg==
 
-Note that I haven't added a symmetrical stmmac_disable_all_dma_irq() at
-the top of stmmac_release() before the NAPI disable since I can't see
-that it would do any good there since NAPI can re-enable DMA irqs.
+--------------TPm4NPg2Cxx7x1oIMonTxg69--
 
-> More common flow (IMO) would be:
->  - request irq
->  - mask irq
->  - populate rings
->  - start dma
->  - enable napi
->  - unmask irq
+--------------LTgM6u0q34vOjsOnn7OEejJ0
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-I don't think this driver has ever followed this exact sequence, but the
-request_irq() was done before the "start dma" and the "enable napi"
-before the commit mentioned in the Fixes: tag.  But that's quite a while
-ago and the driver has changed a lot since then and gotten support for a
-lot of variants and features which I can't test, so I didn't dare to
-rewrite the entire init sequence.
+-----BEGIN PGP SIGNATURE-----
 
-> Other than the difference in flow between open/stop there may also be
-> some unpleasantness around restarting tx queues twice with the patch
-> as is.
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIPc+cFAwAAAAAACgkQlh/E3EQov+BH
+gQ//RgDCqtQlenbOA0fCUdGHC+oXuhOec33RIYsU23am8QOxThWrmV4RIP12S+6kpvH9+c32lG/c
+HTIyxmE3T3igD5asQ29orKnxz2uOIuvC3lBW85zmantd4CZAFfMiFOZc/ZfZnFv+uWSlI8wcdxAQ
+kROUTY5N3brxOuidBSgTHwQtUW6SNP2ycxaD6aq8bKofX0dq1y28zkLby7UO1BUp+FnlIKFYYATv
+nkhxAiqfxBhbzjJQD90MsTqa3OJIXAyTO9CW0oHHHf0m42k+2bW9gLPwo3syv9VuRyCz4uDKmevO
+kjR208vGQyYBoYoarkbLLqyhcI1Kbgeky7s855+tiF9cpRZ1Up6+fKmOhHtd0gyJoy2Nnj0J3lf3
+amBhaTDVYqZl0p/WSRXz2bsCInRAz7Dl9w20SuiZDAXhVf7D4q6QmDKHL49eEwCFqgr+sXJnzbYz
+GJUh6YrKjsOps6+boxGHf5rMzvCL5iLiFaQ/91N98vBu+/p3UnUcUlBcWzdO3tA4rjY1bfkAkOcJ
+qNtGPQmczDWCtmRGJo2Fbl+ID9ILNMLdE0t9Oh/FSVpvwIdmTjs2/rFav9zkDVDkeKqzeBn6y1Iv
+QhLCt/52wf1XunOOqN6ljgppebY2PXgfLvt8hCgq4VfPPc3dJ40KuXP2xMYX98K7DbFrvMdASFfL
+v9w=
+=U2ec
+-----END PGP SIGNATURE-----
 
-New patch below, it works for me (though I don't have hardware with
-working suspend/resume support).  I will send it out as a v2 if there
-are no objections.  Thanks.
-
-8<-----
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 6708ca2aa4f7..43978558d6c0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -2260,6 +2260,23 @@ static void stmmac_stop_tx_dma(struct stmmac_priv *priv, u32 chan)
- 	stmmac_stop_tx(priv, priv->ioaddr, chan);
- }
- 
-+static void stmmac_enable_all_dma_irq(struct stmmac_priv *priv)
-+{
-+	u32 rx_channels_count = priv->plat->rx_queues_to_use;
-+	u32 tx_channels_count = priv->plat->tx_queues_to_use;
-+	u32 dma_csr_ch = max(rx_channels_count, tx_channels_count);
-+	u32 chan;
-+
-+	for (chan = 0; chan < dma_csr_ch; chan++) {
-+		struct stmmac_channel *ch = &priv->channel[chan];
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&ch->lock, flags);
-+		stmmac_enable_dma_irq(priv, priv->ioaddr, chan, 1, 1);
-+		spin_unlock_irqrestore(&ch->lock, flags);
-+	}
-+}
-+
- /**
-  * stmmac_start_all_dma - start all RX and TX DMA channels
-  * @priv: driver private structure
-@@ -2902,8 +2919,10 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
- 		stmmac_axi(priv, priv->ioaddr, priv->plat->axi);
- 
- 	/* DMA CSR Channel configuration */
--	for (chan = 0; chan < dma_csr_ch; chan++)
-+	for (chan = 0; chan < dma_csr_ch; chan++) {
- 		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
-+		stmmac_disable_dma_irq(priv, priv->ioaddr, chan, 1, 1);
-+	}
- 
- 	/* DMA RX Channel Configuration */
- 	for (chan = 0; chan < rx_channels_count; chan++) {
-@@ -3759,6 +3778,7 @@ static int stmmac_open(struct net_device *dev)
- 
- 	stmmac_enable_all_queues(priv);
- 	netif_tx_start_all_queues(priv->dev);
-+	stmmac_enable_all_dma_irq(priv);
- 
- 	return 0;
- 
-@@ -6508,8 +6528,10 @@ int stmmac_xdp_open(struct net_device *dev)
- 	}
- 
- 	/* DMA CSR Channel configuration */
--	for (chan = 0; chan < dma_csr_ch; chan++)
-+	for (chan = 0; chan < dma_csr_ch; chan++) {
- 		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
-+		stmmac_disable_dma_irq(priv, priv->ioaddr, chan, 1, 1);
-+	}
- 
- 	/* Adjust Split header */
- 	sph_en = (priv->hw->rx_csum > 0) && priv->sph;
-@@ -6570,6 +6592,7 @@ int stmmac_xdp_open(struct net_device *dev)
- 	stmmac_enable_all_queues(priv);
- 	netif_carrier_on(dev);
- 	netif_tx_start_all_queues(dev);
-+	stmmac_enable_all_dma_irq(priv);
- 
- 	return 0;
- 
-@@ -7447,6 +7470,7 @@ int stmmac_resume(struct device *dev)
- 	stmmac_restore_hw_vlan_rx_fltr(priv, ndev, priv->hw);
- 
- 	stmmac_enable_all_queues(priv);
-+	stmmac_enable_all_dma_irq(priv);
- 
- 	mutex_unlock(&priv->lock);
- 	rtnl_unlock();
+--------------LTgM6u0q34vOjsOnn7OEejJ0--
