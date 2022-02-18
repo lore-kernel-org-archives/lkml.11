@@ -2,152 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B5AC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E97FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234116AbiBRO5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 09:57:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50358 "EHLO
+        id S236588AbiBRO53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 09:57:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236435AbiBRO4f (ORCPT
+        with ESMTP id S236410AbiBRO4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 09:56:35 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF192580CF
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:13 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id u2so13887637wrw.1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:13 -0800 (PST)
+        Fri, 18 Feb 2022 09:56:48 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6502B2FF0
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:18 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id cm8so6301822edb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=05D+3SKZ7tKyXIjmuWnmBbAFic5DyC5nxoFhcmxTYHM=;
-        b=XRVLtCA6bB2RENQ6zCTV2QK0fMPPuWQMd9PHjYs2TWXZ+/XIHN7/vUE0nW/8Sudo5L
-         ixxyQe/plaAI+6zg7JFobruNHFdn+qRcrRo2T7p0v5CdmK+tfhqNcOgS35lwdQah+ds+
-         OQlk8nTP78vlPGMuwezHTJ1e4Eyomy7OMzZ6YfSwoSPzmPqobc5TfETm/nZu+Vw8TRDt
-         q/NFNvbHzBv4sDjyf6VrG0aEFY3xjvydfdTo1eA496dSKUVmSLEV1LX2+kS0i4Z7of/B
-         dEoOd1OZvv2mWWmmtF/J1GgEi3cGWh8Jw7oqBWBb/tLB1/DUOSWTLShdrc5bWKCbsH0K
-         PL1A==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HEDVsJdoBlriKRiWsMiaPibDlLRBSHkQp8aBEXdrRPg=;
+        b=fqRe4zP7YJl0es1coqEkQ+IA42hkW52O3II+Mzuv6ExVlmG3hQ9BH55+U9/QlFyisp
+         0usnUkaPANy2IpTeSlyrZXG5nwU5PJx+kftwW3x7K85HTPrWGf5JoMKVsOXl8czZudNt
+         kgmk68cPq+KhxefMKldnyo24+ONhbjWcEPftQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=05D+3SKZ7tKyXIjmuWnmBbAFic5DyC5nxoFhcmxTYHM=;
-        b=FyvISIrhMUtzjhhGKrz+WGbzanWb+d56XPfoYsvMKnyP27jDiuf67bRoemshtuvLlV
-         2lSa4r4uz0X1o7H4mCzxOFi9F2bVKTWK2GFJVjuXf7h30K2Tp8wfGCAWN10S62Rm/B5Z
-         REgE5D4BuQGejrkcUgktG01BqB5rb08GWVdI0V9H7mTR2Qsaa/bevXLW6qOfFWenXHir
-         769YDaOtLiQ1HyRrZwlfPv5N5cgotRnK9xVcy2kPKNv9KDppvDvypabJxEgd0olesVcJ
-         KfndQ72eviPBRI/hr8D+CRQRmszaaqGYsG4eLKciGdzGfgJN2gb3b4YJOkG2HeqprsZ5
-         wKOQ==
-X-Gm-Message-State: AOAM530Zk6wUk/X81RcWZXxLdjV1OkzRUmDlMZkvKryT+P9K+H5SGuBs
-        46hOjdjvjZkUC9jtIzBsUVby/Q==
-X-Google-Smtp-Source: ABdhPJxzIJ4HeICGEQlbgAY6RhWstXxhrG+4xKFtg/DzjbljouSlndT3aFcLqryjNnjrzZMMpbND/w==
-X-Received: by 2002:a05:6000:257:b0:1e3:3a1b:d4ca with SMTP id m23-20020a056000025700b001e33a1bd4camr6305144wrz.112.1645196172298;
-        Fri, 18 Feb 2022 06:56:12 -0800 (PST)
-Received: from localhost.localdomain (2a02-8440-6241-3b28-3074-96af-9642-0002.rev.sfr.net. [2a02:8440:6241:3b28:3074:96af:9642:2])
-        by smtp.gmail.com with ESMTPSA id b10sm47431454wrd.8.2022.02.18.06.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 06:56:11 -0800 (PST)
-From:   Guillaume Ranquet <granquet@baylibre.com>
-To:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
-        daniel@ffwll.ch, robh+dt@kernel.org,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, matthias.bgg@gmail.com,
-        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
-        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
-        angelogioacchino.delregno@collabora.com
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH v8 07/19] drm/mediatek: dpi: implement a swap_input toggle in board config
-Date:   Fri, 18 Feb 2022 15:54:25 +0100
-Message-Id: <20220218145437.18563-8-granquet@baylibre.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220218145437.18563-1-granquet@baylibre.com>
-References: <20220218145437.18563-1-granquet@baylibre.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HEDVsJdoBlriKRiWsMiaPibDlLRBSHkQp8aBEXdrRPg=;
+        b=NlR2YxHRPWoi3ULARZIQZzaOAM6/YEUXO1Glb4rFnNTnYq4Kq1/BjqvuR4QziDFEtU
+         hJHkHnRkSHwLTxjESsqXjy7lefy1Zl18KhoIlkPueyeoMbuD3OEMp5+EJ7nNjC21nqpU
+         elBy99rTulvThOr4qNcIs0xbTDrQnxeCs4a1ZX8hm+8vq3hVf5VVrD8fcA6DhAqo2pud
+         HlimleIJICPMSS24Vbdz5JbkdrAfgLvRirA9Fp1o046VGWeV4jHtkGSfouA5922ALNT9
+         mfoTmitMdErJqc0/+Hc8ionXR1hF677DKqDcvnVv6P1KS+WJ2fAA7Ah6Nw1BI7bQxIwG
+         Y2eA==
+X-Gm-Message-State: AOAM530tZ1qnHGU/QK284LF16jl1jmR5GMz38HEzh0gmrVs3ui1T7eoz
+        k7tilGHmLwLtyHcN27/oqYxPpt4ECvZs3FJHEqU=
+X-Google-Smtp-Source: ABdhPJyKJpSAHcZtMzfYQF/gcShqQif4CzVTjcl/RQ6Tg+W9nLIA/gdXfqnenWj7SzTHEtNsmP/qJw==
+X-Received: by 2002:a05:6402:518b:b0:412:80a3:fb6e with SMTP id q11-20020a056402518b00b0041280a3fb6emr8865190edd.84.1645196176254;
+        Fri, 18 Feb 2022 06:56:16 -0800 (PST)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id z12sm5153604edb.77.2022.02.18.06.56.15
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 06:56:15 -0800 (PST)
+Received: by mail-wr1-f47.google.com with SMTP id f3so14887809wrh.7
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:15 -0800 (PST)
+X-Received: by 2002:a5d:4c48:0:b0:1e4:aeab:c77e with SMTP id
+ n8-20020a5d4c48000000b001e4aeabc77emr6335194wrt.342.1645196174604; Fri, 18
+ Feb 2022 06:56:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1644494255-6632-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1644494255-6632-3-git-send-email-quic_sbillaka@quicinc.com> <YgWoAwdH/AqJUshh@builder.lan>
+In-Reply-To: <YgWoAwdH/AqJUshh@builder.lan>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 18 Feb 2022 06:56:01 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=XHsgg-cPVRr8jEUTGm3rf_BO5P+jQawDPq9Hju-O4uwQ@mail.gmail.com>
+Message-ID: <CAD=FV=XHsgg-cPVRr8jEUTGm3rf_BO5P+jQawDPq9Hju-O4uwQ@mail.gmail.com>
+Subject: Re: [PATCH v4 2/5] arm64: dts: qcom: sc7280: Add support for eDP
+ panel on CRD
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, quic_kalyant@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
+        quic_mkrishn@quicinc.com, quic_vproddut@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds a bit of flexibility to support boards without swap_input support
+Hi,
 
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
----
- drivers/gpu/drm/mediatek/mtk_dpi.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+On Thu, Feb 10, 2022 at 4:04 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> > +&mdss_edp {
+> > +     status = "okay";
+> > +
+> > +     vdda-1p2-supply = <&vreg_l6b_1p2>;
+> > +     vdda-0p9-supply = <&vreg_l10c_0p8>;
+> > +     /delete-property/ pinctrl-names;
+> > +     /delete-property/ pinctrl-0;
+>
+> If the first device to enable &mdss_edp overwrites pinctrl-{names,0} in
+> &mdss_dp and removes the properties in &mdss_edp, I think that's a sign
+> that they should not be in the .dtsi in the first place.
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 545a1337cc899..454f8563efae4 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -126,6 +126,7 @@ struct mtk_dpi_conf {
- 	const u32 *output_fmts;
- 	u32 num_output_fmts;
- 	bool is_ck_de_pol;
-+	bool swap_input_support;
- 	const struct mtk_dpi_yc_limit *limit;
- };
- 
-@@ -378,18 +379,21 @@ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
- 	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
- 		mtk_dpi_config_yuv422_enable(dpi, false);
- 		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, false);
-+		if (dpi->conf->swap_input_support)
-+			mtk_dpi_config_swap_input(dpi, false);
- 		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_BGR);
- 	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
- 		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
- 		mtk_dpi_config_yuv422_enable(dpi, true);
- 		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, true);
-+		if (dpi->conf->swap_input_support)
-+			mtk_dpi_config_swap_input(dpi, true);
- 		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
- 	} else {
- 		mtk_dpi_config_yuv422_enable(dpi, false);
- 		mtk_dpi_config_csc_enable(dpi, false);
--		mtk_dpi_config_swap_input(dpi, false);
-+		if (dpi->conf->swap_input_support)
-+			mtk_dpi_config_swap_input(dpi, false);
- 		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
- 	}
- }
-@@ -808,6 +812,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
- 	.output_fmts = mt8173_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
- 	.is_ck_de_pol = true,
-+	.swap_input_support = true,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -819,6 +824,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
- 	.output_fmts = mt8173_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
- 	.is_ck_de_pol = true,
-+	.swap_input_support = true,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -829,6 +835,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
- 	.output_fmts = mt8183_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
- 	.is_ck_de_pol = true,
-+	.swap_input_support = true,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -839,6 +846,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
- 	.output_fmts = mt8173_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
- 	.is_ck_de_pol = true,
-+	.swap_input_support = true,
- 	.limit = &mtk_dpi_limit,
- };
- 
--- 
-2.34.1
+Actually, I just looked more carefully here. I think the
+"/delete-property" for edp_hpd here is just wrong. I'm pretty sure
+that the HPD signal is hooked up on CRD and we actually need it. If
+somehow deleting the property helps you then it's probably just
+hacking around a bug and relying on the panel to be always powered on,
+or something.
 
+I think this gets into some of the stuff in your final patch in this
+series. I found that, on my hardware, the panel doesn't come up at all
+with that final patch. When I go back to how things were working in an
+earlier version of your series, though, I can get things working a
+little better (though still not perfect).
+
+-Doug
