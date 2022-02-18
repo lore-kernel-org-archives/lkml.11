@@ -2,77 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B27C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 19:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 19:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237869AbiBRTrr convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 14:47:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39566 "EHLO
+        id S237897AbiBRTsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 14:48:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237648AbiBRTrp (ORCPT
+        with ESMTP id S236914AbiBRTsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 14:47:45 -0500
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75836EBADB;
-        Fri, 18 Feb 2022 11:47:27 -0800 (PST)
-Received: by mail-yb1-f181.google.com with SMTP id e140so21514030ybh.9;
-        Fri, 18 Feb 2022 11:47:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YULenVBHCbgpW4h6bzsWkYMc9iBOxmalGocySqatDxE=;
-        b=KICVnFen5KXpEynH1RbYeKdLiExoaxkc+I4NEq4Ve5FGVHm7zU18MI+ImqqejfPOkW
-         2VxH+0lUOoYUYHyYcOdmnnUNLmNJIQ0I37wZl2cIzAPjjQnoeMkqVdEKnbl3pRb5BUpt
-         0IUYoXSJfsfZhbnZLiYXY7STykO8kUU7o+G3Cp4VZU2880YEKJIbBmwTqghc4ucTbQHa
-         3lvn+AGp8pvyF2oyELFKKE4JqbzRmTRfS1V+PcAm6hlm7Schgg4d6hFRDIFCb0vrf7iJ
-         MzefnNNf+jnzoyVrRwBfkS0sanBZmfbOMYm90cnRO0gwUmScPb9SdvtFGdG0xf8VOYbV
-         D6Jg==
-X-Gm-Message-State: AOAM531+T/NCTjKFT2c90cYdJRItT3qGwyl3XfKoSA29tLhVlm6smHBG
-        NPajUbeKmwb74bNWOBjXoqycpCmP4O37Lbxuo5c=
-X-Google-Smtp-Source: ABdhPJwMVEmz5/hz5F8xbI86OXsROAY+/cIAJ/NbgN0uPOXar3V2KzbWMlPbhn4W67kUrspHVGDwCUCMhpIpRgIgaqc=
-X-Received: by 2002:a25:d90d:0:b0:615:e400:94c1 with SMTP id
- q13-20020a25d90d000000b00615e40094c1mr8816026ybg.81.1645213646711; Fri, 18
- Feb 2022 11:47:26 -0800 (PST)
+        Fri, 18 Feb 2022 14:48:52 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F09C268373
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 11:48:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645213715; x=1676749715;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=XDQZJxIx28rQCTMb2jQbyuTZQHexkK21y4qx7zsjtWQ=;
+  b=aXTbUpGwOCy2FOU8PuVjXVWRVh7C3dmR9UoHoeAziUCDJh195N3ItBNz
+   1bACXodpMWZiJgrlSdF01b0LVO+T5KcYdVxUe5MVkoONJehSjuBvrpqDG
+   FblfPH4MNvTu8Vlu3VGT/GkYjegoppP4SHoAIb++BPg0dkGWXz0pcvulb
+   X2eJQr/Kuc3jSt1euTksGf5x+74ys0UKo/4ZWnKaRR7Ea2i3dwkt0TRTK
+   ZB0i2t9Q83obaT2xvBhR2JWaXKJRFQ5DkNs1e5WWLopyy87AvX/XhpyON
+   cBhOndRmnqTLw8TSBln4xhdYfZqSNmMZgvkRKfl6bK83gBcYn4/LfDarp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10262"; a="250957483"
+X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
+   d="scan'208";a="250957483"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 11:48:31 -0800
+X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
+   d="scan'208";a="546426638"
+Received: from jabonill-mobl1.amr.corp.intel.com (HELO [10.251.27.55]) ([10.251.27.55])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 11:48:29 -0800
+Message-ID: <523e473f-3a9f-7d82-1d51-2f5db673c84a@intel.com>
+Date:   Fri, 18 Feb 2022 11:39:42 -0800
 MIME-Version: 1.0
-References: <20220216203240.GA918517@embeddedor> <202202161236.FBD5D268@keescook>
-In-Reply-To: <202202161236.FBD5D268@keescook>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 18 Feb 2022 20:47:15 +0100
-Message-ID: <CAJZ5v0j0+oAG3s_ZrhmG+1WaTTc-hogiKv9ZuKDiCkH8JtZ0YA@mail.gmail.com>
-Subject: Re: [PATCH][next] ACPICA: iASL: Replace zero-length array with
- flexible-array member
-To:     Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Robert Moore <robert.moore@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        David Rientjes <rientjes@google.com>
+References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
+ <20220218161718.67148-2-kirill.shutemov@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv3 01/32] x86/mm: Fix warning on build with
+ X86_MEM_ENCRYPT=y
+In-Reply-To: <20220218161718.67148-2-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 9:36 PM Kees Cook <keescook@chromium.org> wrote:
->
-> On Wed, Feb 16, 2022 at 02:32:40PM -0600, Gustavo A. R. Silva wrote:
-> > There is a regular need in the kernel to provide a way to declare
-> > having a dynamically sized set of trailing elements in a structure.
-> > Kernel code should always use “flexible array members”[1] for these
-> > cases. The older style of one-element or zero-length arrays should
-> > no longer be used[2].
-> >
-> > [1] https://en.wikipedia.org/wiki/Flexible_array_member
-> > [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-> >
-> > Link: https://github.com/KSPP/linux/issues/78
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
->
-> Reviewed-by: Kees Cook <keescook@chromium.org>
+On 2/18/22 08:16, Kirill A. Shutemov wrote:
+> So far, AMD_MEM_ENCRYPT is the only user of X86_MEM_ENCRYPT. TDX will be
+> the second. It will make mem_encrypt.c build without AMD_MEM_ENCRYPT,
+> which triggers a warning:
+> 
+> arch/x86/mm/mem_encrypt.c:69:13: warning: no previous prototype for
+> 	function 'mem_encrypt_init' [-Wmissing-prototypes]
+> 
+> Fix it by moving mem_encrypt_init() declaration outside of #ifdef
+> CONFIG_AMD_MEM_ENCRYPT.
 
-I've created an upstream ACPICA pull request for this change, thanks!
+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+
