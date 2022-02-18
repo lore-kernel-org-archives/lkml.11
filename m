@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F72AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A714C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235605AbiBRM4e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:56:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34458 "EHLO
+        id S235476AbiBRM4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:56:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235496AbiBRM4J (ORCPT
+        with ESMTP id S232621AbiBRM4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:56:09 -0500
+        Fri, 18 Feb 2022 07:56:19 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D857A2B5217;
-        Fri, 18 Feb 2022 04:55:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA212B5B8C;
+        Fri, 18 Feb 2022 04:55:51 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 36BB21F46724
+        with ESMTPSA id D34331F4241F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645188946;
-        bh=gJeBHmxNUcShhM9B80s0rTYRD0AkGGRVSNN9sHVW228=;
+        s=mail; t=1645188950;
+        bh=AlyTnLmhORNwZ1RUlUCeby9qHWIa7NQ/vAwxJ0QHz5E=;
         h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-        b=nZVEQtNuhdxqtX/k3VDOxfsE8KyU+gqBGGFR9AuZaywEySAwrfK1XjW69cBFy/+FP
-         DJi/qQQ5sNiFMyL0J1flBsGwIAjH+NHquG5GNN6zkkaDUdiG0inaKFUT2FqQulQoEC
-         Lz0sURCnEvZbKNxDc0a72tFBqnNBnQqFMM40q2+82rSN7GkLK7jdLd4deDfI62aG1+
-         NJgEhU0FBMt0niNPjhKyBzEqhwv2L8ELSrCN0bit/ErtfdQ7GhH9P3o06ArA3t+5Tc
-         IZh7qR+pKgKUZYqNI2VSzIARTPUrQb3EjZZhZcR634njYq8UUitUoGOz3qBJMAJ0Up
-         vv3hr6JQiPD8w==
-Message-ID: <c84ec638-3134-fc1c-4761-7f1ec8381a39@collabora.com>
-Date:   Fri, 18 Feb 2022 13:55:43 +0100
+        b=BqAzjeSe61Vw4kn+wAhUjkIctXCWmc8zNa78w/6pWVOlSRg57PZuC9PiQE1/uruD6
+         mPVgkUN2rRpWhRjdmaSC+Z6XAw8pVw1opgV2HQXeInyRaqu78MWDxOjxZufaeWbByC
+         8nJGw0blViFg0UBl7yYBPmVkkXEIZ35Evil+zFfNhzYnzTUYVx7QigxHleTMj5wHzw
+         JQ29Gg0rUqUUa6VzokLYdri93J+kPsdij1Jkt2OJ4nDCRuaTV85fBDVCyYd6ip3eRi
+         x4ibXuz84X5rAVZMsnn8e9BT14tGmwcV6qOoqvYoaw7niW+tTdxQMBqRyy3hwn+XBF
+         R45cBzMKFEhcA==
+Message-ID: <6bcad8b0-7836-77f0-5040-e76b20c04a4e@collabora.com>
+Date:   Fri, 18 Feb 2022 13:55:47 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v2 09/23] arm64: dts: mt8192: Add infracfg_rst node
+Subject: Re: [PATCH v2 11/23] arm64: dts: mt8192: Correct nor_flash status of
+ mt8192
 To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -44,11 +45,13 @@ Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>
+        Ryder Lee <ryder.lee@kernel.org>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
 References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
- <20220218091633.9368-10-allen-kh.cheng@mediatek.com>
+ <20220218091633.9368-12-allen-kh.cheng@mediatek.com>
 Content-Language: en-US
-In-Reply-To: <20220218091633.9368-10-allen-kh.cheng@mediatek.com>
+In-Reply-To: <20220218091633.9368-12-allen-kh.cheng@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -56,58 +59,29 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 18/02/22 10:16, Allen-KH Cheng ha scritto:
-> add infracfg_rst node for mt8192 SoC.
+> Correct nor_flash status of mt8192 SoC.
 > 
 > Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-For v3, please mention that you're adding simple-mfd to allow probing the
-ti,syscon-reset node.
+The commit message should be:
+arm64: dts: mt8192: Fix nor_flash status disable typo
 
-After the commit description fix:
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+...and it should also have a Fixes: tag.
 
 > ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 18 ++++++++++++++++--
->   1 file changed, 16 insertions(+), 2 deletions(-)
+>   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 > diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index f93fe3779161..a935a22babbb 100644
+> index 4533c794effc..f51fd0f6c356 100644
 > --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 > +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -12,6 +12,7 @@
->   #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
->   #include <dt-bindings/phy/phy.h>
->   #include <dt-bindings/power/mt8192-power.h>
-> +#include <dt-bindings/reset/ti-syscon.h>
->   
->   / {
->   	compatible = "mediatek,mt8192";
-> @@ -267,10 +268,23 @@
->   			#clock-cells = <1>;
+> @@ -936,7 +936,7 @@
+>   			assigned-clock-parents = <&clk26m>;
+>   			#address-cells = <1>;
+>   			#size-cells = <0>;
+> -			status = "disable";
+> +			status = "disabled";
 >   		};
 >   
-> -		infracfg: syscon@10001000 {
-> -			compatible = "mediatek,mt8192-infracfg", "syscon";
-> +		infracfg: infracfg@10001000 {
-> +			compatible = "mediatek,mt8192-infracfg", "syscon", "simple-mfd";
->   			reg = <0 0x10001000 0 0x1000>;
->   			#clock-cells = <1>;
-> +
-> +			infracfg_rst: reset-controller {
-> +				compatible = "ti,syscon-reset";
-> +				#reset-cells = <1>;
-> +
-> +				ti,reset-bits = <
-> +					0x120 0 0x124 0 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 0: lvts_ap */
-> +					0x730 12 0x734 12 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 1: lvts_mcu */
-> +					0x140 15 0x144 15 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 2: pcie phy */
-> +					0x730 1 0x734 1 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 3: pcie top */
-> +					0x150 5 0x154 5 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 4: svs */
-> +				>;
-> +			};
->   		};
->   
->   		pericfg: syscon@10003000 {
-
-
-
+>   		i2c3: i2c@11cb0000 {
