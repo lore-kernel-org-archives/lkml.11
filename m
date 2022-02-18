@@ -2,203 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A87C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67605C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234997AbiBRMEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:04:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51176 "EHLO
+        id S235001AbiBRMFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:05:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232329AbiBRMEb (ORCPT
+        with ESMTP id S232329AbiBRMFv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:04:31 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E18921E1A;
-        Fri, 18 Feb 2022 04:04:14 -0800 (PST)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IAR9pA012876;
-        Fri, 18 Feb 2022 12:04:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=VORmXRm/C/bHZNSgGTho6cWg3rhX086W+oYQTjaKFfg=;
- b=BaO+w0WQ2TV2k6wcBCzQnpS+im1vx+3KbENoZSgeUmGJuaOVGrJkMcrahUoItsNm26mt
- Y7tr07/24YabwvAZHRbw7+GLSpW4vJfQeW6i4A1rkTO05sJOtTAaIaawjhU2PvvzBKiD
- F6yzCsgX4FW7Wn18gaeq8Xbrdbr4EUBP4zkmNaM7HGfeLucanshUaoApvONQbtpnKh9I
- b8yvZTebCUuqiw/oaV06ulWLVEyaAydA168zy6URzajrNgIhD9DHjLJGZisHliZrMhdd
- tiWO+JbabqOFHu/VKloUrgnItN1GDzSipk9CbTuU8vFFCEFctR5Lh8oepcL5KHxy336K 7A== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e8nb3rtgb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 12:04:08 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21IC0GYO052249;
-        Fri, 18 Feb 2022 12:04:07 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2046.outbound.protection.outlook.com [104.47.66.46])
-        by aserp3020.oracle.com with ESMTP id 3e8nvv6a1n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 12:04:07 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CEK8Q/LMBdmuPlEfuRw6i3YDmFT62efFdtkT2MHY+Oci2Z4wK34SLA77vgUh/0dCIJTqmEK/F+ml6JEROo2SXkaXofGfqkvFF6s3Bzu+CtYpU6srnGbrV/4cV+PSZrLbRK+NUhufDwvNuCp8Df0LjMQPlH5ZzFYe+tQoTwZblRtiGUzzMvJ7kuEPo3TrNeYYO9hi15HtszfwRuJSz9jCdNBP+NZGkcFUU0pYzj2kBZ+Ht9ZTYZM4OAeYo98OcbgdKRzCMg+adPobevMj/Z99tZjWijgk9vXAofQNC7dzoE0Ve6pv9I36WS6lgr1TfUMbwbHjjv/5IcL1dSBSNL0CEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VORmXRm/C/bHZNSgGTho6cWg3rhX086W+oYQTjaKFfg=;
- b=E9swgtmUNn9IYX2PqlrkKZ9PARAfwQUykHE4dSG24JbveWSkNiRuH2NLd8Ts2aLJTXcy+Tpaj4MeB4stPEcuXP4PYp/EhAlXsm6R9qa3gtvP+wr+OidXlpLPJfj37wiIFd8IxcWkojGQpKb3elt51jk2lD+LBg18u0lEjYqnR/ziFDSHp41rVlUt58/P/9osFjr6sX+NWXiX9yrS2q3/m9MELObFtqSdeyHEBAbT/SGgbLf8FBJd3NOYw3kXgKhE7R1LLu+MSzG0TqyDbuUFk2oowDUkg/nLV9pqwR8E2AT9GvB54O5G8K+hctQKI3KCbG1XrA7WKQexX5in+fBY2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VORmXRm/C/bHZNSgGTho6cWg3rhX086W+oYQTjaKFfg=;
- b=Ngk53lFpLJkbjdKmA/17euiIcHsAXiUX0zkJ1Iqchwgzf6ukPFEAWjdAXVI8QCCxepabWhcR+wN0lOoqTHwDBmDIikmmbkjmsils1inuEdfJU1GKrc8jQrNmuSkkAm0yeqblm322Fd9Nhy9BWtORuBtQZUOmO8H4TmZ+xJRdC8Q=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BN0PR10MB4824.namprd10.prod.outlook.com
- (2603:10b6:408:121::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Fri, 18 Feb
- 2022 12:04:05 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%3]) with mapi id 15.20.4975.019; Fri, 18 Feb 2022
- 12:04:05 +0000
-Date:   Fri, 18 Feb 2022 15:03:44 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        coiby.xu@gmail.com, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: qlge: add unregister_netdev in qlge_probe
-Message-ID: <20220218120344.GH2407@kadam>
-References: <20220218081130.45670-1-hbh25y@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218081130.45670-1-hbh25y@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JN2P275CA0045.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:2::33)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Fri, 18 Feb 2022 07:05:51 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1185E21E1A;
+        Fri, 18 Feb 2022 04:05:33 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 5149B219A7;
+        Fri, 18 Feb 2022 12:05:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645185932; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m87japvLs6dTotRw4YdigIf21fJ6IZ9mrxbcurYJjpA=;
+        b=yL7tUspE1/oIcVnVHmeQkrRPbWmE2koS2I4ZX7YaTv28BQ9FQ3h4Z+X10KoypCXSLVPXiT
+        iz1W4EFkaXllnszgnn4lBd+WvjI+b9KXXLXd0vmE6mkZfA/KhWUk+SVrwwaRoSXkXZvczp
+        0rjcp5sINF8Tja+PvZLUGpQuytskbss=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645185932;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m87japvLs6dTotRw4YdigIf21fJ6IZ9mrxbcurYJjpA=;
+        b=aiPSgPFlhB4wMyB6cmR5KnM7bVTV5JJnNVZ1Za5wOBLioEeq0a+9nvgx9TSOp5hT7kIZ/P
+        m7YANTEYE3fNu/CA==
+Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id ECB0AA3B81;
+        Fri, 18 Feb 2022 12:05:31 +0000 (UTC)
+Date:   Fri, 18 Feb 2022 13:05:30 +0100
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Martin Mares <mj@ucw.cz>, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Helge Deller <deller@gmx.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Simon Trimmer <simont@opensource.cirrus.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Rob Herring <robh@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Herrmann <dh.herrmann@gmail.com>,
+        linux-video@atrey.karlin.mff.cuni.cz, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] simplefb: Enable boot time VESA graphic mode
+ selection.
+Message-ID: <20220218120530.GX3113@kunlun.suse.cz>
+References: <14dd85f1-21b1-2ff7-3491-466c077210e6@suse.de>
+ <20220218105138.5384-1-msuchanek@suse.de>
+ <a789e375-a23e-6988-33bc-1410eb5d974f@suse.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 340cb458-5946-42b3-c3cb-08d9f2d6c269
-X-MS-TrafficTypeDiagnostic: BN0PR10MB4824:EE_
-X-Microsoft-Antispam-PRVS: <BN0PR10MB4824415610B367BC8B85B1FD8E379@BN0PR10MB4824.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: F4CqLQg5E0AUFVU8zCsugh2QuC+ItNbyCs9+nFMPhYRJTTL+GdusfA2cUMWdbmm6Rxmv0w9z6J9OrMMMYSUTJgHEXpWDZO4DbKQ8weJwh4LkpUq3VtlOh6IH6ICOZaJB6Cr0uuqTF8Mbi+SxZrRKnFkZuwZ9BTMoN4lJIEda2ynEcVYGRIYNSfLtfBEnq7+SizkySF1YBgug3vjRMBFVfgSiZod+dfGaCqNE95OgcHtu0AT/OTrhuXfcSSIAKXnQw2oNvyCvfJLjVR9nVsJl4ggjUIaPC0bqBUB7wZZW3+LXjaTAAIDy+aGlmWBmmQnLNAT+K3v81bJjjRdCjmZVHtF7MW1Zy42k7K7OaxvCBLHwjKoHTJhbTssw/uYde9PNC+ikvgQftXj+C/8bD9GA/RsquzLgX++Eg7n2ijZehKmdostO020O0WDLHQS4qBHxGu4/RHi1jL7M2CvueoD6nm/nuofSMK5v+2hz45R8DdxdaOUXmhEOqFGVUR0LWu06ydKg24ByJ/a7mVTQyMfHlsMqHr4AHHSou8m6wsMSlCjPP0KRST/N/TsrBsmAsmGasaNxcSWZaXcxVXhyZhjPZvwr0GRvANR5bDJs7jUdFYgUJB+IOjrOxsIowOIHyEFRQZeq7pjuDU93Ro39T7aZgUfjT2vHebcATS5Bclhiy6/kDLWPpgGuuR/+BTtca5olUm93eh2ZdCriEb06vbIOCg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(1076003)(33656002)(66476007)(66946007)(83380400001)(44832011)(4326008)(38100700002)(38350700002)(8936002)(86362001)(8676002)(5660300002)(66556008)(2906002)(316002)(508600001)(52116002)(6506007)(6916009)(33716001)(9686003)(6512007)(6666004)(6486002)(186003)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hBkfix7/YPdCU9dgNzjhThCJgC2NLHD445bfzYXXalSzBFQMWlQw7fBInVu6?=
- =?us-ascii?Q?PUM63AHLtsvZzpNtLRxENlEGl0l7qCDk2Dz5LnNExF8JlTAiFh7o59XvBHu1?=
- =?us-ascii?Q?lIDinw8517lqC7X7I5BSZ+2sZGtdZPp3/QnH3DD6B/FbsL94UkXGTJ4p9BoK?=
- =?us-ascii?Q?97KoahWmn4xHyENgoazb0RgbSSgrtFtAnLd8c8q4OfEobGu5+dZRMtDSIRik?=
- =?us-ascii?Q?aHhatoWIwZkvehnMkfaL8iztd7FT3iu041f+RdgLe9qjFizf1VA8kvUkM7mO?=
- =?us-ascii?Q?kVvm4qcyw+c/hWPctVU5kbZVMXd7YffSYo8C3MRwIihRXR253rqdDFTEsv6V?=
- =?us-ascii?Q?nLKU5kXWDffint1OM8kZjqePPnlYJ4aR+VtH1AiIxxHml+srb/L8jr08aOPV?=
- =?us-ascii?Q?LA8xXt40zx8CFUCirjPH2p0SXygq9sfpLyjLmnlrvXzd1YqeC6mwi0xhT42y?=
- =?us-ascii?Q?3SSaHNNlgVhP4VX0xlyYRFSoFcuFTm8d4gtdwCWi2SKt+Lz4doxVJjGajSyK?=
- =?us-ascii?Q?iBAnnEx6vNAxqwtswNIcNbGC8dufVrsVpAjeorFN42Nd9RKiOq7HAjzkmoWb?=
- =?us-ascii?Q?4c89RxeNz/3s/nZ1j7Z58R8Icn2a8Fs9udy3roXCsc6DcOqfh5wkM6iINSzg?=
- =?us-ascii?Q?C3zj5J0Jf1rHAwrVvQQTZw9EUklcU36IkOjI7mNvQ65U2tIHafCf7G/EBfj9?=
- =?us-ascii?Q?PjRkzo/XY5cZgJ3tcAsUrxh0Q1F7Hw08sF+TN4piyDvFb3pyxNRxHFT/F1mW?=
- =?us-ascii?Q?S5O0QM0o2E8rqb1BHgtF+2Q5R6+FrwFvQqN0IxUxwbvTNVEtgyxqy6LkemNJ?=
- =?us-ascii?Q?hhnXCWV8kiSVtQvV6AcLU4Qcx56g24f4+tSkVBGDoQAz0dHEknjM4qkEkB3q?=
- =?us-ascii?Q?S7ZtdHPn/Af0wgvw3hqrvgO/4g1mbLKXV22csBRPBKHNx/ijCRDwZ+xicXvh?=
- =?us-ascii?Q?FT7wv2REhsBCJItb9ks+thMZj+Ekz3RMf6s9B1Nyxa5PIs2RFLj0BhYodaBI?=
- =?us-ascii?Q?o/w2OX362ZJxwShfTFj5PkQSrcs1/Ur2cCa8LcKDAnTJcDSMtdQ73U+7dO4k?=
- =?us-ascii?Q?N5aPrWfjAcocrR6JX5KC8af1MZ/lTKNBaSYTJtZRFSzMrgQmhA/hQk07gqfV?=
- =?us-ascii?Q?kKL5oUQTp987NTQ7LVL9UN/tBtVDKnOKN+gamdOwCWHXJlNIBNsV+dfr6Y/R?=
- =?us-ascii?Q?dMK3OMO3iQ2OWRr4E6WZTR+1OQUkhsH+yT78cnZ+gRBcvnQtyz9zOxn66TRB?=
- =?us-ascii?Q?IzjuCuHAZAKKQd8EbwESMGGny72nCSJg6aJbOJ66osxuc3tvbJlaWMQuCTiD?=
- =?us-ascii?Q?q7C2KXiFPd1Y/Gp8R0QsPOZnTMCu1Bn0n9LZ7Nd+2C4HZlp25lmLa+8/2YBL?=
- =?us-ascii?Q?dsQssXzGd+GSIEc6f3+CdXRV1bsRVD6oY0pBoZStyY44NiFXie7+1b9jIhay?=
- =?us-ascii?Q?FwcQMquHFBy8UizbsRffFk5bQAuVkiaq+ZeWxrC4nl9m6DS14c6LLyuN0Gvc?=
- =?us-ascii?Q?7o8KUJ/0iEntw+w6arIy9wXxU7pUS8nDRVOERGPv9X66ADx3Y8TSVvZtryQn?=
- =?us-ascii?Q?h1F6o0P8gGiqRotxPk8pBNiePJpgKSD1s+pg7dN7WDwTziwbmX5EEOP1EbeB?=
- =?us-ascii?Q?nb03a1WIpuYomzCfMpuG2QxuLMvWm6nLdhnFV9tNknw1BflZZoN4GNjRUkEU?=
- =?us-ascii?Q?2MDIaw=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 340cb458-5946-42b3-c3cb-08d9f2d6c269
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 12:04:05.0926
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XU9w+v1Xjx17XeEJ87xE2EPrBHrnJywbQ/OFm8Jx4nIIwBXwm23iwpD10q2mp+7EnkMnE8zTDEtmkv69tCG3DDOAg5QwUTA1wpwZEPQ+poY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB4824
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10261 signatures=677564
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 spamscore=0
- phishscore=0 bulkscore=0 suspectscore=0 malwarescore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202180078
-X-Proofpoint-GUID: 9HEm23XwEcT85uKrV-kFtuNQPdL4ickS
-X-Proofpoint-ORIG-GUID: 9HEm23XwEcT85uKrV-kFtuNQPdL4ickS
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a789e375-a23e-6988-33bc-1410eb5d974f@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 04:11:30PM +0800, Hangyu Hua wrote:
-> unregister_netdev need to be called when register_netdev succeeds
-> qlge_health_create_reporters fails.
+On Fri, Feb 18, 2022 at 12:36:10PM +0100, Thomas Zimmermann wrote:
+> Hi
 > 
-
-1) Add a Fixes tag:
-
-Fixes: d8827ae8e22b ("staging: qlge: deal with the case that devlink_health_reporter_create fails")
-
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
->  drivers/staging/qlge/qlge_main.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> Am 18.02.22 um 11:51 schrieb Michal Suchanek:
+> > Since switch to simplefb/simpledrm VESA graphic modes are no longer
+> > available with legacy BIOS.
+> > 
+> > The x86 realmode boot code enables the VESA graphic modes when option
+> > FB_BOOT_VESA_SUPPORT is enabled.
+> > 
+> > To enable use of VESA modes with simpledrm in legacy BIOS boot mode drop
+> > dependency of BOOT_VESA_SUPPORT on FB, also drop the FB_ prefix, and
+> > select the option when simpledrm is built-in on x86.
+> > 
+> > Fixes: e3263ab389a7 ("x86: provide platform-devices for boot-framebuffers")
+> > Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> > ---
+> > v2: Select BOOT_VESA_SUPPORT from simplefb rather than simpledrm. The
+> > simpledrm driver uses the firmware provided video modes only indirectly
+> > through simplefb, and both can be enabled independently.
+> > ---
+> >   arch/x86/boot/video-vesa.c  | 4 ++--
+> >   drivers/firmware/Kconfig    | 1 +
+> >   drivers/video/fbdev/Kconfig | 9 ++++-----
+> >   3 files changed, 7 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/arch/x86/boot/video-vesa.c b/arch/x86/boot/video-vesa.c
+> > index 7e185977a984..c2c6d35e3a43 100644
+> > --- a/arch/x86/boot/video-vesa.c
+> > +++ b/arch/x86/boot/video-vesa.c
+> > @@ -83,7 +83,7 @@ static int vesa_probe(void)
+> >   			   (vminfo.memory_layout == 4 ||
+> >   			    vminfo.memory_layout == 6) &&
+> >   			   vminfo.memory_planes == 1) {
+> > -#ifdef CONFIG_FB_BOOT_VESA_SUPPORT
+> > +#ifdef CONFIG_BOOT_VESA_SUPPORT
+> >   			/* Graphics mode, color, linear frame buffer
+> >   			   supported.  Only register the mode if
+> >   			   if framebuffer is configured, however,
+> > @@ -121,7 +121,7 @@ static int vesa_set_mode(struct mode_info *mode)
+> >   	if ((vminfo.mode_attr & 0x15) == 0x05) {
+> >   		/* It's a supported text mode */
+> >   		is_graphic = 0;
+> > -#ifdef CONFIG_FB_BOOT_VESA_SUPPORT
+> > +#ifdef CONFIG_BOOT_VESA_SUPPORT
+> >   	} else if ((vminfo.mode_attr & 0x99) == 0x99) {
+> >   		/* It's a graphics mode with linear frame buffer */
+> >   		is_graphic = 1;
+> > diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
+> > index 75cb91055c17..8053c75b8645 100644
+> > --- a/drivers/firmware/Kconfig
+> > +++ b/drivers/firmware/Kconfig
+> > @@ -224,6 +224,7 @@ config SYSFB
+> >   config SYSFB_SIMPLEFB
+> >   	bool "Mark VGA/VBE/EFI FB as generic system framebuffer"
+> >   	depends on SYSFB
+> > +	select BOOT_VESA_SUPPORT if X86
+> >   	help
+> >   	  Firmwares often provide initial graphics framebuffers so the BIOS,
+> >   	  bootloader or kernel can show basic video-output during boot for
+> > diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
+> > index 6ed5e608dd04..4f3be9b7a520 100644
+> > --- a/drivers/video/fbdev/Kconfig
+> > +++ b/drivers/video/fbdev/Kconfig
+> > @@ -66,9 +66,8 @@ config FB_DDC
+> >   	select I2C_ALGOBIT
+> >   	select I2C
+> > -config FB_BOOT_VESA_SUPPORT
+> > +config BOOT_VESA_SUPPORT
+> >   	bool
+> > -	depends on FB
+> >   	help
+> >   	  If true, at least one selected framebuffer driver can take advantage
+> >   	  of VESA video modes set at an early boot stage via the vga= parameter.
 > 
-> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> index 9873bb2a9ee4..0a199c6d77a1 100644
-> --- a/drivers/staging/qlge/qlge_main.c
-> +++ b/drivers/staging/qlge/qlge_main.c
-> @@ -4611,8 +4611,10 @@ static int qlge_probe(struct pci_dev *pdev,
->  	}
->  
->  	err = qlge_health_create_reporters(qdev);
-> -	if (err)
-> +	if (err) {
-> +		unregister_netdev(ndev);
->  		goto netdev_free;
-> +	}
+> This isn't an fb option any longer. Should we move this into
+> arch/x86/Kconfig ?
 
-2) Use a goto to unwind.  3) Release the other pdev stuff as well.
-4)  Clean up the error handling for register_netdev() by using a goto
-as well.
+I tried moving it just a directory up but then found that it works even
+where it is. It's specific to x86 boot code so moving to x86 may make
+sense. Then the 'if X86' should not be needed, either.
 
-	err = register_netdev(ndev);
-	if (err) {
-		dev_err(&pdev->dev, "net device registration failed.\n");
-		goto cleanup_pdev;
-	}
+Thanks
 
-	err = qlge_health_create_reporters(qdev);
-	if (err)
-		goto unregister_netdev;
+Michal
 
-	...
+> 
+> Best regards
+> Thomas
+> 
+> > @@ -627,7 +626,7 @@ config FB_VESA
+> >   	select FB_CFB_FILLRECT
+> >   	select FB_CFB_COPYAREA
+> >   	select FB_CFB_IMAGEBLIT
+> > -	select FB_BOOT_VESA_SUPPORT
+> > +	select BOOT_VESA_SUPPORT
+> >   	help
+> >   	  This is the frame buffer device driver for generic VESA 2.0
+> >   	  compliant graphic cards. The older VESA 1.2 cards are not supported.
+> > @@ -1051,7 +1050,7 @@ config FB_INTEL
+> >   	select FB_CFB_FILLRECT
+> >   	select FB_CFB_COPYAREA
+> >   	select FB_CFB_IMAGEBLIT
+> > -	select FB_BOOT_VESA_SUPPORT if FB_INTEL = y
+> > +	select BOOT_VESA_SUPPORT if FB_INTEL = y
+> >   	depends on !DRM_I915
+> >   	help
+> >   	  This driver supports the on-board graphics built in to the Intel
+> > @@ -1378,7 +1377,7 @@ config FB_SIS
+> >   	select FB_CFB_FILLRECT
+> >   	select FB_CFB_COPYAREA
+> >   	select FB_CFB_IMAGEBLIT
+> > -	select FB_BOOT_VESA_SUPPORT if FB_SIS = y
+> > +	select BOOT_VESA_SUPPORT if FB_SIS = y
+> >   	select FB_SIS_300 if !FB_SIS_315
+> >   	help
+> >   	  This is the frame buffer device driver for the SiS 300, 315, 330
+> 
+> -- 
+> Thomas Zimmermann
+> Graphics Driver Developer
+> SUSE Software Solutions Germany GmbH
+> Maxfeldstr. 5, 90409 Nürnberg, Germany
+> (HRB 36809, AG Nürnberg)
+> Geschäftsführer: Ivo Totev
 
-	return 0;
 
-unregister_netdev:
-	unregister_netdev(ndev);
-cleanup_pdev:
-	qlge_release_all(pdev);
-	pci_disable_device(pdev);
-netdev_free:
-	free_netdev(ndev);
-devlink_free:
-	devlink_free(devlink);
-
-	return ret;
-
-regards,
-dan carpenter
 
