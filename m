@@ -2,84 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D2FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236603AbiBRRuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:50:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60334 "EHLO
+        id S238853AbiBRRv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:51:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235838AbiBRRuf (ORCPT
+        with ESMTP id S238800AbiBRRvL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:50:35 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA1F3EF08
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:50:18 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id l9so7779745plg.0
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:50:18 -0800 (PST)
+        Fri, 18 Feb 2022 12:51:11 -0500
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDAC74621
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:50:54 -0800 (PST)
+Received: by mail-oo1-xc36.google.com with SMTP id p206-20020a4a2fd7000000b0031bfec11983so4333758oop.13
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:50:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:cc:from:to:message-id;
-        bh=0Qt9aLRVk4goBTUwquuWJkruOHldgdUssfKiVNyRjBQ=;
-        b=ELVfiqPh9ppAkt0PMnsaDcgHf9dr6TJTZx9jcxSn8dD8lROslE9gx+uCG3xPON3JIL
-         nzHVZTyC12rV3QQhc/z6iIQz5FJxsgNfVA5U3/S3dfxwjl/Oe8MQzGLia/1RA7VU/V0Y
-         VqcgPz2pHKc90EFevzjH0w6BQw9cbPycC84VHmDu7k6i3FAeqV1NF5P0Oo5588EvwZFL
-         1wmwH+4WDywZdyLPB+X3ZP+Wm+KkOxTe9E6Nyj++EX+1KXh9D8gwWgwR3ECJN3c9FyFT
-         3rBWEV8sGmdptAiulK619gvuB3lHRgHnMINsLG5SyjKYl8BIyyFlalWBRnWVE3q/8itv
-         J72w==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i6PdaTZaoqrR3pWnqrcADN2t1Wh6WW3RvOic4loCQ2g=;
+        b=mXgCS7/y0gs6Lf1lr7O/RG+nXEWcseUmfzR3/nAl+1Pb1Qs2+zyz5rgRUTqH3Ne/V1
+         K/hT1kYcuCq7WbHpIgjK9HxuM7i1UDsV+5ZuOnSUHccmkcWg59O4KA/DmatwPyvv2avC
+         5Gmcas/lcHb9ycO847tUmhK3HUOjO7l6m8K0bC1jjHwubpQm0HB8/u866HemwCQoElwc
+         +zFDBVTF8HZJL1Rxq1XP2GDELr3d/zw/dCYmi7YigYKy534vB0oShlOdQ9EEvXsGhDV4
+         CFwS3Q+zBzdGjWi4jDosguzFMrcpCODNmO4M6zZhZp9xICL4p9MAaYbhEhFeMnYjzfs0
+         aImg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:cc:from:to:message-id;
-        bh=0Qt9aLRVk4goBTUwquuWJkruOHldgdUssfKiVNyRjBQ=;
-        b=oKO93+F9Q8OdzO/2Q4XrujozVVX+JteUyVpiVRc//6vP/DIPPo64rmmanqCyW9Wonb
-         SqYkj4ZDXPfWPKOqL4/H55HQ0vMzREgyamTfBEiOKRScKbyj5NvNZAANt1buJ4tonGru
-         6zZEvPoPzGYYr2iO3H2R+hBZn5XV/a+w42tWJ8WZuHL53raWDJC80pTiccdcqfjfNdhG
-         OPAsmiWDaWfHtOxQ/anKL/FhITLTKcZrQv2+fzr8hwJfLMl1P2IQmCcVp/PtnR0VUwC5
-         tdvod/48kvSXPdb3bteHou+N+QHAeYzOoVIDS0oQpvr8wHiD5pDGneLcEj0ysG5f2mwp
-         3iMg==
-X-Gm-Message-State: AOAM532tI05XKrMAYNOFo9Z2Lc4qf8G5k5pZY1i1Cry7MDOziPGRHPbd
-        3X0xOA7s75EL1pMxHy0OaPiuzQ/3JLAwBw==
-X-Google-Smtp-Source: ABdhPJwO6mvs5H5GQcZgPoP18sncryFhxTQwZ/ukf2jOdcU83CBOdxodUkk58WWfOmTighdkR3YjVw==
-X-Received: by 2002:a17:902:b201:b0:14d:66b5:5d69 with SMTP id t1-20020a170902b20100b0014d66b55d69mr8420800plr.95.1645206617851;
-        Fri, 18 Feb 2022 09:50:17 -0800 (PST)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id u1sm4081853pfg.151.2022.02.18.09.50.16
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i6PdaTZaoqrR3pWnqrcADN2t1Wh6WW3RvOic4loCQ2g=;
+        b=Wwu+wApXVGV14rlGTzu977GM0c61boA3frXYZdHflFG19ryHgyfauayLTLGKgmut9X
+         2TYwh2XVgD+hLpgfXlnKxDBrFiPsw8pgS4hf1Ss+q9DWU0lwn7WtjgC3AmKQh2nY8vUH
+         LJGwehXKWxGr2Sc1Ibuey67qjIZH2SETBMgcf9n37rEZzzRvFOIR2NDC8ff9GhvBvqbE
+         dEKWmXn67qfhjCCUUS4Qu78fUdHT8JZpqweiD16WyDbSNpJ166vSsdg79zQyzXWVFvSC
+         U8BDJADOR7DJHyKpwuMEYUFUs1KPs+1lbJMtwxuF0dfToRq1w2J8OeKHKp56iDWf5q75
+         ht6g==
+X-Gm-Message-State: AOAM5303xWvaZqzDMQxna7tGqcXYlOAfJYauxLuW6cdzPt6hP3MajdYH
+        Pt0FQ2sVnvGoE08TtKOkzUZMGLPtKH/CBA==
+X-Google-Smtp-Source: ABdhPJwGiKIuSKLq2Srt/umgk9hiZl0LZ27JYC0IPjV3D+pJl3Dpcskij6xMdpTTIeUvmcxqQpj8Qg==
+X-Received: by 2002:a05:6870:8305:b0:d2:793b:1eaa with SMTP id p5-20020a056870830500b000d2793b1eaamr3325187oae.332.1645206654072;
+        Fri, 18 Feb 2022 09:50:54 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id i18sm60354oof.29.2022.02.18.09.50.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 09:50:17 -0800 (PST)
-Date:   Fri, 18 Feb 2022 09:50:17 -0800 (PST)
-X-Google-Original-Date: Fri, 18 Feb 2022 09:49:33 PST (-0800)
-Subject: [GIT PULL] RISC-V Fixes for 5.17-rc5
-CC:        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Message-ID: <mhng-f149d1ba-1f6d-43b3-8df0-95d27c2b89c0@palmer-mbp2014>
+        Fri, 18 Feb 2022 09:50:53 -0800 (PST)
+Date:   Fri, 18 Feb 2022 09:52:59 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Gross <agross@kernel.org>
+Subject: Re: [PATCH] MAINTAINERS: remove duplicate entry for i2c-qcom-geni
+Message-ID: <Yg/c+27yR1P0b+eL@ripper>
+References: <20220218104904.14405-1-wsa@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218104904.14405-1-wsa@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 6df2a016c0c8a3d0933ef33dd192ea6606b115e3:
+On Fri 18 Feb 02:49 PST 2022, Wolfram Sang wrote:
 
-  riscv: fix build with binutils 2.38 (2022-02-10 09:17:01 -0800)
+> The driver is already covered in the ARM/QUALCOMM section. Also, Akash
+> Asthana's email bounces meanwhile and Mukesh Savaliya has never
+> responded to mails regarding this driver.
+> 
+> Signed-off-by: Wolfram Sang <wsa@kernel.org>
 
-are available in the Git repository at:
+It would have been nice to go the other direction (reducing
+ARM/QUALCOMM), but your assessment looks accurate, so:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc5
+Acked-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-for you to fetch changes up to 5feef64f4c67068c49f5409d43c67cabf2327f66:
+Regards,
+Bjorn
 
-  RISC-V: Fix IPI/RFENCE hmask on non-monotonic hartid ordering (2022-02-14 12:27:45 -0800)
-
-----------------------------------------------------------------
-RISC-V Fixes for 5.17-rc5
-
-* A set of three fixes, all aimed at fixing some fallout from the recent
-  sparse hart ID support.
-
-----------------------------------------------------------------
-Geert Uytterhoeven (3):
-      RISC-V: Fix hartid mask handling for hartid 31 and up
-      RISC-V: Fix handling of empty cpu masks
-      RISC-V: Fix IPI/RFENCE hmask on non-monotonic hartid ordering
-
- arch/riscv/kernel/sbi.c | 72 ++++++++++++++++++++++++++++++++-----------------
- 1 file changed, 47 insertions(+), 25 deletions(-)
+> ---
+>  MAINTAINERS | 8 --------
+>  1 file changed, 8 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ea3e6c914384..f0485f61295d 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15972,14 +15972,6 @@ F:	Documentation/devicetree/bindings/misc/qcom,fastrpc.txt
+>  F:	drivers/misc/fastrpc.c
+>  F:	include/uapi/misc/fastrpc.h
+>  
+> -QUALCOMM GENERIC INTERFACE I2C DRIVER
+> -M:	Akash Asthana <akashast@codeaurora.org>
+> -M:	Mukesh Savaliya <msavaliy@codeaurora.org>
+> -L:	linux-i2c@vger.kernel.org
+> -L:	linux-arm-msm@vger.kernel.org
+> -S:	Supported
+> -F:	drivers/i2c/busses/i2c-qcom-geni.c
+> -
+>  QUALCOMM HEXAGON ARCHITECTURE
+>  M:	Brian Cain <bcain@codeaurora.org>
+>  L:	linux-hexagon@vger.kernel.org
+> -- 
+> 2.30.2
+> 
