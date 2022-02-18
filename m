@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C343C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30524C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234733AbiBRLhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:37:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44214 "EHLO
+        id S234693AbiBRLhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:37:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234574AbiBRLgk (ORCPT
+        with ESMTP id S234580AbiBRLgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 06:36:40 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238D42B1A95
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:22 -0800 (PST)
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72294389A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:23 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2338E22450;
-        Fri, 18 Feb 2022 12:36:17 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 26C3022455;
+        Fri, 18 Feb 2022 12:36:18 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645184177;
+        t=1645184178;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7MTuzFpCvHrYsDEsSy+Lrt3U2XF9QJpNBVrsBXeBWII=;
-        b=Ux2ShD0Vt0l2V7Ay4nNe3a8VrhpqY8kLv6O9ZhcbGILSDcP9f9EATTG0k/wdXw7h06/HeQ
-        dh9qY2g6nQeDgk7Ekd+92oAglnNgcK2aINo1YnxdTgylKYIoU2Jj1aLhLggaFaCarzYd8Z
-        89NO7AELgyteQV+5UB64PxzxkLLfT+o=
+        bh=mAAklKio0JJkGw53kWM7gFAN8lZmsvKpPSFctQzn+dA=;
+        b=Q4wG2obFYxqxCm2/+QCY4HDCh4BIZEenfqLIlVwzlJj6Q70JWuwNmt3ezO3La3Qzctz0s2
+        CCQWVkH0cs60B3YHaOU7nHZfSqcn9kixKlSOe1taVJYI2XKbQQKtJozcPR4w4uwLSGx/IP
+        VJ2oAqKOju2k1vga/ufkt9er2LlSkuI=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 10/32] mtd: spi-nor: macronix: unify function names
-Date:   Fri, 18 Feb 2022 12:35:45 +0100
-Message-Id: <20220218113607.1360020-11-michael@walle.cc>
+Subject: [PATCH v2 13/32] mtd: spi-nor: sst: unify function names
+Date:   Fri, 18 Feb 2022 12:35:48 +0100
+Message-Id: <20220218113607.1360020-14-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218113607.1360020-1-michael@walle.cc>
 References: <20220218113607.1360020-1-michael@walle.cc>
@@ -61,47 +61,59 @@ There are no functional changes.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/mtd/spi-nor/macronix.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/mtd/spi-nor/sst.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/macronix.c b/drivers/mtd/spi-nor/macronix.c
-index 97dba1ae7fb1..d81a4cb2812b 100644
---- a/drivers/mtd/spi-nor/macronix.c
-+++ b/drivers/mtd/spi-nor/macronix.c
-@@ -32,7 +32,7 @@ static const struct spi_nor_fixups mx25l25635_fixups = {
- 	.post_bfpt = mx25l25635_post_bfpt_fixups,
+diff --git a/drivers/mtd/spi-nor/sst.c b/drivers/mtd/spi-nor/sst.c
+index 30183e9189b9..45d277d62584 100644
+--- a/drivers/mtd/spi-nor/sst.c
++++ b/drivers/mtd/spi-nor/sst.c
+@@ -58,7 +58,7 @@ static const struct spi_nor_fixups sst26vf_fixups = {
+ 	.late_init = sst26vf_late_init,
  };
  
--static const struct flash_info macronix_parts[] = {
-+static const struct flash_info macronix_nor_parts[] = {
- 	/* Macronix */
- 	{ "mx25l512e",   INFO(0xc22010, 0, 64 * 1024,   1)
- 		NO_SFDP_FLAGS(SECT_4K) },
-@@ -102,19 +102,19 @@ static const struct flash_info macronix_parts[] = {
- 		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
+-static const struct flash_info sst_parts[] = {
++static const struct flash_info sst_nor_parts[] = {
+ 	/* SST -- large erase sizes are "overlays", "sectors" are 4K */
+ 	{ "sst25vf040b", INFO(0xbf258d, 0, 64 * 1024,  8)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+@@ -117,8 +117,8 @@ static const struct flash_info sst_parts[] = {
+ 		.fixups = &sst26vf_fixups },
  };
  
--static void macronix_default_init(struct spi_nor *nor)
-+static void macronix_nor_default_init(struct spi_nor *nor)
+-static int sst_write(struct mtd_info *mtd, loff_t to, size_t len,
+-		     size_t *retlen, const u_char *buf)
++static int sst_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
++			 size_t *retlen, const u_char *buf)
  {
- 	nor->params->quad_enable = spi_nor_sr1_bit6_quad_enable;
- 	nor->params->set_4byte_addr_mode = spi_nor_set_4byte_addr_mode;
+ 	struct spi_nor *nor = mtd_to_spi_nor(mtd);
+ 	size_t actual = 0;
+@@ -203,19 +203,19 @@ static int sst_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 	return ret;
  }
  
--static const struct spi_nor_fixups macronix_fixups = {
--	.default_init = macronix_default_init,
-+static const struct spi_nor_fixups macronix_nor_fixups = {
-+	.default_init = macronix_nor_default_init,
+-static void sst_late_init(struct spi_nor *nor)
++static void sst_nor_late_init(struct spi_nor *nor)
+ {
+ 	if (nor->info->mfr_flags & SST_WRITE)
+-		nor->mtd._write = sst_write;
++		nor->mtd._write = sst_nor_write;
+ }
+ 
+-static const struct spi_nor_fixups sst_fixups = {
+-	.late_init = sst_late_init,
++static const struct spi_nor_fixups sst_nor_fixups = {
++	.late_init = sst_nor_late_init,
  };
  
- const struct spi_nor_manufacturer spi_nor_macronix = {
- 	.name = "macronix",
--	.parts = macronix_parts,
--	.nparts = ARRAY_SIZE(macronix_parts),
--	.fixups = &macronix_fixups,
-+	.parts = macronix_nor_parts,
-+	.nparts = ARRAY_SIZE(macronix_nor_parts),
-+	.fixups = &macronix_nor_fixups,
+ const struct spi_nor_manufacturer spi_nor_sst = {
+ 	.name = "sst",
+-	.parts = sst_parts,
+-	.nparts = ARRAY_SIZE(sst_parts),
+-	.fixups = &sst_fixups,
++	.parts = sst_nor_parts,
++	.nparts = ARRAY_SIZE(sst_nor_parts),
++	.fixups = &sst_nor_fixups,
  };
 -- 
 2.30.2
