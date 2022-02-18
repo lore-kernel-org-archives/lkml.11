@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C38A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E38CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:16:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236563AbiBRRQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:16:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43458 "EHLO
+        id S238273AbiBRRQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:16:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238229AbiBRRPR (ORCPT
+        with ESMTP id S238237AbiBRRPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:15:17 -0500
+        Fri, 18 Feb 2022 12:15:20 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF944D611
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:14:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00944D9FF
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:15:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=drGG7z9wXSjoirqs/jFmcbkXc11ClO+eo/+GaDxmf4w=; b=MMSuTorFKcNO6+EtqdLBOLZvMZ
-        eegfpsCBEe04o/6rJv6/QTUWS/nSRW9ap++8uSChmKh4prIQRUb/n60ndBE9cp/JCuoVjLVB65iaW
-        /DPmns8GY3KuF3x9pY2zoS7TB0aT8m4gkZpY4xcQh2sPgf47JsvNLaQ33pE8Zs4k6g+GBHej9A5TP
-        bbS3d0FrzG27dqgcL+VX+JBO4JSWOgbd06MOLq/ko2GgkPRoDr8pwQEnojAw+IgmTbfVn/9oidaqn
-        TTPokJ+qr2LHh3aY/FbtgIMPcisABNXYCPjSdR8gXNq7Bw2HrLWmrEyE/1OCePKhH3PgeKBy/7Aws
-        90oCp+Fg==;
+        bh=OS+OXrxkCjB0CbzDPGpVL+JNryaY3jwFx8CPkYYuhvk=; b=OgokgflfjPq3B2GQr3adelV6Va
+        c0csuH3VvpGe9CAfpu86GiPNp7oOrM6MbbNun5IyOb6sooXlmWPOt5s2HGDEAIPHqWGFXdwb72OKI
+        gQWF6uVyk1yTv72n/DyaBlHlCMj18OLJdIgJhhSuqQoMOKxy9qhp6rVwMH+itN9s0/iOu1Y7IY37h
+        CtmqaJTDRvzT2j1cXl0cJgdIc4zjL9MT+7bWUURsZrcGXWJbIVO9gnGp1617I4Awr+QWI35re/6Er
+        3bp2UN405FfuM4JmcGb2Xz62GG0nOBIhNUsYy1PRdz7IJHlpdtVBi0+4pxVSoMf7Fw/NOkmD5UZuy
+        r8wzzBXA==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nL6qA-00AsBk-Qq; Fri, 18 Feb 2022 17:14:43 +0000
+        id 1nL6qA-00AsBf-JB; Fri, 18 Feb 2022 17:14:50 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D6D62302A12;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id CF654301A96;
         Fri, 18 Feb 2022 18:14:39 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 636C52B09A2B7; Fri, 18 Feb 2022 18:14:39 +0100 (CET)
-Message-ID: <20220218171409.930927223@infradead.org>
+        id 520B929A07E01; Fri, 18 Feb 2022 18:14:39 +0100 (CET)
+Message-ID: <20220218171409.696743603@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 18 Feb 2022 17:49:25 +0100
+Date:   Fri, 18 Feb 2022 17:49:21 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -46,7 +46,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         ndesaulniers@google.com, keescook@chromium.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com
-Subject: [PATCH 23/29] objtool: Read the NOENDBR annotation
+Subject: [PATCH 19/29] x86/ibt,xen: Annotate away warnings
 References: <20220218164902.008644515@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,81 +54,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Read the new NOENDBR annotation. While there, attempt to not bloat
-struct instruction.
+The xen_iret ENDBR is needed for pre-alternative code calling the
+pv_ops using indirect calls.
+
+The rest look like hypervisor entry points which will be IRET like
+transfers and as such don't need ENDBR.
+
+The hypercall page comes from the hypervisor, there might or might not
+be ENDBR there, not our problem.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- tools/objtool/check.c                 |   27 +++++++++++++++++++++++++++
- tools/objtool/include/objtool/check.h |   13 ++++++++++---
- 2 files changed, 37 insertions(+), 3 deletions(-)
+ arch/x86/entry/entry_64.S |    1 +
+ arch/x86/kernel/head_64.S |    1 +
+ arch/x86/xen/xen-asm.S    |    8 ++++++++
+ arch/x86/xen/xen-head.S   |    5 +++--
+ 4 files changed, 13 insertions(+), 2 deletions(-)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1860,6 +1860,29 @@ static int read_unwind_hints(struct objt
- 	return 0;
- }
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -818,6 +818,7 @@ SYM_CODE_END(exc_xen_hypervisor_callback
+  */
+ SYM_CODE_START(xen_failsafe_callback)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	movl	%ds, %ecx
+ 	cmpw	%cx, 0x10(%rsp)
+ 	jne	1f
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -392,6 +392,7 @@ SYM_CODE_START(early_idt_handler_array)
+ 	.endr
+ 	UNWIND_HINT_IRET_REGS offset=16 entry=0
+ SYM_CODE_END(early_idt_handler_array)
++	ANNOTATE_NOENDBR // early_idt_handler_array[NUM_EXCEPTION_VECTORS]
  
-+static int read_noendbr_hints(struct objtool_file *file)
-+{
-+	struct section *sec;
-+	struct instruction *insn;
-+	struct reloc *reloc;
-+
-+	sec = find_section_by_name(file->elf, ".rela.discard.noendbr");
-+	if (!sec)
-+		return 0;
-+
-+	list_for_each_entry(reloc, &sec->reloc_list, list) {
-+		insn = find_insn(file, reloc->sym->sec, reloc->sym->offset + reloc->addend);
-+		if (!insn) {
-+			WARN("bad .discard.noendbr entry");
-+			return -1;
-+		}
-+
-+		insn->noendbr = 1;
-+	}
-+
-+	return 0;
-+}
-+
- static int read_retpoline_hints(struct objtool_file *file)
- {
- 	struct section *sec;
-@@ -2097,6 +2120,10 @@ static int decode_sections(struct objtoo
- 	if (ret)
- 		return ret;
- 
-+	ret = read_noendbr_hints(file);
-+	if (ret)
-+		return ret;
-+
+ SYM_CODE_START_LOCAL(early_idt_handler_common)
  	/*
- 	 * Must be before add_{jump_call}_destination.
- 	 */
---- a/tools/objtool/include/objtool/check.h
-+++ b/tools/objtool/include/objtool/check.h
-@@ -45,11 +45,18 @@ struct instruction {
- 	unsigned int len;
- 	enum insn_type type;
- 	unsigned long immediate;
--	bool dead_end, ignore, ignore_alts;
--	bool hint;
--	bool retpoline_safe;
-+
-+	u8 dead_end	: 1,
-+	   ignore	: 1,
-+	   ignore_alts	: 1,
-+	   hint		: 1,
-+	   retpoline_safe : 1,
-+	   noendbr	: 1;
-+		/* 2 bit hole */
- 	s8 instr;
- 	u8 visited;
-+	/* u8 hole */
-+
- 	struct alt_group *alt_group;
- 	struct symbol *call_dest;
- 	struct instruction *jump_dest;
+--- a/arch/x86/xen/xen-asm.S
++++ b/arch/x86/xen/xen-asm.S
+@@ -122,6 +122,7 @@ SYM_FUNC_END(xen_read_cr2_direct);
+ .macro xen_pv_trap name
+ SYM_CODE_START(xen_\name)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	pop %rcx
+ 	pop %r11
+ 	jmp  \name
+@@ -162,6 +163,7 @@ SYM_CODE_START(xen_early_idt_handler_arr
+ 	i = 0
+ 	.rept NUM_EXCEPTION_VECTORS
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	pop %rcx
+ 	pop %r11
+ 	jmp early_idt_handler_array + i*EARLY_IDT_HANDLER_SIZE
+@@ -169,6 +171,7 @@ SYM_CODE_START(xen_early_idt_handler_arr
+ 	.fill xen_early_idt_handler_array + i*XEN_EARLY_IDT_HANDLER_SIZE - ., 1, 0xcc
+ 	.endr
+ SYM_CODE_END(xen_early_idt_handler_array)
++	ANNOTATE_NOENDBR
+ 	__FINIT
+ 
+ hypercall_iret = hypercall_page + __HYPERVISOR_iret * 32
+@@ -189,6 +192,7 @@ hypercall_iret = hypercall_page + __HYPE
+  */
+ SYM_CODE_START(xen_iret)
+ 	UNWIND_HINT_EMPTY
++	ENDBR
+ 	pushq $0
+ 	jmp hypercall_iret
+ SYM_CODE_END(xen_iret)
+@@ -230,6 +234,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
+ /* Normal 64-bit system call target */
+ SYM_CODE_START(xen_syscall_target)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	popq %rcx
+ 	popq %r11
+ 
+@@ -249,6 +254,7 @@ SYM_CODE_END(xen_syscall_target)
+ /* 32-bit compat syscall target */
+ SYM_CODE_START(xen_syscall32_target)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	popq %rcx
+ 	popq %r11
+ 
+@@ -266,6 +272,7 @@ SYM_CODE_END(xen_syscall32_target)
+ /* 32-bit compat sysenter target */
+ SYM_CODE_START(xen_sysenter_target)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	/*
+ 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
+ 	 * that we don't need to guard against single step exceptions here.
+@@ -289,6 +296,7 @@ SYM_CODE_END(xen_sysenter_target)
+ SYM_CODE_START(xen_syscall32_target)
+ SYM_CODE_START(xen_sysenter_target)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
+ 	mov $-ENOSYS, %rax
+ 	pushq $0
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -25,8 +25,8 @@
+ SYM_CODE_START(hypercall_page)
+ 	.rept (PAGE_SIZE / 32)
+ 		UNWIND_HINT_FUNC
+-		.skip 31, 0x90
+-		RET
++		ANNOTATE_NOENDBR
++		.skip 32, 0xcc
+ 	.endr
+ 
+ #define HYPERCALL(n) \
+@@ -74,6 +74,7 @@ SYM_CODE_END(startup_xen)
+ .pushsection .text
+ SYM_CODE_START(asm_cpu_bringup_and_idle)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 
+ 	call cpu_bringup_and_idle
+ SYM_CODE_END(asm_cpu_bringup_and_idle)
 
 
