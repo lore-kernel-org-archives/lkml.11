@@ -2,63 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18AD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B86ACC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235716AbiBROdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 09:33:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59200 "EHLO
+        id S236106AbiBROg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 09:36:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236086AbiBROdk (ORCPT
+        with ESMTP id S231318AbiBROg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 09:33:40 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB4425B2CB;
-        Fri, 18 Feb 2022 06:33:13 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9DFCA10000D;
-        Fri, 18 Feb 2022 14:33:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645194788;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P8wreGlX9R9giHg9TtUZfMq1UzO5U2luCRSST3Eos5A=;
-        b=PGeF6w9lBkT1hVEhEqQt/p7nOYy2rD2ee18sQ0smT3QRM0pbn3dBzpxRzQMp3L/QTwpKNS
-        /m7RrOnm2IiqPOzBpG7O2a0bnQVRCI8+v94LwjRgZhr0g4dsyPAy6aJfZ9GlQAAnh/PanX
-        wdlsX26q/F2+DNz5DQz2Dy8QbldHzxpf4v0Le6pYC+egD5qwRaiSmnD5iKHI/GmRYLcumG
-        QkNq53+GA+Nc4QjD3tGSY6sdAeUGMo0CxTSVPZEnC1flmx0/zDwkQLNV1bs0Y1SjxaebtR
-        3trvHTIkc70ZyPM2hbeNTXVVK7+Rer4X/2TrmpAeR9WqNmkBwbSZSFubUfKzIQ==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Christophe Kerello <christophe.kerello@foss.st.com>,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        robh+dt@kernel.org, srinivas.kandagatla@linaro.org, p.yadav@ti.com
-Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        devicetree@vger.kernel.org, chenshumin86@sina.com,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 1/4] dt-binding: mtd: nand: Document the wp-gpios property
-Date:   Fri, 18 Feb 2022 15:33:06 +0100
-Message-Id: <20220218143306.322284-1-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220217144755.270679-2-christophe.kerello@foss.st.com>
-References: 
+        Fri, 18 Feb 2022 09:36:26 -0500
+Received: from mail-m2838.qiye.163.com (mail-m2838.qiye.163.com [103.74.28.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F63E281989;
+        Fri, 18 Feb 2022 06:35:50 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.126.138.100])
+        by mail-m2838.qiye.163.com (Hmail) with ESMTPA id 3CD763C00E8;
+        Fri, 18 Feb 2022 22:35:34 +0800 (CST)
+From:   Tao Liu <thomas.liu@ucloud.cn>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, edumazet@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tao Liu <thomas.liu@ucloud.cn>
+Subject: [PATCH net v3] gso: do not skip outer ip header in case of ipip and net_failover
+Date:   Fri, 18 Feb 2022 22:35:24 +0800
+Message-Id: <20220218143524.61642-1-thomas.liu@ucloud.cn>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-X-linux-mtd-patch-notification: thanks
-X-linux-mtd-patch-commit: b'cb57fae479be41d1233f5a49d4760de9a5692b6e'
 Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUlCN1dZLVlBSVdZDwkaFQgSH1lBWUJNTx5WQx4aH05MShhJHk
+        IYVRkRExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MRQ6HDo5TDI4EQ1WODo0NRoz
+        DB8aCjNVSlVKTU9OSkJPQkhPT05IVTMWGhIXVQ8TFBYaCFUXEg47DhgXFA4fVRgVRVlXWRILWUFZ
+        SklPVUpJTVVKSENVSktLWVdZCAFZQU9KTUk3Bg++
+X-HM-Tid: 0a7f0d4278268420kuqw3cd763c00e8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-17 at 14:47:52 UTC, Christophe Kerello wrote:
-> A few drivers use this property to describe the GPIO pin used to protect
-> the NAND during program/erase operations.
-> 
-> Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
-> Acked-by: Rob Herring <robh@kernel.org>
+We encounter a tcp drop issue in our cloud environment. Packet GROed in
+host forwards to a VM virtio_net nic with net_failover enabled. VM acts
+as a IPVS LB with ipip encapsulation. The full path like:
+host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
+ -> ipip encap -> net_failover tx -> virtio_net tx
 
-Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git nand/next, thanks.
+When net_failover transmits a ipip pkt (gso_type = 0x0103, which means
+SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4), there is no gso
+did because it supports TSO and GSO_IPXIP4. But network_header points to
+inner ip header.
 
-Miquel
+Call Trace:
+ tcp4_gso_segment        ------> return NULL
+ inet_gso_segment        ------> inner iph, network_header points to
+ ipip_gso_segment
+ inet_gso_segment        ------> outer iph
+ skb_mac_gso_segment
+
+Afterwards virtio_net transmits the pkt, only inner ip header is modified.
+And the outer one just keeps unchanged. The pkt will be dropped in remote
+host.
+
+Call Trace:
+ inet_gso_segment        ------> inner iph, outer iph is skipped
+ skb_mac_gso_segment
+ __skb_gso_segment
+ validate_xmit_skb
+ validate_xmit_skb_list
+ sch_direct_xmit
+ __qdisc_run
+ __dev_queue_xmit        ------> virtio_net
+ dev_hard_start_xmit
+ __dev_queue_xmit        ------> net_failover
+ ip_finish_output2
+ ip_output
+ iptunnel_xmit
+ ip_tunnel_xmit
+ ipip_tunnel_xmit        ------> ipip
+ dev_hard_start_xmit
+ __dev_queue_xmit
+ ip_finish_output2
+ ip_output
+ ip_forward
+ ip_rcv
+ __netif_receive_skb_one_core
+ netif_receive_skb_internal
+ napi_gro_receive
+ receive_buf
+ virtnet_poll
+ net_rx_action
+
+The root cause of this issue is specific with the rare combination of
+SKB_GSO_DODGY and a tunnel device that adds an SKB_GSO_ tunnel option.
+SKB_GSO_DODGY is set from external virtio_net. We need to reset network
+header when callbacks.gso_segment() returns NULL.
+
+This patch also includes ipv6_gso_segment(), considering SIT, etc.
+
+Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
+Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+---
+ net/ipv4/af_inet.c     | 5 ++++-
+ net/ipv6/ip6_offload.c | 2 ++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 9c465ba..72fde28 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1376,8 +1376,11 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
+ 	}
+ 
+ 	ops = rcu_dereference(inet_offloads[proto]);
+-	if (likely(ops && ops->callbacks.gso_segment))
++	if (likely(ops && ops->callbacks.gso_segment)) {
+ 		segs = ops->callbacks.gso_segment(skb, features);
++		if (!segs)
++			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
++	}
+ 
+ 	if (IS_ERR_OR_NULL(segs))
+ 		goto out;
+diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
+index b29e9ba..5f577e2 100644
+--- a/net/ipv6/ip6_offload.c
++++ b/net/ipv6/ip6_offload.c
+@@ -114,6 +114,8 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
+ 	if (likely(ops && ops->callbacks.gso_segment)) {
+ 		skb_reset_transport_header(skb);
+ 		segs = ops->callbacks.gso_segment(skb, features);
++		if (!segs)
++			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+ 	}
+ 
+ 	if (IS_ERR_OR_NULL(segs))
+-- 
+1.8.3.1
+
