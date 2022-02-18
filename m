@@ -2,98 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2531AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 08:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA86C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 08:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232524AbiBRI0e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 03:26:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42614 "EHLO
+        id S232538AbiBRIaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 03:30:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231165AbiBRI0c (ORCPT
+        with ESMTP id S231165AbiBRIa1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 03:26:32 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD022221B7
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 00:26:16 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id i6-20020a255406000000b006241e97e420so4943641ybb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 00:26:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=RZAu1RopNW0ZnAhNX12nSJphTGjmyvccd/3qHZblYXY=;
-        b=rCB+yv0t3K2artQviTbyk/s1ERydB/bk4ZSc8CtHBGWDb960G5TEmbF7KVd59dToSl
-         fbSTCa3ux/7+xckpeHEGWrupiuQ26paV6JUm7AiZ695TBD8MwKRpOXr1aAyblZxp4f5z
-         wI6qmLnLkEgVobo9GzyV8cgaoN+kiaMeSqzgzciQz0swVMXroFwjHuW8iSJsYMwGUJ7T
-         QwFy6SnNz0o9fQrZopD2msec3ba4QSNiuewF7551R5Uc+CXwz/pBlVURbYaCatjKNFW+
-         bVQIrlRO0drjc0DgrBs7NvA4cOLJLuyjnwhsN0Xe0nzTTlWeeZ/5uVnQvZsO1Ej2Aijn
-         1ifg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=RZAu1RopNW0ZnAhNX12nSJphTGjmyvccd/3qHZblYXY=;
-        b=cuBo6OqWMitL35yIbByC269XpSbFZxBXn2v7YDleGrvAOPZznT4z8k6Tcih8Lvigqg
-         v2xV+oCCFsYvH5VqtZeQVA8AdnXMn4DM0kEx32WUlx1kEKF01AKCn3Fc/TL97Y90fnGf
-         fSj3ltydZUen+C38WlA5UFRpoYJZaF+Nfoim5xUd3VKv4qqEwokEROmsuCfo14PohNVD
-         hF+Fici2XYqBll4RBrYHHK0hsQABpK5jtJn9cl1wjq2bKo4YJGFkvEqQqGlEv8kE/EDP
-         Txg3/faaDdM5RcUchJhu42gl/tacZZI6WpZx4cemGmFyUnFifNxZd3apnjNJMDkfLhyS
-         cAKA==
-X-Gm-Message-State: AOAM533s4Fs0cVTcvCJZn84fWvJyXbV8JYrXvHRntwC43z1DymmxlhTw
-        7z8/dFzeZ08lGOVs6NV6tdoCpWGMfGIB
-X-Google-Smtp-Source: ABdhPJxrlB+xqNTDUqw0l54UMAh7wnOLcJJX8wTR1FqNzyU2jkIXBNFKEJYtk1JqNQPyLFtrWMgHYrCO8QR6
-X-Received: from maskray1.svl.corp.google.com ([2620:15c:2ce:200:bdb7:3728:9760:87c])
- (user=maskray job=sendgmr) by 2002:a25:d6d3:0:b0:61d:aa5c:7e82 with SMTP id
- n202-20020a25d6d3000000b0061daa5c7e82mr6379447ybg.404.1645172775391; Fri, 18
- Feb 2022 00:26:15 -0800 (PST)
-Date:   Fri, 18 Feb 2022 00:26:11 -0800
-Message-Id: <20220218082611.396353-1-maskray@google.com>
-Mime-Version: 1.0
-Subject: [PATCH] riscv module: remove (NOLOAD)
-From:   Fangrui Song <maskray@google.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-riscv@lists.infradead.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Fangrui Song <maskray@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 18 Feb 2022 03:30:27 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C6217044;
+        Fri, 18 Feb 2022 00:30:09 -0800 (PST)
+Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K0Px70DkxzbkbG;
+        Fri, 18 Feb 2022 16:28:59 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Feb 2022 16:30:06 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Feb 2022 16:30:06 +0800
+Subject: Re: [PATCH v3 0/3] block, bfq: minor cleanup and fix
+From:   "yukuai (C)" <yukuai3@huawei.com>
+To:     Jens Axboe <axboe@kernel.dk>
+CC:     <paolo.valente@linaro.org>, <jack@suse.cz>,
+        <linux-block@vger.kernel.org>, <cgroups@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220129015924.3958918-1-yukuai3@huawei.com>
+ <7cb40388-02e9-712a-6a40-ccabd5605880@kernel.dk>
+ <9ed6bf05-4c31-eef1-1736-65915e55eb8e@huawei.com>
+ <0215f548-5d5f-107d-9c8e-3a802a51e00f@huawei.com>
+Message-ID: <040c3568-50c4-5f5a-08c4-fb182cbcd2a7@huawei.com>
+Date:   Fri, 18 Feb 2022 16:30:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <0215f548-5d5f-107d-9c8e-3a802a51e00f@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
-inappropriate for .plt, .got, and .got.plt sections which are always
-SHT_PROGBITS.
+friendly ping ...
 
-In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
-and (NOLOAD) will be essentially ignored. In ld.lld, since
-https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
-customize the output section type"), ld.lld will report a `section type
-mismatch` error. Just remove (NOLOAD) to fix the error.
-
-[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
-section should be marked as not loadable" on
-https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
-outdated for ELF.
----
- arch/riscv/include/asm/module.lds.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/riscv/include/asm/module.lds.h b/arch/riscv/include/asm/module.lds.h
-index 4254ff2ff049..1075beae1ac6 100644
---- a/arch/riscv/include/asm/module.lds.h
-+++ b/arch/riscv/include/asm/module.lds.h
-@@ -2,8 +2,8 @@
- /* Copyright (C) 2017 Andes Technology Corporation */
- #ifdef CONFIG_MODULE_SECTIONS
- SECTIONS {
--	.plt (NOLOAD) : { BYTE(0) }
--	.got (NOLOAD) : { BYTE(0) }
--	.got.plt (NOLOAD) : { BYTE(0) }
-+	.plt : { BYTE(0) }
-+	.got : { BYTE(0) }
-+	.got.plt : { BYTE(0) }
- }
- #endif
--- 
-2.35.1.265.g69c8d7142f-goog
-
+在 2022/02/10 19:46, yukuai (C) 写道:
+> 在 2022/01/29 10:05, yukuai (C) 写道:
+>> 在 2022/01/29 9:51, Jens Axboe 写道:
+>>> On 1/28/22 6:59 PM, Yu Kuai wrote:
+>>>> Changes in v3:
+>>>>   - fix a clerical error in patch 2
+>>>>
+>>>> Chagnes in v2:
+>>>>   - add comment in patch 2
+>>>>   - remove patch 4, since the problem do not exist.
+>>>>
+>>>> Yu Kuai (3):
+>>>>    block, bfq: cleanup bfq_bfqq_to_bfqg()
+>>>>    block, bfq: avoid moving bfqq to it's parent bfqg
+>>>>    block, bfq: don't move oom_bfqq
+>>>>
+>>>>   block/bfq-cgroup.c  | 16 +++++++++++++++-
+>>>>   block/bfq-iosched.c |  4 ++--
+>>>>   block/bfq-iosched.h |  1 -
+>>>>   block/bfq-wf2q.c    | 15 ---------------
+>>>>   4 files changed, 17 insertions(+), 19 deletions(-)
+>>>
+>>> I'm not even looking at this until you tell me that:
+>>>
+>>> a) you've actually compiled this one. which, btw, I can't believe
+>>>     needs mentioning, particularly when you had enough time to keep
+>>>     pinging about this patchset.
+>>>
+>>> b) it's actually be run. last one was clearly not.
+>>>
+>> Hi,
+>>
+>> I compiled and tested the patchset locally in a different version,
+>> v4.19 specifically. However, after I decide to send them to mainline,
+>> I made such clerical mistake and forgot to check the patches.
+>>
+>> My sincerely apologize again...
+>> Kuai
+> 
+> Hi, Jens
+> 
+> Can you please apply this patch this time?
+> 
+> Thanks,
+> Kuai
