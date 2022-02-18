@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED61CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CB9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230329AbiBRAa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 19:30:57 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46350 "EHLO
+        id S230331AbiBRAa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 19:30:59 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbiBRAaj (ORCPT
+        with ESMTP id S230292AbiBRAar (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 19:30:39 -0500
+        Thu, 17 Feb 2022 19:30:47 -0500
 Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E7E5F4C6;
-        Thu, 17 Feb 2022 16:30:09 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id p9so11719022wra.12;
-        Thu, 17 Feb 2022 16:30:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B326B098;
+        Thu, 17 Feb 2022 16:30:26 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id u2so10606238wrw.1;
+        Thu, 17 Feb 2022 16:30:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=iywisHL0NP8LXATzfziseh3r820tbR1Zc28/vheIWzo=;
-        b=PLMgnL2gW+htEv4k9h09XJY1zhsAjjNHb75EpPVJYJxfSSC5pryk2tME9Ih1ATEB5o
-         lc5PccI25yhsjzUQvl4zdLOR5TTQQp8N1c3pN4xCWVlbZ+pw1Zs4RyLUyyDKZQps9+bo
-         qGguYRpvzhBkmXs6sqxgYolxT96KWpBnqRZWnHJQf4qRI8IsH++KFX4LKAoaIzd4LX3l
-         PmT+5W4d7E6x8Gzf3VuNGR6Exukzk7DDD/vticupAsjMidQPhw7w2mbH68fH79U5Wc7c
-         VGlUWVhVcfHf02CFSKtvhr6clyqs7k3ADmllYh+TSi/hoh1lFYvZ0fhnTrMA9ZfyhVtT
-         zBYA==
+        bh=YNGyf2dFMI9HgNiwXOyPfOUSm3HoLabWOizqD2ml+sg=;
+        b=TbHSQqWPmQSV2LAI6HyHwx3hk8ZOSxJEyRhtTYQbYK0ysVMCrTVt3mhoWtrt35zkbS
+         jYhh/1ZHuHcAteUJS7OB/gYwApEWjxiaByJYVMDJGa15WisTBtuqRl5nW+gZL+Uu77Wf
+         XRWfLkBGv7m5kaKjtAEMRIHL6eoK5QuNJc63AZDTV/HdW4mU0CLx8Wb+qHD3vp70OlOr
+         FiEsSfT2vk+XcOir5GAFQlhhqKJEH87wN9Ogmh3nQiz4d+y+0AYzZzfOUaXhllMw/jWO
+         8uBDU+tw7EQ2TR8LMmfggCYdpO3s5f/gJ+OJ/eymakkoWIw8jUqaLwBvJMhnLWQ5rdqB
+         /27w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=iywisHL0NP8LXATzfziseh3r820tbR1Zc28/vheIWzo=;
-        b=L8rljRkSQUyWJKK1VX2HucPRrrvBkak+f6F9QkJGtf/ksWnMPwJy9b0vLzgROWfrTj
-         TBhEcGDfPH5PuGLG8CJqTF3tAcaEiQ/ixWPFd19DJyEAGkHi5U+Cxbx4/WxFTjHloYG0
-         7zetEfMutOLNIx0sGAYE/rhPhxsl+vmRBsnLDcc2Lx3cdUk6LYXHykJ6uRFI4Os7Mqmu
-         JK6Cyd/IYCHnO9nc+3NUXOET+01w3oOAb7I4s9XRk3j/vUWaZtxVLB5tAwRcSlVOT+V4
-         s3lvBnbwdc96rAlqqERq4gUCwdGyuviY21oefjZN/Tyilb46GQeoZQzhFXssQqC0Jjbf
-         Xh7A==
-X-Gm-Message-State: AOAM53236+cMoET1kls9uNDl0s35UdnLhbL3UmQGcM5sJeY07IrXwClX
-        KI82Tn52ckQx2FeT53bBuNU=
-X-Google-Smtp-Source: ABdhPJyzT+lQdLfsd//FnLjpfNd/Fp51eC6ocEQIUFisYwVxy5bDBGCeyg2OkeRE24GSjsAwCmJ9mw==
-X-Received: by 2002:a5d:458c:0:b0:1e7:4e96:2b90 with SMTP id p12-20020a5d458c000000b001e74e962b90mr4063717wrq.56.1645144203534;
-        Thu, 17 Feb 2022 16:30:03 -0800 (PST)
+        bh=YNGyf2dFMI9HgNiwXOyPfOUSm3HoLabWOizqD2ml+sg=;
+        b=05t7+fwvzgw7xXhmP5O1R2CXPb9uARptxTzsqs/EGaTli0VtaNLrcJ0Aa6CHjqQBh4
+         IsEMRSmQSsvcodDqvE1ElLotpOztVkXcWPlK86qJGkcHZBmSc0mboI+z6EL0eXNpml9Y
+         PFo+jW86lylG44gQgLRKwFsOZ7lzw9vDsDiKO8iZTRaHvSNGpCOMmHmI4c+N2ImwN6O8
+         jCTQXuouz5iucW/dzhs40qqgX2GyvZTZNaEA4dixTzQsajSlgmEURK43eMfy/43POsHV
+         5gjHzIUCf1NJCGrb6BL5APFxFv0J/irWE6jSmaxU30MhG/gFqZbkH69KQD98WFxDZPnl
+         V5ig==
+X-Gm-Message-State: AOAM530cEVvoRGlVmU7DZzKT0J0I+6Omx/u7kcMk4TZGHKOLL2HbDRq/
+        lk+0+5pRqBcnYicZ1t/QzFs=
+X-Google-Smtp-Source: ABdhPJwiqCA4FFsEaIidgIAcqxF/9S7+EsZSp8EDlInro5sHKMPu/03RHeAScR4h08xXcR/+FNIzcg==
+X-Received: by 2002:a5d:4242:0:b0:1e3:3130:5088 with SMTP id s2-20020a5d4242000000b001e331305088mr3986238wrr.540.1645144206238;
+        Thu, 17 Feb 2022 16:30:06 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id d29sm3640406wra.63.2022.02.17.16.30.02
+        by smtp.googlemail.com with ESMTPSA id d29sm3640406wra.63.2022.02.17.16.30.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 16:30:03 -0800 (PST)
+        Thu, 17 Feb 2022 16:30:05 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -55,9 +55,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH v2 08/18] ARM: dts: qcom: fix dtc warning for missing #address-cells for ipq8064
-Date:   Fri, 18 Feb 2022 01:29:46 +0100
-Message-Id: <20220218002956.6590-9-ansuelsmth@gmail.com>
+Subject: [PATCH v2 11/18] ARM: dts: qcom: add sic non secure node for ipq8064
+Date:   Fri, 18 Feb 2022 01:29:49 +0100
+Message-Id: <20220218002956.6590-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218002956.6590-1-ansuelsmth@gmail.com>
 References: <20220218002956.6590-1-ansuelsmth@gmail.com>
@@ -67,33 +67,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix dtc warning for missing #address-cells for ipq8064.
+Add missing sic non secure node for ipq8064.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 36bdfc8db3f0..6768f7ba0d04 100644
+index 7df1c1482220..df2702e6136d 100644
 --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -352,6 +352,7 @@ qcom_pinmux: pinmux@800000 {
- 			gpio-ranges = <&qcom_pinmux 0 0 69>;
- 			#gpio-cells = <2>;
- 			interrupt-controller;
-+			#address-cells = <0>;
- 			#interrupt-cells = <2>;
- 			interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
+@@ -563,6 +563,11 @@ saw_l2: regulator@02012000 {
+ 			regulator;
+ 		};
  
-@@ -473,6 +474,7 @@ mux {
- 		intc: interrupt-controller@2000000 {
- 			compatible = "qcom,msm-qgic2";
- 			interrupt-controller;
-+			#address-cells = <0>;
- 			#interrupt-cells = <3>;
- 			reg = <0x02000000 0x1000>,
- 			      <0x02002000 0x1000>;
++		sic_non_secure: sic-non-secure@12100000 {
++			compatible = "syscon";
++			reg = <0x12100000 0x10000>;
++		};
++
+ 		gsbi2: gsbi@12480000 {
+ 			compatible = "qcom,gsbi-v1.0.0";
+ 			cell-index = <2>;
 -- 
 2.34.1
 
