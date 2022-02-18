@@ -2,86 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F91C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 805CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238866AbiBRR56 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:57:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60142 "EHLO
+        id S238872AbiBRR6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:58:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236574AbiBRR54 (ORCPT
+        with ESMTP id S237328AbiBRR6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:57:56 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 04F0C21B1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:57:38 -0800 (PST)
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-562-deJtrdHpMBS6WWtPDsmWAA-1; Fri, 18 Feb 2022 12:57:23 -0500
-X-MC-Unique: deJtrdHpMBS6WWtPDsmWAA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 18 Feb 2022 12:58:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9931103E;
+        Fri, 18 Feb 2022 09:57:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10113801AC5;
-        Fri, 18 Feb 2022 17:57:22 +0000 (UTC)
-Received: from x1.com (unknown [10.22.32.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4CC5D2BCC1;
-        Fri, 18 Feb 2022 17:57:19 +0000 (UTC)
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
-Subject: [PATCH 3/3] rtla/osnoise: Fix error message when failing to enable trace instance
-Date:   Fri, 18 Feb 2022 18:57:09 +0100
-Message-Id: <53ef0582605af91eca14b19dba9fc9febb95d4f9.1645206561.git.bristot@kernel.org>
-In-Reply-To: <cover.1645206561.git.bristot@kernel.org>
-References: <cover.1645206561.git.bristot@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D6D2B826A7;
+        Fri, 18 Feb 2022 17:57:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75124C340E9;
+        Fri, 18 Feb 2022 17:57:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645207070;
+        bh=dP5b+VA+uAx3bJhnVmVq20KQ+X+9Cy6qAmDwVZSVETA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QvDPAbFjC/4BDN5N4QWsBAXqH2By2fN9OfvYaiEa2EMGl4mymWW8xR+qlQyNEIuA8
+         TPqKYelwYUzcA6s0HPFMHH/nhichKTgj+hHrBc37kVQaDoNGGuLZTVgIDxzZ9up4Nv
+         3l394mt2DHKY8m9e4DnwbzD5MGioZ5eock/RE5GY=
+Date:   Fri, 18 Feb 2022 18:57:47 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     linux-kernel@vger.kernel.org, stable <stable@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Daniel Micay <danielmicay@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nathan Chancellor <nathan@kernel.org>, linux-mm@kvack.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] slab: remove __alloc_size attribute from
+ __kmalloc_track_caller
+Message-ID: <Yg/eG4X7Esa0h1al@kroah.com>
+References: <20220218131358.3032912-1-gregkh@linuxfoundation.org>
+ <a5ab4496-8190-6221-72c7-d1ff2e6cf1d4@suse.cz>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a5ab4496-8190-6221-72c7-d1ff2e6cf1d4@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a trace instance creation fails, tools are printing:
+On Fri, Feb 18, 2022 at 06:14:55PM +0100, Vlastimil Babka wrote:
+> On 2/18/22 14:13, Greg Kroah-Hartman wrote:
+> > Commit c37495d6254c ("slab: add __alloc_size attributes for better
+> > bounds checking") added __alloc_size attributes to a bunch of kmalloc
+> > function prototypes.  Unfortunately the change to __kmalloc_track_caller
+> > seems to cause clang to generate broken code and the first time this is
+> > called when booting, the box will crash.
+> > 
+> > While the compiler problems are being reworked and attempted to be
+> > solved, let's just drop the attribute to solve the issue now.  Once it
+> > is resolved it can be added back.
+> 
+> Could we instead wrap it in some #ifdef that' only true for clang build?
+> That would make the workaround more precise and self-documented. Even
+> better if it can trigger using clang version range and once a fixed
+> clang version is here, it can be updated to stay true for older clangs.
 
-	Could not enable -> osnoiser <- tracer for tracing
+It's not doing all that much good like this, let's just remove it for
+now until it does actually provide a benifit and not just crash the box :)
 
-Print the actual (and correct) name of the tracer it fails to enable.
+This is only 1 function, that is used in only a very small number of
+callers.  I do not think it will be missed.
 
-Fixes: b1696371d865 ("rtla: Helper functions for rtla")
-Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- tools/tracing/rtla/src/osnoise.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks,
 
-diff --git a/tools/tracing/rtla/src/osnoise.c b/tools/tracing/rtla/src/osnoise.c
-index 5648f9252e58..e60f1862bad0 100644
---- a/tools/tracing/rtla/src/osnoise.c
-+++ b/tools/tracing/rtla/src/osnoise.c
-@@ -810,7 +810,7 @@ struct osnoise_tool *osnoise_init_trace_tool(char *tracer)
- 
- 	retval = enable_tracer_by_name(trace->trace.inst, tracer);
- 	if (retval) {
--		err_msg("Could not enable osnoiser tracer for tracing\n");
-+		err_msg("Could not enable %s tracer for tracing\n", tracer);
- 		goto out_err;
- 	}
- 
--- 
-2.34.1
-
+greg k-h
