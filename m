@@ -2,717 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D39E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6346C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:05:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238916AbiBRSF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 13:05:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33204 "EHLO
+        id S238923AbiBRSGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 13:06:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238909AbiBRSFX (ORCPT
+        with ESMTP id S238070AbiBRSGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 13:05:23 -0500
-X-Greylist: delayed 481 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Feb 2022 10:05:04 PST
-Received: from mxchg03.rrz.uni-hamburg.de (mxchg03.rrz.uni-hamburg.de [134.100.38.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EFE1BA33D
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 10:05:04 -0800 (PST)
-X-Virus-Scanned: by University of Hamburg ( RRZ / mgw05.rrz.uni-hamburg.de )
-Received: from exchange.uni-hamburg.de (UN-EX-MR08.uni-hamburg.de [134.100.84.75])
-        by mxchg03.rrz.uni-hamburg.de (Postfix) with ESMTPS;
-        Fri, 18 Feb 2022 18:57:01 +0100 (CET)
-Received: from cortex.rrz.uni-hamburg.de (134.100.3.33) by
- UN-EX-MR08.uni-hamburg.de (134.100.84.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2375.18; Fri, 18 Feb 2022 18:57:01 +0100
-Date:   Fri, 18 Feb 2022 18:55:57 +0100
-From:   "Dr. Thomas Orgis" <thomas.orgis@uni-hamburg.de>
-To:     Balbir Singh <bsingharora@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <hannes@cmpxchg.org>,
-        <ismael@iodev.co.uk>
-Subject: [PATCH] taskstats: version 12 with thread group and exe info
-Message-ID: <20220218185557.69aed9f0@cortex.rrz.uni-hamburg.de>
-Organization: =?UTF-8?B?VW5pdmVyc2l0w6R0?= Hamburg
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Fri, 18 Feb 2022 13:06:09 -0500
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774FF1BA33D;
+        Fri, 18 Feb 2022 10:05:52 -0800 (PST)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 21IBEsoS018177;
+        Fri, 18 Feb 2022 10:05:51 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=V/Exuiw6iSsGd3JEc92YnAQ4ePKe46mOB1u+CfhC6Zg=;
+ b=eFfDX3iZtCQxhKbaDBoa5CTDAhkgqnHCzLd7ODJ1Lt3ZrHRRAeBqvteyKZjcui8O55Qr
+ zaE7WZis6Gk5AkWOSae/9iIaawL8z4Q3ua5r8ACXl9YN5/p7z/zkE2x4V5sjaEkSi/4q
+ mRv72D1G+w8ITCW+SJZ5M3qe9VTENgjAPMI= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net (PPS) with ESMTPS id 3e9e7xcdhr-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 18 Feb 2022 10:05:51 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Feb 2022 10:05:49 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QMmj3Ux7w7EhatY3fmhcGDG57kTy2Ga92bxDZupdkRglpnfXDLQHAs/XELztxX41w2AseALZ/cRwyxvpSq6DvwDtzMd46pP1B/NiELlekJkeciJFrYSPJTFqqVlxVBiqIoPNJ8Sd7IEm9WR7lwhIvdLEau9dwIFz7Y5R32EaehFpR6xTuTwlThmKEbKo83pdkxcVQbFVwB+UfKHHz7MZ0PNddyorEhVVX3L6O01tbK/Uz0tGR4EXNSPNHwAARaCHaiblD7M4iILgTI2p3S4nHXU691YXbaTSOoyLnBnPtd+dFSASP4S0j6UtZGq6Up28GH3Zebdxh5UVh/g3KJw3rA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V/Exuiw6iSsGd3JEc92YnAQ4ePKe46mOB1u+CfhC6Zg=;
+ b=Dwx+H3E1OUM7sb9QAql1UoBCl5sucK44n0TTspIcRudQzXSWQv5R1KXgGUV2X1ylLXO9x4Vx+a40Fjm/I53gLLBKFux1F7/aHrpdTyeybkeu9BWwLGpU5SgZlUESJKXV0hhK/ulu4IsLwOdpMUrPZ/Bt46B5spEREBV9jbEj9FELcQfag079JTJCpQ6nu3tgLqP3LRb6K9ql866BkRQxLQ6n1UtXSxavxtAmHWr+WxU/tNsP/PWP7pHvOHvpxj4OJPpAywnl7h8al/kj6DCpkWE5WfKqahdxu0tkNwNveNaZ0ClpeZFaznCjOczbbxfFYeqZL/7KJZxDc9iUGt4Xaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SJ0PR15MB4552.namprd15.prod.outlook.com (2603:10b6:a03:379::12)
+ by SA1PR15MB4657.namprd15.prod.outlook.com (2603:10b6:806:19c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Fri, 18 Feb
+ 2022 18:05:47 +0000
+Received: from SJ0PR15MB4552.namprd15.prod.outlook.com
+ ([fe80::7cbb:e9df:5833:370e]) by SJ0PR15MB4552.namprd15.prod.outlook.com
+ ([fe80::7cbb:e9df:5833:370e%6]) with mapi id 15.20.4995.017; Fri, 18 Feb 2022
+ 18:05:47 +0000
+From:   Jonathan McDowell <noodles@fb.com>
+To:     "pavel@ucw.cz" <pavel@ucw.cz>, "greg@kroah.com" <greg@kroah.com>
+CC:     Dmitrii Okunev <xaionaro@fb.com>,
+        "qiaowei.ren@intel.com" <qiaowei.ren@intel.com>,
+        "mjg59@srcf.ucam.org" <mjg59@srcf.ucam.org>,
+        "xiaoyan.zhang@intel.com" <xiaoyan.zhang@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "gang.wei@intel.com" <gang.wei@intel.com>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>
+Subject: Re: [discuss] Improve and merge a driver proposed in 2013: sysfs
+ interfaces to access TXT config space
+Thread-Topic: [discuss] Improve and merge a driver proposed in 2013: sysfs
+ interfaces to access TXT config space
+Thread-Index: AQHYI/QfaYkfdhkKB0GRGIMREhsvJayXrY4AgAAA5oCAAe3xAA==
+Date:   Fri, 18 Feb 2022 18:05:47 +0000
+Message-ID: <0cf678e0b01bf421f3db6693a15ac4060501a80a.camel@fb.com>
+References: <1368465884-14779-1-git-send-email-qiaowei.ren@intel.com>
+         <1368465884-14779-3-git-send-email-qiaowei.ren@intel.com>
+         <20130516160311.GA12299@amd.pavel.ucw.cz>
+         <4febd50da7e5007a2797e0f4c969fa5edd0bf725.camel@fb.com>
+         <Yg5A4Mupue0V9diu@kroah.com> <20220217123753.GA21849@duo.ucw.cz>
+In-Reply-To: <20220217123753.GA21849@duo.ucw.cz>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 10a01dd2-8b35-46c4-b694-08d9f3094a42
+x-ms-traffictypediagnostic: SA1PR15MB4657:EE_
+x-microsoft-antispam-prvs: <SA1PR15MB46570D8DEBBBEE7ABDA679E7C1379@SA1PR15MB4657.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: s2cWsJW3xiXdcgWNzzs+Uv1hGa3qk0NkRBJaz/XUxJ28ycMP6qxQXYsvhQGVhcxYxgxPLinnEcYS/NZH2zNo/lkVc7aOuzHs2n/6kLHeTbmaD52YIqU5b30z5LVxktFW/beoMPclIVADLO/rKLvjczmiK/PMsVm52lUqgDnNNSAix9jHKDWXTIujDkeDsxOSxGC82oFiJlO1eovRXu0K7QFKdcHy6u2JsaGnmGjla+57NA2vYAaRs+2lGKCteeQJyFQsryfTTDltcXkAghKM7+UA7EHWCj9iDyCV6lf5UrQyI4IbNQYiN1Ce0rYRZomwZH/ZATokMi6uHA6zXHHK59agKPiVF9R08mUd3P3D7RibU4zg6Ituaov+ocvKkGhH2SLwldmDxo1Mn8B0QkhFGPeqemcXKZdsXrAs8wPHUD5lz8NLQAqZoruix10KVXjfZBtuPyb2JwdeHdJAibNcm8lsl21KtTmwBCUz0CKeaW0iTfrr9D++rCsfXoalh9U7RsybGljqjAjkjnz3uXdGs7+IeyPQiF1CKqui9Cd81260ntlExP7J0rmL9XnzOiS/LiAx4mKnGwULrL7tKv8Tu6ELAoEHTOugv9SRXWG2su0FkQAN0hS5og+r6OLOSWXIje4llLkEimUeTUprXYC/KjwpUxqlqDk7dxBw5YjsswUxPE/BffdIyb9pZPvbr5XkebRybDgSFErOOuNQiDjy+5w4DOxwnIw+rK30pPc5c/8lkOUu4e92LhZssNTGhDrbR+U3YhcZWpL2uykBfDcdUXIr0TCi+ppiu9b7MXmtpWo=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR15MB4552.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(186003)(6512007)(6486002)(71200400001)(6506007)(122000001)(508600001)(38100700002)(966005)(8936002)(316002)(66446008)(54906003)(2906002)(110136005)(91956017)(76116006)(2616005)(36756003)(38070700005)(66946007)(5660300002)(86362001)(8676002)(4326008)(66556008)(66476007)(64756008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bzJ1Y0QzOVVraC9FRUVHQ2ZJWDc5eFhveVpLS0ZteHpXalFIUEFYMmcxNmY0?=
+ =?utf-8?B?T0daemN4dmM1TDY2cTFNYkpvQTFDeXlEM2xSc0xlOC9yemFsTjdMQ1FKbEN3?=
+ =?utf-8?B?MlBtRG1YVXh3Sml6Sk5aNzVya1VlUCtaTFdNclNMWVdEcUdzUUdRaVRKblVu?=
+ =?utf-8?B?Qk9iN1RXUjJIRXhTMTBKeDhNeHJ2eHA1RWxXeUdrVTUzdTBqT3F4bnJ5TWo2?=
+ =?utf-8?B?WTB3RE81UWJpYmFpSHFTOU9vaE1nTURKdTFGU2cvN2QxWEUza2I1SEQvU3NX?=
+ =?utf-8?B?RGJWQnI0ZEFKSFNPeVJGaVRKSDRXQWM1b1BmajJzSEZxTnJLSFluMFA4c0Rm?=
+ =?utf-8?B?amdUbzQzMlNnUjYrbXVuT1lwTTErL1ZKbHRQRDVSc0ZzaldyN2RyTmo0TGVI?=
+ =?utf-8?B?RmRCemJsd0JGZ2ZoSldlN1Q4U2h4YkNBM1BYS3VXUDc2eFNmb1NOMG96bE5F?=
+ =?utf-8?B?S1RISDZKRE12ajFVT1VmZlhiYWcwNEVpM0JKZVF1ZlRwZmI2bmRkenRSU2s5?=
+ =?utf-8?B?aXhFR1ZsOHM0VkkvMUlFN1FoMFVicE4wY0R6dURISzF3cmFNTitJMWNkZEFT?=
+ =?utf-8?B?QzVrU29xbm1KclhZVjhoTHdXUFJBRm9VWEw2aGl2NlUvZmJHS0hYY2pOdStP?=
+ =?utf-8?B?OGNPdW96bFhpeGsyZHFPLzBDRHo3TkcwQVdITTBhR3JxbUtLMDQyYTMxdEd0?=
+ =?utf-8?B?RUZoK3BicGo3aVVWUUVjN3BOMUZOcTAvS25UZjRBWFRjR1hMOTNRVCtXQXF5?=
+ =?utf-8?B?Y3p0V2Qzc29WUTJDa3pQb1BoRWU5RXl6WEN6bGZsT1RYT2NaZ0JGRkRwbXVP?=
+ =?utf-8?B?SDNhSzZDTjlKQkNmbUFSTUd3WkgzK1JqdWxXci9ENjJFb3ByTmRqMkxoeEpX?=
+ =?utf-8?B?N3NsOVpzTDRMN1RnOWtvS0tHU0djd0hrK2FqOGlITkt1NDJZRk5iQzF5UGt2?=
+ =?utf-8?B?aEgvTnoxeldpNzRENlB0OS85YTJwQTVIZnl1RTJva3VDNGw2Q3FsQndsQ0tp?=
+ =?utf-8?B?ako0d3hPM2VIMEdlVVlROXJKblhmVnFNeUN0cVdha2xDK3czNEdESmxzektQ?=
+ =?utf-8?B?RHFiNEpSaHRhekUyU1pzNWVVSm04eWJlVEh5NzZTQURNY1JDekFEVTFsS3h1?=
+ =?utf-8?B?QW5TK1U3aFZySld0b2ttVTh1cmpvM3RHOUpQd2ZUVldXendvM2xpd1pnMGYw?=
+ =?utf-8?B?eDhQclB6UVBjSGJYZlc1czJMTlVTdEpUTnFzWGtJdjhXTHN6ek01NVhvQUQx?=
+ =?utf-8?B?WGNvdDdVaDJzeTV5bG91cTJGYmR3bktKZjRzSi80VFJLT1dOODFEQnkyVmhr?=
+ =?utf-8?B?TGt5Nm9uRitDS2Rid24yTmJZMmZpN3RuVjVkUFBraFNEeEtmRGF1WXNpOTNi?=
+ =?utf-8?B?dmN1UHhFSVVXaVZxQXFhOEZiMDJvMVB3RUc5TllXc1ZieEZNa3Q5elE2TGhy?=
+ =?utf-8?B?Y0YrSVpiaEFSMi94SFo5OXppYmpjMkFBZW9DQnZLZEgzZFVjZ0Q2Q2ZDUGhK?=
+ =?utf-8?B?QU5wRkM0U3Nub3BFR0c2MkFVZzlJRlkwK1c5YlN6T0VrZzU3cU81Y1FBeTRt?=
+ =?utf-8?B?RklGamZGOHlIY0tzR09oVDJWRlpLaTMxZkRXcHFLRWgwbENoaDVRa2taMy9G?=
+ =?utf-8?B?MGIyQ2txdk51M2RBdVNpQlg3SzBCVFgwUDRpVCtlbWxHZkU1ZEYxNHpDamF0?=
+ =?utf-8?B?Umo3QnFZR211VUtEd1I4MUo3NllnS0krdVppYWFydGpGbFgzZm5qbGxqSGxS?=
+ =?utf-8?B?VFNnQndqQWpNdE4wbVhxOHpKaEV5YzY1aERhczVtYTl2U3dobXBoZDFrc3ZL?=
+ =?utf-8?B?dFlOa2d6eTY2WFVFTWZwTnZsMUFybXRCdXk5eERUV1JtVGw4U2oxMDlMTnFh?=
+ =?utf-8?B?M0NoaUxpNmpqTWxDNDcwcllwVzNINDRPWlFSR0xqMHNGWXZnUmlVdHRReXpF?=
+ =?utf-8?B?NVU2bkZtaytCd3FJTFlCMTBsMmNjbUdZQm5LaWVMN2o0Z2JGZzhxYUErS25F?=
+ =?utf-8?B?djlZNGZ0N1laNzFvZnovSy8zQkovT0JEbld4bml0S0xVV0pXZzZyOTlzYUw4?=
+ =?utf-8?B?eG5JdFRpQy96bmRnaDhaUWRNU0VhL0lkekxHVDRZcjM3clM2QmNpc1dsdDZm?=
+ =?utf-8?B?akdVMERwMmFFQ2RHa1pGSkpqWDVma0tKODk3Z011WXd3dWUzK1UxNkVUVy9G?=
+ =?utf-8?B?TFE9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <13930B42E3129444916D7A7026DE7C37@namprd15.prod.outlook.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR15MB4552.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10a01dd2-8b35-46c4-b694-08d9f3094a42
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2022 18:05:47.4527
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GeKDbFsavjXSPRbDGcrU0HQAIqHb7STZP72+YdwUJBrsXZsjXLcaxDlgrXtbMIQR
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4657
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: 7TRrT8RBALcEkxZyC5kPi3Txh1p9L-93
+X-Proofpoint-GUID: 7TRrT8RBALcEkxZyC5kPi3Txh1p9L-93
+Content-Transfer-Encoding: base64
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [134.100.3.33]
-X-ClientProxiedBy: UN-EX-MR03.uni-hamburg.de (134.100.84.70) To
- UN-EX-MR08.uni-hamburg.de (134.100.84.75)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-18_07,2022-02-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 malwarescore=0
+ bulkscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
+ mlxscore=0 clxscore=1011 phishscore=0 adultscore=0 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202180111
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The task exit struct needs some cruciual information to be able
-to provide an enhanced version of process and thread accounting. This
-change provides:
-
-1. ac_tgid in additon to ac_pid
-2. thread group execution walltime in ac_tgetime
-3. flag AGROUP in ac_flag to indicate the last task
-   in a thread group / process
-4. device ID and inode of task's /proc/self/exe in
-   ac_exe_dev and ac_exe_inode
-5. tools/accounting/procacct as demonstrator
-
-When a task exits, taskstats are reported to userspace including the
-task's pid and ppid, but without the id of the thread group this task
-is part of. Without the tgid, the stats of single tasks cannot be
-correlated to each other as a thread group (process).
-
-The taskstats documentation suggests that on process exit a data set
-consisting of accumulated stats for the whole group is produced. But
-such an additional set of stats is only produced for actually
-multithreaded processes, not groups that had only one thread, and
-also those stats only contain data about delay accounting and not
-the more basic information about CPU and memory resource usage. Adding
-the AGROP flag to be set when the last task of a group exited enables
-determination of process end also for single-threaded processes.
-
-My applicaton basically does enhanced process accounting with
-summed cputime, biggest maxrss, tasks per process. The data is not
-available with the traditional BSD process accounting (which is not
-designed to be extensible) and the taskstats interface allows more
-efficient on-the-fly grouping and summing of the stats, anyway,
-without intermediate disk writes.
-
-Furthermore, I do carry statistics on which exact program binary
-is used how often with associated resources, getting a picture
-on how important which parts of a collection of installed scientific
-software in different versions are, and how well they put load on the
-machine. This is enabled by providing information on /proc/self/exe
-for each task. I assume the two 64-bit fields for device ID and
-inode are more appropriate than the possibly large resolved path
-to keep the data volume down.
-
-Add the tgid to the stats to complete task identification,
-the flag AGROUP to mark the last task of a group, the group wallclock
-time, and inode-based identification of the associated executable file.
-
-Add tools/accounting/procacct.c as a simplified fork of getdelays.c
-to demonstrate process and thread accounting.
-
-Base-commit: b3d971ec25346d6890e9e8f05b63f758cfcef8c5
-
-Signed-off-by: Dr. Thomas Orgis <thomas.orgis@uni-hamburg.de>
----
- include/uapi/linux/acct.h      |   3 +-
- include/uapi/linux/taskstats.h |  23 +-
- kernel/taskstats.c             |  23 ++
- kernel/tsacct.c                |  10 +-
- tools/accounting/.gitignore    |   1 +
- tools/accounting/Makefile      |   2 +-
- tools/accounting/procacct.c    | 421 +++++++++++++++++++++++++++++++++
- 7 files changed, 476 insertions(+), 7 deletions(-)
- create mode 100644 tools/accounting/procacct.c
-
-diff --git a/include/uapi/linux/acct.h b/include/uapi/linux/acct.h
-index 985b89068591..0e591152aa8a 100644
---- a/include/uapi/linux/acct.h
-+++ b/include/uapi/linux/acct.h
-@@ -103,12 +103,13 @@ struct acct_v3
- /*
-  *  accounting flags
-  */
--				/* bit set when the process ... */
-+				/* bit set when the process/task ... */
- #define AFORK		0x01	/* ... executed fork, but did not exec */
- #define ASU		0x02	/* ... used super-user privileges */
- #define ACOMPAT		0x04	/* ... used compatibility mode (VAX only not used) */
- #define ACORE		0x08	/* ... dumped core */
- #define AXSIG		0x10	/* ... was killed by a signal */
-+#define AGROUP		0x20	/* ... was the last task of the process (task group) */
- 
- #if defined(__BYTE_ORDER) ? __BYTE_ORDER == __BIG_ENDIAN : defined(__BIG_ENDIAN)
- #define ACCT_BYTEORDER	0x80	/* accounting file is big endian */
-diff --git a/include/uapi/linux/taskstats.h b/include/uapi/linux/taskstats.h
-index 12327d32378f..957ab8f1424e 100644
---- a/include/uapi/linux/taskstats.h
-+++ b/include/uapi/linux/taskstats.h
-@@ -34,7 +34,7 @@
-  */
- 
- 
--#define TASKSTATS_VERSION	11
-+#define TASKSTATS_VERSION	12
- #define TS_COMM_LEN		32	/* should be >= TASK_COMM_LEN
- 					 * in linux/sched.h */
- 
-@@ -48,7 +48,8 @@ struct taskstats {
- 	__u32	ac_exitcode;		/* Exit status */
- 
- 	/* The accounting flags of a task as defined in <linux/acct.h>
--	 * Defined values are AFORK, ASU, ACOMPAT, ACORE, and AXSIG.
-+	 * Defined values are AFORK, ASU, ACOMPAT, ACORE, AXSIG, and AGROUP.
-+	 * (AGROUP since version 11).
- 	 */
- 	__u8	ac_flag;		/* Record flags */
- 	__u8	ac_nice;		/* task_nice */
-@@ -173,9 +174,25 @@ struct taskstats {
- 	/* v10: 64-bit btime to avoid overflow */
- 	__u64	ac_btime64;		/* 64-bit begin time */
- 
--	/* Delay waiting for memory compact */
-+	/* v11: Delay waiting for memory compact */
- 	__u64	compact_count;
- 	__u64	compact_delay_total;
-+
-+	/* v12 begin */
-+	__u32   ac_tgid;	/* thread group ID */
-+	/* Thread group walltime up to now. This is total process walltime if
-+	 * AGROUP flag is set. */
-+	__u64	ac_tgetime __attribute__((aligned(8)));
-+	/* Lightweight information to identify process binary files.
-+	 * This leaves userspace to match this to a file system path, using
-+	 * MAJOR() and MINOR() macros to identify a device and mount point,
-+	 * the inode to identify the executable file. This is /proc/self/exe
-+	 * at the end, so matching the most recent exec(). Values are zero
-+	 * for kernel threads.
-+	 */
-+	__u64   ac_exe_dev;     /* program binary device ID */
-+	__u64   ac_exe_inode;   /* program binary inode number */
-+	/* v11 end */
- };
- 
- 
-diff --git a/kernel/taskstats.c b/kernel/taskstats.c
-index 2b4898b4752e..55c532214ca3 100644
---- a/kernel/taskstats.c
-+++ b/kernel/taskstats.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <linux/taskstats_kern.h>
- #include <linux/tsacct_kern.h>
-+#include <linux/acct.h>
- #include <linux/delayacct.h>
- #include <linux/cpumask.h>
- #include <linux/percpu.h>
-@@ -152,6 +153,23 @@ static void send_cpu_listeners(struct sk_buff *skb,
- 	up_write(&listeners->sem);
- }
- 
-+static void exe_add_tsk(struct taskstats *stats, struct task_struct *tsk)
-+{
-+	/* No idea if I'm allowed to access that here, now. */
-+	struct file *exe_file = get_task_exe_file(tsk);
-+
-+	if (exe_file) {
-+		/* Following cp_new_stat64() in stat.c . */
-+		stats->ac_exe_dev =
-+			huge_encode_dev(exe_file->f_inode->i_sb->s_dev);
-+		stats->ac_exe_inode = exe_file->f_inode->i_ino;
-+		fput(exe_file);
-+	} else {
-+		stats->ac_exe_dev = 0;
-+		stats->ac_exe_inode = 0;
-+	}
-+}
-+
- static void fill_stats(struct user_namespace *user_ns,
- 		       struct pid_namespace *pid_ns,
- 		       struct task_struct *tsk, struct taskstats *stats)
-@@ -174,6 +192,9 @@ static void fill_stats(struct user_namespace *user_ns,
- 
- 	/* fill in extended acct fields */
- 	xacct_add_tsk(stats, tsk);
-+
-+	/* add executable info */
-+	exe_add_tsk(stats, tsk);
- }
- 
- static int fill_stats_for_pid(pid_t pid, struct taskstats *stats)
-@@ -619,6 +640,8 @@ void taskstats_exit(struct task_struct *tsk, int group_dead)
- 		goto err;
- 
- 	fill_stats(&init_user_ns, &init_pid_ns, tsk, stats);
-+	if(group_dead)
-+		stats->ac_flag |= AGROUP;
- 
- 	/*
- 	 * Doesn't matter if tsk is the leader or the last group member leaving
-diff --git a/kernel/tsacct.c b/kernel/tsacct.c
-index 1d261fbe367b..4252f0645b9e 100644
---- a/kernel/tsacct.c
-+++ b/kernel/tsacct.c
-@@ -23,15 +23,20 @@ void bacct_add_tsk(struct user_namespace *user_ns,
- {
- 	const struct cred *tcred;
- 	u64 utime, stime, utimescaled, stimescaled;
--	u64 delta;
-+	u64 now_ns, delta;
- 	time64_t btime;
- 
- 	BUILD_BUG_ON(TS_COMM_LEN < TASK_COMM_LEN);
- 
- 	/* calculate task elapsed time in nsec */
--	delta = ktime_get_ns() - tsk->start_time;
-+	now_ns = ktime_get_ns();
-+	/* store whole group time first */
-+	delta = now_ns - tsk->group_leader->start_time;
- 	/* Convert to micro seconds */
- 	do_div(delta, NSEC_PER_USEC);
-+	stats->ac_tgetime = delta;
-+	delta = now_ns - tsk->start_time;
-+	do_div(delta, NSEC_PER_USEC);
- 	stats->ac_etime = delta;
- 	/* Convert to seconds for btime (note y2106 limit) */
- 	btime = ktime_get_real_seconds() - div_u64(delta, USEC_PER_SEC);
-@@ -51,6 +56,7 @@ void bacct_add_tsk(struct user_namespace *user_ns,
- 	stats->ac_nice	 = task_nice(tsk);
- 	stats->ac_sched	 = tsk->policy;
- 	stats->ac_pid	 = task_pid_nr_ns(tsk, pid_ns);
-+	stats->ac_tgid   = task_tgid_nr_ns(tsk, pid_ns);
- 	rcu_read_lock();
- 	tcred = __task_cred(tsk);
- 	stats->ac_uid	 = from_kuid_munged(user_ns, tcred->uid);
-diff --git a/tools/accounting/.gitignore b/tools/accounting/.gitignore
-index c45fb4ed4309..522a690aaf3d 100644
---- a/tools/accounting/.gitignore
-+++ b/tools/accounting/.gitignore
-@@ -1,2 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0-only
- getdelays
-+procacct
-diff --git a/tools/accounting/Makefile b/tools/accounting/Makefile
-index 03687f19cbb1..11def1ad046c 100644
---- a/tools/accounting/Makefile
-+++ b/tools/accounting/Makefile
-@@ -2,7 +2,7 @@
- CC := $(CROSS_COMPILE)gcc
- CFLAGS := -I../../usr/include
- 
--PROGS := getdelays
-+PROGS := getdelays procacct
- 
- all: $(PROGS)
- 
-diff --git a/tools/accounting/procacct.c b/tools/accounting/procacct.c
-new file mode 100644
-index 000000000000..8390d1251bc9
---- /dev/null
-+++ b/tools/accounting/procacct.c
-@@ -0,0 +1,421 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* procacct.c
-+ *
-+ * Demonstrator of fetching resource data on task exit, as a way
-+ * to accumulate accurate program resource usage statistics, without
-+ * prior identification of the programs. For that, the fields for
-+ * device and inode of the program executable binary file are also
-+ * extracted in addition to the command string.
-+ *
-+ * The TGID together with the PID and the AGROUP flag allow
-+ * identification of threads in a process and single-threaded processes.
-+ * The ac_tgetime field gives proper whole-process walltime.
-+ *
-+ * Written (changed) by Thomas Orgis, University of Hamburg in 2022
-+ *
-+ * This is a cheap derivation (inheriting the style) of getdelays.c:
-+ *
-+ * Utility to get per-pid and per-tgid delay accounting statistics
-+ * Also illustrates usage of the taskstats interface
-+ *
-+ * Copyright (C) Shailabh Nagar, IBM Corp. 2005
-+ * Copyright (C) Balbir Singh, IBM Corp. 2006
-+ * Copyright (c) Jay Lan, SGI. 2006
-+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <errno.h>
-+#include <unistd.h>
-+#include <poll.h>
-+#include <string.h>
-+#include <fcntl.h>
-+#include <sys/types.h>
-+#include <sys/stat.h>
-+#include <sys/socket.h>
-+#include <sys/wait.h>
-+#include <signal.h>
-+
-+#include <linux/genetlink.h>
-+#include <linux/acct.h>
-+#include <linux/taskstats.h>
-+#include <linux/kdev_t.h>
-+
-+/*
-+ * Generic macros for dealing with netlink sockets. Might be duplicated
-+ * elsewhere. It is recommended that commercial grade applications use
-+ * libnl or libnetlink and use the interfaces provided by the library
-+ */
-+#define GENLMSG_DATA(glh)	((void *)(NLMSG_DATA(glh) + GENL_HDRLEN))
-+#define GENLMSG_PAYLOAD(glh)	(NLMSG_PAYLOAD(glh, 0) - GENL_HDRLEN)
-+#define NLA_DATA(na)		((void *)((char *)(na) + NLA_HDRLEN))
-+#define NLA_PAYLOAD(len)	(len - NLA_HDRLEN)
-+
-+#define err(code, fmt, arg...)			\
-+	do {					\
-+		fprintf(stderr, fmt, ##arg);	\
-+		exit(code);			\
-+	} while (0)
-+
-+int done;
-+int rcvbufsz;
-+char name[100];
-+int dbg;
-+int print_delays;
-+int print_io_accounting;
-+int print_task_context_switch_counts;
-+
-+#define PRINTF(fmt, arg...) {			\
-+		if (dbg) {			\
-+			printf(fmt, ##arg);	\
-+		}				\
-+	}
-+
-+/* Maximum size of response requested or message sent */
-+#define MAX_MSG_SIZE	1024
-+/* Maximum number of cpus expected to be specified in a cpumask */
-+#define MAX_CPUS	32
-+
-+struct msgtemplate {
-+	struct nlmsghdr n;
-+	struct genlmsghdr g;
-+	char buf[MAX_MSG_SIZE];
-+};
-+
-+char cpumask[100+6*MAX_CPUS];
-+
-+static void usage(void)
-+{
-+	fprintf(stderr, "procacct [-v] [-w logfile] [-r bufsize] [-m cpumask]\n");
-+	fprintf(stderr, "  -v: debug on\n");
-+}
-+
-+/*
-+ * Create a raw netlink socket and bind
-+ */
-+static int create_nl_socket(int protocol)
-+{
-+	int fd;
-+	struct sockaddr_nl local;
-+
-+	fd = socket(AF_NETLINK, SOCK_RAW, protocol);
-+	if (fd < 0)
-+		return -1;
-+
-+	if (rcvbufsz)
-+		if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF,
-+				&rcvbufsz, sizeof(rcvbufsz)) < 0) {
-+			fprintf(stderr, "Unable to set socket rcv buf size to %d\n",
-+				rcvbufsz);
-+			goto error;
-+		}
-+
-+	memset(&local, 0, sizeof(local));
-+	local.nl_family = AF_NETLINK;
-+
-+	if (bind(fd, (struct sockaddr *) &local, sizeof(local)) < 0)
-+		goto error;
-+
-+	return fd;
-+error:
-+	close(fd);
-+	return -1;
-+}
-+
-+
-+static int send_cmd(int sd, __u16 nlmsg_type, __u32 nlmsg_pid,
-+	     __u8 genl_cmd, __u16 nla_type,
-+	     void *nla_data, int nla_len)
-+{
-+	struct nlattr *na;
-+	struct sockaddr_nl nladdr;
-+	int r, buflen;
-+	char *buf;
-+
-+	struct msgtemplate msg;
-+
-+	msg.n.nlmsg_len = NLMSG_LENGTH(GENL_HDRLEN);
-+	msg.n.nlmsg_type = nlmsg_type;
-+	msg.n.nlmsg_flags = NLM_F_REQUEST;
-+	msg.n.nlmsg_seq = 0;
-+	msg.n.nlmsg_pid = nlmsg_pid;
-+	msg.g.cmd = genl_cmd;
-+	msg.g.version = 0x1;
-+	na = (struct nlattr *) GENLMSG_DATA(&msg);
-+	na->nla_type = nla_type;
-+	na->nla_len = nla_len + 1 + NLA_HDRLEN;
-+	memcpy(NLA_DATA(na), nla_data, nla_len);
-+	msg.n.nlmsg_len += NLMSG_ALIGN(na->nla_len);
-+
-+	buf = (char *) &msg;
-+	buflen = msg.n.nlmsg_len;
-+	memset(&nladdr, 0, sizeof(nladdr));
-+	nladdr.nl_family = AF_NETLINK;
-+	while ((r = sendto(sd, buf, buflen, 0, (struct sockaddr *) &nladdr,
-+			   sizeof(nladdr))) < buflen) {
-+		if (r > 0) {
-+			buf += r;
-+			buflen -= r;
-+		} else if (errno != EAGAIN)
-+			return -1;
-+	}
-+	return 0;
-+}
-+
-+
-+/*
-+ * Probe the controller in genetlink to find the family id
-+ * for the TASKSTATS family
-+ */
-+static int get_family_id(int sd)
-+{
-+	struct {
-+		struct nlmsghdr n;
-+		struct genlmsghdr g;
-+		char buf[256];
-+	} ans;
-+
-+	int id = 0, rc;
-+	struct nlattr *na;
-+	int rep_len;
-+
-+	strcpy(name, TASKSTATS_GENL_NAME);
-+	rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY,
-+			CTRL_ATTR_FAMILY_NAME, (void *)name,
-+			strlen(TASKSTATS_GENL_NAME)+1);
-+	if (rc < 0)
-+		return 0;	/* sendto() failure? */
-+
-+	rep_len = recv(sd, &ans, sizeof(ans), 0);
-+	if (ans.n.nlmsg_type == NLMSG_ERROR ||
-+	    (rep_len < 0) || !NLMSG_OK((&ans.n), rep_len))
-+		return 0;
-+
-+	na = (struct nlattr *) GENLMSG_DATA(&ans);
-+	na = (struct nlattr *) ((char *) na + NLA_ALIGN(na->nla_len));
-+	if (na->nla_type == CTRL_ATTR_FAMILY_ID)
-+		id = *(__u16 *) NLA_DATA(na);
-+
-+	return id;
-+}
-+
-+#define average_ms(t, c) (t / 1000000ULL / (c ? c : 1))
-+
-+static void print_procacct(struct taskstats *t)
-+{
-+	printf( /* First letter: T is a mere thread, G the last in a group, U  unknown. */
-+		"%c pid=%lu tgid=%lu uid=%lu wall=%llu gwall=%llu cpu=%llu vmpeak=%llu rsspeak=%llu"
-+		" dev=%llu:%llu inode=%llu comm=%s\n"
-+	,	t->version >= 12 ? (t->ac_flag & AGROUP ? 'P' : 'T') : '?'
-+	,	(unsigned long)t->ac_pid
-+	,	(unsigned long)(t->version >= 12 ? t->ac_tgid : 0)
-+	,	(unsigned long)t->ac_uid
-+	,	(unsigned long long)t->ac_etime
-+	,	(unsigned long long)(t->version >= 12 ? t->ac_tgetime : 0)
-+	,	(unsigned long long)(t->ac_utime+t->ac_stime)
-+	,	(unsigned long long)t->hiwater_vm
-+	,	(unsigned long long)t->hiwater_rss
-+	,	(unsigned long)(t->version >= 12 ? MAJOR(t->ac_exe_dev) : 0)
-+	,	(unsigned long)(t->version >= 12 ? MINOR(t->ac_exe_dev) : 0)
-+	,	(unsigned long long)(t->version >= 12 ? t->ac_exe_inode : 0)
-+	,	t->ac_comm
-+	);
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	int c, rc, rep_len, aggr_len, len2;
-+	int cmd_type = TASKSTATS_CMD_ATTR_UNSPEC;
-+	__u16 id;
-+	__u32 mypid;
-+
-+	struct nlattr *na;
-+	int nl_sd = -1;
-+	int len = 0;
-+	pid_t tid = 0;
-+	pid_t rtid = 0;
-+
-+	int fd = 0;
-+	int count = 0;
-+	int write_file = 0;
-+	int maskset = 0;
-+	char *logfile = NULL;
-+	int loop = 1;
-+	int containerset = 0;
-+	char *containerpath = NULL;
-+	int cfd = 0;
-+	int forking = 0;
-+	sigset_t sigset;
-+
-+	struct msgtemplate msg;
-+
-+	while (!forking) {
-+		c = getopt(argc, argv, "m:vr:");
-+		if (c < 0)
-+			break;
-+
-+		switch (c) {
-+		case 'w':
-+			logfile = strdup(optarg);
-+			printf("write to file %s\n", logfile);
-+			write_file = 1;
-+			break;
-+		case 'r':
-+			rcvbufsz = atoi(optarg);
-+			printf("receive buf size %d\n", rcvbufsz);
-+			if (rcvbufsz < 0)
-+				err(1, "Invalid rcv buf size\n");
-+			break;
-+		case 'm':
-+			strncpy(cpumask, optarg, sizeof(cpumask));
-+			cpumask[sizeof(cpumask) - 1] = '\0';
-+			maskset = 1;
-+			break;
-+		case 'v':
-+			printf("debug on\n");
-+			dbg = 1;
-+			break;
-+		default:
-+			usage();
-+			exit(-1);
-+		}
-+	}
-+	if (!maskset) {
-+		maskset = 1;
-+		strncpy(cpumask, "1", sizeof(cpumask));
-+		cpumask[sizeof(cpumask) - 1] = '\0';
-+	}
-+	printf("cpumask %s maskset %d\n", cpumask, maskset);
-+
-+	if (write_file) {
-+		fd = open(logfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-+		if (fd == -1) {
-+			perror("Cannot open output file\n");
-+			exit(1);
-+		}
-+	}
-+
-+	nl_sd = create_nl_socket(NETLINK_GENERIC);
-+	if (nl_sd < 0)
-+		err(1, "error creating Netlink socket\n");
-+
-+	mypid = getpid();
-+	id = get_family_id(nl_sd);
-+	if (!id) {
-+		fprintf(stderr, "Error getting family id, errno %d\n", errno);
-+		goto err;
-+	}
-+	PRINTF("family id %d\n", id);
-+
-+	if (maskset) {
-+		rc = send_cmd(nl_sd, id, mypid, TASKSTATS_CMD_GET,
-+			      TASKSTATS_CMD_ATTR_REGISTER_CPUMASK,
-+			      &cpumask, strlen(cpumask) + 1);
-+		PRINTF("Sent register cpumask, retval %d\n", rc);
-+		if (rc < 0) {
-+			fprintf(stderr, "error sending register cpumask\n");
-+			goto err;
-+		}
-+	}
-+
-+	do {
-+		rep_len = recv(nl_sd, &msg, sizeof(msg), 0);
-+		PRINTF("received %d bytes\n", rep_len);
-+
-+		if (rep_len < 0) {
-+			fprintf(stderr, "nonfatal reply error: errno %d\n",
-+				errno);
-+			continue;
-+		}
-+		if (msg.n.nlmsg_type == NLMSG_ERROR ||
-+		    !NLMSG_OK((&msg.n), rep_len)) {
-+			struct nlmsgerr *err = NLMSG_DATA(&msg);
-+
-+			fprintf(stderr, "fatal reply error,  errno %d\n",
-+				err->error);
-+			goto done;
-+		}
-+
-+		PRINTF("nlmsghdr size=%zu, nlmsg_len=%d, rep_len=%d\n",
-+		       sizeof(struct nlmsghdr), msg.n.nlmsg_len, rep_len);
-+
-+
-+		rep_len = GENLMSG_PAYLOAD(&msg.n);
-+
-+		na = (struct nlattr *) GENLMSG_DATA(&msg);
-+		len = 0;
-+		while (len < rep_len) {
-+			len += NLA_ALIGN(na->nla_len);
-+			int mother = na->nla_type;
-+
-+			PRINTF("mother=%i\n", mother);
-+			switch (na->nla_type) {
-+			case TASKSTATS_TYPE_AGGR_PID:
-+				/* Fall through */
-+			case TASKSTATS_TYPE_AGGR_TGID:
-+				aggr_len = NLA_PAYLOAD(na->nla_len);
-+				len2 = 0;
-+				/* For nested attributes, na follows */
-+				na = (struct nlattr *) NLA_DATA(na);
-+				done = 0;
-+				while (len2 < aggr_len) {
-+					switch (na->nla_type) {
-+					case TASKSTATS_TYPE_PID:
-+						rtid = *(int *) NLA_DATA(na);
-+						PRINTF("PID\t%d\n", rtid);
-+						break;
-+					case TASKSTATS_TYPE_TGID:
-+						rtid = *(int *) NLA_DATA(na);
-+						PRINTF("TGID\t%d\n", rtid);
-+						break;
-+					case TASKSTATS_TYPE_STATS:
-+						count++;
-+						if (mother == TASKSTATS_TYPE_AGGR_PID)
-+							print_procacct((struct taskstats *) NLA_DATA(na));
-+						if (fd) {
-+							if (write(fd, NLA_DATA(na), na->nla_len) < 0)
-+								err(1, "write error\n");
-+						}
-+						if (!loop)
-+							goto done;
-+						break;
-+					case TASKSTATS_TYPE_NULL:
-+						break;
-+					default:
-+						fprintf(stderr, "Unknown nested"
-+							" nla_type %d\n",
-+							na->nla_type);
-+						break;
-+					}
-+					len2 += NLA_ALIGN(na->nla_len);
-+					na = (struct nlattr *)((char *)na +
-+							       NLA_ALIGN(na->nla_len));
-+				}
-+				break;
-+
-+			default:
-+				fprintf(stderr, "Unexpected nla_type %d\n",
-+					na->nla_type);
-+			case TASKSTATS_TYPE_NULL:
-+				break;
-+			}
-+			na = (struct nlattr *) (GENLMSG_DATA(&msg) + len);
-+		}
-+	} while (loop);
-+done:
-+	if (maskset) {
-+		rc = send_cmd(nl_sd, id, mypid, TASKSTATS_CMD_GET,
-+			      TASKSTATS_CMD_ATTR_DEREGISTER_CPUMASK,
-+			      &cpumask, strlen(cpumask) + 1);
-+		printf("Sent deregister mask, retval %d\n", rc);
-+		if (rc < 0)
-+			err(rc, "error sending deregister cpumask\n");
-+	}
-+err:
-+	close(nl_sd);
-+	if (fd)
-+		close(fd);
-+	if (cfd)
-+		close(cfd);
-+	return 0;
-+}
--- 
-2.35.0
-
+T24gVGh1LCAyMDIyLTAyLTE3IGF0IDEzOjM3ICswMTAwLCBQYXZlbCBNYWNoZWsgd3JvdGU6DQo+
+IE9uIFRodSAyMDIyLTAyLTE3IDEzOjM0OjQwLCBncmVnQGtyb2FoLmNvbcKgd3JvdGU6DQo+ID4g
+T24gVGh1LCBGZWIgMTcsIDIwMjIgYXQgMTE6NDc6MjFBTSArMDAwMCwgRG1pdHJpaSBPa3VuZXYg
+d3JvdGU6DQo+ID4gPiBIZWxsbyENCj4gPiA+IA0KPiA+ID4gQXMgZmFyIGFzIEkgc2VlIHRoZSBw
+YXRjaCB3YXNuJ3QgbWVyZ2VkLiBBbmQgSSBzZWUgdGhhdCB0aGlzIGlzDQo+ID4gPiB0aGUgb25s
+eSB1bnNvbHZlZCB0aHJlYWQgaW4gdGhlIGRpc2N1c3Npb246DQo+ID4gPiANCj4gPiA+IE9uIFRo
+dSwgMjAxMy0wNS0xNiBhdCAxODowMyArMDIwMCwgUGF2ZWwgTWFjaGVrIHdyb3RlOg0KPiA+ID4g
+PiBPbiBUdWUgMjAxMy0wNS0xNCAwMToyNDo0MywgUWlhb3dlaSBSZW4gd3JvdGU6DQo+ID4gPiA+
+ID4gVGhlc2UgaW50ZXJmYWNlcyBhcmUgbG9jYXRlZCBpbg0KPiA+ID4gPiA+IC9zeXMvZGV2aWNl
+cy9wbGF0Zm9ybS9pbnRlbF90eHQvY29uZmlnLA0KPiA+ID4gPiA+IGFuZCBpbmNsdWRpbmcgdG90
+YWxseSAzNyBmaWxlcywgcHJvdmlkaW5nIGFjY2VzcyB0byBJbnRlbCBUWFQNCj4gPiA+ID4gPiBj
+b25maWd1cmF0aW9uIHJlZ2lzdGVycy4NCj4gPiA+ID4gDQo+ID4gPiA+IFRoaXMgbG9va3MgbGlr
+ZSB2ZXJ5IHdyb25nIGludGVyZmFjZS4uLiBlcXVpdmFsZW50IG9mIC9kZXYvbWVtLg0KPiA+ID4g
+DQo+ID4gPiBBcyBhbiBhY3RpdmUgdXNlciBvZiB0aGVzZSByZWdpc3RlcnMgSSBob3BlIGl0IHdp
+bGwgYmUgbWVyZ2VkLCBzbw0KPiA+ID4gSSB3b3VsZCBsaWtlIHRvIGltcHJvdmUgdGhpcyBwYXRj
+aCAob3IgcmV3cml0ZSBpdCBmcm9tIHNjcmF0Y2gpDQo+ID4gPiB0byBtYWtlIHRoYXQgaGFwcGVu
+LiBPdGhlcndpc2Ugb25lIGhhdmUgdG8gZG8gaGFja2VyeSBhcm91bmQNCj4gPiA+IGAvZGV2L21l
+bWAsIHdoaWNoIGFsc28gY3JlYXRlcyBwcm9ibGVtcyB3aXRoIHByb3BlciBhY2Nlc3MNCj4gPiA+
+IGNvbnRyb2wuDQo+ID4gPiANCj4gPiA+IFRvIGJlIGFibGUgdG8gaW1wcm92ZSB0aGUgcGF0Y2gs
+IGNvdWxkIHNvbWVib2R5IGNsYXJpZnkgd2h5DQo+ID4gPiBleGFjdGx5IHRoaXMgaXMgYSAidmVy
+eSB3cm9uZyBpbnRlcmZhY2UiPw0KPiA+ID4gDQo+ID4gPiA+ID4gK1doYXQ6wqDCoMKgwqDCoMKg
+wqDCoMKgwqAvc3lzL2RldmljZXMvcGxhdGZvcm0vaW50ZWxfdHh0L2NvbmZpZy9TVFNfcmENCj4g
+PiA+ID4gPiB3DQo+ID4gPiA+ID4gK0RhdGU6wqDCoMKgwqDCoMKgwqDCoMKgwqBNYXkgMjAxMw0K
+PiA+ID4gPiA+ICtLZXJuZWxWZXJzaW9uOsKgMy45DQo+ID4gPiA+ID4gK0NvbnRhY3Q6wqDCoMKg
+wqDCoMKgwqAiUWlhb3dlaSBSZW4iIDxxaWFvd2VpLnJlbkBpbnRlbC5jb20+DQo+ID4gPiA+ID4g
+K0Rlc2NyaXB0aW9uOsKgwqDCoFRYVC5TVFMgaXMgdGhlIGdlbmVyYWwgc3RhdHVzIHJlZ2lzdGVy
+LiBUaGlzDQo+ID4gPiA+ID4gcmVhZC0NCj4gPiA+ID4gPiBvbmx5IHJlZ2lzdGVyDQo+ID4gPiA+
+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGlzIHVzZWQgYnkgQUMgbW9kdWxlcyBh
+bmQgdGhlIE1MRSB0byBnZXQgdGhlDQo+ID4gPiA+ID4gc3RhdHVzDQo+ID4gPiA+ID4gb2YgdmFy
+aW91cw0KPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBJbnRlbCBUWFQg
+ZmVhdHVyZXMuDQo+ID4gPiA+IA0KPiA+ID4gPiBUaGlzIGlzIG5vdCBlbm91Z2ggdG8gYWxsb3cg
+cGVvcGxlIHRvIHVuZGVyc3RhbmQgd2hhdCB0aGlzDQo+ID4gPiA+IGRvZXMvc2hvdWxkIGRvLCBu
+b3IgZG9lcyBpdCBhbGxvdyAoZm9yIGV4YW1wbGUpIEFSTSBwZW9wbGUgdG8NCj4gPiA+ID4gaW1w
+bGVtZW50IHNvbWV0aGluZyBjb21wYXRpYmxlLg0KPiA+ID4gPiANCj4gPiA+ID4gSXMgdGhlcmUg
+c3BlY2lmaWMgcmVhc29uIHdoeSAiYmV0dGVyIiBpbnRlcmZhY2UgaXMgaW1wb3NzaWJsZT8NCj4g
+PiA+IA0KPiA+ID4gSSB3b3VsZCBsb3ZlIHRvIHJldXNlIEludGVsJ3MgcHVibGljIGRvY3VtZW50
+YXRpb24gWzFdIHRvIHByb3ZpZGUNCj4gPiA+IGEgcHJvcGVyIGRlc2NyaXB0aW9uICh3aXRoIGJp
+dCBsYXlvdXQgb2YgdGhlIHZhbHVlKS4NCj4gPiA+IA0KPiA+ID4gWzFdIGh0dHBzOi8vY2RyZHYy
+LmludGVsLmNvbS92MS9kbC9nZXRDb250ZW50LzMxNTE2OA0KPiA+ID4gDQo+ID4gPiA+IFsuLi5d
+LCBub3IgZG9lcyBpdCBhbGxvdyAoZm9yIGV4YW1wbGUpIEFSTSBwZW9wbGUgdG8NCj4gPiA+ID4g
+aW1wbGVtZW50IHNvbWV0aGluZyBjb21wYXRpYmxlLg0KPiA+ID4gDQo+ID4gPiBEbyBJIHVuZGVy
+c3RhbmQgY29ycmVjdGx5IHRoYXQgYSBwcm9wZXIgZG9jdW1lbnRhdGlvbiBvZiB0aGUNCj4gPiA+
+IHJlZ2lzdGVycyBzb2x2ZXMgdGhlIHByb2JsZW0/DQo+ID4gPiANCj4gPiA+ID4gSXMgdGhlcmUg
+c3BlY2lmaWMgcmVhc29uIHdoeSAiYmV0dGVyIiBpbnRlcmZhY2UgaXMgaW1wb3NzaWJsZT8NCj4g
+PiA+IA0KPiA+ID4gV2hhdCBhcmUgc3BlY2lmaWMgcHJvYmxlbXMgd2l0aCB0aGUgY3VycmVudCBp
+bnRlcmZhY2U/DQo+ID4gDQo+ID4gV2hhdCBkbyB5b3UgbWVhbiBieSAiY3VycmVudCIgaGVyZT/C
+oCBZb3UgYXJlIHJlZmVycmluZyB0byBhbiBlbWFpbA0KPiA+IGZyb20gMjAxMywgOSB5ZWFycyBh
+Z28uDQo+ID4gDQo+ID4gSWYgeW91IHdhbnQgdG8gcHJvcG9zZSB0aGUgY2hhbmdlIGFnYWluLCBj
+b3JyZWN0bHkgdXBkYXRlIHRoZSBwYXRjaA0KPiA+IGFuZCBzdWJtaXQgaXQgdGhhdCB3YXkuDQo+
+IA0KPiBJIGRvbid0IGJlbGlldmUgdGFraW5nIGhhcmR3YXJlIHJlZ2lzdGVycyBhbmQgZXhwb3Np
+bmcgdGhlbSAxLXRvLTEgaW4NCj4gc3lzZnMgaXMgdGhlIHdheSB0byBnby4NCj4gDQo+IFdlIHdv
+dWxkIGxpa2Ugc2FtZSAvc3lzIGludGVyZmFjZSBvbiBkaWZmZXJlbnQgaGFyZHdhcmUsIGFuZCBz
+aW1wbHkNCj4gZXhwb3NpbmcgSW50ZWwncyByZWdpc3RlcnMgaW4gL3N5cyB3aWxsIG5vdCBkbyB0
+aGUgam9iLg0KDQpTbywgZm9yIG91ciBwYXJ0aWN1bGFyIHVzZSBjYXNlIHdoYXQgd2Ugd2FudCB0
+byBiZSBhYmxlIHRvIHNlZSBpcyB0aGUNCnN0YXR1cyBvZiB0aGUgVFhUIGRldmljZSwgc28gd2hl
+biBhdHRlc3RhdGlvbiBmYWlscyBpdCdzIHBvc3NpYmxlIHRvDQpkaWFnbm9zZSB3aGVyZSB0aGF0
+IG1pZ2h0IGhhdmUgaGFwcGVuZWQuIEF0IGEgbWluaW11bcKgZGV0YWlscyBmcm9tIHRoZQ0Kc3Rh
+dHVzIHJlZ2lzdGVyIGFyZSBmb2xkZWQgaW50byB0aGUgZmlyc3QgbWVhc3VyZW1lbnQsIGFuZCB0
+aGUgZXJyb3INCnJlZ2lzdGVyIGNhbiBwcm92aWRlIHZhbHVhYmxlIGluc2lnaHQgYXMgdG8gd2hh
+dCB0aGUgVFhUIGRldmljZSB0aGlua3MNCmZhaWxlZC4NCg0KQXQgcHJlc2VudCB0aGVzZSBkZXRh
+aWxzIGFyZSByZXRyaWV2ZWQgZnJvbSAvZGV2L21lbSwgYnV0IHRoaXMgaXMgbGVzcw0KdGhhbiBp
+ZGVhbCBhbmQgcHJldmVudHMgdGhlIHVzZSBvZiwgc2F5LCBrZXJuZWwgbG9ja2Rvd24uIEFzIGEg
+cmVzdWx0DQp3ZSdkIGxpa2UgdG8gZXhwb3J0IHRoZSBhcHByb3ByaWF0ZSBkZXRhaWxzIHZpYSBz
+eXNmcy4gVGhlc2UgYXJlIGxpa2VseQ0KdG8gYmUgZXh0cmVtZWx5IHNlY3VyaXR5IGJsb2NrIGlt
+cGxlbWVudGF0aW9uIHNwZWNpZmljLCBzbyBJJ20gbm90DQpjbGVhciB0aGF0IGEgZ2VuZXJpYyBh
+Z25vc3RpYyBpbnRlcmZhY2UgaXMgYXBwcm9wcmlhdGUgdG8gcmV0cmlldmUNCnRoZXNlIGRldGFp
+bHMuDQoNCkRvIHlvdSBoYXZlIHRoZSBzYW1lIG9iamVjdGlvbiB0byBhIHJlYWQgb25seSBzZXQg
+b2YgaW5mb3JtYXRpb24NCihyYXRoZXIgdGhhbiB0aGUgZnVsbCBjb250cm9sIG9mZmVyZWQgYnkg
+dGhlIGluaXRpYWwgc3VibWlzc2lvbik/DQoNCkouDQo=
