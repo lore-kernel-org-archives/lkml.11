@@ -2,193 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A09C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239825AbiBRVRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:17:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42550 "EHLO
+        id S237493AbiBRVUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:20:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239672AbiBRVQM (ORCPT
+        with ESMTP id S232564AbiBRVUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:16:12 -0500
-Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714AE23F0B8;
-        Fri, 18 Feb 2022 13:15:53 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 91E723BA6F5;
-        Fri, 18 Feb 2022 16:06:43 -0500 (EST)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 8-2BVncmHCEG; Fri, 18 Feb 2022 16:06:43 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 38D583BAB12;
-        Fri, 18 Feb 2022 16:06:43 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 38D583BAB12
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1645218403;
-        bh=NkCVjM+S9iEg/gRamTSXlL2ZBMGnYHhG/cpmn7pzdsM=;
-        h=From:To:Date:Message-Id;
-        b=VF0Rg7xRSvX75hYr+WmoJKbpwuPC14+fUA4axb9Au9E73ri5yS4WF2oKzWMDBuH0r
-         XSzug4rvf+FQGSb05mWYWzSq44iQJQfun3omucXVqh+OgUNqLSniPMXYW0l1p9EfaP
-         fgi23lW56Xm3+d+CP+dYv7n7LZc7RP2wogWOGdDFO7EojGfvu8fLHRpqJ6HY3swIVO
-         qTutdSgyOx5pMvX3TeIC0752TUMTHz4r/XDxC803InClq/nWBWtioMarWuLtHj/+DF
-         pQxuL+KdHtZFLLf0ve9QSFWK+BH45epCj5UjA13msd5yKtDdexA2/lx6NO8AQVS2Ft
-         7PXCifAEBgrsg==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id y7UJfNUnBGFr; Fri, 18 Feb 2022 16:06:43 -0500 (EST)
-Received: from localhost.localdomain (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
-        by mail.efficios.com (Postfix) with ESMTPSA id E81343BAB10;
-        Fri, 18 Feb 2022 16:06:42 -0500 (EST)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
-        linux-api@vger.kernel.org,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Florian Weimer <fw@deneb.enyo.de>, David.Laight@ACULAB.COM,
-        carlos@redhat.com, Peter Oskolkov <posk@posk.io>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: [RFC PATCH v2 03/11] rseq: extend struct rseq with numa node id
-Date:   Fri, 18 Feb 2022 16:06:25 -0500
-Message-Id: <20220218210633.23345-4-mathieu.desnoyers@efficios.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220218210633.23345-1-mathieu.desnoyers@efficios.com>
-References: <20220218210633.23345-1-mathieu.desnoyers@efficios.com>
+        Fri, 18 Feb 2022 16:20:04 -0500
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A761D6;
+        Fri, 18 Feb 2022 13:19:46 -0800 (PST)
+Message-ID: <366a9602-555f-7a1b-a8db-bbcbf84b7b08@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1645219184;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k/Sth3fu7bm5ISYgjUl7PqmHSSRtqXyNCYwXP4ToBV0=;
+        b=TYPxEPDn2jcrQLSE8u1I21z8jH93cRkqLe8o/9VoibemK6t5OWxdcorA5LNYgolyEeqAyb
+        dLABZE2f3R7cHvEo367GFkSpem3whgcRTmrgBaEU12N24uFaUqY4ZGaGYH6xIlcFpS1heP
+        XwOal3xeVdt73QCmhrrMwlWAC+nJoPk=
+Date:   Fri, 18 Feb 2022 14:19:20 -0700
+MIME-Version: 1.0
+Subject: Re: [PATCH V5 2/3] PCI: vmd: Add vmd_device_data
+Content-Language: en-US
+To:     "David E. Box" <david.e.box@linux.intel.com>,
+        nirmal.patel@linux.intel.com, lorenzo.pieralisi@arm.com,
+        hch@infradead.org, kw@linux.com, robh@kernel.org,
+        bhelgaas@google.com, michael.a.bottini@linux.intel.com,
+        rafael@kernel.org, me@adhityamohan.in
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220218045056.333799-1-david.e.box@linux.intel.com>
+ <20220218045056.333799-3-david.e.box@linux.intel.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Jonathan Derrick <jonathan.derrick@linux.dev>
+In-Reply-To: <20220218045056.333799-3-david.e.box@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding the NUMA node id to struct rseq is a straightforward thing to do,
-and a good way to figure out if anything in the user-space ecosystem
-prevents extending struct rseq.
+Hi David,
 
-This NUMA node id field allows memory allocators such as tcmalloc to
-take advantage of fast access to the current NUMA node id to perform
-NUMA-aware memory allocation.
+On 2/17/2022 9:50 PM, David E. Box wrote:
+> Add vmd_device_data to allow adding additional info for driver data. Also
+> refactor the PCI ID list to use PCI_VDEVICE and simplify assignments for
+> devices that use the same driver_data.
+> 
+> Signed-off-by: David E. Box <david.e.box@linux.intel.com>
+> ---
+> 
+> V5
+>    - New patch
+> 
+>   drivers/pci/controller/vmd.c | 58 ++++++++++++++++++++----------------
+>   1 file changed, 32 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/vmd.c b/drivers/pci/controller/vmd.c
+> index cc166c683638..a582c351b461 100644
+> --- a/drivers/pci/controller/vmd.c
+> +++ b/drivers/pci/controller/vmd.c
+> @@ -69,6 +69,10 @@ enum vmd_features {
+>   	VMD_FEAT_CAN_BYPASS_MSI_REMAP		= (1 << 4),
+>   };
+>   
+> +struct vmd_device_data {
+> +	enum vmd_features features;
+> +};
+> +
+>   static DEFINE_IDA(vmd_instance_ida);
+>   
+>   /*
+> @@ -710,11 +714,12 @@ static void vmd_copy_host_bridge_flags(struct pci_host_bridge *root_bridge,
+>   	vmd_bridge->native_dpc = root_bridge->native_dpc;
+>   }
+>   
+> -static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
+> +static int vmd_enable_domain(struct vmd_dev *vmd, struct vmd_device_data *info)
+>   {
+>   	struct pci_sysdata *sd = &vmd->sysdata;
+>   	struct resource *res;
+>   	u32 upper_bits;
+> +	unsigned long features = info->features;
+>   	unsigned long flags;
+>   	LIST_HEAD(resources);
+>   	resource_size_t offset[2] = {0};
+> @@ -881,7 +886,8 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
+>   
+>   static int vmd_probe(struct pci_dev *dev, const struct pci_device_id *id)
+>   {
+> -	unsigned long features = (unsigned long) id->driver_data;
+> +	struct vmd_device_data *info = (struct vmd_device_data *)id->driver_data;
+> +	unsigned long features = info->features;
+>   	struct vmd_dev *vmd;
+>   	int err;
+>   
+> @@ -925,7 +931,7 @@ static int vmd_probe(struct pci_dev *dev, const struct pci_device_id *id)
+>   
+>   	spin_lock_init(&vmd->cfg_lock);
+>   	pci_set_drvdata(dev, vmd);
+> -	err = vmd_enable_domain(vmd, features);
+> +	err = vmd_enable_domain(vmd, info);
+>   	if (err)
+>   		goto out_release_instance;
+>   
+> @@ -993,30 +999,30 @@ static int vmd_resume(struct device *dev)
+>   #endif
+>   static SIMPLE_DEV_PM_OPS(vmd_dev_pm_ops, vmd_suspend, vmd_resume);
+>   
+> +static const struct vmd_device_data vmd_201d_data = {
+> +	.features = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP,
+> +};
+> +
+> +static const struct vmd_device_data vmd_28c0_data = {
+> +	.features = VMD_FEAT_HAS_MEMBAR_SHADOW |
+> +		    VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> +		    VMD_FEAT_CAN_BYPASS_MSI_REMAP,
+> +};
+> +
+> +static const struct vmd_device_data vmd_467f_data = {
+> +	.features = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP |
+> +		    VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> +		    VMD_FEAT_OFFSET_FIRST_VECTOR,
+> +};
+> +
 
-It can also be useful for implementing fast-paths for NUMA-aware
-user-space mutexes.
+I'm not the biggest fan of this structure
+Can you inline the declarations into the vmd_ids table below?
 
-It also allows implementing getcpu(2) purely in user-space.
 
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
----
- include/trace/events/rseq.h |  4 +++-
- include/uapi/linux/rseq.h   |  8 ++++++++
- kernel/rseq.c               | 19 +++++++++++++------
- 3 files changed, 24 insertions(+), 7 deletions(-)
 
-diff --git a/include/trace/events/rseq.h b/include/trace/events/rseq.h
-index a04a64bc1a00..6bd442697354 100644
---- a/include/trace/events/rseq.h
-+++ b/include/trace/events/rseq.h
-@@ -16,13 +16,15 @@ TRACE_EVENT(rseq_update,
- 
- 	TP_STRUCT__entry(
- 		__field(s32, cpu_id)
-+		__field(s32, node_id)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->cpu_id = raw_smp_processor_id();
-+		__entry->node_id = cpu_to_node(raw_smp_processor_id());
- 	),
- 
--	TP_printk("cpu_id=%d", __entry->cpu_id)
-+	TP_printk("cpu_id=%d node_id=%d", __entry->cpu_id, __entry->node_id)
- );
- 
- TRACE_EVENT(rseq_ip_fixup,
-diff --git a/include/uapi/linux/rseq.h b/include/uapi/linux/rseq.h
-index 05d3c4cdeb40..1cb90a435c5c 100644
---- a/include/uapi/linux/rseq.h
-+++ b/include/uapi/linux/rseq.h
-@@ -131,6 +131,14 @@ struct rseq {
- 	 */
- 	__u32 flags;
- 
-+	/*
-+	 * Restartable sequences node_id field. Updated by the kernel. Read by
-+	 * user-space with single-copy atomicity semantics. This field should
-+	 * only be read by the thread which registered this data structure.
-+	 * Aligned on 32-bit. Contains the current NUMA node ID.
-+	 */
-+	__u32 node_id;
-+
- 	/*
- 	 * Flexible array member at end of structure, after last feature field.
- 	 */
-diff --git a/kernel/rseq.c b/kernel/rseq.c
-index 46dc5c2ce2b7..cb7d8a5afc82 100644
---- a/kernel/rseq.c
-+++ b/kernel/rseq.c
-@@ -84,15 +84,17 @@
-  *   F1. <failure>
-  */
- 
--static int rseq_update_cpu_id(struct task_struct *t)
-+static int rseq_update_cpu_node_id(struct task_struct *t)
- {
--	u32 cpu_id = raw_smp_processor_id();
- 	struct rseq __user *rseq = t->rseq;
-+	u32 cpu_id = raw_smp_processor_id();
-+	u32 node_id = cpu_to_node(cpu_id);
- 
- 	if (!user_write_access_begin(rseq, t->rseq_len))
- 		goto efault;
- 	unsafe_put_user(cpu_id, &rseq->cpu_id_start, efault_end);
- 	unsafe_put_user(cpu_id, &rseq->cpu_id, efault_end);
-+	unsafe_put_user(node_id, &rseq->node_id, efault_end);
- 	/*
- 	 * Additional feature fields added after ORIG_RSEQ_SIZE
- 	 * need to be conditionally updated only if
-@@ -108,9 +110,9 @@ static int rseq_update_cpu_id(struct task_struct *t)
- 	return -EFAULT;
- }
- 
--static int rseq_reset_rseq_cpu_id(struct task_struct *t)
-+static int rseq_reset_rseq_cpu_node_id(struct task_struct *t)
- {
--	u32 cpu_id_start = 0, cpu_id = RSEQ_CPU_ID_UNINITIALIZED;
-+	u32 cpu_id_start = 0, cpu_id = RSEQ_CPU_ID_UNINITIALIZED, node_id = 0;
- 
- 	/*
- 	 * Reset cpu_id_start to its initial state (0).
-@@ -124,6 +126,11 @@ static int rseq_reset_rseq_cpu_id(struct task_struct *t)
- 	 */
- 	if (put_user(cpu_id, &t->rseq->cpu_id))
- 		return -EFAULT;
-+	/*
-+	 * Reset node_id to its initial state (0).
-+	 */
-+	if (put_user(node_id, &t->rseq->node_id))
-+		return -EFAULT;
- 	/*
- 	 * Additional feature fields added after ORIG_RSEQ_SIZE
- 	 * need to be conditionally reset only if
-@@ -306,7 +313,7 @@ void __rseq_handle_notify_resume(struct ksignal *ksig, struct pt_regs *regs)
- 		if (unlikely(ret < 0))
- 			goto error;
- 	}
--	if (unlikely(rseq_update_cpu_id(t)))
-+	if (unlikely(rseq_update_cpu_node_id(t)))
- 		goto error;
- 	return;
- 
-@@ -353,7 +360,7 @@ SYSCALL_DEFINE4(rseq, struct rseq __user *, rseq, u32, rseq_len,
- 			return -EINVAL;
- 		if (current->rseq_sig != sig)
- 			return -EPERM;
--		ret = rseq_reset_rseq_cpu_id(current);
-+		ret = rseq_reset_rseq_cpu_node_id(current);
- 		if (ret)
- 			return ret;
- 		current->rseq = NULL;
--- 
-2.17.1
+>   static const struct pci_device_id vmd_ids[] = {
+> -	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_VMD_201D),
+> -		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP,},
+> -	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_VMD_28C0),
+> -		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW |
+> -				VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> -				VMD_FEAT_CAN_BYPASS_MSI_REMAP,},
+> -	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x467f),
+> -		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP |
+> -				VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> -				VMD_FEAT_OFFSET_FIRST_VECTOR,},
+> -	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4c3d),
+> -		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP |
+> -				VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> -				VMD_FEAT_OFFSET_FIRST_VECTOR,},
+> -	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa77f),
+> -		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP |
+> -				VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> -				VMD_FEAT_OFFSET_FIRST_VECTOR,},
+> -	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_VMD_9A0B),
+> -		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP |
+> -				VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> -				VMD_FEAT_OFFSET_FIRST_VECTOR,},
+> -	{0,}
+> +	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_VMD_201D), (kernel_ulong_t)&vmd_201d_data },
+> +	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_VMD_28C0), (kernel_ulong_t)&vmd_28c0_data },
+> +	{ PCI_VDEVICE(INTEL, 0x467f), (kernel_ulong_t)&vmd_467f_data },
+> +	{ PCI_VDEVICE(INTEL, 0x4c3d), (kernel_ulong_t)&vmd_467f_data },
+> +	{ PCI_VDEVICE(INTEL, 0xa77f), (kernel_ulong_t)&vmd_467f_data },
+> +	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_VMD_9A0B), (kernel_ulong_t)&vmd_467f_data },
+> +	{ }
 
+For instance:
+{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_VMD_201D), (kernel_ulong_t)&(struct vmd_device_data) {
+							.features = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP,
+
+
+>   };
+>   MODULE_DEVICE_TABLE(pci, vmd_ids);
+>   
