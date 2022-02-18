@@ -2,425 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0775C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:16:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 390D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235070AbiBRMRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:17:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58768 "EHLO
+        id S235096AbiBRMRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:17:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233930AbiBRMRM (ORCPT
+        with ESMTP id S234997AbiBRMRO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:17:12 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D0828ADBB;
-        Fri, 18 Feb 2022 04:16:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645186613; x=1676722613;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=jo9RXuWk9+zTcvMEjwT0ZCRUnTvpVEE6zSwU3xjPQ/I=;
-  b=bTzBfVL/REsG68T8FJQOCPHWo4buHalbltTLn5vnlhFxmIkMpxmA1o+A
-   /buWD0Uo2lMOt3SUsKipEh9pHUBvoH32xW0AfKBRtA9y2to2SRSHTzkYG
-   J9zDaq9B4zC0J+8Hn6KfFmKem8N5oQ+Om4oPEIAHQvEgPBYGq21mEC2mR
-   hIulpvsiVhiVpNS27XShj3y/ZgaJBaN/fG9U/oobGQv9tEFly8DH3Fsys
-   Z+g+T3rNr9b37LpPdH3knfclG3K3AVMImGD3ts+lFiP/ks1u7PPknwKdh
-   rQQcv5GIxziLr2d3oSGl1S3vy8ur69ZSuP1CqYlMfyldoAZTQP7ba5gtk
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
-   d="scan'208";a="149211524"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2022 05:16:52 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 18 Feb 2022 05:16:52 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 18 Feb 2022 05:16:47 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <arnd@arndb.de>, <alexandre.belloni@bootlin.com>, <olof@lixom.net>,
-        <soc@kernel.org>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Kavyasree.Kotagiri@microchip.com>,
-        <Manohar.Puri@microchip.com>
-Subject: [PATCH v6] ARM: dts: add DT for lan966 SoC and 2-port board pcb8291
-Date:   Fri, 18 Feb 2022 17:46:41 +0530
-Message-ID: <20220218121641.26472-1-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
+        Fri, 18 Feb 2022 07:17:14 -0500
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3551428BF4C;
+        Fri, 18 Feb 2022 04:16:55 -0800 (PST)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21ICCdAd007386;
+        Fri, 18 Feb 2022 06:12:39 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21ICCbi7007385;
+        Fri, 18 Feb 2022 06:12:37 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Fri, 18 Feb 2022 06:12:37 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net v3] net: Force inlining of checksum functions in net/checksum.h
+Message-ID: <20220218121237.GQ614@gate.crashing.org>
+References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu> <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com> <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu> <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu> <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com> <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com> <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com> <CAK7LNASvBLLWMa+kb5eGJ6vpSqob_dBUxwCnpHZfL-spzRG7qA@mail.gmail.com> <20220217180735.GM614@gate.crashing.org> <CAK7LNAQ3tdOEYP7LjSX5+vhy=eUf0q-YiktQriH-rcr1n2Q3aA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK7LNAQ3tdOEYP7LjSX5+vhy=eUf0q-YiktQriH-rcr1n2Q3aA@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds basic DT for Microchip lan966x SoC and associated board
-pcb8291(2-port EVB). Adds peripherals required to allow booting: Interrupt
-Controller, Clock, Generic ARMv7 Timers, Synopsys Timer, Flexcoms, GPIOs.
-Also adds other peripherals like crypto(AES/SHA), DMA, Watchdog Timer, TRNG
-and MCAN0.
+On Fri, Feb 18, 2022 at 10:35:48AM +0900, Masahiro Yamada wrote:
+> On Fri, Feb 18, 2022 at 3:10 AM Segher Boessenkool
+> <segher@kernel.crashing.org> wrote:
+> > On Fri, Feb 18, 2022 at 02:27:16AM +0900, Masahiro Yamada wrote:
+> > > On Fri, Feb 18, 2022 at 1:49 AM David Laight <David.Laight@aculab.com> wrote:
+> > > > That description is largely fine.
+> > > >
+> > > > Inappropriate 'inline' ought to be removed.
+> > > > Then 'inline' means - 'really do inline this'.
+> > >
+> > > You cannot change "static inline" to "static"
+> > > in header files.
+> >
+> > Why not?  Those two have identical semantics!
+> 
+> e.g.)
+> 
+> 
+> [1] Open  include/linux/device.h with your favorite editor,
+>      then edit
+> 
+> static inline void *devm_kcalloc(struct device *dev,
+> 
+>     to
+> 
+> static void *devm_kcalloc(struct device *dev,
+> 
+> 
+> [2] Build the kernel
 
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
----
-v5 -> v6:
-- Renamed dts file to lan966x-pcb8291.dts file.
-- Disabled optional watchdog in dtsi file and enabled it in dts file.
+You get some "defined but not used" warnings that are shushed for
+inlines.  Do you see something else?
 
-v4 -> v5:
-- Modified AES, SHA, TRNG node names as per generic names recommended.
+The semantics are the same.  Warnings are just warnings.  It builds
+fine.
 
-v3 -> v4:
-- Removed character 'x' from compatible string.
-- Removed memory node as handled by bootloader.
-- Renamed flexcom3 usart0 to usart3
-- Added /chosen and /aliases nodes in dts file.
 
-v2 -> v3:
-- Enabling trng in dtsi itself.
-- Removed "status=okay" dma0.
-- Add gpio pin settings for can0(missed adding this in previous version)
-
-v1 -> v2:
-- Moved flx3 usart0 node to dtsi file.
-- Removed status="okay" for dma0 to maintain consistency across nodes
-  (which means enabling dma0 by default)
-
- arch/arm/boot/dts/Makefile            |   2 +
- arch/arm/boot/dts/lan966x-pcb8291.dts |  64 +++++++
- arch/arm/boot/dts/lan966x.dtsi        | 238 ++++++++++++++++++++++++++
- 3 files changed, 304 insertions(+)
- create mode 100644 arch/arm/boot/dts/lan966x-pcb8291.dts
- create mode 100644 arch/arm/boot/dts/lan966x.dtsi
-
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 235ad559acb2..c17a7308ff44 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -735,6 +735,8 @@ dtb-$(CONFIG_SOC_IMX7D) += \
- dtb-$(CONFIG_SOC_IMX7ULP) += \
- 	imx7ulp-com.dtb \
- 	imx7ulp-evk.dtb
-+dtb-$(CONFIG_SOC_LAN966) += \
-+	lan966x-pcb8291.dtb
- dtb-$(CONFIG_SOC_LS1021A) += \
- 	ls1021a-moxa-uc-8410a.dtb \
- 	ls1021a-qds.dtb \
-diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
-new file mode 100644
-index 000000000000..3281af90ac6d
---- /dev/null
-+++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
-@@ -0,0 +1,64 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * lan966x_pcb8291.dts - Device Tree file for PCB8291
-+ */
-+/dts-v1/;
-+#include "lan966x.dtsi"
-+
-+/ {
-+	model = "Microchip EVB - LAN9662";
-+	compatible = "microchip,lan9662-pcb8291", "microchip,lan9662", "microchip,lan966";
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	aliases {
-+		serial0 = &usart3;
-+	};
-+};
-+
-+&gpio {
-+	fc_shrd7_pins: fc_shrd7-pins {
-+		pins = "GPIO_49";
-+		function = "fc_shrd7";
-+	};
-+
-+	fc_shrd8_pins: fc_shrd8-pins {
-+		pins = "GPIO_54";
-+		function = "fc_shrd8";
-+	};
-+
-+	fc3_b_pins: fcb3-spi-pins {
-+		/* SCK, RXD, TXD */
-+		pins = "GPIO_51", "GPIO_52", "GPIO_53";
-+		function = "fc3_b";
-+	};
-+
-+	can0_b_pins:  can0_b_pins {
-+		/* RX, TX */
-+		pins = "GPIO_35", "GPIO_36";
-+		function = "can0_b";
-+	};
-+};
-+
-+&can0 {
-+	pinctrl-0 = <&can0_b_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&flx3 {
-+	atmel,flexcom-mode = <ATMEL_FLEXCOM_MODE_USART>;
-+	status = "okay";
-+
-+	usart3: serial@200 {
-+		pinctrl-0 = <&fc3_b_pins>, <&fc_shrd7_pins>, <&fc_shrd8_pins>;
-+		pinctrl-names = "default";
-+		status = "okay";
-+	};
-+};
-+
-+&watchdog {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
-new file mode 100644
-index 000000000000..10ffe78110ff
---- /dev/null
-+++ b/arch/arm/boot/dts/lan966x.dtsi
-@@ -0,0 +1,238 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * lan966x.dtsi - Device Tree Include file for Microchip LAN966 family SoC
-+ *
-+ * Copyright (C) 2021 Microchip Technology, Inc. and its subsidiaries
-+ *
-+ * Author: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-+ *
-+ */
-+
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/mfd/atmel-flexcom.h>
-+#include <dt-bindings/dma/at91.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/clock/microchip,lan966x.h>
-+
-+/ {
-+	model = "Microchip LAN966 family SoC";
-+	compatible = "microchip,lan966";
-+	interrupt-parent = <&gic>;
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a7";
-+			clock-frequency = <600000000>;
-+			reg = <0x0>;
-+		};
-+	};
-+
-+	clocks {
-+		sys_clk: sys_clk {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <162500000>;
-+		};
-+
-+		cpu_clk: cpu_clk {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <600000000>;
-+		};
-+
-+		ddr_clk: ddr_clk {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <300000000>;
-+		};
-+
-+		nic_clk: nic_clk {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <200000000>;
-+		};
-+	};
-+
-+	clks: clock-controller@e00c00a8 {
-+		compatible = "microchip,lan966x-gck";
-+		#clock-cells = <1>;
-+		clocks = <&cpu_clk>, <&ddr_clk>, <&sys_clk>;
-+		clock-names = "cpu", "ddr", "sys";
-+		reg = <0xe00c00a8 0x38>;
-+	};
-+
-+	timer {
-+		compatible = "arm,armv7-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
-+		clock-frequency = <37500000>;
-+		arm,cpu-registers-not-fw-configured;
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+
-+		flx0: flexcom@e0040000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0040000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM0>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0040000 0x800>;
-+			status = "disabled";
-+		};
-+
-+		flx1: flexcom@e0044000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0044000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM1>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0044000 0x800>;
-+			status = "disabled";
-+		};
-+
-+		trng: rng@e0048000 {
-+			compatible = "atmel,at91sam9g45-trng";
-+			reg = <0xe0048000 0x100>;
-+			clocks = <&nic_clk>;
-+		};
-+
-+		aes: crypto@e004c000 {
-+			compatible = "atmel,at91sam9g46-aes";
-+			reg = <0xe004c000 0x100>;
-+			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>;
-+			dmas = <&dma0 AT91_XDMAC_DT_PERID(13)>,
-+			       <&dma0 AT91_XDMAC_DT_PERID(12)>;
-+			dma-names = "rx", "tx";
-+			clocks = <&nic_clk>;
-+			clock-names = "aes_clk";
-+		};
-+
-+		flx2: flexcom@e0060000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0060000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM2>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0060000 0x800>;
-+			status = "disabled";
-+		};
-+
-+		flx3: flexcom@e0064000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0064000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM3>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0064000 0x800>;
-+			status = "disabled";
-+
-+			usart3: serial@200 {
-+				compatible = "atmel,at91sam9260-usart";
-+				reg = <0x200 0x200>;
-+				interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&nic_clk>;
-+				clock-names = "usart";
-+				atmel,fifo-size = <32>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		dma0: dma-controller@e0068000 {
-+			compatible = "microchip,sama7g5-dma";
-+			reg = <0xe0068000 0x1000>;
-+			interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
-+			#dma-cells = <1>;
-+			clocks = <&nic_clk>;
-+			clock-names = "dma_clk";
-+		};
-+
-+		sha: crypto@e006c000 {
-+			compatible = "atmel,at91sam9g46-sha";
-+			reg = <0xe006c000 0xec>;
-+			interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>;
-+			dmas = <&dma0 AT91_XDMAC_DT_PERID(14)>;
-+			dma-names = "tx";
-+			clocks = <&nic_clk>;
-+			clock-names = "sha_clk";
-+		};
-+
-+		flx4: flexcom@e0070000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0070000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM4>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0070000 0x800>;
-+			status = "disabled";
-+		};
-+
-+		timer0: timer@e008c000 {
-+			compatible = "snps,dw-apb-timer";
-+			reg = <0xe008c000 0x400>;
-+			clocks = <&nic_clk>;
-+			clock-names = "timer";
-+			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+
-+		watchdog: watchdog@e0090000 {
-+			compatible = "snps,dw-wdt";
-+			reg = <0xe0090000 0x1000>;
-+			interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&nic_clk>;
-+			status = "disabled";
-+		};
-+
-+		can0: can@e081c000 {
-+			compatible = "bosch,m_can";
-+			reg = <0xe081c000 0xfc>, <0x00100000 0x4000>;
-+			reg-names = "m_can", "message_ram";
-+			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "int0", "int1";
-+			clocks = <&clks GCK_ID_MCAN0>, <&clks GCK_ID_MCAN0>;
-+			clock-names = "hclk", "cclk";
-+			assigned-clocks = <&clks GCK_ID_MCAN0>;
-+			assigned-clock-rates = <40000000>;
-+			bosch,mram-cfg = <0x0 0 0 64 0 0 32 32>;
-+			status = "disabled";
-+		};
-+
-+		gpio: pinctrl@e2004064 {
-+			compatible = "microchip,lan966x-pinctrl";
-+			reg = <0xe2004064 0xb4>,
-+			    <0xe2010024 0x138>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-ranges = <&gpio 0 0 78>;
-+			interrupt-controller;
-+			interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
-+			#interrupt-cells = <2>;
-+		};
-+
-+		gic: interrupt-controller@e8c11000 {
-+			compatible = "arm,gic-400", "arm,cortex-a7-gic";
-+			#interrupt-cells = <3>;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-controller;
-+			reg = <0xe8c11000 0x1000>,
-+			      <0xe8c12000 0x2000>,
-+			      <0xe8c14000 0x2000>,
-+			      <0xe8c16000 0x2000>;
-+		};
-+	};
-+};
--- 
-2.17.1
-
+Segher
