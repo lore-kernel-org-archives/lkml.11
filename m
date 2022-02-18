@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD47C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 789EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237596AbiBRQRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:17:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42606 "EHLO
+        id S237626AbiBRQRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:17:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232507AbiBRQRb (ORCPT
+        with ESMTP id S231398AbiBRQRg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:17:31 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D7E22BCB
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:14 -0800 (PST)
+        Fri, 18 Feb 2022 11:17:36 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6EF22BC5
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645201034; x=1676737034;
+  t=1645201039; x=1676737039;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=e+EaalFBKesanPpHPz49PfBdxnZtE1tHhoVw3wRarAY=;
-  b=Nzq8XJe5JKh30xd80HkHgGUoM4N8os7xrX2DArJVuJ5l7l5XFtuxU6fG
-   3SmmFJj9QEdSx3shEAVV+/BKPiHXwSMRl2Cy9Qov1mWWKjZdjbyYAVI2f
-   7oE5azTvrOzFbbRcZavq9rMjtr2m9t7oAaJrKPCcScyegeuWhvNTXgx17
-   L9/tIYTUH+sFisTJXJDjhH8QWkvJKZKj3JFeAydQIvXiFvHLpBjHgEPhM
-   VexWx7M72k4VMm4kVi72xqxv18VFzIuw9+dUtXuyg9wnk1z5sKNYp3SQX
-   t4+XKknmj8/VsPmocGLUOVzF9uFmu0aSbtpBn9mexw47TiFaesZgzYGyP
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="231138280"
+  bh=zLqkYC/j0gcQLYGXerlmeaKorpD4g3v15vrGt/8wXZc=;
+  b=JdNQDO3FMU5mQ71VnrPG7u7r3HYXnD7JEAAcBYkZgDxP/hAWVZnrqXH4
+   oHtOkGf6FaJK0S+ouKViYWnm9tmDbVa0mVeLdnzXrSbqdA0MNxrYZESCV
+   /8uiNv3iDx1sSX2guiySRRbfF6qCEk3uO8iCexEiPxrg718rKI+BXpBvP
+   tufUolAspwxZ8QTxYwLiZbZ6NzLJRwJ/Z91C7S5RJwvuhAZUqydKKEJy1
+   LMSgN7ssHZkCpElhYXsTAvawWK3rsI6RvAelYLBx9B265z2H31S+gehO3
+   u9eBgjehL8OX4WOYg/cUK77aJn0fcU6bNcGRQVbmOZP3G5pfwRtI3AkzY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="248752945"
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="231138280"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:13 -0800
+   d="scan'208";a="248752945"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:19 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="572355107"
+   d="scan'208";a="637782158"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 18 Feb 2022 08:17:06 -0800
+  by orsmga004.jf.intel.com with ESMTP; 18 Feb 2022 08:17:12 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 3A6F3822; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
+        id 5667884D; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,9 +51,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 04/32] x86/tdx: Provide common base for SEAMCALL and TDCALL C wrappers
-Date:   Fri, 18 Feb 2022 19:16:50 +0300
-Message-Id: <20220218161718.67148-5-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 06/32] x86/tdx: Extend the confidential computing API to support TDX guests
+Date:   Fri, 18 Feb 2022 19:16:52 +0300
+Message-Id: <20220218161718.67148-7-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
@@ -63,203 +63,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Secure Arbitration Mode (SEAM) is an extension of VMX architecture.  It
-defines a new VMX root operation (SEAM VMX root) and a new VMX non-root
-operation (SEAM VMX non-root) which are both isolated from the legacy
-VMX operation where the host kernel runs.
+Confidential Computing (CC) features (like string I/O unroll support,
+memory encryption/decryption support, etc) are conditionally enabled
+in the kernel using cc_platform_has() API. Since TDX guests also need
+to use these CC features, extend cc_platform_has() API and add TDX
+guest-specific CC attributes support.
 
-A CPU-attested software module (called 'TDX module') runs in SEAM VMX
-root to manage and protect VMs running in SEAM VMX non-root.  SEAM VMX
-root is also used to host another CPU-attested software module (called
-'P-SEAMLDR') to load and update the TDX module.
+Like AMD SME/SEV, TDX uses a bit in the page table entry to indicate
+encryption status of the page, but the polarity of the mask is
+opposite to AMD: if the bit is set the page is accessible to VMM.
 
-Host kernel transits to either P-SEAMLDR or TDX module via the new
-SEAMCALL instruction, which is essentially a VMExit from VMX root mode
-to SEAM VMX root mode.  SEAMCALLs are leaf functions defined by
-P-SEAMLDR and TDX module around the new SEAMCALL instruction.
-
-A guest kernel can also communicate with TDX module via TDCALL
-instruction.
-
-TDCALLs and SEAMCALLs use an ABI different from the x86-64 system-v ABI.
-RAX is used to carry both the SEAMCALL leaf function number (input) and
-the completion status (output).  Additional GPRs (RCX, RDX, R8-R11) may
-be further used as both input and output operands in individual leaf.
-
-TDCALL and SEAMCALL share the same ABI and require the largely same
-code to pass down arguments and retrieve results.
-
-Define an assembly macro that can be used to implement C wrapper for
-both TDCALL and SEAMCALL.
+Details about which bit in the page table entry to be used to indicate
+shared/private state can be determined by using the TDINFO TDCALL.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/include/asm/tdx.h    | 20 ++++++++
- arch/x86/kernel/asm-offsets.c |  9 ++++
- arch/x86/virt/tdxcall.S       | 91 +++++++++++++++++++++++++++++++++++
- 3 files changed, 120 insertions(+)
- create mode 100644 arch/x86/virt/tdxcall.S
+ arch/x86/Kconfig              |  1 +
+ arch/x86/coco/tdx.c           | 44 +++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/cc_platform.c |  6 +++++
+ 3 files changed, 51 insertions(+)
 
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index ba8042ce61c2..2f8cb1e53e77 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -8,6 +8,25 @@
- #define TDX_CPUID_LEAF_ID	0x21
- #define TDX_IDENT		"IntelTDX    "
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index ea4190c53db6..581aaff0ccee 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -884,6 +884,7 @@ config INTEL_TDX_GUEST
+ 	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
+ 	depends on X86_64 && CPU_SUP_INTEL
+ 	depends on X86_X2APIC
++	select ARCH_HAS_CC_PLATFORM
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+ 	  the guest kernel can not boot or run under TDX.
+diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+index 89367fa576c1..87e561c5b4e3 100644
+--- a/arch/x86/coco/tdx.c
++++ b/arch/x86/coco/tdx.c
+@@ -5,8 +5,17 @@
+ #define pr_fmt(fmt)     "tdx: " fmt
  
-+#define TDX_SEAMCALL_VMFAILINVALID     0x8000FF00FFFF0000ULL
-+
-+#ifndef __ASSEMBLY__
-+
-+/*
-+ * Used to gather the output registers values of the TDCALL and SEAMCALL
-+ * instructions when requesting services from the TDX module.
-+ *
-+ * This is a software only structure and not part of the TDX module/VMM ABI.
-+ */
-+struct tdx_module_output {
-+	u64 rcx;
-+	u64 rdx;
-+	u64 r8;
-+	u64 r9;
-+	u64 r10;
-+	u64 r11;
-+};
-+
- #ifdef CONFIG_INTEL_TDX_GUEST
+ #include <linux/cpufeature.h>
++#include <asm/coco.h>
+ #include <asm/tdx.h>
  
- void __init tdx_early_init(void);
-@@ -18,4 +37,5 @@ static inline void tdx_early_init(void) { };
- 
- #endif /* CONFIG_INTEL_TDX_GUEST */
- 
-+#endif /* !__ASSEMBLY__ */
- #endif /* _ASM_X86_TDX_H */
-diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
-index 9fb0a2f8b62a..7dca52f5cfc6 100644
---- a/arch/x86/kernel/asm-offsets.c
-+++ b/arch/x86/kernel/asm-offsets.c
-@@ -18,6 +18,7 @@
- #include <asm/bootparam.h>
- #include <asm/suspend.h>
- #include <asm/tlbflush.h>
-+#include <asm/tdx.h>
- 
- #ifdef CONFIG_XEN
- #include <xen/interface/xen.h>
-@@ -65,6 +66,14 @@ static void __used common(void)
- 	OFFSET(XEN_vcpu_info_arch_cr2, vcpu_info, arch.cr2);
- #endif
- 
-+	BLANK();
-+	OFFSET(TDX_MODULE_rcx, tdx_module_output, rcx);
-+	OFFSET(TDX_MODULE_rdx, tdx_module_output, rdx);
-+	OFFSET(TDX_MODULE_r8,  tdx_module_output, r8);
-+	OFFSET(TDX_MODULE_r9,  tdx_module_output, r9);
-+	OFFSET(TDX_MODULE_r10, tdx_module_output, r10);
-+	OFFSET(TDX_MODULE_r11, tdx_module_output, r11);
++/* TDX module Call Leaf IDs */
++#define TDX_GET_INFO			1
 +
- 	BLANK();
- 	OFFSET(BP_scratch, boot_params, scratch);
- 	OFFSET(BP_secure_boot, boot_params, secure_boot);
-diff --git a/arch/x86/virt/tdxcall.S b/arch/x86/virt/tdxcall.S
-new file mode 100644
-index 000000000000..90569faedacc
---- /dev/null
-+++ b/arch/x86/virt/tdxcall.S
-@@ -0,0 +1,91 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#include <asm/asm-offsets.h>
-+#include <asm/tdx.h>
++static struct {
++	unsigned int gpa_width;
++	unsigned long attributes;
++} td_info __ro_after_init;
 +
-+/*
-+ * TDX guests use the TDCALL instruction to make requests to the
-+ * TDX module and hypercalls to the VMM.
-+ *
-+ * TDX host user SEAMCALL instruction to make requests to TDX module.
-+ *
-+ * They are supported in Binutils >= 2.36.
-+ */
-+#define tdcall		.byte 0x66,0x0f,0x01,0xcc
-+#define seamcall	.byte 0x66,0x0f,0x01,0xcf
+ /*
+  * Wrapper for standard use of __tdx_hypercall with no output aside from
+  * return code.
+@@ -25,9 +34,34 @@ static inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14, u64 r15)
+ 	return __tdx_hypercall(&args, 0);
+ }
+ 
++static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
++				   struct tdx_module_output *out)
++{
++	if (__tdx_module_call(fn, rcx, rdx, r8, r9, out))
++		panic("TDCALL %lld failed (Buggy TDX module!)\n", fn);
++}
 +
-+.macro TDX_MODULE_CALL host:req
-+	/*
-+	 * R12 will be used as temporary storage for struct tdx_module_output
-+	 * pointer. Since R12-R15 registers are not used by TDCALL/SEAMCALL
-+	 * services supported by this function, it can be reused.
-+	 */
-+
-+	/* Callee saved, so preserve it */
-+	push %r12
++static void get_info(void)
++{
++	struct tdx_module_output out;
 +
 +	/*
-+	 * Push output pointer to stack.
-+	 * After the operation, it will be fetched into R12 register.
++	 * TDINFO TDX module call is used to get the TD execution environment
++	 * information like GPA width, number of available vcpus, debug mode
++	 * information, etc. More details about the ABI can be found in TDX
++	 * Guest-Host-Communication Interface (GHCI), section 2.4.2 TDCALL
++	 * [TDG.VP.INFO].
 +	 */
-+	push %r9
++	tdx_module_call(TDX_GET_INFO, 0, 0, 0, 0, &out);
 +
-+	/* Mangle function call ABI into TDCALL/SEAMCALL ABI: */
-+	/* Move Leaf ID to RAX */
-+	mov %rdi, %rax
-+	/* Move input 4 to R9 */
-+	mov %r8,  %r9
-+	/* Move input 3 to R8 */
-+	mov %rcx, %r8
-+	/* Move input 1 to RCX */
-+	mov %rsi, %rcx
-+	/* Leave input param 2 in RDX */
++	td_info.gpa_width = out.rcx & GENMASK(5, 0);
++	td_info.attributes = out.rdx;
++}
 +
-+	.if \host
-+	seamcall
-+	/*
-+	 * SEAMCALL instruction is essentially a VMExit from VMX root
-+	 * mode to SEAM VMX root mode.  VMfailInvalid (CF=1) indicates
-+	 * that the targeted SEAM firmware is not loaded or disabled,
-+	 * or P-SEAMLDR is busy with another SEAMCALL.  %rax is not
-+	 * changed in this case.
-+	 *
-+	 * Set %rax to TDX_SEAMCALL_VMFAILINVALID for VMfailInvalid.
-+	 * This value will never be used as actual SEAMCALL error code.
-+	 */
-+	jnc .Lno_vmfailinvalid
-+	mov $TDX_SEAMCALL_VMFAILINVALID, %rax
-+.Lno_vmfailinvalid:
-+	.else
-+	tdcall
-+	.endif
+ void __init tdx_early_init(void)
+ {
+ 	u32 eax, sig[3];
++	u64 mask;
+ 
+ 	cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);
+ 
+@@ -36,5 +70,15 @@ void __init tdx_early_init(void)
+ 
+ 	setup_force_cpu_cap(X86_FEATURE_TDX_GUEST);
+ 
++	get_info();
 +
 +	/*
-+	 * Fetch output pointer from stack to R12 (It is used
-+	 * as temporary storage)
++	 * The highest bit of a guest physical address is the "sharing" bit.
++	 * Set it for shared pages and clear it for private pages.
 +	 */
-+	pop %r12
++	mask = BIT_ULL(td_info.gpa_width - 1);
 +
-+	/* Check for success: 0 - Successful, otherwise failed */
-+	test %rax, %rax
-+	jnz .Lno_output_struct
++	cc_init(CC_VENDOR_INTEL, mask);
 +
-+	/*
-+	 * Since this function can be initiated without an output pointer,
-+	 * check if caller provided an output struct before storing
-+	 * output registers.
-+	 */
-+	test %r12, %r12
-+	jz .Lno_output_struct
-+
-+	/* Copy result registers to output struct: */
-+	movq %rcx, TDX_MODULE_rcx(%r12)
-+	movq %rdx, TDX_MODULE_rdx(%r12)
-+	movq %r8,  TDX_MODULE_r8(%r12)
-+	movq %r9,  TDX_MODULE_r9(%r12)
-+	movq %r10, TDX_MODULE_r10(%r12)
-+	movq %r11, TDX_MODULE_r11(%r12)
-+
-+.Lno_output_struct:
-+	/* Restore the state of R12 register */
-+	pop %r12
-+.endm
+ 	pr_info("Guest detected\n");
+ }
+diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
+index 93e6be7b7eca..dba713c444ab 100644
+--- a/arch/x86/kernel/cc_platform.c
++++ b/arch/x86/kernel/cc_platform.c
+@@ -90,6 +90,8 @@ u64 cc_get_mask(bool enc)
+ 	switch (cc_vendor) {
+ 	case CC_VENDOR_AMD:
+ 		return enc ? cc_mask : 0;
++	case CC_VENDOR_INTEL:
++		return enc ? 0 : cc_mask;
+ 	default:
+ 		return 0;
+ 	}
+@@ -100,6 +102,8 @@ u64 cc_mkenc(u64 val)
+ 	switch (cc_vendor) {
+ 	case CC_VENDOR_AMD:
+ 		return val | cc_mask;
++	case CC_VENDOR_INTEL:
++		return val & ~cc_mask;
+ 	default:
+ 		return val;
+ 	}
+@@ -110,6 +114,8 @@ u64 cc_mkdec(u64 val)
+ 	switch (cc_vendor) {
+ 	case CC_VENDOR_AMD:
+ 		return val & ~cc_mask;
++	case CC_VENDOR_INTEL:
++		return val | cc_mask;
+ 	default:
+ 		return val;
+ 	}
 -- 
 2.34.1
 
