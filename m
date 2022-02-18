@@ -2,126 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004D2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B1FC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:12:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236698AbiBRRId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:08:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46928 "EHLO
+        id S238126AbiBRRM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:12:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238159AbiBRRIa (ORCPT
+        with ESMTP id S231364AbiBRRMZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:08:30 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC25836698
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:08:12 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id g1so2792737pfv.1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:08:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Ll9T055JzV/wdZpn69fyeh7rHkmZmXKfJNyyV9dc/Ag=;
-        b=FoT4ywa0lsi4Q3P6AqAntiw3MSb+cD6KgA9QQiR5TUcijEoS6W3qURgnIevv5OZtYs
-         /zCj/fKUri1RFOIsQAG8t3gKjMm5wGapBoVzmo31uNAuMOeb6V1wm61wvb0EHVqbCVy6
-         OgInI7BUjeUEvAwuhDO1Bb1iQayrDDodwGSNabdj1/BpZJgbsY5fPP5T1hY2sskXD909
-         Ywg0fpbMi0q7eGjILGfYuKFR0IzMd28wkSRsUiUNonMg1buTyUP5J0SWhu7/HUBwatPd
-         y3/DGYFrSpanixG8KhIdvaQXdSYZWKj4tmI/i89WSXT4qi4c3J2ypX2flom2r1IrQk1W
-         BjSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Ll9T055JzV/wdZpn69fyeh7rHkmZmXKfJNyyV9dc/Ag=;
-        b=USWnJbgxAzO4Wt5a/CWdfb+CR446mrfQxXT42oLXlLareiUu4trBzFWeoFdX6O0wUn
-         bsSvI8TzZ358bCe/TldO0dee25I5tnmO01C3VwZ6BKvWhANrIT6e8bTOr0FC2rZb4kte
-         j8XWByAqU+7+NPs1Nq4F0uz03C1u4RuIQmXdbFtvIagpJfPokBVSscshdyklVkZrDXlm
-         wnF5xx8DFqK82MOjq0bckXx4b3QgZ1GWRjWeBYZXRqB0/BzbIsxNv1ln5ysqHolEDrkd
-         EA25xoMq1B4ONK9CexAp/Tv1Xr3ukA+Dnb3lhl0/M5F0rcfFewp4ZOB05VGD0Uo3DImF
-         hcNQ==
-X-Gm-Message-State: AOAM5316oGQ3RCBRS+XfREsTVO8Msd5EFdIzkegE9uHJbt2YA5t122Yb
-        BhYKVCVbvgcNYeh2VxWWjpTN5g==
-X-Google-Smtp-Source: ABdhPJw/DQfbXN1JM/YyP1jNU/eCsVFHl7l0+hZi656gcs+xQh6y73X/pDa10jfoz87JL3QLjF3d5g==
-X-Received: by 2002:a05:6a00:8d5:b0:4e1:77c9:def8 with SMTP id s21-20020a056a0008d500b004e177c9def8mr8713738pfu.55.1645204091920;
-        Fri, 18 Feb 2022 09:08:11 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id m126sm9994947pga.94.2022.02.18.09.08.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 09:08:11 -0800 (PST)
-Date:   Fri, 18 Feb 2022 17:08:07 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2 01/18] KVM: x86: host-initiated EFER.LME write affects
- the MMU
-Message-ID: <Yg/Sd3UE2aCNimGj@google.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
- <20220217210340.312449-2-pbonzini@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217210340.312449-2-pbonzini@redhat.com>
+        Fri, 18 Feb 2022 12:12:25 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D133D489;
+        Fri, 18 Feb 2022 09:12:08 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IH9XD6001484;
+        Fri, 18 Feb 2022 17:09:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=HHQiOYioRcDJxJ+cIF5L0R34uf85m0MBy/ByxExjiM0=;
+ b=LJ9gogOogoZ16KMDJH28oSIAHgNyxbxXYDB2tSanM4cvYROk7el7VsTwioKhJEEhR2wv
+ bIeZiLHym7AQ7WxXeJDT6zxa3VTZjNH7aXqYREI+mUPyNllrrykuxWVqcflmX9uAeeDw
+ xpxwQeL85DWSJ1M005SgavHLwNAqHRO1BkU2zleS7w3tW3NZFfqrB9VsUzr1QkxItGmw
+ 1iw/VkgOPoF3I64vO86pS1gmlj+shpJS2YCib/Pj0TL159R//3+d0bC38SXE8TgzVB1B
+ l5nKKa9QqADN8xJXZoZ9r6dirYZsrE+w60NltufBmznzVQbutVbink2MwWopUl4hjcQ5 Gg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eae34aqrd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 17:09:43 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21IH9huH002074;
+        Fri, 18 Feb 2022 17:09:43 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eae34aqqr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 17:09:43 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21IH3xwn005118;
+        Fri, 18 Feb 2022 17:09:41 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03ams.nl.ibm.com with ESMTP id 3e64haufhf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 17:09:40 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21IGx9eE49742204
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Feb 2022 16:59:09 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AE795A405B;
+        Fri, 18 Feb 2022 17:09:37 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 62423A4057;
+        Fri, 18 Feb 2022 17:09:35 +0000 (GMT)
+Received: from sig-9-65-84-246.ibm.com (unknown [9.65.84.246])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 18 Feb 2022 17:09:35 +0000 (GMT)
+Message-ID: <ce1fbc8baf5359b698bf4420e602cc3a5a2a1f44.camel@linux.ibm.com>
+Subject: Re: [PATCH v10 16/27] ima: Implement ima_free_policy_rules() for
+ freeing of an ima_namespace
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Stefan Berger <stefanb@linux.ibm.com>,
+        linux-integrity@vger.kernel.org
+Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org
+Date:   Fri, 18 Feb 2022 12:09:34 -0500
+In-Reply-To: <20220201203735.164593-17-stefanb@linux.ibm.com>
+References: <20220201203735.164593-1-stefanb@linux.ibm.com>
+         <20220201203735.164593-17-stefanb@linux.ibm.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: emIEgItrNC7fS0Qb3QAVkkh-aKJwErjg
+X-Proofpoint-GUID: jh3pxOibFXtcr2wDrWDhypmigqOTtxcz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-18_07,2022-02-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 spamscore=0 adultscore=0 impostorscore=0 mlxscore=0
+ priorityscore=1501 phishscore=0 malwarescore=0 mlxlogscore=999
+ suspectscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202180109
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The shortlog doesn't come remotely close to saying what this patch does, it's
-simply a statement.
-
-  KVM: x86: Reset the MMU context if host userspace toggles EFER.LME
-
-On Thu, Feb 17, 2022, Paolo Bonzini wrote:
-> While the guest runs, EFER.LME cannot change unless CR0.PG is clear, and therefore
-> EFER.NX is the only bit that can affect the MMU role.  However, set_efer accepts
-> a host-initiated change to EFER.LME even with CR0.PG=1.  In that case, the
-> MMU has to be reset.
-
-Wrap at ~75 please.
-
-> Fixes: 11988499e62b ("KVM: x86: Skip EFER vs. guest CPUID checks for host-initiated writes")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
+> Implement ima_free_policy_rules() that is needed when an ima_namespace
+> is freed.
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> 
 > ---
-
-With nits addressed,
-
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-
->  arch/x86/kvm/mmu.h | 1 +
->  arch/x86/kvm/x86.c | 2 +-
->  2 files changed, 2 insertions(+), 1 deletion(-)
+> v10:
+>   - Not calling ima_delete_rules() anymore
+>   - Move access check from ima_delete_rules into very last patch
 > 
-> diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-> index 51faa2c76ca5..a5a50cfeffff 100644
-> --- a/arch/x86/kvm/mmu.h
-> +++ b/arch/x86/kvm/mmu.h
-> @@ -48,6 +48,7 @@
->  			       X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE)
->  
->  #define KVM_MMU_CR0_ROLE_BITS (X86_CR0_PG | X86_CR0_WP)
-> +#define KVM_MMU_EFER_ROLE_BITS (EFER_LME | EFER_NX)
->  
->  static __always_inline u64 rsvd_bits(int s, int e)
->  {
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index d3da64106685..99a58c25f5c2 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -1647,7 +1647,7 @@ static int set_efer(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>  v9:
+>   - Only reset temp_ima_appraise when using init_ima_ns.
+> ---
+>  security/integrity/ima/ima.h        |  1 +
+>  security/integrity/ima/ima_policy.c | 14 ++++++++++++++
+>  2 files changed, 15 insertions(+)
+> 
+> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+> index aea8fb8d2854..8c757223d549 100644
+> --- a/security/integrity/ima/ima.h
+> +++ b/security/integrity/ima/ima.h
+> @@ -329,6 +329,7 @@ void ima_update_policy_flags(struct ima_namespace *ns);
+>  ssize_t ima_parse_add_rule(struct ima_namespace *ns, char *rule);
+>  void ima_delete_rules(struct ima_namespace *ns);
+>  int ima_check_policy(struct ima_namespace *ns);
+> +void ima_free_policy_rules(struct ima_namespace *ns);
+>  void *ima_policy_start(struct seq_file *m, loff_t *pos);
+>  void *ima_policy_next(struct seq_file *m, void *v, loff_t *pos);
+>  void ima_policy_stop(struct seq_file *m, void *v);
+> diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
+> index 2dcc5a8c585a..fe3dce8fb939 100644
+> --- a/security/integrity/ima/ima_policy.c
+> +++ b/security/integrity/ima/ima_policy.c
+> @@ -1889,6 +1889,20 @@ void ima_delete_rules(struct ima_namespace *ns)
 >  	}
+>  }
 >  
->  	/* Update reserved bits */
+> +/**
+> + * ima_free_policy_rules - free all policy rules
+> + * @ns: IMA namespace that has the policy
+> + */
+> +void ima_free_policy_rules(struct ima_namespace *ns)
+> +{
+> +	struct ima_rule_entry *entry, *tmp;
+> +
+> +	list_for_each_entry_safe(entry, tmp, &ns->ima_policy_rules, list) {
+> +		list_del(&entry->list);
+> +		ima_free_rule(entry);
+> +	}
+> +}
+> +
 
-This comment needs to be dropped, toggling EFER.LME affects more than just reserved
-bits.
+The first time a policy is loaded, the policy rules pivot
+from ima_default_rules to the custom rules.  When this happens, the
+architecture specific policy rules are freed.  Here too, if a custom
+policy isn't already loaded, the architecture specific rules stored as
+an array need to be freed.  Refer to the comment in
+ima_update_policy().
 
-> -	if ((efer ^ old_efer) & EFER_NX)
-> +	if ((efer ^ old_efer) & KVM_MMU_EFER_ROLE_BITS)
->  		kvm_mmu_reset_context(vcpu);
+>  #define __ima_hook_stringify(func, str)	(#func),
 >  
->  	return 0;
-> -- 
-> 2.31.1
-> 
-> 
+>  const char *const func_tokens[] = {
+
+-- 
+thanks,
+
+Mimi
+
+
