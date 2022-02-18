@@ -2,111 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4845BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A569DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233615AbiBRJeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:34:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52024 "EHLO
+        id S233643AbiBRJjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:39:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232058AbiBRJeX (ORCPT
+        with ESMTP id S232545AbiBRJjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:34:23 -0500
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC94213F46;
-        Fri, 18 Feb 2022 01:34:05 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21I9XuT5012082;
-        Fri, 18 Feb 2022 03:33:56 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645176836;
-        bh=5ZdztmiUZEJkMgmXrReLjUq+5pxyCYZ2a0fG4eNTku0=;
-        h=From:To:CC:Subject:Date;
-        b=pVBob8gjChKwoGyBWG+d6SaS3B7daockWs5xvWXjOBEhvSFGeN6pnKTbtbTSPomA2
-         waatfQ/sFs6TvR79wP0SLtrJxOHIR0iSz5ZmywI96reo3ii2KkWoMhCSUrZG9rSaGJ
-         Ru1RSFktd+k5w2qWgZP/vxBtoKVBbQJRszNNS3zU=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21I9XuMS107473
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 18 Feb 2022 03:33:56 -0600
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 18
- Feb 2022 03:33:55 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 18 Feb 2022 03:33:55 -0600
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21I9XqsO126362;
-        Fri, 18 Feb 2022 03:33:53 -0600
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] usb: dwc3: drd: Add support for extcon drd notifier even with usb role switch config enabled
-Date:   Fri, 18 Feb 2022 15:03:47 +0530
-Message-ID: <20220218093348.1098-1-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 18 Feb 2022 04:39:17 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FA21FA74;
+        Fri, 18 Feb 2022 01:39:00 -0800 (PST)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K0RTH49hlz67b2s;
+        Fri, 18 Feb 2022 17:38:27 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Fri, 18 Feb 2022 10:38:58 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Feb 2022 09:38:54 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <jolsa@kernel.org>, <namhyung@kernel.org>,
+        <elver@google.com>, <leo.yan@linaro.org>, <dvyukov@google.com>,
+        <will@kernel.org>
+CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux@armlinux.org.uk>,
+        <tmricht@linux.ibm.com>, <irogers@google.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v2] perf test: Skip Sigtrap test for arm+aarch64
+Date:   Fri, 18 Feb 2022 17:33:33 +0800
+Message-ID: <1645176813-202756-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In AM62x SoC, the USB controller supports USB role switching by using the
-extcon drd notifiers. The current implementation does not accommodate this.
-If usb role switching is enabled then drd notifiers are not added. If usb
-role switching is not enabled then the dr_mode is forced to peripheral
-(dwc3_get_dr_mode) and role switching will not be possible(dwc3_set_mode).
+Skip the Sigtrap test for arm + arm64, same as was done for s390 in
+commit a840974e96fd ("perf test: Test 73 Sig_trap fails on s390"). For
+this, reuse BP_SIGNAL_IS_SUPPORTED - meaning that the arch can use BP to
+generate signals - instead of BP_ACCOUNT_IS_SUPPORTED, which is
+appropriate.
 
-Therefore, rearrange the "if else" logic such that extcon drd notifiers can
-be added even with usb role switching enabled.
+As described by Will at [0], in the test we get stuck in a loop of handling
+the HW breakpoint exception and never making progress. GDB handles this
+by stepping over the faulting instruction, but with perf the kernel is
+expected to handle the step (which it doesn't for arm).
 
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
----
- drivers/usb/dwc3/drd.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+Dmitry made an attempt to get this work, also mentioned in the same thread
+as [0], which was appreciated. But the best thing to do is skip the test
+for now.
 
-diff --git a/drivers/usb/dwc3/drd.c b/drivers/usb/dwc3/drd.c
-index b919ea3d87f2..0e86b1d8b50c 100644
---- a/drivers/usb/dwc3/drd.c
-+++ b/drivers/usb/dwc3/drd.c
-@@ -583,12 +583,7 @@ int dwc3_drd_init(struct dwc3 *dwc)
- 	if (IS_ERR(dwc->edev))
- 		return PTR_ERR(dwc->edev);
+[0] https://lore.kernel.org/linux-perf-users/20220118124343.GC98966@leoy-ThinkPad-X240s/T/#m13b06c39d2a5100d340f009435df6f4d8ee57b5a
+
+Fixes: Fixes: 5504f67944484 ("perf test sigtrap: Add basic stress test for sigtrap handling")
+Signed-off-by: John Garry <john.garry@huawei.com>
+
+diff --git a/tools/perf/tests/sigtrap.c b/tools/perf/tests/sigtrap.c
+index 1f147fe6595f..e32ece90e164 100644
+--- a/tools/perf/tests/sigtrap.c
++++ b/tools/perf/tests/sigtrap.c
+@@ -22,19 +22,6 @@
+ #include "tests.h"
+ #include "../perf-sys.h"
  
--	if (ROLE_SWITCH &&
--	    device_property_read_bool(dwc->dev, "usb-role-switch")) {
--		ret = dwc3_setup_role_switch(dwc);
--		if (ret < 0)
--			return ret;
--	} else if (dwc->edev) {
-+	if (dwc->edev) {
- 		dwc->edev_nb.notifier_call = dwc3_drd_notifier;
- 		ret = extcon_register_notifier(dwc->edev, EXTCON_USB_HOST,
- 					       &dwc->edev_nb);
-@@ -598,7 +593,14 @@ int dwc3_drd_init(struct dwc3 *dwc)
- 		}
+-/*
+- * PowerPC and S390 do not support creation of instruction breakpoints using the
+- * perf_event interface.
+- *
+- * Just disable the test for these architectures until these issues are
+- * resolved.
+- */
+-#if defined(__powerpc__) || defined(__s390x__)
+-#define BP_ACCOUNT_IS_SUPPORTED 0
+-#else
+-#define BP_ACCOUNT_IS_SUPPORTED 1
+-#endif
+-
+ #define NUM_THREADS 5
  
- 		dwc3_drd_update(dwc);
--	} else {
-+	}
-+
-+	if (ROLE_SWITCH &&
-+	    device_property_read_bool(dwc->dev, "usb-role-switch")) {
-+		ret = dwc3_setup_role_switch(dwc);
-+		if (ret < 0)
-+			return ret;
-+	} else if (!dwc->edev) {
- 		dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_OTG);
+ static struct {
+@@ -135,7 +122,7 @@ static int test__sigtrap(struct test_suite *test __maybe_unused, int subtest __m
+ 	char sbuf[STRERR_BUFSIZE];
+ 	int i, fd, ret = TEST_FAIL;
  
- 		/* use OTG block to get ID event */
+-	if (!BP_ACCOUNT_IS_SUPPORTED) {
++	if (!BP_SIGNAL_IS_SUPPORTED) {
+ 		pr_debug("Test not supported on this architecture");
+ 		return TEST_SKIP;
+ 	}
 -- 
-2.17.1
+2.26.2
 
