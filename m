@@ -2,117 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5647C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A37C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234512AbiBRLac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:30:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49080 "EHLO
+        id S234540AbiBRLbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:31:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234507AbiBRLaa (ORCPT
+        with ESMTP id S231566AbiBRLbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 06:30:30 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9632A2AF93C
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:30:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645183814; x=1676719814;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KGo8lcJ4F56kenYAwLaTbI82s91drMBP5GcCwMezJx8=;
-  b=A/PiPf+EIvZffJNRgRcKqWOSvOERH03meykXbNTaq4IPLyRkgPkwjdOh
-   6LhODio+tx/Cy6BzIcjyI0V6hxx8sq2WBTFM27DxNrpmhyG14V+6If0D9
-   MGFuwY5ZWb3wCL2uKHmf9GPBeR+VXiBYZJSxQe7fK8lizXyAGX+akzaag
-   dTSAlK4QpCr9BjeWuVSHk3fCparaGm5lRWeImFPnY4sZmdXKHuSJW/8dv
-   25hIiDQUxRNGTjauhrgCrC8CSYG6/6XeTfY1Z7JHT+0MzBdIYEHKNOFQk
-   2uqTzzjhFLZ887aRJkfW0kEVZC9aegw6woZbTO8WAXyi8G8bpMEyC7UEg
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="337553335"
-X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
-   d="scan'208";a="337553335"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 03:30:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
-   d="scan'208";a="775265393"
-Received: from nntpat99-84.inn.intel.com ([10.125.99.84])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Feb 2022 03:30:10 -0800
-From:   Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexei Budankov <abudankov@huawei.com>
-Subject: [PATCH] perf data: Fix double free in perf_session__delete
-Date:   Fri, 18 Feb 2022 14:30:08 +0300
-Message-Id: <20220218113008.24416-1-alexey.v.bayduraev@linux.intel.com>
-X-Mailer: git-send-email 2.19.0
+        Fri, 18 Feb 2022 06:31:03 -0500
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D09E2AF906;
+        Fri, 18 Feb 2022 03:30:46 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=3;SR=0;TI=SMTPD_---0V4p.agV_1645183842;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V4p.agV_1645183842)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 18 Feb 2022 19:30:43 +0800
+Date:   Fri, 18 Feb 2022 19:30:42 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     "Darrick J. Wong" <djwong@kernel.org>,
+        xfs <linux-xfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] xfs: add missing cmap->br_state = XFS_EXT_NORM update
+Message-ID: <Yg+DYkuTayILe5YA@B-P7TQMD6M-0146.local>
+Mail-Followup-To: "Darrick J. Wong" <djwong@kernel.org>,
+        xfs <linux-xfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220217095542.68085-1-hsiangkao@linux.alibaba.com>
+ <20220218054032.GO8313@magnolia>
+ <Yg802fTm0n31FC+T@B-P7TQMD6M-0146.local>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yg802fTm0n31FC+T@B-P7TQMD6M-0146.local>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When perf_data__create_dir fails, it calls close_dir, but
-perf_session__delete also calls close_dir and since dir.version and
-dir.nr was initialized by perf_data__create_dir, a double free occurs.
-This patch moves the initialization of dir.version and dir.nr after
-successful initialization of dir.files, that prevents double freeing.
-This behavior is already implemented in perf_data__open_dir. The patch
-also adds a missing error message in case data directory creation fails.
+On Fri, Feb 18, 2022 at 01:55:37PM +0800, Gao Xiang wrote:
+> Hi Darrick,
+> 
+> On Thu, Feb 17, 2022 at 09:40:32PM -0800, Darrick J. Wong wrote:
+> > On Thu, Feb 17, 2022 at 05:55:42PM +0800, Gao Xiang wrote:
+> > > COW extents are already converted into written real extents after
+> > > xfs_reflink_convert_cow_locked(), therefore cmap->br_state should
+> > > reflect it.
+> > > 
+> > > Otherwise, there is another necessary unwritten convertion
+> > > triggered in xfs_dio_write_end_io() for direct I/O cases.
+> > > 
+> > > Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+> > 
+> > I /think/ this looks ok.  Does it test ok too?  AFAICT nothing in the
+> > iomap/writeback machinery cares the incorrect state because we always
+> > set IOMAP_F_SHARED (which triggers COW) so I think this is simply a fix
+> > for directio, like you said?
+> 
+> Yeah, I think so, from the code logic buffered i/o seems no impacted...
+> And the unnecessary unwritten convertion under direct i/o takes
+> noticeable extra overhead in our workloads...
+> 
+> I checked my last night xfstests, it seems it stops unexpectedly (maybe
+> due to some environmental problem). I will rerun tests today and
+> feedback later.
 
-Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
----
- tools/perf/builtin-record.c | 4 +++-
- tools/perf/util/data.c      | 7 +++----
- 2 files changed, 6 insertions(+), 5 deletions(-)
+On my test environment machine, with linux 5.17-rc4,
+both w/ and w/o the patch, it fails:
 
-diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
-index 0bc6529814b2..0306d5911de2 100644
---- a/tools/perf/builtin-record.c
-+++ b/tools/perf/builtin-record.c
-@@ -1186,8 +1186,10 @@ static int record__mmap_evlist(struct record *rec,
- 
- 	if (record__threads_enabled(rec)) {
- 		ret = perf_data__create_dir(&rec->data, evlist->core.nr_mmaps);
--		if (ret)
-+		if (ret) {
-+			pr_err("Failed to create data directory: %s\n", strerror(errno));
- 			return ret;
-+		}
- 		for (i = 0; i < evlist->core.nr_mmaps; i++) {
- 			if (evlist->mmap)
- 				evlist->mmap[i].file = &rec->data.dir.files[i];
-diff --git a/tools/perf/util/data.c b/tools/perf/util/data.c
-index f5d260b1df4d..15a4547d608e 100644
---- a/tools/perf/util/data.c
-+++ b/tools/perf/util/data.c
-@@ -44,10 +44,6 @@ int perf_data__create_dir(struct perf_data *data, int nr)
- 	if (!files)
- 		return -ENOMEM;
- 
--	data->dir.version = PERF_DIR_VERSION;
--	data->dir.files   = files;
--	data->dir.nr      = nr;
--
- 	for (i = 0; i < nr; i++) {
- 		struct perf_data_file *file = &files[i];
- 
-@@ -62,6 +58,9 @@ int perf_data__create_dir(struct perf_data *data, int nr)
- 		file->fd = ret;
- 	}
- 
-+	data->dir.version = PERF_DIR_VERSION;
-+	data->dir.files   = files;
-+	data->dir.nr      = nr;
- 	return 0;
- 
- out_err:
--- 
-2.19.0
+generic/594 generic/600 xfs/158 xfs/160
 
+I think no issue with this patch.
+
+Thanks,
+Gao Xiang
