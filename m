@@ -2,191 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 876E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:03:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22370C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236749AbiBRQD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:03:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56728 "EHLO
+        id S237407AbiBRQFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:05:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234506AbiBRQDy (ORCPT
+        with ESMTP id S233019AbiBRQFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:03:54 -0500
-Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DE948E79
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:03:37 -0800 (PST)
-Received: by mail-ua1-x92c.google.com with SMTP id 10so4484696uar.9
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:03:36 -0800 (PST)
+        Fri, 18 Feb 2022 11:05:02 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196B9532FC
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:04:46 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id c4so2642791pfl.7
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:04:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a/tt/i/SHiINJEY0pzj/+Ldx+3Qwg7aOlXBO5O3mv/g=;
-        b=dF4InSk4puY7t63FDNQji1VKBMAT10aW6SsRaj+tbGjKZBA7rCD6pWG5TDIOUYZs6d
-         52g9JlO5u2/5vAvhhXDbgKidl3IcbTgCPe3jNeCsjUK9FLQY9n9zO8f1y5naKqP3Sa5P
-         6GKB8aFGjIk9FgIJB2WZatULVInnG6CvYYyvh929X6pCjT5OuXW71PguXiOApK1ZNhuT
-         riblrkDGEjVWLHl8fFmKnX12m+X1DNxNvEgBeFwgNXqv5j+bZkRW75RYE9667sBznToC
-         Oi0OVnAmg+weJANXpwN9GQNBpPcnyRiuHypFs7bPUZZAfQYlurfZET/5qT1iznjdQTv8
-         ZHNQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WDCu5fW0jU66ysKsVUGrCitGNsiEZTA+NVb+oahcLwA=;
+        b=LXDx8icFsWFPMdF/g01b4gSchKGaC2RcBtXtf4DrUEw3t5xt4m7ZPlXIYKBxC4e7Ub
+         Qd7R+6JNu13TapP/gJmnVnpBwUs0I+fiPNRTy9aIzKEEJdLXmqwROwUL6hBCncRKywW9
+         8AvV3xi6aYtB42zirKim6PrWOMPK7bB1j41JRV68B8HvQa95E+mwiiG1PgEEgOpmgWMF
+         h33tPRQY2315I8lczu0a/qLAjNkMvRguMkRPLTGsdDGNajduA6X8/xfLnAyQbFuPyPkj
+         9qeh8O2uxYR/MgnK/noxfEWh/4i8ORQzF6PfcJ04CAxA2jBWjFflZvonmOP9BxSG8Dgf
+         MeHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a/tt/i/SHiINJEY0pzj/+Ldx+3Qwg7aOlXBO5O3mv/g=;
-        b=IRFlC6POXPpqwn+mxtPLA6JqtWkWRTozYij4NoNuYVVbdWLbNG56f3TIxZzTwE+zk0
-         6h1tHH5EnIIFbwyWOP7GNcW2/W3IYMvMVQpzPe1CmEe7uw/fAJVYn99JDm6hegERYpBN
-         aSIbDP3j8WU9XnUNMv667jC90eRBteYFPtYA2EycodafwLOaqFH03qQKza+CarXMDVfA
-         hu82zklMzez3Rm5LzYbuw3jtutZprrywfCvxN+peWHvmpZ5bKCWnNWKJ6hqXV049xpjh
-         ZrYV/Wx8W9I91RORhgJ5KKYa4Aq4Y4mWsWvQ+9mTyrXu5bsMY9g2MCQzNOQXmq8nCcdq
-         /NKA==
-X-Gm-Message-State: AOAM533fItALWNT9ibbY0HIUnpV2/S5cdUA9i3CeU+4uJ3Q19H2rFOQa
-        uda2tk/Rveq0nGw9TqZ/CsYk2D/X4n7RdOjgiTdUy+D0e1amFQ==
-X-Google-Smtp-Source: ABdhPJweA9UfX0PBbz3wdvBXso5dR5TQDJ3ynb4y/07Jh18joreI6URQtKSRC6DR2FHWxXidwq0Il055iZlCfHPircE=
-X-Received: by 2002:ab0:60b1:0:b0:341:543e:c388 with SMTP id
- f17-20020ab060b1000000b00341543ec388mr3233205uam.80.1645200215894; Fri, 18
- Feb 2022 08:03:35 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WDCu5fW0jU66ysKsVUGrCitGNsiEZTA+NVb+oahcLwA=;
+        b=RGjiJSHLbvuH5KBiEsNILEasUcwZw9kl2hxY32CC+CtBJPdK9j9gUu6PPD3d1x5RmV
+         nM70yezDS1QIXFdwgHIFSLgDF1G9sOhs06N+cQ47nc8JBLYIC6rHHx0NGMCtpist9M7w
+         5hZOX3vdi9b/qfgGrSWUJ57R+PKNijIolpvyHaPaJvzO0D+kBt727YkhgGbXm54ZH1Eu
+         1Mknn16bfMtOZgjhjnU7witpKr4ICWN3BSnZ7WTDEApZj+926YdpOeoHrxdnDFXW6+ln
+         5K9tVwRCmH92Edis3opf2zw5QBaaMfl/NPtu3dZKWH+y1LSnkLc6YcYIw55aLWpOm90a
+         pWGw==
+X-Gm-Message-State: AOAM531mSYby8DRdAoWckYFEkVQe89R8bo7CbYzPDBWLsRuItskPv+7c
+        zjKCXjlkaqMezawdSwxUYcnd2w==
+X-Google-Smtp-Source: ABdhPJyOXXnBv1yMQKgPoI/ywpg5jlp3cL5cedKhOmSghspyiza1zCJ9BlMluZ1SBcRYyVkJhYM2AQ==
+X-Received: by 2002:a62:65c6:0:b0:4d1:6354:e8e6 with SMTP id z189-20020a6265c6000000b004d16354e8e6mr8190211pfb.64.1645200285419;
+        Fri, 18 Feb 2022 08:04:45 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id mg24sm5112105pjb.4.2022.02.18.08.04.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 08:04:44 -0800 (PST)
+Date:   Fri, 18 Feb 2022 16:04:41 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Peng Hao <flyingpenghao@gmail.com>
+Cc:     pbonzini@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH]  kvm: correct comment description issue
+Message-ID: <Yg/DmdjSqNLwWo2d@google.com>
+References: <20220218110547.11249-1-flyingpeng@tencent.com>
 MIME-Version: 1.0
-References: <Yg54nse5qNQO3sbW@zn.tnic> <20220218013209.2436006-1-juew@google.com>
- <Yg+2Hc78nfSRmh/j@zn.tnic>
-In-Reply-To: <Yg+2Hc78nfSRmh/j@zn.tnic>
-From:   Jue Wang <juew@google.com>
-Date:   Fri, 18 Feb 2022 08:03:24 -0800
-Message-ID: <CAPcxDJ4c3eGXTB9UPJmZ8dzyCNPW4Lv9s1QSeoCWq_LdNWTrJw@mail.gmail.com>
-Subject: Re: [PATCH v2] x86/mce: work around an erratum on fast string copy instructions.
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Tony Luck <tony.luck@intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218110547.11249-1-flyingpeng@tencent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 7:07 AM Borislav Petkov <bp@alien8.de> wrote:
->
-> On Thu, Feb 17, 2022 at 05:32:09PM -0800, Jue Wang wrote:
-> > +static noinstr bool quirk_skylake_repmov(void)
-> > +{
-> > +     u64 mcgstatus = mce_rdmsrl(MSR_IA32_MCG_STATUS);
-> > +     u64 misc_enable = __rdmsr(MSR_IA32_MISC_ENABLE);
-> > +
-> > +     /*
-> > +      * Apply the quirk only to local machine checks, i.e., no broadcast
-> > +      * sync is needed.
-> > +      */
-> > +     if ((mcgstatus & MCG_STATUS_LMCES) &&
-> > +         unlikely(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING)) {
-> > +             u64 mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
-> > +
-> > +             /* Check for a software-recoverable data fetch error. */
-> > +             if ((mc1_status &
-> > +                  (MCI_STATUS_VAL | MCI_STATUS_OVER | MCI_STATUS_UC | MCI_STATUS_EN |
-> > +                   MCI_STATUS_ADDRV | MCI_STATUS_MISCV | MCI_STATUS_PCC |
-> > +                   MCI_STATUS_AR | MCI_STATUS_S)) ==
-> > +                  (MCI_STATUS_VAL |                   MCI_STATUS_UC | MCI_STATUS_EN |
-> > +                   MCI_STATUS_ADDRV | MCI_STATUS_MISCV |
-> > +                   MCI_STATUS_AR | MCI_STATUS_S)) {
-> > +                     misc_enable &= ~MSR_IA32_MISC_ENABLE_FAST_STRING;
-> > +                     __wrmsr(MSR_IA32_MISC_ENABLE,
-> > +                             (u32)misc_enable, (u32)(misc_enable >> 32));
->
-> "You're going to have to use the mce_{rd,wr}msrl() routines."
->
-> I actually really meant that.
-Thanks.
+"KVM: VMX:" for the scope.  A more specific shortlog would also be helfpul, stating
+that a comment is being modified doesn't provide any info about what comment.
 
-Since MSR_IA32_MISC_ENABLE is not a MCA register, I wonder if we want
-to mix its read/write with the injected MCE code. I was a bit concerned about
-potential race with mce-inject and the read/write to MSR_IA32_MISC_ENABLE.
+On Fri, Feb 18, 2022, Peng Hao wrote:
+> loaded_vmcs does not have this field 'vcpu', modify this comment.
 
->
-> And I went and simplified this a bit more so that it is more readable,
-> diff ontop.
->
-> Also, Tony, I think the clearing of MCG_STATUS should happen last.
->
+It would be helpful to state that loaded_vmcs has 'cpu', not 'vcpu'.  It's hard to
+identify what's being changed.
+
+
+Something like this?
+
+  KVM: VMX: Fix typos above smp_wmb() comment in __loaded_vmcs_clear()
+
+  Fix a comment documenting the memory barrier related to clearing a
+  loaded_vmcs; loaded_vmcs tracks the host CPU the VMCS is loaded on via
+  the field 'cpu', it doesn't have a 'vcpu' field.
+
+With a tweaked shortlog/changelog (doesn't have to be exactly the above),
+
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+
+> Signed-off-by: Peng Hao <flyingpeng@tencent.com>
 > ---
-> diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-> index c1a41da99975..1741be9b9464 100644
-> --- a/arch/x86/kernel/cpu/mce/core.c
-> +++ b/arch/x86/kernel/cpu/mce/core.c
-> @@ -831,34 +831,35 @@ quirk_sandybridge_ifu(int bank, struct mce *m, struct pt_regs *regs)
->   */
->  static noinstr bool quirk_skylake_repmov(void)
->  {
-> -       u64 mcgstatus = mce_rdmsrl(MSR_IA32_MCG_STATUS);
-> -       u64 misc_enable = __rdmsr(MSR_IA32_MISC_ENABLE);
-> +       u64 mcgstatus   = mce_rdmsrl(MSR_IA32_MCG_STATUS);
-> +       u64 misc_enable = mce_rdmsrl(MSR_IA32_MISC_ENABLE);
-> +       u64 mc1_status;
->
->         /*
->          * Apply the quirk only to local machine checks, i.e., no broadcast
->          * sync is needed.
->          */
-> -       if ((mcgstatus & MCG_STATUS_LMCES) &&
-> -           (misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING)) {
-> -               u64 mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
-> -
-> -               /* Check for a software-recoverable data fetch error. */
-> -               if ((mc1_status &
-> -                    (MCI_STATUS_VAL | MCI_STATUS_OVER | MCI_STATUS_UC | MCI_STATUS_EN |
-> -                     MCI_STATUS_ADDRV | MCI_STATUS_MISCV | MCI_STATUS_PCC |
-> -                     MCI_STATUS_AR | MCI_STATUS_S)) ==
-> -                    (MCI_STATUS_VAL |                   MCI_STATUS_UC | MCI_STATUS_EN |
-> -                     MCI_STATUS_ADDRV | MCI_STATUS_MISCV |
-> -                     MCI_STATUS_AR | MCI_STATUS_S)) {
-> -                       misc_enable &= ~MSR_IA32_MISC_ENABLE_FAST_STRING;
-> -                       __wrmsr(MSR_IA32_MISC_ENABLE,
-> -                               (u32)misc_enable, (u32)(misc_enable >> 32));
-> -                       mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
-> -                       mce_wrmsrl(MSR_IA32_MCx_STATUS(1), 0);
-> -                       pr_err_once("Errata detected, disable fast string copy instructions.\n");
-> -                       return true;
-> -               }
-> +       if (!(mcgstatus & MCG_STATUS_LMCES) ||
-> +           !(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING))
-> +               return false;
-> +
-> +       mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
-> +
-> +       /* Check for a software-recoverable data fetch error. */
-> +       if ((mc1_status &
-> +            (MCI_STATUS_VAL | MCI_STATUS_OVER | MCI_STATUS_UC | MCI_STATUS_EN |
-> +             MCI_STATUS_ADDRV | MCI_STATUS_MISCV | MCI_STATUS_PCC |
-> +             MCI_STATUS_AR | MCI_STATUS_S)) ==
-> +            (MCI_STATUS_VAL |                   MCI_STATUS_UC | MCI_STATUS_EN |
-> +             MCI_STATUS_ADDRV | MCI_STATUS_MISCV |
-> +             MCI_STATUS_AR | MCI_STATUS_S)) {
-> +               misc_enable &= ~MSR_IA32_MISC_ENABLE_FAST_STRING;
-> +               mce_wrmsrl(MSR_IA32_MISC_ENABLE, misc_enable);
-> +               mce_wrmsrl(MSR_IA32_MCx_STATUS(1), 0);
-> +               pr_err_once("Erratum detected, disable fast string copy instructions.\n");
-> +               return true;
->         }
-> +
->         return false;
->  }
->
-> @@ -1432,7 +1433,7 @@ noinstr void do_machine_check(struct pt_regs *regs)
->                 return unexpected_machine_check(regs);
->
->         if (mce_flags.skx_repmov_quirk && quirk_skylake_repmov())
-> -               return;
-> +               goto clear;
->
->         /*
->          * Establish sequential order between the CPUs entering the machine
-> @@ -1576,6 +1577,7 @@ noinstr void do_machine_check(struct pt_regs *regs)
->  out:
->         instrumentation_end();
->
-> +clear:
->         mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
->  }
->  EXPORT_SYMBOL_GPL(do_machine_check);
->
-> --
-> Regards/Gruss,
->     Boris.
->
-> https://people.kernel.org/tglx/notes-about-netiquette
+>  arch/x86/kvm/vmx/vmx.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 7dce746c175f..0ffcfe54eea5 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -644,10 +644,10 @@ static void __loaded_vmcs_clear(void *arg)
+>  
+>  	/*
+>  	 * Ensure all writes to loaded_vmcs, including deleting it from its
+> -	 * current percpu list, complete before setting loaded_vmcs->vcpu to
+> -	 * -1, otherwise a different cpu can see vcpu == -1 first and add
+> -	 * loaded_vmcs to its percpu list before it's deleted from this cpu's
+> -	 * list. Pairs with the smp_rmb() in vmx_vcpu_load_vmcs().
+> +	 * current percpu list, complete before setting loaded_vmcs->cpu to
+> +	 * -1, otherwise a different cpu can see loaded_vmcs->cpu == -1 first
+> +	 * and add loaded_vmcs to its percpu list before it's deleted from this
+> +	 * cpu's list. Pairs with the smp_rmb() in vmx_vcpu_load_vmcs().
+>  	 */
+>  	smp_wmb();
+>  
+> -- 
+> 2.27.0
+> 
