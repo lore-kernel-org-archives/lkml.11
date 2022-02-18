@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AC0C43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 726AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239794AbiBRV1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:27:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51504 "EHLO
+        id S239814AbiBRV1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:27:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239814AbiBRVZn (ORCPT
+        with ESMTP id S239796AbiBRVZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:25:43 -0500
+        Fri, 18 Feb 2022 16:25:42 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF478244650
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33C692409D8
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645219525;
+        s=mimecast20190719; t=1645219522;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Z5IqDksxnanH0T8Ec4A7XO1FHLTibsIpOj59su0De6E=;
-        b=Kr8psRz4TUME0CB9hOFdDCIfXUxhG4NggIKwaIqXb1AFfg/eFyZYcKd7qF5B4W+8qerX2W
-        ft1yD+vl7JKl6G5iHy0hn1jpGqRJ1uqlcPP2mQgl8lar7DLRIX3IyGLnREWEnjz+NsheFK
-        /E4eb685mx1QJQmclrhiBQ/Fml7zGqg=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ePF02phTQNWdjP93kafJk+s6599DXNgjVbs0ZVFVdQM=;
+        b=ISWieQXeDpCk+KmT62RPuPdKMdTqF6umgY5vikQst6ffcryEACws5EsCP+a+9yJcUp1vG+
+        GlgaqPeJvCo1tfVk2xDYorTLwuwJH81vvrqnmGMEOYB+uxP318o/q7QGkNYuaVoyZ03lCX
+        exjnNHG/ZNQISk+Ysi5LdMu+kfNJ7J4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-373-42ZjoZVrM6CYy55JZ-cUzw-1; Fri, 18 Feb 2022 16:25:23 -0500
-X-MC-Unique: 42ZjoZVrM6CYy55JZ-cUzw-1
-Received: by mail-wr1-f71.google.com with SMTP id q21-20020adfab15000000b001e57c9a342aso4079043wrc.6
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:23 -0800 (PST)
+ us-mta-99-0iSSoCbYM2-XubFSDJsuJA-1; Fri, 18 Feb 2022 16:25:20 -0500
+X-MC-Unique: 0iSSoCbYM2-XubFSDJsuJA-1
+Received: by mail-wm1-f72.google.com with SMTP id c7-20020a1c3507000000b0034a0dfc86aaso6464808wma.6
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Z5IqDksxnanH0T8Ec4A7XO1FHLTibsIpOj59su0De6E=;
-        b=pKGvkQG0SW1FFYEHHOUSrlESHANkmtwmu4SL3UywY4e+UneybGN/j3NZloyIRosI78
-         46RLhIB4F+iLohduuY92YkLt8ReC/lYT+h09DmzARkpD0VDdIzIA7SrdZqfa09UWWzlP
-         L7A2T0Dx05f9htIqY7becMX/Nk7aw1PnSfUUBkJMU46dTxqjTCk0FIK/1bkyF7JPOu1E
-         daduL9la5GV+RoM5aT5fnBuc7VXsnQtNTQ2j00Dt3R4g8XUd4DtrgmkwKYnTfZva17Ne
-         xMff8AgMJz0lWcS0CthtKYPqWTOxUjZTU4fvig0u/V2lnFnzUS90kmQRdiId6LtT4U0I
-         Lf+w==
-X-Gm-Message-State: AOAM530EWnDjKWB5cweLpKmclsg3cJHPf7EJWLF0OofZRQGva8nJwZfg
-        8gG2hIIFvlmt1xzlWS1iz1zTqn0SlEWWbbzpf8y0TuvxK5g0wR/SSUWhD/Y/b4be2gqfeCCkMfc
-        LcTHOf2MKT4nRwPK+ZzR8RrM=
-X-Received: by 2002:a7b:c756:0:b0:37b:f0f3:ed71 with SMTP id w22-20020a7bc756000000b0037bf0f3ed71mr11941157wmk.16.1645219522307;
-        Fri, 18 Feb 2022 13:25:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxtqQ7Wvewe3HcQC7SZVtQGdd0D2N0Dcu8lTrvtDWFeRDbY235jQZ9b6bU8zUYzHnDVJj8vJw==
-X-Received: by 2002:a7b:c756:0:b0:37b:f0f3:ed71 with SMTP id w22-20020a7bc756000000b0037bf0f3ed71mr11941145wmk.16.1645219522032;
-        Fri, 18 Feb 2022 13:25:22 -0800 (PST)
+        bh=ePF02phTQNWdjP93kafJk+s6599DXNgjVbs0ZVFVdQM=;
+        b=OZazsI7YZNoVEM3EaVK4059NBwFiVdSGsm/xazDElWwP1v/ebgLn09eFTteF4qb7oY
+         ByvGIhwTuW61gLu1jAoXqxj2btM0vyNYjZbNGkdRiucphlaby6Yi7F+4VGC8FAEz8lZf
+         3Ohs5Xs15TaCCJaku/ztIvM97bj6gCR6ZDIy998s+okZzxEUm03DTooujTCXRDcwmpJK
+         MJBwQmllARydSlSZEs6nkneQ8bxqBOkDHlAcx1JF6fRcgoa9X/1J7/Yv5aoAow4S3Vyf
+         uALc/w4StwcYI3eB8WdXf9aPwOTmet6wEGWi64oUWBqp3REoQUONbMX6E0XktOvpHu0v
+         KhLA==
+X-Gm-Message-State: AOAM533EigrV973B+huKEJGz5ijLC32UVZ/B47psOtoN/TrRHmlz0Jka
+        uul90RT95t9/RMpurToHRrCJU8zlhyyBrp72ldqhkw1JH3OzR3HbeSSrdElAw7q2/Ve4ttphavD
+        yj0cBX+1Vwb/cCglIzEGA/nI=
+X-Received: by 2002:a5d:4242:0:b0:1e3:3130:5088 with SMTP id s2-20020a5d4242000000b001e331305088mr7172758wrr.540.1645219519515;
+        Fri, 18 Feb 2022 13:25:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzJtjH7t8r2WEv1dW0J60Yls0GS2LS3kTdLGMPMqhfpzvJ0YOlMEZsw8eD4jnQnLHgNNWTz3A==
+X-Received: by 2002:a5d:4242:0:b0:1e3:3130:5088 with SMTP id s2-20020a5d4242000000b001e331305088mr7172738wrr.540.1645219519232;
+        Fri, 18 Feb 2022 13:25:19 -0800 (PST)
 Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id a18sm39460178wrg.13.2022.02.18.13.25.21
+        by smtp.gmail.com with ESMTPSA id j10sm657539wmq.20.2022.02.18.13.25.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 13:25:21 -0800 (PST)
+        Fri, 18 Feb 2022 13:25:18 -0800 (PST)
 From:   Aaron Tomlin <atomlin@redhat.com>
 To:     mcgrof@kernel.org
 Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
@@ -64,9 +64,9 @@ Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
         ghalat@redhat.com, allen.lkml@gmail.com, joe@perches.com,
         christophe.leroy@csgroup.eu, msuchanek@suse.de,
         oleksandr@natalenko.name
-Subject: [PATCH v6 07/13] module: Move extra signature support out of core code
-Date:   Fri, 18 Feb 2022 21:25:05 +0000
-Message-Id: <20220218212511.887059-8-atomlin@redhat.com>
+Subject: [PATCH v6 05/13] module: Move latched RB-tree support to a separate file
+Date:   Fri, 18 Feb 2022 21:25:03 +0000
+Message-Id: <20220218212511.887059-6-atomlin@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218212511.887059-1-atomlin@redhat.com>
 References: <20220218212511.887059-1-atomlin@redhat.com>
@@ -78,239 +78,339 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 No functional change.
 
-This patch migrates additional module signature check
-code from core module code into kernel/module/signing.c.
+This patch migrates module latched RB-tree support
+(e.g. see __module_address()) from core module code
+into kernel/module/tree_lookup.c.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- kernel/module/internal.h |  9 +++++
- kernel/module/main.c     | 87 ----------------------------------------
- kernel/module/signing.c  | 77 +++++++++++++++++++++++++++++++++++
- 3 files changed, 86 insertions(+), 87 deletions(-)
+ kernel/module/Makefile      |   3 +
+ kernel/module/internal.h    |  33 +++++++++
+ kernel/module/main.c        | 130 ++----------------------------------
+ kernel/module/tree_lookup.c | 109 ++++++++++++++++++++++++++++++
+ 4 files changed, 149 insertions(+), 126 deletions(-)
+ create mode 100644 kernel/module/tree_lookup.c
 
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+index ba3ebdb7055b..6fb21ebe1aa3 100644
+--- a/kernel/module/Makefile
++++ b/kernel/module/Makefile
+@@ -8,3 +8,6 @@ obj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o
+ obj-$(CONFIG_MODULE_SIG) += signing.o
+ obj-$(CONFIG_MODULE_SIG_FORMAT) += signature.o
+ obj-$(CONFIG_LIVEPATCH) += livepatch.o
++ifdef CONFIG_MODULES
++obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
++endif
 diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index f4b7e123d625..0fdd9c0cd77d 100644
+index ad7a444253ed..57a715454c9e 100644
 --- a/kernel/module/internal.h
 +++ b/kernel/module/internal.h
-@@ -164,3 +164,12 @@ static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
- 	return 0;
+@@ -9,6 +9,7 @@
+ #include <linux/compiler.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/rculist.h>
+ 
+ #ifndef ARCH_SHF_SMALL
+ #define ARCH_SHF_SMALL 0
+@@ -93,3 +94,35 @@ static inline void module_decompress_cleanup(struct load_info *info)
+ {
  }
- #endif /* CONFIG_STRICT_MODULE_RWX */
+ #endif
 +
-+#ifdef CONFIG_MODULE_SIG
-+int module_sig_check(struct load_info *info, int flags);
-+#else /* !CONFIG_MODULE_SIG */
-+static inline int module_sig_check(struct load_info *info, int flags)
++#ifdef CONFIG_MODULES_TREE_LOOKUP
++struct mod_tree_root {
++	struct latch_tree_root root;
++	unsigned long addr_min;
++	unsigned long addr_max;
++};
++
++extern struct mod_tree_root mod_tree;
++
++void mod_tree_insert(struct module *mod);
++void mod_tree_remove_init(struct module *mod);
++void mod_tree_remove(struct module *mod);
++struct module *mod_find(unsigned long addr);
++#else /* !CONFIG_MODULES_TREE_LOOKUP */
++
++static void mod_tree_insert(struct module *mod) { }
++static void mod_tree_remove_init(struct module *mod) { }
++static void mod_tree_remove(struct module *mod) { }
++static inline struct module *mod_find(unsigned long addr)
 +{
-+	return 0;
++	struct module *mod;
++
++	list_for_each_entry_rcu(mod, &modules, list,
++				lockdep_is_held(&module_mutex)) {
++		if (within_module(addr, mod))
++			return mod;
++	}
++
++	return NULL;
 +}
-+#endif /* !CONFIG_MODULE_SIG */
++#endif /* CONFIG_MODULES_TREE_LOOKUP */
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 5cd63f14b1ef..c63e10c61694 100644
+index 3596ebf3a6c3..76b53880ad91 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -23,7 +23,6 @@
- #include <linux/vmalloc.h>
- #include <linux/elf.h>
- #include <linux/proc_fs.h>
--#include <linux/security.h>
- #include <linux/seq_file.h>
- #include <linux/syscalls.h>
- #include <linux/fcntl.h>
-@@ -127,28 +126,6 @@ static void module_assert_mutex_or_preempt(void)
- #endif
- }
+@@ -90,138 +90,16 @@ static DECLARE_WORK(init_free_wq, do_free_init);
+ static LLIST_HEAD(init_free_list);
  
--#ifdef CONFIG_MODULE_SIG
--static bool sig_enforce = IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
--module_param(sig_enforce, bool_enable_only, 0644);
--
--void set_module_sig_enforced(void)
--{
--	sig_enforce = true;
--}
--#else
--#define sig_enforce false
--#endif
+ #ifdef CONFIG_MODULES_TREE_LOOKUP
 -
 -/*
-- * Export sig_enforce kernel cmdline parameter to allow other subsystems rely
-- * on that instead of directly to CONFIG_MODULE_SIG_FORCE config.
+- * Use a latched RB-tree for __module_address(); this allows us to use
+- * RCU-sched lookups of the address from any context.
+- *
+- * This is conditional on PERF_EVENTS || TRACING because those can really hit
+- * __module_address() hard by doing a lot of stack unwinding; potentially from
+- * NMI context.
 - */
--bool is_module_sig_enforced(void)
+-
+-static __always_inline unsigned long __mod_tree_val(struct latch_tree_node *n)
 -{
--	return sig_enforce;
+-	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
+-
+-	return (unsigned long)layout->base;
 -}
--EXPORT_SYMBOL(is_module_sig_enforced);
 -
- /* Block module loading/unloading? */
- int modules_disabled = 0;
- core_param(nomodule, modules_disabled, bint, 0);
-@@ -2569,70 +2546,6 @@ static inline void kmemleak_load_module(const struct module *mod,
- }
- #endif
- 
--#ifdef CONFIG_MODULE_SIG
--static int module_sig_check(struct load_info *info, int flags)
+-static __always_inline unsigned long __mod_tree_size(struct latch_tree_node *n)
 -{
--	int err = -ENODATA;
--	const unsigned long markerlen = sizeof(MODULE_SIG_STRING) - 1;
--	const char *reason;
--	const void *mod = info->hdr;
--	bool mangled_module = flags & (MODULE_INIT_IGNORE_MODVERSIONS |
--				       MODULE_INIT_IGNORE_VERMAGIC);
--	/*
--	 * Do not allow mangled modules as a module with version information
--	 * removed is no longer the module that was signed.
--	 */
--	if (!mangled_module &&
--	    info->len > markerlen &&
--	    memcmp(mod + info->len - markerlen, MODULE_SIG_STRING, markerlen) == 0) {
--		/* We truncate the module to discard the signature */
--		info->len -= markerlen;
--		err = mod_verify_sig(mod, info);
--		if (!err) {
--			info->sig_ok = true;
--			return 0;
--		}
--	}
+-	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
 -
--	/*
--	 * We don't permit modules to be loaded into the trusted kernels
--	 * without a valid signature on them, but if we're not enforcing,
--	 * certain errors are non-fatal.
--	 */
--	switch (err) {
--	case -ENODATA:
--		reason = "unsigned module";
--		break;
--	case -ENOPKG:
--		reason = "module with unsupported crypto";
--		break;
--	case -ENOKEY:
--		reason = "module with unavailable key";
--		break;
--
--	default:
--		/*
--		 * All other errors are fatal, including lack of memory,
--		 * unparseable signatures, and signature check failures --
--		 * even if signatures aren't required.
--		 */
--		return err;
--	}
--
--	if (is_module_sig_enforced()) {
--		pr_notice("Loading of %s is rejected\n", reason);
--		return -EKEYREJECTED;
--	}
--
--	return security_locked_down(LOCKDOWN_MODULE_SIGNATURE);
+-	return (unsigned long)layout->size;
 -}
--#else /* !CONFIG_MODULE_SIG */
--static int module_sig_check(struct load_info *info, int flags)
+-
+-static __always_inline bool
+-mod_tree_less(struct latch_tree_node *a, struct latch_tree_node *b)
 -{
+-	return __mod_tree_val(a) < __mod_tree_val(b);
+-}
+-
+-static __always_inline int
+-mod_tree_comp(void *key, struct latch_tree_node *n)
+-{
+-	unsigned long val = (unsigned long)key;
+-	unsigned long start, end;
+-
+-	start = __mod_tree_val(n);
+-	if (val < start)
+-		return -1;
+-
+-	end = start + __mod_tree_size(n);
+-	if (val >= end)
+-		return 1;
+-
 -	return 0;
 -}
--#endif /* !CONFIG_MODULE_SIG */
 -
- static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
- {
- #if defined(CONFIG_64BIT)
-diff --git a/kernel/module/signing.c b/kernel/module/signing.c
-index 8aeb6d2ee94b..85c8999dfecf 100644
---- a/kernel/module/signing.c
-+++ b/kernel/module/signing.c
-@@ -11,9 +11,29 @@
- #include <linux/module_signature.h>
- #include <linux/string.h>
- #include <linux/verification.h>
-+#include <linux/security.h>
- #include <crypto/public_key.h>
-+#include <uapi/linux/module.h>
- #include "internal.h"
+-static const struct latch_tree_ops mod_tree_ops = {
+-	.less = mod_tree_less,
+-	.comp = mod_tree_comp,
+-};
+-
+-static struct mod_tree_root {
+-	struct latch_tree_root root;
+-	unsigned long addr_min;
+-	unsigned long addr_max;
+-} mod_tree __cacheline_aligned = {
++struct mod_tree_root mod_tree __cacheline_aligned = {
+ 	.addr_min = -1UL,
+ };
  
-+static bool sig_enforce = IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
-+module_param(sig_enforce, bool_enable_only, 0644);
+ #define module_addr_min mod_tree.addr_min
+ #define module_addr_max mod_tree.addr_max
+ 
+-static noinline void __mod_tree_insert(struct mod_tree_node *node)
+-{
+-	latch_tree_insert(&node->node, &mod_tree.root, &mod_tree_ops);
+-}
+-
+-static void __mod_tree_remove(struct mod_tree_node *node)
+-{
+-	latch_tree_erase(&node->node, &mod_tree.root, &mod_tree_ops);
+-}
+-
+-/*
+- * These modifications: insert, remove_init and remove; are serialized by the
+- * module_mutex.
+- */
+-static void mod_tree_insert(struct module *mod)
+-{
+-	mod->core_layout.mtn.mod = mod;
+-	mod->init_layout.mtn.mod = mod;
+-
+-	__mod_tree_insert(&mod->core_layout.mtn);
+-	if (mod->init_layout.size)
+-		__mod_tree_insert(&mod->init_layout.mtn);
+-}
+-
+-static void mod_tree_remove_init(struct module *mod)
+-{
+-	if (mod->init_layout.size)
+-		__mod_tree_remove(&mod->init_layout.mtn);
+-}
+-
+-static void mod_tree_remove(struct module *mod)
+-{
+-	__mod_tree_remove(&mod->core_layout.mtn);
+-	mod_tree_remove_init(mod);
+-}
+-
+-static struct module *mod_find(unsigned long addr)
+-{
+-	struct latch_tree_node *ltn;
+-
+-	ltn = latch_tree_find((void *)addr, &mod_tree.root, &mod_tree_ops);
+-	if (!ltn)
+-		return NULL;
+-
+-	return container_of(ltn, struct mod_tree_node, node)->mod;
+-}
+-
+-#else /* MODULES_TREE_LOOKUP */
+-
+-static unsigned long module_addr_min = -1UL, module_addr_max = 0;
+-
+-static void mod_tree_insert(struct module *mod) { }
+-static void mod_tree_remove_init(struct module *mod) { }
+-static void mod_tree_remove(struct module *mod) { }
+-
+-static struct module *mod_find(unsigned long addr)
+-{
+-	struct module *mod;
+-
+-	list_for_each_entry_rcu(mod, &modules, list,
+-				lockdep_is_held(&module_mutex)) {
+-		if (within_module(addr, mod))
+-			return mod;
+-	}
+-
+-	return NULL;
+-}
+-
+-#endif /* MODULES_TREE_LOOKUP */
++#else /* !CONFIG_MODULES_TREE_LOOKUP */
++static unsigned long module_addr_min = -1UL, module_addr_max;
++#endif /* CONFIG_MODULES_TREE_LOOKUP */
+ 
+ /*
+  * Bounds of module text, for speeding up __module_address.
+diff --git a/kernel/module/tree_lookup.c b/kernel/module/tree_lookup.c
+new file mode 100644
+index 000000000000..0bc4ec3b22ce
+--- /dev/null
++++ b/kernel/module/tree_lookup.c
+@@ -0,0 +1,109 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Modules tree lookup
++ *
++ * Copyright (C) 2015 Peter Zijlstra
++ * Copyright (C) 2015 Rusty Russell
++ */
++
++#include <linux/module.h>
++#include <linux/rbtree_latch.h>
++#include "internal.h"
 +
 +/*
-+ * Export sig_enforce kernel cmdline parameter to allow other subsystems rely
-+ * on that instead of directly to CONFIG_MODULE_SIG_FORCE config.
++ * Use a latched RB-tree for __module_address(); this allows us to use
++ * RCU-sched lookups of the address from any context.
++ *
++ * This is conditional on PERF_EVENTS || TRACING because those can really hit
++ * __module_address() hard by doing a lot of stack unwinding; potentially from
++ * NMI context.
 + */
-+bool is_module_sig_enforced(void)
-+{
-+	return sig_enforce;
-+}
-+EXPORT_SYMBOL(is_module_sig_enforced);
 +
-+void set_module_sig_enforced(void)
++static __always_inline unsigned long __mod_tree_val(struct latch_tree_node *n)
 +{
-+	sig_enforce = true;
++	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
++
++	return (unsigned long)layout->base;
 +}
 +
- /*
-  * Verify the signature on a module.
-  */
-@@ -43,3 +63,60 @@ int mod_verify_sig(const void *mod, struct load_info *info)
- 				      VERIFYING_MODULE_SIGNATURE,
- 				      NULL, NULL);
- }
-+
-+int module_sig_check(struct load_info *info, int flags)
++static __always_inline unsigned long __mod_tree_size(struct latch_tree_node *n)
 +{
-+	int err = -ENODATA;
-+	const unsigned long markerlen = sizeof(MODULE_SIG_STRING) - 1;
-+	const char *reason;
-+	const void *mod = info->hdr;
-+	bool mangled_module = flags & (MODULE_INIT_IGNORE_MODVERSIONS |
-+				       MODULE_INIT_IGNORE_VERMAGIC);
-+	/*
-+	 * Do not allow mangled modules as a module with version information
-+	 * removed is no longer the module that was signed.
-+	 */
-+	if (!mangled_module &&
-+	    info->len > markerlen &&
-+	    memcmp(mod + info->len - markerlen, MODULE_SIG_STRING, markerlen) == 0) {
-+		/* We truncate the module to discard the signature */
-+		info->len -= markerlen;
-+		err = mod_verify_sig(mod, info);
-+		if (!err) {
-+			info->sig_ok = true;
-+			return 0;
-+		}
-+	}
++	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
 +
-+	/*
-+	 * We don't permit modules to be loaded into the trusted kernels
-+	 * without a valid signature on them, but if we're not enforcing,
-+	 * certain errors are non-fatal.
-+	 */
-+	switch (err) {
-+	case -ENODATA:
-+		reason = "unsigned module";
-+		break;
-+	case -ENOPKG:
-+		reason = "module with unsupported crypto";
-+		break;
-+	case -ENOKEY:
-+		reason = "module with unavailable key";
-+		break;
++	return (unsigned long)layout->size;
++}
 +
-+	default:
-+		/*
-+		 * All other errors are fatal, including lack of memory,
-+		 * unparseable signatures, and signature check failures --
-+		 * even if signatures aren't required.
-+		 */
-+		return err;
-+	}
++static __always_inline bool
++mod_tree_less(struct latch_tree_node *a, struct latch_tree_node *b)
++{
++	return __mod_tree_val(a) < __mod_tree_val(b);
++}
 +
-+	if (is_module_sig_enforced()) {
-+		pr_notice("Loading of %s is rejected\n", reason);
-+		return -EKEYREJECTED;
-+	}
++static __always_inline int
++mod_tree_comp(void *key, struct latch_tree_node *n)
++{
++	unsigned long val = (unsigned long)key;
++	unsigned long start, end;
 +
-+	return security_locked_down(LOCKDOWN_MODULE_SIGNATURE);
++	start = __mod_tree_val(n);
++	if (val < start)
++		return -1;
++
++	end = start + __mod_tree_size(n);
++	if (val >= end)
++		return 1;
++
++	return 0;
++}
++
++static const struct latch_tree_ops mod_tree_ops = {
++	.less = mod_tree_less,
++	.comp = mod_tree_comp,
++};
++
++static noinline void __mod_tree_insert(struct mod_tree_node *node)
++{
++	latch_tree_insert(&node->node, &mod_tree.root, &mod_tree_ops);
++}
++
++static void __mod_tree_remove(struct mod_tree_node *node)
++{
++	latch_tree_erase(&node->node, &mod_tree.root, &mod_tree_ops);
++}
++
++/*
++ * These modifications: insert, remove_init and remove; are serialized by the
++ * module_mutex.
++ */
++void mod_tree_insert(struct module *mod)
++{
++	mod->core_layout.mtn.mod = mod;
++	mod->init_layout.mtn.mod = mod;
++
++	__mod_tree_insert(&mod->core_layout.mtn);
++	if (mod->init_layout.size)
++		__mod_tree_insert(&mod->init_layout.mtn);
++}
++
++void mod_tree_remove_init(struct module *mod)
++{
++	if (mod->init_layout.size)
++		__mod_tree_remove(&mod->init_layout.mtn);
++}
++
++void mod_tree_remove(struct module *mod)
++{
++	__mod_tree_remove(&mod->core_layout.mtn);
++	mod_tree_remove_init(mod);
++}
++
++struct module *mod_find(unsigned long addr)
++{
++	struct latch_tree_node *ltn;
++
++	ltn = latch_tree_find((void *)addr, &mod_tree.root, &mod_tree_ops);
++	if (!ltn)
++		return NULL;
++
++	return container_of(ltn, struct mod_tree_node, node)->mod;
 +}
 -- 
 2.34.1
