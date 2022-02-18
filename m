@@ -2,207 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D214BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235161AbiBRMWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:22:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48884 "EHLO
+        id S235129AbiBRMW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:22:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235122AbiBRMV5 (ORCPT
+        with ESMTP id S235166AbiBRMWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:21:57 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92091C907
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 04:21:40 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id d10so14576724eje.10
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 04:21:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K9wD2Tr0KWFRwLLWFyz8BogF6D34vQqJ2tLSqwNrziY=;
-        b=f894Oja0ePJSA3RxY1LN0hdK2YQrjn1gxhMzZU+xzq6qi0xHMLoxnxvT4ddpsm2RJY
-         HLIOBTRmGR2mUDCeXMXugR5d4VGHIOlXe7xqB0FiOY6buAJUUw7AK1Tx7CbkIQ4P6TG5
-         0MsFuge5LxVPFGg9z5QE6rFGWa152KtVJxJjn6ILg3xeIC/WoPZ2gUnKeHv46AT1lbtv
-         MYSFkdPz9/sQxPcCPMXZevKjjg+hl17dURo+b/gGozQ21wgsSc1n23KNT5dmAp8UWXqv
-         R+C5f06QDVXDAGf5MEtsYiCLrLyjJOFSO41PSKJ/OxMJeWcmVQJhcs7qkmQBVGl1vIpI
-         36rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K9wD2Tr0KWFRwLLWFyz8BogF6D34vQqJ2tLSqwNrziY=;
-        b=GYs4DWXD/RQkB8u5GWq9PwkgMGDatoNGUNwMYQ35i8Ub4TKcXyLW6zyXikfSiPMaG8
-         Otn7Ns/vjkoDziJMB2LNmz04A2JilF2wzpEHFMZjIkhTB1RzjhCNVG6cZ7ik4e2sGwar
-         jl2lwhDCDHogO5HnCu5ZVzjFuJIVD7C+HhiVWlPhXQAx3thRiV7frOUsY7eCRnarVDZH
-         ZjgoRxDJhh759n+FNxZ1lzETNBJl30J/a3/KFAGitlbbgyL7e9pqaxNH8vMNvP6gg2E8
-         R6aECh8E27MTQ4Id/BS3/5HGMsr8RTD4JG2iiVYtXK6uOeDRSJsW7zcfR5ssWyZ5UWBf
-         HOFg==
-X-Gm-Message-State: AOAM531XaEBcQum74ah73Hak/oIwyQewo+7S2oudNLoIh/TDLNJFQ8Ae
-        P9i7cyMbHzm/WbeSVfBxMSc=
-X-Google-Smtp-Source: ABdhPJxcgIZ+10B44aMtj9wOPRGY7/4HPeI8NqgjmXec4wFs3wYKpL0ExtoiBsWf7RxBrDdDrvp5Fw==
-X-Received: by 2002:a17:906:3708:b0:6cf:bb34:9d2e with SMTP id d8-20020a170906370800b006cfbb349d2emr6083708ejc.665.1645186896545;
-        Fri, 18 Feb 2022 04:21:36 -0800 (PST)
-Received: from orion.localdomain ([93.99.228.15])
-        by smtp.gmail.com with ESMTPSA id e18sm4736506edj.85.2022.02.18.04.21.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 04:21:35 -0800 (PST)
-Received: by orion.localdomain (Postfix, from userid 1003)
-        id 49536A7FFD; Fri, 18 Feb 2022 13:20:44 +0100 (CET)
-From:   =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
-To:     linux-mm@kvack.org
-Cc:     patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        vbabka@suse.cz, mhocko@kernel.org, mgorman@techsingularity.net,
-        willy@infradead.org, liam.howlett@oracle.com, hughd@google.com,
-        kirill@shutemov.name, riel@surriel.com, rostedt@goodmis.org,
-        peterz@infradead.org,
-        =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
-Subject: [RFC PATCH 3/4] [PATCH 3/4] mm: enable merging of VMAs with different anon_vmas
-Date:   Fri, 18 Feb 2022 13:20:18 +0100
-Message-Id: <20220218122019.130274-4-matenajakub@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220218122019.130274-1-matenajakub@gmail.com>
-References: <20220218122019.130274-1-matenajakub@gmail.com>
+        Fri, 18 Feb 2022 07:22:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7420299249;
+        Fri, 18 Feb 2022 04:22:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FBD161F78;
+        Fri, 18 Feb 2022 12:22:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0EEC340E9;
+        Fri, 18 Feb 2022 12:22:22 +0000 (UTC)
+Message-ID: <ee02bf52-b738-95f7-a4a8-f7d7f2e029ef@xs4all.nl>
+Date:   Fri, 18 Feb 2022 13:22:21 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [RFC v2 5/8] media: uapi: Add fields needed for RKVDEC driver
+Content-Language: en-US
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, jonas@kwiboo.se, nicolas@ndufresne.ca
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com, knaerzche@gmail.com, jc@kynesim.co.uk
+References: <20220215110103.241297-1-benjamin.gaignard@collabora.com>
+ <20220215110103.241297-6-benjamin.gaignard@collabora.com>
+ <b41ea0ec-b5c0-4ea5-9866-35a952c6a8b9@xs4all.nl>
+ <3973e1f8-665a-c2d1-d493-19f66d307b88@collabora.com>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <3973e1f8-665a-c2d1-d493-19f66d307b88@collabora.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable merging of a VMA even when it is linked to different
-anon_vma than the one it is being merged to, but only if the VMA
-in question does not share any page with a parent or child process.
-Every anonymous page stores a pointer to its anon_vma in the parameter
-mapping, which is now updated as part of the merge process.
+On 18/02/2022 13:19, Benjamin Gaignard wrote:
+> 
+> Le 18/02/2022 à 12:32, Hans Verkuil a écrit :
+>> On 15/02/2022 12:01, Benjamin Gaignard wrote:
+>>> RKVDEC driver requires additional fields to perform HEVC decoding.
+>>> Even if the driver isn't mainlined yet WIP patches could be find here:
+>>> https://github.com/LibreELEC/LibreELEC.tv/blob/master/projects/Rockchip/patches/linux/default/linux-2000-v4l2-wip-rkvdec-hevc.patch
+>>>
+>>> This patch only include the change in HEVC uAPI.
+>>>
+>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>>> ---
+>>>   .../userspace-api/media/v4l/ext-ctrls-codec.rst  | 16 ++++++++++++++++
+>>>   include/uapi/linux/v4l2-controls.h               |  5 +++++
+>>>   2 files changed, 21 insertions(+)
+>>>
+>>> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>> index 4f3b3ba8319f..3296ac3b9fca 100644
+>>> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>> @@ -2661,6 +2661,13 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>>>       :stub-columns: 0
+>>>       :widths:       1 1 2
+>>>   +    * - __u8
+>>> +      - ``video_parameter_set_id``
+>>> +      - Identifies the VPS for reference by other syntax elements.
+>>> +    * - __u8
+>>> +      - ``seq_parameter_set_id``
+>>> +      - Provides an identifier for the SPS for reference by other syntax
+>>> +        elements.
+>>>       * - __u16
+>>>         - ``pic_width_in_luma_samples``
+>>>         -
+>>> @@ -2800,6 +2807,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>>>       :stub-columns: 0
+>>>       :widths:       1 1 2
+>>>   +    * - __u8
+>>> +      - ``pic_parameter_set_id``
+>>> +      - Identifies the PPS for reference by other syntax elements.
+>>>       * - __u8
+>>>         - ``num_extra_slice_header_bits``
+>>>         -
+>>> @@ -3026,6 +3036,12 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>>>       * - __u8
+>>>         - ``ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+>>>         - The list of L1 reference elements as indices in the DPB.
+>>> +    * - __u16
+>>> +      - ``short_term_ref_pic_set_size``
+>>> +      -
+>>> +    * - __u16
+>>> +      - ``long_term_ref_pic_set_size``
+>>> +      -
+>>>       * - __u8
+>>>         - ``padding``
+>>>         - Applications and drivers must set this to zero.
+>> Just to confirm: these additional fields are all from the H.265 spec, right?
+>> They are not rkvdec specific.
+> 
+> They are in H.265 spec section "7.4.3.2.2 Sequence parameter set range extension semantics":
+> - num_short_term_ref_pic_sets specifies the number of st_ref_pic_set( ) syntax structures included in the SPS. The value
+> of num_short_term_ref_pic_sets shall be in the range of 0 to 64, inclusive.
+> 
+> - num_long_term_ref_pics_sps specifies the number of candidate long-term reference pictures that are specified in the
+> SPS. The value of num_long_term_ref_pics_sps shall be in the range of 0 to 32, inclusive.
 
-Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
----
- include/linux/rmap.h | 17 ++++++++++++++++-
- mm/mmap.c            | 15 ++++++++++++++-
- mm/rmap.c            | 40 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 70 insertions(+), 2 deletions(-)
+And what about video/seq/pic_parameter_set_id?
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index e704b1a4c06c..c8508a4ebc46 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -137,10 +137,13 @@ static inline void anon_vma_unlock_read(struct anon_vma *anon_vma)
-  */
- void anon_vma_init(void);	/* create anon_vma_cachep */
- int  __anon_vma_prepare(struct vm_area_struct *);
-+void reconnect_pages(struct vm_area_struct *vma, struct vm_area_struct *next);
- void unlink_anon_vmas(struct vm_area_struct *);
- int anon_vma_clone(struct vm_area_struct *, struct vm_area_struct *);
- int anon_vma_fork(struct vm_area_struct *, struct vm_area_struct *);
- 
-+bool rbt_no_children(struct anon_vma *av);
-+
- static inline int anon_vma_prepare(struct vm_area_struct *vma)
- {
- 	if (likely(vma->anon_vma))
-@@ -149,10 +152,22 @@ static inline int anon_vma_prepare(struct vm_area_struct *vma)
- 	return __anon_vma_prepare(vma);
- }
- 
-+/**
-+ * anon_vma_merge() - Merge anon_vmas of the given VMAs
-+ * @vma: VMA being merged to
-+ * @next: VMA being merged
-+ */
- static inline void anon_vma_merge(struct vm_area_struct *vma,
- 				  struct vm_area_struct *next)
- {
--	VM_BUG_ON_VMA(vma->anon_vma != next->anon_vma, vma);
-+	struct anon_vma *anon_vma1 = vma->anon_vma;
-+	struct anon_vma *anon_vma2 = next->anon_vma;
-+
-+	VM_BUG_ON_VMA(anon_vma1 && anon_vma2 && anon_vma1 != anon_vma2 &&
-+			((anon_vma2 != anon_vma2->root)
-+			|| !rbt_no_children(anon_vma2)), vma);
-+
-+	reconnect_pages(vma, next);
- 	unlink_anon_vmas(next);
- }
- 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 8d253b46b349..ed91d0cd2111 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1065,7 +1065,20 @@ static inline int is_mergeable_anon_vma(struct anon_vma *anon_vma1,
- 	if ((!anon_vma1 || !anon_vma2) && (!vma ||
- 		list_is_singular(&vma->anon_vma_chain)))
- 		return 1;
--	return anon_vma1 == anon_vma2;
-+	if (anon_vma1 == anon_vma2)
-+		return 1;
-+	/*
-+	 * Different anon_vma but not shared by several processes
-+	 */
-+	else if ((anon_vma1 && anon_vma2) &&
-+			(anon_vma1 == anon_vma1->root)
-+			&& (rbt_no_children(anon_vma1)))
-+		return 1;
-+	/*
-+	 * Different anon_vma and shared -> unmergeable
-+	 */
-+	else
-+		return 0;
- }
- 
- /*
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 6a1e8c7f6213..1093b518b0be 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -387,6 +387,46 @@ int anon_vma_fork(struct vm_area_struct *vma, struct vm_area_struct *pvma)
- 	return -ENOMEM;
- }
- 
-+/**
-+ * reconnect_pages() - Reconnect physical pages from old to vma
-+ * @vma: VMA to newly contain all physical pages of old
-+ * @old: old VMA being merged to vma
-+ */
-+void reconnect_pages(struct vm_area_struct *vma, struct vm_area_struct *old)
-+{
-+	struct anon_vma *anon_vma1 = vma->anon_vma;
-+	struct anon_vma *anon_vma2 = old->anon_vma;
-+	unsigned long pg_iter;
-+	int pg_iters;
-+
-+	if (anon_vma1 == anon_vma2 || anon_vma1 == NULL || anon_vma2 == NULL)
-+		return; /* Nothing to do */
-+
-+	/* Modify page->mapping for all pages in old */
-+	pg_iter = 0;
-+	pg_iters = (old->vm_end - old->vm_start) >> PAGE_SHIFT;
-+
-+	for (; pg_iter < pg_iters; ++pg_iter) {
-+		/* Get the physical page */
-+		unsigned long shift = pg_iter << PAGE_SHIFT;
-+		struct page *phys_page = follow_page(old, old->vm_start + shift, FOLL_GET);
-+		struct anon_vma *page_anon_vma;
-+
-+		/* Do some checks and lock the page */
-+		if (phys_page == NULL)
-+			continue; /* Virtual memory page is not mapped */
-+		lock_page(phys_page);
-+		page_anon_vma = page_get_anon_vma(phys_page);
-+		if (page_anon_vma != NULL) { /* NULL in case of ZERO_PAGE */
-+			VM_BUG_ON_VMA(page_anon_vma != old->anon_vma, old);
-+			/* Update physical page's mapping */
-+			page_move_anon_rmap(phys_page, vma);
-+		}
-+		unlock_page(phys_page);
-+		put_page(phys_page);
-+	}
-+}
-+
- void unlink_anon_vmas(struct vm_area_struct *vma)
- {
- 	struct anon_vma_chain *avc, *next;
--- 
-2.34.1
+Regards,
+
+	Hans
+
+> 
+> I mention rkvdec because that it is the only driver to use they (as far I knows)
+> 
+> Regards,
+> Benjamin
+> 
+>>
+>> Regards,
+>>
+>>     Hans
+>>
+>>> diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+>>> index 0e0ec2c61b80..b1a3dc05f02f 100644
+>>> --- a/include/uapi/linux/v4l2-controls.h
+>>> +++ b/include/uapi/linux/v4l2-controls.h
+>>> @@ -2341,6 +2341,8 @@ enum v4l2_stateless_hevc_start_code {
+>>>     struct v4l2_ctrl_hevc_sps {
+>>>       /* ISO/IEC 23008-2, ITU-T Rec. H.265: Sequence parameter set */
+>>> +    __u8    video_parameter_set_id;
+>>> +    __u8    seq_parameter_set_id;
+>>>       __u16    pic_width_in_luma_samples;
+>>>       __u16    pic_height_in_luma_samples;
+>>>       __u8    bit_depth_luma_minus8;
+>>> @@ -2393,6 +2395,7 @@ struct v4l2_ctrl_hevc_sps {
+>>>     struct v4l2_ctrl_hevc_pps {
+>>>       /* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture parameter set */
+>>> +    __u8    pic_parameter_set_id;
+>>>       __u8    num_extra_slice_header_bits;
+>>>       __u8    num_ref_idx_l0_default_active_minus1;
+>>>       __u8    num_ref_idx_l1_default_active_minus1;
+>>> @@ -2487,6 +2490,8 @@ struct v4l2_ctrl_hevc_slice_params {
+>>>       __u32    slice_segment_addr;
+>>>       __u8    ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>>>       __u8    ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>>> +    __u16    short_term_ref_pic_set_size;
+>>> +    __u16    long_term_ref_pic_set_size;
+>>>         /* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction parameter */
+>>>       struct v4l2_hevc_pred_weight_table pred_weight_table;
 
