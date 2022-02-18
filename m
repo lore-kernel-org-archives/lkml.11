@@ -2,168 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B64C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D24CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233699AbiBRJmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:42:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45908 "EHLO
+        id S233708AbiBRJmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:42:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231630AbiBRJmi (ORCPT
+        with ESMTP id S233718AbiBRJmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:42:38 -0500
-Received: from spam.unicloud.com (gw.haihefund.cn [220.194.70.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52A022B0D;
-        Fri, 18 Feb 2022 01:42:20 -0800 (PST)
-Received: from eage.unicloud.com ([220.194.70.35])
-        by spam.unicloud.com with ESMTP id 21I9f935052082;
-        Fri, 18 Feb 2022 17:41:09 +0800 (GMT-8)
-        (envelope-from luofei@unicloud.com)
-Received: from localhost.localdomain (10.10.1.7) by zgys-ex-mb09.Unicloud.com
- (10.10.0.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2375.17; Fri, 18
- Feb 2022 17:41:08 +0800
-From:   luofei <luofei@unicloud.com>
-To:     <tony.luck@intel.com>, <bp@alien8.de>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <dave.hansen@linux.intel.com>,
-        <x86@kernel.org>, <akpm@linux-foundation.org>,
-        <naoya.horiguchi@nec.com>
-CC:     <hpa@zytor.com>, <linux-edac@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        luofei <luofei@unicloud.com>
-Subject: [PATCH v3 1/2] hw/poison: Avoid the impact of hwpoison_filter() return value on mce handler
-Date:   Fri, 18 Feb 2022 04:40:56 -0500
-Message-ID: <20220218094056.2056251-1-luofei@unicloud.com>
-X-Mailer: git-send-email 2.27.0
+        Fri, 18 Feb 2022 04:42:50 -0500
+Received: from hust.edu.cn (unknown [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A71A5EDCF;
+        Fri, 18 Feb 2022 01:42:31 -0800 (PST)
+Received: from localhost.localdomain ([172.16.0.254])
+        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
+        by mx1.hust.edu.cn  with ESMTP id 21I9faD6004548-21I9faD9004548
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Fri, 18 Feb 2022 17:41:41 +0800
+From:   Dongliang Mu <dzm91@hust.edu.cn>
+To:     Hans Verkuil <hverkuil@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     syzkaller <syzkaller@googlegroups.com>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
+Date:   Fri, 18 Feb 2022 17:41:30 +0800
+Message-Id: <20220218094134.930074-1-dzm91@hust.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.10.1.7]
-X-ClientProxiedBy: zgys-ex-mb10.Unicloud.com (10.10.0.6) To
- zgys-ex-mb09.Unicloud.com (10.10.0.24)
-X-DNSRBL: 
-X-MAIL: spam.unicloud.com 21I9f935052082
+Content-Transfer-Encoding: 8bit
+X-FEAS-AUTH-USER: dzm91@hust.edu.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the hwpoison page meets the filter conditions, it should
-not be regarded as successful memory_failure() processing for
-mce handler, but should return a value(-EHWPOISON), otherwise
-mce handler regards the error page has been identified and
-isolated, which may lead to calling set_mce_nospec() to change
-page attribute, etc.
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Here a new MF_MCE__HANDLE flag is introdulced to identify the
-call from the mce handler and instruct hwpoison_filter() to
-return -EHWPOISON, other return 0 for compatibility with the
-hwpoison injector.
+hdpvr_register_videodev is responsible to initialize a worker in
+hdpvr_device. However, the worker is only initialized at
+hdpvr_start_streaming other than hdpvr_register_videodev.
+When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
+will encounter one WARN in flush_work.The stack trace is as follows:
 
-Signed-off-by: luofei <luofei@unicloud.com>
+ hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
+ usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
+ __device_release_driver drivers/base/dd.c:1206 [inline]
+ device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
+ bus_remove_device+0x108/0x160 drivers/base/bus.c:529
+ device_del+0x1fe/0x510 drivers/base/core.c:3592
+ usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
+ usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
+
+Fix this by moving the initialization of dev->worker to the starting of
+hdpvr_register_videodev
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 ---
- arch/x86/kernel/cpu/mce/core.c | 15 +++++++++------
- include/linux/mm.h             |  1 +
- mm/memory-failure.c            | 14 ++++++++++++--
- 3 files changed, 22 insertions(+), 8 deletions(-)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 5818b837fd4d..de29165c65b6 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -612,7 +612,7 @@ static int uc_decode_notifier(struct notifier_block *nb, unsigned long val,
- 		return NOTIFY_DONE;
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 563128d11731..60e57e0f1927 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -308,7 +308,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
  
- 	pfn = mce->addr >> PAGE_SHIFT;
--	if (!memory_failure(pfn, 0)) {
-+	if (!memory_failure(pfn, MF_MCE_HANDLE)) {
- 		set_mce_nospec(pfn, whole_page(mce));
- 		mce->kflags |= MCE_HANDLED_UC;
- 	}
-@@ -1286,7 +1286,7 @@ static void kill_me_now(struct callback_head *ch)
- static void kill_me_maybe(struct callback_head *cb)
- {
- 	struct task_struct *p = container_of(cb, struct task_struct, mce_kill_me);
--	int flags = MF_ACTION_REQUIRED;
-+	int flags = MF_ACTION_REQUIRED | MF_MCE_HANDLE;
- 	int ret;
+ 	dev->status = STATUS_STREAMING;
  
- 	p->mce_count = 0;
-@@ -1303,9 +1303,12 @@ static void kill_me_maybe(struct callback_head *cb)
- 	}
+-	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+ 	schedule_work(&dev->worker);
  
- 	/*
--	 * -EHWPOISON from memory_failure() means that it already sent SIGBUS
--	 * to the current process with the proper error info, so no need to
--	 * send SIGBUS here again.
-+	 * -EHWPOISON from memory_failure() means that memory_failure() did
-+	 * not handle the error event for the following reason:
-+	 *  - SIGBUS has already been sent to the current process with the
-+	 *    proper error info, or
-+	 *  - hwpoison_filter() filtered the event,
-+	 * so no need to deal with it more.
- 	 */
- 	if (ret == -EHWPOISON)
- 		return;
-@@ -1320,7 +1323,7 @@ static void kill_me_never(struct callback_head *cb)
+ 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
+@@ -1165,6 +1164,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
+ 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
+ 	int res;
  
- 	p->mce_count = 0;
- 	pr_err("Kernel accessed poison in user space at %llx\n", p->mce_addr);
--	if (!memory_failure(p->mce_addr >> PAGE_SHIFT, 0))
-+	if (!memory_failure(p->mce_addr >> PAGE_SHIFT, MF_MCE_HANDLE))
- 		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
- }
- 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 213cc569b192..f4703f948e9a 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3188,6 +3188,7 @@ enum mf_flags {
- 	MF_MUST_KILL = 1 << 2,
- 	MF_SOFT_OFFLINE = 1 << 3,
- 	MF_UNPOISON = 1 << 4,
-+	MF_MCE_HANDLE = 1 << 5,
- };
- extern int memory_failure(unsigned long pfn, int flags);
- extern void memory_failure_queue(unsigned long pfn, int flags);
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 97a9ed8f87a9..59d6d939a752 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1526,7 +1526,10 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
- 				if (TestClearPageHWPoison(head))
- 					num_poisoned_pages_dec();
- 				unlock_page(head);
--				return 0;
-+				if (flags & MF_MCE_HANDLE)
-+					return -EHWPOISON;
-+				else
-+					return 0;
- 			}
- 			unlock_page(head);
- 			res = MF_FAILED;
-@@ -1613,7 +1616,10 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
- 		goto out;
- 
- 	if (hwpoison_filter(page)) {
--		rc = 0;
-+		if (flags & MF_MCE_HANDLE)
-+			rc = -EHWPOISON;
-+		else
-+			rc = 0;
- 		goto unlock;
- 	}
- 
-@@ -1837,6 +1843,10 @@ int memory_failure(unsigned long pfn, int flags)
- 			num_poisoned_pages_dec();
- 		unlock_page(p);
- 		put_page(p);
-+		if (flags & MF_MCE_HANDLE)
-+			res = -EHWPOISON;
-+		else
-+			res = 0;
- 		goto unlock_mutex;
- 	}
- 
++	// initialize dev->worker
++	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
++
+ 	dev->cur_std = V4L2_STD_525_60;
+ 	dev->width = 720;
+ 	dev->height = 480;
 -- 
-2.27.0
+2.25.1
 
