@@ -2,97 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C181C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF63C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 05:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbiBRFAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 00:00:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47030 "EHLO
+        id S230346AbiBRFAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 00:00:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbiBRFAa (ORCPT
+        with ESMTP id S229974AbiBRFAa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 00:00:30 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D7C2BAA03
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 21:00:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645160415; x=1676696415;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+/4Ws4n5GO5MA4Lob8Av7zlFDSbbD9go+e2hEhCE6S8=;
-  b=CPnR3kyDbfhCzD4Kz5VTmYB/8xlmRAXAyh578UqcY8b3fAC9ltlfrcpt
-   DYJBs2tIw+n0sCQjkkXgaKHVUzzuNvdVTh8Ur6SVyzUxTjrYLvlKTjSvq
-   dJl/k377ehDE3zdf31yFWMwAdoMXpGv5076vAKk/asWhbZv7/TH5KyeQC
-   YAgRKL9g1amtwJ1TdGer0w/s7EgIr9fBLJoVMfgj++vTpU9clkr0mW8DN
-   gVUT4VSppzeDds4LT/Xce335avjFNHtvX3UqwVAjYK5ACKniURyge/IoG
-   KxwhIp7vxSHi/hqFR3+T2WqDiKtPSOtjXXQryRtxzBAuOrE5kQqzZqxOO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="337496543"
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="337496543"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 21:00:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="530771170"
-Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 17 Feb 2022 21:00:13 -0800
-Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nKvNM-0000y0-D9; Fri, 18 Feb 2022 05:00:12 +0000
-Date:   Fri, 18 Feb 2022 12:59:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     yipechai <YiPeng.Chai@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>
-Subject: [agd5f:drm-next 73/91]
- drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c:2460:5: warning: no previous
- prototype for 'amdgpu_ras_block_late_init_default'
-Message-ID: <202202181246.FqQEZVzy-lkp@intel.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EF82BAA08;
+        Thu, 17 Feb 2022 21:00:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88B8DB82580;
+        Fri, 18 Feb 2022 05:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 23CEAC340EF;
+        Fri, 18 Feb 2022 05:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645160412;
+        bh=SUvNkdAPHKRLHby8PNM4g4iD5DZS84CR2ccSdHXAe7g=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=UAWwWCL+ANy91suzOItQUDGzlXIUiIkemRPC8dpp7nwcTIBjoEIKz488HdhEyydFC
+         uNBA46m3dl9vttUnRhvDInO8fcMr+gP9ycbY+IsExfZ4k3ZCKNbEtZe24b996YyPzS
+         oMe7B2CQnrzyX7tMoVUmYzRXxCIzHWv2XpfwrCIcz05HEkAEjpEMHSAsUPOkRoCUE1
+         ajggmbJKciqPX0VpaYxoHmNVuBAxfY/4e2fA9m7mnCCjQL2ubIt6/dFq1N+OIldi4a
+         baF7noKhYJOrF0Pf08PnhndWnNVj/RrGAJtA4y6dQCzDCoVFqJZTl+/zAyk78ii9O+
+         MO6mytIeKkdOw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 02086E5D07D;
+        Fri, 18 Feb 2022 05:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: nixge: Use GFP_KERNEL instead of GFP_ATOMIC when
+ possible
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164516041200.28752.1269210032576115440.git-patchwork-notify@kernel.org>
+Date:   Fri, 18 Feb 2022 05:00:12 +0000
+References: <28d2c8e05951ad02a57eb48333672947c8bb4f81.1645043881.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <28d2c8e05951ad02a57eb48333672947c8bb4f81.1645043881.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   7dfbe38cecadbaf6dd426855d8bf8f34a4ca2c30
-commit: 418abce203fc2e936bf8c7632a9a429e861f6283 [73/91] drm/amdgpu: Remove redundant .ras_late_init initialization in some ras blocks
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220218/202202181246.FqQEZVzy-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout 418abce203fc2e936bf8c7632a9a429e861f6283
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
+Hello:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-All warnings (new ones prefixed by >>):
+On Wed, 16 Feb 2022 21:38:11 +0100 you wrote:
+> NIXGE_MAX_JUMBO_FRAME_SIZE is over 9000 bytes and RX_BD_NUM 128.
+> 
+> So this loop allocates more than 1 Mo of memory.
+> 
+> Previous memory allocations in this function already use GFP_KERNEL, so
+> use __netdev_alloc_skb_ip_align() and an explicit GFP_KERNEL instead of a
+> implicit GFP_ATOMIC.
+> 
+> [...]
 
->> drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c:2460:5: warning: no previous prototype for 'amdgpu_ras_block_late_init_default' [-Wmissing-prototypes]
-    2460 | int amdgpu_ras_block_late_init_default(struct amdgpu_device *adev,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Here is the summary with links:
+  - net: nixge: Use GFP_KERNEL instead of GFP_ATOMIC when possible
+    https://git.kernel.org/netdev/net-next/c/6b48bece871e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-vim +/amdgpu_ras_block_late_init_default +2460 drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-
-  2459	
-> 2460	int amdgpu_ras_block_late_init_default(struct amdgpu_device *adev,
-  2461				 struct ras_common_if *ras_block)
-  2462	{
-  2463		return amdgpu_ras_block_late_init(adev, ras_block);
-  2464	}
-  2465	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
