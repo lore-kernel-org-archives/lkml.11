@@ -2,147 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F18FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C39C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239444AbiBRSnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 13:43:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53328 "EHLO
+        id S238700AbiBRSrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 13:47:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239406AbiBRSm6 (ORCPT
+        with ESMTP id S231462AbiBRSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 13:42:58 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EFD166A43;
-        Fri, 18 Feb 2022 10:42:41 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id w37so2217446pga.7;
-        Fri, 18 Feb 2022 10:42:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MTDO2ijH97Okb1V/c6+V1GCrGsDIxaa5nQMyVR65+So=;
-        b=Pc1SubqIG7PeXuoDJlxerZb7XZz2VYt5/HIAP8fhBnPYFUTEbRoPc/hD0zar1bma3V
-         4HokjUXlFlCzkXeRBqZNmGCQ3l8CKYg2jhW1k3CKkxdouixmWBwlfbye2k3T5UVN4AWn
-         52n/4TpQSOJ6fiHWHFjwReUOQC0he3x2HgAi44cVWeTV8w05Sa1D9bOyeAsYJF4B+JWR
-         mBc9C6T9ZP/m0MlZ+TuVliGVdVQimrRNJyC5IpsM6L0bfkOB3XBCD/HU3/YKOhebN7mq
-         J+lsn34usoaevMCZEEoXO5bPVPzQN4y1vAeuDaooWztwMJK90R8IU55MMcJYkL/7yE9H
-         qIww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MTDO2ijH97Okb1V/c6+V1GCrGsDIxaa5nQMyVR65+So=;
-        b=GhXkPohLkACB6+Ol+G9yfDoeZkPN67Lxxf9R/dJ9Itgn4Z84mLaXeAfnLfHqaYQVsM
-         avT1iaQp+/ss5uz8/3OPZP0+rKeRCtSCMTZeExO3db4Z5UJONvglXn6dTSMgxjEkyVNL
-         gTpN/2cLN5Qv3s3GEz8BFpkkDpcnsHWRZdRHgW07PLg8r+ioMPojOBWswwtbaWkPMUwZ
-         PClxteRWwXtY31Gphr4IYpsqdsmgbQjOzqARbSFZzBnoI/7d4VOP/jVRqsVWo9R/7+rJ
-         p9gr2B8kHilWWfs6F9Azb03iWKMQYKqBCoeFfFOyVlAgshhUCwZIpiN58klYpwY1yzCg
-         y2Dw==
-X-Gm-Message-State: AOAM5303tAz8BA0muh0kGAS6TeVVqoS9UjJ2yLRaT353PNb3C+pM+/G7
-        UhxwjefG6KBFys1QWdXSl5M=
-X-Google-Smtp-Source: ABdhPJwlYmGekFiFlVU1QipHTqjBlqB1DVOw04uJcuNNV1Cz3CVl3v/qDadRl9ArZAyNjW9xzofVrg==
-X-Received: by 2002:a65:6e4b:0:b0:373:8350:cef3 with SMTP id be11-20020a656e4b000000b003738350cef3mr7362940pgb.219.1645209761285;
-        Fri, 18 Feb 2022 10:42:41 -0800 (PST)
-Received: from vm-111.3frfxmc3btcupaqenzdpat1uec.xx.internal.cloudapp.net ([13.77.171.140])
-        by smtp.gmail.com with ESMTPSA id m17-20020a17090ab79100b001b89fd7e298sm130132pjr.4.2022.02.18.10.42.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 10:42:40 -0800 (PST)
-From:   "Melanie Plageman (Microsoft)" <melanieplageman@gmail.com>
-To:     mikelley@microsoft.com, jejb@linux.ibm.com, kys@microsoft.com,
-        martin.petersen@oracle.com, mst@redhat.com,
-        benh@kernel.crashing.org, decui@microsoft.com,
-        don.brace@microchip.com, R-QLogic-Storage-Upstream@marvell.com,
-        haiyangz@microsoft.com, jasowang@redhat.com, john.garry@huawei.com,
-        kashyap.desai@broadcom.com, mpe@ellerman.id.au,
-        njavali@marvell.com, pbonzini@redhat.com, paulus@samba.org,
-        sathya.prakash@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com,
-        sreekanth.reddy@broadcom.com, stefanha@redhat.com,
-        sthemmin@microsoft.com, suganath-prabu.subramani@broadcom.com,
-        sumit.saxena@broadcom.com, tyreld@linux.ibm.com,
-        wei.liu@kernel.org, linuxppc-dev@lists.ozlabs.org,
-        megaraidlinux.pdl@broadcom.com, mpi3mr-linuxdrv.pdl@broadcom.com,
-        storagedev@microchip.com,
-        virtualization@lists.linux-foundation.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com
-Cc:     andres@anarazel.de
-Subject: [PATCH RFC v1 5/5] scsi: storvsc: Hardware queues share blk_mq_tags
-Date:   Fri, 18 Feb 2022 18:41:57 +0000
-Message-Id: <20220218184157.176457-6-melanieplageman@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220218184157.176457-1-melanieplageman@gmail.com>
-References: <20220218184157.176457-1-melanieplageman@gmail.com>
+        Fri, 18 Feb 2022 13:47:06 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E88D6A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 10:46:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=tx5f0UJcnj4R4TQ9Q7WxhcrF/JhIh7OvVd5/el1oJq8=; b=ey0q4gnDN4OAF8aBKVU9l6rjjr
+        SrFhHlNWfk+cJDXcEuK4fKsOj3WawdGMMseCJOjiKTJ5jRGKcWNSnmD+LjeKbgGcgkXWzUARq2tjr
+        ph6jmD0I8IIjefo+toFeEoo+1isV3SavZG/j7vTRZcBE6b8xWFJFmnWVVZ1ONQuEghbzYsjMg7uM3
+        bBuHy1zb+Rmrp+xa8pj1Y2cR7or9Nroof+zEaVCzm8w84Xy+1fvD+tEDFREbdSx7jY/x/uhgDqP8h
+        KE1g9nBEtg6E3VAx0tMSIRhvFMfCb+vBrpAiPh0ERnNNXwt1U9KPowUk/lcBMa2DsN/M/neeuOOe4
+        i/J1cHwg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nL8Gz-00Gq2v-9i; Fri, 18 Feb 2022 18:46:29 +0000
+Date:   Fri, 18 Feb 2022 18:46:29 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jakub =?utf-8?Q?Mat=C4=9Bna?= <matenajakub@gmail.com>,
+        linux-mm@kvack.org, patches@lists.linux.dev,
+        linux-kernel@vger.kernel.org, vbabka@suse.cz, mhocko@kernel.org,
+        mgorman@techsingularity.net, liam.howlett@oracle.com,
+        hughd@google.com, kirill@shutemov.name, riel@surriel.com,
+        peterz@infradead.org
+Subject: Re: [RFC PATCH 4/4] [PATCH 4/4] mm: add tracing for VMA merges
+Message-ID: <Yg/phVScjJCLsGuC@casper.infradead.org>
+References: <20220218122019.130274-1-matenajakub@gmail.com>
+ <20220218122019.130274-5-matenajakub@gmail.com>
+ <20220218130920.5902d967@gandalf.local.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218130920.5902d967@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Decouple the number of tags available from the number of hardware queues
-by sharing a single blk_mq_tags amongst all hardware queues.
+On Fri, Feb 18, 2022 at 01:09:20PM -0500, Steven Rostedt wrote:
+> Please indent the above better. That is:
+> 
+> 		__entry->diff_count = (merge_prev == AV_MERGE_DIFFERENT)
+> 				+ (merge_next == AV_MERGE_DIFFERENT)
+> 				+ (merge_both == AV_MERGE_DIFFERENT);
 
-When storage latency is relatively high, having too many tags available
-can harm the performance of mixed workloads.
-By sharing blk_mq_tags amongst hardware queues, nr_requests can be set
-to the appropriate number of tags for the device.
+I thought our coding style preferred trailing operators; that is:
 
-Signed-off-by: Melanie Plageman <melanieplageman@gmail.com>
----
-As an example, on a 16-core VM coupled with a 1 TiB storage device having a
-combined (VM + disk) max BW of 200 MB/s and IOPS of 5000, configured with 16
-hardware queues and with nr_requests set to 56 and queue_depth set to 15, the
-following fio job description illustrates the benefit of hardware queues sharing
-blk_mq_tags:
-
-[global]
-time_based=1
-ioengine=io_uring
-direct=1
-runtime=60
-
-[read_hogs]
-bs=16k
-iodepth=10000
-rw=randread
-filesize=10G
-numjobs=15
-directory=/mnt/test
-
-[wal]
-bs=8k
-iodepth=3
-filesize=4G
-rw=write
-numjobs=1
-directory=/mnt/test
-
-with hctx_share_tags set, the "wal" job does 271 IOPS, averaging 13120 usec
-completion latency and the "read_hogs" jobs average around 4700 IOPS.
-
-without hctx_share_tags set, the "wal" job does 85 IOPS and averages around
-45308 usec completion latency and the "read_hogs" job average around 4900 IOPS.
-
-Note that reducing nr_requests to a number sufficient to increase WAL IOPS
-results in unacceptably low IOPS for the random reads when only one random read
-job is running.
-
- drivers/scsi/storvsc_drv.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 0ed764bcabab..5048e7fcf959 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -1997,6 +1997,7 @@ static struct scsi_host_template scsi_driver = {
- 	.track_queue_depth =	1,
- 	.change_queue_depth =	storvsc_change_queue_depth,
- 	.per_device_tag_set =	1,
-+	.hctx_share_tags = 1,
- };
- 
- enum {
--- 
-2.25.1
+		 __entry->diff_count = (merge_prev == AV_MERGE_DIFFERENT) +
+				(merge_next == AV_MERGE_DIFFERENT) +
+				(merge_both == AV_MERGE_DIFFERENT);
 
