@@ -2,66 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4BBC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 06:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 06:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231435AbiBRGhl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 01:37:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35550 "EHLO
+        id S231465AbiBRGmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 01:42:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbiBRGhe (ORCPT
+        with ESMTP id S230321AbiBRGmb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 01:37:34 -0500
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CDABF52;
-        Thu, 17 Feb 2022 22:37:18 -0800 (PST)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 342C768BFE; Fri, 18 Feb 2022 07:37:15 +0100 (CET)
-Date:   Fri, 18 Feb 2022 07:37:14 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        linux@armlinux.org.uk, will@kernel.org, guoren@kernel.org,
-        bcain@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu,
-        tsbogend@alpha.franken.de, nickhu@andestech.com,
-        green.hu@gmail.com, dinguyen@kernel.org, shorne@gmail.com,
-        deller@gmx.de, mpe@ellerman.id.au, peterz@infradead.org,
-        mingo@redhat.com, mark.rutland@arm.com, hca@linux.ibm.com,
-        dalias@libc.org, davem@davemloft.net, richard@nod.at,
-        x86@kernel.org, jcmvbkbc@gmail.com, ebiederm@xmission.com,
-        akpm@linux-foundation.org, ardb@kernel.org,
-        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org
-Subject: Re: [PATCH v2 18/18] uaccess: drop maining CONFIG_SET_FS users
-Message-ID: <20220218063714.GL22576@lst.de>
-References: <20220216131332.1489939-1-arnd@kernel.org> <20220216131332.1489939-19-arnd@kernel.org>
+        Fri, 18 Feb 2022 01:42:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACD857B3B;
+        Thu, 17 Feb 2022 22:42:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB1CE61EB3;
+        Fri, 18 Feb 2022 06:42:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4EA1C340E9;
+        Fri, 18 Feb 2022 06:42:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645166533;
+        bh=HjMR23aoxKQWFwKcEqaYH5QVua1wOqAfuXyH1CKbZzw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MW6EycTUDLx3IFunE3hebSFuuTaWWEimw6dLZnfr6JEmtAnu7nxVxUXEid+tgJtYv
+         Vz4bBVvBRbZaE2CZbJHvobefOmDMOinPQVXkOGYVuIrZY/ykRYTFh2yKINs4f1jHLP
+         GZz3bBpOGOquaHzB4/J94Sbv9uLGCnWArZrmFB2M=
+Date:   Fri, 18 Feb 2022 07:42:07 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Pavel Machek <pavel@denx.de>
+Cc:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org, lwn@lwn.net,
+        jslaby@suse.cz
+Subject: Re: Linux 4.4.302
+Message-ID: <Yg8/vxWzcc/etxp+@kroah.com>
+References: <1643877137240249@kroah.com>
+ <20220217205550.GA21004@duo.ucw.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220216131332.1489939-19-arnd@kernel.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20220217205550.GA21004@duo.ucw.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-s/maining/remaining/ ?
+On Thu, Feb 17, 2022 at 09:55:50PM +0100, Pavel Machek wrote:
+> Hi!
+> 
+> > I'm announcing the release of the 4.4.302 kernel.
+> > 
+> > This kernel branch is now END-OF-LIFE.  It will not be getting any more
+> > updates from the kernel stable team, and will most likely quickly become
+> > insecure and out-of-date.  Do not use it anymore unless you really know
+> > what you are doing.
+> > 
+> > Note, the CIP project at https://www.cip-project.org/ is considering to
+> > maintain the 4.4 branch in a limited capability going forward.  If you
+> > really need to use this kernel version, please contact them.
+> 
+> Yes, please; feel free to contact us.
+> 
+> Greg, we'll likely keep maintaining "stable 4.4.X" separately from
+> "stable + changes for cip hardware, aka 4.4.X-cipY". Would it be okay
+> if we simply kept tagging those kernels as 4.4.303 / 4.4.304 / ...?
 
-Or maybe rather:
+No, please do not.  Just call them 4.4.302-cipY as there is no need to
+even attempt to keep 4.4 alive for non-cip platforms at all anymore.  If
+you were to keep incrementing the number, that will cause confusion and
+people would think that it would be a general-purpose release like was
+previously done, when that is going to be impossible for you all to keep
+alive.
 
-uaccess: remove CONFIG_SET_FS
+> CIP project is committed to maintain 4.4.x kernel till January of 2027
+> [1]. We are maintaining -cip branch [2], that is stable kernel with about
+> 1000 of patches to support our reference hardware [3] and -cip-rt
+> branch, with is merge of -rt and -cip trees.
 
-because it is all gone now.
+Hah, good luck!
 
-> With CONFIG_SET_FS gone, so drop all remaining references to
-> set_fs()/get_fs(), mm_segment_t and uaccess_kernel().
+> If you for some reason need 4.4.x with bug and security fixes, and are
+> running similar hardware to our reference hardware (x86-64 and armv7),
+> -cip tree may be good base for that work. Testing of the -cip tree is
+> welcome, as is joining the CIP project.
 
-And this sentence does not parse.
+I agree, people should join the CIP project and work with you all if
+they really want to keep using 4.4
+
+thanks,
+
+greg k-h
