@@ -2,68 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44859C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 13:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0799EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 13:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235629AbiBRNJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 08:09:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34152 "EHLO
+        id S235639AbiBRNKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 08:10:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232256AbiBRNJL (ORCPT
+        with ESMTP id S232732AbiBRNKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 08:09:11 -0500
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C6926AE0;
-        Fri, 18 Feb 2022 05:08:54 -0800 (PST)
-Received: by mail-wm1-f44.google.com with SMTP id bg21-20020a05600c3c9500b0035283e7a012so6409038wmb.0;
-        Fri, 18 Feb 2022 05:08:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oLRoYYItaRFSQb7v3ZtTL1xufEneAUj0e5cG7bAyUuA=;
-        b=wqHsF/PWcocQX6+RaHL0mzGk5seYnziFDeHEvciGktqYUooFHKnZYZhPcj0GEL+oBv
-         Y5asFXjI2aum4yM3JtSkghnnqlv4Pj1B7XRO8nHQI5Q0U9nXkrwDvSkvW6T/CsTjzJSv
-         XGSkNjiiht/57sLu5ksNVuxlk0f9+BvzxCOBpkx4gCgM8sITIpAB0XlkgR6wPTH2wm73
-         vmWsnQWF0E+gGNjM+XD8bAiKaGRuy63fNWj5nhgRGnjovF9RPJ7x0lYErRgBGTJR9/Mi
-         urcqI9Yy/rYHBtkjMVy8ejvsiDRjQgTu2ZSIi2UYHZizn5/2iUjG4JTP4anIBwXFKAew
-         SzeA==
-X-Gm-Message-State: AOAM531k5zUOXWcSjtu8DDgBkss245IbXP0IgwpXKGRl5G95mWriqLXU
-        wK4gKok47nnnX8C6v9KUuvNrT4meowM=
-X-Google-Smtp-Source: ABdhPJy43cjFwZwEPYGnQ7ZaOIr5GqRfVOfSEPQH1GbnFQ/wJbIW4wgG1PAn2KA/xfC+zEIBNO0P5A==
-X-Received: by 2002:a7b:c3d3:0:b0:37b:ea2b:55a4 with SMTP id t19-20020a7bc3d3000000b0037bea2b55a4mr7119758wmj.85.1645189733419;
-        Fri, 18 Feb 2022 05:08:53 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id f25sm4027574wml.16.2022.02.18.05.08.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 05:08:52 -0800 (PST)
-Date:   Fri, 18 Feb 2022 13:08:51 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        vkuznets@redhat.com
-Subject: Re: [PATCH 1/1] hv_utils: Add comment about max VMbus packet size in
- VSS driver
-Message-ID: <20220218130851.2afjdrmhov2qzlu3@liuwe-devbox-debian-v2>
-References: <1644423070-75125-1-git-send-email-mikelley@microsoft.com>
+        Fri, 18 Feb 2022 08:10:34 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE163253BDE;
+        Fri, 18 Feb 2022 05:10:15 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 7BBD11F37F;
+        Fri, 18 Feb 2022 13:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645189814;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1JlFxuUX2jYEpN7LRjICgbNOHYKr0FMLJ/vNPXX2b/U=;
+        b=z4fVxXPuw0f6uc2eukxJR1Wew1zDHTNY7X7eEEgRuhUWUxeDZQ98fZptur359cHZrl6dl4
+        d8ZpONw5LmnWScpGPPyEgkBsnMtzhjdrnH3b87+E3cxFTRAQ+byIyP3NOu9EjaA+Ito5rY
+        cKKT2ZL+S30ol5XDgeUxkv8BETyBbR0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645189814;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1JlFxuUX2jYEpN7LRjICgbNOHYKr0FMLJ/vNPXX2b/U=;
+        b=cnjSx/5Gzt/joRIUQbkLAXJ2pgOS+AwnCVFi+95JtZugVJgSwsvNsXAYiyOm4cOkiubrIC
+        9448VWjM0cAyZPCA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 6896EA3B83;
+        Fri, 18 Feb 2022 13:10:14 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id CD392DA829; Fri, 18 Feb 2022 14:06:28 +0100 (CET)
+Date:   Fri, 18 Feb 2022 14:06:28 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] btrfs: Fix non-kernel-doc comment
+Message-ID: <20220218130628.GS12643@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, clm@fb.com,
+        josef@toxicpanda.com, dsterba@suse.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+References: <20220218101345.125518-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1644423070-75125-1-git-send-email-mikelley@microsoft.com>
+In-Reply-To: <20220218101345.125518-1-jiapeng.chong@linux.alibaba.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 08:11:10AM -0800, Michael Kelley wrote:
-> The VSS driver allocates a VMbus receive buffer significantly
-> larger than sizeof(hv_vss_msg), with no explanation. To help
-> prevent future mistakes, add a #define and comment about why
-> this is done.
+On Fri, Feb 18, 2022 at 06:13:45PM +0800, Jiapeng Chong wrote:
+> Fixes the following W=1 kernel build warning:
 > 
-> No functional change.
+> fs/btrfs/ioctl.c:1789: warning: This comment starts with '/**', but
+> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>  * Entry point to file defragmentation.
 > 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> fs/btrfs/extent_map.c:390: warning: This comment starts with '/**', but
+> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>  * Add new extent map to the extent tree.
+> 
+> fs/btrfs/block-group.c:1743: warning: This comment starts with '/**',
+> but isn't a kernel-doc comment. Refer
+> Documentation/doc-guide/kernel-doc.rst
+>  * Map a physical disk address to a list of logical addresses.
+> 
+> fs/btrfs/extent_io.c:4923: warning: This comment starts with '/**', but
+> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>  * Walk the list of dirty pages of the given address space and write all
+>  * of them.
+> 
+> fs/btrfs/file-item.c:625: warning: This comment starts with '/**', but
+> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>  * Calculate checksums of the data contained inside a bio.
+> 
+> fs/btrfs/inode.c:3430: warning: This comment starts with '/**', but
+> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>  * Wait for flushing all delayed iputs
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  fs/btrfs/block-group.c | 2 +-
+>  fs/btrfs/extent_io.c   | 2 +-
+>  fs/btrfs/extent_map.c  | 2 +-
+>  fs/btrfs/file-item.c   | 2 +-
+>  fs/btrfs/inode.c       | 2 +-
+>  fs/btrfs/ioctl.c       | 2 +-
+>  6 files changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
+> index c22d287e020b..884002e510ec 100644
+> --- a/fs/btrfs/block-group.c
+> +++ b/fs/btrfs/block-group.c
+> @@ -1739,7 +1739,7 @@ static void set_avail_alloc_bits(struct btrfs_fs_info *fs_info, u64 flags)
+>  	write_sequnlock(&fs_info->profiles_lock);
+>  }
+>  
+> -/**
+> +/*
+>   * Map a physical disk address to a list of logical addresses
+>   *
+>   * @fs_info:       the filesystem
 
-Applied to hyperv-next. Thanks.
+We'd actually like the kdoc script to check the argument list.
