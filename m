@@ -2,147 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 894BFC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235885AbiBRQoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:44:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41832 "EHLO
+        id S238063AbiBRQq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:46:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbiBRQoe (ORCPT
+        with ESMTP id S235407AbiBRQq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:44:34 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2073.outbound.protection.outlook.com [40.107.92.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225D82B2C51
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:44:16 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XjnKPlFjCijtBLzbqMmaz4H+UKq/vQKdEuGe4djUYQiLDj7MCI76FxRd7DePfQNism9wgykn5r/ybuyeK6vddypQpK8e81kBAG/ICBeTc7Jil5gEQNb/jRg9uyTZcIWbN3IgBznc9lDOnrAqP+gRtGnaF/kSHkEH9J7w4bj0mUm5NEz3fiSlmFwsYxxpdDCtPKipUQYIUdalNCiuN5ns/04wFzeed6Pdq51TZmHCNFstui/ZsYcllSJVUFOC1/ntJ4l0y4ucbytdXUXRL0yxC9aARgTotbxypVIECMhbMlA5NtzWL9KxLiPZcad02atJwJBmt/Y0eVYILJRGzKX86A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+MslRGygXUxw4eUY6DZAMYVVa1QO86/VajVINhMn5Ds=;
- b=i6yYKMq8Q8ZhZIxHAzvjfb7lagxYh/Dw1a1m2tOmywuAbZsirz9hOLQBMrFsRxugk/kDtUop4epA3lrhlfpNCAKkQaDz4sp39EDXUx3mMIN1+h3To5E7mdDb4eJuQmEQ2NWfBLyXHeDMmv1GI6LWUALbWaUtdT/B1g0bLRqvIkxnGXjN5MWQ1iMvyof3kMj1JhUxF1unArPsJpW90WTTjrM0kg57ICtwn6PPOnIXKkV4WIQp4AsAHt4w3eDlxN4oWEE62v/j25PEa+FbnQx09kynAcMU0S4wVFCznvW4iVaHSCxiScEVGO9Stt1tC2tQMhCao8TOqwrdn7f2KPmwWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+MslRGygXUxw4eUY6DZAMYVVa1QO86/VajVINhMn5Ds=;
- b=2wqnw13uA1kl7PTptGi7XPn5x1IRCwf3YwgdchI4pb3lX7fKOKGKn3T5UX7IukbiR6EX0s7WSR+HBwbpdgqD1B7F8Ns2dhYyDAmJFmgnDyEHcedwtXQC7RWYwc5IzbeHvQBugVw40Rc9pB5ua5q6N+NOSBesGrwTxN1zbXHncv8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MW2PR12MB2379.namprd12.prod.outlook.com (2603:10b6:907:9::24)
- by BN9PR12MB5210.namprd12.prod.outlook.com (2603:10b6:408:11b::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Fri, 18 Feb
- 2022 16:44:14 +0000
-Received: from MW2PR12MB2379.namprd12.prod.outlook.com
- ([fe80::c90d:9f80:a049:b432]) by MW2PR12MB2379.namprd12.prod.outlook.com
- ([fe80::c90d:9f80:a049:b432%2]) with mapi id 15.20.4975.017; Fri, 18 Feb 2022
- 16:44:14 +0000
-Message-ID: <c1cce9f7-6501-b561-325d-126fa075e520@amd.com>
-Date:   Fri, 18 Feb 2022 22:14:00 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [tip:sched/core 27/28] kernel/sched/topology.c:2284:39: sparse:
- sparse: incorrect type in assignment (different address spaces)
-Content-Language: en-US
-To:     Mel Gorman <mgorman@suse.de>
-Cc:     kbuild-all@lists.01.org, kernel test robot <lkp@intel.com>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Gautham R. Shenoy" <gautham.shenoy@amd.com>
-References: <202202170853.9vofgC3O-lkp@intel.com>
-From:   K Prateek Nayak <kprateek.nayak@amd.com>
-In-Reply-To: <202202170853.9vofgC3O-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BM1PR0101CA0042.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:1a::28) To MW2PR12MB2379.namprd12.prod.outlook.com
- (2603:10b6:907:9::24)
+        Fri, 18 Feb 2022 11:46:27 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F512B2C44
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:46:10 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id r20so5183225ljj.1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:46:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=BoIYnMjL8gJwdF/bzCI8rR1UJqefH9/MYqh8v9Nayvo=;
+        b=O6XFaAKIgaqGoZ/Y74CCudZnLB0E+6HDF/n+HkeZfuqLUBoeGYmxpf4/VkW9ZBSiDh
+         c4PfR8mfzZLLrxtDaiL1gTWUg8XTs4joQmlXI9tcTsTwCkIBkrXZI4/ziPbAMRVT3N+f
+         dIhj9G8hg2+Al0isg7KYppYvPwD/oo/jMMPhL0BZdoSsCz3wYA0aQFE1H33+0qtFg0Pg
+         DlybY8bJa/KbXBh8ppK0suX24Mz/oLdFSfQCnKh2yWDOapEroTwat4VCe38F3o9zfslv
+         om7re2RXMkbwLqYuLdbRkXa15kjveft40uY3NiAYzrro2WObuMfr2dOUqHw5Z+8V1+0B
+         zicg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=BoIYnMjL8gJwdF/bzCI8rR1UJqefH9/MYqh8v9Nayvo=;
+        b=ewE5PPQZXNu2TE34mXqo3MLasUZ2E9+uB1pjqE35PvJvApMrYjernxgrpSR0ziM9/d
+         jXRGZu5jZDqQqTrVE8plpVg0YwKpd1C0mrrKOI3f+coX8RVxIR6/TbsrAJNkkvOM8dvJ
+         5Wu/vKMcl/tdjTmHhJ0ob5kNpndDvPAM47ptHLGKpoecVG1Q+37Y2zfm3BFj1u/CJQdg
+         9zaDmfLFVp0BxgeEoLAexrOCM6R30rsS1K27iBNyCATnJUoodSMz+tRxqCzA1uRqm2hv
+         AZRkiZEUFMJRGin3uctUcRE3sGpcwaWnPrjyrqe/cCMuoLPmjV5RCzewuoD8+HeiBGf7
+         JOWQ==
+X-Gm-Message-State: AOAM53031CYdCbbZ6HNeDA/FKaoYc5zS/PzfHnm+2kcyWS1zTpVlvjqS
+        PxMsBw3e84/bZmc26cqzZG0rew==
+X-Google-Smtp-Source: ABdhPJwBH4MvSdmHLlkS1VMdQqcxyXk3soGbZt8vdIZZiablDAdGajyatE3o+Ktu6zHPDHZAut0vcQ==
+X-Received: by 2002:a2e:b816:0:b0:23c:5d59:1837 with SMTP id u22-20020a2eb816000000b0023c5d591837mr6053831ljo.211.1645202768622;
+        Fri, 18 Feb 2022 08:46:08 -0800 (PST)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id e22sm371863ljb.17.2022.02.18.08.46.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 08:46:08 -0800 (PST)
+Message-ID: <b854f7ab-6606-9305-ea3e-6ba728c60584@linaro.org>
+Date:   Fri, 18 Feb 2022 19:46:07 +0300
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 20f9cd47-84fd-4528-c2d6-08d9f2fde532
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5210:EE_
-X-Microsoft-Antispam-PRVS: <BN9PR12MB52109FF908E4334215D5299298379@BN9PR12MB5210.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lqrKZmivnaYRlY/VfHxz1HcjSRjtutfx1sN424+rfgEVeHkGY9QNIZR21jFfj7vxYT99SPYMzGcnFqj9r2si110RN3TRZoyjFerUI0dNHYrSxQybgUcEdQqQot9IrgGx1y633Eha4tb+RlxheERCm7soccqDp9Idzkpvcc8UEGszp5tXHBz3EVWvSc/dhFFcLiEGYi6v6SROHHDPFoE7SKaMg7twn5ZAk6+z9f8KiWKMYk6FALNUH/yIok9Ddyd5Rtu4lFPzcML+pX7YwfcoV88MCtwx6a2ns6IHBsPSsuESU6cBQI2INanSTtSGohqWlqpWCppfMstm5NXigrrfReQ5vobcQ7Px8gfj6yvUSqUy4wo1AAjPXlPJdSf/Je9c5GkJTZDIqxo44RUWi9NYlu0vrqckDCnfwcguhbLL80SbhU/blgLy+PCpzRt0KIUi6vqc4JjfLURPs73/ULH1K8GTObvJi/hEPbSMoeiO8SX3d+L6gdhh8WsYGaFEQtBBhXT7Z2oUnsoPpek19NvbrwfyHYNN3yHImVtrWJTkOXZFnyLpYbClp3dSFLzrsjV1UpLFByfT+sx88cdivFxz7lvTCwldOCoEv/t6A2Pg86AMUkAUDI6/EiPN+u8x6UkdJDL57Uj6JYGp+iYS6OWl+XWGATHiVMxBvbfPdTfVsPhnCIFpCJyLlsBGWaxXpjfYFCFWiKT26EMg7UueJYtHsswDGJEcKWXjTRDvN4jlsyqt2s3M4MjAn35jGfQdr+DQJ8o7NVLLlu9f7UQGZo4QJoTzjdfd0HwGNjR86HSS8IIMCisUAJUrdd5Xu2iBVb+PGAD3O6gZuR5uTE7GzLxmVA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR12MB2379.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(186003)(5660300002)(6512007)(4744005)(66476007)(66946007)(66556008)(2616005)(8676002)(4326008)(966005)(6486002)(54906003)(6916009)(26005)(6666004)(53546011)(36756003)(38100700002)(508600001)(6506007)(2906002)(316002)(83380400001)(86362001)(31696002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Vk5jaisySWR1K0JrNFpUN0F3RGRlbHJlQ2p1SlRqSHlLN0FtUTRFMGtQT2t5?=
- =?utf-8?B?QUxDQjdmdVNSdCtEWG5OUkVobTZFS0tlaitxRWMzRFJSanNrbzRyOU9JTUxm?=
- =?utf-8?B?M2tWcEd5YXFPRjNPajM4MUFyUjlYZG1yMUtqNWRQMm5PWmM4VklrczVpOExE?=
- =?utf-8?B?d1pXNmN1WlFIS2xrSXZISXhOZTIvcUM2Rzh3dEl0TVdUUlNhejlGR0p4RVZX?=
- =?utf-8?B?YjE2aEVDcUl0bXk0ZWNFeGxic0EvREk3cmpHZFZKVnIwcFV3L2owdkYrcXdT?=
- =?utf-8?B?eTF3R3JUc3FpZDJkUjFjdUpQQmtUNTUycHhHamN6ZDJVWVRJZU5XUnlTMVJv?=
- =?utf-8?B?Z3JrUk5ZdUZXNU9ublA5N0ViMzZwWUtnMUFxQ0duVlcrMSs2TllUdlVCTnM0?=
- =?utf-8?B?ajliZ2tJeDE2NDNJcE5yK3dzcmxxQXFWUTFhTnoxWmFXVHc0UUNTbzBTOGNv?=
- =?utf-8?B?ZTBsS2IxTWtIdE5vRWR3a09vdzlQSkd0RFhUWmtybGFyN0ZucnVzOGdETnB4?=
- =?utf-8?B?a3hNOHU4OHp6RTJON3lPREhwamNpK0F0bm5UZWZKY0tQT05JdHV6WVU1V3h2?=
- =?utf-8?B?NHB6QzIxSXRnTTJkVDYvNU9CWmhEbWpieUYyK0tJaVBnUkgxV3B5Tms3L2ZU?=
- =?utf-8?B?U2JZLzJjNnFNTEVUY21WaFl5MFo0Vk9SRjUwSXdPSzUxdWRFbzlJcWxrWWw4?=
- =?utf-8?B?RlluMjFGNUM1ajE4OHBKWVMvUXNYQWF5QWVEL2tkQ1psTVJRY1VGUURxa1hq?=
- =?utf-8?B?cXA3T0xTT1ppQ3hrb0p6M3RkcmlMQmN1YVZ6akhqeTNiSDZuWW00NkdHQXJH?=
- =?utf-8?B?K0piT05GVVNLQXozOURHZGk4OWREZzh4bHRXRVFkMmJtYVFFN2E3S0hmd2ND?=
- =?utf-8?B?emY5WStUc1pjelQreUpVMjJ3eUZTN1VqRXNlQWJ6OElvOHI4bGVveFVCYUo4?=
- =?utf-8?B?UENWbm1jTXcwT2QrY0dDdjA1LzI5dCtvMHBXM1NUbVBEdkJDUDBQN3dXSmVo?=
- =?utf-8?B?djllRlR4M29RYjRqKy9aSm51RkR3TjF5RE1PaTd5SURZOW9LOVV1WGRQOWdS?=
- =?utf-8?B?cHRGODN1QnZRUUZuNmN5VVljNlo3Nlk2Rzg5UVJWNVpqK2pncGVUVlNUZkQ4?=
- =?utf-8?B?cjVPMTRnTmtkOG5iRDdGd21yald0bW9mUkN2M1QxK1VzNzNSUjVWTmh5cEsr?=
- =?utf-8?B?VS9JQ3Z2VFNiZ1hBdFpMWWFKNXZDV0NZYVM4OGxnNHhoLzAxTWk2OFpuVkRG?=
- =?utf-8?B?cEZHdExXNUtUcGRSMTBORmIzakpOS1M2YUhuMmVvSmNpbUtBOVFvWGpPd05h?=
- =?utf-8?B?Znlyd2dEMXFKZmprb0YwWk5scGVpVzZuam44b3hzUlBFaHowOE9tSnJYeGcy?=
- =?utf-8?B?ZGlwUVB3RjVKeHpOSEpXVkpzb1pCV08yUk1rcjRjZERuUkdTWEhNekV3RWUz?=
- =?utf-8?B?bmpES2cxeUw3MFl4VDhjeGpOeUZWNWY4OGlWazFoMDZXVlJtSWkxTDM1Vjhp?=
- =?utf-8?B?bFpjLytSQVJoOUVkRjNZb25NUWlVUVExdjIyQXR4aEFHdUpXVHc0NzVSUktT?=
- =?utf-8?B?bmZvUFoxNGRKYUVyS29kei9YTmVuaFllS0VKU3p0ZytqdEptbHhTcTFIR0Y1?=
- =?utf-8?B?SWlOQ2ltVXdVbVJSelFEWXJlWXBGRnJkMmZyTE5wVStRZUZaMWUwWDAxcmtE?=
- =?utf-8?B?c0pFODZCVzVmY081S3ZJdHRCd1hFbTNIV3dEbFJBQkFNd1hXODkvUlJBYzYw?=
- =?utf-8?B?NWtSdFliMGpZTVRJd3Zsa0ZJdzRWTUtqZWdRYXF5Y2JBelp2SXBPelhrSitz?=
- =?utf-8?B?R2VNWUl5V0ZQTkUyQTk2d0thV2o0SmdDemZ2VHVIUUlFbWVGVllpWGRjVXpi?=
- =?utf-8?B?Q2ZiMnZBZ0h5OVI5NDdPeGNmV3pMdnlBZkFMMFQzSWF0enY1OXlNUnhXbENH?=
- =?utf-8?B?Y1NkTmZ4K2svS0RVYTFPNFQxdkhVcldUT3N4Ymh5MTVjcXhwRXdWV0NmK040?=
- =?utf-8?B?UENCZHdjNjBpa1YwWVQwU1lMTjdBRDN3SFRDbjQ4cUpQRURvYW9IRFZWWjA4?=
- =?utf-8?B?ZDZNRHd4cldER0I1eGptTks2ZElkZzRDVEJZK3NwOFFnaUg3bkJvNUFlWjFH?=
- =?utf-8?B?a1g0RWhUdWRIaVVtZE9kSDZ3SjFLZ3k5Q3NQKzl1ZlFRK25qc204TGExZHoy?=
- =?utf-8?Q?AI47BFpKIHzy3FI0qFgEE+o=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20f9cd47-84fd-4528-c2d6-08d9f2fde532
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR12MB2379.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 16:44:13.8873
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UxN85q2W/mHanHvWp8LxfoXzofsQiOumNo/bpq2CD46TdXWJ2YySbc/n11tnxWogED2lgCKyadTrRpWJTdy3zQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5210
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] drm/msm/dpu: Bind pingpong block to intf on active ctls
+ in cmd encoder
+Content-Language: en-GB
+To:     Marijn Suijten <marijn.suijten@somainline.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Pavel Dubrova <pashadubrova@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Bernard <bernard@vivo.com>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20211222105513.44860-1-marijn.suijten@somainline.org>
+ <84bd598c-b1b7-984e-9fa1-94ad28087ef0@linaro.org>
+ <20220202094850.2asbry44vyh5xw2p@SoMainline.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220202094850.2asbry44vyh5xw2p@SoMainline.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Mel,
+On 02/02/2022 12:48, Marijn Suijten wrote:
+> On 2022-01-20 02:12:51, Dmitry Baryshkov wrote:
+>> On 22/12/2021 13:55, Marijn Suijten wrote:
+>>> As per the specification of DPU_CTL_ACTIVE_CFG the configuration of
+>>> active blocks should be proactively specified, and the pingpong block is
+>>> no different.
+>>>
+>>> The downstream display driver [1] confirms this by also calling
+>>> bind_pingpong_blk on CTL_ACTIVE_CFG.  Note that this else-if is always
+>>> entered, as setup_intf_cfg - unlike this mainline dpu driver that
+>>> combines both behind the same function pointer - is left NULL in favour
+>>> of using setup_intf_cfg_v1 when CTL_ACTIVE_CFG is set.
+>>>
+>>> This solves continuous timeouts on at least the Qualcomm sm6125 SoC:
+>>>
+>>>       [drm:dpu_encoder_frame_done_timeout:2091] [dpu error]enc31 frame done timeout
+>>>       [drm:_dpu_encoder_phys_cmd_handle_ppdone_timeout.isra.0] *ERROR* id:31 pp:0 kickoff timeout 0 cnt 1 koff_cnt 1
+>>>       [drm:dpu_encoder_phys_cmd_prepare_for_kickoff] *ERROR* failed wait_for_idle: id:31 ret:-110 pp:0
+>>>
+>>> In the same way this pingpong block should also be unbound followed by
+>>> an interface flush when the encoder is disabled, according to the
+>>> downstream display driver [2].
+>>>
+>>> [1]: https://source.codeaurora.org/quic/la/platform/vendor/opensource/display-drivers/tree/msm/sde/sde_encoder_phys_cmd.c?h=LA.UM.9.16.r1-08500-MANNAR.0#n167
+>>> [2]: https://source.codeaurora.org/quic/la/platform/vendor/opensource/display-drivers/tree/msm/sde/sde_encoder.c?h=LA.UM.9.16.r1-08500-MANNAR.0#n2986
+>>>
+>>> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+>>> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+>>
+>> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+>>
+>>> ---
+>>>    .../drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c  | 21 +++++++++++++++++++
+>>>    1 file changed, 21 insertions(+)
+>>>
+>>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
+>>> index 8e433af7aea4..e0e08a874f07 100644
+>>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
+>>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
+>>> @@ -71,6 +71,13 @@ static void _dpu_encoder_phys_cmd_update_intf_cfg(
+>>>    	intf_cfg.stream_sel = cmd_enc->stream_sel;
+>>>    	intf_cfg.mode_3d = dpu_encoder_helper_get_3d_blend_mode(phys_enc);
+>>>    	ctl->ops.setup_intf_cfg(ctl, &intf_cfg);
+>>> +
+>>> +	/* setup which pp blk will connect to this intf */
+>>> +	if (test_bit(DPU_CTL_ACTIVE_CFG, &ctl->caps->features) && phys_enc->hw_intf->ops.bind_pingpong_blk)
+>>
+>> Nit: here we bind all interfaces, but later we unbind only master. Is
+>> this correct?
+> 
+> Not sure: it seems downstream only calls
+> _sde/dpu_encoder_phys_cmd_update_intf_cfg when it is _not_ a ppsplit
+> slave, which appears to be very similar to being the master (both check
+> for ENC_ROLE_SLAVE but ppsplit also checks RM topology support for
+> ppsplit).  Should we do this too before calling
+> _dpu_encoder_phys_cmd_update_intf_cfg?
 
-On 2/17/2022 6:28 AM, kernel test robot wrote:
-> [..snip..]
->   2282					/* Set span based on the first NUMA domain. */
->   2283					top = sd;
->> 2284					top_p = top->parent;
->   2285					while (top_p && !(top_p->flags & SD_NUMA)) {
->> 2286						top = top->parent;
->   2287						top_p = top->parent;
->   2288					}
->   2289					imb_span = top_p ? top_p->span_weight : sd->span_weight;
+The PP split is a special topology using a single LM, but two PP (and 
+two INTFs). The dpu driver doesn't provide support for it, so ppsplit is 
+always false.
 
-I was looking into this sparse warning when I noticed
-that the variable "top" is actually redundant - "sd"
-and "top_p" can suffice for the computation "top" is
-involved in. I've created a patch to fix this warning
-and remove the redundant variable top while at it.
-https://lore.kernel.org/lkml/20220218162743.1134-1-kprateek.nayak@amd.com/
---
-Thanks and Regards,
-Prateek
+
+> 
+> - Marijn
+> 
+>>> +		phys_enc->hw_intf->ops.bind_pingpong_blk(
+>>> +				phys_enc->hw_intf,
+>>> +				true,
+>>> +				phys_enc->hw_pp->idx);
+>>>    }
+>>>    
+>>>    static void dpu_encoder_phys_cmd_pp_tx_done_irq(void *arg, int irq_idx)
+>>> @@ -507,6 +514,7 @@ static void dpu_encoder_phys_cmd_disable(struct dpu_encoder_phys *phys_enc)
+>>>    {
+>>>    	struct dpu_encoder_phys_cmd *cmd_enc =
+>>>    		to_dpu_encoder_phys_cmd(phys_enc);
+>>> +	struct dpu_hw_ctl *ctl;
+>>>    
+>>>    	if (!phys_enc->hw_pp) {
+>>>    		DPU_ERROR("invalid encoder\n");
+>>> @@ -523,6 +531,19 @@ static void dpu_encoder_phys_cmd_disable(struct dpu_encoder_phys *phys_enc)
+>>>    
+>>>    	if (phys_enc->hw_pp->ops.enable_tearcheck)
+>>>    		phys_enc->hw_pp->ops.enable_tearcheck(phys_enc->hw_pp, false);
+>>> +
+>>> +	if (dpu_encoder_phys_cmd_is_master(phys_enc)) {
+
+Please remove this condition. Just check for existence of bind_pingpong_blk.
+
+>>> +		if (phys_enc->hw_intf->ops.bind_pingpong_blk) {
+>>> +			phys_enc->hw_intf->ops.bind_pingpong_blk(
+>>> +					phys_enc->hw_intf,
+>>> +					false,
+>>> +					phys_enc->hw_pp->idx);
+>>> +
+>>> +			ctl = phys_enc->hw_ctl;
+>>> +			ctl->ops.update_pending_flush_intf(ctl, phys_enc->intf_idx);
+>>> +		}
+>>> +	}
+>>> +
+>>>    	phys_enc->enable_state = DPU_ENC_DISABLED;
+>>>    }
+>>>    
+>>
+>>
+>> -- 
+>> With best wishes
+>> Dmitry
+
+
+-- 
+With best wishes
+Dmitry
